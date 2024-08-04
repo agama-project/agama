@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-28 02:29+0000\n"
+"POT-Creation-Date: 2024-08-04 02:29+0000\n"
 "PO-Revision-Date: 2024-07-25 08:46+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -18,44 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.6.2\n"
-
-#: src/MainLayout.jsx:52
-msgid "Agama"
-msgstr "Agama"
-
-#: src/MainLayout.jsx:94
-msgid "Change product"
-msgstr "製品の変更"
-
-#: src/components/core/About.jsx:49
-msgid "About"
-msgstr "バージョン情報"
-
-#: src/components/core/About.jsx:69
-msgid "About Agama"
-msgstr "Agama について"
-
-#: src/components/core/About.jsx:74
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"Agama は (open)SUSE システム向けの実験中インストーラです。現在もなお開発途上"
-"にある仕組みですので、本番環境での使用はご遠慮ください。なお、お試しになりた"
-"い場合は、仮想マシン内で実行して不用意なデータ喪失を防ぐことをお勧めします。"
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.jsx:86
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr "詳しくは %s にあるプロジェクトのリポジトリをご覧ください。"
-
-#: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
-msgid "Close"
-msgstr "閉じる"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -80,8 +42,7 @@ msgid "Continue"
 msgstr "続行"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
-#: src/components/core/Popup.jsx:132
+#: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
 #: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "キャンセル"
@@ -91,12 +52,12 @@ msgstr "キャンセル"
 msgid "Install"
 msgstr "インストール"
 
-#: src/components/core/InstallationFinished.jsx:48
+#: src/components/core/InstallationFinished.jsx:49
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr ""
 "TPM シーリングを使用するには、新しいシステムを直接起動する必要があります。"
 
-#: src/components/core/InstallationFinished.jsx:53
+#: src/components/core/InstallationFinished.jsx:54
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -104,15 +65,15 @@ msgstr ""
 "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再"
 "起動までの間にメディアを取り出しておいてください。"
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "Hide details"
 msgstr "詳細を隠す"
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "See more details"
 msgstr "さらに詳細を表示する"
 
-#: src/components/core/InstallationFinished.jsx:62
+#: src/components/core/InstallationFinished.jsx:63
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -124,27 +85,27 @@ msgstr ""
 "は、マシンが新しいブートローダを直接起動するように設定しておく必要がありま"
 "す。"
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:106
 msgid "Congratulations!"
 msgstr "おめでとうございます！"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.jsx:115
 msgid "The installation on your machine is complete."
 msgstr "お使いのマシンへのインストールが完了しました。"
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.jsx:118
 msgid "At this point you can power off the machine."
 msgstr "マシンの電源を切って問題ありません。"
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.jsx:120
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr "あとはマシンを再起動して新しいシステムにログインするだけです。"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Finish"
 msgstr "完了"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Reboot"
 msgstr "再起動"
 
@@ -163,7 +124,7 @@ msgstr "インストーラのオプション"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:55
 msgid "Language"
 msgstr "言語"
 
@@ -234,39 +195,16 @@ msgstr "パスワード入力"
 msgid "Log in"
 msgstr "ログイン"
 
-#: src/components/core/LoginPage.jsx:121
+#: src/components/core/LoginPage.jsx:118
 msgid "More about this"
 msgstr "こちらについて詳しく"
-
-#: src/components/core/LogsButton.jsx:101
-msgid "Collecting logs..."
-msgstr "ログを収集しています..."
-
-#: src/components/core/LogsButton.jsx:101
-#: src/components/core/LogsButton.jsx:104
-msgid "Download logs"
-msgstr "ログのダウンロード"
-
-#: src/components/core/LogsButton.jsx:111
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr ""
-"ログの収集が完了すると、ブラウザ側でダウンロード処理が始まります。しばらくお"
-"待ちください。"
-
-#: src/components/core/LogsButton.jsx:121
-msgid "Something went wrong while collecting logs. Please, try again."
-msgstr "ログの収集時に何らかの問題が発生しました。再試行してみてください。"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
 msgstr "パスワードが合致しません"
 
-#. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
 #: src/components/network/WifiConnectionForm.jsx:128
-#: src/components/questions/QuestionWithPassword.jsx:48
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:130
@@ -290,25 +228,21 @@ msgstr "確認"
 msgid "Loading data..."
 msgstr "データを読み込んでいます..."
 
-#: src/components/core/ProgressReport.jsx:50
-msgid "Finished"
-msgstr "完了"
-
-#: src/components/core/ProgressReport.jsx:59
-msgid "In progress"
-msgstr "処理中"
-
-#: src/components/core/ProgressReport.jsx:74
+#: src/components/core/ProgressReport.jsx:56
 msgid "Pending"
 msgstr "保留中"
 
-#: src/components/core/ProgressReport.jsx:138
-msgid "Waiting for progress status..."
-msgstr "進捗状態を待機しています..."
+#: src/components/core/ProgressReport.jsx:65
+msgid "In progress"
+msgstr "処理中"
+
+#: src/components/core/ProgressReport.jsx:80
+msgid "Finished"
+msgstr "完了"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:491
-#: src/components/storage/ProposalActionsSummary.jsx:233
+#: src/components/storage/ProposalActionsSummary.jsx:234
 msgid "Actions"
 msgstr "処理"
 
@@ -341,39 +275,39 @@ msgid "Keyboard selection"
 msgstr "キーボードの選択"
 
 #: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
 #: src/components/l10n/LocaleSelection.jsx:92
 #: src/components/l10n/TimezoneSelection.jsx:125
 #: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr "選択"
 
-#: src/components/l10n/L10nPage.jsx:53
-#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.js:38
+#: src/components/l10n/L10nPage.jsx:48
+#: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr "ローカライゼーション"
 
-#: src/components/l10n/L10nPage.jsx:61 src/components/l10n/L10nPage.jsx:70
-#: src/components/l10n/L10nPage.jsx:80
+#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:75
 msgid "Not selected yet"
 msgstr "まだ何も選択していません"
 
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
-#: src/components/network/NetworkPage.jsx:74
-#: src/components/storage/InstallationDeviceField.jsx:108
-#: src/components/storage/ProposalActionsSummary.jsx:238
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
+#: src/components/network/NetworkPage.jsx:75
+#: src/components/storage/InstallationDeviceField.jsx:109
+#: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
 msgstr "変更"
 
-#: src/components/l10n/L10nPage.jsx:70
+#: src/components/l10n/L10nPage.jsx:65
 msgid "Keyboard"
 msgstr "キーボード"
 
-#: src/components/l10n/L10nPage.jsx:79
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Time zone"
 msgstr "タイムゾーン"
 
@@ -401,7 +335,7 @@ msgstr "フィルタに該当するタイムゾーンがありません。"
 msgid " Timezone selection"
 msgstr " タイムゾーンの選択"
 
-#: src/components/layout/Loading.jsx:31
+#: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "インストール環境を読み込んでいます。しばらくお待ちください。"
 
@@ -466,12 +400,12 @@ msgid "Connection actions"
 msgstr "接続処理"
 
 #: src/components/network/ConnectionsTable.jsx:75
-#: src/components/network/WifiNetworksListPage.jsx:112
-#: src/components/network/WifiNetworksListPage.jsx:135
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:139
 #: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:85
+#: src/components/users/FirstUser.jsx:86
 msgid "Edit"
 msgstr "編集"
 
@@ -483,8 +417,8 @@ msgid "Edit connection %s"
 msgstr "接続 %s の編集"
 
 #: src/components/network/ConnectionsTable.jsx:82
-#: src/components/network/WifiNetworksListPage.jsx:114
-#: src/components/network/WifiNetworksListPage.jsx:142
+#: src/components/network/WifiNetworksListPage.jsx:118
+#: src/components/network/WifiNetworksListPage.jsx:146
 msgid "Forget"
 msgstr "削除"
 
@@ -557,11 +491,11 @@ msgstr "ゲートウエイ"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "'手動' モードの場合にのみゲートウエイを設定できます"
 
-#: src/components/network/NetworkPage.jsx:55
+#: src/components/network/NetworkPage.jsx:56
 msgid "No Wi-Fi supported"
 msgstr "Wi-Fi サポートがありません"
 
-#: src/components/network/NetworkPage.jsx:57
+#: src/components/network/NetworkPage.jsx:58
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
@@ -569,42 +503,41 @@ msgstr ""
 "このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していな"
 "いか、無効化されているものと思われます。"
 
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:72
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:74
+#: src/components/network/NetworkPage.jsx:75
 #: src/components/network/WifiConnectionForm.jsx:137
-#: src/components/network/WifiNetworksListPage.jsx:110
+#: src/components/network/WifiNetworksListPage.jsx:112
 msgid "Connect"
 msgstr "接続"
 
-#: src/components/network/NetworkPage.jsx:81
+#: src/components/network/NetworkPage.jsx:82
 #, c-format
 msgid "Conected to %s"
 msgstr "%s に接続済み"
 
-#: src/components/network/NetworkPage.jsx:88
+#: src/components/network/NetworkPage.jsx:89
 msgid "No connected yet"
 msgstr "まだ接続していません"
 
-#: src/components/network/NetworkPage.jsx:89
+#: src/components/network/NetworkPage.jsx:90
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr ""
 "このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
 
-#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/NetworkPage.jsx:103
 msgid "Wired"
 msgstr "有線"
 
-#: src/components/network/NetworkPage.jsx:104
+#: src/components/network/NetworkPage.jsx:105
 msgid "No wired connections found"
 msgstr "有線接続が見つかりませんでした"
 
-#: src/components/network/NetworkPage.jsx:114
-#: src/components/network/routes.js:33
+#: src/components/network/NetworkPage.jsx:115
 msgid "Network"
 msgstr "ネットワーク"
 
@@ -649,39 +582,39 @@ msgid "WPA Password"
 msgstr "WPA パスワード"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:64
-#: src/components/network/WifiNetworksListPage.jsx:122
+#: src/components/network/WifiNetworksListPage.jsx:66
+#: src/components/network/WifiNetworksListPage.jsx:126
 msgid "Connecting"
 msgstr "接続しています"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:67
-#: src/components/network/WifiNetworksListPage.jsx:126
-#: src/components/network/WifiNetworksListPage.jsx:169
+#: src/components/network/WifiNetworksListPage.jsx:69
+#: src/components/network/WifiNetworksListPage.jsx:130
+#: src/components/network/WifiNetworksListPage.jsx:173
 msgid "Connected"
 msgstr "接続済み"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:72
-#: src/components/network/WifiNetworksListPage.jsx:124
+#: src/components/network/WifiNetworksListPage.jsx:74
+#: src/components/network/WifiNetworksListPage.jsx:128
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "切断済み"
 
-#: src/components/network/WifiNetworksListPage.jsx:132
+#: src/components/network/WifiNetworksListPage.jsx:136
 msgid "Disconnect"
 msgstr "切断"
 
-#: src/components/network/WifiNetworksListPage.jsx:155
+#: src/components/network/WifiNetworksListPage.jsx:159
 msgid "Connect to a hidden network"
 msgstr "ステルスネットワークへの接続"
 
-#: src/components/network/WifiNetworksListPage.jsx:166
+#: src/components/network/WifiNetworksListPage.jsx:170
 msgid "configured"
 msgstr "設定済み"
 
-#: src/components/network/WifiNetworksListPage.jsx:268
+#: src/components/network/WifiNetworksListPage.jsx:270
 msgid "Connect to hidden network"
 msgstr "ステルスネットワークへの接続"
 
@@ -697,7 +630,7 @@ msgid "The system will use %s as its default language."
 msgstr "システムは %s を既定の言語として使用します。"
 
 #: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
+#: src/components/users/UsersPage.jsx:35
 msgid "Users"
 msgstr "ユーザ"
 
@@ -705,12 +638,10 @@ msgstr "ユーザ"
 #: src/components/overview/StorageSection.jsx:111
 #: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "ストレージ"
 
 #: src/components/overview/OverviewPage.jsx:51
-#: src/components/software/routes.js:32
 msgid "Software"
 msgstr "ソフトウエア"
 
@@ -809,7 +740,7 @@ msgstr ""
 "ジャのボリュームグループを作成してインストールします"
 
 #: src/components/overview/StorageSection.jsx:179
-#: src/components/storage/InstallationDeviceField.jsx:66
+#: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
 msgstr "まだ何もデバイスを選択していません"
 
@@ -843,53 +774,26 @@ msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr ""
 "必要な領域検出に際して独自の方式を利用し、デバイス %s にインストールします"
 
-#: src/components/overview/routes.js:30
-msgid "Overview"
-msgstr "概要"
-
-#: src/components/product/ProductSelectionProgress.jsx:49
+#: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
 msgstr "製品を設定しています。しばらくお待ちください..."
 
-#: src/components/questions/GenericQuestion.jsx:35
-#: src/components/questions/LuksActivationQuestion.jsx:60
-msgid "Question"
-msgstr "質問"
-
-#. TRANSLATORS: error message, user entered a wrong password
-#: src/components/questions/LuksActivationQuestion.jsx:34
-msgid "Given encryption password didn't work"
-msgstr "指定された暗号化パスワードが正しくありません"
-
-#: src/components/questions/LuksActivationQuestion.jsx:59
-msgid "Encrypted Device"
-msgstr "暗号化されたデバイス"
-
-#. TRANSLATORS: field label
-#: src/components/questions/LuksActivationQuestion.jsx:67
-msgid "Encryption Password"
-msgstr "暗号化パスワード"
-
-#: src/components/questions/QuestionWithPassword.jsx:42
-msgid "Password Required"
-msgstr "パスワードが必要です"
-
-#: src/components/storage/BootConfigField.jsx:43
+#: src/components/storage/BootConfigField.jsx:44
 msgid "Change boot options"
 msgstr "起動オプションの変更"
 
-#: src/components/storage/BootConfigField.jsx:81
+#: src/components/storage/BootConfigField.jsx:82
 msgid "Installation will not configure partitions for booting."
 msgstr "インストール作業では起動用のパーティションを設定しません。"
 
-#: src/components/storage/BootConfigField.jsx:85
+#: src/components/storage/BootConfigField.jsx:86
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "インストール作業でインストール先のディスクに起動用のパーティションを設定しま"
 "す。"
 
-#: src/components/storage/BootConfigField.jsx:89
+#: src/components/storage/BootConfigField.jsx:90
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "インストール作業で %s に起動用のパーティションを設定します。"
@@ -1204,7 +1108,6 @@ msgid "Connect to iSCSI targets"
 msgstr "iSCSI ターゲットへの接続"
 
 #: src/components/storage/DevicesTechMenu.jsx:67
-#: src/components/storage/routes.js:37
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1271,29 +1174,29 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "システムの暗号化"
 
-#: src/components/storage/InstallationDeviceField.jsx:36
+#: src/components/storage/InstallationDeviceField.jsx:37
 #: src/components/storage/VolumeLocationSelectorTable.jsx:61
 msgid "Installation device"
 msgstr "インストール先のデバイス"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:38
+#: src/components/storage/InstallationDeviceField.jsx:39
 msgid "Main disk or LVM Volume Group for installation."
 msgstr ""
 "インストール先のメインディスクもしくは LVM ボリュームグループを選択してくださ"
 "い。"
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:52
+#: src/components/storage/InstallationDeviceField.jsx:53
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "%s に新規のパーティションを作成し、そこにファイルシステムを作成"
 
-#: src/components/storage/InstallationDeviceField.jsx:55
+#: src/components/storage/InstallationDeviceField.jsx:56
 msgid "File systems created at a new LVM volume group"
 msgstr "新規 LVM ボリュームグループにファイルシステムを作成"
 
-#: src/components/storage/InstallationDeviceField.jsx:60
+#: src/components/storage/InstallationDeviceField.jsx:61
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "%s 内の新規 LVM ボリュームグループにファイルシステムを作成"
@@ -1540,48 +1443,48 @@ msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] "%d 個のサブボリューム処理を表示"
 
-#: src/components/storage/ProposalActionsSummary.jsx:57
+#: src/components/storage/ProposalActionsSummary.jsx:58
 msgid "Destructive actions are not allowed"
 msgstr "破壊的な処理は許可しません"
 
-#: src/components/storage/ProposalActionsSummary.jsx:59
+#: src/components/storage/ProposalActionsSummary.jsx:60
 msgid "Destructive actions are allowed"
 msgstr "破壊的な処理を許可します"
 
-#: src/components/storage/ProposalActionsSummary.jsx:82
-#: src/components/storage/ProposalActionsSummary.jsx:132
+#: src/components/storage/ProposalActionsSummary.jsx:83
+#: src/components/storage/ProposalActionsSummary.jsx:133
 msgid "affecting"
 msgstr "下記に影響があります"
 
-#: src/components/storage/ProposalActionsSummary.jsx:112
+#: src/components/storage/ProposalActionsSummary.jsx:113
 msgid "Shrinking partitions is not allowed"
 msgstr "パーティションの縮小を許可しません"
 
-#: src/components/storage/ProposalActionsSummary.jsx:116
+#: src/components/storage/ProposalActionsSummary.jsx:117
 msgid "Shrinking partitions is allowed"
 msgstr "パーティションの縮小を許可します"
 
-#: src/components/storage/ProposalActionsSummary.jsx:118
+#: src/components/storage/ProposalActionsSummary.jsx:119
 msgid "Shrinking some partitions is allowed but not needed"
 msgstr "パーティションの縮小を許可していますが不要です"
 
-#: src/components/storage/ProposalActionsSummary.jsx:121
+#: src/components/storage/ProposalActionsSummary.jsx:122
 #, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
 msgstr[0] "%d 個のパーティションを縮小します"
 
-#: src/components/storage/ProposalActionsSummary.jsx:159
+#: src/components/storage/ProposalActionsSummary.jsx:160
 msgid "Cannot accommodate the required file systems for installation"
 msgstr "インストールに必要なファイルシステムを調整できません"
 
-#: src/components/storage/ProposalActionsSummary.jsx:167
+#: src/components/storage/ProposalActionsSummary.jsx:168
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "%d 個の処理計画を確認する"
 
-#: src/components/storage/ProposalActionsSummary.jsx:182
+#: src/components/storage/ProposalActionsSummary.jsx:183
 msgid "Waiting for actions information..."
 msgstr "処理に関する情報を待機しています..."
 
@@ -2197,10 +2100,6 @@ msgstr "検索"
 msgid "Targets"
 msgstr "ターゲット"
 
-#: src/components/storage/routes.js:36
-msgid "Proposal"
-msgstr "提案"
-
 #: src/components/storage/utils.js:64
 msgid "KiB"
 msgstr "KiB"
@@ -2284,11 +2183,11 @@ msgstr "パーティションの設定作業を独自に実施します。"
 msgid "with custom actions"
 msgstr "独自の処理"
 
-#: src/components/users/FirstUser.jsx:34
+#: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
 msgstr "ユーザを設定していません。"
 
-#: src/components/users/FirstUser.jsx:38
+#: src/components/users/FirstUser.jsx:39
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
@@ -2296,23 +2195,23 @@ msgstr ""
 "なお、システムにログインできるようにするには、インストールの前にユーザを設定"
 "しておかなければならないことに注意してください。"
 
-#: src/components/users/FirstUser.jsx:44
+#: src/components/users/FirstUser.jsx:45
 msgid "Define a user now"
 msgstr "今すぐユーザを設定する"
 
-#: src/components/users/FirstUser.jsx:57
+#: src/components/users/FirstUser.jsx:58
 #: src/components/users/FirstUserForm.jsx:217
 msgid "Full name"
 msgstr "フルネーム"
 
-#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUser.jsx:59
 #: src/components/users/FirstUserForm.jsx:231
 #: src/components/users/FirstUserForm.jsx:236
 #: src/components/users/FirstUserForm.jsx:239
 msgid "Username"
 msgstr "ユーザ名"
 
-#: src/components/users/FirstUser.jsx:89
+#: src/components/users/FirstUser.jsx:90
 #: src/components/users/RootAuthMethods.jsx:78
 #: src/components/users/RootAuthMethods.jsx:90
 msgid "Discard"
@@ -2440,13 +2339,84 @@ msgstr "アップロード"
 msgid "Clear"
 msgstr "消去"
 
-#: src/components/users/UsersPage.jsx:45
+#: src/components/users/UsersPage.jsx:44
 msgid "First user"
 msgstr "最初のユーザ"
 
-#: src/components/users/UsersPage.jsx:52
+#: src/components/users/UsersPage.jsx:51
 msgid "Root authentication"
 msgstr "root の認証"
+
+#: src/router.js:48
+msgid "Overview"
+msgstr "概要"
+
+#~ msgid "Question"
+#~ msgstr "質問"
+
+#~ msgid "Given encryption password didn't work"
+#~ msgstr "指定された暗号化パスワードが正しくありません"
+
+#~ msgid "Encrypted Device"
+#~ msgstr "暗号化されたデバイス"
+
+#~ msgid "Encryption Password"
+#~ msgstr "暗号化パスワード"
+
+#~ msgid "Password Required"
+#~ msgstr "パスワードが必要です"
+
+#~ msgid "Agama"
+#~ msgstr "Agama"
+
+#~ msgid "Change product"
+#~ msgstr "製品の変更"
+
+#~ msgid "About"
+#~ msgstr "バージョン情報"
+
+#~ msgid "About Agama"
+#~ msgstr "Agama について"
+
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "Agama は (open)SUSE システム向けの実験中インストーラです。現在もなお開発途"
+#~ "上にある仕組みですので、本番環境での使用はご遠慮ください。なお、お試しにな"
+#~ "りたい場合は、仮想マシン内で実行して不用意なデータ喪失を防ぐことをお勧めし"
+#~ "ます。"
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr "詳しくは %s にあるプロジェクトのリポジトリをご覧ください。"
+
+#~ msgid "Close"
+#~ msgstr "閉じる"
+
+#~ msgid "Collecting logs..."
+#~ msgstr "ログを収集しています..."
+
+#~ msgid "Download logs"
+#~ msgstr "ログのダウンロード"
+
+#~ msgid ""
+#~ "The browser will run the logs download as soon as they are ready. Please, "
+#~ "be patient."
+#~ msgstr ""
+#~ "ログの収集が完了すると、ブラウザ側でダウンロード処理が始まります。しばらく"
+#~ "お待ちください。"
+
+#~ msgid "Something went wrong while collecting logs. Please, try again."
+#~ msgstr "ログの収集時に何らかの問題が発生しました。再試行してみてください。"
+
+#~ msgid "Waiting for progress status..."
+#~ msgstr "進捗状態を待機しています..."
+
+#~ msgid "Proposal"
+#~ msgstr "提案"
 
 #, c-format
 #~ msgid "Register %s"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-28 02:29+0000\n"
+"POT-Creation-Date: 2024-08-04 02:29+0000\n"
 "PO-Revision-Date: 2024-07-25 08:46+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -18,46 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.6.2\n"
-
-#: src/MainLayout.jsx:52
-msgid "Agama"
-msgstr "Agama"
-
-#: src/MainLayout.jsx:94
-msgid "Change product"
-msgstr "Canvia el producte"
-
-#: src/components/core/About.jsx:49
-msgid "About"
-msgstr "Quant a"
-
-#: src/components/core/About.jsx:69
-msgid "About Agama"
-msgstr "Quant a Agama"
-
-#: src/components/core/About.jsx:74
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"L'Agama és un instal·lador experimental per a sistemes (open)SUSE. Encara "
-"està en desenvolupament, així que, si us plau, no l'useu en entorns de "
-"producció. Si voleu provar-lo, us recomanem que feu servir una màquina "
-"virtual per evitar possibles pèrdues de dades."
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.jsx:86
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr ""
-"Per obtenir-ne més informació, visiteu el repositori del projecte a %s."
-
-#: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
-msgid "Close"
-msgstr "Tanca"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -82,8 +42,7 @@ msgid "Continue"
 msgstr "Continua"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
-#: src/components/core/Popup.jsx:132
+#: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
 #: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "Cancel·la"
@@ -93,11 +52,11 @@ msgstr "Cancel·la"
 msgid "Install"
 msgstr "Instal·la"
 
-#: src/components/core/InstallationFinished.jsx:48
+#: src/components/core/InstallationFinished.jsx:49
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "El segellament TPM requereix que el sistema nou s'iniciï directament."
 
-#: src/components/core/InstallationFinished.jsx:53
+#: src/components/core/InstallationFinished.jsx:54
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -105,15 +64,15 @@ msgstr ""
 "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo "
 "abans de la propera arrencada."
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "Hide details"
 msgstr "Amaga els detalls"
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "See more details"
 msgstr "Mostra'n més detalls"
 
-#: src/components/core/InstallationFinished.jsx:62
+#: src/components/core/InstallationFinished.jsx:63
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -125,28 +84,28 @@ msgstr ""
 "arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar "
 "directament amb el carregador d'arrencada nou."
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:106
 msgid "Congratulations!"
 msgstr "Enhorabona!"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.jsx:115
 msgid "The installation on your machine is complete."
 msgstr "La instal·lació a la màquina s'ha completat."
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.jsx:118
 msgid "At this point you can power off the machine."
 msgstr "En aquest punt, podeu aturar la màquina."
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.jsx:120
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "En aquest punt, podeu reiniciar la màquina per iniciar sessió al sistema nou."
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Finish"
 msgstr "Acaba"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Reboot"
 msgstr "Reinicia"
 
@@ -165,7 +124,7 @@ msgstr "Opcions de l'instal·lador"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:55
 msgid "Language"
 msgstr "Llengua"
 
@@ -238,40 +197,16 @@ msgstr "Introducció de contrasenya"
 msgid "Log in"
 msgstr "Inicia la sessió"
 
-#: src/components/core/LoginPage.jsx:121
+#: src/components/core/LoginPage.jsx:118
 msgid "More about this"
 msgstr "Més sobre això"
-
-#: src/components/core/LogsButton.jsx:101
-msgid "Collecting logs..."
-msgstr "Recopilant registres..."
-
-#: src/components/core/LogsButton.jsx:101
-#: src/components/core/LogsButton.jsx:104
-msgid "Download logs"
-msgstr "Baixa els registres"
-
-#: src/components/core/LogsButton.jsx:111
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr ""
-"El navegador executarà la baixada de registres així que estiguin a punt. Si "
-"us plau, tingueu paciència."
-
-#: src/components/core/LogsButton.jsx:121
-msgid "Something went wrong while collecting logs. Please, try again."
-msgstr ""
-"Hi ha hagut un error durant la recopilació de registres. Torneu-ho a provar."
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
 msgstr "Les contrasenyes no coincideixen."
 
-#. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
 #: src/components/network/WifiConnectionForm.jsx:128
-#: src/components/questions/QuestionWithPassword.jsx:48
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:130
@@ -295,25 +230,21 @@ msgstr "Confirmeu-ho"
 msgid "Loading data..."
 msgstr "Carregant dades..."
 
-#: src/components/core/ProgressReport.jsx:50
-msgid "Finished"
-msgstr "Acabada"
-
-#: src/components/core/ProgressReport.jsx:59
-msgid "In progress"
-msgstr "En curs"
-
-#: src/components/core/ProgressReport.jsx:74
+#: src/components/core/ProgressReport.jsx:56
 msgid "Pending"
 msgstr "Pendent"
 
-#: src/components/core/ProgressReport.jsx:138
-msgid "Waiting for progress status..."
-msgstr "Esperant l'informe de progrés..."
+#: src/components/core/ProgressReport.jsx:65
+msgid "In progress"
+msgstr "En curs"
+
+#: src/components/core/ProgressReport.jsx:80
+msgid "Finished"
+msgstr "Acabada"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:491
-#: src/components/storage/ProposalActionsSummary.jsx:233
+#: src/components/storage/ProposalActionsSummary.jsx:234
 msgid "Actions"
 msgstr "Accions"
 
@@ -346,39 +277,39 @@ msgid "Keyboard selection"
 msgstr "Selecció del teclat"
 
 #: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
 #: src/components/l10n/LocaleSelection.jsx:92
 #: src/components/l10n/TimezoneSelection.jsx:125
 #: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr "Selecciona"
 
-#: src/components/l10n/L10nPage.jsx:53
-#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.js:38
+#: src/components/l10n/L10nPage.jsx:48
+#: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr "Localització"
 
-#: src/components/l10n/L10nPage.jsx:61 src/components/l10n/L10nPage.jsx:70
-#: src/components/l10n/L10nPage.jsx:80
+#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:75
 msgid "Not selected yet"
 msgstr "Encara no s'ha seleccionat."
 
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
-#: src/components/network/NetworkPage.jsx:74
-#: src/components/storage/InstallationDeviceField.jsx:108
-#: src/components/storage/ProposalActionsSummary.jsx:238
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
+#: src/components/network/NetworkPage.jsx:75
+#: src/components/storage/InstallationDeviceField.jsx:109
+#: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
 msgstr "Canvia"
 
-#: src/components/l10n/L10nPage.jsx:70
+#: src/components/l10n/L10nPage.jsx:65
 msgid "Keyboard"
 msgstr "Teclat"
 
-#: src/components/l10n/L10nPage.jsx:79
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Time zone"
 msgstr "Zona horària"
 
@@ -406,7 +337,7 @@ msgstr "Cap de les zones horàries coincideix amb el filtre."
 msgid " Timezone selection"
 msgstr " Selecció de la zona horària"
 
-#: src/components/layout/Loading.jsx:31
+#: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "Carregant l'entorn d'instal·lació. Espereu, si us plau."
 
@@ -471,12 +402,12 @@ msgid "Connection actions"
 msgstr "Accions de connexió"
 
 #: src/components/network/ConnectionsTable.jsx:75
-#: src/components/network/WifiNetworksListPage.jsx:112
-#: src/components/network/WifiNetworksListPage.jsx:135
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:139
 #: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:85
+#: src/components/users/FirstUser.jsx:86
 msgid "Edit"
 msgstr "Edita"
 
@@ -488,8 +419,8 @@ msgid "Edit connection %s"
 msgstr "Edita la connexió %s"
 
 #: src/components/network/ConnectionsTable.jsx:82
-#: src/components/network/WifiNetworksListPage.jsx:114
-#: src/components/network/WifiNetworksListPage.jsx:142
+#: src/components/network/WifiNetworksListPage.jsx:118
+#: src/components/network/WifiNetworksListPage.jsx:146
 msgid "Forget"
 msgstr "Oblida-la"
 
@@ -561,11 +492,11 @@ msgstr "Passarel·la"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "La passarel·la només es pot definir en mode manual."
 
-#: src/components/network/NetworkPage.jsx:55
+#: src/components/network/NetworkPage.jsx:56
 msgid "No Wi-Fi supported"
 msgstr "No és compatible amb Wi-Fi."
 
-#: src/components/network/NetworkPage.jsx:57
+#: src/components/network/NetworkPage.jsx:58
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
@@ -573,42 +504,41 @@ msgstr ""
 "El sistema no admet connexions de wifi, probablement a causa de maquinari "
 "que manca o que està inhabilitat."
 
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:72
 msgid "Wi-Fi"
 msgstr "Wifi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:74
+#: src/components/network/NetworkPage.jsx:75
 #: src/components/network/WifiConnectionForm.jsx:137
-#: src/components/network/WifiNetworksListPage.jsx:110
+#: src/components/network/WifiNetworksListPage.jsx:112
 msgid "Connect"
 msgstr "Connecta't"
 
-#: src/components/network/NetworkPage.jsx:81
+#: src/components/network/NetworkPage.jsx:82
 #, c-format
 msgid "Conected to %s"
 msgstr "Connectat amb %s"
 
-#: src/components/network/NetworkPage.jsx:88
+#: src/components/network/NetworkPage.jsx:89
 msgid "No connected yet"
 msgstr "Encara no s'ha connetat."
 
-#: src/components/network/NetworkPage.jsx:89
+#: src/components/network/NetworkPage.jsx:90
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr ""
 "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
 
-#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/NetworkPage.jsx:103
 msgid "Wired"
 msgstr "Amb fil"
 
-#: src/components/network/NetworkPage.jsx:104
+#: src/components/network/NetworkPage.jsx:105
 msgid "No wired connections found"
 msgstr "No s'ha trobat cap connexió amb fil."
 
-#: src/components/network/NetworkPage.jsx:114
-#: src/components/network/routes.js:33
+#: src/components/network/NetworkPage.jsx:115
 msgid "Network"
 msgstr "Xarxa"
 
@@ -654,39 +584,39 @@ msgid "WPA Password"
 msgstr "Contrasenya de WPA"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:64
-#: src/components/network/WifiNetworksListPage.jsx:122
+#: src/components/network/WifiNetworksListPage.jsx:66
+#: src/components/network/WifiNetworksListPage.jsx:126
 msgid "Connecting"
 msgstr "Connectant"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:67
-#: src/components/network/WifiNetworksListPage.jsx:126
-#: src/components/network/WifiNetworksListPage.jsx:169
+#: src/components/network/WifiNetworksListPage.jsx:69
+#: src/components/network/WifiNetworksListPage.jsx:130
+#: src/components/network/WifiNetworksListPage.jsx:173
 msgid "Connected"
 msgstr "Connectat"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:72
-#: src/components/network/WifiNetworksListPage.jsx:124
+#: src/components/network/WifiNetworksListPage.jsx:74
+#: src/components/network/WifiNetworksListPage.jsx:128
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "Desconnectat"
 
-#: src/components/network/WifiNetworksListPage.jsx:132
+#: src/components/network/WifiNetworksListPage.jsx:136
 msgid "Disconnect"
 msgstr "Desconnecta"
 
-#: src/components/network/WifiNetworksListPage.jsx:155
+#: src/components/network/WifiNetworksListPage.jsx:159
 msgid "Connect to a hidden network"
 msgstr "Connecta't a una xarxa oculta"
 
-#: src/components/network/WifiNetworksListPage.jsx:166
+#: src/components/network/WifiNetworksListPage.jsx:170
 msgid "configured"
 msgstr "configurat"
 
-#: src/components/network/WifiNetworksListPage.jsx:268
+#: src/components/network/WifiNetworksListPage.jsx:270
 msgid "Connect to hidden network"
 msgstr "Connecta't a una xarxa oculta"
 
@@ -702,7 +632,7 @@ msgid "The system will use %s as its default language."
 msgstr "El sistema usarà el %s com a llengua per defecte."
 
 #: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
+#: src/components/users/UsersPage.jsx:35
 msgid "Users"
 msgstr "Usuaris"
 
@@ -710,12 +640,10 @@ msgstr "Usuaris"
 #: src/components/overview/StorageSection.jsx:111
 #: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "Emmagatzematge"
 
 #: src/components/overview/OverviewPage.jsx:51
-#: src/components/software/routes.js:32
 msgid "Software"
 msgstr "Programari"
 
@@ -817,7 +745,7 @@ msgstr ""
 "amb una estratègia personalitzada per trobar l'espai necessari."
 
 #: src/components/overview/StorageSection.jsx:179
-#: src/components/storage/InstallationDeviceField.jsx:66
+#: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
 msgstr "Encara no s'ha seleccionat cap dispositiu."
 
@@ -853,53 +781,26 @@ msgstr ""
 "Instal·la usant el dispositiu %s amb una estratègia personalitzada per "
 "trobar l'espai necessari."
 
-#: src/components/overview/routes.js:30
-msgid "Overview"
-msgstr "Resum"
-
-#: src/components/product/ProductSelectionProgress.jsx:49
+#: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
 msgstr "Configurant el producte. Espereu, si us plau..."
 
-#: src/components/questions/GenericQuestion.jsx:35
-#: src/components/questions/LuksActivationQuestion.jsx:60
-msgid "Question"
-msgstr "Pregunta"
-
-#. TRANSLATORS: error message, user entered a wrong password
-#: src/components/questions/LuksActivationQuestion.jsx:34
-msgid "Given encryption password didn't work"
-msgstr "La contrasenya d'encriptació proporcionada no ha funcionat."
-
-#: src/components/questions/LuksActivationQuestion.jsx:59
-msgid "Encrypted Device"
-msgstr "Dispositiu encriptat"
-
-#. TRANSLATORS: field label
-#: src/components/questions/LuksActivationQuestion.jsx:67
-msgid "Encryption Password"
-msgstr "Contrasenya d'encriptació"
-
-#: src/components/questions/QuestionWithPassword.jsx:42
-msgid "Password Required"
-msgstr "Cal una contrasenya."
-
-#: src/components/storage/BootConfigField.jsx:43
+#: src/components/storage/BootConfigField.jsx:44
 msgid "Change boot options"
 msgstr "Canvia les opcions d'arrencada"
 
-#: src/components/storage/BootConfigField.jsx:81
+#: src/components/storage/BootConfigField.jsx:82
 msgid "Installation will not configure partitions for booting."
 msgstr "La instal·lació no configurarà les particions per a l'arrencada."
 
-#: src/components/storage/BootConfigField.jsx:85
+#: src/components/storage/BootConfigField.jsx:86
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "La instal·lació configurarà les particions per arrencar al disc "
 "d'instal·lació."
 
-#: src/components/storage/BootConfigField.jsx:89
+#: src/components/storage/BootConfigField.jsx:90
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "La instal·lació configurarà les particions per arrencar a %s."
@@ -1216,7 +1117,6 @@ msgid "Connect to iSCSI targets"
 msgstr "Connecta amb objectius iSCSI"
 
 #: src/components/storage/DevicesTechMenu.jsx:67
-#: src/components/storage/routes.js:37
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1283,27 +1183,27 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "Encripta el sistema"
 
-#: src/components/storage/InstallationDeviceField.jsx:36
+#: src/components/storage/InstallationDeviceField.jsx:37
 #: src/components/storage/VolumeLocationSelectorTable.jsx:61
 msgid "Installation device"
 msgstr "Dispositiu d'instal·lació"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:38
+#: src/components/storage/InstallationDeviceField.jsx:39
 msgid "Main disk or LVM Volume Group for installation."
 msgstr "Disc principal o grup de volums d'LVM per a la instal·lació."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:52
+#: src/components/storage/InstallationDeviceField.jsx:53
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "Sistemes de fitxers creats com a particions noves a %s"
 
-#: src/components/storage/InstallationDeviceField.jsx:55
+#: src/components/storage/InstallationDeviceField.jsx:56
 msgid "File systems created at a new LVM volume group"
 msgstr "Sistemes de fitxers creats en un nou grup de volums d'LVM"
 
-#: src/components/storage/InstallationDeviceField.jsx:60
+#: src/components/storage/InstallationDeviceField.jsx:61
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "Sistemes de fitxers creats en un nou grup de volums d'LVM a %s"
@@ -1554,52 +1454,52 @@ msgid_plural "Show %d subvolume actions"
 msgstr[0] "Mostra %d acció de subvolum"
 msgstr[1] "Mostra %d accions de subvolum"
 
-#: src/components/storage/ProposalActionsSummary.jsx:57
+#: src/components/storage/ProposalActionsSummary.jsx:58
 msgid "Destructive actions are not allowed"
 msgstr "No es permeten accions destructives."
 
-#: src/components/storage/ProposalActionsSummary.jsx:59
+#: src/components/storage/ProposalActionsSummary.jsx:60
 msgid "Destructive actions are allowed"
 msgstr "Es permeten accions destructives."
 
-#: src/components/storage/ProposalActionsSummary.jsx:82
-#: src/components/storage/ProposalActionsSummary.jsx:132
+#: src/components/storage/ProposalActionsSummary.jsx:83
+#: src/components/storage/ProposalActionsSummary.jsx:133
 msgid "affecting"
 msgstr "Això afecta"
 
-#: src/components/storage/ProposalActionsSummary.jsx:112
+#: src/components/storage/ProposalActionsSummary.jsx:113
 msgid "Shrinking partitions is not allowed"
 msgstr "No es permet encongir particions."
 
-#: src/components/storage/ProposalActionsSummary.jsx:116
+#: src/components/storage/ProposalActionsSummary.jsx:117
 msgid "Shrinking partitions is allowed"
 msgstr "Es permet encongir particions."
 
-#: src/components/storage/ProposalActionsSummary.jsx:118
+#: src/components/storage/ProposalActionsSummary.jsx:119
 msgid "Shrinking some partitions is allowed but not needed"
 msgstr "Es permet encongir algunes particions, però no cal."
 
-#: src/components/storage/ProposalActionsSummary.jsx:121
+#: src/components/storage/ProposalActionsSummary.jsx:122
 #, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
 msgstr[0] "S'encongirà %d partició."
 msgstr[1] "S'encongiran %d particions."
 
-#: src/components/storage/ProposalActionsSummary.jsx:159
+#: src/components/storage/ProposalActionsSummary.jsx:160
 msgid "Cannot accommodate the required file systems for installation"
 msgstr ""
 "No es poden acomodar els sistemes de fitxers necessaris per a la "
 "instal·lació."
 
-#: src/components/storage/ProposalActionsSummary.jsx:167
+#: src/components/storage/ProposalActionsSummary.jsx:168
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "Marca l'acció planificada"
 msgstr[1] "Marca les %d accions planificades"
 
-#: src/components/storage/ProposalActionsSummary.jsx:182
+#: src/components/storage/ProposalActionsSummary.jsx:183
 msgid "Waiting for actions information..."
 msgstr "Esperant la informació de les accions..."
 
@@ -2217,10 +2117,6 @@ msgstr "Descobreix"
 msgid "Targets"
 msgstr "Destinacions"
 
-#: src/components/storage/routes.js:36
-msgid "Proposal"
-msgstr "Proposta"
-
 #: src/components/storage/utils.js:64
 msgid "KiB"
 msgstr "KiB"
@@ -2301,11 +2197,11 @@ msgstr "Seleccioneu què voleu fer amb cada partició."
 msgid "with custom actions"
 msgstr "amb accions personalitzades."
 
-#: src/components/users/FirstUser.jsx:34
+#: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
 msgstr "Encara no s'ha definit cap usuari."
 
-#: src/components/users/FirstUser.jsx:38
+#: src/components/users/FirstUser.jsx:39
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
@@ -2313,23 +2209,23 @@ msgstr ""
 "Si us plau, tingueu en compte que cal definir un usuari abans d'instal·lar "
 "el sistema per poder-hi iniciar sessió."
 
-#: src/components/users/FirstUser.jsx:44
+#: src/components/users/FirstUser.jsx:45
 msgid "Define a user now"
 msgstr "Definiu un usuari ara"
 
-#: src/components/users/FirstUser.jsx:57
+#: src/components/users/FirstUser.jsx:58
 #: src/components/users/FirstUserForm.jsx:217
 msgid "Full name"
 msgstr "Nom complet"
 
-#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUser.jsx:59
 #: src/components/users/FirstUserForm.jsx:231
 #: src/components/users/FirstUserForm.jsx:236
 #: src/components/users/FirstUserForm.jsx:239
 msgid "Username"
 msgstr "Nom d'usuari"
 
-#: src/components/users/FirstUser.jsx:89
+#: src/components/users/FirstUser.jsx:90
 #: src/components/users/RootAuthMethods.jsx:78
 #: src/components/users/RootAuthMethods.jsx:90
 msgid "Discard"
@@ -2459,13 +2355,87 @@ msgstr "Carrega"
 msgid "Clear"
 msgstr "Neteja"
 
-#: src/components/users/UsersPage.jsx:45
+#: src/components/users/UsersPage.jsx:44
 msgid "First user"
 msgstr "Usuari primer"
 
-#: src/components/users/UsersPage.jsx:52
+#: src/components/users/UsersPage.jsx:51
 msgid "Root authentication"
 msgstr "Autenticació d'arrel"
+
+#: src/router.js:48
+msgid "Overview"
+msgstr "Resum"
+
+#~ msgid "Question"
+#~ msgstr "Pregunta"
+
+#~ msgid "Given encryption password didn't work"
+#~ msgstr "La contrasenya d'encriptació proporcionada no ha funcionat."
+
+#~ msgid "Encrypted Device"
+#~ msgstr "Dispositiu encriptat"
+
+#~ msgid "Encryption Password"
+#~ msgstr "Contrasenya d'encriptació"
+
+#~ msgid "Password Required"
+#~ msgstr "Cal una contrasenya."
+
+#~ msgid "Agama"
+#~ msgstr "Agama"
+
+#~ msgid "Change product"
+#~ msgstr "Canvia el producte"
+
+#~ msgid "About"
+#~ msgstr "Quant a"
+
+#~ msgid "About Agama"
+#~ msgstr "Quant a Agama"
+
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "L'Agama és un instal·lador experimental per a sistemes (open)SUSE. Encara "
+#~ "està en desenvolupament, així que, si us plau, no l'useu en entorns de "
+#~ "producció. Si voleu provar-lo, us recomanem que feu servir una màquina "
+#~ "virtual per evitar possibles pèrdues de dades."
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr ""
+#~ "Per obtenir-ne més informació, visiteu el repositori del projecte a %s."
+
+#~ msgid "Close"
+#~ msgstr "Tanca"
+
+#~ msgid "Collecting logs..."
+#~ msgstr "Recopilant registres..."
+
+#~ msgid "Download logs"
+#~ msgstr "Baixa els registres"
+
+#~ msgid ""
+#~ "The browser will run the logs download as soon as they are ready. Please, "
+#~ "be patient."
+#~ msgstr ""
+#~ "El navegador executarà la baixada de registres així que estiguin a punt. "
+#~ "Si us plau, tingueu paciència."
+
+#~ msgid "Something went wrong while collecting logs. Please, try again."
+#~ msgstr ""
+#~ "Hi ha hagut un error durant la recopilació de registres. Torneu-ho a "
+#~ "provar."
+
+#~ msgid "Waiting for progress status..."
+#~ msgstr "Esperant l'informe de progrés..."
+
+#~ msgid "Proposal"
+#~ msgstr "Proposta"
 
 #, c-format
 #~ msgid "Register %s"

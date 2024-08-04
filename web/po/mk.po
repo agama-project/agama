@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-28 02:29+0000\n"
+"POT-Creation-Date: 2024-08-04 02:29+0000\n"
 "PO-Revision-Date: 2024-05-09 06:43+0000\n"
 "Last-Translator: Kristijan Fremen Velkovski <me@krisfremen.com>\n"
 "Language-Team: Macedonian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -18,48 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n==1 || n%10==1 ? 0 : 1;\n"
 "X-Generator: Weblate 4.9.1\n"
-
-#: src/MainLayout.jsx:52
-#, fuzzy
-msgid "Agama"
-msgstr "За Agama"
-
-#: src/MainLayout.jsx:94
-msgid "Change product"
-msgstr ""
-
-#: src/components/core/About.jsx:49
-#, fuzzy
-msgid "About"
-msgstr "За Agama"
-
-#: src/components/core/About.jsx:69
-msgid "About Agama"
-msgstr "За Agama"
-
-#: src/components/core/About.jsx:74
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"Agama е експериментален инсталер за (open)SUSE системи. Сè уште е во развој, "
-"затоа, ве молиме, не го користете во производствени средини. Ако сакате да "
-"го испробате, препорачуваме да користите виртуелна машина за да се спречи "
-"можноста на губење на податоци."
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.jsx:86
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr ""
-"За повеќе информации, ве молиме посетете го складиштето за проектот на %s."
-
-#: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
-msgid "Close"
-msgstr "Затвори"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -84,8 +42,7 @@ msgid "Continue"
 msgstr "Продолжи"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
-#: src/components/core/Popup.jsx:132
+#: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
 #: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "Откажи"
@@ -95,11 +52,11 @@ msgstr "Откажи"
 msgid "Install"
 msgstr "Инсталирајте"
 
-#: src/components/core/InstallationFinished.jsx:48
+#: src/components/core/InstallationFinished.jsx:49
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "Запечатувањето TPM бара новиот систем директно да се бутира."
 
-#: src/components/core/InstallationFinished.jsx:53
+#: src/components/core/InstallationFinished.jsx:54
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -107,15 +64,15 @@ msgstr ""
 "Ако се користел локален медиум за стартување на овој инсталар, отстранете го "
 "пред следното бутирање."
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "Hide details"
 msgstr "Сокриј детали"
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "See more details"
 msgstr "Видете повеќе детали"
 
-#: src/components/core/InstallationFinished.jsx:62
+#: src/components/core/InstallationFinished.jsx:63
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -123,29 +80,29 @@ msgid ""
 "the new boot loader."
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:106
 msgid "Congratulations!"
 msgstr "Честитки!"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.jsx:115
 msgid "The installation on your machine is complete."
 msgstr "Инсталирањето на вашата машина заврши."
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.jsx:118
 msgid "At this point you can power off the machine."
 msgstr "Во овој момент можете да ја исклучите машината."
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.jsx:120
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "Во овој момент можете да ја рестартирате машината за да се најавите на "
 "новиот систем."
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Finish"
 msgstr "Заврши"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Reboot"
 msgstr "Рестартирај"
 
@@ -165,7 +122,7 @@ msgstr "Инсталирањето заврши"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:55
 msgid "Language"
 msgstr ""
 
@@ -235,37 +192,16 @@ msgstr ""
 msgid "Log in"
 msgstr ""
 
-#: src/components/core/LoginPage.jsx:121
+#: src/components/core/LoginPage.jsx:118
 msgid "More about this"
-msgstr ""
-
-#: src/components/core/LogsButton.jsx:101
-msgid "Collecting logs..."
-msgstr ""
-
-#: src/components/core/LogsButton.jsx:101
-#: src/components/core/LogsButton.jsx:104
-msgid "Download logs"
-msgstr ""
-
-#: src/components/core/LogsButton.jsx:111
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr ""
-
-#: src/components/core/LogsButton.jsx:121
-msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
 msgstr ""
 
-#. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
 #: src/components/network/WifiConnectionForm.jsx:128
-#: src/components/questions/QuestionWithPassword.jsx:48
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:130
@@ -289,26 +225,22 @@ msgstr ""
 msgid "Loading data..."
 msgstr "Се читаат податоци..."
 
-#: src/components/core/ProgressReport.jsx:50
+#: src/components/core/ProgressReport.jsx:56
+msgid "Pending"
+msgstr ""
+
+#: src/components/core/ProgressReport.jsx:65
+msgid "In progress"
+msgstr ""
+
+#: src/components/core/ProgressReport.jsx:80
 #, fuzzy
 msgid "Finished"
 msgstr "Заврши"
 
-#: src/components/core/ProgressReport.jsx:59
-msgid "In progress"
-msgstr ""
-
-#: src/components/core/ProgressReport.jsx:74
-msgid "Pending"
-msgstr ""
-
-#: src/components/core/ProgressReport.jsx:138
-msgid "Waiting for progress status..."
-msgstr ""
-
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:491
-#: src/components/storage/ProposalActionsSummary.jsx:233
+#: src/components/storage/ProposalActionsSummary.jsx:234
 msgid "Actions"
 msgstr ""
 
@@ -344,39 +276,39 @@ msgid "Keyboard selection"
 msgstr ""
 
 #: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
 #: src/components/l10n/LocaleSelection.jsx:92
 #: src/components/l10n/TimezoneSelection.jsx:125
 #: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:53
-#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.js:38
+#: src/components/l10n/L10nPage.jsx:48
+#: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:61 src/components/l10n/L10nPage.jsx:70
-#: src/components/l10n/L10nPage.jsx:80
+#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:75
 msgid "Not selected yet"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
-#: src/components/network/NetworkPage.jsx:74
-#: src/components/storage/InstallationDeviceField.jsx:108
-#: src/components/storage/ProposalActionsSummary.jsx:238
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
+#: src/components/network/NetworkPage.jsx:75
+#: src/components/storage/InstallationDeviceField.jsx:109
+#: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:70
+#: src/components/l10n/L10nPage.jsx:65
 msgid "Keyboard"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:79
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Time zone"
 msgstr ""
 
@@ -404,7 +336,7 @@ msgstr ""
 msgid " Timezone selection"
 msgstr ""
 
-#: src/components/layout/Loading.jsx:31
+#: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr ""
 
@@ -469,12 +401,12 @@ msgid "Connection actions"
 msgstr ""
 
 #: src/components/network/ConnectionsTable.jsx:75
-#: src/components/network/WifiNetworksListPage.jsx:112
-#: src/components/network/WifiNetworksListPage.jsx:135
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:139
 #: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:85
+#: src/components/users/FirstUser.jsx:86
 msgid "Edit"
 msgstr ""
 
@@ -486,8 +418,8 @@ msgid "Edit connection %s"
 msgstr ""
 
 #: src/components/network/ConnectionsTable.jsx:82
-#: src/components/network/WifiNetworksListPage.jsx:114
-#: src/components/network/WifiNetworksListPage.jsx:142
+#: src/components/network/WifiNetworksListPage.jsx:118
+#: src/components/network/WifiNetworksListPage.jsx:146
 msgid "Forget"
 msgstr ""
 
@@ -559,51 +491,50 @@ msgstr ""
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:55
+#: src/components/network/NetworkPage.jsx:56
 msgid "No Wi-Fi supported"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:57
+#: src/components/network/NetworkPage.jsx:58
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:72
 msgid "Wi-Fi"
 msgstr ""
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:74
+#: src/components/network/NetworkPage.jsx:75
 #: src/components/network/WifiConnectionForm.jsx:137
-#: src/components/network/WifiNetworksListPage.jsx:110
+#: src/components/network/WifiNetworksListPage.jsx:112
 msgid "Connect"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:81
+#: src/components/network/NetworkPage.jsx:82
 #, c-format
 msgid "Conected to %s"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:88
+#: src/components/network/NetworkPage.jsx:89
 msgid "No connected yet"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:89
+#: src/components/network/NetworkPage.jsx:90
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/NetworkPage.jsx:103
 msgid "Wired"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:104
+#: src/components/network/NetworkPage.jsx:105
 msgid "No wired connections found"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:114
-#: src/components/network/routes.js:33
+#: src/components/network/NetworkPage.jsx:115
 msgid "Network"
 msgstr ""
 
@@ -648,39 +579,39 @@ msgid "WPA Password"
 msgstr ""
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:64
-#: src/components/network/WifiNetworksListPage.jsx:122
+#: src/components/network/WifiNetworksListPage.jsx:66
+#: src/components/network/WifiNetworksListPage.jsx:126
 msgid "Connecting"
 msgstr ""
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:67
-#: src/components/network/WifiNetworksListPage.jsx:126
-#: src/components/network/WifiNetworksListPage.jsx:169
+#: src/components/network/WifiNetworksListPage.jsx:69
+#: src/components/network/WifiNetworksListPage.jsx:130
+#: src/components/network/WifiNetworksListPage.jsx:173
 msgid "Connected"
 msgstr ""
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:72
-#: src/components/network/WifiNetworksListPage.jsx:124
+#: src/components/network/WifiNetworksListPage.jsx:74
+#: src/components/network/WifiNetworksListPage.jsx:128
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr ""
 
-#: src/components/network/WifiNetworksListPage.jsx:132
+#: src/components/network/WifiNetworksListPage.jsx:136
 msgid "Disconnect"
 msgstr ""
 
-#: src/components/network/WifiNetworksListPage.jsx:155
+#: src/components/network/WifiNetworksListPage.jsx:159
 msgid "Connect to a hidden network"
 msgstr ""
 
-#: src/components/network/WifiNetworksListPage.jsx:166
+#: src/components/network/WifiNetworksListPage.jsx:170
 msgid "configured"
 msgstr ""
 
-#: src/components/network/WifiNetworksListPage.jsx:268
+#: src/components/network/WifiNetworksListPage.jsx:270
 msgid "Connect to hidden network"
 msgstr ""
 
@@ -696,7 +627,7 @@ msgid "The system will use %s as its default language."
 msgstr ""
 
 #: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
+#: src/components/users/UsersPage.jsx:35
 msgid "Users"
 msgstr ""
 
@@ -704,12 +635,10 @@ msgstr ""
 #: src/components/overview/StorageSection.jsx:111
 #: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr ""
 
 #: src/components/overview/OverviewPage.jsx:51
-#: src/components/software/routes.js:32
 msgid "Software"
 msgstr ""
 
@@ -792,7 +721,7 @@ msgid ""
 msgstr ""
 
 #: src/components/overview/StorageSection.jsx:179
-#: src/components/storage/InstallationDeviceField.jsx:66
+#: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
 msgstr ""
 
@@ -824,51 +753,24 @@ msgstr ""
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr ""
 
-#: src/components/overview/routes.js:30
-msgid "Overview"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:49
+#: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
 msgstr ""
 
-#: src/components/questions/GenericQuestion.jsx:35
-#: src/components/questions/LuksActivationQuestion.jsx:60
-msgid "Question"
-msgstr ""
-
-#. TRANSLATORS: error message, user entered a wrong password
-#: src/components/questions/LuksActivationQuestion.jsx:34
-msgid "Given encryption password didn't work"
-msgstr ""
-
-#: src/components/questions/LuksActivationQuestion.jsx:59
-msgid "Encrypted Device"
-msgstr ""
-
-#. TRANSLATORS: field label
-#: src/components/questions/LuksActivationQuestion.jsx:67
-msgid "Encryption Password"
-msgstr ""
-
-#: src/components/questions/QuestionWithPassword.jsx:42
-msgid "Password Required"
-msgstr ""
-
-#: src/components/storage/BootConfigField.jsx:43
+#: src/components/storage/BootConfigField.jsx:44
 msgid "Change boot options"
 msgstr ""
 
-#: src/components/storage/BootConfigField.jsx:81
+#: src/components/storage/BootConfigField.jsx:82
 msgid "Installation will not configure partitions for booting."
 msgstr ""
 
-#: src/components/storage/BootConfigField.jsx:85
+#: src/components/storage/BootConfigField.jsx:86
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 
-#: src/components/storage/BootConfigField.jsx:89
+#: src/components/storage/BootConfigField.jsx:90
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr ""
@@ -1175,7 +1077,6 @@ msgid "Connect to iSCSI targets"
 msgstr ""
 
 #: src/components/storage/DevicesTechMenu.jsx:67
-#: src/components/storage/routes.js:37
 msgid "iSCSI"
 msgstr ""
 
@@ -1233,27 +1134,27 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr ""
 
-#: src/components/storage/InstallationDeviceField.jsx:36
+#: src/components/storage/InstallationDeviceField.jsx:37
 #: src/components/storage/VolumeLocationSelectorTable.jsx:61
 msgid "Installation device"
 msgstr ""
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:38
+#: src/components/storage/InstallationDeviceField.jsx:39
 msgid "Main disk or LVM Volume Group for installation."
 msgstr ""
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:52
+#: src/components/storage/InstallationDeviceField.jsx:53
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr ""
 
-#: src/components/storage/InstallationDeviceField.jsx:55
+#: src/components/storage/InstallationDeviceField.jsx:56
 msgid "File systems created at a new LVM volume group"
 msgstr ""
 
-#: src/components/storage/InstallationDeviceField.jsx:60
+#: src/components/storage/InstallationDeviceField.jsx:61
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr ""
@@ -1502,51 +1403,51 @@ msgid_plural "Show %d subvolume actions"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:57
+#: src/components/storage/ProposalActionsSummary.jsx:58
 msgid "Destructive actions are not allowed"
 msgstr ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:59
+#: src/components/storage/ProposalActionsSummary.jsx:60
 msgid "Destructive actions are allowed"
 msgstr ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:82
-#: src/components/storage/ProposalActionsSummary.jsx:132
+#: src/components/storage/ProposalActionsSummary.jsx:83
+#: src/components/storage/ProposalActionsSummary.jsx:133
 msgid "affecting"
 msgstr ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:112
+#: src/components/storage/ProposalActionsSummary.jsx:113
 msgid "Shrinking partitions is not allowed"
 msgstr ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:116
+#: src/components/storage/ProposalActionsSummary.jsx:117
 msgid "Shrinking partitions is allowed"
 msgstr ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:118
+#: src/components/storage/ProposalActionsSummary.jsx:119
 msgid "Shrinking some partitions is allowed but not needed"
 msgstr ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:121
+#: src/components/storage/ProposalActionsSummary.jsx:122
 #, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:159
+#: src/components/storage/ProposalActionsSummary.jsx:160
 #, fuzzy
 msgid "Cannot accommodate the required file systems for installation"
 msgstr "Потврдете ја инсталацијата"
 
-#: src/components/storage/ProposalActionsSummary.jsx:167
+#: src/components/storage/ProposalActionsSummary.jsx:168
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/components/storage/ProposalActionsSummary.jsx:182
+#: src/components/storage/ProposalActionsSummary.jsx:183
 msgid "Waiting for actions information..."
 msgstr ""
 
@@ -2141,10 +2042,6 @@ msgstr ""
 msgid "Targets"
 msgstr ""
 
-#: src/components/storage/routes.js:36
-msgid "Proposal"
-msgstr ""
-
 #: src/components/storage/utils.js:64
 msgid "KiB"
 msgstr ""
@@ -2222,33 +2119,33 @@ msgstr ""
 msgid "with custom actions"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:34
+#: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:38
+#: src/components/users/FirstUser.jsx:39
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:44
+#: src/components/users/FirstUser.jsx:45
 msgid "Define a user now"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:57
+#: src/components/users/FirstUser.jsx:58
 #: src/components/users/FirstUserForm.jsx:217
 msgid "Full name"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUser.jsx:59
 #: src/components/users/FirstUserForm.jsx:231
 #: src/components/users/FirstUserForm.jsx:236
 #: src/components/users/FirstUserForm.jsx:239
 msgid "Username"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:89
+#: src/components/users/FirstUser.jsx:90
 #: src/components/users/RootAuthMethods.jsx:78
 #: src/components/users/RootAuthMethods.jsx:90
 msgid "Discard"
@@ -2376,13 +2273,47 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: src/components/users/UsersPage.jsx:45
+#: src/components/users/UsersPage.jsx:44
 msgid "First user"
 msgstr ""
 
-#: src/components/users/UsersPage.jsx:52
+#: src/components/users/UsersPage.jsx:51
 msgid "Root authentication"
 msgstr ""
+
+#: src/router.js:48
+msgid "Overview"
+msgstr ""
+
+#, fuzzy
+#~ msgid "Agama"
+#~ msgstr "За Agama"
+
+#, fuzzy
+#~ msgid "About"
+#~ msgstr "За Agama"
+
+#~ msgid "About Agama"
+#~ msgstr "За Agama"
+
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "Agama е експериментален инсталер за (open)SUSE системи. Сè уште е во "
+#~ "развој, затоа, ве молиме, не го користете во производствени средини. Ако "
+#~ "сакате да го испробате, препорачуваме да користите виртуелна машина за да "
+#~ "се спречи можноста на губење на податоци."
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr ""
+#~ "За повеќе информации, ве молиме посетете го складиштето за проектот на %s."
+
+#~ msgid "Close"
+#~ msgstr "Затвори"
 
 #, fuzzy, c-format
 #~ msgid "Installation will take %s."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-28 02:29+0000\n"
+"POT-Creation-Date: 2024-08-04 02:29+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -18,43 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.6.2\n"
-
-#: src/MainLayout.jsx:52
-msgid "Agama"
-msgstr "Agama"
-
-#: src/MainLayout.jsx:94
-msgid "Change product"
-msgstr "更改产品"
-
-#: src/components/core/About.jsx:49
-msgid "About"
-msgstr "关于"
-
-#: src/components/core/About.jsx:69
-msgid "About Agama"
-msgstr "关于 Agama"
-
-#: src/components/core/About.jsx:74
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"Agama 是（open）SUSE 系统的实验性安装程序。其仍处于开发阶段，因此请勿将其用于"
-"生产环境。如果您想试用，建议使用虚拟机以防止任何可能的数据丢失。"
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.jsx:86
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr "若想了解更多信息，请从 %s 访问项目仓库。"
-
-#: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
-msgid "Close"
-msgstr "关闭"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -76,8 +39,7 @@ msgid "Continue"
 msgstr "继续"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
-#: src/components/core/Popup.jsx:132
+#: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
 #: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "取消"
@@ -87,25 +49,25 @@ msgstr "取消"
 msgid "Install"
 msgstr "安装"
 
-#: src/components/core/InstallationFinished.jsx:48
+#: src/components/core/InstallationFinished.jsx:49
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "TPM 密封过程要求新系统直接启动。"
 
-#: src/components/core/InstallationFinished.jsx:53
+#: src/components/core/InstallationFinished.jsx:54
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "Hide details"
 msgstr "隐藏细节"
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "See more details"
 msgstr "查看更多细节"
 
-#: src/components/core/InstallationFinished.jsx:62
+#: src/components/core/InstallationFinished.jsx:63
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -115,27 +77,27 @@ msgstr ""
 "配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。"
 "为此，本机需要直接启动到新的引导加载程序。"
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:106
 msgid "Congratulations!"
 msgstr "恭喜！"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.jsx:115
 msgid "The installation on your machine is complete."
 msgstr "在您机器上的安装过程已完成。"
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.jsx:118
 msgid "At this point you can power off the machine."
 msgstr "现在您可以关闭机器电源了。"
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.jsx:120
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr "现在您可以重启机器并登录到新系统。"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Finish"
 msgstr "完成"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Reboot"
 msgstr "重启"
 
@@ -154,7 +116,7 @@ msgstr "安装程序选项"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:55
 msgid "Language"
 msgstr "语言"
 
@@ -223,37 +185,16 @@ msgstr "密码输入"
 msgid "Log in"
 msgstr "登录"
 
-#: src/components/core/LoginPage.jsx:121
+#: src/components/core/LoginPage.jsx:118
 msgid "More about this"
 msgstr "更多有关信息"
-
-#: src/components/core/LogsButton.jsx:101
-msgid "Collecting logs..."
-msgstr "正在收集日志……"
-
-#: src/components/core/LogsButton.jsx:101
-#: src/components/core/LogsButton.jsx:104
-msgid "Download logs"
-msgstr "下载日志"
-
-#: src/components/core/LogsButton.jsx:111
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr "浏览器将会在日志收集完毕后启动下载过程，请耐心等待。"
-
-#: src/components/core/LogsButton.jsx:121
-msgid "Something went wrong while collecting logs. Please, try again."
-msgstr "收集日志时出现问题，请重试。"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
 msgstr "密码不匹配"
 
-#. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
 #: src/components/network/WifiConnectionForm.jsx:128
-#: src/components/questions/QuestionWithPassword.jsx:48
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:130
@@ -277,25 +218,21 @@ msgstr "确认"
 msgid "Loading data..."
 msgstr "正在读取数据……"
 
-#: src/components/core/ProgressReport.jsx:50
-msgid "Finished"
-msgstr "已完成"
-
-#: src/components/core/ProgressReport.jsx:59
-msgid "In progress"
-msgstr "进行中"
-
-#: src/components/core/ProgressReport.jsx:74
+#: src/components/core/ProgressReport.jsx:56
 msgid "Pending"
 msgstr "等待中"
 
-#: src/components/core/ProgressReport.jsx:138
-msgid "Waiting for progress status..."
-msgstr "正在等待进度状态…"
+#: src/components/core/ProgressReport.jsx:65
+msgid "In progress"
+msgstr "进行中"
+
+#: src/components/core/ProgressReport.jsx:80
+msgid "Finished"
+msgstr "已完成"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:491
-#: src/components/storage/ProposalActionsSummary.jsx:233
+#: src/components/storage/ProposalActionsSummary.jsx:234
 msgid "Actions"
 msgstr "操作"
 
@@ -328,39 +265,39 @@ msgid "Keyboard selection"
 msgstr "键盘选择"
 
 #: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
 #: src/components/l10n/LocaleSelection.jsx:92
 #: src/components/l10n/TimezoneSelection.jsx:125
 #: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr "选择"
 
-#: src/components/l10n/L10nPage.jsx:53
-#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.js:38
+#: src/components/l10n/L10nPage.jsx:48
+#: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr "本地化"
 
-#: src/components/l10n/L10nPage.jsx:61 src/components/l10n/L10nPage.jsx:70
-#: src/components/l10n/L10nPage.jsx:80
+#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:75
 msgid "Not selected yet"
 msgstr "尚未选择"
 
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
-#: src/components/network/NetworkPage.jsx:74
-#: src/components/storage/InstallationDeviceField.jsx:108
-#: src/components/storage/ProposalActionsSummary.jsx:238
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
+#: src/components/network/NetworkPage.jsx:75
+#: src/components/storage/InstallationDeviceField.jsx:109
+#: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
 msgstr "更改"
 
-#: src/components/l10n/L10nPage.jsx:70
+#: src/components/l10n/L10nPage.jsx:65
 msgid "Keyboard"
 msgstr "键盘"
 
-#: src/components/l10n/L10nPage.jsx:79
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Time zone"
 msgstr "时区"
 
@@ -388,7 +325,7 @@ msgstr "没有符合过滤器的时区。"
 msgid " Timezone selection"
 msgstr " 时区选择"
 
-#: src/components/layout/Loading.jsx:31
+#: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "正在载入安装环境，请稍候。"
 
@@ -454,12 +391,12 @@ msgid "Connection actions"
 msgstr "正在连接"
 
 #: src/components/network/ConnectionsTable.jsx:75
-#: src/components/network/WifiNetworksListPage.jsx:112
-#: src/components/network/WifiNetworksListPage.jsx:135
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:139
 #: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:85
+#: src/components/users/FirstUser.jsx:86
 msgid "Edit"
 msgstr "编辑"
 
@@ -471,8 +408,8 @@ msgid "Edit connection %s"
 msgstr "编辑连接 %s"
 
 #: src/components/network/ConnectionsTable.jsx:82
-#: src/components/network/WifiNetworksListPage.jsx:114
-#: src/components/network/WifiNetworksListPage.jsx:142
+#: src/components/network/WifiNetworksListPage.jsx:118
+#: src/components/network/WifiNetworksListPage.jsx:146
 msgid "Forget"
 msgstr "忘掉"
 
@@ -544,51 +481,50 @@ msgstr "网关"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "网关只能在“手动”模式下配置"
 
-#: src/components/network/NetworkPage.jsx:55
+#: src/components/network/NetworkPage.jsx:56
 msgid "No Wi-Fi supported"
 msgstr "没有 Wi-Fi 支持"
 
-#: src/components/network/NetworkPage.jsx:57
+#: src/components/network/NetworkPage.jsx:58
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
 msgstr "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
 
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:72
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:74
+#: src/components/network/NetworkPage.jsx:75
 #: src/components/network/WifiConnectionForm.jsx:137
-#: src/components/network/WifiNetworksListPage.jsx:110
+#: src/components/network/WifiNetworksListPage.jsx:112
 msgid "Connect"
 msgstr "连接"
 
-#: src/components/network/NetworkPage.jsx:81
+#: src/components/network/NetworkPage.jsx:82
 #, c-format
 msgid "Conected to %s"
 msgstr "已连接到 %s"
 
-#: src/components/network/NetworkPage.jsx:88
+#: src/components/network/NetworkPage.jsx:89
 msgid "No connected yet"
 msgstr "尚未连接"
 
-#: src/components/network/NetworkPage.jsx:89
+#: src/components/network/NetworkPage.jsx:90
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr "系统尚未配置为连接到 WiFi 网络。"
 
-#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/NetworkPage.jsx:103
 msgid "Wired"
 msgstr "有线连接"
 
-#: src/components/network/NetworkPage.jsx:104
+#: src/components/network/NetworkPage.jsx:105
 msgid "No wired connections found"
 msgstr "未找到有线连接"
 
-#: src/components/network/NetworkPage.jsx:114
-#: src/components/network/routes.js:33
+#: src/components/network/NetworkPage.jsx:115
 msgid "Network"
 msgstr "网络"
 
@@ -633,39 +569,39 @@ msgid "WPA Password"
 msgstr "WPA 密码"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:64
-#: src/components/network/WifiNetworksListPage.jsx:122
+#: src/components/network/WifiNetworksListPage.jsx:66
+#: src/components/network/WifiNetworksListPage.jsx:126
 msgid "Connecting"
 msgstr "正在连接"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:67
-#: src/components/network/WifiNetworksListPage.jsx:126
-#: src/components/network/WifiNetworksListPage.jsx:169
+#: src/components/network/WifiNetworksListPage.jsx:69
+#: src/components/network/WifiNetworksListPage.jsx:130
+#: src/components/network/WifiNetworksListPage.jsx:173
 msgid "Connected"
 msgstr "已连接"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:72
-#: src/components/network/WifiNetworksListPage.jsx:124
+#: src/components/network/WifiNetworksListPage.jsx:74
+#: src/components/network/WifiNetworksListPage.jsx:128
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "已断开连接"
 
-#: src/components/network/WifiNetworksListPage.jsx:132
+#: src/components/network/WifiNetworksListPage.jsx:136
 msgid "Disconnect"
 msgstr "断开连接"
 
-#: src/components/network/WifiNetworksListPage.jsx:155
+#: src/components/network/WifiNetworksListPage.jsx:159
 msgid "Connect to a hidden network"
 msgstr "连接到隐藏网络"
 
-#: src/components/network/WifiNetworksListPage.jsx:166
+#: src/components/network/WifiNetworksListPage.jsx:170
 msgid "configured"
 msgstr "已配置"
 
-#: src/components/network/WifiNetworksListPage.jsx:268
+#: src/components/network/WifiNetworksListPage.jsx:270
 msgid "Connect to hidden network"
 msgstr "连接到隐藏网络"
 
@@ -681,7 +617,7 @@ msgid "The system will use %s as its default language."
 msgstr "系统会使用 %s 作为默认语言。"
 
 #: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
+#: src/components/users/UsersPage.jsx:35
 msgid "Users"
 msgstr "用户"
 
@@ -689,12 +625,10 @@ msgstr "用户"
 #: src/components/overview/StorageSection.jsx:111
 #: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "存储"
 
 #: src/components/overview/OverviewPage.jsx:51
-#: src/components/software/routes.js:32
 msgid "Software"
 msgstr "软件"
 
@@ -779,7 +713,7 @@ msgstr ""
 "间"
 
 #: src/components/overview/StorageSection.jsx:179
-#: src/components/storage/InstallationDeviceField.jsx:66
+#: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
 msgstr "尚未选择设备"
 
@@ -811,52 +745,24 @@ msgstr "使用设备 %s 进行安装并删除其上的现有内容"
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr "使用设备 %s 进行安装，并采用自定义策略寻找所需空间"
 
-#: src/components/overview/routes.js:30
-msgid "Overview"
-msgstr "概览"
-
-#: src/components/product/ProductSelectionProgress.jsx:49
+#: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
 msgstr "正在配置产品，请稍候……"
 
-#: src/components/questions/GenericQuestion.jsx:35
-#: src/components/questions/LuksActivationQuestion.jsx:60
-msgid "Question"
-msgstr "问题"
-
-#. TRANSLATORS: error message, user entered a wrong password
-#: src/components/questions/LuksActivationQuestion.jsx:34
-msgid "Given encryption password didn't work"
-msgstr "输入的加密密码无效"
-
-#: src/components/questions/LuksActivationQuestion.jsx:59
-msgid "Encrypted Device"
-msgstr "已加密设备"
-
-#. TRANSLATORS: field label
-#: src/components/questions/LuksActivationQuestion.jsx:67
-msgid "Encryption Password"
-msgstr "加密密码"
-
-#: src/components/questions/QuestionWithPassword.jsx:42
-#, fuzzy
-msgid "Password Required"
-msgstr "密码输入"
-
-#: src/components/storage/BootConfigField.jsx:43
+#: src/components/storage/BootConfigField.jsx:44
 msgid "Change boot options"
 msgstr "更改启动选项"
 
-#: src/components/storage/BootConfigField.jsx:81
+#: src/components/storage/BootConfigField.jsx:82
 msgid "Installation will not configure partitions for booting."
 msgstr "安装程序将不会配置用于启动的分区。"
 
-#: src/components/storage/BootConfigField.jsx:85
+#: src/components/storage/BootConfigField.jsx:86
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr "安装程序将在所选安装磁盘上配置启动所需的分区。"
 
-#: src/components/storage/BootConfigField.jsx:89
+#: src/components/storage/BootConfigField.jsx:90
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "安装程序将在 %s 上配置启动所需的分区。"
@@ -1165,7 +1071,6 @@ msgid "Connect to iSCSI targets"
 msgstr "连接到 iSCSI 目标"
 
 #: src/components/storage/DevicesTechMenu.jsx:67
-#: src/components/storage/routes.js:37
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1226,27 +1131,27 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "加密系统"
 
-#: src/components/storage/InstallationDeviceField.jsx:36
+#: src/components/storage/InstallationDeviceField.jsx:37
 #: src/components/storage/VolumeLocationSelectorTable.jsx:61
 msgid "Installation device"
 msgstr "安装设备"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:38
+#: src/components/storage/InstallationDeviceField.jsx:39
 msgid "Main disk or LVM Volume Group for installation."
 msgstr "用于安装的主磁盘或 LVM 卷组。"
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:52
+#: src/components/storage/InstallationDeviceField.jsx:53
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "已在 %s 上将文件系统创建为新的分区"
 
-#: src/components/storage/InstallationDeviceField.jsx:55
+#: src/components/storage/InstallationDeviceField.jsx:56
 msgid "File systems created at a new LVM volume group"
 msgstr "已在新建 LVM 卷组上创建文件系统"
 
-#: src/components/storage/InstallationDeviceField.jsx:60
+#: src/components/storage/InstallationDeviceField.jsx:61
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "已在 %s 上新建的 LVM 卷组中创建文件系统"
@@ -1493,48 +1398,48 @@ msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] "显示 %d 个子卷操作"
 
-#: src/components/storage/ProposalActionsSummary.jsx:57
+#: src/components/storage/ProposalActionsSummary.jsx:58
 msgid "Destructive actions are not allowed"
 msgstr "不允许执行具有破坏性的操作"
 
-#: src/components/storage/ProposalActionsSummary.jsx:59
+#: src/components/storage/ProposalActionsSummary.jsx:60
 msgid "Destructive actions are allowed"
 msgstr "允许执行具有破坏性的操作"
 
-#: src/components/storage/ProposalActionsSummary.jsx:82
-#: src/components/storage/ProposalActionsSummary.jsx:132
+#: src/components/storage/ProposalActionsSummary.jsx:83
+#: src/components/storage/ProposalActionsSummary.jsx:133
 msgid "affecting"
 msgstr "影响到"
 
-#: src/components/storage/ProposalActionsSummary.jsx:112
+#: src/components/storage/ProposalActionsSummary.jsx:113
 msgid "Shrinking partitions is not allowed"
 msgstr "不允许缩小分区"
 
-#: src/components/storage/ProposalActionsSummary.jsx:116
+#: src/components/storage/ProposalActionsSummary.jsx:117
 msgid "Shrinking partitions is allowed"
 msgstr "允许缩小分区"
 
-#: src/components/storage/ProposalActionsSummary.jsx:118
+#: src/components/storage/ProposalActionsSummary.jsx:119
 msgid "Shrinking some partitions is allowed but not needed"
 msgstr "允许缩小分区，但并非必需"
 
-#: src/components/storage/ProposalActionsSummary.jsx:121
+#: src/components/storage/ProposalActionsSummary.jsx:122
 #, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
 msgstr[0] "%d 个分区将被缩小"
 
-#: src/components/storage/ProposalActionsSummary.jsx:159
+#: src/components/storage/ProposalActionsSummary.jsx:160
 msgid "Cannot accommodate the required file systems for installation"
 msgstr "无法容纳安装所需的文件系统"
 
-#: src/components/storage/ProposalActionsSummary.jsx:167
+#: src/components/storage/ProposalActionsSummary.jsx:168
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "检查 %d 个已计划的操作"
 
-#: src/components/storage/ProposalActionsSummary.jsx:182
+#: src/components/storage/ProposalActionsSummary.jsx:183
 msgid "Waiting for actions information..."
 msgstr "正在等待操作信息……"
 
@@ -2136,10 +2041,6 @@ msgstr "发现"
 msgid "Targets"
 msgstr "目标"
 
-#: src/components/storage/routes.js:36
-msgid "Proposal"
-msgstr "建议"
-
 #: src/components/storage/utils.js:64
 msgid "KiB"
 msgstr "KiB"
@@ -2217,33 +2118,33 @@ msgstr "选择对每个分区执行的操作。"
 msgid "with custom actions"
 msgstr "通过自定义操作"
 
-#: src/components/users/FirstUser.jsx:34
+#: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
 msgstr "尚未设定用户。"
 
-#: src/components/users/FirstUser.jsx:38
+#: src/components/users/FirstUser.jsx:39
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
 msgstr "请注意，在安装系统前必须设定用户才能登录。"
 
-#: src/components/users/FirstUser.jsx:44
+#: src/components/users/FirstUser.jsx:45
 msgid "Define a user now"
 msgstr "现在设定用户"
 
-#: src/components/users/FirstUser.jsx:57
+#: src/components/users/FirstUser.jsx:58
 #: src/components/users/FirstUserForm.jsx:217
 msgid "Full name"
 msgstr "全名"
 
-#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUser.jsx:59
 #: src/components/users/FirstUserForm.jsx:231
 #: src/components/users/FirstUserForm.jsx:236
 #: src/components/users/FirstUserForm.jsx:239
 msgid "Username"
 msgstr "用户名"
 
-#: src/components/users/FirstUser.jsx:89
+#: src/components/users/FirstUser.jsx:90
 #: src/components/users/RootAuthMethods.jsx:78
 #: src/components/users/RootAuthMethods.jsx:90
 msgid "Discard"
@@ -2371,13 +2272,81 @@ msgstr "上传"
 msgid "Clear"
 msgstr "清除"
 
-#: src/components/users/UsersPage.jsx:45
+#: src/components/users/UsersPage.jsx:44
 msgid "First user"
 msgstr "首个用户"
 
-#: src/components/users/UsersPage.jsx:52
+#: src/components/users/UsersPage.jsx:51
 msgid "Root authentication"
 msgstr "Root 认证"
+
+#: src/router.js:48
+msgid "Overview"
+msgstr "概览"
+
+#~ msgid "Question"
+#~ msgstr "问题"
+
+#~ msgid "Given encryption password didn't work"
+#~ msgstr "输入的加密密码无效"
+
+#~ msgid "Encrypted Device"
+#~ msgstr "已加密设备"
+
+#~ msgid "Encryption Password"
+#~ msgstr "加密密码"
+
+#, fuzzy
+#~ msgid "Password Required"
+#~ msgstr "密码输入"
+
+#~ msgid "Agama"
+#~ msgstr "Agama"
+
+#~ msgid "Change product"
+#~ msgstr "更改产品"
+
+#~ msgid "About"
+#~ msgstr "关于"
+
+#~ msgid "About Agama"
+#~ msgstr "关于 Agama"
+
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "Agama 是（open）SUSE 系统的实验性安装程序。其仍处于开发阶段，因此请勿将其"
+#~ "用于生产环境。如果您想试用，建议使用虚拟机以防止任何可能的数据丢失。"
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr "若想了解更多信息，请从 %s 访问项目仓库。"
+
+#~ msgid "Close"
+#~ msgstr "关闭"
+
+#~ msgid "Collecting logs..."
+#~ msgstr "正在收集日志……"
+
+#~ msgid "Download logs"
+#~ msgstr "下载日志"
+
+#~ msgid ""
+#~ "The browser will run the logs download as soon as they are ready. Please, "
+#~ "be patient."
+#~ msgstr "浏览器将会在日志收集完毕后启动下载过程，请耐心等待。"
+
+#~ msgid "Something went wrong while collecting logs. Please, try again."
+#~ msgstr "收集日志时出现问题，请重试。"
+
+#~ msgid "Waiting for progress status..."
+#~ msgstr "正在等待进度状态…"
+
+#~ msgid "Proposal"
+#~ msgstr "建议"
 
 #, c-format
 #~ msgid "Register %s"
