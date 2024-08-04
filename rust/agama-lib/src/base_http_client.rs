@@ -200,11 +200,18 @@ impl BaseHTTPClient {
     ///
     /// * `path`: path relative to HTTP API like `/users/first`
     /// * `object`: Object that can be serialiazed to JSON as body of request.
-    pub async fn patch(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
+    pub async fn patch<T>(&self, path: &str, object: &impl Serialize) -> Result<T, ServiceError>
+    where
+        T: DeserializeOwned,
+    {
         let response = self
             .request_response(reqwest::Method::PATCH, path, object)
             .await?;
-        self.unit_or_error(response).await
+        if response.status().is_success() {
+            response.json::<T>().await.map_err(|e| e.into())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
     }
     /// delete call on given path and report error if failed
     ///

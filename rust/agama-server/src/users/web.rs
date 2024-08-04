@@ -191,21 +191,27 @@ async fn get_user_config(State(state): State<UsersState<'_>>) -> Result<Json<Fir
 async fn patch_root(
     State(state): State<UsersState<'_>>,
     Json(config): Json<RootPatchSettings>,
-) -> Result<(), Error> {
+) -> Result<impl IntoResponse, Error> {
+    let mut retcode1 = 0;
     if let Some(key) = config.sshkey {
-        state.users.set_root_sshkey(&key).await?;
+        retcode1 = state.users.set_root_sshkey(&key).await?;
     }
+
+    let mut retcode2 = 0;
     if let Some(password) = config.password {
-        if password.is_empty() {
-            state.users.remove_root_password().await?;
+        retcode2 = if password.is_empty() {
+            state.users.remove_root_password().await?
         } else {
             state
                 .users
                 .set_root_password(&password, config.password_encrypted == Some(true))
-                .await?;
+                .await?
         }
     }
-    Ok(())
+
+    let retcode: u32 = if retcode1 != 0 { retcode1 } else { retcode2 };
+
+    Ok(Json(retcode))
 }
 
 #[utoipa::path(get, path = "/users/root", responses(

@@ -42,7 +42,8 @@ impl UsersHTTPClient {
         Ok(root_config.password)
     }
 
-    /// SetRootPassword method
+    /// SetRootPassword method.
+    /// Returns 0 if successful (always, for current backend)
     pub async fn set_root_password(
         &self,
         value: &str,
@@ -53,10 +54,8 @@ impl UsersHTTPClient {
             password: Some(value.to_owned()),
             password_encrypted: Some(encrypted),
         };
-        // TODO various errors
-        // current backend always returns 0
-        let _ret = self.client.patch("/users/root", &rps).await?;
-        Ok(0)
+        let ret = self.client.patch("/users/root", &rps).await?;
+        Ok(ret)
     }
 
     /// Returns the SSH key for the root user
@@ -65,16 +64,15 @@ impl UsersHTTPClient {
         Ok(root_config.sshkey)
     }
 
-    /// SetRootSSHKey method
+    /// SetRootSSHKey method.
+    /// Returns 0 if successful (always, for current backend)
     pub async fn set_root_sshkey(&self, value: &str) -> Result<u32, ServiceError> {
         let rps = RootPatchSettings {
             sshkey: Some(value.to_owned()),
             password: None,
             password_encrypted: None,
         };
-        // TODO various errors
-        // current backend always returns 0
-        let _ret = self.client.patch("/users/root", &rps).await?;
-        Ok(0)
+        let ret = self.client.patch("/users/root", &rps).await?;
+        Ok(ret)
     }
 }
