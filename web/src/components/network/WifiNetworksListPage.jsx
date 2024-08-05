@@ -107,7 +107,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
 
   if (network === HIDDEN_NETWORK) return <Form />;
 
-  if (data.needsAuth) return <Form />;
+  if (data && data.needsAuth) return <Form />;
 
   if (network.settings && !network.device) {
     return (
@@ -208,9 +208,6 @@ const NetworkListItem = ({ network }) => {
     </DataListItem>
   );
 };
-
-// FIXME: Question: why do we need to do this? Can it be done directly in the useNetwork query?
-const networksFromValues = (networks) => Object.values(networks).flat();
 
 /**
  * Component for displaying a list of available Wi-Fi networks
