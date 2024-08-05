@@ -72,7 +72,7 @@ module Agama
       def implicit_boot_device
         # TODO: preliminary implementation with very simplistic checks
         root_drive = drives.find do |drive|
-          drive.partitions.any? { |p| p.filesystem&.path == "/" }
+          drive.partitions.any? { |p| p.filesystem.root? }
         end
 
         root_drive&.found_device.name
@@ -123,14 +123,15 @@ module Agama
       end
 
       def size_with_fallbacks(device, outline, attr, builder)
-        proposed_paths = filesystems.map(&:path)
+        fallback_paths = outline.send(:"#{attr}_size_fallback_for")
+        missing_paths = fallback_paths.reject { |p| proposed_path?(p) }
 
         size = outline.send(:"base_#{attr}_size")
-
-        fallback_paths = outline.send(:"#{attr}_size_fallback_for")
-        # TODO: we need to normalize all the paths (or use Path for comparison or whatever)
-        missing_paths = fallback_paths - proposed_paths
         missing_paths.inject(size) { |total, p| total + builder.for(p).send(:"#{attr}_size") }
+      end
+
+      def proposed_path?(path)
+        filesystems.any? { |fs| fs.path?(path) }
       end
 
       def size_with_ram(initial_size, outline)
