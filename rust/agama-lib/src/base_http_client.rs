@@ -66,9 +66,11 @@ impl BaseHTTPClient {
         Ok(client)
     }
 
+    fn url(&self, path: &str) -> String {
+        self.base_url.clone() + path
+    }
+
     /// Simple wrapper around [`Response`] to get object from response.
-    ///
-    /// If a complete [`Response`] is needed, use the [`Self::get_response`] method.
     ///
     /// Arguments:
     ///
@@ -77,32 +79,23 @@ impl BaseHTTPClient {
     where
         T: DeserializeOwned,
     {
-        let response = self.get_response(path).await?;
-        if response.status().is_success() {
-            response.json::<T>().await.map_err(|e| e.into())
-        } else {
-            Err(self.build_backend_error(response).await)
-        }
-    }
-
-    /// Calls GET method on the given path and returns [`Response`] that can be further
-    /// processed.
-    ///
-    /// If only simple object from JSON is required, use method get.
-    ///
-    /// Arguments:
-    ///
-    /// * `path`: path relative to HTTP API like `/questions`
-    pub async fn get_response(&self, path: &str) -> Result<Response, ServiceError> {
-        self.client
+        let response: Result<_, ServiceError> = self
+            .client
             .get(self.url(path))
             .send()
             .await
-            .map_err(|e| e.into())
+            .map_err(|e| e.into());
+        self.deserialize_or_error(response?).await
     }
 
-    fn url(&self, path: &str) -> String {
-        self.base_url.clone() + path
+    pub async fn post<T>(&self, path: &str, object: &impl Serialize) -> Result<T, ServiceError>
+    where
+        T: DeserializeOwned,
+    {
+        let response = self
+            .request_response(reqwest::Method::POST, path, object)
+            .await?;
+        self.deserialize_or_error(response).await
     }
 
     /// post object to given path and report error if response is not success
@@ -111,29 +104,11 @@ impl BaseHTTPClient {
     ///
     /// * `path`: path relative to HTTP API like `/questions`
     /// * `object`: Object that can be serialiazed to JSON as body of request.
-    pub async fn post(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
+    pub async fn post_void(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
         let response = self
             .request_response(reqwest::Method::POST, path, object)
             .await?;
         self.unit_or_error(response).await
-    }
-
-    /// post object to given path and returns server response. Reports error only if failed to send
-    /// request, but if server returns e.g. 500, it will be in Ok result.
-    ///
-    /// In general unless specific response handling is needed, simple post should be used.
-    ///
-    /// Arguments:
-    ///
-    /// * `path`: path relative to HTTP API like `/questions`
-    /// * `object`: Object that can be serialiazed to JSON as body of request.
-    pub async fn post_response(
-        &self,
-        path: &str,
-        object: &impl Serialize,
-    ) -> Result<Response, ServiceError> {
-        self.request_response(reqwest::Method::POST, path, object)
-            .await
     }
 
     /// put object to given path, deserializes the response
@@ -149,11 +124,7 @@ impl BaseHTTPClient {
         let response = self
             .request_response(reqwest::Method::PUT, path, object)
             .await?;
-        if response.status().is_success() {
-            response.json::<T>().await.map_err(|e| e.into())
-        } else {
-            Err(self.build_backend_error(response).await)
-        }
+        self.deserialize_or_error(response).await
     }
 
     /// put object to given path and report error if response is not success
@@ -169,31 +140,6 @@ impl BaseHTTPClient {
         self.unit_or_error(response).await
     }
 
-    /// POST/PUT/PATCH an object to a given path and returns server response.
-    /// Reports Err only if failed to send
-    /// request, but if server returns e.g. 500, it will be in Ok result.
-    ///
-    /// In general unless specific response handling is needed, simple post should be used.
-    ///
-    /// Arguments:
-    ///
-    /// * `method`: for example `reqwest::Method::PUT`
-    /// * `path`: path relative to HTTP API like `/questions`
-    /// * `object`: Object that can be serialiazed to JSON as body of request.
-    pub async fn request_response(
-        &self,
-        method: reqwest::Method,
-        path: &str,
-        object: &impl Serialize,
-    ) -> Result<Response, ServiceError> {
-        self.client
-            .request(method, self.url(path))
-            .json(object)
-            .send()
-            .await
-            .map_err(|e| e.into())
-    }
-
     /// patch object at given path and report error if response is not success
     ///
     /// Arguments:
@@ -207,37 +153,70 @@ impl BaseHTTPClient {
         let response = self
             .request_response(reqwest::Method::PATCH, path, object)
             .await?;
-        if response.status().is_success() {
-            response.json::<T>().await.map_err(|e| e.into())
-        } else {
-            Err(self.build_backend_error(response).await)
-        }
+        self.deserialize_or_error(response).await
     }
+
+    pub async fn patch_void(
+        &self,
+        path: &str,
+        object: &impl Serialize,
+    ) -> Result<(), ServiceError> {
+        let response = self
+            .request_response(reqwest::Method::PATCH, path, object)
+            .await?;
+        self.unit_or_error(response).await
+    }
+
     /// delete call on given path and report error if failed
     ///
     /// Arguments:
     ///
     /// * `path`: path relative to HTTP API like `/questions/1`    
-    pub async fn delete(&self, path: &str) -> Result<(), ServiceError> {
-        let response = self.delete_response(path).await?;
-        self.unit_or_error(response).await
-    }
-
-    /// delete call on given path and returns server response. Reports error only if failed to send
-    /// request, but if server returns e.g. 500, it will be in Ok result.
-    ///
-    /// In general unless specific response handling is needed, simple delete should be used.
-    /// TODO: do not need variant with request body? if so, then create additional method.
-    ///
-    /// Arguments:
-    ///
-    /// * `path`: path relative to HTTP API like `/questions/1`    
-    pub async fn delete_response(&self, path: &str) -> Result<Response, ServiceError> {
-        self.client
+    pub async fn delete_void(&self, path: &str) -> Result<(), ServiceError> {
+        let response: Result<_, ServiceError> = self
+            .client
             .delete(self.url(path))
             .send()
             .await
+            .map_err(|e| e.into());
+        self.unit_or_error(response?).await
+    }
+
+    /// POST/PUT/PATCH an object to a given path and returns server response.
+    /// Reports Err only if failed to send
+    /// request, but if server returns e.g. 500, it will be in Ok result.
+    ///
+    /// In general unless specific response handling is needed, simple post should be used.
+    ///
+    /// Arguments:
+    ///
+    /// * `method`: for example `reqwest::Method::PUT`
+    /// * `path`: path relative to HTTP API like `/questions`
+    /// * `object`: Object that can be serialiazed to JSON as body of request.
+    async fn request_response(
+        &self,
+        method: reqwest::Method,
+        path: &str,
+        object: &impl Serialize,
+    ) -> Result<Response, ServiceError> {
+        self.client
+            .request(method, self.url(path))
+            .json(object)
+            .send()
+            .await
             .map_err(|e| e.into())
+    }
+
+    /// Return deserialized JSON body as `Ok(T)` or an `Err` with [`ServiceError::BackendError`]
+    async fn deserialize_or_error<T>(&self, response: Response) -> Result<T, ServiceError>
+    where
+        T: DeserializeOwned,
+    {
+        if response.status().is_success() {
+            response.json::<T>().await.map_err(|e| e.into())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
     }
 
     /// Return `Ok(())` or an `Err` with [`ServiceError::BackendError`]
@@ -257,7 +236,7 @@ impl BaseHTTPClient {
     /// Arguments:
     ///
     /// * `response`: response from which generate error
-    pub async fn build_backend_error(&self, response: Response) -> ServiceError {
+    async fn build_backend_error(&self, response: Response) -> ServiceError {
         let code = response.status().as_u16();
         let text = response
             .text()

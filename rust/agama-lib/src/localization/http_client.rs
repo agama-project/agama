@@ -21,6 +21,6 @@ impl LocalizationHTTPClient {
     }
 
     pub async fn set_config(&self, config: &LocaleConfig) -> Result<(), ServiceError> {
-        self.client.patch("/l10n/config", config).await
+        self.client.patch_void("/l10n/config", config).await
     }
 }
