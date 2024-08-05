@@ -20,17 +20,24 @@
  */
 
 import React from "react";
-import { QueryClient, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
-import { FirstUser, RootUser, RootUserChanges } from "~/types/users";
+import { RootUser, RootUserChanges } from "~/types/users";
+import {
+  fetchFirstUser,
+  fetchRoot,
+  removeFirstUser,
+  updateFirstUser,
+  updateRoot,
+} from "~/api/users";
 
 /**
  * Returns a query for retrieving the first user configuration
  */
 const firstUserQuery = () => ({
   queryKey: ["users", "firstUser"],
-  queryFn: () => fetch("/api/users/first").then((res) => res.json()),
+  queryFn: fetchFirstUser,
 });
 
 /**
@@ -47,20 +54,7 @@ const useFirstUser = () => {
 const useFirstUserMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (user: FirstUser) =>
-      fetch("/api/users/first", {
-        method: "PUT",
-        body: JSON.stringify({ ...user, data: {} }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error(_("Please, try again"));
-        }
-      }),
+    mutationFn: updateFirstUser,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users", "firstUser"] }),
   };
   return useMutation(query);
@@ -69,13 +63,7 @@ const useFirstUserMutation = () => {
 const useRemoveFirstUserMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: () =>
-      fetch("/api/users/first", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
+    mutationFn: removeFirstUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users", "firstUser"] });
     },
@@ -113,7 +101,7 @@ const useFirstUserChanges = () => {
  */
 const rootUserQuery = () => ({
   queryKey: ["users", "root"],
-  queryFn: () => fetch("/api/users/root").then((res) => res.json()),
+  queryFn: fetchRoot,
 });
 
 const useRootUser = () => {
@@ -127,14 +115,7 @@ const useRootUser = () => {
 const useRootUserMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (changes: Partial<RootUserChanges>) =>
-      fetch("/api/users/root", {
-        method: "PATCH",
-        body: JSON.stringify({ ...changes, passwordEncrypted: false }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
+    mutationFn: updateRoot,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users", "root"] }),
   };
   return useMutation(query);
