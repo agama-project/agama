@@ -168,14 +168,14 @@ mod test {
                 .path("/api/users/root")
                 .header("content-type", "application/json")
                 .body(r#"{"sshkey":null,"password":"1234","passwordEncrypted":false}"#);
-            then.status(200);
+            then.status(200).body("0");
         });
         let root_mock2 = server.mock(|when, then| {
             when.method(PATCH)
                 .path("/api/users/root")
                 .header("content-type", "application/json")
                 .body(r#"{"sshkey":"keykeykey","password":null,"passwordEncrypted":null}"#);
-            then.status(200);
+            then.status(200).body("0");
         });
         let url = server.url("/api");
 
