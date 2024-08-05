@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,13 +20,18 @@
  */
 
 import ipaddr from "ipaddr.js";
-import { ApFlags, ApSecurityFlags, ConnectionState, IPAddress, SecurityProtocols } from "~/types/network";
+import {
+  ApFlags,
+  ApSecurityFlags,
+  Connection,
+  ConnectionState,
+  Device,
+  IPAddress,
+  SecurityProtocols,
+} from "~/types/network";
 
 /**
  * Returns a human readable connection state
- *
- * @property {number} state
- * @return {string}
  */
 const connectionHumanState = (state: number): string => {
   const stateIndex = Object.values(ConnectionState).indexOf(state);
@@ -37,20 +42,20 @@ const connectionHumanState = (state: number): string => {
 /**
  * Check if an IP is valid
  *
- * By now, only IPv4 is supported.
+ * @note By now, only IPv4 is supported.
  *
- * @param {string} value - An IP Address
- * @return {boolean} true if given IP is valid; false otherwise.
+ * @param value - An IP Address
+ * @return true if given IP is valid; false otherwise.
  */
 const isValidIp = (value: string): boolean => ipaddr.IPv4.isValidFourPartDecimal(value);
 
 /**
  * Check if a value is a valid netmask or network prefix
  *
- * By now, only IPv4 is supported.
+ * @note By now, only IPv4 is supported.
  *
- * @param {string} value - An netmask or a network prefix
- * @return {boolean} true if given IP is valid; false otherwise.
+ * @param value - An netmask or a network prefix
+ * @return true if given IP is valid; false otherwise.
  */
 const isValidIpPrefix = (value: string): boolean => {
   if (value.match(/^\d+$/)) {
@@ -63,10 +68,10 @@ const isValidIpPrefix = (value: string): boolean => {
 /**
  * Prefix for the given prefix or netmask
  *
- * By now, only IPv4 is supported.
+ * @note By now, only IPv4 is supported.
  *
- * @param {string} value - An netmask or a network prefix
- * @return {number} prefix for the given netmask or prefix
+ * @param value - An netmask or a network prefix
+ * @return prefix for the given netmask or prefix
  */
 const ipPrefixFor = (value: string): number => {
   if (value.match(/^\d+$/)) {
@@ -81,8 +86,8 @@ const ipPrefixFor = (value: string): number => {
  *
  * FIXME: IPv6 is not supported yet.
  *
- * @param {number} address - An IP Address as network byte-order
- * @return {string|null} the address given as a string
+ * @param address - An IP Address as network byte-order
+ * @return given address as string, when possible
  */
 const intToIPString = (address: number): string | null => {
   const ip = ipaddr.parse(address.toString());
@@ -97,8 +102,8 @@ const intToIPString = (address: number): string | null => {
  *
  * FIXME: Currently it is assumed 'le' ordering which should be read from NetworkManager State
  *
- * @param {string} text - string representing an IPv4 address
- * @return {number} IP address as network byte-order
+ * @param text - string representing an IPv4 address
+ * @return IP address as network byte-order
  */
 const stringToIPInt = (text: string): number => {
   if (text === "") return 0;
@@ -117,9 +122,6 @@ const stringToIPInt = (text: string): number => {
 
 /**
  * Returns given IP address in the X.X.X.X/YY format
- *
- * @param {IPAddress} addr
- * @return {string}
  */
 const formatIp = (addr: IPAddress): string => {
   if (addr.prefix === undefined) {
@@ -130,12 +132,11 @@ const formatIp = (addr: IPAddress): string => {
 };
 
 /**
- * @param {number} flags - AP flags
- * @param {number} wpa_flags - AP WPA1 flags
- * @param {number} rsn_flags - AP WPA2 flags
- * @return {string[]} security protocols supported
+ * @param flags - AP flags
+ * @param wpa_flags - AP WPA1 flags
+ * @param rsn_flags - AP WPA2 flags
+ * @return supported security protocols
  */
-
 const securityFromFlags = (flags: number, wpa_flags: number, rsn_flags: number): string[] => {
   const security = [];
 
@@ -156,6 +157,28 @@ const securityFromFlags = (flags: number, wpa_flags: number, rsn_flags: number):
   return security;
 };
 
+/**
+ * Returns addresses IP addresses for given connection
+ *
+ * Looks for them in the associated device first, if any.
+ */
+const connectionAddresses = (connection: Connection, devices: Device[]): string => {
+  const device = devices?.find(
+    ({ connection: deviceConnectionId }) => connection.id === deviceConnectionId,
+  );
+  const addresses = device ? device.addresses : connection.addresses;
 
+  return addresses?.map(formatIp).join(", ");
+};
 
-export { connectionHumanState, isValidIp, isValidIpPrefix, intToIPString, stringToIPInt, formatIp, ipPrefixFor, securityFromFlags };
+export {
+  connectionAddresses,
+  connectionHumanState,
+  formatIp,
+  intToIPString,
+  ipPrefixFor,
+  isValidIp,
+  isValidIpPrefix,
+  securityFromFlags,
+  stringToIPInt,
+};
