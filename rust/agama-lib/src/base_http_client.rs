@@ -212,8 +212,23 @@ impl BaseHTTPClient {
     where
         T: DeserializeOwned,
     {
+        // DEBUG: This dbg is nice but it omits the body, thus we try harder below
+        // let response = dbg!(response);
+
         if response.status().is_success() {
-            response.json::<T>().await.map_err(|e| e.into())
+            // We'd like to simply:
+            //     response.json::<T>().await.map_err(|e| e.into())
+            // BUT also peek into the response text, in case something is wrong
+            // so this copies the implementation from the above and adds a debug part
+
+            let bytes_r: Result<_, ServiceError> = response.bytes().await.map_err(|e| e.into());
+            let bytes = bytes_r?;
+
+            // DEBUG: (we expect JSON so dbg! would escape too much, eprintln! is better)
+            // let text = String::from_utf8_lossy(&bytes);
+            // eprintln!("Response body: {}", text);
+
+            serde_json::from_slice(&bytes).map_err(|e| e.into())
         } else {
             Err(self.build_backend_error(response).await)
         }
