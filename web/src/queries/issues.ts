@@ -28,16 +28,8 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { Issue, IssuesList } from "~/types/issues";
-
-type IssuesScope = "product" | "software" | "storage" | "users";
-
-const URLS = {
-  product: "software/issues/product",
-  software: "software/issues/software",
-  users: "users/issues",
-  storage: "storage/issues",
-};
+import { Issue, IssuesList, IssuesScope } from "~/types/issues";
+import { fetchIssues } from "~/api/issues";
 
 const scopesFromPath = {
   "/org/opensuse/Agama/Software1": "software",
@@ -49,15 +41,15 @@ const scopesFromPath = {
 const issuesQuery = (scope: IssuesScope) => {
   return {
     queryKey: ["issues", scope],
-    queryFn: () => fetch(`/api/${URLS[scope]}`).then((res) => res.json()),
+    queryFn: () => fetchIssues(scope),
   };
 };
 
 /**
  * Returns the issues for the given scope.
  *
- * @param {IssuesScope} scope - Scope to get the issues from.
- * @return {Issue[]}
+ * @param scope - Scope to get the issues from.
+ * @return issues for the given scope.
  */
 const useIssues = (scope: IssuesScope) => {
   const { data } = useSuspenseQuery(issuesQuery(scope));
@@ -74,12 +66,6 @@ const useAllIssues = () => {
 
   const [{ data: product }, { data: software }, { data: storage }, { data: users }] =
     useSuspenseQueries({ queries });
-  const list = {
-    product: product as Issue[],
-    software: software as Issue[],
-    storage: storage as Issue[],
-    users: users as Issue[],
-  };
   return new IssuesList(product, software, storage, users);
 };
 
