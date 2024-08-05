@@ -107,15 +107,16 @@ mod test {
         let store = localization_store(url).await?;
         let settings = store.load().await?;
 
-        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
-        l10n_mock.assert();
-
         let expected = LocalizationSettings {
             language: Some("fr_FR.UTF-8".to_owned()),
             keyboard: Some("fr(dvorak)".to_owned()),
             timezone: Some("Europe/Paris".to_owned()),
         };
+        // main assertion
         assert_eq!(settings, expected);
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        l10n_mock.assert();
         Ok(())
     }
 
@@ -142,9 +143,11 @@ mod test {
         };
         let result = store.store(&settings).await;
 
+        // main assertion
+        result?;
+
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
         l10n_mock.assert();
-        assert!(result.is_ok());
         Ok(())
     }
 }

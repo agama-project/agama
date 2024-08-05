@@ -126,10 +126,6 @@ mod test {
         let store = users_store(url)?;
         let settings = store.load().await?;
 
-        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
-        user_mock.assert();
-        root_mock.assert();
-
         let first_user = FirstUserSettings {
             full_name: Some("Tux".to_owned()),
             user_name: Some("tux".to_owned()),
@@ -146,7 +142,13 @@ mod test {
             root: Some(root_user),
         };
 
+        // main assertion
         assert_eq!(settings, expected);
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        user_mock.assert();
+        root_mock.assert();
+
         Ok(())
     }
 
@@ -197,11 +199,13 @@ mod test {
         };
         let result = store.store(&settings).await;
 
+        // main assertion
+        result?;
+
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
         user_mock.assert();
         root_mock.assert();
         root_mock2.assert();
-        assert!(result.is_ok());
         Ok(())
     }
 }
