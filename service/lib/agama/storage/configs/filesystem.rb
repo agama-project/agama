@@ -19,10 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "pathname"
+
 module Agama
   module Storage
     module Configs
       class Filesystem
+        # @return [Pathname] Object that represents the root path
+        ROOT_PATH = Pathname.new("/").freeze
+
         attr_accessor :path
         # @return [Configs::FilesystemType]
         attr_accessor :type
@@ -34,6 +39,25 @@ module Agama
         def initialize
           @mount_options = []
           @mkfs = []
+        end
+
+        # Whether the given path is equivalent to {#path}
+        #
+        # This method is more robust than a simple string comparison, since it takes
+        # into account trailing slashes and similar potential problems.
+        #
+        # @param other_path [String, Pathname]
+        # @return [Boolean]
+        def path?(other_path)
+          return false unless path
+
+          Pathname.new(other_path).cleanpath == Pathname.new(path).cleanpath
+        end
+
+        # Whether the mount point is root
+        # @return [Boolean]
+        def root?
+          path?(ROOT_PATH)
         end
 
         def btrfs_snapshots?
