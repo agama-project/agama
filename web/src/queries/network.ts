@@ -386,6 +386,7 @@ const useWifiNetworks = () => {
   return accessPoints
     .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
     .map((ap: AccessPoint) => {
+      console.log("Access point: ", ap);
       // Do not include networks without SSID
       if (!ap.ssid || ap.ssid === "") return null;
       // Do not include "duplicates"
@@ -409,7 +410,7 @@ const useWifiNetworks = () => {
       knownSsids.push(network.ssid);
 
       return network;
-    });
+    }).filter((ap: AccessPoint) => ap != null);
 };
 
 export {
