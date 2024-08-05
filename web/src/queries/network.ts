@@ -20,7 +20,12 @@
  */
 
 import React from "react";
-import { useQueryClient, useMutation, useSuspenseQuery, useSuspenseQueries } from "@tanstack/react-query";
+import {
+  useQueryClient,
+  useMutation,
+  useSuspenseQuery,
+  useSuspenseQueries,
+} from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { createAccessPoint } from "~/client/network/model";
 import { _ } from "~/i18n";
@@ -28,21 +33,23 @@ import { AccessPoint, Connection, Device, DeviceState } from "~/types/network";
 import { formatIp, ipPrefixFor, securityFromFlags } from "~/utils/network";
 
 /**
-   * Returns the device settings
-   */
+ * Returns the device settings
+ */
 const fromApiDevice = (device: object): Device => {
-  const nameservers = (device?.ipConfig?.nameservers || []);
+  const nameservers = device?.ipConfig?.nameservers || [];
   const { ipConfig = {}, ...dev } = device;
   const routes4 = (ipConfig.routes4 || []).map((route) => {
     const [ip, netmask] = route.destination.split("/");
-    const destination = (netmask !== undefined) ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
+    const destination =
+      netmask !== undefined ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
 
     return { ...route, destination };
   });
 
   const routes6 = (ipConfig.routes6 || []).map((route) => {
     const [ip, netmask] = route.destination.split("/");
-    const destination = (netmask !== undefined) ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
+    const destination =
+      netmask !== undefined ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
 
     return { ...route, destination };
   });
@@ -60,7 +67,7 @@ const fromApiDevice = (device: object): Device => {
 };
 
 const fromApiConnection = (connection: object): Connection => {
-  const nameservers = (connection.nameservers || []);
+  const nameservers = connection.nameservers || [];
   const addresses = (connection.addresses || []).map((address) => {
     const [ip, netmask] = address.split("/");
     if (netmask !== undefined) {
@@ -83,7 +90,11 @@ const toApiConnection = (connection: Connection): object => {
   return { ...conn, addresses, interface: iface };
 };
 
-const loadNetworks = (devices: Device[], connections: Connection[], accessPoints: AccessPoint[]) => {
+const loadNetworks = (
+  devices: Device[],
+  connections: Connection[],
+  accessPoints: AccessPoint[],
+) => {
   const knownSsids = [];
 
   return accessPoints
@@ -139,7 +150,7 @@ const devicesQuery = () => ({
 
     return devices.map(fromApiDevice);
   },
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 /**
@@ -152,7 +163,7 @@ const connectionQuery = (name) => ({
     const connection = await response.json();
     return fromApiConnection(connection);
   },
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 /**
@@ -165,7 +176,7 @@ const connectionsQuery = () => ({
     const connections = await response.json();
     return connections.map(fromApiConnection);
   },
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 /**
@@ -181,12 +192,12 @@ const accessPointsQuery = () => ({
         ssid: ap.ssid,
         hwAddress: ap.hw_address,
         strength: ap.strength,
-        security: securityFromFlags(ap.flags, ap.wpaFlags, ap.rsnFlags)
+        security: securityFromFlags(ap.flags, ap.wpaFlags, ap.rsnFlags),
       });
     });
-    return access_points.sort((a, b) => (a.strength < b.strength) ? -1 : 1);
+    return access_points.sort((a, b) => (a.strength < b.strength ? -1 : 1));
   },
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 /**
@@ -203,7 +214,7 @@ const useAddConnectionMutation = () => {
         body: JSON.stringify(toApiConnection(newConnection)),
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       }).then((response) => {
         if (response.ok) {
           return fetch(`/api/network/system/apply`, { method: "PUT" });
@@ -212,9 +223,9 @@ const useAddConnectionMutation = () => {
         }
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network"] })
-      queryClient.invalidateQueries({ queryKey: ["network"] })
-    }
+      queryClient.invalidateQueries({ queryKey: ["network"] });
+      queryClient.invalidateQueries({ queryKey: ["network"] });
+    },
   };
   return useMutation(query);
 };
@@ -227,13 +238,12 @@ const useConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (newConnection) =>
-      fetch(`/api/network/connections/${newConnection.id
-        }`, {
+      fetch(`/api/network/connections/${newConnection.id}`, {
         method: "PUT",
         body: JSON.stringify(toApiConnection(newConnection)),
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       }).then((response) => {
         if (response.ok) {
           return fetch(`/api/network/system/apply`, { method: "PUT" });
@@ -242,9 +252,9 @@ const useConnectionMutation = () => {
         }
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network", "connections"] })
-      queryClient.invalidateQueries({ queryKey: ["network", "devices"] })
-    }
+      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
+      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
+    },
   };
   return useMutation(query);
 };
@@ -258,18 +268,17 @@ const useRemoveConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (name) =>
-      fetch(`/api/network/connections/${name}`, { method: "DELETE" })
-        .then((response) => {
-          if (response.ok) {
-            return fetch(`/api/network/system/apply`, { method: "PUT" });
-          } else {
-            throw new Error(_("Please, try again"));
-          }
-        }),
+      fetch(`/api/network/connections/${name}`, { method: "DELETE" }).then((response) => {
+        if (response.ok) {
+          return fetch(`/api/network/system/apply`, { method: "PUT" });
+        } else {
+          throw new Error(_("Please, try again"));
+        }
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network", "connections"] })
-      queryClient.invalidateQueries({ queryKey: ["network", "devices"] })
-    }
+      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
+      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
+    },
   };
   return useMutation(query);
 };
@@ -284,13 +293,13 @@ const selectedWiFiNetworkQuery = () => ({
   queryFn: async () => {
     return Promise.resolve({ ssid: null, needsAuth: null });
   },
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 const useSelectedWifi = () => {
   // TODO: evaluate if useSuspenseQuery is really needed, probably not.
   return useSuspenseQuery(selectedWiFiNetworkQuery());
-}
+};
 
 const useSelectedWifiChange = () => {
   const queryClient = useQueryClient();
@@ -299,11 +308,11 @@ const useSelectedWifiChange = () => {
     mutationFn: async (data) => Promise.resolve(data),
     onSuccess: (data) => {
       queryClient.setQueryData(["wifi", "selected"], (prev) => ({ ...prev, ...data }));
-    }
+    },
   });
 
   return mutation;
-}
+};
 
 /**
  * Hook that returns a useEffect to listen for NetworkChanged events
@@ -352,27 +361,17 @@ const useNetworkConfigChanges = () => {
 const useConnection = (name) => {
   const { data } = useSuspenseQuery(connectionQuery(name));
   return data;
-}
+};
 
 const useNetwork = () => {
-  const [
-    { data: state },
-    { data: devices },
-    { data: connections },
-    { data: accessPoints }
-  ] = useSuspenseQueries({
-    queries: [
-      stateQuery(),
-      devicesQuery(),
-      connectionsQuery(),
-      accessPointsQuery()
-    ]
-  });
+  const [{ data: state }, { data: devices }, { data: connections }, { data: accessPoints }] =
+    useSuspenseQueries({
+      queries: [stateQuery(), devicesQuery(), connectionsQuery(), accessPointsQuery()],
+    });
   const networks = loadNetworks(devices, connections, accessPoints);
 
   return { connections, settings: state, devices, accessPoints, networks };
 };
-
 
 export {
   stateQuery,
@@ -388,5 +387,5 @@ export {
   useNetwork,
   useSelectedWifi,
   useSelectedWifiChange,
-  useNetworkConfigChanges
+  useNetworkConfigChanges,
 };
