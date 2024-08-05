@@ -20,18 +20,13 @@
  */
 
 import React from "react";
+import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { WifiNetworksListPage } from "~/components/network";
+import { useNetworkConfigChanges } from "~/queries/network";
 import { _ } from "~/i18n";
-import { Grid, GridItem } from "@patternfly/react-core";
-import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
-
-const networksFromValues = (networks) => Object.values(networks).flat();
-
-// FIXME: use a reducer
 
 function WifiSelectorPage() {
-  const { networks } = useNetwork();
   useNetworkConfigChanges();
 
   return (
@@ -42,7 +37,7 @@ function WifiSelectorPage() {
       <Page.MainContent>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <WifiNetworksListPage networks={networksFromValues(networks)} />
+            <WifiNetworksListPage />
           </GridItem>
         </Grid>
       </Page.MainContent>

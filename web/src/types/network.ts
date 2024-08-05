@@ -127,8 +127,8 @@ type Device = {
   gateway6: string;
   method4: string;
   method6: string;
-  routes4: Route[];
-  routes6: Route[];
+  routes4?: Route[];
+  routes6?: Route[];
   macAddress: string;
   state: DeviceState;
   connection?: string;
@@ -146,6 +146,7 @@ type ConnectionApi = {
   wireless?: Wireless;
 };
 
+// TODO: use a WirelessOptions instead of having them as args in the constructor?
 class Wireless {
   ssid: string;
   password?: string;
@@ -161,6 +162,16 @@ class Wireless {
   }
 }
 
+type ConnectionOptions = {
+  addresses?: IPAddress[];
+  nameservers?: string[];
+  gateway4?: string;
+  gateway6?: string;
+  method4?: string;
+  method6?: string;
+  wireless?: Wireless;
+};
+
 class Connection {
   id: string;
   status: string;
@@ -173,12 +184,13 @@ class Connection {
   method6?: string = "auto";
   wireless?: Wireless;
 
-  constructor(id: string, iface?: string, options?: Connection) {
+  constructor(id: string, iface?: string, options?: ConnectionOptions) {
     this.id = id;
     if (iface !== undefined) {
       this.iface = iface;
     }
 
+    // FIXME: iterate instead
     if (options !== undefined) {
       if (options.addresses) this.addresses = options.addresses;
       if (options.nameservers) this.nameservers = options.nameservers;
@@ -190,6 +202,21 @@ class Connection {
     }
   }
 }
+
+enum WifiNetworkStatus {
+  NOT_CONFIGURED = "not_configured",
+  CONFIGURED = "configured",
+  CONNECTED = "connected",
+}
+
+type WifiNetwork = AccessPoint & {
+  settings?: Connection;
+  device?: Device;
+  // FIXME: maybe would be better to have a class and a method, to avoid having a connected status without a device, for example
+  /** Whether the network is connected (configured and connected), configured (configured but
+  not connected), or none  */
+  status: WifiNetworkStatus;
+};
 
 type NetworkGeneralState = {
   connectivity: boolean;
@@ -208,6 +235,7 @@ export {
   NetworkState,
   DeviceType,
   Wireless,
+  WifiNetworkStatus,
   SecurityProtocols,
 };
-export type { AccessPoint, Device, IPAddress, NetworkGeneralState };
+export type { AccessPoint, Device, IPAddress, NetworkGeneralState, WifiNetwork };

@@ -44,7 +44,6 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { generatePath } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import { Icon } from "~/components/layout";
 import { WifiConnectionForm } from "~/components/network";
 import { ButtonLink } from "~/components/core";
@@ -52,7 +51,13 @@ import { PATHS } from "~/routes/network";
 import { DeviceState } from "~/types/network";
 import { _ } from "~/i18n";
 import { formatIp } from "~/utils/network";
-import { useRemoveConnectionMutation, useSelectedWifi, useSelectedWifiChange } from "~/queries/network";
+import {
+  useNetwork,
+  useRemoveConnectionMutation,
+  useSelectedWifi,
+  useSelectedWifiChange,
+  useWifiNetworks,
+} from "~/queries/network";
 
 const HIDDEN_NETWORK = Object.freeze({ hidden: true });
 
@@ -76,6 +81,7 @@ const networkState = (state) => {
   }
 };
 
+// FIXME: too similar to utils/network#connectionAddresses method. Try to join them.
 const connectionAddresses = (network) => {
   const { device, settings } = network;
   const addresses = device ? device.addresses : settings?.addresses;
@@ -88,10 +94,11 @@ const ConnectionData = ({ network }) => {
 };
 
 const WifiDrawerPanelBody = ({ network, onCancel }) => {
-  const setConnection = useRemoveConnectionMutation();
+  const { mutate: removeConnection } = useRemoveConnectionMutation();
   const { data } = useSelectedWifi();
+
   const forgetNetwork = async () => {
-    setConnection.mutate(network.settings.id);
+    removeConnection(network.settings.id);
   };
 
   if (!network) return;
@@ -135,11 +142,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
             <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
               {_("Edit")}
             </ButtonLink>
-            <Button
-              variant="secondary"
-              isDanger
-              onClick={forgetNetwork}
-            >
+            <Button variant="secondary" isDanger onClick={forgetNetwork}>
               {_("Forget")}
             </Button>
           </Split>
@@ -156,12 +159,12 @@ const NetworkFormName = ({ network }) => {
   return <h3>{network === HIDDEN_NETWORK ? _("Connect to a hidden network") : network.ssid}</h3>;
 };
 
-const NetworkListName = ({ network }) => {
+const NetworkListName = ({ network, ...props }) => {
   const state = networkState(network.device?.state);
 
   return (
     <Flex columnGap={{ default: "columnGapXs" }}>
-      <b>{network.ssid}</b>
+      <b {...props}>{network.ssid}</b>
       {network.settings && (
         <Label isCompact color="cyan" variant="outline">
           {_("configured")}
@@ -176,63 +179,59 @@ const NetworkListName = ({ network }) => {
   );
 };
 
+const NetworkListItem = ({ network }) => {
+  const headerId = `network-${network.ssid}`;
+  return (
+    <DataListItem id={network.ssid} aria-labelledby={headerId}>
+      <DataListItemRow>
+        <DataListItemCells
+          dataListCells={[
+            <DataListCell key="ssid">
+              <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapSm" }}>
+                <NetworkListName id={headerId} network={network} />
+                <Flex
+                  alignItems={{ default: "alignItemsCenter" }}
+                  columnGap={{ default: "columnGapSm" }}
+                >
+                  <div>
+                    <Icon name="lock" size="10" fill="grey" /> {network.security.join(", ")}
+                  </div>
+                  <div>
+                    <Icon name="signal_cellular_alt" size="10" fill="grey" /> {network.strength}
+                  </div>
+                </Flex>
+              </Flex>
+            </DataListCell>,
+          ]}
+        />
+      </DataListItemRow>
+    </DataListItem>
+  );
+};
+
+// FIXME: Question: why do we need to do this? Can it be done directly in the useNetwork query?
+const networksFromValues = (networks) => Object.values(networks).flat();
+
 /**
  * Component for displaying a list of available Wi-Fi networks
- *
- * @param {object} props - component props
- * @param {object[]} [props.networks=[]] - list of networks to show
- * @param {object} [props.activeNetwork] - the active network
- * @param {object} [props.selectedNetwork] - the selected network (not necessarily the same as active)
- * @param {function} props.onSelectionCallback - the function to trigger when user selects a network
- * @param {function} props.onCancelCallback - the function to trigger when user cancel dismiss before connecting to a network
  */
-function WifiNetworksListPage({ networks = [] }) {
-  const { data } = useSelectedWifi();
+function WifiNetworksListPage() {
+  const /** @type import("~/types/network").WifiNetw */ networks = useWifiNetworks();
+  const { ssid: selectedSsid } = useSelectedWifi();
   const selected =
-    data.ssid === undefined ? HIDDEN_NETWORK : networks.find((n) => n.ssid === data.ssid);
-  const changeSelected = useSelectedWifiChange();
+    selectedSsid === undefined ? HIDDEN_NETWORK : networks.find((n) => n.ssid === selectedSsid);
+  const { mutate: changeSelection } = useSelectedWifiChange();
 
   const selectHiddneNetwork = () => {
-    changeSelected.mutate({ ssid: undefined, needsAuth: null });
+    changeSelection({ ssid: undefined, needsAuth: null });
   };
 
   const selectNetwork = (ssid) => {
-    changeSelected.mutate({ ssid, needsAuth: null });
+    changeSelection({ ssid, needsAuth: null });
   };
 
   const unselectNetwork = () => {
-    changeSelected.mutate({ ssid: null, needsAuth: null });
-  };
-
-  const renderElements = () => {
-    return networks.map((n) => {
-      return (
-        <DataListItem id={n.ssid} key={n.ssid}>
-          <DataListItemRow>
-            <DataListItemCells
-              dataListCells={[
-                <DataListCell key="ssid">
-                  <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapSm" }}>
-                    <NetworkListName network={n} />
-                    <Flex
-                      alignItems={{ default: "alignItemsCenter" }}
-                      columnGap={{ default: "columnGapSm" }}
-                    >
-                      <div>
-                        <Icon name="lock" size="10" fill="grey" /> {n.security.join(", ")}
-                      </div>
-                      <div>
-                        <Icon name="signal_cellular_alt" size="10" fill="grey" /> {n.strength}
-                      </div>
-                    </Flex>
-                  </Flex>
-                </DataListCell>,
-              ]}
-            />
-          </DataListItemRow>
-        </DataListItem>
-      );
-    });
+    changeSelection({ ssid: null, needsAuth: null });
   };
 
   return (
@@ -261,9 +260,15 @@ function WifiNetworksListPage({ networks = [] }) {
                   selectedDataListItemId={selected?.ssid}
                   onSelectDataListItem={(_, ssid) => selectNetwork(ssid)}
                 >
-                  {renderElements()}
+                  {networks.map((n) => (
+                    <NetworkListItem key={n.ssid} network={n} />
+                  ))}
                 </DataList>
-                <Button variant="link" onClick={selectHiddneNetwork}>
+                <Button
+                  variant="link"
+                  isDisabled={selected === HIDDEN_NETWORK}
+                  onClick={selectHiddneNetwork}
+                >
                   {_("Connect to hidden network")}
                 </Button>
               </Stack>

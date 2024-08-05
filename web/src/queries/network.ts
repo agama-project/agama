@@ -29,7 +29,14 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import { createAccessPoint } from "~/client/network/model";
 import { _ } from "~/i18n";
-import { AccessPoint, Connection, Device, DeviceState } from "~/types/network";
+import {
+  AccessPoint,
+  Connection,
+  Device,
+  DeviceState,
+  WifiNetwork,
+  WifiNetworkStatus,
+} from "~/types/network";
 import { formatIp, ipPrefixFor, securityFromFlags } from "~/utils/network";
 
 /**
@@ -94,39 +101,36 @@ const loadNetworks = (
   devices: Device[],
   connections: Connection[],
   accessPoints: AccessPoint[],
-) => {
+): WifiNetwork[] => {
   const knownSsids = [];
 
   return accessPoints
     .sort((a, b) => b.strength - a.strength)
-    .reduce(
-      (networks, ap) => {
-        // Do not include networks without SSID
-        if (!ap.ssid || ap.ssid === "") return networks;
-        // Do not include "duplicates"
-        if (knownSsids.includes(ap.ssid)) return networks;
+    .map((ap) => {
+      // Do not include networks without SSID
+      if (!ap.ssid || ap.ssid === "") return null;
+      // Do not include "duplicates"
+      if (knownSsids.includes(ap.ssid)) return null;
 
-        const network = {
-          ...ap,
-          settings: connections.find((c) => c.wireless?.ssid === ap.ssid),
-          device: devices.find((c) => c.connection === ap.ssid),
-        };
+      const settings = connections.find((c) => c.wireless?.ssid === ap.ssid);
+      const device = devices.find((c) => c.connection === ap.ssid);
+      const status = device
+        ? WifiNetworkStatus.CONNECTED
+        : settings
+          ? WifiNetworkStatus.CONFIGURED
+          : WifiNetworkStatus.NOT_CONFIGURED;
 
-        // Group networks
-        if (network.device) {
-          networks.connected.push(network);
-        } else if (network.settings) {
-          networks.configured.push(network);
-        } else {
-          networks.others.push(network);
-        }
+      const network = {
+        ...ap,
+        settings,
+        device,
+        status,
+      };
 
-        knownSsids.push(network.ssid);
+      knownSsids.push(network.ssid);
 
-        return networks;
-      },
-      { connected: [], configured: [], others: [] },
-    );
+      return network;
+    });
 };
 
 /**
@@ -298,16 +302,17 @@ const selectedWiFiNetworkQuery = () => ({
 
 const useSelectedWifi = () => {
   // TODO: evaluate if useSuspenseQuery is really needed, probably not.
-  return useSuspenseQuery(selectedWiFiNetworkQuery());
+  const { data } = useSuspenseQuery(selectedWiFiNetworkQuery());
+  return data;
 };
 
 const useSelectedWifiChange = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (data) => Promise.resolve(data),
-    onSuccess: (data) => {
-      queryClient.setQueryData(["wifi", "selected"], (prev) => ({ ...prev, ...data }));
+    mutationFn: async (data: object): Promise<object> => Promise.resolve(data),
+    onSuccess: (data: object) => {
+      queryClient.setQueryData(["wifi", "selected"], (prev: object) => ({ ...prev, ...data }));
     },
   });
 
@@ -368,9 +373,43 @@ const useNetwork = () => {
     useSuspenseQueries({
       queries: [stateQuery(), devicesQuery(), connectionsQuery(), accessPointsQuery()],
     });
-  const networks = loadNetworks(devices, connections, accessPoints);
 
-  return { connections, settings: state, devices, accessPoints, networks };
+  return { connections, settings: state, devices, accessPoints };
+};
+
+const useWifiNetworks = () => {
+  const knownSsids: string[] = [];
+  const [{ data: devices }, { data: connections }, { data: accessPoints }] = useSuspenseQueries({
+    queries: [devicesQuery(), connectionsQuery(), accessPointsQuery()],
+  });
+
+  return accessPoints
+    .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
+    .map((ap: AccessPoint) => {
+      // Do not include networks without SSID
+      if (!ap.ssid || ap.ssid === "") return null;
+      // Do not include "duplicates"
+      if (knownSsids.includes(ap.ssid)) return null;
+
+      const settings = connections.find((c: Connection) => c.wireless?.ssid === ap.ssid);
+      const device = devices.find((d: Device) => d.connection === ap.ssid);
+      const status = device
+        ? WifiNetworkStatus.CONNECTED
+        : settings
+          ? WifiNetworkStatus.CONFIGURED
+          : WifiNetworkStatus.NOT_CONFIGURED;
+
+      const network = {
+        ...ap,
+        settings,
+        device,
+        status,
+      };
+
+      knownSsids.push(network.ssid);
+
+      return network;
+    });
 };
 
 export {
@@ -388,4 +427,5 @@ export {
   useSelectedWifi,
   useSelectedWifiChange,
   useNetworkConfigChanges,
+  useWifiNetworks,
 };
