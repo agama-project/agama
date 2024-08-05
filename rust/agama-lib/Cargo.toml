@@ -31,3 +31,4 @@ home = "0.5.9"
 
 [dev-dependencies]
 httpmock = "0.7.0"
+env_logger = "0.11.5"
