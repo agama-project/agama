@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-type ProgressApi = {
+type APIProgress = {
   currentStep: number;
   maxSteps: number;
   currentTitle: string;
@@ -43,7 +43,7 @@ class Progress {
     this.steps = steps;
   }
 
-  static fromApi(progress: ProgressApi) {
+  static fromApi(progress: APIProgress) {
     const {
       currentStep: current,
       maxSteps: total,
@@ -56,3 +56,4 @@ class Progress {
 }
 
 export { Progress };
+export type { APIProgress };

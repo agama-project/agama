@@ -23,6 +23,7 @@ import React from "react";
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { Progress } from "~/types/progress";
+import { fetchProgress } from "~/api/progress";
 
 const servicesMap = {
   "org.opensuse.Agama.Manager1": "manager",
@@ -41,10 +42,7 @@ const servicesMap = {
 const progressQuery = (service: string) => {
   return {
     queryKey: ["progress", service],
-    queryFn: () =>
-      fetch(`/api/${service}/progress`)
-        .then((res) => res.json())
-        .then((body) => Progress.fromApi(body)),
+    queryFn: () => fetchProgress(service),
   };
 };
 
