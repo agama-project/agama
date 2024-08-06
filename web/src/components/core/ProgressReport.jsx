@@ -35,13 +35,7 @@ import {
 
 import { _ } from "~/i18n";
 import { Center } from "~/components/layout";
-import {
-  progressQuery,
-  useProgress,
-  useProgressChanges,
-  useResetProgress,
-} from "~/queries/progress";
-import { useQuery } from "@tanstack/react-query";
+import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
 
 const Progress = ({ steps, step, firstStep, detail }) => {
   const stepProperties = (stepNumber) => {
