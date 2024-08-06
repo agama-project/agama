@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-28 02:29+0000\n"
-"PO-Revision-Date: 2024-07-25 08:46+0000\n"
+"POT-Creation-Date: 2024-08-04 02:29+0000\n"
+"PO-Revision-Date: 2024-08-02 09:47+0000\n"
 "Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
 ">\n"
@@ -19,45 +19,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Weblate 5.6.2\n"
-
-#: src/MainLayout.jsx:52
-msgid "Agama"
-msgstr "Agama"
-
-#: src/MainLayout.jsx:94
-msgid "Change product"
-msgstr "Změnit produkt"
-
-#: src/components/core/About.jsx:49
-msgid "About"
-msgstr "O"
-
-#: src/components/core/About.jsx:69
-msgid "About Agama"
-msgstr "O Agamě"
-
-#: src/components/core/About.jsx:74
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"Agama je experimentální instalátor pro (otevřené) systémy SUSE. Je stále ve "
-"fázi vývoje, proto ji prosím nepoužívejte v produkčních prostředích. Pokud "
-"ji chcete vyzkoušet, doporučujeme použít virtuální počítač, abyste předešli "
-"případné ztrátě dat."
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.jsx:86
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr "Další informace najdete v úložišti projektu na %s."
-
-#: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
-msgid "Close"
-msgstr "Zavřít"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -81,8 +42,7 @@ msgid "Continue"
 msgstr "Pokračovat"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
-#: src/components/core/Popup.jsx:132
+#: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
 #: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "Zrušit/Storno"
@@ -92,11 +52,11 @@ msgstr "Zrušit/Storno"
 msgid "Install"
 msgstr "Instalovat"
 
-#: src/components/core/InstallationFinished.jsx:48
+#: src/components/core/InstallationFinished.jsx:49
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "Zapečetění čipem TPM vyžaduje přímé spuštění nového systému."
 
-#: src/components/core/InstallationFinished.jsx:53
+#: src/components/core/InstallationFinished.jsx:54
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -104,15 +64,15 @@ msgstr ""
 "Bylo-li ke spuštění tohoto instalačního programu použito místní médium, před "
 "dalším spuštěním ho odstraňte."
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "Hide details"
 msgstr "Skrýt podrobnosti"
 
-#: src/components/core/InstallationFinished.jsx:57
+#: src/components/core/InstallationFinished.jsx:58
 msgid "See more details"
 msgstr "Ukázat podrobněji"
 
-#: src/components/core/InstallationFinished.jsx:62
+#: src/components/core/InstallationFinished.jsx:63
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -124,27 +84,27 @@ msgstr ""
 "nového systému. Aby to fungovalo, musí se počítač spustit přímo novým "
 "zavaděčem."
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:106
 msgid "Congratulations!"
 msgstr "Blahopřejeme!"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.jsx:115
 msgid "The installation on your machine is complete."
 msgstr "Instalace na Váš počítač je dokončena."
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.jsx:118
 msgid "At this point you can power off the machine."
 msgstr "Nyní můžete počítač vypnout."
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.jsx:120
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr "Nyní můžete počítač restartovat a přihlásit se do nového systému."
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Finish"
 msgstr "Dokončeno"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.jsx:129
 msgid "Reboot"
 msgstr "Restart systému"
 
@@ -163,7 +123,7 @@ msgstr "Možnosti instalace"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:55
 msgid "Language"
 msgstr "Jazyk"
 
@@ -232,37 +192,16 @@ msgstr "Zadejte heslo"
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: src/components/core/LoginPage.jsx:121
+#: src/components/core/LoginPage.jsx:118
 msgid "More about this"
 msgstr "Více o tom"
-
-#: src/components/core/LogsButton.jsx:101
-msgid "Collecting logs..."
-msgstr "Shromažďuji záznamy..."
-
-#: src/components/core/LogsButton.jsx:101
-#: src/components/core/LogsButton.jsx:104
-msgid "Download logs"
-msgstr "Stahuji zázbamy"
-
-#: src/components/core/LogsButton.jsx:111
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr "Prohlížeč stáhne záznamy, jakmile budou připraveny. Čekejte prosím."
-
-#: src/components/core/LogsButton.jsx:121
-msgid "Something went wrong while collecting logs. Please, try again."
-msgstr "Stahování záznamů se nezdařilo. Zkuste to znovu."
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
 msgstr "Hesla se neshodují"
 
-#. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
 #: src/components/network/WifiConnectionForm.jsx:128
-#: src/components/questions/QuestionWithPassword.jsx:48
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:130
@@ -286,25 +225,21 @@ msgstr "Potvrdit"
 msgid "Loading data..."
 msgstr "Soubor se načítá…"
 
-#: src/components/core/ProgressReport.jsx:50
-msgid "Finished"
-msgstr "Dokončeno"
-
-#: src/components/core/ProgressReport.jsx:59
-msgid "In progress"
-msgstr "Probíhá"
-
-#: src/components/core/ProgressReport.jsx:74
+#: src/components/core/ProgressReport.jsx:56
 msgid "Pending"
 msgstr "Čeká se na"
 
-#: src/components/core/ProgressReport.jsx:138
-msgid "Waiting for progress status..."
-msgstr "Čekáme na stav postupu..."
+#: src/components/core/ProgressReport.jsx:65
+msgid "In progress"
+msgstr "Probíhá"
+
+#: src/components/core/ProgressReport.jsx:80
+msgid "Finished"
+msgstr "Dokončeno"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:491
-#: src/components/storage/ProposalActionsSummary.jsx:233
+#: src/components/storage/ProposalActionsSummary.jsx:234
 msgid "Actions"
 msgstr "Akce"
 
@@ -337,39 +272,39 @@ msgid "Keyboard selection"
 msgstr "Výběr klávesnice"
 
 #: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
 #: src/components/l10n/LocaleSelection.jsx:92
 #: src/components/l10n/TimezoneSelection.jsx:125
 #: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr "Zvolit"
 
-#: src/components/l10n/L10nPage.jsx:53
-#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.js:38
+#: src/components/l10n/L10nPage.jsx:48
+#: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr "Lokalizace"
 
-#: src/components/l10n/L10nPage.jsx:61 src/components/l10n/L10nPage.jsx:70
-#: src/components/l10n/L10nPage.jsx:80
+#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:75
 msgid "Not selected yet"
 msgstr "Dosud nevybráno"
 
-#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/L10nPage.jsx:83
-#: src/components/network/NetworkPage.jsx:74
-#: src/components/storage/InstallationDeviceField.jsx:108
-#: src/components/storage/ProposalActionsSummary.jsx:238
+#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
+#: src/components/l10n/L10nPage.jsx:78
+#: src/components/network/NetworkPage.jsx:75
+#: src/components/storage/InstallationDeviceField.jsx:109
+#: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
 msgstr "Změnit"
 
-#: src/components/l10n/L10nPage.jsx:70
+#: src/components/l10n/L10nPage.jsx:65
 msgid "Keyboard"
 msgstr "Klávesnice"
 
-#: src/components/l10n/L10nPage.jsx:79
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Time zone"
 msgstr "Časové pásmo"
 
@@ -397,7 +332,7 @@ msgstr "Žádné z časových pásem neodpovídá filtru."
 msgid " Timezone selection"
 msgstr " Výběr časového pásma"
 
-#: src/components/layout/Loading.jsx:31
+#: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "Načítá se instalační prostředí, vyčkejte prosím."
 
@@ -462,12 +397,12 @@ msgid "Connection actions"
 msgstr "Akce připojení"
 
 #: src/components/network/ConnectionsTable.jsx:75
-#: src/components/network/WifiNetworksListPage.jsx:112
-#: src/components/network/WifiNetworksListPage.jsx:135
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:139
 #: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:85
+#: src/components/users/FirstUser.jsx:86
 msgid "Edit"
 msgstr "Upravit"
 
@@ -479,8 +414,8 @@ msgid "Edit connection %s"
 msgstr "Upravit připojení %s"
 
 #: src/components/network/ConnectionsTable.jsx:82
-#: src/components/network/WifiNetworksListPage.jsx:114
-#: src/components/network/WifiNetworksListPage.jsx:142
+#: src/components/network/WifiNetworksListPage.jsx:118
+#: src/components/network/WifiNetworksListPage.jsx:146
 msgid "Forget"
 msgstr "Zapomenout"
 
@@ -552,11 +487,11 @@ msgstr "Brána"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "Bránu lze definovat pouze v režimu 'Manual'"
 
-#: src/components/network/NetworkPage.jsx:55
+#: src/components/network/NetworkPage.jsx:56
 msgid "No Wi-Fi supported"
 msgstr "Wi-Fi není podporováno"
 
-#: src/components/network/NetworkPage.jsx:57
+#: src/components/network/NetworkPage.jsx:58
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
@@ -564,41 +499,40 @@ msgstr ""
 "Systém nepodporuje připojení Wi-Fi, pravděpodobně chybí hardware nebo je "
 "zakázán."
 
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:72
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:74
+#: src/components/network/NetworkPage.jsx:75
 #: src/components/network/WifiConnectionForm.jsx:137
-#: src/components/network/WifiNetworksListPage.jsx:110
+#: src/components/network/WifiNetworksListPage.jsx:112
 msgid "Connect"
 msgstr "Připojit"
 
-#: src/components/network/NetworkPage.jsx:81
+#: src/components/network/NetworkPage.jsx:82
 #, c-format
 msgid "Conected to %s"
 msgstr "Připojit k %s"
 
-#: src/components/network/NetworkPage.jsx:88
+#: src/components/network/NetworkPage.jsx:89
 msgid "No connected yet"
 msgstr "Dosud nepřipojeno"
 
-#: src/components/network/NetworkPage.jsx:89
+#: src/components/network/NetworkPage.jsx:90
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr "Systém zatím nebyl konfigurován pro připojení k síti Wi-Fi."
 
-#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/NetworkPage.jsx:103
 msgid "Wired"
 msgstr "Připojení kabelem (Ethernet)"
 
-#: src/components/network/NetworkPage.jsx:104
+#: src/components/network/NetworkPage.jsx:105
 msgid "No wired connections found"
 msgstr "Nebyla nalezena žádná kabelová připojení"
 
-#: src/components/network/NetworkPage.jsx:114
-#: src/components/network/routes.js:33
+#: src/components/network/NetworkPage.jsx:115
 msgid "Network"
 msgstr "Síť"
 
@@ -643,39 +577,39 @@ msgid "WPA Password"
 msgstr "Heslo k WPA"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:64
-#: src/components/network/WifiNetworksListPage.jsx:122
+#: src/components/network/WifiNetworksListPage.jsx:66
+#: src/components/network/WifiNetworksListPage.jsx:126
 msgid "Connecting"
 msgstr "Připojuji"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:67
-#: src/components/network/WifiNetworksListPage.jsx:126
-#: src/components/network/WifiNetworksListPage.jsx:169
+#: src/components/network/WifiNetworksListPage.jsx:69
+#: src/components/network/WifiNetworksListPage.jsx:130
+#: src/components/network/WifiNetworksListPage.jsx:173
 msgid "Connected"
 msgstr "Připojeno"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:72
-#: src/components/network/WifiNetworksListPage.jsx:124
+#: src/components/network/WifiNetworksListPage.jsx:74
+#: src/components/network/WifiNetworksListPage.jsx:128
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "Odpojeno"
 
-#: src/components/network/WifiNetworksListPage.jsx:132
+#: src/components/network/WifiNetworksListPage.jsx:136
 msgid "Disconnect"
 msgstr "Odpojit"
 
-#: src/components/network/WifiNetworksListPage.jsx:155
+#: src/components/network/WifiNetworksListPage.jsx:159
 msgid "Connect to a hidden network"
 msgstr "Připojení ke skryté síti"
 
-#: src/components/network/WifiNetworksListPage.jsx:166
+#: src/components/network/WifiNetworksListPage.jsx:170
 msgid "configured"
 msgstr "konfigurováno"
 
-#: src/components/network/WifiNetworksListPage.jsx:268
+#: src/components/network/WifiNetworksListPage.jsx:270
 msgid "Connect to hidden network"
 msgstr "Připojit ke skryté síti"
 
@@ -691,7 +625,7 @@ msgid "The system will use %s as its default language."
 msgstr "Systém použije jako výchozí jazyk %s."
 
 #: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
+#: src/components/users/UsersPage.jsx:35
 msgid "Users"
 msgstr "Uživatelé"
 
@@ -699,12 +633,10 @@ msgstr "Uživatelé"
 #: src/components/overview/StorageSection.jsx:111
 #: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "Paměť"
 
 #: src/components/overview/OverviewPage.jsx:51
-#: src/components/software/routes.js:32
 msgid "Software"
 msgstr "Software"
 
@@ -803,7 +735,7 @@ msgstr ""
 "použitím vlastní strategie pro nalezení potřebného místa"
 
 #: src/components/overview/StorageSection.jsx:179
-#: src/components/storage/InstallationDeviceField.jsx:66
+#: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
 msgstr "Zatím nebylo vybráno žádné zařízení"
 
@@ -838,51 +770,24 @@ msgstr ""
 "Instalace pomocí zařízení %s s vlastní strategií pro vyhledání potřebného "
 "místa"
 
-#: src/components/overview/routes.js:30
-msgid "Overview"
-msgstr "Přehled"
-
-#: src/components/product/ProductSelectionProgress.jsx:49
+#: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
 msgstr "Konfigurace produktu, počkejte prosím..."
 
-#: src/components/questions/GenericQuestion.jsx:35
-#: src/components/questions/LuksActivationQuestion.jsx:60
-msgid "Question"
-msgstr "Dotaz"
-
-#. TRANSLATORS: error message, user entered a wrong password
-#: src/components/questions/LuksActivationQuestion.jsx:34
-msgid "Given encryption password didn't work"
-msgstr "Zadané šifrovací heslo nefungovalo"
-
-#: src/components/questions/LuksActivationQuestion.jsx:59
-msgid "Encrypted Device"
-msgstr "Šifrované zařízení"
-
-#. TRANSLATORS: field label
-#: src/components/questions/LuksActivationQuestion.jsx:67
-msgid "Encryption Password"
-msgstr "Heslo pro šifrování"
-
-#: src/components/questions/QuestionWithPassword.jsx:42
-msgid "Password Required"
-msgstr "Vyžadováno heslo"
-
-#: src/components/storage/BootConfigField.jsx:43
+#: src/components/storage/BootConfigField.jsx:44
 msgid "Change boot options"
 msgstr "Změna možností spouštění systému"
 
-#: src/components/storage/BootConfigField.jsx:81
+#: src/components/storage/BootConfigField.jsx:82
 msgid "Installation will not configure partitions for booting."
 msgstr "Instalace nenakonfiguruje oddíly pro zavádění systému."
 
-#: src/components/storage/BootConfigField.jsx:85
+#: src/components/storage/BootConfigField.jsx:86
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr "Instalace nakonfiguruje oddíly pro zavádění na instalačním disku."
 
-#: src/components/storage/BootConfigField.jsx:89
+#: src/components/storage/BootConfigField.jsx:90
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Instalace nakonfiguruje oddíly pro zavádění v %s."
@@ -1098,7 +1003,6 @@ msgid "Prepare more devices by configuring advanced"
 msgstr "Připravte další zařízení pomocí pokročilé konfigurace"
 
 #: src/components/storage/DeviceSelection.jsx:243
-#, fuzzy
 msgid "storage techs"
 msgstr "technologie úložiště"
 
@@ -1199,7 +1103,6 @@ msgid "Connect to iSCSI targets"
 msgstr "Připojení k cílům iSCSI"
 
 #: src/components/storage/DevicesTechMenu.jsx:67
-#: src/components/storage/routes.js:37
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1266,27 +1169,27 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "Šifrování systému"
 
-#: src/components/storage/InstallationDeviceField.jsx:36
+#: src/components/storage/InstallationDeviceField.jsx:37
 #: src/components/storage/VolumeLocationSelectorTable.jsx:61
 msgid "Installation device"
 msgstr "Instalační zařízení"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:38
+#: src/components/storage/InstallationDeviceField.jsx:39
 msgid "Main disk or LVM Volume Group for installation."
 msgstr "Hlavní disk nebo skupina svazků LVM pro instalaci."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:52
+#: src/components/storage/InstallationDeviceField.jsx:53
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "Souborové systémy vytvořené jako nové oddíly v %s"
 
-#: src/components/storage/InstallationDeviceField.jsx:55
+#: src/components/storage/InstallationDeviceField.jsx:56
 msgid "File systems created at a new LVM volume group"
 msgstr "Souborové systémy vytvořené v nové skupině svazků LVM"
 
-#: src/components/storage/InstallationDeviceField.jsx:60
+#: src/components/storage/InstallationDeviceField.jsx:61
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "Souborové systémy vytvořené v nové skupině svazků LVM na %s"
@@ -1539,32 +1442,32 @@ msgstr[0] "Zobrazit %d akci podsvazku"
 msgstr[1] "Zobrazit %d akce podsvazku"
 msgstr[2] "Zobrazit %d akcí podsvazku"
 
-#: src/components/storage/ProposalActionsSummary.jsx:57
+#: src/components/storage/ProposalActionsSummary.jsx:58
 msgid "Destructive actions are not allowed"
 msgstr "Destruktivní akce nejsou povoleny"
 
-#: src/components/storage/ProposalActionsSummary.jsx:59
+#: src/components/storage/ProposalActionsSummary.jsx:60
 msgid "Destructive actions are allowed"
 msgstr "Destruktivní akce jsou povoleny"
 
-#: src/components/storage/ProposalActionsSummary.jsx:82
-#: src/components/storage/ProposalActionsSummary.jsx:132
+#: src/components/storage/ProposalActionsSummary.jsx:83
+#: src/components/storage/ProposalActionsSummary.jsx:133
 msgid "affecting"
 msgstr "ovlivňující"
 
-#: src/components/storage/ProposalActionsSummary.jsx:112
+#: src/components/storage/ProposalActionsSummary.jsx:113
 msgid "Shrinking partitions is not allowed"
 msgstr "Zmenšování oddílů není povoleno"
 
-#: src/components/storage/ProposalActionsSummary.jsx:116
+#: src/components/storage/ProposalActionsSummary.jsx:117
 msgid "Shrinking partitions is allowed"
 msgstr "Zmenšování oddílů je povoleno"
 
-#: src/components/storage/ProposalActionsSummary.jsx:118
+#: src/components/storage/ProposalActionsSummary.jsx:119
 msgid "Shrinking some partitions is allowed but not needed"
 msgstr "Zmenšení některých oddílů je povoleno, ale není nutné"
 
-#: src/components/storage/ProposalActionsSummary.jsx:121
+#: src/components/storage/ProposalActionsSummary.jsx:122
 #, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
@@ -1572,11 +1475,11 @@ msgstr[0] "%d oddíl bude zmenšen"
 msgstr[1] "%d oddíly budou zmenšeny"
 msgstr[2] "%d oddílů bude zmenšeno"
 
-#: src/components/storage/ProposalActionsSummary.jsx:159
+#: src/components/storage/ProposalActionsSummary.jsx:160
 msgid "Cannot accommodate the required file systems for installation"
 msgstr "Nelze umístit požadované souborové systémy pro instalaci"
 
-#: src/components/storage/ProposalActionsSummary.jsx:167
+#: src/components/storage/ProposalActionsSummary.jsx:168
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
@@ -1584,7 +1487,7 @@ msgstr[0] "Zkontrolujte plánovanou akci"
 msgstr[1] "Zkontrolujte %d plánované akce"
 msgstr[2] "Zkontrolujte %d plánovaných akcí"
 
-#: src/components/storage/ProposalActionsSummary.jsx:182
+#: src/components/storage/ProposalActionsSummary.jsx:183
 msgid "Waiting for actions information..."
 msgstr "Čekáme na informace o akcích..."
 
@@ -2126,9 +2029,8 @@ msgstr "iBFT"
 
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:87
-#, fuzzy
 msgid "Offload card"
-msgstr "Vyložení karty"
+msgstr "Karta k přesměrování části (mobilního) provozu"
 
 #. TRANSLATORS: iSCSI initiator section name
 #: src/components/storage/iscsi/InitiatorSection.jsx:49
@@ -2197,10 +2099,6 @@ msgstr "Objevit"
 #: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
 msgstr "Cíle"
-
-#: src/components/storage/routes.js:36
-msgid "Proposal"
-msgstr "Návrh"
 
 #: src/components/storage/utils.js:64
 msgid "KiB"
@@ -2284,11 +2182,11 @@ msgstr "Vyberte, co se má s jednotlivými oddíly dělat."
 msgid "with custom actions"
 msgstr "s vlastními akcemi"
 
-#: src/components/users/FirstUser.jsx:34
+#: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
 msgstr "Zatím není definován žádný uživatel."
 
-#: src/components/users/FirstUser.jsx:38
+#: src/components/users/FirstUser.jsx:39
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
@@ -2296,23 +2194,23 @@ msgstr ""
 "Pozor, před instalací systému musí být definován uživatel, aby se pak do "
 "systému dalo přihlásit."
 
-#: src/components/users/FirstUser.jsx:44
+#: src/components/users/FirstUser.jsx:45
 msgid "Define a user now"
 msgstr "Nyní definujte uživatele"
 
-#: src/components/users/FirstUser.jsx:57
+#: src/components/users/FirstUser.jsx:58
 #: src/components/users/FirstUserForm.jsx:217
 msgid "Full name"
 msgstr "Celé jméno"
 
-#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUser.jsx:59
 #: src/components/users/FirstUserForm.jsx:231
 #: src/components/users/FirstUserForm.jsx:236
 #: src/components/users/FirstUserForm.jsx:239
 msgid "Username"
 msgstr "Uživatelské jméno"
 
-#: src/components/users/FirstUser.jsx:89
+#: src/components/users/FirstUser.jsx:90
 #: src/components/users/RootAuthMethods.jsx:78
 #: src/components/users/RootAuthMethods.jsx:90
 msgid "Discard"
@@ -2441,13 +2339,82 @@ msgstr "Nahrát"
 msgid "Clear"
 msgstr "Smazat"
 
-#: src/components/users/UsersPage.jsx:45
+#: src/components/users/UsersPage.jsx:44
 msgid "First user"
 msgstr "První uživatel"
 
-#: src/components/users/UsersPage.jsx:52
+#: src/components/users/UsersPage.jsx:51
 msgid "Root authentication"
 msgstr "Ověření superuživatele root"
+
+#: src/router.js:48
+msgid "Overview"
+msgstr "Přehled"
+
+#~ msgid "Question"
+#~ msgstr "Dotaz"
+
+#~ msgid "Given encryption password didn't work"
+#~ msgstr "Zadané šifrovací heslo nefungovalo"
+
+#~ msgid "Encrypted Device"
+#~ msgstr "Šifrované zařízení"
+
+#~ msgid "Encryption Password"
+#~ msgstr "Heslo pro šifrování"
+
+#~ msgid "Password Required"
+#~ msgstr "Vyžadováno heslo"
+
+#~ msgid "Agama"
+#~ msgstr "Agama"
+
+#~ msgid "Change product"
+#~ msgstr "Změnit produkt"
+
+#~ msgid "About"
+#~ msgstr "O"
+
+#~ msgid "About Agama"
+#~ msgstr "O Agamě"
+
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "Agama je experimentální instalátor pro (otevřené) systémy SUSE. Je stále "
+#~ "ve fázi vývoje, proto ji prosím nepoužívejte v produkčních prostředích. "
+#~ "Pokud ji chcete vyzkoušet, doporučujeme použít virtuální počítač, abyste "
+#~ "předešli případné ztrátě dat."
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr "Další informace najdete v úložišti projektu na %s."
+
+#~ msgid "Close"
+#~ msgstr "Zavřít"
+
+#~ msgid "Collecting logs..."
+#~ msgstr "Shromažďuji záznamy..."
+
+#~ msgid "Download logs"
+#~ msgstr "Stahuji zázbamy"
+
+#~ msgid ""
+#~ "The browser will run the logs download as soon as they are ready. Please, "
+#~ "be patient."
+#~ msgstr "Prohlížeč stáhne záznamy, jakmile budou připraveny. Čekejte prosím."
+
+#~ msgid "Something went wrong while collecting logs. Please, try again."
+#~ msgstr "Stahování záznamů se nezdařilo. Zkuste to znovu."
+
+#~ msgid "Waiting for progress status..."
+#~ msgstr "Čekáme na stav postupu..."
+
+#~ msgid "Proposal"
+#~ msgstr "Návrh"
 
 #, c-format
 #~ msgid "Register %s"
