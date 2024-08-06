@@ -33,9 +33,6 @@ module Agama
             @size_json = size_json
           end
 
-          # @todo For now only {min: number, max: number} schema is supported. Add support for a
-          #   direct value (e.g., 1024, "2 GiB"), and array format ([min, max]).
-          #
           # Performs the conversion from Hash according to the JSON schema.
           #
           # @return [Configs::Size]
@@ -44,8 +41,8 @@ module Agama
 
             Configs::Size.new.tap do |config|
               config.default = false
-              config.min = convert_min
-              config.max = convert_max || Y2Storage::DiskSize.unlimited
+              config.min = convert_size(:min)
+              config.max = convert_size(:max) || Y2Storage::DiskSize.unlimited
             end
           end
 
@@ -54,17 +51,24 @@ module Agama
           # @return [Hash]
           attr_reader :size_json
 
-          # @return [Y2Storage::DiskSize]
-          def convert_min
-            Y2Storage::DiskSize.new(size_json[:min])
-          end
-
           # @return [Y2Storage::DiskSize, nil]
-          def convert_max
-            value = size_json[:max]
+          def convert_size(field)
+            value =
+              if size_json.is_a?(Hash)
+                size_json[field]
+              elsif size_json.is_a?(Array)
+                field == :max ? size_json[1] : size_json[0]
+              else
+                size_json
+              end
             return unless value
 
-            Y2Storage::DiskSize.new(value)
+            begin
+              # This parses without legacy_units, ie. "1 GiB" != "1 GB"
+              Y2Storage::DiskSize.new(value)
+            rescue TypeError
+              # JSON schema validations should prevent this from happening
+            end
           end
 
           def default_size
