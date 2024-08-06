@@ -73,7 +73,7 @@ const useInstallerStatusChanges = () => {
 
       if (type === "ServiceStatusChanged" && event.service === MANAGER_SERVICE) {
         const { status } = event;
-        queryClient.setQueryData(["status"], { ...data, busy: status === 1 });
+        queryClient.setQueryData(["status"], { ...data, isBusy: status === 1 });
       }
 
       if (type === "IssuesChanged") {
