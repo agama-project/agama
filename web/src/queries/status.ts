@@ -21,6 +21,7 @@
 
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
+import { fetchInstallerStatus } from "~/api/status";
 import { useInstallerClient } from "~/context/installer";
 import { InstallerStatus } from "~/types/status";
 
@@ -31,13 +32,7 @@ const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
  */
 const statusQuery = () => ({
   queryKey: ["status"],
-  queryFn: (): Promise<InstallerStatus> =>
-    fetch(`/api/manager/installer`)
-      .then((res) => res.json())
-      .then((body) => {
-        const { phase, isBusy, useIguana, canInstall } = body;
-        return { phase, isBusy, useIguana, canInstall };
-      }),
+  queryFn: fetchInstallerStatus,
 });
 
 /**
