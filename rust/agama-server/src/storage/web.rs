@@ -21,11 +21,15 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use tokio_stream::{Stream, StreamExt};
 
+pub mod dasd;
 pub mod iscsi;
 
 use crate::{
     error::Error,
-    storage::web::iscsi::{iscsi_service, iscsi_stream},
+    storage::web::{
+        dasd::{dasd_service, dasd_stream},
+        iscsi::{iscsi_service, iscsi_stream},
+    },
     web::{
         common::{issues_router, progress_router, service_status_router, EventStreams},
         Event,
@@ -38,8 +42,10 @@ pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Err
         Box::pin(devices_dirty_stream(dbus.clone()).await?),
     )];
     let mut iscsi = iscsi_stream(&dbus).await?;
+    let mut dasd = dasd_stream(&dbus).await?;
 
     result.append(&mut iscsi);
+    result.append(&mut dasd);
     Ok(result)
 }
 
@@ -72,6 +78,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let issues_router = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let iscsi_router = iscsi_service(&dbus).await?;
+    let dasd_router = dasd_service(&dbus).await?;
 
     let client = StorageClient::new(dbus.clone()).await?;
     let state = StorageState { client };
@@ -92,6 +99,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .merge(status_router)
         .nest("/issues", issues_router)
         .nest("/iscsi", iscsi_router)
+        .nest("/dasd", dasd_router)
         .with_state(state);
     Ok(router)
 }

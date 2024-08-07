@@ -1,8 +1,8 @@
 use crate::network::model::NetworkChange;
 use agama_lib::{
     localization::model::LocaleConfig, manager::InstallationPhase,
-    product::RegistrationRequirement, progress::Progress, software::SelectedBy, storage::ISCSINode,
-    users::FirstUser,
+    product::RegistrationRequirement, progress::Progress, software::SelectedBy,
+    storage::model::dasd::DASDDevice, storage::ISCSINode, users::FirstUser,
 };
 use serde::Serialize;
 use std::collections::HashMap;
@@ -76,6 +76,15 @@ pub enum Event {
     ISCSIInitiatorChanged {
         name: Option<String>,
         ibft: Option<bool>,
+    },
+    DASDDeviceAdded {
+        device: DASDDevice,
+    },
+    DASDDeviceChanged {
+        device: DASDDevice,
+    },
+    DASDDeviceRemoved {
+        device: DASDDevice,
     },
 }
 
