@@ -92,12 +92,11 @@ const connectionAddresses = (network) => {
 
 const connectTo = (id) => {
   return fetch(`/api/network/connections/${id}/connect`);
-}
+};
 
 const disconnectFrom = (id) => {
   return fetch(`/api/network/connections/${id}/disconnect`);
-}
-
+};
 
 const ConnectionData = ({ network }) => {
   return <Stack hasGutter>{connectionAddresses(network)}</Stack>;
@@ -166,7 +165,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
 const NetworkFormName = ({ network }) => {
   if (!network) return;
 
-  return <h3>{network === HIDDEN_NETWORK ? _("Connect to a hidden network") : network.ssid}</h3>;
+  return <h3>{network === HIDDEN_NETWORK ? _("Connect to hidden network") : network.ssid}</h3>;
 };
 
 const NetworkListName = ({ network, ...props }) => {

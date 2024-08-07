@@ -50,15 +50,16 @@ const buildAddress = (address: string): IPAddress => {
   const result: IPAddress = { address: ip };
   if (netmask) result.prefix = ipPrefixFor(netmask);
   return result;
-}
+};
 
-const buildAddresses = (rawAddresses?: string[]): IPAddress[] => rawAddresses?.map(buildAddress) || [];
+const buildAddresses = (rawAddresses?: string[]): IPAddress[] =>
+  rawAddresses?.map(buildAddress) || [];
 
 const buildRoutes = (rawRoutes?: RouteApi[]): Route[] => {
   if (!rawRoutes) return [];
 
   return rawRoutes.map((route) => ({ ...route, destination: buildAddress(route.destination) }));
-}
+};
 /**
  * Returns the device settings
  */
@@ -92,7 +93,7 @@ const toApiConnection = (connection: Connection): ConnectionApi => {
     ...newConnection,
     interface: iface,
     addresses: addresses?.map(formatIp) || [],
-  }
+  };
 
   if (result.gateway4 === "") delete result.gateway4;
   if (result.gateway6 === "") delete result.gateway6;
@@ -327,7 +328,11 @@ const useNetworkConfigChanges = () => {
           }
 
           const current_device = devices.find((d) => d.name === name);
-          if ([DeviceState.DISCONNECTED, DeviceState.ACTIVATED, DeviceState.UNAVAILABLE].includes(data.state)) {
+          if (
+            [DeviceState.DISCONNECTED, DeviceState.ACTIVATED, DeviceState.UNAVAILABLE].includes(
+              data.state,
+            )
+          ) {
             if (current_device.state !== data.state) {
               queryClient.invalidateQueries({ queryKey: ["network"] });
             }

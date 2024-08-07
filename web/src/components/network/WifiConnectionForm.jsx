@@ -91,14 +91,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       {network?.hidden && (
         // TRANSLATORS: SSID (Wifi network name) configuration
         <FormGroup fieldId="ssid" label={_("SSID")}>
-          <TextInput
-            id="ssid"
-            name="ssid"
-            label={_("SSID")}
-            aria-label="ssid"
-            value={ssid}
-            onChange={(_, value) => setSsid(value)}
-          />
+          <TextInput id="ssid" name="ssid" value={ssid} onChange={(_, value) => setSsid(value)} />
         </FormGroup>
       )}
 
