@@ -35,7 +35,6 @@ import {
   FormHelperText,
 } from "@patternfly/react-core";
 
-import { useInstallerClient } from "~/context/installer";
 import { Page } from "~/components/core";
 import { AddressesDataList, DnsDataList } from "~/components/network";
 import { _ } from "~/i18n";
@@ -50,9 +49,8 @@ const METHODS = {
 const usingDHCP = (method) => method === METHODS.AUTO;
 
 export default function IpSettingsForm() {
-  const client = useInstallerClient();
-  const { name } = useParams();
-  const connection = useConnection(name);
+  const { id } = useParams();
+  const connection = useConnection(id);
   const setConnection = useConnectionMutation();
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState(connection.addresses);

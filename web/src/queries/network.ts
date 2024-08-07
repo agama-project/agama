@@ -32,6 +32,8 @@ import { _ } from "~/i18n";
 import {
   AccessPoint,
   Connection,
+  ConnectionApi,
+  ConnectionOptions,
   Device,
   DeviceState,
   WifiNetwork,
@@ -73,7 +75,7 @@ const fromApiDevice = (device: object): Device => {
   return { ...dev, ...ipConfig, addresses, nameservers, routes4, routes6 };
 };
 
-const fromApiConnection = (connection: object): Connection => {
+const fromApiConnection = (connection: ConnectionApi): Connection => {
   const nameservers = connection.nameservers || [];
   const addresses = (connection.addresses || []).map((address) => {
     const [ip, netmask] = address.split("/");
@@ -87,7 +89,7 @@ const fromApiConnection = (connection: object): Connection => {
   return { ...connection, addresses, nameservers };
 };
 
-const toApiConnection = (connection: Connection): object => {
+const toApiConnection = (connection: Connection): ConnectionApi => {
   const addresses = (connection.addresses || []).map((addr) => formatIp(addr));
   const { iface, gateway4, gateway6, ...conn } = connection;
 
@@ -227,8 +229,9 @@ const useAddConnectionMutation = () => {
         }
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network"] });
-      queryClient.invalidateQueries({ queryKey: ["network"] });
+      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
+      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
+      queryClient.invalidateQueries({ queryKey: ["network", "accessPoints"] });
     },
   };
   return useMutation(query);
@@ -241,7 +244,7 @@ const useAddConnectionMutation = () => {
 const useConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (newConnection) =>
+    mutationFn: (newConnection: Connection) =>
       fetch(`/api/network/connections/${newConnection.id}`, {
         method: "PUT",
         body: JSON.stringify(toApiConnection(newConnection)),
@@ -250,7 +253,7 @@ const useConnectionMutation = () => {
         },
       }).then((response) => {
         if (response.ok) {
-          return fetch(`/api/network/system/apply`, { method: "PUT" });
+          return fetch("/api/network/system/apply", { method: "PUT" });
         } else {
           throw new Error(_("Please, try again"));
         }

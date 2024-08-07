@@ -79,6 +79,11 @@ enum DeviceState {
   FAILED = "failed",
 }
 
+enum ConnectionStatus {
+  UP = "up",
+  DOWN = "down"
+}
+
 enum DeviceType {
   LOOPBACK = 0,
   ETHERNET = 1,
@@ -102,7 +107,7 @@ enum SecurityProtocols {
 
 type IPAddress = {
   address: string;
-  prefix: number | string;
+  prefix?: number | string;
 };
 
 type Route = {
@@ -136,14 +141,15 @@ type Device = {
 
 type ConnectionApi = {
   id: string;
-  iface: string;
-  addresses: IPAddress[];
-  nameservers: string[];
-  gateway4: string;
-  gateway6: string;
+  interface: string;
+  addresses?: string[];
+  nameservers?: string[];
+  gateway4?: string;
+  gateway6?: string;
   method4: string;
   method6: string;
   wireless?: Wireless;
+  status: ConnectionStatus;
 };
 
 // TODO: use a WirelessOptions instead of having them as args in the constructor?
@@ -238,4 +244,4 @@ export {
   WifiNetworkStatus,
   SecurityProtocols,
 };
-export type { AccessPoint, Device, IPAddress, NetworkGeneralState, WifiNetwork };
+export type { AccessPoint, ConnectionApi, ConnectionOptions, Device, IPAddress, NetworkGeneralState, WifiNetwork };
