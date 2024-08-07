@@ -56,7 +56,7 @@ impl BaseHTTPClient {
         let mut headers = header::HeaderMap::new();
         // just use generic anyhow error here as Bearer format is constructed by us, so failures can come only from token
         let value = header::HeaderValue::from_str(format!("Bearer {}", token).as_str())
-            .map_err(|e| anyhow::Error::new(e))?;
+            .map_err(anyhow::Error::new)?;
 
         headers.insert(header::AUTHORIZATION, value);
 

@@ -20,7 +20,6 @@ use agama_lib::{
     },
 };
 use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
-//use reqwest;
 use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]

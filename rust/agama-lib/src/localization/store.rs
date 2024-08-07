@@ -38,10 +38,7 @@ impl LocalizationStore {
     pub async fn load(&self) -> Result<LocalizationSettings, ServiceError> {
         let config = self.localization_client.get_config().await?;
 
-        let opt_language = config
-            .locales
-            .map(|vec_s| Self::chestburster(vec_s))
-            .flatten();
+        let opt_language = config.locales.and_then(Self::chestburster);
         let opt_keyboard = config.keymap;
         let opt_timezone = config.timezone;
 
