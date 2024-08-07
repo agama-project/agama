@@ -42,7 +42,7 @@ pub struct GenericQuestion {
 #[serde(rename_all = "camelCase")]
 pub struct QuestionWithPassword {}
 
-#[derive(Default, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Answer {
     pub generic: GenericAnswer,
@@ -50,14 +50,14 @@ pub struct Answer {
 }
 
 /// Answer needed for GenericQuestion
-#[derive(Default, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct GenericAnswer {
     pub answer: String,
 }
 
 /// Answer needed for Password specific questions.
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct PasswordAnswer {
     pub password: String,

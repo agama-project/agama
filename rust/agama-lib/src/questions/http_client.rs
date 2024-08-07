@@ -66,7 +66,7 @@ impl HTTPClient {
 
 #[cfg(test)]
 mod test {
-    use super::model::GenericQuestion;
+    use super::model::{GenericAnswer, GenericQuestion};
     use super::*;
     use crate::base_http_client::BaseHTTPClient;
     use httpmock::prelude::*;
@@ -121,6 +121,46 @@ mod test {
         assert_eq!(actual, expected);
 
         mock.assert();
+        Ok(())
+    }
+
+    #[test]
+    async fn test_try_answer() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let client = questions_client(server.url("/api"));
+
+        let mock = server.mock(|when, then| {
+            when.method(GET).path("/api/questions/42/answer");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                        "generic": {
+                            "answer": "maybe"
+                        },
+                        "withPassword":null
+                    }"#,
+                );
+        });
+
+        let expected = Some(Answer {
+            generic: GenericAnswer {
+                answer: "maybe".to_owned(),
+            },
+            with_password: None,
+        });
+        let actual = client.try_answer(42).await?;
+        assert_eq!(actual, expected);
+
+        let mock2 = server.mock(|when, then| {
+            when.method(GET).path("/api/questions/666/answer");
+            then.status(404);
+        });
+        let actual = client.try_answer(666).await?;
+        assert_eq!(actual, None);
+
+        mock.assert();
+        mock2.assert();
         Ok(())
     }
 }
