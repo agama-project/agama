@@ -72,12 +72,16 @@ module Y2Storage
     # @return [Proposal::SpaceMaker]
     attr_reader :space_maker
 
+    def fatal_error?
+      issues_list.any?(&:error?)
+    end
+
     # Calculates the proposal
     #
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
       Proposal::AgamaSearcher.new.search(initial_devicegraph, settings, issues_list)
-      if issues_list.any?(:error?)
+      if fatal_error?
         # This means some IfNotFound is set to "error" and we failed to find a match
         @devices = nil
         return @devices
@@ -90,13 +94,17 @@ module Y2Storage
     # Proposes a devicegraph based on given configuration
     #
     # @param devicegraph [Devicegraph]                 Starting point
-    # @return [Devicegraph] Devicegraph containing the planned devices
+    # @return [Devicegraph, nil] Devicegraph containing the planned devices, nil if the proposal
+    #   failed
     def propose_devicegraph
       devicegraph = initial_devicegraph.dup
 
       calculate_initial_planned(devicegraph)
+      return if fatal_error?
+
       clean_graph(devicegraph)
       complete_planned(devicegraph)
+      return if fatal_error?
 
       result = create_devices(devicegraph)
       result.devicegraph

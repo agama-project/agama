@@ -527,33 +527,114 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         [
           {
             "id": "linux", "size": { "min": "10 GiB" },
-            # FIXME: The schema specified "key_size" instead of keySize
-            # FIXME: Not sure if "key" is a good name for the password/passphrase
-            "encryption": { "key": "notsecret", "method": "luks2", "keySize": 256 },
-            "filesystem": { "type": "xfs", "path": "/home" }
+            "filesystem": { "type": "xfs", "path": "/home" },
+            "encryption": encryption_home
           },
           {
             "size": { "min": "2 GiB" },
-            "filesystem": { "type": "swap", "path": "swap" }
+            "filesystem": { "type": "swap", "path": "swap" },
+            "encryption": encryption_swap
           }
         ]
       end
 
-      it "sets the encryption settings for the corresponding partition" do
-        config = subject.convert
-        partitions = config.drives.first.partitions
-        expect(partitions).to contain_exactly(
-          an_object_having_attributes(
-            filesystem: have_attributes(path: "/home"),
-            encryption: have_attributes(
-              key: "notsecret", method: Y2Storage::EncryptionMethod::LUKS2, key_size: 256
+      context "if the method and the mandatory attributes are specified" do
+        let(:encryption_home) do
+          # FIXME: The schema specified "key_size" instead of keySize
+          # FIXME: Not sure if "key" is a good name for the password/passphrase
+          { "key": "notsecret", "method": "luks2", "keySize": 256 }
+        end
+        let(:encryption_swap) { nil }
+
+        it "sets the encryption settings for the corresponding partition" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+          expect(partitions).to contain_exactly(
+            an_object_having_attributes(
+              filesystem: have_attributes(path: "/home"),
+              encryption: have_attributes(
+                key: "notsecret", method: Y2Storage::EncryptionMethod::LUKS2, key_size: 256
+              )
+            ),
+            an_object_having_attributes(
+              filesystem: have_attributes(path: "swap"),
+              encryption: nil
             )
-          ),
-          an_object_having_attributes(
-            filesystem: have_attributes(path: "swap"),
-            encryption: nil
           )
-        )
+        end
+      end
+
+      context "if only the password is provided" do
+        let(:encryption_home) { { "key": "notsecret" } }
+        let(:encryption_swap) { nil }
+
+        it "uses the default method and derivation function" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+          expect(partitions).to contain_exactly(
+            an_object_having_attributes(
+              filesystem: have_attributes(path: "/home"),
+              encryption: have_attributes(
+                key: "notsecret",
+                method: Y2Storage::EncryptionMethod::LUKS2,
+                pbkd_function: Y2Storage::PbkdFunction::ARGON2ID
+              )
+            ),
+            an_object_having_attributes(
+              filesystem: have_attributes(path: "swap"),
+              encryption: nil
+            )
+          )
+        end
+      end
+
+      context "if random encryption is configured for swap" do
+        let(:encryption_home) { nil }
+        let(:encryption_swap) { { "method": "random_swap" } }
+
+        it "sets the corresponding configuration" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+          expect(partitions).to contain_exactly(
+            an_object_having_attributes(
+              filesystem: have_attributes(path: "/home"),
+              encryption: nil
+            ),
+            an_object_having_attributes(
+              filesystem: have_attributes(path: "swap"),
+              encryption: have_attributes(
+                key: nil,
+                label: nil,
+                cipher: nil,
+                method: Y2Storage::EncryptionMethod::RANDOM_SWAP
+              )
+            )
+          )
+        end
+      end
+
+      context "if an unknown encryption method is specified" do
+        let(:encryption_home) { { "key": "notsecret", method: "foo" } }
+        let(:encryption_swap) { nil }
+
+        # FIXME: shouldn't the problem (and the applied 'fix') be reported as an issue?
+        it "uses the default method" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+          expect(partitions).to contain_exactly(
+            an_object_having_attributes(
+              filesystem: have_attributes(path: "/home"),
+              encryption: have_attributes(
+                key: "notsecret",
+                method: Y2Storage::EncryptionMethod::LUKS2
+              )
+            ),
+            an_object_having_attributes(
+              filesystem: have_attributes(path: "swap"),
+              encryption: nil
+            )
+          )
+        end
       end
     end
 
