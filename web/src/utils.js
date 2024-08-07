@@ -119,6 +119,37 @@ function classNames(...classes) {
 }
 
 /**
+ * Convert any string into a slug
+ *
+ * Borrowed from https://jasonwatmore.com/vanilla-js-slugify-a-string-in-javascript
+ *
+ * @example
+ * slugify("Agama! / Network 1");
+ * // returns "agama-network-1"
+ *
+ * @param {string} input - the string to slugify
+ * @returns {string} - the slug
+ */
+function slugify(input) {
+  if (!input) return "";
+
+  return (
+    input
+      // make lower case and trim
+      .toLowerCase()
+      .trim()
+      // remove accents from charaters
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      // replace invalid chars with spaces
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .trim()
+      // replace multiple spaces or hyphens with a single hyphen
+      .replace(/[\s-]+/g, "-")
+  );
+}
+
+/**
  * @typedef {Object} cancellableWrapper
  * @property {Promise} promise - Cancellable promise
  * @property {function} cancel - Function for canceling the promise
@@ -402,6 +433,7 @@ export {
   setLocationSearch,
   localConnection,
   remoteConnection,
+  slugify,
   timezoneTime,
   timezoneUTCOffset,
 };
