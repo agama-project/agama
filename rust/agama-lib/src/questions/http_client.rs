@@ -12,7 +12,7 @@ pub struct HTTPClient {
 }
 
 impl HTTPClient {
-    pub async fn new() -> Result<Self, ServiceError> {
+    pub fn new() -> Result<Self, ServiceError> {
         Ok(Self {
             client: BaseHTTPClient::new()?,
         })

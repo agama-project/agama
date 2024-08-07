@@ -55,7 +55,7 @@ async fn set_answers(proxy: Questions1Proxy<'_>, path: String) -> Result<(), Ser
 }
 
 async fn list_questions() -> Result<(), ServiceError> {
-    let client = HTTPClient::new().await?;
+    let client = HTTPClient::new()?;
     let questions = client.list_questions().await?;
     // FIXME: if performance is bad, we can skip converting json from http to struct and then
     // serialize it, but it won't be pretty string
@@ -66,7 +66,7 @@ async fn list_questions() -> Result<(), ServiceError> {
 }
 
 async fn ask_question() -> Result<(), ServiceError> {
-    let client = HTTPClient::new().await?;
+    let client = HTTPClient::new()?;
     let question = serde_json::from_reader(std::io::stdin())?;
 
     let created_question = client.create_question(&question).await?;
