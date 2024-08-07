@@ -26,7 +26,7 @@ import { timezoneUTCOffset } from "~/utils";
 /**
  * Returns the l10n configuration
  */
-const fetchConfig = () => get("/api/l10n/config");
+const fetchConfig = (): Promise<LocaleConfig> => get("/api/l10n/config");
 
 /**
  * Returns the list of known locales for installation
