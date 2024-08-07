@@ -46,7 +46,7 @@ import {
 import { generatePath } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { WifiConnectionForm } from "~/components/network";
-import { ButtonLink } from "~/components/core";
+import { ButtonLink, EmptyState } from "~/components/core";
 import { PATHS } from "~/routes/network";
 import { DeviceState } from "~/types/network";
 import { _ } from "~/i18n";
@@ -58,6 +58,7 @@ import {
   useSelectedWifiChange,
   useWifiNetworks,
 } from "~/queries/network";
+import { slugify } from "~/utils";
 
 const HIDDEN_NETWORK = Object.freeze({ hidden: true });
 
@@ -180,7 +181,7 @@ const NetworkListName = ({ network, ...props }) => {
 };
 
 const NetworkListItem = ({ network }) => {
-  const headerId = `network-${network.ssid}`;
+  const headerId = slugify(`network-${network.ssid}`);
   return (
     <DataListItem id={network.ssid} aria-labelledby={headerId}>
       <DataListItemRow>
@@ -252,15 +253,19 @@ function WifiNetworksListPage() {
           >
             <DrawerContentBody>
               <Stack hasGutter>
-                <DataList
-                  isCompact
-                  selectedDataListItemId={selected?.ssid}
-                  onSelectDataListItem={(_, ssid) => selectNetwork(ssid)}
-                >
-                  {networks.map((n) => (
-                    <NetworkListItem key={n.ssid} network={n} />
-                  ))}
-                </DataList>
+                {networks.length === 0 ? (
+                  <EmptyState title="No visible Wi-Fi networks found" icon="error" />
+                ) : (
+                  <DataList
+                    isCompact
+                    selectedDataListItemId={selected?.ssid}
+                    onSelectDataListItem={(_, ssid) => selectNetwork(ssid)}
+                  >
+                    {networks.map((n) => (
+                      <NetworkListItem key={n.ssid} network={n} />
+                    ))}
+                  </DataList>
+                )}
                 <Button
                   variant="link"
                   isDisabled={selected === HIDDEN_NETWORK}
