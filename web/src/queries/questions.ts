@@ -22,40 +22,15 @@
 import React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { Answer, Question, QuestionType } from "~/types/questions";
-
-type APIQuestion = {
-  generic?: Question;
-  withPassword?: Pick<Question, "password">;
-};
-
-/**
- * Internal method to build proper question objects
- *
- * TODO: improve/simplify it once the backend API is improved.
- */
-function buildQuestion(httpQuestion: APIQuestion) {
-  const question: Question = { ...httpQuestion.generic };
-
-  if (httpQuestion.generic) {
-    question.type = QuestionType.generic;
-    question.answer = httpQuestion.generic.answer;
-  }
-
-  if (httpQuestion.withPassword) {
-    question.type = QuestionType.withPassword;
-    question.password = httpQuestion.withPassword.password;
-  }
-
-  return question;
-}
+import { Question } from "~/types/questions";
+import { fetchQuestions, updateAnswer } from "~/api/questions";
 
 /**
  * Query to retrieve questions
  */
 const questionsQuery = () => ({
   queryKey: ["questions"],
-  queryFn: () => fetch("/api/questions").then((res) => res.json()),
+  queryFn: fetchQuestions,
 });
 
 /**
@@ -65,21 +40,7 @@ const questionsQuery = () => ({
  */
 const useQuestionsConfig = () => {
   const query = {
-    mutationFn: (question: Question) => {
-      const answer: Answer = { generic: { answer: question.answer } };
-
-      if (question.type === QuestionType.withPassword) {
-        answer.withPassword = { password: question.password };
-      }
-
-      return fetch(`/api/questions/${question.id}/answer`, {
-        method: "PUT",
-        body: JSON.stringify(answer),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    },
+    mutationFn: (question: Question) => updateAnswer(question),
   };
   return useMutation(query);
 };
@@ -106,8 +67,8 @@ const useQuestionsChanges = () => {
  * Hook for retrieving available questions
  */
 const useQuestions = () => {
-  const { data, isPending } = useQuery(questionsQuery());
-  return isPending ? [] : data.map(buildQuestion);
+  const { data: questions, isPending } = useQuery(questionsQuery());
+  return isPending ? [] : questions;
 };
 
 export { questionsQuery, useQuestions, useQuestionsConfig, useQuestionsChanges };

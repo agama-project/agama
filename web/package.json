@@ -110,6 +110,7 @@
     "@patternfly/react-core": "^5.1.1",
     "@patternfly/react-table": "^5.1.1",
     "@tanstack/react-query": "^5.49.2",
+    "axios": "^1.7.3",
     "fast-sort": "^3.4.0",
     "ipaddr.js": "^2.1.0",
     "react": "^18.2.0",

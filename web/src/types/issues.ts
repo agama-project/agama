@@ -20,6 +20,11 @@
  */
 
 /**
+ * Known scopes for issues.
+ */
+type IssuesScope = "product" | "software" | "storage" | "users";
+
+/**
  * Source of the issue
  *
  * Which is the origin of the issue (the system, the configuration or unknown).
@@ -80,4 +85,4 @@ class IssuesList {
 }
 
 export { IssueSource, IssuesList, IssueSeverity };
-export type { Issue };
+export type { Issue, IssuesScope };

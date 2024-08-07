@@ -22,7 +22,7 @@
 import React from "react";
 import { useQueryClient, useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { timezoneUTCOffset } from "~/utils";
+import { fetchConfig, fetchKeymaps, fetchLocales, fetchTimezones, updateConfig } from "~/api/l10n";
 
 /**
  * Returns a query for retrieving the localization configuration
@@ -30,7 +30,7 @@ import { timezoneUTCOffset } from "~/utils";
 const configQuery = () => {
   return {
     queryKey: ["l10n/config"],
-    queryFn: () => fetch("/api/l10n/config").then((res) => res.json()),
+    queryFn: fetchConfig,
   };
 };
 
@@ -39,13 +39,7 @@ const configQuery = () => {
  */
 const localesQuery = () => ({
   queryKey: ["l10n/locales"],
-  queryFn: async (): Promise<Locale[]> => {
-    const response = await fetch("/api/l10n/locales");
-    const locales = await response.json();
-    return locales.map(({ id, language, territory }): Locale => {
-      return { id, name: language, territory };
-    });
-  },
+  queryFn: fetchLocales,
   staleTime: Infinity,
 });
 
@@ -54,14 +48,7 @@ const localesQuery = () => ({
  */
 const timezonesQuery = () => ({
   queryKey: ["l10n/timezones"],
-  queryFn: async (): Promise<Timezone[]> => {
-    const response = await fetch("/api/l10n/timezones");
-    const timezones = await response.json();
-    return timezones.map(({ code, parts, country }): Timezone => {
-      const offset = timezoneUTCOffset(code);
-      return { id: code, parts, country, utcOffset: offset };
-    });
-  },
+  queryFn: fetchTimezones,
   staleTime: Infinity,
 });
 
@@ -70,14 +57,7 @@ const timezonesQuery = () => ({
  */
 const keymapsQuery = () => ({
   queryKey: ["l10n/keymaps"],
-  queryFn: async (): Promise<Keymap[]> => {
-    const response = await fetch("/api/l10n/keymaps");
-    const json = await response.json();
-    const keymaps = json.map(({ id, description }): Keymap => {
-      return { id, name: description };
-    });
-    return keymaps.sort((a, b) => (a.name < b.name ? -1 : 1));
-  },
+  queryFn: fetchKeymaps,
   staleTime: Infinity,
 });
 
@@ -87,17 +67,9 @@ const keymapsQuery = () => ({
  * It does not require to call `useMutation`.
  */
 const useConfigMutation = () => {
-  const query = {
-    mutationFn: (newConfig) =>
-      fetch("/api/l10n/config", {
-        method: "PATCH",
-        body: JSON.stringify(newConfig),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-  };
-  return useMutation(query);
+  return useMutation({
+    mutationFn: updateConfig,
+  });
 };
 
 /**
