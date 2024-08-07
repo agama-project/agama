@@ -224,13 +224,12 @@ const NetworkListItem = ({ network }) => {
  */
 function WifiNetworksListPage() {
   const /** @type import("~/types/network").WifiNetw */ networks = useWifiNetworks();
-  const { ssid: selectedSsid } = useSelectedWifi();
-  const selected =
-    selectedSsid === undefined ? HIDDEN_NETWORK : networks.find((n) => n.ssid === selectedSsid);
+  const { ssid: selectedSsid, hidden } = useSelectedWifi();
+  const selected = hidden ? HIDDEN_NETWORK : networks.find((n) => n.ssid === selectedSsid);
   const { mutate: changeSelection } = useSelectedWifiChange();
 
   const selectHiddneNetwork = () => {
-    changeSelection({ ssid: undefined, needsAuth: null });
+    changeSelection(HIDDEN_NETWORK);
   };
 
   const selectNetwork = (ssid) => {

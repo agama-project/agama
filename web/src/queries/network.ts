@@ -25,6 +25,7 @@ import {
   useMutation,
   useSuspenseQuery,
   useSuspenseQueries,
+  useQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { createAccessPoint } from "~/client/network/model";
@@ -270,17 +271,26 @@ const selectedWiFiNetworkQuery = () => ({
 
 const useSelectedWifi = () => {
   // TODO: evaluate if useSuspenseQuery is really needed, probably not.
-  const { data } = useSuspenseQuery(selectedWiFiNetworkQuery());
-  return data;
+  const { data } = useQuery(selectedWiFiNetworkQuery());
+  return data || {};
 };
 
 const useSelectedWifiChange = () => {
+  type SelectedWifi = {
+    ssid?: string;
+    hidden?: boolean;
+    needsAuth?: boolean;
+  };
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (data: object): Promise<object> => Promise.resolve(data),
-    onSuccess: (data: object) => {
-      queryClient.setQueryData(["wifi", "selected"], (prev: object) => ({ ...prev, ...data }));
+    mutationFn: async (data: SelectedWifi): Promise<SelectedWifi> => Promise.resolve(data),
+    onSuccess: (data: SelectedWifi) => {
+      queryClient.setQueryData(["wifi", "selected"], (prev: SelectedWifi) => ({
+        ssid: prev.ssid,
+        ...data,
+      }));
     },
   });
 
