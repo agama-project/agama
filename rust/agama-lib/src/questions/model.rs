@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Question {
     pub generic: GenericQuestion,
@@ -16,7 +16,7 @@ pub struct Question {
 /// API which has both as attributes, but web API separate
 /// question and its answer. So here it is split into GenericQuestion
 /// and GenericAnswer
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct GenericQuestion {
     /// id is optional as newly created questions does not have it assigned
@@ -38,7 +38,7 @@ pub struct GenericQuestion {
 /// Also note that question is empty as QuestionWithPassword does not
 /// provide more details for question, but require additional answer.
 /// Can be potentionally extended in future e.g. with list of allowed characters?
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct QuestionWithPassword {}
 

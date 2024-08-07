@@ -63,3 +63,64 @@ impl HTTPClient {
         self.client.delete_void(path.as_str()).await
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::model::GenericQuestion;
+    use super::*;
+    use crate::base_http_client::BaseHTTPClient;
+    use httpmock::prelude::*;
+    use std::collections::HashMap;
+    use std::error::Error;
+    use tokio::test; // without this, "error: async functions cannot be used for tests"
+
+    fn questions_client(mock_server_url: String) -> HTTPClient {
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = mock_server_url;
+        HTTPClient { client: bhc }
+    }
+
+    #[test]
+    async fn test_list_questions() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let client = questions_client(server.url("/api"));
+
+        let mock = server.mock(|when, then| {
+            when.method(GET).path("/api/questions");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"[
+                        {
+                            "generic": {
+                                "id": 42,
+                                "class": "foo",
+                                "text": "Shape",
+                                "options": ["bouba","kiki"],
+                                "defaultOption": "bouba",
+                                "data": { "a": "A" }
+                            },
+                            "withPassword":null
+                        }
+                    ]"#,
+                );
+        });
+
+        let expected: Vec<model::Question> = vec![Question {
+            generic: GenericQuestion {
+                id: Some(42),
+                class: "foo".to_owned(),
+                text: "Shape".to_owned(),
+                options: vec!["bouba".to_owned(), "kiki".to_owned()],
+                default_option: "bouba".to_owned(),
+                data: HashMap::from([("a".to_owned(), "A".to_owned())]),
+            },
+            with_password: None,
+        }];
+        let actual = client.list_questions().await?;
+        assert_eq!(actual, expected);
+
+        mock.assert();
+        Ok(())
+    }
+}
