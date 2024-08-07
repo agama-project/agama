@@ -127,7 +127,7 @@ type Device = {
   name: string;
   type: ConnectionType;
   addresses: IPAddress[];
-  nameservers: string;
+  nameservers: string[];
   gateway4: string;
   gateway6: string;
   method4: string;
@@ -138,6 +138,33 @@ type Device = {
   state: DeviceState;
   connection?: string;
 };
+
+type IPConfig = {
+  addresses: string[];
+  nameservers?: string[];
+  gateway4?: string;
+  gateway6?: string;
+  method4: string;
+  method6: string;
+  routes4?: RouteApi[];
+  routes6?: RouteApi[];
+};
+
+type DeviceApi = {
+  name: string;
+  type: ConnectionType;
+  macAddress: string;
+  state: DeviceState;
+  connection?: string;
+  ipConfig?: IPConfig;
+  stateReason: string;
+};
+
+type RouteApi = {
+  destination: string;
+  nextHop: string;
+  metric: number;
+}
 
 type ConnectionApi = {
   id: string;
@@ -180,14 +207,15 @@ type ConnectionOptions = {
 
 class Connection {
   id: string;
-  status: string;
+  status: ConnectionStatus;
   iface: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
   gateway4?: string = "";
   gateway6?: string = "";
-  method4?: string = "auto";
-  method6?: string = "auto";
+  // FIXME: Use enum for methods instead of string
+  method4: string = "auto";
+  method6: string = "auto";
   wireless?: Wireless;
 
   constructor(id: string, iface?: string, options?: ConnectionOptions) {
@@ -244,4 +272,4 @@ export {
   WifiNetworkStatus,
   SecurityProtocols,
 };
-export type { AccessPoint, ConnectionApi, ConnectionOptions, Device, IPAddress, NetworkGeneralState, WifiNetwork };
+export type { AccessPoint, ConnectionApi, ConnectionOptions, Device, DeviceApi, IPAddress, NetworkGeneralState, Route, RouteApi, WifiNetwork };

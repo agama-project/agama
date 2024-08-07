@@ -33,106 +33,70 @@ import {
   AccessPoint,
   Connection,
   ConnectionApi,
-  ConnectionOptions,
   Device,
+  DeviceApi,
   DeviceState,
+  IPAddress,
+  Route,
+  RouteApi,
   WifiNetwork,
   WifiNetworkStatus,
 } from "~/types/network";
 import { formatIp, ipPrefixFor, securityFromFlags } from "~/utils/network";
 
+const buildAddress = (address: string): IPAddress => {
+  const [ip, netmask] = address.split("/");
+  const result: IPAddress = { address: ip };
+  if (netmask) result.prefix = ipPrefixFor(netmask);
+  return result;
+}
+
+const buildAddresses = (rawAddresses?: string[]): IPAddress[] => rawAddresses?.map(buildAddress) || [];
+
+const buildRoutes = (rawRoutes?: RouteApi[]): Route[] => {
+  if (!rawRoutes) return [];
+
+  return rawRoutes.map((route) => ({ ...route, destination: buildAddress(route.destination) }));
+}
 /**
  * Returns the device settings
  */
-const fromApiDevice = (device: object): Device => {
-  const nameservers = device?.ipConfig?.nameservers || [];
-  const { ipConfig = {}, ...dev } = device;
-  const routes4 = (ipConfig.routes4 || []).map((route) => {
-    const [ip, netmask] = route.destination.split("/");
-    const destination =
-      netmask !== undefined ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
-
-    return { ...route, destination };
-  });
-
-  const routes6 = (ipConfig.routes6 || []).map((route) => {
-    const [ip, netmask] = route.destination.split("/");
-    const destination =
-      netmask !== undefined ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
-
-    return { ...route, destination };
-  });
-
-  const addresses = (ipConfig.addresses || []).map((address) => {
-    const [ip, netmask] = address.split("/");
-    if (netmask !== undefined) {
-      return { address: ip, prefix: ipPrefixFor(netmask) };
-    } else {
-      return { address: ip };
-    }
-  });
-
-  return { ...dev, ...ipConfig, addresses, nameservers, routes4, routes6 };
+const fromApiDevice = (device: DeviceApi): Device => {
+  const { ipConfig, stateReason, ...newDevice } = device;
+  // FIXME: Actually, would be better to have a Device class too in types and
+  // move all of this logic to it.
+  return {
+    ...newDevice,
+    nameservers: ipConfig?.nameservers || [],
+    addresses: buildAddresses(ipConfig?.addresses),
+    routes4: buildRoutes(ipConfig?.routes4),
+    routes6: buildRoutes(ipConfig?.routes6),
+    method4: ipConfig?.method4,
+    method6: ipConfig?.method6,
+    gateway4: ipConfig?.gateway4,
+    gateway6: ipConfig?.gateway6,
+  };
 };
 
 const fromApiConnection = (connection: ConnectionApi): Connection => {
+  const { id, interface: iface, ...options } = connection;
   const nameservers = connection.nameservers || [];
-  const addresses = (connection.addresses || []).map((address) => {
-    const [ip, netmask] = address.split("/");
-    if (netmask !== undefined) {
-      return { address: ip, prefix: ipPrefixFor(netmask) };
-    } else {
-      return { address: ip };
-    }
-  });
-
-  return { ...connection, addresses, nameservers };
+  const addresses = connection.addresses?.map(buildAddress) || [];
+  return new Connection(id, iface, { ...options, addresses, nameservers });
 };
 
 const toApiConnection = (connection: Connection): ConnectionApi => {
-  const addresses = (connection.addresses || []).map((addr) => formatIp(addr));
-  const { iface, gateway4, gateway6, ...conn } = connection;
+  const { iface, addresses, ...newConnection } = connection;
+  const result: ConnectionApi = {
+    ...newConnection,
+    interface: iface,
+    addresses: addresses?.map(formatIp) || [],
+  }
 
-  if (gateway4?.trim() !== "") conn.gateway4 = gateway4;
-  if (gateway6?.trim() !== "") conn.gateway6 = gateway6;
+  if (result.gateway4 === "") delete result.gateway4;
+  if (result.gateway6 === "") delete result.gateway6;
 
-  return { ...conn, addresses, interface: iface };
-};
-
-const loadNetworks = (
-  devices: Device[],
-  connections: Connection[],
-  accessPoints: AccessPoint[],
-): WifiNetwork[] => {
-  const knownSsids = [];
-
-  return accessPoints
-    .sort((a, b) => b.strength - a.strength)
-    .map((ap) => {
-      // Do not include networks without SSID
-      if (!ap.ssid || ap.ssid === "") return null;
-      // Do not include "duplicates"
-      if (knownSsids.includes(ap.ssid)) return null;
-
-      const settings = connections.find((c) => c.wireless?.ssid === ap.ssid);
-      const device = devices.find((c) => c.connection === ap.ssid);
-      const status = device
-        ? WifiNetworkStatus.CONNECTED
-        : settings
-          ? WifiNetworkStatus.CONFIGURED
-          : WifiNetworkStatus.NOT_CONFIGURED;
-
-      const network = {
-        ...ap,
-        settings,
-        device,
-        status,
-      };
-
-      knownSsids.push(network.ssid);
-
-      return network;
-    });
+  return result;
 };
 
 /**
@@ -203,7 +167,8 @@ const accessPointsQuery = () => ({
     });
     return access_points.sort((a, b) => (a.strength < b.strength ? -1 : 1));
   },
-  staleTime: Infinity,
+  //FIXME: Infinity vs 1second
+  staleTime: 1000,
 });
 
 /**
@@ -344,7 +309,7 @@ const useNetworkConfigChanges = () => {
 
         if (event.deviceUpdated) {
           const [name, data] = event.deviceUpdated;
-          const devices = queryClient.getQueryData(["network", "devices"]);
+          const devices: Device[] = queryClient.getQueryData(["network", "devices"]);
           if (!devices) return;
 
           if (name !== data.name) {
@@ -352,9 +317,9 @@ const useNetworkConfigChanges = () => {
           }
 
           const current_device = devices.find((d) => d.name === name);
-          if ([DeviceState.DISCONNECTED, DeviceState.ACTIVATED].includes(data.state)) {
+          if ([DeviceState.DISCONNECTED, DeviceState.ACTIVATED, DeviceState.UNAVAILABLE].includes(data.state)) {
             if (current_device.state !== data.state) {
-              return queryClient.invalidateQueries({ queryKey: ["network"] });
+              queryClient.invalidateQueries({ queryKey: ["network"] });
             }
           }
           if (data.state === DeviceState.FAILED) {
@@ -387,14 +352,17 @@ const useWifiNetworks = () => {
   });
 
   return accessPoints
-    .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
-    .map((ap: AccessPoint) => {
-      console.log("Access point: ", ap);
-      // Do not include networks without SSID
-      if (!ap.ssid || ap.ssid === "") return null;
+    .filter((ap: AccessPoint) => {
       // Do not include "duplicates"
-      if (knownSsids.includes(ap.ssid)) return null;
+      if (knownSsids.includes(ap.ssid)) return false;
+      // Do not include networks without SSID
+      if (!ap.ssid || ap.ssid.trim() === "") return false;
 
+      knownSsids.push(ap.ssid);
+      return true;
+    })
+    .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
+    .map((ap: AccessPoint): WifiNetwork => {
       const settings = connections.find((c: Connection) => c.wireless?.ssid === ap.ssid);
       const device = devices.find((d: Device) => d.connection === ap.ssid);
       const status = device
@@ -403,16 +371,12 @@ const useWifiNetworks = () => {
           ? WifiNetworkStatus.CONFIGURED
           : WifiNetworkStatus.NOT_CONFIGURED;
 
-      const network = {
+      return {
         ...ap,
         settings,
         device,
         status,
       };
-
-      knownSsids.push(network.ssid);
-
-      return network;
     }).filter((ap: AccessPoint) => ap != null);
 };
 
