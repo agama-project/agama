@@ -90,6 +90,15 @@ const connectionAddresses = (network) => {
   return addresses?.map(formatIp).join(", ");
 };
 
+const connectTo = (id) => {
+  return fetch(`/api/network/connections/${id}/connect`);
+}
+
+const disconnectFrom = (id) => {
+  return fetch(`/api/network/connections/${id}/disconnect`);
+}
+
+
 const ConnectionData = ({ network }) => {
   return <Stack hasGutter>{connectionAddresses(network)}</Stack>;
 };
@@ -113,7 +122,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
   if (network.settings && !network.device) {
     return (
       <Split hasGutter>
-        <ButtonLink onClick={async () => await network.connectTo(network.settings)}>
+        <ButtonLink onClick={async () => await connectTo(network.settings.id)}>
           {_("Connect")}
         </ButtonLink>
         <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
@@ -137,7 +146,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
         <Stack>
           <ConnectionData network={network} />
           <Split hasGutter>
-            <ButtonLink onClick={async () => await network.disconnect(network.settings)}>
+            <ButtonLink onClick={async () => await disconnectFrom(network.settings.id)}>
               {_("Disconnect")}
             </ButtonLink>
             <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
