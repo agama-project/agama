@@ -387,7 +387,7 @@ const useWifiNetworks = () => {
         device,
         status,
       };
-    }).filter((ap: AccessPoint) => ap != null);
+    });
 };
 
 export {
