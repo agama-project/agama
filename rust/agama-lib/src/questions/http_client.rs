@@ -125,6 +125,56 @@ mod test {
     }
 
     #[test]
+    async fn test_create_question() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let mock = server.mock(|when, then| {
+            when.method(POST)
+                .path("/api/questions")
+                .header("content-type", "application/json")
+                .body(
+                    r#"{"generic":{"id":null,"class":"fiction.hamlet","text":"To be or not to be","options":["to be","not to be"],"defaultOption":"to be","data":{"a":"A"}},"withPassword":null}"#
+                );
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                        "generic": {
+                            "id": 7,
+                            "class": "fiction.hamlet",
+                            "text": "To be or not to be",
+                            "options": ["to be","not to be"],
+                            "defaultOption": "to be",
+                            "data": { "a": "A" }
+                        },
+                        "withPassword":null
+                    }"#,
+                );
+            });
+        let client = questions_client(server.url("/api"));
+
+        let posted_question = Question {
+            generic: GenericQuestion {
+                id: None,
+                class: "fiction.hamlet".to_owned(),
+                text: "To be or not to be".to_owned(),
+                options: vec!["to be".to_owned(), "not to be".to_owned()],
+                default_option: "to be".to_owned(),
+                data: HashMap::from([("a".to_owned(), "A".to_owned())]),
+            },
+            with_password: None,
+        };
+        let mut expected_question = posted_question.clone();
+        expected_question.generic.id = Some(7);
+
+        let actual = client.create_question(&posted_question).await?;
+        assert_eq!(actual, expected_question);
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        mock.assert();
+        Ok(())
+    }
+
+    #[test]
     async fn test_try_answer() -> Result<(), Box<dyn Error>> {
         let server = MockServer::start();
         let client = questions_client(server.url("/api"));
