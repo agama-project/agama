@@ -20,7 +20,7 @@
  */
 
 import { get } from "~/api/http";
-import { IssuesScope } from "~/types/issues";
+import { Issue, IssuesScope } from "~/types/issues";
 
 const URLS = {
   product: "software/issues/product",
@@ -32,6 +32,6 @@ const URLS = {
 /**
  * Return the issues of the given scope.
  */
-const fetchIssues = (scope: IssuesScope) => get(`/api/${URLS[scope]}`);
+const fetchIssues = (scope: IssuesScope): Promise<Issue[]> => get(`/api/${URLS[scope]}`);
 
 export { fetchIssues };
