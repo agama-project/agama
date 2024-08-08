@@ -141,4 +141,27 @@ describe("WifiConnectionForm", () => {
       });
     });
   });
+
+  it("allows connecting to hidden network", async () => {
+    const { user } = plainRender(<WifiConnectionForm network={{ hidden: true }} />);
+    const ssidInput = screen.getByRole("textbox", { name: "SSID" });
+    const securitySelector = screen.getByRole("combobox", { name: "Security" });
+    const wpaOption = screen.getByRole("option", { name: /WPA/ });
+    const connectButton = screen.getByRole("button", { name: "Connect" });
+    await user.type(ssidInput, "AHiddenNetwork");
+    await user.selectOptions(securitySelector, wpaOption);
+    const passwordInput = screen.getByLabelText("WPA Password");
+    await user.type(passwordInput, "ASecretPassword");
+    await user.click(connectButton);
+    expect(mockAddConnection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "AHiddenNetwork",
+        wireless: expect.objectContaining({
+          hidden: true,
+          ssid: "AHiddenNetwork",
+          password: "ASecretPassword",
+        }),
+      }),
+    );
+  });
 });

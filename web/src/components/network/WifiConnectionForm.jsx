@@ -34,12 +34,11 @@ import { PasswordInput } from "~/components/core";
 import {
   useAddConnectionMutation,
   useConnectionMutation,
-  useNetworkConfigChanges,
-  useSelectedWifi,
   useSelectedWifiChange,
 } from "~/queries/network";
-import { _ } from "~/i18n";
 import { Connection, Wireless } from "~/types/network";
+import sprintf from "sprintf-js";
+import { _ } from "~/i18n";
 
 /*
  * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
@@ -88,7 +87,8 @@ export default function WifiConnectionForm({ network, errors = {}, onCancel }) {
   };
 
   return (
-    <Form id={`${ssid}-connection-form`} onSubmit={accept}>
+    /** TRANSLATORS: accessible name for the WiFi connection form */
+    <Form onSubmit={accept} aria-label={_("WiFi connection form")}>
       {showErrors && (
         <Alert
           variant="warning"

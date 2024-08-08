@@ -25,35 +25,32 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import WifiNetworksListPage from "~/components/network/WifiNetworksListPage";
-import { ConnectionType, DeviceState, WifiNetworkStatus } from "~/types/network";
+import { Connection, ConnectionType, DeviceState, WifiNetworkStatus } from "~/types/network";
 
-const wifiDevice = {
-  name: "wlan0",
-  connection: "AgamaNetwork",
-  type: ConnectionType.WIFI,
-  state: DeviceState.ACTIVATED,
-  addresses: [{ address: "192.168.69.200", prefix: 24 }],
-  nameservers: "192.168.69.1",
-  method4: "static",
-  method6: "",
-  gateway4: "192.168.69.1",
-  gateway6: "",
-  macAddress: "AA:11:22:33:44::FF",
-};
+const /** @type import("~/types/network").Device */ wlan0 = {
+    name: "wlan0",
+    connection: "Network 1",
+    type: ConnectionType.WIFI,
+    state: DeviceState.ACTIVATED,
+    addresses: [{ address: "192.168.69.201", prefix: 24 }],
+    nameservers: ["192.168.69.1"],
+    method4: "static",
+    method6: "",
+    gateway4: "192.168.69.1",
+    gateway6: "",
+    macAddress: "AA:11:22:33:44::FF",
+  };
 
-const mockSelectedWifi = {};
-const mockSelectedWifiMutation = jest.fn();
 const mockConnectionRemoval = jest.fn();
 const mockAddConnection = jest.fn();
 let /** @type import("~/types/network").WifiNetwork[] */ mockWifiNetworks;
 
+// NOTE: mock only backend related queries.
+// I.e., do not mock useSelectedWifi nor useSelectedWifiChange here to being able
+// to test them along with user interactions
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
   useNetworkConfigChanges: jest.fn(),
-  // useSelectedWifi: jest.fn().mockResolvedValue(mockSelectedWifi),
-  // useSelectedWifiChange: () => ({
-  //   mutate: mockSelectedWifiMutation,
-  // }),
   useRemoveConnectionMutation: () => ({
     mutate: mockConnectionRemoval,
   }),
@@ -64,20 +61,35 @@ jest.mock("~/queries/network", () => ({
 }));
 
 describe("WifiNetworksListPage", () => {
-  describe("when wifi networks are found", () => {
+  describe("when visible networks are found", () => {
     beforeEach(() => {
       mockWifiNetworks = [
         {
-          ssid: "Agama Network 1",
+          ssid: "Network 1",
           strength: 4,
           hwAddress: "??",
           security: ["WPA"],
-          device: wifiDevice,
+          device: wlan0,
+          settings: new Connection("Network 1", {
+            iface: "wlan0",
+            addresses: [{ address: "192.168.69.201", prefix: 24 }],
+          }),
           status: WifiNetworkStatus.CONNECTED,
         },
         {
-          ssid: "Agama Network 2",
+          ssid: "Network 2",
           strength: 8,
+          hwAddress: "??",
+          security: ["WPA"],
+          settings: new Connection("Network 2", {
+            iface: "wlan1",
+            addresses: [{ address: "192.168.69.202", prefix: 24 }],
+          }),
+          status: WifiNetworkStatus.CONFIGURED,
+        },
+        {
+          ssid: "Network 3",
+          strength: 6,
           hwAddress: "??",
           security: ["WPA"],
           status: WifiNetworkStatus.NOT_CONFIGURED,
@@ -87,38 +99,58 @@ describe("WifiNetworksListPage", () => {
 
     it("renders a list of available wifi networks", () => {
       installerRender(<WifiNetworksListPage />);
-      screen.getByRole("listitem", { name: "Agama Network 1" });
-      screen.getByRole("listitem", { name: "Agama Network 2" });
+      screen.getByRole("listitem", { name: "Network 1" });
+      screen.getByRole("listitem", { name: "Network 2" });
+      screen.getByRole("listitem", { name: "Network 3" });
     });
 
-    it("allows to select a network", async () => {
-      const { user } = installerRender(<WifiNetworksListPage />);
-      const network2 = screen.getByRole("listitem", { name: "Agama Network 2" });
-      await user.click(network2);
-      screen.getByRole("heading", { name: "Agama Network 2" });
-    });
-
-    it.only("allows connecting to hidden network", async () => {
+    it("allows opening the connection form for a hidden network", async () => {
       const { user } = installerRender(<WifiNetworksListPage />);
       const button = screen.getByRole("button", { name: "Connect to hidden network" });
       await user.click(button);
-      const ssidInput = screen.getByRole("textbox", { name: "SSID" });
-      const securitySelector = screen.getByRole("combobox", { name: "Security" });
-      const wpaOption = screen.getByRole("option", { name: /WPA/ });
-      const connectButton = screen.getByRole("button", { name: "Connect" });
-      await user.type(ssidInput, "AHiddenNetwork");
-      await user.click(securitySelector);
-      await user.click(wpaOption);
-      const passwordInput = screen.getByRole("textbox", { name: "WPA Password" });
-      await user.type(passwordInput, "ASecretPassword");
-      await user.click(connectButton);
-      expect(mockAddConnection).toHaveBeenCalledWith(
-        expect.objectContaining({ ssid: "AHiddenNetowrk", password: "ASecretPassword" }),
-      );
+      screen.getByRole("heading", { name: "Connect to hidden network" });
+      screen.getByRole("form", { name: "WiFi connection form" });
+    });
+
+    describe("and user selects a connected network", () => {
+      it("renders basic network information and actions instead of the connection form", async () => {
+        const { user } = installerRender(<WifiNetworksListPage />);
+        const network1 = screen.getByRole("listitem", { name: "Network 1" });
+        await user.click(network1);
+        screen.getByRole("heading", { name: "Network 1" });
+        expect(screen.queryByRole("form")).toBeNull();
+        screen.getByText("192.168.69.201/24");
+        screen.getByRole("button", { name: "Disconnect" });
+        screen.getByRole("link", { name: "Edit" });
+        screen.getByRole("button", { name: "Forget" });
+      });
+    });
+
+    describe("and user selects a configured network", () => {
+      it("renders actions instead of the connection form", async () => {
+        const { user } = installerRender(<WifiNetworksListPage />);
+        const network2 = screen.getByRole("listitem", { name: "Network 2" });
+        await user.click(network2);
+        screen.getByRole("heading", { name: "Network 2" });
+        expect(screen.queryByRole("form")).toBeNull();
+        screen.getByRole("button", { name: "Connect" });
+        screen.getByRole("link", { name: "Edit" });
+        screen.getByRole("button", { name: "Forget" });
+      });
+    });
+
+    describe("and user selects a not configured network", () => {
+      it("renders the connection form", async () => {
+        const { user } = installerRender(<WifiNetworksListPage />);
+        const network3 = screen.getByRole("listitem", { name: "Network 3" });
+        await user.click(network3);
+        screen.getByRole("heading", { name: "Network 3" });
+        screen.queryByRole("form", { name: "WiFi connection form" });
+      });
     });
   });
 
-  describe("when no wifi network was found", () => {
+  describe("when no visible networks are found", () => {
     beforeEach(() => {
       mockWifiNetworks = [];
     });
@@ -126,6 +158,14 @@ describe("WifiNetworksListPage", () => {
     it("renders information about it", () => {
       installerRender(<WifiNetworksListPage />);
       screen.getByText("No visible Wi-Fi networks found");
+    });
+
+    it("allows opening the connection form for a hidden network", async () => {
+      const { user } = installerRender(<WifiNetworksListPage />);
+      const button = screen.getByRole("button", { name: "Connect to hidden network" });
+      await user.click(button);
+      screen.getByRole("heading", { name: "Connect to hidden network" });
+      screen.getByRole("form", { name: "WiFi connection form" });
     });
   });
 });
