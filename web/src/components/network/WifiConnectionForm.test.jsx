@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,18 +21,19 @@
 import React from "react";
 
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 import { createClient } from "~/client";
 
 import { WifiConnectionForm } from "~/components/network";
 
-jest.mock("~/client");
+const mockAddConnection = jest.fn();
 
 jest.mock("~/queries/network", () => ({
   useNetworkConfigChanges: jest.fn(),
+  useAddConnectionMutation: () => ({
+    mutate: mockAddConnection,
+  }),
 }));
-
-Element.prototype.scrollIntoView = jest.fn();
 
 const hiddenNetworkMock = {
   hidden: true,
@@ -45,39 +46,24 @@ const networkMock = {
   strength: 85,
 };
 
-const addAndConnectToFn = jest.fn().mockResolvedValue({});
-
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      network: {
-        addAndConnectTo: addAndConnectToFn,
-      },
-    };
-  });
-});
-
 describe("WifiConnectionForm", () => {
   describe("when mounted for connecting to a hidden network", () => {
     it("renders the SSID input", async () => {
-      const { user } = installerRender(<WifiConnectionForm network={hiddenNetworkMock} />);
-
-      const ssidInput = screen.getByLabelText("SSID");
-
-      await user.type(ssidInput, "HiddenWiFi");
+      plainRender(<WifiConnectionForm network={hiddenNetworkMock} />);
+      screen.getByRole("textbox", { name: "SSID" });
     });
   });
 
   describe("when mounted for connecting to a visible network", () => {
     it("does not render the SSID input", () => {
-      installerRender(<WifiConnectionForm network={networkMock} />);
-      expect(screen.queryByLabelText("SSID")).not.toBeInTheDocument();
+      plainRender(<WifiConnectionForm network={networkMock} />);
+      expect(screen.queryByRole("textbox", { name: "SSID" })).not.toBeInTheDocument();
     });
   });
 
   describe("when form is send", () => {
     it("disables cancel and submission actions", async () => {
-      const { user } = installerRender(<WifiConnectionForm network={networkMock} />);
+      const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
       const connectButton = screen.getByText("Connect");
       const cancelLink = screen.getByText("Cancel");
 
@@ -91,38 +77,36 @@ describe("WifiConnectionForm", () => {
       });
     });
 
-    it("calls network service for adding and connecting to the network", async () => {
-      const { user } = installerRender(<WifiConnectionForm network={networkMock} />);
-
-      const securitySelector = screen.getByLabelText("Security");
+    it("triggers a mutation for adding and connecting to the network", async () => {
+      const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
+      const securitySelector = screen.getByRole("combobox", { name: "Security" });
+      const connectButton = screen.getByText("Connect");
       await user.selectOptions(securitySelector, "wpa-psk");
       const passwordInput = screen.getByLabelText("WPA Password");
       await user.type(passwordInput, "wifi-password");
-
-      const connectButton = screen.getByText("Connect");
       await user.click(connectButton);
 
-      expect(addAndConnectToFn).toHaveBeenCalledWith(
-        "Wi-Fi Network",
-        expect.objectContaining({ security: "wpa-psk", password: "wifi-password" }),
+      expect(mockAddConnection).toHaveBeenCalledWith(
+        expect.objectContaining({
+          wireless: expect.objectContaining({ security: "wpa-psk", password: "wifi-password" }),
+        }),
       );
     });
 
     describe("and something went wrong", () => {
       beforeEach(() => {
-        addAndConnectToFn.mockRejectedValue("Sorry, something went wrong");
+        mockAddConnection.mockRejectedValue("Sorry, something went wrong");
       });
 
       it("renders a warning", async () => {
-        const { user } = installerRender(<WifiConnectionForm network={networkMock} />);
+        const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
         const connectButton = screen.getByText("Connect");
-
         await user.click(connectButton);
         screen.getByText("Warning alert:");
       });
 
       it("enables cancel and submission actions again", async () => {
-        const { user } = installerRender(<WifiConnectionForm network={networkMock} />);
+        const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
         const cancelLink = screen.getByText("Cancel");
         const connectButton = screen.getByText("Connect");
 

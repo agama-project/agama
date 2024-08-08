@@ -98,12 +98,23 @@ describe("WifiNetworksListPage", () => {
       screen.getByRole("heading", { name: "Agama Network 2" });
     });
 
-    it("allows to open form for connecting to hidden network", async () => {
+    it.only("allows connecting to hidden network", async () => {
       const { user } = installerRender(<WifiNetworksListPage />);
       const button = screen.getByRole("button", { name: "Connect to hidden network" });
       await user.click(button);
-      screen.getByRole("heading", { name: "Connect to hidden network" });
-      screen.getByRole("textbox", { name: "SSID" });
+      const ssidInput = screen.getByRole("textbox", { name: "SSID" });
+      const securitySelector = screen.getByRole("combobox", { name: "Security" });
+      const wpaOption = screen.getByRole("option", { name: /WPA/ });
+      const connectButton = screen.getByRole("button", { name: "Connect" });
+      await user.type(ssidInput, "AHiddenNetwork");
+      await user.click(securitySelector);
+      await user.click(wpaOption);
+      const passwordInput = screen.getByRole("textbox", { name: "WPA Password" });
+      await user.type(passwordInput, "ASecretPassword");
+      await user.click(connectButton);
+      expect(mockAddConnection).toHaveBeenCalledWith(
+        expect.objectContaining({ ssid: "AHiddenNetowrk", password: "ASecretPassword" }),
+      );
     });
   });
 

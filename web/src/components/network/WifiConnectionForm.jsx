@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -56,8 +56,8 @@ const securityFrom = (supported) => {
   return "";
 };
 
-export default function WifiConnectionForm({ network, onCancel, onSubmitCallback }) {
-  const addClient = useAddConnectionMutation();
+export default function WifiConnectionForm({ network, onCancel }) {
+  const { mutate: addConnection } = useAddConnectionMutation();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [ssid, setSsid] = useState(network?.ssid || "");
@@ -72,12 +72,9 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
     setError(false);
     setIsConnecting(true);
 
-    if (typeof onSubmitCallback === "function") {
-      onSubmitCallback({ ssid, password, hidden, security: [security] });
-    }
-    const wireless = new Wireless(ssid, { security, password, hidden });
+    const wireless = new Wireless({ ssid, security, password, hidden });
     const connection = new Connection(ssid, { wireless });
-    addClient.mutate(connection);
+    addConnection(connection);
   };
 
   return (
