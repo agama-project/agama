@@ -79,7 +79,7 @@ export default function WifiConnectionForm({ network, errors = {}, onCancel }) {
     e.preventDefault();
     setShowErrors(false);
     setIsConnecting(true);
-    updateSelectedNetwork({ needsAuth: null });
+    updateSelectedNetwork({ ssid, needsAuth: null });
 
     const wireless = new Wireless({ ssid, security, password, hidden });
     const connection = new Connection(ssid, { wireless });
