@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+import { isObject } from "~/utils";
+
 enum ApFlags {
   NONE = 0x00000000,
   PRIVACY = 0x00000001,
@@ -81,7 +83,7 @@ enum DeviceState {
 
 enum ConnectionStatus {
   UP = "up",
-  DOWN = "down"
+  DOWN = "down",
 }
 
 enum DeviceType {
@@ -164,7 +166,7 @@ type RouteApi = {
   destination: string;
   nextHop: string;
   metric: number;
-}
+};
 
 type ConnectionApi = {
   id: string;
@@ -179,7 +181,13 @@ type ConnectionApi = {
   status: ConnectionStatus;
 };
 
-// TODO: use a WirelessOptions instead of having them as args in the constructor?
+type WirelessOptions = {
+  password?: string;
+  security?: string;
+  hidden?: boolean;
+  mode?: string;
+};
+
 class Wireless {
   ssid: string;
   password?: string;
@@ -187,15 +195,17 @@ class Wireless {
   hidden?: boolean = false;
   mode: string = "infrastructure";
 
-  constructor(password?: string, security?: string, hidden?: boolean, mode?: string) {
-    if (security) this.security = security;
-    if (password) this.password = password;
-    if (hidden !== undefined) this.hidden = hidden;
-    if (mode) this.mode = mode;
+  constructor(options: WirelessOptions) {
+    if (!isObject(options)) return;
+
+    for (const [key, value] of Object.entries(options)) {
+      if (value) this[key] = value;
+    }
   }
 }
 
 type ConnectionOptions = {
+  iface?: string;
   addresses?: IPAddress[];
   nameservers?: string[];
   gateway4?: string;
@@ -218,21 +228,13 @@ class Connection {
   method6: string = "auto";
   wireless?: Wireless;
 
-  constructor(id: string, iface?: string, options?: ConnectionOptions) {
+  constructor(id: string, options?: ConnectionOptions) {
     this.id = id;
-    if (iface !== undefined) {
-      this.iface = iface;
-    }
 
-    // FIXME: iterate instead
-    if (options !== undefined) {
-      if (options.addresses) this.addresses = options.addresses;
-      if (options.nameservers) this.nameservers = options.nameservers;
-      if (options.gateway4) this.gateway4 = options.gateway4;
-      if (options.gateway6) this.gateway6 = options.gateway6;
-      if (options.method4) this.method4 = options.method4;
-      if (options.method6) this.method6 = options.method6;
-      if (options.wireless) this.wireless = options.wireless;
+    if (!isObject(options)) return;
+
+    for (const [key, value] of Object.entries(options)) {
+      if (value) this[key] = value;
     }
   }
 }
@@ -272,4 +274,15 @@ export {
   WifiNetworkStatus,
   SecurityProtocols,
 };
-export type { AccessPoint, ConnectionApi, ConnectionOptions, Device, DeviceApi, IPAddress, NetworkGeneralState, Route, RouteApi, WifiNetwork };
+export type {
+  AccessPoint,
+  ConnectionApi,
+  ConnectionOptions,
+  Device,
+  DeviceApi,
+  IPAddress,
+  NetworkGeneralState,
+  Route,
+  RouteApi,
+  WifiNetwork,
+};

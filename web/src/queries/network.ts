@@ -84,7 +84,7 @@ const fromApiConnection = (connection: ConnectionApi): Connection => {
   const { id, interface: iface, ...options } = connection;
   const nameservers = connection.nameservers || [];
   const addresses = connection.addresses?.map(buildAddress) || [];
-  return new Connection(id, iface, { ...options, addresses, nameservers });
+  return new Connection(id, { ...options, iface, addresses, nameservers });
 };
 
 const toApiConnection = (connection: Connection): ConnectionApi => {
