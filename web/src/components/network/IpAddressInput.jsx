@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,18 +19,25 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from "react";
 import { isValidIp } from "~/utils/network";
 import { TextInput, ValidatedOptions } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
-const IpAddressInput = ({ placeholder, onError = () => null, ...props }) => {
-  const [validated, setValidated] = useState("default");
+const IpAddressInput = ({ label = _("IP Address"), onError = (value) => null, ...props }) => {
+  const [validated, setValidated] = useState(
+    !props.defaultValue || props.defaultValue === "" || isValidIp(props.defaultValue)
+      ? "default"
+      : "error",
+  );
 
   return (
     <TextInput
-      // TRANSLATORS: input field name
-      placeholder={placeholder || _("IP Address")}
+      aria-label={label}
+      // FIXME: avoid using this placeholder as label technique
+      placeholder={label}
       validated={ValidatedOptions[validated]}
       onFocus={() => setValidated("default")}
       onBlur={(e) => {
