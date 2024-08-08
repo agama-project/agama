@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,17 +25,27 @@ import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { RowActions } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { PATHS } from "~/routes/network";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
 import { Connection, Device } from "~/types/network";
 import { formatIp } from "~/utils/network";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
+
+type ConnectionsTableProps = {
+  connections: Connection[];
+  devices: Device[];
+  onForget?: (connection: Connection) => void;
+};
 
 /**
  *
  * Displays given connections in a table
-
+ *
  */
-const ConnectionsTable = ({ connections, devices, onForget }: { connections: Connection[], devices: Device[], onForget: Function }): React.ReactNode => {
+const ConnectionsTable = ({
+  connections,
+  devices,
+  onForget,
+}: ConnectionsTableProps): React.ReactNode => {
   const navigate = useNavigate();
   if (connections.length === 0) return null;
 
@@ -97,6 +107,6 @@ const ConnectionsTable = ({ connections, devices, onForget }: { connections: Con
       </Tbody>
     </Table>
   );
-}
+};
 
 export default ConnectionsTable;
