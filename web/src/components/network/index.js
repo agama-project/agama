@@ -27,6 +27,5 @@ export { default as IpAddressInput } from "./IpAddressInput";
 export { default as IpPrefixInput } from "./IpPrefixInput";
 export { default as IpSettingsForm } from "./IpSettingsForm";
 export { default as WifiConnectionForm } from "./WifiConnectionForm";
-export { default as WifiHiddenNetworkForm } from "./WifiHiddenNetworkForm";
 export { default as WifiNetworksListPage } from "./WifiNetworksListPage";
 export { default as WifiSelectorPage } from "./WifiSelectorPage";
