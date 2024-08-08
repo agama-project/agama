@@ -19,19 +19,21 @@
  * find current contact information at www.suse.com.
  */
 import React from "react";
-
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender, plainRender } from "~/test-utils";
-import { createClient } from "~/client";
-
-import { WifiConnectionForm } from "~/components/network";
+import { plainRender } from "~/test-utils";
+import WifiConnectionForm from "~/components/network/WifiConnectionForm";
 
 const mockAddConnection = jest.fn();
+const mockUpdateConnection = jest.fn();
 
 jest.mock("~/queries/network", () => ({
+  ...jest.requireActual("~/queries/network"),
   useNetworkConfigChanges: jest.fn(),
   useAddConnectionMutation: () => ({
     mutate: mockAddConnection,
+  }),
+  useConnectionMutation: () => ({
+    mutate: mockUpdateConnection,
   }),
 }));
 
@@ -47,6 +49,21 @@ const networkMock = {
 };
 
 describe("WifiConnectionForm", () => {
+  it("renders a generic warning when mounted with no needsAuth erorr", () => {
+    const errors = { errorId: true };
+    plainRender(<WifiConnectionForm network={networkMock} errors={errors} />);
+    const connectButton = screen.getByText("Connect");
+    screen.getByText("Warning alert:");
+  });
+
+  it("renders an authentication failed warning when mounted with needsAuth erorr", () => {
+    const errors = { needsAuth: true };
+    plainRender(<WifiConnectionForm network={networkMock} errors={errors} />);
+    const connectButton = screen.getByText("Connect");
+    screen.getByText("Warning alert:");
+    screen.getByText(/Authentication failed/);
+  });
+
   describe("when mounted for connecting to a hidden network", () => {
     it("renders the SSID input", async () => {
       plainRender(<WifiConnectionForm network={hiddenNetworkMock} />);
@@ -77,50 +94,50 @@ describe("WifiConnectionForm", () => {
       });
     });
 
-    it("triggers a mutation for adding and connecting to the network", async () => {
-      const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
-      const securitySelector = screen.getByRole("combobox", { name: "Security" });
-      const connectButton = screen.getByText("Connect");
-      await user.selectOptions(securitySelector, "wpa-psk");
-      const passwordInput = screen.getByLabelText("WPA Password");
-      await user.type(passwordInput, "wifi-password");
-      await user.click(connectButton);
+    describe("for a not configured network", () => {
+      it("triggers a mutation for adding and connecting to the network", async () => {
+        const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
+        const securitySelector = screen.getByRole("combobox", { name: "Security" });
+        const connectButton = screen.getByText("Connect");
+        await user.selectOptions(securitySelector, "wpa-psk");
+        const passwordInput = screen.getByLabelText("WPA Password");
+        await user.type(passwordInput, "wifi-password");
+        await user.click(connectButton);
 
-      expect(mockAddConnection).toHaveBeenCalledWith(
-        expect.objectContaining({
-          wireless: expect.objectContaining({ security: "wpa-psk", password: "wifi-password" }),
-        }),
-      );
+        expect(mockUpdateConnection).not.toHaveBeenCalled();
+        expect(mockAddConnection).toHaveBeenCalledWith(
+          expect.objectContaining({
+            wireless: expect.objectContaining({ security: "wpa-psk", password: "wifi-password" }),
+          }),
+        );
+      });
     });
 
-    describe("and something went wrong", () => {
-      beforeEach(() => {
-        mockAddConnection.mockRejectedValue("Sorry, something went wrong");
-      });
-
-      it("renders a warning", async () => {
-        const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
+    describe("for an already configured network", () => {
+      it("triggers a mutation for updating and connecting to the network", async () => {
+        const { user } = plainRender(
+          <WifiConnectionForm
+            network={{
+              ...networkMock,
+              settings: { security: "wpa-psk", password: "wrong-wifi-password" },
+            }}
+          />,
+        );
         const connectButton = screen.getByText("Connect");
+        const passwordInput = screen.getByLabelText("WPA Password");
+        await user.type(passwordInput, "right-wifi-password");
         await user.click(connectButton);
-        screen.getByText("Warning alert:");
-      });
 
-      it("enables cancel and submission actions again", async () => {
-        const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
-        const cancelLink = screen.getByText("Cancel");
-        const connectButton = screen.getByText("Connect");
-
-        expect(cancelLink).not.toBeDisabled();
-        expect(connectButton).not.toBeDisabled();
-
-        await waitFor(() => {
-          user.click(connectButton);
-          expect(cancelLink).toBeDisabled();
-          expect(connectButton).toBeDisabled();
-        });
-
-        expect(cancelLink).not.toBeDisabled();
-        expect(connectButton).not.toBeDisabled();
+        expect(mockAddConnection).not.toHaveBeenCalled();
+        expect(mockUpdateConnection).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: networkMock.ssid,
+            wireless: expect.objectContaining({
+              security: "wpa-psk",
+              password: "right-wifi-password",
+            }),
+          }),
+        );
       });
     });
   });

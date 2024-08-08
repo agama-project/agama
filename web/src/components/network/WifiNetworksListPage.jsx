@@ -104,7 +104,7 @@ const ConnectionData = ({ network }) => {
 
 const WifiDrawerPanelBody = ({ network, onCancel }) => {
   const { mutate: removeConnection } = useRemoveConnectionMutation();
-  const { data } = useSelectedWifi();
+  const selectedWifi = useSelectedWifi();
 
   const forgetNetwork = async () => {
     removeConnection(network.settings.id);
@@ -112,11 +112,13 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
 
   if (!network) return;
 
-  const Form = () => <WifiConnectionForm network={network} onCancel={onCancel} />;
+  const Form = ({ errors = {} }) => (
+    <WifiConnectionForm network={network} errors={errors} onCancel={onCancel} />
+  );
 
   if (network === HIDDEN_NETWORK) return <Form />;
 
-  if (data && data.needsAuth) return <Form />;
+  if (selectedWifi?.needsAuth) return <Form errors={{ needsAuth: true }} />;
 
   if (network.settings && !network.device) {
     return (

@@ -271,7 +271,6 @@ const selectedWiFiNetworkQuery = () => ({
 });
 
 const useSelectedWifi = () => {
-  // TODO: evaluate if useSuspenseQuery is really needed, probably not.
   const { data } = useQuery(selectedWiFiNetworkQuery());
   return data || {};
 };
@@ -337,7 +336,7 @@ const useNetworkConfigChanges = () => {
               queryClient.invalidateQueries({ queryKey: ["network"] });
             }
           }
-          if (data.state === DeviceState.FAILED) {
+          if ([DeviceState.NEEDAUTH, DeviceState.FAILED].includes(data.state)) {
             return changeSelected.mutate({ needsAuth: true });
           }
         }

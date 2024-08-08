@@ -31,7 +31,13 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
-import { useAddConnectionMutation, useNetworkConfigChanges } from "~/queries/network";
+import {
+  useAddConnectionMutation,
+  useConnectionMutation,
+  useNetworkConfigChanges,
+  useSelectedWifi,
+  useSelectedWifiChange,
+} from "~/queries/network";
 import { _ } from "~/i18n";
 import { Connection, Wireless } from "~/types/network";
 
@@ -56,32 +62,44 @@ const securityFrom = (supported) => {
   return "";
 };
 
-export default function WifiConnectionForm({ network, onCancel }) {
+// FIXME: improve error handling. The errors props shuld have a key/value error
+//  and the component should show all of them, if any
+export default function WifiConnectionForm({ network, errors = {}, onCancel }) {
   const { mutate: addConnection } = useAddConnectionMutation();
-  const [error, setError] = useState(false);
+  const { mutate: updateConnection } = useConnectionMutation();
+  const { mutate: updateSelectedNetwork } = useSelectedWifiChange();
+  const [showErrors, setShowErrors] = useState(Object.keys(errors).length > 0);
   const [isConnecting, setIsConnecting] = useState(false);
   const [ssid, setSsid] = useState(network?.ssid || "");
   const [password, setPassword] = useState(network?.password || "");
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
   const hidden = network?.hidden || false;
 
-  useNetworkConfigChanges();
-
   const accept = async (e) => {
     e.preventDefault();
-    setError(false);
+    setShowErrors(false);
     setIsConnecting(true);
+    updateSelectedNetwork({ needsAuth: null });
 
     const wireless = new Wireless({ ssid, security, password, hidden });
     const connection = new Connection(ssid, { wireless });
-    addConnection(connection);
+    const action = network.settings ? updateConnection : addConnection;
+    action(connection);
   };
 
   return (
     <Form id={`${ssid}-connection-form`} onSubmit={accept}>
-      {error && (
-        <Alert variant="warning" isInline title={_("Something went wrong")}>
-          <p>{_("Please, review provided settings and try again.")}</p>
+      {showErrors && (
+        <Alert
+          variant="warning"
+          isInline
+          title={
+            errors.needsAuth
+              ? _("Authentication failed, please try again")
+              : _("Something went wrong")
+          }
+        >
+          {!errors.needsAuth && <p>{_("Please, review provided settings and try again.")}</p>}
         </Alert>
       )}
 
