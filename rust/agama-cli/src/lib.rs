@@ -49,7 +49,7 @@ use std::{
 /// Agama's CLI global options
 #[derive(Args)]
 struct GlobalOpts {
-    #[clap(long)]
+    #[clap(long, default_value = "http://localhost/api/")]
     /// uri pointing to agama's remote api. If not provided, default https://localhost/api is
     /// used
     pub uri: String,
@@ -153,6 +153,8 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     let client = BaseHTTPClient::new()?;
 
+    // we need to distinguish commands on those which assume that JWT is already available
+    // and those which not (or don't need it)
     match cli.command {
         Commands::Config(subcommand) => {
             let manager = build_manager().await?;
@@ -171,8 +173,11 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         }
         Commands::Questions(subcommand) => run_questions_cmd(subcommand).await?,
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await?,
-        Commands::Auth(subcommand) => run_auth_cmd(client, subcommand).await?,
         Commands::Download { url } => Transfer::get(&url, std::io::stdout())?,
+        Commands::Auth(subcommand) => {
+            let client = BaseHTTPClient::bare()?;
+            run_auth_cmd(client, subcommand).await?;
+        }
     };
 
     Ok(())

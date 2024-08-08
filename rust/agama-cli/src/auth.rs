@@ -24,7 +24,7 @@ use clap::Subcommand;
 use crate::error::CliError;
 use agama_lib::base_http_client::BaseHTTPClient;
 use inquire::Password;
-use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
+use std::collections::HashMap;
 use std::io::{self, IsTerminal};
 
 /// HTTP Client for auth queries
@@ -37,31 +37,19 @@ impl AuthHTTPClient {
         Ok(Self { api: client })
     }
 
-    /// Necessary http request header for authenticate
-    fn authenticate_headers() -> HeaderMap {
-        let mut headers = HeaderMap::new();
-
-        headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
-
-        headers
-    }
-
     /// Query web server for JWT
     ///
     /// TODO:
     /// for now it doesn't use BaseHTTPClient's post and similar methods as it needs
     /// to update query headers
     pub async fn get_jwt(&self, password: String) -> anyhow::Result<String> {
-        let client = reqwest::Client::new();
-        let response = client
-            // TODO: BaseHTTPClient::url is private, so duplicate it for now.
-            .post(self.api.base_url.clone() + "/auth")
-            .headers(Self::authenticate_headers())
-            .body(format!("{{\"password\": \"{}\"}}", password))
-            .send()
-            .await?;
+        let mut auth_body = HashMap::new();
+
+        auth_body.insert("password", password);
+
+        let response = self.api.post_response("/auth", &auth_body).await?;
         let body = response
-            .json::<std::collections::HashMap<String, String>>()
+            .json::<HashMap<String, String>>()
             .await?;
         let value = body.get("token");
 
@@ -104,6 +92,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: AuthCommands) -> anyhow::Re
 /// user.
 fn read_password() -> Result<String, CliError> {
     let stdin = io::stdin();
+
     let password = if stdin.is_terminal() {
         ask_password()?
     } else {
