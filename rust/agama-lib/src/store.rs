@@ -16,12 +16,12 @@ use zbus::Connection;
 ///
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store<'a> {
-    users: UsersStore<'a>,
+    users: UsersStore,
     network: NetworkStore,
     product: ProductStore<'a>,
     software: SoftwareStore<'a>,
     storage: StorageStore<'a>,
-    localization: LocalizationStore<'a>,
+    localization: LocalizationStore,
 }
 
 impl<'a> Store<'a> {
@@ -30,8 +30,8 @@ impl<'a> Store<'a> {
         http_client: reqwest::Client,
     ) -> Result<Store<'a>, ServiceError> {
         Ok(Self {
-            localization: LocalizationStore::new(connection.clone()).await?,
-            users: UsersStore::new(connection.clone()).await?,
+            localization: LocalizationStore::new()?,
+            users: UsersStore::new()?,
             network: NetworkStore::new(http_client).await?,
             product: ProductStore::new(connection.clone()).await?,
             software: SoftwareStore::new(connection.clone()).await?,

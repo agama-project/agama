@@ -58,7 +58,7 @@ macro_rules! property_from_dbus {
 /// NOTE: we could follow a different approach like building our own type (e.g.
 /// using the newtype idiom) and offering a better API.
 ///
-/// * `source`: hash map containing non-onwed values ([zbus::zvariant::Value]).
+/// * `source`: hash map containing non-onwed values ([enum@zbus::zvariant::Value]).
 pub fn to_owned_hash(source: &HashMap<&str, Value<'_>>) -> HashMap<String, OwnedValue> {
     let mut owned = HashMap::new();
     for (key, value) in source.iter() {

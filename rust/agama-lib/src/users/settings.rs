@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 /// User settings
 ///
 /// Holds the user settings for the installation.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct UserSettings {
     #[serde(rename = "user")]
@@ -14,7 +14,7 @@ pub struct UserSettings {
 /// First user settings
 ///
 /// Holds the settings for the first user.
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct FirstUserSettings {
     /// First user's full name
@@ -30,7 +30,7 @@ pub struct FirstUserSettings {
 /// Root user settings
 ///
 /// Holds the settings for the root user.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct RootUserSettings {
     /// Root's password (in clear text)

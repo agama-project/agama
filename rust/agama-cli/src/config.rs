@@ -43,7 +43,7 @@ pub enum ConfigCommands {
 
 pub async fn run(subcommand: ConfigCommands) -> anyhow::Result<()> {
     let Some(token) = AuthToken::find() else {
-        println!("You need to login for generating a valid token");
+        println!("You need to login for generating a valid token: agama auth login");
         return Ok(());
     };
 
