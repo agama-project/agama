@@ -28,7 +28,6 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { createAccessPoint } from "~/client/network/model";
 import { _ } from "~/i18n";
 import {
   AccessPoint,
@@ -160,12 +159,13 @@ const accessPointsQuery = () => ({
     const response = await fetch("/api/network/wifi");
     const json = await response.json();
     const access_points = json.map((ap) => {
-      return createAccessPoint({
+      const access_point: AccessPoint = {
         ssid: ap.ssid,
         hwAddress: ap.hw_address,
         strength: ap.strength,
         security: securityFromFlags(ap.flags, ap.wpaFlags, ap.rsnFlags),
-      });
+      };
+      return access_point;
     });
     return access_points.sort((a, b) => (a.strength < b.strength ? -1 : 1));
   },
