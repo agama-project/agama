@@ -15,6 +15,9 @@ use zbus::PropertyStream;
 
 use crate::error::Error;
 
+mod jobs;
+pub use jobs::{jobs_router, jobs_stream};
+
 use super::Event;
 
 pub type EventStreams = Vec<(&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>)>;

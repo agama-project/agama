@@ -1,6 +1,6 @@
 use crate::network::model::NetworkChange;
 use agama_lib::{
-    localization::model::LocaleConfig, manager::InstallationPhase,
+    jobs::Job, localization::model::LocaleConfig, manager::InstallationPhase,
     product::RegistrationRequirement, progress::Progress, software::SelectedBy,
     storage::model::dasd::DASDDevice, storage::ISCSINode, users::FirstUser,
 };
@@ -85,6 +85,15 @@ pub enum Event {
     },
     DASDDeviceRemoved {
         device: DASDDevice,
+    },
+    JobAdded {
+        job: Job,
+    },
+    JobChanged {
+        job: Job,
+    },
+    JobRemoved {
+        job: Job,
     },
 }
 
