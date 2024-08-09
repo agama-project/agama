@@ -95,6 +95,12 @@ pub enum Event {
     JobRemoved {
         job: Job,
     },
+    DASDFormatJobChanged {
+        job_id: String,
+        total: u32,
+        step: u32,
+        done: bool,
+    },
 }
 
 pub type EventsSender = Sender<Event>;

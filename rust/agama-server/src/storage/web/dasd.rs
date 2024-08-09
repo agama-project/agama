@@ -18,7 +18,7 @@ use serde::Deserialize;
 
 use crate::{error::Error, web::common::EventStreams};
 
-use self::stream::DASDDeviceStream;
+use self::stream::{DASDDeviceStream, DASDFormatJobStream};
 
 mod stream;
 
@@ -30,7 +30,13 @@ mod stream;
 ///
 /// * `dbus`: D-Bus connection to use.
 pub async fn dasd_stream(dbus: &zbus::Connection) -> Result<EventStreams, Error> {
-    let stream: EventStreams = vec![("dasd_devices", Box::pin(DASDDeviceStream::new(dbus).await?))];
+    let stream: EventStreams = vec![
+        ("dasd_devices", Box::pin(DASDDeviceStream::new(dbus).await?)),
+        (
+            "format_jobs",
+            Box::pin(DASDFormatJobStream::new(dbus).await?),
+        ),
+    ];
     Ok(stream)
 }
 

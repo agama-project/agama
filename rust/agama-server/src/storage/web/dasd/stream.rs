@@ -1,6 +1,6 @@
 // FIXME: the code is pretty similar to iscsi::stream. Refactor the stream to reduce the repetition.
 
-use std::{collections::HashMap, task::Poll};
+use std::{collections::HashMap, sync::Arc, task::Poll};
 
 use agama_lib::{
     dbus::get_optional_property,
@@ -13,7 +13,11 @@ use pin_project::pin_project;
 use thiserror::Error;
 use tokio::sync::mpsc::unbounded_channel;
 use tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
-use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
+use zbus::{
+    fdo::{PropertiesChanged, PropertiesChangedArgs},
+    zvariant::{self, ObjectPath, OwnedObjectPath, OwnedValue},
+    MatchRule, Message, MessageStream, MessageType,
+};
 
 use crate::{
     dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
@@ -147,6 +151,97 @@ impl Stream for DASDDeviceStream {
                         Some(event)
                     } else {
                         log::warn!("Could not process change {:?}", &change);
+                        None
+                    }
+                }
+                None => break None,
+            };
+            if next_value.is_some() {
+                break next_value;
+            }
+        })
+    }
+}
+
+/// This stream listens for DASD progress changes and emits an [Event::DASDFormatJobChanged] event.
+#[pin_project]
+pub struct DASDFormatJobStream {
+    #[pin]
+    inner: MessageStream,
+}
+
+impl DASDFormatJobStream {
+    pub async fn new(connection: &zbus::Connection) -> Result<Self, ServiceError> {
+        let rule = MatchRule::builder()
+            .msg_type(MessageType::Signal)
+            .path_namespace("/org/opensuse/Agama/Storage1/jobs")?
+            .interface("org.freedesktop.DBus.Properties")?
+            .member("PropertiesChanged")?
+            .build();
+        let inner = MessageStream::for_match_rule(rule, connection, None).await?;
+        Ok(Self { inner })
+    }
+
+    fn handle_change(message: Result<Arc<Message>, zbus::Error>) -> Option<Event> {
+        let Ok(message) = message else {
+            return None;
+        };
+        let properties = PropertiesChanged::from_message(message)?;
+        let args = properties.args().ok()?;
+
+        if args.interface_name.as_str() != "org.opensuse.Agama.Storage1.DASD.Format" {
+            return None;
+        }
+
+        let id = properties.path()?.to_string();
+        let event = Self::to_event(id, &args);
+        if event.is_none() {
+            log::warn!("Could not decode the DASDFormatJobChanged event");
+        }
+        event
+    }
+
+    fn to_event(path: String, properties_changed: &PropertiesChangedArgs) -> Option<Event> {
+        let dict = properties_changed
+            .changed_properties()
+            .get("Summary")?
+            .downcast_ref::<zvariant::Dict>()?;
+
+        // the key is the D-Bus path of the DASD device and the value is the progress
+        // of the related formatting process
+        let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict.clone()).ok()?;
+
+        let summary = map.values().next()?;
+        let summary = summary.downcast_ref::<zvariant::Structure>()?;
+        let fields = summary.fields();
+        let total: &u32 = fields.get(0)?.downcast_ref()?;
+        let step: &u32 = fields.get(1)?.downcast_ref()?;
+        let done: &bool = fields.get(2)?.downcast_ref()?;
+        Some(Event::DASDFormatJobChanged {
+            job_id: path.to_string(),
+            total: total.clone(),
+            step: step.clone(),
+            done: done.clone(),
+        })
+    }
+}
+
+impl Stream for DASDFormatJobStream {
+    type Item = Event;
+
+    fn poll_next(
+        self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Option<Self::Item>> {
+        let mut pinned = self.project();
+
+        Poll::Ready(loop {
+            let item = ready!(pinned.inner.as_mut().poll_next(cx));
+            let next_value = match item {
+                Some(change) => {
+                    if let Some(event) = Self::handle_change(change) {
+                        Some(event)
+                    } else {
                         None
                     }
                 }
