@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,13 +24,24 @@ import { isValidIpPrefix } from "~/utils/network";
 import { TextInput, ValidatedOptions } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
-const IpPrefixInput = ({ placeholder, onError = () => null, ...props }) => {
-  const [validated, setValidated] = useState("default");
+// @ts-check
+
+const IpPrefixInput = ({
+  label = _("Ip prefix or netmask"),
+  onError = (value) => null,
+  ...props
+}) => {
+  const [validated, setValidated] = useState(
+    !props.defaultValue || props.defaultValue === "" || isValidIpPrefix(props.defaultValue)
+      ? "default"
+      : "error",
+  );
 
   return (
     <TextInput
-      // TRANSLATORS: input field name
-      placeholder={placeholder || _("IP prefix or netmask")}
+      // FIXME: avoid using this placeholder as label technique
+      placeholder={label}
+      aria-label={label}
       validated={ValidatedOptions[validated]}
       onFocus={() => setValidated("default")}
       onBlur={(e) => {
