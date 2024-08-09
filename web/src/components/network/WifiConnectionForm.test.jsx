@@ -25,6 +25,7 @@ import WifiConnectionForm from "~/components/network/WifiConnectionForm";
 
 const mockAddConnection = jest.fn();
 const mockUpdateConnection = jest.fn();
+const mockUpdateSelectedWifi = jest.fn();
 
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
@@ -35,6 +36,9 @@ jest.mock("~/queries/network", () => ({
   useConnectionMutation: () => ({
     mutate: mockUpdateConnection,
   }),
+  useSelectedWifiChange: () => ({
+    mutate: mockUpdateSelectedWifi,
+  }),
 }));
 
 const hiddenNetworkMock = {
@@ -43,7 +47,7 @@ const hiddenNetworkMock = {
 
 const networkMock = {
   hidden: false,
-  ssid: "Wi-Fi Network",
+  ssid: "Visible Network",
   security: ["WPA2"],
   strength: 85,
 };
@@ -79,6 +83,30 @@ describe("WifiConnectionForm", () => {
   });
 
   describe("when form is send", () => {
+    // Note, not using rerender for next two test examples because it doesn not work always
+    // because previous first render somehow leaks in the next one.
+    it("updates information about selected network (visible network version)", async () => {
+      const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
+      const connectButton = screen.getByRole("button", { name: "Connect" });
+      await user.click(connectButton);
+      expect(mockUpdateSelectedWifi).toHaveBeenCalledWith({
+        ssid: "Visible Network",
+        needsAuth: null,
+      });
+    });
+
+    it("updates information about selected network (hidden network version)", async () => {
+      const { user } = plainRender(<WifiConnectionForm network={hiddenNetworkMock} />);
+      const ssidInput = screen.getByRole("textbox", { name: "SSID" });
+      const connectButton = screen.getByRole("button", { name: "Connect" });
+      await user.type(ssidInput, "Secret Network");
+      await user.click(connectButton);
+      expect(mockUpdateSelectedWifi).toHaveBeenCalledWith({
+        ssid: "Secret Network",
+        needsAuth: null,
+      });
+    });
+
     it("disables cancel and submission actions", async () => {
       const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
       const connectButton = screen.getByText("Connect");

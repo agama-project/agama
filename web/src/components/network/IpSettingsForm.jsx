@@ -50,9 +50,9 @@ const usingDHCP = (method) => method === METHODS.AUTO;
 
 export default function IpSettingsForm() {
   const { id } = useParams();
-  const connection = useConnection(id);
-  const setConnection = useConnectionMutation();
   const navigate = useNavigate();
+  const { mutateAsync: setConnection } = useConnectionMutation();
+  const connection = useConnection(id);
   const [addresses, setAddresses] = useState(connection.addresses);
   const [nameservers, setNameservers] = useState(
     connection.nameservers.map((a) => {
@@ -125,7 +125,9 @@ export default function IpSettingsForm() {
       gateway4: gateway,
       nameservers: sanitizedNameservers.map((s) => s.address),
     };
-    setConnection.mutateAsync(updatedConnection).catch((error) => setErrors(error)).then(navigate(-1));
+    setConnection(updatedConnection)
+      .catch((error) => setErrors(error))
+      .then(navigate(-1));
   };
 
   const renderError = (field) => {
