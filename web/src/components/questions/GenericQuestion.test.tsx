@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,10 +21,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { GenericQuestion } from "~/components/questions";
+import { plainRender } from "~/test-utils";
+import { Question } from "~/types/questions";
+import GenericQuestion from "~/components/questions/GenericQuestion";
 
-const question = {
+const question: Question = {
   id: 1,
   text: "Do you write unit tests?",
   options: ["always", "sometimes", "never"],
@@ -34,7 +35,7 @@ const question = {
 const answerFn = jest.fn();
 
 const renderQuestion = () =>
-  installerRender(<GenericQuestion question={question} answerCallback={answerFn} />);
+  plainRender(<GenericQuestion question={question} answerCallback={answerFn} />);
 
 describe("GenericQuestion", () => {
   it("renders the question text", async () => {

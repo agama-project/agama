@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug  1 13:57:51 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use exfatprogs instead of exfat-utils (gh#openSUSE/agama#1520).
+
+-------------------------------------------------------------------
 Wed Jul 31 15:48:00 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Update nokogiri dependency to version 1.16

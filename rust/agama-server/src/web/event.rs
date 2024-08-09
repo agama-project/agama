@@ -1,7 +1,8 @@
-use crate::{l10n::web::LocaleConfig, network::model::NetworkChange};
+use crate::network::model::NetworkChange;
 use agama_lib::{
-    manager::InstallationPhase, product::RegistrationRequirement, progress::Progress,
-    software::SelectedBy, storage::ISCSINode, users::FirstUser,
+    localization::model::LocaleConfig, manager::InstallationPhase,
+    product::RegistrationRequirement, progress::Progress, software::SelectedBy, storage::ISCSINode,
+    users::FirstUser,
 };
 use serde::Serialize;
 use std::collections::HashMap;

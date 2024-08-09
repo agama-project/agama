@@ -166,7 +166,7 @@ impl Display for AuthToken {
 
 /// Claims that are included in the token.
 ///
-/// See https://datatracker.ietf.org/doc/html/rfc7519 for reference.
+/// See <https://datatracker.ietf.org/doc/html/rfc7519> for reference.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
     pub exp: i64,

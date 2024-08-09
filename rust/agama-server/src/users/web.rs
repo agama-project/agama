@@ -13,10 +13,13 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError,
-    users::{proxies::Users1Proxy, FirstUser, UsersClient},
+    users::{
+        model::{RootConfig, RootPatchSettings},
+        proxies::Users1Proxy,
+        FirstUser, UsersClient,
+    },
 };
-use axum::{extract::State, routing::get, Json, Router};
-use serde::{Deserialize, Serialize};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]
@@ -154,13 +157,22 @@ async fn remove_first_user(State(state): State<UsersState<'_>>) -> Result<(), Er
 #[utoipa::path(put, path = "/users/first", responses(
     (status = 200, description = "Sets the first user"),
     (status = 400, description = "The D-Bus service could not perform the action"),
+    (status = 422, description = "Invalid first user. Details are in body", body = Vec<String>),
 ))]
 async fn set_first_user(
     State(state): State<UsersState<'_>>,
     Json(config): Json<FirstUser>,
-) -> Result<(), Error> {
-    state.users.set_first_user(&config).await?;
-    Ok(())
+) -> Result<impl IntoResponse, Error> {
+    // issues: for example, trying to use a system user id; empty password
+    // success: simply issues.is_empty()
+    let (_success, issues) = state.users.set_first_user(&config).await?;
+    let status = if issues.is_empty() {
+        StatusCode::OK
+    } else {
+        StatusCode::UNPROCESSABLE_ENTITY
+    };
+
+    Ok((status, Json(issues).into_response()))
 }
 
 #[utoipa::path(get, path = "/users/first", responses(
@@ -171,17 +183,6 @@ async fn get_user_config(State(state): State<UsersState<'_>>) -> Result<Json<Fir
     Ok(Json(state.users.first_user().await?))
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct RootPatchSettings {
-    /// empty string here means remove ssh key for root
-    pub sshkey: Option<String>,
-    /// empty string here means remove password for root
-    pub password: Option<String>,
-    /// specify if patched password is provided in encrypted form
-    pub password_encrypted: Option<bool>,
-}
-
 #[utoipa::path(patch, path = "/users/root", responses(
     (status = 200, description = "Root configuration is modified", body = RootPatchSettings),
     (status = 400, description = "The D-Bus service could not perform the action"),
@@ -189,29 +190,27 @@ pub struct RootPatchSettings {
 async fn patch_root(
     State(state): State<UsersState<'_>>,
     Json(config): Json<RootPatchSettings>,
-) -> Result<(), Error> {
+) -> Result<impl IntoResponse, Error> {
+    let mut retcode1 = 0;
     if let Some(key) = config.sshkey {
-        state.users.set_root_sshkey(&key).await?;
+        retcode1 = state.users.set_root_sshkey(&key).await?;
     }
+
+    let mut retcode2 = 0;
     if let Some(password) = config.password {
-        if password.is_empty() {
-            state.users.remove_root_password().await?;
+        retcode2 = if password.is_empty() {
+            state.users.remove_root_password().await?
         } else {
             state
                 .users
                 .set_root_password(&password, config.password_encrypted == Some(true))
-                .await?;
+                .await?
         }
     }
-    Ok(())
-}
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct RootConfig {
-    /// returns if password for root is set or not
-    password: bool,
-    /// empty string mean no sshkey is specified
-    sshkey: String,
+    let retcode: u32 = if retcode1 != 0 { retcode1 } else { retcode2 };
+
+    Ok(Json(retcode))
 }
 
 #[utoipa::path(get, path = "/users/root", responses(

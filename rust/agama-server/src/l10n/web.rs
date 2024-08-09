@@ -8,7 +8,8 @@ use crate::{
     web::{Event, EventsSender},
 };
 use agama_lib::{
-    error::ServiceError, localization::LocaleProxy, proxies::LocaleProxy as ManagerLocaleProxy,
+    error::ServiceError, localization::model::LocaleConfig, localization::LocaleProxy,
+    proxies::LocaleProxy as ManagerLocaleProxy,
 };
 use agama_locale_data::LocaleId;
 use axum::{
@@ -18,7 +19,6 @@ use axum::{
     routing::{get, patch},
     Json, Router,
 };
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -64,21 +64,6 @@ async fn locales(State(state): State<LocaleState<'_>>) -> Json<Vec<LocaleEntry>>
     let data = state.locale.read().await;
     let locales = data.locales_db.entries().to_vec();
     Json(locales)
-}
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct LocaleConfig {
-    /// Locales to install in the target system
-    locales: Option<Vec<String>>,
-    /// Keymap for the target system
-    keymap: Option<String>,
-    /// Timezone for the target system
-    timezone: Option<String>,
-    /// User-interface locale. It is actually not related to the `locales` property.
-    ui_locale: Option<String>,
-    /// User-interface locale. It is relevant only on local installations.
-    ui_keymap: Option<String>,
 }
 
 #[utoipa::path(

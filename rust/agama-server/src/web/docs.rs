@@ -96,7 +96,7 @@ use utoipa::OpenApi;
         schemas(crate::l10n::Keymap),
         schemas(crate::l10n::LocaleEntry),
         schemas(crate::l10n::TimezoneEntry),
-        schemas(crate::l10n::web::LocaleConfig),
+        schemas(agama_lib::localization::model::LocaleConfig),
         schemas(crate::manager::web::InstallerStatus),
         schemas(crate::network::model::Connection),
         schemas(crate::network::model::Device),
@@ -113,8 +113,8 @@ use utoipa::OpenApi;
         schemas(crate::storage::web::iscsi::InitiatorParams),
         schemas(crate::storage::web::iscsi::LoginParams),
         schemas(crate::storage::web::iscsi::NodeParams),
-        schemas(crate::users::web::RootConfig),
-        schemas(crate::users::web::RootPatchSettings),
+        schemas(agama_lib::users::model::RootConfig),
+        schemas(agama_lib::users::model::RootPatchSettings),
         schemas(super::http::PingResponse)
     )
 )]

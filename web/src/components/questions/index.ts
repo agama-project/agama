@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,28 +19,4 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Text } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
-import { QuestionActions } from "~/components/questions";
-import { _ } from "~/i18n";
-
-export default function GenericQuestion({ question, answerCallback }) {
-  const actionCallback = (option) => {
-    question.answer = option;
-    answerCallback(question);
-  };
-
-  return (
-    <Popup isOpen aria-label={_("Question")}>
-      <Text>{question.text}</Text>
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
-    </Popup>
-  );
-}
+export { default as Questions } from "./Questions";

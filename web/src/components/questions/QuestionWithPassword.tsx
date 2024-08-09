@@ -20,17 +20,30 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Form, FormGroup, Text } from "@patternfly/react-core";
+import { Form, FormGroup, Stack, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
-import { QuestionActions } from "~/components/questions";
+import { AnswerCallback, Question } from "~/types/questions";
+import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 
-export default function QuestionWithPassword({ question, answerCallback }) {
+/**
+ * Component for rendering questions asking for password
+ *
+ * @param question - the question to be answered
+ * @param answerCallback - the callback to be triggered on answer
+ */
+export default function QuestionWithPassword({
+  question,
+  answerCallback,
+}: {
+  question: Question;
+  answerCallback: AnswerCallback;
+}): React.ReactNode {
   const [password, setPassword] = useState(question.password || "");
   const defaultAction = question.defaultOption;
 
-  const actionCallback = (option) => {
+  const actionCallback = (option: string) => {
     question.password = password;
     question.answer = option;
     answerCallback(question);
@@ -42,18 +55,20 @@ export default function QuestionWithPassword({ question, answerCallback }) {
       title={_("Password Required")}
       titleIconVariant={() => <Icon name="lock" size="s" />}
     >
-      <Text>{question.text}</Text>
-      <Form>
-        {/* TRANSLATORS: field label */}
-        <FormGroup label={_("Password")} fieldId="password">
-          <PasswordInput
-            autoFocus
-            id="password"
-            value={password}
-            onChange={(_, value) => setPassword(value)}
-          />
-        </FormGroup>
-      </Form>
+      <Stack hasGutter>
+        <Text>{question.text}</Text>
+        <Form>
+          {/* TRANSLATORS: field label */}
+          <FormGroup label={_("Password")} fieldId="password">
+            <PasswordInput
+              autoFocus
+              id="password"
+              value={password}
+              onChange={(_, value) => setPassword(value)}
+            />
+          </FormGroup>
+        </Form>
+      </Stack>
 
       <Popup.Actions>
         <QuestionActions

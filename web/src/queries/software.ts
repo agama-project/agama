@@ -36,13 +36,20 @@ import {
   SoftwareConfig,
   SoftwareProposal,
 } from "~/types/software";
+import {
+  fetchConfig,
+  fetchPatterns,
+  fetchProducts,
+  fetchProposal,
+  updateConfig,
+} from "~/api/software";
 
 /**
  * Query to retrieve software configuration
  */
 const configQuery = () => ({
   queryKey: ["software/config"],
-  queryFn: () => fetch("/api/software/config").then((res) => res.json()),
+  queryFn: fetchConfig,
 });
 
 /**
@@ -50,7 +57,7 @@ const configQuery = () => ({
  */
 const proposalQuery = () => ({
   queryKey: ["software/proposal"],
-  queryFn: () => fetch("/api/software/proposal").then((res) => res.json()),
+  queryFn: fetchProposal,
 });
 
 /**
@@ -58,7 +65,7 @@ const proposalQuery = () => ({
  */
 const productsQuery = () => ({
   queryKey: ["software/products"],
-  queryFn: () => fetch("/api/software/products").then((res) => res.json()),
+  queryFn: fetchProducts,
   staleTime: Infinity,
 });
 
@@ -67,11 +74,7 @@ const productsQuery = () => ({
  */
 const selectedProductQuery = () => ({
   queryKey: ["software/product"],
-  queryFn: async () => {
-    const response = await fetch("/api/software/config");
-    const { product } = await response.json();
-    return product;
-  },
+  queryFn: () => fetchConfig().then(({ product }) => product),
 });
 
 /**
@@ -79,7 +82,7 @@ const selectedProductQuery = () => ({
  */
 const patternsQuery = () => ({
   queryKey: ["software/patterns"],
-  queryFn: () => fetch("/api/software/patterns").then((res) => res.json()),
+  queryFn: fetchPatterns,
 });
 
 /**
@@ -93,16 +96,8 @@ const useConfigMutation = () => {
   const client = useInstallerClient();
 
   const query = {
-    mutationFn: (newConfig: SoftwareConfig) =>
-      fetch("/api/software/config", {
-        // FIXME: use "PATCH" instead
-        method: "PUT",
-        body: JSON.stringify(newConfig),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-    onSuccess: (_, config: SoftwareConfig) => {
+    mutationFn: updateConfig,
+    onSuccess: (_: any, config: SoftwareConfig) => {
       queryClient.invalidateQueries({ queryKey: ["software/config"] });
       queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       if (config.product) {
@@ -126,7 +121,7 @@ const useProduct = (
     { data: products, isPending: isProductsPending },
   ] = func({
     queries: [selectedProductQuery(), productsQuery()],
-  });
+  }) as [{ data: string; isPending: boolean }, { data: Product[]; isPending: boolean }];
 
   if (isSelectedPending || isProductsPending) {
     return {};
@@ -188,7 +183,7 @@ const useProductChanges = () => {
     if (!client) return;
 
     return client.ws().onEvent((event) => {
-      if (event.type === "") {
+      if (event.type === "ProductChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/config"] });
       }
     });

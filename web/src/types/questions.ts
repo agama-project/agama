@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,8 +19,32 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as QuestionActions } from "./QuestionActions";
-export { default as GenericQuestion } from "./GenericQuestion";
-export { default as QuestionWithPassword } from "./QuestionWithPassword";
-export { default as LuksActivationQuestion } from "./LuksActivationQuestion";
-export { default as Questions } from "./Questions";
+/**
+ * Enum for question types
+ */
+enum QuestionType {
+  generic = "generic",
+  withPassword = "withPassword",
+}
+
+type Question = {
+  id: number;
+  type?: QuestionType;
+  class?: string;
+  options?: string[];
+  defaultOption?: string;
+  text?: string;
+  data?: { [key: string]: string };
+  answer?: string;
+  password?: string;
+};
+
+type Answer = {
+  generic?: { answer: string };
+  withPassword?: { password: string };
+};
+
+type AnswerCallback = (answeredQuestion: Question) => void;
+
+export { QuestionType };
+export type { Answer, AnswerCallback, Question };

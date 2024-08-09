@@ -147,7 +147,10 @@ mod tests {
         db.read("de").unwrap();
         let found_locales = db.entries();
         let spanish: LocaleId = "es_ES".try_into().unwrap();
-        let found = found_locales.iter().find(|l| l.id == spanish).unwrap();
+        let found = found_locales
+            .iter()
+            .find(|l| l.id == spanish)
+            .expect("Spanish locale not found?! Suggestion: zypper in glibc-locale");
         assert_eq!(&found.language, "Spanisch");
         assert_eq!(&found.territory, "Spanien");
     }

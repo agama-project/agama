@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-10 02:23+0000\n"
-"PO-Revision-Date: 2024-07-02 11:46+0000\n"
+"PO-Revision-Date: 2024-07-28 18:47+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
-"Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/es/>\n"
+"Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,35 +22,34 @@ msgstr ""
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
 msgid "Load software translations"
-msgstr ""
+msgstr "Cargar traducciones de software"
 
 #: service/lib/agama/manager.rb:89
 msgid "Load storage translations"
-msgstr ""
+msgstr "Cargar traducciones de almacenamiento"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
-msgstr ""
+msgstr "Analizar discos"
 
 #: service/lib/agama/manager.rb:104
 msgid "Configure software"
-msgstr ""
+msgstr "Configurar software"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
-msgstr ""
+msgstr "Preparar discos"
 
 #: service/lib/agama/manager.rb:125
-#, fuzzy
 msgid "Install software"
-msgstr "Instalando software"
+msgstr "Instalar software"
 
 #: service/lib/agama/manager.rb:126
 msgid "Configure the system"
-msgstr ""
+msgstr "Configurar el sistema"
 
 #. Callback to handle unsigned files
 #.
@@ -85,19 +84,21 @@ msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
 "want to trust this key?"
 msgstr ""
+"La clave %{id} (%{name}) con la huella digital %{fingerprint} es "
+"desconocida. ¿Quieres confiar en esta clave?"
 
 #. Should an error be raised?
 #: service/lib/agama/software/manager.rb:141
 msgid "Initializing sources"
-msgstr ""
+msgstr "Inicializando fuentes"
 
 #: service/lib/agama/software/manager.rb:146
 msgid "Refreshing repositories metadata"
-msgstr ""
+msgstr "Actualizando los metadatos del repositorios"
 
 #: service/lib/agama/software/manager.rb:147
 msgid "Calculating the software proposal"
-msgstr ""
+msgstr "Calcular la propuesta de software"
 
 #. Issues related to the software proposal.
 #.
@@ -107,21 +108,21 @@ msgstr ""
 #: service/lib/agama/software/manager.rb:563
 #, c-format
 msgid "Could not read repository \"%s\""
-msgstr ""
+msgstr "No se pudo leer el repositorio \"%s\""
 
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:573
 msgid "Product not selected yet"
-msgstr ""
+msgstr "Producto aún no seleccionado"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:582
 msgid "Product must be registered"
-msgstr ""
+msgstr "El producto debe estar registrado"
 
 #. Returns solver error messages from the last attempt
 #.
@@ -129,7 +130,7 @@ msgstr ""
 #: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
-msgstr ""
+msgstr "Se encontraron %s problemas de dependencias."
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
@@ -140,48 +141,52 @@ msgid ""
 "case the device does contain a file system or a storage system that is not "
 "supported, resizing will most likely cause data loss."
 msgstr ""
+"No se detectó ni un sistema de archivos ni un sistema de almacenamiento en "
+"el dispositivo. En caso de que el dispositivo contenga un sistema de "
+"archivos o un sistema de almacenamiento que no sea compatible, cambiar el "
+"tamaño probablemente provocará la pérdida de datos."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr ""
+msgstr "Este dispositivo no admite la reducción"
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:115
 msgid "Activating storage devices"
-msgstr ""
+msgstr "Activar dispositivos de almacenamiento"
 
 #: service/lib/agama/storage/manager.rb:116
 msgid "Probing storage devices"
-msgstr ""
+msgstr "Probando los dispositivos de almacenamiento"
 
 #: service/lib/agama/storage/manager.rb:117
 msgid "Calculating the storage proposal"
-msgstr ""
+msgstr "Calcular la propuesta de almacenamiento"
 
 #: service/lib/agama/storage/manager.rb:118
 msgid "Selecting Linux Security Modules"
-msgstr ""
+msgstr "Seleccionar módulos de seguridad de Linux"
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:126
 msgid "Preparing bootloader proposal"
-msgstr ""
+msgstr "Preparando la propuesta del gestor de arranque"
 
 #. first make bootloader proposal to be sure that required packages are installed
 #: service/lib/agama/storage/manager.rb:131
 msgid "Adding storage-related packages"
-msgstr ""
+msgstr "Agregar paquetes relacionados con el almacenamiento"
 
 #: service/lib/agama/storage/manager.rb:132
 msgid "Preparing the storage devices"
-msgstr ""
+msgstr "Preparando los dispositivos de almacenamiento"
 
 #: service/lib/agama/storage/manager.rb:133
 msgid "Writing bootloader sysconfig"
-msgstr ""
+msgstr "Escribiendo el gestor de arranque sysconfig"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -196,14 +201,14 @@ msgstr ""
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:203
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "Ocurrió un problema al calcular la configuración de almacenamiento"
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal_strategies/guided.rb:124
 msgid "No device selected for installation"
-msgstr ""
+msgstr "No se seleccionó ningún dispositivo para la instalación"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -214,13 +219,19 @@ msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
+"El siguiente dispositivo seleccionado no se encuentra en el sistema: "
+"%{devices}"
 msgstr[1] ""
+"Los siguientes dispositivos seleccionados no se encuentran en el sistema: "
+"%{devices}"
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:152
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
+"Es necesario definir un usuario, configurar la contraseña de root o una "
+"clave pública SSH"
 
 #~ msgid "Partitioning"
 #~ msgstr "Particionado"

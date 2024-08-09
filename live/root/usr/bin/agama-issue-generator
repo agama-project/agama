@@ -139,6 +139,91 @@ generate_avahi_url() {
     done
 }
 
+# function for centering text
+# $1 - the text
+# $2 - requested width
+function center_text() {
+  LEN=${#1}
+  PADDING_LEN=$(($2 - LEN))
+  PADDING_LEN=$((PADDING_LEN / 2))
+  PADDING="$(printf '%*s' $PADDING_LEN)"
+  echo "$PADDING$1$PADDING"
+}
+
+# generate QR codes for the access URLs
+function create_qr_codes() {
+    ADDRESSES=("$@")
+    # width of the generated QR code
+    QR_WIDTH=30
+
+    # check if serial console is used, get the terminal size (width)
+    TERM_WIDTH=$(stty -F /dev/ttyS0 size 2> /dev/null | cut -d " " -f 2)
+
+    # otherwise check the first console size
+    if [ -z "$TERM_WIDTH" ]; then
+      TERM_WIDTH=$(stty -F /dev/tty1 size 2> /dev/null | cut -d " " -f 2)
+      echo "Linux console width $TERM_WIDTH"
+    else
+      echo "Serial console width $TERM_WIDTH"
+    fi
+
+    # display QR codes only if the terminal is bigger than the 80x24(25) default
+    if [ -n "$TERM_WIDTH" ] && [ "$TERM_WIDTH" -gt 80 ]; then
+      # compute how much QR codes can fit on the screen side-by-side
+      QR_NUM=$(( TERM_WIDTH / QR_WIDTH ))
+      # split the list into 2 parts, for the first part display the QR codes
+      QR_ADDRESSES=("${ADDRESSES[@]:0:$QR_NUM}")
+      SZ="${#ADDRESSES[@]}"
+      # for the rest display just the text URL
+      REST_ADDRESSES=("${ADDRESSES[@]:$QR_NUM:$SZ}")
+    else
+      QR_ADDRESSES=()
+      REST_ADDRESSES=("${ADDRESSES[@]}")
+    fi
+
+    if [ -n "${REST_ADDRESSES[*]}" ]; then
+      printf "    https://%s\n" "${REST_ADDRESSES[@]}" >> "$URL_ISSUES"
+    fi
+
+    if [ -z "${QR_ADDRESSES[*]}" ]; then
+      return 0
+    fi
+
+    # temporary file for generated QR code
+    QR_TEMP=$(mktemp)
+    # temporary file for merged QR codes (displayed side-by-side)
+    QR_RESULT=$(mktemp)
+    # copy of the merged QR codes (the merged file cannot be used as input and
+    # output at the same time)
+    QR_RESULT_COPY=$(mktemp)
+
+    # label with URLs displayed below the QR codes
+    LABEL=""
+
+    # generate the QR codes and merge them side-by-side
+    for ADDR in "${QR_ADDRESSES[@]}"; do
+      cp "$QR_RESULT" "$QR_RESULT_COPY"
+      URL="https://$ADDR"
+      echo "Rendering QR code for $URL"
+      # force (the -v option) using at least symbol version 2 (QR size 25x25),
+      # for short addresses (like https://1.1.1.1) it would be enough using
+      # version 1 (QR size 21x21), but longer addresses need version 2 and
+      # putting different sizes side-by-side breaks formatting, see `man
+      # qrencode` and https://www.qrcode.com/en/about/version.html
+      qrencode -t ANSIUTF8 -m 2 -v 2 -o "$QR_TEMP" "$URL"
+      # put the QR codes side-by-side
+      paste -d " " "$QR_RESULT_COPY" "$QR_TEMP" > "$QR_RESULT"
+      PADDED_URL=$(center_text "$URL" "$QR_WIDTH")
+      LABEL="$LABEL$PADDED_URL "
+    done
+
+    cat "$QR_RESULT" >> "$URL_ISSUES"
+    echo "$LABEL" >> "$URL_ISSUES"
+
+    # delete the temporary files
+    rm -f "$QR_TEMP" "$QR_RESULT_COPY" "$QR_RESULT"
+}
+
 # helper function, write the issue with the currently available URLs for
 # accessing Agama from outside
 build_addresses() {
@@ -158,11 +243,11 @@ build_addresses() {
   # remove duplicates
   readarray -t ADDRESSES < <(printf "%s\n" "${ADDRESSES[@]}" | sort -u)
 
+  # delete the old file
+  rm -f "$URL_ISSUES"
+
   if [ -n "${ADDRESSES[*]}" ]; then
-    printf "    https://%s\n" "${ADDRESSES[@]}" > "$URL_ISSUES"
-  else
-    # no messages, delete the URLs
-    rm -f "$URL_ISSUES"
+    create_qr_codes "${ADDRESSES[@]}"
   fi
 
   write_url_headers
@@ -185,6 +270,7 @@ generate_network_url() {
   type=signal" 2> /dev/null | while read -r line; do
     # some IP4 configuration has been changed, rebuild the URLs
     if echo "$line" | grep -q 'string "org.freedesktop.NetworkManager.IP4Config"'; then
+      echo "Network configuration changed"
       build_addresses
     fi
   done

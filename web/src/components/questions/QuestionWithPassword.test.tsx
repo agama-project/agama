@@ -22,26 +22,22 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { QuestionWithPassword } from "~/components/questions";
+import { Question } from "~/types/questions";
+import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
 
-let question;
 const answerFn = jest.fn();
+const question: Question = {
+  id: 1,
+  class: "question.password",
+  text: "Random question. Will you provide random password?",
+  options: ["ok", "cancel"],
+  defaultOption: "cancel",
+};
 
 const renderQuestion = () =>
   plainRender(<QuestionWithPassword question={question} answerCallback={answerFn} />);
 
 describe("QuestionWithPassword", () => {
-  beforeEach(() => {
-    question = {
-      id: 1,
-      class: "question.password",
-      text: "Random question. Will you provide random password?",
-      options: ["ok", "cancel"],
-      defaultOption: "cancel",
-      data: {},
-    };
-  });
-
   it("renders the question text", () => {
     renderQuestion();
 
@@ -49,12 +45,12 @@ describe("QuestionWithPassword", () => {
   });
 
   describe("when the user enters the password", () => {
-    it("calls the callback", async () => {
+    it("calls the callback with given password", async () => {
       const { user } = renderQuestion();
 
       const passwordInput = await screen.findByLabelText("Password");
       await user.type(passwordInput, "notSecret");
-      const skipButton = await screen.findByRole("button", { name: /Ok/ });
+      const skipButton = await screen.findByRole("button", { name: "Ok" });
       await user.click(skipButton);
 
       expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "ok" }));
