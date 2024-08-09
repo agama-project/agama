@@ -25,11 +25,11 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
-import { Connection, ConnectionType } from "~/types/network";
+import { Connection, ConnectionStatus, ConnectionType } from "~/types/network";
 
 const /** @type Connection */ wiredConnection = {
     id: "eth0",
-    status: "up",
+    status: ConnectionStatus.UP,
     iface: "eth0",
     method4: "manual",
     addresses: [{ address: "192.168.122.20", prefix: 24 }],

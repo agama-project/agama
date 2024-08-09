@@ -265,15 +265,17 @@ export {
   ApFlags,
   ApSecurityFlags,
   Connection,
-  ConnectionType,
   ConnectionState,
+  ConnectionStatus,
+  ConnectionType,
   DeviceState,
-  NetworkState,
   DeviceType,
-  Wireless,
-  WifiNetworkStatus,
+  NetworkState,
   SecurityProtocols,
+  WifiNetworkStatus,
+  Wireless,
 };
+
 export type {
   AccessPoint,
   ConnectionApi,
