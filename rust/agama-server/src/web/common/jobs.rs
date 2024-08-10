@@ -1,4 +1,4 @@
-use std::{collections::HashMap, task::Poll};
+use std::{collections::HashMap, pin::Pin, task::Poll};
 
 use agama_lib::{
     dbus::get_optional_property,
@@ -19,10 +19,8 @@ use crate::{
     web::Event,
 };
 
-use super::EventStreams;
-
 /// Builds a router for the jobs objects.
-pub async fn jobs_router<T>(
+pub async fn jobs_service<T>(
     dbus: &zbus::Connection,
     destination: &'static str,
     path: &'static str,
@@ -56,13 +54,13 @@ async fn jobs(State(state): State<JobsState<'_>>) -> Result<Json<Vec<Job>>, Erro
 ///
 /// * `dbus`: D-Bus connection to use.
 pub async fn jobs_stream(
-    dbus: &zbus::Connection,
+    dbus: zbus::Connection,
+    destination: &'static str,
     manager: &'static str,
     namespace: &'static str,
-) -> Result<EventStreams, Error> {
-    let jobs_stream = JobsStream::new(dbus, manager, namespace).await?;
-    let stream: EventStreams = vec![("jobs", Box::pin(jobs_stream))];
-    Ok(stream)
+) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+    let stream = JobsStream::new(&dbus, destination, manager, namespace).await?;
+    Ok(Box::pin(stream))
 }
 
 #[pin_project]
@@ -84,6 +82,7 @@ enum JobsStreamError {
 impl JobsStream {
     pub async fn new(
         dbus: &zbus::Connection,
+        destination: &'static str,
         manager: &'static str,
         namespace: &'static str,
     ) -> Result<Self, ServiceError> {
@@ -104,7 +103,7 @@ impl JobsStream {
         let rx = UnboundedReceiverStream::new(rx);
 
         let mut cache: ObjectsCache<Job> = Default::default();
-        let client = JobsClient::new(dbus.clone(), manager, namespace).await?;
+        let client = JobsClient::new(dbus.clone(), destination, manager).await?;
         for (path, job) in client.jobs().await? {
             cache.add(path.into(), job);
         }

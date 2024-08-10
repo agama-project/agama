@@ -16,7 +16,7 @@ use zbus::PropertyStream;
 use crate::error::Error;
 
 mod jobs;
-pub use jobs::{jobs_router, jobs_stream};
+pub use jobs::{jobs_service, jobs_stream};
 
 use super::Event;
 

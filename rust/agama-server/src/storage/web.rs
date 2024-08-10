@@ -31,7 +31,9 @@ use crate::{
         iscsi::{iscsi_service, iscsi_stream},
     },
     web::{
-        common::{issues_router, progress_router, service_status_router, EventStreams},
+        common::{
+            issues_router, jobs_service, progress_router, service_status_router, EventStreams,
+        },
         Event,
     },
 };
@@ -73,12 +75,14 @@ struct StorageState<'a> {
 pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Storage1";
+    const DBUS_DESTINATION: &str = "org.opensuse.Agama.Storage1";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let issues_router = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let iscsi_router = iscsi_service(&dbus).await?;
     let dasd_router = dasd_service(&dbus).await?;
+    let jobs_router = jobs_service(&dbus, DBUS_DESTINATION, DBUS_PATH).await?;
 
     let client = StorageClient::new(dbus.clone()).await?;
     let state = StorageState { client };
@@ -97,6 +101,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         )
         .merge(progress_router)
         .merge(status_router)
+        .merge(jobs_router)
         .nest("/issues", issues_router)
         .nest("/iscsi", iscsi_router)
         .nest("/dasd", dasd_router)
