@@ -59,6 +59,7 @@ import {
   useWifiNetworks,
 } from "~/queries/network";
 import { slugify } from "~/utils";
+import { connect, disconnect } from "~/api/network";
 
 const HIDDEN_NETWORK = Object.freeze({ hidden: true });
 
@@ -90,14 +91,6 @@ const connectionAddresses = (network) => {
   return addresses?.map(formatIp).join(", ");
 };
 
-const connectTo = (id) => {
-  return fetch(`/api/network/connections/${id}/connect`);
-};
-
-const disconnectFrom = (id) => {
-  return fetch(`/api/network/connections/${id}/disconnect`);
-};
-
 const ConnectionData = ({ network }) => {
   return <Stack hasGutter>{connectionAddresses(network)}</Stack>;
 };
@@ -123,7 +116,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
   if (network.settings && !network.device) {
     return (
       <Split hasGutter>
-        <Button onClick={async () => await connectTo(network.settings.id)}>{_("Connect")}</Button>
+        <Button onClick={async () => await connect(network.settings.id)}>{_("Connect")}</Button>
         <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
           {_("Edit")}
         </ButtonLink>
@@ -145,7 +138,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
         <Stack>
           <ConnectionData network={network} />
           <Split hasGutter>
-            <Button onClick={async () => await disconnectFrom(network.settings.id)}>
+            <Button onClick={async () => await disconnect(network.settings.id)}>
               {_("Disconnect")}
             </Button>
             <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>

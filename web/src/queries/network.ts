@@ -43,6 +43,17 @@ import {
   WifiNetworkStatus,
 } from "~/types/network";
 import { formatIp, ipPrefixFor, securityFromFlags } from "~/utils/network";
+import {
+  addConnection,
+  applyChanges,
+  deleteConnection,
+  fetchAccessPoints,
+  fetchConnection,
+  fetchConnections,
+  fetchDevices,
+  fetchState,
+  updateConnection,
+} from "~/api/network";
 
 const buildAddress = (address: string): IPAddress => {
   const [ip, netmask] = address.split("/");
@@ -106,7 +117,7 @@ const toApiConnection = (connection: Connection): ConnectionApi => {
 const stateQuery = () => {
   return {
     queryKey: ["network", "state"],
-    queryFn: () => fetch("/api/network/state").then((res) => res.json()),
+    queryFn: fetchState,
   };
 };
 
@@ -116,22 +127,19 @@ const stateQuery = () => {
 const devicesQuery = () => ({
   queryKey: ["network", "devices"],
   queryFn: async () => {
-    const response = await fetch("/api/network/devices");
-    const devices = await response.json();
-
+    const devices = await fetchDevices();
     return devices.map(fromApiDevice);
   },
   staleTime: Infinity,
 });
 
 /**
- * Returns a query for retrieving the list of known connections
+ * Returns a query for retrieving data for the given conneciton name
  */
-const connectionQuery = (name) => ({
+const connectionQuery = (name: string) => ({
   queryKey: ["network", "connections", name],
   queryFn: async () => {
-    const response = await fetch(`/api/network/connections/${name}`);
-    const connection = await response.json();
+    const connection = await fetchConnection(name);
     return fromApiConnection(connection);
   },
   staleTime: Infinity,
@@ -143,8 +151,7 @@ const connectionQuery = (name) => ({
 const connectionsQuery = () => ({
   queryKey: ["network", "connections"],
   queryFn: async () => {
-    const response = await fetch("/api/network/connections");
-    const connections = await response.json();
+    const connections = await fetchConnections();
     return connections.map(fromApiConnection);
   },
   staleTime: Infinity,
@@ -155,21 +162,20 @@ const connectionsQuery = () => ({
  */
 const accessPointsQuery = () => ({
   queryKey: ["network", "accessPoints"],
-  queryFn: async () => {
-    const response = await fetch("/api/network/wifi");
-    const json = await response.json();
-    const access_points = json.map((ap) => {
-      const access_point: AccessPoint = {
-        ssid: ap.ssid,
-        hwAddress: ap.hw_address,
-        strength: ap.strength,
-        security: securityFromFlags(ap.flags, ap.wpaFlags, ap.rsnFlags),
-      };
-      return access_point;
-    });
-    return access_points.sort((a, b) => (a.strength < b.strength ? -1 : 1));
+  queryFn: async (): Promise<AccessPoint[]> => {
+    const accessPoints = await fetchAccessPoints();
+    return accessPoints
+      .map((ap) => {
+        return {
+          ssid: ap.ssid,
+          hwAddress: ap.hwAddress,
+          strength: ap.strength,
+          security: securityFromFlags(ap.flags, ap.wpaFlags, ap.rsnFlags),
+        };
+      })
+      .sort((a, b) => (a.strength < b.strength ? -1 : 1));
   },
-  //FIXME: Infinity vs 1second
+  // FIXME: Infinity vs 1second
   staleTime: 1000,
 });
 
@@ -181,20 +187,10 @@ const accessPointsQuery = () => ({
 const useAddConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (newConnection) =>
-      fetch("/api/network/connections", {
-        method: "POST",
-        body: JSON.stringify(toApiConnection(newConnection)),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        if (response.ok) {
-          return fetch(`/api/network/system/apply`, { method: "PUT" });
-        } else {
-          throw new Error(_("Please, try again"));
-        }
-      }),
+    mutationFn: (newConnection: Connection) =>
+      addConnection(toApiConnection(newConnection))
+        .then(() => applyChanges())
+        .catch((e) => console.log(e)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
       queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
@@ -204,7 +200,7 @@ const useAddConnectionMutation = () => {
   return useMutation(query);
 };
 /**
- * Hook that builds a mutation to update a network connections
+ * Hook that builds a mutation to update a network connection
  *
  * It does not require to call `useMutation`.
  */
@@ -212,19 +208,9 @@ const useConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (newConnection: Connection) =>
-      fetch(`/api/network/connections/${newConnection.id}`, {
-        method: "PUT",
-        body: JSON.stringify(toApiConnection(newConnection)),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        if (response.ok) {
-          return fetch("/api/network/system/apply", { method: "PUT" });
-        } else {
-          throw new Error(_("Please, try again"));
-        }
-      }),
+      updateConnection(toApiConnection(newConnection))
+        .then(() => applyChanges())
+        .catch((e) => console.log(e)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
       queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
@@ -241,14 +227,10 @@ const useConnectionMutation = () => {
 const useRemoveConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (name) =>
-      fetch(`/api/network/connections/${name}`, { method: "DELETE" }).then((response) => {
-        if (response.ok) {
-          return fetch(`/api/network/system/apply`, { method: "PUT" });
-        } else {
-          throw new Error(_("Please, try again"));
-        }
-      }),
+    mutationFn: (name: string) =>
+      deleteConnection(name)
+        .then(() => applyChanges())
+        .catch((e) => console.log(e)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
       queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
