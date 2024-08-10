@@ -118,10 +118,16 @@ type Route = {
   metric: number;
 };
 
-type AccessPoint = {
+type AccessPointApi = {
   ssid: string;
   strength: number;
   hwAddress: string;
+  flags: number;
+  wpaFlags: number;
+  rsnFlags: number;
+};
+
+type AccessPoint = Omit<AccessPointApi, "flags" | "wpaFlags" | "rsnFlags"> & {
   security: string[];
 };
 
@@ -278,6 +284,7 @@ export {
 
 export type {
   AccessPoint,
+  AccessPointApi,
   ConnectionApi,
   ConnectionOptions,
   Device,
