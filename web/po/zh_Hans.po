@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-04 02:29+0000\n"
+"POT-Creation-Date: 2024-08-08 02:27+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -218,15 +218,15 @@ msgstr "确认"
 msgid "Loading data..."
 msgstr "正在读取数据……"
 
-#: src/components/core/ProgressReport.jsx:56
+#: src/components/core/ProgressReport.jsx:50
 msgid "Pending"
 msgstr "等待中"
 
-#: src/components/core/ProgressReport.jsx:65
+#: src/components/core/ProgressReport.jsx:59
 msgid "In progress"
 msgstr "进行中"
 
-#: src/components/core/ProgressReport.jsx:80
+#: src/components/core/ProgressReport.jsx:74
 msgid "Finished"
 msgstr "已完成"
 
@@ -365,8 +365,8 @@ msgstr "地址"
 msgid "Addresses data list"
 msgstr "地址数据列表"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:64
 #: src/components/network/ConnectionsTable.jsx:93
 #: src/components/storage/ZFCPPage.jsx:381
@@ -581,8 +581,8 @@ msgstr "正在连接"
 msgid "Connected"
 msgstr "已连接"
 
-#. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworksListPage.jsx:74
 #: src/components/network/WifiNetworksListPage.jsx:128
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
