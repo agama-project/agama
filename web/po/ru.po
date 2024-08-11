@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-04 02:29+0000\n"
+"POT-Creation-Date: 2024-08-08 02:27+0000\n"
 "PO-Revision-Date: 2024-07-26 12:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -230,15 +230,15 @@ msgstr "Подтвердить"
 msgid "Loading data..."
 msgstr "Загрузка данных..."
 
-#: src/components/core/ProgressReport.jsx:56
+#: src/components/core/ProgressReport.jsx:50
 msgid "Pending"
 msgstr "Ожидается"
 
-#: src/components/core/ProgressReport.jsx:65
+#: src/components/core/ProgressReport.jsx:59
 msgid "In progress"
 msgstr "В процессе"
 
-#: src/components/core/ProgressReport.jsx:80
+#: src/components/core/ProgressReport.jsx:74
 msgid "Finished"
 msgstr "Завершено"
 
@@ -377,8 +377,8 @@ msgstr "Адреса"
 msgid "Addresses data list"
 msgstr "Список данных адресов"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:64
 #: src/components/network/ConnectionsTable.jsx:93
 #: src/components/storage/ZFCPPage.jsx:381
@@ -594,8 +594,8 @@ msgstr "Подключение"
 msgid "Connected"
 msgstr "Подключено"
 
-#. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworksListPage.jsx:74
 #: src/components/network/WifiNetworksListPage.jsx:128
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
