@@ -19,41 +19,39 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import IpPrefixInput from "~/components/network/IpPrefixInput";
+import IpAddressInput from "~/components/network/IpAddressInput";
 
-const getInput = () => screen.getByRole("textbox", { name: "Ip prefix or netmask" });
+const getInput = () => screen.getByRole("textbox", { name: "IP Address" });
 
-describe("IpPrefixInput", () => {
+describe("IpAddressInput", () => {
   it("renders a textbox using given or default label", () => {
-    const { rerender } = plainRender(<IpPrefixInput />);
-    screen.getByRole("textbox", { name: "Ip prefix or netmask" });
-    rerender(<IpPrefixInput label="Prefix" />);
-    screen.getByRole("textbox", { name: "Prefix" });
+    const { rerender } = plainRender(<IpAddressInput />);
+    screen.getByRole("textbox", { name: "IP Address" });
+    rerender(<IpAddressInput label="Internet Protocol Address" />);
+    screen.getByRole("textbox", { name: "Internet Protocol Address" });
   });
 
-  it("renders its as valid when given defaultValue is none, empty, or valid prefix", () => {
-    const { rerender } = plainRender(<IpPrefixInput />);
+  it("renders its as valid when given defaultValue is none, empty, or valid ip", () => {
+    const { rerender } = plainRender(<IpAddressInput />);
     expect(getInput()).toHaveAttribute("aria-invalid", "false");
-    rerender(<IpPrefixInput defaultValue="" />);
+    rerender(<IpAddressInput defaultValue="" />);
     expect(getInput()).toHaveAttribute("aria-invalid", "false");
-    rerender(<IpPrefixInput defaultValue="1.1.1.1" />);
+    rerender(<IpAddressInput defaultValue="1.1.1.1" />);
     expect(getInput()).toHaveAttribute("aria-invalid", "false");
   });
 
-  it("renders its as not valid when given defaultValue a not valid prefix", () => {
-    plainRender(<IpPrefixInput defaultValue="8.7." />);
+  it("renders its as not valid when given defaultValue a not valid ip", () => {
+    plainRender(<IpAddressInput defaultValue="8.7." />);
     expect(getInput()).toHaveAttribute("aria-invalid", "true");
   });
 
   it("updates its validation status on user interactions", async () => {
     // Let's start with a not valid value
-    const { container, user } = plainRender(<IpPrefixInput defaultValue="x" />);
-    const input = screen.getByRole("textbox", { name: "Ip prefix or netmask" });
+    const { container, user } = plainRender(<IpAddressInput defaultValue="x" />);
+    const input = getInput();
     expect(input).toHaveAttribute("aria-invalid", "true");
     // Getting the focus means that the user is gonna enter a different value,
     // the validation status should be reset until user leaves the input
@@ -64,12 +62,11 @@ describe("IpPrefixInput", () => {
     await user.click(container);
     expect(input).toHaveAttribute("aria-invalid", "false");
     // User enters a not valid value again and leaves the input
-    await user.type(input, "2400");
+    await user.type(input, "192.168.1");
     await user.click(container);
     expect(input).toHaveAttribute("aria-invalid", "true");
     // User fixes the wrong value and leaves the input
-    await user.clear(input);
-    await user.type(input, "24");
+    await user.type(input, ".1");
     await user.click(container);
     expect(input).toHaveAttribute("aria-invalid", "false");
   });

@@ -19,38 +19,34 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
-import { Connection, ConnectionStatus, ConnectionType } from "~/types/network";
+import { Connection, ConnectionMethod, ConnectionStatus, ConnectionType } from "~/types/network";
 
-const /** @type Connection */ wiredConnection = {
-    id: "eth0",
-    status: ConnectionStatus.UP,
-    iface: "eth0",
-    method4: "manual",
-    addresses: [{ address: "192.168.122.20", prefix: 24 }],
-    nameservers: ["192.168.122.1"],
-    gateway4: "192.168.122.1",
-  };
+const wiredConnection = new Connection("eth0", {
+  iface: "eth0",
+  method4: ConnectionMethod.MANUAL,
+  method6: ConnectionMethod.MANUAL,
+  addresses: [{ address: "192.168.122.20", prefix: 24 }],
+  nameservers: ["192.168.122.1"],
+  gateway4: "192.168.122.1",
+});
 
-const /** @type Connection */ wifiConnection = {
-    id: "AgamaNetwork",
-    iface: "wlan0",
-    method4: "auto",
-    wireless: {
-      ssid: "Agama",
-      security: "wpa-psk",
-      mode: "infrastructure",
-      password: "agama.test",
-    },
-    addresses: [{ address: "192.168.69.200", prefix: 24 }],
-    nameservers: [],
-    status: "up",
-  };
+const wifiConnection = new Connection("AgamaNetwork", {
+  iface: "wlan0",
+  method4: ConnectionMethod.AUTO,
+  method6: ConnectionMethod.AUTO,
+  wireless: {
+    ssid: "Agama",
+    security: "wpa-psk",
+    mode: "infrastructure",
+    password: "agama.test",
+  },
+  addresses: [{ address: "192.168.69.200", prefix: 24 }],
+  nameservers: [],
+});
 
 const ethernetDevice = {
   name: "eth0",
@@ -58,6 +54,7 @@ const ethernetDevice = {
   type: ConnectionType.ETHERNET,
   addresses: [{ address: "192.168.122.20", prefix: 24 }],
   macAddress: "00:11:22:33:44::55",
+  status: ConnectionStatus.UP,
 };
 
 const wifiDevice = {
@@ -67,6 +64,7 @@ const wifiDevice = {
   state: "activated",
   addresses: [{ address: "192.168.69.200", prefix: 24 }],
   macAddress: "AA:11:22:33:44::FF",
+  status: ConnectionStatus.UP,
 };
 
 const mockDevices = [ethernetDevice, wifiDevice];

@@ -19,14 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState } from "react";
 import { isValidIp } from "~/utils/network";
-import { TextInput, ValidatedOptions } from "@patternfly/react-core";
+import { TextInput, TextInputProps, ValidatedOptions } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
-const IpAddressInput = ({ label = _("IP Address"), onError = (value) => null, ...props }) => {
+const IpAddressInput = ({
+  label = _("IP Address"),
+  onError = (value) => null,
+  ...props
+}: TextInputProps & { defaultValue?: string }) => {
   const [validated, setValidated] = useState(
     !props.defaultValue || props.defaultValue === "" || isValidIp(props.defaultValue)
       ? "default"

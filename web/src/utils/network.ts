@@ -49,7 +49,8 @@ const connectionHumanState = (state: number): string => {
  * @param value - An IP Address
  * @return true if given IP is valid; false otherwise.
  */
-const isValidIp = (value: string): boolean => ipaddr.IPv4.isValidFourPartDecimal(value);
+const isValidIp = (value: IPAddress["address"]): boolean =>
+  ipaddr.IPv4.isValidFourPartDecimal(value);
 
 /**
  * Check if a value is a valid netmask or network prefix
@@ -59,11 +60,13 @@ const isValidIp = (value: string): boolean => ipaddr.IPv4.isValidFourPartDecimal
  * @param value - An netmask or a network prefix
  * @return true if given IP is valid; false otherwise.
  */
-const isValidIpPrefix = (value: string): boolean => {
-  if (value.match(/^\d+$/)) {
-    return parseInt(value) <= 32;
+const isValidIpPrefix = (value: IPAddress["prefix"]): boolean => {
+  const prefix = value as string;
+
+  if (prefix.match(/^\d+$/)) {
+    return parseInt(prefix) <= 32;
   } else {
-    return ipaddr.IPv4.isValidFourPartDecimal(value);
+    return ipaddr.IPv4.isValidFourPartDecimal(prefix);
   }
 };
 

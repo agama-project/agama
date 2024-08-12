@@ -21,16 +21,14 @@
 
 import React, { useState } from "react";
 import { isValidIpPrefix } from "~/utils/network";
-import { TextInput, ValidatedOptions } from "@patternfly/react-core";
+import { TextInput, TextInputProps, ValidatedOptions } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-
-// @ts-check
 
 const IpPrefixInput = ({
   label = _("Ip prefix or netmask"),
   onError = (value) => null,
   ...props
-}) => {
+}: TextInputProps & { defaultValue?: string | number }) => {
   const [validated, setValidated] = useState(
     !props.defaultValue || props.defaultValue === "" || isValidIpPrefix(props.defaultValue)
       ? "default"

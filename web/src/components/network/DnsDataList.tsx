@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -42,10 +42,21 @@ import { FormLabel } from "~/components/core";
 import { IpAddressInput } from "~/components/network";
 import { _ } from "~/i18n";
 
+type DNS = {
+  id?: number;
+  address: string;
+};
+
 let index = 0;
 
-export default function DnsDataList({ servers: originalServers, updateDnsServers }) {
-  const servers = originalServers.map((dns) => {
+export default function DnsDataList({
+  servers: originalServers,
+  updateDnsServers,
+}: {
+  servers: DNS[];
+  updateDnsServers: (servers: DNS[]) => void;
+}) {
+  const servers = originalServers.map((dns: DNS) => {
     if (!dns.id) dns.id = index++;
     return dns;
   });
@@ -55,19 +66,19 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
     updateDnsServers(servers);
   };
 
-  const updateServer = (id, field, value) => {
+  const updateServer = (id: number, field: string, value: string) => {
     const server = servers.find((dns) => dns.id === id);
     server[field] = value;
     updateDnsServers(servers);
   };
 
-  const deleteServer = (id) => {
+  const deleteServer = (id: number) => {
     const serverIdx = servers.findIndex((dns) => dns.id === id);
     servers.splice(serverIdx, 1);
     updateDnsServers(servers);
   };
 
-  const renderDns = ({ id, address }) => {
+  const renderDns = ({ id, address }: DNS) => {
     return (
       <DataListItem key={`address-${id}`}>
         <DataListItemRow>
@@ -78,12 +89,13 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
                   // TRANSLATORS: input field name
                   label={_("Server IP")}
                   defaultValue={address}
-                  onChange={(_, value) => updateServer(id, "address", value)}
+                  onChange={(_, value: string) => updateServer(id, "address", value)}
                 />
               </DataListCell>,
             ]}
           />
-          <DataListAction>
+          {/** @ts-expect-error: https://github.com/patternfly/patternfly-react/issues/9823 */}
+          <DataListAction id={`delete-dns${id}`}>
             <Button
               size="sm"
               variant="link"
@@ -107,7 +119,8 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
       <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
         <FormLabel>{_("DNS")}</FormLabel>
       </Flex>
-      <DataList isCompact title="Addresses data list">
+      {/** FIXME: try to use an aria-labelledby instead when PatternFly permits it (or open a bug report) */}
+      <DataList isCompact aria-label="DNS data list">
         {servers.map((server) => renderDns(server))}
       </DataList>
       <Flex>

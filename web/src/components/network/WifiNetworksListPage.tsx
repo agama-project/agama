@@ -48,7 +48,7 @@ import { Icon } from "~/components/layout";
 import { WifiConnectionForm } from "~/components/network";
 import { ButtonLink, EmptyState } from "~/components/core";
 import { PATHS } from "~/routes/network";
-import { DeviceState } from "~/types/network";
+import { DeviceState, WifiNetwork, Wireless } from "~/types/network";
 import { _ } from "~/i18n";
 import { formatIp } from "~/utils/network";
 import {
@@ -61,10 +61,11 @@ import {
 import { slugify } from "~/utils";
 import { connect, disconnect } from "~/api/network";
 
-const HIDDEN_NETWORK = Object.freeze({ hidden: true });
+type HiddenNetwork = { hidden: boolean };
+const HIDDEN_NETWORK: HiddenNetwork = Object.freeze({ hidden: true });
 
 // FIXME: Move to the model and stop using translations for checking the state
-const networkState = (state) => {
+const networkState = (state: DeviceState): string => {
   switch (state) {
     case DeviceState.CONFIG:
     case DeviceState.IPCHECK:
@@ -84,18 +85,24 @@ const networkState = (state) => {
 };
 
 // FIXME: too similar to utils/network#connectionAddresses method. Try to join them.
-const connectionAddresses = (network) => {
+const connectionAddresses = (network: WifiNetwork) => {
   const { device, settings } = network;
   const addresses = device ? device.addresses : settings?.addresses;
 
   return addresses?.map(formatIp).join(", ");
 };
 
-const ConnectionData = ({ network }) => {
+const ConnectionData = ({ network }: { network: WifiNetwork }) => {
   return <Stack hasGutter>{connectionAddresses(network)}</Stack>;
 };
 
-const WifiDrawerPanelBody = ({ network, onCancel }) => {
+const WifiDrawerPanelBody = ({
+  network,
+  onCancel,
+}: {
+  network: WifiNetwork;
+  onCancel: () => void;
+}) => {
   const { mutate: removeConnection } = useRemoveConnectionMutation();
   const selectedWifi = useSelectedWifi();
 
@@ -196,10 +203,10 @@ const NetworkListItem = ({ network }) => {
                   columnGap={{ default: "columnGapSm" }}
                 >
                   <div>
-                    <Icon name="lock" size="10" fill="grey" /> {network.security.join(", ")}
+                    <Icon name="lock" size="10" /> {network.security.join(", ")}
                   </div>
                   <div>
-                    <Icon name="signal_cellular_alt" size="10" fill="grey" /> {network.strength}
+                    <Icon name="signal_cellular_alt" size="10" /> {network.strength}
                   </div>
                 </Flex>
               </Flex>
@@ -215,16 +222,20 @@ const NetworkListItem = ({ network }) => {
  * Component for displaying a list of available Wi-Fi networks
  */
 function WifiNetworksListPage() {
-  const /** @type import("~/types/network").WifiNetw */ networks = useWifiNetworks();
+  const networks: WifiNetwork[] = useWifiNetworks();
+  // @ts-expect-error
   const { ssid: selectedSsid, hidden } = useSelectedWifi();
-  const selected = hidden ? HIDDEN_NETWORK : networks.find((n) => n.ssid === selectedSsid);
+  const selected = hidden
+    ? // FIXME: improve below type casting, if possible
+      (HIDDEN_NETWORK as unknown as WifiNetwork)
+    : networks.find((n) => n.ssid === selectedSsid);
   const { mutate: changeSelection } = useSelectedWifiChange();
 
   const selectHiddneNetwork = () => {
     changeSelection(HIDDEN_NETWORK);
   };
 
-  const selectNetwork = (ssid) => {
+  const selectNetwork = (ssid: string) => {
     changeSelection({ ssid, needsAuth: null });
   };
 
@@ -235,7 +246,7 @@ function WifiNetworksListPage() {
   return (
     <Card isRounded isCompact>
       <CardBody>
-        <Drawer isExpanded={selected}>
+        <Drawer isExpanded={!!selected}>
           <DrawerContent
             panelContent={
               <DrawerPanelContent>
@@ -256,7 +267,9 @@ function WifiNetworksListPage() {
                 {networks.length === 0 ? (
                   <EmptyState title="No visible Wi-Fi networks found" icon="error" />
                 ) : (
+                  // @ts-expect-error: related to https://github.com/patternfly/patternfly-react/issues/9823
                   <DataList
+                    title={_("Visible Wi-Fi networks")}
                     isCompact
                     selectedDataListItemId={selected?.ssid}
                     onSelectDataListItem={(_, ssid) => selectNetwork(ssid)}

@@ -28,6 +28,7 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
+  FormSelectProps,
   TextInput,
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
@@ -36,7 +37,7 @@ import {
   useConnectionMutation,
   useSelectedWifiChange,
 } from "~/queries/network";
-import { Connection, Wireless } from "~/types/network";
+import { Connection, WifiNetwork, Wireless } from "~/types/network";
 import sprintf from "sprintf-js";
 import { _ } from "~/i18n";
 
@@ -55,23 +56,26 @@ const selectorOptions = security_options.map((security) => (
   <FormSelectOption key={security.value} value={security.value} label={security.label} />
 ));
 
-const securityFrom = (supported) => {
-  if (supported.includes("WPA2")) return "wpa-psk";
-  if (supported.includes("WPA1")) return "wpa-psk";
-  return "";
-};
-
 // FIXME: improve error handling. The errors props shuld have a key/value error
 //  and the component should show all of them, if any
-export default function WifiConnectionForm({ network, errors = {}, onCancel }) {
+export default function WifiConnectionForm({
+  network,
+  errors = {},
+  onCancel,
+}: {
+  network: WifiNetwork;
+  errors?: object;
+  onCancel: () => void;
+}) {
+  const settings = network.settings?.wireless || new Wireless();
   const { mutate: addConnection } = useAddConnectionMutation();
   const { mutate: updateConnection } = useConnectionMutation();
   const { mutate: updateSelectedNetwork } = useSelectedWifiChange();
-  const [showErrors, setShowErrors] = useState(Object.keys(errors).length > 0);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [ssid, setSsid] = useState(network?.ssid || "");
-  const [password, setPassword] = useState(network?.password || "");
-  const [security, setSecurity] = useState(securityFrom(network?.security || []));
+  const [ssid, setSsid] = useState<string>(settings.ssid);
+  const [security, setSecurity] = useState<string>(settings.security);
+  const [password, setPassword] = useState<string>(settings.password);
+  const [showErrors, setShowErrors] = useState<boolean>(Object.keys(errors).length > 0);
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const hidden = network?.hidden || false;
 
   const accept = async (e) => {
@@ -79,9 +83,8 @@ export default function WifiConnectionForm({ network, errors = {}, onCancel }) {
     setShowErrors(false);
     setIsConnecting(true);
     updateSelectedNetwork({ ssid, needsAuth: null });
-
-    const wireless = new Wireless({ ssid, security, password, hidden });
-    const connection = new Connection(ssid, { wireless });
+    const connection = network.settings || new Connection(ssid);
+    connection.wireless = new Wireless({ ssid, security, password, hidden });
     const action = network.settings ? updateConnection : addConnection;
     action(connection);
   };
@@ -94,19 +97,21 @@ export default function WifiConnectionForm({ network, errors = {}, onCancel }) {
           variant="warning"
           isInline
           title={
+            // @ts-expect-error
             errors.needsAuth
               ? _("Authentication failed, please try again")
               : _("Something went wrong")
           }
         >
+          {/** @ts-expect-error */}
           {!errors.needsAuth && <p>{_("Please, review provided settings and try again.")}</p>}
         </Alert>
       )}
 
-      {network?.hidden && (
+      {hidden && (
         // TRANSLATORS: SSID (Wifi network name) configuration
         <FormGroup fieldId="ssid" label={_("SSID")}>
-          <TextInput id="ssid" name="ssid" value={ssid} onChange={(_, value) => setSsid(value)} />
+          <TextInput id="ssid" name="ssid" value={ssid} onChange={(_, v) => setSsid(v)} />
         </FormGroup>
       )}
 
@@ -116,7 +121,7 @@ export default function WifiConnectionForm({ network, errors = {}, onCancel }) {
           id="security"
           aria-label={_("Security")}
           value={security}
-          onChange={(_, value) => setSecurity(value)}
+          onChange={(_, v) => setSecurity(v)}
         >
           {selectorOptions}
         </FormSelect>
@@ -129,7 +134,7 @@ export default function WifiConnectionForm({ network, errors = {}, onCancel }) {
             name="password"
             aria-label={_("Password")}
             value={password}
-            onChange={(_, value) => setPassword(value)}
+            onChange={(_, v) => setPassword(v)}
           />
         </FormGroup>
       )}

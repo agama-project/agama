@@ -20,12 +20,12 @@
  */
 
 import { del, get, patch, post, put } from "~/api/http";
-import { APIAccessPoint, APIConnection, APIDevice, NetworkState } from "~/types/network";
+import { APIAccessPoint, APIConnection, APIDevice, NetworkGeneralState } from "~/types/network";
 
 /**
  * Returns the network configuration
  */
-const fetchState = (): Promise<NetworkState> => get("/api/network/state");
+const fetchState = (): Promise<NetworkGeneralState> => get("/api/network/state");
 
 /**
  * Returns a list of known devices

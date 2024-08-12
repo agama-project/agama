@@ -19,31 +19,38 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import WifiNetworksListPage from "~/components/network/WifiNetworksListPage";
-import { Connection, ConnectionType, DeviceState, WifiNetworkStatus } from "~/types/network";
+import {
+  Connection,
+  ConnectionMethod,
+  ConnectionType,
+  Device,
+  DeviceState,
+  SecurityProtocols,
+  WifiNetwork,
+  WifiNetworkStatus,
+} from "~/types/network";
 
-const /** @type import("~/types/network").Device */ wlan0 = {
-    name: "wlan0",
-    connection: "Network 1",
-    type: ConnectionType.WIFI,
-    state: DeviceState.ACTIVATED,
-    addresses: [{ address: "192.168.69.201", prefix: 24 }],
-    nameservers: ["192.168.69.1"],
-    method4: "static",
-    method6: "",
-    gateway4: "192.168.69.1",
-    gateway6: "",
-    macAddress: "AA:11:22:33:44::FF",
-  };
+const wlan0: Device = {
+  name: "wlan0",
+  connection: "Network 1",
+  type: ConnectionType.WIFI,
+  state: DeviceState.ACTIVATED,
+  addresses: [{ address: "192.168.69.201", prefix: 24 }],
+  nameservers: ["192.168.69.1"],
+  method4: ConnectionMethod.MANUAL,
+  method6: ConnectionMethod.AUTO,
+  gateway4: "192.168.69.1",
+  gateway6: "",
+  macAddress: "AA:11:22:33:44::FF",
+};
 
 const mockConnectionRemoval = jest.fn();
 const mockAddConnection = jest.fn();
-let /** @type import("~/types/network").WifiNetwork[] */ mockWifiNetworks;
+let mockWifiNetworks: WifiNetwork[];
 
 // NOTE: mock only backend related queries.
 // I.e., do not mock useSelectedWifi nor useSelectedWifiChange here to being able
@@ -68,7 +75,7 @@ describe("WifiNetworksListPage", () => {
           ssid: "Network 1",
           strength: 4,
           hwAddress: "??",
-          security: ["WPA"],
+          security: [SecurityProtocols.RSN],
           device: wlan0,
           settings: new Connection("Network 1", {
             iface: "wlan0",
@@ -80,7 +87,7 @@ describe("WifiNetworksListPage", () => {
           ssid: "Network 2",
           strength: 8,
           hwAddress: "??",
-          security: ["WPA"],
+          security: [SecurityProtocols.RSN],
           settings: new Connection("Network 2", {
             iface: "wlan1",
             addresses: [{ address: "192.168.69.202", prefix: 24 }],
@@ -91,7 +98,7 @@ describe("WifiNetworksListPage", () => {
           ssid: "Network 3",
           strength: 6,
           hwAddress: "??",
-          security: ["WPA"],
+          security: [SecurityProtocols.RSN],
           status: WifiNetworkStatus.NOT_CONFIGURED,
         },
       ];

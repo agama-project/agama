@@ -22,7 +22,7 @@
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { mockNavigateFn, plainRender } from "~/test-utils";
-import { Connection, ConnectionType, Device, DeviceState } from "~/types/network";
+import { Connection, ConnectionMethod, ConnectionType, Device, DeviceState } from "~/types/network";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 
 const mockOnForgetFn = jest.fn();
@@ -34,8 +34,8 @@ const enp1s0: Device = {
   state: DeviceState.ACTIVATED,
   addresses: [{ address: "192.168.69.200", prefix: 24 }],
   nameservers: ["192.168.69.1"],
-  method4: "static",
-  method6: "",
+  method4: ConnectionMethod.MANUAL,
+  method6: ConnectionMethod.AUTO,
   gateway4: "192.168.69.1",
   gateway6: "",
   macAddress: "AA:11:22:33:44::FF",
@@ -48,8 +48,8 @@ const wlan0: Device = {
   state: DeviceState.ACTIVATED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   nameservers: ["192.168.69.1"],
-  method4: "static",
-  method6: "",
+  method4: ConnectionMethod.MANUAL,
+  method6: ConnectionMethod.AUTO,
   gateway4: "192.168.69.1",
   gateway6: "",
   macAddress: "AA:11:22:33:55::FF",

@@ -20,7 +20,13 @@
  */
 
 import { isObject } from "~/utils";
-import { buildAddress, buildAddresses, buildRoutes, formatIp, securityFromFlags } from "~/utils/network";
+import {
+  buildAddress,
+  buildAddresses,
+  buildRoutes,
+  formatIp,
+  securityFromFlags,
+} from "~/utils/network";
 
 enum ApFlags {
   NONE = 0x00000000,
@@ -87,6 +93,11 @@ enum ConnectionStatus {
   DOWN = "down",
 }
 
+enum ConnectionMethod {
+  MANUAL = "manual",
+  AUTO = "auto",
+}
+
 enum DeviceType {
   LOOPBACK = 0,
   ETHERNET = 1,
@@ -128,8 +139,6 @@ type APIAccessPoint = {
   rsnFlags: number;
 };
 
-
-
 class AccessPoint {
   ssid: string;
   strength: number;
@@ -148,7 +157,7 @@ class AccessPoint {
 
     return new AccessPoint(ssid, strength, hwAddress, securityFromFlags(flags, wpaFlags, rsnFlags));
   }
-};
+}
 
 class Device {
   name: string;
@@ -157,8 +166,8 @@ class Device {
   nameservers: string[];
   gateway4: string;
   gateway6: string;
-  method4: string;
-  method6: string;
+  method4: ConnectionMethod;
+  method6: ConnectionMethod;
   routes4?: Route[];
   routes6?: Route[];
   macAddress: string;
@@ -181,15 +190,15 @@ class Device {
       gateway6: ipConfig?.gateway6,
     };
   }
-};
+}
 
 type IPConfig = {
   addresses: string[];
   nameservers?: string[];
   gateway4?: string;
   gateway6?: string;
-  method4: string;
-  method6: string;
+  method4: ConnectionMethod;
+  method6: ConnectionMethod;
   routes4?: APIRoute[];
   routes6?: APIRoute[];
 };
@@ -224,6 +233,7 @@ type APIConnection = {
 };
 
 type WirelessOptions = {
+  ssid?: string;
   password?: string;
   security?: string;
   hidden?: boolean;
@@ -237,7 +247,7 @@ class Wireless {
   hidden?: boolean = false;
   mode: string = "infrastructure";
 
-  constructor(options: WirelessOptions) {
+  constructor(options?: WirelessOptions) {
     if (!isObject(options)) return;
 
     for (const [key, value] of Object.entries(options)) {
@@ -252,8 +262,8 @@ type ConnectionOptions = {
   nameservers?: string[];
   gateway4?: string;
   gateway6?: string;
-  method4?: string;
-  method6?: string;
+  method4?: ConnectionMethod;
+  method6?: ConnectionMethod;
   wireless?: Wireless;
 };
 
@@ -265,9 +275,8 @@ class Connection {
   nameservers: string[] = [];
   gateway4?: string = "";
   gateway6?: string = "";
-  // FIXME: Use enum for methods instead of string
-  method4: string = "auto";
-  method6: string = "auto";
+  method4: ConnectionMethod = ConnectionMethod.AUTO;
+  method6: ConnectionMethod = ConnectionMethod.AUTO;
   wireless?: Wireless;
 
   constructor(id: string, options?: ConnectionOptions) {
@@ -281,10 +290,18 @@ class Connection {
   }
 
   static fromApi(connection: APIConnection) {
-    const { id, interface: iface, ...options } = connection;
+    const { id, status, interface: iface, ...options } = connection;
     const nameservers = connection.nameservers || [];
     const addresses = connection.addresses?.map(buildAddress) || [];
-    return new Connection(id, { ...options, iface, addresses, nameservers });
+    return new Connection(id, {
+      ...options,
+      // FIXME: try a better approach for methods/gateway and/or typecasting
+      method4: options.method4 as ConnectionMethod,
+      method6: options.method6 as ConnectionMethod,
+      iface,
+      addresses,
+      nameservers,
+    });
   }
 
   toApi() {
@@ -315,6 +332,7 @@ type WifiNetwork = AccessPoint & {
   /** Whether the network is connected (configured and connected), configured (configured but
   not connected), or none  */
   status: WifiNetworkStatus;
+  hidden?: boolean;
 };
 
 type NetworkGeneralState = {
@@ -331,6 +349,7 @@ export {
   Connection,
   ConnectionState,
   ConnectionStatus,
+  ConnectionMethod,
   ConnectionType,
   Device,
   DeviceState,
