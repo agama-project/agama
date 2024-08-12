@@ -20,6 +20,7 @@
  */
 
 import { isObject } from "~/utils";
+import { buildAddress, formatIp, securityFromFlags } from "~/utils/network";
 
 enum ApFlags {
   NONE = 0x00000000,
@@ -118,7 +119,7 @@ type Route = {
   metric: number;
 };
 
-type AccessPointApi = {
+type APIAccessPoint = {
   ssid: string;
   strength: number;
   hwAddress: string;
@@ -127,11 +128,29 @@ type AccessPointApi = {
   rsnFlags: number;
 };
 
-type AccessPoint = Omit<AccessPointApi, "flags" | "wpaFlags" | "rsnFlags"> & {
-  security: string[];
+
+
+class AccessPoint {
+  ssid: string;
+  strength: number;
+  hwAddress: string;
+  security: SecurityProtocols[];
+
+  constructor(ssid: string, strength: number, hwAddress: string, security: SecurityProtocols[]) {
+    this.ssid = ssid;
+    this.strength = strength;
+    this.hwAddress = hwAddress;
+    this.security = security;
+  }
+
+  static fromApi(options: APIAccessPoint) {
+    const { ssid, strength, hwAddress, flags, wpaFlags, rsnFlags } = options;
+
+    return new AccessPoint(ssid, strength, hwAddress, securityFromFlags(flags, wpaFlags, rsnFlags));
+  }
 };
 
-type Device = {
+class Device {
   name: string;
   type: ConnectionType;
   addresses: IPAddress[];
@@ -145,6 +164,23 @@ type Device = {
   macAddress: string;
   state: DeviceState;
   connection?: string;
+
+  static fromApi(device: APIDevice) {
+    const { ipConfig, stateReason, ...newDevice } = device;
+    // FIXME: Actually, would be better to have a Device class too in types and
+    // move all of this logic to it.
+    return {
+      ...newDevice,
+      nameservers: ipConfig?.nameservers || [],
+      addresses: buildAddresses(ipConfig?.addresses),
+      routes4: buildRoutes(ipConfig?.routes4),
+      routes6: buildRoutes(ipConfig?.routes6),
+      method4: ipConfig?.method4,
+      method6: ipConfig?.method6,
+      gateway4: ipConfig?.gateway4,
+      gateway6: ipConfig?.gateway6,
+    };
+  }
 };
 
 type IPConfig = {
@@ -154,11 +190,11 @@ type IPConfig = {
   gateway6?: string;
   method4: string;
   method6: string;
-  routes4?: RouteApi[];
-  routes6?: RouteApi[];
+  routes4?: APIRoute[];
+  routes6?: APIRoute[];
 };
 
-type DeviceApi = {
+type APIDevice = {
   name: string;
   type: ConnectionType;
   macAddress: string;
@@ -168,13 +204,13 @@ type DeviceApi = {
   stateReason: string;
 };
 
-type RouteApi = {
+type APIRoute = {
   destination: string;
   nextHop: string;
   metric: number;
 };
 
-type ConnectionApi = {
+type APIConnection = {
   id: string;
   interface: string;
   addresses?: string[];
@@ -243,6 +279,27 @@ class Connection {
       if (value) this[key] = value;
     }
   }
+
+  static fromApi(connection: APIConnection) {
+    const { id, interface: iface, ...options } = connection;
+    const nameservers = connection.nameservers || [];
+    const addresses = connection.addresses?.map(buildAddress) || [];
+    return new Connection(id, { ...options, iface, addresses, nameservers });
+  }
+
+  toApi() {
+    const { iface, addresses, ...newConnection } = this;
+    const result: APIConnection = {
+      ...newConnection,
+      interface: iface,
+      addresses: addresses?.map(formatIp) || [],
+    };
+
+    if (result.gateway4 === "") delete result.gateway4;
+    if (result.gateway6 === "") delete result.gateway6;
+
+    return result;
+  }
 }
 
 enum WifiNetworkStatus {
@@ -268,12 +325,14 @@ type NetworkGeneralState = {
 };
 
 export {
+  AccessPoint,
   ApFlags,
   ApSecurityFlags,
   Connection,
   ConnectionState,
   ConnectionStatus,
   ConnectionType,
+  Device,
   DeviceState,
   DeviceType,
   NetworkState,
@@ -283,15 +342,13 @@ export {
 };
 
 export type {
-  AccessPoint,
-  AccessPointApi,
-  ConnectionApi,
+  APIAccessPoint,
+  APIConnection,
   ConnectionOptions,
-  Device,
-  DeviceApi,
+  APIDevice,
   IPAddress,
   NetworkGeneralState,
   Route,
-  RouteApi,
+  APIRoute,
   WifiNetwork,
 };

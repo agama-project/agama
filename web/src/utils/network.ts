@@ -21,12 +21,14 @@
 
 import ipaddr from "ipaddr.js";
 import {
+  APIRoute,
   ApFlags,
   ApSecurityFlags,
   Connection,
   ConnectionState,
   Device,
   IPAddress,
+  Route,
   SecurityProtocols,
 } from "~/types/network";
 
@@ -131,13 +133,21 @@ const formatIp = (addr: IPAddress): string => {
   }
 };
 
+const buildAddress = (address: string): IPAddress => {
+  const [ip, netmask] = address.split("/");
+  const result: IPAddress = { address: ip };
+  if (netmask) result.prefix = ipPrefixFor(netmask);
+  return result;
+};
+
+
 /**
  * @param flags - AP flags
  * @param wpa_flags - AP WPA1 flags
  * @param rsn_flags - AP WPA2 flags
  * @return supported security protocols
  */
-const securityFromFlags = (flags: number, wpa_flags: number, rsn_flags: number): string[] => {
+const securityFromFlags = (flags: number, wpa_flags: number, rsn_flags: number): SecurityProtocols[] => {
   const security = [];
 
   if (flags & ApFlags.PRIVACY && wpa_flags === 0 && rsn_flags === 0) {
@@ -157,6 +167,15 @@ const securityFromFlags = (flags: number, wpa_flags: number, rsn_flags: number):
   return security;
 };
 
+const buildAddresses = (rawAddresses?: string[]): IPAddress[] =>
+  rawAddresses?.map(buildAddress) || [];
+
+const buildRoutes = (rawRoutes?: APIRoute[]): Route[] => {
+  if (!rawRoutes) return [];
+
+  return rawRoutes.map((route) => ({ ...route, destination: buildAddress(route.destination) }));
+};
+
 /**
  * Returns addresses IP addresses for given connection
  *
@@ -172,6 +191,9 @@ const connectionAddresses = (connection: Connection, devices: Device[]): string 
 };
 
 export {
+  buildAddress,
+  buildAddresses,
+  buildRoutes,
   connectionAddresses,
   connectionHumanState,
   formatIp,

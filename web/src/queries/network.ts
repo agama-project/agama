@@ -32,17 +32,17 @@ import { _ } from "~/i18n";
 import {
   AccessPoint,
   Connection,
-  ConnectionApi,
+  APIConnection,
   Device,
-  DeviceApi,
+  APIDevice,
   DeviceState,
   IPAddress,
   Route,
-  RouteApi,
+  APIRoute,
   WifiNetwork,
   WifiNetworkStatus,
 } from "~/types/network";
-import { formatIp, ipPrefixFor, securityFromFlags } from "~/utils/network";
+import { buildAddress, formatIp, ipPrefixFor, securityFromFlags } from "~/utils/network";
 import {
   addConnection,
   applyChanges,
@@ -54,62 +54,6 @@ import {
   fetchState,
   updateConnection,
 } from "~/api/network";
-
-const buildAddress = (address: string): IPAddress => {
-  const [ip, netmask] = address.split("/");
-  const result: IPAddress = { address: ip };
-  if (netmask) result.prefix = ipPrefixFor(netmask);
-  return result;
-};
-
-const buildAddresses = (rawAddresses?: string[]): IPAddress[] =>
-  rawAddresses?.map(buildAddress) || [];
-
-const buildRoutes = (rawRoutes?: RouteApi[]): Route[] => {
-  if (!rawRoutes) return [];
-
-  return rawRoutes.map((route) => ({ ...route, destination: buildAddress(route.destination) }));
-};
-/**
- * Returns the device settings
- */
-const fromApiDevice = (device: DeviceApi): Device => {
-  const { ipConfig, stateReason, ...newDevice } = device;
-  // FIXME: Actually, would be better to have a Device class too in types and
-  // move all of this logic to it.
-  return {
-    ...newDevice,
-    nameservers: ipConfig?.nameservers || [],
-    addresses: buildAddresses(ipConfig?.addresses),
-    routes4: buildRoutes(ipConfig?.routes4),
-    routes6: buildRoutes(ipConfig?.routes6),
-    method4: ipConfig?.method4,
-    method6: ipConfig?.method6,
-    gateway4: ipConfig?.gateway4,
-    gateway6: ipConfig?.gateway6,
-  };
-};
-
-const fromApiConnection = (connection: ConnectionApi): Connection => {
-  const { id, interface: iface, ...options } = connection;
-  const nameservers = connection.nameservers || [];
-  const addresses = connection.addresses?.map(buildAddress) || [];
-  return new Connection(id, { ...options, iface, addresses, nameservers });
-};
-
-const toApiConnection = (connection: Connection): ConnectionApi => {
-  const { iface, addresses, ...newConnection } = connection;
-  const result: ConnectionApi = {
-    ...newConnection,
-    interface: iface,
-    addresses: addresses?.map(formatIp) || [],
-  };
-
-  if (result.gateway4 === "") delete result.gateway4;
-  if (result.gateway6 === "") delete result.gateway6;
-
-  return result;
-};
 
 /**
  * Returns a query for retrieving the network configuration
@@ -128,7 +72,7 @@ const devicesQuery = () => ({
   queryKey: ["network", "devices"],
   queryFn: async () => {
     const devices = await fetchDevices();
-    return devices.map(fromApiDevice);
+    return devices.map(Device.fromApi);
   },
   staleTime: Infinity,
 });
@@ -140,7 +84,7 @@ const connectionQuery = (name: string) => ({
   queryKey: ["network", "connections", name],
   queryFn: async () => {
     const connection = await fetchConnection(name);
-    return fromApiConnection(connection);
+    return Connection.fromApi(connection);
   },
   staleTime: Infinity,
 });
@@ -152,7 +96,7 @@ const connectionsQuery = () => ({
   queryKey: ["network", "connections"],
   queryFn: async () => {
     const connections = await fetchConnections();
-    return connections.map(fromApiConnection);
+    return connections.map(Connection.fromApi);
   },
   staleTime: Infinity,
 });
@@ -165,14 +109,7 @@ const accessPointsQuery = () => ({
   queryFn: async (): Promise<AccessPoint[]> => {
     const accessPoints = await fetchAccessPoints();
     return accessPoints
-      .map((ap) => {
-        return {
-          ssid: ap.ssid,
-          hwAddress: ap.hwAddress,
-          strength: ap.strength,
-          security: securityFromFlags(ap.flags, ap.wpaFlags, ap.rsnFlags),
-        };
-      })
+      .map(AccessPoint.fromApi)
       .sort((a, b) => (a.strength < b.strength ? -1 : 1));
   },
   // FIXME: Infinity vs 1second
@@ -188,7 +125,7 @@ const useAddConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (newConnection: Connection) =>
-      addConnection(toApiConnection(newConnection))
+      addConnection(newConnection.toApi())
         .then(() => applyChanges())
         .catch((e) => console.log(e)),
     onSuccess: () => {
@@ -208,7 +145,7 @@ const useConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (newConnection: Connection) =>
-      updateConnection(toApiConnection(newConnection))
+      updateConnection(newConnection.toApi())
         .then(() => applyChanges())
         .catch((e) => console.log(e)),
     onSuccess: () => {
