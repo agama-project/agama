@@ -39,7 +39,7 @@ import {
 } from "@patternfly/react-core";
 
 import { FormLabel } from "~/components/core";
-import { IpAddressInput } from "~/components/network";
+import IpAddressInput from "~/components/network/IpAddressInput";
 import { _ } from "~/i18n";
 
 type DNS = {

@@ -22,7 +22,7 @@
 import React from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import { WifiNetworksListPage } from "~/components/network";
+import WifiNetworksListPage from "~/components/network/WifiNetworksListPage";
 import { useNetworkConfigChanges } from "~/queries/network";
 import { _ } from "~/i18n";
 

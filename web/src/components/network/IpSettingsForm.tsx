@@ -37,7 +37,8 @@ import {
 } from "@patternfly/react-core";
 
 import { Page } from "~/components/core";
-import { AddressesDataList, DnsDataList } from "~/components/network";
+import AddressesDataList from "~/components/network/AddressesDataList";
+import DnsDataList from "~/components/network/DnsDataList";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useConnection, useConnectionMutation } from "~/queries/network";

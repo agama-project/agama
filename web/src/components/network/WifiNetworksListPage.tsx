@@ -45,8 +45,8 @@ import {
 } from "@patternfly/react-core";
 import { generatePath } from "react-router-dom";
 import { Icon } from "~/components/layout";
-import { WifiConnectionForm } from "~/components/network";
 import { ButtonLink, EmptyState } from "~/components/core";
+import WifiConnectionForm from "~/components/network/WifiConnectionForm";
 import { PATHS } from "~/routes/network";
 import { DeviceState, WifiNetwork, Wireless } from "~/types/network";
 import { _ } from "~/i18n";

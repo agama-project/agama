@@ -39,7 +39,8 @@ import {
 } from "@patternfly/react-core";
 
 import { FormLabel } from "~/components/core";
-import { IpAddressInput, IpPrefixInput } from "~/components/network";
+import IpAddressInput from "~/components/network/IpAddressInput";
+import IpPrefixInput from "~/components/network/IpPrefixInput";
 import { _ } from "~/i18n";
 import { IPAddress } from "~/types/network";
 

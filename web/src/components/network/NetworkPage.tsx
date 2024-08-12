@@ -22,7 +22,7 @@
 import React from "react";
 import { CardBody, Grid, GridItem } from "@patternfly/react-core";
 import { ButtonLink, CardField, EmptyState, Page } from "~/components/core";
-import { ConnectionsTable } from "~/components/network";
+import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { _ } from "~/i18n";
 import { connectionAddresses } from "~/utils/network";
 import { sprintf } from "sprintf-js";
