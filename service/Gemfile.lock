@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    agama-yast (9)
+    agama-yast (9.devel505)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
       eventmachine (~> 1.2.7)
       fast_gettext (~> 2.3.0)
-      nokogiri (~> 1.16.6)
+      nokogiri (~> 1.15)
       rexml (~> 3.2.5)
       ruby-dbus (>= 0.23.1, < 1.0)
 
