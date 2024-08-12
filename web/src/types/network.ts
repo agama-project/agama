@@ -20,7 +20,7 @@
  */
 
 import { isObject } from "~/utils";
-import { buildAddress, formatIp, securityFromFlags } from "~/utils/network";
+import { buildAddress, buildAddresses, buildRoutes, formatIp, securityFromFlags } from "~/utils/network";
 
 enum ApFlags {
   NONE = 0x00000000,

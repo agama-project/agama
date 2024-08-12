@@ -20,7 +20,7 @@
  */
 
 import { del, get, patch, post, put } from "~/api/http";
-import { AccessPointApi, ConnectionApi, DeviceApi, NetworkState } from "~/types/network";
+import { APIAccessPoint, APIConnection, APIDevice, NetworkState } from "~/types/network";
 
 /**
  * Returns the network configuration
@@ -30,37 +30,37 @@ const fetchState = (): Promise<NetworkState> => get("/api/network/state");
 /**
  * Returns a list of known devices
  */
-const fetchDevices = (): Promise<DeviceApi[]> => get("/api/network/devices");
+const fetchDevices = (): Promise<APIDevice[]> => get("/api/network/devices");
 
 /**
  * Returns data for given connection name
  */
-const fetchConnection = (name: string): Promise<ConnectionApi> =>
+const fetchConnection = (name: string): Promise<APIConnection> =>
   get(`/api/network/connections/${name}`);
 
 /**
  * Returns the list of known connections
  */
-const fetchConnections = (): Promise<ConnectionApi[]> => get("/api/network/connections");
+const fetchConnections = (): Promise<APIConnection[]> => get("/api/network/connections");
 
 /**
  * Returns the list of known access points
  */
-const fetchAccessPoints = (): Promise<AccessPointApi[]> => get("/api/network/wifi");
+const fetchAccessPoints = (): Promise<APIAccessPoint[]> => get("/api/network/wifi");
 
 /**
  * Adds a new connection
  *
  * @param connection - connection to be added
  */
-const addConnection = (connection: ConnectionApi) => post("/api/network/connections", connection);
+const addConnection = (connection: APIConnection) => post("/api/network/connections", connection);
 
 /**
  * Updates given connection
  *
  * @param connection - connection to be added
  */
-const updateConnection = (connection: ConnectionApi) =>
+const updateConnection = (connection: APIConnection) =>
   put(`/api/network/connections/${connection.id}`, connection);
 
 /**
