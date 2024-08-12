@@ -27,8 +27,10 @@ rm /tmp/systemsmanagement_key.gpg
 # import the IBS key for the Devel:YaST:Agama:Head project
 rpm --import /tmp/Devel_YaST_Agama_Head_key.gpg
 rm /tmp/Devel_YaST_Agama_Head_key.gpg
-# import the openSUSE keys
-rpm --import /usr/lib/rpm/gnupg/keys/*.asc
+# import the openSUSE keys, but check if there is any
+if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
+  rpm --import /usr/lib/rpm/gnupg/keys/*.asc
+fi
 
 # activate services
 systemctl enable sshd.service
