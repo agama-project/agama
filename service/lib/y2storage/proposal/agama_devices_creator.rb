@@ -155,7 +155,7 @@ module Y2Storage
 
       def partitions_for_existing(planned_devices)
         # Maybe in the future this can include partitions on top of existing MDs
-        # TODO: simplistic implementation
+        # NOTE: simplistic implementation
         planned_devices.partitions.reject(&:reuse?)
       end
 
