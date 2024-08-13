@@ -30,7 +30,7 @@ export default function ButtonLink({ to, isPrimary = false, children, ...props }
   return (
     <Link
       to={to}
-      className={[buttonStyles.button, buttonStyles.modifiers[isPrimary ? "primary" : "scondary"]]
+      className={[buttonStyles.button, buttonStyles.modifiers[isPrimary ? "primary" : "secondary"]]
         .join(" ")
         .trim()}
       {...props}
