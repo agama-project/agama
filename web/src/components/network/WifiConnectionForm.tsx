@@ -56,7 +56,7 @@ const selectorOptions = security_options.map((security) => (
   <FormSelectOption key={security.value} value={security.value} label={security.label} />
 ));
 
-// FIXME: improve error handling. The errors props shuld have a key/value error
+// FIXME: improve error handling. The errors props should have a key/value error
 //  and the component should show all of them, if any
 export default function WifiConnectionForm({
   network,
