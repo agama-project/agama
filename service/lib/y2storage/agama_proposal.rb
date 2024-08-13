@@ -182,7 +182,7 @@ module Y2Storage
 
     # Planned partitions that will hold the given planned devices
     #
-    # TODO:
+    # NOTE:
     # Extracted to a separate method because it's something that may need some extra logic
     # in the future. See the equivalent method at DevicegraphGenerator.
     #
