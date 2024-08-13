@@ -20,22 +20,28 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
-import buttonStyles from "@patternfly/react-styles/css/components/Button/button";
+import { Button, ButtonProps } from "@patternfly/react-core";
+import { useHref } from "react-router-dom";
 
-// TODO: Evaluate which is better, this approach or just using a
-// PF/Button with onClick callback and "component" prop sets as "a"
+type LinkProps = Omit<ButtonProps, "component"> & {
+  /** The target route */
+  to: string;
+  /** Whether use PF/Button primary variant */
+  isPrimary?: boolean;
+};
 
-export default function ButtonLink({ to, isPrimary = false, children, ...props }) {
+/**
+ * Returns an HTML `<a>` tag built on top of PF/Button and useHref ReactRouter hook
+ *
+ * @note when isPrimary not given or false and props does not contain a variant prop,
+ * it will default to "secondary" variant
+ */
+export default function Link({ to, isPrimary, variant, children, ...props }: LinkProps) {
+  const href = useHref(to);
+  const linkVariant = isPrimary ? "primary" : variant || "secondary";
   return (
-    <Link
-      to={to}
-      className={[buttonStyles.button, buttonStyles.modifiers[isPrimary ? "primary" : "scondary"]]
-        .join(" ")
-        .trim()}
-      {...props}
-    >
+    <Button component="a" href={href} variant={linkVariant} {...props}>
       {children}
-    </Link>
+    </Button>
   );
 }
