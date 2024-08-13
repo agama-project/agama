@@ -20,22 +20,25 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
-import buttonStyles from "@patternfly/react-styles/css/components/Button/button";
+import { Button, ButtonProps } from "@patternfly/react-core";
+import { useNavigate } from "react-router-dom";
 
-// TODO: Evaluate which is better, this approach or just using a
-// PF/Button with onClick callback and "component" prop sets as "a"
+type LinkProps = Omit<ButtonProps, "component"> & {
+  /** The target route */
+  to: string;
+};
 
-export default function ButtonLink({ to, isPrimary = false, children, ...props }) {
+/**
+ * Returns an HTML `<a>` tag built on top of PF/Button and useNavigate ReactRouter hook
+ *
+ * By default, it uses the PF/Button "secondary" variant to make the link look like a button but
+ * using the right HTML tag for a navigation action.
+ */
+export default function ButtonLink({ to, children, ...props }: LinkProps) {
+  const navigate = useNavigate();
   return (
-    <Link
-      to={to}
-      className={[buttonStyles.button, buttonStyles.modifiers[isPrimary ? "primary" : "secondary"]]
-        .join(" ")
-        .trim()}
-      {...props}
-    >
+    <Button component="a" variant="secondary" onClick={() => navigate(to)} {...props}>
       {children}
-    </Link>
+    </Button>
   );
 }
