@@ -36,8 +36,11 @@ const WiredConnections = ({ connections, devices }) => {
   return (
     <CardField label={total > 0 && _("Wired")}>
       <CardBody>
-        {total === 0 && <EmptyState title={_("No wired connections found")} icon="warning" />}
-        {total !== 0 && <ConnectionsTable connections={connections} devices={devices} />}
+        {total === 0 ? (
+          <EmptyState title={_("No wired connections found")} icon="warning" />
+        ) : (
+          <ConnectionsTable connections={connections} devices={devices} />
+        )}
       </CardBody>
     </CardField>
   );
