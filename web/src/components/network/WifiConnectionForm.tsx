@@ -71,7 +71,7 @@ export default function WifiConnectionForm({
   const { mutate: addConnection } = useAddConnectionMutation();
   const { mutate: updateConnection } = useConnectionMutation();
   const { mutate: updateSelectedNetwork } = useSelectedWifiChange();
-  const [ssid, setSsid] = useState<string>(settings.ssid);
+  const [ssid, setSsid] = useState<string>(network.ssid);
   const [security, setSecurity] = useState<string>(settings.security);
   const [password, setPassword] = useState<string>(settings.password);
   const [showErrors, setShowErrors] = useState<boolean>(Object.keys(errors).length > 0);

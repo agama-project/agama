@@ -52,7 +52,6 @@ import { DeviceState, WifiNetwork, Wireless } from "~/types/network";
 import { _ } from "~/i18n";
 import { formatIp } from "~/utils/network";
 import {
-  useNetwork,
   useRemoveConnectionMutation,
   useSelectedWifi,
   useSelectedWifiChange,

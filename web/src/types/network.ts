@@ -221,7 +221,7 @@ type APIRoute = {
 
 type APIConnection = {
   id: string;
-  interface: string;
+  interface?: string;
   addresses?: string[];
   nameservers?: string[];
   gateway4?: string;
@@ -269,7 +269,7 @@ type ConnectionOptions = {
 
 class Connection {
   id: string;
-  status: ConnectionStatus;
+  status: ConnectionStatus = ConnectionStatus.UP;
   iface: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
