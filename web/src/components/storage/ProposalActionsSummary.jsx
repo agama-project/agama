@@ -23,7 +23,7 @@
 
 import React from "react";
 import { Button, Skeleton, Stack, List, ListItem } from "@patternfly/react-core";
-import { CardField, ButtonLink } from "~/components/core";
+import { CardField, Link } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -236,7 +236,7 @@ export default function ProposalActionsSummary({
         isLoading ? (
           <Skeleton fontSize="sm" width="100px" />
         ) : (
-          <ButtonLink to={PATHS.spacePolicy}>{_("Change")}</ButtonLink>
+          <Link to={PATHS.spacePolicy}>{_("Change")}</Link>
         )
       }
       cardProps={{ isFullHeight: false }}

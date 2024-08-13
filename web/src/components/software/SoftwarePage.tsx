@@ -30,7 +30,7 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { ButtonLink, CardField, IssuesHint, Page } from "~/components/core";
+import { Link, CardField, IssuesHint, Page } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
 import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
@@ -67,9 +67,9 @@ const SelectedPatterns = ({ patterns }): React.ReactNode => (
   <CardField
     label={_("Selected patterns")}
     actions={
-      <ButtonLink to={PATHS.patternsSelection} isPrimary>
+      <Link to={PATHS.patternsSelection} isPrimary>
         {_("Change selection")}
-      </ButtonLink>
+      </Link>
     }
   >
     <CardBody>

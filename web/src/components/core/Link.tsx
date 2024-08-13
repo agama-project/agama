@@ -21,23 +21,26 @@
 
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useHref } from "react-router-dom";
 
 type LinkProps = Omit<ButtonProps, "component"> & {
   /** The target route */
   to: string;
+  /** Whether use PF/Button primary variant */
+  isPrimary?: boolean;
 };
 
 /**
- * Returns an HTML `<a>` tag built on top of PF/Button and useNavigate ReactRouter hook
+ * Returns an HTML `<a>` tag built on top of PF/Button and useHref ReactRouter hook
  *
- * By default, it uses the PF/Button "secondary" variant to make the link look like a button but
- * using the right HTML tag for a navigation action.
+ * @note when isPrimary not given or false and props does not contain a variant prop,
+ * it will default to "secondary" variant
  */
-export default function ButtonLink({ to, children, ...props }: LinkProps) {
-  const navigate = useNavigate();
+export default function Link({ to, isPrimary, variant, children, ...props }: LinkProps) {
+  const href = useHref(to);
+  const linkVariant = isPrimary ? "primary" : variant || "secondary";
   return (
-    <Button component="a" variant="secondary" onClick={() => navigate(to)} {...props}>
+    <Button component="a" href={href} variant={linkVariant} {...props}>
       {children}
     </Button>
   );
