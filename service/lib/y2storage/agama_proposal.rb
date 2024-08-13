@@ -102,6 +102,7 @@ module Y2Storage
       calculate_initial_planned(devicegraph)
       return if fatal_error?
 
+      configure_ptable_types(devicegraph)
       clean_graph(devicegraph)
       complete_planned(devicegraph)
       return if fatal_error?
@@ -122,6 +123,16 @@ module Y2Storage
       remove_empty_partition_tables(devicegraph)
       protect_sids
       space_maker.prepare_devicegraph(devicegraph, partitions_for_clean)
+    end
+
+    def configure_ptable_types(devicegraph)
+      configured = settings.drives.select(&:ptable_type)
+      configured.each do |drive|
+        dev = device_for(drive, devicegraph)
+        next unless dev
+
+        dev.forced_ptable_type = drive.ptable_type
+      end
     end
 
     # Modifies the given list of planned devices, removing shadowed subvolumes and
@@ -165,7 +176,7 @@ module Y2Storage
     # @param devicegraph [Y2Storage::Devicegraph]
     # @return [Array<Y2Storage::BlkDevice>]
     def drives_with_empty_partition_table(devicegraph)
-      devices = settings.drives.map(&:found_device).compact
+      devices = settings.drives.map { |d| device_for(d, devicegraph) }.compact
       devices.select { |d| d.partition_table && d.partitions.empty? }
     end
 
@@ -190,25 +201,16 @@ module Y2Storage
     # Creates planned devices on a given devicegraph
     #
     def create_devices(devicegraph)
-      # Almost for sure, this should happen as part of the creation of devices below
-      add_partition_tables(devicegraph)
-
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
       names = settings.drives.map(&:found_device).compact.map(&:name)
       protect_sids
       result = devices_creator.populated_devicegraph(planned_devices, names, space_maker)
     end
 
-    # Add partition tables
-    #
-    # This method create/change partitions tables according to information
-    # specified in the profile. Disks containing any partition will be ignored.
-    #
-    # The devicegraph which is passed as first argument will be modified.
-    #
-    # @param devicegraph [Devicegraph]                 Starting point
-    def add_partition_tables(devicegraph)
-      # TODO: if needed, will very likely be moved to AgamaDevicesCreator
+    def device_for(drive, devicegraph)
+      return unless drive.found_device
+
+      devicegraph.find_device(drive.found_device.sid)
     end
   end
 end
