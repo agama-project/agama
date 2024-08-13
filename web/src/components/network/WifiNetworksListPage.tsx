@@ -45,7 +45,7 @@ import {
 } from "@patternfly/react-core";
 import { generatePath } from "react-router-dom";
 import { Icon } from "~/components/layout";
-import { ButtonLink, EmptyState } from "~/components/core";
+import { Link, EmptyState } from "~/components/core";
 import WifiConnectionForm from "~/components/network/WifiConnectionForm";
 import { PATHS } from "~/routes/network";
 import { DeviceState, WifiNetwork, Wireless } from "~/types/network";
@@ -123,9 +123,9 @@ const WifiDrawerPanelBody = ({
     return (
       <Split hasGutter>
         <Button onClick={async () => await connect(network.settings.id)}>{_("Connect")}</Button>
-        <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
+        <Link to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
           {_("Edit")}
-        </ButtonLink>
+        </Link>
         <Button variant="secondary" isDanger onClick={forgetNetwork}>
           {_("Forget")}
         </Button>
@@ -147,9 +147,9 @@ const WifiDrawerPanelBody = ({
             <Button onClick={async () => await disconnect(network.settings.id)}>
               {_("Disconnect")}
             </Button>
-            <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
+            <Link to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
               {_("Edit")}
-            </ButtonLink>
+            </Link>
             <Button variant="secondary" isDanger onClick={forgetNetwork}>
               {_("Forget")}
             </Button>

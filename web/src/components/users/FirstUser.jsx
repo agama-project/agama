@@ -23,7 +23,7 @@ import React, { useState, useEffect } from "react";
 import { Split, Stack } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { useNavigate } from "react-router-dom";
-import { RowActions, ButtonLink } from "~/components/core";
+import { RowActions, Link } from "~/components/core";
 import { _ } from "~/i18n";
 import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
 import { PATHS } from "~/routes/users";
@@ -41,9 +41,9 @@ const UserNotDefined = ({ actionCb }) => {
           </strong>
         </div>
         <Split hasGutter>
-          <ButtonLink to={PATHS.firstUser.create} isPrimary>
+          <Link to={PATHS.firstUser.create} isPrimary>
             {_("Define a user now")}
-          </ButtonLink>
+          </Link>
         </Split>
       </Stack>
     </>

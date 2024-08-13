@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 12 12:38:45 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Do not fail if there is no opensuse keys on medium for PXE
+  (gh#openSUSE/agama#1535)
+
+-------------------------------------------------------------------
 Fri Aug  2 08:02:41 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Display QR codes at the console for easier connecting to Agama

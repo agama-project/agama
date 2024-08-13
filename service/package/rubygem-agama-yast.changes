@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 12 11:44:15 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Less strict nokogiri dependency as nokogiri follows semver, so do
+  not depend on patch level (gh#openSUSE/agama#1534).
+
+-------------------------------------------------------------------
 Thu Aug  1 13:57:51 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use exfatprogs instead of exfat-utils (gh#openSUSE/agama#1520).
