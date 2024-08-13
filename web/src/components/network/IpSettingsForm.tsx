@@ -79,7 +79,6 @@ export default function IpSettingsForm() {
   };
 
   const onMethodChange: FormSelectProps["onChange"] = (_, value) => {
-    console.log("onMethodChange", value);
     let nextAddresses = cleanAddresses(addresses);
 
     if (!usingDHCP(ConnectionMethod[value]) && nextAddresses.length === 0) {
@@ -137,10 +136,6 @@ export default function IpSettingsForm() {
       </HelperText>
     );
   };
-
-  console.log("Method", method);
-  console.log("ConnectionMethod.AUTO", ConnectionMethod.AUTO);
-  console.log("ConnectionMethod.MANUAL", ConnectionMethod.MANUAL);
 
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name
