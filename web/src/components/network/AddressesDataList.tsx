@@ -53,9 +53,12 @@ export default function AddressesDataList({
   updateAddresses,
   allowEmpty = true,
 }: {
+  /** The initial collection of IP addresses */
   addresses: Address[];
+  /** A callback to be called for updating the IP addresses collection */
   updateAddresses: (addresses: Address[]) => void;
-  allowEmpty: boolean;
+  /** Whether the component allows reaching an empty addresses collection */
+  allowEmpty?: boolean;
 }) {
   const addresses = originalAddresses.map((addr) => {
     const newAddr = addr;
