@@ -21,19 +21,19 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { Link } from "~/components/core";
 
 describe("Link", () => {
   it("renders an HTML `a` tag with the `href` attribute set to given `to` prop", () => {
-    plainRender(<Link to="somewhere">Agama Link</Link>);
+    installerRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" });
     // NOTE: Link uses ReactRouter#useHref hook which is mocked in test-utils.js
     expect(link).toHaveAttribute("href", "somewhere");
   });
 
   it("renders it as primary when either, using a truthy `isPrimary` prop or `variant` is set to primary", () => {
-    const { rerender } = plainRender(<Link to="somewhere">Agama Link</Link>);
+    const { rerender } = installerRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" });
 
     expect(link.classList.contains("pf-m-primary")).not.toBe(true);
@@ -70,7 +70,7 @@ describe("Link", () => {
   });
 
   it("renders it as secondary when neither is given, a truthy `isPrimary` nor `variant`", () => {
-    const { rerender } = plainRender(<Link to="somewhere">Agama Link</Link>);
+    const { rerender } = installerRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" });
 
     expect(link.classList.contains("pf-m-secondary")).toBe(true);
