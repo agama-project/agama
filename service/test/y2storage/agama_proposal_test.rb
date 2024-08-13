@@ -93,6 +93,27 @@ describe Y2Storage::AgamaProposal do
       end
     end
 
+    context "when a partition table type is specified for a drive" do
+      let(:drive0) do
+        Agama::Storage::Configs::Drive.new.tap do |drive|
+          drive.partitions = partitions0
+          drive.ptable_type = Y2Storage::PartitionTables::Type::MSDOS
+        end
+      end
+
+      it "tries to propose a partition table of the requested type" do
+        proposal.propose
+        ptable = proposal.devices.disks.first.partition_table
+        expect(ptable.type).to eq Y2Storage::PartitionTables::Type::MSDOS
+      end
+
+      it "honors the partition table type if possible when calculating the boot partitions" do
+        proposal.propose
+        partitions = proposal.devices.partitions
+        expect(partitions.map(&:id)).to_not include Y2Storage::PartitionId::BIOS_BOOT
+      end
+    end
+
     context "when encrypting some devices" do
       let(:partitions0) { [root_partition, home_partition ] }
 
