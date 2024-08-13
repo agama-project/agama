@@ -24,33 +24,30 @@ import { isValidIp } from "~/utils/network";
 import { TextInput, TextInputProps, ValidatedOptions } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
+/**
+ * Returns the validation state for given value
+ */
+const validationState = (value?: string): keyof typeof ValidatedOptions =>
+  !value || value === "" || isValidIp(value) ? "default" : "error";
+
 const IpAddressInput = ({
   label = _("IP Address"),
   onError = (value) => null,
   ...props
 }: TextInputProps & { defaultValue?: string }) => {
-  const [validated, setValidated] = useState(
-    !props.defaultValue || props.defaultValue === "" || isValidIp(props.defaultValue)
-      ? "default"
-      : "error",
-  );
+  const [state, setState] = useState(validationState(props.defaultValue));
 
   return (
     <TextInput
       aria-label={label}
       // FIXME: avoid using this placeholder as label technique
       placeholder={label}
-      validated={ValidatedOptions[validated]}
-      onFocus={() => setValidated("default")}
+      validated={ValidatedOptions[state]}
+      onFocus={() => setState("default")}
       onBlur={(e) => {
-        const value = e.target.value;
-
-        if (value === "" || isValidIp(value)) {
-          return;
-        }
-
-        setValidated("error");
-        onError(value);
+        const nextState = validationState(e.target.value);
+        nextState === "error" && onError(e.target.value);
+        setState(nextState);
       }}
       {...props}
     />
