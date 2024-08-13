@@ -64,7 +64,7 @@ export default function WifiConnectionForm({
   onCancel,
 }: {
   network: WifiNetwork;
-  errors?: object;
+  errors?: { [key: string]: boolean | string };
   onCancel: () => void;
 }) {
   const settings = network.settings?.wireless || new Wireless();
@@ -97,13 +97,11 @@ export default function WifiConnectionForm({
           variant="warning"
           isInline
           title={
-            // @ts-expect-error
             errors.needsAuth
               ? _("Authentication failed, please try again")
               : _("Something went wrong")
           }
         >
-          {/** @ts-expect-error */}
           {!errors.needsAuth && <p>{_("Please, review provided settings and try again.")}</p>}
         </Alert>
       )}

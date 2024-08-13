@@ -178,8 +178,8 @@ const useRemoveConnectionMutation = () => {
  * Returns selected Wi-Fi network
  */
 const selectedWiFiNetworkQuery = () => ({
-  // queryKey: ["network", "wifi", "selected"],
   // TODO: use right key, once we stop invalidating everything under network
+  // queryKey: ["network", "wifi", "selected"],
   queryKey: ["wifi", "selected"],
   queryFn: async () => {
     return Promise.resolve({ ssid: null, needsAuth: null });
@@ -187,7 +187,7 @@ const selectedWiFiNetworkQuery = () => ({
   staleTime: Infinity,
 });
 
-const useSelectedWifi = (): { ssid?: string; needsAuth?: boolean } => {
+const useSelectedWifi = (): { ssid?: string; needsAuth?: boolean; hidden?: boolean } => {
   const { data } = useQuery(selectedWiFiNetworkQuery());
   return data || {};
 };

@@ -222,7 +222,6 @@ const NetworkListItem = ({ network }) => {
  */
 function WifiNetworksListPage() {
   const networks: WifiNetwork[] = useWifiNetworks();
-  // @ts-expect-error
   const { ssid: selectedSsid, hidden } = useSelectedWifi();
   const selected = hidden
     ? // FIXME: improve below type casting, if possible
