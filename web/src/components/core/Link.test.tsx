@@ -21,20 +21,19 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { Link } from "~/components/core";
 
 describe("Link", () => {
   it("renders an HTML `a` tag with the `href` attribute set to given `to` prop", () => {
-    installerRender(<Link to="somewhere">Agama Link</Link>);
+    plainRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" }) as HTMLLinkElement;
     // NOTE: Link uses ReactRouter#useHref hook which is mocked in test-utils.js
-    // TODO: Not using toHaveAttribute("href", "somewhere") because some weird problems at CI
-    expect(link.href).toContain("somewhere");
+    expect(link).toHaveAttribute("href", "somewhere");
   });
 
   it("renders it as primary when either, using a truthy `isPrimary` prop or `variant` is set to primary", () => {
-    const { rerender } = installerRender(<Link to="somewhere">Agama Link</Link>);
+    const { rerender } = plainRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" });
 
     expect(link.classList.contains("pf-m-primary")).not.toBe(true);
@@ -71,7 +70,7 @@ describe("Link", () => {
   });
 
   it("renders it as secondary when neither is given, a truthy `isPrimary` nor `variant`", () => {
-    const { rerender } = installerRender(<Link to="somewhere">Agama Link</Link>);
+    const { rerender } = plainRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" });
 
     expect(link.classList.contains("pf-m-secondary")).toBe(true);
