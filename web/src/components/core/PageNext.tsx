@@ -94,8 +94,6 @@ const Section = ({
   const renderDescription = !!description && description.trim() !== "";
   const renderHeader = renderTitle || renderValue;
 
-  console.log("here");
-
   return (
     <Card {...defaultCardProps} {...pfCardProps}>
       {renderHeader && (
@@ -157,7 +155,9 @@ const Action = ({ navigateTo, children, ...props }: PageActionProps) => {
 
   props.onClick = (e) => {
     if (typeof onClickFn === "function") onClickFn(e);
-    if (navigateTo) navigate(navigateTo);
+    // FIXME: look for a better overloading alternative. See https://github.com/remix-run/react-router/issues/10505#issuecomment-2237126223
+    // and https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads
+    if (navigateTo) typeof navigateTo === "number" ? navigate(navigateTo) : navigate(navigateTo);
   };
 
   const buttonProps = { size: "lg" as const, ...props };

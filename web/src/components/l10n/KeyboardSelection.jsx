@@ -77,19 +77,19 @@ export default function KeyboardSelection() {
         <h2>{_("Keyboard selection")}</h2>
         <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
       </Page.Header>
-      <Page.MainContent>
-        <Page.CardSection>
+
+      <Page.Content>
+        <Page.Section>
           <Form id="keymapSelection" onSubmit={onSubmit}>
             <FormGroup isStack>{keymapsList}</FormGroup>
           </Form>
-        </Page.CardSection>
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action type="submit" form="keymapSelection">
-          {_("Select")}
-        </Page.Action>
-      </Page.NextActions>
+        </Page.Section>
+      </Page.Content>
+
+      <Page.Actions>
+        <Page.Cancel />
+        <Page.Submit form="keymapSelection">{_("Select")}</Page.Submit>
+      </Page.Actions>
     </Page>
   );
 }

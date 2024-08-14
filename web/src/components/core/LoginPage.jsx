@@ -82,7 +82,7 @@ user privileges.",
   ).split(/[[\]]/);
 
   return (
-    <Page.MainContent>
+    <Page.Content>
       <Center>
         <Grid>
           <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -122,6 +122,6 @@ user privileges.",
           </GridItem>
         </Grid>
       </Center>
-    </Page.MainContent>
+    </Page.Content>
   );
 }

@@ -201,7 +201,7 @@ export default function FirstUserForm() {
         <h2>{state.isEditing ? _("Edit user") : _("Create user")}</h2>
       </Page.Header>
 
-      <Page.MainContent>
+      <Page.Content>
         <Form id="firstUserForm" onSubmit={onSubmit}>
           {errors.length > 0 && (
             <Alert variant="warning" isInline title={_("Something went wrong")}>
@@ -212,7 +212,7 @@ export default function FirstUserForm() {
           )}
           <Grid hasGutter>
             <GridItem sm={12} xl={6} rowSpan={2}>
-              <Page.CardSection isFullHeight>
+              <Page.Section>
                 <Stack hasGutter>
                   <FormGroup fieldId="userFullName" label={_("Full name")}>
                     <TextInput
@@ -251,10 +251,10 @@ export default function FirstUserForm() {
                     />
                   </FormGroup>
                 </Stack>
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
             <GridItem sm={12} xl={6}>
-              <Page.CardSection>
+              <Page.Section>
                 <Stack hasGutter>
                   {state.isEditing && (
                     <Switch
@@ -269,10 +269,10 @@ export default function FirstUserForm() {
                     showErrors={false}
                   />
                 </Stack>
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
             <GridItem sm={12} xl={6}>
-              <Page.CardSection>
+              <Page.Section>
                 <Checkbox
                   aria-label={_("user autologin")}
                   id="autologin"
@@ -281,18 +281,16 @@ export default function FirstUserForm() {
                   label={_("Auto-login")}
                   defaultChecked={state.user.autologin}
                 />
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
           </Grid>
         </Form>
-      </Page.MainContent>
+      </Page.Content>
 
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action type="submit" form="firstUserForm">
-          {_("Accept")}
-        </Page.Action>
-      </Page.NextActions>
+      <Page.Actions>
+        <Page.Cancel />
+        <Page.Submit form="firstUserForm" />
+      </Page.Actions>
     </Page>
   );
 }

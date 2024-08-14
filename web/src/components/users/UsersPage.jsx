@@ -20,9 +20,9 @@
  */
 
 import React from "react";
-import { CardField, IssuesHint, Page } from "~/components/core";
+import { Grid, GridItem } from "@patternfly/react-core";
+import { IssuesHint, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
-import { CardBody, Grid, GridItem } from "@patternfly/react-core";
 import { useIssues } from "~/queries/issues";
 import { _ } from "~/i18n";
 
@@ -35,27 +35,19 @@ export default function UsersPage() {
         <h2>{_("Users")}</h2>
       </Page.Header>
 
-      <Page.MainContent>
+      <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
             <IssuesHint issues={issues} />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField label={_("First user")}>
-              <CardBody>
-                <FirstUser />
-              </CardBody>
-            </CardField>
+            <FirstUser />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField label={_("Root authentication")}>
-              <CardBody>
-                <RootAuthMethods />
-              </CardBody>
-            </CardField>
+            <RootAuthMethods />
           </GridItem>
         </Grid>
-      </Page.MainContent>
+      </Page.Content>
     </Page>
   );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,41 +19,80 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
-import { Button, Skeleton, Split, Stack, Truncate } from "@patternfly/react-core";
+import React, { useState } from "react";
+import { Button, Stack, Truncate } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { Em, RowActions } from "~/components/core";
+import { Em, Page, RowActions } from "~/components/core";
 import { RootPasswordPopup, RootSSHKeyPopup } from "~/components/users";
 
 import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
 import { useRootUser, useRootUserChanges, useRootUserMutation } from "~/queries/users";
 
-const MethodsNotDefined = ({ setPassword, setSSHKey }) => {
+const NoMethodDefined = () => (
+  <Stack hasGutter>
+    <div>{_("No root authentication method defined yet.")}</div>
+    <div>
+      <strong>
+        {_(
+          "Please, define at least one authentication method for logging into the system as root.",
+        )}
+      </strong>
+    </div>
+  </Stack>
+);
+
+const SSHKeyLabel = ({ sshKey }) => {
+  const trailingChars = Math.min(sshKey.length - sshKey.lastIndexOf(" "), 30);
+
   return (
-    <Stack hasGutter>
-      <div>{_("No root authentication method defined yet.")}</div>
-      <div>
-        <strong>
-          {_(
-            "Please, define at least one authentication method for logging into the system as root.",
-          )}
-        </strong>
-      </div>
-      <Split hasGutter>
-        {/* TRANSLATORS: push button label */}
-        <Button variant="primary" onClick={setPassword}>
-          {_("Set a password")}
-        </Button>
-        {/* TRANSLATORS: push button label */}
-        <Button variant="secondary" onClick={setSSHKey}>
-          {_("Upload a SSH Public Key")}
-        </Button>
-      </Split>
-    </Stack>
+    <Em>
+      <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />
+    </Em>
   );
 };
+
+const Content = ({
+  isPasswordDefined,
+  isSSHKeyDefined,
+  sshKey,
+  passwordActions,
+  sshKeyActions,
+}) => {
+  if (!isPasswordDefined && !isSSHKeyDefined) return <NoMethodDefined />;
+
+  return (
+    <Table variant="compact" gridBreakPoint="grid-md">
+      <Thead>
+        <Tr>
+          {/* TRANSLATORS: table header, user authentication method */}
+          <Th width={25}>{_("Method")}</Th>
+          {/* TRANSLATORS: table header */}
+          <Th>{_("Status")}</Th>
+          <Th />
+        </Tr>
+      </Thead>
+      <Tbody>
+        <Tr>
+          <Td dataLabel="Method">{_("Password")}</Td>
+          <Td dataLabel="Status">{isPasswordDefined ? _("Already set") : _("Not set")}</Td>
+          <Td isActionCell>
+            <RowActions actions={passwordActions} id="actions-for-root-password" />
+          </Td>
+        </Tr>
+        <Tr>
+          <Td dataLabel="Method">{_("SSH Key")}</Td>
+          <Td dataLabel="Status">
+            {isSSHKeyDefined ? <SSHKeyLabel sshKey={sshKey} /> : _("Not set")}
+          </Td>
+          <Td isActionCell>
+            <RowActions actions={sshKeyActions} id="actions-for-root-sshKey" />
+          </Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
+};
+
 export default function RootAuthMethods() {
   const setRootUser = useRootUserMutation();
   const [isSSHKeyFormOpen, setIsSSHKeyFormOpen] = useState(false);
@@ -93,65 +132,33 @@ export default function RootAuthMethods() {
     },
   ].filter(Boolean);
 
-  const PasswordLabel = () => {
-    return isPasswordDefined ? _("Already set") : _("Not set");
-  };
-
-  const SSHKeyLabel = () => {
-    if (!isSSHKeyDefined) return _("Not set");
-
-    const trailingChars = Math.min(sshKey.length - sshKey.lastIndexOf(" "), 30);
-
-    return (
-      <Em>
-        <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />
-      </Em>
-    );
-  };
-
-  const Content = () => {
-    if (!isPasswordDefined && !isSSHKeyDefined) {
-      return <MethodsNotDefined setPassword={openPasswordForm} setSSHKey={openSSHKeyForm} />;
-    }
-
-    return (
-      <Table variant="compact" gridBreakPoint="grid-md">
-        <Thead>
-          <Tr>
-            {/* TRANSLATORS: table header, user authentication method */}
-            <Th width={25}>{_("Method")}</Th>
-            {/* TRANSLATORS: table header */}
-            <Th>{_("Status")}</Th>
-            <Th />
-          </Tr>
-        </Thead>
-        <Tbody>
-          <Tr>
-            <Td dataLabel="Method">{_("Password")}</Td>
-            <Td dataLabel="Status">
-              <PasswordLabel />
-            </Td>
-            <Td isActionCell>
-              <RowActions actions={passwordActions} id="actions-for-root-password" />
-            </Td>
-          </Tr>
-          <Tr>
-            <Td dataLabel="Method">{_("SSH Key")}</Td>
-            <Td dataLabel="Status">
-              <SSHKeyLabel />
-            </Td>
-            <Td isActionCell>
-              <RowActions actions={sshKeyActions} id="actions-for-root-sshKey" />
-            </Td>
-          </Tr>
-        </Tbody>
-      </Table>
-    );
-  };
-
   return (
-    <>
-      <Content />
+    <Page.Section
+      title={_("Root authentication")}
+      actions={
+        !isPasswordDefined &&
+        !isSSHKeyDefined && (
+          <>
+            {/* TRANSLATORS: push button label */}
+            <Button variant="primary" onClick={openPasswordForm}>
+              {_("Set a password")}
+            </Button>
+            {/* TRANSLATORS: push button label */}
+            <Button variant="secondary" onClick={openSSHKeyForm}>
+              {_("Upload a SSH Public Key")}
+            </Button>
+          </>
+        )
+      }
+    >
+      <Content
+        isPasswordDefined={isPasswordDefined}
+        isSSHKeyDefined={isSSHKeyDefined}
+        sshKey={sshKey}
+        passwordActions={passwordActions}
+        sshKeyActions={sshKeyActions}
+      />
+
       {isPasswordFormOpen && (
         <RootPasswordPopup
           isOpen
@@ -172,6 +179,6 @@ export default function RootAuthMethods() {
           onClose={closeSSHKeyForm}
         />
       )}
-    </>
+    </Page.Section>
   );
 }

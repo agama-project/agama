@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page, Drawer } from "~/components/core/";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
@@ -105,7 +105,8 @@ export default function ProposalPage() {
       <Page.Header>
         <h2>{_("Storage")}</h2>
       </Page.Header>
-      <Page.MainContent>
+
+      <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
             <ProposalTransactionalInfo settings={settings} />
@@ -152,7 +153,7 @@ export default function ProposalPage() {
             </Drawer>
           </GridItem>
         </Grid>
-      </Page.MainContent>
+      </Page.Content>
     </Page>
   );
 }

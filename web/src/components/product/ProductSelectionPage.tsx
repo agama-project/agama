@@ -20,7 +20,20 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardBody, Flex, Form, Grid, GridItem, Radio, List, ListItem, Split, Stack, FormGroup } from "@patternfly/react-core";
+import {
+  Card,
+  CardBody,
+  Flex,
+  Form,
+  Grid,
+  GridItem,
+  Radio,
+  List,
+  ListItem,
+  Split,
+  Stack,
+  FormGroup,
+} from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
@@ -86,7 +99,7 @@ function ProductSelectionPage() {
   const isSelectionDisabled = !nextProduct || nextProduct === selectedProduct;
 
   return (
-    <Page>
+    <Page.Content>
       <Center>
         <Form id="productSelectionForm" onSubmit={onSubmit}>
           <Grid hasGutter>
@@ -106,21 +119,20 @@ function ProductSelectionPage() {
             </ResponsiveGridItem>
             <ResponsiveGridItem>
               <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-                {selectedProduct && !isLoading && <Page.CancelAction navigateTo="-1" />}
-                <Page.Action
-                  type="submit"
+                {selectedProduct && !isLoading && <Page.Cancel navigateTo={-1} />}
+                <Page.Submit
                   form="productSelectionForm"
                   isDisabled={isSelectionDisabled}
                   isLoading={isLoading}
                 >
                   {_("Select")}
-                </Page.Action>
+                </Page.Submit>
               </Flex>
             </ResponsiveGridItem>
           </Grid>
         </Form>
       </Center>
-    </Page >
+    </Page.Content>
   );
 }
 

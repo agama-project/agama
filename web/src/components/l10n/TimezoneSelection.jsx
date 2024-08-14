@@ -112,19 +112,18 @@ export default function TimezoneSelection() {
         />
       </Page.Header>
 
-      <Page.MainContent>
-        <Page.CardSection>
+      <Page.Content>
+        <Page.Section>
           <Form id="timezoneSelection" onSubmit={onSubmit}>
             <FormGroup isStack>{timezonesList}</FormGroup>
           </Form>
-        </Page.CardSection>
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action type="submit" form="timezoneSelection">
-          {_("Select")}
-        </Page.Action>
-      </Page.NextActions>
+        </Page.Section>
+      </Page.Content>
+
+      <Page.Actions>
+        <Page.Cancel />
+        <Page.Submit form="timezoneSelection">{_("Select")}</Page.Submit>
+      </Page.Actions>
     </Page>
   );
 }

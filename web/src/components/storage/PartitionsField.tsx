@@ -22,12 +22,11 @@
 import React, { useState } from "react";
 import {
   Button,
-  CardBody,
   CardExpandableContent,
   Divider,
   Dropdown,
-  DropdownList,
   DropdownItem,
+  DropdownList,
   Flex,
   List,
   ListItem,
@@ -37,7 +36,7 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { CardField, RowActions, Tip } from "~/components/core";
+import { Page, RowActions, Tip } from "~/components/core";
 import { noop } from "~/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -808,13 +807,13 @@ export default function PartitionsField({
   const onExpand = () => setIsExpanded(!isExpanded);
 
   return (
-    <CardField
-      label={_("Partitions and file systems")}
+    <Page.Section
+      title={_("Partitions and file systems")}
       description={_(
         "Structure of the new system, including any additional partition needed for booting",
       )}
-      cardProps={{ isExpanded }}
-      cardHeaderProps={{
+      pfCardProps={{ isExpanded }}
+      pfCardHeaderProps={{
         onExpand,
         toggleButtonProps: {
           id: "toggle-partitions-and-file-systems-view",
@@ -825,33 +824,29 @@ export default function PartitionsField({
       }}
     >
       {!isExpanded && (
-        <CardBody>
-          <Basic
-            volumes={volumes}
-            configureBoot={configureBoot}
-            bootDevice={bootDevice}
-            target={target}
-            isLoading={isLoading}
-          />
-        </CardBody>
+        <Basic
+          volumes={volumes}
+          configureBoot={configureBoot}
+          bootDevice={bootDevice}
+          target={target}
+          isLoading={isLoading}
+        />
       )}
       <CardExpandableContent>
-        <CardBody>
-          <Advanced
-            volumes={volumes}
-            templates={templates}
-            volumeDevices={volumeDevices}
-            availableDevices={availableDevices}
-            target={target}
-            targetDevices={targetDevices}
-            configureBoot={configureBoot}
-            bootDevice={bootDevice}
-            defaultBootDevice={defaultBootDevice}
-            onVolumesChange={onVolumesChange}
-            isLoading={isLoading}
-          />
-        </CardBody>
+        <Advanced
+          volumes={volumes}
+          templates={templates}
+          volumeDevices={volumeDevices}
+          targetDevices={targetDevices}
+          availableDevices={availableDevices}
+          target={target}
+          configureBoot={configureBoot}
+          bootDevice={bootDevice}
+          defaultBootDevice={defaultBootDevice}
+          onVolumesChange={onVolumesChange}
+          isLoading={isLoading}
+        />
       </CardExpandableContent>
-    </CardField>
+    </Page.Section>
   );
 }

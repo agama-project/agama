@@ -79,19 +79,18 @@ export default function LocaleSelection() {
         <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
       </Page.Header>
 
-      <Page.MainContent>
-        <Page.CardSection>
+      <Page.Content>
+        <Page.Section>
           <Form id="localeSelection" onSubmit={onSubmit}>
             <FormGroup isStack>{localesList}</FormGroup>
           </Form>
-        </Page.CardSection>
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action type="submit" form="localeSelection">
-          {_("Select")}
-        </Page.Action>
-      </Page.NextActions>
+        </Page.Section>
+      </Page.Content>
+
+      <Page.Actions>
+        <Page.Cancel />
+        <Page.Submit form="localeSelection">{_("Select")}</Page.Submit>
+      </Page.Actions>
     </Page>
   );
 }

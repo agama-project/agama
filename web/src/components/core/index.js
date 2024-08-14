@@ -39,7 +39,8 @@ export { default as ListSearch } from "./ListSearch";
 export { default as LoginPage } from "./LoginPage";
 export { default as LogsButton } from "./LogsButton";
 export { default as RowActions } from "./RowActions";
-export { default as Page } from "./Page";
+// FIXME: rename PageNext to Page when all componentes are migrated
+export { default as Page } from "./PageNext";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
