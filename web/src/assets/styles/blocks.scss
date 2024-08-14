@@ -2,41 +2,10 @@
 // In the future we might add different section layouts by using data-variant attribute
 // or similar strategy
 
-// raw file content with formatting similar to <pre>
-.filecontent {
-  font-family: var(--ff-code);
-  font-size: 90%;
-  word-break: break-all;
-  white-space: pre-wrap;
-}
-
 // Make progress more compact
 .dasd-format-progress {
   .pf-v5-c-progress {
     --pf-v5-c-progress--GridGap: var(--spacer-small);
-  }
-}
-
-[data-type="agama/page-menu"] {
-  > button {
-    --pf-v5-c-button--PaddingRight: 0;
-  }
-
-  a {
-    font-weight: var(--fw-bold);
-    text-decoration: none;
-
-    svg {
-      color: inherit;
-    }
-
-    &:hover {
-      color: var(--color-link-hover);
-
-      svg {
-        color: var(--color-link);
-      }
-    }
   }
 }
 
@@ -52,174 +21,6 @@
 
   div:nth-child(2) {
     padding-left: calc(var(--icon-size) + var(--pf-v5-c-helper-text__item-icon--MarginRight));
-  }
-}
-
-ul[data-type="agama/list"] {
-  list-style: none;
-  margin-inline: 0;
-
-  li {
-    border: 2px solid var(--color-gray-dark);
-    padding: var(--spacer-small);
-    text-align: start;
-    background: var(--color-gray-light);
-    margin-block-end: 0;
-
-    &:nth-child(n + 2) {
-      border-top: 0;
-    }
-
-    &:not(:last-child) {
-      border-bottom-width: 1px;
-    }
-
-    > div {
-      margin-block-end: var(--spacer-smaller);
-    }
-
-    // Done in two rules instead of div:not(:last-child) to avoid specificity
-    // problems later; see the storage-devices selector
-    > div:last-child {
-      margin-block-end: 0;
-    }
-  }
-
-  // FIXME: see if it's semantically correct to mark an li as aria-selected when
-  // not belongs to a listbox or grid list ul.
-  li[aria-selected] {
-    background: var(--color-gray-dark);
-
-    &:not(:last-child) {
-      border-bottom-color: white;
-    }
-  }
-}
-
-// These attributes together means that UI is rendering a selector
-ul[data-type="agama/list"][role="grid"] {
-  li[role="row"] {
-    cursor: pointer;
-
-    &:first-child {
-      border-radius: 5px 5px 0 0;
-    }
-
-    &:last-child {
-      border-radius: 0 0 5px 5px;
-    }
-
-    &:only-child {
-      border-radius: 5px;
-    }
-
-    &:hover {
-      &:not([aria-selected]) {
-        background: var(--color-gray-dark);
-      }
-
-      &:not(:last-child) {
-        border-bottom-color: white;
-      }
-    }
-
-    div[role="gridcell"] {
-      display: flex;
-      align-items: center;
-      gap: var(--spacer-small);
-
-      input {
-        --size: var(--fs-h2);
-        cursor: pointer;
-        block-size: var(--size);
-        inline-size: var(--size);
-
-        &[data-auto-selected] {
-          accent-color: white;
-          box-shadow: 0 0 1px;
-        }
-      }
-
-      & > div:first-child {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--spacer-small);
-
-        span {
-          font-size: var(--fs-small);
-          font-weight: bold;
-        }
-      }
-
-      & > div:last-child {
-        flex: 1;
-      }
-    }
-  }
-}
-
-[data-items-type="agama/space-policies"] {
-  // It works with the default styling
-}
-
-[data-items-type="agama/locales"] {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-
-  > :last-child {
-    grid-column: 1 / -1;
-    font-size: var(--fs-small);
-  }
-}
-
-[data-items-type="agama/keymaps"] {
-  > :last-child {
-    font-size: var(--fs-small);
-  }
-}
-
-[data-items-type="agama/timezones"] {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-
-  > :last-child {
-    grid-column: 1 / -1;
-    font-size: 80%;
-  }
-
-  > :nth-child(3) {
-    color: var(--color-gray-dimmed);
-    text-align: end;
-  }
-}
-
-ul[data-items-type="agama/patterns"] {
-  div[role="gridcell"] {
-    & > div:first-child {
-      min-width: 65px;
-    }
-
-    & > div:last-child * {
-      margin-block-end: var(--spacer-small);
-    }
-  }
-}
-
-[role="dialog"] {
-  .sticky-top-0 {
-    position: sticky;
-    top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
-    margin-block-start: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
-    padding-block-start: var(--pf-v5-c-modal-box__body--PaddingTop);
-    background-color: var(--pf-v5-c-modal-box--BackgroundColor);
-
-    [role="search"] {
-      width: 100%;
-      padding: var(--spacer-small);
-      border: 1px solid var(--color-primary);
-      border-radius: 5px;
-    }
   }
 }
 
@@ -340,11 +141,6 @@ table.proposal-result {
       border-right: solid var(--arrow-size) transparent;
     }
   }
-}
-
-.highlighted-live-region {
-  padding: 10px;
-  background: var(--color-gray);
 }
 
 .size-input-group {
