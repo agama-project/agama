@@ -61,15 +61,6 @@ impl Default for BaseHTTPClient {
 }
 
 impl BaseHTTPClient {
-    // Provides new client with no specialities like authorization headers or so.
-    // If needed, there is place for helpers like "self::to_authorized" or so.
-    pub fn bare() -> Result<Self, ServiceError> {
-        Ok(Self {
-            client: reqwest::Client::new(),
-            base_url: API_URL.to_string(),
-        })
-    }
-
     /// Uses `localhost`, authenticates with [`AuthToken`].
     pub fn new() -> Result<Self, ServiceError> {
         Ok(Self {

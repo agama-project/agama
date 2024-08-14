@@ -43,10 +43,8 @@ impl AuthHTTPClient {
 
         auth_body.insert("password", password);
 
-        eprintln!("get_jwt asks url: {}", self.api.base_url);
-        let response = self.api.post_response("/auth", &auth_body).await?;
-        let body = response.json::<HashMap<String, String>>().await?;
-        let value = body.get("token");
+        let response = self.api.post::<HashMap<String, String>>("/auth", &auth_body).await?;
+        let value = response.get("token");
 
         if let Some(token) = value {
             return Ok(token.clone());
