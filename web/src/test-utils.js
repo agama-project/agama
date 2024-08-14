@@ -74,6 +74,7 @@ const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
 // Centralize the react-router-dom mock here
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
+  useHref: (to) => to,
   useNavigate: () => mockNavigateFn,
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
   Outlet: () => <>Outlet Content</>,
