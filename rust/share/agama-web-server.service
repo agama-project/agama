@@ -3,10 +3,10 @@ Description=Agama Web Server
 # agama-hostname might change the host name which is used when creating
 # a self signed certificate, run it before the web server
 After=network-online.target agama.service agama-hostname.service
-PartOf=agama.service
+BindsTo=agama.service
 
 [Service]
-Type=simple
+Type=notify
 ExecStart=/usr/bin/agama-web-server serve --address :::80 --address2 :::443
 PIDFile=/run/agama/web.pid
 User=root
