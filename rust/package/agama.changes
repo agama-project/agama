@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Aug 15 08:33:02 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Use sd_notify for starting agama-web-service to notify systemd
+  when service is ready. It helps with race condition in agama-auto
+  (gh#openSUSE/agama#1539)
+- improve systemd dependencies of agama-web-service to ensure that
+  agama service runs
+
+-------------------------------------------------------------------
 Fri Aug  9 08:50:31 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - For CLI, use HTTP clients instead of D-Bus clients,
