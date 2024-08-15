@@ -350,7 +350,8 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
 
     // notify systemd that web server start serving
     if let Ok(true) = sd_notify::booted() {
-        sd_notify::notify(true, &[sd_notify::NotifyState::Ready]).context("Failed to notify systemd")?;
+        sd_notify::notify(true, &[sd_notify::NotifyState::Ready])
+            .context("Failed to notify systemd")?;
     }
 
     futures_util::future::join_all(servers).await;
