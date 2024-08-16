@@ -145,24 +145,24 @@ const buildAddress = (address: string): IPAddress => {
 
 /**
  * @param flags - AP flags
- * @param wpa_flags - AP WPA1 flags
- * @param rsn_flags - AP WPA2 flags
+ * @param wpaFlags - AP WPA1 flags
+ * @param rsnFlags - AP WPA2 flags
  * @return supported security protocols
  */
-const securityFromFlags = (flags: number, wpa_flags: number, rsn_flags: number): SecurityProtocols[] => {
+const securityFromFlags = (flags: number, wpaFlags: number, rsnFlags: number): SecurityProtocols[] => {
   const security = [];
 
-  if (flags & ApFlags.PRIVACY && wpa_flags === 0 && rsn_flags === 0) {
+  if (flags & ApFlags.PRIVACY && wpaFlags === 0 && rsnFlags === 0) {
     security.push(SecurityProtocols.WEP);
   }
 
-  if (wpa_flags > 0) {
+  if (wpaFlags > 0) {
     security.push(SecurityProtocols.WPA);
   }
-  if (rsn_flags > 0) {
+  if (rsnFlags > 0) {
     security.push(SecurityProtocols.RSN);
   }
-  if (wpa_flags & ApSecurityFlags.KEY_MGMT_8021_X || rsn_flags & ApSecurityFlags.KEY_MGMT_8021_X) {
+  if (wpaFlags & ApSecurityFlags.KEY_MGMT_8021_X || rsnFlags & ApSecurityFlags.KEY_MGMT_8021_X) {
     security.push(SecurityProtocols._8021X);
   }
 

@@ -28,6 +28,11 @@ import {
   securityFromFlags,
 } from "~/utils/network";
 
+/**
+ * Enum for AccessPoint flags
+ *
+ * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NM80211ApFlags
+ */
 enum ApFlags {
   NONE = 0x00000000,
   PRIVACY = 0x00000001,
@@ -35,7 +40,11 @@ enum ApFlags {
   WPS_PBC = 0x00000004,
   WPS_PIN = 0x00000008,
 }
-
+/**
+ * Enum for AccessPoint security flags
+ *
+ * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NM80211ApSecurityFlags
+ */
 enum ApSecurityFlags {
   NONE = 0x00000000,
   PAIR_WEP40 = 0x00000001,
