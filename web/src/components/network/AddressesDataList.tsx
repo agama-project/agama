@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -39,15 +39,26 @@ import {
 } from "@patternfly/react-core";
 
 import { FormLabel } from "~/components/core";
-import { IpAddressInput, IpPrefixInput } from "~/components/network";
+import IpAddressInput from "~/components/network/IpAddressInput";
+import IpPrefixInput from "~/components/network/IpPrefixInput";
 import { _ } from "~/i18n";
+import { IPAddress } from "~/types/network";
 
 let index = 0;
+
+type Address = IPAddress & { id?: number };
 
 export default function AddressesDataList({
   addresses: originalAddresses,
   updateAddresses,
   allowEmpty = true,
+}: {
+  /** The initial collection of IP addresses */
+  addresses: Address[];
+  /** A callback to be called for updating the IP addresses collection */
+  updateAddresses: (addresses: Address[]) => void;
+  /** Whether the component allows reaching an empty addresses collection */
+  allowEmpty?: boolean;
 }) {
   const addresses = originalAddresses.map((addr) => {
     const newAddr = addr;
@@ -60,25 +71,28 @@ export default function AddressesDataList({
     updateAddresses(addresses);
   };
 
-  const updateAddress = (id, field, value) => {
+  const updateAddress = (id: number, field: string, value: string) => {
     const address = addresses.find((addr) => addr.id === id);
     address[field] = value;
     updateAddresses(addresses);
   };
 
-  const deleteAddress = (id) => {
+  const deleteAddress = (id: number) => {
     const addressIdx = addresses.findIndex((addr) => addr.id === id);
     addresses.splice(addressIdx, 1);
     updateAddresses(addresses);
   };
 
-  const renderAddress = ({ id, address, prefix }) => {
+  const renderAddress = ({ id, address, prefix }: Address) => {
     const renderDeleteAction = () => {
       if (!allowEmpty && addresses.length === 1) return null;
+      const buttonId = `delete-address-${id}-button`;
 
       return (
-        <DataListAction>
+        /** @ts-expect-error: https://github.com/patternfly/patternfly-react/issues/9823 */
+        <DataListAction id={`delete-address-${id}`}>
           <Button
+            id={buttonId}
             size="sm"
             variant="link"
             className="remove-link"
@@ -94,20 +108,18 @@ export default function AddressesDataList({
     const cells = [
       <DataListCell key={`address-${id}-address`}>
         <IpAddressInput
-          defaultValue={address}
-          onChange={(_, value) => updateAddress(id, "address", value)}
           // TRANSLATORS: input field name
-          placeholder={_("IP Address")}
-          aria-label={_("IP Address")}
+          label={_("IP Address")}
+          defaultValue={address}
+          onChange={(_, value: string) => updateAddress(id, "address", value)}
         />
       </DataListCell>,
       <DataListCell key={`address-${id}-prefix`}>
         <IpPrefixInput
-          defaultValue={prefix}
-          onChange={(_, value) => updateAddress(id, "prefix", value)}
           // TRANSLATORS: input field name
-          placeholder={_("Prefix length or netmask")}
-          aria-label={_("Prefix length or netmask")}
+          label={_("Prefix length or netmask")}
+          defaultValue={prefix}
+          onChange={(_, value: string) => updateAddress(id, "prefix", value)}
         />
       </DataListCell>,
     ];
@@ -130,7 +142,8 @@ export default function AddressesDataList({
       <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
         <FormLabel isRequired={!allowEmpty}>{_("Addresses")}</FormLabel>
       </Flex>
-      <DataList isCompact gridBreakpoint="none" title={_("Addresses data list")}>
+      {/** FIXME: try to use an aria-labelledby instead when PatternFly permits it (or open a bug report) */}
+      <DataList isCompact gridBreakpoint="none" aria-label={_("Addresses data list")}>
         {addresses.map((address) => renderAddress(address))}
       </DataList>
       <Flex>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,13 +20,5 @@
  */
 
 export { default as NetworkPage } from "./NetworkPage";
-export { default as AddressesDataList } from "./AddressesDataList";
-export { default as ConnectionsTable } from "./ConnectionsTable";
-export { default as DnsDataList } from "./DnsDataList";
-export { default as IpAddressInput } from "./IpAddressInput";
-export { default as IpPrefixInput } from "./IpPrefixInput";
 export { default as IpSettingsForm } from "./IpSettingsForm";
-export { default as WifiConnectionForm } from "./WifiConnectionForm";
-export { default as WifiHiddenNetworkForm } from "./WifiHiddenNetworkForm";
-export { default as WifiNetworksListPage } from "./WifiNetworksListPage";
 export { default as WifiSelectorPage } from "./WifiSelectorPage";

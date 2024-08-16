@@ -39,7 +39,7 @@ const get = (url: string) => http.get(url).then(({ data }) => data);
  * @param url - endpoint URL
  * @param data - Request payload
  */
-const patch = (url: string, data: object) => http.patch(url, data);
+const patch = (url: string, data?: object) => http.patch(url, data);
 
 /**
  * Performs a PUT request with the given URL and data
@@ -55,7 +55,7 @@ const put = (url: string, data: object) => http.put(url, data);
  * @param url - endpoint URL
  * @param data - request payload
  */
-const post = (url: string, data: object) => http.post(url, data);
+const post = (url: string, data?: object) => http.post(url, data);
 
 /**
  * Performs a DELETE request on the given URL

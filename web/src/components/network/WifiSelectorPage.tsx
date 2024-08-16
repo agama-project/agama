@@ -20,29 +20,24 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
-import { WifiNetworksListPage } from "~/components/network";
-import { _ } from "~/i18n";
 import { Grid, GridItem } from "@patternfly/react-core";
-import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
-
-const networksFromValues = (networks) => Object.values(networks).flat();
-
-// FIXME: use a reducer
+import { Page } from "~/components/core";
+import WifiNetworksListPage from "~/components/network/WifiNetworksListPage";
+import { useNetworkConfigChanges } from "~/queries/network";
+import { _ } from "~/i18n";
 
 function WifiSelectorPage() {
-  const { networks } = useNetwork();
   useNetworkConfigChanges();
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Connect to a Wi-Fi network")}</h2>
       </Page.Header>
       <Page.MainContent>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <WifiNetworksListPage networks={networksFromValues(networks)} />
+            <WifiNetworksListPage />
           </GridItem>
         </Grid>
       </Page.MainContent>
@@ -50,7 +45,7 @@ function WifiSelectorPage() {
       <Page.NextActions>
         <Page.CancelAction />
       </Page.NextActions>
-    </>
+    </Page>
   );
 }
 

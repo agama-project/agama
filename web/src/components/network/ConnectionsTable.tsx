@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,32 +24,33 @@ import { useNavigate, generatePath } from "react-router-dom";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { RowActions } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { formatIp } from "~/client/network/utils";
 import { PATHS } from "~/routes/network";
+import { Connection, Device } from "~/types/network";
+import { formatIp } from "~/utils/network";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
-/**
- * @typedef {import("~/client/network/model").Device} Device
- * @typedef {import("~/client/network/model").Connection} Connection
- */
+type ConnectionsTableProps = {
+  connections: Connection[];
+  devices: Device[];
+  onForget?: (connection: Connection) => void;
+};
 
 /**
  *
  * Displays given connections in a table
- * @component
  *
- * @param {object} props
- * @param {Connection[]} props.connections - Connections to be shown
- * @param {Device[]} props.devices - Connections to be shown
- * @param {function} [props.onForget] - function to be called for forgetting a connection
  */
-export default function ConnectionsTable({ connections, devices, onForget }) {
+const ConnectionsTable = ({
+  connections,
+  devices,
+  onForget,
+}: ConnectionsTableProps): React.ReactNode => {
   const navigate = useNavigate();
   if (connections.length === 0) return null;
 
   const connectionDevice = ({ id }) => devices.find(({ connection }) => id === connection);
-  const connectionAddresses = (connection) => {
+  const connectionAddresses = (connection: Connection) => {
     const device = connectionDevice(connection);
     const addresses = device ? device.addresses : connection.addresses;
 
@@ -106,4 +107,6 @@ export default function ConnectionsTable({ connections, devices, onForget }) {
       </Tbody>
     </Table>
   );
-}
+};
+
+export default ConnectionsTable;

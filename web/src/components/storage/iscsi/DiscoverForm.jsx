@@ -25,7 +25,7 @@ import { Alert, Form, FormGroup, TextInput } from "@patternfly/react-core";
 import { FormValidationError, Popup } from "~/components/core";
 import { AuthFields } from "~/components/storage/iscsi";
 import { useLocalStorage } from "~/utils";
-import { isValidIp } from "~/client/network/utils";
+import { isValidIp } from "~/utils/network";
 import { _ } from "~/i18n";
 
 const defaultData = {
