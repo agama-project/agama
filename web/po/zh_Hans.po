@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-08 02:27+0000\n"
+"POT-Creation-Date: 2024-08-18 02:29+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -40,7 +40,6 @@ msgstr "继续"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
-#: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "取消"
 
@@ -130,7 +129,6 @@ msgid "Cannot be changed in remote installation"
 msgstr "无法在远程安装中更改"
 
 #: src/components/core/InstallerOptions.jsx:142
-#: src/components/network/IpSettingsForm.jsx:228
 #: src/components/storage/BootSelection.jsx:250
 #: src/components/storage/DeviceSelection.jsx:254
 #: src/components/storage/EncryptionSettingsDialog.jsx:155
@@ -194,7 +192,6 @@ msgid "Passwords do not match"
 msgstr "密码不匹配"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/network/WifiConnectionForm.jsx:128
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:130
@@ -285,7 +282,6 @@ msgstr "尚未选择"
 
 #: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
 #: src/components/l10n/L10nPage.jsx:78
-#: src/components/network/NetworkPage.jsx:75
 #: src/components/storage/InstallationDeviceField.jsx:109
 #: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
@@ -328,286 +324,6 @@ msgstr " 时区选择"
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "正在载入安装环境，请稍候。"
-
-#. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:88
-#: src/components/network/DnsDataList.jsx:95
-msgid "Remove"
-msgstr "移除"
-
-#. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:100
-#: src/components/network/AddressesDataList.jsx:101
-#: src/components/network/IpAddressInput.jsx:33
-msgid "IP Address"
-msgstr "IP 地址"
-
-#. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:109
-#: src/components/network/AddressesDataList.jsx:110
-msgid "Prefix length or netmask"
-msgstr "前缀长度或掩码"
-
-#: src/components/network/AddressesDataList.jsx:126
-msgid "Add an address"
-msgstr "添加地址"
-
-#. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:126
-msgid "Add another address"
-msgstr "添加另一个地址"
-
-#: src/components/network/AddressesDataList.jsx:131
-msgid "Addresses"
-msgstr "地址"
-
-#: src/components/network/AddressesDataList.jsx:133
-msgid "Addresses data list"
-msgstr "地址数据列表"
-
-#. TRANSLATORS: table header
-#. TRANSLATORS: input field for the iSCSI initiator name
-#: src/components/network/ConnectionsTable.jsx:64
-#: src/components/network/ConnectionsTable.jsx:93
-#: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
-msgid "Name"
-msgstr "名称"
-
-#. TRANSLATORS: table header
-#: src/components/network/ConnectionsTable.jsx:66
-#: src/components/network/ConnectionsTable.jsx:94
-msgid "IP addresses"
-msgstr "IP 地址"
-
-#. TRANSLATORS: table header aria label
-#: src/components/network/ConnectionsTable.jsx:68
-#, fuzzy
-msgid "Connection actions"
-msgstr "正在连接"
-
-#: src/components/network/ConnectionsTable.jsx:75
-#: src/components/network/WifiNetworksListPage.jsx:115
-#: src/components/network/WifiNetworksListPage.jsx:139
-#: src/components/storage/PartitionsField.jsx:347
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "编辑"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:78
-#: src/components/network/IpSettingsForm.jsx:151
-#, c-format
-msgid "Edit connection %s"
-msgstr "编辑连接 %s"
-
-#: src/components/network/ConnectionsTable.jsx:82
-#: src/components/network/WifiNetworksListPage.jsx:118
-#: src/components/network/WifiNetworksListPage.jsx:146
-msgid "Forget"
-msgstr "忘掉"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:84
-#, c-format
-msgid "Forget connection %s"
-msgstr "忘掉连接 %s"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:99
-#, c-format
-msgid "Actions for connection %s"
-msgstr "对连接 %s 的操作"
-
-#. TRANSLATORS: input field name
-#: src/components/network/DnsDataList.jsx:81
-#: src/components/network/DnsDataList.jsx:82
-msgid "Server IP"
-msgstr "服务器 IP"
-
-#: src/components/network/DnsDataList.jsx:104
-msgid "Add DNS"
-msgstr "添加 DNS"
-
-#. TRANSLATORS: button label
-#: src/components/network/DnsDataList.jsx:104
-msgid "Add another DNS"
-msgstr "添加另一个 DNS"
-
-#: src/components/network/DnsDataList.jsx:109
-msgid "DNS"
-msgstr "DNS"
-
-#. TRANSLATORS: input field name
-#: src/components/network/IpPrefixInput.jsx:33
-msgid "IP prefix or netmask"
-msgstr "IP 前缀或掩码"
-
-#. TRANSLATORS: error message
-#: src/components/network/IpSettingsForm.jsx:104
-msgid "At least one address must be provided for selected mode"
-msgstr "所选模式要求至少提供一个地址"
-
-#. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:160
-#: src/components/network/IpSettingsForm.jsx:165
-#: src/components/network/IpSettingsForm.jsx:167
-msgid "Mode"
-msgstr "模式"
-
-#: src/components/network/IpSettingsForm.jsx:174
-msgid "Automatic (DHCP)"
-msgstr "自动（DHCP）"
-
-#. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:177
-#: src/components/storage/iscsi/NodeStartupOptions.js:25
-msgid "Manual"
-msgstr "手动"
-
-#. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:185
-#: src/components/network/IpSettingsForm.jsx:188
-msgid "Gateway"
-msgstr "网关"
-
-#: src/components/network/IpSettingsForm.jsx:196
-msgid "Gateway can be defined only in 'Manual' mode"
-msgstr "网关只能在“手动”模式下配置"
-
-#: src/components/network/NetworkPage.jsx:56
-msgid "No Wi-Fi supported"
-msgstr "没有 Wi-Fi 支持"
-
-#: src/components/network/NetworkPage.jsx:58
-msgid ""
-"The system does not support Wi-Fi connections, probably because of missing "
-"or disabled hardware."
-msgstr "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
-
-#: src/components/network/NetworkPage.jsx:72
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:75
-#: src/components/network/WifiConnectionForm.jsx:137
-#: src/components/network/WifiNetworksListPage.jsx:112
-msgid "Connect"
-msgstr "连接"
-
-#: src/components/network/NetworkPage.jsx:82
-#, c-format
-msgid "Conected to %s"
-msgstr "已连接到 %s"
-
-#: src/components/network/NetworkPage.jsx:89
-msgid "No connected yet"
-msgstr "尚未连接"
-
-#: src/components/network/NetworkPage.jsx:90
-msgid ""
-"The system has not been configured for connecting to a Wi-Fi network yet."
-msgstr "系统尚未配置为连接到 WiFi 网络。"
-
-#: src/components/network/NetworkPage.jsx:103
-msgid "Wired"
-msgstr "有线连接"
-
-#: src/components/network/NetworkPage.jsx:105
-msgid "No wired connections found"
-msgstr "未找到有线连接"
-
-#: src/components/network/NetworkPage.jsx:115
-msgid "Network"
-msgstr "网络"
-
-#. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:45
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr "无"
-
-#. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:47
-msgid "WPA & WPA2 Personal"
-msgstr "WPA 与 WPA2 个人版"
-
-#: src/components/network/WifiConnectionForm.jsx:92
-#: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
-#: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
-msgid "Something went wrong"
-msgstr "出了点问题"
-
-#: src/components/network/WifiConnectionForm.jsx:93
-msgid "Please, review provided settings and try again."
-msgstr "请回顾之前提供的设定后再试。"
-
-#. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:99
-#: src/components/network/WifiConnectionForm.jsx:103
-msgid "SSID"
-msgstr "SSID"
-
-#. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:112
-#: src/components/network/WifiConnectionForm.jsx:115
-msgid "Security"
-msgstr "安全性"
-
-#. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:124
-msgid "WPA Password"
-msgstr "WPA 密码"
-
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:66
-#: src/components/network/WifiNetworksListPage.jsx:126
-msgid "Connecting"
-msgstr "正在连接"
-
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:69
-#: src/components/network/WifiNetworksListPage.jsx:130
-#: src/components/network/WifiNetworksListPage.jsx:173
-msgid "Connected"
-msgstr "已连接"
-
-#. TRANSLATORS: Wifi network status
-#. TRANSLATORS: iSCSI connection status
-#: src/components/network/WifiNetworksListPage.jsx:74
-#: src/components/network/WifiNetworksListPage.jsx:128
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
-msgid "Disconnected"
-msgstr "已断开连接"
-
-#: src/components/network/WifiNetworksListPage.jsx:136
-msgid "Disconnect"
-msgstr "断开连接"
-
-#: src/components/network/WifiNetworksListPage.jsx:159
-msgid "Connect to a hidden network"
-msgstr "连接到隐藏网络"
-
-#: src/components/network/WifiNetworksListPage.jsx:170
-msgid "configured"
-msgstr "已配置"
-
-#: src/components/network/WifiNetworksListPage.jsx:270
-msgid "Connect to hidden network"
-msgstr "连接到隐藏网络"
-
-#: src/components/network/WifiSelectorPage.jsx:40
-msgid "Connect to a Wi-Fi network"
-msgstr "连接到 Wi-Fi 网络"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -1329,6 +1045,13 @@ msgstr "位于系统 LVM 的逻辑卷"
 msgid "Partition at installation disk"
 msgstr "安装磁盘上的分区"
 
+#: src/components/storage/PartitionsField.jsx:347
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
+#: src/components/storage/iscsi/NodesPresenter.jsx:73
+#: src/components/users/FirstUser.jsx:86
+msgid "Edit"
+msgstr "编辑"
+
 #: src/components/storage/PartitionsField.jsx:348
 msgid "Reset location"
 msgstr "重设位置"
@@ -1788,6 +1511,13 @@ msgstr "选定磁盘上的当前文件系统将被挂载，但不会被格式化
 msgid "Usage"
 msgstr "用量"
 
+#: src/components/storage/ZFCPDiskForm.jsx:105
+#: src/components/storage/iscsi/DiscoverForm.jsx:98
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/users/FirstUserForm.jsx:207
+msgid "Something went wrong"
+msgstr "出了点问题"
+
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "zFCP 磁盘未激活。"
@@ -1815,6 +1545,16 @@ msgstr "已激活"
 #: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
 msgstr "已停用"
+
+#. TRANSLATORS: input field for the iSCSI initiator name
+#: src/components/storage/ZFCPPage.jsx:381
+#: src/components/storage/iscsi/InitiatorForm.jsx:52
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
+#: src/components/storage/iscsi/NodesPresenter.jsx:98
+#: src/components/storage/iscsi/NodesPresenter.jsx:119
+msgid "Name"
+msgstr "名称"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
@@ -1969,6 +1709,10 @@ msgid "iBFT"
 msgstr "iBFT"
 
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
+msgid "None"
+msgstr "无"
+
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:87
 msgid "Offload card"
 msgstr "卸载卡"
@@ -1990,9 +1734,18 @@ msgstr "登录 %s"
 msgid "Startup"
 msgstr "启动"
 
+#: src/components/storage/iscsi/NodeStartupOptions.js:25
+msgid "Manual"
+msgstr "手动"
+
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
 msgstr "开机时"
+
+#. TRANSLATORS: iSCSI connection status
+#: src/components/storage/iscsi/NodesPresenter.jsx:63
+msgid "Disconnected"
+msgstr "已断开连接"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
@@ -2283,6 +2036,149 @@ msgstr "Root 认证"
 #: src/router.js:48
 msgid "Overview"
 msgstr "概览"
+
+#~ msgid "Remove"
+#~ msgstr "移除"
+
+#~ msgid "IP Address"
+#~ msgstr "IP 地址"
+
+#~ msgid "Prefix length or netmask"
+#~ msgstr "前缀长度或掩码"
+
+#~ msgid "Add an address"
+#~ msgstr "添加地址"
+
+#~ msgid "Add another address"
+#~ msgstr "添加另一个地址"
+
+#~ msgid "Addresses"
+#~ msgstr "地址"
+
+#~ msgid "Addresses data list"
+#~ msgstr "地址数据列表"
+
+#~ msgid "IP addresses"
+#~ msgstr "IP 地址"
+
+#, fuzzy
+#~ msgid "Connection actions"
+#~ msgstr "正在连接"
+
+#, c-format
+#~ msgid "Edit connection %s"
+#~ msgstr "编辑连接 %s"
+
+#~ msgid "Forget"
+#~ msgstr "忘掉"
+
+#, c-format
+#~ msgid "Forget connection %s"
+#~ msgstr "忘掉连接 %s"
+
+#, c-format
+#~ msgid "Actions for connection %s"
+#~ msgstr "对连接 %s 的操作"
+
+#~ msgid "Server IP"
+#~ msgstr "服务器 IP"
+
+#~ msgid "Add DNS"
+#~ msgstr "添加 DNS"
+
+#~ msgid "Add another DNS"
+#~ msgstr "添加另一个 DNS"
+
+#~ msgid "DNS"
+#~ msgstr "DNS"
+
+#~ msgid "IP prefix or netmask"
+#~ msgstr "IP 前缀或掩码"
+
+#~ msgid "At least one address must be provided for selected mode"
+#~ msgstr "所选模式要求至少提供一个地址"
+
+#~ msgid "Mode"
+#~ msgstr "模式"
+
+#~ msgid "Automatic (DHCP)"
+#~ msgstr "自动（DHCP）"
+
+#~ msgid "Gateway"
+#~ msgstr "网关"
+
+#~ msgid "Gateway can be defined only in 'Manual' mode"
+#~ msgstr "网关只能在“手动”模式下配置"
+
+#~ msgid "No Wi-Fi supported"
+#~ msgstr "没有 Wi-Fi 支持"
+
+#~ msgid ""
+#~ "The system does not support Wi-Fi connections, probably because of "
+#~ "missing or disabled hardware."
+#~ msgstr "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
+
+#~ msgid "Wi-Fi"
+#~ msgstr "Wi-Fi"
+
+#~ msgid "Connect"
+#~ msgstr "连接"
+
+#, c-format
+#~ msgid "Conected to %s"
+#~ msgstr "已连接到 %s"
+
+#~ msgid "No connected yet"
+#~ msgstr "尚未连接"
+
+#~ msgid ""
+#~ "The system has not been configured for connecting to a Wi-Fi network yet."
+#~ msgstr "系统尚未配置为连接到 WiFi 网络。"
+
+#~ msgid "Wired"
+#~ msgstr "有线连接"
+
+#~ msgid "No wired connections found"
+#~ msgstr "未找到有线连接"
+
+#~ msgid "Network"
+#~ msgstr "网络"
+
+#~ msgid "WPA & WPA2 Personal"
+#~ msgstr "WPA 与 WPA2 个人版"
+
+#~ msgid "Please, review provided settings and try again."
+#~ msgstr "请回顾之前提供的设定后再试。"
+
+#~ msgid "SSID"
+#~ msgstr "SSID"
+
+#~ msgid "Security"
+#~ msgstr "安全性"
+
+#~ msgid "WPA Password"
+#~ msgstr "WPA 密码"
+
+#~ msgid "Connecting"
+#~ msgstr "正在连接"
+
+#~ msgid "Connected"
+#~ msgstr "已连接"
+
+#~ msgid "Disconnect"
+#~ msgstr "断开连接"
+
+#~ msgid "Connect to a hidden network"
+#~ msgstr "连接到隐藏网络"
+
+#~ msgid "configured"
+#~ msgstr "已配置"
+
+#~ msgid "Connect to hidden network"
+#~ msgstr "连接到隐藏网络"
+
+#~ msgid "Connect to a Wi-Fi network"
+#~ msgstr "连接到 Wi-Fi 网络"
 
 #~ msgid "Question"
 #~ msgstr "问题"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-08 02:27+0000\n"
+"POT-Creation-Date: 2024-08-18 02:29+0000\n"
 "PO-Revision-Date: 2024-07-25 08:46+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -43,7 +43,6 @@ msgstr "Continua"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
-#: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -138,7 +137,6 @@ msgid "Cannot be changed in remote installation"
 msgstr "No es pot canviar a la instal·lació remota."
 
 #: src/components/core/InstallerOptions.jsx:142
-#: src/components/network/IpSettingsForm.jsx:228
 #: src/components/storage/BootSelection.jsx:250
 #: src/components/storage/DeviceSelection.jsx:254
 #: src/components/storage/EncryptionSettingsDialog.jsx:155
@@ -206,7 +204,6 @@ msgid "Passwords do not match"
 msgstr "Les contrasenyes no coincideixen."
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/network/WifiConnectionForm.jsx:128
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:130
@@ -297,7 +294,6 @@ msgstr "Encara no s'ha seleccionat."
 
 #: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
 #: src/components/l10n/L10nPage.jsx:78
-#: src/components/network/NetworkPage.jsx:75
 #: src/components/storage/InstallationDeviceField.jsx:109
 #: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
@@ -340,289 +336,6 @@ msgstr " Selecció de la zona horària"
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "Carregant l'entorn d'instal·lació. Espereu, si us plau."
-
-#. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:88
-#: src/components/network/DnsDataList.jsx:95
-msgid "Remove"
-msgstr "Suprimeix"
-
-#. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:100
-#: src/components/network/AddressesDataList.jsx:101
-#: src/components/network/IpAddressInput.jsx:33
-msgid "IP Address"
-msgstr "Adreça IP"
-
-#. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:109
-#: src/components/network/AddressesDataList.jsx:110
-msgid "Prefix length or netmask"
-msgstr "Longitud del prefix o màscara de xarxa"
-
-#: src/components/network/AddressesDataList.jsx:126
-msgid "Add an address"
-msgstr "Afegeix-hi una adreça"
-
-#. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:126
-msgid "Add another address"
-msgstr "Afegeix-hi una altra adreça"
-
-#: src/components/network/AddressesDataList.jsx:131
-msgid "Addresses"
-msgstr "Adreces"
-
-#: src/components/network/AddressesDataList.jsx:133
-msgid "Addresses data list"
-msgstr "Llista de dades d'adreces"
-
-#. TRANSLATORS: table header
-#. TRANSLATORS: input field for the iSCSI initiator name
-#: src/components/network/ConnectionsTable.jsx:64
-#: src/components/network/ConnectionsTable.jsx:93
-#: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
-msgid "Name"
-msgstr "Nom"
-
-#. TRANSLATORS: table header
-#: src/components/network/ConnectionsTable.jsx:66
-#: src/components/network/ConnectionsTable.jsx:94
-msgid "IP addresses"
-msgstr "Adreces IP"
-
-#. TRANSLATORS: table header aria label
-#: src/components/network/ConnectionsTable.jsx:68
-msgid "Connection actions"
-msgstr "Accions de connexió"
-
-#: src/components/network/ConnectionsTable.jsx:75
-#: src/components/network/WifiNetworksListPage.jsx:115
-#: src/components/network/WifiNetworksListPage.jsx:139
-#: src/components/storage/PartitionsField.jsx:347
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "Edita"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:78
-#: src/components/network/IpSettingsForm.jsx:151
-#, c-format
-msgid "Edit connection %s"
-msgstr "Edita la connexió %s"
-
-#: src/components/network/ConnectionsTable.jsx:82
-#: src/components/network/WifiNetworksListPage.jsx:118
-#: src/components/network/WifiNetworksListPage.jsx:146
-msgid "Forget"
-msgstr "Oblida-la"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:84
-#, c-format
-msgid "Forget connection %s"
-msgstr "Oblida la connexió %s"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:99
-#, c-format
-msgid "Actions for connection %s"
-msgstr "Accions per a la connexió %s"
-
-#. TRANSLATORS: input field name
-#: src/components/network/DnsDataList.jsx:81
-#: src/components/network/DnsDataList.jsx:82
-msgid "Server IP"
-msgstr "IP del servidor"
-
-#: src/components/network/DnsDataList.jsx:104
-msgid "Add DNS"
-msgstr "Afegeix-hi un DNS"
-
-#. TRANSLATORS: button label
-#: src/components/network/DnsDataList.jsx:104
-msgid "Add another DNS"
-msgstr "Afegeix-hi un altre DNS"
-
-#: src/components/network/DnsDataList.jsx:109
-msgid "DNS"
-msgstr "DNS"
-
-#. TRANSLATORS: input field name
-#: src/components/network/IpPrefixInput.jsx:33
-msgid "IP prefix or netmask"
-msgstr "Prefix IP o màscara de xarxa"
-
-#. TRANSLATORS: error message
-#: src/components/network/IpSettingsForm.jsx:104
-msgid "At least one address must be provided for selected mode"
-msgstr "S'ha de proporcionar almenys una adreça per al mode seleccionat."
-
-#. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:160
-#: src/components/network/IpSettingsForm.jsx:165
-#: src/components/network/IpSettingsForm.jsx:167
-msgid "Mode"
-msgstr "Mode"
-
-#: src/components/network/IpSettingsForm.jsx:174
-msgid "Automatic (DHCP)"
-msgstr "Automàtic (DHCP)"
-
-#. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:177
-#: src/components/storage/iscsi/NodeStartupOptions.js:25
-msgid "Manual"
-msgstr "Manual"
-
-#. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:185
-#: src/components/network/IpSettingsForm.jsx:188
-msgid "Gateway"
-msgstr "Passarel·la"
-
-#: src/components/network/IpSettingsForm.jsx:196
-msgid "Gateway can be defined only in 'Manual' mode"
-msgstr "La passarel·la només es pot definir en mode manual."
-
-#: src/components/network/NetworkPage.jsx:56
-msgid "No Wi-Fi supported"
-msgstr "No és compatible amb Wi-Fi."
-
-#: src/components/network/NetworkPage.jsx:58
-msgid ""
-"The system does not support Wi-Fi connections, probably because of missing "
-"or disabled hardware."
-msgstr ""
-"El sistema no admet connexions de wifi, probablement a causa de maquinari "
-"que manca o que està inhabilitat."
-
-#: src/components/network/NetworkPage.jsx:72
-msgid "Wi-Fi"
-msgstr "Wifi"
-
-#. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:75
-#: src/components/network/WifiConnectionForm.jsx:137
-#: src/components/network/WifiNetworksListPage.jsx:112
-msgid "Connect"
-msgstr "Connecta't"
-
-#: src/components/network/NetworkPage.jsx:82
-#, c-format
-msgid "Conected to %s"
-msgstr "Connectat amb %s"
-
-#: src/components/network/NetworkPage.jsx:89
-msgid "No connected yet"
-msgstr "Encara no s'ha connetat."
-
-#: src/components/network/NetworkPage.jsx:90
-msgid ""
-"The system has not been configured for connecting to a Wi-Fi network yet."
-msgstr ""
-"El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
-
-#: src/components/network/NetworkPage.jsx:103
-msgid "Wired"
-msgstr "Amb fil"
-
-#: src/components/network/NetworkPage.jsx:105
-msgid "No wired connections found"
-msgstr "No s'ha trobat cap connexió amb fil."
-
-#: src/components/network/NetworkPage.jsx:115
-msgid "Network"
-msgstr "Xarxa"
-
-#. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:45
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr "Cap"
-
-#. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:47
-msgid "WPA & WPA2 Personal"
-msgstr "WPA i WPA2 personal"
-
-#: src/components/network/WifiConnectionForm.jsx:92
-#: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
-#: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
-msgid "Something went wrong"
-msgstr "Alguna cosa ha anat malament."
-
-#: src/components/network/WifiConnectionForm.jsx:93
-msgid "Please, review provided settings and try again."
-msgstr ""
-"Si us plau, reviseu la configuració proporcionada i torneu-ho a provar."
-
-#. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:99
-#: src/components/network/WifiConnectionForm.jsx:103
-msgid "SSID"
-msgstr "SSID"
-
-#. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:112
-#: src/components/network/WifiConnectionForm.jsx:115
-msgid "Security"
-msgstr "Seguretat"
-
-#. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:124
-msgid "WPA Password"
-msgstr "Contrasenya de WPA"
-
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:66
-#: src/components/network/WifiNetworksListPage.jsx:126
-msgid "Connecting"
-msgstr "Connectant"
-
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:69
-#: src/components/network/WifiNetworksListPage.jsx:130
-#: src/components/network/WifiNetworksListPage.jsx:173
-msgid "Connected"
-msgstr "Connectat"
-
-#. TRANSLATORS: Wifi network status
-#. TRANSLATORS: iSCSI connection status
-#: src/components/network/WifiNetworksListPage.jsx:74
-#: src/components/network/WifiNetworksListPage.jsx:128
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
-msgid "Disconnected"
-msgstr "Desconnectat"
-
-#: src/components/network/WifiNetworksListPage.jsx:136
-msgid "Disconnect"
-msgstr "Desconnecta"
-
-#: src/components/network/WifiNetworksListPage.jsx:159
-msgid "Connect to a hidden network"
-msgstr "Connecta't a una xarxa oculta"
-
-#: src/components/network/WifiNetworksListPage.jsx:170
-msgid "configured"
-msgstr "configurat"
-
-#: src/components/network/WifiNetworksListPage.jsx:270
-msgid "Connect to hidden network"
-msgstr "Connecta't a una xarxa oculta"
-
-#: src/components/network/WifiSelectorPage.jsx:40
-msgid "Connect to a Wi-Fi network"
-msgstr "Connecteu-vos a una xarxa Wi-Fi"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -1381,6 +1094,13 @@ msgstr "Volum lògic al sistema LVM"
 msgid "Partition at installation disk"
 msgstr "Partició al disc d'instal·lació"
 
+#: src/components/storage/PartitionsField.jsx:347
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
+#: src/components/storage/iscsi/NodesPresenter.jsx:73
+#: src/components/users/FirstUser.jsx:86
+msgid "Edit"
+msgstr "Edita"
+
 #: src/components/storage/PartitionsField.jsx:348
 msgid "Reset location"
 msgstr "Restableix la ubicació"
@@ -1859,6 +1579,13 @@ msgstr ""
 msgid "Usage"
 msgstr "Ús"
 
+#: src/components/storage/ZFCPDiskForm.jsx:105
+#: src/components/storage/iscsi/DiscoverForm.jsx:98
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/users/FirstUserForm.jsx:207
+msgid "Something went wrong"
+msgstr "Alguna cosa ha anat malament."
+
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "El disc zFCP no s'ha activat."
@@ -1886,6 +1613,16 @@ msgstr "Activat"
 #: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
 msgstr "Desactivat"
+
+#. TRANSLATORS: input field for the iSCSI initiator name
+#: src/components/storage/ZFCPPage.jsx:381
+#: src/components/storage/iscsi/InitiatorForm.jsx:52
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
+#: src/components/storage/iscsi/NodesPresenter.jsx:98
+#: src/components/storage/iscsi/NodesPresenter.jsx:119
+msgid "Name"
+msgstr "Nom"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
@@ -2043,6 +1780,10 @@ msgid "iBFT"
 msgstr "iBFT"
 
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
+msgid "None"
+msgstr "Cap"
+
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:87
 msgid "Offload card"
 msgstr "Targeta de descàrrega"
@@ -2064,9 +1805,18 @@ msgstr "Entrada per a %s"
 msgid "Startup"
 msgstr "Inici"
 
+#: src/components/storage/iscsi/NodeStartupOptions.js:25
+msgid "Manual"
+msgstr "Manual"
+
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
 msgstr "A l'arrencada"
+
+#. TRANSLATORS: iSCSI connection status
+#: src/components/storage/iscsi/NodesPresenter.jsx:63
+msgid "Disconnected"
+msgstr "Desconnectat"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
@@ -2366,6 +2116,152 @@ msgstr "Autenticació d'arrel"
 #: src/router.js:48
 msgid "Overview"
 msgstr "Resum"
+
+#~ msgid "Remove"
+#~ msgstr "Suprimeix"
+
+#~ msgid "IP Address"
+#~ msgstr "Adreça IP"
+
+#~ msgid "Prefix length or netmask"
+#~ msgstr "Longitud del prefix o màscara de xarxa"
+
+#~ msgid "Add an address"
+#~ msgstr "Afegeix-hi una adreça"
+
+#~ msgid "Add another address"
+#~ msgstr "Afegeix-hi una altra adreça"
+
+#~ msgid "Addresses"
+#~ msgstr "Adreces"
+
+#~ msgid "Addresses data list"
+#~ msgstr "Llista de dades d'adreces"
+
+#~ msgid "IP addresses"
+#~ msgstr "Adreces IP"
+
+#~ msgid "Connection actions"
+#~ msgstr "Accions de connexió"
+
+#, c-format
+#~ msgid "Edit connection %s"
+#~ msgstr "Edita la connexió %s"
+
+#~ msgid "Forget"
+#~ msgstr "Oblida-la"
+
+#, c-format
+#~ msgid "Forget connection %s"
+#~ msgstr "Oblida la connexió %s"
+
+#, c-format
+#~ msgid "Actions for connection %s"
+#~ msgstr "Accions per a la connexió %s"
+
+#~ msgid "Server IP"
+#~ msgstr "IP del servidor"
+
+#~ msgid "Add DNS"
+#~ msgstr "Afegeix-hi un DNS"
+
+#~ msgid "Add another DNS"
+#~ msgstr "Afegeix-hi un altre DNS"
+
+#~ msgid "DNS"
+#~ msgstr "DNS"
+
+#~ msgid "IP prefix or netmask"
+#~ msgstr "Prefix IP o màscara de xarxa"
+
+#~ msgid "At least one address must be provided for selected mode"
+#~ msgstr "S'ha de proporcionar almenys una adreça per al mode seleccionat."
+
+#~ msgid "Mode"
+#~ msgstr "Mode"
+
+#~ msgid "Automatic (DHCP)"
+#~ msgstr "Automàtic (DHCP)"
+
+#~ msgid "Gateway"
+#~ msgstr "Passarel·la"
+
+#~ msgid "Gateway can be defined only in 'Manual' mode"
+#~ msgstr "La passarel·la només es pot definir en mode manual."
+
+#~ msgid "No Wi-Fi supported"
+#~ msgstr "No és compatible amb Wi-Fi."
+
+#~ msgid ""
+#~ "The system does not support Wi-Fi connections, probably because of "
+#~ "missing or disabled hardware."
+#~ msgstr ""
+#~ "El sistema no admet connexions de wifi, probablement a causa de maquinari "
+#~ "que manca o que està inhabilitat."
+
+#~ msgid "Wi-Fi"
+#~ msgstr "Wifi"
+
+#~ msgid "Connect"
+#~ msgstr "Connecta't"
+
+#, c-format
+#~ msgid "Conected to %s"
+#~ msgstr "Connectat amb %s"
+
+#~ msgid "No connected yet"
+#~ msgstr "Encara no s'ha connetat."
+
+#~ msgid ""
+#~ "The system has not been configured for connecting to a Wi-Fi network yet."
+#~ msgstr ""
+#~ "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
+
+#~ msgid "Wired"
+#~ msgstr "Amb fil"
+
+#~ msgid "No wired connections found"
+#~ msgstr "No s'ha trobat cap connexió amb fil."
+
+#~ msgid "Network"
+#~ msgstr "Xarxa"
+
+#~ msgid "WPA & WPA2 Personal"
+#~ msgstr "WPA i WPA2 personal"
+
+#~ msgid "Please, review provided settings and try again."
+#~ msgstr ""
+#~ "Si us plau, reviseu la configuració proporcionada i torneu-ho a provar."
+
+#~ msgid "SSID"
+#~ msgstr "SSID"
+
+#~ msgid "Security"
+#~ msgstr "Seguretat"
+
+#~ msgid "WPA Password"
+#~ msgstr "Contrasenya de WPA"
+
+#~ msgid "Connecting"
+#~ msgstr "Connectant"
+
+#~ msgid "Connected"
+#~ msgstr "Connectat"
+
+#~ msgid "Disconnect"
+#~ msgstr "Desconnecta"
+
+#~ msgid "Connect to a hidden network"
+#~ msgstr "Connecta't a una xarxa oculta"
+
+#~ msgid "configured"
+#~ msgstr "configurat"
+
+#~ msgid "Connect to hidden network"
+#~ msgstr "Connecta't a una xarxa oculta"
+
+#~ msgid "Connect to a Wi-Fi network"
+#~ msgstr "Connecteu-vos a una xarxa Wi-Fi"
 
 #~ msgid "Question"
 #~ msgstr "Pregunta"
