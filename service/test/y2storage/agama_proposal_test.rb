@@ -135,7 +135,7 @@ describe Y2Storage::AgamaProposal do
 
       let(:home_encryption) do
         Agama::Storage::Configs::Encryption.new.tap do |enc|
-					enc.key = "notSecreT"
+					enc.password = "notSecreT"
 					enc.method = encryption_method
         end
       end
@@ -150,7 +150,7 @@ describe Y2Storage::AgamaProposal do
       context "if the encryption settings contain all the detailed information" do
         let(:home_encryption) do
           Agama::Storage::Configs::Encryption.new.tap do |enc|
-						enc.key = "notSecreT"
+						enc.password = "notSecreT"
 						enc.method = encryption_method
 						enc.pbkd_function = Y2Storage::PbkdFunction::ARGON2I
 						enc.label = "luks_label"
