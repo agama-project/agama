@@ -19,15 +19,30 @@
  * find current contact information at www.suse.com.
  */
 
-import { get } from "~/api/http";
-import { InstallerStatus } from "~/types/status";
+// @ts-check
 
-/**
- * Returns the installer status information
- */
-const fetchInstallerStatus = async (): Promise<InstallerStatus> => {
-  const { phase, busy, iguana, canInstall } = await get("/api/manager/installer");
-  return { phase, isBusy: busy.length !== 0, useIguana: iguana, canInstall };
-};
+import { get } from "./http";
+import { fetchInstallerStatus } from "./status";
 
-export { fetchInstallerStatus };
+const mockGetFn = jest.fn().mockImplementation(() => {
+  return { 
+    phase:	2,
+    busy:	[],
+    iguana:	false,
+    canInstall:	false
+  };
+});
+
+jest.mock("./http", () => {
+    return {
+      // TODO: fix mocking of get. How to do it for api tests?
+      // get: mockGetFn,
+    };
+});
+
+describe("#fetchInstallerStatus", () => {
+    it.skip("parses response from manager/installer", async() => {
+        const response = await fetchInstallerStatus();
+        expect(response.isBusy).toEqual(false);
+    });
+});
