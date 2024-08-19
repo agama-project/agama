@@ -1,9 +1,4 @@
 -------------------------------------------------------------------
-Mon Aug 19 11:54:07 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
-
-- Fix early finish of installation (gh#openSUSE/agama#1544)
-
--------------------------------------------------------------------
 Tue Aug 13 14:57:21 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Allow links look like buttons again (gh#openSUSE/agama#1536).

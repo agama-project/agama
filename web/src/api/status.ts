@@ -26,8 +26,8 @@ import { InstallerStatus } from "~/types/status";
  * Returns the installer status information
  */
 const fetchInstallerStatus = async (): Promise<InstallerStatus> => {
-  const { phase, busy, iguana, canInstall } = await get("/api/manager/installer");
-  return { phase, isBusy: busy.length !== 0, useIguana: iguana, canInstall };
+  const { phase, isBusy, useIguana, canInstall } = await get("/api/manager/installer");
+  return { phase, isBusy, useIguana, canInstall };
 };
 
 export { fetchInstallerStatus };
