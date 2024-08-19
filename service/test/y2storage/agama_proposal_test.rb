@@ -233,5 +233,95 @@ describe Y2Storage::AgamaProposal do
         end
       end
     end
+
+    context "when there are more drives than disks in the system" do
+      let(:drives) { [drive0, drive1] }
+      let(:drive1) do
+        Agama::Storage::Configs::Drive.new.tap do |drive|
+          drive.search = Agama::Storage::Configs::Search.new.tap do |search|
+            search.if_not_found = if_not_found
+          end
+        end
+      end
+
+      context "if if_not_found is set to :skip for the surplus drive" do
+        let(:if_not_found) { :skip }
+
+        it "calculates a proposal if possible" do
+          proposal.propose
+          expect(proposal.failed?).to eq false
+        end
+
+        it "registers a non-critical issue" do
+          proposal.propose
+          expect(proposal.issues_list).to include an_object_having_attributes(
+            description: /optional drive/,
+            severity: Agama::Issue::Severity::WARN
+          )
+        end
+      end
+
+      context "if if_not_found is set to :error for the surplus drive" do
+        let(:if_not_found) { :error }
+
+        it "aborts the proposal" do
+          proposal.propose
+          expect(proposal.failed?).to eq true
+        end
+
+        it "registers a critical issue" do
+          proposal.propose
+          expect(proposal.issues_list).to include an_object_having_attributes(
+            description: /mandatory drive/,
+            severity: Agama::Issue::Severity::ERROR
+          )
+        end
+      end
+    end
+
+    context "when searching for a non-existent partition" do
+      let(:partitions0) { [root_partition, existing_partition ] }
+      let(:existing_partition) do
+        Agama::Storage::Configs::Partition.new.tap do |part|
+          part.search = Agama::Storage::Configs::Search.new.tap do |search|
+            search.if_not_found = if_not_found
+          end
+        end
+      end
+
+      context "if if_not_found is set to :skip" do
+        let(:if_not_found) { :skip }
+
+        it "calculates a proposal if possible" do
+          proposal.propose
+          expect(proposal.failed?).to eq false
+        end
+
+        it "registers a non-critical issue" do
+          proposal.propose
+          expect(proposal.issues_list).to include an_object_having_attributes(
+            description: /optional partition/,
+            severity: Agama::Issue::Severity::WARN
+          )
+        end
+      end
+
+      context "if if_not_found is set to :error" do
+        let(:if_not_found) { :error }
+
+        it "aborts the proposal" do
+          proposal.propose
+          expect(proposal.failed?).to eq true
+        end
+
+        it "registers a critical issue" do
+          proposal.propose
+          expect(proposal.issues_list).to include an_object_having_attributes(
+            description: /mandatory partition/,
+            severity: Agama::Issue::Severity::ERROR
+          )
+        end
+      end
+    end
   end
 end

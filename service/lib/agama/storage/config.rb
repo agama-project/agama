@@ -35,7 +35,6 @@ module Agama
       attr_accessor :md_raids
       attr_accessor :btrfs_raids
       attr_accessor :nfs_mounts
-      attr_accessor :original_graph
 
       def initialize
         @boot = Configs::Boot.new
