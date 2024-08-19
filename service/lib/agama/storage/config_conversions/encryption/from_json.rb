@@ -41,13 +41,13 @@ module Agama
           # @return [Configs::Encryption]
           def convert
             default_config.dup.tap do |config|
-              key = convert_key
+              password = convert_password
               method = convert_method
               pbkdf = convert_pbkd_function
               key_size = convert_key_size
               cipher = convert_cipher
 
-              config.key = key if key
+              config.password = password if password
               config.method = method if method
               config.pbkd_function = pbkdf if pbkdf
               config.key_size = key_size if key_size
@@ -64,9 +64,8 @@ module Agama
           attr_reader :default_config
 
           # @return [String, nil]
-          def convert_key
-            # TODO: this is set as "key" in the schema, but it looks like a bad name
-            encryption_json[:key]
+          def convert_password
+            encryption_json[:password]
           end
 
           # @return [Y2Storage::EncryptionMethod, nil]
@@ -84,7 +83,6 @@ module Agama
 
           # @return [Integer, nil]
           def convert_key_size
-            # FIXME: this is using camel_case in the schema definition, looks wrong
             encryption_json[:keySize]
           end
 

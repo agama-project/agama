@@ -24,7 +24,7 @@ module Agama
     module Configs
       class Encryption
         attr_accessor :method
-        attr_accessor :key
+        attr_accessor :password
         attr_accessor :pbkd_function
         attr_accessor :label
         attr_accessor :cipher

@@ -90,7 +90,7 @@ module Y2Storage
       # @param planned [Planned::Disk, Planned::Partition]
       # @param settings [Agama::Storage::Configs::Encryption]
       def configure_encryption(planned, settings)
-        planned.encryption_password = settings.key
+        planned.encryption_password = settings.password
         planned.encryption_method = settings.method
         planned.encryption_pbkdf = settings.pbkd_function
         planned.encryption_label = settings.label
