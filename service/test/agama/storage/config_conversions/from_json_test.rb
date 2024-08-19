@@ -540,9 +540,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
 
       context "if the method and the mandatory attributes are specified" do
         let(:encryption_home) do
-          # FIXME: The schema specified "key_size" instead of keySize
-          # FIXME: Not sure if "key" is a good name for the password/passphrase
-          { "key": "notsecret", "method": "luks2", "keySize": 256 }
+          { "password": "notsecret", "method": "luks2", "keySize": 256 }
         end
         let(:encryption_swap) { nil }
 
@@ -553,7 +551,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
             an_object_having_attributes(
               filesystem: have_attributes(path: "/home"),
               encryption: have_attributes(
-                key: "notsecret", method: Y2Storage::EncryptionMethod::LUKS2, key_size: 256
+                password: "notsecret", method: Y2Storage::EncryptionMethod::LUKS2, key_size: 256
               )
             ),
             an_object_having_attributes(
@@ -565,7 +563,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       end
 
       context "if only the password is provided" do
-        let(:encryption_home) { { "key": "notsecret" } }
+        let(:encryption_home) { { "password": "notsecret" } }
         let(:encryption_swap) { nil }
 
         it "uses the default method and derivation function" do
@@ -575,7 +573,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
             an_object_having_attributes(
               filesystem: have_attributes(path: "/home"),
               encryption: have_attributes(
-                key: "notsecret",
+                password: "notsecret",
                 method: Y2Storage::EncryptionMethod::LUKS2,
                 pbkd_function: Y2Storage::PbkdFunction::ARGON2ID
               )
@@ -603,7 +601,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
             an_object_having_attributes(
               filesystem: have_attributes(path: "swap"),
               encryption: have_attributes(
-                key: nil,
+                password: nil,
                 label: nil,
                 cipher: nil,
                 method: Y2Storage::EncryptionMethod::RANDOM_SWAP
@@ -614,7 +612,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       end
 
       context "if an unknown encryption method is specified" do
-        let(:encryption_home) { { "key": "notsecret", method: "foo" } }
+        let(:encryption_home) { { "password": "notsecret", method: "foo" } }
         let(:encryption_swap) { nil }
 
         # FIXME: shouldn't the problem (and the applied 'fix') be reported as an issue?
@@ -625,7 +623,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
             an_object_having_attributes(
               filesystem: have_attributes(path: "/home"),
               encryption: have_attributes(
-                key: "notsecret",
+                password: "notsecret",
                 method: Y2Storage::EncryptionMethod::LUKS2
               )
             ),

@@ -93,7 +93,7 @@ module Agama
           # @return [Configs::Encryption]
           def default_encrypt_config
             Configs::Encryption.new.tap do |config|
-              config.key = settings.encryption.password
+              config.password = settings.encryption.password
               config.method = settings.encryption.method
               config.pbkd_function = settings.encryption.pbkd_function
             end
