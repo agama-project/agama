@@ -33,43 +33,62 @@ module Y2Storage
 
       # The last two arguments get modified
       def search(devicegraph, settings, issues_list)
-        settings.original_graph = devicegraph
-
-        sids = []
+        @sids = []
         settings.drives.each do |drive|
-          drive.search_device(devicegraph, sids)
+          drive.search_device(devicegraph, @sids)
+          process_element(drive, settings.drives, issues_list)
 
-          found = drive.found_device
-          if found.nil?
-            # TODO: If IfNotFound is 'skip' => 
-            #   invalidate somehow the device definition (registering issue?)
-            #
-            # Let's assume IfNotFound is 'error'
-            issues_list << issue_missing_drive(drive)
-            return false
-          end
-
-          sids << found.sid
-          next unless drive.partitions?
+          next unless drive.found_device && drive.partitions?
 
           drive.partitions.each do |part|
-            part.search_device(devicegraph, found.sid, sids)
-            part_sid = part.found_device&.sid
-            sids << part_sid if part_sid
+            next unless part.search
+
+            part.search_device(drive.found_device, @sids)
+            process_element(part, drive.partitions, issues_list)
           end
         end
-
-        true
       end
 
       private
 
-      def issue_missing_drive(drive)
+      def process_element(element, collection, issues_list)
+        found = element.found_device
+        if found
+          @sids << found.sid
+        else
+          issues_list << not_found_issue(element)
+          collection.delete(element) if element.search.skip_device?
+        end
+      end
+
+      def not_found_issue(element)
         Agama::Issue.new(
-          _("No device found for a given drive"),
+          issue_message(element),
           source:   Agama::Issue::Source::CONFIG,
-          severity: Agama::Issue::Severity::ERROR
+          severity: issue_severity(element.search)
         )
+      end
+
+      def issue_message(element)
+        if element.kind_of?(Agama::Storage::Configs::Drive)
+          if element.search.skip_device?
+            _("No device found for an optional drive")
+          else
+            _("No device found for a mandatory drive")
+          end
+        else
+          if element.search.skip_device?
+            _("No device found for an optional partition")
+          else
+            _("No device found for a mandatory partition")
+          end
+        end
+      end
+
+      def issue_severity(search)
+        return Agama::Issue::Severity::WARN if search.skip_device?
+
+        Agama::Issue::Severity::ERROR
       end
     end
   end

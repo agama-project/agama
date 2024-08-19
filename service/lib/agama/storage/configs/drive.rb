@@ -45,7 +45,8 @@ module Agama
 
         def search_device(devicegraph, used_sids)
           @search ||= default_search
-          search.find(self, devicegraph, used_sids)
+          devs = devicegraph.blk_devices.select { |d| d.is?(:disk_device, :stray_blk_device) }
+          search.find(self, devs, used_sids)
         end
 
         def default_search

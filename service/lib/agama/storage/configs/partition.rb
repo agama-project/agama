@@ -29,9 +29,9 @@ module Agama
         attr_accessor :encryption
         attr_accessor :filesystem
 
-        def search_device(devicegraph, parent_sid, used_sids)
+        def search_device(partitionable, used_sids)
           @search ||= default_search
-          search.find(self, devicegraph, used_sids, parent: parent_sid)
+          search.find(self, partitionable.partitions, used_sids)
         end
 
         def default_search

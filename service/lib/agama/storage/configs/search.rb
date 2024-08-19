@@ -24,21 +24,24 @@ module Agama
     module Configs
       class Search
         attr_reader :device
+        attr_accessor :if_not_found
 
-        def find(setting, devicegraph, used_sids, parent: nil)
-          devices = candidate_devices(setting, devicegraph, parent)
-          devices.reject! { |d| used_sids.include?(d.sid) }
-          @device = devices.sort_by(&:name).first
+        def initialize
+          @if_not_found = :skip
         end
 
-        def candidate_devices(setting, devicegraph, parent)
-          if setting.kind_of?(Drive)
-            devicegraph.blk_devices.select do |dev|
-              dev.is?(:disk_device, :stray_blk_device)
-            end
-          else
-            devicegraph.find_device(parent).partitions
-          end
+        def resolved?
+          !!@resolved
+        end
+
+        def skip_device?
+          resolved? && device.nil? && if_not_found == :skip
+        end
+
+        def find(setting, candidate_devs, used_sids)
+          devices = candidate_devs.reject { |d| used_sids.include?(d.sid) }
+          @resolved = true
+          @device = devices.sort_by(&:name).first
         end
       end
     end
