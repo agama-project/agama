@@ -167,6 +167,7 @@
         <package name="ruby3.3-rubygem-agama-yast"/>
         <package name="ruby3.3-rubygem-byebug"/>
         <package name="staging-build-key"/>
+        <package name="openSUSE-build-key"/>
     </packages>
     <!-- additional packages for the SLE distributions -->
     <packages type="image" profiles="SLE">
