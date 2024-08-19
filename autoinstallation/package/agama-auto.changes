@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Aug 15 08:35:31 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- change agama-auto systemd service depedencies to reflect changes
+  in agama CLI communication and ensure that it runs when
+  agama-auto runs
+  (gh#openSUSE/agama#1539)
+
+-------------------------------------------------------------------
 Wed Jul  3 15:24:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Bring back the service scriptlets but using the right service
