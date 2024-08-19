@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 19 15:13:46 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Allow overriding of install repos which is needed by openQA
+- Override urls by using agama.install_url=https://.. boot param
+
+-------------------------------------------------------------------
 Mon Aug 12 11:44:15 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Less strict nokogiri dependency as nokogiri follows semver, so do
