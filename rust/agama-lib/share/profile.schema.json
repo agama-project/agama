@@ -355,6 +355,8 @@
         },
         "guided": {
           "title": "Settings to execute a Guided Proposal.",
+          "deprecated": true,
+          "$comment": "Guided settings will be removed from the schema.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -406,11 +408,11 @@
               "required": ["password"],
               "properties": {
                 "password": {
-                  "title": "Passphrase to use when creating a new encryption device.",
-                  "type": "string"
+                  "$ref": "#/$defs/encryptionPassword"
                 },
                 "method": {
-                  "$ref": "#/$defs/encryptionMethod"
+                  "title": "Method used to encrypt the devices.",
+                  "enum": ["luks2", "tpm_fde"]
                 },
                 "pbkdFunction": {
                   "$ref": "#/$defs/encryptionPbkdFunction"
@@ -705,45 +707,109 @@
         }
       }
     },
-    "encryptionMethod": {
-      "title": "Method used to create the encryption device.",
-      "enum": ["luks2", "tpm_fde"]
+    "encryptionPassword": {
+      "title": "Passphrase to use when creating a new encryption device.",
+      "type": "string"
+    },
+    "encryptionCipher": {
+      "title": "Cipher used for LUKS encryption.",
+      "description": "The value must be compatible with the --cipher argument of the command cryptsetup.",
+      "type": "string"
+    },
+    "encryptionKeySize": {
+      "title": "Key size, in bits, used for LUKS encryption.",
+      "description": "The value has to be a multiple of 8. The possible key sizes are limited by the used cipher.",
+      "type": "integer"
     },
     "encryptionPbkdFunction": {
       "title": "Password-based key derivation function to use for LUKS2.",
       "enum": ["pbkdf2", "argon2i", "argon2id"]
     },
-    "encryption": {
-      "title": "Encryption options.",
+    "encryptionLUKS1": {
+      "title": "LUKS1 encryption.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["key"],
+      "required": ["luks1"],
       "properties": {
-        "key": {
-          "title": "Passphrase to use when creating a new encryption device.",
-          "type": "string"
-        },
-        "method": {
-          "$ref": "#/$defs/encryptionMethod"
-        },
-        "pbkdFunction": {
-          "$ref": "#/$defs/encryptionPbkdFunction"
-        },
-        "label": {
-          "title": "LUKS label for the encrypted device.",
-          "type": "string"
-        },
-        "cipher": {
-          "title": "Cipher used for LUKS encryption.",
-          "description": "The value must be compatible with the --cipher argument of the command cryptsetup.",
-          "type": "string"
-        },
-        "key_size": {
-          "title": "Key size, in bits, used for LUKS encryption.",
-          "description": "The value has to be a multiple of 8. The possible key sizes are limited by the used cipher.",
-          "type": "integer"
+        "luks1": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": {
+              "$ref": "#/$defs/encryptionPassword"
+            },
+            "cipher": {
+              "$ref": "#/$defs/encryptionCipher"
+            },
+            "keySize": {
+              "$ref": "#/$defs/encryptionKeySize"
+            }
+          }
         }
       }
+    },
+    "encryptionLUKS2": {
+      "title": "LUKS2 encryption.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["luks2"],
+      "properties": {
+        "luks2": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": {
+              "$ref": "#/$defs/encryptionPassword"
+            },
+            "cipher": {
+              "$ref": "#/$defs/encryptionCipher"
+            },
+            "keySize": {
+              "$ref": "#/$defs/encryptionKeySize"
+            },
+            "pbkdFunction": {
+              "$ref": "#/$defs/encryptionPbkdFunction"
+            },
+            "label": {
+              "title": "LUKS label for the encrypted device.",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "encryptionPervasiveLUKS2": {
+      "title": "LUKS2 pervasive encryption.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pervasiveLuks2"],
+      "properties": {
+        "pervasiveLuks2": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": {
+              "$ref": "#/$defs/encryptionPassword"
+            }
+          }
+        }
+      }
+    },
+    "encryptionSwap": {
+      "title": "Swap encryption.",
+      "enum": ["protected_swap", "secure_swap", "random_swap"]
+    },
+    "encryption": {
+      "title": "Encryption options.",
+      "anyOf": [
+        { "$ref": "#/$defs/encryptionLUKS1" },
+        { "$ref": "#/$defs/encryptionLUKS2" },
+        { "$ref": "#/$defs/encryptionPervasiveLUKS2" },
+        { "$ref": "#/$defs/encryptionSwap" }
+      ]
     },
     "filesystemType": {
       "title": "File system type.",
