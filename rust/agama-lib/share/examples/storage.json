@@ -13,6 +13,11 @@
         "partitions": [
           {
             "search": { "name": "/dev/vda2" },
+            "encryption": {
+              "luks1": {
+                "password": "notsecret"
+              }
+            },
             "filesystem": {
               "reuse": false,
               "type": "btrfs",
@@ -27,8 +32,10 @@
             "id": "linux",
             "size": "10 GiB",
             "encryption": {
-              "key": "notsecret",
-              "method": "luks2"
+              "luks2": {
+                "password": "notsecret",
+                "label": "data"
+              }
             },
             "filesystem": {
               "type": "xfs",
@@ -37,10 +44,7 @@
           },
           {
             "size": "2 GiB",
-            "encryption": {
-              "key": "notsecret",
-              "method": "luks2"
-            },
+            "encryption": "random_swap",
             "filesystem": {
               "type": "swap",
               "path": "swap"
@@ -51,10 +55,6 @@
       {
         "search": {
           "name": "/dev/vdb"
-        },
-        "encryption": {
-          "key": "notsecret",
-          "method": "luks2"
         },
         "filesystem": {
           "type": "ext4",
