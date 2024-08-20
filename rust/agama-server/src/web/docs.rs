@@ -106,7 +106,7 @@ use utoipa::OpenApi;
         schemas(agama_lib::questions::model::PasswordAnswer),
         schemas(agama_lib::questions::model::Question),
         schemas(agama_lib::questions::model::QuestionWithPassword),
-        schemas(crate::software::web::SoftwareConfig),
+        schemas(agama_lib::software::model::SoftwareConfig),
         schemas(crate::software::web::SoftwareProposal),
         schemas(crate::storage::web::ProductParams),
         schemas(crate::storage::web::iscsi::DiscoverParams),
