@@ -74,8 +74,6 @@ module Agama
           # @return [Configs::Filesystem, nil]
           def convert_filesystem
             filesystem_json = blk_device_json[:filesystem]
-
-            return if filesystem_json == false # "filesystem": false
             return if filesystem_json.nil?
 
             default = default_filesystem_config(filesystem_json&.dig(:path) || "")
