@@ -71,6 +71,11 @@ describe Agama::Storage::ConfigConversions::FromJSON do
     }
   end
 
+  before do
+    # Speed up tests by avoding real check of TPM presence.
+    allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
+  end
+
   describe "#convert" do
     using Y2Storage::Refinements::SizeCasts
 
@@ -89,7 +94,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         expect(config.boot.device).to eq nil
       end
 
-      # FIXME: Is this correct?
+      # @todo Generate default drive/LVM from product descripton.
       it "does not include any device in the configuration" do
         config = subject.convert
         expect(config.drives).to be_empty
@@ -538,35 +543,34 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         ]
       end
 
-      context "if the method and the mandatory attributes are specified" do
-        let(:encryption_home) do
-          { "password": "notsecret", "method": "luks2", "keySize": 256 }
-        end
-        let(:encryption_swap) { nil }
+      let(:encryption_home) do
+        { "luks2": { "password": "notsecret", "keySize": 256 } }
+      end
 
-        it "sets the encryption settings for the corresponding partition" do
-          config = subject.convert
-          partitions = config.drives.first.partitions
-          expect(partitions).to contain_exactly(
-            an_object_having_attributes(
-              filesystem: have_attributes(path: "/home"),
-              encryption: have_attributes(
-                password: "notsecret", method: Y2Storage::EncryptionMethod::LUKS2, key_size: 256
-              )
-            ),
-            an_object_having_attributes(
-              filesystem: have_attributes(path: "swap"),
-              encryption: nil
+      let(:encryption_swap) { nil }
+
+      it "sets the encryption settings for the corresponding partition" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+        expect(partitions).to contain_exactly(
+          an_object_having_attributes(
+            filesystem: have_attributes(path: "/home"),
+            encryption: have_attributes(
+              password: "notsecret", method: Y2Storage::EncryptionMethod::LUKS2, key_size: 256
             )
+          ),
+          an_object_having_attributes(
+            filesystem: have_attributes(path: "swap"),
+            encryption: nil
           )
-        end
+        )
       end
 
       context "if only the password is provided" do
-        let(:encryption_home) { { "password": "notsecret" } }
+        let(:encryption_home) { { "luks2": { "password": "notsecret" } } }
         let(:encryption_swap) { nil }
 
-        it "uses the default method and derivation function" do
+        it "uses the default derivation function" do
           config = subject.convert
           partitions = config.drives.first.partitions
           expect(partitions).to contain_exactly(
@@ -588,7 +592,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
 
       context "if random encryption is configured for swap" do
         let(:encryption_home) { nil }
-        let(:encryption_swap) { { "method": "random_swap" } }
+        let(:encryption_swap) { "random_swap" }
 
         it "sets the corresponding configuration" do
           config = subject.convert
@@ -606,30 +610,6 @@ describe Agama::Storage::ConfigConversions::FromJSON do
                 cipher: nil,
                 method: Y2Storage::EncryptionMethod::RANDOM_SWAP
               )
-            )
-          )
-        end
-      end
-
-      context "if an unknown encryption method is specified" do
-        let(:encryption_home) { { "password": "notsecret", method: "foo" } }
-        let(:encryption_swap) { nil }
-
-        # FIXME: shouldn't the problem (and the applied 'fix') be reported as an issue?
-        it "uses the default method" do
-          config = subject.convert
-          partitions = config.drives.first.partitions
-          expect(partitions).to contain_exactly(
-            an_object_having_attributes(
-              filesystem: have_attributes(path: "/home"),
-              encryption: have_attributes(
-                password: "notsecret",
-                method: Y2Storage::EncryptionMethod::LUKS2
-              )
-            ),
-            an_object_having_attributes(
-              filesystem: have_attributes(path: "swap"),
-              encryption: nil
             )
           )
         end
