@@ -65,7 +65,7 @@ module Agama
 
           # @return [Y2Storage::PartitionId, nil]
           def convert_id
-            value = partition_json.dig(:id)
+            value = partition_json[:id]
             return unless value
 
             Y2Storage::PartitionId.find(value)
@@ -73,7 +73,7 @@ module Agama
 
           # @return [Configs::Size]
           def convert_size
-            size_json = partition_json.dig(:size)
+            size_json = partition_json[:size]
             return Configs::Size.new unless size_json
 
             Size::FromJSON.new(size_json).convert

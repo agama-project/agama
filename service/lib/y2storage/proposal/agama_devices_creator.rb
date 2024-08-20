@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2017-2020] SUSE LLC
 #
 # All Rights Reserved.
@@ -73,7 +75,8 @@ module Y2Storage
 
       attr_reader :space_maker
 
-      # @return [Proposal::CreatorResult] Current result containing the devices that have been created
+      # @return [Proposal::CreatorResult] Current result containing the devices that have been
+      #   created
       attr_reader :creator_result
 
       # @return [Devicegraph] Current devicegraph
@@ -120,7 +123,8 @@ module Y2Storage
         space_result = provide_space(partitions, original_graph, lvm_helper)
 
         partition_creator = PartitionCreator.new(space_result[:devicegraph])
-        self.creator_result = partition_creator.create_partitions(space_result[:partitions_distribution])
+        self.creator_result =
+          partition_creator.create_partitions(space_result[:partitions_distribution])
 
         # This may be here or before create_partitions.
         #

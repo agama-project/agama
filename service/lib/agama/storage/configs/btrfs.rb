@@ -34,8 +34,8 @@ module Agama
         attr_accessor :read_only
         alias_method :read_only?, :read_only
 
-        # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list may
-        #   be applied depending on the mount path of the volume
+        # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list
+        #   may be applied depending on the mount path of the volume
         attr_accessor :subvolumes
 
         # @return [String]

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
@@ -22,6 +24,7 @@ require "y2storage/proposal_settings"
 
 module Y2Storage
   module Proposal
+    # LVM helper for Agama.
     class AgamaLvmHelper < LvmHelper
       # Initialize.
       def initialize(lvm_lvs)
@@ -35,7 +38,7 @@ module Y2Storage
         Y2Storage::ProposalSettings.new_for_current_product.tap do |target|
           target.lvm_vg_strategy = :use_needed
           target.lvm_vg_reuse = false
-          # TODO:
+          # TODO: Add encryption options.
           target.encryption_password = nil
           # target.encryption_pbkdf
           # target.encryption_method

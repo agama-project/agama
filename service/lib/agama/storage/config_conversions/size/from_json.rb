@@ -53,14 +53,15 @@ module Agama
 
           # @return [Y2Storage::DiskSize, nil]
           def convert_size(field)
-            value =
-              if size_json.is_a?(Hash)
-                size_json[field]
-              elsif size_json.is_a?(Array)
-                field == :max ? size_json[1] : size_json[0]
-              else
-                size_json
-              end
+            value = case size_json
+            when Hash
+              size_json[field]
+            when Array
+              field == :max ? size_json[1] : size_json[0]
+            else
+              size_json
+            end
+
             return unless value
 
             begin
