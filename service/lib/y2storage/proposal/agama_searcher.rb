@@ -49,7 +49,7 @@ module Y2Storage
         end
       end
 
-      private
+    private
 
       def process_element(element, collection, issues_list)
         found = element.found_device
@@ -70,18 +70,16 @@ module Y2Storage
       end
 
       def issue_message(element)
-        if element.kind_of?(Agama::Storage::Configs::Drive)
+        if element.is_a?(Agama::Storage::Configs::Drive)
           if element.search.skip_device?
             _("No device found for an optional drive")
           else
             _("No device found for a mandatory drive")
           end
+        elsif element.search.skip_device?
+          _("No device found for an optional partition")
         else
-          if element.search.skip_device?
-            _("No device found for an optional partition")
-          else
-            _("No device found for a mandatory partition")
-          end
+          _("No device found for a mandatory partition")
         end
       end
 

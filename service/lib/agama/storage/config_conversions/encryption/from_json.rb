@@ -42,9 +42,9 @@ module Agama
           def convert
             default_config.dup.tap do |config|
               convert_luks1(config) ||
-              convert_luks2(config) ||
-              convert_pervasive_luks2(config) ||
-              convert_swap_encryption(config)
+                convert_luks2(config) ||
+                convert_pervasive_luks2(config) ||
+                convert_swap_encryption(config)
             end
           end
 

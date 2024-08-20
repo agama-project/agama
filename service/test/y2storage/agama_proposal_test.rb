@@ -42,7 +42,7 @@ describe Y2Storage::AgamaProposal do
   let(:issues_list) { [] }
   let(:drives) { [drive0] }
   let(:drive0) { Agama::Storage::Configs::Drive.new.tap { |d| d.partitions = partitions0 } }
-  let(:partitions0) { [root_partition ] }
+  let(:partitions0) { [root_partition] }
   let(:root_partition) do
     Agama::Storage::Configs::Partition.new.tap do |part|
       part.filesystem = Agama::Storage::Configs::Filesystem.new.tap do |fs|
@@ -115,7 +115,7 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when encrypting some devices" do
-      let(:partitions0) { [root_partition, home_partition ] }
+      let(:partitions0) { [root_partition, home_partition] }
 
       let(:home_partition) do
         Agama::Storage::Configs::Partition.new.tap do |part|
@@ -135,8 +135,8 @@ describe Y2Storage::AgamaProposal do
 
       let(:home_encryption) do
         Agama::Storage::Configs::Encryption.new.tap do |enc|
-					enc.password = "notSecreT"
-					enc.method = encryption_method
+          enc.password = "notSecreT"
+          enc.method = encryption_method
         end
       end
 
@@ -150,12 +150,12 @@ describe Y2Storage::AgamaProposal do
       context "if the encryption settings contain all the detailed information" do
         let(:home_encryption) do
           Agama::Storage::Configs::Encryption.new.tap do |enc|
-						enc.password = "notSecreT"
-						enc.method = encryption_method
-						enc.pbkd_function = Y2Storage::PbkdFunction::ARGON2I
-						enc.label = "luks_label"
-						enc.cipher = "aes-xts-plain64"
-						enc.key_size = 512
+            enc.password = "notSecreT"
+            enc.method = encryption_method
+            enc.pbkd_function = Y2Storage::PbkdFunction::ARGON2I
+            enc.label = "luks_label"
+            enc.cipher = "aes-xts-plain64"
+            enc.key_size = 512
           end
         end
 
@@ -166,11 +166,11 @@ describe Y2Storage::AgamaProposal do
           end
           expect(partition.encrypted?).to eq true
           expect(partition.encryption).to have_attributes(
-            method: Y2Storage::EncryptionMethod::LUKS2,
+            method:   Y2Storage::EncryptionMethod::LUKS2,
             password: "notSecreT",
-            pbkdf: Y2Storage::PbkdFunction::ARGON2I,
-            label: "luks_label",
-            cipher: "aes-xts-plain64",
+            pbkdf:    Y2Storage::PbkdFunction::ARGON2I,
+            label:    "luks_label",
+            cipher:   "aes-xts-plain64",
             # libstorage-ng uses bytes instead of bits to represent the key size, contrary to
             # all LUKS documentation and to cryptsetup
             key_size: 64
@@ -190,7 +190,7 @@ describe Y2Storage::AgamaProposal do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
             description: /method 'luks2' is not available/,
-            severity: Agama::Issue::Severity::ERROR
+            severity:    Agama::Issue::Severity::ERROR
           )
         end
       end
@@ -207,7 +207,7 @@ describe Y2Storage::AgamaProposal do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
             description: /'random_swap' is not a suitable method/,
-            severity: Agama::Issue::Severity::ERROR
+            severity:    Agama::Issue::Severity::ERROR
           )
         end
       end
@@ -215,7 +215,7 @@ describe Y2Storage::AgamaProposal do
       context "if the method requires a password but none is provided" do
         let(:home_encryption) do
           Agama::Storage::Configs::Encryption.new.tap do |enc|
-					  enc.method = encryption_method
+            enc.method = encryption_method
           end
         end
 
@@ -228,7 +228,7 @@ describe Y2Storage::AgamaProposal do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
             description: /No passphrase provided/,
-            severity: Agama::Issue::Severity::ERROR
+            severity:    Agama::Issue::Severity::ERROR
           )
         end
       end
@@ -256,7 +256,7 @@ describe Y2Storage::AgamaProposal do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
             description: /optional drive/,
-            severity: Agama::Issue::Severity::WARN
+            severity:    Agama::Issue::Severity::WARN
           )
         end
       end
@@ -273,14 +273,14 @@ describe Y2Storage::AgamaProposal do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
             description: /mandatory drive/,
-            severity: Agama::Issue::Severity::ERROR
+            severity:    Agama::Issue::Severity::ERROR
           )
         end
       end
     end
 
     context "when searching for a non-existent partition" do
-      let(:partitions0) { [root_partition, existing_partition ] }
+      let(:partitions0) { [root_partition, existing_partition] }
       let(:existing_partition) do
         Agama::Storage::Configs::Partition.new.tap do |part|
           part.search = Agama::Storage::Configs::Search.new.tap do |search|
@@ -301,7 +301,7 @@ describe Y2Storage::AgamaProposal do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
             description: /optional partition/,
-            severity: Agama::Issue::Severity::WARN
+            severity:    Agama::Issue::Severity::WARN
           )
         end
       end
@@ -318,7 +318,7 @@ describe Y2Storage::AgamaProposal do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
             description: /mandatory partition/,
-            severity: Agama::Issue::Severity::ERROR
+            severity:    Agama::Issue::Severity::ERROR
           )
         end
       end

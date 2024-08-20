@@ -60,7 +60,7 @@ module Y2Storage
         process_devices
       end
 
-      protected
+    protected
 
       # @return [Devicegraph] Original devicegraph
       attr_reader :original_graph
@@ -79,7 +79,7 @@ module Y2Storage
       # @return [Devicegraph] Current devicegraph
       attr_reader :devicegraph
 
-      private
+    private
 
       # Sets the current creator result
       #
@@ -125,7 +125,7 @@ module Y2Storage
         # This may be here or before create_partitions.
         #
         # What about resizing if needed?
-        # Likely shrinking is fine and should be always handled at the SpaceMaker. 
+        # Likely shrinking is fine and should be always handled at the SpaceMaker.
         # But I'm not so sure if growing is so fine (we may need to make some space first).
         # I don't think we have the growing case covered by SpaceMaker, the distribution
         # calculator, etc.
@@ -141,7 +141,7 @@ module Y2Storage
         # if settings.use_lvm
         #  new_pvs = new_physical_volumes(space_result[:devicegraph], graph)
         #  graph = lvm_helper.create_volumes(graph, new_pvs)
-        #end
+        # end
 
         # Needed or already part of other components?
         # graph.mount_points.each(&:adjust_mount_options)
@@ -164,7 +164,7 @@ module Y2Storage
       # Add planned disk like devices to reuse list so they can be considered for lvm and raids
       # later on.
       def process_disk_like_devs
-      # Do we do something about SpaceMaker here? I assume it was already done as mandatory
+        # Do we do something about SpaceMaker here? I assume it was already done as mandatory
         planned_devs = planned_devices.select do |dev|
           dev.is_a?(Planned::StrayBlkDevice) || dev.is_a?(Planned::Disk)
         end
