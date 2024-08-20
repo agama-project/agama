@@ -28,7 +28,7 @@ module Y2Storage
         [planned_drive(settings)]
       end
 
-      private
+    private
 
       # @param settings [Agama::Storage::Settings::Drive]
       # @return [Planned::Disk]
