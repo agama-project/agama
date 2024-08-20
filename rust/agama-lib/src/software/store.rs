@@ -2,19 +2,18 @@
 
 use std::collections::HashMap;
 
-use super::{SoftwareClient, SoftwareSettings};
+use super::{SoftwareHTTPClient, SoftwareSettings};
 use crate::error::ServiceError;
-use zbus::Connection;
 
 /// Loads and stores the software settings from/to the D-Bus service.
-pub struct SoftwareStore<'a> {
-    software_client: SoftwareClient<'a>,
+pub struct SoftwareStore {
+    software_client: SoftwareHTTPClient,
 }
 
-impl<'a> SoftwareStore<'a> {
-    pub async fn new(connection: Connection) -> Result<SoftwareStore<'a>, ServiceError> {
+impl SoftwareStore {
+    pub fn new() -> Result<SoftwareStore, ServiceError> {
         Ok(Self {
-            software_client: SoftwareClient::new(connection.clone()).await?,
+            software_client: SoftwareHTTPClient::new()?,
         })
     }
 
