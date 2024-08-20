@@ -57,7 +57,7 @@ module Y2Storage
         Planned::DevicesCollection.new(devs)
       end
 
-      protected
+    protected
 
       # @return [Array<Agama::Issue>] List to register any found issue
       attr_reader :issues_list

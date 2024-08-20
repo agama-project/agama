@@ -49,7 +49,7 @@ module Y2Storage
         raise NotImplementedError
       end
 
-      private
+    private
 
       # @param planned [Planned::Disk, Planned::Partition]
       # @param settings [#format, #mount]
@@ -149,7 +149,7 @@ module Y2Storage
       def encryption_issue(message)
         Agama::Issue.new(
           message,
-          source: Agama::Issue::Source::CONFIG,
+          source:   Agama::Issue::Source::CONFIG,
           severity: Agama::Issue::Severity::ERROR
         )
       end

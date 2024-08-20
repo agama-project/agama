@@ -58,7 +58,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           },
           {
             "mount_path" => "/home", "size" => { "auto" => false, "min" => "5 GiB" },
-            "filesystem" => "xfs", "outline" => { "required" => false}
+            "filesystem" => "xfs", "outline" => { "required" => false }
           },
           {
             "mount_path" => "swap", "filesystem" => "swap",
@@ -104,7 +104,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
     context "with some drives and boot configuration at JSON" do
       let(:config_json) do
         {
-          boot: { configure: true, device: "/dev/sdb" },
+          boot:   { configure: true, device: "/dev/sdb" },
           drives: [
             {
               ptableType: "gpt",
@@ -160,19 +160,21 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         expect(partitions).to contain_exactly(
           an_object_having_attributes(
             filesystem: have_attributes(path: "/"),
-            size: have_attributes(default: true, min: 5.GiB, max: 10.GiB)
+            size:       have_attributes(default: true, min: 5.GiB, max: 10.GiB)
           ),
           an_object_having_attributes(
             filesystem: have_attributes(path: "/home"),
-            size: have_attributes(default: true, min: 5.GiB, max: Y2Storage::DiskSize.unlimited)
+            size:       have_attributes(default: true, min: 5.GiB,
+              max: Y2Storage::DiskSize.unlimited)
           ),
           an_object_having_attributes(
             filesystem: have_attributes(path: "/opt"),
-            size: have_attributes(default: true, min: 100.MiB, max: Y2Storage::DiskSize.unlimited)
+            size:       have_attributes(default: true, min: 100.MiB,
+              max: Y2Storage::DiskSize.unlimited)
           ),
           an_object_having_attributes(
             filesystem: have_attributes(path: "swap"),
-            size: have_attributes(
+            size:       have_attributes(
               default: true, min: Y2Storage::DiskSize.zero, max: Y2Storage::DiskSize.unlimited
             )
           )
@@ -186,7 +188,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           drives: [
             {
               partitions: [
-                { filesystem: { path: "/"}, size: "10 GiB" },
+                { filesystem: { path: "/" }, size: "10 GiB" },
                 { filesystem: { path: "/home" }, size: "6Gb" },
                 { filesystem: { path: "/opt" }, size: 3221225472 },
                 { filesystem: { path: "swap" }, size: "6 Gib" }
@@ -202,7 +204,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         expect(partitions).to include(
           an_object_having_attributes(
             filesystem: have_attributes(path: "/"),
-            size: have_attributes(default: false, min: 10.GiB, max: 10.GiB)
+            size:       have_attributes(default: false, min: 10.GiB, max: 10.GiB)
           )
         )
       end
@@ -213,7 +215,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         expect(partitions).to include(
           an_object_having_attributes(
             filesystem: have_attributes(path: "/opt"),
-            size: have_attributes(default: false, min: 3.GiB, max: 3.GiB)
+            size:       have_attributes(default: false, min: 3.GiB, max: 3.GiB)
           )
         )
       end
@@ -223,8 +225,8 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         partitions = config.drives.first.partitions
         home_size = partitions.find { |p| p.filesystem.path == "/home" }.size
         swap_size = partitions.find { |p| p.filesystem.path == "swap" }.size
-        expect(swap_size.min.to_i).to eq 6*1024*1024*1024
-        expect(home_size.max.to_i).to eq 6*1000*1000*1000
+        expect(swap_size.min.to_i).to eq 6 * 1024 * 1024 * 1024
+        expect(home_size.max.to_i).to eq 6 * 1000 * 1000 * 1000
       end
     end
 
@@ -237,7 +239,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           expect(partitions).to include(
             an_object_having_attributes(
               filesystem: have_attributes(path: "/home"),
-              size: have_attributes(default: false, min: 6.GiB, max: 9.GiB)
+              size:       have_attributes(default: false, min: 6.GiB, max: 9.GiB)
             )
           )
         end
@@ -247,8 +249,8 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           partitions = config.drives.first.partitions
           home_size = partitions.find { |p| p.filesystem.path == "/home" }.size
           swap_size = partitions.find { |p| p.filesystem.path == "swap" }.size
-          expect(home_size.min.to_i).to eq 6*1024*1024*1024
-          expect(swap_size.max.to_i).to eq 6*1000*1000*1000
+          expect(home_size.min.to_i).to eq 6 * 1024 * 1024 * 1024
+          expect(swap_size.max.to_i).to eq 6 * 1000 * 1000 * 1000
         end
 
         it "sets both min and max limits as requested if numbers are used" do
@@ -257,11 +259,11 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           expect(partitions).to include(
             an_object_having_attributes(
               filesystem: have_attributes(path: "swap"),
-              size: have_attributes(default: false, min: 1.GiB)
+              size:       have_attributes(default: false, min: 1.GiB)
             ),
             an_object_having_attributes(
               filesystem: have_attributes(path: "/opt"),
-              size: have_attributes(default: false, min: 1.GiB, max: 3.GiB)
+              size:       have_attributes(default: false, min: 1.GiB, max: 3.GiB)
             )
           )
         end
@@ -272,7 +274,8 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           expect(partitions).to include(
             an_object_having_attributes(
               filesystem: have_attributes(path: "/"),
-              size: have_attributes(default: false, min: 3.GiB, max: Y2Storage::DiskSize.unlimited)
+              size:       have_attributes(default: false, min: 3.GiB,
+                max: Y2Storage::DiskSize.unlimited)
             )
           )
         end
@@ -286,19 +289,19 @@ describe Agama::Storage::ConfigConversions::FromJSON do
                 partitions: [
                   {
                     filesystem: { path: "/", type: { btrfs: { snapshots: false } } },
-                    size: { min: "3 GiB" }
+                    size:       { min: "3 GiB" }
                   },
                   {
                     filesystem: { path: "/home" },
-                    size: { min: "6 GiB", max: "9 GiB" }
+                    size:       { min: "6 GiB", max: "9 GiB" }
                   },
                   {
                     filesystem: { path: "swap" },
-                    size: { min: 1073741824, max: "6 GB" }
+                    size:       { min: 1073741824, max: "6 GB" }
                   },
                   {
                     filesystem: { path: "/opt" },
-                    size: { min: "1073741824", max: 3221225472 }
+                    size:       { min: "1073741824", max: 3221225472 }
                   }
                 ]
               }
@@ -317,19 +320,19 @@ describe Agama::Storage::ConfigConversions::FromJSON do
                 partitions: [
                   {
                     filesystem: { path: "/", type: { btrfs: { snapshots: false } } },
-                    size: ["3 GiB"]
+                    size:       ["3 GiB"]
                   },
                   {
                     filesystem: { path: "/home" },
-                    size: ["6 GiB", "9 GiB"]
+                    size:       ["6 GiB", "9 GiB"]
                   },
                   {
                     filesystem: { path: "swap" },
-                    size: [ 1073741824, "6 GB"]
+                    size:       [1073741824, "6 GB"]
                   },
                   {
                     filesystem: { path: "/opt" },
-                    size: ["1073741824", 3221225472]
+                    size:       ["1073741824", 3221225472]
                   }
                 ]
               }
@@ -352,7 +355,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
                 },
                 {
                   filesystem: { path: "/opt" },
-                  size: { min: "6 GiB", max: "22 GiB" }
+                  size:       { min: "6 GiB", max: "22 GiB" }
                 }
               ]
             }
@@ -366,11 +369,12 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         expect(partitions).to contain_exactly(
           an_object_having_attributes(
             filesystem: have_attributes(path: "/"),
-            size: have_attributes(default: true, min: 40.GiB, max: Y2Storage::DiskSize.unlimited)
+            size:       have_attributes(default: true, min: 40.GiB,
+              max: Y2Storage::DiskSize.unlimited)
           ),
           an_object_having_attributes(
             filesystem: have_attributes(path: "/opt"),
-            size: have_attributes(default: false, min: 6.GiB, max: 22.GiB)
+            size:       have_attributes(default: false, min: 6.GiB, max: 22.GiB)
           )
         )
       end
@@ -387,7 +391,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
                 },
                 {
                   filesystem: { path: "/opt" },
-                  size: { min: "6 GiB", max: "22 GiB" }
+                  size:       { min: "6 GiB", max: "22 GiB" }
                 }
               ]
             }
@@ -401,11 +405,12 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         expect(partitions).to contain_exactly(
           an_object_having_attributes(
             filesystem: have_attributes(path: "/"),
-            size: have_attributes(default: true, min: 40.GiB, max: Y2Storage::DiskSize.unlimited)
+            size:       have_attributes(default: true, min: 40.GiB,
+              max: Y2Storage::DiskSize.unlimited)
           ),
           an_object_having_attributes(
             filesystem: have_attributes(path: "/opt"),
-            size: have_attributes(default: false, min: 6.GiB, max: 22.GiB)
+            size:       have_attributes(default: false, min: 6.GiB, max: 22.GiB)
           )
         )
       end
@@ -414,7 +419,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
     context "using 'default' for a partition that is fallback for others" do
       let(:config_json) { { drives: [{ partitions: partitions }] } }
       let(:root) do
-        { "filesystem": { "path": "/", type: { btrfs: { snapshots: false } } }, size: "default" }
+        { filesystem: { path: "/", type: { btrfs: { snapshots: false } } }, size: "default" }
       end
       let(:partitions) { [root] + other }
 
@@ -427,14 +432,15 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           expect(partitions).to contain_exactly(
             an_object_having_attributes(
               filesystem: have_attributes(path: "/"),
-              size: have_attributes(default: true, min: 10.GiB, max: Y2Storage::DiskSize.unlimited)
+              size:       have_attributes(default: true, min: 10.GiB,
+                max: Y2Storage::DiskSize.unlimited)
             )
           )
         end
       end
 
       context "if the other partitions are included (even with non-exact name)" do
-        let(:other) { [ { "filesystem": { "path": "/home/"} } ] }
+        let(:other) { [{ filesystem: { path: "/home/" } }] }
 
         it "ignores the fallback sizes" do
           config = subject.convert
@@ -442,7 +448,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           expect(partitions).to include(
             an_object_having_attributes(
               filesystem: have_attributes(path: "/"),
-              size: have_attributes(default: true, min: 5.GiB, max: 10.GiB)
+              size:       have_attributes(default: true, min: 5.GiB, max: 10.GiB)
             )
           )
         end
@@ -472,8 +478,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       context "if the filesystem specification contains some btrfs settings" do
         let(:filesystem) do
           { path: "/",
-            type: { btrfs: { snapshots: false, default_subvolume: "", subvolumes: ["tmp"] } }
-          }
+            type: { btrfs: { snapshots: false, default_subvolume: "", subvolumes: ["tmp"] } } }
         end
 
         it "uses the specified btrfs attributes" do
@@ -492,9 +497,9 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       let(:config_json) { { drives: [{ partitions: partitions }] } }
       let(:partitions) do
         [
-          { "filesystem": { "path": "/" } },
-          { "filesystem": { "path": "swap" } },
-          { "filesystem": { "path": "/opt" } }
+          { filesystem: { path: "/" } },
+          { filesystem: { path: "swap" } },
+          { filesystem: { path: "/opt" } }
         ]
       end
 
@@ -531,20 +536,20 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       let(:partitions) do
         [
           {
-            "id": "linux", "size": { "min": "10 GiB" },
-            "filesystem": { "type": "xfs", "path": "/home" },
-            "encryption": encryption_home
+            id: "linux", size: { min: "10 GiB" },
+            filesystem: { type: "xfs", path: "/home" },
+            encryption: encryption_home
           },
           {
-            "size": { "min": "2 GiB" },
-            "filesystem": { "type": "swap", "path": "swap" },
-            "encryption": encryption_swap
+            size:       { min: "2 GiB" },
+            filesystem: { type: "swap", path: "swap" },
+            encryption: encryption_swap
           }
         ]
       end
 
       let(:encryption_home) do
-        { "luks2": { "password": "notsecret", "keySize": 256 } }
+        { luks2: { password: "notsecret", keySize: 256 } }
       end
 
       let(:encryption_swap) { nil }
@@ -567,7 +572,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       end
 
       context "if only the password is provided" do
-        let(:encryption_home) { { "luks2": { "password": "notsecret" } } }
+        let(:encryption_home) { { luks2: { password: "notsecret" } } }
         let(:encryption_swap) { nil }
 
         it "uses the default derivation function" do
@@ -577,8 +582,8 @@ describe Agama::Storage::ConfigConversions::FromJSON do
             an_object_having_attributes(
               filesystem: have_attributes(path: "/home"),
               encryption: have_attributes(
-                password: "notsecret",
-                method: Y2Storage::EncryptionMethod::LUKS2,
+                password:      "notsecret",
+                method:        Y2Storage::EncryptionMethod::LUKS2,
                 pbkd_function: Y2Storage::PbkdFunction::ARGON2ID
               )
             ),
@@ -606,9 +611,9 @@ describe Agama::Storage::ConfigConversions::FromJSON do
               filesystem: have_attributes(path: "swap"),
               encryption: have_attributes(
                 password: nil,
-                label: nil,
-                cipher: nil,
-                method: Y2Storage::EncryptionMethod::RANDOM_SWAP
+                label:    nil,
+                cipher:   nil,
+                method:   Y2Storage::EncryptionMethod::RANDOM_SWAP
               )
             )
           )
@@ -626,12 +631,12 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       let(:partitions) do
         [
           {
-            "id": "Esp", "size": { "min": "10 GiB" },
-            "filesystem": { "type": "xfs", "path": "/home" }
+            id: "Esp", size: { min: "10 GiB" },
+            filesystem: { type: "xfs", path: "/home" }
           },
           {
-            "size": { "min": "2 GiB" },
-            "filesystem": { "type": "swap", "path": "swap" }
+            size:       { min: "2 GiB" },
+            filesystem: { type: "swap", path: "swap" }
           }
         ]
       end
@@ -642,11 +647,11 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         expect(partitions).to contain_exactly(
           an_object_having_attributes(
             filesystem: have_attributes(path: "/home"),
-            id: Y2Storage::PartitionId::ESP
+            id:         Y2Storage::PartitionId::ESP
           ),
           an_object_having_attributes(
             filesystem: have_attributes(path: "swap"),
-            id: nil
+            id:         nil
           )
         )
       end

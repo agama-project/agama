@@ -84,7 +84,7 @@ module Agama
         end
       end
 
-      private
+    private
 
       def filesystems
         (drives + partitions).map(&:filesystem).compact
@@ -121,7 +121,7 @@ module Agama
         Y2Storage::DiskSize.unlimited
       end
 
-      def size_with_fallbacks(device, outline, attr, builder)
+      def size_with_fallbacks(_device, outline, attr, builder)
         fallback_paths = outline.send(:"#{attr}_size_fallback_for")
         missing_paths = fallback_paths.reject { |p| proposed_path?(p) }
 

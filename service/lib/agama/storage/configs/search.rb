@@ -38,7 +38,7 @@ module Agama
           resolved? && device.nil? && if_not_found == :skip
         end
 
-        def find(setting, candidate_devs, used_sids)
+        def find(_setting, candidate_devs, used_sids)
           devices = candidate_devs.reject { |d| used_sids.include?(d.sid) }
           @resolved = true
           @device = devices.sort_by(&:name).first

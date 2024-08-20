@@ -63,7 +63,7 @@ module Y2Storage
       @settings = initial_settings
     end
 
-    private
+  private
 
     # Not sure if needed in the final version
     # @return [ProposalSettings]
@@ -151,7 +151,7 @@ module Y2Storage
       checker = BootRequirementsChecker.new(
         devicegraph,
         planned_devices: planned_devices.mountable_devices,
-        boot_disk_name: settings.boot_device
+        boot_disk_name:  settings.boot_device
       )
       # NOTE: Should we try with :desired first?
       checker.needed_partitions(:min)
