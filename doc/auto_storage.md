@@ -15,7 +15,7 @@ JSON validation will be performed for it.
 ### Implementation Considerations for AutoYaST Specification
 
 In principle, implementing the legacy AutoYaST module is as simple as converting the corresponding
-section of the profile into a `Y2Storage::PartitioningSection` object and use 
+section of the profile into a `Y2Storage::PartitioningSection` object and use
 `Y2Storage::AutoInstProposal` to calculate the result.
 
 But there are some special cases in which AutoYaST fallbacks to read some settings from the YaST
@@ -142,12 +142,24 @@ LogicalVolume
 
 Encryption
   reuse <Boolean>
-  method <string>
-  key [<string>]
+  type <EncryptionType>
+
+EncryptionType <EncryptionLUKS1|EncryptionLUKS2|EncryptionPervasiveLUKS2|"protected_swap"|"secure_swap"|"random_swap">
+
+EncryptionLUKS1
+  password <string>
+  keySize [<number>]
+  cipher [<string>]
+
+EncryptionLUKS2
+  password <string>
+  keySize [<number>]
+  cipher [<string>]
   pdkdf [<string>]
   label [<string>]
-  cipher [<string>]
-  keySize [<number>]
+
+EncryptionPervasiveLUKS2
+  password <string>
 
 Filesystem
   reuse <Boolean>
@@ -191,13 +203,12 @@ it) to allocate two file systems.
     "drives": [
         {
             "partitions": [
-                { 
+                {
                     "alias": "pv",
                     "id": "lvm",
                     "size": { "min": "12 GiB" },
                     "encryption": {
-                        "method": "luks2",
-                        "key": "my secret passphrase"
+                        "luks2": { "password": "my secret passphrase" }
                     }
                 }
               ]
@@ -214,7 +225,7 @@ it) to allocate two file systems.
                 },
                 {
                     "size":   "2 GiB",
-                    "format": { "path": "swap", "type": "swap" }
+                    "filesystem": { "path": "swap", "type": "swap" }
                 }
             ]
         }
@@ -325,7 +336,7 @@ within them and create new partitions of type RAID.
                     },
                     "delete": true
                 },
-                { 
+                {
                     "alias": "newRaidPart",
                     "id": "raid",
                     "size": { "min": "1 GiB" }
@@ -597,7 +608,7 @@ TargetDevice <string|TargetDisk|TargetNewLvm|TargetReusedLvm>
 
 TargetDisk
   disk <string>
- 
+
 TargetNewLvm
   newLvmVg <string[]>
 
@@ -618,10 +629,10 @@ VolumeTarget <'default'|NewPartition|NewVg|UseDevice|UseFilesystem>
 
 NewPartition
   newPartition <string>
-  
+
 NewVg
   newVg <string>
-  
+
 UseDevice
   device <string>
 
