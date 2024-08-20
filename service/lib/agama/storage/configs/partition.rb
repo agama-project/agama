@@ -22,11 +22,21 @@
 module Agama
   module Storage
     module Configs
+      # Partition configuration.
       class Partition
+        # @return [Search]
         attr_accessor :search
+
+        # @return [Y2Storage::PartitionId, nil]
         attr_accessor :id
+
+        # @return [Size, nil]
         attr_accessor :size
+
+        # @return [Encryption, nil]
         attr_accessor :encryption
+
+        # @return [Filesystem, nil]
         attr_accessor :filesystem
 
         def search_device(partitionable, used_sids)

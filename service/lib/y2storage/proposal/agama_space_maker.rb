@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
@@ -22,6 +24,7 @@ require "y2storage/proposal_settings"
 
 module Y2Storage
   module Proposal
+    # Space maker for Agama.
     class AgamaSpaceMaker < SpaceMaker
       # Initialize.
       def initialize(disk_analyzer, settings)

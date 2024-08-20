@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
@@ -25,8 +27,6 @@ module Y2Storage
       include Yast::Logger
       include Yast::I18n
 
-      # Constructor
-      #
       def initialize
         textdomain "agama"
       end

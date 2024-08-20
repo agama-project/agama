@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
@@ -22,6 +24,7 @@ require "y2storage/planned"
 
 module Y2Storage
   module Proposal
+    # Devices planner for Agama.
     class AgamaDevicesPlanner
       include Yast::Logger
 

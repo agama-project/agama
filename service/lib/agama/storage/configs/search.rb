@@ -22,6 +22,7 @@
 module Agama
   module Storage
     module Configs
+      # Search configuration.
       class Search
         attr_reader :device
         attr_accessor :if_not_found
@@ -41,7 +42,7 @@ module Agama
         def find(_setting, candidate_devs, used_sids)
           devices = candidate_devs.reject { |d| used_sids.include?(d.sid) }
           @resolved = true
-          @device = devices.sort_by(&:name).first
+          @device = devices.min_by(&:name)
         end
       end
     end
