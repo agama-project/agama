@@ -65,8 +65,6 @@ module Y2Storage
         planned.mount_by = settings.mount_by
         planned.fstab_options = settings.mount_options
         planned.mkfs_options = settings.mkfs_options
-        # FIXME: Is this needed? Or #mount_options is enough?
-        # planned.read_only = settings.read_only?
         planned.label = settings.label
         configure_filesystem_type(planned, settings.type) if settings.type
       end
@@ -81,6 +79,9 @@ module Y2Storage
       # @param planned [Planned::Disk, Planned::Partition]
       # @param settings [Agama::Storage::Settings::Btrfs]
       def configure_btrfs(planned, settings)
+        # TODO: we need to discuss what to do with transactional systems and the read_only
+        # property. We are not sure whether those things should be configurable by the user.
+        # planned.read_only = settings.read_only?
         planned.snapshots = settings.snapshots?
         planned.default_subvolume = settings.default_subvolume
         planned.subvolumes = settings.subvolumes
