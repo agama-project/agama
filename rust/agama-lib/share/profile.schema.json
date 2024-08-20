@@ -514,23 +514,7 @@
                     }
                   },
                   "filesystem": {
-                    "title": "File system of the volume.",
-                    "anyOf": [
-                      {
-                        "$ref": "#/$defs/filesystemType"
-                      },
-                      {
-                        "title": "Btrfs file system.",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": ["btrfs"],
-                        "properties": {
-                          "btrfs": {
-                            "$ref": "#/$defs/btrfsOptions"
-                          }
-                        }
-                      }
-                    ]
+                    "$ref": "#/$defs/filesystemType"
                   },
                   "size": {
                     "$ref": "#/$defs/size"
@@ -812,22 +796,34 @@
       ]
     },
     "filesystemType": {
-      "title": "File system type.",
-      "enum": [
-        "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
-        "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
-      ]
-    },
-    "btrfsOptions": {
-      "title": "Btrfs file system options.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "snapshots": {
-          "title": "Whether Btrfs snapshots should be configured.",
-          "type": "boolean"
+      "title": "File system type",
+      "anyOf": [
+        {
+          "enum": [
+            "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
+            "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
+          ]
+        },
+        {
+          "title": "Btrfs file system",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["btrfs"],
+          "properties": {
+            "btrfs": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "snapshots": {
+                  "title": "Btrfs snapshots",
+                  "description": "Whether Btrfs snapshots should be configured.",
+                  "type": "boolean"
+                }
+              }
+            }
+          }
         }
-      }
+      ]
     },
     "filesystem": {
       "title": "File system options.",
@@ -850,9 +846,6 @@
           "title": "Mount path.",
           "type": "string",
           "examples": ["/dev/vda"]
-        },
-        "btrfsOptions": {
-          "$ref": "#/$defs/btrfsOptions"
         },
         "mkfsOptions": {
           "title": "Options for creating the file system.",

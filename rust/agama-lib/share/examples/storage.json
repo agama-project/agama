@@ -20,9 +20,10 @@
             },
             "filesystem": {
               "reuse": false,
-              "type": "btrfs",
-              "btrfsOptions": {
-                "snapshots": true
+              "type": {
+                "btrfs": {
+                  "snapshots": true
+                }
               },
               "path": "/",
               "mountOptions": ["ro"]
