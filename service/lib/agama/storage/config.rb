@@ -74,7 +74,7 @@ module Agama
           drive.partitions.any? { |p| p.filesystem.root? }
         end
 
-        root_drive&.found_device.name
+        root_drive&.found_device&.name
       end
 
       def calculate_default_sizes(volume_builder)

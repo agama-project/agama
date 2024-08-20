@@ -24,21 +24,32 @@ require "pathname"
 module Agama
   module Storage
     module Configs
+      # File system configuration.
       class Filesystem
-        # @return [Pathname] Object that represents the root path
+        # @return [Pathname] Object that represents the root path.
         ROOT_PATH = Pathname.new("/").freeze
 
+        # @return [String, nil]
         attr_accessor :path
-        # @return [Configs::FilesystemType]
+
+        # @return [Configs::FilesystemType, nil]
         attr_accessor :type
+
+        # @return [String, nil]
         attr_accessor :label
+
+        # @return [Array<String>]
         attr_accessor :mkfs_options
+
+        # @return [Array<String>]
         attr_accessor :mount_options
+
+        # @return [Y2Storage::Filesystems::MountByType, nil]
         attr_accessor :mount_by
 
         def initialize
           @mount_options = []
-          @mkfs = []
+          @mkfs_options = []
         end
 
         # Whether the given path is equivalent to {#path}

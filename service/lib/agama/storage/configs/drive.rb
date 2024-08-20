@@ -24,7 +24,9 @@ require "agama/storage/configs/search"
 module Agama
   module Storage
     module Configs
+      # Drive configuration.
       class Drive
+        # @return [Search]
         attr_accessor :search
 
         # @return [Encryption]
@@ -33,12 +35,12 @@ module Agama
         # @return [Filesystem]
         attr_accessor :filesystem
 
+        # @return [Y2Storage::PartitionTables::Type]
         attr_accessor :ptable_type
 
         # @return [Array<Partition>]
         attr_accessor :partitions
 
-        # @param mount_path [String]
         def initialize
           @partitions = []
         end

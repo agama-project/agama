@@ -22,9 +22,15 @@
 module Agama
   module Storage
     module Configs
+      # Size configuration.
       class Size
+        # @return [Boolean]
         attr_accessor :default
+
+        # @return [Y2Storage::DiskSize, nil]
         attr_accessor :min
+
+        # @return [Y2Storage::DiskSize, nil]
         attr_accessor :max
 
         def initialize

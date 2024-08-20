@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
@@ -21,6 +23,7 @@ require "y2storage/proposal/agama_device_planner"
 
 module Y2Storage
   module Proposal
+    # Drive planner for Agama.
     class AgamaDrivePlanner < AgamaDevicePlanner
       # @param settings [Agama::Storage::Settings::Drive]
       # @return [Array<Planned::Device>]
