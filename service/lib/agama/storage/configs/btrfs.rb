@@ -41,6 +41,7 @@ module Agama
         # @return [String]
         attr_accessor :default_subvolume
 
+        # Constructor
         def initialize
           @snapshots = false
           @read_only = false

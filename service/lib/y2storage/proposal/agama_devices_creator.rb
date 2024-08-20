@@ -28,7 +28,7 @@ module Y2Storage
     class AgamaDevicesCreator
       include Yast::Logger
 
-      # @return [AutoinstIssues::List] List of found AutoYaST issues
+      # @return [Array<Agama::Issue>] List of found issues
       attr_reader :issues_list
 
       # Constructor
@@ -45,8 +45,9 @@ module Y2Storage
       #
       # @param planned_devices [Planned::DevicesCollection] Devices to create/reuse
       # @param disk_names [Array<String>] Disks to consider
+      # @param space_maker [SpaceMaker]
       #
-      # @return [AutoinstCreatorResult] Result with new devicegraph in which all the
+      # @return [CreatorResult] Result with new devicegraph in which all the
       #   planned devices have been allocated
       def populated_devicegraph(planned_devices, disk_names, space_maker)
         # Process planned partitions
@@ -73,6 +74,7 @@ module Y2Storage
       # @return [Array<String>] Disks to consider
       attr_reader :disk_names
 
+      # @return [SpaceMaker] space maker to use during operation
       attr_reader :space_maker
 
       # @return [Proposal::CreatorResult] Current result containing the devices that have been
@@ -104,13 +106,14 @@ module Y2Storage
 
       # Reuses and creates planned devices
       #
-      # @return [AutoinstCreatorResult] Result with new devicegraph in which all the
+      # @return [CreatorResult] Result with new devicegraph in which all the
       #   planned devices have been allocated
       def process_devices
         process_existing_partitionables
         creator_result
       end
 
+      # @see #process_devices
       def process_existing_partitionables
         partitions = partitions_for_existing(planned_devices)
 
@@ -140,39 +143,34 @@ module Y2Storage
           planned.reuse!(devicegraph)
         end
 
-        # graph = create_separate_vgs(planned_devices, creator_result).devicegraph
-
-        # if settings.use_lvm
-        #  new_pvs = new_physical_volumes(space_result[:devicegraph], graph)
-        #  graph = lvm_helper.create_volumes(graph, new_pvs)
-        # end
-
-        # Needed or already part of other components?
-        # graph.mount_points.each(&:adjust_mount_options)
+        # This may be unexpected if the storage configuration provided by the user includes
+        # carefully crafted mount options but may be needed in weird situations for more automated
+        # proposals. Let's re-evaluate over time.
+        devicegraph.mount_points.each(&:adjust_mount_options)
       end
 
+      # @see #process_existing_partitionables
       def provide_space(planned_partitions, devicegraph, lvm_helper)
         result = space_maker.provide_space(devicegraph, planned_partitions, lvm_helper)
         log.info "Found enough space"
         result
       end
 
+      # @see #process_existing_partitionables
       def partitions_for_existing(planned_devices)
         # Maybe in the future this can include partitions on top of existing MDs
         # NOTE: simplistic implementation
         planned_devices.partitions.reject(&:reuse?)
       end
 
-      # Formats and/or mounts the disk like block devices (Xen virtual partitions and full disks)
+      # Formats and/or mounts the disk-like block devices
       #
-      # Add planned disk like devices to reuse list so they can be considered for lvm and raids
-      # later on.
+      # XEN partitions (StrayBlkDevice) are intentionally left out for now
+      #
+      # Add planned disks to reuse list so they can be considered for lvm and raids later on.
       def process_disk_like_devs
         # Do we do something about SpaceMaker here? I assume it was already done as mandatory
-        planned_devs = planned_devices.select do |dev|
-          dev.is_a?(Planned::StrayBlkDevice) || dev.is_a?(Planned::Disk)
-        end
-
+        planned_devs = planned_devices.select { |d| d.is_a?(Planned::Disk) }
         planned_devs.each { |d| d.reuse!(devicegraph) }
       end
     end

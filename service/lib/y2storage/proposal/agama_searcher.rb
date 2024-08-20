@@ -23,15 +23,32 @@ require "agama/issue"
 
 module Y2Storage
   module Proposal
+    # Auxiliary class to handle the 'search' elements within a storage configuration
     class AgamaSearcher
       include Yast::Logger
       include Yast::I18n
 
+      # Constructor
       def initialize
         textdomain "agama"
       end
 
-      # The last two arguments get modified
+      # Resolve all the 'search' elements within a given configuration
+      #
+      # The second argument (the storage configuration) gets modified in several ways:
+      #
+      #   - All its 'search' elements get resolved, associating devices from the devicegraph
+      #     (first argument) if some is found.
+      #   - Some device definitions can get removed if configured to be skipped in absence of a
+      #     corresponding device
+      #
+      # The third argument (the list of issues) gets modified by adding any found problem.
+      #
+      # @param devicegraph [Devicegraph] used to find the corresponding devices that will get
+      #   associated to each search element
+      # @param settings [Agama::Storage::Config] storage configuration containing device definitions
+      #   like drives, volume groups, etc.
+      # @param issues_list [Array<Agama::Issue>]
       def search(devicegraph, settings, issues_list)
         @sids = []
         settings.drives.each do |drive|
@@ -51,6 +68,7 @@ module Y2Storage
 
     private
 
+      # @see #search
       def process_element(element, collection, issues_list)
         found = element.found_device
         if found
@@ -61,6 +79,10 @@ module Y2Storage
         end
       end
 
+      # Issue generated if a corresponding device is not found for the given element
+      #
+      # @param element [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
+      # @return [Agama::Issue]
       def not_found_issue(element)
         Agama::Issue.new(
           issue_message(element),
@@ -69,6 +91,7 @@ module Y2Storage
         )
       end
 
+      # @see #not_found_issue
       def issue_message(element)
         if element.is_a?(Agama::Storage::Configs::Drive)
           if element.search.skip_device?
@@ -83,6 +106,7 @@ module Y2Storage
         end
       end
 
+      # @see #not_found_issue
       def issue_severity(search)
         return Agama::Issue::Severity::WARN if search.skip_device?
 

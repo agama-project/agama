@@ -29,14 +29,19 @@ module Y2Storage
       include Yast::I18n
 
       # @!attribute [r] devicegraph
+      #   Devicegraph to be used as starting point.
       #   @return [Devicegraph]
       attr_reader :devicegraph
 
       # @!attribute [r] issues_list
+      #   List of issues to register any found problem
+      #   @return [Array<Agama::Issue>]
       attr_reader :issues_list
 
-      # @param devicegraph [Devicegraph] Devicegraph to be used as starting point.
-      # @param issues_list [AutoinstIssues::List] List of issues to register them.
+      # Constructor
+      #
+      # @param devicegraph [Devicegraph] see {#devicegraph}
+      # @param issues_list [Array<Agama::Issue>] see {#issues_list}
       def initialize(devicegraph, issues_list)
         textdomain "agama"
 
@@ -54,32 +59,32 @@ module Y2Storage
     private
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [#format, #mount]
+      # @param settings [#encryption, #filesystem]
       def configure_device(planned, settings)
         configure_encryption(planned, settings.encryption) if settings.encryption
         configure_filesystem(planned, settings.filesystem) if settings.filesystem
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Settings::Format]
+      # @param settings [Agama::Storage::Configs::Filesystem]
       def configure_filesystem(planned, settings)
         planned.mount_point = settings.path
         planned.mount_by = settings.mount_by
         planned.fstab_options = settings.mount_options
-        planned.mkfs_options = settings.mkfs_options
+        planned.mkfs_options = settings.mkfs_options.join(",")
         planned.label = settings.label
         configure_filesystem_type(planned, settings.type) if settings.type
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Settings::Filesystem]
+      # @param settings [Agama::Storage::Configs::FilesystemType]
       def configure_filesystem_type(planned, settings)
         planned.filesystem_type = settings.fs_type
         configure_btrfs(planned, settings.btrfs) if settings.btrfs
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Settings::Btrfs]
+      # @param settings [Agama::Storage::Configs::Btrfs]
       def configure_btrfs(planned, settings)
         # TODO: we need to discuss what to do with transactional systems and the read_only
         # property. We are not sure whether those things should be configurable by the user.
@@ -102,22 +107,26 @@ module Y2Storage
         check_encryption(planned)
       end
 
+      # @see #configure_encryption
       def check_encryption(dev)
         issues_list << issue_missing_enc_password(dev) if missing_enc_password?(dev)
         issues_list << issue_available_enc_method(dev) unless dev.encryption_method.available?
         issues_list << issue_wrong_enc_method(dev) unless supported_enc_method?(dev)
       end
 
+      # @see #check_encryption
       def missing_enc_password?(planned)
         return false unless planned.encryption_method&.password_required?
 
         planned.encryption_password.nil? || planned.encryption_password.empty?
       end
 
+      # @see #check_encryption
       def supported_enc_method?(planned)
         planned.supported_encryption_method?(planned.encryption_method)
       end
 
+      # @see #check_encryption
       def issue_missing_enc_password(planned)
         msg = format(
           # TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
@@ -128,6 +137,7 @@ module Y2Storage
         encryption_issue(msg)
       end
 
+      # @see #check_encryption
       def issue_available_enc_method(planned)
         msg = format(
           # TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
@@ -138,6 +148,7 @@ module Y2Storage
         encryption_issue(msg)
       end
 
+      # @see #check_encryption
       def issue_wrong_enc_method(planned)
         msg = format(
           # TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
@@ -148,6 +159,7 @@ module Y2Storage
         encryption_issue(msg)
       end
 
+      # @see #check_encryption
       def encryption_issue(message)
         Agama::Issue.new(
           message,
@@ -157,7 +169,7 @@ module Y2Storage
       end
 
       # @param planned [Planned::Partition]
-      # @param settings [Agama::Storage::Settings::Size]
+      # @param settings [Agama::Storage::Configs::Size]
       def configure_size(planned, settings)
         planned.min_size = settings.min
         planned.max_size = settings.max
@@ -165,14 +177,14 @@ module Y2Storage
       end
 
       # @param planned [Planned::Disk]
-      # @param settings [Agama::Storage::Settings::Drive]
+      # @param settings [Agama::Storage::Configs::Drive]
       def configure_partitions(planned, settings)
         planned.partitions = settings.partitions.map do |partition_settings|
           planned_partition(partition_settings).tap { |p| p.disk = settings.found_device.name }
         end
       end
 
-      # @param settings [Agama::Storage::Settings::Partition]
+      # @param settings [Agama::Storage::Configs::Partition]
       # @return [Planned::Partition]
       def planned_partition(settings)
         Planned::Partition.new(nil, nil).tap do |planned|

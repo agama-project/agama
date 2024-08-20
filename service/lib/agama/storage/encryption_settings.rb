@@ -35,7 +35,7 @@ module Agama
       ].freeze
       private_constant :METHODS
 
-      # @!attribute encryption_password
+      # @!attribute password
       #   Password to use when creating new encryption devices
       #   @return [String, nil] nil if undetermined
       secret_attr :password
