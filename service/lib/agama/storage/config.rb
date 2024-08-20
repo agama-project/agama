@@ -30,10 +30,19 @@ module Agama
       # @return [Configs::Boot]
       attr_accessor :boot
 
+      # @return [Array<Configs::Drive>]
       attr_accessor :drives
+
+      # @return [Array]
       attr_accessor :volume_groups
+
+      # @return [Array]
       attr_accessor :md_raids
+
+      # @return [Array]
       attr_accessor :btrfs_raids
+
+      # @return [Array]
       attr_accessor :nfs_mounts
 
       def initialize
@@ -55,19 +64,25 @@ module Agama
         ConfigConversions::FromJSON.new(config_json, product_config: product_config).convert
       end
 
+      # Name of the device that will presumably be used to boot the target system
+      #
+      # @return [String, nil] nil if there is no enough information to infer a possible boot disk
       def boot_device
         explicit_boot_device || implicit_boot_device
       end
 
-      # Device used for booting.
+      # Device used for booting the target system
       #
-      # @return [String, nil]
+      # @return [String, nil] nil if no disk is explicitly chosen
       def explicit_boot_device
         return nil unless boot.configure?
 
         boot.device
       end
 
+      # Device that seems to be expected to be used for booting, according to the drive definitions
+      #
+      # @return [String, nil] nil if the information cannot be inferred from the list of drives
       def implicit_boot_device
         # NOTE: preliminary implementation with very simplistic checks
         root_drive = drives.find do |drive|
@@ -77,6 +92,10 @@ module Agama
         root_drive&.found_device&.name
       end
 
+      # Sets min and max sizes for all partitions and logical volumes with default size
+      #
+      # @param volume_builder [VolumeTemplatesBuilder] used to check the configuration of the
+      #   product volume templates
       def calculate_default_sizes(volume_builder)
         default_size_devices.each do |dev|
           dev.size.min = default_size(dev, :min, volume_builder)
@@ -86,18 +105,26 @@ module Agama
 
     private
 
+      # return [Array<Configs::Filesystem>]
       def filesystems
         (drives + partitions).map(&:filesystem).compact
       end
 
+      # return [Array<Configs::Partition>]
       def partitions
         drives.flat_map(&:partitions)
       end
 
+      # return [Array<Configs::Partitions>]
       def default_size_devices
         partitions.select { |p| p.size&.default? }
       end
 
+      # Min or max size that should be used for the given partition or logical volume
+      #
+      # @param device [Configs::Partition] device configured to have a default size
+      # @param attr [Symbol] :min or :max
+      # @param builder [VolumeTemplatesBuilder] see {#calculate_default_sizes}
       def default_size(device, attr, builder)
         path = device.filesystem&.path || ""
         vol = builder.for(path)
@@ -108,7 +135,7 @@ module Agama
         return vol.send(:"#{attr}_size") unless vol.auto_size?
 
         outline = vol.outline
-        size = size_with_fallbacks(device, outline, attr, builder)
+        size = size_with_fallbacks(outline, attr, builder)
         size = size_with_ram(size, outline)
         size_with_snapshots(size, device, outline)
       end
@@ -121,7 +148,8 @@ module Agama
         Y2Storage::DiskSize.unlimited
       end
 
-      def size_with_fallbacks(_device, outline, attr, builder)
+      # @see #default_size
+      def size_with_fallbacks(outline, attr, builder)
         fallback_paths = outline.send(:"#{attr}_size_fallback_for")
         missing_paths = fallback_paths.reject { |p| proposed_path?(p) }
 
@@ -129,16 +157,14 @@ module Agama
         missing_paths.inject(size) { |total, p| total + builder.for(p).send(:"#{attr}_size") }
       end
 
-      def proposed_path?(path)
-        filesystems.any? { |fs| fs.path?(path) }
-      end
-
+      # @see #default_size
       def size_with_ram(initial_size, outline)
         return initial_size unless outline.adjust_by_ram?
 
         [initial_size, ram_size].max
       end
 
+      # @see #default_size
       def size_with_snapshots(initial_size, device, outline)
         return initial_size unless device.filesystem.btrfs_snapshots?
         return initial_size unless outline.snapshots_affect_sizes?
@@ -149,6 +175,14 @@ module Agama
           multiplicator = 1.0 + (outline.snapshots_percentage / 100.0)
           initial_size * multiplicator
         end
+      end
+
+      # Whether there is a separate filesystem configured for the given path
+      #
+      # @param path [String, Pathname]
+      # @return [Boolean]
+      def proposed_path?(path)
+        filesystems.any? { |fs| fs.path?(path) }
       end
 
       # Return the total amount of RAM as DiskSize

@@ -34,7 +34,7 @@ module Agama
         class FromJSON
           # @todo Replace settings and volume_builder params by a ProductDefinition.
           #
-          # @param drive_json [Hash]
+          # @param blk_device_json [Hash]
           # @param settings [ProposalSettings]
           # @param volume_builder [VolumeTemplatesBuilder]
           def initialize(blk_device_json, settings:, volume_builder:)

@@ -22,15 +22,15 @@
 module Agama
   module Storage
     module Configs
-      # Partition configuration.
+      # Section of the configuration representing a partition
       class Partition
-        # @return [Search]
+        # @return [Search, nil]
         attr_accessor :search
 
         # @return [Y2Storage::PartitionId, nil]
         attr_accessor :id
 
-        # @return [Size, nil]
+        # @return [Size, nil] can be nil for reused partitions
         attr_accessor :size
 
         # @return [Encryption, nil]
@@ -39,15 +39,21 @@ module Agama
         # @return [Filesystem, nil]
         attr_accessor :filesystem
 
+        # Resolves the search if the partition specification contains any, associating a partition
+        # of the given device if possible
+        #
+        # @param partitionable [Y2Storage::Partitionable] scope for the search
+        # @param used_sids [Array<Integer>] SIDs of the devices that are already associated to
+        #   another partition definition, so they cannot be associated to this
         def search_device(partitionable, used_sids)
-          @search ||= default_search
-          search.find(self, partitionable.partitions, used_sids)
+          return unless search
+
+          search.find(partitionable.partitions, used_sids)
         end
 
-        def default_search
-          Search.new
-        end
-
+        # Device resulting from a previous call to {#search_device}
+        #
+        # @return [Y2Storage::Device, nil]
         def found_device
           search&.device
         end

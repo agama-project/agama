@@ -26,11 +26,14 @@ module Y2Storage
   module Proposal
     # Space maker for Agama.
     class AgamaSpaceMaker < SpaceMaker
-      # Initialize.
+      # Constructor
       def initialize(disk_analyzer, settings)
         super(disk_analyzer, guided_settings(settings))
       end
 
+    private
+
+      # Method used by the constructor to somehow simulate a typical Guided Proposal
       def guided_settings(settings)
         # Despite the "current_product" part in the name of the constructor, it only applies
         # generic default values that are independent of the product (there is no YaST

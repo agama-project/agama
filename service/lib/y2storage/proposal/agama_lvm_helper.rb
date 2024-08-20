@@ -26,11 +26,14 @@ module Y2Storage
   module Proposal
     # LVM helper for Agama.
     class AgamaLvmHelper < LvmHelper
-      # Initialize.
+      # Constructor
       def initialize(lvm_lvs)
         super(lvm_lvs, guided_settings)
       end
 
+    private
+
+      # Method used by the constructor to somehow simulate a typical Guided Proposal
       def guided_settings
         # Despite the "current_product" part in the name of the constructor, it only applies
         # generic default values that are independent of the product (there is no YaST
