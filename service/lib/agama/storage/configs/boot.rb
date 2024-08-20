@@ -36,6 +36,7 @@ module Agama
         #   device for allocating root.
         attr_accessor :device
 
+        # Constructor
         def initialize
           @configure = true
         end

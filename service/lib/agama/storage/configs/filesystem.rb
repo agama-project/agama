@@ -71,6 +71,7 @@ module Agama
           path?(ROOT_PATH)
         end
 
+        # @return [Boolean]
         def btrfs_snapshots?
           return false unless type&.fs_type&.is?(:btrfs)
 
