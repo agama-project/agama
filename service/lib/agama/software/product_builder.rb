@@ -65,7 +65,6 @@ module Agama
           product.name = data[:name]
           product.version = data[:version]
           product.icon = attrs["icon"] if attrs.key?("icon") && !attrs["icon"].nil?
-          @logger.info(product.name + " uses icon " + product.icon)
         end
       end
 
