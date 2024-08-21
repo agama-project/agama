@@ -30,11 +30,13 @@ const tumbleweedProduct = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   description: "Tumbleweed description...",
+  icon: "Tumbleweed.icon",
 };
 const microosProduct = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
   description: "MicroOS description",
+  icon: "MicroOS.icon",
 };
 
 let mockUseProduct: { products: Product[]; selectedProduct?: Product };
