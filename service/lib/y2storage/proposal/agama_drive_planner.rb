@@ -25,7 +25,7 @@ module Y2Storage
   module Proposal
     # Drive planner for Agama.
     class AgamaDrivePlanner < AgamaDevicePlanner
-      # @param settings [Agama::Storage::Settings::Drive]
+      # @param settings [Agama::Storage::Configs::Drive]
       # @return [Array<Planned::Device>]
       def planned_devices(settings)
         [planned_drive(settings)]
@@ -33,7 +33,10 @@ module Y2Storage
 
     private
 
-      # @param settings [Agama::Storage::Settings::Drive]
+      # Support for StrayBlkDevice is intentionally left out. As far as we know, the plan
+      # for SLE/Leap 16 is to drop XEN support
+      #
+      # @param settings [Agama::Storage::Configs::Drive]
       # @return [Planned::Disk]
       def planned_drive(settings)
         return planned_full_drive(settings) unless settings.partitions?
@@ -41,7 +44,7 @@ module Y2Storage
         planned_partitioned_drive(settings)
       end
 
-      # @param settings [Agama::Storage::Settings::Drive]
+      # @param settings [Agama::Storage::Configs::Drive]
       # @return [Planned::Disk]
       def planned_full_drive(settings)
         Planned::Disk.new.tap do |planned|
@@ -50,7 +53,7 @@ module Y2Storage
         end
       end
 
-      # @param settings [Agama::Storage::Settings::Drive]
+      # @param settings [Agama::Storage::Configs::Drive]
       # @return [Planned::Disk]
       def planned_partitioned_drive(settings)
         Planned::Disk.new.tap do |planned|
@@ -60,7 +63,7 @@ module Y2Storage
       end
 
       # @param planned [Planned::Disk]
-      # @param settings [Agama::Storage::Settings::Drive]
+      # @param settings [Agama::Storage::Configs::Drive]
       def configure_drive(planned, settings)
         planned.assign_reuse(settings.found_device)
       end
