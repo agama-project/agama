@@ -86,7 +86,7 @@ function ProductSelectionPage() {
                   onClick={() => handleCardClick(product)}
                   style={{
                     cursor: 'pointer',  // Change the cursor to indicate clickable
-                    border: nextProduct === product ? '2px solid #0066cc' : 'none',  // Optional: highlight selected card
+                    border: nextProduct === product ? '2px solid #51c38d' : 'none',  // highlight selected card
                   }}
                 >
                   <CardBody>
