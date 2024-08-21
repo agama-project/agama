@@ -56,7 +56,7 @@ module Y2Storage
     # @param devicegraph [Devicegraph] starting point. If nil, then probed devicegraph
     #   will be used
     # @param disk_analyzer [DiskAnalyzer] by default, the method will create a new one
-    #   based on the initial devicegraph or will use the one in {StorageManager} if
+    #   based on the initial devicegraph or will use the one from the StorageManager if
     #   starting from probed (i.e. 'devicegraph' argument is also missing)
     # @param issues_list [Array<Agama::Issue] Array to register issues found during the process
     def initialize(initial_settings, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
