@@ -62,7 +62,7 @@ function ProductSelectionPage() {
         src={productIcon}
         alt={alt}
         width="80px"
-        style={{ height: 'auto', width: '10%', float: 'left', padding: '0 15px 0 0' }}
+        style={{ height: 'auto', width: '10%', float: 'left', padding: '0 20px 20px 0' }}
       />
     );
   };
