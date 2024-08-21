@@ -10,6 +10,7 @@ description: "SUSE Linux Enterprise Server is the open, reliable, compliant, and
   continuity. It is the secure and adaptable OS for long-term supported,
   innovation-ready infrastructure running business-critical workloads
   on-premises, in the cloud, and at the edge."
+icon: SUSE.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:

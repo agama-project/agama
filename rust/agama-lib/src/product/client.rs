@@ -16,6 +16,8 @@ pub struct Product {
     pub name: String,
     /// Product description
     pub description: String,
+    /// Product icon (e.g., "default.svg")
+    pub icon: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
@@ -74,10 +76,15 @@ impl<'a> ProductClient<'a> {
                     Some(value) => value.try_into().unwrap(),
                     None => "",
                 };
+                let icon = match data.get("icon") {
+                    Some(value) => value.try_into().unwrap(),
+                    None => "default.svg",
+                };
                 Product {
                     id,
                     name,
                     description: description.to_string(),
+                    icon: icon.to_string(),
                 }
             })
             .collect();

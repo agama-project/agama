@@ -38,6 +38,8 @@ type Product = {
   name: string;
   /** Product description */
   description: string;
+  /** Product icon (e.g., "default.svg") */
+  icon: string;
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };

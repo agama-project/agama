@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 21 19:07:28 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add product icons. Resolves Issue #1415
+  Not setting any icon will default to default.svg icon
+
+-------------------------------------------------------------------
 Mon Aug 19 15:13:46 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Allow overriding of install repos which is needed by openQA

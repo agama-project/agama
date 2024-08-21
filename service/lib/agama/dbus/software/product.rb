@@ -54,7 +54,14 @@ module Agama
 
         def available_products
           backend.products.map do |product|
-            [product.id, product.display_name, { "description" => product.localized_description }]
+            [
+              product.id,
+              product.display_name,
+              {
+                "description" => product.localized_description,
+                "icon"        => product.icon
+              }
+            ]
           end
         end
 

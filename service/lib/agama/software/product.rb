@@ -48,6 +48,13 @@ module Agama
       # @return [String, nil] E.g., "1.0".
       attr_accessor :version
 
+      # Product icon. Please use specify filename with svg suffix and ensure referenced
+      # file exists inside agama/web/src/assests/product.
+      # default.svg unless be used nless specified otherwise.
+      #
+      # @return [String, "default.svg"] E.g., "1.0".
+      attr_accessor :icon
+
       # List of repositories.
       #
       # @return [Array<String>] Empty if the product requires registration.
@@ -99,6 +106,7 @@ module Agama
       # @param id [string] Product id.
       def initialize(id)
         @id = id
+        @icon = "default.svg"
         @repositories = []
         @labels = []
         @mandatory_packages = []

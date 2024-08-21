@@ -30,6 +30,7 @@
         "id": {
           "title": "Product identifier",
           "description": "The id field from a products.d/foo.yaml file",
+          "icon": "Product Icon path specified in products.d/foo.yaml file",
           "type": "string"
         },
         "registrationCode": {

@@ -9,6 +9,7 @@ description: 'The Tumbleweed distribution is a pure rolling release version of
   openSUSE containing the latest "stable" versions of all software instead of
   relying on rigid periodic release cycles. The project does this for users that
   want the newest stable software.'
+icon: Tumbleweed.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:

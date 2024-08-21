@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 21 19:07:28 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add product icons. Resolves Issue #1415
+  Not setting any icon will default to default.svg icon
+
+-------------------------------------------------------------------
 Thu Aug 15 08:33:02 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Use sd_notify for starting agama-web-service to notify systemd

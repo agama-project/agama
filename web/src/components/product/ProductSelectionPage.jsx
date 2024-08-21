@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 /*
  * Copyright (c) [2022-2024] SUSE LLC
  *
@@ -20,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardBody, Flex, Form, Grid, GridItem, Radio } from "@patternfly/react-core";
+import { Card, CardBody, Flex, Form, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
@@ -46,15 +47,31 @@ function ProductSelectionPage() {
     }
   };
 
-  const Item = ({ children }) => {
+  const Item = ({ children }) => (
+    <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
+      {children}
+    </GridItem>
+  );
+
+  const ProductIcon = ({ src, alt }) => {
+    // Ensure that we display something even if icon path is incorrect
+    const productIcon = require(`../../assets/products/${src}`);
+
     return (
-      <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
-        {children}
-      </GridItem>
+      <img
+        src={productIcon}
+        alt={alt}
+        width="80px"
+        style={{ height: 'auto', width: '10%', float: 'left', padding: '0 15px 0 0' }}
+      />
     );
   };
 
   const isSelectionDisabled = !nextProduct || nextProduct === selectedProduct;
+
+  const handleCardClick = (product) => {
+    setNextProduct(product);
+  };
 
   return (
     <Page>
@@ -63,17 +80,24 @@ function ProductSelectionPage() {
           <Grid hasGutter>
             {products.map((product, index) => (
               <Item key={index}>
-                <Card key={index} isRounded>
+                <Card
+                  key={index}
+                  isRounded
+                  onClick={() => handleCardClick(product)}
+                  style={{
+                    cursor: 'pointer',  // Change the cursor to indicate clickable
+                    border: nextProduct === product ? '2px solid #0066cc' : 'none',  // Optional: highlight selected card
+                  }}
+                >
                   <CardBody>
-                    <Radio
-                      key={index}
-                      name="product"
-                      id={product.name}
-                      label={<Label>{product.name}</Label>}
-                      body={product.description}
-                      isChecked={nextProduct === product}
-                      onChange={() => setNextProduct(product)}
+                    <ProductIcon
+                      src={product.icon}
+                      alt={`${product.name} product icon`}
                     />
+                    <div>
+                      <Label>{product.name}</Label>
+                      <p>{product.description}</p>
+                    </div>
                   </CardBody>
                 </Card>
               </Item>
