@@ -25,6 +25,7 @@ require "y2storage/proposal/agama_searcher"
 require "y2storage/proposal/agama_space_maker"
 require "y2storage/proposal/agama_devices_planner"
 require "y2storage/proposal/agama_devices_creator"
+require "y2storage/proposal/planned_devices_handler"
 require "y2storage/exceptions"
 require "y2storage/planned"
 
@@ -44,6 +45,8 @@ module Y2Storage
   #   proposal.devices              # => Proposed layout
   #
   class AgamaProposal < Proposal::Base
+    include Proposal::PlannedDevicesHandler
+
     # @return [Agama::Storage::Config]
     attr_reader :settings
 
@@ -151,7 +154,7 @@ module Y2Storage
         @planned_devices = planned_devices.prepend(boot_partitions(devicegraph))
       end
 
-      planned_devices.remove_shadowed_subvols
+      remove_shadowed_subvols(planned_devices)
     end
 
     # @see #complete_planned
