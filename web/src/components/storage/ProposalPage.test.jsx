@@ -42,20 +42,20 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: () => <div>PFSkeleton</div>
-
+    Skeleton: () => <div>PFSkeleton</div>,
   };
 });
 jest.mock("./DevicesTechMenu", () => () => <div>Devices Tech Menu</div>);
 
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
   useProduct: () => ({
-    selectedProduct: { name: "Test" }
-  })
+    selectedProduct: { name: "Test" },
+  }),
+  useProductChanges: () => jest.fn(),
 }));
 
-const createClientMock = /** @type {jest.Mock} */(createClient);
+const createClientMock = /** @type {jest.Mock} */ (createClient);
 
 /** @type {StorageDevice} */
 const vda = {
@@ -72,7 +72,7 @@ const vda = {
   sdCard: true,
   active: true,
   name: "/dev/vda",
-  size: 1e+12,
+  size: 1e12,
   systems: ["Windows 11", "openSUSE Leap 15.2"],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
@@ -89,7 +89,7 @@ const vdb = {
   driver: ["ahci", "mmcblk"],
   bus: "IDE",
   name: "/dev/vdb",
-  size: 1e+6
+  size: 1e6,
 };
 
 /**
@@ -97,28 +97,26 @@ const vdb = {
  * @returns {Volume}
  */
 const volume = (mountPath) => {
-  return (
-    {
-      mountPath,
-      target: "DEFAULT",
-      fsType: "Btrfs",
-      minSize: 1024,
-      maxSize: 1024,
-      autoSize: false,
-      snapshots: false,
-      transactional: false,
-      outline: {
-        required: false,
-        fsTypes: ["Btrfs"],
-        supportAutoSize: false,
-        snapshotsConfigurable: false,
-        snapshotsAffectSizes: false,
-        sizeRelevantVolumes: [],
-        adjustByRam: false,
-        productDefined: false
-      }
-    }
-  );
+  return {
+    mountPath,
+    target: "DEFAULT",
+    fsType: "Btrfs",
+    minSize: 1024,
+    maxSize: 1024,
+    autoSize: false,
+    snapshots: false,
+    transactional: false,
+    outline: {
+      required: false,
+      fsTypes: ["Btrfs"],
+      supportAutoSize: false,
+      snapshotsConfigurable: false,
+      snapshotsAffectSizes: false,
+      sizeRelevantVolumes: [],
+      adjustByRam: false,
+      productDefined: false,
+    },
+  };
 };
 
 /** @type {StorageClient} */
@@ -140,9 +138,9 @@ beforeEach(() => {
       spacePolicy: "",
       spaceActions: [],
       volumes: [],
-      installationDevices: []
+      installationDevices: [],
     },
-    actions: []
+    actions: [],
   };
 
   storage = {
@@ -154,21 +152,21 @@ beforeEach(() => {
       getEncryptionMethods: jest.fn().mockResolvedValue([]),
       getProductMountPoints: jest.fn().mockResolvedValue([]),
       getResult: jest.fn().mockResolvedValue(proposalResult),
-      defaultVolume: jest.fn(mountPath => Promise.resolve(volume(mountPath))),
+      defaultVolume: jest.fn((mountPath) => Promise.resolve(volume(mountPath))),
       calculate: jest.fn().mockResolvedValue(0),
     },
     // @ts-expect-error Some methods have to be private to avoid type complaint.
     system: {
-      getDevices: jest.fn().mockResolvedValue([vda, vdb])
+      getDevices: jest.fn().mockResolvedValue([vda, vdb]),
     },
     // @ts-expect-error Some methods have to be private to avoid type complaint.
     staging: {
-      getDevices: jest.fn().mockResolvedValue([vda])
+      getDevices: jest.fn().mockResolvedValue([vda]),
     },
     getErrors: jest.fn().mockResolvedValue([]),
     isDeprecated: jest.fn().mockResolvedValue(false),
     onDeprecate: jest.fn(),
-    onStatusChange: jest.fn()
+    onStatusChange: jest.fn(),
   };
 
   createClientMock.mockImplementation(() => ({ storage }));

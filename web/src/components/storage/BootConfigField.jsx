@@ -28,6 +28,7 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "~/components/storage/utils";
 import { Icon } from "~/components/layout";
+import { PATHS } from "~/routes/storage";
 
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
@@ -42,11 +43,7 @@ import { Icon } from "~/components/layout";
 const Link = ({ isBold = false }) => {
   const text = _("Change boot options");
 
-  return (
-    <RouterLink to="booting-partition">
-      {isBold ? <b>{text}</b> : text}
-    </RouterLink>
-  );
+  return <RouterLink to={PATHS.bootingPartition}>{isBold ? <b>{text}</b> : text}</RouterLink>;
 };
 
 /**
@@ -67,12 +64,7 @@ const Link = ({ isBold = false }) => {
  *
  * @param {BootConfigFieldProps} props
  */
-export default function BootConfigField({
-  configureBoot,
-  bootDevice,
-  isLoading,
-  onChange
-}) {
+export default function BootConfigField({ configureBoot, bootDevice, isLoading, onChange }) {
   const onAccept = ({ configureBoot, bootDevice }) => {
     onChange({ configureBoot, bootDevice });
   };
@@ -84,12 +76,20 @@ export default function BootConfigField({
   let value;
 
   if (!configureBoot) {
-    value = <><Icon name="feedback" size="xs" /> {_("Installation will not configure partitions for booting.")}</>;
+    value = (
+      <>
+        <Icon name="feedback" size="xs" />{" "}
+        {_("Installation will not configure partitions for booting.")}
+      </>
+    );
   } else if (!bootDevice) {
     value = _("Installation will configure partitions for booting at the installation disk.");
   } else {
     // TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-    value = sprintf(_("Installation will configure partitions for booting at %s."), deviceLabel(bootDevice));
+    value = sprintf(
+      _("Installation will configure partitions for booting at %s."),
+      deviceLabel(bootDevice),
+    );
   }
 
   return (

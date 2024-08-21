@@ -42,11 +42,7 @@ import { Stack } from "@patternfly/react-core";
  * @param {JSX.Element} [props.children] - the section content
  * @param {object} [props.otherProps] fieldset element attributes, see {@link https://html.spec.whatwg.org/#the-fieldset-element}
  */
-export default function Fieldset({
-  legend,
-  children,
-  ...otherProps
-}) {
+export default function Fieldset({ legend, children, ...otherProps }) {
   return (
     <fieldset {...otherProps}>
       <Stack hasGutter>

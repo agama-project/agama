@@ -148,11 +148,12 @@ export default class DevicesManager {
     const targetSystem = this.system.filter(isTarget);
     const targetStaging = this.staging.filter(isTarget);
 
-    const sids = targetSystem.concat(targetStaging)
-      .filter(d => this.#isUsed(d))
-      .map(d => d.sid);
+    const sids = targetSystem
+      .concat(targetStaging)
+      .filter((d) => this.#isUsed(d))
+      .map((d) => d.sid);
 
-    return compact(uniq(sids).map(sid => this.stagingDevice(sid)));
+    return compact(uniq(sids).map((sid) => this.stagingDevice(sid)));
   }
 
   /**
@@ -164,7 +165,7 @@ export default class DevicesManager {
    * @returns {StorageDevice[]}
    */
   deletedDevices() {
-    return this.#deleteActionsDevice().filter(d => !d.isDrive);
+    return this.#deleteActionsDevice().filter((d) => !d.isDrive);
   }
 
   /**
@@ -176,7 +177,7 @@ export default class DevicesManager {
    * @returns {StorageDevice[]}
    */
   resizedDevices() {
-    return this.#resizeActionsDevice().filter(d => !d.isDrive);
+    return this.#resizeActionsDevice().filter((d) => !d.isDrive);
   }
 
   /**
@@ -187,8 +188,8 @@ export default class DevicesManager {
    */
   deletedSystems() {
     const systems = this.#deleteActionsDevice()
-      .filter(d => !d.partitionTable)
-      .map(d => d.systems)
+      .filter((d) => !d.partitionTable)
+      .map((d) => d.systems)
       .flat();
     return compact(systems);
   }
@@ -201,8 +202,8 @@ export default class DevicesManager {
    */
   resizedSystems() {
     const systems = this.#resizeActionsDevice()
-      .filter(d => !d.partitionTable)
-      .map(d => d.systems)
+      .filter((d) => !d.partitionTable)
+      .map((d) => d.systems)
       .flat();
     return compact(systems);
   }
@@ -213,7 +214,7 @@ export default class DevicesManager {
    * @returns {StorageDevice|undefined}
    */
   #device(sid, source) {
-    return source.find(d => d.sid === sid);
+    return source.find((d) => d.sid === sid);
   }
 
   /**
@@ -230,24 +231,24 @@ export default class DevicesManager {
    * @returns {boolean}
    */
   #isUsed(device) {
-    const sids = uniq(compact(this.actions.map(a => a.device)));
+    const sids = uniq(compact(this.actions.map((a) => a.device)));
 
     const partitions = device.partitionTable?.partitions || [];
     const lvmLvs = device.logicalVolumes || [];
 
-    return sids.includes(device.sid) ||
-      partitions.find(p => this.#isUsed(p)) !== undefined ||
-      lvmLvs.find(l => this.#isUsed(l)) !== undefined;
+    return (
+      sids.includes(device.sid) ||
+      partitions.find((p) => this.#isUsed(p)) !== undefined ||
+      lvmLvs.find((l) => this.#isUsed(l)) !== undefined
+    );
   }
 
   /**
    * @returns {StorageDevice[]}
    */
   #deleteActionsDevice() {
-    const sids = this.actions
-      .filter(a => a.delete)
-      .map(a => a.device);
-    const devices = sids.map(sid => this.systemDevice(sid));
+    const sids = this.actions.filter((a) => a.delete).map((a) => a.device);
+    const devices = sids.map((sid) => this.systemDevice(sid));
     return compact(devices);
   }
 
@@ -255,10 +256,8 @@ export default class DevicesManager {
    * @returns {StorageDevice[]}
    */
   #resizeActionsDevice() {
-    const sids = this.actions
-      .filter(a => a.resize)
-      .map(a => a.device);
-    const devices = sids.map(sid => this.systemDevice(sid));
+    const sids = this.actions.filter((a) => a.resize).map((a) => a.device);
+    const devices = sids.map((sid) => this.systemDevice(sid));
     return compact(devices);
   }
 }

@@ -1,0 +1,9 @@
+[Unit]
+Description=Delete a temporary file to have more disk space
+
+[Service]
+ExecStart=rm -f /var/lib/live_free_space
+Type=oneshot
+
+[Install]
+WantedBy=default.target

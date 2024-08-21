@@ -39,8 +39,8 @@ const sda = {
   active: true,
   name: "/dev/sda",
   size: 1024,
-  recoverableSize: 0,
-  systems : [],
+  shrinking: { unsupported: ["Resizing is not supported"] },
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -52,10 +52,10 @@ const sda1 = {
   active: true,
   name: "/dev/sda1",
   size: 512,
-  recoverableSize: 128,
-  systems : [],
+  shrinking: { supported: 128 },
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 const sda2 = {
@@ -65,16 +65,16 @@ const sda2 = {
   active: true,
   name: "/dev/sda2",
   size: 512,
-  recoverableSize: 0,
-  systems : [],
+  shrinking: { unsupported: ["Resizing is not supported"] },
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 sda.partitionTable = {
   type: "gpt",
   partitions: [sda1, sda2],
-  unpartitionedSize: 512
+  unpartitionedSize: 512,
 };
 
 const sdb = {
@@ -92,25 +92,23 @@ const sdb = {
   active: true,
   name: "/dev/sdb",
   size: 2048,
-  recoverableSize: 0,
-  systems : [],
+  shrinking: { unsupported: ["Resizing is not supported"] },
+  systems: [],
   udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
+  udevPaths: ["pci-0000:00-19"],
 };
 
 const lv1 = {
   sid: "163",
   name: "/dev/system/vg/lv1",
-  content: "Personal Data"
+  content: "Personal Data",
 };
 
 const vg = {
   sid: "162",
   type: "vg",
   name: "/dev/system/vg",
-  lvs: [
-    lv1
-  ]
+  lvs: [lv1],
 };
 
 const columns = [
@@ -122,7 +120,7 @@ const columns = [
       if (item.type === "vg") return `${item.lvs.length} logical volume(s)`;
 
       return item.content;
-    }
+    },
   },
   { name: "Size", value: (item) => item.size },
 ];
@@ -135,11 +133,9 @@ const commonProps = {
   items: [sda, sdb, vg],
   itemIdKey: "sid",
   initialExpandedKeys: [sda.sid, vg.sid],
-  itemChildren: (item) => (
-    item.isDrive ? item.partitionTable?.partitions : item.lvs
-  ),
+  itemChildren: (item) => (item.isDrive ? item.partitionTable?.partitions : item.lvs),
   onSelectionChange: onChangeFn,
-  "aria-label": "Device selector"
+  "aria-label": "Device selector",
 };
 
 describe("ExpandableSelector", () => {
@@ -203,7 +199,7 @@ describe("ExpandableSelector", () => {
 
   it("renders as expanded items which value for `itemIdKey` is included in `initialExpandedKeys` prop", () => {
     plainRender(
-      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />
+      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
     );
     const table = screen.getByRole("grid");
     within(table).getByRole("row", { name: /dev\/sda1 512/ });
@@ -212,7 +208,7 @@ describe("ExpandableSelector", () => {
 
   it("keeps track of expanded items", async () => {
     const { user } = plainRender(
-      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />
+      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
     );
     const table = screen.getByRole("grid");
     const sdaRow = within(table).getByRole("row", { name: /sda 1024/ });
@@ -233,9 +229,7 @@ describe("ExpandableSelector", () => {
   });
 
   it("uses 'id' as key when `itemIdKey` prop is not given", () => {
-    plainRender(
-      <ExpandableSelector {...props} itemIdKey={undefined} />
-    );
+    plainRender(<ExpandableSelector {...props} itemIdKey={undefined} />);
 
     const table = screen.getByRole("grid");
     // Since itemIdKey does not match the id used for the item, they are
@@ -246,7 +240,7 @@ describe("ExpandableSelector", () => {
 
   it("uses given `itemIdKey` as key", () => {
     plainRender(
-      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />
+      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
     );
 
     const table = screen.getByRole("grid");
@@ -269,7 +263,7 @@ describe("ExpandableSelector", () => {
         plainRender(<ExpandableSelector {...props} itemsSelected="Whatever" />);
         expect(console.error).toHaveBeenCalledWith(
           expect.stringContaining("prop must be an array"),
-          "Whatever"
+          "Whatever",
         );
       });
 
@@ -331,7 +325,7 @@ describe("ExpandableSelector", () => {
           it("outputs to console.error", () => {
             plainRender(<ExpandableSelector {...props} itemsSelected={[sda1, lv1]} />);
             expect(console.error).toHaveBeenCalledWith(
-              expect.stringContaining("Using only the first element")
+              expect.stringContaining("Using only the first element"),
             );
           });
 
@@ -423,12 +417,14 @@ describe("ExpandableSelector", () => {
       const lv1Row = within(table).getByRole("row", { name: /Personal Data/ });
       const selection = screen.getAllByRole("checkbox", { checked: true });
       expect(selection.length).toEqual(2);
-      [sda1Row, lv1Row].forEach(row => within(row).getByRole("checkbox", { checked: true }));
+      [sda1Row, lv1Row].forEach((row) => within(row).getByRole("checkbox", { checked: true }));
     });
 
     describe("and user selects an already selected item", () => {
       it("triggers the `onSelectionChange` callback with a collection not including the item", async () => {
-        const { user } = plainRender(<ExpandableSelector {...props} itemsSelected={[sda1, sda2]} />);
+        const { user } = plainRender(
+          <ExpandableSelector {...props} itemsSelected={[sda1, sda2]} />,
+        );
         const sda1row = screen.getByRole("row", { name: /dev\/sda1/ });
         const sda1radio = within(sda1row).getByRole("checkbox");
         await user.click(sda1radio);

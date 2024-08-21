@@ -71,6 +71,7 @@ pub struct NetworkDevice {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct NetworkConnection {
     pub id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -85,6 +86,10 @@ pub struct NetworkConnection {
     pub addresses: Vec<IpInet>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub nameservers: Vec<IpAddr>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub dns_searchlist: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ignore_auto_dns: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless: Option<WirelessSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]

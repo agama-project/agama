@@ -3,7 +3,7 @@
 //! This library offers an API to interact with Agama services. At this point, the library allows:
 //!
 //! * Reading and writing [installation settings](install_settings::InstallSettings).
-//! * Monitoring the [progress](progress).
+//! * Monitoring the [progress].
 //! * Triggering actions through the [manager] (e.g., starting installation).
 //!
 //! ## Handling installation settings
@@ -24,6 +24,7 @@
 //! As said, those modules might implement additional stuff, like specific types, clients, etc.
 
 pub mod auth;
+pub mod base_http_client;
 pub mod error;
 pub mod install_settings;
 pub mod localization;

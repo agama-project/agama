@@ -3,7 +3,8 @@
 use serde::{Deserialize, Serialize};
 
 /// Localization settings for the system being installed (not the UI)
-#[derive(Debug, Default, Serialize, Deserialize)]
+/// FIXME: this one is close to CLI. A possible duplicate close to HTTP is LocaleConfig
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct LocalizationSettings {
     /// like "en_US.UTF-8"

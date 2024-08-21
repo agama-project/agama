@@ -26,7 +26,7 @@ import { Split, Switch } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
 import { hasFS } from "~/components/storage/utils";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 /**
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
@@ -34,8 +34,10 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
  */
 
 const LABEL = _("Use Btrfs snapshots for the root file system");
-const DESCRIPTION = _("Allows to boot to a previous version of the \
-system after configuration changes or software upgrades.");
+const DESCRIPTION = _(
+  "Allows to boot to a previous version of the \
+system after configuration changes or software upgrades.",
+);
 
 /**
  * Allows to define snapshots enablement
@@ -50,10 +52,7 @@ system after configuration changes or software upgrades.");
  *
  * @param {SnapshotsFieldProps} props
  */
-export default function SnapshotsField({
-  rootVolume,
-  onChange = noop
-}) {
+export default function SnapshotsField({ rootVolume, onChange = noop }) {
   const isChecked = hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
 
   const switchState = () => {
@@ -62,12 +61,7 @@ export default function SnapshotsField({
 
   return (
     <Split hasGutter>
-      <Switch
-        id="snapshots"
-        isChecked={isChecked}
-        onChange={switchState}
-        hasCheckIcon
-      />
+      <Switch id="snapshots" isChecked={isChecked} onChange={switchState} hasCheckIcon />
       <div>
         <div>{LABEL}</div>
         <div className={textStyles.color_200}>{DESCRIPTION}</div>

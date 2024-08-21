@@ -20,13 +20,12 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 
 import App from "./App";
 import { createClient } from "~/client";
-import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
-import { IDLE, BUSY } from "~/client/status";
+import { InstallationPhase } from "./types/status";
 
 jest.mock("~/client");
 
@@ -34,26 +33,41 @@ jest.mock("~/client");
 let mockProducts;
 let mockSelectedProduct;
 
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
   useProduct: () => {
     return {
       products: mockProducts,
-      selectedProduct: mockSelectedProduct
+      selectedProduct: mockSelectedProduct,
     };
-  }
+  },
+  useProductChanges: () => jest.fn(),
+}));
+
+jest.mock("~/queries/l10n", () => ({
+  ...jest.requireActual("~/queries/l10n"),
+  useL10nConfigChanges: () => jest.fn(),
+}));
+
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useIssuesChanges: () => jest.fn(),
 }));
 
 const mockClientStatus = {
-  connected: true,
-  error: false,
-  phase: STARTUP,
-  status: BUSY
+  phase: InstallationPhase.Startup,
+  isBusy: true,
 };
+
+jest.mock("~/queries/status", () => ({
+  ...jest.requireActual("~/queries/status"),
+  useInstallerStatus: () => mockClientStatus,
+  useInstallerStatusChanges: () => jest.fn(),
+}));
 
 jest.mock("~/context/installer", () => ({
   ...jest.requireActual("~/context/installer"),
-  useInstallerClientStatus: () => mockClientStatus
+  useInstallerClientStatus: () => ({ connected: true, error: false }),
 }));
 
 // Mock some components,
@@ -70,25 +84,16 @@ describe("App", () => {
     createClient.mockImplementation(() => {
       return {
         l10n: {
-          locales: jest.fn().mockResolvedValue([["en_us", "English", "United States"]]),
-          getLocales: jest.fn().mockResolvedValue(["en_us"]),
-          timezones: jest.fn().mockResolvedValue([]),
-          getTimezone: jest.fn().mockResolvedValue("Europe/Berlin"),
-          keymaps: jest.fn().mockResolvedValue([]),
-          getKeymap: jest.fn().mockResolvedValue(undefined),
           getUIKeymap: jest.fn().mockResolvedValue("en"),
           getUILocale: jest.fn().mockResolvedValue("en_us"),
           setUILocale: jest.fn().mockResolvedValue("en_us"),
-          onTimezoneChange: jest.fn(),
-          onLocalesChange: jest.fn(),
-          onKeymapChange: jest.fn()
-        }
+        },
       };
     });
 
     mockProducts = [
       { id: "openSUSE", name: "openSUSE Tumbleweed" },
-      { id: "Leap Micro", name: "openSUSE Micro" }
+      { id: "Leap Micro", name: "openSUSE Micro" },
     ];
   });
 
@@ -110,8 +115,8 @@ describe("App", () => {
 
   describe("when the service is busy during startup", () => {
     beforeEach(() => {
-      mockClientStatus.phase = STARTUP;
-      mockClientStatus.status = BUSY;
+      mockClientStatus.phase = InstallationPhase.Startup;
+      mockClientStatus.isBusy = true;
     });
 
     it("renders the Loading screen", async () => {
@@ -120,14 +125,15 @@ describe("App", () => {
     });
   });
 
-  describe("on the CONFIG phase", () => {
+  describe("on the configuration phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = CONFIG;
+      mockClientStatus.phase = InstallationPhase.Config;
     });
 
     describe("if the service is busy", () => {
       beforeEach(() => {
-        mockClientStatus.status = BUSY;
+        mockClientStatus.isBusy = true;
+        mockSelectedProduct = { id: "Tumbleweed" };
       });
 
       it("redirects to product selection progress", async () => {
@@ -138,7 +144,7 @@ describe("App", () => {
 
     describe("if the service is not busy", () => {
       beforeEach(() => {
-        mockClientStatus.status = IDLE;
+        mockClientStatus.isBusy = false;
       });
 
       it("renders the application content", async () => {
@@ -148,9 +154,9 @@ describe("App", () => {
     });
   });
 
-  describe("on the INSTALL phase", () => {
+  describe("on the installaiton phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = INSTALL;
+      mockClientStatus.phase = InstallationPhase.Install;
       mockSelectedProduct = { id: "Fake product" };
     });
 

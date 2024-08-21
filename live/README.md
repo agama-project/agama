@@ -32,7 +32,7 @@ This directory contains a set of files that are used to build the Agama Live ISO
 - [src](src) subdirectory contains all source files which are copied unmodified to the OBS project
 - [root](root) subdirectory contains files which are added to the Live ISO root system (inside the
   squashfs image)
-- [root-ALP-PXE](root-ALP-PXE) subdirectory contains specific files for the ALP image used for the
+- [root-openSUSE-PXE](root-openSUSE-PXE) subdirectory contains specific files for the openSUSE image used for the
   PXE boot, see a separate [PXE documentation](PXE.md) for more details about the PXE boot
 - [config-cdroot](config-cdroot) subdirectory contains file which are copied to the uncompressed
   root of the ISO image, the files can be accessed just by mounting the ISO file or the DVD medium
@@ -75,21 +75,21 @@ By default this will build the openSUSE image. If you want to build another imag
 
 ```shell
 make build FLAVOR=<flavor>
-# for building the ALP flavor:
-make build FLAVOR=ALP
+# for building the openSUSE-PXE flavor:
+make build FLAVOR=openSUSE-PXE
 ```
 
 See the [_multibuild](src/_multibuild) file for the list of available build flavors.
 
 By default it will use the
-[systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)
+[systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)
 OBS project. If you want to build using another project, like your fork, then delete the `dist`
 directory and checkout the OBS project manually and run the build:
 
 ```shell
 rm -rf dist
 # replace <USER> with your OBS account name
-osc co -o dist home:<USER>:branches:systemsmanagement:Agama:Staging agama-live
+osc co -o dist home:<USER>:branches:systemsmanagement:Agama:Devel agama-installer-openSUSE
 make build
 ```
 
@@ -103,7 +103,7 @@ build workflow and the `.kiwi` file format.
 
 The main Kiwi source files are located in the [src](src) subdirectory:
 
-- [agama-live.kiwi](src/agama-live.kiwi) is the main KIWI file which drives the ISO image build.
+- [agama-installer-openSUSE.kiwi](src/agama-installer-openSUSE.kiwi) is the main KIWI file which drives the ISO image build.
 - [config.sh](src/config.sh) is a KIWI hook script which is called and the end of the build process,
   after all packages are installed but before compressing and building the image. The script runs in
   the image chroot and is usually used to adjust the system configuration (enable/disable services,

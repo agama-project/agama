@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { List, ListItem, ExpandableSection, } from "@patternfly/react-core";
+import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { partition } from "~/utils";
@@ -29,9 +29,11 @@ const ActionsList = ({ actions }) => {
   // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
   const actionItems = (action, id) => {
     return action.text.split("\n").map((text, index) => {
+      const Wrapper = action.delete ? "strong" : "span";
+
       return (
-        <ListItem key={`${id}-${index}`} className={action.delete ? "proposal-action--delete" : null}>
-          {text}
+        <ListItem key={`${id}-${index}`}>
+          <Wrapper>{text}</Wrapper>
         </ListItem>
       );
     });
@@ -39,7 +41,7 @@ const ActionsList = ({ actions }) => {
 
   const items = actions.map(actionItems).flat();
 
-  return <List className="proposal-actions">{items}</List>;
+  return <List>{items}</List>;
 };
 
 /**
@@ -56,26 +58,32 @@ export default function ProposalActionsDialog({ actions = [] }) {
 
   if (actions.length === 0) return null;
 
-  const [generalActions, subvolActions] = partition(actions, a => !a.subvol);
+  const [generalActions, subvolActions] = partition(actions, (a) => !a.subvol);
   const toggleText = isExpanded
-    // TRANSLATORS: show/hide toggle action, this is a clickable link
-    ? sprintf(n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length), subvolActions.length)
-    // TRANSLATORS: show/hide toggle action, this is a clickable link
-    : sprintf(n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length), subvolActions.length);
+    ? // TRANSLATORS: show/hide toggle action, this is a clickable link
+      sprintf(
+        n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length),
+        subvolActions.length,
+      )
+    : // TRANSLATORS: show/hide toggle action, this is a clickable link
+      sprintf(
+        n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length),
+        subvolActions.length,
+      );
 
   return (
     <>
       <ActionsList actions={generalActions} />
-      {subvolActions.length > 0 &&
+      {subvolActions.length > 0 && (
         <ExpandableSection
           isIndented
           isExpanded={isExpanded}
           onToggle={() => setIsExpanded(!isExpanded)}
           toggleText={toggleText}
-          className="expandable-actions"
         >
           <ActionsList actions={subvolActions} />
-        </ExpandableSection>}
+        </ExpandableSection>
+      )}
     </>
   );
 }

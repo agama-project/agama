@@ -1,8 +1,13 @@
 //! Data model for Agama questions
 
 use std::collections::HashMap;
+pub mod http_client;
+pub mod model;
 
 /// Basic generic question that fits question without special needs
+///
+/// structs living directly under questions namespace is for D-Bus usage and holds complete questions data
+/// for user side data model see questions::model
 #[derive(Clone, Debug)]
 pub struct GenericQuestion {
     /// numeric id used to identify question on D-Bus

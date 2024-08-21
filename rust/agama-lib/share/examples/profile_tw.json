@@ -12,7 +12,12 @@
     "id": "Tumbleweed"
   },
   "storage": {
-    "bootDevice": "/dev/dm-1"
+    "guided": {
+      "boot": {
+        "configure": true,
+        "device": "/dev/dm-1"
+      }
+    }
   },
   "user": {
     "fullName": "Jane Doe",

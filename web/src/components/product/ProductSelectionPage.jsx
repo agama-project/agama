@@ -20,28 +20,20 @@
  */
 
 import React, { useState } from "react";
-import {
-  Card, CardBody,
-  Flex,
-  Form,
-  Grid, GridItem,
-  Radio
-} from "@patternfly/react-core";
-import styles from '@patternfly/react-styles/css/utilities/Text/text';
-
-import { _ } from "~/i18n";
+import { Card, CardBody, Flex, Form, Grid, GridItem, Radio } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import { Loading, Center } from "~/components/layout";
-import { useProduct } from "~/context/product";
+import { Center } from "~/components/layout";
+import { useConfigMutation, useProduct } from "~/queries/software";
+import { _ } from "~/i18n";
+import styles from "@patternfly/react-styles/css/utilities/Text/text";
 
 const Label = ({ children }) => (
-  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>
-    {children}
-  </span>
+  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>{children}</span>
 );
 
 function ProductSelectionPage() {
-  const { products, selectedProduct, selectProduct } = useProduct();
+  const { products, selectedProduct } = useProduct({ suspense: true });
+  const setConfig = useConfigMutation();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,14 +41,10 @@ function ProductSelectionPage() {
     e.preventDefault();
 
     if (nextProduct) {
-      await selectProduct(nextProduct.id);
+      setConfig.mutate({ product: nextProduct.id });
       setIsLoading(true);
     }
   };
-
-  if (!products) return (
-    <Loading text={_("Loading available products, please wait...")} />
-  );
 
   const Item = ({ children }) => {
     return (
@@ -66,45 +54,47 @@ function ProductSelectionPage() {
     );
   };
 
-  const isSelectionDisabled = !nextProduct || (nextProduct === selectedProduct);
+  const isSelectionDisabled = !nextProduct || nextProduct === selectedProduct;
 
   return (
-    <Center>
-      <Form id="productSelectionForm" onSubmit={onSubmit}>
-        <Grid hasGutter>
-          {products.map((product, index) => (
-            <Item key={index}>
-              <Card key={index} isRounded>
-                <CardBody>
-                  <Radio
-                    key={index}
-                    name="product"
-                    id={product.name}
-                    label={<Label>{product.name}</Label>}
-                    body={product.description}
-                    isChecked={nextProduct === product}
-                    onChange={() => setNextProduct(product)}
-                  />
-                </CardBody>
-              </Card>
+    <Page>
+      <Center>
+        <Form id="productSelectionForm" onSubmit={onSubmit}>
+          <Grid hasGutter>
+            {products.map((product, index) => (
+              <Item key={index}>
+                <Card key={index} isRounded>
+                  <CardBody>
+                    <Radio
+                      key={index}
+                      name="product"
+                      id={product.name}
+                      label={<Label>{product.name}</Label>}
+                      body={product.description}
+                      isChecked={nextProduct === product}
+                      onChange={() => setNextProduct(product)}
+                    />
+                  </CardBody>
+                </Card>
+              </Item>
+            ))}
+            <Item>
+              <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+                {selectedProduct && !isLoading && <Page.CancelAction navigateTo={-1} />}
+                <Page.Action
+                  type="submit"
+                  form="productSelectionForm"
+                  isDisabled={isSelectionDisabled}
+                  isLoading={isLoading}
+                >
+                  {_("Select")}
+                </Page.Action>
+              </Flex>
             </Item>
-          ))}
-          <Item>
-            <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-              {selectedProduct && !isLoading && <Page.CancelAction navigateTo={-1} />}
-              <Page.Action
-                type="submit"
-                form="productSelectionForm"
-                isDisabled={isSelectionDisabled}
-                isLoading={isLoading}
-              >
-                {_("Select")}
-              </Page.Action>
-            </Flex>
-          </Item>
-        </Grid>
-      </Form>
-    </Center>
+          </Grid>
+        </Form>
+      </Center>
+    </Page>
   );
 }
 

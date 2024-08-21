@@ -221,6 +221,7 @@ impl Questions {
     }
 
     /// Removes question at given object path
+    /// TODO: use id as parameter ( need at first check other users of method )
     async fn delete(&mut self, question: ObjectPath<'_>) -> zbus::fdo::Result<()> {
         // TODO: error checking
         let id: u32 = question.rsplit('/').next().unwrap().parse().unwrap();

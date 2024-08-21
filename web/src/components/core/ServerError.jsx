@@ -20,38 +20,42 @@
  */
 
 import React from "react";
-import { EmptyState, EmptyStateIcon, EmptyStateBody, EmptyStateHeader } from "@patternfly/react-core";
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateBody,
+  EmptyStateHeader,
+} from "@patternfly/react-core";
 import { Center, Icon } from "~/components/layout";
 import { Page } from "~/components/core";
+import SimpleLayout from "~/SimpleLayout";
 import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
+
+// TODO: refactor, and if possible use a route for it. Related with needed
+// changes in src/App.jsx
 
 const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
 
 function ServerError() {
   return (
-    // TRANSLATORS: page title
-    <Page icon="problem" title={_("Agama Error")}>
-      <Center>
-        <EmptyState variant="xl">
-          <EmptyStateHeader
-            titleText={_("Cannot connect to Agama server")}
-            headingLevel="h2"
-            icon={<EmptyStateIcon icon={ErrorIcon} />}
-          />
-          <EmptyStateBody>
-            {_("Please, check whether it is running.")}
-          </EmptyStateBody>
-        </EmptyState>
-      </Center>
-
-      <Page.Actions>
-        <Page.Action onClick={() => locationReload()}>
-          {/* TRANSLATORS: button label */}
-          {_("Reload")}
-        </Page.Action>
-      </Page.Actions>
-    </Page>
+    <SimpleLayout showOutlet={false}>
+      <Page.MainContent>
+        <Center>
+          <EmptyState variant="xl">
+            <EmptyStateHeader
+              titleText={_("Cannot connect to Agama server")}
+              headingLevel="h2"
+              icon={<EmptyStateIcon icon={ErrorIcon} />}
+            />
+            <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+          </EmptyState>
+        </Center>
+      </Page.MainContent>
+      <Page.NextActions>
+        <Page.Action onClick={locationReload}>{_("Reload")}</Page.Action>
+      </Page.NextActions>
+    </SimpleLayout>
   );
 }
 

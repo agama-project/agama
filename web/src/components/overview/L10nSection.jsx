@@ -23,15 +23,10 @@ import React from "react";
 import { TextContent, Text, TextVariants } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
-import { useL10n } from "~/context/l10n";
+import { useL10n } from "~/queries/l10n";
 
 export default function L10nSection() {
-  const { selectedLocales } = useL10n();
-
-  const locale = selectedLocales[0];
-  if (locale === undefined) {
-    return;
-  }
+  const { selectedLocale: locale } = useL10n();
 
   // TRANSLATORS: %s will be replaced by a language name and territory, example:
   // "English (United States)".

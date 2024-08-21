@@ -22,7 +22,6 @@
 require "dbus"
 require "agama/manager"
 require "agama/users"
-require "agama/cockpit_manager"
 require "agama/dbus/bus"
 require "agama/dbus/clients/locale"
 require "agama/dbus/manager"
@@ -69,7 +68,6 @@ module Agama
       #
       # @note The service runs its startup phase
       def start
-        setup_cockpit
         export
         # We need locale for data from users
         locale_client = Clients::Locale.instance
@@ -98,11 +96,6 @@ module Agama
 
       # @return [Config]
       attr_reader :config
-
-      def setup_cockpit
-        cockpit = CockpitManager.new(logger)
-        cockpit.setup(config.data["web"])
-      end
 
       # @return [::DBus::ObjectServer]
       def service

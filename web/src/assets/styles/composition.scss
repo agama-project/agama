@@ -6,14 +6,17 @@
     display: flex;
     flex-direction: column;
     flex: 1 1 0;
-    gap: 0
+    gap: 0;
   }
 
   form > div:nth-child(2) {
     overflow-y: auto;
     min-block-size: 120px;
     margin-block-end: var(--spacer-medium);
-    table { background: transparent; }
+
+    table {
+      background: transparent;
+    }
   }
 
   form > div:last-child {
@@ -32,13 +35,7 @@
   }
 }
 
-[data-state="reversed"] {
-  flex-direction: row-reverse;
-}
-
 body > div[inert],
-body > div[aria-hidden="true"],
-div[data-type="agama/page"] > [inert],
-div[data-type="agama/page"] > [aria-hidden="true"] {
+body > div[aria-hidden="true"] {
   filter: grayscale(1) blur(2px);
 }

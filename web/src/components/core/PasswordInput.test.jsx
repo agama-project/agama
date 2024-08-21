@@ -28,26 +28,14 @@ import { _ } from "~/i18n";
 
 describe("PasswordInput Component", () => {
   it("renders a password input", () => {
-    plainRender(
-      <PasswordInput
-        id="password"
-        name="password"
-        aria-label={_("User password")}
-      />
-    );
+    plainRender(<PasswordInput id="password" name="password" aria-label={_("User password")} />);
 
     const inputField = screen.getByLabelText("User password");
     expect(inputField).toHaveAttribute("type", "password");
   });
 
   it("allows revealing the password", async () => {
-    plainRender(
-      <PasswordInput
-        id="password"
-        name="password"
-        aria-label={_("User password")}
-      />
-    );
+    plainRender(<PasswordInput id="password" name="password" aria-label={_("User password")} />);
 
     const passwordInput = screen.getByLabelText("User password");
     const button = screen.getByRole("button");
@@ -59,12 +47,7 @@ describe("PasswordInput Component", () => {
 
   it("applies autoFocus behavior correctly", () => {
     plainRender(
-      <PasswordInput
-        autoFocus
-        id="password"
-        name="password"
-        aria-label={_("User password")}
-      />
+      <PasswordInput autoFocus id="password" name="password" aria-label={_("User password")} />,
     );
 
     const inputField = screen.getByLabelText("User password");
@@ -86,7 +69,9 @@ describe("PasswordInput Component", () => {
   };
 
   it("triggers onChange callback", async () => {
-    const { user } = plainRender(<PasswordInputTest id="test-password" aria-label="Test password" />);
+    const { user } = plainRender(
+      <PasswordInputTest id="test-password" aria-label="Test password" />,
+    );
     const passwordInput = screen.getByLabelText("Test password");
 
     expect(screen.queryByText("Password value updated!")).toBeNull();

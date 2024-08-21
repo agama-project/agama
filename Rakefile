@@ -65,7 +65,7 @@ end
 
 Yast::Tasks.configuration do |conf|
   conf.obs_api = "https://api.opensuse.org"
-  conf.obs_project = ENV["OBS_PROJECT"] || "systemsmanagement:Agama:Staging"
+  conf.obs_project = ENV["OBS_PROJECT"] || "systemsmanagement:Agama:Devel"
   conf.package_dir = File.join(Rake.original_dir, "package")
   conf.obs_target = "openSUSE_Tumbleweed"
   package_name = package_name_from(Rake.original_dir)
@@ -175,15 +175,6 @@ if ENV["YUPDATE_FORCE"] == "1" || File.exist?("/.packages.initrd") || live_iso?
           FileUtils.rm_f(Dir.glob("/usr/share/cockpit/agama/*.gz"))
         end
       end
-    end
-
-    # update also the tests if they are present in the system
-    if ENV["YUPDATE_SKIP_TESTS"] != "1" && File.exist?("/usr/share/agama-playwright")
-      puts "Installing the integration tests..."
-
-      # we are installing into an empty chroot, make sure the target exists
-      FileUtils.mkdir_p(File.join(destdir, "/usr/share"))
-      FileUtils.cp_r("playwright/.", File.join(destdir, "/usr/share/agama-playwright"))
     end
 
     if ENV["YUPDATE_SKIP_PRODUCTS"] != "1"

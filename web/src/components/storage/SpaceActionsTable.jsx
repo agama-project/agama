@@ -22,15 +22,28 @@
 // @ts-check
 
 import React from "react";
-import { FormSelect, FormSelectOption } from "@patternfly/react-core";
+import {
+  Button,
+  Flex,
+  FlexItem,
+  List,
+  ListItem,
+  Popover,
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { deviceChildren, deviceSize } from '~/components/storage/utils';
+import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import {
-  DeviceName, DeviceDetails, DeviceSize, toStorageDevice
+  DeviceName,
+  DeviceDetails,
+  DeviceSize,
+  toStorageDevice,
 } from "~/components/storage/device-utils";
 import { TreeTable } from "~/components/core";
+import { Icon } from "~/components/layout";
 
 /**
  * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
@@ -40,45 +53,102 @@ import { TreeTable } from "~/components/core";
  */
 
 /**
+ * Info about the device.
  * @component
  *
  * @param {object} props
- * @param {PartitionSlot|StorageDevice} props.item
+ * @param {StorageDevice} props.device
  */
-const DeviceSizeDetails = ({ item }) => {
-  const device = toStorageDevice(item);
-  if (!device || device.isDrive || device.recoverableSize === 0) return null;
+const DeviceInfoContent = ({ device }) => {
+  const minSize = device.shrinking?.supported;
 
-  return deviceSize(device.recoverableSize);
+  if (minSize) {
+    const recoverable = device.size - minSize;
+    return sprintf(
+      _("Up to %s can be recovered by shrinking the device."),
+      deviceSize(recoverable),
+    );
+  }
+
+  const reasons = device.shrinking.unsupported;
+
+  return (
+    <>
+      {_("The device cannot be shrunk:")}
+      <List>
+        {reasons.map((reason, idx) => (
+          <ListItem key={idx}>{reason}</ListItem>
+        ))}
+      </List>
+    </>
+  );
 };
 
 /**
- * Form to configure the space action for a device (a partition).
+ * Button to show a popup with info about the device.
+ * @component
+ *
+ * @param {object} props
+ * @param {StorageDevice} props.device
+ */
+const DeviceInfo = ({ device }) => {
+  return (
+    <Popover headerContent={device.name} bodyContent={<DeviceInfoContent device={device} />}>
+      <Button
+        aria-label={sprintf(_("Show information about %s"), device.name)}
+        variant="plain"
+        icon={<Icon name="info" size="xs" />}
+      />
+    </Popover>
+  );
+};
+
+/**
+ * Space action selector.
  * @component
  *
  * @param {object} props
  * @param {StorageDevice} props.device
  * @param {string} props.action - Possible values: "force_delete", "resize" or "keep".
- * @param {boolean} [props.isDisabled=false]
  * @param {(action: SpaceAction) => void} [props.onChange]
  */
-const DeviceActionForm = ({ device, action, isDisabled = false, onChange }) => {
-  const changeAction = (_, action) => onChange({ device: device.name, action });
+const DeviceActionSelector = ({ device, action, onChange }) => {
+  const changeAction = (action) => onChange({ device: device.name, action });
+
+  const isResizeDisabled = device.shrinking?.supported === undefined;
+  const hasInfo = device.shrinking !== undefined;
 
   return (
-    <FormSelect
-      value={action}
-      isDisabled={isDisabled}
-      onChange={changeAction}
-      aria-label={
-        /* TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda) */
-        sprintf(_("Space action selector for %s"), device.name)
-      }
-    >
-      <FormSelectOption value="force_delete" label={_("Delete")} />
-      <FormSelectOption value="resize" label={_("Allow resize")} />
-      <FormSelectOption value="keep" label={_("Do not modify")} />
-    </FormSelect>
+    <Flex>
+      <FlexItem>
+        <ToggleGroup isCompact>
+          <ToggleGroupItem
+            text="Do not modify"
+            buttonId="not-modify"
+            isSelected={action === "keep"}
+            onChange={() => changeAction("keep")}
+          />
+          <ToggleGroupItem
+            text="Allow shrink"
+            buttonId="resize"
+            isDisabled={isResizeDisabled}
+            isSelected={action === "resize"}
+            onChange={() => changeAction("resize")}
+          />
+          <ToggleGroupItem
+            text="Delete"
+            buttonId="delete"
+            isSelected={action === "force_delete"}
+            onChange={() => changeAction("force_delete")}
+          />
+        </ToggleGroup>
+      </FlexItem>
+      {hasInfo && (
+        <FlexItem>
+          <DeviceInfo device={device} />
+        </FlexItem>
+      )}
+    </Flex>
   );
 };
 
@@ -89,26 +159,17 @@ const DeviceActionForm = ({ device, action, isDisabled = false, onChange }) => {
  * @param {object} props
  * @param {PartitionSlot|StorageDevice} props.item
  * @param {string} props.action - Possible values: "force_delete", "resize" or "keep".
- * @param {boolean} [props.isDisabled=false]
  * @param {(action: SpaceAction) => void} [props.onChange]
  */
-const DeviceAction = ({ item, action, isDisabled = false, onChange }) => {
+const DeviceAction = ({ item, action, onChange }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
   if (device.type === "partition") {
-    return (
-      <DeviceActionForm
-        device={device}
-        action={action}
-        isDisabled={isDisabled}
-        onChange={onChange}
-      />
-    );
+    return <DeviceActionSelector device={device} action={action} onChange={onChange} />;
   }
 
-  if (device.filesystem || device.component)
-    return _("The content may be deleted");
+  if (device.filesystem || device.component) return _("The content may be deleted");
 
   if (!device.partitionTable || device.partitionTable.partitions.length === 0)
     return _("No content found");
@@ -123,7 +184,6 @@ const DeviceAction = ({ item, action, isDisabled = false, onChange }) => {
  * @typedef {object} SpaceActionsTableProps
  * @property {StorageDevice[]} devices
  * @property {StorageDevice[]} [expandedDevices=[]] - Initially expanded devices.
- * @property {boolean} [isActionDisabled=false] - Whether the action selector is disabled.
  * @property {(item: PartitionSlot|StorageDevice) => string} deviceAction - Gets the action for a device.
  * @property {(action: SpaceAction) => void} onActionChange
  *
@@ -132,7 +192,6 @@ const DeviceAction = ({ item, action, isDisabled = false, onChange }) => {
 export default function SpaceActionsTable({
   devices,
   expandedDevices = [],
-  isActionDisabled = false,
   deviceAction,
   onActionChange,
 }) {
@@ -141,18 +200,12 @@ export default function SpaceActionsTable({
     { name: _("Device"), value: (item) => <DeviceName item={item} /> },
     { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
     { name: _("Size"), value: (item) => <DeviceSize item={item} /> },
-    { name: _("Shrinkable"), value: (item) => <DeviceSizeDetails item={item} /> },
     {
       name: _("Action"),
       value: (item) => (
-        <DeviceAction
-          item={item}
-          action={deviceAction(item)}
-          isDisabled={isActionDisabled}
-          onChange={onActionChange}
-        />
-      )
-    }
+        <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
+      ),
+    },
   ];
 
   return (

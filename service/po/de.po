@@ -7,22 +7,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-06-22 21:46+0000\n"
+"POT-Creation-Date: 2024-07-10 02:23+0000\n"
+"PO-Revision-Date: 2024-07-13 19:47+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
-"Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/de/>\n"
+"Language-Team: German <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
 msgid "Load software translations"
-msgstr ""
+msgstr "Softwareübersetzungen laden"
 
 #: service/lib/agama/manager.rb:89
 msgid "Load storage translations"
@@ -31,27 +31,25 @@ msgstr ""
 #. Runs the config phase
 #: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
-msgstr ""
+msgstr "Festplatten analysieren"
 
 #: service/lib/agama/manager.rb:104
-#, fuzzy
 msgid "Configure software"
-msgstr "Software wird untersucht"
+msgstr "Software konfigurieren"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
-msgstr ""
+msgstr "Festplatten vorbereiten"
 
 #: service/lib/agama/manager.rb:125
-#, fuzzy
 msgid "Install software"
-msgstr "Software wird installiert"
+msgstr "Software installieren"
 
 #: service/lib/agama/manager.rb:126
 msgid "Configure the system"
-msgstr ""
+msgstr "System konfigurieren"
 
 #. Callback to handle unsigned files
 #.
@@ -133,6 +131,27 @@ msgstr "Produkt muss registriert sein"
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "%s Abhängigkeitsprobleme gefunden."
+
+#. Text of the reason preventing to shrink because there is no content.
+#.
+#. @return [String, nil] nil if there is content or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:151
+msgid ""
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
+msgstr ""
+"Es wurde weder ein Dateisystem noch ein Speichersystem auf dem Gerät "
+"erkannt. Falls das Gerät ein Dateisystem oder ein Speichersystem enthält, "
+"das nicht unterstützt wird, führt die Größenänderung höchstwahrscheinlich zu "
+"Datenverlust."
+
+#. Text of the reason preventing to shrink because there is no valid minimum size.
+#.
+#. @return [String, nil] nil if there is a minimum size or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:162
+msgid "Shrinking is not supported by this device"
+msgstr "Verkleinern wird von diesem Gerät nicht unterstützt"
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:115

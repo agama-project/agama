@@ -23,7 +23,7 @@
 // cspell:ignore ptable
 
 import { compact, hex, uniq } from "~/utils";
-import { WithIssues, WithProgress, WithStatus } from "./mixins";
+import { WithStatus } from "./mixins";
 import { HTTPClient } from "./http";
 
 const SERVICE_NAME = "org.opensuse.Agama.Storage1";
@@ -43,7 +43,32 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
 
 /** @fixme Adapt code depending on D-Bus */
 class DBusClient {
-  proxy() {
+  /**
+   * @param {string} service
+   * @param {string|undefined} address
+   */
+  constructor(service, address) {
+    console.warn(`FIXME: Adapt code depending on D-Bus ${service} ${address}`);
+  }
+
+  /**
+   * @param {string} iface
+   * @param {string} [path]
+   * @return {Promise<object,undefined>}
+   */
+  async proxy(iface, path) {
+    console.warn(`FIXME: Adapt code depending on D-Bus ${iface} ${path}`);
+    return Promise.resolve(undefined);
+  }
+
+  /**
+   * @param {string|undefined} iface
+   * @param {string|undefined} path_namespace
+   * @param {object|undefined} options
+   * @return {Promise<any>}
+   */
+  async proxies(iface, path_namespace, options) {
+    console.warn(`FIXME: Adapt code depending on D-Bus ${iface} ${path_namespace} ${options}`);
     return Promise.resolve(undefined);
   }
 }
@@ -72,7 +97,7 @@ class DBusClient {
  * @property {boolean} [encrypted] - Whether the device is encrypted (only for block devices)
  * @property {boolean} [isEFI] - Whether the device is an EFI partition (only for partition)
  * @property {number} [size]
- * @property {number} [recoverableSize]
+ * @property {ShrinkingInfo} [shrinking]
  * @property {string[]} [systems] - Name of the installed systems
  * @property {string[]} [udevIds]
  * @property {string[]} [udevPaths]
@@ -101,6 +126,10 @@ class DBusClient {
  * @property {string} type
  * @property {string} [mountPath]
  * @property {string} [label]
+ *
+ * @typedef {object} ShrinkingInfo
+ * @property {number} [supported] - Min size the device can be shrunk to.
+ * @property {string[]} [unsupported] - Reasons why the device cannot be shrunk.
  *
  * @typedef {object} ProposalResult
  * @property {ProposalSettings} settings
@@ -170,7 +199,7 @@ class DBusClient {
 const ProposalTargets = Object.freeze({
   DISK: "disk",
   NEW_LVM_VG: "newLvmVg",
-  REUSED_LVM_VG: "reusedLvmVg"
+  REUSED_LVM_VG: "reusedLvmVg",
 });
 
 /**
@@ -183,7 +212,7 @@ const VolumeTargets = Object.freeze({
   NEW_PARTITION: "new_partition",
   NEW_VG: "new_vg",
   DEVICE: "device",
-  FILESYSTEM: "filesystem"
+  FILESYSTEM: "filesystem",
 });
 
 /**
@@ -194,7 +223,7 @@ const VolumeTargets = Object.freeze({
  */
 const EncryptionMethods = Object.freeze({
   LUKS2: "luks2",
-  TPM: "tpm_fde"
+  TPM: "tpm_fde",
 });
 
 /**
@@ -236,20 +265,25 @@ class DevicesManager {
           name: "",
           description: "",
           isDrive: false,
-          type: ""
+          type: "",
         };
       };
 
       /** @type {(names: string[]) => StorageDevice[]} */
       const buildCollectionFromNames = (names) => {
-        return names.map(name => ({ ...buildDefaultDevice(), name }));
+        return names.map((name) => ({ ...buildDefaultDevice(), name }));
       };
 
       /** @type {(sids: String[], jsonDevices: object[]) => StorageDevice[]} */
       const buildCollection = (sids, jsonDevices) => {
         if (sids === null || sids === undefined) return [];
 
-        return sids.map(sid => buildDevice(jsonDevices.find(dev => dev.deviceInfo?.sid === sid), jsonDevices));
+        return sids.map((sid) =>
+          buildDevice(
+            jsonDevices.find((dev) => dev.deviceInfo?.sid === sid),
+            jsonDevices,
+          ),
+        );
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
@@ -310,19 +344,19 @@ class DevicesManager {
           type: tableInfo.type,
           partitions,
           unpartitionedSize: device.size - partitions.reduce((s, p) => s + p.size, 0),
-          unusedSlots: tableInfo.unusedSlots.map(s => Object.assign({}, s))
+          unusedSlots: tableInfo.unusedSlots.map((s) => Object.assign({}, s)),
         };
       };
 
       /** @type {(device: StorageDevice, filesystemInfo: object) => void} */
       const addFilesystemInfo = (device, filesystemInfo) => {
-        const buildMountPath = path => path.length > 0 ? path : undefined;
-        const buildLabel = label => label.length > 0 ? label : undefined;
+        const buildMountPath = (path) => (path.length > 0 ? path : undefined);
+        const buildLabel = (label) => (label.length > 0 ? label : undefined);
         device.filesystem = {
           sid: filesystemInfo.sid,
           type: filesystemInfo.type,
           mountPath: buildMountPath(filesystemInfo.mountPath),
-          label: buildLabel(filesystemInfo.label)
+          label: buildLabel(filesystemInfo.label),
         };
       };
 
@@ -330,7 +364,7 @@ class DevicesManager {
       const addComponentInfo = (device, info) => {
         device.component = {
           type: info.type,
-          deviceNames: info.deviceNames
+          deviceNames: info.deviceNames,
         };
       };
 
@@ -366,7 +400,7 @@ class DevicesManager {
       return [];
     }
     const jsonDevices = await response.json();
-    return jsonDevices.map(d => buildDevice(d, jsonDevices));
+    return jsonDevices.map((d) => buildDevice(d, jsonDevices));
   }
 }
 
@@ -390,7 +424,7 @@ class ProposalManager {
    */
   async getAvailableDevices() {
     const findDevice = (devices, sid) => {
-      const device = devices.find(d => d.sid === sid);
+      const device = devices.find((d) => d.sid === sid);
 
       if (device === undefined) console.warn("Device not found: ", sid);
 
@@ -405,7 +439,7 @@ class ProposalManager {
       return [];
     }
     const usable_devices = await response.json();
-    return usable_devices.map(sid => findDevice(systemDevices, sid)).filter(d => d);
+    return usable_devices.map((sid) => findDevice(systemDevices, sid)).filter((d) => d);
   }
 
   /**
@@ -426,18 +460,18 @@ class ProposalManager {
     const isAvailable = (device) => {
       const isChildren = (device, parentDevice) => {
         const partitions = parentDevice.partitionTable?.partitions || [];
-        return !!partitions.find(d => d.name === device.name);
+        return !!partitions.find((d) => d.name === device.name);
       };
 
-      return !!availableDevices.find(d => d.name === device.name || isChildren(device, d));
+      return !!availableDevices.find((d) => d.name === device.name || isChildren(device, d));
     };
 
     /** @type {(device: StorageDevice[]) => boolean} */
     const allAvailable = (devices) => devices.every(isAvailable);
 
     const system = await this.system.getDevices();
-    const mds = system.filter(d => d.type === "md" && allAvailable(d.devices));
-    const vgs = system.filter(d => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
+    const mds = system.filter((d) => d.type === "md" && allAvailable(d.devices));
+    const vgs = system.filter((d) => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
 
     return [...availableDevices, ...mds, ...vgs];
   }
@@ -454,7 +488,7 @@ class ProposalManager {
       return [];
     }
 
-    return response.json().then(params => params.mountPoints);
+    return response.json().then((params) => params.mountPoints);
   }
 
   /**
@@ -469,7 +503,7 @@ class ProposalManager {
       return [];
     }
 
-    return response.json().then(params => params.encryptionMethods);
+    return response.json().then((params) => params.encryptionMethods);
   }
 
   /**
@@ -489,7 +523,7 @@ class ProposalManager {
     const systemDevices = await this.system.getDevices();
     const productMountPoints = await this.getProductMountPoints();
 
-    return response.json().then(volume => {
+    return response.json().then((volume) => {
       return this.buildVolume(volume, systemDevices, productMountPoints);
     });
   }
@@ -498,7 +532,7 @@ class ProposalManager {
    * Gets the values of the current proposal
    *
    * @return {Promise<ProposalResult|undefined>}
-  */
+   */
   async getResult() {
     const settingsResponse = await this.client.get("/storage/proposal/settings");
     if (!settingsResponse.ok) {
@@ -520,9 +554,12 @@ class ProposalManager {
      */
     const buildTarget = (value) => {
       switch (value) {
-        case "disk": return "DISK";
-        case "newLvmVg": return "NEW_LVM_VG";
-        case "reusedLvmVg": return "REUSED_LVM_VG";
+        case "disk":
+          return "DISK";
+        case "newLvmVg":
+          return "NEW_LVM_VG";
+        case "reusedLvmVg":
+          return "REUSED_LVM_VG";
         default:
           console.info(`Unknown proposal target "${value}", using "disk".`);
           return "DISK";
@@ -532,7 +569,7 @@ class ProposalManager {
     /** @todo Read installation devices from D-Bus. */
     const buildInstallationDevices = (settings, devices) => {
       const findDevice = (name) => {
-        const device = devices.find(d => d.name === name);
+        const device = devices.find((d) => d.name === name);
 
         if (device === undefined) console.error("Device object not found: ", name);
 
@@ -542,19 +579,19 @@ class ProposalManager {
       // Only consider the device assigned to a volume as installation device if it is needed
       // to find space in that device. For example, devices directly formatted or mounted are not
       // considered as installation devices.
-      const volumes = settings.volumes.filter(vol => (
-        [VolumeTargets.NEW_PARTITION, VolumeTargets.NEW_VG].includes(vol.target))
+      const volumes = settings.volumes.filter((vol) =>
+        [VolumeTargets.NEW_PARTITION, VolumeTargets.NEW_VG].includes(vol.target),
       );
 
       const values = [
         settings.targetDevice,
         settings.targetPVDevices,
-        volumes.map(v => v.targetDevice)
+        volumes.map((v) => v.targetDevice),
       ].flat();
 
       if (settings.configureBoot) values.push(settings.bootDevice);
 
-      const names = uniq(compact(values)).filter(d => d.length > 0);
+      const names = uniq(compact(values)).filter((d) => d.length > 0);
 
       // #findDevice returns undefined if no device is found with the given name.
       return compact(names.sort().map(findDevice));
@@ -570,14 +607,16 @@ class ProposalManager {
       settings: {
         ...settings,
         target: buildTarget(settings.target),
-        volumes: settings.volumes.map(v => this.buildVolume(v, systemDevices, productMountPoints)),
+        volumes: settings.volumes.map((v) =>
+          this.buildVolume(v, systemDevices, productMountPoints),
+        ),
         // NOTE: strictly speaking, installation devices does not belong to the settings. It
         // should be a separate method instead of an attribute in the settings object.
         // Nevertheless, it was added here for simplicity and to avoid passing more props in some
         // react components. Please, do not use settings as a jumble.
-        installationDevices: buildInstallationDevices(settings, systemDevices)
+        installationDevices: buildInstallationDevices(settings, systemDevices),
       },
-      actions
+      actions,
     };
   }
 
@@ -598,7 +637,7 @@ class ProposalManager {
         mountPath: volume.mountPath,
         snapshots: volume.snapshots,
         target: VolumeTargets[volume.target],
-        targetDevice: volume.targetDevice?.name
+        targetDevice: volume.targetDevice?.name,
       };
     };
 
@@ -614,7 +653,7 @@ class ProposalManager {
         target: ProposalTargets[settings.target],
         targetDevice: settings.targetDevice,
         targetPVDevices: settings.targetPVDevices,
-        volumes: settings.volumes?.map(buildHttpVolume)
+        volumes: settings.volumes?.map(buildHttpVolume),
       };
     };
 
@@ -655,11 +694,16 @@ class ProposalManager {
      */
     const buildTarget = (value) => {
       switch (value) {
-        case "default": return "DEFAULT";
-        case "new_partition": return "NEW_PARTITION";
-        case "new_vg": return "NEW_VG";
-        case "device": return "DEVICE";
-        case "filesystem": return "FILESYSTEM";
+        case "default":
+          return "DEFAULT";
+        case "new_partition":
+          return "NEW_PARTITION";
+        case "new_vg":
+          return "NEW_VG";
+        case "device":
+          return "DEVICE";
+        case "filesystem":
+          return "FILESYSTEM";
         default:
           console.info(`Unknown volume target "${value}", using "default".`);
           return "DEFAULT";
@@ -669,7 +713,7 @@ class ProposalManager {
     const volume = {
       ...rawVolume,
       target: buildTarget(rawVolume.target),
-      targetDevice: devices.find(d => d.name === rawVolume.targetDevice)
+      targetDevice: devices.find((d) => d.name === rawVolume.targetDevice),
     };
 
     // Indicate whether a volume is defined by the product.
@@ -727,7 +771,7 @@ class DASDManager {
     return {
       path: job.path,
       running: job.Running,
-      exitCode: job.ExitCode
+      exitCode: job.ExitCode,
     };
   }
 
@@ -758,7 +802,7 @@ class DASDManager {
    */
   async format(devices) {
     const proxy = await this.managerProxy();
-    const devicesPath = devices.map(d => this.devicePath(d));
+    const devicesPath = devices.map((d) => this.devicePath(d));
     proxy.Format(devicesPath);
   }
 
@@ -770,7 +814,7 @@ class DASDManager {
    */
   async setDIAG(devices, value) {
     const proxy = await this.managerProxy();
-    const devicesPath = devices.map(d => this.devicePath(d));
+    const devicesPath = devices.map((d) => this.devicePath(d));
     proxy.SetDiag(devicesPath, value);
   }
 
@@ -781,7 +825,7 @@ class DASDManager {
    */
   async enableDevices(devices) {
     const proxy = await this.managerProxy();
-    const devicesPath = devices.map(d => this.devicePath(d));
+    const devicesPath = devices.map((d) => this.devicePath(d));
     proxy.Enable(devicesPath);
   }
 
@@ -792,7 +836,7 @@ class DASDManager {
    */
   async disableDevices(devices) {
     const proxy = await this.managerProxy();
-    const devicesPath = devices.map(d => this.devicePath(d));
+    const devicesPath = devices.map((d) => this.devicePath(d));
     proxy.Disable(devicesPath);
   }
 
@@ -813,7 +857,8 @@ class DASDManager {
 
   async getJobs() {
     const proxy = await this.jobsProxy();
-    return Object.values(proxy).filter(p => p.Running)
+    return Object.values(proxy)
+      .filter((p) => p.Running)
       .map(this.buildJob);
   }
 
@@ -916,7 +961,7 @@ class DASDManager {
       name: device.DeviceName,
       partitionInfo: enabled ? device.PartitionInfo : "",
       status: device.Status,
-      type: device.Type
+      type: device.Type,
     };
   }
 
@@ -1142,7 +1187,10 @@ class ZFCPManager {
    */
   async controllersProxy() {
     if (!this.proxies.controllers)
-      this.proxies.controllers = await this.client().proxies(ZFCP_CONTROLLER_IFACE, ZFCP_CONTROLLERS_NAMESPACE);
+      this.proxies.controllers = await this.client().proxies(
+        ZFCP_CONTROLLER_IFACE,
+        ZFCP_CONTROLLERS_NAMESPACE,
+      );
 
     return this.proxies.controllers;
   }
@@ -1254,7 +1302,7 @@ class ZFCPManager {
       id: dbusBasename(proxy.path),
       active: proxy.Active,
       lunScan: proxy.LUNScan,
-      channel: proxy.Channel
+      channel: proxy.Channel,
     };
   }
 
@@ -1285,7 +1333,7 @@ class ZFCPManager {
       name: proxy.Name,
       channel: proxy.Channel,
       wwpn: proxy.WWPN,
-      lun: proxy.LUN
+      lun: proxy.LUN,
     };
   }
 
@@ -1553,7 +1601,9 @@ class StorageBaseClient {
     this.staging = new DevicesManager(this.client, "result");
     this.proposal = new ProposalManager(this.client, this.system);
     this.iscsi = new ISCSIManager(this.client);
+    // @ts-ignore
     this.dasd = new DASDManager(StorageBaseClient.SERVICE, client);
+    // @ts-ignore
     this.zfcp = new ZFCPManager(StorageBaseClient.SERVICE, client);
   }
 
@@ -1602,10 +1652,6 @@ class StorageBaseClient {
 /**
  * Allows interacting with the storage settings
  */
-class StorageClient extends WithIssues(
-  WithProgress(
-    WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME), "/storage/progress", SERVICE_NAME
-  ), "/storage/issues", SERVICE_NAME
-) { }
+class StorageClient extends WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME) {}
 
 export { StorageClient, EncryptionMethods };

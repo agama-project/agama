@@ -22,8 +22,10 @@
 import React, { useEffect, useState } from "react";
 import {
   CardBody,
-  Grid, GridItem,
-  Hint, HintBody,
+  Grid,
+  GridItem,
+  Hint,
+  HintBody,
   NotificationDrawer,
   NotificationDrawerBody,
   NotificationDrawerList,
@@ -40,11 +42,13 @@ import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
+import { useAllIssues } from "~/queries/issues";
+import { IssueSeverity } from "~/types/issues";
 
 const SCOPE_HEADERS = {
   users: _("Users"),
   storage: _("Storage"),
-  software: _("Software")
+  software: _("Software"),
 };
 
 const ReadyForInstallation = () => (
@@ -57,15 +61,19 @@ const ReadyForInstallation = () => (
 
 // FIXME: improve
 const IssuesList = ({ issues }) => {
-  const { isEmpty, ...scopes } = issues;
+  const { isEmpty, issues: issuesByScope } = issues;
   const list = [];
-  Object.entries(scopes).forEach(([scope, issues], idx) => {
+  Object.entries(issuesByScope).forEach(([scope, issues], idx) => {
     issues.forEach((issue, subIdx) => {
-      const variant = issue.severity === "error" ? "warning" : "info";
+      const variant = issue.severity === IssueSeverity.Error ? "warning" : "info";
 
       const link = (
         <NotificationDrawerListItem key={`${idx}-${subIdx}`} variant={variant} isHoverable={false}>
-          <NotificationDrawerListItemHeader title={SCOPE_HEADERS[scope]} variant={variant} headingLevel="h4" />
+          <NotificationDrawerListItemHeader
+            title={SCOPE_HEADERS[scope]}
+            variant={variant}
+            headingLevel="h4"
+          />
           <NotificationDrawerListItemBody>
             <Link to={`/${scope}`}>{issue.description}</Link>
           </NotificationDrawerListItemBody>
@@ -78,40 +86,32 @@ const IssuesList = ({ issues }) => {
   return (
     <NotificationDrawer>
       <NotificationDrawerBody>
-        <NotificationDrawerList>
-          {list}
-        </NotificationDrawerList>
+        <NotificationDrawerList>{list}</NotificationDrawerList>
       </NotificationDrawerBody>
     </NotificationDrawer>
   );
 };
 
 export default function OverviewPage() {
-  const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
+  const issues = useAllIssues();
 
-  useEffect(() => {
-    client.issues().then(setIssues);
-  }, [client]);
-
-  const resultSectionProps =
-    issues.isEmpty
-      ? {}
-      : {
-
+  const resultSectionProps = issues.isEmpty
+    ? {}
+    : {
         label: _("Installation"),
-        description: _("Before installing, please check the following problems.")
+        description: _("Before installing, please check the following problems."),
       };
 
   return (
-    <>
+    <Page>
       <Page.MainContent>
         <Grid hasGutter>
           <GridItem sm={12}>
             <Hint>
               <HintBody>
                 {_(
-                  "Take your time to check your configuration before starting the installation process."
+                  "Take your time to check your configuration before starting the installation process.",
                 )}
               </HintBody>
             </Hint>
@@ -120,7 +120,7 @@ export default function OverviewPage() {
             <CardField
               label="Overview"
               description={_(
-                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details."
+                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
               )}
             >
               <CardBody>
@@ -141,6 +141,6 @@ export default function OverviewPage() {
           </GridItem>
         </Grid>
       </Page.MainContent>
-    </>
+    </Page>
   );
 }

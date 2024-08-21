@@ -1,0 +1,121 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Storage1">
+  <node name="Proposal" />
+  <node name="dasds" />
+  <interface name="org.freedesktop.DBus.Properties">
+    <method name="Get">
+      <arg name="interface_name" direction="in" type="s"/>
+      <arg name="property_name" direction="in" type="s"/>
+      <arg name="value" direction="out" type="v"/>
+    </method>
+    <method name="Set">
+      <arg name="interface_name" direction="in" type="s"/>
+      <arg name="property_name" direction="in" type="s"/>
+      <arg name="val" direction="in" type="v"/>
+    </method>
+    <method name="GetAll">
+      <arg name="interface_name" direction="in" type="s"/>
+      <arg name="value" direction="out" type="a{sv}"/>
+    </method>
+    <signal name="PropertiesChanged">
+      <arg name="interface" type="s"/>
+      <arg name="changed_properties" type="a{sv}"/>
+      <arg name="invalidated_properties" type="as"/>
+    </signal>
+  </interface>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg name="xml_data" direction="out" type="s"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.ObjectManager">
+    <method name="GetManagedObjects">
+      <arg name="res" direction="out" type="a{oa{sa{sv}}}"/>
+    </method>
+    <signal name="InterfacesAdded">
+      <arg name="object" type="o"/>
+      <arg name="interfaces_and_properties" type="a{sa{sv}}"/>
+    </signal>
+    <signal name="InterfacesRemoved">
+      <arg name="object" type="o"/>
+      <arg name="interfaces" type="as"/>
+    </signal>
+  </interface>
+  <interface name="org.opensuse.Agama1.Issues">
+    <property type="a(ssuu)" name="All" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama1.Progress">
+    <property type="u" name="TotalSteps" access="read"/>
+    <property type="(us)" name="CurrentStep" access="read"/>
+    <property type="b" name="Finished" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama1.ServiceStatus">
+    <property type="aa{sv}" name="All" access="read"/>
+    <property type="u" name="Current" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1">
+    <method name="Probe">
+    </method>
+    <method name="Install">
+    </method>
+    <method name="Finish">
+    </method>
+    <property type="b" name="DeprecatedSystem" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.Proposal.Calculator">
+    <method name="DefaultVolume">
+      <arg name="mount_path" direction="in" type="s"/>
+      <arg name="volume" direction="out" type="a{sv}"/>
+    </method>
+    <method name="Calculate">
+      <arg name="settings" direction="in" type="a{sv}"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <property type="ao" name="AvailableDevices" access="read"/>
+    <property type="as" name="ProductMountPoints" access="read"/>
+    <property type="as" name="EncryptionMethods" access="read"/>
+    <property type="o" name="Result" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.ISCSI.Initiator">
+    <method name="Discover">
+      <arg name="address" direction="in" type="s"/>
+      <arg name="port" direction="in" type="u"/>
+      <arg name="options" direction="in" type="a{sv}"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="Delete">
+      <arg name="node" direction="in" type="o"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <property type="s" name="InitiatorName" access="readwrite"/>
+    <property type="b" name="IBFT" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.DASD.Manager">
+    <method name="Probe">
+    </method>
+    <method name="Enable">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="Disable">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="SetDiag">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="diag" direction="in" type="b"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="Format">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+      <arg name="job" direction="out" type="o"/>
+    </method>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
+    <method name="Probe">
+    </method>
+    <property type="b" name="AllowLUNScan" access="read"/>
+  </interface>
+</node>

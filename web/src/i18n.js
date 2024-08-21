@@ -72,7 +72,7 @@ const xTranslate = (str) => {
  * @param {string} str the input string to translate
  * @return {string} translated or original text
  */
-const _ = (str) => isTestingLanguage() ? xTranslate(str) : agama.gettext(str);
+const _ = (str) => (isTestingLanguage() ? xTranslate(str) : agama.gettext(str));
 
 /**
  * Similar to the _() function. This variant returns singular or plural form
@@ -86,9 +86,7 @@ const _ = (str) => isTestingLanguage() ? xTranslate(str) : agama.gettext(str);
  * @return {string} translated or original text
  */
 const n_ = (str1, strN, n) => {
-  return isTestingLanguage()
-    ? xTranslate((n === 1) ? str1 : strN)
-    : agama.ngettext(str1, strN, n);
+  return isTestingLanguage() ? xTranslate(n === 1 ? str1 : strN) : agama.ngettext(str1, strN, n);
 };
 
 /**
@@ -137,11 +135,6 @@ const N_ = (str) => str;
  * @return {string} the original text, either "string1" or "stringN" depending
  *   on the value "num"
  */
-const Nn_ = (str1, strN, n) => (n === 1) ? str1 : strN;
+const Nn_ = (str1, strN, n) => (n === 1 ? str1 : strN);
 
-export {
-  _,
-  n_,
-  N_,
-  Nn_
-};
+export { _, n_, N_, Nn_ };

@@ -23,31 +23,40 @@ import React from "react";
 import { createHashRouter } from "react-router-dom";
 import App from "~/App";
 import Protected from "~/Protected";
-import MainLayout from "~/MainLayout";
+import MainLayout from "~/components/layout/Main";
 import SimpleLayout from "./SimpleLayout";
 import { LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
-import { _ } from "~/i18n";
-import overviewRoutes from "~/components/overview/routes";
-import l10nRoutes from "~/components/l10n/routes";
-import networkRoutes from "~/components/network/routes";
-import { productsRoute } from "~/components/product/routes";
-import storageRoutes from "~/components/storage/routes";
-import softwareRoutes from "~/components/software/routes";
-import usersRoutes from "~/components/users/routes";
+import { _, N_ } from "~/i18n";
+import l10nRoutes from "~/routes/l10n";
+import networkRoutes from "~/routes/network";
+import productsRoutes from "~/routes/products";
+import storageRoutes from "~/routes/storage";
+import softwareRoutes from "~/routes/software";
+import usersRoutes from "~/routes/users";
 
-const rootRoutes = [
-  overviewRoutes,
-  l10nRoutes,
-  networkRoutes,
-  storageRoutes,
-  softwareRoutes,
-  usersRoutes
+const PATHS = {
+  root: "/",
+  login: "/login",
+  overview: "/overview",
+};
+
+const rootRoutes = () => [
+  {
+    path: "/overview",
+    element: <OverviewPage />,
+    handle: { name: N_("Overview"), icon: "list_alt" },
+  },
+  l10nRoutes(),
+  networkRoutes(),
+  storageRoutes(),
+  softwareRoutes(),
+  usersRoutes(),
 ];
 
-const protectedRoutes = [
+const protectedRoutes = () => [
   {
-    path: "/",
+    path: PATHS.root,
     element: <App />,
     children: [
       {
@@ -55,41 +64,37 @@ const protectedRoutes = [
         children: [
           {
             index: true,
-            element: <OverviewPage />
+            element: <OverviewPage />,
           },
-          ...rootRoutes
-        ]
+          ...rootRoutes(),
+        ],
       },
       {
         element: <SimpleLayout showInstallerOptions />,
-        children: [productsRoute]
-      }
-    ]
-  }
-];
-
-const routes = [
-  {
-    path: "/login",
-    exact: true,
-    element: <SimpleLayout />,
-    children: [
-      {
-        index: true,
-        element: <LoginPage />
-      }
-    ]
+        children: [productsRoutes()],
+      },
+    ],
   },
-  {
-    path: "/",
-    element: <Protected />,
-    children: [...protectedRoutes]
-  }
 ];
 
-const router = createHashRouter(routes);
+const router = () =>
+  createHashRouter([
+    {
+      path: PATHS.login,
+      exact: true,
+      element: <SimpleLayout />,
+      children: [
+        {
+          index: true,
+          element: <LoginPage />,
+        },
+      ],
+    },
+    {
+      path: PATHS.root,
+      element: <Protected />,
+      children: [...protectedRoutes()],
+    },
+  ]);
 
-export {
-  router,
-  rootRoutes
-};
+export { router, rootRoutes, PATHS };

@@ -48,8 +48,8 @@ const sda = {
   active: true,
   name: "/dev/sda",
   size: 1024,
-  recoverableSize: 0,
-  systems : [],
+  shrinking: { unsupported: ["Resizing is not supported"] },
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -64,7 +64,7 @@ beforeEach(() => {
     defaultBootDevice: undefined,
     availableDevices: [sda],
     isLoading: false,
-    onChange: jest.fn()
+    onChange: jest.fn(),
   };
 });
 

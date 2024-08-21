@@ -20,14 +20,14 @@
  */
 
 import React, { useState } from "react";
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { RowActions } from '~/components/core';
+import { RowActions } from "~/components/core";
 import { EditNodeForm, LoginForm, NodeStartupOptions } from "~/components/storage/iscsi";
 
-export default function NodesPresenter ({ nodes, client }) {
+export default function NodesPresenter({ nodes, client }) {
   const [currentNode, setCurrentNode] = useState();
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const [isLoginFormOpen, setIsLoginFormOpen] = useState(false);
@@ -62,7 +62,7 @@ export default function NodesPresenter ({ nodes, client }) {
     // TRANSLATORS: iSCSI connection status
     if (!node.connected) return _("Disconnected");
 
-    const startup = Object.values(NodeStartupOptions).find(o => o.value === node.startup);
+    const startup = Object.values(NodeStartupOptions).find((o) => o.value === node.startup);
     // TRANSLATORS: iSCSI connection status, %s is replaced by node label
     return sprintf(_("Connected (%s)"), startup.label);
   };
@@ -71,27 +71,25 @@ export default function NodesPresenter ({ nodes, client }) {
     const actions = {
       edit: {
         title: _("Edit"),
-        onClick: () => openEditForm(node)
+        onClick: () => openEditForm(node),
       },
       delete: {
         title: _("Delete"),
         onClick: () => client.iscsi.delete(node),
-        isDanger: true
+        isDanger: true,
       },
       login: {
         title: _("Login"),
-        onClick: () => openLoginForm(node)
+        onClick: () => openLoginForm(node),
       },
       logout: {
         title: _("Logout"),
-        onClick: () => client.iscsi.logout(node)
-      }
+        onClick: () => client.iscsi.logout(node),
+      },
     };
 
-    if (node.connected)
-      return [actions.edit, actions.logout];
-    else
-      return [actions.login, actions.delete];
+    if (node.connected) return [actions.edit, actions.logout];
+    else return [actions.login, actions.delete];
   };
 
   const NodeRow = ({ node }) => {
@@ -110,7 +108,7 @@ export default function NodesPresenter ({ nodes, client }) {
   };
 
   const Content = () => {
-    return nodes.map(n => <NodeRow node={n} key={`node${n.id}`} />);
+    return nodes.map((n) => <NodeRow node={n} key={`node${n.id}`} />);
   };
 
   return (
@@ -130,18 +128,12 @@ export default function NodesPresenter ({ nodes, client }) {
           <Content />
         </Tbody>
       </Table>
-      { isLoginFormOpen &&
-        <LoginForm
-          node={currentNode}
-          onSubmit={submitLoginForm}
-          onCancel={closeLoginForm}
-        /> }
-      { isEditFormOpen &&
-        <EditNodeForm
-          node={currentNode}
-          onSubmit={submitEditForm}
-          onCancel={closeEditForm}
-        /> }
+      {isLoginFormOpen && (
+        <LoginForm node={currentNode} onSubmit={submitLoginForm} onCancel={closeLoginForm} />
+      )}
+      {isEditFormOpen && (
+        <EditNodeForm node={currentNode} onSubmit={submitEditForm} onCancel={closeEditForm} />
+      )}
     </>
   );
 }

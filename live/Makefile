@@ -13,12 +13,12 @@ FLAVOR = openSUSE
 
 # the default OBS project,
 # to use a different project run "make build OBS_PROJECT=<project>"
-OBS_PROJECT = "systemsmanagement:Agama:Staging"
+OBS_PROJECT = "systemsmanagement:Agama:Devel"
 
 # files to copy from src/
 COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%,$(wildcard $(SRCDIR)/*))
 
-all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/root.tar.xz
+all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/root.tar.xz $(DESTDIR)/root-openSUSE-PXE.tar.xz
 
 # clean the destination directory (but keep the .osc directory if it is present)
 clean:
@@ -52,7 +52,7 @@ $(DESTDIR)/%.tar.xz: % $$(shell find % -type f,l)
 
 # build the ISO locally
 build: $(DESTDIR)
-	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc co -o $(DESTDIR) $(OBS_PROJECT) agama-live; fi
+	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc co -o $(DESTDIR) $(OBS_PROJECT) agama-installer-openSUSE; fi
 	$(MAKE) all
 	(cd $(DESTDIR) && osc build -M $(FLAVOR) images)
 

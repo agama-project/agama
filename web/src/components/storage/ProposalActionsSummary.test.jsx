@@ -44,15 +44,15 @@ const sda = {
   active: true,
   name: "/dev/sda",
   size: 1024,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-const keepPolicy = SPACE_POLICIES.find(p => p.id === "keep");
-const deletePolicy = SPACE_POLICIES.find(p => p.id === "delete");
-const resizePolicy = SPACE_POLICIES.find(p => p.id === "resize");
+const keepPolicy = SPACE_POLICIES.find((p) => p.id === "keep");
+const deletePolicy = SPACE_POLICIES.find((p) => p.id === "delete");
+const resizePolicy = SPACE_POLICIES.find((p) => p.id === "resize");
 
 const defaultProps = {
   isLoading: false,
@@ -60,7 +60,8 @@ const defaultProps = {
   onActionsClick: jest.fn(),
   system: devices.system,
   staging: devices.staging,
-  actions
+  devices: [sda],
+  actions,
 };
 
 describe("ProposalActionsSummary", () => {
@@ -75,7 +76,7 @@ describe("ProposalActionsSummary", () => {
     const props = {
       ...defaultProps,
       policy: deletePolicy,
-      actions: [{ device: 79, subvol: false, delete: true, text: "" }]
+      actions: [{ device: 79, subvol: false, delete: true, resize: false, text: "" }],
     };
 
     installerRender(<ProposalActionsSummary {...props} />);
@@ -90,7 +91,7 @@ describe("ProposalActionsSummary", () => {
     const props = {
       ...defaultProps,
       policy: resizePolicy,
-      actions: [{ device: 79, subvol: false, delete: false, resize: true, text: "" }]
+      actions: [{ device: 79, subvol: false, delete: false, resize: true, text: "" }],
     };
 
     installerRender(<ProposalActionsSummary {...props} />);

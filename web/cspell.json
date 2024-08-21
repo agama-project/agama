@@ -84,11 +84,5 @@
       ]
     }
   ],
-  "dictionaries": [
-    "custom",
-    "css",
-    "en-common-misspelling",
-    "fullstack",
-    "html"
-  ]
+  "dictionaries": ["custom", "css", "en-common-misspelling", "fullstack", "html"]
 }

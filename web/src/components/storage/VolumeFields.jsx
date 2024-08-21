@@ -23,21 +23,26 @@
 
 import React, { useState } from "react";
 import {
-  FormGroup, FormSelect, FormSelectOption,
-  InputGroup, InputGroupItem,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
+  InputGroup,
+  InputGroupItem,
   MenuToggle,
   Popover,
   Radio,
-  Select, SelectOption, SelectList,
+  Select,
+  SelectOption,
+  SelectList,
   Split,
   Stack,
-  TextInput
+  TextInput,
 } from "@patternfly/react-core";
-import { FormValidationError, FormReadOnlyField, NumericTextInput } from '~/components/core';
+import { FormValidationError, FormReadOnlyField, NumericTextInput } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { _, N_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { SIZE_METHODS, SIZE_UNITS } from '~/components/storage/utils';
+import { SIZE_METHODS, SIZE_UNITS } from "~/components/storage/utils";
 
 const { K, ...MAX_SIZE_UNITS } = SIZE_UNITS;
 
@@ -94,9 +99,11 @@ const MountPathField = ({ value = "", onChange, isReadOnly = false, error }) => 
 const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
   return (
     <FormSelect {...formSelectProps}>
-      {/* the unit values are marked for translation in the utils.js file */}
-      {/* eslint-disable-next-line agama-i18n/string-literals */}
-      {units.map(unit => <FormSelectOption key={unit} value={unit} label={_(unit)} />)}
+      {units.map((unit) => {
+        // unit values are marked for translation in the utils.js file
+        // eslint-disable-next-line agama-i18n/string-literals
+        return <FormSelectOption key={unit} value={unit} label={_(unit)} />;
+      })}
     </FormSelect>
   );
 };
@@ -153,7 +160,7 @@ const FsSelect = ({ id, value, volume, isDisabled, onChange }) => {
     onChange({ fsType: option });
   };
 
-  const toggle = toggleRef => {
+  const toggle = (toggleRef) => {
     return (
       <MenuToggle
         id={id}
@@ -214,14 +221,16 @@ const FsField = ({ value, volume, isDisabled = false, onChange }) => {
 
   const Info = () => {
     // TRANSLATORS: info about possible file system types.
-    const text = _("The options for the file system type depends on the product and the mount point.");
+    const text = _(
+      "The options for the file system type depends on the product and the mount point.",
+    );
 
     return (
       <Popover showClose={false} bodyContent={text} maxWidth="18em">
         <button
           type="button"
           aria-label={_("More info for file system types")}
-          onClick={e => e.preventDefault()}
+          onClick={(e) => e.preventDefault()}
           className="pf-v5-c-form__group-label-help"
         >
           <Icon name="info" size="xxs" />
@@ -267,23 +276,31 @@ const SizeAuto = ({ volume }) => {
   if (volume.outline.sizeRelevantVolumes && volume.outline.sizeRelevantVolumes.length > 0)
     // TRANSLATORS: item which affects the final computed partition size
     // %s is replaced by a list of mount points like "/home, /boot"
-    conditions.push(sprintf(_("the presence of the file system for %s"),
-      // TRANSLATORS: conjunction for merging two list items
-                            volume.outline.sizeRelevantVolumes.join(_(", "))));
+    conditions.push(
+      sprintf(
+        _("the presence of the file system for %s"),
+        // TRANSLATORS: conjunction for merging two list items
+        volume.outline.sizeRelevantVolumes.join(_(", ")),
+      ),
+    );
 
   if (volume.outline.adjustByRam)
     // TRANSLATORS: item which affects the final computed partition size
     conditions.push(_("the amount of RAM in the system"));
 
   // TRANSLATORS: the %s is replaced by the items which affect the computed size
-  const conditionsText = sprintf(_("The final size depends on %s."),
+  const conditionsText = sprintf(
+    _("The final size depends on %s."),
     // TRANSLATORS: conjunction for merging two texts
-                                 conditions.join(_(" and ")));
+    conditions.join(_(" and ")),
+  );
 
   return (
     <>
       {/* TRANSLATORS: the partition size is automatically computed */}
-      <p>{_("Automatically calculated size according to the selected product.")}{" "}{conditionsText}</p>
+      <p>
+        {_("Automatically calculated size according to the selected product.")} {conditionsText}
+      </p>
     </>
   );
 };
@@ -301,13 +318,8 @@ const SizeAuto = ({ volume }) => {
 const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
   return (
     <Stack hasGutter>
-      <p>
-        {_("Exact size for the file system.")}
-      </p>
-      <FormGroup
-        fieldId="size"
-        isRequired
-      >
+      <p>{_("Exact size for the file system.")}</p>
+      <FormGroup fieldId="size" isRequired>
         <InputGroup className="size-input-group">
           <InputGroupItem>
             <NumericTextInput
@@ -323,7 +335,7 @@ const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
               //   (https://github.com/globalizejs/globalize#number-module)
               value={formData.minSize}
               onChange={(minSize) => onChange({ minSize })}
-              validated={errors.minSize && 'error'}
+              validated={errors.minSize && "error"}
               isDisabled={isDisabled}
             />
           </InputGroupItem>
@@ -360,8 +372,10 @@ const SizeRange = ({ errors, formData, isDisabled, onChange }) => {
   return (
     <Stack hasGutter>
       <p>
-        {_("Limits for the file system size. The final size will be a value between the given minimum \
-and maximum. If no maximum is given then the file system will be as big as possible.")}
+        {_(
+          "Limits for the file system size. The final size will be a value between the given minimum \
+and maximum. If no maximum is given then the file system will be as big as possible.",
+        )}
       </p>
       <Split hasGutter>
         <FormGroup
@@ -381,7 +395,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 aria-label={_("Minimum desired size")}
                 value={formData.minSize}
                 onChange={(minSize) => onChange({ minSize })}
-                validated={errors.minSize && 'error'}
+                validated={errors.minSize && "error"}
                 isDisabled={isDisabled}
               />
             </InputGroupItem>
@@ -411,7 +425,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 /** @ts-expect-error: for some reason using id makes TS complain */
                 id="maxSize"
                 name="maxSize"
-                validated={errors.maxSize && 'error'}
+                validated={errors.maxSize && "error"}
                 // TRANSLATORS: the maximum partition size
                 aria-label={_("Maximum desired size")}
                 value={formData.maxSize}
@@ -445,7 +459,7 @@ const SIZE_OPTION_LABELS = Object.freeze({
   // TRANSLATORS: radio button label, exact partition size requested by user
   fixed: N_("Fixed"),
   // TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-  range: N_("Range")
+  range: N_("Range"),
 });
 
 /**

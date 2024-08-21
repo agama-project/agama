@@ -52,7 +52,7 @@
     Requires:       dmraid
     Requires:       dosfstools
     Requires:       e2fsprogs
-    Requires:       exfat-utils
+    Requires:       exfatprogs
     Requires:       f2fs-tools
     Requires:       fcoe-utils
     %ifarch x86_64 aarch64

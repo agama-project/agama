@@ -9,7 +9,7 @@ Before=avahi-daemon.service
 ConditionHost=localhost
 
 [Service]
-ExecStart=hostnamectl hostname agama
+ExecStart=hostnamectl hostname --transient agama
 Type=oneshot
 User=root
 

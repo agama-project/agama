@@ -20,18 +20,17 @@
  */
 
 import React from "react";
-
-import { _ } from "~/i18n";
 import { CardField, IssuesHint, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
 import { CardBody, Grid, GridItem } from "@patternfly/react-core";
-import { useIssues } from "~/context/issues";
+import { useIssues } from "~/queries/issues";
+import { _ } from "~/i18n";
 
 export default function UsersPage() {
-  const { users: issues } = useIssues();
+  const issues = useIssues("users");
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Users")}</h2>
       </Page.Header>
@@ -57,6 +56,6 @@ export default function UsersPage() {
           </GridItem>
         </Grid>
       </Page.MainContent>
-    </>
+    </Page>
   );
 }

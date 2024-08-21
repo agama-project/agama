@@ -1,27 +1,21 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
+    "outDir": "dist/",
     "isolatedModules": true,
-    "noEmit": true,
     "target": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "allowJs": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
+    "types": ["node", "jest", "@testing-library/jest-dom", "webpack-env"],
     "paths": {
-      "~/*": [
-        "src/*"
-      ],
-      "~/client": [
-        "src/client/index.js"
-      ],
-      "@icons/*": [
-        "node_modules/@material-symbols/svg-400/outlined/*"
-      ]
+      "~/*": ["src/*"],
+      "~/client": ["src/client/index.js"],
+      "@icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"]
     }
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

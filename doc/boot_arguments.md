@@ -15,6 +15,22 @@ See [URL handling in the
 installer](https://github.com/yast/yast-installation/blob/master/doc/url.md) to find more details
 about the supported URLs.
 
+## Custom Installation URL Configuration
+
+You can override the default `installation_url` set in the product files [here](https://github.com/openSUSE/agama/tree/master/products.d) by passing the `agama.install_url` parameter as a boot option in the bootloader.
+This is particularly useful for any pre-production testing in openQA. 
+
+**Note:** Setting this variable will impact all products. 
+
+### Example Usage
+
+To specify a custom installation URLs, pass following as a parameter to kernel in the bootloader.
+You can specify multiple URLs by separating them with commas.
+
+```
+agama.install_url=https://myrepo,https://myrepo2
+```
+
 ## Changing configuration values
 
 Instead of loading a full configuration file, you might be interested in adjusting just a few

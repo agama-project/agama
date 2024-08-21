@@ -36,8 +36,10 @@ $SUDO systemctl list-unit-files agama-web-server.service &>/dev/null && $SUDO sy
 
 # Ruby services
 
+ZYPPER="zypper --non-interactive -v"
+
 # Packages required for Ruby development (i.e., bundle install).
-$SUDO zypper --non-interactive install \
+$SUDO $ZYPPER install \
   gcc \
   gcc-c++ \
   make \
@@ -47,7 +49,7 @@ $SUDO zypper --non-interactive install \
 
 # Packages required by Agama Ruby services (see ./service/package/gem2rpm.yml).
 # TODO extract list from gem2rpm.yml
-$SUDO zypper --non-interactive install \
+$SUDO $ZYPPER install \
   dbus-1-common \
   suseconnect-ruby-bindings \
   autoyast2-installation \
@@ -68,7 +70,7 @@ $SUDO zypper --non-interactive install \
   dmraid \
   dosfstools \
   e2fsprogs \
-  exfat-utils \
+  exfatprogs \
   f2fs-tools \
   fcoe-utils \
   jfsutils \
@@ -89,13 +91,13 @@ $SUDO zypper --non-interactive install \
 
 # Install x86_64 packages
 if [ $(uname -m) == "x86_64" ]; then
-  $SUDO zypper --non-interactive install \
+  $SUDO $ZYPPER install \
     fde-tools
 fi
 
 # Install s390 packages
 if [ $(uname -m) == "s390x" ]; then
-  $SUDO zypper --non-interactive install \
+  $SUDO $ZYPPER install \
     yast2-s390 \
     yast2-reipl \
     yast2-cio
@@ -120,10 +122,10 @@ fi
 # Rust service, CLI and auto-installation.
 
 # Only install cargo if it is not available (avoid conflicts with rustup)
-which cargo || $SUDO zypper --non-interactive install cargo
+which cargo || $SUDO $ZYPPER install cargo
 
 # Packages required by Rust code (see ./rust/package/agama.spec)
-$SUDO zypper --non-interactive install \
+$SUDO $ZYPPER install \
   clang-devel \
   gzip \
   jsonnet \

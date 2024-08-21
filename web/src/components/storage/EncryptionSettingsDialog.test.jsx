@@ -40,7 +40,7 @@ describe.skip("EncryptionSettingsDialog", () => {
       methods: Object.values(EncryptionMethods),
       isOpen: true,
       onCancel: onCancelFn,
-      onAccept: onAcceptFn
+      onAccept: onAcceptFn,
     };
   });
 
@@ -73,9 +73,7 @@ describe.skip("EncryptionSettingsDialog", () => {
       await user.type(confirmationInput, "2345");
       await user.click(acceptButton);
 
-      expect(props.onAccept).toHaveBeenCalledWith(
-        expect.objectContaining({ password: "2345" })
-      );
+      expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining({ password: "2345" }));
     });
   });
 
@@ -94,9 +92,10 @@ describe.skip("EncryptionSettingsDialog", () => {
       await user.click(tpmCheckbox);
       await user.click(acceptButton);
 
-      expect(props.onAccept).toHaveBeenCalledWith(
-        { password: "9876", method: EncryptionMethods.TPM }
-      );
+      expect(props.onAccept).toHaveBeenCalledWith({
+        password: "9876",
+        method: EncryptionMethods.TPM,
+      });
     });
 
     it("allows unsetting the encryption", async () => {
@@ -125,7 +124,7 @@ describe.skip("EncryptionSettingsDialog", () => {
       expect(tpmCheckbox).not.toBeChecked();
       await user.click(acceptButton);
       expect(props.onAccept).toHaveBeenCalledWith(
-        expect.not.objectContaining({ method: EncryptionMethods.TPM })
+        expect.not.objectContaining({ method: EncryptionMethods.TPM }),
       );
     });
   });

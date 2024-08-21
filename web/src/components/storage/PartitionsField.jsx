@@ -24,28 +24,36 @@
 import React, { useState } from "react";
 import {
   Button,
-  CardBody, CardExpandableContent,
+  CardBody,
+  CardExpandableContent,
   Divider,
-  Dropdown, DropdownList, DropdownItem,
+  Dropdown,
+  DropdownList,
+  DropdownItem,
   Flex,
-  List, ListItem,
+  List,
+  ListItem,
   MenuToggle,
   Skeleton,
   Split,
-  Stack
-} from '@patternfly/react-core';
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import { CardField, RowActions, Tip } from '~/components/core';
+  Stack,
+} from "@patternfly/react-core";
+import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
+import { CardField, RowActions, Tip } from "~/components/core";
 import { noop } from "~/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import {
-  deviceSize, hasSnapshots, isTransactionalRoot, isTransactionalSystem, reuseDevice
-} from '~/components/storage/utils';
+  deviceSize,
+  hasSnapshots,
+  isTransactionalRoot,
+  isTransactionalSystem,
+  reuseDevice,
+} from "~/components/storage/utils";
 import BootConfigField from "~/components/storage/BootConfigField";
 import SnapshotsField from "~/components/storage/SnapshotsField";
-import VolumeDialog from '~/components/storage/VolumeDialog';
-import VolumeLocationDialog from '~/components/storage/VolumeLocationDialog';
+import VolumeDialog from "~/components/storage/VolumeDialog";
+import VolumeLocationDialog from "~/components/storage/VolumeLocationDialog";
 
 /**
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
@@ -62,11 +70,14 @@ import VolumeLocationDialog from '~/components/storage/VolumeLocationDialog';
  */
 const SizeText = ({ volume }) => {
   let targetSize;
-  if (reuseDevice(volume))
-    targetSize = volume.targetDevice.size;
+  if (reuseDevice(volume)) targetSize = volume.targetDevice.size;
 
   const minSize = deviceSize(targetSize || volume.minSize);
-  const maxSize = targetSize ? deviceSize(targetSize) : volume.maxSize ? deviceSize(volume.maxSize) : undefined;
+  const maxSize = targetSize
+    ? deviceSize(targetSize)
+    : volume.maxSize
+      ? deviceSize(volume.maxSize)
+      : undefined;
 
   if (minSize && maxSize && minSize !== maxSize) return `${minSize} - ${maxSize}`;
   // TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
@@ -86,24 +97,24 @@ const BasicVolumeText = ({ volume, target }) => {
   const snapshots = hasSnapshots(volume);
   const transactional = isTransactionalRoot(volume);
   const size = SizeText({ volume });
-  const lvm = (target === "NEW_LVM_VG");
+  const lvm = target === "NEW_LVM_VG";
   // When target is "filesystem" or "device" this is irrelevant since the type of device
   // is not mentioned
   const lv = volume.target === "NEW_VG" || (volume.target === "DEFAULT" && lvm);
 
   if (transactional)
-    return (lv)
-      // TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-      ? sprintf(_("Transactional Btrfs root volume (%s)"), size)
-      // TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-      : sprintf(_("Transactional Btrfs root partition (%s)"), size);
+    return lv
+      ? // TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
+        sprintf(_("Transactional Btrfs root volume (%s)"), size)
+      : // TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
+        sprintf(_("Transactional Btrfs root partition (%s)"), size);
 
   if (snapshots)
-    return (lv)
-      // TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-      ? sprintf(_("Btrfs root volume with snapshots (%s)"), size)
-      // TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-      : sprintf(_("Btrfs root partition with snapshots (%s)"), size);
+    return lv
+      ? // TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
+        sprintf(_("Btrfs root volume with snapshots (%s)"), size)
+      : // TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
+        sprintf(_("Btrfs root partition with snapshots (%s)"), size);
 
   const volTarget = volume.target;
   const mount = volume.mountPath;
@@ -120,11 +131,11 @@ const BasicVolumeText = ({ volume, target }) => {
       // %1$s is replaced by the device name, and %2$s by the size
       return sprintf(_("Swap at %1$s (%2$s)"), device, size);
 
-    return (lv)
-      // TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-      ? sprintf(_("Swap volume (%s)"), size)
-      // TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-      : sprintf(_("Swap partition (%s)"), size);
+    return lv
+      ? // TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
+        sprintf(_("Swap volume (%s)"), size)
+      : // TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
+        sprintf(_("Swap partition (%s)"), size);
   }
 
   const type = volume.fsType;
@@ -135,14 +146,14 @@ const BasicVolumeText = ({ volume, target }) => {
       // %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
       return sprintf(_("%1$s root at %2$s (%3$s)"), type, device, size);
 
-    return (lv)
-      // TRANSLATORS: "/" is in an LVM logical volume.
-      // Results in something like "Btrfs root volume (at least 20 GiB)" since
-      // $1$s is replaced by filesystem type and %2$s by size description
-      ? sprintf(_("%1$s root volume (%2$s)"), type, size)
-      // TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
-      // $1$s is replaced by filesystem type and %2$s by size description
-      : sprintf(_("%1$s root partition (%2$s)"), type, size);
+    return lv
+      ? // TRANSLATORS: "/" is in an LVM logical volume.
+        // Results in something like "Btrfs root volume (at least 20 GiB)" since
+        // $1$s is replaced by filesystem type and %2$s by size description
+        sprintf(_("%1$s root volume (%2$s)"), type, size)
+      : // TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
+        // $1$s is replaced by filesystem type and %2$s by size description
+        sprintf(_("%1$s root partition (%2$s)"), type, size);
   }
 
   if (volTarget === "DEVICE")
@@ -150,14 +161,14 @@ const BasicVolumeText = ({ volume, target }) => {
     // %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
     return sprintf(_("%1$s %2$s at %3$s (%4$s)"), type, mount, device, size);
 
-  return (lv)
-    // TRANSLATORS: The filesystem is in an LVM logical volume.
-    // Results in something like "Ext4 /home volume (at least 10 GiB)" since
-    // %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-    ? sprintf(_("%1$s %2$s volume (%3$s)"), type, mount, size)
-    // TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
-    // %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-    : sprintf(_("%1$s %2$s partition (%3$s)"), type, mount, size);
+  return lv
+    ? // TRANSLATORS: The filesystem is in an LVM logical volume.
+      // Results in something like "Ext4 /home volume (at least 10 GiB)" since
+      // %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
+      sprintf(_("%1$s %2$s volume (%3$s)"), type, mount, size)
+    : // TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
+      // %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
+      sprintf(_("%1$s %2$s partition (%3$s)"), type, mount, size);
 };
 
 /**
@@ -168,11 +179,9 @@ const BasicVolumeText = ({ volume, target }) => {
  * @param {StorageDevice} props.device
  */
 const BootLabelText = ({ configure, device }) => {
-  if (!configure)
-    return _("Do not configure partitions for booting");
+  if (!configure) return _("Do not configure partitions for booting");
 
-  if (!device)
-    return _("Boot partitions at installation disk");
+  if (!device) return _("Boot partitions at installation disk");
 
   // TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
   return sprintf(_("Boot partitions at %s"), device.name);
@@ -199,17 +208,22 @@ const AutoCalculatedHint = ({ volume }) => {
       {/* TRANSLATORS: header for a list of items referring to size limits for file systems */}
       {_("These limits are affected by:")}
       <List>
-        {snapshotsAffectSizes &&
+        {snapshotsAffectSizes && (
           // TRANSLATORS: list item, this affects the computed partition size limits
-          <ListItem>{_("The configuration of snapshots")}</ListItem>}
-        {sizeRelevantVolumes.length > 0 &&
+          <ListItem>{_("The configuration of snapshots")}</ListItem>
+        )}
+        {sizeRelevantVolumes.length > 0 && (
           // TRANSLATORS: list item, this affects the computed partition size limits
           // %s is replaced by a list of the volumes (like "/home, /boot")
-          <ListItem>{sprintf(_("Presence of other volumes (%s)"), sizeRelevantVolumes.join(", "))}</ListItem>}
-        {adjustByRam &&
+          <ListItem>
+            {sprintf(_("Presence of other volumes (%s)"), sizeRelevantVolumes.join(", "))}
+          </ListItem>
+        )}
+        {adjustByRam && (
           // TRANSLATORS: list item, describes a factor that affects the computed size of a
           // file system; eg. adjusting the size of the swap
-          <ListItem>{_("The amount of RAM in the system")}</ListItem>}
+          <ListItem>{_("The amount of RAM in the system")}</ListItem>
+        )}
       </List>
     </>
   );
@@ -224,7 +238,14 @@ const AutoCalculatedHint = ({ volume }) => {
  */
 const VolumeLabel = ({ volume, target }) => {
   return (
-    <Split hasGutter style={{ background: "var(--color-gray)", padding: "var(--spacer-smaller) var(--spacer-small)", borderRadius: "var(--spacer-smaller)" }}>
+    <Split
+      hasGutter
+      style={{
+        background: "var(--color-gray)",
+        padding: "var(--spacer-smaller) var(--spacer-small)",
+        borderRadius: "var(--spacer-smaller)",
+      }}
+    >
       <span>{BasicVolumeText({ volume, target })}</span>
     </Split>
   );
@@ -239,7 +260,14 @@ const VolumeLabel = ({ volume, target }) => {
  */
 const BootLabel = ({ bootDevice, configureBoot }) => {
   return (
-    <Split hasGutter style={{ background: "var(--color-gray)", padding: "var(--spacer-smaller) var(--spacer-small)", borderRadius: "var(--spacer-smaller)" }}>
+    <Split
+      hasGutter
+      style={{
+        background: "var(--color-gray)",
+        padding: "var(--spacer-smaller) var(--spacer-small)",
+        borderRadius: "var(--spacer-smaller)",
+      }}
+    >
       <span>{BootLabelText({ configure: configureBoot, device: bootDevice })}</span>
     </Split>
   );
@@ -249,10 +277,10 @@ const BootLabel = ({ bootDevice, configureBoot }) => {
 // components to a new file.
 
 /**
-  * @component
-  * @param {object} props
-  * @param {Volume} props.volume
-  */
+ * @component
+ * @param {object} props
+ * @param {Volume} props.volume
+ */
 const VolumeSizeLimits = ({ volume }) => {
   const isAuto = volume.autoSize;
 
@@ -260,16 +288,18 @@ const VolumeSizeLimits = ({ volume }) => {
     <Split hasGutter>
       <span>{SizeText({ volume })}</span>
       {/* TRANSLATORS: device flag, the partition size is automatically computed */}
-      {isAuto && !reuseDevice(volume) && <Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>}
+      {isAuto && !reuseDevice(volume) && (
+        <Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>
+      )}
     </Split>
   );
 };
 
 /**
-  * @component
-  * @param {object} props
-  * @param {Volume} props.volume
-  */
+ * @component
+ * @param {object} props
+ * @param {Volume} props.volume
+ */
 const VolumeDetails = ({ volume }) => {
   const snapshots = hasSnapshots(volume);
   const transactional = isTransactionalRoot(volume);
@@ -277,20 +307,18 @@ const VolumeDetails = ({ volume }) => {
   if (volume.target === "FILESYSTEM")
     // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
     return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
-  if (transactional)
-    return _("Transactional Btrfs");
-  if (snapshots)
-    return _("Btrfs with snapshots");
+  if (transactional) return _("Transactional Btrfs");
+  if (snapshots) return _("Btrfs with snapshots");
 
   return volume.fsType;
 };
 
 /**
-  * @component
-  * @param {object} props
-  * @param {Volume} props.volume
-  * @param {ProposalTarget} props.target
-  */
+ * @component
+ * @param {object} props
+ * @param {Volume} props.volume
+ * @param {ProposalTarget} props.target
+ */
 const VolumeLocation = ({ volume, target }) => {
   if (volume.target === "NEW_PARTITION")
     // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
@@ -300,27 +328,26 @@ const VolumeLocation = ({ volume, target }) => {
     return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
   if (volume.target === "DEVICE" || volume.target === "FILESYSTEM")
     return volume.targetDevice?.name || "";
-  if (target === "NEW_LVM_VG")
-    return _("Logical volume at system LVM");
+  if (target === "NEW_LVM_VG") return _("Logical volume at system LVM");
 
   return _("Partition at installation disk");
 };
 
 /**
-  * @component
-  * @param {object} props
-  * @param {Volume} props.volume
-  * @param {() => void} props.onEdit
-  * @param {() => void} props.onResetLocation
-  * @param {() => void} props.onLocation
-  * @param {() => void} props.onDelete
-  */
+ * @component
+ * @param {object} props
+ * @param {Volume} props.volume
+ * @param {() => void} props.onEdit
+ * @param {() => void} props.onResetLocation
+ * @param {() => void} props.onLocation
+ * @param {() => void} props.onDelete
+ */
 const VolumeActions = ({ volume, onEdit, onResetLocation, onLocation, onDelete }) => {
   const actions = [
     { title: _("Edit"), onClick: onEdit },
     volume.target !== "DEFAULT" && { title: _("Reset location"), onClick: onResetLocation },
     { title: _("Change location"), onClick: onLocation },
-    !volume.outline.required && { title: _("Delete"), onClick: onDelete, isDanger: true }
+    !volume.outline.required && { title: _("Delete"), onClick: onDelete, isDanger: true },
   ];
 
   return <RowActions id="volume_actions" actions={actions.filter(Boolean)} />;
@@ -352,7 +379,7 @@ const VolumeRow = ({
   targetDevices,
   isLoading,
   onEdit = noop,
-  onDelete = noop
+  onDelete = noop,
 }) => {
   /** @type {[string, (dialog: string) => void]} */
   const [dialog, setDialog] = useState();
@@ -378,7 +405,9 @@ const VolumeRow = ({
   if (isLoading) {
     return (
       <Tr>
-        <Td colSpan={5}><Skeleton /></Td>
+        <Td colSpan={5}>
+          <Skeleton />
+        </Td>
       </Tr>
     );
   }
@@ -387,9 +416,15 @@ const VolumeRow = ({
     <>
       <Tr>
         <Td dataLabel={columns.mountPath}>{volume.mountPath}</Td>
-        <Td dataLabel={columns.details}><VolumeDetails volume={volume} /></Td>
-        <Td dataLabel={columns.size}><VolumeSizeLimits volume={volume} /></Td>
-        <Td dataLabel={columns.location}><VolumeLocation volume={volume} target={target} /></Td>
+        <Td dataLabel={columns.details}>
+          <VolumeDetails volume={volume} />
+        </Td>
+        <Td dataLabel={columns.size}>
+          <VolumeSizeLimits volume={volume} />
+        </Td>
+        <Td dataLabel={columns.location}>
+          <VolumeLocation volume={volume} target={target} />
+        </Td>
         <Td isActionCell>
           <VolumeActions
             volume={volume}
@@ -400,7 +435,7 @@ const VolumeRow = ({
           />
         </Td>
       </Tr>
-      {isEditDialogOpen &&
+      {isEditDialogOpen && (
         <VolumeDialog
           isOpen
           volume={volume}
@@ -408,8 +443,9 @@ const VolumeRow = ({
           templates={templates}
           onAccept={acceptForm}
           onCancel={closeDialog}
-        />}
-      {isLocationDialogOpen &&
+        />
+      )}
+      {isLocationDialogOpen && (
         <VolumeLocationDialog
           isOpen
           volume={volume}
@@ -418,7 +454,8 @@ const VolumeRow = ({
           targetDevices={targetDevices}
           onAccept={acceptForm}
           onCancel={closeDialog}
-        />}
+        />
+      )}
     </>
   );
 };
@@ -443,7 +480,7 @@ const VolumesTable = ({
   target,
   targetDevices,
   isLoading,
-  onVolumesChange
+  onVolumesChange,
 }) => {
   const columns = {
     mountPath: _("Mount point"),
@@ -451,12 +488,12 @@ const VolumesTable = ({
     size: _("Size"),
     // TRANSLATORS: where (and how) the file-system is going to be created
     location: _("Location"),
-    actions: _("Actions")
+    actions: _("Actions"),
   };
 
   /** @type {(volume: Volume) => void} */
   const editVolume = (volume) => {
-    const index = volumes.findIndex(v => v.mountPath === volume.mountPath);
+    const index = volumes.findIndex((v) => v.mountPath === volume.mountPath);
     const newVolumes = [...volumes];
     newVolumes[index] = volume;
     onVolumesChange(newVolumes);
@@ -464,7 +501,7 @@ const VolumesTable = ({
 
   /** @type {(volume: Volume) => void} */
   const deleteVolume = (volume) => {
-    const newVolumes = volumes.filter(v => v.mountPath !== volume.mountPath);
+    const newVolumes = volumes.filter((v) => v.mountPath !== volume.mountPath);
     onVolumesChange(newVolumes);
   };
 
@@ -502,9 +539,7 @@ const VolumesTable = ({
           <Th />
         </Tr>
       </Thead>
-      <Tbody>
-        {renderVolumes()}
-      </Tbody>
+      <Tbody>{renderVolumes()}</Tbody>
     </Table>
   );
 };
@@ -532,7 +567,9 @@ const Basic = ({ volumes, configureBoot, bootDevice, target, isLoading }) => {
 
   return (
     <Split hasGutter isWrappable>
-      {volumes.map((v, i) => <VolumeLabel key={i} volume={v} target={target} />)}
+      {volumes.map((v, i) => (
+        <VolumeLabel key={i} volume={v} target={target} />
+      ))}
       <BootLabel bootDevice={bootDevice} configureBoot={configureBoot} />
     </Split>
   );
@@ -563,7 +600,9 @@ const AddVolumeButton = ({ options, onClick }) => {
   // Shows a button if the only option is to add an arbitrary volume.
   if (options.length === 1 && options[0] === "") {
     return (
-      <Button variant="secondary" onClick={() => onClick("")}>{_("Add file system")}</Button>
+      <Button variant="secondary" onClick={() => onClick("")}>
+        {_("Add file system")}
+      </Button>
     );
   }
 
@@ -574,7 +613,7 @@ const AddVolumeButton = ({ options, onClick }) => {
       isOpen={isOpen}
       onSelect={onSelect}
       onOpenChange={setIsOpen}
-      toggle={toggleRef => (
+      toggle={(toggleRef) => (
         <MenuToggle
           ref={toggleRef}
           onClick={onToggleClick}
@@ -593,12 +632,16 @@ const AddVolumeButton = ({ options, onClick }) => {
             return (
               <React.Fragment key="other-option">
                 <Divider component="li" key="separator" />
-                <DropdownItem key={index} value={option}>{_("Other")}</DropdownItem>
+                <DropdownItem key={index} value={option}>
+                  {_("Other")}
+                </DropdownItem>
               </React.Fragment>
             );
           } else {
             return (
-              <DropdownItem key={index} value={option}><b>{option}</b></DropdownItem>
+              <DropdownItem key={index} value={option}>
+                <b>{option}</b>
+              </DropdownItem>
             );
           }
         })}
@@ -637,7 +680,7 @@ const Advanced = ({
   defaultBootDevice,
   onVolumesChange,
   onBootChange,
-  isLoading
+  isLoading,
 }) => {
   const [isVolumeDialogOpen, setIsVolumeDialogOpen] = useState(false);
   /** @type {[Volume|undefined, (volume: Volume) => void]} */
@@ -651,7 +694,7 @@ const Advanced = ({
   const onAcceptVolumeDialog = (volume) => {
     closeVolumeDialog();
 
-    const index = volumes.findIndex(v => v.mountPath === volume.mountPath);
+    const index = volumes.findIndex((v) => v.mountPath === volume.mountPath);
 
     if (index !== -1) {
       const newVolumes = [...volumes];
@@ -666,7 +709,7 @@ const Advanced = ({
 
   /** @type {(mountPath: string) => void} */
   const addVolume = (mountPath) => {
-    const template = templates.find(t => t.mountPath === mountPath);
+    const template = templates.find((t) => t.mountPath === mountPath);
     setTemplate(template);
     openVolumeDialog();
   };
@@ -676,13 +719,13 @@ const Advanced = ({
    * @type {() => string[]}
    */
   const mountPathOptions = () => {
-    const mountPaths = volumes.map(v => v.mountPath);
+    const mountPaths = volumes.map((v) => v.mountPath);
     const isTransactional = isTransactionalSystem(templates);
 
     return templates
-      .map(t => t.mountPath)
-      .filter(p => !mountPaths.includes(p))
-      .filter(p => !isTransactional || p.length);
+      .map((t) => t.mountPath)
+      .filter((p) => !mountPaths.includes(p))
+      .filter((p) => !isTransactional || p.length);
   };
 
   /**
@@ -691,14 +734,14 @@ const Advanced = ({
    */
   const showAddVolume = () => {
     const hasOptionalVolumes = () => {
-      return templates.find(t => t.mountPath.length && !t.outline.required) !== undefined;
+      return templates.find((t) => t.mountPath.length && !t.outline.required) !== undefined;
     };
 
     return !isTransactionalSystem(templates) || hasOptionalVolumes();
   };
 
   /** @type {Volume} */
-  const rootVolume = volumes.find(v => v.mountPath === "/");
+  const rootVolume = volumes.find((v) => v.mountPath === "/");
 
   /** @type {(config: SnapshotsConfig) => void} */
   const changeBtrfsSnapshots = ({ active }) => {
@@ -716,7 +759,9 @@ const Advanced = ({
 
   return (
     <Stack hasGutter>
-      {showSnapshotsField && <SnapshotsField rootVolume={rootVolume} onChange={changeBtrfsSnapshots} />}
+      {showSnapshotsField && (
+        <SnapshotsField rootVolume={rootVolume} onChange={changeBtrfsSnapshots} />
+      )}
       <VolumesTable
         volumes={volumes}
         templates={templates}
@@ -728,9 +773,11 @@ const Advanced = ({
       />
       <Flex direction={{ default: "rowReverse" }}>
         {showAddVolume() && <AddVolumeButton options={mountPathOptions()} onClick={addVolume} />}
-        <Button variant="plain" onClick={resetVolumes}>{_("Reset to defaults")}</Button>
+        <Button variant="plain" onClick={resetVolumes}>
+          {_("Reset to defaults")}
+        </Button>
       </Flex>
-      {isVolumeDialogOpen &&
+      {isVolumeDialogOpen && (
         <VolumeDialog
           isOpen
           volume={template}
@@ -738,7 +785,8 @@ const Advanced = ({
           templates={templates}
           onAccept={onAcceptVolumeDialog}
           onCancel={closeVolumeDialog}
-        />}
+        />
+      )}
       <Divider />
       <BootConfigField
         configureBoot={configureBoot}
@@ -791,7 +839,7 @@ export default function PartitionsField({
   defaultBootDevice,
   isLoading = false,
   onVolumesChange,
-  onBootChange
+  onBootChange,
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const onExpand = () => setIsExpanded(!isExpanded);
@@ -799,19 +847,21 @@ export default function PartitionsField({
   return (
     <CardField
       label={_("Partitions and file systems")}
-      description={_("Structure of the new system, including any additional partition needed for booting")}
+      description={_(
+        "Structure of the new system, including any additional partition needed for booting",
+      )}
       cardProps={{ isExpanded }}
       cardHeaderProps={{
         onExpand,
         toggleButtonProps: {
-          id: 'toggle-partitions-and-file-systems-view',
-          'aria-label': _("Show partitions and file-systems actions"),
-          'aria-expanded': isExpanded
+          id: "toggle-partitions-and-file-systems-view",
+          "aria-label": _("Show partitions and file-systems actions"),
+          "aria-expanded": isExpanded,
         },
-        isToggleRightAligned: true
+        isToggleRightAligned: true,
       }}
     >
-      {!isExpanded &&
+      {!isExpanded && (
         <CardBody>
           <Basic
             volumes={volumes}
@@ -820,7 +870,8 @@ export default function PartitionsField({
             target={target}
             isLoading={isLoading}
           />
-        </CardBody>}
+        </CardBody>
+      )}
       <CardExpandableContent>
         <CardBody>
           <Advanced

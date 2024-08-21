@@ -67,25 +67,6 @@
   --pf-v5-c-button--m-secondary--Color: var(--color-link-hover);
 }
 
-// Force a separation between PF/EmptyStateBody paragraph without needing
-// either: add the .pf-v5-c-content class nor wrapping PF/Text into
-// PF/TextContent
-.pf-v5-c-empty-state__body p:not(:last-child) {
-  margin-block-end: var(--pf-v5-global--spacer--md);
-}
-
-// Do not add block padding to empty state inside a table/column
-table td > .pf-v5-c-empty-state {
-  --pf-v5-c-empty-state--PaddingTop: 0;
-  --pf-v5-c-empty-state--PaddingBottom: 0;
-}
-
-// Fix single-line sub-progress miss-alignment
-.pf-v5-c-progress.pf-m-singleline .pf-v5-c-progress__bar {
-  grid-row: 1/3;
-  grid-column: 1/3;
-}
-
 .pf-v5-c-modal-box__body {
   padding-block: var(--pf-v5-c-modal-box__body--PaddingTop);
 }
@@ -150,7 +131,9 @@ table td > .pf-v5-c-empty-state {
 
 .pf-v5-c-switch {
   // We prefer having same label color for checked and not checked switches
-  --pf-v5-c-switch__input--not-checked__label--Color: var(--pf-v5-c-switch__input--checked__label--Color);
+  --pf-v5-c-switch__input--not-checked__label--Color: var(
+    --pf-v5-c-switch__input--checked__label--Color
+  );
 }
 
 // Make the switch focus looks like the rest
@@ -162,9 +145,7 @@ table td > .pf-v5-c-empty-state {
 // Avoid form select toggle icon overlap input Text
 .pf-v5-c-form-control__toggle-icon {
   padding-inline-end: 0;
-  margin-inline-start: calc(
-    var(--pf-v5-c-form-control__toggle-icon--PaddingRight) * 2
-  );
+  margin-inline-start: calc(var(--pf-v5-c-form-control__toggle-icon--PaddingRight) * 2);
 }
 
 // Adjust icons for a menu item
@@ -249,7 +230,8 @@ table td > .pf-v5-c-empty-state {
 
 .pf-v5-c-table tr[aria-level="1"] {
   border-block-end: 0;
-  border-block-start: var(--pf-v5-c-table--border-width--base) solid var(--pf-v5-c-table--BorderColor);
+  border-block-start: var(--pf-v5-c-table--border-width--base) solid
+    var(--pf-v5-c-table--BorderColor);
 }
 
 .pf-v5-c-table tr[aria-level="2"] {
@@ -270,7 +252,6 @@ table td > .pf-v5-c-empty-state {
   }
 }
 
-
 // New-ui overrides
 // ================
 
@@ -279,7 +260,7 @@ table td > .pf-v5-c-empty-state {
   fill: var(--pf-v5-c-nav__link--Color);
 }
 
-.pf-v5-c-page__sidebar-body{
+.pf-v5-c-page__sidebar-body {
   fill: white;
 }
 
@@ -294,8 +275,12 @@ table td > .pf-v5-c-empty-state {
 // that knowst that link "isActive")
 
 .pf-v5-c-tabs__link.pf-m-current {
-  --pf-v5-c-tabs__link--after--BorderColor: var(--pf-v5-c-tabs__item--m-current__link--after--BorderColor);
-  --pf-v5-c-tabs__link--after--BorderWidth: var(--pf-v5-c-tabs__item--m-current__link--after--BorderWidth);
+  --pf-v5-c-tabs__link--after--BorderColor: var(
+    --pf-v5-c-tabs__item--m-current__link--after--BorderColor
+  );
+  --pf-v5-c-tabs__link--after--BorderWidth: var(
+    --pf-v5-c-tabs__item--m-current__link--after--BorderWidth
+  );
 }
 
 // Color for icons in Masthead

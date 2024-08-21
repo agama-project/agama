@@ -20,24 +20,16 @@
  */
 
 import React from "react";
-import {
-  Gallery, GalleryItem,
-} from "@patternfly/react-core";
-import { Link } from "react-router-dom";
-import { ButtonLink, CardField, Page } from "~/components/core";
+import { Gallery, GalleryItem } from "@patternfly/react-core";
+import { Link, CardField, Page } from "~/components/core";
+import { PATHS } from "~/routes/l10n";
 import { _ } from "~/i18n";
-import { useL10n } from "~/context/l10n";
-import buttonStyles from '@patternfly/react-styles/css/components/Button/button';
+import { useL10n } from "~/queries/l10n";
 
 const Section = ({ label, value, children }) => {
   return (
-    <CardField
-      label={label}
-      value={value}
-    >
-      <CardField.Content>
-        {children}
-      </CardField.Content>
+    <CardField label={label} value={value}>
+      <CardField.Content>{children}</CardField.Content>
     </CardField>
   );
 };
@@ -48,14 +40,10 @@ const Section = ({ label, value, children }) => {
  * @component
  */
 export default function L10nPage() {
-  const {
-    selectedKeymap: keymap,
-    selectedTimezone: timezone,
-    selectedLocales: [locale]
-  } = useL10n();
+  const { selectedLocale: locale, selectedTimezone: timezone, selectedKeymap: keymap } = useL10n();
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Localization")}</h2>
       </Page.Header>
@@ -67,35 +55,32 @@ export default function L10nPage() {
               label={_("Language")}
               value={locale ? `${locale.name} - ${locale.territory}` : _("Not selected yet")}
             >
-              <ButtonLink to="language/select" isPrimary={!locale}>
+              <Link to={PATHS.localeSelection} isPrimary={!locale}>
                 {locale ? _("Change") : _("Select")}
-              </ButtonLink>
+              </Link>
             </Section>
           </GalleryItem>
 
           <GalleryItem>
-            <Section
-              label={_("Keyboard")}
-              value={keymap ? keymap.name : _("Not selected yet")}
-            >
-              <ButtonLink to="keymap/select" isPrimary={!keymap}>
+            <Section label={_("Keyboard")} value={keymap ? keymap.name : _("Not selected yet")}>
+              <Link to={PATHS.keymapSelection} isPrimary={!keymap}>
                 {keymap ? _("Change") : _("Select")}
-              </ButtonLink>
+              </Link>
             </Section>
           </GalleryItem>
 
           <GalleryItem>
             <Section
               label={_("Time zone")}
-              value={timezone ? (timezone.parts || []).join(' - ') : _("Not selected yet")}
+              value={timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
             >
-              <ButtonLink to="timezone/select" isPrimary={!timezone}>
+              <Link to={PATHS.timezoneSelection} isPrimary={!timezone}>
                 {timezone ? _("Change") : _("Select")}
-              </ButtonLink>
+              </Link>
             </Section>
           </GalleryItem>
         </Gallery>
       </Page.MainContent>
-    </>
+    </Page>
   );
 }

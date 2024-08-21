@@ -19,12 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+// @ts-check
+
+import React, { useState, useRef } from "react";
 import { Form } from "@patternfly/react-core";
-import { PasswordAndConfirmationInput, Popup } from '~/components/core';
+import { PasswordAndConfirmationInput, Popup } from "~/components/core";
 
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
+import { useRootUser, useRootUserMutation } from "~/queries/users";
 
 /**
  * A dialog holding the form to change the root password
@@ -38,14 +41,11 @@ import { useInstallerClient } from "~/context/installer";
  * @param {boolean} props.isOpen - whether the dialog should be visible
  * @param {function} props.onClose - the function to be called when the dialog is closed
  */
-export default function RootPasswordPopup({
-  title = _("Root password"),
-  isOpen,
-  onClose
-}) {
-  const { users: client } = useInstallerClient();
+export default function RootPasswordPopup({ title = _("Root password"), isOpen, onClose }) {
+  const setRootUser = useRootUserMutation();
   const [password, setPassword] = useState("");
   const [isValidPassword, setIsValidPassword] = useState(true);
+  const passwordRef = useRef();
 
   const close = () => {
     setPassword("");
@@ -55,7 +55,7 @@ export default function RootPasswordPopup({
   const accept = async (e) => {
     e.preventDefault();
     // TODO: handle errors
-    if (password !== "") await client.setRootPassword(password);
+    if (password !== "") await setRootUser.mutateAsync({ password });
     close();
   };
 
@@ -67,6 +67,7 @@ export default function RootPasswordPopup({
     <Popup title={title} isOpen={isOpen} inlineSize="small">
       <Form id="root-password" onSubmit={accept}>
         <PasswordAndConfirmationInput
+          inputRef={passwordRef}
           value={password}
           onChange={onPasswordChange}
           onValidation={onPasswordValidation}
@@ -74,7 +75,11 @@ export default function RootPasswordPopup({
       </Form>
 
       <Popup.Actions>
-        <Popup.Confirm form="root-password" type="submit" isDisabled={password === "" || !isValidPassword} />
+        <Popup.Confirm
+          form="root-password"
+          type="submit"
+          isDisabled={password === "" || !isValidPassword}
+        />
         <Popup.Cancel onClick={close} />
       </Popup.Actions>
     </Popup>

@@ -28,16 +28,16 @@ import { noop } from "~/utils";
 const useNodeSiblings = (node) => {
   if (!node) return [noop, noop];
 
-  const siblings = [...node.parentNode.children].filter(n => n !== node);
+  const siblings = [...node.parentNode.children].filter((n) => n !== node);
 
   const addAttribute = (attribute, value) => {
-    siblings.forEach(sibling => {
+    siblings.forEach((sibling) => {
       sibling.setAttribute(attribute, value);
     });
   };
 
   const removeAttribute = (attribute) => {
-    siblings.forEach(sibling => {
+    siblings.forEach((sibling) => {
       sibling.removeAttribute(attribute);
     });
   };

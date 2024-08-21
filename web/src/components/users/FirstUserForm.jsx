@@ -23,22 +23,34 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Alert,
   Checkbox,
-  Form, FormGroup,
+  Form,
+  FormGroup,
   TextInput,
-  Menu, MenuContent, MenuList, MenuItem,
-  Grid, GridItem,
+  Menu,
+  MenuContent,
+  MenuList,
+  MenuItem,
+  Grid,
+  GridItem,
   Stack,
-  Switch
+  Switch,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
-import { PasswordAndConfirmationInput, Page } from '~/components/core';
+import { PasswordAndConfirmationInput, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import { suggestUsernames } from '~/components/users/utils';
+import { suggestUsernames } from "~/components/users/utils";
+import { useFirstUser, useFirstUserMutation } from "~/queries/users";
 
-const UsernameSuggestions = ({ isOpen = false, entries, onSelect, setInsideDropDown, focusedIndex = -1 }) => {
+const UsernameSuggestions = ({
+  isOpen = false,
+  entries,
+  onSelect,
+  setInsideDropDown,
+  focusedIndex = -1,
+}) => {
   if (!isOpen) return;
 
   return (
@@ -57,7 +69,7 @@ const UsernameSuggestions = ({ isOpen = false, entries, onSelect, setInsideDropD
               isFocused={focusedIndex === index}
               onClick={() => onSelect(suggestion)}
             >
-              { /* TRANSLATORS: dropdown username suggestions */}
+              {/* TRANSLATORS: dropdown username suggestions */}
               {_("Use suggested username")} <b>{suggestion}</b>
             </MenuItem>
           ))}
@@ -71,6 +83,8 @@ const UsernameSuggestions = ({ isOpen = false, entries, onSelect, setInsideDropD
 // close to the related input.
 // TODO: extract the suggestions logic.
 export default function FirstUserForm() {
+  const firstUser = useFirstUser();
+  const setFirstUser = useFirstUserMutation();
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, setState] = useState({});
@@ -85,24 +99,14 @@ export default function FirstUserForm() {
   const passwordRef = useRef();
 
   useEffect(() => {
-    cancellablePromise(client.users.getUser()).then(userValues => {
-      const editing = userValues.userName !== "";
-      setState({
-        load: true,
-        user: userValues,
-        isEditing: editing
-      });
-      setChangePassword(!editing);
+    const editing = firstUser.userName !== "";
+    setState({
+      load: true,
+      user: firstUser,
+      isEditing: editing,
     });
-  }, [client.users, cancellablePromise]);
-
-  useEffect(() => {
-    return client.users.onUsersChange(({ firstUser }) => {
-      if (firstUser !== undefined) {
-        setState({ ...state, user: firstUser });
-      }
-    });
-  }, [client.users, state]);
+    setChangePassword(!editing);
+  }, [firstUser]);
 
   useEffect(() => {
     if (showSuggestions) {
@@ -136,18 +140,15 @@ export default function FirstUserForm() {
     }
 
     // FIXME: improve validations
-    if (Object.values(user).some(v => v === "")) {
+    if (Object.values(user).some((v) => v === "")) {
       setErrors([_("All fields are required")]);
       return;
     }
 
-    const { result, issues = [] } = await client.users.setUser({ ...state.user, ...user });
-    if (!result || issues.length) {
-      // FIXME: improve error handling. See client.
-      setErrors(issues.length ? issues : [_("Please, try again.")]);
-    } else {
-      navigate("..");
-    }
+    setFirstUser
+      .mutateAsync({ ...state.user, ...user })
+      .catch((e) => setErrors(e))
+      .then(() => navigate(".."));
   };
 
   const onSuggestionSelected = (suggestion) => {
@@ -165,24 +166,27 @@ export default function FirstUserForm() {
 
   const handleKeyDown = (e) => {
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault(); // Prevent page scrolling
         renderSuggestions(e);
         setFocusedIndex((prevIndex) => (prevIndex + 1) % suggestions.length);
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault(); // Prevent page scrolling
         renderSuggestions(e);
-        setFocusedIndex((prevIndex) => (prevIndex - (prevIndex === -1 ? 0 : 1) + suggestions.length) % suggestions.length);
+        setFocusedIndex(
+          (prevIndex) =>
+            (prevIndex - (prevIndex === -1 ? 0 : 1) + suggestions.length) % suggestions.length,
+        );
         break;
-      case 'Enter':
+      case "Enter":
         if (focusedIndex >= 0) {
           e.preventDefault();
           onSuggestionSelected(suggestions[focusedIndex]);
         }
         break;
-      case 'Escape':
-      case 'Tab':
+      case "Escape":
+      case "Tab":
         setShowSuggestions(false);
         break;
       default:
@@ -192,17 +196,20 @@ export default function FirstUserForm() {
   };
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{state.isEditing ? _("Edit user") : _("Create user")}</h2>
       </Page.Header>
 
       <Page.MainContent>
         <Form id="firstUserForm" onSubmit={onSubmit}>
-          {errors.length > 0 &&
+          {errors.length > 0 && (
             <Alert variant="warning" isInline title={_("Something went wrong")}>
-              {errors.map((e, i) => <p key={`error_${i}`}>{e}</p>)}
-            </Alert>}
+              {errors.map((e, i) => (
+                <p key={`error_${i}`}>{e}</p>
+              ))}
+            </Alert>
+          )}
           <Grid hasGutter>
             <GridItem sm={12} xl={6} rowSpan={2}>
               <Page.CardSection isFullHeight>
@@ -249,12 +256,13 @@ export default function FirstUserForm() {
             <GridItem sm={12} xl={6}>
               <Page.CardSection>
                 <Stack hasGutter>
-                  {state.isEditing &&
+                  {state.isEditing && (
                     <Switch
                       label={_("Edit password too")}
                       isChecked={changePassword}
                       onChange={() => setChangePassword(!changePassword)}
-                    />}
+                    />
+                  )}
                   <PasswordAndConfirmationInput
                     inputRef={passwordRef}
                     isDisabled={!changePassword}
@@ -285,6 +293,6 @@ export default function FirstUserForm() {
           {_("Accept")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

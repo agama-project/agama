@@ -23,14 +23,22 @@
 
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Button, Flex, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
+import {
+  Button,
+  Flex,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
+} from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import { localConnection } from "~/utils";
 import { useInstallerL10n } from "~/context/installerL10n";
 import supportedLanguages from "~/languages.json";
-import { useL10n } from "~/context/l10n";
+import { useQuery } from "@tanstack/react-query";
+import { keymapsQuery } from "~/queries/l10n";
 
 /**
  * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
@@ -46,17 +54,18 @@ export default function InstallerOptions() {
     language: initialLanguage,
     keymap: initialKeymap,
     changeLanguage,
-    changeKeymap
+    changeKeymap,
   } = useInstallerL10n();
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(initialKeymap);
-  const { keymaps } = useL10n();
+  const { isPending, data: keymaps } = useQuery(keymapsQuery());
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [inProgress, setInProgress] = useState(false);
 
   // FIXME: Installer options should be available in the login too.
   if (["/login", "/products/progress"].includes(location.pathname)) return;
+  if (isPending) return;
 
   const open = () => setIsOpen(true);
   const close = () => {
@@ -83,16 +92,10 @@ export default function InstallerOptions() {
         aria-label={_("Show installer options")}
       />
 
-      <Popup
-        isOpen={isOpen}
-        title={_("Installer options")}
-      >
+      <Popup isOpen={isOpen} title={_("Installer options")}>
         <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
           <Form id="installer-l10n" onSubmit={onSubmit}>
-            <FormGroup
-              fieldId="language"
-              label={_("Language")}
-            >
+            <FormGroup fieldId="language" label={_("Language")}>
               <FormSelect
                 id="language"
                 name="language"
@@ -104,35 +107,40 @@ export default function InstallerOptions() {
                 {Object.keys(supportedLanguages)
                   .sort()
                   .map((id, index) => (
-                    <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />)
-                  )}
+                    <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />
+                  ))}
               </FormSelect>
             </FormGroup>
 
-            <FormGroup
-              fieldId="keymap"
-              label={_("Keyboard layout")}
-            >
-              {localConnection()
-                ? (
-                  <FormSelect
-                    id="keymap"
-                    name="keymap"
-                    label={_("Keyboard layout")}
-                    value={keymap}
-                    onChange={(_e, value) => setKeymap(value)}
-                  >
-                    {keymaps.map((keymap, index) => (
-                      <FormSelectOption key={index} value={keymap.id} label={keymap.name} />)
-                    )}
-                  </FormSelect>
-                )
-                : _("Cannot be changed in remote installation")}
+            <FormGroup fieldId="keymap" label={_("Keyboard layout")}>
+              {localConnection() ? (
+                <FormSelect
+                  id="keymap"
+                  name="keymap"
+                  label={_("Keyboard layout")}
+                  value={keymap}
+                  onChange={(_e, value) => setKeymap(value)}
+                >
+                  {keymaps.map((keymap, index) => (
+                    <FormSelectOption key={index} value={keymap.id} label={keymap.name} />
+                  ))}
+                </FormSelect>
+              ) : (
+                _("Cannot be changed in remote installation")
+              )}
             </FormGroup>
           </Form>
         </Flex>
         <Popup.Actions>
-          <Popup.Confirm form="installer-l10n" type="submit" autoFocus isDisabled={inProgress} isLoading={inProgress}>{_("Accept")}</Popup.Confirm>
+          <Popup.Confirm
+            form="installer-l10n"
+            type="submit"
+            autoFocus
+            isDisabled={inProgress}
+            isLoading={inProgress}
+          >
+            {_("Accept")}
+          </Popup.Confirm>
           <Popup.Cancel onClick={close} isDisabled={inProgress} />
         </Popup.Actions>
       </Popup>

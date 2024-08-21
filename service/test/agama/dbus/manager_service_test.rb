@@ -33,8 +33,6 @@ describe Agama::DBus::ManagerService do
   let(:object_server) { instance_double(DBus::ObjectServer, export: nil) }
   let(:bus) { instance_double(Agama::DBus::Bus, request_name: nil) }
 
-  let(:cockpit) { instance_double(Agama::CockpitManager, setup: nil) }
-
   let(:manager_obj) { instance_double(Agama::DBus::Manager, path: "/org/opensuse/Agama/Users1") }
   let(:users_obj) { instance_double(Agama::DBus::Users, path: "/org/opensuse/Agama/Users1") }
 
@@ -48,7 +46,6 @@ describe Agama::DBus::ManagerService do
     allow(bus).to receive(:request_service).with("org.opensuse.Agama.Manager1")
       .and_return(object_server)
     allow(Agama::Manager).to receive(:new).with(config, logger).and_return(manager)
-    allow(Agama::CockpitManager).to receive(:new).and_return(cockpit)
     allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
     allow(Agama::DBus::Manager).to receive(:new).with(manager, logger).and_return(manager_obj)
     allow(Agama::DBus::Users).to receive(:new).and_return(users_obj)

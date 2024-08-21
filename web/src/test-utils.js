@@ -35,7 +35,7 @@ import { InstallerClientProvider } from "~/context/installer";
 import { noop, isObject } from "./utils";
 import cockpit from "./lib/cockpit";
 import { InstallerL10nProvider } from "./context/installerL10n";
-import { L10nProvider } from "./context/l10n";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -52,6 +52,14 @@ const initialRoutes = jest.fn().mockReturnValue(["/"]);
 const mockNavigateFn = jest.fn();
 
 /**
+ * Allows checking when the useRevalidator function has been called
+ *
+ * @example
+ *   expect(mockUseRevalidator).toHaveBeenCalled()
+ */
+const mockUseRevalidator = jest.fn();
+
+/**
  * Allows manipulating MemoryRouter routes for testing purpose
  *
  * NOTE: on purpose, it will take effect only once.
@@ -64,11 +72,13 @@ const mockNavigateFn = jest.fn();
 const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
 
 // Centralize the react-router-dom mock here
-jest.mock('react-router-dom', () => ({
+jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
+  useHref: (to) => to,
   useNavigate: () => mockNavigateFn,
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
-  Outlet: () => <>Outlet Content</>
+  Outlet: () => <>Outlet Content</>,
+  useRevalidator: () => mockUseRevalidator,
 }));
 
 const Providers = ({ children, withL10n }) => {
@@ -88,31 +98,15 @@ const Providers = ({ children, withL10n }) => {
     client.manager = {};
   }
 
-  client.manager = {
-    getPhase: noop,
-    getStatus: noop,
-    onPhaseChange: noop,
-    onStatusChange: noop,
-    ...client.manager
-  };
-
   if (withL10n) {
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider>
-          <L10nProvider>
-            {children}
-          </L10nProvider>
-        </InstallerL10nProvider>
+        <InstallerL10nProvider>{children}</InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }
 
-  return (
-    <InstallerClientProvider client={client}>
-      {children}
-    </InstallerClientProvider>
-  );
+  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
 };
 
 /**
@@ -122,20 +116,20 @@ const Providers = ({ children, withL10n }) => {
  * @see #plainRender for rendering without installer providers
  */
 const installerRender = (ui, options = {}) => {
+  const queryClient = new QueryClient({});
+
   const Wrapper = ({ children }) => (
     <Providers withL10n={options.withL10n}>
       <MemoryRouter initialEntries={initialRoutes()}>
-        {children}
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
       </MemoryRouter>
     </Providers>
   );
 
-  return (
-    {
-      user: userEvent.setup(),
-      ...render(ui, { wrapper: Wrapper, ...options })
-    }
-  );
+  return {
+    user: userEvent.setup(),
+    ...render(ui, { wrapper: Wrapper, ...options }),
+  };
 };
 
 /**
@@ -151,12 +145,15 @@ const installerRender = (ui, options = {}) => {
  * core/Sidebar as part of the layout.
  */
 const plainRender = (ui, options = {}) => {
-  return (
-    {
-      user: userEvent.setup(),
-      ...render(ui, options)
-    }
+  const queryClient = new QueryClient({});
+
+  const Wrapper = ({ children }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  return {
+    user: userEvent.setup(),
+    ...render(ui, { wrapper: Wrapper, ...options }),
+  };
 };
 
 /**
@@ -215,5 +212,6 @@ export {
   mockGettext,
   mockNavigateFn,
   mockRoutes,
-  resetLocalStorage
+  mockUseRevalidator,
+  resetLocalStorage,
 };

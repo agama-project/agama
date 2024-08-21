@@ -23,8 +23,8 @@ import React, { useState } from "react";
 import { Form, FormGroup, FileUpload } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { Popup } from '~/components/core';
-import { useInstallerClient } from "~/context/installer";
+import { Popup } from "~/components/core";
+import { useRootUserMutation } from "~/queries/users";
 
 /**
  * A dialog holding the form to set the SSH Public key for root
@@ -43,9 +43,9 @@ export default function RootSSHKeyPopup({
   title = _("Set root SSH public key"),
   currentKey = "",
   isOpen,
-  onClose
+  onClose,
 }) {
-  const client = useInstallerClient();
+  const setRootUser = useRootUserMutation();
   const [isLoading, setIsLoading] = useState(false);
   const [sshKey, setSSHKey] = useState(currentKey);
 
@@ -60,7 +60,7 @@ export default function RootSSHKeyPopup({
 
   const accept = async (e) => {
     e.preventDefault();
-    client.users.setRootSSHKey(sshKey);
+    await setRootUser.mutateAsync({ sshkey: sshKey });
     // TODO: handle/display errors
     close();
   };

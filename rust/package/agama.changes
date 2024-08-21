@@ -1,4 +1,81 @@
 -------------------------------------------------------------------
+Thu Aug 15 08:33:02 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Use sd_notify for starting agama-web-service to notify systemd
+  when service is ready. It helps with race condition in agama-auto
+  (gh#openSUSE/agama#1539)
+- improve systemd dependencies of agama-web-service to ensure that
+  agama service runs
+
+-------------------------------------------------------------------
+Fri Aug  9 08:50:31 UTC 2024 - Martin Vidner <mvidner@suse.com>
+
+- For CLI, use HTTP clients instead of D-Bus clients,
+  for Users and Localization (gh#openSUSE/agama#1438)
+  - service clients used by CLI:
+    - added UsersHTTPClient, LocalizationHTTPClient
+    - removed LocalizationClient
+    - BaseHTTPClient API reworked:
+      - return () or deserialized objects
+      - added PUT and PATCH
+  - web service:
+    - PUT /api/users/first: do report backend errors
+    - PATCH /api/users/root: report the (potential) backend errors
+  - tests:
+    - added tests using httpmock
+    - env_logger added to dev-dependencies
+
+-------------------------------------------------------------------
+Mon Jul 22 15:27:44 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix `agama questions list` to list only unaswered questions and
+  improve its performance
+  (gh#openSUSE/agama#1476)
+
+-------------------------------------------------------------------
+Wed Jul 17 11:15:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns search domains and ignore-auto-dns to network settings
+  (gh#openSUSE/agama#1330).
+
+-------------------------------------------------------------------
+Tue Jul 16 11:56:29 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI:
+-- Add `agama questions list` to get list of unanswered questions
+-- Add `agama questions ask` to ask for question and wait for
+   answer
+- agama-lib:
+-- Add BaseHTTPClient that is base for clients that communicate
+   with agama-web-server
+   (gh#openSUSE/agama#1457)
+
+-------------------------------------------------------------------
+Wed Jul 10 20:11:39 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to HTTP API a method to remove questions
+- Add to HTTP API method to get the answer to a question
+  (gh#openSUSE/agama#1453)
+
+-------------------------------------------------------------------
+Wed Jul 10 10:01:18 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to HTTP API method POST for question to ask new question
+  (gh#openSUSE/agama#1451)
+
+-------------------------------------------------------------------
+Fri Jul  5 13:17:17 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Adapt storage model to changes in D-Bus API
+  (gh#openSUSE/agama#1428).
+
+-------------------------------------------------------------------
+Mon Jul  1 15:50:40 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Schema definition for guided and AutoYaST storage proposals
+  (gh#openSUSE/agama#1263).
+
+-------------------------------------------------------------------
 Fri Jun 28 06:56:02 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - Use gzip (.gz) instead of bzip2 (.bz2) to compress logs

@@ -23,19 +23,26 @@ import React, { useState, useEffect } from "react";
 import {
   Alert,
   Button,
-  Card, CardBody,
-  EmptyState, EmptyStateBody, EmptyStateHeader, EmptyStateIcon, ExpandableSection,
+  Card,
+  CardBody,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateHeader,
+  EmptyStateIcon,
+  ExpandableSection,
   Flex,
-  Grid, GridItem,
+  Grid,
+  GridItem,
   Stack,
-  Text
+  Text,
 } from "@patternfly/react-core";
 import SimpleLayout from "~/SimpleLayout";
 import { Center, Icon } from "~/components/layout";
 import { EncryptionMethods } from "~/client/storage";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
-import alignmentStyles from '@patternfly/react-styles/css/utilities/Alignment/alignment';
+import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+import { useInstallerStatus } from "~/queries/status";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -52,9 +59,11 @@ const TpmHint = () => {
         >
           {
             // TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
-            _("The final step to configure the Trusted Platform Module (TPM) to automatically \
+            _(
+              "The final step to configure the Trusted Platform Module (TPM) to automatically \
 open encrypted devices will take place during the first boot of the new system. For that to work, \
-the machine needs to boot directly to the new boot loader.")
+the machine needs to boot directly to the new boot loader.",
+            )
           }
         </ExpandableSection>
       </Stack>
@@ -66,17 +75,17 @@ const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-s
 
 function InstallationFinished() {
   const client = useInstallerClient();
-  const [usingIguana, setUsingIguana] = useState(false);
+  const { useIguana } = useInstallerStatus({ suspense: true });
   const [usingTpm, setUsingTpm] = useState(false);
   const closingAction = () => client.manager.finishInstallation();
 
   useEffect(() => {
     async function preparePage() {
-      const iguana = await client.manager.useIguana();
       // FIXME: This logic should likely not be placed here, it's too coupled to storage internals.
       // Something to fix when this whole page is refactored in a (hopefully near) future.
-      const { settings: { encryptionPassword, encryptionMethod } } = await client.storage.proposal.getResult();
-      setUsingIguana(iguana);
+      const {
+        settings: { encryptionPassword, encryptionMethod },
+      } = await client.storage.proposal.getResult();
       setUsingTpm(encryptionPassword?.length > 0 && encryptionMethod === EncryptionMethods.TPM);
     }
 
@@ -99,18 +108,25 @@ function InstallationFinished() {
                       icon={<EmptyStateIcon icon={SuccessIcon} />}
                     />
                     <EmptyStateBody>
-                      <Text>{_("The installation on your machine is complete.")}</Text>
-                      <Text>
-                        {usingIguana
-                          ? _("At this point you can power off the machine.")
-                          : _("At this point you can reboot the machine to log in to the new system.")}
-                      </Text>
-                      {usingTpm && <TpmHint />}
+                      <Flex
+                        rowGap={{ default: "rowGapMd" }}
+                        justifyContent={{ default: "justifyContentCenter" }}
+                      >
+                        <Text>{_("The installation on your machine is complete.")}</Text>
+                        <Text>
+                          {useIguana
+                            ? _("At this point you can power off the machine.")
+                            : _(
+                                "At this point you can reboot the machine to log in to the new system.",
+                              )}
+                        </Text>
+                        {usingTpm && <TpmHint />}
+                      </Flex>
                     </EmptyStateBody>
                   </EmptyState>
                   <Flex direction={{ default: "rowReverse" }}>
                     <Button size="lg" variant="primary" onClick={closingAction}>
-                      {usingIguana ? _("Finish") : _("Reboot")}
+                      {useIguana ? _("Finish") : _("Reboot")}
                     </Button>
                   </Flex>
                 </Stack>

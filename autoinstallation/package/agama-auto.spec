@@ -38,7 +38,21 @@ install -D -d -m 0755 %{buildroot}%{_bindir}
 install -m 0755 %{_builddir}/agama/bin/agama-auto %{buildroot}%{_bindir}/agama-auto
 install -D -m 0644 %{_builddir}/agama/systemd/agama-auto.service %{buildroot}%{_unitdir}/agama-auto.service
 
+%pre
+%service_add_pre agama-auto.service
+
+%post
+%service_add_post agama-auto.service
+
+%preun
+%service_del_preun agama-auto.service
+
+%postun
+%service_del_preun agama-auto.service
+
 %files
+%doc README.md
+%license LICENSE
 %{_bindir}/agama-auto
 %{_unitdir}/agama-auto.service
 

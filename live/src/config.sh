@@ -12,12 +12,25 @@ echo "Configure image: [$kiwi_iname]..."
 # setup baseproduct link
 suseSetupProduct
 
+# enable the corresponding repository
+DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
+REPO="/etc/zypp/repos.d/agama-${DISTRO}.repo"
+if [ -f "${REPO}.disabled" ]; then
+  mv "${REPO}.disabled" $REPO
+fi
+rm /etc/zypp/repos.d/*.disabled
+
 # configure the repositories in the Live system
 # import the OBS key for the systemsmanagement OBS project
 rpm --import /tmp/systemsmanagement_key.gpg
 rm /tmp/systemsmanagement_key.gpg
-# import the openSUSE keys
-rpm --import /usr/lib/rpm/gnupg/keys/*.asc
+# import the IBS key for the Devel:YaST:Agama:Head project
+rpm --import /tmp/Devel_YaST_Agama_Head_key.gpg
+rm /tmp/Devel_YaST_Agama_Head_key.gpg
+# import the openSUSE keys, but check if there is any
+if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
+  rpm --import /usr/lib/rpm/gnupg/keys/*.asc
+fi
 
 # activate services
 systemctl enable sshd.service
@@ -32,8 +45,10 @@ systemctl enable agama-certificate-issue.path
 systemctl enable agama-certificate-wait.service
 systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
+systemctl enable agama-url-issue.service
 systemctl enable agama-ssh-issue.service
 systemctl enable agama-self-update.service
+systemctl enable live-free-space.service
 systemctl enable live-password-cmdline.service
 systemctl enable live-password-dialog.service
 systemctl enable live-password-iso.service
@@ -75,6 +90,16 @@ fi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
+
+# Increase the Live ISO image size to have some extra free space for installing
+# additional debugging or development packages.
+#
+# Unfortunately Kiwi does not allow to configure the image size for the "iso"
+# build target (it can do  that for "oem"). As a workaround here we create a big
+# sparse file which in reality takes just little space in the image but Kiwi
+# uses its virtual size for estimating the needed filesystem size.
+# The file is later deleted at boot by the live-free-space service.
+dd bs=1 count=1 seek=2G if=/dev/zero of=/var/lib/live_free_space
 
 ################################################################################
 # Reducing the used space

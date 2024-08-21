@@ -23,11 +23,12 @@
 
 import React from "react";
 import { Button, Skeleton, Stack, List, ListItem } from "@patternfly/react-core";
-import { CardField, ButtonLink } from "~/components/core";
+import { CardField, Link } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { PATHS } from "~/routes/storage";
 
 /**
  * @typedef {import ("~/client/storage").Action} Action
@@ -49,7 +50,7 @@ const DeletionsInfo = ({ policy, manager, spaceActions }) => {
   let label;
   let systemsLabel;
   const systems = manager.deletedSystems();
-  const deleteActions = manager.actions.filter(a => a.delete && !a.subvol).length;
+  const deleteActions = manager.actions.filter((a) => a.delete && !a.subvol).length;
   const isDeletePolicy = policy?.id === "delete";
   const hasDeleteActions = deleteActions !== 0;
 
@@ -61,13 +62,14 @@ const DeletionsInfo = ({ policy, manager, spaceActions }) => {
     // TRANSLATORS: %d will be replaced by the amount of destructive actions
     label = (
       <strong className={textStyles.warningColor_200}>
-        {
-          sprintf(n_(
+        {sprintf(
+          n_(
             "There is %d destructive action planned",
             "There are %d destructive actions planned",
-            deleteActions
-          ), deleteActions)
-        }
+            deleteActions,
+          ),
+          deleteActions,
+        )}
       </strong>
     );
   }
@@ -76,7 +78,11 @@ const DeletionsInfo = ({ policy, manager, spaceActions }) => {
     // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
     // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
     // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
-    systemsLabel = <>{_("affecting")} <strong>{systems.join(", ")}</strong></>;
+    systemsLabel = (
+      <>
+        {_("affecting")} <strong>{systems.join(", ")}</strong>
+      </>
+    );
   }
 
   return (
@@ -99,7 +105,7 @@ const ResizesInfo = ({ policy, manager, validProposal, spaceActions }) => {
   let label;
   let systemsLabel;
   const systems = manager.resizedSystems();
-  const resizeActions = manager.actions.filter(a => a.resize).length;
+  const resizeActions = manager.actions.filter((a) => a.resize).length;
   const isResizePolicy = policy?.id === "resize";
   const hasResizeActions = resizeActions !== 0;
 
@@ -112,18 +118,21 @@ const ResizesInfo = ({ policy, manager, validProposal, spaceActions }) => {
   } else if (validProposal && (isResizePolicy || spaceActions.length > 0) && !hasResizeActions) {
     label = _("Shrinking some partitions is allowed but not needed");
   } else if (hasResizeActions) {
-    label = sprintf(n_(
-      "%d partition will be shrunk",
-      "%d partitions will be shrunk",
-      resizeActions
-    ), resizeActions);
+    label = sprintf(
+      n_("%d partition will be shrunk", "%d partitions will be shrunk", resizeActions),
+      resizeActions,
+    );
   }
 
   if (systems.length) {
     // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
     // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
     // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
-    systemsLabel = <>{_("affecting")} <strong>{systems.join(", ")}</strong></>;
+    systemsLabel = (
+      <>
+        {_("affecting")} <strong>{systems.join(", ")}</strong>
+      </>
+    );
   }
 
   return (
@@ -156,27 +165,23 @@ const ActionsInfo = ({ actions, validProposal, onClick }) => {
     label = (
       <Button onClick={onClick} variant="link" isInline>
         {sprintf(
-          n_(
-            "Check the planned action",
-            "Check the %d planned actions",
-            actions.length
-          ),
-          actions.length
+          n_("Check the planned action", "Check the %d planned actions", actions.length),
+          actions.length,
         )}
       </Button>
     );
   }
 
-  return (
-    <ListItem key="actions">
-      {label}
-    </ListItem>
-  );
+  return <ListItem key="actions">{label}</ListItem>;
 };
 
 const ActionsSkeleton = () => (
   <Stack hasGutter>
-    <Skeleton fontSize="sm" width="65%" screenreaderText={_("Waiting for actions information...")} />
+    <Skeleton
+      fontSize="sm"
+      width="65%"
+      screenreaderText={_("Waiting for actions information...")}
+    />
     <Skeleton fontSize="sm" width="55%" />
     <Skeleton fontSize="sm" width="75%" />
   </Stack>
@@ -215,8 +220,11 @@ export default function ProposalActionsSummary({
     // eslint-disable-next-line agama-i18n/string-literals
     value = _(policy.summaryLabels[0]);
   } else {
-    // eslint-disable-next-line agama-i18n/string-literals
-    value = sprintf(n_(policy.summaryLabels[0], policy.summaryLabels[1], devices.length), devices.length);
+    value = sprintf(
+      // eslint-disable-next-line agama-i18n/string-literals
+      n_(policy.summaryLabels[0], policy.summaryLabels[1], devices.length),
+      devices.length,
+    );
   }
 
   const devicesManager = new DevicesManager(system, staging, actions);
@@ -225,35 +233,37 @@ export default function ProposalActionsSummary({
     <CardField
       label={_("Actions")}
       actions={
-        isLoading ? <Skeleton fontSize="sm" width="100px" /> : <ButtonLink to="space-policy">{_("Change")}</ButtonLink>
+        isLoading ? (
+          <Skeleton fontSize="sm" width="100px" />
+        ) : (
+          <Link to={PATHS.spacePolicy}>{_("Change")}</Link>
+        )
       }
       cardProps={{ isFullHeight: false }}
     >
       <CardField.Content>
-        {
-          isLoading
-            ? <ActionsSkeleton />
-            : (
-              <List>
-                <DeletionsInfo
-                  policy={policy}
-                  manager={devicesManager}
-                  spaceActions={spaceActions.filter(a => a.action === "force_delete")}
-                />
-                <ResizesInfo
-                  policy={policy}
-                  manager={devicesManager}
-                  validProposal={errors.length === 0}
-                  spaceActions={spaceActions.filter(a => a.action === "resize")}
-                />
-                <ActionsInfo
-                  actions={actions}
-                  validProposal={errors.length === 0}
-                  onClick={onActionsClick}
-                />
-              </List>
-            )
-        }
+        {isLoading ? (
+          <ActionsSkeleton />
+        ) : (
+          <List>
+            <DeletionsInfo
+              policy={policy}
+              manager={devicesManager}
+              spaceActions={spaceActions.filter((a) => a.action === "force_delete")}
+            />
+            <ResizesInfo
+              policy={policy}
+              manager={devicesManager}
+              validProposal={errors.length === 0}
+              spaceActions={spaceActions.filter((a) => a.action === "resize")}
+            />
+            <ActionsInfo
+              actions={actions}
+              validProposal={errors.length === 0}
+              onClick={onActionsClick}
+            />
+          </List>
+        )}
       </CardField.Content>
     </CardField>
   );

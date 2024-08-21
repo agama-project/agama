@@ -1,0 +1,76 @@
+-------------------------------------------------------------------
+Fri Aug  2 09:12:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust Linux Security Modules (LSM) configuration for SLES 16
+(gh#openSUSE/agama#1525):
+  - Enable SELinux by default.
+  - Drop AppArmor as it is not available.
+
+-------------------------------------------------------------------
+Fri Aug  2 08:51:59 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust the SLES 16 repositories (gh#openSUSE/agama#1524):
+  - The TEST repositories are more stable at this time.
+  - Add s390x and ppc64le repositories.
+
+-------------------------------------------------------------------
+Wed Jul 17 07:34:01 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a definition for SUSE Linux Enteprise Server
+  (gh#openSUSE/agama#1473).
+- Generate separate packages for openSUSE and SLE-based products.
+
+-------------------------------------------------------------------
+Tue Jul  12 17:29:00 UTC 2024 - Natasha Ament <stacheldrahtje@gmail.com>
+
+- change url for leap_160.yaml due to typo
+
+-------------------------------------------------------------------
+Tue Jul  12 13:39:15 UTC 2024 - Natasha Ament <stacheldrahtje@gmail.com>
+
+- change url for leap_160.yaml to distribution
+
+-------------------------------------------------------------------
+Tue Jul  2 13:54:15 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Use specific flavor of openSUSE-repos for each distro
+  (gh#openSUSE/agama#1424).
+
+-------------------------------------------------------------------
+Tue Jul  2 11:33:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Enable Leap 16.0 Alpha (gh#openSUSE/agama#1423).
+
+-------------------------------------------------------------------
+Wed Jun 26 15:23:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Temporarily remove Leap 16.0 Alpha from the list of products
+  (gh#openSUSE/agama#1390).
+
+-------------------------------------------------------------------
+Wed Jun 26 08:25:00 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Remove the "32bit" pattern from openSUSE MicroOS
+  (gh#openSUSE/agama#1381)
+
+-------------------------------------------------------------------
+Mon Jun 24 20:35:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add Leap 16 (gh#openSUSE/agama#1371)
+
+-------------------------------------------------------------------
+Tue May 21 11:35:51 UTC 2024 - Richard Brown <rbrown@suse.com>
+
+- Remove definitions for MicroOS Desktop (gh#openSUSE/agama#1243).
+
+-------------------------------------------------------------------
+Mon Dec  4 14:11:51 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Preliminary definitions of openSUSE MicroOS products
+- Remove Leap 16.0 for now
+
+-------------------------------------------------------------------
+Mon Oct 30 14:38:51 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Initial split of products (gh#openSUSE/agama#602,
+  gh#openSUSE/agama#822)

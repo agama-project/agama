@@ -23,8 +23,9 @@
 
 import React from "react";
 import { Skeleton } from "@patternfly/react-core";
-import { ButtonLink, CardField } from "~/components/core";
-import { deviceLabel } from '~/components/storage/utils';
+import { Link, CardField } from "~/components/core";
+import { deviceLabel } from "~/components/storage/utils";
+import { PATHS } from "~/routes/storage";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
@@ -56,7 +57,10 @@ const targetValue = (target, targetDevice, targetPVDevices) => {
 
     if (targetPVDevices.length === 1) {
       // TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-      return sprintf(_("File systems created at a new LVM volume group on %s"), deviceLabel(targetPVDevices[0]));
+      return sprintf(
+        _("File systems created at a new LVM volume group on %s"),
+        deviceLabel(targetPVDevices[0]),
+      );
     }
   }
 
@@ -90,19 +94,21 @@ export default function InstallationDeviceField({
   isLoading,
 }) {
   let value;
-  if (isLoading || !target)
-    value = <Skeleton fontSize="sm" width="75%" />;
-  else
-    value = targetValue(target, targetDevice, targetPVDevices);
+  if (isLoading || !target) value = <Skeleton fontSize="sm" width="75%" />;
+  else value = targetValue(target, targetDevice, targetPVDevices);
 
   return (
     <CardField
       label={LABEL}
       description={DESCRIPTION}
       actions={
-        isLoading
-          ? <Skeleton fontSize="sm" width="100px" />
-          : <ButtonLink to="target-device" isPrimary={false}>{_("Change")}</ButtonLink>
+        isLoading ? (
+          <Skeleton fontSize="sm" width="100px" />
+        ) : (
+          <Link to={PATHS.targetDevice} isPrimary={false}>
+            {_("Change")}
+          </Link>
+        )
       }
     >
       <CardField.Content isFilled={false}>{value}</CardField.Content>

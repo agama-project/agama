@@ -24,11 +24,12 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalTransactionalInfo } from "~/components/storage";
 
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
   useProduct: () => ({
-    selectedProduct : { name: "Test" }
-  })
+    selectedProduct: { name: "Test" },
+  }),
+  useProductChanges: () => jest.fn(),
 }));
 
 let props;

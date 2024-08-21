@@ -1,0 +1,17 @@
+-------------------------------------------------------------------
+Wed Jul 24 15:03:25 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Reduce the node_modules size, delete not needed files
+  (gh#openSUSE/agama#1497)
+
+-------------------------------------------------------------------
+Fri Jul 19 10:18:37 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Downgrade Puppeteer from 22.13.1 to 22.13.0, the latest version
+  fails to start with the Firefox browser (gh#openSUSE/agama#1485)
+
+-------------------------------------------------------------------
+Tue Jul 16 13:25:52 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Initial version
+

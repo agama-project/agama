@@ -1,5 +1,6 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema",
+  "$comment": "based on doc/auto_storage.md",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
   "$id": "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json",
   "title": "Profile",
   "description": "Profile definition for automated installation",
@@ -7,55 +8,66 @@
   "additionalProperties": false,
   "properties": {
     "software": {
-      "description": "Software settings (e.g., product to install)",
+      "title": "Software settings",
       "type": "object",
       "properties": {
         "patterns": {
-          "description": "List of patterns to install",
-          "type": "array"
+          "title": "List of patterns to install",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": ["minimal_base"]
+          }
         }
       }
     },
     "product": {
-      "description": "Software settings (e.g., product to install)",
+      "title": "Product to install",
       "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
       "properties": {
         "id": {
-          "description": "Product identifier",
+          "title": "Product identifier",
+          "description": "The id field from a products.d/foo.yaml file",
           "type": "string"
         },
         "registrationCode": {
-          "description": "Product registration code",
+          "title": "Product registration code",
           "type": "string"
         },
         "registrationEmail": {
-          "description": "Product registration email",
+          "title": "Product registration email",
           "type": "string"
         }
       }
     },
     "network": {
-      "description": "Network settings",
+      "title": "Network settings",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "connections": {
-          "description": "Network connections to be defined",
+          "title": "Network connections to be defined",
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
+            "required": [
+              "id"
+            ],
             "properties": {
               "id": {
-                "description": "Connection ID",
+                "title": "Connection ID",
                 "type": "string"
               },
               "interface": {
-                "description": "The name of the network interface bound to this connection",
+                "title": "The name of the network interface bound to this connection",
                 "type": "string"
               },
               "mac-address": {
-                "description": "Custom mac-address (can also be 'preserve', 'permanent', 'random' or 'stable')",
+                "title": "Custom mac-address",
+                "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
                 "type": "string"
               },
               "mtu": {
@@ -64,7 +76,7 @@
                 "minimum": 0
               },
               "method4": {
-                "description": "IPv4 configuration method (e.g., 'auto')",
+                "title": "IPv4 configuration method",
                 "type": "string",
                 "enum": [
                   "auto",
@@ -74,7 +86,7 @@
                 ]
               },
               "method6": {
-                "description": "IPv6 configuration method (e.g., 'auto')",
+                "title": "IPv6 configuration method",
                 "type": "string",
                 "enum": [
                   "auto",
@@ -84,39 +96,61 @@
                 ]
               },
               "gateway4": {
-                "description": "Connection gateway address (e.g., '192.168.122.1')",
-                "type": "string"
+                "title": "Connection gateway address",
+                "type": "string",
+                "examples": ["192.168.122.1"]
               },
               "gateway6": {
-                "description": "Connection gateway address (e.g., '::ffff:c0a8:7a01')",
-                "type": "string"
+                "title": "Connection gateway address",
+                "type": "string",
+                "examples": ["::ffff:c0a8:7a01"]
               },
               "addresses": {
                 "type": "array",
                 "items": {
-                  "description": "Connection addresses",
-                  "type": "string",
-                  "additionalProperties": false
+                  "title": "Connection addresses",
+                  "type": "string"
                 }
               },
               "nameservers": {
                 "type": "array",
                 "items": {
-                  "description": "Nameservers (IPv4 and/or IPv6 are allowed)",
+                  "title": "Nameservers",
+                  "description": "IPv4 and/or IPv6 are allowed.",
+                  "type": "string"
+                }
+              },
+              "dns_searchlist": {
+                "type": "array",
+                "items": {
+                  "description": "DNS search domains",
                   "type": "string",
                   "additionalProperties": false
                 }
               },
+              "ignore_auto_dns": {
+                "description": "Whether DNS options provided via DHCP are used or not",
+                "type": "boolean"
+              },
               "wireless": {
                 "type": "object",
-                "description": "Wireless configuration",
+                "title": "Wireless configuration",
                 "additionalProperties": false,
                 "properties": {
                   "password": {
                     "type": "string"
                   },
                   "security": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "owe",
+                      "ieee8021x",
+                      "wpa-psk",
+                      "sae",
+                      "wpa-eap",
+                      "wpa-eap-suite-b192"
+                    ]
                   },
                   "ssid": {
                     "type": "string"
@@ -134,11 +168,20 @@
               },
               "bond": {
                 "type": "object",
-                "description": "Bonding configuration",
+                "title": "Bonding configuration",
                 "additionalProperties": false,
                 "properties": {
                   "mode": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                      "balance-rr",
+                      "active-backup",
+                      "balance-xor",
+                      "broadcast",
+                      "802.3ad",
+                      "balance-tlb",
+                      "balance-alb"
+                    ]
                   },
                   "options": {
                     "type": "string"
@@ -146,75 +189,72 @@
                   "ports": {
                     "type": "array",
                     "items": {
-                      "description": "A list of the interfaces or connections to be bonded",
-                      "type": "string",
-                      "additionalProperties": false
+                      "title": "A list of the interfaces or connections to be bonded",
+                      "type": "string"
                     }
                   }
                 }
               },
               "match": {
                 "type": "object",
-                "description": "Match settings",
+                "title": "Match settings",
+                "description": "Identifies the network interface to apply the connection settings to",
                 "additionalProperties": false,
                 "properties": {
                   "kernel": {
                     "type": "array",
                     "items": {
-                      "description": "A list of kernel command line arguments to match",
-                      "type": "string",
-                      "additionalProperties": false
+                      "title": "A list of kernel command line arguments to match",
+                      "type": "string"
                     }
                   },
                   "interface": {
                     "type": "array",
                     "items": {
-                      "description": "A list of interface names to match",
-                      "type": "string",
-                      "additionalProperties": false
+                      "title": "A list of interface names to match",
+                      "type": "string"
                     }
                   },
                   "driver": {
                     "type": "array",
                     "items": {
-                      "description": "A list of driver names to match",
-                      "type": "string",
-                      "additionalProperties": false
+                      "title": "A list of driver names to match",
+                      "type": "string"
                     }
                   },
                   "path": {
                     "type": "array",
                     "items": {
-                      "description": "A list of paths to match against the ID_PATH udev property of devices",
-                      "type": "string",
-                      "additionalProperties": false
+                      "title": "A list of paths to match against the ID_PATH udev property of devices",
+                      "type": "string"
                     }
                   }
                 }
               }
-            },
-            "required": [
-              "id"
-            ]
+            }
           }
         }
       }
     },
     "user": {
-      "description": "First user settings",
+      "title": "First user settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "fullName": {
-          "description": "Full name (e.g., 'Jane Doe')",
-          "type": "string"
+          "title": "Full name",
+          "type": "string",
+          "examples": ["Jane Doe"]
         },
         "userName": {
-          "description": "User login name (e.g., 'jane.doe')",
-          "type": "string"
+          "title": "User login name",
+          "type": "string",
+          "examples": ["jane.doe"]
         },
         "password": {
-          "description": "User password (e.g., 'nots3cr3t')",
-          "type": "string"
+          "title": "User password",
+          "type": "string",
+          "examples": ["nots3cr3t"]
         }
       },
       "required": [
@@ -224,54 +264,388 @@
       ]
     },
     "root": {
-      "description": "Root authentication settings",
+      "title": "Root authentication settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "password": {
-          "description": "Root password",
+          "title": "Root password",
           "type": "string"
         },
         "sshPublicKey": {
-          "description": "SSH public key",
+          "title": "SSH public key",
           "type": "string"
         }
       }
     },
     "localization": {
-      "description": "Localization settings",
+      "title": "Localization settings",
       "type": "object",
       "properties": {
         "language": {
-          "description": "System language ID (e.g., 'en_US')",
-          "type": "string"
+          "title": "System language ID",
+          "type": "string",
+          "examples": ["en_US.UTF-8", "en_US"]
         },
         "keyboard": {
-          "description": "Keyboard layout ID",
+          "title": "Keyboard layout ID",
           "type": "string"
         },
         "timezone": {
-          "description": "Time zone identifier such as 'Europe/Berlin'",
-          "type": "string"
+          "title": "Time zone identifier such as 'Europe/Berlin'",
+          "type": "string",
+          "examples": ["Europe/Berlin"]
         }
       }
     },
     "storage": {
-      "description": "Storage settings",
+      "title": "Storage settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "bootDevice": {
-          "description": "Device used for booting (e.g., '/dev/sda'). By default, all file systems are created in the boot device.",
-          "type": "string"
-        },
-        "lvm": {
-          "description": "Whether LVM is used.",
-          "type": "boolean"
-        },
-        "encryptionPassword": {
-          "description": "If set, the devices are encrypted using the given password.",
-          "type": "string"
+        "guided": {
+          "title": "Settings to execute a Guided Proposal",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "title": "Target device",
+              "anyOf": [
+                {
+                  "enum": ["disk", "newLvmVg"]
+                },
+                {
+                  "title": "Disk device for installing",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["disk"],
+                  "properties": {
+                    "disk": {
+                      "title": "Disk device name",
+                      "type": "string",
+                      "examples": ["/dev/vda"]
+                    }
+                  }
+                },
+                {
+                  "title": "New LVM for installing",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["newLvmVg"],
+                  "properties": {
+                    "newLvmVg": {
+                      "title": "Devices in which to create the physical volumes",
+                      "type": "array",
+                      "items": {
+                        "title": "Disk device name",
+                        "type": "string",
+                        "examples": ["/dev/vda"]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "boot": {
+              "title": "Configuration of the boot settings",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["configure"],
+              "properties": {
+                "configure": {
+                  "title": "Whether to configure partitions for booting",
+                  "type": "boolean"
+                },
+                "device": {
+                  "title": "Device to use for booting",
+                  "description": "The installation device is used by default for booting",
+                  "type": "string",
+                  "examples": ["/dev/vda"]
+                }
+              }
+            },
+            "encryption": {
+              "title": "Encryption settings",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["password"],
+              "properties": {
+                "password": {
+                  "title": "Passphrase to use when creating new encryption devices",
+                  "type": "string"
+                },
+                "method": {
+                  "title": "Method used to create the encryption devices",
+                  "enum": ["luks2", "tpm_fde"]
+                },
+                "pbkdFunction": {
+                  "title": "Password-based key derivation function to use for LUKS2",
+                  "enum": ["pbkdf2", "argon2i", "argon2id"]
+                }
+              }
+            },
+            "space": {
+              "title": "Policy to find space for the new partitions",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "policy": {
+                  "enum": ["delete", "resize", "keep", "custom"]
+                },
+                "actions": {
+                  "type": "array"
+                }
+              },
+              "if": {
+                "properties": {
+                  "policy": { "const": "custom" }
+                }
+              },
+              "then": {
+                "required": ["policy", "actions"],
+                "properties": {
+                  "actions": {
+                    "title": "Actions to find space if policy is 'custom'",
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "title": "Delete device",
+                          "description": "Force device deletion",
+                          "type": "object",
+                          "required": ["forceDelete"],
+                          "additionalProperties": false,
+                          "properties": {
+                            "forceDelete": {
+                              "title": "Device to delete",
+                              "type": "string",
+                              "examples": ["/dev/vda"]
+                            }
+                          }
+                        },
+                        {
+                          "title": "Allow shinking",
+                          "description": "Indicate the device can be shrunk in needed",
+                          "type": "object",
+                          "required": ["resize"],
+                          "additionalProperties": false,
+                          "properties": {
+                            "resize": {
+                              "title": "Device to allow resizing",
+                              "type": "string",
+                              "examples": ["/dev/vda"]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "else": {
+                "required": ["policy"],
+                "properties": {
+                  "actions": {
+                    "type": "array",
+                    "maxItems": 0
+                  }
+                }
+              }
+            },
+            "volumes": {
+              "title": "Set of volumes (file systems) to create",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["mount"],
+                "properties": {
+                  "mount": {
+                    "title": "Mount point",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["path"],
+                    "properties": {
+                      "path": {
+                        "title": "Mount path",
+                        "type": "string"
+                      },
+                      "options": {
+                        "title": "Options to add to the fourth field of fstab",
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    }
+                  },
+                  "filesystem": {
+                    "title": "File system of the volume",
+                    "anyOf": [
+                      {
+                        "title": "File system type",
+                        "enum": [
+                          "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
+                          "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
+                        ]
+                      },
+                      {
+                        "title": "Btrfs file system",
+                        "description": "Indicates properties of the Btrfs file system",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["btrfs"],
+                        "properties": {
+                          "btrfs": {
+                            "title": "Specification of a Btrfs file system",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "snapshots": {
+                                "title": "Whether Btrfs snapshots should be configured",
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "size": {
+                    "title": "Size limits",
+                    "description": "Options to indicate the size of a device",
+                    "anyOf": [
+                      {
+                        "title": "Automatic size",
+                        "description": "The size is auto calculated according to the product",
+                        "const": "auto"
+                      },
+                      {
+                        "title": "Size unit",
+                        "$ref": "#/$defs/sizeValue"
+                      },
+                      {
+                        "title": "Size range (e.g., [1024, '2 GiB'])",
+                        "description": "Lower size limit and optionally upper size limit",
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/$defs/sizeValue"
+                        },
+                        "minItems": 1,
+                        "maxItems": 2,
+                        "examples": [[1024, "2 GiB"]]
+                      },
+                      {
+                        "title": "Size range",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "min": {
+                            "title": "Mandatory lower size limit",
+                            "$ref": "#/$defs/sizeValue"
+                          },
+                          "max": {
+                            "title": "Optional upper size limit",
+                            "$ref": "#/$defs/sizeValue"
+                          }
+                        },
+                        "required": ["min"]
+                      }
+                    ]
+                  },
+                  "target": {
+                    "title": "Location of the file system",
+                    "description": "Options to indicate the location of a file system",
+                    "anyOf": [
+                      {
+                        "const": "default"
+                      },
+                      {
+                        "title": "New partition",
+                        "description": "The file system is created over a new partition",
+                        "type": "object",
+                        "required": ["newPartition"],
+                        "additionalProperties": false,
+                        "properties": {
+                          "newPartition": {
+                            "title": "Name of a disk device",
+                            "type": "string",
+                            "examples": ["/dev/vda"]
+                          }
+                        }
+                      },
+                      {
+                        "title": "Dedicated LVM volume group",
+                        "description": "The file system is created over a dedicated LVM",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["newVg"],
+                        "properties": {
+                          "newVg": {
+                            "title": "Name of a disk device",
+                            "type": "string",
+                            "examples": ["/dev/vda"]
+                          }
+                        }
+                      },
+                      {
+                        "title": "Re-used existing device",
+                        "description": "The file system is created over an existing device",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["device"],
+                        "properties": {
+                          "device": {
+                            "title": "Name of a device",
+                            "type": "string",
+                            "examples": ["/dev/vda1"]
+                          }
+                        }
+                      },
+                      {
+                        "title": "Re-used existing file system",
+                        "description": "An existing file system is reused (without formatting)",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["filesystem"],
+                        "properties": {
+                          "filesystem": {
+                            "title": "Name of a device containing the file system",
+                            "type": "string",
+                            "examples": ["/dev/vda1"]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
         }
       }
+    },
+    "legacyAutoyastStorage": {
+      "title": "Legacy AutoYaST storage settings",
+      "description": "Accepts all options of the AutoYaST profile (XML to JSON)",
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "sizeString": {
+      "title": "Human readable size (e.g., '2 GiB')",
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$",
+      "examples": ["2 GiB", "1.5 TB", "1TIB", "1073741824 b", "1073741824"]
+    },
+    "sizeInteger": {
+      "title": "Size in bytes",
+      "type": "integer",
+      "minimum": 0
+    },
+    "sizeValue": {
+      "anyOf": [
+        { "$ref": "#/$defs/sizeString" },
+        { "$ref": "#/$defs/sizeInteger" }
+      ]
     }
   }
 }

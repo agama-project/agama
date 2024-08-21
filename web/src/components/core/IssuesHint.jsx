@@ -34,7 +34,9 @@ export default function IssuesHint({ issues }) {
             {_("Before starting the installation, you need to address the following problems:")}
           </p>
           <List>
-            {issues.map((i, idx) => <ListItem key={idx}>{i.description}</ListItem>)}
+            {issues.map((i, idx) => (
+              <ListItem key={idx}>{i.description}</ListItem>
+            ))}
           </List>
         </Stack>
       </HintBody>

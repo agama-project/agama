@@ -116,9 +116,7 @@ class DBusClient {
    * @return {Promise<any>} DBusProxies object
    */
   async proxies(iface, path_namespace, options) {
-    const all = await this.client.proxies(
-      iface, path_namespace, { watch: true, ...options }
-    );
+    const all = await this.client.proxies(iface, path_namespace, { watch: true, ...options });
     await all.wait();
     return all;
   }
@@ -148,15 +146,16 @@ class DBusClient {
     let property;
 
     try {
-      const result = await this.client.call(
-        path, "org.freedesktop.DBus.Properties", "Get", [iface, name]
-      );
+      const result = await this.client.call(path, "org.freedesktop.DBus.Properties", "Get", [
+        iface,
+        name,
+      ]);
       property = result[0];
     } catch (error) {
       console.warn(`Could not get the ${name} property in ${iface}`, error);
     }
 
-    return (property === undefined) ? null : property.v;
+    return property === undefined ? null : property.v;
   }
 
   /**
@@ -172,14 +171,14 @@ class DBusClient {
       {
         path,
         interface: "org.freedesktop.DBus.Properties",
-        member: "PropertiesChanged"
+        member: "PropertiesChanged",
       },
       (_path, _iface, _signal, args) => {
         const [source_iface, changes, invalid] = args;
         if (iface === source_iface) {
           handler(changes, invalid);
         }
-      }
+      },
     );
     return remove;
   }

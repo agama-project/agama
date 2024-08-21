@@ -26,9 +26,13 @@ import { Questions } from "~/components/questions";
 import { ServerError, Installation } from "~/components/core";
 import { useInstallerL10n } from "./context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
-import { useProduct } from "./context/product";
-import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
-import { BUSY } from "~/client/status";
+import { useProduct, useProductChanges } from "./queries/software";
+import { useL10nConfigChanges } from "~/queries/l10n";
+import { useIssuesChanges } from "./queries/issues";
+import { useInstallerStatus, useInstallerStatusChanges } from "./queries/status";
+import { PATHS as PRODUCT_PATHS } from "./routes/products";
+import SimpleLayout from "./SimpleLayout";
+import { InstallationPhase } from "./types/status";
 
 /**
  * Main application component.
@@ -39,29 +43,43 @@ import { BUSY } from "~/client/status";
  */
 function App() {
   const location = useLocation();
-  const { connected, error, phase, status } = useInstallerClientStatus();
+  const { isBusy, phase } = useInstallerStatus({ suspense: true });
+  const { connected, error } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
+  useL10nConfigChanges();
+  useProductChanges();
+  useIssuesChanges();
+  useInstallerStatusChanges();
 
   const Content = () => {
     if (error) return <ServerError />;
 
-    if (phase === INSTALL) {
-      return <Installation status={status} />;
+    if (phase === InstallationPhase.Install) {
+      return <Installation isBusy={isBusy} />;
     }
 
-    if (!products || !connected) return <Loading />;
+    if (!products || !connected)
+      return (
+        <SimpleLayout showOutlet={false}>
+          <Loading />
+        </SimpleLayout>
+      );
 
-    if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
+    if (phase === InstallationPhase.Startup && isBusy) {
       return <Loading />;
     }
 
-    if (selectedProduct === null && location.pathname !== "/products") {
+    if (selectedProduct === undefined && location.pathname !== PRODUCT_PATHS.root) {
       return <Navigate to="/products" />;
     }
 
-    if (phase === CONFIG && status === BUSY && location.pathname !== "/products/progress") {
-      return <Navigate to="/products/progress" />;
+    if (
+      phase === InstallationPhase.Config &&
+      isBusy &&
+      location.pathname !== PRODUCT_PATHS.progress
+    ) {
+      return <Navigate to={PRODUCT_PATHS.progress} />;
     }
 
     return <Outlet />;

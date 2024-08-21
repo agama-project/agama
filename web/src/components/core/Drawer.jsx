@@ -19,12 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
+// FIXME: rewrite to .tsx
 
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
-  Drawer as PFDrawer, DrawerPanelBody,
-  DrawerPanelContent, DrawerContent, DrawerContentBody, DrawerHead, DrawerActions, DrawerCloseButton,
+  Drawer as PFDrawer,
+  DrawerPanelBody,
+  DrawerPanelContent,
+  DrawerContent,
+  DrawerContentBody,
+  DrawerHead,
+  DrawerActions,
+  DrawerCloseButton,
 } from "@patternfly/react-core";
 
 /**
@@ -37,41 +43,36 @@ import {
  *
  * @todo write documentation
  */
-const Drawer = forwardRef(
-  ({ panelHeader, panelContent, isExpanded = false, children }, ref) => {
-    const [isOpen, setIsOpen] = useState(isExpanded);
-    const open = () => setIsOpen(true);
-    const close = () => setIsOpen(false);
-    const publicAPI = () => ({ open, close });
+const Drawer = forwardRef(({ panelHeader, panelContent, isExpanded = false, children }, ref) => {
+  const [isOpen, setIsOpen] = useState(isExpanded);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+  const publicAPI = () => ({ open, close });
 
-    useImperativeHandle(ref, publicAPI, []);
+  useImperativeHandle(ref, publicAPI, []);
 
-    const onEscape = event => event.key === 'Escape' && close();
+  const onEscape = (event) => event.key === "Escape" && close();
 
-    return (
-      <PFDrawer isExpanded={isOpen} onKeyDown={onEscape}>
-        <DrawerContent
-          panelContent={
-            <DrawerPanelContent focusTrap={{ enabled: true }}>
-              <DrawerHead>
-                {panelHeader}
-                <DrawerActions>
-                  <DrawerCloseButton onClick={close} />
-                </DrawerActions>
-              </DrawerHead>
-              <DrawerPanelBody>
-                {panelContent}
-              </DrawerPanelBody>
-            </DrawerPanelContent>
-          }
-          colorVariant="no-background"
-        >
-          <DrawerContentBody>
-            {children}
-          </DrawerContentBody>
-        </DrawerContent>
-      </PFDrawer>
-    );
-  });
+  return (
+    <PFDrawer isExpanded={isOpen} onKeyDown={onEscape}>
+      <DrawerContent
+        panelContent={
+          <DrawerPanelContent focusTrap={{ enabled: true }}>
+            <DrawerHead>
+              {panelHeader}
+              <DrawerActions>
+                <DrawerCloseButton onClick={close} />
+              </DrawerActions>
+            </DrawerHead>
+            <DrawerPanelBody>{panelContent}</DrawerPanelBody>
+          </DrawerPanelContent>
+        }
+        colorVariant="no-background"
+      >
+        <DrawerContentBody>{children}</DrawerContentBody>
+      </DrawerContent>
+    </PFDrawer>
+  );
+});
 
 export default Drawer;

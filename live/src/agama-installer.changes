@@ -1,0 +1,265 @@
+-------------------------------------------------------------------
+Mon Aug 19 17:54:55 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add beside staging-build-keys also openSUSE-build-keys to not
+  require import of keys for official opensuse repos
+  (gh#openSUSE/agama#1538)
+
+-------------------------------------------------------------------
+Mon Aug 12 12:38:45 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Do not fail if there is no opensuse keys on medium for PXE
+  (gh#openSUSE/agama#1535)
+
+-------------------------------------------------------------------
+Fri Aug  2 08:02:41 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Display QR codes at the console for easier connecting to Agama
+  with smartphones (gh#openSUSE/agama#1522)
+
+-------------------------------------------------------------------
+Thu Jul 25 13:18:38 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Increase the available disk space in the Live system to allow
+  installing additional development or debugging tools
+  (gh#openSUSE/agama#1501)
+
+-------------------------------------------------------------------
+Fri Jul 19 09:43:06 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a new profile for SLE-based distributions
+  (gh#openSUSE/agama#1475).
+- Rename the package to "agama-installer".
+- Do not include the full "base-x11" pattern but only the needed
+  packages.
+
+-------------------------------------------------------------------
+Thu Jul 18 15:25:39 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Include Puppeteer in all ISO images (gh#openSUSE/agama#1477)
+- Drop Playwright ISO flavor (gh#openSUSE/agama#1481)
+
+-------------------------------------------------------------------
+Tue Jul  9 13:26:38 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Added agama-installer-openSUSE PXE images
+  (gh#openSUSE/agama#1450).
+
+-------------------------------------------------------------------
+Thu Jul  4 11:24:47 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Update src/live to match rename to agama-installer-openSUSE
+  fixes issue that bot updates wrong spec/changes file
+
+- Update README and PXE to reference to agama-installer-openSUSE
+
+- Update PXE instructions to create 25GB image instead of 20
+  Current agama can't deploy e.g. Leap 16 on 20GB disk image
+  with default layout including swap
+
+-------------------------------------------------------------------
+Wed Jul  3 10:41:32 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Set agama as a transient hostname instead of an static one
+  (gh#openSUSE/agama#1432).
+
+-------------------------------------------------------------------
+Fri Jun 28 13:40:35 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Syntax highlighting for "agama config edit"
+  (gh#openSUSE/agama#1411)
+
+-------------------------------------------------------------------
+Thu Jun 27 14:33:24 UTC 2024 -Steffen Winterfeldt <snwint@suse.com>
+
+- Enable checksum generation for s390x agama live images
+  (gh#openSUSE/agama#1406).
+
+-------------------------------------------------------------------
+Thu Jun 27 13:24:19 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 9
+
+-------------------------------------------------------------------
+Fri Jun 14 10:36:52 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Experimental Agama self-update (gh#openSUSE/agama#1341)
+
+-------------------------------------------------------------------
+Thu Jun 13 16:07:08 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Added Tumbleweed OSS and Agama Staging repositories to the Live
+  system itself (gh#openSUSE/agama#1332)
+
+-------------------------------------------------------------------
+Tue Jun 11 21:39:51 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the jq package to the image (gh#openSUSE/agama#1314).
+
+-------------------------------------------------------------------
+Thu Jun  6 14:30:19 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically generate the root password (gh#openSUSE/agama#1292)
+- Allow setting the default root password in ISO metadata
+  (gh#openSUSE/agama#1290)
+- Alloe setting teh root password from boot command line or set
+  it interactively during boot (gh#openSUSE/agama#1288)
+
+-------------------------------------------------------------------
+Wed Jun  5 15:40:43 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the cd.ikr content for booting the s390x iso
+  (gh#openSUSE/agama#1289).
+
+-------------------------------------------------------------------
+Tue May 21 10:38:39 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the procps4 package to the image (gh#openSUSE/agama#1245).
+
+-------------------------------------------------------------------
+Fri May 17 09:52:27 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 8
+
+-------------------------------------------------------------------
+Fri Feb  9 16:16:29 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Image size reduced:
+  - Removed translations and locale definitions for unsupported
+    languages, removed translations for unused tools
+  - Removed sound card and TV card drivers (not needed for the installer)
+  - Removed alsa packages
+  - Removed unused firmware files
+- Require 25GB disk space for build (PXE build might fail with
+  just 20GB)
+
+-------------------------------------------------------------------
+Thu Feb  1 08:27:29 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve multipath experience: preload kernel module and set probing
+  to smart option (bsc#1215598)
+
+-------------------------------------------------------------------
+Thu Dec 21 15:43:06 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 7
+
+-------------------------------------------------------------------
+Mon Dec  4 16:03:08 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Remove dependencies included by Agama packages (related to
+  gh#openSUSE/agama#911).
+
+-------------------------------------------------------------------
+Fri Dec  1 14:23:09 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 6
+
+-------------------------------------------------------------------
+Mon Nov 13 18:02:39 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Use by default zram to allow having 2GiB memory requirements
+  (jsc#PED-7303)
+
+-------------------------------------------------------------------
+Mon Nov  6 08:30:01 UTC 2023 - Marcus Schäfer <marcus.schaefer@suse.com>
+
+- Fix s390 PXE build by using 'custom' bootloader for s390 target
+  There is an error inside grub2-zipl-setup which calls zipl that
+  then complains with "Unable to create temporary device node: No such device or address".
+  We don't see this issue with zipl in the kiwi integration test from here:
+  https://build.opensuse.org/project/show/Virtualization:Appliances:Images:Testing_s390:tumbleweed
+  Thus I don't think it's an issue with kiwi but most probably a conflict
+  between the zipl setup and the raw btrfs filesystem usage in this case.
+  Long story short, the zipl issue needs extra inspection and the fix
+  here is simple because we actually don't need a bootloader to be installed
+  into the disk image because it is expected to be deployed via a remote
+  boot infrastructure. Therefore this change disables the bootloader
+  install for s390 by setting the attribute: bootloader="custom"
+
+-------------------------------------------------------------------
+Tue Oct 24 08:04:07 UTC 2023 - Marcus Schäfer <marcus.schaefer@suse.com>
+
+- Add new profile ALP-PXE which builds a variant of the agama
+  installer that is an oem disk image which can be remote deployed
+  into a ramdisk to boot into the agama installation. The size constraints
+  are similar to the live-iso size. For more details please refer
+  to README.pxe
+
+----------------------------------------------------------------------------
+Mon Oct 23 12:03:55 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Add adobe-sourcehansans-jp-fonts
+- Version 5
+
+----------------------------------------------------------------------------
+Thu Oct 19 20:19:11 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Add libstorage-ng translations
+
+----------------------------------------------------------------------------
+Wed Sep 27 08:45:26 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Version 4
+
+----------------------------------------------------------------------------
+Tue Sep 26 07:55:34 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Clean-up zypper logs
+
+----------------------------------------------------------------------------
+Tue Sep 26 05:28:35 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Added nvme-cli requested by https://bugzilla.suse.com/show_bug.cgi?id=1215572
+
+----------------------------------------------------------------------------
+Wed Aug 30 09:44:04 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Add microos-tools package and enable proxy setup services.
+
+----------------------------------------------------------------------------
+Tue Aug 29 09:19:26 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Enable ppc64le images
+
+----------------------------------------------------------------------------
+Thu Aug 03 10:23:49 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Disable building the ALP image for ppc64le
+
+----------------------------------------------------------------------------
+Wed Aug 02 10:37:21 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Version 3
+
+----------------------------------------------------------------------------
+Tue Aug 01 09:56:42 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Replace "default" flavor with a new "openSUSE" flavor that only includes
+  openSUSE-based products.
+- Replace ALP-build-key with suse-build-key.
+
+----------------------------------------------------------------------------
+Mon Jul 31 11:34:26 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Replace ALP-build-key with suse-build-key
+
+----------------------------------------------------------------------------
+Tue Jul 25 14:43:39 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Update filtering
+
+----------------------------------------------------------------------------
+Wed Jul 05 08:27:33 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Bump version to match Agama
+
+----------------------------------------------------------------------------
+Thu Jun 08 14:12:15 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- add to live image also dbus services written in rust
+
+----------------------------------------------------------------------------
+Thu Jun 01 14:05:13 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- osc copypac from project:YaST:Head:Agama package:agama-live revision:13

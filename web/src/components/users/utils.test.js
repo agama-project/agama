@@ -23,45 +23,65 @@
 
 import { suggestUsernames } from "./utils";
 
-describe('suggestUsernames', () => {
-  test('returns empty collection if fullName not defined', () => {
+describe("suggestUsernames", () => {
+  test("returns empty collection if fullName not defined", () => {
     expect(suggestUsernames(undefined)).toEqual([]);
     expect(suggestUsernames(null)).toEqual([]);
   });
 
-  test('handles basic single name', () => {
-    expect(suggestUsernames('John')).toEqual(expect.arrayContaining(['john']));
+  test("handles basic single name", () => {
+    expect(suggestUsernames("John")).toEqual(expect.arrayContaining(["john"]));
   });
 
-  test('handles basic two-part name', () => {
-    expect(suggestUsernames('John Doe')).toEqual(expect.arrayContaining(['john', 'jdoe', 'johnd', 'johndoe']));
+  test("handles basic two-part name", () => {
+    expect(suggestUsernames("John Doe")).toEqual(
+      expect.arrayContaining(["john", "jdoe", "johnd", "johndoe"]),
+    );
   });
 
-  test('handles name with middle initial', () => {
-    expect(suggestUsernames('John Q. Doe')).toEqual(expect.arrayContaining(['john', 'jqdoe', 'johnqd', 'johnqdoe']));
+  test("handles name with middle initial", () => {
+    expect(suggestUsernames("John Q. Doe")).toEqual(
+      expect.arrayContaining(["john", "jqdoe", "johnqd", "johnqdoe"]),
+    );
   });
 
-  test('normalizes accented characters', () => {
-    expect(suggestUsernames('José María')).toEqual(expect.arrayContaining(['jose', 'jmaria', 'josem', 'josemaria']));
+  test("normalizes accented characters", () => {
+    expect(suggestUsernames("José María")).toEqual(
+      expect.arrayContaining(["jose", "jmaria", "josem", "josemaria"]),
+    );
   });
 
-  test('removes hyphens and apostrophes', () => {
-    expect(suggestUsernames("Jean-Luc O'Neill")).toEqual(expect.arrayContaining(['jeanluc', 'joneill', 'jeanluco', 'jeanluconeill']));
+  test("removes hyphens and apostrophes", () => {
+    expect(suggestUsernames("Jean-Luc O'Neill")).toEqual(
+      expect.arrayContaining(["jeanluc", "joneill", "jeanluco", "jeanluconeill"]),
+    );
   });
 
-  test('removes non-alphanumeric characters', () => {
-    expect(suggestUsernames("Anna*#& Maria$%^")).toEqual(expect.arrayContaining(['anna', 'amaria', 'annam', 'annamaria']));
+  test("removes non-alphanumeric characters", () => {
+    expect(suggestUsernames("Anna*#& Maria$%^")).toEqual(
+      expect.arrayContaining(["anna", "amaria", "annam", "annamaria"]),
+    );
   });
 
-  test('handles long name with multiple parts', () => {
-    expect(suggestUsernames("Maria del Carmen Fernandez Vega")).toEqual(expect.arrayContaining(['maria', 'mdelcarmenfernandezvega', 'mariadcfv', 'mdcfvega', 'mariadelcarmenfernandezvega']));
+  test("handles long name with multiple parts", () => {
+    expect(suggestUsernames("Maria del Carmen Fernandez Vega")).toEqual(
+      expect.arrayContaining([
+        "maria",
+        "mdelcarmenfernandezvega",
+        "mariadcfv",
+        "mdcfvega",
+        "mariadelcarmenfernandezvega",
+      ]),
+    );
   });
 
-  test('handles empty or invalid input', () => {
+  test("handles empty or invalid input", () => {
     expect(suggestUsernames("")).toEqual(expect.arrayContaining([]));
   });
 
-  test('trims spaces and handles multiple spaces between names', () => {
-    expect(suggestUsernames("   John   Doe   ")).toEqual(expect.arrayContaining(['john', 'jdoe', 'johnd', 'johndoe']));
+  test("trims spaces and handles multiple spaces between names", () => {
+    expect(suggestUsernames("   John   Doe   ")).toEqual(
+      expect.arrayContaining(["john", "jdoe", "johnd", "johndoe"]),
+    );
   });
 });

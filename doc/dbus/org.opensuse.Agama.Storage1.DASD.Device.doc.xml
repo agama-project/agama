@@ -1,0 +1,58 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Storage1/dasds/1">
+  <interface name="org.opensuse.Agama.Storage1.DASD.Device">
+    <!--
+        Id:
+        Device channel ID.
+    -->
+    <property type="s" name="Id" access="read"/>
+
+    <!--
+        Enabled:
+        Whether the device is enabled.
+    -->
+    <property type="b" name="Enabled" access="read"/>
+
+    <!--
+        DeviceName:
+        The associated device name. It is empty if the device is not enabled.
+    -->
+    <property type="s" name="DeviceName" access="read"/>
+
+    <!--
+        Formatted:
+        Whether the device is formatted.
+    -->
+    <property type="b" name="Formatted" access="read"/>
+
+    <!--
+        Diag:
+        Whether the DIAG access method is enabled.
+    -->
+    <property type="b" name="Diag" access="read"/>
+
+    <!--
+        Status:
+        The device status. It is empty if unknown.
+    -->
+    <property type="s" name="Status" access="read"/>
+
+    <!--
+        Type:
+        The DASD type ("ECKD" or "FBA"). It is empty if unknown.
+    -->
+    <property type="s" name="Type" access="read"/>
+
+    <!--
+        AccessType:
+        Device access type ("rw" or "ro"). It is empty if unknown.
+    -->
+    <property type="s" name="AccessType" access="read"/>
+    <!--
+        PartitionInfo:
+        Description of the partitions. It is empty if unknown.
+    -->
+    <property type="s" name="PartitionInfo" access="read"/>
+  </interface>
+</node>

@@ -1,7 +1,6 @@
 # The Open Build Service (OBS) Integration
 
 - [The Open Build Service (OBS) Integration](#the-open-build-service-obs-integration)
-  - [Staging Project](#staging-project)
   - [Development Project](#development-project)
   - [Releasing a New Version](#releasing-a-new-version)
   - [OBS Synchronization](#obs-synchronization)
@@ -12,32 +11,21 @@
     - [Configuring the GitHub Actions](#configuring-the-github-actions)
     - [Triggering the Rebuild](#triggering-the-rebuild)
   - [Package Versioning](#package-versioning)
-    - [Staging](#staging)
-    - [Devel](#devel)
 
 ---
 
 The Agama installer packages are built in the openSUSE [Open Build Service](
 https://build.opensuse.org/).
 
-## Staging Project
+## Development Project
 
-The [systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)
+The [systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)
 contains the latest packages built from the `master` Git branch. This project
 contains unstable development version of Agama. It is intended for development
 and testing.
 
-The packages are automatically updated whenever the `master` branch is changed,
-see more details below.
-
-## Development Project
-
-The [systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)
-contains the latest released version of the Agama project. The packages should
-be more stable than in the Staging project.
-
-These packages are updated automatically when a new version is released. See
-more details below.
+The packages are automatically updated whenever the `master` branch is changed
+or when a new version is released. See more details below.
 
 ## Releasing a New Version
 
@@ -56,9 +44,10 @@ Because the process of updating a package is the same for several packages
 the definition is shared in the [obs-staging-shared.yml](
 ../.github/workflows/obs-staging-shared.yml) file.
 
-The packages in staging are updated only when a respective source file is
-changed. That saves some resources for rebuilding and makes synchronization
-faster. But that also means the packages might not have exactly same version.
+The packages in the devel project are updated only when a respective source
+file is changed. That saves some resources for rebuilding and makes
+synchronization faster. But that also means the packages might not have exactly
+the same version.
 
 The project to which the packages are submitted is configured in the
 `OBS_PROJECT` GitHub Actions variable.
@@ -71,7 +60,7 @@ packages).
 
 The process of updating a package is basically:
 
-- `osc co systemsmanagement:Agama:Staging <package>` - checkout the package
+- `osc co systemsmanagement:Agama:Devel <package>` - checkout the package
   from OBS
 - `osc service manualrun` - update the sources and dependencies by running
   the OBS services locally
@@ -103,16 +92,16 @@ Live ISO.
 First you need to create an OBS project where the packages will be built.
 
 The easiest way is to branch the Agama package which you want to modify from the
-[systemsmanagement:Agama:Staging](
-https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)
+[systemsmanagement:Agama:Devel](
+https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)
 repository. This will inherit the repository setup for building the packages,
 images and containers.
 
 ``` shell
-osc branch systemsmanagement:Agama:Staging agama-web-ui
+osc branch systemsmanagement:Agama:Devel agama-web-ui
 ```
 
-This will create `home:$OBS_USER:branches:systemsmanagement:Agama:Staging`
+This will create `home:$OBS_USER:branches:systemsmanagement:Agama:Devel`
 project where `$OBS_USER` is your OBS account name. This `$OBS_USER` placeholder
 is also used in the following text.
 
@@ -123,9 +112,9 @@ idea to remove the other architectures and save some OBS build power.
 To remove all architectures except the x86_64 run this command:
 
 ``` shell
-osc meta prj home:$OBS_USER:branches:systemsmanagement:Agama:Staging | \
+osc meta prj home:$OBS_USER:branches:systemsmanagement:Agama:Devel | \
 sed "/<arch>aarch64<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>s390x<\/arch>/d;" | \
-osc meta prj -F - home:$OBS_USER:branches:systemsmanagement:Agama:Staging
+osc meta prj -F - home:$OBS_USER:branches:systemsmanagement:Agama:Devel
 ```
 
 The branched package is still linked to the original package. This might cause
@@ -133,15 +122,15 @@ conflicts after the original package is updated. To avoid this problem you
 should detach the branched package from the original repository:
 
 ``` shell
-osc detachbranch home:$OBS_USER:branches:systemsmanagement:Agama:Staging agama-web-ui
+osc detachbranch home:$OBS_USER:branches:systemsmanagement:Agama:Devel agama-web-ui
 ```
 
 If you want to also build the Live ISO from your modified packaged then you need
-to branch (and detach) also the `agama-live` package:
+to branch (and detach) also the `agama-installer` package:
 
 ``` shell
-osc branch systemsmanagement:Agama:Staging agama-live
-osc detachbranch home:$OBS_USER:branches:systemsmanagement:Agama:Staging agama-live
+osc branch systemsmanagement:Agama:Devel agama-installer
+osc detachbranch home:$OBS_USER:branches:systemsmanagement:Agama:Devel agama-installer
 ```
 
 *Please delete your branched OBS project once you do not need it anymore, it
@@ -176,7 +165,7 @@ The GitHub Actions needs some configuration to allow the automatic submission.
 
 2. Switch to "Variables" tabs and click "New Repository Variable".
    Create `OBS_PROJECT` variable with name of your OBS branch project
-   ("home:$OBS_USER:branches:systemsmanagement:Agama:Staging"). If the variable
+   ("home:$OBS_USER:branches:systemsmanagement:Agama:Devel"). If the variable
    is not created or is empty the autosubmission is disabled.
 
 3. Enable the GitHub Actions in the "Actions" tab.
@@ -196,16 +185,9 @@ keep the default `master` branch and click the "Run workflow" button.
 
 ## Package Versioning
 
-### Staging
-
-The packages in the Staging project use a version built from the last released
+The packages in the Devel project use a version built from the last released
 version with a number of commits in the `master` branch since that release.
 
 The version is automatically constructed by the OBS service, for the
 `rubygem-agama` package the version is built using the `git describe --tags`
 command.
-
-### Devel
-
-The Devel packages use the release version (a Git tag) without any additional
-number of commits.

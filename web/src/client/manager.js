@@ -21,16 +21,10 @@
 
 // @ts-check
 
-import { WithProgress, WithStatus } from "./mixins";
-
-const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
-
 /**
- * Manager base client
- *
- * @ignore
+ * Client to interact with the Agama manager service
  */
-class ManagerBaseClient {
+class ManagerClient {
   /**
    * @param {import("./http").HTTPClient} client - HTTP client.
    */
@@ -61,24 +55,6 @@ class ManagerBaseClient {
   }
 
   /**
-   * Checks whether it is possible to start the installation
-   *
-   * It might happen that there are some validation errors. In that case,
-   * it is not possible to proceed with the installation.
-   *
-   * @return {Promise<boolean>}
-   */
-  async canInstall() {
-    const response = await this.client.get("/manager/installer");
-    if (!response.ok) {
-      console.error("Failed to get installer config: ", response);
-      return false;
-    }
-    const installer = await response.json();
-    return installer.canInstall;
-  }
-
-  /**
    * Returns the binary content of the YaST logs file
    *
    * @todo Implement a mechanism to get the logs.
@@ -94,64 +70,11 @@ class ManagerBaseClient {
   }
 
   /**
-   * Return the installer status
-   *
-   * @return {Promise<number>}
-   */
-  async getPhase() {
-    const response = await this.client.get("/manager/installer");
-    if (!response.ok) {
-      console.error("Failed to get installer config: ", response);
-      return 0;
-    }
-    const installer = await response.json();
-    return installer.phase;
-  }
-
-  /**
-   * Register a callback to run when the "CurrentInstallationPhase" changes
-   *
-   * @param {function} handler - callback function
-   * @return {import ("./dbus").RemoveFn} function to disable the callback
-   */
-  onPhaseChange(handler) {
-    return this.client.onEvent("InstallationPhaseChanged", ({ phase }) => {
-      if (phase) {
-        handler(phase);
-      }
-    });
-  }
-
-  /**
    * Runs cleanup when installation is done
    */
   finishInstallation() {
     return this.client.post("/manager/finish", {});
   }
-
-  /**
-   * Returns whether Iguana is used on the system
-   *
-   * @return {Promise<boolean>}
-   */
-  async useIguana() {
-    const response = await this.client.get("/manager/installer");
-    if (!response.ok) {
-      console.error("Failed to get installer config: ", response);
-      return false;
-    }
-    const installer = await response.json();
-    return installer.iguana;
-  }
 }
-
-/**
- * Client to interact with the Agama manager service
- */
-class ManagerClient extends WithProgress(
-  WithStatus(ManagerBaseClient, "/manager/status", MANAGER_SERVICE),
-  "/manager/progress",
-  MANAGER_SERVICE,
-) { }
 
 export { ManagerClient };

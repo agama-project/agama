@@ -1,4 +1,52 @@
 -------------------------------------------------------------------
+Tue Aug 13 14:57:21 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Allow links look like buttons again (gh#openSUSE/agama#1536).
+
+-------------------------------------------------------------------
+Fri Jul 26 11:42:05 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow reloading the page during installation
+  (gh#openSUSE/agama#1503).
+
+-------------------------------------------------------------------
+Mon Jul 22 15:28:42 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for generic questions with password
+  (gh#openSUSE/agama#1476)
+
+-------------------------------------------------------------------
+Wed Jul 17 09:52:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Handle the case where there are not user selectable patterns
+  (gh#openSUSE/agama#1472).
+
+-------------------------------------------------------------------
+Fri Jul 12 10:41:28 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Allow using TypeScript (gh#openSUSE/agama#1456).
+
+-------------------------------------------------------------------
+Tue Jul  9 08:51:34 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not try to connect to the WebSocket until the user is
+  logged in (gh#openSUSE/agama#1449).
+
+-------------------------------------------------------------------
+Mon Jul  8 11:12:13 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Improve storage UI for configuring the space policy actions
+  (gh#openSUSE/agama#1428).
+
+-------------------------------------------------------------------
+Mon Jul  8 10:56:14 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce TanStack Query for data fetching and state management
+  (gh#openSUSE/agama#1439).
+- Replace the l10n context with a solution based on TanStack
+  Query.
+
+-------------------------------------------------------------------
 Wed Jul  3 07:17:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the files list in the spec file (gh#openSUSE/agama#1429).

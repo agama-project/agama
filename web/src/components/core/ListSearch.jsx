@@ -28,10 +28,7 @@ const search = (elements, term) => {
   const value = term.toLowerCase();
 
   const match = (element) => {
-    return Object.values(element)
-      .join('')
-      .toLowerCase()
-      .includes(value);
+    return Object.values(element).join("").toLowerCase().includes(value);
   };
 
   return elements.filter(match);
@@ -50,7 +47,7 @@ const search = (elements, term) => {
 export default function ListSearch({
   placeholder = _("Search"),
   elements = [],
-  onChange: onChangeProp = noop
+  onChange: onChangeProp = noop,
 }) {
   const [value, setValue] = useState("");
   const [resultSize, setResultSize] = useState(elements.length);
@@ -60,7 +57,7 @@ export default function ListSearch({
     onChangeProp(result);
   };
 
-  const searchHandler = useDebounce(term => {
+  const searchHandler = useDebounce((term) => {
     updateResult(search(elements, term));
   }, 500);
 

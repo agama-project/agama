@@ -20,13 +20,13 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Skeleton, Split, Stack } from "@patternfly/react-core";
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Split, Stack } from "@patternfly/react-core";
+import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { useNavigate } from "react-router-dom";
-import { RowActions, ButtonLink } from '~/components/core';
+import { RowActions, Link } from "~/components/core";
 import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
+import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
+import { PATHS } from "~/routes/users";
 
 const UserNotDefined = ({ actionCb }) => {
   return (
@@ -35,11 +35,15 @@ const UserNotDefined = ({ actionCb }) => {
         <div>{_("No user defined yet.")}</div>
         <div>
           <strong>
-            {_("Please, be aware that a user must be defined before installing the system to be able to log into it.")}
+            {_(
+              "Please, be aware that a user must be defined before installing the system to be able to log into it.",
+            )}
           </strong>
         </div>
         <Split hasGutter>
-          <ButtonLink to="first" isPrimary>{_("Define a user now")}</ButtonLink>
+          <Link to={PATHS.firstUser.create} isPrimary>
+            {_("Define a user now")}
+          </Link>
         </Split>
       </Stack>
     </>
@@ -69,63 +73,27 @@ const UserData = ({ user, actions }) => {
   );
 };
 
-const initialUser = {
-  userName: "",
-  fullName: "",
-  autologin: false,
-  password: "",
-};
-
 export default function FirstUser() {
-  const client = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-  const [user, setUser] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    cancellablePromise(client.users.getUser()).then(userValues => {
-      setUser(userValues);
-      setIsLoading(false);
-    });
-  }, [client.users, cancellablePromise]);
-
-  useEffect(() => {
-    return client.users.onUsersChange(changes => {
-      if (changes.firstUser !== undefined) {
-        setUser(changes.firstUser);
-      }
-    });
-  }, [client.users]);
-
-  const remove = async () => {
-    setIsLoading(true);
-
-    const result = await client.users.removeUser();
-
-    if (result) {
-      setUser(initialUser);
-      setIsLoading(false);
-    }
-  };
-
-  const isUserDefined = user?.userName && user?.userName !== "";
+  const user = useFirstUser();
+  const removeUser = useRemoveFirstUserMutation();
   const navigate = useNavigate();
 
+  useFirstUserChanges();
+
+  const isUserDefined = user?.userName && user?.userName !== "";
   const actions = [
     {
       title: _("Edit"),
-      onClick: () => navigate('/users/first/edit')
+      onClick: () => navigate(PATHS.firstUser.edit),
     },
     {
       title: _("Discard"),
-      onClick: remove,
-      isDanger: true
-    }
+      onClick: () => removeUser.mutate(),
+      isDanger: true,
+    },
   ];
 
-  if (isLoading) {
-    return <Skeleton />;
-  } else if (isUserDefined) {
+  if (isUserDefined) {
     return <UserData user={user} actions={actions} />;
   } else {
     return <UserNotDefined />;

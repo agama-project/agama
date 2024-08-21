@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import userEvent from '@testing-library/user-event';
+import userEvent from "@testing-library/user-event";
 import { plainRender } from "~/test-utils";
 import { ZFCPDiskForm } from "~/components/storage";
 
@@ -41,7 +41,7 @@ const luns = [
   { channel: "0.0.fa00", wwpn: "0x500507630704d3b3", lun: "0x0000000000000010" },
   { channel: "0.0.fa00", wwpn: "0x500507630704d3b3", lun: "0x0000000000000020" },
   { channel: "0.0.fb00", wwpn: "0x500507630705d3b3", lun: "0x0000000000000100" },
-  { channel: "0.0.fb00", wwpn: "0x500507630705d3b3", lun: "0x0000000000000200" }
+  { channel: "0.0.fb00", wwpn: "0x500507630705d3b3", lun: "0x0000000000000200" },
 ];
 
 let props = {};
@@ -51,7 +51,7 @@ beforeEach(() => {
     id: "ZFCPDiskForm",
     luns,
     onSubmit: jest.fn().mockResolvedValue(0),
-    onLoading: jest.fn()
+    onLoading: jest.fn(),
   };
 });
 
@@ -111,7 +111,9 @@ describe("when the form is submitted", () => {
     await user.click(accept);
 
     expect(props.onSubmit).toHaveBeenCalledWith({
-      channel: "0.0.fa00", wwpn: "0x500507630703d3b3", lun: "0x0000000000000001"
+      channel: "0.0.fa00",
+      wwpn: "0x500507630703d3b3",
+      lun: "0x0000000000000001",
     });
 
     expect(screen.queryByText(/was not activated/)).toBeNull();

@@ -1,16 +1,21 @@
-use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersClient};
+use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersHTTPClient};
 use crate::error::ServiceError;
-use zbus::Connection;
 
 /// Loads and stores the users settings from/to the D-Bus service.
-pub struct UsersStore<'a> {
-    users_client: UsersClient<'a>,
+pub struct UsersStore {
+    users_client: UsersHTTPClient,
 }
 
-impl<'a> UsersStore<'a> {
-    pub async fn new(connection: Connection) -> Result<UsersStore<'a>, ServiceError> {
+impl UsersStore {
+    pub fn new() -> Result<Self, ServiceError> {
         Ok(Self {
-            users_client: UsersClient::new(connection).await?,
+            users_client: UsersHTTPClient::new()?,
+        })
+    }
+
+    pub fn new_with_client(client: UsersHTTPClient) -> Result<Self, ServiceError> {
+        Ok(Self {
+            users_client: client,
         })
     }
 
@@ -53,10 +58,7 @@ impl<'a> UsersStore<'a> {
             password: settings.password.clone().unwrap_or_default(),
             ..Default::default()
         };
-        let (success, issues) = self.users_client.set_first_user(&first_user).await?;
-        if !success {
-            return Err(ServiceError::WrongUser(issues));
-        }
+        self.users_client.set_first_user(&first_user).await?;
         Ok(())
     }
 
@@ -71,6 +73,139 @@ impl<'a> UsersStore<'a> {
             self.users_client.set_root_sshkey(ssh_public_key).await?;
         }
 
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::base_http_client::BaseHTTPClient;
+    use httpmock::prelude::*;
+    use httpmock::Method::PATCH;
+    use std::error::Error;
+    use tokio::test; // without this, "error: async functions cannot be used for tests"
+
+    fn users_store(mock_server_url: String) -> Result<UsersStore, ServiceError> {
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = mock_server_url;
+        let client = UsersHTTPClient::new_with_base(bhc)?;
+        UsersStore::new_with_client(client)
+    }
+
+    #[test]
+    async fn test_getting_users() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let user_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/users/first");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "fullName": "Tux",
+                    "userName": "tux",
+                    "password": "fish",
+                    "autologin": true,
+                    "data": {}
+                }"#,
+                );
+        });
+        let root_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/users/root");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "sshkey": "keykeykey",
+                    "password": true
+                }"#,
+                );
+        });
+        let url = server.url("/api");
+
+        let store = users_store(url)?;
+        let settings = store.load().await?;
+
+        let first_user = FirstUserSettings {
+            full_name: Some("Tux".to_owned()),
+            user_name: Some("tux".to_owned()),
+            password: Some("fish".to_owned()),
+            autologin: Some(true),
+        };
+        let root_user = RootUserSettings {
+            // FIXME this is weird: no matter what HTTP reports, we end up with None
+            password: None,
+            ssh_public_key: Some("keykeykey".to_owned()),
+        };
+        let expected = UserSettings {
+            first_user: Some(first_user),
+            root: Some(root_user),
+        };
+
+        // main assertion
+        assert_eq!(settings, expected);
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        user_mock.assert();
+        root_mock.assert();
+
+        Ok(())
+    }
+
+    #[test]
+    async fn test_setting_users() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let user_mock = server.mock(|when, then| {
+            when.method(PUT)
+                .path("/api/users/first")
+                .header("content-type", "application/json")
+                .body(
+                    r#"{"fullName":"Tux","userName":"tux","password":"fish","autologin":true,"data":{}}"#
+                );
+            then.status(200);
+        });
+        // note that we use 2 requests for root
+        let root_mock = server.mock(|when, then| {
+            when.method(PATCH)
+                .path("/api/users/root")
+                .header("content-type", "application/json")
+                .body(r#"{"sshkey":null,"password":"1234","passwordEncrypted":false}"#);
+            then.status(200).body("0");
+        });
+        let root_mock2 = server.mock(|when, then| {
+            when.method(PATCH)
+                .path("/api/users/root")
+                .header("content-type", "application/json")
+                .body(r#"{"sshkey":"keykeykey","password":null,"passwordEncrypted":null}"#);
+            then.status(200).body("0");
+        });
+        let url = server.url("/api");
+
+        let store = users_store(url)?;
+
+        let first_user = FirstUserSettings {
+            full_name: Some("Tux".to_owned()),
+            user_name: Some("tux".to_owned()),
+            password: Some("fish".to_owned()),
+            autologin: Some(true),
+        };
+        let root_user = RootUserSettings {
+            password: Some("1234".to_owned()),
+            ssh_public_key: Some("keykeykey".to_owned()),
+        };
+        let settings = UserSettings {
+            first_user: Some(first_user),
+            root: Some(root_user),
+        };
+        let result = store.store(&settings).await;
+
+        // main assertion
+        result?;
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        user_mock.assert();
+        root_mock.assert();
+        root_mock2.assert();
         Ok(())
     }
 }

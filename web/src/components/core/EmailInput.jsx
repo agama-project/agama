@@ -32,23 +32,24 @@ import { noop } from "~/utils";
  * @returns {boolean}
  */
 const validateEmail = (email) => {
-  const regexp = /^[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+  const regexp =
+    /^[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
   const validateFormat = (email) => {
-    const parts = email.split('@');
+    const parts = email.split("@");
 
     return parts.length === 2 && regexp.test(email);
   };
 
   const validateSizes = (email) => {
-    const [account, address] = email.split('@');
+    const [account, address] = email.split("@");
 
     if (account.length > 64) return false;
     if (address.length > 255) return false;
 
-    const domainParts = address.split('.');
+    const domainParts = address.split(".");
 
-    if (domainParts.find(p => p.length > 63)) return false;
+    if (domainParts.find((p) => p.length > 63)) return false;
 
     return true;
   };
@@ -76,11 +77,7 @@ export default function EmailInput({ onValidate = noop, ...props }) {
 
   return (
     <InputGroup>
-      <TextInput
-        {...props}
-        type='email'
-        validated={isValid ? 'default' : 'error'}
-      />
+      <TextInput {...props} type="email" validated={isValid ? "default" : "error"} />
     </InputGroup>
   );
 }

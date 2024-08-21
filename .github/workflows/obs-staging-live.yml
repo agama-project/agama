@@ -1,4 +1,4 @@
-name: Submit agama-live
+name: Submit agama-installer
 
 on:
   # runs on pushes targeting the default branch
@@ -29,7 +29,7 @@ jobs:
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
-             findutils git make osc
+             findutils git make osc obs-service-format_spec_file
 
       - name: Git Checkout
         uses: actions/checkout@v4
@@ -43,8 +43,8 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ vars.OBS_PROJECT }} agama-live
-        run: osc co -o dist ${{ vars.OBS_PROJECT }} agama-live
+      - name: Checkout ${{ vars.OBS_PROJECT }} agama-installer
+        run: osc co -o dist ${{ vars.OBS_PROJECT }} agama-installer
         working-directory: ./live
 
       - name: Build sources
@@ -59,6 +59,6 @@ jobs:
         run: osc diff && osc status
         working-directory: ./live/dist
 
-      - name: Commit agama-live to ${{ vars.OBS_PROJECT }}
-        run:  osc commit -m "Updated to Agama $GITHUB_SHA"
+      - name: Commit agama-installer to ${{ vars.OBS_PROJECT }}
+        run: osc commit -m "Updated to Agama $GITHUB_SHA"
         working-directory: ./live/dist

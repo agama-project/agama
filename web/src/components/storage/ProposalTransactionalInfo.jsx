@@ -23,7 +23,7 @@ import React from "react";
 import { Alert } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useProduct } from "~/context/product";
+import { useProduct } from "~/queries/software";
 import { isTransactionalSystem } from "~/components/storage/utils";
 
 /**
@@ -38,16 +38,22 @@ import { isTransactionalSystem } from "~/components/storage/utils";
  * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
  */
 export default function ProposalTransactionalInfo({ settings }) {
-  const { selectedProduct } = useProduct();
+  const { selectedProduct } = useProduct({ suspense: true });
 
   if (!isTransactionalSystem(settings?.volumes)) return;
 
   const title = _("Transactional root file system");
   /* TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed) */
   const description = sprintf(
-    _("%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots."),
-    selectedProduct.name
+    _(
+      "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.",
+    ),
+    selectedProduct.name,
   );
 
-  return <Alert isInline title={title}>{description}</Alert>;
+  return (
+    <Alert isInline title={title}>
+      {description}
+    </Alert>
+  );
 }

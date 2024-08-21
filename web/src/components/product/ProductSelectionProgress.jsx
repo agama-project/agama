@@ -22,10 +22,12 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { _ } from "~/i18n";
-import { useProduct } from "~/context/product";
-import { ProgressReport } from "~/components/core";
+import { useProduct } from "~/queries/software";
+import { Page, ProgressReport } from "~/components/core";
 import { IDLE } from "~/client/status";
 import { useInstallerClient } from "~/context/installer";
+import { PATHS } from "~/router";
+import { useInstallerStatus } from "~/queries/status";
 
 /**
  * @component
@@ -33,26 +35,18 @@ import { useInstallerClient } from "~/context/installer";
  * Shows progress steps when a product is selected.
  */
 function ProductSelectionProgress() {
-  const { selectedProduct } = useProduct();
-  const { manager } = useInstallerClient();
-  const [status, setStatus] = useState();
+  const { selectedProduct } = useProduct({ suspense: true });
+  const { isBusy } = useInstallerStatus({ suspense: true });
 
-  useEffect(() => {
-    manager.getStatus().then(setStatus);
-    return manager.onStatusChange(setStatus);
-  }, [manager, setStatus]);
-
-  if (!selectedProduct) {
-    return;
-  }
-
-  if (status === IDLE) return <Navigate to="/" replace />;
+  if (!isBusy) return <Navigate to={PATHS.root} replace />;
 
   return (
-    <ProgressReport
-      title={_("Configuring the product, please wait ...")}
-      firstStep={selectedProduct.name}
-    />
+    <Page>
+      <ProgressReport
+        title={_("Configuring the product, please wait ...")}
+        firstStep={selectedProduct.name}
+      />
+    </Page>
   );
 }
 

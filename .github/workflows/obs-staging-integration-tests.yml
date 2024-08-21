@@ -1,0 +1,23 @@
+name: Submit agama-integration-tests
+
+on:
+  # runs on pushes targeting the default branch
+  push:
+    branches:
+      - master
+    paths:
+      # run only when a source file is changed
+      - puppeteer/**
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  update_staging:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      install_packages: obs-service-node_modules
+      package_name: agama-integration-tests
+      service_file: puppeteer/package/_service

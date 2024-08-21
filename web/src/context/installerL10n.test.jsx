@@ -35,12 +35,6 @@ const setUILocaleFn = jest.fn().mockResolvedValue();
 const client = {
   onConnect: jest.fn(),
   onDisconnect: jest.fn(),
-  manager: {
-    getPhase: jest.fn(),
-    getStatus: jest.fn(),
-    onPhaseChange: jest.fn(),
-    onStatusChange: jest.fn()
-  },
   l10n: {
     getUILocale: getUILocaleFn,
     setUILocale: setUILocaleFn,

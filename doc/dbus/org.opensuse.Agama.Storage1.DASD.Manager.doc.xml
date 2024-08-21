@@ -1,0 +1,54 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Storage1">
+  <node name="Proposal" />
+  <node name="dasds" />
+  <interface name="org.opensuse.Agama.Storage1.DASD.Manager">
+    <!--
+        Probe:
+        Finds DASDs in the system and populates the D-Bus objects tree
+        accordingly.
+    -->
+    <method name="Probe">
+    </method>
+
+    <!--
+        Enable:
+        Enables the given list of DASDs.
+    -->
+    <method name="Enable">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+
+    <!--
+        Disable:
+        Disables the given list of DASDs.
+    -->
+    <method name="Disable">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+
+    <!--
+        SetDiag:
+        Sets the use_diag attribute for the given DASDs.
+    -->
+    <method name="SetDiag">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="diag" direction="in" type="b"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+
+    <!--
+        Format:
+        Starts the formatting of the given DASDs. To keep track
+        of the progress check the jobs interface.
+    -->
+    <method name="Format">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+      <arg name="job" direction="out" type="o"/>
+    </method>
+  </interface>
+</node>

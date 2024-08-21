@@ -23,7 +23,7 @@
 // cspell:ignore labelable
 
 import React from "react";
-import styles from '@patternfly/react-styles/css/components/Form/form';
+import styles from "@patternfly/react-styles/css/components/Form/form";
 
 /**
  * Renders a read-only form value with a label that visually looks identically

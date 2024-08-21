@@ -43,10 +43,10 @@ pub struct ManagerState<'a> {
 pub struct InstallerStatus {
     /// Current installation phase.
     phase: InstallationPhase,
-    /// List of busy services.
-    busy: Vec<String>,
+    /// Whether the service is busy.
+    is_busy: bool,
     /// Whether Agama is running on Iguana.
-    iguana: bool,
+    use_iguana: bool,
     /// Whether it is possible to start the installation.
     can_install: bool,
 }
@@ -183,8 +183,8 @@ async fn installer_status(
     let status = InstallerStatus {
         phase,
         can_install,
-        busy: state.manager.busy_services().await?,
-        iguana: state.manager.use_iguana().await?,
+        is_busy: state.manager.is_busy().await,
+        use_iguana: state.manager.use_iguana().await?,
     };
     Ok(Json(status))
 }

@@ -22,7 +22,16 @@
 // @ts-check
 
 import React, { useState } from "react";
-import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent, RowSelectVariant } from "@patternfly/react-table";
+import {
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Tbody,
+  Td,
+  ExpandableRowContent,
+  RowSelectVariant,
+} from "@patternfly/react-table";
 
 /**
  * @typedef {import("@patternfly/react-table").TableProps} TableProps
@@ -61,7 +70,11 @@ const TableHeader = ({ columns }) => (
     <Tr>
       <Th />
       <Th />
-      { columns?.map((c, i) => <Th key={i} className={c.classNames}>{c.name}</Th>) }
+      {columns?.map((c, i) => (
+        <Th key={i} className={c.classNames}>
+          {c.name}
+        </Th>
+      ))}
     </Tr>
   </Thead>
 );
@@ -88,7 +101,7 @@ const sanitizeSelection = (selection, allowMultiple) => {
   if (!allowMultiple && selection.length > 1) {
     console.error(
       "`itemsSelected` prop can only have more than one item when selector `isMultiple`. " +
-        "Using only the first element"
+        "Using only the first element",
     );
 
     return [selection[0]];
@@ -136,8 +149,9 @@ export default function ExpandableSelector({
   const selection = sanitizeSelection(itemsSelected, isMultiple);
   const isItemSelected = (item) => {
     const selected = selection.find((selectionItem) => {
-      return Object.hasOwn(selectionItem, itemIdKey) &&
-        selectionItem[itemIdKey] === item[itemIdKey];
+      return (
+        Object.hasOwn(selectionItem, itemIdKey) && selectionItem[itemIdKey] === item[itemIdKey]
+      );
     });
 
     return selected !== undefined || selection.includes(item);
@@ -145,7 +159,7 @@ export default function ExpandableSelector({
   const isItemExpanded = (key) => expandedItemsKeys.includes(key);
   const toggleExpanded = (key) => {
     if (isItemExpanded(key)) {
-      setExpandedItemsKeys(expandedItemsKeys.filter(k => k !== key));
+      setExpandedItemsKeys(expandedItemsKeys.filter((k) => k !== key));
     } else {
       setExpandedItemsKeys([...expandedItemsKeys, key]);
     }
@@ -158,7 +172,7 @@ export default function ExpandableSelector({
     }
 
     if (isItemSelected(item)) {
-      onSelectionChange(selection.filter(i => i !== item));
+      onSelectionChange(selection.filter((i) => i !== item));
     } else {
       onSelectionChange([...selection, item]);
     }
@@ -178,14 +192,14 @@ export default function ExpandableSelector({
       rowIndex,
       onSelect: () => updateSelection(item),
       isSelected: isItemSelected(item),
-      variant: isMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio
+      variant: isMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
     };
 
     return (
       <Tr key={rowIndex} isExpanded={isExpanded} className={itemClassNames(item)}>
         <Td />
         <Td select={itemSelectable(item) ? selectProps : undefined} />
-        { columns?.map((column, index) => (
+        {columns?.map((column, index) => (
           <Td key={index} dataLabel={column.name} className={column.classNames}>
             <ExpandableRowContent>{column.value(item)}</ExpandableRowContent>
           </Td>
@@ -215,13 +229,13 @@ export default function ExpandableSelector({
       rowIndex,
       onSelect: () => updateSelection(item),
       isSelected: isItemSelected(item),
-      variant: isMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio
+      variant: isMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
     };
 
     const renderChildren = () => {
       if (!validChildren) return;
 
-      return children.map(item => renderItemChild(item, isItemExpanded(itemKey), sharedData));
+      return children.map((item) => renderItemChild(item, isItemExpanded(itemKey), sharedData));
     };
 
     // TODO: Add label to Tbody?
@@ -230,13 +244,13 @@ export default function ExpandableSelector({
         <Tr className={itemClassNames(item)}>
           <Td expand={expandProps} />
           <Td select={itemSelectable(item) ? selectProps : undefined} />
-          { columns?.map((column, index) => (
+          {columns?.map((column, index) => (
             <Td key={index} dataLabel={column.name} className={column.classNames}>
               {column.value(item)}
             </Td>
           ))}
         </Tr>
-        { renderChildren() }
+        {renderChildren()}
       </Tbody>
     );
   };
@@ -244,7 +258,7 @@ export default function ExpandableSelector({
   // @see SharedData
   const sharedData = { rowIndex: 0 };
 
-  const TableBody = () => items?.map(item => renderItem(item, sharedData));
+  const TableBody = () => items?.map((item) => renderItem(item, sharedData));
 
   return (
     <Table data-type="agama/expandable-selector" {...tableProps}>

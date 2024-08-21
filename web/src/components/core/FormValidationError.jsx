@@ -38,9 +38,7 @@ export default function FormValidationError({ message }) {
   return (
     <FormHelperText>
       <HelperText>
-        <HelperTextItem variant="error">
-          {message}
-        </HelperTextItem>
+        <HelperTextItem variant="error">{message}</HelperTextItem>
       </HelperText>
     </FormHelperText>
   );

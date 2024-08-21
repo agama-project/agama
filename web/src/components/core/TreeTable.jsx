@@ -22,7 +22,7 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
-import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from "@patternfly/react-table";
 
 /**
  * @typedef {import("@patternfly/react-table").TableProps} TableProps
@@ -73,7 +73,7 @@ export default function TreeTable({
 
   const toggle = (item) => {
     if (isExpanded(item)) {
-      setExpanded(expanded.filter(d => d !== item));
+      setExpanded(expanded.filter((d) => d !== item));
     } else {
       setExpanded([...expanded, item]);
     }
@@ -83,13 +83,15 @@ export default function TreeTable({
     return columns.map((c, cIdx) => {
       const props = {
         dataLabel: c.name,
-        className: c.classNames
+        className: c.classNames,
       };
 
       if (cIdx === 0) props.treeRow = treeRow;
 
       return (
-        <Td key={cIdx} {...props}>{c.value(item)}</Td>
+        <Td key={cIdx} {...props}>
+          {c.value(item)}
+        </Td>
       );
     });
   };
@@ -97,53 +99,48 @@ export default function TreeTable({
   const renderRows = (items, level, hidden = false) => {
     if (items?.length <= 0) return;
 
-    return (
-      items.map((item, itemIdx) => {
-        const children = itemChildren(item);
-        const expanded = isExpanded(item);
+    return items.map((item, itemIdx) => {
+      const children = itemChildren(item);
+      const expanded = isExpanded(item);
 
-        const treeRow = {
-          onCollapse: () => toggle(item),
-          props: {
-            isExpanded: expanded,
-            isDetailsExpanded: true,
-            isHidden: hidden,
-            "aria-level": level,
-            "aria-posinset": itemIdx + 1,
-            "aria-setsize": children?.length || 0
-          }
-        };
+      const treeRow = {
+        onCollapse: () => toggle(item),
+        props: {
+          isExpanded: expanded,
+          isDetailsExpanded: true,
+          isHidden: hidden,
+          "aria-level": level,
+          "aria-posinset": itemIdx + 1,
+          "aria-setsize": children?.length || 0,
+        },
+      };
 
-        const rowProps = {
-          row: { props: treeRow.props },
-          className: rowClassNames(item)
-        };
+      const rowProps = {
+        row: { props: treeRow.props },
+        className: rowClassNames(item),
+      };
 
-        return (
-          <React.Fragment key={itemIdx}>
-            <TreeRowWrapper {...rowProps}>{renderColumns(item, treeRow)}</TreeRowWrapper>
-            { renderRows(children, level + 1, !expanded)}
-          </React.Fragment>
-        );
-      })
-    );
+      return (
+        <React.Fragment key={itemIdx}>
+          <TreeRowWrapper {...rowProps}>{renderColumns(item, treeRow)}</TreeRowWrapper>
+          {renderRows(children, level + 1, !expanded)}
+        </React.Fragment>
+      );
+    });
   };
 
   return (
-    <Table
-      variant="compact"
-      {...tableProps}
-      isTreeTable
-      data-type="agama/tree-table"
-    >
+    <Table variant="compact" {...tableProps} isTreeTable data-type="agama/tree-table">
       <Thead noWrap>
         <Tr>
-          { columns.map((c, i) => <Th key={i} className={c.classNames}>{c.name}</Th>) }
+          {columns.map((c, i) => (
+            <Th key={i} className={c.classNames}>
+              {c.name}
+            </Th>
+          ))}
         </Tr>
       </Thead>
-      <Tbody>
-        { renderRows(items, 1) }
-      </Tbody>
+      <Tbody>{renderRows(items, 1)}</Tbody>
     </Table>
   );
 }
