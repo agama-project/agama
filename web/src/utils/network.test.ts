@@ -21,6 +21,7 @@
 
 // @ts-check
 
+import { SecurityProtocols } from "~/types/network";
 import {
   isValidIp,
   isValidIpPrefix,
@@ -28,7 +29,8 @@ import {
   stringToIPInt,
   formatIp,
   ipPrefixFor,
-} from "./utils";
+  securityFromFlags,
+} from "./network";
 
 describe("#isValidIp", () => {
   it("returns true when the IP is valid", () => {
@@ -79,4 +81,11 @@ describe("formatIp", () => {
   it("returns the given IPv4 address in the X.X.X.X/YY format", () => {
     expect(formatIp({ address: "1.2.3.4", prefix: 24 })).toEqual("1.2.3.4/24");
   });
+});
+
+describe("securityFromFlags", () => {
+  it("returns an array with the supported security protocols", () => {
+    expect(securityFromFlags(0, 0, 0)).toEqual([]);
+    expect(securityFromFlags(3, 392, 0)).toEqual([SecurityProtocols.WPA]);
+  })
 });

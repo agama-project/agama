@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,13 +20,14 @@
  */
 
 import React, { useState } from "react";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   HelperText,
   HelperTextItem,
   Form,
   FormGroup,
   FormSelect,
+  FormSelectProps,
   FormSelectOption,
   Grid,
   GridItem,
@@ -35,45 +36,41 @@ import {
   FormHelperText,
 } from "@patternfly/react-core";
 
-import { useInstallerClient } from "~/context/installer";
 import { Page } from "~/components/core";
-import { AddressesDataList, DnsDataList } from "~/components/network";
+import AddressesDataList from "~/components/network/AddressesDataList";
+import DnsDataList from "~/components/network/DnsDataList";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { useConnection, useConnectionMutation } from "~/queries/network";
+import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
 
-const METHODS = {
-  MANUAL: "manual",
-  AUTO: "auto",
-};
-
-const usingDHCP = (method) => method === METHODS.AUTO;
+const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
 export default function IpSettingsForm() {
-  const client = useInstallerClient();
-  const connection = useLoaderData();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [addresses, setAddresses] = useState(connection.addresses);
+  const { mutateAsync: updateConnection } = useConnectionMutation();
+  const connection = useConnection(id);
+  const [addresses, setAddresses] = useState<IPAddress[]>(connection.addresses);
   const [nameservers, setNameservers] = useState(
     connection.nameservers.map((a) => {
       return { address: a };
     }),
   );
-  const [method, setMethod] = useState(connection.method4);
-  const [gateway, setGateway] = useState(connection.gateway4);
-  const [errors, setErrors] = useState({});
+  const [method, setMethod] = useState<ConnectionMethod>(connection.method4);
+  const [gateway, setGateway] = useState<string>(connection.gateway4);
+  const [errors, setErrors] = useState<object>({});
 
-  const isSetAsInvalid = (field) => Object.keys(errors).includes(field);
+  const isSetAsInvalid = (field: string) => Object.keys(errors).includes(field);
   const isGatewayDisabled = addresses.length === 0;
 
-  const validatedAttrValue = (field) => {
-    if (isSetAsInvalid(field)) return "error";
-
-    return "default";
+  const validatedAttrValue = (field: string) => {
+    return isSetAsInvalid(field) ? "error" : "default";
   };
 
-  const cleanAddresses = (addrs) => addrs.filter((addr) => addr.address !== "");
+  const cleanAddresses = (addrs: IPAddress[]) => addrs.filter((addr) => addr.address !== "");
 
-  const cleanError = (field) => {
+  const cleanError = (field: string) => {
     if (isSetAsInvalid(field)) {
       const nextErrors = { ...errors };
       delete nextErrors[field];
@@ -81,24 +78,24 @@ export default function IpSettingsForm() {
     }
   };
 
-  const onMethodChange = (_, value) => {
+  const onMethodChange: FormSelectProps["onChange"] = (_, value) => {
     let nextAddresses = cleanAddresses(addresses);
 
-    if (!usingDHCP(value) && nextAddresses.length === 0) {
-      // FIXME: Use a model instead?
+    if (!usingDHCP(ConnectionMethod[value]) && nextAddresses.length === 0) {
       nextAddresses = [{ address: "", prefix: "" }];
     }
 
     cleanError("method");
     setAddresses(nextAddresses);
-    setMethod(value);
+    // FIXME: evaluate if there is a better and safer way to update the method,
+    // maybe using the enum key instead of the value
+    setMethod(value as ConnectionMethod);
   };
 
-  const validate = (sanitizedAddresses) => {
+  const validate = (sanitizedAddresses: IPAddress[]) => {
     setErrors({});
 
-    const nextErrors = {};
-
+    const nextErrors: { method?: string } = {};
     if (!usingDHCP(method) && sanitizedAddresses.length === 0) {
       // TRANSLATORS: error message
       nextErrors.method = _("At least one address must be provided for selected mode");
@@ -118,22 +115,19 @@ export default function IpSettingsForm() {
     if (!validate(sanitizedAddresses)) return;
 
     // TODO: deal with DNS servers
-    const updatedConnection = {
+    const updatedConnection = new Connection(connection.id, {
       ...connection,
       addresses: sanitizedAddresses,
       method4: method,
       gateway4: gateway,
       nameservers: sanitizedNameservers.map((s) => s.address),
-    };
-
-    client.network
-      .updateConnection(updatedConnection)
-      .then(navigate(-1))
-      // TODO: better error reporting. By now, it sets an error for the whole connection.
-      .catch(({ message }) => setErrors({ object: message }));
+    });
+    updateConnection(updatedConnection)
+      .catch((error) => setErrors(error))
+      .then(() => navigate(-1));
   };
 
-  const renderError = (field) => {
+  const renderError = (field: string) => {
     if (!isSetAsInvalid(field)) return null;
 
     return (
@@ -146,7 +140,7 @@ export default function IpSettingsForm() {
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{sprintf(_("Edit connection %s"), connection.id)}</h2>
       </Page.Header>
@@ -170,11 +164,15 @@ export default function IpSettingsForm() {
                     >
                       <FormSelectOption
                         key="auto"
-                        value={METHODS.AUTO}
+                        value={ConnectionMethod.AUTO}
                         label={_("Automatic (DHCP)")}
                       />
                       {/* TRANSLATORS: manual network configuration mode with a static IP address */}
-                      <FormSelectOption key="manual" value={METHODS.MANUAL} label={_("Manual")} />
+                      <FormSelectOption
+                        key="manual"
+                        value={ConnectionMethod.MANUAL}
+                        label={_("Manual")}
+                      />
                     </FormSelect>
                     {renderError("method")}
                   </FormGroup>
@@ -193,6 +191,7 @@ export default function IpSettingsForm() {
                       <FormHelperText>
                         <HelperText>
                           <HelperTextItem variant="indeterminate">
+                            {/** FIXME: check if that afirmation is true */}
                             {_("Gateway can be defined only in 'Manual' mode")}
                           </HelperTextItem>
                         </HelperText>
@@ -223,11 +222,11 @@ export default function IpSettingsForm() {
       </Page.MainContent>
 
       <Page.NextActions>
-        <Page.CancelAction navigateTo={-1} />
+        <Page.CancelAction />
         <Page.Action type="submit" form="editConnectionForm">
           {_("Accept")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

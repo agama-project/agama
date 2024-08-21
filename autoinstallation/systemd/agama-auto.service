@@ -1,11 +1,9 @@
 [Unit]
 Description=Agama automatic profile runner
-# it needs to D-Bus, so it has access to Agama D-Bus interface
-After=dbus.socket
-# it needs to NetworkManager, so it has access to it
-After=NetworkManager.service
-# it needs agama, of course
+# it needs agama web service as it calls CLI which uses its API
+# other dependencies are transitive
 After=agama-web-server.service
+BindsTo=agama-web-server.service
 
 [Service]
 ExecStart=/usr/bin/agama-auto

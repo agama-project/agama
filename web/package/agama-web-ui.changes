@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 13 14:57:21 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Allow links look like buttons again (gh#openSUSE/agama#1536).
+
+-------------------------------------------------------------------
 Fri Jul 26 11:42:05 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Allow reloading the page during installation

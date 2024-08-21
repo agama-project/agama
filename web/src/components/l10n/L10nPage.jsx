@@ -21,7 +21,7 @@
 
 import React from "react";
 import { Gallery, GalleryItem } from "@patternfly/react-core";
-import { ButtonLink, CardField, Page } from "~/components/core";
+import { Link, CardField, Page } from "~/components/core";
 import { PATHS } from "~/routes/l10n";
 import { _ } from "~/i18n";
 import { useL10n } from "~/queries/l10n";
@@ -55,17 +55,17 @@ export default function L10nPage() {
               label={_("Language")}
               value={locale ? `${locale.name} - ${locale.territory}` : _("Not selected yet")}
             >
-              <ButtonLink to={PATHS.localeSelection} isPrimary={!locale}>
+              <Link to={PATHS.localeSelection} isPrimary={!locale}>
                 {locale ? _("Change") : _("Select")}
-              </ButtonLink>
+              </Link>
             </Section>
           </GalleryItem>
 
           <GalleryItem>
             <Section label={_("Keyboard")} value={keymap ? keymap.name : _("Not selected yet")}>
-              <ButtonLink to={PATHS.keymapSelection} isPrimary={!keymap}>
+              <Link to={PATHS.keymapSelection} isPrimary={!keymap}>
                 {keymap ? _("Change") : _("Select")}
-              </ButtonLink>
+              </Link>
             </Section>
           </GalleryItem>
 
@@ -74,9 +74,9 @@ export default function L10nPage() {
               label={_("Time zone")}
               value={timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
             >
-              <ButtonLink to={PATHS.timezoneSelection} isPrimary={!timezone}>
+              <Link to={PATHS.timezoneSelection} isPrimary={!timezone}>
                 {timezone ? _("Change") : _("Select")}
-              </ButtonLink>
+              </Link>
             </Section>
           </GalleryItem>
         </Gallery>

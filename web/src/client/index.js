@@ -24,14 +24,12 @@
 import { L10nClient } from "./l10n";
 import { ManagerClient } from "./manager";
 import { StorageClient } from "./storage";
-import { NetworkClient } from "./network";
 import { HTTPClient, WSClient } from "./http";
 
 /**
  * @typedef {object} InstallerClient
  * @property {L10nClient} l10n - localization client.
  * @property {ManagerClient} manager - manager client.
- * @property {NetworkClient} network - network client.
  * @property {StorageClient} storage - storage client.
  * @property {() => WSClient} ws - Agama WebSocket client.
  * @property {() => boolean} isConnected - determines whether the client is connected
@@ -53,7 +51,6 @@ const createClient = (url) => {
   const l10n = new L10nClient(client);
   // TODO: unify with the manager client
   const manager = new ManagerClient(client);
-  const network = new NetworkClient(client);
   const storage = new StorageClient(client);
 
   const isConnected = () => client.ws().isConnected() || false;
@@ -62,7 +59,6 @@ const createClient = (url) => {
   return {
     l10n,
     manager,
-    network,
     storage,
     isConnected,
     isRecoverable,

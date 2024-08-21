@@ -9,7 +9,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{delete, get, put},
+    routing::{delete, get, patch, post},
     Json, Router,
 };
 
@@ -101,10 +101,10 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
                 .put(update_connection)
                 .get(connection),
         )
-        .route("/connections/:id/connect", get(connect))
-        .route("/connections/:id/disconnect", get(disconnect))
+        .route("/connections/:id/connect", patch(connect))
+        .route("/connections/:id/disconnect", patch(disconnect))
         .route("/devices", get(devices))
-        .route("/system/apply", put(apply))
+        .route("/system/apply", post(apply))
         .route("/wifi", get(wifi_networks))
         .with_state(state))
 }
@@ -293,7 +293,7 @@ async fn update_connection(
 }
 
 #[utoipa::path(
-    get,
+    patch,
     path = "/connections/:id/connect",
     context_path = "/api/network",
     responses(
@@ -325,7 +325,7 @@ async fn connect(
 }
 
 #[utoipa::path(
-    get,
+    patch,
     path = "/connections/:id/disconnect",
     context_path = "/api/network",
     responses(
@@ -357,7 +357,7 @@ async fn disconnect(
 }
 
 #[utoipa::path(
-    put,
+    post,
     path = "/system/apply",
     context_path = "/api/network",
     responses(

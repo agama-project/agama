@@ -29,6 +29,7 @@ import {
   localConnection,
   remoteConnection,
   isObject,
+  slugify,
 } from "./utils";
 
 describe("noop", () => {
@@ -178,5 +179,11 @@ describe("isObject", () => {
   it("returns false when called with a map", () => {
     const map = new Map([["dummy", "map"]]);
     expect(isObject(map)).toBe(false);
+  });
+});
+
+describe("slugify", () => {
+  it("converts given input into a slug", () => {
+    expect(slugify("Agama! / Network 1")).toEqual("agama-network-1");
   });
 });

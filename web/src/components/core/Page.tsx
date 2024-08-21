@@ -27,6 +27,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  CardProps,
   Flex,
   PageGroup,
   PageSection,
@@ -138,7 +139,7 @@ const Header = ({ hasGutter = true, children, ...props }) => {
   );
 };
 
-const CardSection = ({ title, children, ...props }) => {
+const CardSection = ({ title, children, ...props }: CardProps & { title?: string }) => {
   return (
     <Card isRounded isCompact {...props}>
       {title && <CardHeader> {title} </CardHeader>}
