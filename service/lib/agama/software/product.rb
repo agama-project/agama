@@ -52,7 +52,7 @@ module Agama
       # file exists inside agama/web/src/assests/product.
       # `default.svg` will be used unless specified otherwise.
       #
-      # @return [String, "default.svg"] E.g., "1.0".
+      # @return [String] E.g. "leap.svg"
       attr_accessor :icon
 
       # List of repositories.
