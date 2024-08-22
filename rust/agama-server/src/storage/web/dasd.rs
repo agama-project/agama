@@ -69,7 +69,7 @@ pub async fn dasd_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
         (status = OK, description = "Returns whether DASD technology is supported")
     )
 )]
-async fn supported(State(state): State<DASDState<'_>>) -> Result<Json<()>, Error> {
+async fn supported(State(state): State<DASDState<'_>>) -> Result<Json<bool>, Error> {
     Ok(Json(state.client.supported().await?))
 }
 
