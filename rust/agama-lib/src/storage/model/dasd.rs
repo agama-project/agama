@@ -8,6 +8,7 @@ use crate::{dbus::get_property, error::ServiceError};
 
 /// Represents a DASD device (specific to s390x systems).
 #[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct DASDDevice {
     pub id: String,
     pub enabled: bool,
