@@ -26,6 +26,7 @@ import { useHref } from "react-router-dom";
 import { MenuToggle, Select, SelectList, SelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
+import { DASDSupported } from "~/api/dasd";
 
 /**
  * Internal component for building the link to Storage/DASD page
@@ -85,7 +86,7 @@ export default function DevicesTechMenu({ label }) {
   const { storage: client } = useInstallerClient();
 
   useEffect(() => {
-    client.dasd.isSupported().then(setShowDasdLink);
+    DASDSupported().then(setShowDasdLink);
     client.zfcp.isSupported().then(setShowZFCPLink);
   }, [client.dasd, client.zfcp]);
 

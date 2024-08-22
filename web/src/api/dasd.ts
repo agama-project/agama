@@ -27,4 +27,6 @@ import { DASDDevice } from "~/types/dasd";
  */
 const fetchDASDDevices = (): Promise<DASDDevice[]> => get("/api/storage/dasd/devices");
 
-export { fetchDASDDevices };
+const DASDSupported = (): Promise<boolean> => get("/api/storage/dasd/supported");
+
+export { fetchDASDDevices, DASDSupported };
