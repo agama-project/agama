@@ -126,6 +126,7 @@ Partition
   encryption [Encryption]
   filesystem [<Filesystem>]
   delete [<boolean=false>]
+  deleteIfNeeded [<boolean=false>]
 
 LogicalVolume
   search [<Search>]
@@ -139,7 +140,7 @@ LogicalVolume
   encryption [Encryption]
   filesystem [<Filesystem>]
   delete [<boolean=false>]
-
+  deleteIfNeeded [<boolean=false>]
 Encryption
   reuse <Boolean>
   type <EncryptionType>
@@ -255,6 +256,10 @@ into the following:
  - If the product does not specify a default volume, the behavior is still not defined (there are
    several reasonable options).
 
+It is also possible to specify "current" as a size value for partitions and logical volumes that
+already exist in the system. The usage of "current" and how it affects resizing the corresponding
+devices is explained at a separate section below.
+
 ### Under Discussion
 
 As explained, it should be possible to specify the sizes as "default", as a range or as a fixed
@@ -264,10 +269,11 @@ represent a size. The following two possibilities are also under consideration.
  - `{ "gib": 40 }`
  - `{ "value": 40, "units": "gib" }`
 
-Resizing is also an open topic. We may not be able to easily combine a resize operation with aspects
-like ranges (min and max) or automatic sizes. We also need to define how to specify something like
-"shink as much as needed to allocate the other partitions". See the section below about deleting and
-shrinking.
+## Partitions Needed for Booting
+
+Using a `boot` entry makes it possible to configure whether (and where, using an alias) Agama
+should calculate and create the extra partitions needed for booting. If the device is not
+specified, Agama will take the location of the root file system as a reference.
 
 ## Searching Existing Devices
 
@@ -548,11 +554,6 @@ system (so the same conditions can be matched by a disk, a partition, an LVM dev
 }
 ```
 
-## Partitions Needed for Booting
-
-Using a `boot` entry makes it possible to configure whether (and where, using an alias) Agama
-should calculate and create the extra partitions needed for booting.
-
 ## Keeping an Existing File System or Encryption Layer
 
 The entries for both `encryption` and `filesystem` contain a flag `reuse` with a default value of
@@ -564,29 +565,134 @@ or re-formatted.
 The storage proposal must make possible to define what to do with existing partitions and logical
 volumes. Even with existing MD RAIDs or LVM volume groups.
 
-In order to provide the same capabilities than the Guided proposal (see below) it must be possible
-to specify that a given partition (or LVM logical volume) must be:
+A `search` section allows to match the definition of a partition or an LVM logical volume with one
+(or several) devices existing in the system. In order to provide the same capabilities than the
+Guided proposal (see below) it must be possible to specify that a given partition or volume must be:
 
   - Deleted if needed to make space for the newly defined devices
   - Deleted in all cases
   - Shrunk to the necessary size to make space for new devices
-  - Shrunk to a given size, maybe a range, in all cases (not really possible in the current Guided
+  - Shrunk or extended to a given size, maybe a range (not really possible in the current Guided
     Proposal)
 
-It would be desirable to have the possibility of expressing some combinations of the above, like
-"try to shrink it to make space but proceed to delete it if shrinking it is not enough".
+It is even possible to express some combinations of the above, like "try to shrink it to make space
+but proceed to delete it if shrinking it is not enough".
 
-For partitions that are marked to be deleted (either mandatory or on demand), it makes no sense to
-specify any other usage (like declaring a file system on it). But resizing a partition is more on
-the grey area. Often some partitions or logical volumes are resized only to make space for the
-declared devices. But since resizing is not a destructive operation it can also make sense to
-declare a given partition must be resized and then formatted.
+Deletion can be achieved with the corresponding `delete` flag or the alternative `deleteIfNeeded`.
+If any of those flags are active for a partition, it makes no sense to specify any other usage
+(like declaring a file system on it).
 
-The exact syntax to specify all the possible actions is still under discussion. The current document
-shows how a `delete` attribute could be used in combination with `search` to specify the devices to
-delete. An alternative could be to have separate section for each device to specify how to delete
-and/or shrink its partitions or logical volumes, instead of integrating that information into the
-corresponding `partitions` or `logical_volumes` attributes.
+The following example deletes the partition with the label "root" in all cases and, if needed, keeps
+deleting other partitions as needed to make space for the new partition of 30 GiB.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "root" }
+                    },
+                    "delete": true
+                },
+                { "search": {}, "deleteIfNeeded": true },
+                { "size": "30 GiB" }
+            ]
+        }
+    ]
+}
+```
+
+Often some partitions or logical volumes are shrunk only to make space for the declared devices. But
+since resizing is not a destructive operation, it can also make sense to declare a given partition
+must be resized (shrunk or extended) and then formatted and/or mounted.
+
+In any case, note that resizing a partition can be limited depending on its content, the filesystem
+type, etc.
+
+Combining `search` and `resize` is enough to indicate Agama is expected to resize a given partition
+if possible. The keyword "current" can be used eveywhere a size is expected and it is always
+equivalent to the exact original size of the device. The simplest way to use "current" is to just
+specify that the matched device should keep its original size. That's the default for searched (and
+found) devices if `size` is completely omitted.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "reuse" }
+                    },
+                    "size": "current"
+                }
+            ]
+        }
+    ]
+}
+```
+
+Using "current" for the min and max values of a size allows to specify how a device could be resized
+if possible. See the following examples with explanatory filesystem labels.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "shrinkIfNeeded" }
+                    },
+                    "size": { "min": 0, "max": "current" }
+                },
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "resizeToFixedSize" }
+                    },
+                    "size": "15 GiB"
+                },
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "resizeByRange" }
+                    },
+                    "size": { "min": "10 GiB", "max": "50 GiB" }
+                },
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "growAsMuchAsPossible" }
+                    },
+                    "size": { "min": "current" }
+                },
+            ]
+        }
+    ]
+}
+```
+
+Of course, when the size limits are specified as a combination of "current" and a fixed value, the
+user must still make sure that the resulting min is not bigger than the resulting max.
+
+Both `deleteIfNeeded` and a size range can be combined to indicate that Agama should try to make
+space first by shrinking the partitions and deleting them only if shrinking is not enough.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                {
+                    "search": {},
+                    "size": { "min": 0, "max": "current" },
+                    "deleteIfNeeded": true
+                }
+            ]
+        }
+    ]
+}
+```
 
 ## Using the Automatic Proposal
 
