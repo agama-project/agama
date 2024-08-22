@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { del, get, patch, put } from "~/api/http";
+import { post, get } from "~/api/http";
 import { DASDDevice } from "~/types/dasd";
 
 /**
@@ -29,4 +29,6 @@ const fetchDASDDevices = (): Promise<DASDDevice[]> => get("/api/storage/dasd/dev
 
 const DASDSupported = (): Promise<boolean> => get("/api/storage/dasd/supported");
 
-export { fetchDASDDevices, DASDSupported };
+const probeDASD = () => post("/api/storage/dasd/probe");
+
+export { fetchDASDDevices, DASDSupported, probeDASD };
