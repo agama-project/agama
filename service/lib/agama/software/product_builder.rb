@@ -64,7 +64,7 @@ module Agama
           product.description = attrs["description"]
           product.name = data[:name]
           product.version = data[:version]
-          product.icon = attrs["icon"] if attrs.key?("icon") && !attrs["icon"].nil?
+          product.icon = attrs["icon"] if attrs["icon"]
         end
       end
 
