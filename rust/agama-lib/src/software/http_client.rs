@@ -13,11 +13,9 @@ impl SoftwareHTTPClient {
         })
     }
 
-    /*
-    pub fn new_with_base(base: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self { client: base })
+    pub fn new_with_base(base: BaseHTTPClient) -> Self {
+        Self { client: base }
     }
-    */
 
     pub async fn get_config(&self) -> Result<SoftwareConfig, ServiceError> {
         self.client.get("/software/config").await
