@@ -20,15 +20,16 @@
  */
 
 type DASDDevice = {
-    id: string;
-    enabled: boolean;
-    deviceName: string;
-    formatted: boolean;
-    diag: boolean;
-    status: string; // TODO: sync with rust when it switch to enum
-    deviceType: string; // TODO: sync with rust when it switch to enum
-    accessType: string; // TODO: sync with rust when it switch to enum
-    partitionInfo: string;
-  };
+  id: string;
+  enabled: boolean;
+  deviceName: string;
+  formatted: boolean;
+  diag: boolean;
+  status: string; // TODO: sync with rust when it switch to enum
+  deviceType: string; // TODO: sync with rust when it switch to enum
+  accessType: string; // TODO: sync with rust when it switch to enum
+  partitionInfo: string;
+  hexId: number;
+};
 
-  export type { DASDDevice };
+export type { DASDDevice };

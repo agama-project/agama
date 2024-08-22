@@ -27,6 +27,7 @@ import { hex, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { Page } from "~/components/core";
 import { useDASDDevices, useDASDDevicesChanges } from "~/queries/dasd";
+import { DASDDevice } from "~/types/dasd";
 
 const reducer = (state, action) => {
   const { type, payload } = action;
@@ -128,19 +129,10 @@ const initialState = {
   formatJob: {},
 };
 
-// FIXME
-const buildDevice = (device) => {
-  return {
-    ...device,
-    hexId: hex(device.id),
-    partitionInfo: device.partition_info
-  }
-}
-
 export default function DASDPage() {
   useDASDDevicesChanges();
-  const devices = useDASDDevices();
-  initialState.devices = devices.map(buildDevice);
+  const devices: DASDDevice[] = useDASDDevices();
+  initialState.devices = devices;
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);

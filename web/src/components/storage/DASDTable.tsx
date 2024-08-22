@@ -43,10 +43,11 @@ import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { useInstallerClient } from "~/context/installer";
+import { DASDDevice } from "~/types/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
-const columnData = (device, column) => {
+const columnData = (device: DASDDevice, column: { id: string, sortId: string, label: string }) => {
   let data = device[column.id];
 
   switch (column.id) {
@@ -67,17 +68,16 @@ const columnData = (device, column) => {
 };
 
 const columns = [
-  // TODO: fix keys case on rust side and then adapt
   { id: "id", sortId: "hexId", label: _("Channel ID") },
   { id: "status", label: _("Status") },
-  { id: "device_name", label: _("Device") },
-  { id: "device_type", label: _("Type") },
+  { id: "deviceName", label: _("Device") },
+  { id: "deviceType", label: _("Type") },
   // TRANSLATORS: table header, the column contains "Yes"/"No" values
   // for the DIAG access mode (special disk access mode on IBM mainframes),
   // usually keep untranslated
   { id: "diag", label: _("DIAG") },
   { id: "formatted", label: _("Formatted") },
-  { id: "partition_info", label: _("Partition Info") },
+  { id: "partitionInfo", label: _("Partition Info") },
 ];
 
 const Actions = ({ devices, isDisabled }) => {
@@ -146,8 +146,8 @@ const Actions = ({ devices, isDisabled }) => {
   );
 };
 
-const filterDevices = (devices, from, to) => {
-  const allChannels = devices.map((d) => d.hexId);
+const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDevice[] => {
+  const allChannels: number[] = devices.map((d) => d.hexId);
   const min = hex(from) || Math.min(...allChannels);
   const max = hex(to) || Math.max(...allChannels);
 
@@ -175,7 +175,7 @@ export default function DASDTable({ state, dispatch }) {
 
   // Sorting
   // See https://github.com/snovakovic/fast-sort
-  const sortBy = sortingColumn.sortBy || sortingColumn.id;
+  const sortBy = sortingColumn.sortId || sortingColumn.id;
   const sortedDevices = sort(filteredDevices)[sortDirection]((d) => d[sortBy]);
 
   // FIXME: this can be improved and even extracted to be used with other tables.

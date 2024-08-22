@@ -22,50 +22,51 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { _ } from "~/i18n";
 import {
-    fetchDASDDevices,
+  fetchDASDDevices,
 } from "~/api/dasd";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
+import { hex } from "~/utils";
 
 /**
  * Returns a query for retrieving the dasd devices
  */
 const DASDDevicesQuery = () => ({
-    queryKey: ["dasd", "devices"],
-    queryFn: fetchDASDDevices,
+  queryKey: ["dasd", "devices"],
+  queryFn: fetchDASDDevices,
 });
 
 /**
  * Hook that returns DASD devices.
  */
 const useDASDDevices = () => {
-    const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
-    return devices;
+  const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
+  return devices.map((d) => ({ ...d, hexId: hex(d.id) }));
 };
 
 /**
  * Listens for DASD devices changes.
  */
 const useDASDDevicesChanges = () => {
-    const client = useInstallerClient();
-    const queryClient = useQueryClient();
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
 
-    React.useEffect(() => {
-        if (!client) return;
+  React.useEffect(() => {
+    if (!client) return;
 
-        return client.ws().onEvent((event) => {
-            // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
-            if (
-                event.type === "DASDDeviceAdded" ||
-                event.type === "DASDDeviceRemoved" ||
-                event.type === "DASDDeviceChanged"
-            ) {
-                queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-            }
-        });
+    return client.ws().onEvent((event) => {
+      // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
+      if (
+        event.type === "DASDDeviceAdded" ||
+        event.type === "DASDDeviceRemoved" ||
+        event.type === "DASDDeviceChanged"
+      ) {
+        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+      }
     });
-    const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
-    return devices;
+  });
+  const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
+  return devices;
 };
 
 export { useDASDDevices, useDASDDevicesChanges };
