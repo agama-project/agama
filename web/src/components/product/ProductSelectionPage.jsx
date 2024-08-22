@@ -55,7 +55,7 @@ function ProductSelectionPage() {
 
   const ProductIcon = ({ src, alt }) => {
     // Ensure that we display something even if icon path is incorrect
-    const productIcon = require(`../../assets/products/${src}`);
+    const productIcon = require(`~/assets/products/${src}`);
 
     return (
       <img
