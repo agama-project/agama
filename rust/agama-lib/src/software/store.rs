@@ -81,29 +81,80 @@ mod test {
         Ok(())
     }
 
+    struct MyMockServer<'a> {
+        delegate: httpmock::MockServer,
+        mocks: Vec<httpmock::Mock<'a>>,
+    }
+
+    impl<'a> MyMockServer<'a> {
+        pub fn start() -> Self {
+            Self {
+                delegate: MockServer::start(),
+                mocks: vec![],
+            }
+        }
+
+        pub fn url<S: Into<String>>(&self, path: S) -> String {
+            self.delegate.url(path)
+        }
+
+        fn mock<F>(&'a mut self, config_fn: F)
+        where
+            F: FnOnce(httpmock::When, httpmock::Then),
+        {
+            let mock = self.delegate.mock(config_fn);
+            self.mocks.push(mock);
+        }
+
+        fn assert(&mut self) {
+            for mock in &self.mocks {
+                mock.assert();
+            }
+        }
+    }
+
+    fn before_this<'a>() -> (SoftwareStore, MyMockServer<'a>) {
+        let server = MyMockServer::start();
+        let url = server.url("/api");
+        let store = software_store(url);
+
+        (store, server)
+    }
+
+    fn after_this(_store: SoftwareStore, server: &MyMockServer) -> Result<(), Box<dyn Error>> {
+        for mock in &server.mocks {
+            mock.assert();
+        }
+
+        Ok(())
+    }
+
     #[test]
     async fn test_getting_software_bdd() -> Result<(), Box<dyn Error>> {
-        // the mock_server is a wrapper that will assert all mocks that it returns
-        setup_this(|store, server| {
-            server.mock(|when, then| {
-                when.method(GET).path("/api/software/config");
-                then.status(200)
-                    .header("content-type", "application/json")
-                    .body(
-                        r#"{
-                        "patterns": {"xfce":true},
-                        "product": "Tumbleweed"
-                    }"#,
-                    );
-            });
+        let (store, mut server) = before_this();
 
-            let settings = store.load().await?;
-
-            let expected = SoftwareSettings {
-                patterns: vec!["xfce".to_owned()],
-            };
-            assert_eq!(settings, expected);
+        server.mock(|when, then| {
+            when.method(GET).path("/api/software/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "patterns": {"xfce":true},
+                    "product": "Tumbleweed"
+                }"#,
+                );
         });
+
+        let settings = store.load().await?;
+
+        let expected = SoftwareSettings {
+            patterns: vec!["xfce".to_owned()],
+        };
+        assert_eq!(settings, expected);
+
+        server.assert();
+        Ok(())
+        //after_this(store, &server)
     }
 
 
