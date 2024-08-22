@@ -82,6 +82,32 @@ mod test {
     }
 
     #[test]
+    async fn test_getting_software_bdd() -> Result<(), Box<dyn Error>> {
+        // the mock_server is a wrapper that will assert all mocks that it returns
+        setup_this(|store, server| {
+            server.mock(|when, then| {
+                when.method(GET).path("/api/software/config");
+                then.status(200)
+                    .header("content-type", "application/json")
+                    .body(
+                        r#"{
+                        "patterns": {"xfce":true},
+                        "product": "Tumbleweed"
+                    }"#,
+                    );
+            });
+
+            let settings = store.load().await?;
+
+            let expected = SoftwareSettings {
+                patterns: vec!["xfce".to_owned()],
+            };
+            assert_eq!(settings, expected);
+        });
+    }
+
+
+    #[test]
     async fn test_setting_software_ok() -> Result<(), Box<dyn Error>> {
         let server = MockServer::start();
         let software_mock = server.mock(|when, then| {
