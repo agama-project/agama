@@ -50,7 +50,7 @@ module Agama
 
       # Product icon. Please use specify filename with svg suffix and ensure referenced
       # file exists inside agama/web/src/assests/product.
-      # default.svg unless be used nless specified otherwise.
+      # `default.svg` will be used unless specified otherwise.
       #
       # @return [String, "default.svg"] E.g., "1.0".
       attr_accessor :icon
