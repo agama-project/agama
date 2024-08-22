@@ -32,6 +32,12 @@ impl<'a> DASDClient<'a> {
         })
     }
 
+    pub async fn supported(&self) -> Result<bool, ServiceError> {
+        let introspect = self.manager_proxy.introspect().await?;
+        // simply check if introspection contain given interface
+        Ok(introspect.contains("org.opensuse.Agama.Storage1.DASD.Manager"))
+    }
+
     pub async fn probe(&self) -> Result<(), ServiceError> {
         Ok(self.manager_proxy.probe().await?)
     }
