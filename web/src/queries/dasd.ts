@@ -19,9 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { _ } from "~/i18n";
 import {
+    DASDDisable,
+    DASDEnable,
+  diagEnable,
   fetchDASDDevices,
 } from "~/api/dasd";
 import { useInstallerClient } from "~/context/installer";
@@ -69,4 +72,48 @@ const useDASDDevicesChanges = () => {
   return devices;
 };
 
-export { useDASDDevices, useDASDDevicesChanges };
+const useDASDEnableMutation = () => {
+    const queryClient = useQueryClient();
+    const query = {
+      mutationFn: DASDEnable,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+      },
+    };
+    return useMutation(query);
+  };
+
+  const useDASDDisableMutation = () => {
+    const queryClient = useQueryClient();
+    const query = {
+      mutationFn: DASDDisable,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+      },
+    };
+    return useMutation(query);
+  };
+
+  const useDiagEnableMutation = () => {
+    const queryClient = useQueryClient();
+    const query = {
+      mutationFn: diagEnable,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+      },
+    };
+    return useMutation(query);
+  };
+
+  const useDiagDisableMutation = () => {
+    const queryClient = useQueryClient();
+    const query = {
+      mutationFn: diagEnable,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+      },
+    };
+    return useMutation(query);
+  };
+
+export { useDASDDevices, useDASDDevicesChanges, useDASDEnableMutation, useDASDDisableMutation, useDiagDisableMutation, useDiagEnableMutation };

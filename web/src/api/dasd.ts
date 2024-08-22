@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { post, get } from "~/api/http";
+import { post, get, put } from "~/api/http";
 import { DASDDevice } from "~/types/dasd";
 
 /**
@@ -27,8 +27,39 @@ import { DASDDevice } from "~/types/dasd";
  */
 const fetchDASDDevices = (): Promise<DASDDevice[]> => get("/api/storage/dasd/devices");
 
+/**
+ * Returns if DASD is supported at all
+ */
 const DASDSupported = (): Promise<boolean> => get("/api/storage/dasd/supported");
 
+/**
+ * probes DASD devices
+ */
 const probeDASD = () => post("/api/storage/dasd/probe");
 
-export { fetchDASDDevices, DASDSupported, probeDASD };
+/**
+ * Enables given list of devices
+ * @param devicesIDs array of device ids
+ */
+const DASDEnable = (devicesIDs: string[]) => post("/api/storage/dasd/enable", devicesIDs);
+
+/**
+ * Enables given list of devices
+ * @param devicesIDs array of device ids
+ */
+const DASDDisable = (devicesIDs: string[]) => post("/api/storage/dasd/disable", devicesIDs);
+
+/**
+ * Enables giag on given list of devices
+ * @param devicesIDs array of device ids
+ */
+const diagEnable = (devicesIDs: string[]) => put("/api/storage/dasd/diag", { devices: devicesIDs, diag: true });
+
+/**
+ * Disables diag on given list of devices
+ * @param devicesIDs array of device ids
+ */
+const diagDisable = (devicesIDs: string[]) => put("/api/storage/dasd/diag", { devices: devicesIDs, diag: false });
+
+
+export { fetchDASDDevices, DASDSupported, probeDASD, DASDEnable, DASDDisable, diagEnable, diagDisable };
