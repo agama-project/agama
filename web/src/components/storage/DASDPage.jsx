@@ -25,6 +25,8 @@ import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
+import { Page } from "~/components/core";
+import { useDASDDevices, useDASDDevicesChanges } from "~/queries/dasd";
 
 const reducer = (state, action) => {
   const { type, payload } = action;
@@ -128,18 +130,14 @@ const initialState = {
 };
 
 export default function DASDPage() {
+  useDASDDevicesChanges();
+  const devices = useDASDDevices();
+  initialState.devices = devices;
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    const loadDevices = async () => {
-      dispatch({ type: "START_LOADING" });
-      const devices = await cancellablePromise(client.dasd.getDevices());
-      dispatch({ type: "SET_DEVICES", payload: { devices } });
-      dispatch({ type: "STOP_LOADING" });
-    };
-
     const loadJobs = async () => {
       const jobs = await cancellablePromise(client.dasd.getJobs());
       if (jobs.length > 0) {
@@ -147,44 +145,21 @@ export default function DASDPage() {
       }
     };
 
-    loadDevices().catch(console.error);
     loadJobs().catch(console.error);
-  }, [client.dasd, cancellablePromise]);
-
-  useEffect(() => {
-    const subscriptions = [];
-
-    const subscribe = async () => {
-      const action = (type, device) => dispatch({ type, payload: { device } });
-
-      subscriptions.push(
-        await client.dasd.deviceEventListener("added", (d) => action("ADD_DEVICE", d)),
-        await client.dasd.deviceEventListener("removed", (d) => action("REMOVE_DEVICE", d)),
-        await client.dasd.deviceEventListener("changed", (d) => action("UPDATE_DEVICE", d)),
-      );
-
-      await client.dasd.onJobAdded((data) =>
-        dispatch({ type: "START_FORMAT_JOB", payload: { data } }),
-      );
-      await client.dasd.onJobChanged((data) =>
-        dispatch({ type: "UPDATE_FORMAT_JOB", payload: { data } }),
-      );
-    };
-
-    const unsubscribe = () => {
-      subscriptions.forEach((fn) => fn());
-    };
-
-    subscribe();
-    return unsubscribe;
-  }, [client.dasd]);
+  }, [client.dasd, cancellablePromise, devices]);
 
   return (
-    <>
-      <DASDTable state={state} dispatch={dispatch} />
-      {state.formatJob.running && (
-        <DASDFormatProgress job={state.formatJob} devices={state.devices} />
-      )}
-    </>
+    <Page>
+      <Page.Header>
+        <h2>{_("DASD")}</h2>
+      </Page.Header>
+
+      <Page.MainContent>
+        <DASDTable state={state} dispatch={dispatch} />
+        {state.formatJob.running && (
+          <DASDFormatProgress job={state.formatJob} devices={state.devices} />
+        )}
+      </Page.MainContent>
+    </Page>
   );
 }
