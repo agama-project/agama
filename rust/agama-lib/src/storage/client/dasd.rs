@@ -32,6 +32,13 @@ impl<'a> DASDClient<'a> {
         })
     }
 
+    pub async fn supported(&self) -> Result<(), ServiceError> {
+        let introspect = self.manager_proxy.introspect().await?;
+        let manager = self.object_manager_proxy.get_managed_objects().await?;
+        dbg!(manager);
+        Ok(())
+    }
+
     pub async fn probe(&self) -> Result<(), ServiceError> {
         Ok(self.manager_proxy.probe().await?)
     }

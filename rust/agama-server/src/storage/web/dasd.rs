@@ -49,6 +49,7 @@ pub async fn dasd_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
     let client = DASDClient::new(dbus.clone()).await?;
     let state = DASDState { client };
     let router = Router::new()
+        .route("/supported", get(supported))
         .route("/devices", get(devices))
         .route("/probe", post(probe))
         .route("/format", post(format))
@@ -57,6 +58,19 @@ pub async fn dasd_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
         .route("/diag", put(set_diag))
         .with_state(state);
     Ok(router)
+}
+
+/// Returns whether DASD technology is supported or not
+#[utoipa::path(
+    get,
+    path="/supported",
+    context_path="/api/storage/dasd",
+    responses(
+        (status = OK, description = "Returns whether DASD technology is supported")
+    )
+)]
+async fn supported(State(state): State<DASDState<'_>>) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.supported().await?))
 }
 
 /// Returns the list of known DASD devices.
