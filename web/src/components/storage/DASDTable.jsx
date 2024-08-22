@@ -22,6 +22,7 @@
 import React, { useState } from "react";
 import {
   Button,
+  CardBody,
   Divider,
   Dropdown,
   DropdownItem,
@@ -37,7 +38,7 @@ import {
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { Icon } from "~/components/layout";
-import { SectionSkeleton } from "~/components/core";
+import { CardField } from "~/components/core";
 import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
@@ -206,9 +207,8 @@ export default function DASDTable({ state, dispatch }) {
   };
 
   const Content = () => {
-    if (state.isLoading) return <SectionSkeleton />;
-
     return (
+
       <Table variant="compact">
         <Thead>
           <Tr>
@@ -249,68 +249,70 @@ export default function DASDTable({ state, dispatch }) {
   };
 
   return (
-    <>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarGroup align={{ default: "alignRight" }}>
-            <ToolbarItem>
-              <TextInputGroup>
-                <TextInputGroupMain
-                  value={state.minChannel}
-                  type="text"
-                  aria-label={_("Filter by min channel")}
-                  placeholder={_("Filter by min channel")}
-                  onChange={onMinChannelFilterChange}
+    <CardField>
+      <CardBody>
+        <Toolbar>
+          <ToolbarContent>
+            <ToolbarGroup align={{ default: "alignRight" }}>
+              <ToolbarItem>
+                <TextInputGroup>
+                  <TextInputGroupMain
+                    value={state.minChannel}
+                    type="text"
+                    aria-label={_("Filter by min channel")}
+                    placeholder={_("Filter by min channel")}
+                    onChange={onMinChannelFilterChange}
+                  />
+                  {state.minChannel !== "" && (
+                    <TextInputGroupUtilities>
+                      <Button
+                        variant="plain"
+                        aria-label={_("Remove min channel filter")}
+                        onClick={removeMinChannelFilter}
+                      >
+                        <Icon name="backspace" size="s" />
+                      </Button>
+                    </TextInputGroupUtilities>
+                  )}
+                </TextInputGroup>
+              </ToolbarItem>
+              <ToolbarItem>
+                <TextInputGroup>
+                  <TextInputGroupMain
+                    value={state.maxChannel}
+                    type="text"
+                    aria-label={_("Filter by max channel")}
+                    placeholder={_("Filter by max channel")}
+                    onChange={onMaxChannelFilterChange}
+                  />
+                  {state.maxChannel !== "" && (
+                    <TextInputGroupUtilities>
+                      <Button
+                        variant="plain"
+                        aria-label={_("Remove max channel filter")}
+                        onClick={removeMaxChannelFilter}
+                      >
+                        <Icon name="backspace" size="s" />
+                      </Button>
+                    </TextInputGroupUtilities>
+                  )}
+                </TextInputGroup>
+              </ToolbarItem>
+
+              <ToolbarItem variant="separator" />
+
+              <ToolbarItem>
+                <Actions
+                  devices={state.selectedDevices}
+                  isDisabled={state.selectedDevices.length === 0}
                 />
-                {state.minChannel !== "" && (
-                  <TextInputGroupUtilities>
-                    <Button
-                      variant="plain"
-                      aria-label={_("Remove min channel filter")}
-                      onClick={removeMinChannelFilter}
-                    >
-                      <Icon name="backspace" size="s" />
-                    </Button>
-                  </TextInputGroupUtilities>
-                )}
-              </TextInputGroup>
-            </ToolbarItem>
-            <ToolbarItem>
-              <TextInputGroup>
-                <TextInputGroupMain
-                  value={state.maxChannel}
-                  type="text"
-                  aria-label={_("Filter by max channel")}
-                  placeholder={_("Filter by max channel")}
-                  onChange={onMaxChannelFilterChange}
-                />
-                {state.maxChannel !== "" && (
-                  <TextInputGroupUtilities>
-                    <Button
-                      variant="plain"
-                      aria-label={_("Remove max channel filter")}
-                      onClick={removeMaxChannelFilter}
-                    >
-                      <Icon name="backspace" size="s" />
-                    </Button>
-                  </TextInputGroupUtilities>
-                )}
-              </TextInputGroup>
-            </ToolbarItem>
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
 
-            <ToolbarItem variant="separator" />
-
-            <ToolbarItem>
-              <Actions
-                devices={state.selectedDevices}
-                isDisabled={state.selectedDevices.length === 0}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
-
-      <Content />
-    </>
+        <Content />
+      </CardBody >
+    </CardField >
   );
 }

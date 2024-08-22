@@ -23,7 +23,7 @@ import React, { useEffect, useReducer } from "react";
 import DASDTable from "~/components/storage/DASDTable";
 import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
+import { hex, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { Page } from "~/components/core";
 import { useDASDDevices, useDASDDevicesChanges } from "~/queries/dasd";
@@ -125,14 +125,22 @@ const initialState = {
   selectedDevices: [],
   minChannel: "",
   maxChannel: "",
-  isLoading: true,
   formatJob: {},
 };
+
+// FIXME
+const buildDevice = (device) => {
+  return {
+    ...device,
+    hexId: hex(device.id),
+    partitionInfo: device.partition_info
+  }
+}
 
 export default function DASDPage() {
   useDASDDevicesChanges();
   const devices = useDASDDevices();
-  initialState.devices = devices;
+  initialState.devices = devices.map(buildDevice);
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -146,7 +154,7 @@ export default function DASDPage() {
     };
 
     loadJobs().catch(console.error);
-  }, [client.dasd, cancellablePromise, devices]);
+  }, [client.dasd, cancellablePromise]);
 
   return (
     <Page>
