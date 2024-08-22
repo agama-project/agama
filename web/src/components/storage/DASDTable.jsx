@@ -67,16 +67,17 @@ const columnData = (device, column) => {
 };
 
 const columns = [
-  { id: "channelId", sortId: "hexId", label: _("Channel ID") },
+  // TODO: fix keys case on rust side and then adapt
+  { id: "id", sortId: "hexId", label: _("Channel ID") },
   { id: "status", label: _("Status") },
-  { id: "name", label: _("Device") },
-  { id: "type", label: _("Type") },
+  { id: "device_name", label: _("Device") },
+  { id: "device_type", label: _("Type") },
   // TRANSLATORS: table header, the column contains "Yes"/"No" values
   // for the DIAG access mode (special disk access mode on IBM mainframes),
   // usually keep untranslated
   { id: "diag", label: _("DIAG") },
   { id: "formatted", label: _("Formatted") },
-  { id: "partitionInfo", label: _("Partition Info") },
+  { id: "partition_info", label: _("Partition Info") },
 ];
 
 const Actions = ({ devices, isDisabled }) => {
