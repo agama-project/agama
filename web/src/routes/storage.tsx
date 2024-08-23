@@ -27,6 +27,7 @@ import { DASDPage, ISCSIPage } from "~/components/storage";
 import ProposalPage from "~/components/storage/ProposalPage";
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
+import { probeDASD } from "~/api/dasd";
 
 const PATHS = {
   root: "/storage",
@@ -66,6 +67,8 @@ const routes = (): Route => ({
       path: PATHS.dasd,
       element: <DASDPage />,
       handle: { name: N_("DASD") },
+      //FIXME: move to the onClick of the DASD SelectOption
+      loader: async () => probeDASD()
     },
   ],
 });

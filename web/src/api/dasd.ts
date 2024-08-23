@@ -41,19 +41,19 @@ const probeDASD = () => post("/api/storage/dasd/probe");
  * Start format job for given list of devices
  * @param devicesIDs array of device ids
  */
-const DASDFormat = (devicesIDs: string[]) => post("/api/storage/dasd/format", devicesIDs);
+const DASDFormat = (devicesIDs: string[]) => post("/api/storage/dasd/format", { devices: devicesIDs });
 
 /**
  * Enables given list of devices
  * @param devicesIDs array of device ids
  */
-const DASDEnable = (devicesIDs: string[]) => post("/api/storage/dasd/enable", devicesIDs);
+const DASDEnable = (devicesIDs: string[]) => post("/api/storage/dasd/enable", { devices: devicesIDs });
 
 /**
  * Enables given list of devices
  * @param devicesIDs array of device ids
  */
-const DASDDisable = (devicesIDs: string[]) => post("/api/storage/dasd/disable", devicesIDs);
+const DASDDisable = (devicesIDs: string[]) => post("/api/storage/dasd/disable", { devices: devicesIDs });
 
 /**
  * Enables giag on given list of devices

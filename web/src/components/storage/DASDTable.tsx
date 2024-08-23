@@ -44,6 +44,7 @@ import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { useInstallerClient } from "~/context/installer";
 import { DASDDevice } from "~/types/dasd";
+import { DASDDisable, DASDEnable, DASDFormat, diagDisable, diagEnable } from "~/api/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
@@ -80,17 +81,18 @@ const columns = [
   { id: "partitionInfo", label: _("Partition Info") },
 ];
 
-const Actions = ({ devices, isDisabled }) => {
+const Actions = ({ devices, isDisabled }: { devices: DASDDevice[], isDisabled: boolean }) => {
   const { storage: client } = useInstallerClient();
   const [isOpen, setIsOpen] = useState(false);
 
   const onToggle = () => setIsOpen(!isOpen);
   const onSelect = () => setIsOpen(false);
 
-  const activate = () => client.dasd.enableDevices(devices);
-  const deactivate = () => client.dasd.disableDevices(devices);
-  const setDiagOn = () => client.dasd.setDIAG(devices, true);
-  const setDiagOff = () => client.dasd.setDIAG(devices, false);
+  const deviceIds = devices.map((d) => d.id);
+  const activate = () => DASDEnable(deviceIds);
+  const deactivate = () => DASDDisable(deviceIds);
+  const setDiagOn = () => diagEnable(deviceIds);
+  const setDiagOff = () => diagDisable(deviceIds);
   const format = () => {
     const offline = devices.filter((d) => !d.enabled);
 
@@ -98,7 +100,7 @@ const Actions = ({ devices, isDisabled }) => {
       return false;
     }
 
-    return client.dasd.format(devices);
+    return DASDFormat(devices.map((d) => d.id));
   };
 
   const Action = ({ children, ...props }) => (
@@ -156,7 +158,7 @@ const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDev
 
 export default function DASDTable({ state, dispatch }) {
   const [sortingColumn, setSortingColumn] = useState(columns[0]);
-  const [sortDirection, setSortDirection] : [ "asc" | "desc", Dispatch<SetStateAction<"asc"|"desc">>] = useState("asc");
+  const [sortDirection, setSortDirection]: ["asc" | "desc", Dispatch<SetStateAction<"asc" | "desc">>] = useState("asc");
 
   const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
   const filteredDevices = filterDevices(state.devices, state.minChannel, state.maxChannel);

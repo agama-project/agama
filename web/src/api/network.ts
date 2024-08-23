@@ -58,7 +58,7 @@ const addConnection = (connection: APIConnection) => post("/api/network/connecti
 /**
  * Updates given connection
  *
- * @param connection - connection to be added
+ * @param connection - connection to be updated
  */
 const updateConnection = (connection: APIConnection) =>
   put(`/api/network/connections/${connection.id}`, connection);
