@@ -86,6 +86,37 @@ mod test {
     // automate the `software_mock.assert();` by wrapping MockServer in MyMockServer,
     // which will remember all mocks that it hands out and will call assert on them at the end.
 
+    struct CountMockServer {
+        delegate: httpmock::MockServer,
+        num_mocks: u32,
+    }
+
+    impl CountMockServer {
+        pub fn start() -> Self {
+            Self {
+                delegate: MockServer::start(),
+                num_mocks: 0,
+            }
+        }
+
+        pub fn url<S: Into<String>>(&self, path: S) -> String {
+            self.delegate.url(path)
+        }
+
+        fn mock<F>(&mut self, config_fn: F)
+        where
+            F: FnOnce(httpmock::When, httpmock::Then),
+        {
+            let _mock = self.delegate.mock(config_fn);
+            self.num_mocks = self.num_mocks + 1;
+        }
+
+        // wanted this to be &self, but &mut self does not help either
+        fn assert(&self) {
+            assert!(self.num_mocks > 0);
+        }
+    }
+
     struct MyMockServer<'a> {
         delegate: httpmock::MockServer,
         // Mock has a reference to its originating MockServer,
@@ -121,42 +152,42 @@ mod test {
         }
     }
 
-    fn before_this<'a>() -> (SoftwareStore, MyMockServer<'a>) {
-        let server = MyMockServer::start();
+    fn before_this() -> (SoftwareStore, CountMockServer) {
+        let server = CountMockServer::start();
         let url = server.url("/api");
         let store = software_store(url);
 
         (store, server)
     }
 
-    fn after_this(_store: SoftwareStore, server: &MyMockServer) -> Result<(), Box<dyn Error>> {
-        for mock in &server.mocks {
-            mock.assert();
-        }
-
+    fn after_this(_store: SoftwareStore, server: &CountMockServer) -> Result<(), Box<dyn Error>> {
+        server.assert();
         Ok(())
     }
 
     #[test]
     async fn test_getting_software_bdd() -> Result<(), Box<dyn Error>> {
-        let (store, server) = {
-            let (store, mut server) = before_this();
+        /*
+                let (store, server) = {
+        */
+        let (store, mut server) = before_this();
 
-            server.mock(|when, then| {
-                when.method(GET).path("/api/software/config");
-                then.status(200)
-                    .header("content-type", "application/json")
-                    .body(
-                        r#"{
+        server.mock(|when, then| {
+            when.method(GET).path("/api/software/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
                         "patterns": {"xfce":true},
                         "product": "Tumbleweed"
                     }"#,
-                    );
-            });
-            (store, server)
-            // I am trying to express "I am done with mutating `server`"
-        };
-
+                );
+        });
+        /*
+                    (store, server)
+                    // I am trying to express "I am done with mutating `server`"
+                };
+        */
         let settings = store.load().await?;
 
         let expected = SoftwareSettings {
@@ -164,9 +195,7 @@ mod test {
         };
         assert_eq!(settings, expected);
 
-        server.assert();
-        Ok(())
-        //after_this(store, &server)
+        after_this(store, &server)
     }
 
     #[test]
