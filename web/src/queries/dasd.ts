@@ -30,6 +30,7 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { hex } from "~/utils";
+import { DASDDevice } from "~/types/dasd";
 
 /**
  * Returns a query for retrieving the dasd devices
@@ -45,6 +46,49 @@ const DASDDevicesQuery = () => ({
 const useDASDDevices = () => {
   const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
   return devices.map((d) => ({ ...d, hexId: hex(d.id) }));
+};
+
+/**
+ * Returns seleced DASD ids
+ */
+const selectedDASDQuery = () => ({
+  queryKey: ["dasd", "selected"],
+  queryFn: async () => {
+    return Promise.resolve([]);
+  },
+  staleTime: Infinity,
+});
+
+const useSelectedDASD = (): DASDDevice[] => {
+  const { data } = useQuery(selectedDASDQuery());
+
+  return data || [];
+}
+
+const useSelectedDASDChange = () => {
+  type SelectDASD = {
+    unselect?: boolean,
+    device?: DASDDevice,
+    devices?: DASDDevice[]
+  }
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (data: SelectDASD): Promise<SelectDASD> => Promise.resolve(data),
+    onSuccess: (data: SelectDASD) => queryClient.setQueryData(["dasd", "selected"], (prev: DASDDevice[]) => {
+      if (data.unselect) {
+        if (data.device) return prev.filter((d) => d.id !== data.device.id);
+        if (data.devices) return [];
+
+      } else {
+        if (data.device) return [...prev, data.device];
+        if (data.devices) return data.devices;
+      }
+    }),
+  });
+
+  return mutation;
 };
 
 /**
@@ -154,4 +198,4 @@ const useDiagDisableMutation = () => {
   return useMutation(query);
 };
 
-export { useDASDDevices, useDASDDevicesChanges, useDASDEnableMutation, useDASDDisableMutation, useDiagDisableMutation, useDiagEnableMutation, useFilterDASDChange, filterDASDQuery, useFilterDASD };
+export { useDASDDevices, useDASDDevicesChanges, useDASDEnableMutation, useDASDDisableMutation, useDiagDisableMutation, useDiagEnableMutation, useFilterDASDChange, filterDASDQuery, useFilterDASD, useSelectedDASD, useSelectedDASDChange, selectedDASDQuery };
