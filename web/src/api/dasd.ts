@@ -40,8 +40,9 @@ const probeDASD = () => post("/api/storage/dasd/probe");
 /**
  * Start format job for given list of devices
  * @param devicesIDs array of device ids
+ * @return id of format job
  */
-const DASDFormat = (devicesIDs: string[]) => post("/api/storage/dasd/format", { devices: devicesIDs });
+const DASDFormat = (devicesIDs: string[]): Promise<string> => post("/api/storage/dasd/format", { devices: devicesIDs }).then(({ data }) => data);
 
 /**
  * Enables given list of devices

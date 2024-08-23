@@ -23,9 +23,18 @@ import { post, get, put } from "~/api/http";
 import { Job } from "~/types/job";
 
 /**
- * Returns the installer status information
+ * Returns the list of jobs
  */
 const fetchStorageJobs = async (): Promise<Job[]> => {
     const jobs: Job[] = await get("/api/manager/installer");
     return jobs;
   };
+
+/**
+ * Returns the job with given id or undefined
+ */
+const findStorageJob = async (id: string): Promise<Job|undefined> => {
+  return fetchStorageJobs().then((jobs: Job[]) => jobs.find((value, _i, _o) => value.id === id));
+};
+
+  export { fetchStorageJobs, findStorageJob };

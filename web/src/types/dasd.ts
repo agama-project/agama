@@ -32,4 +32,11 @@ type DASDDevice = {
   hexId: number;
 };
 
-export type { DASDDevice };
+type FormatJob = {
+  job_id: string,
+  total: number,
+  step: number,
+  done: boolean
+}
+
+export type { DASDDevice, FormatJob };

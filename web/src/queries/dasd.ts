@@ -31,6 +31,7 @@ import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { hex } from "~/utils";
 import { DASDDevice } from "~/types/dasd";
+import { findStorageJob } from "~/api/storage";
 
 /**
  * Returns a query for retrieving the dasd devices
@@ -46,6 +47,47 @@ const DASDDevicesQuery = () => ({
 const useDASDDevices = () => {
   const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
   return devices.map((d) => ({ ...d, hexId: hex(d.id) }));
+};
+
+/**
+ * Returns a query for retrieving the dasd format job
+ */
+const DASDFormatJobQuery = (id: string) => ({
+  queryKey: ["dasd", "formatJob", id],
+  queryFn: () => findStorageJob(id),
+});
+
+/**
+ * Hook that returns DASD devices.
+ */
+const useDASDFormatJob = (id: string) => {
+  const { data: job } = useSuspenseQuery(DASDFormatJobQuery(id));
+  return job;
+};
+
+/**
+ * Listens for DASD format job changes.
+ */
+const useDASDFormatJobChanges = (id: string) => {
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.ws().onEvent((event) => {
+      // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
+      if (
+        event.type === "DASDFormatJobChanged" && event.job_id === id
+      ) {
+        const data = queryClient.getQueryData(["dasd", "formatJob", id]) as object;
+        const { step, total, done } = event;
+        queryClient.setQueryData(["dasd", "formatJob", id], { ...data, step, total, done });
+      }
+    });
+  });
+  const { data: formatJob } = useSuspenseQuery(DASDFormatJobQuery(id));
+  return formatJob;
 };
 
 /**
@@ -198,4 +240,6 @@ const useDiagDisableMutation = () => {
   return useMutation(query);
 };
 
-export { useDASDDevices, useDASDDevicesChanges, useDASDEnableMutation, useDASDDisableMutation, useDiagDisableMutation, useDiagEnableMutation, useFilterDASDChange, filterDASDQuery, useFilterDASD, useSelectedDASD, useSelectedDASDChange, selectedDASDQuery };
+export { useDASDDevices, useDASDDevicesChanges, useDASDEnableMutation, useDASDDisableMutation, useDiagDisableMutation,
+   useDiagEnableMutation, useFilterDASDChange, filterDASDQuery, useFilterDASD, useSelectedDASD, useSelectedDASDChange, selectedDASDQuery,
+   useDASDFormatJobChanges, useDASDFormatJob };
