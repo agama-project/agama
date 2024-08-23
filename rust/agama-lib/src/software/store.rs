@@ -118,16 +118,16 @@ mod test {
     }
 
     struct MyMockServer<'a> {
-        delegate: httpmock::MockServer,
+        delegate: &'a httpmock::MockServer,
         // Mock has a reference to its originating MockServer,
         // so we must name that lifetimes
         mocks: Vec<httpmock::Mock<'a>>,
     }
 
     impl<'a> MyMockServer<'a> {
-        pub fn start() -> Self {
+        pub fn start(server: &'a MockServer) -> Self {
             Self {
-                delegate: MockServer::start(),
+                delegate: server,
                 mocks: vec![],
             }
         }
@@ -136,7 +136,7 @@ mod test {
             self.delegate.url(path)
         }
 
-        fn mock<F>(&'a mut self, config_fn: F)
+        fn mock<F>(&mut self, config_fn: F)
         where
             F: FnOnce(httpmock::When, httpmock::Then),
         {
@@ -145,32 +145,30 @@ mod test {
         }
 
         // wanted this to be &self, but &mut self does not help either
-        fn assert(&mut self) {
+        fn assert(&self) {
             for mock in &self.mocks {
                 mock.assert();
             }
         }
     }
 
-    fn before_this() -> (SoftwareStore, CountMockServer) {
-        let server = CountMockServer::start();
+    fn before_this(server: &MockServer) -> (SoftwareStore, MyMockServer) {
+        let server = MyMockServer::start(server);
         let url = server.url("/api");
         let store = software_store(url);
 
         (store, server)
     }
 
-    fn after_this(_store: SoftwareStore, server: &CountMockServer) -> Result<(), Box<dyn Error>> {
+    fn after_this(_store: SoftwareStore, server: &MyMockServer) -> Result<(), Box<dyn Error>> {
         server.assert();
         Ok(())
     }
 
     #[test]
     async fn test_getting_software_bdd() -> Result<(), Box<dyn Error>> {
-        /*
-                let (store, server) = {
-        */
-        let (store, mut server) = before_this();
+        let urserver = MockServer::start();
+        let (store, mut server) = before_this(&urserver);
 
         server.mock(|when, then| {
             when.method(GET).path("/api/software/config");
@@ -183,11 +181,7 @@ mod test {
                     }"#,
                 );
         });
-        /*
-                    (store, server)
-                    // I am trying to express "I am done with mutating `server`"
-                };
-        */
+
         let settings = store.load().await?;
 
         let expected = SoftwareSettings {
