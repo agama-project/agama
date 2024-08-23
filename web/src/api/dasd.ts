@@ -38,6 +38,12 @@ const DASDSupported = (): Promise<boolean> => get("/api/storage/dasd/supported")
 const probeDASD = () => post("/api/storage/dasd/probe");
 
 /**
+ * Start format job for given list of devices
+ * @param devicesIDs array of device ids
+ */
+const DASDFormat = (devicesIDs: string[]) => post("/api/storage/dasd/format", devicesIDs);
+
+/**
  * Enables given list of devices
  * @param devicesIDs array of device ids
  */
@@ -62,4 +68,4 @@ const diagEnable = (devicesIDs: string[]) => put("/api/storage/dasd/diag", { dev
 const diagDisable = (devicesIDs: string[]) => put("/api/storage/dasd/diag", { devices: devicesIDs, diag: false });
 
 
-export { fetchDASDDevices, DASDSupported, probeDASD, DASDEnable, DASDDisable, diagEnable, diagDisable };
+export { fetchDASDDevices, DASDSupported, DASDFormat, probeDASD, DASDEnable, DASDDisable, diagEnable, diagDisable };
