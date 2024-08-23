@@ -19,11 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { _ } from "~/i18n";
 import {
-    DASDDisable,
-    DASDEnable,
+  DASDDisable,
+  DASDEnable,
   diagEnable,
   fetchDASDDevices,
 } from "~/api/dasd";
@@ -45,6 +45,44 @@ const DASDDevicesQuery = () => ({
 const useDASDDevices = () => {
   const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
   return devices.map((d) => ({ ...d, hexId: hex(d.id) }));
+};
+
+/**
+ * Returns DASD filters
+ */
+const filterDASDQuery = () => ({
+  queryKey: ["dasd", "filter"],
+  queryFn: async () => {
+    return Promise.resolve({ minChannel: "", maxChannel: "" });
+  },
+  staleTime: Infinity,
+});
+
+const useFilterDASD = (): { minChannel?: string, maxChannel?: string } => {
+  const { data } = useQuery(filterDASDQuery());
+
+  return data || { minChannel: "", maxChannel: "" };
+}
+
+const useFilterDASDChange = () => {
+  type FilterDASD = {
+    maxChannel?: string;
+    minChannel?: string;
+  };
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (data: FilterDASD): Promise<FilterDASD> => Promise.resolve(data),
+    onSuccess: (data: FilterDASD) => {
+      queryClient.setQueryData(["dasd", "filter"], (prev: FilterDASD) => ({
+        ...prev,
+        ...data
+      }));
+    },
+  });
+
+  return mutation;
 };
 
 /**
@@ -73,47 +111,47 @@ const useDASDDevicesChanges = () => {
 };
 
 const useDASDEnableMutation = () => {
-    const queryClient = useQueryClient();
-    const query = {
-      mutationFn: DASDEnable,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-      },
-    };
-    return useMutation(query);
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: DASDEnable,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+    },
   };
+  return useMutation(query);
+};
 
-  const useDASDDisableMutation = () => {
-    const queryClient = useQueryClient();
-    const query = {
-      mutationFn: DASDDisable,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-      },
-    };
-    return useMutation(query);
+const useDASDDisableMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: DASDDisable,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+    },
   };
+  return useMutation(query);
+};
 
-  const useDiagEnableMutation = () => {
-    const queryClient = useQueryClient();
-    const query = {
-      mutationFn: diagEnable,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-      },
-    };
-    return useMutation(query);
+const useDiagEnableMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: diagEnable,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+    },
   };
+  return useMutation(query);
+};
 
-  const useDiagDisableMutation = () => {
-    const queryClient = useQueryClient();
-    const query = {
-      mutationFn: diagEnable,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-      },
-    };
-    return useMutation(query);
+const useDiagDisableMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: diagEnable,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+    },
   };
+  return useMutation(query);
+};
 
-export { useDASDDevices, useDASDDevicesChanges, useDASDEnableMutation, useDASDDisableMutation, useDiagDisableMutation, useDiagEnableMutation };
+export { useDASDDevices, useDASDDevicesChanges, useDASDEnableMutation, useDASDDisableMutation, useDiagDisableMutation, useDiagEnableMutation, useFilterDASDChange, filterDASDQuery, useFilterDASD };

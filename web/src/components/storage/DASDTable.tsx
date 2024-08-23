@@ -42,9 +42,9 @@ import { CardField } from "~/components/core";
 import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
-import { useInstallerClient } from "~/context/installer";
 import { DASDDevice } from "~/types/dasd";
 import { DASDDisable, DASDEnable, DASDFormat, diagDisable, diagEnable } from "~/api/dasd";
+import { useDASDDevices, useFilterDASD, useFilterDASDChange } from "~/queries/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
@@ -82,7 +82,6 @@ const columns = [
 ];
 
 const Actions = ({ devices, isDisabled }: { devices: DASDDevice[], isDisabled: boolean }) => {
-  const { storage: client } = useInstallerClient();
   const [isOpen, setIsOpen] = useState(false);
 
   const onToggle = () => setIsOpen(!isOpen);
@@ -157,11 +156,15 @@ const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDev
 };
 
 export default function DASDTable({ state, dispatch }) {
+  const devices = useDASDDevices();
+  const { mutate: changeFilter } = useFilterDASDChange();
+  const { minChannel, maxChannel } = useFilterDASD();
+
   const [sortingColumn, setSortingColumn] = useState(columns[0]);
   const [sortDirection, setSortDirection]: ["asc" | "desc", Dispatch<SetStateAction<"asc" | "desc">>] = useState("asc");
 
   const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
-  const filteredDevices = filterDevices(state.devices, state.minChannel, state.maxChannel);
+  const filteredDevices = filterDevices(devices, minChannel, maxChannel);
   const selectedDevicesIds = state.selectedDevices.map((d) => d.id);
 
   // Selecting
@@ -194,19 +197,19 @@ export default function DASDTable({ state, dispatch }) {
 
   // Filtering
   const onMinChannelFilterChange = (_event, value) => {
-    dispatch({ type: "SET_MIN_CHANNEL", payload: { minChannel: value } });
+    changeFilter({ minChannel: value });
   };
 
   const onMaxChannelFilterChange = (_event, value) => {
-    dispatch({ type: "SET_MAX_CHANNEL", payload: { maxChannel: value } });
+    changeFilter({ maxChannel: value });
   };
 
   const removeMinChannelFilter = () => {
-    dispatch({ type: "SET_MIN_CHANNEL", payload: { minChannel: "" } });
+    changeFilter({ minChannel: "" });
   };
 
   const removeMaxChannelFilter = () => {
-    dispatch({ type: "SET_MAX_CHANNEL", payload: { maxChannel: "" } });
+    changeFilter({ maxChannel: "" });
   };
 
   const Content = () => {
@@ -260,13 +263,13 @@ export default function DASDTable({ state, dispatch }) {
               <ToolbarItem>
                 <TextInputGroup>
                   <TextInputGroupMain
-                    value={state.minChannel}
+                    value={minChannel}
                     type="text"
                     aria-label={_("Filter by min channel")}
                     placeholder={_("Filter by min channel")}
                     onChange={onMinChannelFilterChange}
                   />
-                  {state.minChannel !== "" && (
+                  {minChannel !== "" && (
                     <TextInputGroupUtilities>
                       <Button
                         variant="plain"
@@ -282,13 +285,13 @@ export default function DASDTable({ state, dispatch }) {
               <ToolbarItem>
                 <TextInputGroup>
                   <TextInputGroupMain
-                    value={state.maxChannel}
+                    value={maxChannel}
                     type="text"
                     aria-label={_("Filter by max channel")}
                     placeholder={_("Filter by max channel")}
                     onChange={onMaxChannelFilterChange}
                   />
-                  {state.maxChannel !== "" && (
+                  {maxChannel !== "" && (
                     <TextInputGroupUtilities>
                       <Button
                         variant="plain"
