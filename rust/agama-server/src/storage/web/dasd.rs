@@ -112,15 +112,15 @@ async fn probe(State(state): State<DASDState<'_>>) -> Result<Json<()>, Error> {
     path="/format",
     context_path="/api/storage/dasd",
     responses(
-        (status = OK, description = "The formatting process started.")
+        (status = OK, description = "The formatting process started. The id of format job is in response.")
     )
 )]
 async fn format(
     State(state): State<DASDState<'_>>,
     Json(devices): Json<DevicesList>,
-) -> Result<Json<()>, Error> {
-    state.client.format(&devices.as_references()).await?;
-    Ok(Json(()))
+) -> Result<Json<String>, Error> {
+    let path = state.client.format(&devices.as_references()).await?;
+    Ok(Json(path))
 }
 
 /// Enables a set of devices.

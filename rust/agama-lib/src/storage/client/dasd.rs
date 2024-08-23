@@ -61,11 +61,15 @@ impl<'a> DASDClient<'a> {
         Ok(devices)
     }
 
-    pub async fn format(&self, ids: &[&str]) -> Result<(), ServiceError> {
+    pub async fn format(&self, ids: &[&str]) -> Result<String, ServiceError> {
         let selected = self.find_devices(ids).await?;
         let references = selected.iter().collect::<Vec<&ObjectPath<'_>>>();
-        self.manager_proxy.format(&references).await?;
-        Ok(())
+        let (exit_code, job_path) = self.manager_proxy.format(&references).await?;
+        if exit_code != 0 {
+            return Err(ServiceError::UnsuccessfulAction("DASD format".to_string()));
+        }
+
+        Ok(job_path.to_string())
     }
 
     pub async fn enable(&self, ids: &[&str]) -> Result<(), ServiceError> {
