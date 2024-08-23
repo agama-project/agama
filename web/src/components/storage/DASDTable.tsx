@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
   Button,
   CardBody,
@@ -47,7 +47,7 @@ import { DASDDevice } from "~/types/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
-const columnData = (device: DASDDevice, column: { id: string, sortId: string, label: string }) => {
+const columnData = (device: DASDDevice, column: { id: string, sortId?: string, label: string }) => {
   let data = device[column.id];
 
   switch (column.id) {
@@ -156,7 +156,7 @@ const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDev
 
 export default function DASDTable({ state, dispatch }) {
   const [sortingColumn, setSortingColumn] = useState(columns[0]);
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortDirection, setSortDirection] : [ "asc" | "desc", Dispatch<SetStateAction<"asc"|"desc">>] = useState("asc");
 
   const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
   const filteredDevices = filterDevices(state.devices, state.minChannel, state.maxChannel);
