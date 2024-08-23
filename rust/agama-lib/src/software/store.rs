@@ -131,19 +131,22 @@ mod test {
 
     #[test]
     async fn test_getting_software_bdd() -> Result<(), Box<dyn Error>> {
-        let (store, mut server) = before_this();
+        let (store, server) = {
+            let (store, mut server) = before_this();
 
-        server.mock(|when, then| {
-            when.method(GET).path("/api/software/config");
-            then.status(200)
-                .header("content-type", "application/json")
-                .body(
-                    r#"{
-                    "patterns": {"xfce":true},
-                    "product": "Tumbleweed"
-                }"#,
-                );
-        });
+            server.mock(|when, then| {
+                when.method(GET).path("/api/software/config");
+                then.status(200)
+                    .header("content-type", "application/json")
+                    .body(
+                        r#"{
+                        "patterns": {"xfce":true},
+                        "product": "Tumbleweed"
+                    }"#,
+                    );
+            });
+            (store, server)
+        };
 
         let settings = store.load().await?;
 
