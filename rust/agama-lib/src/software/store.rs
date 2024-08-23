@@ -80,4 +80,31 @@ mod test {
         software_mock.assert();
         Ok(())
     }
+
+    #[test]
+    async fn test_setting_software_ok() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let software_mock = server.mock(|when, then| {
+            when.method(PUT)
+                .path("/api/software/config")
+                .header("content-type", "application/json")
+                .body(r#"{"patterns":{"xfce":true},"product":null}"#);
+            then.status(200);
+        });
+        let url = server.url("/api");
+
+        let store = software_store(url);
+        let settings = SoftwareSettings {
+            patterns: vec!["xfce".to_owned()],
+        };
+
+        let result = store.store(&settings).await;
+
+        // main assertion
+        result?;
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        software_mock.assert();
+        Ok(())
+    }
 }
