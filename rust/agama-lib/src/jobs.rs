@@ -13,6 +13,7 @@ pub mod client;
 
 /// Represents a job.
 #[derive(Clone, Debug, Default, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Job {
     /// Artificial job identifier.
     pub id: String,
