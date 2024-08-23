@@ -81,8 +81,15 @@ mod test {
         Ok(())
     }
 
+    // === attempting to rewrite the above test_getting_software in a more readable way ===
+    // One major idea, where the borrow checker wins over me, is this:
+    // automate the `software_mock.assert();` by wrapping MockServer in MyMockServer,
+    // which will remember all mocks that it hands out and will call assert on them at the end.
+
     struct MyMockServer<'a> {
         delegate: httpmock::MockServer,
+        // Mock has a reference to its originating MockServer,
+        // so we must name that lifetimes
         mocks: Vec<httpmock::Mock<'a>>,
     }
 
@@ -106,6 +113,7 @@ mod test {
             self.mocks.push(mock);
         }
 
+        // wanted this to be &self, but &mut self does not help either
         fn assert(&mut self) {
             for mock in &self.mocks {
                 mock.assert();
@@ -146,6 +154,7 @@ mod test {
                     );
             });
             (store, server)
+            // I am trying to express "I am done with mutating `server`"
         };
 
         let settings = store.load().await?;
@@ -159,7 +168,6 @@ mod test {
         Ok(())
         //after_this(store, &server)
     }
-
 
     #[test]
     async fn test_setting_software_ok() -> Result<(), Box<dyn Error>> {
