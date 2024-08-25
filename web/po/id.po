@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-08 02:27+0000\n"
+"POT-Creation-Date: 2024-08-18 02:29+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -42,7 +42,6 @@ msgstr "Lanjutkan"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
-#: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "Batal"
 
@@ -144,7 +143,6 @@ msgid "Cannot be changed in remote installation"
 msgstr "Tata letak papan ketik tidak dapat diubah dalam instalasi jarak jauh"
 
 #: src/components/core/InstallerOptions.jsx:142
-#: src/components/network/IpSettingsForm.jsx:228
 #: src/components/storage/BootSelection.jsx:250
 #: src/components/storage/DeviceSelection.jsx:254
 #: src/components/storage/EncryptionSettingsDialog.jsx:155
@@ -210,7 +208,6 @@ msgid "Passwords do not match"
 msgstr "Kata sandi tidak cocok"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/network/WifiConnectionForm.jsx:128
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:130
@@ -309,7 +306,6 @@ msgstr "Belum ada perangkat yang dipilih"
 
 #: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
 #: src/components/l10n/L10nPage.jsx:78
-#: src/components/network/NetworkPage.jsx:75
 #: src/components/storage/InstallationDeviceField.jsx:109
 #: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
@@ -354,295 +350,6 @@ msgstr "Mengubah zona waktu"
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "Memuat lingkungan penginstalan, harap tunggu."
-
-#. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:88
-#: src/components/network/DnsDataList.jsx:95
-msgid "Remove"
-msgstr "Menghapus"
-
-#. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:100
-#: src/components/network/AddressesDataList.jsx:101
-#: src/components/network/IpAddressInput.jsx:33
-msgid "IP Address"
-msgstr "Alamat IP"
-
-#. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:109
-#: src/components/network/AddressesDataList.jsx:110
-msgid "Prefix length or netmask"
-msgstr "Panjang awalan atau netmask"
-
-#: src/components/network/AddressesDataList.jsx:126
-msgid "Add an address"
-msgstr "Tambahkan alamat"
-
-#. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:126
-msgid "Add another address"
-msgstr "Tambahkan alamat lain"
-
-#: src/components/network/AddressesDataList.jsx:131
-msgid "Addresses"
-msgstr "Alamat"
-
-#: src/components/network/AddressesDataList.jsx:133
-msgid "Addresses data list"
-msgstr "Daftar data alamat"
-
-#. TRANSLATORS: table header
-#. TRANSLATORS: input field for the iSCSI initiator name
-#: src/components/network/ConnectionsTable.jsx:64
-#: src/components/network/ConnectionsTable.jsx:93
-#: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
-msgid "Name"
-msgstr "Nama"
-
-#. TRANSLATORS: table header
-#: src/components/network/ConnectionsTable.jsx:66
-#: src/components/network/ConnectionsTable.jsx:94
-msgid "IP addresses"
-msgstr "Alamat IP"
-
-#. TRANSLATORS: table header aria label
-#: src/components/network/ConnectionsTable.jsx:68
-#, fuzzy
-msgid "Connection actions"
-msgstr "Menyambung"
-
-#: src/components/network/ConnectionsTable.jsx:75
-#: src/components/network/WifiNetworksListPage.jsx:115
-#: src/components/network/WifiNetworksListPage.jsx:139
-#: src/components/storage/PartitionsField.jsx:347
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "Edit"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:78
-#: src/components/network/IpSettingsForm.jsx:151
-#, c-format
-msgid "Edit connection %s"
-msgstr "Edit koneksi %s"
-
-#: src/components/network/ConnectionsTable.jsx:82
-#: src/components/network/WifiNetworksListPage.jsx:118
-#: src/components/network/WifiNetworksListPage.jsx:146
-msgid "Forget"
-msgstr "Lupakan"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:84
-#, c-format
-msgid "Forget connection %s"
-msgstr "Lupakan koneksi %s"
-
-#. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:99
-#, c-format
-msgid "Actions for connection %s"
-msgstr "Tindakan untuk koneksi %s"
-
-#. TRANSLATORS: input field name
-#: src/components/network/DnsDataList.jsx:81
-#: src/components/network/DnsDataList.jsx:82
-msgid "Server IP"
-msgstr "IP Server"
-
-#: src/components/network/DnsDataList.jsx:104
-msgid "Add DNS"
-msgstr "Tambahkan DNS"
-
-#. TRANSLATORS: button label
-#: src/components/network/DnsDataList.jsx:104
-msgid "Add another DNS"
-msgstr "Tambahkan DNS lain"
-
-#: src/components/network/DnsDataList.jsx:109
-msgid "DNS"
-msgstr "DNS"
-
-#. TRANSLATORS: input field name
-#: src/components/network/IpPrefixInput.jsx:33
-msgid "IP prefix or netmask"
-msgstr "Awalan IP atau netmask"
-
-#. TRANSLATORS: error message
-#: src/components/network/IpSettingsForm.jsx:104
-msgid "At least one address must be provided for selected mode"
-msgstr "Setidaknya satu alamat harus disediakan untuk mode yang dipilih"
-
-#. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:160
-#: src/components/network/IpSettingsForm.jsx:165
-#: src/components/network/IpSettingsForm.jsx:167
-msgid "Mode"
-msgstr "Mode"
-
-#: src/components/network/IpSettingsForm.jsx:174
-msgid "Automatic (DHCP)"
-msgstr "Otomatis (DHCP)"
-
-#. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:177
-#: src/components/storage/iscsi/NodeStartupOptions.js:25
-msgid "Manual"
-msgstr "Manual"
-
-#. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:185
-#: src/components/network/IpSettingsForm.jsx:188
-msgid "Gateway"
-msgstr "Gateway"
-
-#: src/components/network/IpSettingsForm.jsx:196
-msgid "Gateway can be defined only in 'Manual' mode"
-msgstr ""
-
-#: src/components/network/NetworkPage.jsx:56
-msgid "No Wi-Fi supported"
-msgstr ""
-
-#: src/components/network/NetworkPage.jsx:58
-#, fuzzy
-msgid ""
-"The system does not support Wi-Fi connections, probably because of missing "
-"or disabled hardware."
-msgstr ""
-"Sistem tidak mendukung sambungan WiFi, mungkin karena perangkat keras yang "
-"tidak ada atau dinonaktifkan."
-
-#: src/components/network/NetworkPage.jsx:72
-msgid "Wi-Fi"
-msgstr ""
-
-#. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:75
-#: src/components/network/WifiConnectionForm.jsx:137
-#: src/components/network/WifiNetworksListPage.jsx:112
-msgid "Connect"
-msgstr "Sambungkan"
-
-#: src/components/network/NetworkPage.jsx:82
-#, fuzzy, c-format
-msgid "Conected to %s"
-msgstr "Tersambung (%s)"
-
-#: src/components/network/NetworkPage.jsx:89
-#, fuzzy
-msgid "No connected yet"
-msgstr "Belum ada perangkat yang dipilih"
-
-#: src/components/network/NetworkPage.jsx:90
-#, fuzzy
-msgid ""
-"The system has not been configured for connecting to a Wi-Fi network yet."
-msgstr "Sistem belum dikonfigurasi untuk menyambung ke jaringan WiFi."
-
-#: src/components/network/NetworkPage.jsx:103
-msgid "Wired"
-msgstr ""
-
-#: src/components/network/NetworkPage.jsx:105
-#, fuzzy
-msgid "No wired connections found"
-msgstr "Tidak ditemukan koneksi kabel."
-
-#: src/components/network/NetworkPage.jsx:115
-msgid "Network"
-msgstr "Jaringan"
-
-#. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:45
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr "Tidak ada"
-
-#. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:47
-msgid "WPA & WPA2 Personal"
-msgstr "WPA & WPA2 Pribadi"
-
-#: src/components/network/WifiConnectionForm.jsx:92
-#: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
-#: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
-msgid "Something went wrong"
-msgstr "Ada yang tidak beres"
-
-#: src/components/network/WifiConnectionForm.jsx:93
-msgid "Please, review provided settings and try again."
-msgstr "Harap tinjau pengaturan yang tersedia dan coba lagi."
-
-#. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:99
-#: src/components/network/WifiConnectionForm.jsx:103
-msgid "SSID"
-msgstr "SSID"
-
-#. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:112
-#: src/components/network/WifiConnectionForm.jsx:115
-msgid "Security"
-msgstr "Keamanan"
-
-#. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:124
-msgid "WPA Password"
-msgstr "Kata Sandi WPA"
-
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:66
-#: src/components/network/WifiNetworksListPage.jsx:126
-msgid "Connecting"
-msgstr "Menyambung"
-
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:69
-#: src/components/network/WifiNetworksListPage.jsx:130
-#: src/components/network/WifiNetworksListPage.jsx:173
-msgid "Connected"
-msgstr "Tersambung"
-
-#. TRANSLATORS: Wifi network status
-#. TRANSLATORS: iSCSI connection status
-#: src/components/network/WifiNetworksListPage.jsx:74
-#: src/components/network/WifiNetworksListPage.jsx:128
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
-msgid "Disconnected"
-msgstr "Terputus"
-
-#: src/components/network/WifiNetworksListPage.jsx:136
-#, fuzzy
-msgid "Disconnect"
-msgstr "Terputus"
-
-#: src/components/network/WifiNetworksListPage.jsx:159
-#, fuzzy
-msgid "Connect to a hidden network"
-msgstr "Sambungkan ke jaringan tersembunyi"
-
-#: src/components/network/WifiNetworksListPage.jsx:170
-#, fuzzy
-msgid "configured"
-msgstr "Jangan konfigurasikan"
-
-#: src/components/network/WifiNetworksListPage.jsx:270
-msgid "Connect to hidden network"
-msgstr "Sambungkan ke jaringan tersembunyi"
-
-#: src/components/network/WifiSelectorPage.jsx:40
-msgid "Connect to a Wi-Fi network"
-msgstr "Sambungkan ke jaringan Wi-Fi"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -1416,6 +1123,13 @@ msgstr "Gunakan manajemen volume logis (LVM)"
 msgid "Partition at installation disk"
 msgstr "mengecilkan partisi dari %d disk yang dipilih"
 
+#: src/components/storage/PartitionsField.jsx:347
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
+#: src/components/storage/iscsi/NodesPresenter.jsx:73
+#: src/components/users/FirstUser.jsx:86
+msgid "Edit"
+msgstr "Edit"
+
 #: src/components/storage/PartitionsField.jsx:348
 #, fuzzy
 msgid "Reset location"
@@ -1913,6 +1627,13 @@ msgstr ""
 msgid "Usage"
 msgstr ""
 
+#: src/components/storage/ZFCPDiskForm.jsx:105
+#: src/components/storage/iscsi/DiscoverForm.jsx:98
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/users/FirstUserForm.jsx:207
+msgid "Something went wrong"
+msgstr "Ada yang tidak beres"
+
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "Disk zFCP tidak diaktifkan."
@@ -1940,6 +1661,16 @@ msgstr "Diaktifkan"
 #: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
 msgstr "Dinonaktifkan"
+
+#. TRANSLATORS: input field for the iSCSI initiator name
+#: src/components/storage/ZFCPPage.jsx:381
+#: src/components/storage/iscsi/InitiatorForm.jsx:52
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
+#: src/components/storage/iscsi/NodesPresenter.jsx:98
+#: src/components/storage/iscsi/NodesPresenter.jsx:119
+msgid "Name"
+msgstr "Nama"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
@@ -2097,6 +1828,10 @@ msgid "iBFT"
 msgstr "iBFT"
 
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
+msgid "None"
+msgstr "Tidak ada"
+
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:87
 msgid "Offload card"
 msgstr "Bongkar kartu"
@@ -2118,9 +1853,18 @@ msgstr "Login %s"
 msgid "Startup"
 msgstr "Startup"
 
+#: src/components/storage/iscsi/NodeStartupOptions.js:25
+msgid "Manual"
+msgstr "Manual"
+
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
 msgstr "Saat boot"
+
+#. TRANSLATORS: iSCSI connection status
+#: src/components/storage/iscsi/NodesPresenter.jsx:63
+msgid "Disconnected"
+msgstr "Terputus"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
@@ -2428,6 +2172,146 @@ msgstr "Autentikasi root"
 #: src/router.js:48
 msgid "Overview"
 msgstr ""
+
+#~ msgid "Remove"
+#~ msgstr "Menghapus"
+
+#~ msgid "IP Address"
+#~ msgstr "Alamat IP"
+
+#~ msgid "Prefix length or netmask"
+#~ msgstr "Panjang awalan atau netmask"
+
+#~ msgid "Add an address"
+#~ msgstr "Tambahkan alamat"
+
+#~ msgid "Add another address"
+#~ msgstr "Tambahkan alamat lain"
+
+#~ msgid "Addresses"
+#~ msgstr "Alamat"
+
+#~ msgid "Addresses data list"
+#~ msgstr "Daftar data alamat"
+
+#~ msgid "IP addresses"
+#~ msgstr "Alamat IP"
+
+#, fuzzy
+#~ msgid "Connection actions"
+#~ msgstr "Menyambung"
+
+#, c-format
+#~ msgid "Edit connection %s"
+#~ msgstr "Edit koneksi %s"
+
+#~ msgid "Forget"
+#~ msgstr "Lupakan"
+
+#, c-format
+#~ msgid "Forget connection %s"
+#~ msgstr "Lupakan koneksi %s"
+
+#, c-format
+#~ msgid "Actions for connection %s"
+#~ msgstr "Tindakan untuk koneksi %s"
+
+#~ msgid "Server IP"
+#~ msgstr "IP Server"
+
+#~ msgid "Add DNS"
+#~ msgstr "Tambahkan DNS"
+
+#~ msgid "Add another DNS"
+#~ msgstr "Tambahkan DNS lain"
+
+#~ msgid "DNS"
+#~ msgstr "DNS"
+
+#~ msgid "IP prefix or netmask"
+#~ msgstr "Awalan IP atau netmask"
+
+#~ msgid "At least one address must be provided for selected mode"
+#~ msgstr "Setidaknya satu alamat harus disediakan untuk mode yang dipilih"
+
+#~ msgid "Mode"
+#~ msgstr "Mode"
+
+#~ msgid "Automatic (DHCP)"
+#~ msgstr "Otomatis (DHCP)"
+
+#~ msgid "Gateway"
+#~ msgstr "Gateway"
+
+#, fuzzy
+#~ msgid ""
+#~ "The system does not support Wi-Fi connections, probably because of "
+#~ "missing or disabled hardware."
+#~ msgstr ""
+#~ "Sistem tidak mendukung sambungan WiFi, mungkin karena perangkat keras "
+#~ "yang tidak ada atau dinonaktifkan."
+
+#~ msgid "Connect"
+#~ msgstr "Sambungkan"
+
+#, fuzzy, c-format
+#~ msgid "Conected to %s"
+#~ msgstr "Tersambung (%s)"
+
+#, fuzzy
+#~ msgid "No connected yet"
+#~ msgstr "Belum ada perangkat yang dipilih"
+
+#, fuzzy
+#~ msgid ""
+#~ "The system has not been configured for connecting to a Wi-Fi network yet."
+#~ msgstr "Sistem belum dikonfigurasi untuk menyambung ke jaringan WiFi."
+
+#, fuzzy
+#~ msgid "No wired connections found"
+#~ msgstr "Tidak ditemukan koneksi kabel."
+
+#~ msgid "Network"
+#~ msgstr "Jaringan"
+
+#~ msgid "WPA & WPA2 Personal"
+#~ msgstr "WPA & WPA2 Pribadi"
+
+#~ msgid "Please, review provided settings and try again."
+#~ msgstr "Harap tinjau pengaturan yang tersedia dan coba lagi."
+
+#~ msgid "SSID"
+#~ msgstr "SSID"
+
+#~ msgid "Security"
+#~ msgstr "Keamanan"
+
+#~ msgid "WPA Password"
+#~ msgstr "Kata Sandi WPA"
+
+#~ msgid "Connecting"
+#~ msgstr "Menyambung"
+
+#~ msgid "Connected"
+#~ msgstr "Tersambung"
+
+#, fuzzy
+#~ msgid "Disconnect"
+#~ msgstr "Terputus"
+
+#, fuzzy
+#~ msgid "Connect to a hidden network"
+#~ msgstr "Sambungkan ke jaringan tersembunyi"
+
+#, fuzzy
+#~ msgid "configured"
+#~ msgstr "Jangan konfigurasikan"
+
+#~ msgid "Connect to hidden network"
+#~ msgstr "Sambungkan ke jaringan tersembunyi"
+
+#~ msgid "Connect to a Wi-Fi network"
+#~ msgstr "Sambungkan ke jaringan Wi-Fi"
 
 #~ msgid "Question"
 #~ msgstr "Pertanyaan"
