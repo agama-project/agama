@@ -107,4 +107,32 @@ mod test {
         software_mock.assert();
         Ok(())
     }
+
+    #[test]
+    async fn test_setting_software_err() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let software_mock = server.mock(|when, then| {
+            when.method(PUT)
+                .path("/api/software/config")
+                .header("content-type", "application/json")
+                .body(r#"{"patterns":{"no_such_pattern":true},"product":null}"#);
+            then.status(400)
+                .body(r#"'{"error":"Agama service error: Failed to find these patterns: [\"no_such_pattern\"]"}"#);
+        });
+        let url = server.url("/api");
+
+        let store = software_store(url);
+        let settings = SoftwareSettings {
+            patterns: vec!["no_such_pattern".to_owned()],
+        };
+
+        let result = store.store(&settings).await;
+
+        // main assertion
+        assert!(result.is_err());
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        software_mock.assert();
+        Ok(())
+    }
 }
