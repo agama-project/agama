@@ -68,7 +68,7 @@ module Agama
       Config.from_file(path, logger)
     end
 
-    # Return an arry with the different {Config} objects read from the different locations
+    # Return an array with the different {Config} objects read from the different locations
     #
     # TODO: handle precedence correctly
     #
@@ -82,7 +82,7 @@ module Agama
       @configs
     end
 
-    # Return a {Config} oject
+    # Return a {Config} object
     # @return [Config] resultant Config after merging all the configurations
     def config
       config = configs.first || Config.new(nil, logger)
@@ -97,7 +97,7 @@ module Agama
     # @param location [String] File location. It might be an URL-like string (e.g.,
     #   "http://example.net/example.yml").
     # @param target [String] Path to copy the file to.
-    # @return [Boolean] Whether the file was sucessfully copied or not
+    # @return [Boolean] Whether the file was successfully copied or not
     def copy_file(location, target)
       url = Yast::URL.Parse(location)
 
