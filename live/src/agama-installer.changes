@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 26 10:05:01 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Include the procps instead of the procps4 package
+  (jsc#PED-8669, gh#openSUSE/agama#1554).
+
+-------------------------------------------------------------------
 Mon Aug 19 17:54:55 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Add beside staging-build-keys also openSUSE-build-keys to not
