@@ -53,7 +53,6 @@
     Requires:       dosfstools
     Requires:       e2fsprogs
     Requires:       exfatprogs
-    Requires:       f2fs-tools
     Requires:       fcoe-utils
     %ifarch x86_64 aarch64
     Requires:       fde-tools
@@ -63,7 +62,6 @@
     Requires:       lvm2
     Requires:       mdadm
     Requires:       multipath-tools
-    Requires:       nilfs-utils
     Requires:       nfs-client
     Requires:       ntfs-3g
     Requires:       ntfsprogs

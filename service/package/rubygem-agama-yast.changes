@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 26 10:01:27 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not depend on f2fs-tools and nilfs-utils
+  (jsc#PED-8669, gh#openSUSE/agama#1554).
+
+-------------------------------------------------------------------
 Mon Aug 19 15:13:46 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Allow overriding of install repos which is needed by openQA
