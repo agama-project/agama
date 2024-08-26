@@ -95,7 +95,7 @@
         <package name="avahi"/>
         <package name="bind-utils"/>
         <package name="systemd"/>
-        <package name="procps4"/>
+        <package name="procps"/>
         <package name="iputils"/>
         <package name="vim"/>
         <package name="vim-data"/>
