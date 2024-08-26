@@ -155,9 +155,10 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // and those which not (or don't need it)
     match cli.command {
         Commands::Config(subcommand) => {
-            let manager = build_manager().await?;
-            wait_for_services(&manager).await?;
-            run_config_cmd(subcommand).await?
+            // this deals with authentication need inside
+            let client = BaseHTTPClient::new()?;
+
+            run_config_cmd(client, subcommand).await?
         }
         Commands::Probe => {
             let manager = build_manager().await?;

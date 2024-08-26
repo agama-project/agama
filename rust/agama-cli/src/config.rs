@@ -25,7 +25,11 @@ use std::{
 };
 
 use crate::show_progress;
-use agama_lib::{auth::AuthToken, install_settings::InstallSettings, Store as SettingsStore};
+use agama_lib::{
+    connection,
+    install_settings::InstallSettings, Store as SettingsStore,
+    base_http_client::BaseHTTPClient,
+};
 use anyhow::anyhow;
 use clap::Subcommand;
 use std::io::Write;
@@ -59,14 +63,8 @@ pub enum ConfigCommands {
     },
 }
 
-pub async fn run(subcommand: ConfigCommands) -> anyhow::Result<()> {
-    let Some(token) = AuthToken::find() else {
-        println!("You need to login for generating a valid token: agama auth login");
-        return Ok(());
-    };
-
-    let client = agama_lib::http_client(token.as_str())?;
-    let store = SettingsStore::new(client).await?;
+pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> anyhow::Result<()> {
+    let store = SettingsStore::new(connection().await?, http_client).await?;
 
     match subcommand {
         ConfigCommands::Show => {

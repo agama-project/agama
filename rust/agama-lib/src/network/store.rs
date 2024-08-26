@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use super::settings::NetworkConnection;
+use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 use crate::network::{NetworkClient, NetworkSettings};
 
@@ -28,7 +29,7 @@ pub struct NetworkStore {
 }
 
 impl NetworkStore {
-    pub async fn new(client: reqwest::Client) -> Result<NetworkStore, ServiceError> {
+    pub async fn new(client: BaseHTTPClient) -> Result<NetworkStore, ServiceError> {
         Ok(Self {
             network_client: NetworkClient::new(client).await?,
         })

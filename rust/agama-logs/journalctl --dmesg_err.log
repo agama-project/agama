@@ -1,0 +1,4 @@
+[0;1;39mHint: You are currently not seeing messages from other users and the system.[0m
+[0;1;39m      Users in the 'systemd-journal' group can see all messages. Pass -q to[0m
+[0;1;39m      turn off this notice.[0m
+[0;1;31mNo journal files were opened due to insufficient permissions.[0m
