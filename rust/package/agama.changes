@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Aug 26 11:19:27 UTC 2024 - Martin Vidner <mvidner@suse.com>
+
+- For CLI, use HTTP clients instead of D-Bus clients,
+  for Software (gh#openSUSE/agama#1548)
+  - added SoftwareHTTPClient
+
+-------------------------------------------------------------------
 Thu Aug 15 08:33:02 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Use sd_notify for starting agama-web-service to notify systemd
