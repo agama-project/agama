@@ -326,6 +326,8 @@ export default function ProposalPage() {
                   actions={state.actions}
                   spaceActions={state.settings.spaceActions}
                   devices={state.settings.installationDevices}
+                  // @ts-expect-error: we do not know how to specify the type of
+                  // drawerRef properly and TS does not find the "open" property
                   onActionsClick={drawerRef.current?.open}
                   isLoading={showSkeleton(state.loading, "ProposalActionsSummary", state.changing)}
                 />

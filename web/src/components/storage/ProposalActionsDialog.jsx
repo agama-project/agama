@@ -51,7 +51,7 @@ const ActionsList = ({ actions }) => {
  * @param {object} props
  * @param {object[]} [props.actions=[]] - The actions to perform in the system.
  * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
- * @param {() => void} props.onClose - Whether the dialog is visible or not.
+ * @param {() => void} [props.onClose] - Whether the dialog is visible or not.
  */
 export default function ProposalActionsDialog({ actions = [] }) {
   const [isExpanded, setIsExpanded] = useState(false);
