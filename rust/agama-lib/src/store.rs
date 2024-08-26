@@ -47,7 +47,7 @@ pub struct Store {
 impl<'a> Store<'a> {
     pub async fn new(
         connection: Connection,
-        http_client: BaseHTTPClient
+        http_client: BaseHTTPClient,
     ) -> Result<Store<'a>, ServiceError> {
         Ok(Self {
             localization: LocalizationStore::new()?,

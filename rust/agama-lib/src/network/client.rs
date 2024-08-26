@@ -41,14 +41,20 @@ impl NetworkClient {
 
     /// Returns an array of network connections
     pub async fn connections(&self) -> Result<Vec<NetworkConnection>, ServiceError> {
-        let json = self.client.get::<Vec<NetworkConnection>>("/network/connections").await?;
+        let json = self
+            .client
+            .get::<Vec<NetworkConnection>>("/network/connections")
+            .await?;
 
         Ok(json)
     }
 
     /// Returns an array of network connections
     pub async fn connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
-        let json = self.client.get::<NetworkConnection>(format!("/network/connections/{id}").as_str()).await?;
+        let json = self
+            .client
+            .get::<NetworkConnection>(format!("/network/connections/{id}").as_str())
+            .await?;
 
         Ok(json)
     }
@@ -65,7 +71,9 @@ impl NetworkClient {
             let path = format!("/network/connections/{id}");
             self.client.put_void(&path.as_str(), &connection).await?
         } else {
-            self.client.post_void(format!("/network/connections").as_str(), &connection).await?
+            self.client
+                .post_void(format!("/network/connections").as_str(), &connection)
+                .await?
         }
 
         Ok(())
@@ -77,8 +85,9 @@ impl NetworkClient {
         // BaseHTTPClient which doesn't require a serialiable object for the body
         let empty_body: [String; 0] = [];
 
-        eprintln!("Trying to be tricky works?");
-        self.client.put_void(&format!("/network/system/apply").as_str(), &empty_body).await?;
+        self.client
+            .put_void(&format!("/network/system/apply").as_str(), &empty_body)
+            .await?;
 
         Ok(())
     }
