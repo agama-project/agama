@@ -1,12 +1,8 @@
 [workspace]
-members = [
-  "agama-cli",
-  "agama-server",
-  "agama-lib",
-  "agama-locale-data",
-]
+members = ["agama-cli", "agama-server", "agama-lib", "agama-locale-data"]
 resolver = "2"
 
 [workspace.package]
-rust-version = "1.74"
+# IpAddr::to_canonical is stable since 1.75
+rust-version = "1.75"
 edition = "2021"
