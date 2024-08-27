@@ -32,11 +32,15 @@ type DASDDevice = {
   hexId: number;
 };
 
-type FormatJob = {
-  job_id: string,
+type FormatSummary = {
   total: number,
   step: number,
   done: boolean
+}
+
+type FormatJob = {
+  job_id: string,
+  summary: { [key: string]: FormatSummary }
 }
 
 export type { DASDDevice, FormatJob };

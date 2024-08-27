@@ -19,19 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Progress, Skeleton, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
+import { useDASDFormatJobChanges } from "~/queries/dasd";
 
 export default function DASDFormatProgress({ job, devices, isOpen = true }) {
-  const { storage: client } = useInstallerClient();
-  const [progress, setProgress] = useState(undefined);
-
-  useEffect(() => {
-    client.dasd.onFormatProgress(job.path, (p) => setProgress(p));
-  }, [client.dasd, job.path]);
+  const formatJob = useDASDFormatJobChanges(job.id);
+  const progress = formatJob?.summary;
 
   const ProgressContent = ({ progress }) => {
     return (

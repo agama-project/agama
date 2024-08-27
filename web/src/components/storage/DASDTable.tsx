@@ -44,7 +44,8 @@ import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
 import { DASDDisable, DASDEnable, DASDFormat, diagDisable, diagEnable } from "~/api/dasd";
-import { useDASDDevices, useFilterDASD, useFilterDASDChange } from "~/queries/dasd";
+import { useDASDDevices, useFilterDASD, useFilterDASDChange, useSelectedDASD, useSelectedDASDChange } from "~/queries/dasd";
+import { useSelectedWifiChange } from "~/queries/network";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
@@ -155,27 +156,27 @@ const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDev
   return devices.filter((d) => d.hexId >= min && d.hexId <= max);
 };
 
-export default function DASDTable({ state, dispatch }) {
+export default function DASDTable() {
   const devices = useDASDDevices();
   const { mutate: changeFilter } = useFilterDASDChange();
+  const { mutate: changeSelected } = useSelectedDASDChange();
   const { minChannel, maxChannel } = useFilterDASD();
+  const selectedDevices = useSelectedDASD();
 
   const [sortingColumn, setSortingColumn] = useState(columns[0]);
   const [sortDirection, setSortDirection]: ["asc" | "desc", Dispatch<SetStateAction<"asc" | "desc">>] = useState("asc");
 
   const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
   const filteredDevices = filterDevices(devices, minChannel, maxChannel);
-  const selectedDevicesIds = state.selectedDevices.map((d) => d.id);
+  const selectedDevicesIds = selectedDevices.map((d) => d.id);
 
   // Selecting
   const selectAll = (isSelecting = true) => {
-    const type = isSelecting ? "SELECT_ALL_DEVICES" : "UNSELECT_ALL_DEVICES";
-    dispatch({ type, payload: { devices: filteredDevices } });
+    changeSelected({ unselect: !isSelecting, devices: filteredDevices })
   };
 
   const selectDevice = (device, isSelecting = true) => {
-    const type = isSelecting ? "SELECT_DEVICE" : "UNSELECT_DEVICE";
-    dispatch({ type, payload: { device } });
+    changeSelected({ unselect: !isSelecting, device })
   };
 
   // Sorting
@@ -221,7 +222,7 @@ export default function DASDTable({ state, dispatch }) {
             <Th
               select={{
                 onSelect: (_event, isSelecting) => selectAll(isSelecting),
-                isSelected: filteredDevices.length === state.selectedDevices.length,
+                isSelected: filteredDevices.length === selectedDevices.length,
               }}
             />
             {columns.map((column, index) => (
@@ -309,8 +310,8 @@ export default function DASDTable({ state, dispatch }) {
 
               <ToolbarItem>
                 <Actions
-                  devices={state.selectedDevices}
-                  isDisabled={state.selectedDevices.length === 0}
+                  devices={selectedDevices}
+                  isDisabled={selectedDevices.length === 0}
                 />
               </ToolbarItem>
             </ToolbarGroup>

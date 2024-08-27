@@ -26,7 +26,7 @@ import { _ } from "~/i18n";
 import { hex, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { Page } from "~/components/core";
-import { useDASDDevices, useDASDDevicesChanges } from "~/queries/dasd";
+import { useDASDDevices, useDASDDevicesChanges, useDASDFormatJobChanges, useDASDFormatJobs } from "~/queries/dasd";
 import { DASDDevice } from "~/types/dasd";
 
 const reducer = (state, action) => {
@@ -62,34 +62,6 @@ const reducer = (state, action) => {
       return { ...state, devices: state.devices.filter((d) => d.id !== device.id) };
     }
 
-    case "SET_MIN_CHANNEL": {
-      return { ...state, minChannel: payload.minChannel, selectedDevices: [] };
-    }
-
-    case "SET_MAX_CHANNEL": {
-      return { ...state, maxChannel: payload.maxChannel, selectedDevices: [] };
-    }
-
-    case "SELECT_DEVICE": {
-      const { device } = payload;
-
-      return { ...state, selectedDevices: [...state.selectedDevices, device] };
-    }
-
-    case "UNSELECT_DEVICE": {
-      const { device } = payload;
-
-      return { ...state, selectedDevices: state.selectedDevices.filter((d) => d.id !== device.id) };
-    }
-
-    case "SELECT_ALL_DEVICES": {
-      return { ...state, selectedDevices: payload.devices };
-    }
-
-    case "UNSELECT_ALL_DEVICES": {
-      return { ...state, selectedDevices: [] };
-    }
-
     case "START_FORMAT_JOB": {
       const { data: formatJob } = payload;
 
@@ -121,32 +93,12 @@ const reducer = (state, action) => {
   }
 };
 
-const initialState = {
-  devices: [],
-  selectedDevices: [],
-  minChannel: "",
-  maxChannel: "",
-  formatJob: {},
-};
-
 export default function DASDPage() {
   useDASDDevicesChanges();
+  const jobs = useDASDFormatJobs().filter((j) => j.running);
+  const job = jobs[0];
+
   const devices: DASDDevice[] = useDASDDevices();
-  initialState.devices = devices;
-  const { storage: client } = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  useEffect(() => {
-    const loadJobs = async () => {
-      const jobs = await cancellablePromise(client.dasd.getJobs());
-      if (jobs.length > 0) {
-        dispatch({ type: "START_FORMAT_JOB", payload: { data: jobs[0] } });
-      }
-    };
-
-    loadJobs().catch(console.error);
-  }, [client.dasd, cancellablePromise]);
 
   return (
     <Page>
@@ -155,9 +107,9 @@ export default function DASDPage() {
       </Page.Header>
 
       <Page.MainContent>
-        <DASDTable state={state} dispatch={dispatch} />
-        {state.formatJob.running && (
-          <DASDFormatProgress job={state.formatJob} devices={state.devices} />
+        <DASDTable />
+        {job && (
+          <DASDFormatProgress job={job} devices={devices} />
         )}
       </Page.MainContent>
     </Page>
