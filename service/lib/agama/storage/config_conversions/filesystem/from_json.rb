@@ -21,6 +21,7 @@
 
 require "agama/storage/config_conversions/filesystem_type/from_json"
 require "agama/storage/configs/filesystem"
+require "y2storage/filesystems/mount_by_type"
 
 module Agama
   module Storage
@@ -41,12 +42,15 @@ module Agama
             default_config = default.dup || Configs::Filesystem.new
 
             default_config.tap do |config|
+              mount_by = convert_mount_by
+              type = convert_type(config.type)
               label = filesystem_json[:label]
               mkfs_options = filesystem_json[:mkfsOptions]
 
               config.path = filesystem_json[:path]
               config.mount_options = filesystem_json[:mountOptions] || []
-              config.type = convert_type(config.type)
+              config.mount_by = mount_by if mount_by
+              config.type = type if type
               config.label = label if label
               config.mkfs_options = mkfs_options if mkfs_options
             end
@@ -57,10 +61,21 @@ module Agama
           # @return [Hash]
           attr_reader :filesystem_json
 
-          # @param default [Configs::Filesystem, nil]
-          # @return [Configs::FilesystemType]
+          # @return [Y2Storage::Filesystems::MountByType, nil]
+          def convert_mount_by
+            value = filesystem_json[:mountBy]
+            return unless value
+
+            Y2Storage::Filesystems::MountByType.find(value.to_sym)
+          end
+
+          # @param default [Configs::FilesystemType, nil]
+          # @return [Configs::FilesystemType, nil]
           def convert_type(default = nil)
-            FilesystemType::FromJSON.new(filesystem_json[:type]).convert(default)
+            filesystem_type_json = filesystem_json[:type]
+            return unless filesystem_type_json
+
+            FilesystemType::FromJSON.new(filesystem_type_json).convert(default)
           end
         end
       end

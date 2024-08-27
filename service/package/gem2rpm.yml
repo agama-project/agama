@@ -39,7 +39,7 @@
     Requires:       yast2-iscsi-client >= 4.5.7
     Requires:       yast2-network
     Requires:       yast2-proxy
-    Requires:       yast2-storage-ng >= 5.0.16
+    Requires:       yast2-storage-ng >= 5.0.17
     Requires:       yast2-users
     %ifarch s390 s390x
     Requires:       yast2-s390 >= 4.6.4

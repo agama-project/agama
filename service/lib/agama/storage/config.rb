@@ -86,7 +86,7 @@ module Agama
       def implicit_boot_device
         # NOTE: preliminary implementation with very simplistic checks
         root_drive = drives.find do |drive|
-          drive.partitions.any? { |p| p.filesystem.root? }
+          drive.partitions.any? { |p| p.filesystem&.root? }
         end
 
         root_drive&.found_device&.name

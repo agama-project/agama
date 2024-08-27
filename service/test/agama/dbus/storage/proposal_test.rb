@@ -32,23 +32,27 @@ describe Agama::DBus::Storage::Proposal do
   subject { described_class.new(backend, logger) }
 
   let(:backend) do
-    instance_double(Agama::Storage::Proposal, settings: settings)
+    instance_double(Agama::Storage::Proposal, guided_settings: settings, guided?: guided)
   end
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:settings) { nil }
 
+  let(:guided) { false }
+
   describe "#settings" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
+    context "if a guided proposal has not been calculated yet" do
+      let(:guided) { false }
 
       it "returns an empty hash" do
         expect(subject.settings).to eq({})
       end
     end
 
-    context "if a proposal has been calculated" do
+    context "if a guided proposal has been calculated" do
+      let(:guided) { true }
+
       let(:settings) do
         Agama::Storage::ProposalSettings.new.tap do |settings|
           settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
