@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 27 11:38:01 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a dependency on the D-Bus daemon (bsc#1229807).
+
+-------------------------------------------------------------------
 Mon Aug 26 10:01:27 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not depend on f2fs-tools and nilfs-utils
