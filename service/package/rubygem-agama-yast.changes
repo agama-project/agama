@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 27 15:16:17 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: allow calling to #SetConfig D-Bus method using the new
+  storage JSON config (gh#openSUSE/agama#1471).
+
+-------------------------------------------------------------------
 Tue Aug 27 11:38:01 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a dependency on the D-Bus daemon (bsc#1229807).
