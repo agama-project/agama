@@ -5,6 +5,8 @@ use zbus::zvariant::{OwnedValue, Value};
 
 use crate::dbus::{get_optional_property, get_property};
 
+pub mod dasd;
+
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct DeviceSid(u32);
 

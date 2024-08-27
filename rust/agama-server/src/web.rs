@@ -13,7 +13,7 @@ use crate::{
     software::web::{software_service, software_streams},
     storage::web::{storage_service, storage_streams},
     users::web::{users_service, users_streams},
-    web::common::{issues_stream, progress_stream, service_status_stream},
+    web::common::{issues_stream, jobs_stream, progress_stream, service_status_stream},
 };
 use axum::Router;
 
@@ -138,6 +138,16 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
             dbus.clone(),
             "org.opensuse.Agama.Storage1",
             "/org/opensuse/Agama/Storage1",
+        )
+        .await?,
+    );
+    stream.insert(
+        "storage-jobs",
+        jobs_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Storage1",
+            "/org/opensuse/Agama/Storage1",
+            "/org/opensuse/Agama/Storage1/jobs",
         )
         .await?,
     );

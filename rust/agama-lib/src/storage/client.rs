@@ -14,6 +14,7 @@ use zbus::fdo::ObjectManagerProxy;
 use zbus::names::{InterfaceName, OwnedInterfaceName};
 use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 use zbus::Connection;
+pub mod dasd;
 pub mod iscsi;
 
 type DBusObject = (

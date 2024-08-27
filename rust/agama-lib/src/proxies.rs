@@ -192,3 +192,29 @@ trait Locale {
     /// SetLocale method
     fn set_locale(&self, locale: &str) -> zbus::Result<()>;
 }
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.Job",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1/jobs"
+)]
+trait Job {
+    #[dbus_proxy(property)]
+    fn running(&self) -> zbus::Result<bool>;
+
+    #[dbus_proxy(property)]
+    fn exit_code(&self) -> zbus::Result<u32>;
+
+    #[dbus_proxy(signal)]
+    fn finished(&self, exit_code: u32) -> zbus::Result<()>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.DASD.Format",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1/jobs/1"
+)]
+trait FormatJob {
+    #[dbus_proxy(property)]
+    fn summary(&self) -> zbus::Result<std::collections::HashMap<String, (u32, u32, bool)>>;
+}
