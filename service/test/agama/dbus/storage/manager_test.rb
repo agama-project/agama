@@ -23,6 +23,7 @@ require_relative "../../../test_helper"
 require_relative "../../storage/storage_helpers"
 require "agama/dbus/storage/manager"
 require "agama/dbus/storage/proposal"
+require "agama/storage/config"
 require "agama/storage/device_settings"
 require "agama/storage/manager"
 require "agama/storage/proposal"
@@ -73,6 +74,8 @@ describe Agama::DBus::Storage::Manager do
   end
 
   before do
+    # Speed up tests by avoding real check of TPM presence.
+    allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
     allow(Yast::Arch).to receive(:s390).and_return false
     allow(proposal).to receive(:on_calculate)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
@@ -332,9 +335,11 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#apply_storage_config" do
+  describe "#apply_config" do
+    let(:serialized_config) { config_json.to_json }
+
     context "if the serialized config contains guided proposal settings" do
-      let(:storage_config) do
+      let(:config_json) do
         {
           storage: {
             guided: {
@@ -382,11 +387,11 @@ describe Agama::DBus::Storage::Manager do
           )
         end
 
-        subject.apply_storage_config(storage_config.to_json)
+        subject.apply_config(serialized_config)
       end
 
       context "when the serialized config omits some settings" do
-        let(:storage_config) do
+        let(:config_json) do
           {
             storage: {
               guided: {}
@@ -405,7 +410,7 @@ describe Agama::DBus::Storage::Manager do
             expect(settings.volumes).to eq([])
           end
 
-          subject.apply_storage_config(storage_config.to_json)
+          subject.apply_config(serialized_config)
         end
       end
 
@@ -455,7 +460,7 @@ describe Agama::DBus::Storage::Manager do
             expect(volume.btrfs.snapshots).to eq(true)
           end
 
-          subject.apply_storage_config(storage_config.to_json)
+          subject.apply_config(serialized_config)
         end
 
         context "and the volume settings omits some values" do
@@ -490,14 +495,51 @@ describe Agama::DBus::Storage::Manager do
               expect(volume.btrfs.snapshots).to eq(false)
             end
 
-            subject.apply_storage_config(storage_config.to_json)
+            subject.apply_config(serialized_config)
           end
         end
       end
     end
 
+    context "if the serialized config contains storage settings" do
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              ptableType: "gpt",
+              partitions: [
+                {
+                  filesystem: {
+                    type: "btrfs",
+                    path: "/"
+                  }
+                }
+              ]
+            ]
+          }
+        }
+      end
+
+      it "calculates an agama proposal with the given config" do
+        expect(proposal).to receive(:calculate_agama) do |config|
+          expect(config).to be_a(Agama::Storage::Config)
+          expect(config.drives.size).to eq(1)
+
+          drive = config.drives.first
+          expect(drive.ptable_type).to eq(Y2Storage::PartitionTables::Type::GPT)
+          expect(drive.partitions.size).to eq(1)
+
+          partition = drive.partitions.first
+          expect(partition.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+          expect(partition.filesystem.path).to eq("/")
+        end
+
+        subject.apply_config(serialized_config)
+      end
+    end
+
     context "if the serialized config contains legacy AutoYaST settings" do
-      let(:storage_config) do
+      let(:config_json) do
         {
           legacyAutoyastStorage: [
             { device: "/dev/vda" }
@@ -507,26 +549,26 @@ describe Agama::DBus::Storage::Manager do
 
       it "calculates an AutoYaST proposal with the given settings" do
         expect(proposal).to receive(:calculate_autoyast) do |settings|
-          expect(settings).to eq([{ "device" => "/dev/vda" }])
+          expect(settings).to eq(config_json[:legacyAutoyastStorage])
         end
 
-        subject.apply_storage_config(storage_config.to_json)
+        subject.apply_config(serialized_config)
       end
     end
   end
 
-  describe "#serialized_storage_config" do
-    def pretty_json(value)
+  describe "#recover_config" do
+    def serialize(value)
       JSON.pretty_generate(value)
     end
 
     context "if a proposal has not been calculated" do
       it "returns serialized empty storage config" do
-        expect(subject.serialized_storage_config).to eq(pretty_json({}))
+        expect(subject.recover_config).to eq(serialize({}))
       end
     end
 
-    context "if a proposal has been calculated" do
+    context "if a guided proposal has been calculated" do
       before do
         proposal.calculate_guided(settings)
       end
@@ -537,92 +579,102 @@ describe Agama::DBus::Storage::Manager do
         end
       end
 
-      it "returns serialized storage config including guided proposal settings" do
+      it "returns serialized guided storage config" do
         expected_config = {
           storage: {
             guided: settings.to_json_settings
           }
         }
 
-        expect(subject.serialized_storage_config).to eq(pretty_json(expected_config))
-      end
-    end
-  end
-
-  describe "#proposal_calculated?" do
-    before do
-      allow(proposal).to receive(:calculated?).and_return(calculated)
-    end
-
-    context "if the proposal is not calculated yet" do
-      let(:calculated) { false }
-
-      it "returns false" do
-        expect(subject.proposal_calculated?).to eq(false)
+        expect(subject.recover_config).to eq(serialize(expected_config))
       end
     end
 
-    context "if the proposal is calculated" do
-      let(:calculated) { true }
-
-      it "returns true" do
-        expect(subject.proposal_calculated?).to eq(true)
+    context "if an agama proposal has been calculated" do
+      before do
+        proposal.calculate_agama(config)
       end
-    end
-  end
 
-  describe "#proposal_result" do
-    before do
-      allow(proposal).to receive(:calculated?).and_return(calculated)
-    end
-
-    context "if the proposal is not calculated yet" do
-      let(:calculated) { false }
-
-      it "returns an empty hash" do
-        expect(subject.proposal_result).to eq({})
-      end
-    end
-
-    context "if the proposal is calculated" do
-      let(:calculated) { true }
-      let(:guided) { Agama::DBus::Storage::Manager::ProposalStrategy::GUIDED }
-      let(:autoyast) { Agama::DBus::Storage::Manager::ProposalStrategy::AUTOYAST }
-
-      context "and it is a guided proposal" do
-        before do
-          allow(proposal).to receive(:strategy?).with(guided).and_return(true)
-          allow(proposal).to receive(:success?).and_return(true)
-          allow(proposal).to receive(:settings).and_return(Agama::Storage::ProposalSettings.new)
+      let(:config) do
+        fs_type = Agama::Storage::Configs::FilesystemType.new.tap do |t|
+          t.fs_type = Y2Storage::Filesystems::Type::BTRFS
         end
 
-        it "returns a Hash with success, strategy and settings" do
-          result = subject.proposal_result
-          serialized_settings = proposal.settings.to_json_settings.to_json
+        filesystem = Agama::Storage::Configs::Filesystem.new.tap do |f|
+          f.type = fs_type
+        end
 
-          expect(result.keys).to contain_exactly("success", "strategy", "settings")
-          expect(result["success"]).to eq(true)
-          expect(result["strategy"]).to eq(guided)
-          expect(result["settings"]).to eq(serialized_settings)
+        drive = Agama::Storage::Configs::Drive.new.tap do |d|
+          d.filesystem = filesystem
+        end
+
+        Agama::Storage::Config.new.tap do |config|
+          config.drives = [drive]
         end
       end
 
-      context "and it is an autoyast proposal" do
-        before do
-          allow(proposal).to receive(:strategy?).with(guided).and_return(false)
-          allow(proposal).to receive(:success?).and_return(true)
-          allow(proposal).to receive(:settings).and_return({})
-        end
+      it "returns serialized storage config" do
+        skip "Missing conversion from Agama::Storage::Config to JSON"
 
-        it "returns a Hash with success, strategy and settings" do
-          result = subject.proposal_result
-          serialized_settings = proposal.settings.to_json
+        expected_config = {
+          storage: {
+            drives: [
+              {
+                filesystem: {
+                  type: "btrfs"
+                }
+              }
+            ]
+          }
+        }
 
-          expect(result.keys).to contain_exactly("success", "strategy", "settings")
-          expect(result["success"]).to eq(true)
-          expect(result["strategy"]).to eq(autoyast)
-          expect(result["settings"]).to eq(serialized_settings)
-        end
+        expect(subject.recover_config).to eq(serialize(expected_config))
+      end
+    end
+
+    context "if a proposal was calculated from storage json" do
+      before do
+        proposal.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              ptableType: "gpt",
+              partitions: [
+                {
+                  filesystem: {
+                    type: "btrfs",
+                    path: "/"
+                  }
+                }
+              ]
+            ]
+          }
+        }
+      end
+
+      it "returns the serialized storage config" do
+        expect(subject.recover_config).to eq(serialize(config_json))
+      end
+    end
+
+    context "if a proposal was calculated from AutoYaST json" do
+      before do
+        proposal.calculate_from_json(autoyast_json)
+      end
+
+      let(:autoyast_json) do
+        {
+          legacyAutoyastStorage: [
+            { device: "/dev/vda" }
+          ]
+        }
+      end
+
+      it "returns the serialized AutoYaST config" do
+        expect(subject.recover_config).to eq(serialize(autoyast_json))
       end
     end
   end
