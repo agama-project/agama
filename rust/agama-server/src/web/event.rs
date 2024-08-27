@@ -1,8 +1,14 @@
 use crate::network::model::NetworkChange;
 use agama_lib::{
-    jobs::Job, localization::model::LocaleConfig, manager::InstallationPhase,
-    product::RegistrationRequirement, progress::Progress, software::SelectedBy,
-    storage::model::dasd::DASDDevice, storage::ISCSINode, users::FirstUser,
+    jobs::Job,
+    localization::model::LocaleConfig,
+    manager::InstallationPhase,
+    product::RegistrationRequirement,
+    progress::Progress,
+    software::SelectedBy,
+    storage::model::dasd::{DASDDevice, DASDFormatSummary},
+    storage::ISCSINode,
+    users::FirstUser,
 };
 use serde::Serialize;
 use std::collections::HashMap;
@@ -97,9 +103,7 @@ pub enum Event {
     },
     DASDFormatJobChanged {
         job_id: String,
-        total: u32,
-        step: u32,
-        done: bool,
+        summary: HashMap<String, DASDFormatSummary>,
     },
 }
 
