@@ -200,21 +200,21 @@ const useDASDDevicesChanges = () => {
 
     return client.ws().onEvent((event) => {
       if (event.type === "DASDDeviceAdded") {
-        const device : DASDDevice = event.device;
+        const device: DASDDevice = event.device;
         queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
           // do not use push here as updater has to be immutable
           const res = prev.concat([device]);
           return res;
-      });
+        });
       } else if (event.type === "DASDDeviceRemoved") {
-        const device : DASDDevice = event.device;
+        const device: DASDDevice = event.device;
         const { id } = device;
         queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
           const res = prev.filter(dev => dev.id !== id);
           return res;
-      });
+        });
       } else if (event.type === "DASDDeviceChanged") {
-        const device : DASDDevice = event.device;
+        const device: DASDDevice = event.device;
         const { id } = device;
         queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
           // deep copy of original to have it immutable
@@ -222,7 +222,7 @@ const useDASDDevicesChanges = () => {
           const index = res.findIndex(dev => dev.id === id);
           res[index] = device;
           return res;
-      });
+        });
       }
     });
   });

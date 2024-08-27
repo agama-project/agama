@@ -40,7 +40,7 @@ type FormatSummary = {
 
 type FormatJob = {
   job_id: string,
-  summary: { [key: string]: FormatSummary }
+  summary?: { [key: string]: FormatSummary }
 }
 
 export type { DASDDevice, FormatJob };

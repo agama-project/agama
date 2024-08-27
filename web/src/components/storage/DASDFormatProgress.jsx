@@ -27,21 +27,21 @@ import { useDASDFormatJobChanges } from "~/queries/dasd";
 
 export default function DASDFormatProgress({ job, devices, isOpen = true }) {
   const formatJob = useDASDFormatJobChanges(job.id);
-  const progress = formatJob?.summary;
+  const progress = formatJob?.summary || {};
 
   const ProgressContent = ({ progress }) => {
     return (
       <Stack hasGutter className="dasd-format-progress">
-        {Object.entries(progress).map(([path, [total, step, done]]) => {
-          const device = devices.find((d) => d.id === path.split("/").slice(-1)[0]);
+        {Object.entries(progress).map(([id, { total, step, done }]) => {
+          const device = devices.find((d) => d.id === id);
 
           return (
             <Progress
-              key={path}
+              key={id}
               size="sm"
               max={total}
               value={step}
-              title={`${device.channelId} - ${device.name}`}
+              title={`${device.id} - ${device.deviceName}`}
               measureLocation="none"
               variant={done ? "success" : undefined}
             />
