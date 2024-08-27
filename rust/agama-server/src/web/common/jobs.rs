@@ -105,7 +105,7 @@ impl JobsStream {
         let mut cache: ObjectsCache<Job> = Default::default();
         let client = JobsClient::new(dbus.clone(), destination, manager).await?;
         for (path, job) in client.jobs().await? {
-            cache.add(path.into(), job);
+            cache.add(path, job);
         }
 
         Ok(Self {
