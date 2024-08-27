@@ -40,7 +40,7 @@ module Y2Storage
         # ProductFeatures mechanism in place).
         Y2Storage::ProposalSettings.new_for_current_product.tap do |target|
           target.space_settings.strategy = :bigger_resize
-          target.space_settings.actions = []
+          target.space_settings.actions = {}
 
           boot_device = settings.boot_device
 
