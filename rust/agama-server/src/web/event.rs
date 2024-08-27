@@ -17,7 +17,7 @@ use tokio::sync::broadcast::{Receiver, Sender};
 use super::common::Issue;
 
 #[derive(Clone, Debug, Serialize)]
-#[serde(tag = "type")]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub enum Event {
     L10nConfigChanged(LocaleConfig),
     LocaleChanged {
