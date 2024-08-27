@@ -85,38 +85,6 @@ mod test {
     // One major idea, where the borrow checker wins over me, is this:
     // automate the `software_mock.assert();` by wrapping MockServer in MyMockServer,
     // which will remember all mocks that it hands out and will call assert on them at the end.
-
-    struct CountMockServer {
-        delegate: httpmock::MockServer,
-        num_mocks: u32,
-    }
-
-    impl CountMockServer {
-        pub fn start() -> Self {
-            Self {
-                delegate: MockServer::start(),
-                num_mocks: 0,
-            }
-        }
-
-        pub fn url<S: Into<String>>(&self, path: S) -> String {
-            self.delegate.url(path)
-        }
-
-        fn mock<F>(&mut self, config_fn: F)
-        where
-            F: FnOnce(httpmock::When, httpmock::Then),
-        {
-            let _mock = self.delegate.mock(config_fn);
-            self.num_mocks = self.num_mocks + 1;
-        }
-
-        // wanted this to be &self, but &mut self does not help either
-        fn assert(&self) {
-            assert!(self.num_mocks > 0);
-        }
-    }
-
     struct MyMockServer<'a> {
         delegate: &'a httpmock::MockServer,
         // Mock has a reference to its originating MockServer,
