@@ -52,9 +52,9 @@ module Agama
         #
         # @return [Hash]
         def settings
-          return {} unless backend.settings
+          return {} unless backend.guided?
 
-          ProposalSettingsConversion.to_dbus(backend.settings)
+          ProposalSettingsConversion.to_dbus(backend.guided_settings)
         end
 
         # List of sorted actions in D-Bus format.

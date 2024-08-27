@@ -48,13 +48,6 @@ module Agama
           raise NotImplementedError
         end
 
-        # Identifier for the strategy.
-        #
-        # @return [Symbol]
-        def id
-          self.class.name.split("::").last.downcase.to_sym
-        end
-
         # List of issues.
         #
         # @return [Array<Issue>]
