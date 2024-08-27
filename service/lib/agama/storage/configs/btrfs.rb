@@ -21,21 +21,32 @@
 
 module Agama
   module Storage
-    # Class for configuring the boot settings of the Agama storage proposal.
-    class BootSettings
-      # Whether to configure partitions for booting.
-      #
-      # @return [Boolean]
-      attr_accessor :configure
-      alias_method :configure?, :configure
+    module Configs
+      # Btrfs configuration.
+      class Btrfs
+        # Whether there are snapshots.
+        #
+        # @return [Boolean]
+        attr_accessor :snapshots
+        alias_method :snapshots?, :snapshots
 
-      # Device to use for booting.
-      #
-      # @return [String, nil] nil means use installation device.
-      attr_accessor :device
+        # @return [Boolean]
+        attr_accessor :read_only
+        alias_method :read_only?, :read_only
 
-      def initialize
-        @configure = true
+        # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list
+        #   may be applied depending on the mount path of the volume
+        attr_accessor :subvolumes
+
+        # @return [String]
+        attr_accessor :default_subvolume
+
+        # Constructor
+        def initialize
+          @snapshots = false
+          @read_only = false
+          @default_subvolume = ""
+        end
       end
     end
   end
