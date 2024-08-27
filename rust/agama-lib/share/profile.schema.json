@@ -340,9 +340,6 @@
                     "description": "The search is limited to drives scope.",
                     "$ref": "#/$defs/search"
                   },
-                  "encryption": {
-                    "$ref": "#/$defs/encryption"
-                  },
                   "ptableType": {
                     "title": "Partition table type",
                     "description": "The partition table is created only if all the current partitions are deleted.",
@@ -358,7 +355,7 @@
         },
         "guided": {
           "title": "Guided proposal settings",
-          "$comment": "Guided settings will be removed from this schema.",
+          "$comment": "This guided section will be extracted to a separate schema. Only storage and legacyAutoyastStorage will be offered as valid schemas for the storage config.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -646,7 +643,7 @@
           "$ref": "#/$defs/sizeValue"
         },
         {
-          "title": "Size range (tuple systax)",
+          "title": "Size range (tuple syntax)",
           "description": "Lower size limit and optionally upper size limit.",
           "type": "array",
           "items": {
