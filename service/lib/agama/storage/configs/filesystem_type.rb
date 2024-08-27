@@ -23,7 +23,7 @@ module Agama
   module Storage
     module Configs
       class FilesystemType
-        # @return [Y2Storage::Filesystems::Type]
+        # @return [Y2Storage::Filesystems::Type, nil]
         attr_accessor :fs_type
 
         # @return [Configs::Btrfs, nil]

@@ -20,9 +20,11 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/storage/config_conversions/from_json"
 require "agama/config"
+require "agama/storage/config_conversions/from_json"
 require "y2storage/encryption_method"
+require "y2storage/filesystems/mount_by_type"
+require "y2storage/filesystems/type"
 require "y2storage/pbkd_function"
 
 describe Agama::Storage::ConfigConversions::FromJSON do
@@ -462,6 +464,28 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         }
       end
 
+      let(:filesystem) do
+        {
+          path:         "/",
+          type:         "xfs",
+          label:        "root",
+          mkfsOptions:  ["version=2"],
+          mountOptions: ["rw"],
+          mountBy:      "label"
+        }
+      end
+
+      it "uses the specified attributes" do
+        config = subject.convert
+        filesystem = config.drives.first.filesystem
+        expect(filesystem.path).to eq "/"
+        expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::XFS
+        expect(filesystem.label).to eq "root"
+        expect(filesystem.mkfs_options).to eq ["version=2"]
+        expect(filesystem.mount_options).to eq ["rw"]
+        expect(filesystem.mount_by).to eq Y2Storage::Filesystems::MountByType::LABEL
+      end
+
       context "if the filesystem specification only contains a path" do
         let(:filesystem) { { path: "/" } }
 
@@ -489,6 +513,18 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           # TODO: none of the following attributes are specified at the schema. Intentional?
           # expect(filesystem.type.btrfs.default_subvolume).to eq ""
           # expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["tmp"]
+        end
+
+        context "and the default filesystem type is not btrfs" do
+          let(:filesystem) do
+            { path: "/home", type: { btrfs: { snapshots: false } } }
+          end
+
+          it "uses btrfs filesystem" do
+            config = subject.convert
+            filesystem = config.drives.first.filesystem
+            expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
+          end
         end
       end
     end

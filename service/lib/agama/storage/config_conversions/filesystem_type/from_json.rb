@@ -27,48 +27,45 @@ module Agama
   module Storage
     module ConfigConversions
       module FilesystemType
-        # Filesystem conversion from JSON hash according to schema.
+        # Filesystem type conversion from JSON hash according to schema.
         class FromJSON
-          # @param filesystem_json [Hash, String, nil]
-          def initialize(filesystem_json)
-            @filesystem_json = filesystem_json
+          # @param filesystem_type_json [Hash, String]
+          def initialize(filesystem_type_json)
+            @filesystem_type_json = filesystem_type_json
           end
 
           # Performs the conversion from Hash according to the JSON schema.
           #
-          # @param default [Configs::Filesystem, nil]
-          # @return [Configs::Filesystem]
+          # @param default [Configs::FilesystemType, nil]
+          # @return [Configs::FilesystemType]
           def convert(default = nil)
             default_config = default.dup || Configs::FilesystemType.new
 
             default_config.tap do |config|
               btrfs = convert_btrfs(config.btrfs)
-              type = convert_type
 
-              config.fs_type = type if type
+              config.fs_type = convert_type
               config.btrfs = btrfs if btrfs
             end
           end
 
         private
 
-          # @return [Hash]
-          attr_reader :filesystem_json
+          # @return [Hash, String]
+          attr_reader :filesystem_type_json
 
           # @return [Y2Storage::Filesystems::Type]
           def convert_type
-            return if filesystem_json.nil?
-
-            value = filesystem_json.is_a?(String) ? filesystem_json : "btrfs"
+            value = filesystem_type_json.is_a?(String) ? filesystem_type_json : "btrfs"
             Y2Storage::Filesystems::Type.find(value.to_sym)
           end
 
-          # @param default [Configs::Btrfs]
+          # @param default [Configs::Btrfs, nil]
           # @return [Configs::Btrfs, nil]
           def convert_btrfs(default = nil)
-            return if filesystem_json.nil? || filesystem_json.is_a?(String)
+            return if filesystem_type_json.nil? || filesystem_type_json.is_a?(String)
 
-            btrfs_json = filesystem_json[:btrfs]
+            btrfs_json = filesystem_type_json[:btrfs]
             default_config = default.dup || Configs::Btrfs.new
 
             default_config.tap do |config|
