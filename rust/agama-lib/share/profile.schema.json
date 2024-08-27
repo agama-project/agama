@@ -864,6 +864,10 @@
           "type": "string",
           "examples": ["/dev/vda"]
         },
+        "mountBy": {
+          "title": "How to mount the device",
+          "enum": ["device", "id", "label", "path", "uuid"]
+        },
         "mkfsOptions": {
           "title": "mkfs options",
           "description": "Options for creating the file system.",
