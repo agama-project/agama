@@ -16,6 +16,7 @@ use agama_lib::{
     error::ServiceError,
     product::{proxies::RegistrationProxy, Product, ProductClient, RegistrationRequirement},
     software::{
+        model::SoftwareConfig,
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
     },
@@ -35,15 +36,6 @@ use tokio_stream::{Stream, StreamExt};
 struct SoftwareState<'a> {
     product: ProductClient<'a>,
     software: SoftwareClient<'a>,
-}
-
-/// Software service configuration (product, patterns, etc.).
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct SoftwareConfig {
-    /// A map where the keys are the pattern names and the values whether to install them or not.
-    patterns: Option<HashMap<String, bool>>,
-    /// Name of the product to install.
-    product: Option<String>,
 }
 
 /// Returns an stream that emits software related events coming from D-Bus.

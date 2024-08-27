@@ -182,6 +182,9 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
 $SUDO mkdir -p /usr/share/agama/products.d
 $SUDO cp -f $MYDIR/products.d/*.yaml /usr/share/agama/products.d
 
+# - Make sure NetworkManager is running
+$SUDO systemctl start NetworkManager
+
 # systemd reload and start of service
 (
   $SUDO systemctl daemon-reload
@@ -190,6 +193,3 @@ $SUDO cp -f $MYDIR/products.d/*.yaml /usr/share/agama/products.d
   # Start the web server
   $SUDO systemctl start agama-web-server.service
 )
-
-# - Make sure NetworkManager is running
-$SUDO systemctl start NetworkManager
