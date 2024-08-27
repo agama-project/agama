@@ -91,7 +91,7 @@ fn edit(model: &InstallSettings, editor: &str) -> anyhow::Result<InstallSettings
     let path = PathBuf::from(file.path());
     write!(file, "{}", content)?;
 
-    let mut command = editor_command(&editor);
+    let mut command = editor_command(editor);
     let status = command.arg(path.as_os_str()).status()?;
     if status.success() {
         return Ok(InstallSettings::from_file(path)?);

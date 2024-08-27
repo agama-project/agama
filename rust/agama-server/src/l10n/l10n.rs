@@ -69,7 +69,7 @@ fn run_with_timeout(cmd: &[&str], timeout: u64) -> Result<Option<String>, PopenE
         }
     }
 
-    return Ok(out);
+    Ok(out)
 }
 
 // the default X display to use if not configured or when X forwarding is used
@@ -84,7 +84,7 @@ fn display() -> String {
     match display {
         Ok(display) => {
             // use the $DISPLAY value only when it is a local X server
-            if display.starts_with(":") {
+            if display.starts_with(':') {
                 display
             } else {
                 // when using SSH X forwarding (e.g. "localhost:10.0") we could

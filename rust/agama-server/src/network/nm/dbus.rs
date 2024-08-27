@@ -366,7 +366,7 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
     ipv6_dbus
 }
 
-fn wireless_config_to_dbus<'a>(config: &'a WirelessConfig) -> NestedHash<'a> {
+fn wireless_config_to_dbus(config: &'_ WirelessConfig) -> NestedHash<'_> {
     let mut wireless: HashMap<&str, zvariant::Value> = HashMap::from([
         ("mode", Value::new(config.mode.to_string())),
         ("ssid", Value::new(config.ssid.to_vec())),
