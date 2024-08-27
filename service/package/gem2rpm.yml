@@ -26,6 +26,7 @@
     Provides:       agama-yast
     BuildRequires:  dbus-1-common
     Requires:       dbus-1-common
+    Requires:       dbus-1-daemon
     Requires:       suseconnect-ruby-bindings
     # YaST dependencies
     Requires:       autoyast2-installation
