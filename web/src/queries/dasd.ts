@@ -182,13 +182,30 @@ const useDASDDevicesChanges = () => {
     if (!client) return;
 
     return client.ws().onEvent((event) => {
-      // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
-      if (
-        event.type === "DASDDeviceAdded" ||
-        event.type === "DASDDeviceRemoved" ||
-        event.type === "DASDDeviceChanged"
-      ) {
-        queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
+      if (event.type === "DASDDeviceAdded") {
+        const device : DASDDevice = event.device;
+        queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+          // do not use push here as updater has to be immutable
+          const res = prev.concat([device]);
+          return res;
+      });
+      } else if (event.type === "DASDDeviceRemoved") {
+        const device : DASDDevice = event.device;
+        const { id } = device;
+        queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+          const res = prev.filter(dev => dev.id !== id);
+          return res;
+      });
+      } else if (event.type === "DASDDeviceChanged") {
+        const device : DASDDevice = event.device;
+        const { id } = device;
+        queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+          // deep copy of original to have it immutable
+          const res = [...prev];
+          const index = res.findIndex(dev => dev.id === id);
+          res[index] = device;
+          return res;
+      });
       }
     });
   });
