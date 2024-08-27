@@ -153,11 +153,23 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // we need to distinguish commands on those which assume that JWT is already available
     // and those which not (or don't need it)
+    let mut client = if matches!(cli.command, Commands::Auth(_)) {
+        BaseHTTPClient::default()
+    }
+    else {
+        // this deals with authentication need inside
+        BaseHTTPClient::new()?
+    };
+
+    client.base_url = cli
+        .opts
+        .api
+        .strip_suffix("/")
+        .unwrap_or(client.base_url.as_str())
+        .to_string();
+
     match cli.command {
         Commands::Config(subcommand) => {
-            // this deals with authentication need inside
-            let client = BaseHTTPClient::new()?;
-
             run_config_cmd(client, subcommand).await?
         }
         Commands::Probe => {
@@ -176,15 +188,6 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await?,
         Commands::Download { url } => Transfer::get(&url, std::io::stdout())?,
         Commands::Auth(subcommand) => {
-            let mut client = BaseHTTPClient::default();
-
-            client.base_url = cli
-                .opts
-                .api
-                .strip_suffix("/")
-                .unwrap_or(client.base_url.as_str())
-                .to_string();
-
             run_auth_cmd(client, subcommand).await?;
         }
     };
