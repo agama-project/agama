@@ -20,6 +20,12 @@ pub struct DASDDevice {
     pub access_type: String,
     pub partition_info: String,
 }
+#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
+pub struct DASDFormatSummary {
+    pub total: u32,
+    pub step: u32,
+    pub done: bool,
+}
 
 impl TryFrom<&HashMap<String, OwnedValue>> for DASDDevice {
     type Error = ServiceError;

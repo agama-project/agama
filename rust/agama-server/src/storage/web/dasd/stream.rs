@@ -6,7 +6,10 @@ use agama_lib::{
     dbus::get_optional_property,
     error::ServiceError,
     property_from_dbus,
-    storage::{client::dasd::DASDClient, model::dasd::DASDDevice},
+    storage::{
+        client::dasd::DASDClient,
+        model::dasd::{DASDDevice, DASDFormatSummary},
+    },
 };
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
@@ -210,18 +213,27 @@ impl DASDFormatJobStream {
         // the key is the D-Bus path of the DASD device and the value is the progress
         // of the related formatting process
         let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict.clone()).ok()?;
+        let mut format_summary = HashMap::new();
 
-        let summary = map.values().next()?;
-        let summary = summary.downcast_ref::<zvariant::Structure>()?;
-        let fields = summary.fields();
-        let total: &u32 = fields.get(0)?.downcast_ref()?;
-        let step: &u32 = fields.get(1)?.downcast_ref()?;
-        let done: &bool = fields.get(2)?.downcast_ref()?;
+        for (dasd_id, summary) in map {
+            let summary_values = summary.downcast_ref::<zvariant::Structure>()?;
+            let fields = summary_values.fields();
+            let total: &u32 = fields.get(0)?.downcast_ref()?;
+            let step: &u32 = fields.get(1)?.downcast_ref()?;
+            let done: &bool = fields.get(2)?.downcast_ref()?;
+            format_summary.insert(
+                dasd_id.to_string(),
+                DASDFormatSummary {
+                    total: *total,
+                    step: *step,
+                    done: *done,
+                },
+            );
+        }
+
         Some(Event::DASDFormatJobChanged {
             job_id: path.to_string(),
-            total: total.clone(),
-            step: step.clone(),
-            done: done.clone(),
+            summary: format_summary,
         })
     }
 }
