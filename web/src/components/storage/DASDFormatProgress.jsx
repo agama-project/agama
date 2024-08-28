@@ -61,7 +61,7 @@ export default function DASDFormatProgress({ job, devices, isOpen = true }) {
 
   return (
     <Popup title={_("Formatting DASD devices")} isOpen={isOpen} disableFocusTrap>
-      {progress ? <ProgressContent progress={progress} /> : <WaitingProgress />}
+      {Object.keys(progress).length !== 0 ? <ProgressContent progress={progress} /> : <WaitingProgress />}
     </Popup>
   );
 }
