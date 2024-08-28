@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug 28 12:37:34 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose the DASD D-Bus API through HTTP (gh#openSUSE/agama#1532).
+
+-------------------------------------------------------------------
 Tue Aug 27 13:57:35 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Schema definition for basic storage settings
