@@ -21,17 +21,20 @@
 
 require "agama/issue"
 require "agama/storage/actions_generator"
+require "agama/storage/config_conversions/from_json"
+require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
+require "json"
 require "yast"
 require "y2storage"
 
 module Agama
   module Storage
-    # Backend class to calculate a storage proposal.
+    # Class used for calculating a storage proposal.
     class Proposal
       include Yast::I18n
 
-      # @param config [Config] Agama config
+      # @param config [Agama::Config] Agama config
       # @param logger [Logger]
       def initialize(config, logger: nil)
         textdomain "agama"
@@ -73,34 +76,90 @@ module Agama
         disk_analyzer&.candidate_disks || []
       end
 
-      # Settings used to calculate the current proposal.
+      # Storage config from the current proposal, if any.
       #
-      # The type depends on the kind of proposal, see {#calculate_guided} and {#calculate_autoyast}.
-      #
-      # @return [Agama::Storage::ProposalSettings, Array<Hash>]
-      def settings
-        return unless calculated?
+      # @return [Hash] Storage config according to JSON schema.
+      def config_json
+        return {} unless calculated?
 
-        strategy_object.settings
+        case strategy_object
+        when ProposalStrategies::Guided
+          {
+            storage: {
+              guided: strategy_object.settings.to_json_settings
+            }
+          }
+        when ProposalStrategies::Agama
+          # @todo Convert config to JSON if there is no raw config.
+          raw_config || {}
+        when ProposalStrategies::Autoyast
+          raw_config
+        else
+          {}
+        end
       end
 
-      # Calculates a new guided proposal.
+      # Calculates a new proposal using the guided strategy.
       #
-      # @param settings [Agama::Storage::ProposalSettings] settings to calculate the proposal.
-      # @return [Boolean] whether the proposal was correctly calculated.
+      # @param settings [Agama::Storage::ProposalSettings]
+      # @return [Boolean] Whether the proposal successes.
       def calculate_guided(settings)
+        logger.info("Calculating proposal with guided strategy: #{settings.inspect}")
+        @raw_config = nil
         @strategy_object = ProposalStrategies::Guided.new(config, logger, settings)
         calculate
       end
 
-      # Calculates a new legacy AutoYaST proposal.
+      # Calculates a new proposal using the agama strategy.
+      #
+      # @param storage_config [Agama::Storage::Config]
+      # @return [Boolean] Whether the proposal successes.
+      def calculate_agama(storage_config)
+        logger.info("Calculating proposal with agama strategy: #{storage_config.inspect}")
+        @raw_config = nil
+        @strategy_object = ProposalStrategies::Agama.new(config, logger, storage_config)
+        calculate
+      end
+
+      # Calculates a new proposal using the autoyast strategy.
       #
       # @param partitioning [Array<Hash>] Hash-based representation of the <partitioning> section
-      #   of the AutoYaST profile
-      # @return [Boolean] whether the proposal was correctly calculated.
+      #   of the AutoYaST profile.
+      # @return [Boolean] Whether the proposal successes.
       def calculate_autoyast(partitioning)
+        logger.info("Calculating proposal with autoyast strategy: #{partitioning}")
+        @raw_config = nil
+        # Ensures keys are strings.
+        partitioning = JSON.parse(partitioning.to_json)
         @strategy_object = ProposalStrategies::Autoyast.new(config, logger, partitioning)
         calculate
+      end
+
+      # Calculates a new proposal using the given JSON config.
+      #
+      # @raise If the config is not valid.
+      #
+      # @param config_json [Hash] Storage config according to the JSON schema.
+      # @return [Boolean] Whether the proposal successes.
+      def calculate_from_json(config_json)
+        # @todo Validate config_json with JSON schema.
+
+        guided_json = config_json.dig(:storage, :guided)
+        storage_json = config_json[:storage]
+        autoyast_json = config_json[:legacyAutoyastStorage]
+
+        if guided_json
+          calculate_guided_from_json(guided_json)
+        elsif storage_json
+          calculate_agama_from_json(storage_json)
+        elsif autoyast_json
+          calculate_autoyast(autoyast_json)
+        else
+          raise "Invalid storage config: #{config_json}"
+        end
+
+        @raw_config = config_json
+        success?
       end
 
       # Storage actions.
@@ -115,29 +174,61 @@ module Agama
         ActionsGenerator.new(probed, target).generate
       end
 
-      # Whether the current proposal was calculated the given strategy (:autoyast or :guided).
+      # Whether the guided strategy was used for calculating the current proposal.
       #
-      # @param id [#downcase]
       # @return [Boolean]
-      def strategy?(id)
+      def guided?
         return false unless calculated?
 
-        id.downcase.to_sym == strategy_object.id
+        strategy_object.is_a?(ProposalStrategies::Guided)
+      end
+
+      # Settings used for calculating the guided proposal, if any.
+      #
+      # @return [ProposalSettings, nil]
+      def guided_settings
+        return unless guided?
+
+        strategy_object.settings
       end
 
     private
 
-      # @return [Config]
+      # @return [Agama::Config]
       attr_reader :config
 
       # @return [Logger]
       attr_reader :logger
 
+      # @return [ProposalStrategies::Base]
       attr_reader :strategy_object
 
-      # Calculates a new proposal.
+      # @return [Hash] JSON config without processing.
+      attr_reader :raw_config
+
+      # Calculates a proposal from guided JSON settings.
       #
-      # @return [Boolean] whether the proposal was correctly calculated.
+      # @param guided_json [Hash] e.g., { "target": { "disk": "/dev/vda" } }.
+      # @return [Boolean] Whether the proposal successes.
+      def calculate_guided_from_json(guided_json)
+        settings = ProposalSettings.new_from_json(guided_json, config: config)
+        calculate_guided(settings)
+      end
+
+      # Calculates a proposal from storage JSON settings.
+      #
+      # @param storage_json [Hash] e.g., { "drives": [] }.
+      # @return [Boolean] Whether the proposal successes.
+      def calculate_agama_from_json(storage_json)
+        storage_config = ConfigConversions::FromJSON
+          .new(storage_json, product_config: config)
+          .convert
+        calculate_agama(storage_config)
+      end
+
+      # Calculates a new proposal with the assigned strategy.
+      #
+      # @return [Boolean] Whether the proposal successes.
       def calculate
         return false unless storage_manager.probed?
 

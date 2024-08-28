@@ -1,0 +1,8 @@
+{
+  "legacyAutoyastStorage": [
+    {
+      "device": "/dev/vdc",
+      "use": "all"
+    }
+  ]
+}

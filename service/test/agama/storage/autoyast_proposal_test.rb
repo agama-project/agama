@@ -468,6 +468,31 @@ describe Agama::Storage::Proposal do
       end
     end
 
+    describe "using encryption for some partitions" do
+      let(:root) do
+        ROOT_PART.merge("create" => true, "crypt_method" => :luks1, "crypt_key" => "12345")
+      end
+
+      let(:partitioning) do
+        [{ "device" => "/dev/sda", "use" => "all", "partitions" => [root] }]
+      end
+
+      it "returns true and stores a successful proposal" do
+        expect(subject.calculate_autoyast(partitioning)).to eq true
+        expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq false
+      end
+
+      it "creates the expected layout" do
+        subject.calculate_autoyast(partitioning)
+        partitions = staging.find_by_name("/dev/sda").partitions.sort_by(&:number)
+        expect(partitions.size).to eq(2)
+        expect(partitions[0].id.is?(:esp)).to eq(true)
+        expect(partitions[1].filesystem.root?).to eq(true)
+        expect(partitions[1].encryption.type).to eq(Y2Storage::EncryptionType::LUKS1)
+        expect(partitions[1].encryption.password).to eq("12345")
+      end
+    end
+
     describe "automatic partitioning" do
       let(:partitioning) do
         [

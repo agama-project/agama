@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,31 +19,13 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/encryption/from_json"
+
 module Agama
   module Storage
-    # Settings regarding Btrfs for a given Volume
-    class BtrfsSettings
-      # Whether the volume contains Btrfs snapshots
-      #
-      # @return [Boolean]
-      attr_accessor :snapshots
-      alias_method :snapshots?, :snapshots
-
-      # @return [Boolean]
-      attr_accessor :read_only
-      alias_method :read_only?, :read_only
-
-      # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list may
-      #   be applied depending on the mount path of the volume
-      attr_accessor :subvolumes
-
-      # @return [String]
-      attr_accessor :default_subvolume
-
-      def initialize
-        @snapshots = false
-        @read_only = false
-        @default_subvolume = ""
+    module ConfigConversions
+      # Conversions for encryption.
+      module Encryption
       end
     end
   end

@@ -129,7 +129,7 @@ async fn format(
     path="/enable",
     context_path="/api/storage/dasd",
     responses(
-        (status = OK, description = "The formatting process started.")
+        (status = OK, description = "The DASD devices are enabled.")
     )
 )]
 async fn enable(
@@ -146,7 +146,7 @@ async fn enable(
     path="/disable",
     context_path="/api/storage/dasd",
     responses(
-        (status = OK, description = "The formatting process started.")
+        (status = OK, description = "The DASD devices are disabled.")
     )
 )]
 async fn disable(
@@ -163,7 +163,7 @@ async fn disable(
      path="/diag",
      context_path="/api/storage/dasd",
      responses(
-         (status = OK, description = "The formatting process started.")
+         (status = OK, description = "The DIAG properties are set.")
      )
  )]
 async fn set_diag(

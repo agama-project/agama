@@ -19,7 +19,7 @@ pub struct Store<'a> {
     users: UsersStore,
     network: NetworkStore,
     product: ProductStore<'a>,
-    software: SoftwareStore<'a>,
+    software: SoftwareStore,
     storage: StorageStore<'a>,
     localization: LocalizationStore,
 }
@@ -34,7 +34,7 @@ impl<'a> Store<'a> {
             users: UsersStore::new()?,
             network: NetworkStore::new(http_client).await?,
             product: ProductStore::new(connection.clone()).await?,
-            software: SoftwareStore::new(connection.clone()).await?,
+            software: SoftwareStore::new()?,
             storage: StorageStore::new(connection).await?,
         })
     }

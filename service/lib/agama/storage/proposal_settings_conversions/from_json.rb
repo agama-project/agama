@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/boot_settings"
+require "agama/storage/configs/boot"
 require "agama/storage/device_settings"
 require "agama/storage/encryption_settings"
 require "agama/storage/proposal_settings_reader"
@@ -87,7 +87,7 @@ module Agama
           boot_json = settings_json[:boot]
           return unless boot_json
 
-          Agama::Storage::BootSettings.new.tap do |boot_settings|
+          Agama::Storage::Configs::Boot.new.tap do |boot_settings|
             boot_settings.configure = boot_json[:configure]
             boot_settings.device = boot_json[:device]
           end
