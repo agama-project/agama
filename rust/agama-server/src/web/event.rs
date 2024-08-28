@@ -17,7 +17,7 @@ use tokio::sync::broadcast::{Receiver, Sender};
 use super::common::Issue;
 
 #[derive(Clone, Debug, Serialize)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(tag = "type")]
 pub enum Event {
     L10nConfigChanged(LocaleConfig),
     LocaleChanged {
@@ -102,6 +102,7 @@ pub enum Event {
         job: Job,
     },
     DASDFormatJobChanged {
+        #[serde(rename = "JobId")]
         job_id: String,
         summary: HashMap<String, DASDFormatSummary>,
     },
