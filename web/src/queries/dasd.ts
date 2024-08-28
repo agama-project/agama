@@ -30,7 +30,7 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { hex } from "~/utils";
-import { DASDDevice, FormatJob } from "~/types/dasd";
+import { DASDDevice, FilterDASD, FormatJob } from "~/types/dasd";
 import { fetchStorageJobs, findStorageJob } from "~/api/storage";
 
 /**
@@ -161,18 +161,13 @@ const filterDASDQuery = () => ({
   staleTime: Infinity,
 });
 
-const useFilterDASD = (): { minChannel?: string, maxChannel?: string } => {
+const useFilterDASD = (): FilterDASD => {
   const { data } = useQuery(filterDASDQuery());
 
   return data || { minChannel: "", maxChannel: "" };
 }
 
 const useFilterDASDChange = () => {
-  type FilterDASD = {
-    maxChannel?: string;
-    minChannel?: string;
-  };
-
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

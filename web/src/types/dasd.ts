@@ -43,4 +43,9 @@ type FormatJob = {
   summary?: { [key: string]: FormatSummary }
 }
 
-export type { DASDDevice, FormatJob };
+type FilterDASD = {
+  maxChannel?: string;
+  minChannel?: string;
+};
+
+export type { DASDDevice, FormatJob, FilterDASD };
