@@ -102,7 +102,7 @@ pub enum Event {
         job: Job,
     },
     DASDFormatJobChanged {
-        #[serde(rename = "JobId")]
+        #[serde(rename = "jobId")]
         job_id: String,
         summary: HashMap<String, DASDFormatSummary>,
     },
