@@ -103,6 +103,17 @@ const useDASDFormatJobChanges = () => {
 
         queryClient.setQueryData(["dasd", "formatJobs", "running"], data);
       }
+      if (
+        event.type === "JobChanged"
+      ) {
+        const { id, running } = event.job;
+        if (running) return;
+        let data = queryClient.getQueryData(["dasd", "formatJobs", "running"]) as FormatJob[];
+        const nextData = data.filter((j) => j.jobId !== id);
+        if (data.length !== nextData.length) {
+          queryClient.setQueryData(["dasd", "formatJobs", "running"], nextData);
+        }
+      }
     });
   });
 
