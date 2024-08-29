@@ -57,7 +57,7 @@ const DASDEnable = (devicesIDs: string[]) => post("/api/storage/dasd/enable", { 
 const DASDDisable = (devicesIDs: string[]) => post("/api/storage/dasd/disable", { devices: devicesIDs });
 
 /**
- * Enables giag on given list of devices
+ * Enables diag on given list of devices
  * @param devicesIDs array of device ids
  */
 const diagEnable = (devicesIDs: string[]) => put("/api/storage/dasd/diag", { devices: devicesIDs, diag: true });
