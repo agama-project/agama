@@ -51,41 +51,27 @@ const useDASDDevices = () => {
 };
 
 /**
- * Returns a query for retrieving DASD format jobs
+ * Returns a query for retrieving the running dasd format jobs
  */
-const DASDFormatJobsQuery = () => ({
-  queryKey: ["dasd", "formatJobs"],
-  queryFn: () => fetchStorageJobs(),
-});
-
-/**
- * Hook that returns DASD format jobs.
- */
-const useDASDFormatJobs = () => {
-  const { data: jobs } = useSuspenseQuery(DASDFormatJobsQuery());
-  return jobs;
-};
-
-/**
- * Returns a query for retrieving the dasd format job
- */
-const DASDFormatJobQuery = (id: string) => ({
-  queryKey: ["dasd", "formatJob", id],
-  queryFn: () => findStorageJob(id).then((sj) => ({jobId: sj.id})),
+const DASDRunningFormatJobsQuery = () => ({
+  queryKey: ["dasd", "formatJobs", "running"],
+  queryFn: () => fetchStorageJobs().then((jobs) => jobs.filter((j) => j.running).map(({ id }) => ({ jobId: id }))),
+  staleTime: 200
 });
 
 /**
  * Hook that returns and specific DASD format job.
  */
-const useDASDFormatJob = (id: string) : FormatJob => {
-  const { data: job } = useSuspenseQuery(DASDFormatJobQuery(id));
-  return job;
+const useDASDRunningFormatJobs = (): FormatJob[] => {
+  const { data: jobs } = useSuspenseQuery(DASDRunningFormatJobsQuery());
+
+  return jobs;
 };
 
 /**
  * Listens for DASD format job changes.
  */
-const useDASDFormatJobChanges = (id: string) : FormatJob => {
+const useDASDFormatJobChanges = () => {
   const client = useInstallerClient();
   const queryClient = useQueryClient();
 
@@ -95,19 +81,36 @@ const useDASDFormatJobChanges = (id: string) : FormatJob => {
     return client.ws().onEvent((event) => {
       // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
       if (
-        event.type === "DASDFormatJobChanged" && event.jobId === id
+        event.type === "DASDFormatJobChanged"
       ) {
-        const data = queryClient.getQueryData(["dasd", "formatJob", id]) as FormatJob;
-        const merged_summary = { ...data.summary, ...event.summary };
-        const job = { ...data, summary: merged_summary };
-        queryClient.setQueryData(["dasd", "formatJob", id], job);
+        const data = queryClient.getQueryData(["dasd", "formatJobs", "running"]) as FormatJob[];
+        const nextData = data.map((job) => {
+          if (job.jobId !== event.jobId) return job;
+
+          return {
+            ...job,
+            summary: { ...job?.summary, ...event.summary }
+          }
+        });
+        queryClient.setQueryData(["dasd", "formatJobs", "running"], nextData);
       }
     });
   });
-  const { data: formatJob } = useSuspenseQuery(DASDFormatJobQuery(id));
-  return formatJob;
+
+  const { data: jobs } = useSuspenseQuery(DASDRunningFormatJobsQuery());
+  return jobs;
 };
 
+const useFormatDASDMutation = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (data: FormatJob): Promise<FormatJob> => Promise.resolve(data),
+    onSuccess: (data: FormatJob) => queryClient.setQueryData(["dasd", "formatJob", data.jobId], data)
+  });
+
+  return mutation;
+};
 /**
  * Returns seleced DASD ids
  */
@@ -222,56 +225,12 @@ const useDASDDevicesChanges = () => {
       }
     });
   });
+
   const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
   return devices;
 };
 
-const useDASDEnableMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: enableDASD,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-    },
-  };
-  return useMutation(query);
-};
-
-const useDASDDisableMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: disableDASD,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-    },
-  };
-  return useMutation(query);
-};
-
-const useDiagEnableMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: enableDiag,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-    },
-  };
-  return useMutation(query);
-};
-
-const useDiagDisableMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: disableDiag,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
-    },
-  };
-  return useMutation(query);
-};
-
 export {
-  useDASDDevices, useDASDDevicesChanges, useDASDEnableMutation, useDASDDisableMutation, useDiagDisableMutation,
-  useDiagEnableMutation, useFilterDASDChange, filterDASDQuery, useFilterDASD, useSelectedDASD, useSelectedDASDChange, selectedDASDQuery,
-  useDASDFormatJobChanges, useDASDFormatJob, useDASDFormatJobs
+  useDASDDevices, useDASDDevicesChanges, useFilterDASDChange, filterDASDQuery, useFilterDASD, useSelectedDASD, useSelectedDASDChange, selectedDASDQuery,
+  useDASDFormatJobChanges, useDASDRunningFormatJobs, useFormatDASDMutation
 };

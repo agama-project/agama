@@ -24,15 +24,11 @@ import DASDTable from "~/components/storage/DASDTable";
 import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
-import { useDASDDevices, useDASDDevicesChanges, useDASDFormatJobs } from "~/queries/dasd";
-import { DASDDevice } from "~/types/dasd";
+import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/dasd";
 
 export default function DASDPage() {
   useDASDDevicesChanges();
-  const jobs = useDASDFormatJobs().filter((j) => j.running);
-  const job = jobs[0];
-
-  const devices: DASDDevice[] = useDASDDevices();
+  useDASDFormatJobChanges();
 
   return (
     <Page>
@@ -42,9 +38,7 @@ export default function DASDPage() {
 
       <Page.MainContent>
         <DASDTable />
-        {job && (
-          <DASDFormatProgress job={job} devices={devices} />
-        )}
+        <DASDFormatProgress />
       </Page.MainContent>
     </Page>
   );

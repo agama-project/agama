@@ -218,7 +218,7 @@ export default function DASDTable() {
       <Table variant="compact">
         <Thead>
           <Tr>
-            <Th
+            <Th aria-label="dasd-select"
               select={{
                 onSelect: (_event, isSelecting) => selectAll(isSelecting),
                 isSelected: filteredDevices.length === selectedDevices.length,
@@ -234,7 +234,7 @@ export default function DASDTable() {
         <Tbody>
           {sortedDevices.map((device, rowIndex) => (
             <Tr key={device.id}>
-              <Td
+              <Td dataLabel={device.id}
                 select={{
                   rowIndex,
                   onSelect: (_event, isSelecting) => selectDevice(device, isSelecting),
