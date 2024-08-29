@@ -22,6 +22,7 @@
 // TODO: for an overview see crate::store (?)
 
 use super::{LocalizationHTTPClient, LocalizationSettings};
+use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 use crate::localization::model::LocaleConfig;
 
@@ -31,9 +32,9 @@ pub struct LocalizationStore {
 }
 
 impl LocalizationStore {
-    pub fn new() -> Result<LocalizationStore, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<LocalizationStore, ServiceError> {
         Ok(Self {
-            localization_client: LocalizationHTTPClient::new()?,
+            localization_client: LocalizationHTTPClient::new_with_base(client)?,
         })
     }
 
