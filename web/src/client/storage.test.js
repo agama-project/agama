@@ -20,7 +20,7 @@
  */
 
 // @ts-check
-// cspell:ignore ECKD dasda ddgdcbibhd wwpns
+// cspell:ignore ddgdcbibhd wwpns
 
 import { HTTPClient } from "./http";
 import DBusClient from "./dbus";
@@ -274,31 +274,6 @@ const multipath = {
 };
 
 /** @type {StorageDevice}  */
-const dasd = {
-  sid: 69,
-  isDrive: true,
-  type: "dasd",
-  vendor: "IBM",
-  model: "IBM",
-  driver: [],
-  bus: "",
-  busId: "0.0.0150",
-  transport: "",
-  dellBOSS: false,
-  sdCard: false,
-  active: true,
-  name: "/dev/dasda",
-  description: "",
-  size: 2048,
-  start: 0,
-  encrypted: false,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: [],
-  udevPaths: [],
-};
-
-/** @type {StorageDevice}  */
 const sdf = {
   sid: 70,
   isDrive: true,
@@ -469,7 +444,6 @@ const systemDevices = {
   md0,
   raid,
   multipath,
-  dasd,
   sdf,
   sdf1,
   lvmVg,
@@ -600,35 +574,6 @@ const contexts = {
       startup: "onboot",
     },
   ],
-  withoutDASDDevices: () => {
-    cockpitProxies.dasdDevices = {};
-  },
-  withDASDDevices: () => {
-    cockpitProxies.dasdDevices = {
-      "/org/opensuse/Agama/Storage1/dasds/8": {
-        path: "/org/opensuse/Agama/Storage1/dasds/8",
-        AccessType: "",
-        DeviceName: "dasd_sample_8",
-        Diag: false,
-        Enabled: true,
-        Formatted: false,
-        Id: "0.0.019e",
-        PartitionInfo: "",
-        Type: "ECKD",
-      },
-      "/org/opensuse/Agama/Storage1/dasds/9": {
-        path: "/org/opensuse/Agama/Storage1/dasds/9",
-        AccessType: "rw",
-        DeviceName: "dasd_sample_9",
-        Diag: false,
-        Enabled: true,
-        Formatted: false,
-        Id: "0.0.ffff",
-        PartitionInfo: "/dev/dasd_sample_9",
-        Type: "FBA",
-      },
-    };
-  },
   withoutZFCPControllers: () => {
     cockpitProxies.zfcpControllers = {};
   },
@@ -986,11 +931,6 @@ const contexts = {
       },
     },
     {
-      deviceInfo: {
-        sid: 69,
-        name: "/dev/dasda",
-        description: "",
-      },
       blockDevice: {
         active: true,
         encrypted: false,
@@ -1000,19 +940,6 @@ const contexts = {
         systems: [],
         udevIds: [],
         udevPaths: [],
-      },
-      drive: {
-        type: "dasd",
-        vendor: "IBM",
-        model: "IBM",
-        driver: [],
-        bus: "",
-        busId: "0.0.0150",
-        transport: "",
-        info: {
-          dellBOSS: false,
-          sdCard: false,
-        },
       },
     },
     {
@@ -1147,8 +1074,6 @@ const mockProxy = (iface, path) => {
       return cockpitProxies.iscsiInitiator;
     case "org.opensuse.Agama.Storage1.ISCSI.Node":
       return cockpitProxies.iscsiNode[path];
-    case "org.opensuse.Agama.Storage1.DASD.Manager":
-      return cockpitProxies.dasdManager;
     case "org.opensuse.Agama.Storage1.ZFCP.Manager":
       return cockpitProxies.zfcpManager;
     case "org.opensuse.Agama.Storage1.ZFCP.Controller":
@@ -1160,8 +1085,6 @@ const mockProxies = (iface) => {
   switch (iface) {
     case "org.opensuse.Agama.Storage1.ISCSI.Node":
       return cockpitProxies.iscsiNodes;
-    case "org.opensuse.Agama.Storage1.DASD.Device":
-      return cockpitProxies.dasdDevices;
     case "org.opensuse.Agama.Storage1.ZFCP.Controller":
       return cockpitProxies.zfcpControllers;
     case "org.opensuse.Agama.Storage1.ZFCP.Disk":
@@ -1192,8 +1115,6 @@ const reset = () => {
   cockpitProxies.iscsiInitiator = {};
   cockpitProxies.iscsiNodes = {};
   cockpitProxies.iscsiNode = {};
-  cockpitProxies.dasdManager = {};
-  cockpitProxies.dasdDevices = {};
   cockpitProxies.zfcpManager = {};
   cockpitProxies.zfcpControllers = {};
   cockpitProxies.zfcpDisks = {};
@@ -1893,110 +1814,6 @@ describe("#proposal", () => {
 
       const result = await client.proposal.calculate({});
       expect(result).toEqual(true);
-    });
-  });
-});
-
-describe.skip("#dasd", () => {
-  const sampleDasdDevice = {
-    id: "8",
-    accessType: "",
-    channelId: "0.0.019e",
-    diag: false,
-    enabled: true,
-    formatted: false,
-    hexId: 414,
-    name: "sample_dasd_device",
-    partitionInfo: "",
-    type: "ECKD",
-  };
-
-  const probeFn = jest.fn();
-  const setDiagFn = jest.fn();
-  const enableFn = jest.fn();
-  const disableFn = jest.fn();
-
-  beforeEach(() => {
-    client = new StorageClient();
-    cockpitProxies.dasdManager = {
-      Probe: probeFn,
-      SetDiag: setDiagFn,
-      Enable: enableFn,
-      Disable: disableFn,
-    };
-    contexts.withDASDDevices();
-  });
-
-  describe("#getDevices", () => {
-    it("triggers probing", async () => {
-      await client.dasd.getDevices();
-      expect(probeFn).toHaveBeenCalled();
-    });
-
-    describe("if there is no exported DASD devices yet", () => {
-      beforeEach(() => {
-        contexts.withoutDASDDevices();
-      });
-
-      it("returns an empty list", async () => {
-        const result = await client.dasd.getDevices();
-        expect(result).toStrictEqual([]);
-      });
-    });
-
-    describe("if there are exported DASD devices", () => {
-      it("returns a list with the exported DASD devices", async () => {
-        const result = await client.dasd.getDevices();
-        expect(result.length).toEqual(2);
-        expect(result).toContainEqual({
-          id: "8",
-          accessType: "",
-          channelId: "0.0.019e",
-          diag: false,
-          enabled: true,
-          formatted: false,
-          hexId: 414,
-          name: "dasd_sample_8",
-          partitionInfo: "",
-          type: "ECKD",
-        });
-        expect(result).toContainEqual({
-          id: "9",
-          accessType: "rw",
-          channelId: "0.0.ffff",
-          diag: false,
-          enabled: true,
-          formatted: false,
-          hexId: 65535,
-          name: "dasd_sample_9",
-          partitionInfo: "/dev/dasd_sample_9",
-          type: "FBA",
-        });
-      });
-    });
-  });
-
-  describe("#setDIAG", () => {
-    it("requests for setting DIAG for given devices", async () => {
-      await client.dasd.setDIAG([sampleDasdDevice], true);
-      expect(setDiagFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"], true);
-
-      await client.dasd.setDIAG([sampleDasdDevice], false);
-      expect(setDiagFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"], false);
-    });
-  });
-
-  describe("#enableDevices", () => {
-    it("requests for enabling given devices", async () => {
-      await client.dasd.enableDevices([sampleDasdDevice]);
-      expect(enableFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"]);
-    });
-  });
-
-  describe("#disableDevices", () => {
-    it("requests for disabling given devices", async () => {
-      await client.dasd.disableDevices([sampleDasdDevice]);
-      expect(disableFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"]);
     });
   });
 });
