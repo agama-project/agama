@@ -16,6 +16,7 @@ use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 use zbus::Connection;
 pub mod dasd;
 pub mod iscsi;
+pub mod zfcp;
 
 type DBusObject = (
     OwnedObjectPath,
