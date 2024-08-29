@@ -18,162 +18,61 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use utoipa::OpenApi;
-#[derive(OpenApi)]
-#[openapi(
-    info(description = "Agama web API description"),
-    paths(
-        crate::l10n::web::get_config,
-        crate::l10n::web::keymaps,
-        crate::l10n::web::locales,
-        crate::l10n::web::set_config,
-        crate::l10n::web::timezones,
-        crate::manager::web::finish_action,
-        crate::manager::web::install_action,
-        crate::manager::web::installer_status,
-        crate::manager::web::probe_action,
-        crate::network::web::add_connection,
-        crate::network::web::apply,
-        crate::network::web::connect,
-        crate::network::web::connections,
-        crate::network::web::delete_connection,
-        crate::network::web::devices,
-        crate::network::web::disconnect,
-        crate::network::web::update_connection,
-        crate::questions::web::answer_question,
-        crate::questions::web::get_answer,
-        crate::questions::web::delete_question,
-        crate::questions::web::create_question,
-        crate::questions::web::list_questions,
-        crate::software::web::get_config,
-        crate::software::web::patterns,
-        crate::software::web::probe,
-        crate::software::web::products,
-        crate::software::web::proposal,
-        crate::software::web::set_config,
-        crate::storage::web::actions,
-        crate::storage::web::devices_dirty,
-        crate::storage::web::get_proposal_settings,
-        crate::storage::web::probe,
-        crate::storage::web::product_params,
-        crate::storage::web::set_proposal_settings,
-        crate::storage::web::staging_devices,
-        crate::storage::web::system_devices,
-        crate::storage::web::usable_devices,
-        crate::storage::web::volume_for,
-        crate::storage::web::iscsi::delete_node,
-        crate::storage::web::iscsi::discover,
-        crate::storage::web::iscsi::initiator,
-        crate::storage::web::iscsi::login_node,
-        crate::storage::web::iscsi::logout_node,
-        crate::storage::web::iscsi::nodes,
-        crate::storage::web::iscsi::update_initiator,
-        crate::storage::web::iscsi::update_node,
-        crate::storage::web::dasd::probe,
-        crate::storage::web::dasd::supported,
-        crate::storage::web::dasd::devices,
-        crate::storage::web::dasd::format,
-        crate::storage::web::dasd::enable,
-        crate::storage::web::dasd::disable,
-        crate::storage::web::dasd::set_diag,
-        crate::storage::web::zfcp::supported,
-        crate::storage::web::zfcp::controllers,
-        crate::storage::web::zfcp::activate_controller,
-        crate::storage::web::zfcp::activate_disk,
-        crate::storage::web::zfcp::deactivate_disk,
-        crate::storage::web::zfcp::get_disks,
-        crate::storage::web::zfcp::get_wwpns,
-        crate::storage::web::zfcp::get_luns,
-        crate::users::web::get_root_config,
-        crate::users::web::get_user_config,
-        crate::users::web::patch_root,
-        crate::users::web::remove_first_user,
-        crate::users::web::set_first_user,
-        super::http::ping
-    ),
-    components(
-        schemas(agama_locale_data::KeymapId),
-        schemas(agama_locale_data::LocaleId),
-        schemas(agama_lib::manager::InstallationPhase),
-        schemas(agama_lib::network::settings::NetworkConnection),
-        schemas(agama_lib::network::settings::NetworkSettings),
-        schemas(agama_lib::network::settings::WirelessSettings),
-        schemas(agama_lib::network::types::DeviceState),
-        schemas(agama_lib::network::types::DeviceType),
-        schemas(agama_lib::network::types::Status),
-        schemas(agama_lib::product::Product),
-        schemas(agama_lib::software::Pattern),
-        schemas(agama_lib::storage::model::Action),
-        schemas(agama_lib::storage::model::BlockDevice),
-        schemas(agama_lib::storage::model::Component),
-        schemas(agama_lib::storage::model::Device),
-        schemas(agama_lib::storage::model::DeviceInfo),
-        schemas(agama_lib::storage::model::DeviceSid),
-        schemas(agama_lib::storage::model::Drive),
-        schemas(agama_lib::storage::model::DriveInfo),
-        schemas(agama_lib::storage::model::DeviceSize),
-        schemas(agama_lib::storage::model::Filesystem),
-        schemas(agama_lib::storage::model::LvmLv),
-        schemas(agama_lib::storage::model::LvmVg),
-        schemas(agama_lib::storage::model::Md),
-        schemas(agama_lib::storage::model::Multipath),
-        schemas(agama_lib::storage::model::Partition),
-        schemas(agama_lib::storage::model::PartitionTable),
-        schemas(agama_lib::storage::model::ProposalSettings),
-        schemas(agama_lib::storage::model::ProposalSettingsPatch),
-        schemas(agama_lib::storage::model::ProposalTarget),
-        schemas(agama_lib::storage::model::Raid),
-        schemas(agama_lib::storage::model::SpaceAction),
-        schemas(agama_lib::storage::model::SpaceActionSettings),
-        schemas(agama_lib::storage::model::UnusedSlot),
-        schemas(agama_lib::storage::model::Volume),
-        schemas(agama_lib::storage::model::VolumeOutline),
-        schemas(agama_lib::storage::model::VolumeTarget),
-        schemas(agama_lib::storage::model::dasd::DASDDevice),
-        schemas(agama_lib::storage::model::dasd::DASDFormatSummary),
-        schemas(agama_lib::storage::model::zfcp::ZFCPDisk),
-        schemas(agama_lib::storage::model::zfcp::ZFCPController),
-        schemas(agama_lib::storage::client::iscsi::ISCSIAuth),
-        schemas(agama_lib::storage::client::iscsi::ISCSIInitiator),
-        schemas(agama_lib::storage::client::iscsi::ISCSINode),
-        schemas(agama_lib::storage::client::iscsi::LoginResult),
-        schemas(agama_lib::users::FirstUser),
-        schemas(crate::l10n::Keymap),
-        schemas(crate::l10n::LocaleEntry),
-        schemas(crate::l10n::TimezoneEntry),
-        schemas(agama_lib::localization::model::LocaleConfig),
-        schemas(crate::manager::web::InstallerStatus),
-        schemas(crate::network::model::BondConfig),
-        schemas(crate::network::model::BridgeConfig),
-        schemas(crate::network::model::Connection),
-        schemas(crate::network::model::ConnectionConfig),
-        schemas(crate::network::model::Device),
-        schemas(crate::network::model::InfinibandConfig),
-        schemas(crate::network::model::IpConfig),
-        schemas(crate::network::model::MacAddress),
-        schemas(crate::network::model::MatchConfig),
-        schemas(crate::network::model::PortConfig),
-        schemas(crate::network::model::SecurityProtocol),
-        schemas(crate::network::model::TunConfig),
-        schemas(crate::network::model::VlanConfig),
-        schemas(crate::network::model::VlanProtocol),
-        schemas(crate::network::model::WirelessConfig),
-        schemas(agama_lib::questions::model::Answer),
-        schemas(agama_lib::questions::model::GenericAnswer),
-        schemas(agama_lib::questions::model::GenericQuestion),
-        schemas(agama_lib::questions::model::PasswordAnswer),
-        schemas(agama_lib::questions::model::Question),
-        schemas(agama_lib::questions::model::QuestionWithPassword),
-        schemas(agama_lib::software::model::SoftwareConfig),
-        schemas(crate::software::web::SoftwareProposal),
-        schemas(crate::storage::web::ProductParams),
-        schemas(crate::storage::web::iscsi::DiscoverParams),
-        schemas(crate::storage::web::iscsi::InitiatorParams),
-        schemas(crate::storage::web::iscsi::LoginParams),
-        schemas(crate::storage::web::iscsi::NodeParams),
-        schemas(agama_lib::users::model::RootConfig),
-        schemas(agama_lib::users::model::RootPatchSettings),
-        schemas(super::http::PingResponse)
-    )
-)]
+use utoipa::openapi::{ComponentsBuilder, InfoBuilder, PathsBuilder};
+
+mod network;
+pub use network::NetworkApiDocBuilder;
+mod storage;
+pub use storage::StorageApiDocBuilder;
+mod software;
+pub use software::SoftwareApiDocBuilder;
+mod l10n;
+pub use l10n::L10nApiDocBuilder;
+mod questions;
+pub use questions::QuestionsApiDocBuilder;
+mod manager;
+pub use manager::ManagerApiDocBuilder;
+mod users;
+pub use users::UsersApiDocBuilder;
+
 pub struct ApiDoc;
+
+impl ApiDoc {
+    pub fn build() -> utoipa::openapi::OpenApi {
+        let info = InfoBuilder::new()
+            .title("Agama HTTP API")
+            .version("0.1.0")
+            .build();
+
+        let paths = PathsBuilder::new()
+            .path_from::<super::http::__path_ping>()
+            .build();
+
+        let components = ComponentsBuilder::new()
+            .schema_from::<super::http::PingResponse>()
+            .build();
+
+        let mut openapi = utoipa::openapi::OpenApiBuilder::new()
+            .info(info)
+            .paths(paths)
+            .components(Some(components))
+            .build();
+
+        let l10n = L10nApiDocBuilder::build();
+        let manager = ManagerApiDocBuilder::build();
+        let network = NetworkApiDocBuilder::build();
+        let questions = QuestionsApiDocBuilder::build();
+        let software = SoftwareApiDocBuilder::build();
+        let storage = StorageApiDocBuilder::build();
+        let users = UsersApiDocBuilder::build();
+
+        openapi.merge(l10n);
+        openapi.merge(manager);
+        openapi.merge(network);
+        openapi.merge(questions);
+        openapi.merge(software);
+        openapi.merge(storage);
+        openapi.merge(users);
+        openapi
+    }
+}

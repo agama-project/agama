@@ -826,7 +826,7 @@ pub struct MatchConfig {
 #[error("Unknown IP configuration method name: {0}")]
 pub struct UnknownIpMethod(String);
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
     #[default]
@@ -862,7 +862,7 @@ impl FromStr for Ipv4Method {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
     #[default]
@@ -910,7 +910,7 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IpRoute {
     pub destination: IpInet,
@@ -1122,7 +1122,7 @@ impl TryFrom<WirelessConfig> for WirelessSettings {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, utoipa::ToSchema)]
 pub enum WirelessMode {
     Unknown = 0,
     AdHoc = 1,
@@ -1206,7 +1206,7 @@ impl TryFrom<&str> for SecurityProtocol {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, utoipa::ToSchema)]
 pub enum GroupAlgorithm {
     Wep40,
     Wep104,
@@ -1244,7 +1244,7 @@ impl fmt::Display for GroupAlgorithm {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, utoipa::ToSchema)]
 pub enum PairwiseAlgorithm {
     Tkip,
     Ccmp,
@@ -1276,7 +1276,7 @@ impl fmt::Display for PairwiseAlgorithm {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, utoipa::ToSchema)]
 pub enum WPAProtocolVersion {
     Wpa,
     Rsn,
@@ -1308,7 +1308,7 @@ impl fmt::Display for WPAProtocolVersion {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct WEPSecurity {
     pub auth_alg: WEPAuthAlg,
     pub wep_key_type: WEPKeyType,
@@ -1317,7 +1317,7 @@ pub struct WEPSecurity {
     pub wep_key_index: u32,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub enum WEPKeyType {
     #[default]
     Unknown = 0,
@@ -1338,7 +1338,7 @@ impl TryFrom<u32> for WEPKeyType {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub enum WEPAuthAlg {
     #[default]
     Unset,
@@ -1373,7 +1373,7 @@ impl fmt::Display for WEPAuthAlg {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, utoipa::ToSchema)]
 pub enum WirelessBand {
     A,  // 5GHz
     BG, // 2.4GHz
@@ -1401,7 +1401,7 @@ impl TryFrom<&str> for WirelessBand {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
 pub struct BondOptions(pub HashMap<String, String>);
 
 impl TryFrom<&str> for BondOptions {
@@ -1493,7 +1493,7 @@ pub struct BridgeConfig {
     pub ageing_time: Option<u32>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct BridgePortConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
@@ -1508,7 +1508,7 @@ pub struct InfinibandConfig {
     pub transport_mode: InfinibandTransportMode,
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Serialize)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub enum InfinibandTransportMode {
     #[default]
     Datagram,
@@ -1541,7 +1541,7 @@ impl fmt::Display for InfinibandTransportMode {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Serialize)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub enum TunMode {
     #[default]
     Tun = 1,

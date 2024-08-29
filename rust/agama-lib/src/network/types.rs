@@ -183,7 +183,7 @@ impl TryFrom<&str> for Status {
 }
 
 /// Bond mode
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
 pub enum BondMode {
     #[serde(rename = "balance-rr")]
     RoundRobin = 0,
