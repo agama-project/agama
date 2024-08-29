@@ -69,6 +69,7 @@ jobs:
 
     - name: Install required packages
       run: zypper --non-interactive install
+        dbus-1-daemon
         clang-devel
         dbus-1-daemon
         jq
