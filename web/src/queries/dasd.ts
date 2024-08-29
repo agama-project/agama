@@ -22,9 +22,10 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { _ } from "~/i18n";
 import {
-  DASDDisable,
-  DASDEnable,
-  diagEnable,
+  disableDASD,
+  disableDiag,
+  enableDASD,
+  enableDiag,
   fetchDASDDevices,
 } from "~/api/dasd";
 import { useInstallerClient } from "~/context/installer";
@@ -233,7 +234,7 @@ const useDASDDevicesChanges = () => {
 const useDASDEnableMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: DASDEnable,
+    mutationFn: enableDASD,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
     },
@@ -244,7 +245,7 @@ const useDASDEnableMutation = () => {
 const useDASDDisableMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: DASDDisable,
+    mutationFn: disableDASD,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
     },
@@ -255,7 +256,7 @@ const useDASDDisableMutation = () => {
 const useDiagEnableMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: diagEnable,
+    mutationFn: enableDiag,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
     },
@@ -266,7 +267,7 @@ const useDiagEnableMutation = () => {
 const useDiagDisableMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: diagEnable,
+    mutationFn: disableDiag,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dasd", "devices"] });
     },

@@ -43,7 +43,7 @@ import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
-import { DASDDisable, DASDEnable, DASDFormat, diagDisable, diagEnable } from "~/api/dasd";
+import { disableDASD, disableDiag, enableDASD, enableDiag } from "~/api/dasd";
 import { useDASDDevices, useFilterDASD, useFilterDASDChange, useSelectedDASD, useSelectedDASDChange } from "~/queries/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
@@ -88,10 +88,10 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[], isDisabled: b
   const onSelect = () => setIsOpen(false);
 
   const deviceIds = devices.map((d) => d.id);
-  const activate = () => DASDEnable(deviceIds);
-  const deactivate = () => DASDDisable(deviceIds);
-  const setDiagOn = () => diagEnable(deviceIds);
-  const setDiagOff = () => diagDisable(deviceIds);
+  const activate = () => enableDASD(deviceIds);
+  const deactivate = () => disableDASD(deviceIds);
+  const setDiagOn = () => enableDiag(deviceIds);
+  const setDiagOff = () => disableDiag(deviceIds);
   const format = () => {
     const offline = devices.filter((d) => !d.enabled);
 
@@ -99,7 +99,7 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[], isDisabled: b
       return false;
     }
 
-    return DASDFormat(devices.map((d) => d.id));
+    return formatDASD(devices.map((d) => d.id));
   };
 
   const Action = ({ children, ...props }) => (
