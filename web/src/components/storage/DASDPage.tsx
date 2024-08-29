@@ -19,79 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useReducer } from "react";
+import React from "react";
 import DASDTable from "~/components/storage/DASDTable";
 import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import { _ } from "~/i18n";
-import { hex, useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
 import { Page } from "~/components/core";
-import { useDASDDevices, useDASDDevicesChanges, useDASDFormatJobChanges, useDASDFormatJobs } from "~/queries/dasd";
+import { useDASDDevices, useDASDDevicesChanges, useDASDFormatJobs } from "~/queries/dasd";
 import { DASDDevice } from "~/types/dasd";
-
-const reducer = (state, action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case "SET_DEVICES": {
-      return { ...state, devices: payload.devices };
-    }
-
-    case "ADD_DEVICE": {
-      const { device } = payload;
-      if (state.devices.find((d) => d.id === device.id)) return state;
-
-      return { ...state, devices: [...state.devices, device] };
-    }
-
-    case "UPDATE_DEVICE": {
-      const { device } = payload;
-      const index = state.devices.findIndex((d) => d.id === device.id);
-      const devices = [...state.devices];
-      index !== -1 ? (devices[index] = device) : devices.push(device);
-
-      const selectedDevicesIds = state.selectedDevices.map((d) => d.id);
-      const selectedDevices = devices.filter((d) => selectedDevicesIds.includes(d.id));
-
-      return { ...state, devices, selectedDevices };
-    }
-
-    case "REMOVE_DEVICE": {
-      const { device } = payload;
-
-      return { ...state, devices: state.devices.filter((d) => d.id !== device.id) };
-    }
-
-    case "START_FORMAT_JOB": {
-      const { data: formatJob } = payload;
-
-      if (!formatJob.running) return state;
-      const newState = { ...state, formatJob };
-
-      return newState;
-    }
-
-    case "UPDATE_FORMAT_JOB": {
-      const { data: formatJob } = payload;
-
-      if (formatJob.path !== state.formatJob.path) return state;
-
-      return { ...state, formatJob };
-    }
-
-    case "START_LOADING": {
-      return { ...state, isLoading: true };
-    }
-
-    case "STOP_LOADING": {
-      return { ...state, isLoading: false };
-    }
-
-    default: {
-      return state;
-    }
-  }
-};
 
 export default function DASDPage() {
   useDASDDevicesChanges();

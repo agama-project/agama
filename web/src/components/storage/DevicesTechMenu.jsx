@@ -88,7 +88,7 @@ export default function DevicesTechMenu({ label }) {
   useEffect(() => {
     DASDSupported().then(setShowDasdLink);
     client.zfcp.isSupported().then(setShowZFCPLink);
-  }, [client.dasd, client.zfcp]);
+  }, [client.zfcp]);
 
   const toggle = (toggleRef) => (
     <MenuToggle ref={toggleRef} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>
