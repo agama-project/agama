@@ -45,7 +45,6 @@ import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
 import { DASDDisable, DASDEnable, DASDFormat, diagDisable, diagEnable } from "~/api/dasd";
 import { useDASDDevices, useFilterDASD, useFilterDASDChange, useSelectedDASD, useSelectedDASDChange } from "~/queries/dasd";
-import { useSelectedWifiChange } from "~/queries/network";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
