@@ -70,13 +70,13 @@ const useDASDFormatJobs = () => {
  */
 const DASDFormatJobQuery = (id: string) => ({
   queryKey: ["dasd", "formatJob", id],
-  queryFn: () => findStorageJob(id),
+  queryFn: () => findStorageJob(id).then((sj) => ({jobId: sj.id})),
 });
 
 /**
  * Hook that returns and specific DASD format job.
  */
-const useDASDFormatJob = (id: string) => {
+const useDASDFormatJob = (id: string) : FormatJob => {
   const { data: job } = useSuspenseQuery(DASDFormatJobQuery(id));
   return job;
 };
@@ -84,7 +84,7 @@ const useDASDFormatJob = (id: string) => {
 /**
  * Listens for DASD format job changes.
  */
-const useDASDFormatJobChanges = (id: string) => {
+const useDASDFormatJobChanges = (id: string) : FormatJob => {
   const client = useInstallerClient();
   const queryClient = useQueryClient();
 
@@ -94,7 +94,7 @@ const useDASDFormatJobChanges = (id: string) => {
     return client.ws().onEvent((event) => {
       // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
       if (
-        event.type === "DASDFormatJobChanged" && event.job_id === id
+        event.type === "DASDFormatJobChanged" && event.jobId === id
       ) {
         const data = queryClient.getQueryData(["dasd", "formatJob", id]) as FormatJob;
         const merged_summary = { ...data.summary, ...event.summary };

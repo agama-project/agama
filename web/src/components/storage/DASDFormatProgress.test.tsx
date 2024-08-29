@@ -24,8 +24,9 @@ import { act, screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DASDTable from "~/components/storage/DASDTable";
 import DASDFormatProgress from "./DASDFormatProgress";
+import { FormatJob } from "~/types/dasd";
 
-let mockDASDFormatJob;
+let mockDASDFormatJob : FormatJob;
 
 jest.mock("~/queries/dasd", () => ({
   useDASDFormatJobChanges: () => mockDASDFormatJob,

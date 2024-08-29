@@ -24,12 +24,13 @@ import { Progress, Skeleton, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import { useDASDFormatJobChanges } from "~/queries/dasd";
+import { FormatJob, FormatSummary } from "~/types/dasd";
 
 export default function DASDFormatProgress({ job, devices, isOpen = true }) {
-  const formatJob = useDASDFormatJobChanges(job.id);
+  const formatJob: FormatJob = useDASDFormatJobChanges(job.id);
   const progress = formatJob?.summary || {};
 
-  const ProgressContent = ({ progress }) => {
+  const ProgressContent = ({ progress } : { progress: { [key: string]: FormatSummary }}) => {
     return (
       <Stack hasGutter className="dasd-format-progress">
         {Object.entries(progress).map(([id, { total, step, done }]) => {

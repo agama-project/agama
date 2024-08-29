@@ -39,8 +39,8 @@ type FormatSummary = {
 }
 
 type FormatJob = {
-  job_id: string,
+  jobId: string,
   summary?: { [key: string]: FormatSummary }
 }
 
-export type { DASDDevice, FormatJob };
+export type { DASDDevice, FormatJob, FormatSummary };
