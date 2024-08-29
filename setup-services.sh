@@ -51,6 +51,7 @@ $SUDO $ZYPPER install \
 # TODO extract list from gem2rpm.yml
 $SUDO $ZYPPER install \
   dbus-1-common \
+  dbus-1-daemon \
   suseconnect-ruby-bindings \
   autoyast2-installation \
   yast2 \
