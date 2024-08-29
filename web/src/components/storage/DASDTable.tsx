@@ -43,7 +43,7 @@ import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
-import { disableDASD, disableDiag, enableDASD, enableDiag } from "~/api/dasd";
+import { disableDASD, disableDiag, enableDASD, enableDiag, formatDASD } from "~/api/dasd";
 import { useDASDDevices, useFilterDASD, useFilterDASDChange, useSelectedDASD, useSelectedDASDChange } from "~/queries/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a

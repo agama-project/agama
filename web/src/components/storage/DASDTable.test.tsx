@@ -25,9 +25,9 @@ import { installerRender } from "~/test-utils";
 import DASDTable from "~/components/storage/DASDTable";
 import { DASDDevice, FilterDASD } from "~/types/dasd";
 
-let mockDASDDevices: DASDDevice[];
-let mockDASDFilter: { minChannel: string, maxChannel: string };
-let mockSelectedDASD: { minChannel: string, maxChannel: string };
+let mockDASDDevices: DASDDevice[] = [];
+const mockDASDFilter = { minChannel: "", maxChannel: "" };
+const mockSelectedDASD: string[] = [];
 
 jest.mock("~/queries/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
