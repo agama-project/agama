@@ -1,20 +1,20 @@
 //! Implements the store for the product settings.
 
-use super::{ProductClient, ProductSettings};
+use super::{ProductHTTPClient, ProductSettings};
 use crate::error::ServiceError;
 use crate::manager::ManagerClient;
 use zbus::Connection;
 
 /// Loads and stores the product settings from/to the D-Bus service.
 pub struct ProductStore<'a> {
-    product_client: ProductClient<'a>,
+    product_client: ProductHTTPClient,
     manager_client: ManagerClient<'a>,
 }
 
 impl<'a> ProductStore<'a> {
     pub async fn new(connection: Connection) -> Result<ProductStore<'a>, ServiceError> {
         Ok(Self {
-            product_client: ProductClient::new(connection.clone()).await?,
+            product_client: ProductHTTPClient::new()?,
             manager_client: ManagerClient::new(connection).await?,
         })
     }
