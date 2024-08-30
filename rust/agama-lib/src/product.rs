@@ -5,6 +5,7 @@ pub mod proxies;
 mod settings;
 mod store;
 
-pub use client::{Product, ProductClient, RegistrationRequirement};
+pub use crate::software::model::RegistrationRequirement;
+pub use client::{Product, ProductClient};
 pub use settings::ProductSettings;
 pub use store::ProductStore;
