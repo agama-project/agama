@@ -380,7 +380,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
 
 /// Display the API documentation in OpenAPI format.
 fn openapi_command() -> anyhow::Result<()> {
-    println!("{}", web::ApiDoc::build().to_pretty_json().unwrap());
+    println!("{}", web::ApiDoc::build().to_pretty_json()?);
     Ok(())
 }
 
