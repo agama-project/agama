@@ -51,7 +51,7 @@ impl<'a> Store<'a> {
     ) -> Result<Store<'a>, ServiceError> {
         Ok(Self {
             localization: LocalizationStore::new(http_client.clone())?,
-            users: UsersStore::new()?,
+            users: UsersStore::new(http_client.clone())?,
             network: NetworkStore::new(http_client.clone()).await?,
             product: ProductStore::new(connection.clone()).await?,
             software: SoftwareStore::new(connection.clone()).await?,
