@@ -27,6 +27,8 @@ translations:
       последней версии SUSE Linux Enterprise Server.
     sv: Leap 16.0 är den senaste versionen av en distribution skapad av gemenskapen
       som baseras på den senaste SUSE Linux Enterprise Server.
+    tr: Leap 16.0, en son SUSE Linux Enterprise Server'ı temel alan bir topluluk
+      dağıtımının en son sürümüdür.
     zh_Hans: Leap 16.0 是基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
 software:
   installation_repositories:
