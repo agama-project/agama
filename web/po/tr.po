@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-18 02:29+0000\n"
-"PO-Revision-Date: 2024-05-16 14:46+0000\n"
-"Last-Translator: Özgür Arslan <ozgurarslln@gmail.com>\n"
+"PO-Revision-Date: 2024-08-28 16:47+0000\n"
+"Last-Translator: yok <mtopac2024@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "tr/>\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -108,19 +108,16 @@ msgid "Reboot"
 msgstr "Yeniden Başlat"
 
 #: src/components/core/InstallationProgress.jsx:30
-#, fuzzy
 msgid "Installing the system, please wait ..."
 msgstr "Kurulum ortamı yükleniyor, lütfen bekleyin."
 
 #: src/components/core/InstallerOptions.jsx:92
-#, fuzzy
 msgid "Show installer options"
-msgstr "Yükleyici seçeneklerini gizle"
+msgstr "Yükleyici seçeneklerini göster"
 
 #: src/components/core/InstallerOptions.jsx:95
-#, fuzzy
 msgid "Installer options"
-msgstr "Kurulum Seçenekleri"
+msgstr "Kurulum seçenekleri"
 
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
@@ -131,14 +128,12 @@ msgstr "Dil"
 
 #: src/components/core/InstallerOptions.jsx:115
 #: src/components/core/InstallerOptions.jsx:120
-#, fuzzy
 msgid "Keyboard layout"
-msgstr "Klavyeyi değiştir"
+msgstr "Klavye düzeni"
 
 #: src/components/core/InstallerOptions.jsx:129
-#, fuzzy
 msgid "Cannot be changed in remote installation"
-msgstr "Uzaktan kurulumda klavye düzeni değiştirilemez"
+msgstr "Uzaktan kurulumda değiştirilemez"
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/storage/BootSelection.jsx:250
@@ -154,7 +149,7 @@ msgstr "Kabul Et"
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
 "Before starting the installation, you need to address the following problems:"
-msgstr ""
+msgstr "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
 
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
@@ -166,7 +161,7 @@ msgstr "Giriş yapılamadı. Lütfen şifrenin doğru olduğundan emin olun."
 
 #: src/components/core/LoginPage.jsx:66
 msgid "Could not authenticate against the server, please check it."
-msgstr ""
+msgstr "Sunucuya karşı kimlik doğrulaması yapılamadı, lütfen kontrol edin."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
@@ -177,14 +172,11 @@ msgstr "%s olarak oturum açın"
 
 #: src/components/core/LoginPage.jsx:80
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
 
 #: src/components/core/LoginPage.jsx:95
-#, fuzzy
 msgid "Please, provide its password to log in to the system."
-msgstr ""
-"Yükleyici %s kullanıcı ayrıcalıklarına ihtiyaç duyuyor. Lütfen sisteme giriş "
-"yapabilmek için şifrenizi giriniz."
+msgstr "Lütfen sisteme giriş yapabilmek için şifrenizi giriniz."
 
 #: src/components/core/LoginPage.jsx:96
 msgid "Login form"
@@ -200,7 +192,7 @@ msgstr "Giriş Yap"
 
 #: src/components/core/LoginPage.jsx:118
 msgid "More about this"
-msgstr ""
+msgstr "Bu konuda daha fazla bilgi"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
@@ -232,14 +224,13 @@ msgstr "Veri yükleniyor..."
 
 #: src/components/core/ProgressReport.jsx:50
 msgid "Pending"
-msgstr ""
+msgstr "Bekliyor"
 
 #: src/components/core/ProgressReport.jsx:59
 msgid "In progress"
-msgstr ""
+msgstr "Devam ediyor"
 
 #: src/components/core/ProgressReport.jsx:74
-#, fuzzy
 msgid "Finished"
 msgstr "Bitti"
 
@@ -254,15 +245,12 @@ msgid "Waiting"
 msgstr "Bekleyin"
 
 #: src/components/core/ServerError.jsx:47
-#, fuzzy
 msgid "Cannot connect to Agama server"
-msgstr "D-Bus'a bağlanılamıyor"
+msgstr "Agama sunucusuna bağlanılamıyor"
 
 #: src/components/core/ServerError.jsx:51
-#, fuzzy
 msgid "Please, check whether it is running."
-msgstr ""
-"D-Bus hizmetine bağlanılamadı. Lütfen çalışıp çalışmadığını kontrol edin."
+msgstr "Çalışıp çalışmadığını kontrol edin lütfen."
 
 #: src/components/core/ServerError.jsx:56
 msgid "Reload"
@@ -274,12 +262,11 @@ msgstr "Açıklamaya veya tuş haritası koduna göre filtreleyin"
 
 #: src/components/l10n/KeyboardSelection.jsx:71
 msgid "None of the keymaps match the filter."
-msgstr ""
+msgstr "Hiçbir tuş haritası filtreye uymuyor."
 
 #: src/components/l10n/KeyboardSelection.jsx:77
-#, fuzzy
 msgid "Keyboard selection"
-msgstr "Klavye henüz seçilmedi"
+msgstr "Klavye seçimi"
 
 #: src/components/l10n/KeyboardSelection.jsx:90
 #: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
@@ -288,7 +275,7 @@ msgstr "Klavye henüz seçilmedi"
 #: src/components/l10n/TimezoneSelection.jsx:125
 #: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
-msgstr ""
+msgstr "Seç"
 
 #: src/components/l10n/L10nPage.jsx:48
 #: src/components/overview/L10nSection.jsx:37
@@ -297,9 +284,8 @@ msgstr "Yerelleştirme"
 
 #: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
 #: src/components/l10n/L10nPage.jsx:75
-#, fuzzy
 msgid "Not selected yet"
-msgstr "Dil henüz seçilmedi"
+msgstr "Henüz seçilmedi"
 
 #: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
 #: src/components/l10n/L10nPage.jsx:78
@@ -308,7 +294,7 @@ msgstr "Dil henüz seçilmedi"
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
-msgstr ""
+msgstr "Değiştir"
 
 #: src/components/l10n/L10nPage.jsx:65
 msgid "Keyboard"
@@ -324,12 +310,11 @@ msgstr "Dile, bölgeye veya yerel ayar koduna göre filtreleyin"
 
 #: src/components/l10n/LocaleSelection.jsx:72
 msgid "None of the locales match the filter."
-msgstr ""
+msgstr "Hiçbir yerel ayar filtreye uymuyor."
 
 #: src/components/l10n/LocaleSelection.jsx:78
-#, fuzzy
 msgid "Locale selection"
-msgstr "Yerelleştirme"
+msgstr "Yerelleştirme seçimi"
 
 #: src/components/l10n/TimezoneSelection.jsx:64
 msgid "Filter by territory, time zone code or UTC offset"
@@ -337,12 +322,11 @@ msgstr "Bölgeye, saat dilimi koduna veya UTC farkına göre filtreleyin"
 
 #: src/components/l10n/TimezoneSelection.jsx:101
 msgid "None of the time zones match the filter."
-msgstr ""
+msgstr "Hiçbir zaman dilimi filtreye uymuyor."
 
 #: src/components/l10n/TimezoneSelection.jsx:107
-#, fuzzy
 msgid " Timezone selection"
-msgstr "Saat dilimi henüz seçilmedi"
+msgstr " Zaman dilimi seçimi"
 
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
@@ -353,73 +337,83 @@ msgstr "Kurulum ortamı yükleniyor, lütfen bekleyin."
 #: src/components/overview/L10nSection.jsx:33
 #, c-format
 msgid "The system will use %s as its default language."
-msgstr ""
+msgstr "Sistem varsayılan dil olarak %s dilini kullanacaktır."
 
 #: src/components/overview/OverviewPage.jsx:49
 #: src/components/users/UsersPage.jsx:35
 msgid "Users"
-msgstr ""
+msgstr "Kullanıcılar"
 
 #: src/components/overview/OverviewPage.jsx:50
 #: src/components/overview/StorageSection.jsx:111
 #: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
 msgid "Storage"
-msgstr ""
+msgstr "Depolama"
 
 #: src/components/overview/OverviewPage.jsx:51
 msgid "Software"
-msgstr ""
+msgstr "Yazılım"
 
 #: src/components/overview/OverviewPage.jsx:56
-#, fuzzy
 msgid "Ready for installation"
-msgstr "Kurulumu Onaylayın"
+msgstr "Kuruluma hazır"
 
 #: src/components/overview/OverviewPage.jsx:102
-#, fuzzy
 msgid "Installation"
 msgstr "Kurulum"
 
 #: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
-msgstr ""
+msgstr "Kurulum yapmadan önce lütfen aşağıdaki sorunları kontrol edin."
 
 #: src/components/overview/OverviewPage.jsx:114
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr ""
+"Kurulum sürecine başlamadan önce yapılandırmanızı kontrol etmek için zaman "
+"ayırın."
 
 #: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
+"Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki "
+"bölümlere göz atmaktan çekinmeyin."
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group shrinking "
 "existing partitions at the underlying devices as needed"
 msgstr ""
+"Gerektiğinde temel cihazlardaki mevcut bölümleri daraltan yeni bir Mantıksal "
+"Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
 
 #: src/components/overview/StorageSection.jsx:58
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group without modifying "
 "the partitions at the underlying devices"
 msgstr ""
+"Temel cihazlardaki bölümleri değiştirmeden yeni bir Mantıksal Birim "
+"Yöneticisi (LVM) birim grubuna kurulum yapın"
 
 #: src/components/overview/StorageSection.jsx:63
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group deleting all the "
 "content of the underlying devices"
 msgstr ""
+"Temel aygıtların tüm içeriğini silerek yeni bir Mantıksal Birim Yöneticisi "
+"(LVM) birim grubuna kurulum yapın"
 
 #: src/components/overview/StorageSection.jsx:68
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group using a custom "
 "strategy to find the needed space at the underlying devices"
 msgstr ""
+"Temel cihazlarda gerekli alanı bulmak için özel bir strateji kullanarak yeni "
+"bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
 
 #: src/components/overview/StorageSection.jsx:86
 #, c-format
@@ -427,6 +421,8 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking "
 "existing partitions as needed"
 msgstr ""
+"%s'de yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna yükleyin ve "
+"gerektiğinde mevcut bölümleri küçültün"
 
 #: src/components/overview/StorageSection.jsx:92
 #, c-format
@@ -434,6 +430,8 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s without "
 "modifying existing partitions"
 msgstr ""
+"Mevcut bölümleri değiştirmeden %s üzerindeki yeni bir Mantıksal Birim "
+"Yöneticisi (LVM) birim grubuna yükleyin"
 
 #: src/components/overview/StorageSection.jsx:98
 #, c-format
@@ -441,6 +439,8 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s deleting "
 "all its content"
 msgstr ""
+"%s'de yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna yükleyin ve "
+"tüm içeriğini silin"
 
 #: src/components/overview/StorageSection.jsx:104
 #, c-format
@@ -448,11 +448,13 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s using a "
 "custom strategy to find the needed space"
 msgstr ""
+"%s üzerinde yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna, gereken "
+"alanı bulmak için özel bir strateji kullanarak yükleyin"
 
 #: src/components/overview/StorageSection.jsx:179
 #: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
-msgstr ""
+msgstr "Henüz hiçbir cihaz seçilmedi"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
@@ -460,20 +462,22 @@ msgstr ""
 #, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
 msgstr ""
+"%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri "
+"küçültün"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:190
 #, c-format
 msgid "Install using device %s without modifying existing partitions"
-msgstr ""
+msgstr "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:194
 #, c-format
 msgid "Install using device %s and deleting all its content"
-msgstr ""
+msgstr "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
@@ -481,104 +485,109 @@ msgstr ""
 #, c-format
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr ""
+"Gerekli alanı bulmak için özel bir stratejiyle %s aygıtını kullanarak "
+"yükleyin"
 
 #: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
-msgstr ""
+msgstr "Ürün yapılandırılıyor, lütfen bekleyin..."
 
 #: src/components/storage/BootConfigField.jsx:44
 msgid "Change boot options"
-msgstr ""
+msgstr "Önyükleme seçeneklerini değiştir"
 
 #: src/components/storage/BootConfigField.jsx:82
 msgid "Installation will not configure partitions for booting."
-msgstr ""
+msgstr "Kurulum, önyükleme için bölümleri yapılandırmayacaktır."
 
 #: src/components/storage/BootConfigField.jsx:86
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
-msgstr ""
+msgstr "Kurulum, kurulum diskinde önyükleme için bölümleri yapılandıracaktır."
 
 #: src/components/storage/BootConfigField.jsx:90
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
-msgstr ""
+msgstr "Kurulum, bölümleri %s konumunda önyükleme için yapılandıracaktır."
 
 #: src/components/storage/BootSelection.jsx:132
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
 msgstr ""
+"Yeni sistemin önyükleme yapabilmesini sağlamak için yükleyicinin uygun "
+"diskte bazı bölümler oluşturması veya yapılandırması gerekebilir."
 
 #: src/components/storage/BootSelection.jsx:138
 msgid "Partitions to boot will be allocated at the installation disk."
-msgstr ""
+msgstr "Önyükleme için gerekli bölümler kurulum diskinde tahsis edilecektir."
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
 #: src/components/storage/BootSelection.jsx:143
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
-msgstr ""
+msgstr "Önyükleme için bölümler kurulum diskinde (%s) tahsis edilecektir."
 
 #: src/components/storage/BootSelection.jsx:159
-#, fuzzy
 msgid "Select booting partition"
-msgstr "Saat dilimini seçin"
+msgstr "Önyükleme bölümünü seçin"
 
 #: src/components/storage/BootSelection.jsx:180
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
-msgstr ""
+msgstr "Otomatik"
 
 #: src/components/storage/BootSelection.jsx:198
 msgid "Select a disk"
-msgstr ""
+msgstr "Bir disk seçin"
 
 #: src/components/storage/BootSelection.jsx:204
 msgid "Partitions to boot will be allocated at the following device."
-msgstr ""
+msgstr "Önyükleme için bölümler aşağıdaki aygıta tahsis edilecektir."
 
 #: src/components/storage/BootSelection.jsx:207
 msgid "Choose a disk for placing the boot loader"
-msgstr ""
+msgstr "Önyükleme yükleyicisini yerleştirmek için bir disk seçin"
 
 #: src/components/storage/BootSelection.jsx:230
 msgid "Do not configure"
-msgstr ""
+msgstr "Yapılandırmayın"
 
 #: src/components/storage/BootSelection.jsx:236
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
+"Önyükleme için hiçbir bölüm otomatik olarak yapılandırılmayacak. Dikkatli "
+"kullanın."
 
 #: src/components/storage/DASDFormatProgress.jsx:60
 msgid "Waiting for progress report"
-msgstr ""
+msgstr "İlerleme raporunu bekliyorum"
 
 #: src/components/storage/DASDFormatProgress.jsx:67
 msgid "Formatting DASD devices"
-msgstr ""
+msgstr "DASD aygıtlarının biçimlendirilmesi"
 
 #: src/components/storage/DASDTable.jsx:62
 #: src/components/storage/ZFCPPage.jsx:340
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:101
 msgid "No"
-msgstr ""
+msgstr "Hayır"
 
 #: src/components/storage/DASDTable.jsx:62
 #: src/components/storage/ZFCPPage.jsx:340
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:101
 msgid "Yes"
-msgstr ""
+msgstr "Evet"
 
 #: src/components/storage/DASDTable.jsx:69
 #: src/components/storage/ZFCPDiskForm.jsx:110
 #: src/components/storage/ZFCPPage.jsx:324
 #: src/components/storage/ZFCPPage.jsx:382
 msgid "Channel ID"
-msgstr ""
+msgstr "Kanal Kimliği"
 
 #. TRANSLATORS: table header
 #: src/components/storage/DASDTable.jsx:70
@@ -587,7 +596,7 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:123
 #: src/components/users/RootAuthMethods.jsx:124
 msgid "Status"
-msgstr ""
+msgstr "Durum"
 
 #: src/components/storage/DASDTable.jsx:71
 #: src/components/storage/DeviceSelectorTable.jsx:197
@@ -595,81 +604,83 @@ msgstr ""
 #: src/components/storage/SpaceActionsTable.jsx:200
 #: src/components/storage/VolumeLocationSelectorTable.jsx:107
 msgid "Device"
-msgstr ""
+msgstr "Cihaz"
 
 #: src/components/storage/DASDTable.jsx:72
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #. TRANSLATORS: table header, the column contains "Yes"/"No" values
 #. for the DIAG access mode (special disk access mode on IBM mainframes),
 #. usually keep untranslated
 #: src/components/storage/DASDTable.jsx:76
 msgid "DIAG"
-msgstr ""
+msgstr "DIAG"
 
 #: src/components/storage/DASDTable.jsx:77
 msgid "Formatted"
-msgstr ""
+msgstr "Biçimlendirilmiş"
 
 #: src/components/storage/DASDTable.jsx:78
 msgid "Partition Info"
-msgstr ""
+msgstr "Bölüm Bilgisi"
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/DASDTable.jsx:115
 msgid "Perform an action"
-msgstr ""
+msgstr "Bir eylem gerçekleştir"
 
 #: src/components/storage/DASDTable.jsx:122
 #: src/components/storage/ZFCPPage.jsx:353
 msgid "Activate"
-msgstr ""
+msgstr "Etkinleştir"
 
 #: src/components/storage/DASDTable.jsx:126
 #: src/components/storage/ZFCPPage.jsx:395
 msgid "Deactivate"
-msgstr ""
+msgstr "Devre dışı bırak"
 
 #: src/components/storage/DASDTable.jsx:131
 msgid "Set DIAG On"
-msgstr ""
+msgstr "DIAG'ı Açık olarak ayarlayın"
 
 #: src/components/storage/DASDTable.jsx:135
 msgid "Set DIAG Off"
-msgstr ""
+msgstr "DIAG'ı Kapalı Olarak Ayarla"
 
 #: src/components/storage/DASDTable.jsx:140
 msgid "Format"
-msgstr ""
+msgstr "Biçim"
 
 #: src/components/storage/DASDTable.jsx:261
 #: src/components/storage/DASDTable.jsx:262
 msgid "Filter by min channel"
-msgstr ""
+msgstr "Minimum kanala göre filtrele"
 
 #: src/components/storage/DASDTable.jsx:269
 msgid "Remove min channel filter"
-msgstr ""
+msgstr "Min kanal filtresini kaldır"
 
 #: src/components/storage/DASDTable.jsx:283
 #: src/components/storage/DASDTable.jsx:284
 msgid "Filter by max channel"
-msgstr ""
+msgstr "Maksimum kanala göre filtrele"
 
 #: src/components/storage/DASDTable.jsx:291
 msgid "Remove max channel filter"
-msgstr ""
+msgstr "Maksimum kanal filtresini kaldır"
 
 #: src/components/storage/DeviceSelection.jsx:108
 msgid "Loading data, please wait a second..."
-msgstr ""
+msgstr "Veriler yükleniyor, lütfen bir saniye bekleyin..."
 
 #: src/components/storage/DeviceSelection.jsx:144
 msgid ""
 "The file systems will be allocated by default as [new partitions in the "
 "selected device]."
 msgstr ""
+"Dosya sistemleri varsayılan olarak [seçili aygıtta yeni bölümler] olarak "
+"tahsis edilecektir."
 
 #: src/components/storage/DeviceSelection.jsx:151
 msgid ""
@@ -677,103 +688,104 @@ msgid ""
 "LVM Volume Group]. The corresponding physical volumes will be created on "
 "demand as new partitions at the selected devices."
 msgstr ""
+"Dosya sistemleri varsayılan olarak [yeni bir LVM Birim Grubunun mantıksal "
+"birimleri] olarak tahsis edilecektir. İlgili fiziksel birimler, seçili "
+"aygıtlarda yeni bölümler olarak talep üzerine oluşturulacaktır."
 
 #: src/components/storage/DeviceSelection.jsx:160
 msgid "Select installation device"
-msgstr ""
+msgstr "Kurulum cihazını seçin"
 
 #: src/components/storage/DeviceSelection.jsx:166
-#, fuzzy
 msgid "Install new system on"
-msgstr "Kurulum Seçenekleri"
+msgstr "Yeni sistemi buraya kur"
 
 #: src/components/storage/DeviceSelection.jsx:169
 msgid "An existing disk"
-msgstr ""
+msgstr "Mevcut bir disk"
 
 #: src/components/storage/DeviceSelection.jsx:178
 msgid "A new LVM Volume Group"
-msgstr ""
+msgstr "Yeni bir LVM Disk Grubu"
 
 #: src/components/storage/DeviceSelection.jsx:203
 msgid "Device selector for target disk"
-msgstr ""
+msgstr "Hedef disk için cihaz seçici"
 
 #: src/components/storage/DeviceSelection.jsx:226
 msgid "Device selector for new LVM volume group"
-msgstr ""
+msgstr "Yeni LVM birim grubu için cihaz seçici"
 
 #: src/components/storage/DeviceSelection.jsx:242
 msgid "Prepare more devices by configuring advanced"
-msgstr ""
+msgstr "Gelişmiş yapılandırmalar yaparak daha fazla cihaz hazırlayın"
 
 #: src/components/storage/DeviceSelection.jsx:243
-#, fuzzy
 msgid "storage techs"
-msgstr "Depolama sorunları"
+msgstr "depolama teknolojisi"
 
 #. TRANSLATORS: multipath device type
 #: src/components/storage/DeviceSelectorTable.jsx:61
 msgid "Multipath"
-msgstr ""
+msgstr "Çoklu yol"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
 #: src/components/storage/DeviceSelectorTable.jsx:66
 #, c-format
 msgid "DASD %s"
-msgstr ""
+msgstr "DASD %s"
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
 #: src/components/storage/DeviceSelectorTable.jsx:71
 #, c-format
 msgid "Software %s"
-msgstr ""
+msgstr "Yazılım %s"
 
 #: src/components/storage/DeviceSelectorTable.jsx:76
 msgid "SD Card"
-msgstr ""
+msgstr "SD Kart"
 
 #. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
 #: src/components/storage/DeviceSelectorTable.jsx:81
 #, c-format
 msgid "%s disk"
-msgstr ""
+msgstr "%s disk"
 
 #: src/components/storage/DeviceSelectorTable.jsx:82
 msgid "Disk"
-msgstr ""
+msgstr "Disk"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/DeviceSelectorTable.jsx:102
 #, c-format
 msgid "Members: %s"
-msgstr ""
+msgstr "Üyeler: %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/DeviceSelectorTable.jsx:111
 #, c-format
 msgid "Devices: %s"
-msgstr ""
+msgstr "Cihazlar: %s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
 #: src/components/storage/DeviceSelectorTable.jsx:120
 #, c-format
 msgid "Wires: %s"
-msgstr ""
+msgstr "Bağlantılar: %s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
 #: src/components/storage/DeviceSelectorTable.jsx:155
 #, c-format
 msgid "%s with %d partitions"
-msgstr ""
+msgstr "%s ile %d bölümler"
 
 #. TRANSLATORS: status message, no existing content was found on the disk,
 #. i.e. the disk is completely empty
 #: src/components/storage/DeviceSelectorTable.jsx:161
 #: src/components/storage/SpaceActionsTable.jsx:175
 msgid "No content found"
-msgstr ""
+msgstr "İçerik bulunamadı"
 
 #: src/components/storage/DeviceSelectorTable.jsx:198
 #: src/components/storage/PartitionsField.jsx:487
@@ -781,7 +793,7 @@ msgstr ""
 #: src/components/storage/SpaceActionsTable.jsx:201
 #: src/components/storage/VolumeLocationSelectorTable.jsx:108
 msgid "Details"
-msgstr ""
+msgstr "Detaylar"
 
 #: src/components/storage/DeviceSelectorTable.jsx:199
 #: src/components/storage/PartitionsField.jsx:488
@@ -790,70 +802,76 @@ msgstr ""
 #: src/components/storage/VolumeFields.jsx:488
 #: src/components/storage/VolumeLocationSelectorTable.jsx:113
 msgid "Size"
-msgstr ""
+msgstr "Boyut"
 
 #: src/components/storage/DevicesTechMenu.jsx:38
 msgid "Manage and format"
-msgstr ""
+msgstr "Yönet ve biçimlendir"
 
 #: src/components/storage/DevicesTechMenu.jsx:52
 msgid "Activate disks"
-msgstr ""
+msgstr "Diskleri etkinleştir"
 
 #: src/components/storage/DevicesTechMenu.jsx:53
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #: src/components/storage/DevicesTechMenu.jsx:66
 msgid "Connect to iSCSI targets"
-msgstr ""
+msgstr "iSCSI hedeflerine bağlanın"
 
 #: src/components/storage/DevicesTechMenu.jsx:67
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/components/storage/EncryptionField.jsx:38
 #: src/components/storage/EncryptionSettingsDialog.jsx:36
 msgid "Encryption"
-msgstr ""
+msgstr "Şifreleme"
 
 #: src/components/storage/EncryptionField.jsx:40
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
 msgstr ""
+"Veriler, programlar ve sistem dosyaları dahil olmak üzere cihazda depolanan "
+"bilgilerin korunması."
 
 #: src/components/storage/EncryptionField.jsx:44
 msgid "disabled"
-msgstr ""
+msgstr "devre dışı"
 
 #: src/components/storage/EncryptionField.jsx:45
 msgid "enabled"
-msgstr ""
+msgstr "etkinleştirildi"
 
 #: src/components/storage/EncryptionField.jsx:46
 msgid "using TPM unlocking"
-msgstr ""
+msgstr "TPM kilidini açmayı kullanma"
 
 #: src/components/storage/EncryptionField.jsx:60
 msgid "Enable"
-msgstr ""
+msgstr "Etkinleştir"
 
 #: src/components/storage/EncryptionField.jsx:60
 msgid "Modify"
-msgstr ""
+msgstr "Değiştir"
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:38
 msgid ""
 "Full Disk Encryption (FDE) allows to protect the information stored at the "
 "device, including data, programs, and system files."
 msgstr ""
+"Tam Disk Şifreleme (FDE), veriler, programlar ve sistem dosyaları dahil "
+"olmak üzere cihazda depolanan bilgilerin korunmasına olanak tanır."
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
 #: src/components/storage/EncryptionSettingsDialog.jsx:42
 msgid ""
 "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
 msgstr ""
+"Her önyüklemede otomatik olarak şifre çözmek için Güvenilir Platform "
+"Modülünü (TPM) kullanın"
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:46
 msgid ""
@@ -861,98 +879,101 @@ msgid ""
 "verify the integrity of the system. TPM sealing requires the new system to "
 "be booted directly on its first run."
 msgstr ""
+"TPM sistemin bütünlüğünü doğrulayabiliyorsa, verileri başlatmak ve erişmek "
+"için parolaya gerek kalmayacaktır. TPM yalıtımı, yeni sistemin ilk "
+"çalıştırmada doğrudan başlatılmasını gerektirir."
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:129
 msgid "Encrypt the system"
-msgstr ""
+msgstr "Sistemi şifrele"
 
 #: src/components/storage/InstallationDeviceField.jsx:37
 #: src/components/storage/VolumeLocationSelectorTable.jsx:61
 msgid "Installation device"
-msgstr ""
+msgstr "Kurulum cihazı"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
 #: src/components/storage/InstallationDeviceField.jsx:39
 msgid "Main disk or LVM Volume Group for installation."
-msgstr ""
+msgstr "Kurulum için ana disk veya LVM Birim Grubu."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:53
 #, c-format
 msgid "File systems created as new partitions at %s"
-msgstr ""
+msgstr "%s konumunda yeni bölümler olarak oluşturulan dosya sistemleri"
 
 #: src/components/storage/InstallationDeviceField.jsx:56
 msgid "File systems created at a new LVM volume group"
-msgstr ""
+msgstr "Yeni bir LVM birim grubunda oluşturulan dosya sistemleri"
 
 #: src/components/storage/InstallationDeviceField.jsx:61
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
-msgstr ""
+msgstr "%s üzerinde yeni bir LVM birim grubunda oluşturulan dosya sistemleri"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:84
 #, c-format
 msgid "at least %s"
-msgstr ""
+msgstr "en az %s"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:108
 #, c-format
 msgid "Transactional Btrfs root volume (%s)"
-msgstr ""
+msgstr "İşlemsel Btrfs kök diski (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:110
 #, c-format
 msgid "Transactional Btrfs root partition (%s)"
-msgstr ""
+msgstr "İşlemsel Btrfs kök bölümü (%s)"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:115
 #, c-format
 msgid "Btrfs root volume with snapshots (%s)"
-msgstr ""
+msgstr "Anlık imajlarla (%s) Btrfs kök birimi"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:117
 #, c-format
 msgid "Btrfs root partition with snapshots (%s)"
-msgstr ""
+msgstr "Anlık imajlarla (%s) Btrfs kök bölümü"
 
 #. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
 #. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
 #: src/components/storage/PartitionsField.jsx:126
 #, c-format
 msgid "Mount %1$s at %2$s (%3$s)"
-msgstr ""
+msgstr "%1$s'yi %2$s'ye (%3$s) bağlayın"
 
 #. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
 #. %1$s is replaced by the device name, and %2$s by the size
 #: src/components/storage/PartitionsField.jsx:132
 #, c-format
 msgid "Swap at %1$s (%2$s)"
-msgstr ""
+msgstr "%1$s'de takas (%2$s)"
 
 #. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
 #: src/components/storage/PartitionsField.jsx:136
 #, c-format
 msgid "Swap volume (%s)"
-msgstr ""
+msgstr "Takas diski (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
 #: src/components/storage/PartitionsField.jsx:138
 #, c-format
 msgid "Swap partition (%s)"
-msgstr ""
+msgstr "Takas bölümü (%s)"
 
 #. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
 #: src/components/storage/PartitionsField.jsx:147
 #, c-format
 msgid "%1$s root at %2$s (%3$s)"
-msgstr ""
+msgstr "%1$s kökü %2$s'de (%3$s)"
 
 #. TRANSLATORS: "/" is in an LVM logical volume.
 #. Results in something like "Btrfs root volume (at least 20 GiB)" since
@@ -960,21 +981,21 @@ msgstr ""
 #: src/components/storage/PartitionsField.jsx:153
 #, c-format
 msgid "%1$s root volume (%2$s)"
-msgstr ""
+msgstr "%1$s kök diski (%2$s)"
 
 #. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
 #: src/components/storage/PartitionsField.jsx:156
 #, c-format
 msgid "%1$s root partition (%2$s)"
-msgstr ""
+msgstr "%1$s kök bölümü (%2$s)"
 
 #. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
 #: src/components/storage/PartitionsField.jsx:162
 #, c-format
 msgid "%1$s %2$s at %3$s (%4$s)"
-msgstr ""
+msgstr "%1$s %2$s %3$s'de (%4$s)"
 
 #. TRANSLATORS: The filesystem is in an LVM logical volume.
 #. Results in something like "Ext4 /home volume (at least 10 GiB)" since
@@ -982,253 +1003,252 @@ msgstr ""
 #: src/components/storage/PartitionsField.jsx:168
 #, c-format
 msgid "%1$s %2$s volume (%3$s)"
-msgstr ""
+msgstr "%1$s %2$s disk (%3$s)"
 
 #. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
 #: src/components/storage/PartitionsField.jsx:171
 #, c-format
 msgid "%1$s %2$s partition (%3$s)"
-msgstr ""
+msgstr "%1$s %2$s bölüm (%3$s)"
 
 #: src/components/storage/PartitionsField.jsx:182
 msgid "Do not configure partitions for booting"
-msgstr ""
+msgstr "Önyükleme için bölümleri yapılandırmayın"
 
 #: src/components/storage/PartitionsField.jsx:184
 msgid "Boot partitions at installation disk"
-msgstr ""
+msgstr "Yükleme diskindeki önyükleme bölümleri"
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/PartitionsField.jsx:187
 #, c-format
 msgid "Boot partitions at %s"
-msgstr ""
+msgstr "%s'deki önyükleme bölümleri"
 
 #. TRANSLATORS: header for a list of items referring to size limits for file systems
 #: src/components/storage/PartitionsField.jsx:209
 msgid "These limits are affected by:"
-msgstr ""
+msgstr "Bu sınırlar şunlardan etkilenir:"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #: src/components/storage/PartitionsField.jsx:213
 msgid "The configuration of snapshots"
-msgstr ""
+msgstr "Anlık imajların yapılandırılması"
 
 #: src/components/storage/PartitionsField.jsx:219
 #, c-format
 msgid "Presence of other volumes (%s)"
-msgstr ""
+msgstr "Diğer disklerin mevcudu (%s)"
 
 #. TRANSLATORS: list item, describes a factor that affects the computed size of a
 #. file system; eg. adjusting the size of the swap
 #: src/components/storage/PartitionsField.jsx:225
 msgid "The amount of RAM in the system"
-msgstr ""
+msgstr "Sistemdeki RAM miktarı"
 
 #: src/components/storage/PartitionsField.jsx:292
 msgid "auto"
-msgstr ""
+msgstr "otomatik"
 
 #. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
 #: src/components/storage/PartitionsField.jsx:309
 #, c-format
 msgid "Reused %s"
-msgstr ""
+msgstr "Yeniden kullanılan %s"
 
 #: src/components/storage/PartitionsField.jsx:310
 msgid "Transactional Btrfs"
-msgstr ""
+msgstr "İşlemsel Btrfs"
 
 #: src/components/storage/PartitionsField.jsx:311
 msgid "Btrfs with snapshots"
-msgstr ""
+msgstr "Anlık imajlarla Btrfs"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
 #: src/components/storage/PartitionsField.jsx:325
 #, c-format
 msgid "Partition at %s"
-msgstr ""
+msgstr "%s'de bölüm"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
 #: src/components/storage/PartitionsField.jsx:328
 #, c-format
 msgid "Separate LVM at %s"
-msgstr ""
+msgstr "%s'de Ayrı LVM"
 
 #: src/components/storage/PartitionsField.jsx:331
 msgid "Logical volume at system LVM"
-msgstr ""
+msgstr "Sistem LVM'sindeki mantıksal birim"
 
 #: src/components/storage/PartitionsField.jsx:333
 msgid "Partition at installation disk"
-msgstr ""
+msgstr "Kurulum diskindeki bölüm"
 
 #: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:86
 msgid "Edit"
-msgstr ""
+msgstr "Düzenle"
 
 #: src/components/storage/PartitionsField.jsx:348
 msgid "Reset location"
-msgstr ""
+msgstr "Konumu sıfırla"
 
 #: src/components/storage/PartitionsField.jsx:349
 msgid "Change location"
-msgstr ""
+msgstr "Konumu değiştir"
 
 #: src/components/storage/PartitionsField.jsx:350
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
-msgstr ""
+msgstr "Sil"
 
 #: src/components/storage/PartitionsField.jsx:486
 #: src/components/storage/VolumeFields.jsx:66
 #: src/components/storage/VolumeFields.jsx:75
 #: src/components/storage/VolumeFields.jsx:80
 msgid "Mount point"
-msgstr ""
+msgstr "Bağlantı noktası"
 
 #. TRANSLATORS: where (and how) the file-system is going to be created
 #: src/components/storage/PartitionsField.jsx:490
 msgid "Location"
-msgstr ""
+msgstr "Konum"
 
 #: src/components/storage/PartitionsField.jsx:532
 msgid "Table with mount points"
-msgstr ""
+msgstr "Bağlantı noktaları olan tablo"
 
 #: src/components/storage/PartitionsField.jsx:604
 #: src/components/storage/PartitionsField.jsx:624
 #: src/components/storage/VolumeDialog.jsx:86
 msgid "Add file system"
-msgstr ""
+msgstr "Dosya sistemi ekle"
 
 #: src/components/storage/PartitionsField.jsx:636
 msgid "Other"
-msgstr ""
+msgstr "Diğer"
 
 #: src/components/storage/PartitionsField.jsx:777
 msgid "Reset to defaults"
-msgstr ""
+msgstr "Varsayılanlara sıfırla"
 
 #: src/components/storage/PartitionsField.jsx:849
 msgid "Partitions and file systems"
-msgstr ""
+msgstr "Bölümler ve dosya sistemleri"
 
 #: src/components/storage/PartitionsField.jsx:851
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting"
 msgstr ""
+"Önyükleme için gereken ek bölümler de dahil olmak üzere yeni sistemin yapısı"
 
 #: src/components/storage/PartitionsField.jsx:858
 msgid "Show partitions and file-systems actions"
-msgstr ""
+msgstr "Bölümleri ve dosya sistemi eylemlerini göster"
 
 #: src/components/storage/ProposalActionsDialog.jsx:65
 #, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d alt birim eylemini gizle"
+msgstr[1] "%d alt birim eylemlerini gizle"
 
 #: src/components/storage/ProposalActionsDialog.jsx:70
 #, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d alt birim eylemini göster"
+msgstr[1] "%d alt birim eylemlerini göster"
 
 #: src/components/storage/ProposalActionsSummary.jsx:58
 msgid "Destructive actions are not allowed"
-msgstr ""
+msgstr "Tahrip edici eylemlere izin verilmez"
 
 #: src/components/storage/ProposalActionsSummary.jsx:60
 msgid "Destructive actions are allowed"
-msgstr ""
+msgstr "Tahrip edici eylemlere izin veriliyor"
 
 #: src/components/storage/ProposalActionsSummary.jsx:83
 #: src/components/storage/ProposalActionsSummary.jsx:133
-#, fuzzy
 msgid "affecting"
-msgstr "Bekleyin"
+msgstr "etkiliyor"
 
 #: src/components/storage/ProposalActionsSummary.jsx:113
 msgid "Shrinking partitions is not allowed"
-msgstr ""
+msgstr "Bölümlerin küçültülmesine izin verilmez"
 
 #: src/components/storage/ProposalActionsSummary.jsx:117
 msgid "Shrinking partitions is allowed"
-msgstr ""
+msgstr "Bölümlerin küçültülmesine izin verilir"
 
 #: src/components/storage/ProposalActionsSummary.jsx:119
 msgid "Shrinking some partitions is allowed but not needed"
-msgstr ""
+msgstr "Bazı bölümlerin küçültülmesine izin verilir ancak buna gerek yoktur"
 
 #: src/components/storage/ProposalActionsSummary.jsx:122
 #, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d bölümü küçültülecek"
+msgstr[1] "%d bölümü küçültülecek"
 
 #: src/components/storage/ProposalActionsSummary.jsx:160
-#, fuzzy
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "Uzaktan kurulumda klavye düzeni değiştirilemez"
+msgstr "Kurulum için gerekli dosya sistemlerine yer verilemiyor"
 
 #: src/components/storage/ProposalActionsSummary.jsx:168
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Planlanan eylemi kontrol edin"
+msgstr[1] "%d planlanan eylemi kontrol edin"
 
 #: src/components/storage/ProposalActionsSummary.jsx:183
 msgid "Waiting for actions information..."
-msgstr ""
+msgstr "Eylem bilgileri bekleniyor..."
 
 #: src/components/storage/ProposalPage.jsx:317
 msgid "Planned Actions"
-msgstr ""
+msgstr "Planlanan Eylemler"
 
 #: src/components/storage/ProposalResultSection.jsx:43
 msgid "Waiting for information about storage configuration"
-msgstr ""
+msgstr "Depolama yapılandırması hakkında bilgi bekleniyor"
 
 #: src/components/storage/ProposalResultSection.jsx:73
 msgid "Final layout"
-msgstr ""
+msgstr "Son düzen"
 
 #: src/components/storage/ProposalResultSection.jsx:74
 msgid "The systems will be configured as displayed below."
-msgstr ""
+msgstr "Sistemler aşağıda gösterildiği şekilde yapılandırılacaktır."
 
 #: src/components/storage/ProposalResultSection.jsx:83
 msgid "Storage proposal not possible"
-msgstr ""
+msgstr "Depolama önerisi mümkün değil"
 
 #: src/components/storage/ProposalResultTable.jsx:79
 msgid "New"
-msgstr ""
+msgstr "Yeni"
 
 #. TRANSLATORS: Label to indicate the device size before resizing, where %s is
 #. replaced by the original size (e.g., 3.00 GiB).
 #: src/components/storage/ProposalResultTable.jsx:105
 #, c-format
 msgid "Before %s"
-msgstr ""
+msgstr "Önce %s"
 
 #: src/components/storage/ProposalResultTable.jsx:131
 msgid "Mount Point"
-msgstr ""
+msgstr "Bağlantı Noktası"
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:45
 msgid "Transactional root file system"
-msgstr ""
+msgstr "İşlemsel kök dosya sistemi"
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:49
 #, c-format
@@ -1236,182 +1256,188 @@ msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
 "file system updated via snapshots."
 msgstr ""
+"%s atomik güncellemelere sahip değişmez bir sistemdir. Anlık imajlar "
+"aracılığıyla güncellenen salt okunur bir Btrfs dosya sistemi kullanır."
 
 #: src/components/storage/SnapshotsField.jsx:36
 msgid "Use Btrfs snapshots for the root file system"
-msgstr ""
+msgstr "Kök dosya sistemi için Btrfs anlık imajlarını kullanın"
 
 #: src/components/storage/SnapshotsField.jsx:38
 msgid ""
 "Allows to boot to a previous version of the system after configuration "
 "changes or software upgrades."
 msgstr ""
+"Yapılandırma değişiklikleri veya yazılım yükseltmeleri sonrasında sistemin "
+"önceki bir sürümüne önyükleme yapılmasına olanak tanır."
 
 #: src/components/storage/SpaceActionsTable.jsx:68
 #, c-format
 msgid "Up to %s can be recovered by shrinking the device."
-msgstr ""
+msgstr "Cihazın küçültülmesiyle %s'ye kadar geri kazanılabilir."
 
 #: src/components/storage/SpaceActionsTable.jsx:77
 msgid "The device cannot be shrunk:"
-msgstr ""
+msgstr "Cihaz daraltılamaz:"
 
 #: src/components/storage/SpaceActionsTable.jsx:98
 #, c-format
 msgid "Show information about %s"
-msgstr ""
+msgstr "%s hakkında bilgi göster"
 
 #: src/components/storage/SpaceActionsTable.jsx:172
 msgid "The content may be deleted"
-msgstr ""
+msgstr "İçerik silinmiş olabilir"
 
 #: src/components/storage/SpaceActionsTable.jsx:204
 msgid "Action"
-msgstr ""
+msgstr "Eylem"
 
 #: src/components/storage/SpaceActionsTable.jsx:215
 msgid "Actions to find space"
-msgstr ""
+msgstr "Alan bulmak için eylemler"
 
 #: src/components/storage/SpacePolicySelection.jsx:172
 msgid "Space policy"
-msgstr ""
+msgstr "Alan politikası"
 
 #: src/components/storage/VolumeDialog.jsx:83
 #, c-format
 msgid "Add %s file system"
-msgstr ""
+msgstr "%s dosya sistemini ekle"
 
 #: src/components/storage/VolumeDialog.jsx:84
 #, c-format
 msgid "Edit %s file system"
-msgstr ""
+msgstr "%s dosya sistemini düzenle"
 
 #: src/components/storage/VolumeDialog.jsx:86
 msgid "Edit file system"
-msgstr ""
+msgstr "Dosya sistemini düzenle"
 
 #. TRANSLATORS: Warning when editing a file system.
 #: src/components/storage/VolumeDialog.jsx:101
 msgid "The type and size of the file system cannot be edited."
-msgstr ""
+msgstr "Dosya sisteminin türü ve boyutu düzenlenemez."
 
 #: src/components/storage/VolumeDialog.jsx:105
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr ""
+"%s üzerindeki geçerli dosya sistemi %s konumuna bağlanmak üzere seçildi."
 
 #. TRANSLATORS: Warning when editing a file system.
 #: src/components/storage/VolumeDialog.jsx:113
 msgid "The size of the file system cannot be edited"
-msgstr ""
+msgstr "Dosya sisteminin boyutu düzenlenemez"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
 #: src/components/storage/VolumeDialog.jsx:115
 #, c-format
 msgid "The file system is allocated at the device %s."
-msgstr ""
+msgstr "Dosya sistemi %s cihazına tahsis edildi."
 
 #: src/components/storage/VolumeDialog.jsx:163
 msgid "A mount point is required"
-msgstr ""
+msgstr "Bir bağlama noktası gerekli"
 
 #: src/components/storage/VolumeDialog.jsx:190
 msgid "The mount point is invalid"
-msgstr ""
+msgstr "Bağlama noktası geçersiz"
 
 #: src/components/storage/VolumeDialog.jsx:218
 msgid "A size value is required"
-msgstr ""
+msgstr "Bir boyut değeri gerekli"
 
 #: src/components/storage/VolumeDialog.jsx:246
 msgid "Minimum size is required"
-msgstr ""
+msgstr "Minimum boyut gereklidir"
 
 #: src/components/storage/VolumeDialog.jsx:278
 msgid "Maximum must be greater than minimum"
-msgstr ""
+msgstr "Maksimum, minimumdan büyük olmalıdır"
 
 #: src/components/storage/VolumeDialog.jsx:320
 #, c-format
 msgid "There is already a file system for %s."
-msgstr ""
+msgstr "%s için zaten bir dosya sistemi var."
 
 #: src/components/storage/VolumeDialog.jsx:322
 msgid "Do you want to edit it?"
-msgstr ""
+msgstr "Düzenlemek ister misiniz?"
 
 #: src/components/storage/VolumeDialog.jsx:367
 #, c-format
 msgid "There is a predefined file system for %s."
-msgstr ""
+msgstr "%s için önceden tanımlanmış bir dosya sistemi var."
 
 #: src/components/storage/VolumeDialog.jsx:369
 msgid "Do you want to add it?"
-msgstr ""
+msgstr "Eklemek ister misiniz?"
 
 #: src/components/storage/VolumeFields.jsx:225
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
+"Dosya sistemi türüyle ilgili seçenekler ürüne ve bağlama noktasına bağlıdır."
 
 #: src/components/storage/VolumeFields.jsx:232
 msgid "More info for file system types"
-msgstr ""
+msgstr "Dosya sistemi türleri hakkında daha fazla bilgi"
 
 #. TRANSLATORS: label for the file system selector.
 #: src/components/storage/VolumeFields.jsx:243
 msgid "File system type"
-msgstr ""
+msgstr "Dosya sistemi türü"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #: src/components/storage/VolumeFields.jsx:274
 msgid "the configuration of snapshots"
-msgstr ""
+msgstr "anlık imajların yapılandırılması"
 
 #: src/components/storage/VolumeFields.jsx:281
 #, c-format
 msgid "the presence of the file system for %s"
-msgstr ""
+msgstr "%s için dosya sisteminin mevcut olması"
 
 #. TRANSLATORS: conjunction for merging two list items
 #: src/components/storage/VolumeFields.jsx:283
 msgid ", "
-msgstr ""
+msgstr ", "
 
 #. TRANSLATORS: item which affects the final computed partition size
 #: src/components/storage/VolumeFields.jsx:289
 msgid "the amount of RAM in the system"
-msgstr ""
+msgstr "sistemdeki RAM miktarı"
 
 #: src/components/storage/VolumeFields.jsx:293
 #, c-format
 msgid "The final size depends on %s."
-msgstr ""
+msgstr "Son boyut %s'ye bağlıdır."
 
 #. TRANSLATORS: conjunction for merging two texts
 #: src/components/storage/VolumeFields.jsx:295
 msgid " and "
-msgstr ""
+msgstr " ve "
 
 #: src/components/storage/VolumeFields.jsx:302
 msgid "Automatically calculated size according to the selected product."
-msgstr ""
+msgstr "Seçilen ürüne göre otomatik olarak boyut hesaplanır."
 
 #: src/components/storage/VolumeFields.jsx:321
 msgid "Exact size for the file system."
-msgstr ""
+msgstr "Dosya sisteminin tam boyutu."
 
 #. TRANSLATORS: requested partition size
 #: src/components/storage/VolumeFields.jsx:330
 msgid "Exact size"
-msgstr ""
+msgstr "Tam boyut"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
 #: src/components/storage/VolumeFields.jsx:347
 msgid "Size unit"
-msgstr ""
+msgstr "Boyut birimi"
 
 #: src/components/storage/VolumeFields.jsx:376
 msgid ""
@@ -1419,151 +1445,160 @@ msgid ""
 "given minimum and maximum. If no maximum is given then the file system will "
 "be as big as possible."
 msgstr ""
+"Dosya sistemi boyutu için sınırlar. Son boyut, verilen minimum ve maksimum "
+"arasında bir değer olacaktır. Maksimum verilmezse dosya sistemi mümkün "
+"olduğunca büyük olacaktır."
 
 #. TRANSLATORS: the minimal partition size
 #: src/components/storage/VolumeFields.jsx:384
 msgid "Minimum"
-msgstr ""
+msgstr "Minimum"
 
 #. TRANSLATORS: the minium partition size
 #: src/components/storage/VolumeFields.jsx:395
 msgid "Minimum desired size"
-msgstr ""
+msgstr "Minimum istenen boyut"
 
 #: src/components/storage/VolumeFields.jsx:406
 msgid "Unit for the minimum size"
-msgstr ""
+msgstr "Minimum boyut için birim"
 
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeFields.jsx:418
 msgid "Maximum"
-msgstr ""
+msgstr "Maksimum"
 
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeFields.jsx:430
 msgid "Maximum desired size"
-msgstr ""
+msgstr "İstenilen maksimum boyut"
 
 #: src/components/storage/VolumeFields.jsx:440
 msgid "Unit for the maximum size"
-msgstr ""
+msgstr "Maksimum boyut için birim"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
 #: src/components/storage/VolumeFields.jsx:458
 msgid "Auto"
-msgstr ""
+msgstr "Otomatik"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
 #: src/components/storage/VolumeFields.jsx:460
 msgid "Fixed"
-msgstr ""
+msgstr "Düzeltildi"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
 #: src/components/storage/VolumeFields.jsx:462
 msgid "Range"
-msgstr ""
+msgstr "Aralık"
 
 #: src/components/storage/VolumeLocationDialog.jsx:41
 msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
 msgstr ""
+"Dosya sistemleri varsayılan olarak kurulum cihazına tahsis edilir. Dosya "
+"sistemini belirli bir cihazda oluşturmak için özel bir konum belirtin."
 
 #. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
 #. by a mount path (e.g., /home).
 #: src/components/storage/VolumeLocationDialog.jsx:137
 #, c-format
 msgid "Location for %s file system"
-msgstr ""
+msgstr "%s dosya sistemi için konum"
 
 #: src/components/storage/VolumeLocationDialog.jsx:147
 msgid "Select in which device to allocate the file system"
-msgstr ""
+msgstr "Dosya sisteminin hangi cihaza tahsis edileceğini seçin"
 
 #: src/components/storage/VolumeLocationDialog.jsx:150
 msgid "Select a location"
-msgstr ""
+msgstr "Bir konum seçin"
 
 #: src/components/storage/VolumeLocationDialog.jsx:162
 msgid "Select how to allocate the file system"
-msgstr ""
+msgstr "Dosya sisteminin nasıl tahsis edileceğini seçin"
 
 #: src/components/storage/VolumeLocationDialog.jsx:167
 msgid "Create a new partition"
-msgstr ""
+msgstr "Yeni bir bölüm oluştur"
 
 #: src/components/storage/VolumeLocationDialog.jsx:169
 msgid ""
 "The file system will be allocated as a new partition at the selected   disk."
 msgstr ""
+"Seçilen   diskte dosya sistemi yeni bir bölüm olarak tahsis edilecektir."
 
 #: src/components/storage/VolumeLocationDialog.jsx:179
 msgid "Create a dedicated LVM volume group"
-msgstr ""
+msgstr "Özel bir LVM birim grubu oluşturun"
 
 #: src/components/storage/VolumeLocationDialog.jsx:181
 msgid ""
 "A new volume group will be allocated in the selected disk and the   file "
 "system will be created as a logical volume."
 msgstr ""
+"Seçilen diskte yeni bir birim grubu tahsis edilecek ve   dosya sistemi "
+"mantıksal birim olarak oluşturulacaktır."
 
 #: src/components/storage/VolumeLocationDialog.jsx:191
 msgid "Format the device"
-msgstr ""
+msgstr "Cihazı biçimlendirin"
 
 #: src/components/storage/VolumeLocationDialog.jsx:195
 #, c-format
 msgid "The selected device will be formatted as %s file system."
-msgstr ""
+msgstr "Seçilen cihaz %s dosya sistemi olarak formatlanacak."
 
 #: src/components/storage/VolumeLocationDialog.jsx:206
 msgid "Mount the file system"
-msgstr ""
+msgstr "Dosya sistemini bağlayın"
 
 #: src/components/storage/VolumeLocationDialog.jsx:208
 msgid ""
 "The current file system on the selected device will be mounted   without "
 "formatting the device."
 msgstr ""
+"Seçilen cihazdaki mevcut dosya sistemi, cihaz   formatlanmadan bağlanacaktır."
 
 #: src/components/storage/VolumeLocationSelectorTable.jsx:110
 msgid "Usage"
-msgstr ""
+msgstr "Kullanım"
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
 #: src/components/storage/iscsi/DiscoverForm.jsx:98
 #: src/components/storage/iscsi/LoginForm.jsx:69
 #: src/components/users/FirstUserForm.jsx:207
 msgid "Something went wrong"
-msgstr ""
+msgstr "Bir şeyler ters gitti"
 
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
-msgstr ""
+msgstr "zFCP diski etkinleştirilmedi."
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:123
 #: src/components/storage/ZFCPPage.jsx:383
 msgid "WWPN"
-msgstr ""
+msgstr "WWPN"
 
 #. TRANSLATORS: abbrev. Logical Unit Number
 #: src/components/storage/ZFCPDiskForm.jsx:131
 #: src/components/storage/ZFCPPage.jsx:384
 msgid "LUN"
-msgstr ""
+msgstr "LUN"
 
 #: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
-msgstr ""
+msgstr "Otomatik LUN Taraması"
 
 #: src/components/storage/ZFCPPage.jsx:337
 msgid "Activated"
-msgstr ""
+msgstr "Aktifleştirildi"
 
 #: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
-msgstr ""
+msgstr "Devre dışı bırakıldı"
 
 #. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
@@ -1573,72 +1608,77 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:98
 #: src/components/storage/iscsi/NodesPresenter.jsx:119
 msgid "Name"
-msgstr ""
+msgstr "İsim"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
-msgstr ""
+msgstr "Hiçbir zFCP denetleyicisi bulunamadı."
 
 #: src/components/storage/ZFCPPage.jsx:438
 msgid "Please, try to read the zFCP devices again."
-msgstr ""
+msgstr "Lütfen zFCP cihazlarını tekrar okumayı deneyin."
 
 #: src/components/storage/ZFCPPage.jsx:441
 msgid "Read zFCP devices"
-msgstr ""
+msgstr "zFCP aygıtlarını oku"
 
 #: src/components/storage/ZFCPPage.jsx:452
 msgid ""
 "Automatic LUN scan is [enabled]. Activating a controller which is running in "
 "NPIV mode will automatically configures all its LUNs."
 msgstr ""
+"Otomatik LUN taraması [etkin]. NPIV modunda çalışan bir denetleyiciyi "
+"etkinleştirmek, tüm LUN'larını otomatik olarak yapılandıracaktır."
 
 #: src/components/storage/ZFCPPage.jsx:457
 msgid ""
 "Automatic LUN scan is [disabled]. LUNs have to be manually configured after "
 "activating a controller."
 msgstr ""
+"Otomatik LUN taraması [devre dışı]. Bir denetleyici etkinleştirildikten "
+"sonra LUN'ların manuel olarak yapılandırılması gerekir."
 
 #: src/components/storage/ZFCPPage.jsx:519
 msgid "Activate a zFCP disk"
-msgstr ""
+msgstr "Bir zFCP diskini etkinleştirin"
 
 #: src/components/storage/ZFCPPage.jsx:553
 msgid "Please, try to activate a zFCP controller."
-msgstr ""
+msgstr "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
 
 #: src/components/storage/ZFCPPage.jsx:559
 msgid "Please, try to activate a zFCP disk."
-msgstr ""
+msgstr "Lütfen bir zFCP diski etkinleştirmeyi deneyin."
 
 #: src/components/storage/ZFCPPage.jsx:562
 msgid "Activate zFCP disk"
-msgstr ""
+msgstr "zFCP diskini etkinleştir"
 
 #: src/components/storage/ZFCPPage.jsx:570
 msgid "No zFCP disks found."
-msgstr ""
+msgstr "zFCP diski bulunamadı."
 
 #: src/components/storage/ZFCPPage.jsx:586
 msgid "Activate new disk"
-msgstr ""
+msgstr "Yeni diski etkinleştir"
 
 #. TRANSLATORS: section title
 #: src/components/storage/ZFCPPage.jsx:599
 msgid "Disks"
-msgstr ""
+msgstr "Diskler"
 
 #: src/components/storage/device-utils.jsx:92
 msgid "Unused space"
-msgstr ""
+msgstr "Kullanılmayan alan"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
 msgstr ""
+"Yalnızca hedef tarafından kimlik doğrulaması sağlandığında kullanılabilir"
 
 #: src/components/storage/iscsi/AuthFields.jsx:77
 msgid "Authentication by target"
-msgstr ""
+msgstr "Hedefe göre kimlik doğrulama"
 
 #: src/components/storage/iscsi/AuthFields.jsx:78
 #: src/components/storage/iscsi/AuthFields.jsx:82
@@ -1647,75 +1687,75 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:108
 #: src/components/storage/iscsi/AuthFields.jsx:110
 msgid "User name"
-msgstr ""
+msgstr "Kullanıcı adı"
 
 #: src/components/storage/iscsi/AuthFields.jsx:88
 #: src/components/storage/iscsi/AuthFields.jsx:116
 msgid "Incorrect user name"
-msgstr ""
+msgstr "Yanlış kullanıcı adı"
 
 #: src/components/storage/iscsi/AuthFields.jsx:99
 #: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
-msgstr ""
+msgstr "Yanlış şifre"
 
 #: src/components/storage/iscsi/AuthFields.jsx:102
 msgid "Authentication by initiator"
-msgstr ""
+msgstr "Başlatıcıya göre kimlik doğrulama"
 
 #: src/components/storage/iscsi/AuthFields.jsx:123
 msgid "Target Password"
-msgstr ""
+msgstr "Hedef Şifre"
 
 #. TRANSLATORS: popup title
 #: src/components/storage/iscsi/DiscoverForm.jsx:94
 msgid "Discover iSCSI Targets"
-msgstr ""
+msgstr "iSCSI Hedeflerini Keşfedin"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:99
 #: src/components/storage/iscsi/LoginForm.jsx:70
 msgid "Make sure you provide the correct values"
-msgstr ""
+msgstr "Doğru değerleri sağladığınızdan emin olun"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:103
 msgid "IP address"
-msgstr ""
+msgstr "IP adresi"
 
 #. TRANSLATORS: network address
 #: src/components/storage/iscsi/DiscoverForm.jsx:108
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
 msgid "Address"
-msgstr ""
+msgstr "Adres"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:115
 msgid "Incorrect IP address"
-msgstr ""
+msgstr "Yanlış IP adresi"
 
 #. TRANSLATORS: network port number
 #: src/components/storage/iscsi/DiscoverForm.jsx:117
 #: src/components/storage/iscsi/DiscoverForm.jsx:122
 #: src/components/storage/iscsi/DiscoverForm.jsx:124
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:129
 msgid "Incorrect port"
-msgstr ""
+msgstr "Yanlış port"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target node name
 #: src/components/storage/iscsi/EditNodeForm.jsx:48
 #, c-format
 msgid "Edit %s"
-msgstr ""
+msgstr "%s'yi düzenle"
 
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
 msgid "Edit iSCSI Initiator"
-msgstr ""
+msgstr "iSCSI Başlatıcısını Düzenle"
 
 #. TRANSLATORS: iSCSI initiator name
 #: src/components/storage/iscsi/InitiatorForm.jsx:49
 msgid "Initiator name"
-msgstr ""
+msgstr "Başlatıcı adı"
 
 #. TRANSLATORS: usually just keep the original text
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
@@ -1724,336 +1764,345 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:101
 #: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "iBFT"
-msgstr ""
+msgstr "iBFT"
 
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
-msgstr ""
+msgstr "Yok"
 
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:87
 msgid "Offload card"
-msgstr ""
+msgstr "Kartı boşalt"
 
 #. TRANSLATORS: iSCSI initiator section name
 #: src/components/storage/iscsi/InitiatorSection.jsx:49
 msgid "Initiator"
-msgstr ""
+msgstr "Başlatıcı"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
-msgstr ""
+msgstr "Giriş %s"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:74
 #: src/components/storage/iscsi/LoginForm.jsx:77
 msgid "Startup"
-msgstr ""
+msgstr "Başlangıç"
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
-msgstr ""
+msgstr "Manuel"
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
-msgstr ""
+msgstr "Önyüklemede"
 
 #. TRANSLATORS: iSCSI connection status
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
-msgstr ""
+msgstr "Bağlantısı Kesildi"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
 #, c-format
 msgid "Connected (%s)"
-msgstr ""
+msgstr "Bağlandı (%s)"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:82
 msgid "Login"
-msgstr ""
+msgstr "Oturum aç"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:86
 msgid "Logout"
-msgstr ""
+msgstr "Oturumu kapat"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:99
 #: src/components/storage/iscsi/NodesPresenter.jsx:120
 msgid "Portal"
-msgstr ""
+msgstr "Portal"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:100
 #: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Interface"
-msgstr ""
+msgstr "Arayüz"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:138
 msgid "No iSCSI targets found."
-msgstr ""
+msgstr "Hiçbir iSCSI hedefi bulunamadı."
 
 #: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
 msgstr ""
+"Lütfen kullanılabilir iSCSI hedeflerini bulmak için bir iSCSI keşfi "
+"gerçekleştirin."
 
 #: src/components/storage/iscsi/TargetsSection.jsx:144
 msgid "Discover iSCSI targets"
-msgstr ""
+msgstr "iSCSI hedeflerini keşfedin"
 
 #. TRANSLATORS: button label, starts iSCSI discovery
 #: src/components/storage/iscsi/TargetsSection.jsx:156
 msgid "Discover"
-msgstr ""
+msgstr "Keşfet"
 
 #. TRANSLATORS: iSCSI targets section title
 #: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
-msgstr ""
+msgstr "Hedefler"
 
 #: src/components/storage/utils.js:64
 msgid "KiB"
-msgstr ""
+msgstr "KB"
 
 #: src/components/storage/utils.js:65
 msgid "MiB"
-msgstr ""
+msgstr "MB"
 
 #: src/components/storage/utils.js:66
 msgid "GiB"
-msgstr ""
+msgstr "GB"
 
 #: src/components/storage/utils.js:67
 msgid "TiB"
-msgstr ""
+msgstr "TB"
 
 #: src/components/storage/utils.js:68
 msgid "PiB"
-msgstr ""
+msgstr "PB"
 
 #: src/components/storage/utils.js:77
 msgid "Delete current content"
-msgstr ""
+msgstr "Mevcut içeriği sil"
 
 #: src/components/storage/utils.js:78
 msgid "All partitions will be removed and any data in the disks will be lost."
-msgstr ""
+msgstr "Tüm bölümler kaldırılacak ve disklerdeki tüm veriler kaybolacaktır."
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting current content". Keep it short
 #: src/components/storage/utils.js:82
 msgid "deleting current content"
-msgstr ""
+msgstr "mevcut içerik siliniyor"
 
 #: src/components/storage/utils.js:87
 msgid "Shrink existing partitions"
-msgstr ""
+msgstr "Mevcut bölümleri küçült"
 
 #: src/components/storage/utils.js:88
 msgid "The data is kept, but the current partitions will be resized as needed."
 msgstr ""
+"Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden "
+"boyutlandırılacak."
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions". Keep it short.
 #: src/components/storage/utils.js:92
 msgid "shrinking partitions"
-msgstr ""
+msgstr "bölümler küçültülüyor"
 
 #: src/components/storage/utils.js:97
 msgid "Use available space"
-msgstr ""
+msgstr "Mevcut alanı kullan"
 
 #: src/components/storage/utils.js:98
 msgid ""
 "The data is kept. Only the space not assigned to any partition will be used."
 msgstr ""
+"Veriler tutulur. Sadece herhangi bir bölüme atanmamış alan kullanılacaktır."
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space without modifying any partition". Keep it short.
 #: src/components/storage/utils.js:102
 msgid "without modifying any partition"
-msgstr ""
+msgstr "herhangi bir bölümü değiştirmeden"
 
 #: src/components/storage/utils.js:107
 msgid "Custom"
-msgstr ""
+msgstr "Özel"
 
 #: src/components/storage/utils.js:108
 msgid "Select what to do with each partition."
-msgstr ""
+msgstr "Her bölümle ne yapılacağını seçin."
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space with custom actions". Keep it short.
 #: src/components/storage/utils.js:112
 msgid "with custom actions"
-msgstr ""
+msgstr "özel eylemlerle"
 
 #: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
-msgstr ""
+msgstr "Henüz kullanıcı tanımlı değil."
 
 #: src/components/users/FirstUser.jsx:39
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
 msgstr ""
+"Sisteme giriş yapılabilmesi için kurulumdan önce bir kullanıcı tanımlanması "
+"gerektiğini lütfen aklınızda bulundurun."
 
 #: src/components/users/FirstUser.jsx:45
 msgid "Define a user now"
-msgstr ""
+msgstr "Şimdi bir kullanıcı tanımlayın"
 
 #: src/components/users/FirstUser.jsx:58
 #: src/components/users/FirstUserForm.jsx:217
 msgid "Full name"
-msgstr ""
+msgstr "Tam isim"
 
 #: src/components/users/FirstUser.jsx:59
 #: src/components/users/FirstUserForm.jsx:231
 #: src/components/users/FirstUserForm.jsx:236
 #: src/components/users/FirstUserForm.jsx:239
 msgid "Username"
-msgstr ""
+msgstr "Kullanıcı adı"
 
 #: src/components/users/FirstUser.jsx:90
 #: src/components/users/RootAuthMethods.jsx:78
 #: src/components/users/RootAuthMethods.jsx:90
 msgid "Discard"
-msgstr ""
+msgstr "At"
 
 #: src/components/users/FirstUserForm.jsx:58
 msgid "Username suggestion dropdown"
-msgstr ""
+msgstr "Kullanıcı adı önerisi açılır listesi"
 
 #. TRANSLATORS: dropdown username suggestions
 #: src/components/users/FirstUserForm.jsx:73
 msgid "Use suggested username"
-msgstr ""
+msgstr "Önerilen kullanıcı adını kullan"
 
 #: src/components/users/FirstUserForm.jsx:144
 msgid "All fields are required"
-msgstr ""
+msgstr "Tüm alanlar zorunludur"
 
 #: src/components/users/FirstUserForm.jsx:201
 msgid "Create user"
-msgstr ""
+msgstr "Kullanıcı oluştur"
 
 #: src/components/users/FirstUserForm.jsx:201
 msgid "Edit user"
-msgstr ""
+msgstr "Kullanıcıyı düzenle"
 
 #: src/components/users/FirstUserForm.jsx:221
 #: src/components/users/FirstUserForm.jsx:223
 msgid "User full name"
-msgstr ""
+msgstr "Kullanıcının tam adı"
 
 #: src/components/users/FirstUserForm.jsx:261
 msgid "Edit password too"
-msgstr ""
+msgstr "Şifreyi de düzenle"
 
 #: src/components/users/FirstUserForm.jsx:277
 msgid "user autologin"
-msgstr ""
+msgstr "kullanıcı otomatik oturum açma"
 
 #. TRANSLATORS: check box label
 #: src/components/users/FirstUserForm.jsx:281
 msgid "Auto-login"
-msgstr ""
+msgstr "Otomatik oturum açma"
 
 #: src/components/users/RootAuthMethods.jsx:36
 msgid "No root authentication method defined yet."
-msgstr ""
+msgstr "Henüz tanımlanmış bir kök kimlik doğrulama yöntemi yok."
 
 #: src/components/users/RootAuthMethods.jsx:40
 msgid ""
 "Please, define at least one authentication method for logging into the "
 "system as root."
 msgstr ""
+"Lütfen sisteme root olarak giriş yapmak için en az bir kimlik doğrulama "
+"yöntemi tanımlayın."
 
 #: src/components/users/RootAuthMethods.jsx:47
 msgid "Set a password"
-msgstr ""
+msgstr "Bir şifre belirleyin"
 
 #: src/components/users/RootAuthMethods.jsx:51
 msgid "Upload a SSH Public Key"
-msgstr ""
+msgstr "Bir SSH Genel Anahtarı Yükleyin"
 
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Set"
-msgstr ""
+msgstr "Ayarla"
 
 #: src/components/users/RootAuthMethods.jsx:97
 msgid "Already set"
-msgstr ""
+msgstr "Zaten ayarlandı"
 
 #: src/components/users/RootAuthMethods.jsx:97
 #: src/components/users/RootAuthMethods.jsx:101
 msgid "Not set"
-msgstr ""
+msgstr "Ayarlanmamış"
 
 #. TRANSLATORS: table header, user authentication method
 #: src/components/users/RootAuthMethods.jsx:122
 msgid "Method"
-msgstr ""
+msgstr "Yöntem"
 
 #: src/components/users/RootAuthMethods.jsx:139
 msgid "SSH Key"
-msgstr ""
+msgstr "SSH Anahtarı"
 
 #: src/components/users/RootAuthMethods.jsx:158
 msgid "Change the root password"
-msgstr ""
+msgstr "Root şifresini değiştirin"
 
 #: src/components/users/RootAuthMethods.jsx:158
 msgid "Set a root password"
-msgstr ""
+msgstr "Root şifresi belirleyin"
 
 #: src/components/users/RootAuthMethods.jsx:168
 msgid "Edit the SSH Public Key for root"
-msgstr ""
+msgstr "Root için SSH Genel Anahtarını düzenleyin"
 
 #: src/components/users/RootAuthMethods.jsx:169
 msgid "Add a SSH Public Key for root"
-msgstr ""
+msgstr "Root için bir SSH Genel Anahtarı ekleyin"
 
 #: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
-msgstr ""
+msgstr "Root şifresi"
 
 #: src/components/users/RootSSHKeyPopup.jsx:43
 msgid "Set root SSH public key"
-msgstr ""
+msgstr "Root SSH genel anahtarını ayarlayın"
 
 #: src/components/users/RootSSHKeyPopup.jsx:71
 msgid "Root SSH public key"
-msgstr ""
+msgstr "Root SSH genel anahtarı"
 
 #: src/components/users/RootSSHKeyPopup.jsx:76
 msgid "Upload, paste, or drop an SSH public key"
-msgstr ""
+msgstr "Bir SSH genel anahtarını yükleyin, yapıştırın veya bırakın"
 
 #. TRANSLATORS: push button label
 #: src/components/users/RootSSHKeyPopup.jsx:78
 msgid "Upload"
-msgstr ""
+msgstr "Yükle"
 
 #. TRANSLATORS: push button label, clears the related input field
 #: src/components/users/RootSSHKeyPopup.jsx:80
 msgid "Clear"
-msgstr ""
+msgstr "Temizle"
 
 #: src/components/users/UsersPage.jsx:44
 msgid "First user"
-msgstr ""
+msgstr "İlk kullanıcı"
 
 #: src/components/users/UsersPage.jsx:51
 msgid "Root authentication"
-msgstr ""
+msgstr "Root kimlik doğrulaması"
 
 #: src/router.js:48
 msgid "Overview"
-msgstr ""
+msgstr "Genel bakış"
 
 #~ msgid "Remove"
 #~ msgstr "Kaldır"
