@@ -146,6 +146,8 @@ $SUDO $ZYPPER install \
 (
   cd $MYDIR/rust
   cargo build
+
+  ln -st /usr/bin $MYDIR/rust/target/debug/agama{,*server}
 )
 
 # - D-Bus configuration
