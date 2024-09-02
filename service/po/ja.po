@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-10 02:23+0000\n"
-"PO-Revision-Date: 2024-07-11 04:47+0000\n"
+"POT-Creation-Date: 2024-08-28 02:30+0000\n"
+"PO-Revision-Date: 2024-08-29 07:47+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/ja/>\n"
@@ -190,14 +190,14 @@ msgstr "ブートローダの sysconfig を書き込んでいます"
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:192
+#: service/lib/agama/storage/proposal.rb:283
 msgid "Cannot accommodate the required file systems for installation"
 msgstr "インストールに必要なファイルシステムを調整できません"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:203
+#: service/lib/agama/storage/proposal.rb:294
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "ストレージ設定を作成する際に問題が発生しました"
 
@@ -224,6 +224,49 @@ msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "ユーザの設定、 root パスワードの設定、 SSH 公開鍵の設定のいずれかが必要です"
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:134
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr "パスフレーズが設定されていません ('%{crypt_method}' "
+"方式を使用する際には必須です) 。"
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:145
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr "このシステムでは '%{crypt_method}' 暗号化方式は利用できません。"
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:156
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr "'%{crypt_method}' はデバイスの暗号化方式として不適切です。"
+
+#. @see #not_found_issue
+#: service/lib/y2storage/proposal/agama_searcher.rb:98
+msgid "No device found for an optional drive"
+msgstr "任意指定のドライブに対応するデバイスが見つかりません"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:100
+msgid "No device found for a mandatory drive"
+msgstr "必須指定のドライブに対応するデバイスが見つかりません"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:103
+msgid "No device found for an optional partition"
+msgstr "任意指定のパーティションに対応するデバイスが見つかりません"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:105
+msgid "No device found for a mandatory partition"
+msgstr "必須指定のパーティションに対応するデバイスが見つかりません"
 
 #~ msgid "Probing Storage"
 #~ msgstr "ストレージを検出しています"
