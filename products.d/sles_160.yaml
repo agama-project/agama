@@ -37,6 +37,11 @@ translations:
       affärskontinuitet. Detta är det säkra och anpassningsbara operativsystemet
       för långsiktigt stöd, innovationsfärdig infrastruktur som kör
       affärskritiska arbetsbelastningar på plats, i molnet och vid kanten.
+    tr: SUSE Linux Enterprise Server, kuruluşun iş sürekliliğini garanti eden açık,
+      güvenilir, uyumlu ve geleceğe yönelik Linux Sunucu seçeneğidir. Şirket
+      içinde, bulutta ve uçta iş açısından kritik iş yüklerini çalıştıran uzun
+      vadeli desteklenen, inovasyona hazır altyapı için güvenli ve uyarlanabilir
+      işletim sistemidir.
 software:
   installation_repositories:
     - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-x86_64/
