@@ -931,18 +931,6 @@ const contexts = {
       },
     },
     {
-      blockDevice: {
-        active: true,
-        encrypted: false,
-        size: 2048,
-        start: 0,
-        shrinking: { unsupported: ["Resizing is not supported"] },
-        systems: [],
-        udevIds: [],
-        udevPaths: [],
-      },
-    },
-    {
       deviceInfo: {
         sid: 70,
         name: "/dev/sdf",
