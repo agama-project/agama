@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 30 13:05:53 UTC 2024 - Thomas Blume <Thomas.Blume@suse.com>
+
+- remove memcheck workaround in images.sh (bsc#1228621)
+
+-------------------------------------------------------------------
 Mon Aug 26 10:05:01 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Include the procps instead of the procps4 package
