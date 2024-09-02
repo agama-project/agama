@@ -34,6 +34,7 @@ import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
+import { fetchDevices } from "~/api/storage/devices";
 
 /**
  * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
@@ -183,8 +184,8 @@ export default function ProposalPage() {
   }, [client, cancellablePromise]);
 
   const loadDevices = useCallback(async () => {
-    const system = (await cancellablePromise(client.system.getDevices())) || [];
-    const staging = (await cancellablePromise(client.staging.getDevices())) || [];
+    const system = (await cancellablePromise(fetchDevices("system"))) || [];
+    const staging = (await cancellablePromise(fetchDevices("result"))) || [];
     return { system, staging };
   }, [client, cancellablePromise]);
 
