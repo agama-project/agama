@@ -38,35 +38,52 @@ const DASDSupported = (): Promise<boolean> => get("/api/storage/dasd/supported")
 const probeDASD = () => post("/api/storage/dasd/probe");
 
 /**
- * Start format job for given list of devices
- * @param devicesIDs array of device ids
+ * Start format job for given list of DASD devices
+ * @param devicesIDs - array of DASD device ids
  * @return id of format job
  */
-const formatDASD = (devicesIDs: string[]): Promise<string> => post("/api/storage/dasd/format", { devices: devicesIDs }).then(({ data }) => data);
+const formatDASD = (devicesIDs: string[]): Promise<string> =>
+  post("/api/storage/dasd/format", { devices: devicesIDs }).then(({ data }) => data);
 
 /**
- * Enables given list of devices
- * @param devicesIDs array of device ids
+ * Enable given list of DASD devices
+ *
+ * @param devicesIDs - array of DASD device ids
  */
-const enableDASD = (devicesIDs: string[]) => post("/api/storage/dasd/enable", { devices: devicesIDs });
+const enableDASD = (devicesIDs: string[]) =>
+  post("/api/storage/dasd/enable", { devices: devicesIDs });
 
 /**
- * Enables given list of devices
- * @param devicesIDs array of device ids
+ * Disable given list of DASD devices
+ *
+ * @param devicesIDs - array of DASD device ids
  */
-const disableDASD = (devicesIDs: string[]) => post("/api/storage/dasd/disable", { devices: devicesIDs });
+const disableDASD = (devicesIDs: string[]) =>
+  post("/api/storage/dasd/disable", { devices: devicesIDs });
 
 /**
- * Enables diag on given list of devices
- * @param devicesIDs array of device ids
+ * Enables diag on given list of DASD devices
+ *
+ * @param devicesIDs - array of DASD device ids
  */
-const enableDiag = (devicesIDs: string[]) => put("/api/storage/dasd/diag", { devices: devicesIDs, diag: true });
+const enableDiag = (devicesIDs: string[]) =>
+  put("/api/storage/dasd/diag", { devices: devicesIDs, diag: true });
 
 /**
- * Disables diag on given list of devices
- * @param devicesIDs array of device ids
+ * Disables diag on given list of DASD devices
+ *
+ * @param devicesIDs - array of DASD device ids
  */
-const disableDiag = (devicesIDs: string[]) => put("/api/storage/dasd/diag", { devices: devicesIDs, diag: false });
+const disableDiag = (devicesIDs: string[]) =>
+  put("/api/storage/dasd/diag", { devices: devicesIDs, diag: false });
 
-
-export { fetchDASDDevices, DASDSupported, formatDASD, probeDASD, enableDASD, disableDASD, enableDiag, disableDiag };
+export {
+  fetchDASDDevices,
+  DASDSupported,
+  formatDASD,
+  probeDASD,
+  enableDASD,
+  disableDASD,
+  enableDiag,
+  disableDiag,
+};

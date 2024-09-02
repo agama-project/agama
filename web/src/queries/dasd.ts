@@ -125,7 +125,7 @@ const useFormatDASDMutation = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (data: FormatJob): Promise<FormatJob> => Promise.resolve(data),
+    mutationFn: (data: FormatJob): Promise<FormatJob> => Promise.resolve(data),
     onSuccess: (data: FormatJob) => queryClient.setQueryData(["dasd", "formatJob", data.jobId], data)
   });
 
@@ -136,7 +136,7 @@ const useFormatDASDMutation = () => {
  */
 const selectedDASDQuery = () => ({
   queryKey: ["dasd", "selected"],
-  queryFn: async () => {
+  queryFn: () => {
     return Promise.resolve([]);
   },
   staleTime: Infinity,
@@ -158,7 +158,7 @@ const useSelectedDASDChange = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (data: SelectDASD): Promise<SelectDASD> => Promise.resolve(data),
+    mutationFn: (data: SelectDASD): Promise<SelectDASD> => Promise.resolve(data),
     onSuccess: (data: SelectDASD) => queryClient.setQueryData(["dasd", "selected"], (prev: DASDDevice[]) => {
       if (data.unselect) {
         if (data.device) return prev.filter((d) => d.id !== data.device.id);
@@ -179,7 +179,7 @@ const useSelectedDASDChange = () => {
  */
 const filterDASDQuery = () => ({
   queryKey: ["dasd", "filter"],
-  queryFn: async () => {
+  queryFn: () => {
     return Promise.resolve({ minChannel: "", maxChannel: "" });
   },
   staleTime: Infinity,
@@ -195,7 +195,7 @@ const useFilterDASDChange = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (data: FilterDASD): Promise<FilterDASD> => Promise.resolve(data),
+    mutationFn: (data: FilterDASD): Promise<FilterDASD> => Promise.resolve(data),
     onSuccess: (data: FilterDASD) => {
       queryClient.setQueryData(["dasd", "filter"], (prev: FilterDASD) => ({
         ...prev,
@@ -218,30 +218,37 @@ const useDASDDevicesChanges = () => {
     if (!client) return;
 
     return client.ws().onEvent((event) => {
-      if (event.type === "DASDDeviceAdded") {
-        const device: DASDDevice = event.device;
-        queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-          // do not use push here as updater has to be immutable
-          const res = prev.concat([device]);
-          return res;
-        });
-      } else if (event.type === "DASDDeviceRemoved") {
-        const device: DASDDevice = event.device;
-        const { id } = device;
-        queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-          const res = prev.filter(dev => dev.id !== id);
-          return res;
-        });
-      } else if (event.type === "DASDDeviceChanged") {
-        const device: DASDDevice = event.device;
-        const { id } = device;
-        queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-          // deep copy of original to have it immutable
-          const res = [...prev];
-          const index = res.findIndex(dev => dev.id === id);
-          res[index] = device;
-          return res;
-        });
+      switch (event.type) {
+        case "DASDDeviceAdded": {
+          const device: DASDDevice = event.device;
+          queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+            // do not use push here as updater has to be immutable
+            const res = prev.concat([device]);
+            return res;
+          });
+          break;
+        }
+        case "DASDDeviceRemoved": {
+          const device: DASDDevice = event.device;
+          const { id } = device;
+          queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+            const res = prev.filter(dev => dev.id !== id);
+            return res;
+          });
+          break;
+        }
+        case "DASDDeviceChanged": {
+          const device: DASDDevice = event.device;
+          const { id } = device;
+          queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+            // deep copy of original to have it immutable
+            const res = [...prev];
+            const index = res.findIndex(dev => dev.id === id);
+            res[index] = device;
+            return res;
+          });
+          break;
+        }
       }
     });
   });
