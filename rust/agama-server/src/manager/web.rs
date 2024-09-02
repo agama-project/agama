@@ -105,7 +105,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
 // long-lived HTTP connection, this method returns immediately (with a 200) and runs the request on
 // a separate task.
 #[utoipa::path(
-    get,
+    post,
     path = "/probe",
     context_path = "/api/manager",
     responses(
@@ -136,7 +136,7 @@ async fn probe_action<'a>(State(state): State<ManagerState<'a>>) -> Result<(), E
 
 /// Starts the probing process.
 #[utoipa::path(
-    get,
+    post,
     path = "/install",
     context_path = "/api/manager",
     responses(
@@ -150,7 +150,7 @@ async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Err
 
 /// Executes the post installation tasks (e.g., rebooting the system).
 #[utoipa::path(
-    get,
+    post,
     path = "/install",
     context_path = "/api/manager",
     responses(
