@@ -20,37 +20,35 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import DASDTable from "~/components/storage/DASDTable";
+import { screen } from "@testing-library/react";
+import { installerRender, plainRender } from "~/test-utils";
 import DASDFormatProgress from "./DASDFormatProgress";
-import { FormatJob } from "~/types/dasd";
+import { DASDDevice, FormatJob } from "~/types/dasd";
 
-let mockDASDFormatJob : FormatJob;
+let mockDASDFormatJobs: FormatJob[];
+let mockDASDDevices: DASDDevice[];
 
 jest.mock("~/queries/dasd", () => ({
-  useDASDFormatJobChanges: () => mockDASDFormatJob,
+  useDASDRunningFormatJobs: () => mockDASDFormatJobs,
+  useDASDDevices: () => mockDASDDevices,
 }));
 
 describe("DASDFormatProgress", () => {
   describe("when there is already some progress", () => {
     beforeEach(() => {
-      mockDASDFormatJob = 
-        { 
-            jobId: "0.0.0200",
-            summary: {
-                "0.0.0200": {
-                    total: 5,
-                    step: 1,
-                    done: false,
-                },
+      mockDASDFormatJobs =
+        [{
+          jobId: "0.0.0200",
+          summary: {
+            "0.0.0200": {
+              total: 5,
+              step: 1,
+              done: false,
             },
-        }
-      ;
-    });
+          },
+        }];
 
-    it("renders the progress", () => {
-      const devices = [{ 
+      mockDASDDevices = [{
         id: "0.0.0200",
         enabled: false,
         deviceName: "dasda",
@@ -62,22 +60,21 @@ describe("DASDFormatProgress", () => {
         partitionInfo: "1",
         hexId: 0x200,
       }];
-      installerRender(<DASDFormatProgress job="0.0.0200" devices={devices} />);
+      ;
+    });
+
+    it("renders the progress", () => {
+      installerRender(<DASDFormatProgress />);
+      expect(screen.queryByRole("progressbar")).toBeInTheDocument();
       screen.getByText("0.0.0200 - dasda");
     });
   });
 
-  describe("when there is no progress yet", () => {
+  describe("when there are no running jobs", () => {
     beforeEach(() => {
-      mockDASDFormatJob = 
-        { 
-            jobId: "0.0.0200",
-        }
-      ;
-    });
+      mockDASDFormatJobs = [];
 
-    it("renders the progress", () => {
-      const devices = [{ 
+      mockDASDDevices = [{
         id: "0.0.0200",
         enabled: false,
         deviceName: "dasda",
@@ -89,8 +86,11 @@ describe("DASDFormatProgress", () => {
         partitionInfo: "1",
         hexId: 0x200,
       }];
-      installerRender(<DASDFormatProgress job="0.0.0200" devices={devices} />);
-      screen.getByText("Waiting for progress report");
+    });
+
+    it("does not render any progress", () => {
+      installerRender(<DASDFormatProgress />);
+      expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
   });
 });
