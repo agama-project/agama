@@ -1,16 +1,16 @@
 //! Implements a client to access Agama's D-Bus API related to zFCP management.
 
-use zbus::{
-    fdo::ObjectManagerProxy,
-    zvariant::OwnedObjectPath,
-    Connection,
-};
+use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath, Connection};
 
 use crate::{
-    error::ServiceError, storage::{model::zfcp::{ZFCPController, ZFCPDisk}, proxies::{ZFCPControllerProxy, ZFCPManagerProxy}},
+    error::ServiceError,
+    storage::{
+        model::zfcp::{ZFCPController, ZFCPDisk},
+        proxies::{ZFCPControllerProxy, ZFCPManagerProxy},
+    },
 };
 
-const ZFCP_CONTROLLER_PREFIX : &'static str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
+const ZFCP_CONTROLLER_PREFIX: &'static str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
 
 /// Client to connect to Agama's D-Bus API for zFCP management.
 #[derive(Clone)]
@@ -31,7 +31,7 @@ impl<'a> ZFCPClient<'a> {
         Ok(Self {
             manager_proxy,
             object_manager_proxy,
-            connection
+            connection,
         })
     }
 
@@ -70,7 +70,9 @@ impl<'a> ZFCPClient<'a> {
         Ok(devices)
     }
 
-    pub async fn get_controllers(&self) -> Result<Vec<(OwnedObjectPath, ZFCPController)>, ServiceError> {
+    pub async fn get_controllers(
+        &self,
+    ) -> Result<Vec<(OwnedObjectPath, ZFCPController)>, ServiceError> {
         let managed_objects = self.object_manager_proxy.get_managed_objects().await?;
 
         let mut devices: Vec<(OwnedObjectPath, ZFCPController)> = vec![];
@@ -89,8 +91,14 @@ impl<'a> ZFCPClient<'a> {
         Ok(devices)
     }
 
-    async fn get_controller_proxy(&self, controller_id: &str) -> Result<ZFCPControllerProxy, ServiceError> {
-        let dbus = ZFCPControllerProxy::builder(&self.connection).path(ZFCP_CONTROLLER_PREFIX.to_string() + "/" + controller_id)?.build().await?;
+    async fn get_controller_proxy(
+        &self,
+        controller_id: &str,
+    ) -> Result<ZFCPControllerProxy, ServiceError> {
+        let dbus = ZFCPControllerProxy::builder(&self.connection)
+            .path(ZFCP_CONTROLLER_PREFIX.to_string() + "/" + controller_id)?
+            .build()
+            .await?;
         Ok(dbus)
     }
 
@@ -100,7 +108,7 @@ impl<'a> ZFCPClient<'a> {
         let controller = self.get_controller_proxy(controller_id).await?;
         controller.activate().await?;
         Ok(())
-    }  
+    }
 
     pub async fn get_wwpns(&self, controller_id: &str) -> Result<Vec<String>, ServiceError> {
         let controller = self.get_controller_proxy(controller_id).await?;
@@ -108,13 +116,22 @@ impl<'a> ZFCPClient<'a> {
         Ok(result)
     }
 
-    pub async fn get_luns(&self, controller_id: &str, wwpn: &str) -> Result<Vec<String>, ServiceError> {
+    pub async fn get_luns(
+        &self,
+        controller_id: &str,
+        wwpn: &str,
+    ) -> Result<Vec<String>, ServiceError> {
         let controller = self.get_controller_proxy(controller_id).await?;
         let result = controller.get_luns(wwpn).await?;
         Ok(result)
     }
 
-    pub async fn activate_disk(&self, controller_id: &str, wwpn: &str, lun: &str) -> Result<(), ServiceError> {
+    pub async fn activate_disk(
+        &self,
+        controller_id: &str,
+        wwpn: &str,
+        lun: &str,
+    ) -> Result<(), ServiceError> {
         let controller = self.get_controller_proxy(controller_id).await?;
         let result = controller.activate_disk(wwpn, lun).await?;
         if result == 0 {
@@ -122,10 +139,15 @@ impl<'a> ZFCPClient<'a> {
         } else {
             let text = format!("Failed to activate disk. chzdev exit code {}", result);
             Err(ServiceError::UnsuccessfulAction(text))
-        }       
+        }
     }
 
-    pub async fn deactivate_disk(&self, controller_id: &str, wwpn: &str, lun: &str) -> Result<(), ServiceError> {
+    pub async fn deactivate_disk(
+        &self,
+        controller_id: &str,
+        wwpn: &str,
+        lun: &str,
+    ) -> Result<(), ServiceError> {
         let controller = self.get_controller_proxy(controller_id).await?;
         let result = controller.deactivate_disk(wwpn, lun).await?;
         if result == 0 {
@@ -133,6 +155,6 @@ impl<'a> ZFCPClient<'a> {
         } else {
             let text = format!("Failed to deactivate disk. chzdev exit code {}", result);
             Err(ServiceError::UnsuccessfulAction(text))
-        }       
+        }
     }
 }

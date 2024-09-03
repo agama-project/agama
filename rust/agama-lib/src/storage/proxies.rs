@@ -301,4 +301,3 @@ trait Disk {
     #[dbus_proxy(property, name = "WWPN")]
     fn wwpn(&self) -> zbus::Result<String>;
 }
-

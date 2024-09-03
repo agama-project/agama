@@ -6,7 +6,8 @@
 //! * `zfcp_stream` which offers an stream that emits the zFCP-related events coming from D-Bus.
 
 use agama_lib::{
-    error::ServiceError, storage::{client::zfcp::ZFCPClient, model::zfcp::ZFCPController},
+    error::ServiceError,
+    storage::{client::zfcp::ZFCPClient, model::zfcp::ZFCPController},
 };
 use axum::{
     extract::{Path, State},
@@ -29,7 +30,10 @@ use crate::{error::Error, web::common::EventStreams};
 pub async fn zfcp_stream(dbus: &zbus::Connection) -> Result<EventStreams, Error> {
     let stream: EventStreams = vec![
         ("zfcp_disks", Box::pin(ZFCPDiskStream::new(dbus).await?)),
-        ("zfcp_controllers", Box::pin(ZFCPControllerStream::new(dbus).await?)),
+        (
+            "zfcp_controllers",
+            Box::pin(ZFCPControllerStream::new(dbus).await?),
+        ),
     ];
     Ok(stream)
 }
@@ -45,11 +49,23 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
     let router = Router::new()
         .route("/supported", get(supported))
         .route("/controllers", get(controllers))
-        .route("/controllers/:controller_id/activate", post(activate_controller))
+        .route(
+            "/controllers/:controller_id/activate",
+            post(activate_controller),
+        )
         .route("/controllers/:controller_id/wwpns", get(get_wwpns))
-        .route("/controllers/:controller_id/wwpns/:wwpn_id/luns", get(get_luns))
-        .route("/controllers/:controller_id/wwpns/:wwpn_id/luns/:lun_id/activate_disk", post(activate_disk))
-        .route("/controllers/:controller_id/wwpns/:wwpn_id/luns/:lun_id/deactivate_disk", post(deactivate_disk))
+        .route(
+            "/controllers/:controller_id/wwpns/:wwpn_id/luns",
+            get(get_luns),
+        )
+        .route(
+            "/controllers/:controller_id/wwpns/:wwpn_id/luns/:lun_id/activate_disk",
+            post(activate_disk),
+        )
+        .route(
+            "/controllers/:controller_id/wwpns/:wwpn_id/luns/:lun_id/deactivate_disk",
+            post(deactivate_disk),
+        )
         .route("/probe", post(probe))
         .with_state(state);
     Ok(router)
@@ -77,7 +93,9 @@ async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Err
         (status = OK, description = "List of ZFCP devices", body = Vec<ZFCPController>)
     )
 )]
-async fn controllers(State(state): State<ZFCPState<'_>>) -> Result<Json<Vec<ZFCPController>>, Error> {
+async fn controllers(
+    State(state): State<ZFCPState<'_>>,
+) -> Result<Json<Vec<ZFCPController>>, Error> {
     let devices = state
         .client
         .get_controllers()
@@ -97,8 +115,14 @@ async fn controllers(State(state): State<ZFCPState<'_>>) -> Result<Json<Vec<ZFCP
         (status = OK, description = "controller activated")
     )
 )]
-async fn activate_controller(State(state): State<ZFCPState<'_>>, Path(controller_id): Path<String>) -> Result<(), Error> {
-    state.client.activate_controller(controller_id.as_str()).await?;
+async fn activate_controller(
+    State(state): State<ZFCPState<'_>>,
+    Path(controller_id): Path<String>,
+) -> Result<(), Error> {
+    state
+        .client
+        .activate_controller(controller_id.as_str())
+        .await?;
     Ok(())
 }
 
@@ -111,7 +135,10 @@ async fn activate_controller(State(state): State<ZFCPState<'_>>, Path(controller
         (status = OK, description = "list of wwpns", body=Vec<String>)
     )
 )]
-async fn get_wwpns(State(state): State<ZFCPState<'_>>, Path(controller_id): Path<String>) -> Result<Json<Vec<String>>, Error> {
+async fn get_wwpns(
+    State(state): State<ZFCPState<'_>>,
+    Path(controller_id): Path<String>,
+) -> Result<Json<Vec<String>>, Error> {
     let result = state.client.get_wwpns(controller_id.as_str()).await?;
     Ok(Json(result))
 }
@@ -125,7 +152,10 @@ async fn get_wwpns(State(state): State<ZFCPState<'_>>, Path(controller_id): Path
         (status = OK, description = "list of luns", body=Vec<String>)
     )
 )]
-async fn get_luns(State(state): State<ZFCPState<'_>>, Path((controller_id, wwpn_id)): Path<(String, String)>) -> Result<Json<Vec<String>>, Error> {
+async fn get_luns(
+    State(state): State<ZFCPState<'_>>,
+    Path((controller_id, wwpn_id)): Path<(String, String)>,
+) -> Result<Json<Vec<String>>, Error> {
     let result = state.client.get_luns(&controller_id, &wwpn_id).await?;
     Ok(Json(result))
 }
@@ -139,8 +169,14 @@ async fn get_luns(State(state): State<ZFCPState<'_>>, Path((controller_id, wwpn_
         (status = OK, description = "The activation was succesful.")
     )
 )]
-async fn activate_disk(State(state): State<ZFCPState<'_>>, Path((controller_id, wwpn_id, lun_id)): Path<(String, String, String)>) -> Result<(), Error> {
-    state.client.activate_disk(&controller_id, &wwpn_id, &lun_id).await?;
+async fn activate_disk(
+    State(state): State<ZFCPState<'_>>,
+    Path((controller_id, wwpn_id, lun_id)): Path<(String, String, String)>,
+) -> Result<(), Error> {
+    state
+        .client
+        .activate_disk(&controller_id, &wwpn_id, &lun_id)
+        .await?;
     Ok(())
 }
 
@@ -153,8 +189,14 @@ async fn activate_disk(State(state): State<ZFCPState<'_>>, Path((controller_id, 
         (status = OK, description = "The activation was succesful.")
     )
 )]
-async fn deactivate_disk(State(state): State<ZFCPState<'_>>, Path((controller_id, wwpn_id, lun_id)): Path<(String, String, String)>) -> Result<(), Error> {
-    state.client.deactivate_disk(&controller_id, &wwpn_id, &lun_id).await?;
+async fn deactivate_disk(
+    State(state): State<ZFCPState<'_>>,
+    Path((controller_id, wwpn_id, lun_id)): Path<(String, String, String)>,
+) -> Result<(), Error> {
+    state
+        .client
+        .deactivate_disk(&controller_id, &wwpn_id, &lun_id)
+        .await?;
     Ok(())
 }
 

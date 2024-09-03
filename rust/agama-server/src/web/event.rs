@@ -6,7 +6,13 @@ use agama_lib::{
     product::RegistrationRequirement,
     progress::Progress,
     software::SelectedBy,
-    storage::{model::{dasd::{DASDDevice, DASDFormatSummary}, zfcp::{ZFCPController, ZFCPDisk}}, ISCSINode},
+    storage::{
+        model::{
+            dasd::{DASDDevice, DASDFormatSummary},
+            zfcp::{ZFCPController, ZFCPDisk},
+        },
+        ISCSINode,
+    },
     users::FirstUser,
 };
 use serde::Serialize;
@@ -105,12 +111,24 @@ pub enum Event {
         job_id: String,
         summary: HashMap<String, DASDFormatSummary>,
     },
-    ZFCPDiskAdded { device: ZFCPDisk },
-    ZFCPDiskChanged { device: ZFCPDisk },
-    ZFCPDiskRemoved { device: ZFCPDisk },
-    ZFCPControllerAdded { device: ZFCPController },
-    ZFCPControllerChanged { device: ZFCPController },
-    ZFCPControllerRemoved { device: ZFCPController },
+    ZFCPDiskAdded {
+        device: ZFCPDisk,
+    },
+    ZFCPDiskChanged {
+        device: ZFCPDisk,
+    },
+    ZFCPDiskRemoved {
+        device: ZFCPDisk,
+    },
+    ZFCPControllerAdded {
+        device: ZFCPController,
+    },
+    ZFCPControllerChanged {
+        device: ZFCPController,
+    },
+    ZFCPControllerRemoved {
+        device: ZFCPController,
+    },
 }
 
 pub type EventsSender = Sender<Event>;
