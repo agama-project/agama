@@ -34,7 +34,7 @@ import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { fetchDevices } from "~/api/storage/devices";
+import { useAvailableDevices, useDevices, useProductParams, useProposalResult, useVolumeDevices, useVolumeTemplates } from "~/queries/storage";
 
 /**
  * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
@@ -44,13 +44,7 @@ const initialState = {
   loading: true,
   // which UI item is being changed by user
   changing: undefined,
-  availableDevices: [],
-  volumeDevices: [],
-  volumeTemplates: [],
-  encryptionMethods: [],
   settings: {},
-  system: [],
-  staging: [],
   actions: [],
 };
 
@@ -65,26 +59,6 @@ const reducer = (state, action) => {
       return { ...state, loading: false, changing: undefined };
     }
 
-    case "UPDATE_AVAILABLE_DEVICES": {
-      const { availableDevices } = action.payload;
-      return { ...state, availableDevices };
-    }
-
-    case "UPDATE_VOLUME_DEVICES": {
-      const { volumeDevices } = action.payload;
-      return { ...state, volumeDevices };
-    }
-
-    case "UPDATE_ENCRYPTION_METHODS": {
-      const { encryptionMethods } = action.payload;
-      return { ...state, encryptionMethods };
-    }
-
-    case "UPDATE_VOLUME_TEMPLATES": {
-      const { volumeTemplates } = action.payload;
-      return { ...state, volumeTemplates };
-    }
-
     case "UPDATE_RESULT": {
       const { settings, actions } = action.payload.result;
       return { ...state, settings, actions };
@@ -93,11 +67,6 @@ const reducer = (state, action) => {
     case "UPDATE_SETTINGS": {
       const { settings, changing } = action.payload;
       return { ...state, settings, changing };
-    }
-
-    case "UPDATE_DEVICES": {
-      const { system, staging } = action.payload;
-      return { ...state, system, staging };
     }
 
     default: {
@@ -150,44 +119,17 @@ export default function ProposalPage() {
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
   const drawerRef = useRef();
+  const systemDevices = useDevices("system");
+  const stagingDevices = useDevices("result");
+  const availableDevices = useAvailableDevices();
+  const { encryptionMethods } = useProductParams({ suspense: true });
+  const volumeTemplates = useVolumeTemplates({ suspense: true });
+  const volumeDevices = useVolumeDevices();
+  const { actions, settings } = useProposalResult();
 
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
-
-  const loadAvailableDevices = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getAvailableDevices());
-  }, [client, cancellablePromise]);
-
-  const loadVolumeDevices = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getVolumeDevices());
-  }, [client, cancellablePromise]);
-
-  const loadEncryptionMethods = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getEncryptionMethods());
-  }, [client, cancellablePromise]);
-
-  const loadVolumeTemplates = useCallback(async () => {
-    const mountPoints = await cancellablePromise(client.proposal.getProductMountPoints());
-    const volumeTemplates = [];
-
-    for (const mountPoint of mountPoints) {
-      volumeTemplates.push(await cancellablePromise(client.proposal.defaultVolume(mountPoint)));
-    }
-
-    volumeTemplates.push(await cancellablePromise(client.proposal.defaultVolume("")));
-    return volumeTemplates;
-  }, [client, cancellablePromise]);
-
-  const loadProposalResult = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getResult());
-  }, [client, cancellablePromise]);
-
-  const loadDevices = useCallback(async () => {
-    const system = (await cancellablePromise(fetchDevices("system"))) || [];
-    const staging = (await cancellablePromise(fetchDevices("result"))) || [];
-    return { system, staging };
-  }, [client, cancellablePromise]);
 
   const calculateProposal = useCallback(
     async (settings) => {
@@ -201,40 +143,20 @@ export default function ProposalPage() {
 
     const isDeprecated = await cancellablePromise(client.isDeprecated());
     if (isDeprecated) {
-      const result = await loadProposalResult();
+      //const result = await loadProposalResult();
       await cancellablePromise(client.probe());
-      if (result?.settings) await calculateProposal(result.settings);
+      // if (result?.settings) await calculateProposal(result.settings);
+      await calculateProposal(settings);
     }
 
-    const availableDevices = await loadAvailableDevices();
-    dispatch({ type: "UPDATE_AVAILABLE_DEVICES", payload: { availableDevices } });
+    // const result = await loadProposalResult();
+    // if (result !== undefined) dispatch({ type: "UPDATE_RESULT", payload: { result } });
 
-    const volumeDevices = await loadVolumeDevices();
-    dispatch({ type: "UPDATE_VOLUME_DEVICES", payload: { volumeDevices } });
-
-    const encryptionMethods = await loadEncryptionMethods();
-    dispatch({ type: "UPDATE_ENCRYPTION_METHODS", payload: { encryptionMethods } });
-
-    const volumeTemplates = await loadVolumeTemplates();
-    dispatch({ type: "UPDATE_VOLUME_TEMPLATES", payload: { volumeTemplates } });
-
-    const result = await loadProposalResult();
-    if (result !== undefined) dispatch({ type: "UPDATE_RESULT", payload: { result } });
-
-    const devices = await loadDevices();
-    dispatch({ type: "UPDATE_DEVICES", payload: devices });
-
-    if (result !== undefined) dispatch({ type: "STOP_LOADING" });
+    dispatch({ type: "STOP_LOADING" });
   }, [
     calculateProposal,
     cancellablePromise,
     client,
-    loadAvailableDevices,
-    loadVolumeDevices,
-    loadDevices,
-    loadEncryptionMethods,
-    loadProposalResult,
-    loadVolumeTemplates,
   ]);
 
   const calculate = useCallback(
@@ -243,15 +165,12 @@ export default function ProposalPage() {
 
       await calculateProposal(settings);
 
-      const result = await loadProposalResult();
+      // const result = await loadProposalResult();
       dispatch({ type: "UPDATE_RESULT", payload: { result } });
-
-      const devices = await loadDevices();
-      dispatch({ type: "UPDATE_DEVICES", payload: devices });
 
       dispatch({ type: "STOP_LOADING" });
     },
-    [calculateProposal, loadDevices, loadProposalResult],
+    [calculateProposal],
   );
 
   useEffect(() => {
@@ -298,15 +217,15 @@ export default function ProposalPage() {
       <Page.MainContent>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <ProposalTransactionalInfo settings={state.settings} />
+            <ProposalTransactionalInfo settings={settings} />
           </GridItem>
           <GridItem sm={12} xl={6}>
             <ProposalSettingsSection
-              availableDevices={state.availableDevices}
-              volumeDevices={state.volumeDevices}
-              encryptionMethods={state.encryptionMethods}
-              volumeTemplates={state.volumeTemplates}
-              settings={state.settings}
+              availableDevices={availableDevices}
+              volumeDevices={volumeDevices}
+              encryptionMethods={encryptionMethods}
+              volumeTemplates={volumeTemplates}
+              settings={settings}
               onChange={changeSettings}
               isLoading={state.loading}
               changing={state.changing}
@@ -316,26 +235,26 @@ export default function ProposalPage() {
             <Drawer
               ref={drawerRef}
               panelHeader={<h4>{_("Planned Actions")}</h4>}
-              panelContent={<ProposalActionsDialog actions={state.actions} />}
+              panelContent={<ProposalActionsDialog actions={actions} />}
             >
               <Stack hasGutter>
                 <ProposalActionsSummary
                   policy={spacePolicy}
-                  system={state.system}
-                  staging={state.staging}
+                  system={systemDevices}
+                  staging={stagingDevices}
                   errors={errors}
-                  actions={state.actions}
-                  spaceActions={state.settings.spaceActions}
-                  devices={state.settings.installationDevices}
+                  actions={actions}
+                  spaceActions={settings.spaceActions}
+                  devices={settings.installationDevices}
                   // @ts-expect-error: we do not know how to specify the type of
                   // drawerRef properly and TS does not find the "open" property
                   onActionsClick={drawerRef.current?.open}
                   isLoading={showSkeleton(state.loading, "ProposalActionsSummary", state.changing)}
                 />
                 <ProposalResultSection
-                  system={state.system}
-                  staging={state.staging}
-                  actions={state.actions}
+                  system={systemDevices}
+                  staging={stagingDevices}
+                  actions={actions}
                   errors={state.errors}
                   isLoading={state.loading}
                 />

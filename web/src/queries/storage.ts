@@ -166,9 +166,8 @@ const useProposalResult = (): ProposalResult | undefined => {
     // to find space in that device. For example, devices directly formatted or mounted are not
     // considered as installation devices.
     const volumes = settings.volumes.filter((vol) => {
-      return true;
-      // const target = vol.target as VolumeTarget;
-      // return [VolumeTarget.NEW_PARTITION, VolumeTarget.NEW_VG].includes(target);
+      const target = vol.target as VolumeTarget;
+      return [VolumeTarget.NEW_PARTITION, VolumeTarget.NEW_VG].includes(target);
     });
 
     const values = [
