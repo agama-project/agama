@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  3 10:24:30 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add kde to Leap 16.0
+  initial set of ~800 related packages were just merged to Leap 16.0
+
+-------------------------------------------------------------------
 Fri Aug  2 09:12:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adjust Linux Security Modules (LSM) configuration for SLES 16

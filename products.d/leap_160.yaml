@@ -41,6 +41,7 @@ software:
     - basic_desktop
     - xfce
     - gnome
+    - kde
     - yast2_basis
     - yast2_desktop
     - yast2_server
