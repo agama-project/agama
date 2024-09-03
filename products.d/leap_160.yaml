@@ -39,7 +39,6 @@ software:
   optional_patterns: null # no optional pattern shared
   user_patterns:
     - basic_desktop
-    - xfce
     - gnome
     - kde
     - yast2_basis
