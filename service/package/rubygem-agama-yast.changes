@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  3 08:14:23 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: add support for searching by device in the storage
+  config (gh#openSUSE/agama#1560).
+
+-------------------------------------------------------------------
 Tue Aug 27 15:16:17 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: allow calling to #SetConfig D-Bus method using the new
