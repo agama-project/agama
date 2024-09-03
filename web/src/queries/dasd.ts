@@ -27,6 +27,7 @@ import {
   enableDASD,
   enableDiag,
   fetchDASDDevices,
+  formatDASD,
 } from "~/api/dasd";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
@@ -119,16 +120,6 @@ const useDASDFormatJobChanges = () => {
   return jobs;
 };
 
-const useFormatDASDMutation = () => {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (data: FormatJob): Promise<FormatJob> => Promise.resolve(data),
-    onSuccess: (data: FormatJob) => queryClient.setQueryData(["dasd", "formatJob", data.jobId], data)
-  });
-
-  return mutation;
-};
 /**
  * Returns seleced DASD ids
  */
@@ -254,7 +245,96 @@ const useDASDDevicesChanges = () => {
   return devices;
 };
 
+const useEnableDASDMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: enableDASD,
+    onSuccess: (_: object, deviceIds: string[]) => {
+      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+        const nextData = prev.map((dev) => {
+          if (deviceIds.includes(dev.id)) dev.enabled = true;
+          return dev;
+        });
+        return nextData;
+      });
+    },
+  };
+  return useMutation(query);
+};
+
+const useDisableDASDMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: disableDASD,
+    onSuccess: (_: object, deviceIds: string[]) => {
+      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+        const nextData = prev.map((dev) => {
+          if (deviceIds.includes(dev.id)) dev.enabled = false;
+          return dev;
+        });
+        return nextData;
+      });
+    },
+  };
+  return useMutation(query);
+};
+
+const useEnableDiagMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: enableDiag,
+    onSuccess: (_: object, deviceIds: string[]) => {
+      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+        const nextData = prev.map((dev) => {
+          if (deviceIds.includes(dev.id)) dev.diag = true;
+          return dev;
+        });
+        return nextData;
+      });
+    },
+  };
+  return useMutation(query);
+};
+
+const useDisableDiagMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: disableDiag,
+    onSuccess: (_: object, deviceIds: string[]) => {
+      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+        const nextData = prev.map((dev) => {
+          if (deviceIds.includes(dev.id)) dev.diag = false;
+          return dev;
+        });
+        return nextData;
+      });
+    },
+  };
+  return useMutation(query);
+};
+
+const useFormatDASDMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: formatDASD,
+    onSuccess: (data: string, deviceIds: string[]) => {
+      queryClient.setQueryData(["dasd", "formatJob", data], { jobId: data });
+      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+        const nextData = prev.map((dev) => {
+          if (deviceIds.includes(dev.id)) dev.formatted = false;
+          return dev;
+        });
+        return nextData;
+      });
+    },
+  };
+
+  return useMutation(query);
+};
+
+
 export {
   useDASDDevices, useDASDDevicesChanges, useFilterDASDMutation, filterDASDQuery, useFilterDASD, useSelectedDASD, useSelectedDASDChange, selectedDASDQuery,
-  useDASDFormatJobChanges, useDASDRunningFormatJobs, useFormatDASDMutation
+  useDASDFormatJobChanges, useDASDRunningFormatJobs, useEnableDASDMutation, useDisableDASDMutation, useEnableDiagMutation, useDisableDiagMutation,
+  useFormatDASDMutation
 };

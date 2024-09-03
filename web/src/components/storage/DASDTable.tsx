@@ -43,11 +43,15 @@ import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
-import { disableDASD, disableDiag, enableDASD, enableDiag, formatDASD } from "~/api/dasd";
 import {
   useDASDDevices,
+  useEnableDASDMutation,
+  useDisableDASDMutation,
+  useEnableDiagMutation,
+  useDisableDiagMutation,
   useFilterDASD,
   useFilterDASDMutation,
+  useFormatDASDMutation,
   useSelectedDASD,
   useSelectedDASDChange,
 } from "~/queries/dasd";
@@ -88,6 +92,11 @@ const columns = [
 ];
 
 const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
+  const { mutate: enableDASD } = useEnableDASDMutation();
+  const { mutate: disableDASD } = useDisableDASDMutation();
+  const { mutate: enableDiag } = useEnableDiagMutation();
+  const { mutate: disableDiag } = useDisableDiagMutation();
+  const { mutate: formatDASD } = useFormatDASDMutation();
   const [isOpen, setIsOpen] = useState(false);
 
   const onToggle = () => setIsOpen(!isOpen);
