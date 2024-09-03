@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  3 14:50:58 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Firefox: disable the initial configuration workflow
+  (gh#openSUSE/agama#1573)
+
+-------------------------------------------------------------------
 Fri Aug 30 13:05:53 UTC 2024 - Thomas Blume <Thomas.Blume@suse.com>
 
 - remove memcheck workaround in images.sh (bsc#1228621)
