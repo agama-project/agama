@@ -59,6 +59,17 @@ module Y2Storage
     private
 
       # @param planned [Planned::Disk, Planned::Partition]
+      # @param settings [#found_device]
+      def configure_reuse(planned, settings)
+        device = settings.found_device
+        return unless device
+
+        planned.assign_reuse(device)
+        # TODO: Allow mounting without reformatting.
+        planned.reformat = true
+      end
+
+      # @param planned [Planned::Disk, Planned::Partition]
       # @param settings [#encryption, #filesystem]
       def configure_device(planned, settings)
         configure_encryption(planned, settings.encryption) if settings.encryption
@@ -189,6 +200,7 @@ module Y2Storage
       def planned_partition(settings)
         Planned::Partition.new(nil, nil).tap do |planned|
           planned.partition_id = settings.id
+          configure_reuse(planned, settings)
           configure_device(planned, settings)
           configure_size(planned, settings.size)
         end

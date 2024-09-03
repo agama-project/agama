@@ -27,22 +27,20 @@ require "y2storage/agama_proposal"
 describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
 
-  before do
-    mock_storage(devicegraph: "empty-hd-50GiB.yaml")
-  end
-
-  subject(:proposal) do
-    described_class.new(initial_settings, issues_list: issues_list)
-  end
   let(:initial_settings) do
     Agama::Storage::Config.new.tap do |settings|
       settings.drives = drives
     end
   end
+
   let(:issues_list) { [] }
+
   let(:drives) { [drive0] }
+
   let(:drive0) { Agama::Storage::Configs::Drive.new.tap { |d| d.partitions = partitions0 } }
+
   let(:partitions0) { [root_partition] }
+
   let(:root_partition) do
     Agama::Storage::Configs::Partition.new.tap do |part|
       part.filesystem = Agama::Storage::Configs::Filesystem.new.tap do |fs|
@@ -57,6 +55,31 @@ describe Y2Storage::AgamaProposal do
       end
     end
   end
+
+  let(:home_partition) do
+    Agama::Storage::Configs::Partition.new.tap do |part|
+      part.filesystem = Agama::Storage::Configs::Filesystem.new.tap do |fs|
+        fs.path = "/home"
+        fs.type = Agama::Storage::Configs::FilesystemType.new.tap do |type|
+          type.fs_type = Y2Storage::Filesystems::Type::EXT4
+        end
+      end
+      part.size = Agama::Storage::Configs::Size.new.tap do |size|
+        size.min = Y2Storage::DiskSize.GiB(10)
+        size.max = Y2Storage::DiskSize.unlimited
+      end
+    end
+  end
+
+  before do
+    mock_storage(devicegraph: scenario)
+  end
+
+  subject(:proposal) do
+    described_class.new(initial_settings, issues_list: issues_list)
+  end
+
+  let(:scenario) { "empty-hd-50GiB.yaml" }
 
   describe "#propose" do
     context "when only the root partition is specified" do
@@ -117,22 +140,6 @@ describe Y2Storage::AgamaProposal do
     context "when encrypting some devices" do
       let(:partitions0) { [root_partition, home_partition] }
 
-      let(:home_partition) do
-        Agama::Storage::Configs::Partition.new.tap do |part|
-          part.filesystem = Agama::Storage::Configs::Filesystem.new.tap do |fs|
-            fs.path = "/home"
-            fs.type = Agama::Storage::Configs::FilesystemType.new.tap do |type|
-              type.fs_type = Y2Storage::Filesystems::Type::EXT4
-            end
-          end
-          part.size = Agama::Storage::Configs::Size.new.tap do |size|
-            size.min = Y2Storage::DiskSize.GiB(10)
-            size.max = Y2Storage::DiskSize.unlimited
-          end
-          part.encryption = home_encryption
-        end
-      end
-
       let(:home_encryption) do
         Agama::Storage::Configs::Encryption.new.tap do |enc|
           enc.password = "notSecreT"
@@ -145,6 +152,7 @@ describe Y2Storage::AgamaProposal do
 
       before do
         allow(encryption_method).to receive(:available?).and_return(available?) if encryption_method
+        home_partition.encryption = home_encryption
       end
 
       context "if the encryption settings contain all the detailed information" do
@@ -279,9 +287,56 @@ describe Y2Storage::AgamaProposal do
       end
     end
 
-    context "when searching for a non-existent partition" do
-      let(:partitions0) { [root_partition, existing_partition] }
-      let(:existing_partition) do
+    context "when searching for an existent drive" do
+      let(:scenario) { "partitioned_disk.yaml" }
+
+      before do
+        drive0.search.name = "/dev/vdb"
+      end
+
+      it "uses the drive" do
+        proposal.propose
+
+        root = proposal.devices.partitions.find do |part|
+          part.filesystem&.mount_path == "/"
+        end
+
+        expect(root.disk.name).to eq("/dev/vdb")
+      end
+    end
+
+    context "when searching for any drive" do
+      let(:scenario) { "partitioned_disk.yaml" }
+
+      let(:drives) { [drive0, drive1] }
+
+      let(:drive0) do
+        Agama::Storage::Configs::Drive.new.tap { |d| d.partitions = [root_partition] }
+      end
+
+      let(:drive1) do
+        Agama::Storage::Configs::Drive.new.tap { |d| d.partitions = [home_partition] }
+      end
+
+      it "uses the first unassigned drive" do
+        proposal.propose
+
+        root = proposal.devices.partitions.find do |part|
+          part.filesystem&.mount_path == "/"
+        end
+
+        home = proposal.devices.partitions.find do |part|
+          part.filesystem&.mount_path == "/home"
+        end
+
+        expect(root.disk.name).to eq("/dev/vda")
+        expect(home.disk.name).to eq("/dev/vdb")
+      end
+    end
+
+    context "when searching for a missing partition" do
+      let(:partitions0) { [root_partition, missing_partition] }
+      let(:missing_partition) do
         Agama::Storage::Configs::Partition.new.tap do |part|
           part.search = Agama::Storage::Configs::Search.new.tap do |search|
             search.if_not_found = if_not_found
@@ -321,6 +376,62 @@ describe Y2Storage::AgamaProposal do
             severity:    Agama::Issue::Severity::ERROR
           )
         end
+      end
+    end
+
+    context "when searching for an existent partition" do
+      let(:scenario) { "partitioned_disk.yaml" }
+
+      let(:partitions0) { [root_partition, home_partition] }
+
+      before do
+        home_partition.search = Agama::Storage::Configs::Search.new.tap do |search|
+          search.name = "/dev/vda3"
+        end
+      end
+
+      it "reuses the partition" do
+        vda3 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3")
+        proposal.propose
+
+        partition = proposal.devices.find_by_name("/dev/vda3")
+        expect(partition.sid).to eq(vda3.sid)
+        expect(partition.filesystem.mount_path).to eq("/home")
+      end
+    end
+
+    context "when searching for any partition" do
+      let(:scenario) { "partitioned_disk.yaml" }
+
+      let(:partitions0) { [root_partition, home_partition] }
+
+      before do
+        home_partition.search = Agama::Storage::Configs::Search.new
+      end
+
+      # TODO: Is this correct? The first partition (boot partition) is reused for home.
+      it "reuses the first unassigned partition" do
+        vda1 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda1")
+        proposal.propose
+
+        partition = proposal.devices.find_by_name("/dev/vda1")
+        expect(partition.sid).to eq(vda1.sid)
+        expect(partition.filesystem.mount_path).to eq("/home")
+      end
+
+      it "does not reuse the same partition twice" do
+        vda1 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda1")
+        vda2 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda2")
+        root_partition.search = Agama::Storage::Configs::Search.new
+        proposal.propose
+
+        root = proposal.devices.find_by_name("/dev/vda1")
+        expect(root.sid).to eq(vda1.sid)
+        expect(root.filesystem.mount_path).to eq("/")
+
+        home = proposal.devices.find_by_name("/dev/vda2")
+        expect(home.sid).to eq(vda2.sid)
+        expect(home.filesystem.mount_path).to eq("/home")
       end
     end
   end

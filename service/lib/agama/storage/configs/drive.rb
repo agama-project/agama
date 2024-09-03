@@ -27,7 +27,7 @@ module Agama
       # Section of the configuration representing a device that is expected to exist in the target
       # system and that can be used as a regular disk.
       class Drive
-        # @return [Search, nil]
+        # @return [Search]
         attr_accessor :search
 
         # @return [Encryption, nil]
@@ -45,33 +45,17 @@ module Agama
         # Constructor
         def initialize
           @partitions = []
+          # All drives are expected to match a real device in the system, so let's ensure a search.
+          @search = Search.new
         end
 
-        # Resolves the search, so a devices of the given devicegraph is associated to the drive if
-        # possible
+        # Assigned device according to the search.
         #
-        # Since all drives are expected to match a real device in the system, this creates a default
-        # search if that was ommited.
-        #
-        # @param devicegraph [Y2Storage::Devicegraph] source of the search
-        # @param used_sids [Array<Integer>] SIDs of the devices that are already associated to
-        #   another drive, so they cannot be associated to this
-        def search_device(devicegraph, used_sids)
-          @search ||= default_search
-          devs = devicegraph.blk_devices.select { |d| d.is?(:disk_device, :stray_blk_device) }
-          search.find(devs, used_sids)
-        end
-
-        # @return [Search]
-        def default_search
-          Search.new
-        end
-
-        # Device resulting from a previous call to {#search_device}
+        # @see Y2Storage::Proposal::AgamaSearcher
         #
         # @return [Y2Storage::Device, nil]
         def found_device
-          search&.device
+          search.device
         end
 
         # Whether the drive definition contains partition definitions

@@ -45,18 +45,23 @@ module Agama
 
         # @see Base#calculate
         def calculate
-          proposal = agama_proposal
-          proposal.propose
+          @proposal = agama_proposal
+          @proposal.propose
         ensure
-          storage_manager.proposal = proposal
+          storage_manager.proposal = @proposal
         end
 
         # @see Base#issues
         def issues
-          storage_manager.proposal.issues_list
+          return [] unless proposal
+
+          proposal.issues_list
         end
 
       private
+
+        # @return [Y2Storage::AgamaProposal, nil] Proposal used.
+        attr_reader :proposal
 
         # Instance of the Y2Storage proposal to be used to run the calculation.
         #
