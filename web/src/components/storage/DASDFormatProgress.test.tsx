@@ -36,8 +36,8 @@ jest.mock("~/queries/dasd", () => ({
 describe("DASDFormatProgress", () => {
   describe("when there is already some progress", () => {
     beforeEach(() => {
-      mockDASDFormatJobs =
-        [{
+      mockDASDFormatJobs = [
+        {
           jobId: "0.0.0200",
           summary: {
             "0.0.0200": {
@@ -46,21 +46,23 @@ describe("DASDFormatProgress", () => {
               done: false,
             },
           },
-        }];
+        },
+      ];
 
-      mockDASDDevices = [{
-        id: "0.0.0200",
-        enabled: false,
-        deviceName: "dasda",
-        deviceType: "eckd",
-        formatted: false,
-        diag: false,
-        status: "active",
-        accessType: "rw",
-        partitionInfo: "1",
-        hexId: 0x200,
-      }];
-      ;
+      mockDASDDevices = [
+        {
+          id: "0.0.0200",
+          enabled: false,
+          deviceName: "dasda",
+          deviceType: "eckd",
+          formatted: false,
+          diag: false,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+          hexId: 0x200,
+        },
+      ];
     });
 
     it("renders the progress", () => {
@@ -74,18 +76,20 @@ describe("DASDFormatProgress", () => {
     beforeEach(() => {
       mockDASDFormatJobs = [];
 
-      mockDASDDevices = [{
-        id: "0.0.0200",
-        enabled: false,
-        deviceName: "dasda",
-        deviceType: "eckd",
-        formatted: false,
-        diag: false,
-        status: "active",
-        accessType: "rw",
-        partitionInfo: "1",
-        hexId: 0x200,
-      }];
+      mockDASDDevices = [
+        {
+          id: "0.0.0200",
+          enabled: false,
+          deviceName: "dasda",
+          deviceType: "eckd",
+          formatted: false,
+          diag: false,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+          hexId: 0x200,
+        },
+      ];
     });
 
     it("does not render any progress", () => {

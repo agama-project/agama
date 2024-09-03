@@ -44,11 +44,17 @@ import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
 import { disableDASD, disableDiag, enableDASD, enableDiag, formatDASD } from "~/api/dasd";
-import { useDASDDevices, useFilterDASD, useFilterDASDChange, useSelectedDASD, useSelectedDASDChange } from "~/queries/dasd";
+import {
+  useDASDDevices,
+  useFilterDASD,
+  useFilterDASDMutation,
+  useSelectedDASD,
+  useSelectedDASDChange,
+} from "~/queries/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
-const columnData = (device: DASDDevice, column: { id: string, sortId?: string, label: string }) => {
+const columnData = (device: DASDDevice, column: { id: string; sortId?: string; label: string }) => {
   let data = device[column.id];
 
   switch (column.id) {
@@ -81,7 +87,7 @@ const columns = [
   { id: "partitionInfo", label: _("Partition Info") },
 ];
 
-const Actions = ({ devices, isDisabled }: { devices: DASDDevice[], isDisabled: boolean }) => {
+const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onToggle = () => setIsOpen(!isOpen);
@@ -148,7 +154,7 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[], isDisabled: b
 };
 
 const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDevice[] => {
-  const allChannels: number[] = devices.map((d) => d.hexId);
+  const allChannels = devices.map((d) => d.hexId);
   const min = hex(from) || Math.min(...allChannels);
   const max = hex(to) || Math.max(...allChannels);
 
@@ -157,13 +163,13 @@ const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDev
 
 export default function DASDTable() {
   const devices = useDASDDevices();
-  const { mutate: changeFilter } = useFilterDASDChange();
+  const { mutate: changeFilter } = useFilterDASDMutation();
   const { mutate: changeSelected } = useSelectedDASDChange();
   const { minChannel, maxChannel } = useFilterDASD();
   const selectedDevices = useSelectedDASD();
 
   const [sortingColumn, setSortingColumn] = useState(columns[0]);
-  const [sortDirection, setSortDirection]: ["asc" | "desc", Dispatch<SetStateAction<"asc" | "desc">>] = useState("asc");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
   const filteredDevices = filterDevices(devices, minChannel, maxChannel);
@@ -171,11 +177,11 @@ export default function DASDTable() {
 
   // Selecting
   const selectAll = (isSelecting = true) => {
-    changeSelected({ unselect: !isSelecting, devices: filteredDevices })
+    changeSelected({ unselect: !isSelecting, devices: filteredDevices });
   };
 
   const selectDevice = (device, isSelecting = true) => {
-    changeSelected({ unselect: !isSelecting, device })
+    changeSelected({ unselect: !isSelecting, device });
   };
 
   // Sorting
@@ -214,11 +220,11 @@ export default function DASDTable() {
 
   const Content = () => {
     return (
-
       <Table variant="compact">
         <Thead>
           <Tr>
-            <Th aria-label="dasd-select"
+            <Th
+              aria-label="dasd-select"
               select={{
                 onSelect: (_event, isSelecting) => selectAll(isSelecting),
                 isSelected: filteredDevices.length === selectedDevices.length,
@@ -234,7 +240,8 @@ export default function DASDTable() {
         <Tbody>
           {sortedDevices.map((device, rowIndex) => (
             <Tr key={device.id}>
-              <Td dataLabel={device.id}
+              <Td
+                dataLabel={device.id}
                 select={{
                   rowIndex,
                   onSelect: (_event, isSelecting) => selectDevice(device, isSelecting),
@@ -308,17 +315,14 @@ export default function DASDTable() {
               <ToolbarItem variant="separator" />
 
               <ToolbarItem>
-                <Actions
-                  devices={selectedDevices}
-                  isDisabled={selectedDevices.length === 0}
-                />
+                <Actions devices={selectedDevices} isDisabled={selectedDevices.length === 0} />
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>
 
         <Content />
-      </CardBody >
-    </CardField >
+      </CardBody>
+    </CardField>
   );
 }

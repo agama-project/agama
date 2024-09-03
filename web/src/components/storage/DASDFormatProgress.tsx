@@ -28,36 +28,38 @@ import { FormatSummary } from "~/types/dasd";
 
 export default function DASDFormatProgress() {
   const devices = useDASDDevices();
-  const runningJobs = useDASDRunningFormatJobs();
+  const runningJobs = useDASDRunningFormatJobs().filter(
+    (job) => Object.keys(job.summary || {}).length > 0,
+  );
 
-  const ProgressContent = ({ progress }: { progress: { [key: string]: FormatSummary } }) => (
+  const ProgressContent = ({ progress }: { progress: { [key: string]: FormatSummary } }) =>
     Object.entries(progress).map(([id, { total, step, done }]) => {
       const device = devices.find((d) => d.id === id);
 
       return (
-        <Stack hasGutter className="dasd-format-progress">
-          <Progress
-            key={id}
-            size="sm"
-            max={total}
-            value={step}
-            title={`${device.id} - ${device.deviceName}`}
-            measureLocation="none"
-            variant={done ? "success" : undefined}
-          />
-        </Stack>
+        <Progress
+          key={`progress_${id}`}
+          size="sm"
+          max={total}
+          value={step}
+          title={`${device.id} - ${device.deviceName}`}
+          measureLocation="none"
+          variant={done ? "success" : undefined}
+        />
       );
-    }));
+    });
 
   return (
     <Popup title={_("Formatting DASD devices")} isOpen={runningJobs.length > 0} disableFocusTrap>
       {runningJobs.map((job) => {
-        const progress = job.summary || {};
-
-        if (Object.keys(progress).length === 0) return;
-
         return (
-          <ProgressContent progress={progress} />
+          <Stack
+            key={`formatting_progress_${job.jobId}`}
+            hasGutter
+            className="dasd-format-progress"
+          >
+            <ProgressContent key={`progress_content_${job.jobId}`} progress={job.summary} />
+          </Stack>
         );
       })}
     </Popup>

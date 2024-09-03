@@ -32,27 +32,30 @@ const mockSelectedDASD: string[] = [];
 jest.mock("~/queries/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
   useFilterDASD: () => mockDASDFilter,
-  useFilterDASDChange: () => jest.fn().mockImplementation(() => ({ mutate: (data: FilterDASD) => ({data: mockDASDFilter}) })),
+  useFilterDASDChange: () =>
+    jest
+      .fn()
+      .mockImplementation(() => ({ mutate: (data: FilterDASD) => ({ data: mockDASDFilter }) })),
   useSelectedDASD: () => mockSelectedDASD,
-  useSelectedDASDChange: () => jest.fn().mockImplementation(()=> ({ data: mockSelectedDASD })),
+  useSelectedDASDChange: () => jest.fn().mockImplementation(() => ({ data: mockSelectedDASD })),
 }));
 
 describe("DASDTable", () => {
   describe("when there is some DASD devices available", () => {
     beforeEach(() => {
       mockDASDDevices = [
-        { 
-            id: "0.0.0200",
-            enabled: false,
-            deviceName: "dasda",
-            deviceType: "eckd",
-            formatted: false,
-            diag: false,
-            status: "active",
-            accessType: "rw",
-            partitionInfo: "1",
-            hexId: 0x200,
-        }
+        {
+          id: "0.0.0200",
+          enabled: false,
+          deviceName: "dasda",
+          deviceType: "eckd",
+          formatted: false,
+          diag: false,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+          hexId: 0x200,
+        },
       ];
     });
 
