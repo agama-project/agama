@@ -138,6 +138,215 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         partition = drive.partitions.first
         expect(partition.filesystem.path).to eq "/"
       end
+
+      context "omitting search for a drive" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: []
+              }
+            ]
+          }
+        end
+
+        it "sets the default search" do
+          config = subject.convert
+          drive = config.drives.first
+          expect(drive.search).to be_a(Agama::Storage::Configs::Search)
+          expect(drive.search.name).to be_nil
+          expect(drive.search.if_not_found).to eq(:error)
+        end
+      end
+
+      context "specifying search for a drive" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                search:     search,
+                partitions: []
+              }
+            ]
+          }
+        end
+
+        context "with a device name" do
+          let(:search) { "/dev/vda" }
+
+          it "sets the expected search" do
+            config = subject.convert
+            drive = config.drives.first
+            expect(drive.search).to be_a(Agama::Storage::Configs::Search)
+            expect(drive.search.name).to eq("/dev/vda")
+            expect(drive.search.if_not_found).to eq(:error)
+          end
+        end
+
+        context "with a search section" do
+          let(:search) do
+            {
+              condition:  { name: "/dev/vda" },
+              ifNotFound: "skip"
+            }
+          end
+
+          it "sets the expected search" do
+            config = subject.convert
+            drive = config.drives.first
+            expect(drive.search).to be_a(Agama::Storage::Configs::Search)
+            expect(drive.search.name).to eq("/dev/vda")
+            expect(drive.search.if_not_found).to eq(:skip)
+          end
+        end
+      end
+    end
+
+    context "specifying a filesystem for a drive" do
+      let(:config_json) do
+        {
+          drives: [{ filesystem: filesystem }]
+        }
+      end
+
+      let(:filesystem) do
+        {
+          path:         "/",
+          type:         "xfs",
+          label:        "root",
+          mkfsOptions:  ["version=2"],
+          mountOptions: ["rw"],
+          mountBy:      "label"
+        }
+      end
+
+      it "uses the specified attributes" do
+        config = subject.convert
+        filesystem = config.drives.first.filesystem
+        expect(filesystem.path).to eq "/"
+        expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::XFS
+        expect(filesystem.label).to eq "root"
+        expect(filesystem.mkfs_options).to eq ["version=2"]
+        expect(filesystem.mount_options).to eq ["rw"]
+        expect(filesystem.mount_by).to eq Y2Storage::Filesystems::MountByType::LABEL
+      end
+
+      context "if the filesystem specification only contains a path" do
+        let(:filesystem) { { path: "/" } }
+
+        it "uses the default type and btrfs attributes for that path" do
+          config = subject.convert
+          filesystem = config.drives.first.filesystem
+          expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
+          expect(filesystem.type.btrfs.snapshots).to eq true
+          expect(filesystem.type.btrfs.default_subvolume).to eq "@"
+          expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["home", "opt", "root", "srv"]
+        end
+      end
+
+      context "if the filesystem specification contains some btrfs settings" do
+        let(:filesystem) do
+          { path: "/",
+            type: { btrfs: { snapshots: false, default_subvolume: "", subvolumes: ["tmp"] } } }
+        end
+
+        it "uses the specified btrfs attributes" do
+          config = subject.convert
+          filesystem = config.drives.first.filesystem
+          expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
+          expect(filesystem.type.btrfs.snapshots).to eq false
+          # TODO: none of the following attributes are specified at the schema. Intentional?
+          # expect(filesystem.type.btrfs.default_subvolume).to eq ""
+          # expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["tmp"]
+        end
+
+        context "and the default filesystem type is not btrfs" do
+          let(:filesystem) do
+            { path: "/home", type: { btrfs: { snapshots: false } } }
+          end
+
+          it "uses btrfs filesystem" do
+            config = subject.convert
+            filesystem = config.drives.first.filesystem
+            expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
+          end
+        end
+      end
+    end
+
+    context "omitting search for a partition" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  filesystem: {
+                    path: "/"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "does not set a search" do
+        config = subject.convert
+        drive = config.drives.first
+        partition = drive.partitions.first
+        expect(partition.search).to be_nil
+      end
+    end
+
+    context "specifying search for a partition" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  search:     search,
+                  filesystem: {
+                    path: "/"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      context "with a device name" do
+        let(:search) { "/dev/vda1" }
+
+        it "sets the expected search" do
+          config = subject.convert
+          drive = config.drives.first
+          partition = drive.partitions.first
+          expect(partition.search).to be_a(Agama::Storage::Configs::Search)
+          expect(partition.search.name).to eq("/dev/vda1")
+          expect(partition.search.if_not_found).to eq(:error)
+        end
+      end
+
+      context "with a search section" do
+        let(:search) do
+          {
+            condition:  { name: "/dev/vda1" },
+            ifNotFound: "skip"
+          }
+        end
+
+        it "sets the expected search" do
+          config = subject.convert
+          drive = config.drives.first
+          partition = drive.partitions.first
+          expect(partition.search).to be_a(Agama::Storage::Configs::Search)
+          expect(partition.search.name).to eq("/dev/vda1")
+          expect(partition.search.if_not_found).to eq(:skip)
+        end
+      end
     end
 
     context "omitting sizes for the partitions" do
@@ -346,7 +555,8 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       end
     end
 
-    context "using 'default' as size for some partitions and size limit for others" do
+    # TODO: "default" is not currently accepted by the schema.
+    xcontext "using 'default' as size for some partitions and size limit for others" do
       let(:config_json) do
         {
           drives: [
@@ -382,43 +592,8 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       end
     end
 
-    context "using 'default' as size for some partitions and size limit for others" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  filesystem: { path: "/", size: "default" }
-                },
-                {
-                  filesystem: { path: "/opt" },
-                  size:       { min: "6 GiB", max: "22 GiB" }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      it "uses the appropriate sizes for each partition" do
-        config = subject.convert
-        partitions = config.drives.first.partitions
-        expect(partitions).to contain_exactly(
-          an_object_having_attributes(
-            filesystem: have_attributes(path: "/"),
-            size:       have_attributes(default: true, min: 40.GiB,
-              max: Y2Storage::DiskSize.unlimited)
-          ),
-          an_object_having_attributes(
-            filesystem: have_attributes(path: "/opt"),
-            size:       have_attributes(default: false, min: 6.GiB, max: 22.GiB)
-          )
-        )
-      end
-    end
-
-    context "using 'default' for a partition that is fallback for others" do
+    # TODO: "default" is not currently accepted by the schema.
+    xcontext "using 'default' for a partition that is fallback for others" do
       let(:config_json) { { drives: [{ partitions: partitions }] } }
       let(:root) do
         { filesystem: { path: "/", type: { btrfs: { snapshots: false } } }, size: "default" }
@@ -453,78 +628,6 @@ describe Agama::Storage::ConfigConversions::FromJSON do
               size:       have_attributes(default: true, min: 5.GiB, max: 10.GiB)
             )
           )
-        end
-      end
-    end
-
-    context "specifying a filesystem for a drive" do
-      let(:config_json) do
-        {
-          drives: [{ filesystem: filesystem }]
-        }
-      end
-
-      let(:filesystem) do
-        {
-          path:         "/",
-          type:         "xfs",
-          label:        "root",
-          mkfsOptions:  ["version=2"],
-          mountOptions: ["rw"],
-          mountBy:      "label"
-        }
-      end
-
-      it "uses the specified attributes" do
-        config = subject.convert
-        filesystem = config.drives.first.filesystem
-        expect(filesystem.path).to eq "/"
-        expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::XFS
-        expect(filesystem.label).to eq "root"
-        expect(filesystem.mkfs_options).to eq ["version=2"]
-        expect(filesystem.mount_options).to eq ["rw"]
-        expect(filesystem.mount_by).to eq Y2Storage::Filesystems::MountByType::LABEL
-      end
-
-      context "if the filesystem specification only contains a path" do
-        let(:filesystem) { { path: "/" } }
-
-        it "uses the default type and btrfs attributes for that path" do
-          config = subject.convert
-          filesystem = config.drives.first.filesystem
-          expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
-          expect(filesystem.type.btrfs.snapshots).to eq true
-          expect(filesystem.type.btrfs.default_subvolume).to eq "@"
-          expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["home", "opt", "root", "srv"]
-        end
-      end
-
-      context "if the filesystem specification contains some btrfs settings" do
-        let(:filesystem) do
-          { path: "/",
-            type: { btrfs: { snapshots: false, default_subvolume: "", subvolumes: ["tmp"] } } }
-        end
-
-        it "uses the specified btrfs attributes" do
-          config = subject.convert
-          filesystem = config.drives.first.filesystem
-          expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
-          expect(filesystem.type.btrfs.snapshots).to eq false
-          # TODO: none of the following attributes are specified at the schema. Intentional?
-          # expect(filesystem.type.btrfs.default_subvolume).to eq ""
-          # expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["tmp"]
-        end
-
-        context "and the default filesystem type is not btrfs" do
-          let(:filesystem) do
-            { path: "/home", type: { btrfs: { snapshots: false } } }
-          end
-
-          it "uses btrfs filesystem" do
-            config = subject.convert
-            filesystem = config.drives.first.filesystem
-            expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
-          end
         end
       end
     end

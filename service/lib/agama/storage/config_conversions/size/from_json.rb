@@ -35,11 +35,12 @@ module Agama
 
           # Performs the conversion from Hash according to the JSON schema.
           #
+          # @param default [Configs::Size, nil]
           # @return [Configs::Size]
-          def convert
-            return default_size if size_json.is_a?(String) && size_json.casecmp?("default")
+          def convert(default = nil)
+            default_config = default.dup || Configs::Size.new
 
-            Configs::Size.new.tap do |config|
+            default_config.tap do |config|
               config.default = false
               config.min = convert_size(:min)
               config.max = convert_size(:max) || Y2Storage::DiskSize.unlimited
@@ -70,10 +71,6 @@ module Agama
             rescue TypeError
               # JSON schema validations should prevent this from happening
             end
-          end
-
-          def default_size
-            Configs::Size.new.tap { |c| c.default = true }
           end
         end
       end

@@ -45,11 +45,13 @@ module Agama
 
           # Performs the conversion from Hash according to the JSON schema.
           #
-          # @param config [#encrypt=, #format=, #mount=]
-          def convert(config)
-            config.encryption = convert_encrypt
-            config.filesystem = convert_filesystem
-            config
+          # @param default [Configs::Drive, Configs::Partition]
+          # @return [Configs::Drive, Configs::Partition]
+          def convert(default)
+            default.dup.tap do |config|
+              config.encryption = convert_encrypt
+              config.filesystem = convert_filesystem
+            end
           end
 
         private

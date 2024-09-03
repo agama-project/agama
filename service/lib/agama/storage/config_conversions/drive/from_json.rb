@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/block_device/from_json"
+require "agama/storage/config_conversions/search/from_json"
 require "agama/storage/config_conversions/partitionable/from_json"
 require "agama/storage/configs/drive"
 
@@ -42,11 +43,14 @@ module Agama
 
           # Performs the conversion from Hash according to the JSON schema.
           #
+          # @param default [Configs::Drive, nil]
           # @return [Configs::Drive]
-          def convert
-            Configs::Drive.new.tap do |config|
-              convert_block_device(config)
-              convert_partitionable(config)
+          def convert(default = nil)
+            default_config = default.dup || Configs::Drive.new
+
+            convert_drive(default_config).tap do |config|
+              search = convert_search(config.search)
+              config.search = search if search
             end
           end
 
@@ -62,6 +66,14 @@ module Agama
           attr_reader :volume_builder
 
           # @param config [Configs::Drive]
+          # @return [Configs::Drive]
+          def convert_drive(config)
+            convert_block_device(
+              convert_partitionable(config)
+            )
+          end
+
+          # @param config [Configs::Drive]
           def convert_block_device(config)
             converter = BlockDevice::FromJSON.new(drive_json,
               settings: settings, volume_builder: volume_builder)
@@ -74,6 +86,16 @@ module Agama
             converter = Partitionable::FromJSON.new(drive_json,
               settings: settings, volume_builder: volume_builder)
 
+            converter.convert(config)
+          end
+
+          # @param config [Configs::Search]
+          # @return [Configs::Search, nil]
+          def convert_search(config)
+            search_json = drive_json[:search]
+            return unless search_json
+
+            converter = Search::FromJSON.new(search_json)
             converter.convert(config)
           end
         end
