@@ -29,6 +29,14 @@ module Agama
         # @return [Search, nil]
         attr_accessor :search
 
+        # @return [Boolean]
+        attr_accessor :delete
+        alias_method :delete?, :delete
+
+        # @return [Boolean]
+        attr_accessor :delete_if_needed
+        alias_method :delete_if_needed?, :delete_if_needed
+
         # @return [Y2Storage::PartitionId, nil]
         attr_accessor :id
 
@@ -43,6 +51,8 @@ module Agama
 
         def initialize
           @size = Size.new
+          @delete = false
+          @delete_if_needed = false
         end
 
         # Assigned device according to the search.

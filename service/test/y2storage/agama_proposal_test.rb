@@ -116,6 +116,26 @@ describe Y2Storage::AgamaProposal do
       end
     end
 
+    context "when the config has 2 drives" do
+      let(:scenario) { "partitioned_disk.yaml" }
+
+      let(:drives) { [drive0, drive1] }
+
+      let(:drive1) do
+        Agama::Storage::Configs::Drive.new.tap { |d| d.partitions = [home_partition] }
+      end
+
+      it "proposes the expected devices" do
+        devicegraph = proposal.propose
+
+        root = devicegraph.find_by_name("/dev/vda4")
+        expect(root.filesystem.mount_path).to eq("/")
+
+        home = devicegraph.find_by_name("/dev/vdb1")
+        expect(home.filesystem.mount_path).to eq("/home")
+      end
+    end
+
     context "when a partition table type is specified for a drive" do
       let(:drive0) do
         Agama::Storage::Configs::Drive.new.tap do |drive|
@@ -432,6 +452,122 @@ describe Y2Storage::AgamaProposal do
         home = proposal.devices.find_by_name("/dev/vda2")
         expect(home.sid).to eq(vda2.sid)
         expect(home.filesystem.mount_path).to eq("/home")
+      end
+    end
+
+    def partition_config(name)
+      Agama::Storage::Configs::Partition.new.tap do |partition_config|
+        partition_config.search = Agama::Storage::Configs::Search.new.tap do |search_config|
+          search_config.name = name
+        end
+      end
+    end
+
+    context "forcing to delete some partitions" do
+      let(:scenario) { "partitioned_disk.yaml" }
+
+      let(:partitions0) { [root_partition, vda2, vda3] }
+
+      let(:vda2) do
+        partition_config("/dev/vda2").tap { |c| c.delete = true }
+      end
+
+      let(:vda3) do
+        partition_config("/dev/vda3").tap { |c| c.delete = true }
+      end
+
+      before do
+        drive0.search.name = "/dev/vda"
+      end
+
+      it "deletes the partitions" do
+        vda1_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda1").sid
+        vda2_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda2").sid
+        vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+        devicegraph = proposal.propose
+
+        expect(devicegraph.find_device(vda1_sid)).to_not be_nil
+        expect(devicegraph.find_device(vda2_sid)).to be_nil
+        expect(devicegraph.find_device(vda3_sid)).to be_nil
+
+        root = devicegraph.find_by_name("/dev/vda2")
+        expect(root.filesystem.mount_path).to eq("/")
+      end
+    end
+
+    context "allowing to delete some partition" do
+      let(:scenario) { "partitioned_disk.yaml" }
+
+      let(:partitions0) { [root_partition, vda3] }
+
+      let(:vda3) do
+        partition_config("/dev/vda3").tap { |c| c.delete_if_needed = true }
+      end
+
+      before do
+        # vda has 18 GiB of free space.
+        drive0.search.name = "/dev/vda"
+      end
+
+      context "if deleting the partition is not needed" do
+        before do
+          root_partition.size.min = Y2Storage::DiskSize.GiB(15)
+        end
+
+        it "does not delete the partition" do
+          vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+          devicegraph = proposal.propose
+          expect(devicegraph.find_device(vda3_sid)).to_not be_nil
+
+          root = devicegraph.find_by_name("/dev/vda4")
+          expect(root.filesystem.mount_path).to eq("/")
+        end
+      end
+
+      context "if the partition has to be deleted" do
+        before do
+          root_partition.size.min = Y2Storage::DiskSize.GiB(20)
+        end
+
+        it "deletes the partition" do
+          vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+          devicegraph = proposal.propose
+          expect(devicegraph.find_device(vda3_sid)).to be_nil
+
+          root = devicegraph.find_by_name("/dev/vda3")
+          expect(root.filesystem.mount_path).to eq("/")
+        end
+      end
+    end
+
+    # Testing precedence. This configuration should not be possible.
+    context "if the partition config indicates both force to delete and allow to delete" do
+      let(:scenario) { "partitioned_disk.yaml" }
+
+      let(:partitions0) { [root_partition, vda3] }
+
+      let(:vda3) do
+        partition_config("/dev/vda3").tap do |config|
+          config.delete = true
+          config.delete_if_needed = true
+        end
+      end
+
+      before do
+        drive0.search.name = "/dev/vda"
+      end
+
+      it "deletes the partition" do
+        vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+        devicegraph = proposal.propose
+        expect(devicegraph.find_device(vda3_sid)).to be_nil
+
+        root = devicegraph.find_by_name("/dev/vda3")
+        expect(root.filesystem.mount_path).to eq("/")
       end
     end
   end
