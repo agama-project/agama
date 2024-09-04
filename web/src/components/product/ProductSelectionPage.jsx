@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardBody, Flex, Form, Grid, GridItem } from "@patternfly/react-core";
+import { Card, CardBody, Flex, Form, Grid, GridItem, Radio, Split, Stack } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
@@ -62,16 +62,11 @@ function ProductSelectionPage() {
         src={productIcon}
         alt={alt}
         width="80px"
-        style={{ height: 'auto', width: '10%', float: 'left', padding: '0 20px 20px 0' }}
       />
     );
   };
 
   const isSelectionDisabled = !nextProduct || nextProduct === selectedProduct;
-
-  const handleCardClick = (product) => {
-    setNextProduct(product);
-  };
 
   return (
     <Page>
@@ -83,21 +78,27 @@ function ProductSelectionPage() {
                 <Card
                   key={index}
                   isRounded
-                  onClick={() => handleCardClick(product)}
-                  style={{
-                    cursor: 'pointer',  // Change the cursor to indicate clickable
-                    border: nextProduct === product ? '2px solid #51c38d' : 'none',  // highlight selected card
-                  }}
                 >
                   <CardBody>
-                    <ProductIcon
-                      src={product.icon}
-                      alt={`${product.name} product icon`}
+                    <Radio
+                      key={index}
+                      name="product"
+                      id={product.name}
+                      label={
+                        <Split hasGutter>
+                          <ProductIcon
+                            src={product.icon}
+                            alt={`${product.name} product icon`}
+                          />
+                          <Stack hasGutter>
+                            <Label>{product.name}</Label>
+                            <p>{product.description}</p>
+                          </Stack>
+                        </Split>
+                      }
+                      isChecked={nextProduct === product}
+                      onChange={() => setNextProduct(product)}
                     />
-                    <div>
-                      <Label>{product.name}</Label>
-                      <p>{product.description}</p>
-                    </div>
                   </CardBody>
                 </Card>
               </Item>
