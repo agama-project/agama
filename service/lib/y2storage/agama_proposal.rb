@@ -98,7 +98,7 @@ module Y2Storage
 
   private
 
-    # @return [Proposal::SpaceMaker]
+    # @return [Proposal::AgamaSpaceMaker]
     attr_reader :space_maker
 
     # Whether the list of issues generated so far already includes any serious error
@@ -140,7 +140,7 @@ module Y2Storage
       return if fatal_error?
 
       configure_ptable_types(devicegraph)
-      clean_graph(devicegraph)
+      devicegraph = clean_graph(devicegraph)
       complete_planned(devicegraph)
       return if fatal_error?
 
@@ -162,6 +162,7 @@ module Y2Storage
     def clean_graph(devicegraph)
       remove_empty_partition_tables(devicegraph)
       protect_sids
+      # {Proposal::SpaceMaker#prepare_devicegraph} returns a copy of the given devicegraph.
       space_maker.prepare_devicegraph(devicegraph, partitions_for_clean)
     end
 
