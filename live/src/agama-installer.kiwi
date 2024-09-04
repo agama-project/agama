@@ -95,7 +95,7 @@
         <package name="avahi"/>
         <package name="bind-utils"/>
         <package name="systemd"/>
-        <package name="procps4"/>
+        <package name="procps"/>
         <package name="iputils"/>
         <package name="vim"/>
         <package name="vim-data"/>
@@ -133,8 +133,7 @@
         <package name="libblogger2" arch="s390x" />
         <package name="xauth"/>
         <package name="patterns-yast-yast2_basis"/>
-        <package name="MozillaFirefox" arch="aarch64,x86_64"/>
-        <package name="MozillaFirefox-branding-openSUSE" arch="aarch64,x86_64"/>
+        <package name="MozillaFirefox"/>
         <package name="libpwquality-tools"/>
         <package name="NetworkManager"/>
         <package name="agama"/>
@@ -168,6 +167,7 @@
         <package name="ruby3.3-rubygem-byebug"/>
         <package name="staging-build-key"/>
         <package name="openSUSE-build-key"/>
+        <package name="MozillaFirefox-branding-openSUSE"/>
     </packages>
     <!-- additional packages for the SLE distributions -->
     <packages type="image" profiles="SLE">
@@ -177,6 +177,7 @@
         <package name="ruby3.2-rubygem-agama-yast"/>
         <package name="ruby3.2-rubygem-byebug"/>
         <package name="suse-build-key"/>
+        <package name="MozillaFirefox-branding-SLE"/>
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>

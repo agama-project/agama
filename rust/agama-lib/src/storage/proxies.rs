@@ -156,3 +156,75 @@ trait Node {
     #[dbus_proxy(property)]
     fn target(&self) -> zbus::Result<String>;
 }
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.DASD.Manager",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
+)]
+trait DASDManager {
+    /// Disable method
+    fn disable(&self, devices: &[&zbus::zvariant::ObjectPath<'_>]) -> zbus::Result<u32>;
+
+    /// Enable method
+    fn enable(&self, devices: &[&zbus::zvariant::ObjectPath<'_>]) -> zbus::Result<u32>;
+
+    /// Format method
+    fn format(
+        &self,
+        devices: &[&zbus::zvariant::ObjectPath<'_>],
+    ) -> zbus::Result<(u32, zbus::zvariant::OwnedObjectPath)>;
+
+    /// Probe method
+    fn probe(&self) -> zbus::Result<()>;
+
+    /// SetDiag method
+    fn set_diag(
+        &self,
+        devices: &[&zbus::zvariant::ObjectPath<'_>],
+        diag: bool,
+    ) -> zbus::Result<u32>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.DASD.Device",
+    default_service = "org.opensuse.Agama.Storage1",
+    assume_defaults = true
+)]
+trait DASDDevice {
+    /// AccessType property
+    #[dbus_proxy(property)]
+    fn access_type(&self) -> zbus::Result<String>;
+
+    /// DeviceName property
+    #[dbus_proxy(property)]
+    fn device_name(&self) -> zbus::Result<String>;
+
+    /// Diag property
+    #[dbus_proxy(property)]
+    fn diag(&self) -> zbus::Result<bool>;
+
+    /// Enabled property
+    #[dbus_proxy(property)]
+    fn enabled(&self) -> zbus::Result<bool>;
+
+    /// Formatted property
+    #[dbus_proxy(property)]
+    fn formatted(&self) -> zbus::Result<bool>;
+
+    /// Id property
+    #[dbus_proxy(property)]
+    fn id(&self) -> zbus::Result<String>;
+
+    /// PartitionInfo property
+    #[dbus_proxy(property)]
+    fn partition_info(&self) -> zbus::Result<String>;
+
+    /// Status property
+    #[dbus_proxy(property)]
+    fn status(&self) -> zbus::Result<String>;
+
+    /// Type property
+    #[dbus_proxy(property)]
+    fn type_(&self) -> zbus::Result<String>;
+}

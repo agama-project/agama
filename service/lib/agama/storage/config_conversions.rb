@@ -19,24 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/block_device"
+require "agama/storage/config_conversions/drive"
+require "agama/storage/config_conversions/encryption"
+require "agama/storage/config_conversions/filesystem"
+require "agama/storage/config_conversions/from_json"
+require "agama/storage/config_conversions/partition"
+require "agama/storage/config_conversions/partitionable"
+require "agama/storage/config_conversions/search"
+require "agama/storage/config_conversions/size"
+
 module Agama
   module Storage
-    # Class for configuring the boot settings of the Agama storage proposal.
-    class BootSettings
-      # Whether to configure partitions for booting.
-      #
-      # @return [Boolean]
-      attr_accessor :configure
-      alias_method :configure?, :configure
-
-      # Device to use for booting.
-      #
-      # @return [String, nil] nil means use installation device.
-      attr_accessor :device
-
-      def initialize
-        @configure = true
-      end
+    # Conversions for the storage config.
+    module ConfigConversions
     end
   end
 end

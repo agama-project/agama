@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,29 +21,32 @@
 
 module Agama
   module Storage
-    # Settings regarding Btrfs for a given Volume
-    class BtrfsSettings
-      # Whether the volume contains Btrfs snapshots
-      #
-      # @return [Boolean]
-      attr_accessor :snapshots
-      alias_method :snapshots?, :snapshots
+    module Configs
+      # Btrfs configuration.
+      class Btrfs
+        # Whether there are snapshots.
+        #
+        # @return [Boolean]
+        attr_accessor :snapshots
+        alias_method :snapshots?, :snapshots
 
-      # @return [Boolean]
-      attr_accessor :read_only
-      alias_method :read_only?, :read_only
+        # @return [Boolean]
+        attr_accessor :read_only
+        alias_method :read_only?, :read_only
 
-      # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list may
-      #   be applied depending on the mount path of the volume
-      attr_accessor :subvolumes
+        # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list
+        #   may be applied depending on the mount path of the volume
+        attr_accessor :subvolumes
 
-      # @return [String]
-      attr_accessor :default_subvolume
+        # @return [String]
+        attr_accessor :default_subvolume
 
-      def initialize
-        @snapshots = false
-        @read_only = false
-        @default_subvolume = ""
+        # Constructor
+        def initialize
+          @snapshots = false
+          @read_only = false
+          @default_subvolume = ""
+        end
       end
     end
   end

@@ -1,7 +1,13 @@
 use crate::network::model::NetworkChange;
 use agama_lib::{
-    localization::model::LocaleConfig, manager::InstallationPhase,
-    product::RegistrationRequirement, progress::Progress, software::SelectedBy, storage::ISCSINode,
+    jobs::Job,
+    localization::model::LocaleConfig,
+    manager::InstallationPhase,
+    product::RegistrationRequirement,
+    progress::Progress,
+    software::SelectedBy,
+    storage::model::dasd::{DASDDevice, DASDFormatSummary},
+    storage::ISCSINode,
     users::FirstUser,
 };
 use serde::Serialize;
@@ -76,6 +82,29 @@ pub enum Event {
     ISCSIInitiatorChanged {
         name: Option<String>,
         ibft: Option<bool>,
+    },
+    DASDDeviceAdded {
+        device: DASDDevice,
+    },
+    DASDDeviceChanged {
+        device: DASDDevice,
+    },
+    DASDDeviceRemoved {
+        device: DASDDevice,
+    },
+    JobAdded {
+        job: Job,
+    },
+    JobChanged {
+        job: Job,
+    },
+    JobRemoved {
+        job: Job,
+    },
+    DASDFormatJobChanged {
+        #[serde(rename = "jobId")]
+        job_id: String,
+        summary: HashMap<String, DASDFormatSummary>,
     },
 }
 

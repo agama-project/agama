@@ -157,7 +157,7 @@ describe Agama::Storage::Proposal do
       it "returns settings with a set of volumes with adjusted sizes" do
         proposal.calculate_guided(settings)
 
-        expect(proposal.settings.volumes).to contain_exactly(
+        expect(proposal.guided_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_path: "/",
             auto_size:  true,
@@ -198,7 +198,7 @@ describe Agama::Storage::Proposal do
       it "returns settings with a set of volumes with adjusted sizes" do
         proposal.calculate_guided(settings)
 
-        expect(proposal.settings.volumes).to contain_exactly(
+        expect(proposal.guided_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_path: "/",
             auto_size:  true,
@@ -240,7 +240,7 @@ describe Agama::Storage::Proposal do
       it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
         proposal.calculate_guided(settings)
 
-        expect(proposal.settings.volumes).to contain_exactly(
+        expect(proposal.guided_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_path: "/",
             btrfs:      an_object_having_attributes(snapshots?: true),
@@ -281,7 +281,7 @@ describe Agama::Storage::Proposal do
       it "returns settings with a set of volumes with adjusted sizes" do
         proposal.calculate_guided(settings)
 
-        expect(proposal.settings.volumes).to contain_exactly(
+        expect(proposal.guided_settings.volumes).to contain_exactly(
           an_object_having_attributes(mount_path: "/", auto_size: true),
           an_object_having_attributes(
             mount_path: "swap",
@@ -330,7 +330,7 @@ describe Agama::Storage::Proposal do
       it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
         proposal.calculate_guided(settings)
 
-        expect(proposal.settings.volumes).to contain_exactly(
+        expect(proposal.guided_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_path: "/",
             btrfs:      an_object_having_attributes(snapshots?: false),

@@ -304,41 +304,95 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "boot": {
+          "$ref": "#/$defs/boot"
+        },
+        "drives": {
+          "title": "Drive devices",
+          "description": "Section describing drives (disks, BIOS RAIDs and multipath devices).",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "title": "Unpartitioned drive",
+                "description": "Drive without a partition table (e.g., directly formatted).",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "search": {
+                    "description": "The search is limited to drives scope.",
+                    "$ref": "#/$defs/search"
+                  },
+                  "encryption": {
+                    "$ref": "#/$defs/encryption"
+                  },
+                  "filesystem": {
+                    "description": "The partition table (if any) is deleted.",
+                    "$ref": "#/$defs/filesystem"
+                  }
+                }
+              },
+              {
+                "title": "Partitioned drive",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "search": {
+                    "description": "The search is limited to drives scope.",
+                    "$ref": "#/$defs/search"
+                  },
+                  "ptableType": {
+                    "title": "Partition table type",
+                    "description": "The partition table is created only if all the current partitions are deleted.",
+                    "enum": ["gpt", "msdos", "dasd"]
+                  },
+                  "partitions": {
+                    "$ref": "#/$defs/partitions"
+                  }
+                }
+              }
+            ]
+          }
+        },
         "guided": {
-          "title": "Settings to execute a Guided Proposal",
+          "title": "Guided proposal settings",
+          "$comment": "This guided section will be extracted to a separate schema. Only storage and legacyAutoyastStorage will be offered as valid schemas for the storage config.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "target": {
-              "title": "Target device",
               "anyOf": [
                 {
+                  "title": "Target for installing",
+                  "description": "Indicates whether to install in a disk or a new LVM.",
                   "enum": ["disk", "newLvmVg"]
                 },
                 {
-                  "title": "Disk device for installing",
+                  "title": "Target disk",
+                  "description": "Indicates to install in a specific disk device.",
                   "type": "object",
                   "additionalProperties": false,
                   "required": ["disk"],
                   "properties": {
                     "disk": {
-                      "title": "Disk device name",
+                      "title": "Device name",
                       "type": "string",
                       "examples": ["/dev/vda"]
                     }
                   }
                 },
                 {
-                  "title": "New LVM for installing",
+                  "title": "New LVM",
+                  "description": "Indicates to install in a new LVM created over some specific devices.",
                   "type": "object",
                   "additionalProperties": false,
                   "required": ["newLvmVg"],
                   "properties": {
                     "newLvmVg": {
-                      "title": "Devices in which to create the physical volumes",
+                      "description": "List of devices in which to create the physical volumes.",
                       "type": "array",
                       "items": {
-                        "title": "Disk device name",
+                        "title": "Device name",
                         "type": "string",
                         "examples": ["/dev/vda"]
                       }
@@ -348,45 +402,31 @@
               ]
             },
             "boot": {
-              "title": "Configuration of the boot settings",
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["configure"],
-              "properties": {
-                "configure": {
-                  "title": "Whether to configure partitions for booting",
-                  "type": "boolean"
-                },
-                "device": {
-                  "title": "Device to use for booting",
-                  "description": "The installation device is used by default for booting",
-                  "type": "string",
-                  "examples": ["/dev/vda"]
-                }
-              }
+              "$ref": "#/$defs/boot"
             },
             "encryption": {
-              "title": "Encryption settings",
+              "title": "Encryption",
+              "description": "Indicates the options for encrypting the new partitions.",
               "type": "object",
               "additionalProperties": false,
               "required": ["password"],
               "properties": {
                 "password": {
-                  "title": "Passphrase to use when creating new encryption devices",
-                  "type": "string"
+                  "$ref": "#/$defs/encryptionPassword"
                 },
                 "method": {
-                  "title": "Method used to create the encryption devices",
+                  "title": "Encryption method",
+                  "description": "Method used to encrypt the devices.",
                   "enum": ["luks2", "tpm_fde"]
                 },
                 "pbkdFunction": {
-                  "title": "Password-based key derivation function to use for LUKS2",
-                  "enum": ["pbkdf2", "argon2i", "argon2id"]
+                  "$ref": "#/$defs/encryptionPbkdFunction"
                 }
               }
             },
             "space": {
-              "title": "Policy to find space for the new partitions",
+              "title": "Space policy",
+              "description": "Indicates how to find space for the new partitions.",
               "type": "object",
               "additionalProperties": false,
               "properties": {
@@ -406,19 +446,20 @@
                 "required": ["policy", "actions"],
                 "properties": {
                   "actions": {
-                    "title": "Actions to find space if policy is 'custom'",
+                    "title": "Custom actions",
+                    "description": "Indicates what to do with specific devices.",
                     "type": "array",
                     "items": {
                       "anyOf": [
                         {
-                          "title": "Delete device",
-                          "description": "Force device deletion",
+                          "title": "Force delete",
+                          "description": "Indicates to delete a specific device.",
                           "type": "object",
                           "required": ["forceDelete"],
                           "additionalProperties": false,
                           "properties": {
                             "forceDelete": {
-                              "title": "Device to delete",
+                              "description": "Name of the device to delete.",
                               "type": "string",
                               "examples": ["/dev/vda"]
                             }
@@ -426,13 +467,13 @@
                         },
                         {
                           "title": "Allow shinking",
-                          "description": "Indicate the device can be shrunk in needed",
+                          "description": "Indicates whether a specific device can be shrunk if needed.",
                           "type": "object",
                           "required": ["resize"],
                           "additionalProperties": false,
                           "properties": {
                             "resize": {
-                              "title": "Device to allow resizing",
+                              "description": "Name of the shrinkable device.",
                               "type": "string",
                               "examples": ["/dev/vda"]
                             }
@@ -454,7 +495,8 @@
               }
             },
             "volumes": {
-              "title": "Set of volumes (file systems) to create",
+              "title": "System volumes",
+              "description": "List of volumes (file systems) to create.",
               "type": "array",
               "items": {
                 "type": "object",
@@ -462,126 +504,64 @@
                 "required": ["mount"],
                 "properties": {
                   "mount": {
-                    "title": "Mount point",
+                    "title": "Mount properties",
                     "type": "object",
                     "additionalProperties": false,
                     "required": ["path"],
                     "properties": {
                       "path": {
                         "title": "Mount path",
-                        "type": "string"
+                        "type": "string",
+                        "examples": ["/dev/vda"]
                       },
                       "options": {
-                        "title": "Options to add to the fourth field of fstab",
+                        "title": "Mount options",
+                        "description": "Options to add to the fourth field of fstab.",
                         "type": "array",
-                        "items": { "type": "string" }
+                        "items": {
+                          "type": "string"
+                        }
                       }
                     }
                   },
                   "filesystem": {
-                    "title": "File system of the volume",
-                    "anyOf": [
-                      {
-                        "title": "File system type",
-                        "enum": [
-                          "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
-                          "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
-                        ]
-                      },
-                      {
-                        "title": "Btrfs file system",
-                        "description": "Indicates properties of the Btrfs file system",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": ["btrfs"],
-                        "properties": {
-                          "btrfs": {
-                            "title": "Specification of a Btrfs file system",
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                              "snapshots": {
-                                "title": "Whether Btrfs snapshots should be configured",
-                                "type": "boolean"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
+                    "$ref": "#/$defs/filesystemType"
                   },
                   "size": {
-                    "title": "Size limits",
-                    "description": "Options to indicate the size of a device",
-                    "anyOf": [
-                      {
-                        "title": "Automatic size",
-                        "description": "The size is auto calculated according to the product",
-                        "const": "auto"
-                      },
-                      {
-                        "title": "Size unit",
-                        "$ref": "#/$defs/sizeValue"
-                      },
-                      {
-                        "title": "Size range (e.g., [1024, '2 GiB'])",
-                        "description": "Lower size limit and optionally upper size limit",
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/$defs/sizeValue"
-                        },
-                        "minItems": 1,
-                        "maxItems": 2,
-                        "examples": [[1024, "2 GiB"]]
-                      },
-                      {
-                        "title": "Size range",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "min": {
-                            "title": "Mandatory lower size limit",
-                            "$ref": "#/$defs/sizeValue"
-                          },
-                          "max": {
-                            "title": "Optional upper size limit",
-                            "$ref": "#/$defs/sizeValue"
-                          }
-                        },
-                        "required": ["min"]
-                      }
-                    ]
+                    "$ref": "#/$defs/size"
                   },
                   "target": {
-                    "title": "Location of the file system",
-                    "description": "Options to indicate the location of a file system",
+                    "title": "Volume target",
+                    "description": "Options to indicate the location of a volume.",
                     "anyOf": [
                       {
+                        "title": "Default target",
+                        "description": "The volume is created in the target device for installing.",
                         "const": "default"
                       },
                       {
                         "title": "New partition",
-                        "description": "The file system is created over a new partition",
+                        "description": "The volume is created over a new partition in a specific disk.",
                         "type": "object",
                         "required": ["newPartition"],
                         "additionalProperties": false,
                         "properties": {
                           "newPartition": {
-                            "title": "Name of a disk device",
+                            "description": "Name of a disk device.",
                             "type": "string",
                             "examples": ["/dev/vda"]
-                          }
+                            }
                         }
                       },
                       {
                         "title": "Dedicated LVM volume group",
-                        "description": "The file system is created over a dedicated LVM",
+                        "description": "The volume is created over a new dedicated LVM.",
                         "type": "object",
                         "additionalProperties": false,
                         "required": ["newVg"],
                         "properties": {
                           "newVg": {
-                            "title": "Name of a disk device",
+                            "description": "Name of a disk device.",
                             "type": "string",
                             "examples": ["/dev/vda"]
                           }
@@ -589,13 +569,13 @@
                       },
                       {
                         "title": "Re-used existing device",
-                        "description": "The file system is created over an existing device",
+                        "description": "The volume is created over an existing device.",
                         "type": "object",
                         "additionalProperties": false,
                         "required": ["device"],
                         "properties": {
                           "device": {
-                            "title": "Name of a device",
+                            "description": "Name of a device.",
                             "type": "string",
                             "examples": ["/dev/vda1"]
                           }
@@ -603,13 +583,13 @@
                       },
                       {
                         "title": "Re-used existing file system",
-                        "description": "An existing file system is reused (without formatting)",
+                        "description": "An existing file system is reused (without formatting).",
                         "type": "object",
                         "additionalProperties": false,
                         "required": ["filesystem"],
                         "properties": {
                           "filesystem": {
-                            "title": "Name of a device containing the file system",
+                            "description": "Name of a device containing the file system.",
                             "type": "string",
                             "examples": ["/dev/vda1"]
                           }
@@ -626,13 +606,16 @@
     },
     "legacyAutoyastStorage": {
       "title": "Legacy AutoYaST storage settings",
-      "description": "Accepts all options of the AutoYaST profile (XML to JSON)",
-      "type": "object"
+      "description": "Accepts all options of the AutoYaST partitioning section (i.e., XML to JSON)",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
     }
   },
   "$defs": {
     "sizeString": {
-      "title": "Human readable size (e.g., '2 GiB')",
+      "title": "Human readable size",
       "type": "string",
       "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$",
       "examples": ["2 GiB", "1.5 TB", "1TIB", "1073741824 b", "1073741824"]
@@ -640,13 +623,361 @@
     "sizeInteger": {
       "title": "Size in bytes",
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "examples": [1024, 2048]
     },
     "sizeValue": {
       "anyOf": [
         { "$ref": "#/$defs/sizeString" },
         { "$ref": "#/$defs/sizeInteger" }
       ]
+    },
+    "size": {
+      "title": "Size options",
+      "anyOf": [
+        {
+          "title": "Automatic size",
+          "description": "The size is auto calculated according to the product.",
+          "const": "auto"
+        },
+        {
+          "$ref": "#/$defs/sizeValue"
+        },
+        {
+          "title": "Size range (tuple syntax)",
+          "description": "Lower size limit and optionally upper size limit.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sizeValue"
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "examples": [[1024, 2048], ["1 GiB", "5 GiB"], [1024, "2 GiB"], ["2 GiB"]]
+        },
+        {
+          "title": "Size range",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min"],
+          "properties": {
+            "min": {
+              "title": "Mandatory lower size limit",
+              "$ref": "#/$defs/sizeValue"
+            },
+            "max": {
+              "title": "Optional upper size limit",
+              "$ref": "#/$defs/sizeValue"
+            }
+          }
+        }
+      ]
+    },
+    "searchName": {
+      "title": "Device name",
+      "type": "string",
+      "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
+    },
+    "searchByName": {
+      "title": "Search by name condition",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/searchName"
+        }
+      }
+    },
+    "search": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/searchName"
+        },
+        {
+          "title": "Search options",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "condition": {
+              "$ref": "#/$defs/searchByName"
+            },
+            "ifNotFound": {
+              "title": "Not found action",
+              "description": "How to handle the section if the device is not found.",
+              "enum": ["skip", "error"],
+              "default": "error"
+            }
+          }
+        }
+      ]
+    },
+    "boot": {
+      "title": "Boot options",
+      "description": "Allows configuring boot partitions automatically.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configure"],
+      "properties": {
+        "configure": {
+          "title": "Configure boot",
+          "description": "Whether to configure partitions for booting.",
+          "type": "boolean"
+        },
+        "device": {
+          "title": "Boot device",
+          "description": "The target installation device is used by default.",
+          "type": "string",
+          "examples": ["/dev/vda"]
+        }
+      }
+    },
+    "encryptionPassword": {
+      "title": "Encryption password",
+      "description": "Password to use when creating a new encryption device.",
+      "type": "string"
+    },
+    "encryptionCipher": {
+      "title": "LUKS cipher",
+      "description": "The value must be compatible with the --cipher argument of the command cryptsetup.",
+      "type": "string"
+    },
+    "encryptionKeySize": {
+      "title": "LUKS key size",
+      "description": "The value (in bits) has to be a multiple of 8. The possible key sizes are limited by the used cipher.",
+      "type": "integer"
+    },
+    "encryptionPbkdFunction": {
+      "title": "LUKS2 password-based key derivation",
+      "enum": ["pbkdf2", "argon2i", "argon2id"]
+    },
+    "encryptionLUKS1": {
+      "title": "LUKS1 encryption",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["luks1"],
+      "properties": {
+        "luks1": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": {
+              "$ref": "#/$defs/encryptionPassword"
+            },
+            "cipher": {
+              "$ref": "#/$defs/encryptionCipher"
+            },
+            "keySize": {
+              "$ref": "#/$defs/encryptionKeySize"
+            }
+          }
+        }
+      }
+    },
+    "encryptionLUKS2": {
+      "title": "LUKS2 encryption",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["luks2"],
+      "properties": {
+        "luks2": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": {
+              "$ref": "#/$defs/encryptionPassword"
+            },
+            "cipher": {
+              "$ref": "#/$defs/encryptionCipher"
+            },
+            "keySize": {
+              "$ref": "#/$defs/encryptionKeySize"
+            },
+            "pbkdFunction": {
+              "$ref": "#/$defs/encryptionPbkdFunction"
+            },
+            "label": {
+              "title": "LUKS2 label",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "encryptionPervasiveLUKS2": {
+      "title": "LUKS2 pervasive encryption",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pervasiveLuks2"],
+      "properties": {
+        "pervasiveLuks2": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": {
+              "$ref": "#/$defs/encryptionPassword"
+            }
+          }
+        }
+      }
+    },
+    "encryptionSwap": {
+      "title": "Swap encryptions",
+      "enum": ["protected_swap", "secure_swap", "random_swap"]
+    },
+    "encryption": {
+      "anyOf": [
+        { "$ref": "#/$defs/encryptionLUKS1" },
+        { "$ref": "#/$defs/encryptionLUKS2" },
+        { "$ref": "#/$defs/encryptionPervasiveLUKS2" },
+        { "$ref": "#/$defs/encryptionSwap" }
+      ]
+    },
+    "filesystemType": {
+      "anyOf": [
+        {
+          "title": "File system type",
+          "enum": [
+            "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
+            "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
+          ]
+        },
+        {
+          "title": "Btrfs file system",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["btrfs"],
+          "properties": {
+            "btrfs": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "snapshots": {
+                  "title": "Btrfs snapshots",
+                  "description": "Whether to configrue Btrfs snapshots.",
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "filesystem": {
+      "title": "File system options",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reuse": {
+          "title": "Reuse file system",
+          "description": "Whether to reuse the existing file system (if any).",
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "$ref": "#/$defs/filesystemType"
+        },
+        "label": {
+          "title": "File system label",
+          "type": "string"
+        },
+        "path": {
+          "title": "Mount path",
+          "type": "string",
+          "examples": ["/dev/vda"]
+        },
+        "mountBy": {
+          "title": "How to mount the device",
+          "enum": ["device", "id", "label", "path", "uuid"]
+        },
+        "mkfsOptions": {
+          "title": "mkfs options",
+          "description": "Options for creating the file system.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mountOptions": {
+          "title": "Mount options",
+          "description": "Options to add to the fourth field of fstab.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "partitions": {
+      "title": "Partitions",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "title": "Partition to create or reuse",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "search": {
+                "description": "The search is limited to the partitions of the selected device scope.",
+                "$ref": "#/$defs/search"
+              },
+              "id": {
+                "title": "Partition ID",
+                "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
+              },
+              "size": {
+                "title": "Partition size",
+                "$ref": "#/$defs/size"
+              },
+              "encryption": {
+                "$ref": "#/$defs/encryption"
+              },
+              "filesystem": {
+                "$ref": "#/$defs/filesystem"
+              }
+            }
+          },
+          {
+            "title": "Partition to delete if needed",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["deleteIfNeeded", "search"],
+            "properties": {
+              "deleteIfNeeded": {
+                "title": "Delete if needed",
+                "description": "Delete the partition if needed to make space.",
+                "const": true
+              },
+              "search": {
+                "description": "The search is limited to the partitions of the selected device scope.",
+                "$ref": "#/$defs/search"
+              },
+              "size": {
+                "title": "Partition size",
+                "$ref": "#/$defs/size"
+              }
+            }
+          },
+          {
+            "title": "Partition to delete",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["delete", "search"],
+            "properties": {
+              "delete": {
+                "title": "Delete",
+                "description": "Delete the partition.",
+                "const": true
+              },
+              "search": {
+                "description": "The search is limited to the partitions of the selected device scope.",
+                "$ref": "#/$defs/search"
+              }
+            }
+          }
+        ]
+      }
     }
   }
 }

@@ -22,15 +22,41 @@
 require_relative "../../test_helper"
 require_relative "storage_helpers"
 require "agama/config"
+require "agama/storage/configs"
 require "agama/storage/device_settings"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "y2storage"
 
+def root_partition(size)
+  fs_type_config = Agama::Storage::Configs::FilesystemType.new.tap do |t|
+    t.fs_type = Y2Storage::Filesystems::Type::BTRFS
+  end
+
+  filesystem_config = Agama::Storage::Configs::Filesystem.new.tap do |f|
+    f.type = fs_type_config
+    f.path = "/"
+  end
+
+  size_config = Agama::Storage::Configs::Size.new.tap do |s|
+    s.min = size
+    s.max = size
+  end
+
+  Agama::Storage::Configs::Partition.new.tap do |p|
+    p.filesystem = filesystem_config
+    p.size = size_config
+  end
+end
+
+def drive(partitions)
+  Agama::Storage::Configs::Drive.new.tap do |d|
+    d.partitions = partitions
+  end
+end
+
 describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
-
-  before { mock_storage(devicegraph: "partitioned_md.yml") }
 
   subject(:proposal) { described_class.new(config, logger: logger) }
 
@@ -38,21 +64,23 @@ describe Agama::Storage::Proposal do
 
   let(:config) { Agama::Config.new }
 
-  let(:achievable_settings) do
-    Agama::Storage::ProposalSettings.new.tap do |settings|
-      settings.device.name = "/dev/sdb"
-      settings.boot.device = "/dev/sda"
-      settings.volumes = [Agama::Storage::Volume.new("/")]
+  before do
+    mock_storage(devicegraph: "empty-hd-50GiB.yaml")
+  end
+
+  let(:achivable_config) do
+    Agama::Storage::Config.new.tap do |config|
+      root = root_partition(Y2Storage::DiskSize.GiB(10))
+      drive = drive([root])
+      config.drives = [drive]
     end
   end
 
-  let(:impossible_settings) do
-    Agama::Storage::ProposalSettings.new.tap do |settings|
-      settings.device.name = "/dev/sdb"
-      settings.volumes = [
-        # The boot disk size is 500 GiB, so it cannot accomodate a 1 TiB volume.
-        Agama::Storage::Volume.new("/").tap { |v| v.min_size = Y2Storage::DiskSize.TiB(1) }
-      ]
+  let(:impossible_config) do
+    Agama::Storage::Config.new.tap do |config|
+      root = root_partition(Y2Storage::DiskSize.GiB(100))
+      drive = drive([root])
+      config.drives = [drive]
     end
   end
 
@@ -61,13 +89,13 @@ describe Agama::Storage::Proposal do
       expect(subject.success?).to eq(false)
     end
 
-    context "if calculate_guided was already called" do
+    context "if a proposal was already calculated" do
       before do
-        subject.calculate_guided(settings)
+        subject.calculate_agama(config)
       end
 
       context "and the proposal was successful" do
-        let(:settings) { achievable_settings }
+        let(:config) { achivable_config }
 
         it "returns true" do
           expect(subject.success?).to eq(true)
@@ -75,7 +103,7 @@ describe Agama::Storage::Proposal do
       end
 
       context "and the proposal failed" do
-        let(:settings) { impossible_settings }
+        let(:config) { impossible_config }
 
         it "returns false" do
           expect(subject.success?).to eq(false)
@@ -84,20 +112,141 @@ describe Agama::Storage::Proposal do
     end
   end
 
-  describe "#calculate_guided" do
-    it "calculates a new proposal with the given settings" do
-      expect(Y2Storage::StorageManager.instance.proposal).to be_nil
-
-      subject.calculate_guided(achievable_settings)
-
-      expect(Y2Storage::StorageManager.instance.proposal).to_not be_nil
-      y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
-      expect(y2storage_settings.root_device).to eq("/dev/sda")
-      expect(y2storage_settings.volumes).to contain_exactly(
-        an_object_having_attributes(mount_point: "/", device: "/dev/sdb")
-      )
+  describe "#config_json" do
+    context "if no proposal has been calculated yet" do
+      it "returns an empty hash" do
+        expect(subject.calculated?).to eq(false)
+        expect(proposal.config_json).to eq({})
+      end
     end
 
+    context "if a proposal was calculated with the guided strategy" do
+      before do
+        subject.calculate_guided(Agama::Storage::ProposalSettings.new)
+      end
+
+      it "returns the guided JSON config" do
+        expected_json = {
+          storage: {
+            guided: {
+              boot:    {
+                configure: true
+              },
+              space:   {
+                policy: "keep"
+              },
+              target:  {
+                disk: "/dev/sda"
+              },
+              volumes: []
+            }
+          }
+        }
+
+        expect(subject.config_json).to eq(expected_json)
+      end
+    end
+
+    context "if a proposal was calculated with the agama strategy" do
+      before do
+        subject.calculate_agama(achivable_config)
+      end
+
+      it "returns the storage JSON config" do
+        skip "Missing conversion from Agama::Storage::Config to JSON"
+      end
+    end
+
+    context "if a proposal was calculated from guided JSON config" do
+      before do
+        subject.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            guided: {
+              target: {
+                disk: "/dev/vda"
+              }
+            }
+          }
+        }
+      end
+
+      it "returns the full guided JSON config" do
+        expected_json = {
+          storage: {
+            guided: {
+              boot:    {
+                configure: true
+              },
+              space:   {
+                policy: "keep"
+              },
+              target:  {
+                disk: "/dev/vda"
+              },
+              volumes: []
+            }
+          }
+        }
+
+        expect(subject.config_json).to eq(expected_json)
+      end
+    end
+
+    context "if a proposal was calculated from storage JSON config" do
+      before do
+        subject.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                filesystem: {
+                  type: "btrfs"
+                }
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns the given storage JSON config" do
+        expect(subject.config_json).to eq(config_json)
+      end
+    end
+
+    context "if a proposal was calculated from autoyast JSON config" do
+      before do
+        subject.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          legacyAutoyastStorage: [
+            {
+              partitions: [
+                {
+                  mount: "/",
+                  size:  "10 GiB"
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "returns the given autoyast JSON config" do
+        expect(subject.config_json).to eq(config_json)
+      end
+    end
+  end
+
+  shared_examples "check proposal callbacks" do |action, settings|
     it "runs all the callbacks" do
       callback1 = proc {}
       callback2 = proc {}
@@ -108,61 +257,28 @@ describe Agama::Storage::Proposal do
       expect(callback1).to receive(:call)
       expect(callback2).to receive(:call)
 
-      subject.calculate_guided(achievable_settings)
+      subject.public_send(action, send(settings))
     end
+  end
 
+  shared_examples "check proposal return" do |action, achivable_settings, impossible_settings|
     it "returns whether the proposal was successful" do
-      expect(subject.calculate_guided(achievable_settings)).to eq(true)
-      expect(subject.calculate_guided(impossible_settings)).to eq(false)
+      result = subject.public_send(action, send(achivable_settings))
+      expect(result).to eq(true)
+
+      result = subject.public_send(action, send(impossible_settings))
+      expect(result).to eq(false)
     end
+  end
 
-    context "if the given device settings sets a disk as target" do
-      before do
-        achievable_settings.device = Agama::Storage::DeviceSettings::Disk.new
-      end
-
-      context "and the target disk is not indicated" do
-        before do
-          achievable_settings.device.name = nil
-        end
-
-        it "sets the first available device as target device for volumes" do
-          subject.calculate_guided(achievable_settings)
-          y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
-
-          expect(y2storage_settings.volumes).to contain_exactly(
-            an_object_having_attributes(mount_point: "/", device: "/dev/sda")
-          )
-        end
-      end
-    end
-
-    context "if the given device settings sets a new LVM volume group as target" do
-      before do
-        achievable_settings.device = Agama::Storage::DeviceSettings::NewLvmVg.new
-      end
-
-      context "and the target disks for physical volumes are not indicated" do
-        before do
-          achievable_settings.device.candidate_pv_devices = []
-        end
-
-        it "sets the first available device as candidate device" do
-          subject.calculate_guided(achievable_settings)
-          y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
-
-          expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
-        end
-      end
-    end
-
+  shared_examples "check early proposal" do |action, settings|
     context "if the system has not been probed yet" do
       before do
         allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
       end
 
       it "does not calculate a proposal" do
-        subject.calculate_guided(achievable_settings)
+        subject.public_send(action, send(settings))
         expect(Y2Storage::StorageManager.instance.proposal).to be_nil
       end
 
@@ -176,34 +292,242 @@ describe Agama::Storage::Proposal do
         expect(callback1).to_not receive(:call)
         expect(callback2).to_not receive(:call)
 
-        subject.calculate_guided(achievable_settings)
+        subject.public_send(action, send(settings))
       end
 
       it "returns false" do
-        expect(subject.calculate_guided(achievable_settings)).to eq(false)
+        result = subject.public_send(action, send(settings))
+        expect(result).to eq(false)
       end
     end
   end
 
-  describe "#settings" do
-    it "returns nil if calculate has not been called yet" do
-      expect(proposal.settings).to be_nil
+  describe "#calculate_guided" do
+    before do
+      mock_storage(devicegraph: "partitioned_md.yml")
     end
 
-    context "if the proposal was already calculated" do
+    let(:achivable_settings) do
+      Agama::Storage::ProposalSettings.new.tap do |settings|
+        settings.device.name = "/dev/sdb"
+        settings.boot.device = "/dev/sda"
+        settings.volumes = [Agama::Storage::Volume.new("/")]
+      end
+    end
+
+    let(:impossible_settings) do
+      Agama::Storage::ProposalSettings.new.tap do |settings|
+        settings.device.name = "/dev/sdb"
+        settings.volumes = [
+          # The boot disk size is 500 GiB, so it cannot accomodate a 1 TiB volume.
+          Agama::Storage::Volume.new("/").tap { |v| v.min_size = Y2Storage::DiskSize.TiB(1) }
+        ]
+      end
+    end
+
+    it "calculates a proposal with the guided strategy and with the given settings" do
+      expect(Y2Storage::StorageManager.instance.proposal).to be_nil
+
+      subject.calculate_guided(achivable_settings)
+
+      expect(Y2Storage::StorageManager.instance.proposal).to_not be_nil
+      y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
+      expect(y2storage_settings.root_device).to eq("/dev/sda")
+      expect(y2storage_settings.volumes).to contain_exactly(
+        an_object_having_attributes(mount_point: "/", device: "/dev/sdb")
+      )
+    end
+
+    include_examples "check proposal callbacks", :calculate_guided, :achivable_settings
+
+    include_examples "check proposal return",
+      :calculate_guided, :achivable_settings, :impossible_settings
+
+    include_examples "check early proposal", :calculate_guided, :achivable_settings
+
+    context "if the given device settings sets a disk as target" do
       before do
-        subject.calculate_guided(achievable_settings)
+        achivable_settings.device = Agama::Storage::DeviceSettings::Disk.new
       end
 
-      it "returns the settings used for calculating the proposal" do
-        expect(subject.settings).to be_a(Agama::Storage::ProposalSettings)
+      context "and the target disk is not indicated" do
+        before do
+          achivable_settings.device.name = nil
+        end
 
-        expect(subject.settings).to have_attributes(
-          device:  an_object_having_attributes(name: "/dev/sdb"),
-          volumes: contain_exactly(
-            an_object_having_attributes(mount_path: "/")
+        it "sets the first available device as target device for volumes" do
+          subject.calculate_guided(achivable_settings)
+          y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
+
+          expect(y2storage_settings.volumes).to contain_exactly(
+            an_object_having_attributes(mount_point: "/", device: "/dev/sda")
           )
-        )
+        end
+      end
+    end
+
+    context "if the given device settings sets a new LVM volume group as target" do
+      before do
+        achivable_settings.device = Agama::Storage::DeviceSettings::NewLvmVg.new
+      end
+
+      context "and the target disks for physical volumes are not indicated" do
+        before do
+          achivable_settings.device.candidate_pv_devices = []
+        end
+
+        it "sets the first available device as candidate device" do
+          subject.calculate_guided(achivable_settings)
+          y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
+
+          expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
+        end
+      end
+    end
+  end
+
+  describe "#calculate_agama" do
+    it "calculates a proposal with the agama strategy and with the given config" do
+      expect(Y2Storage::StorageManager.instance.proposal).to be_nil
+
+      subject.calculate_agama(achivable_config)
+
+      expect(Y2Storage::StorageManager.instance.proposal).to be_a(Y2Storage::AgamaProposal)
+    end
+
+    include_examples "check proposal callbacks", :calculate_agama, :achivable_config
+
+    include_examples "check proposal return",
+      :calculate_agama, :achivable_config, :impossible_config
+
+    include_examples "check early proposal", :calculate_agama, :achivable_config
+  end
+
+  describe "#calculate_autoyast" do
+    let(:achivable_settings) do
+      [
+        {
+          partitions: [
+            {
+              mount: "/",
+              size:  "10 GiB"
+            }
+          ]
+        }
+      ]
+    end
+
+    let(:impossible_settings) do
+      [
+        {
+          device:     "/dev/sdb",
+          partitions: [
+            {
+              mount: "/",
+              size:  "10 GiB"
+            }
+          ]
+        }
+      ]
+    end
+
+    it "calculates a proposal with the autoyast strategy and with the given settings" do
+      expect(Y2Storage::StorageManager.instance.proposal).to be_nil
+
+      subject.calculate_autoyast(achivable_settings)
+      expect(Y2Storage::StorageManager.instance.proposal).to be_a(Y2Storage::AutoinstProposal)
+    end
+
+    include_examples "check proposal callbacks", :calculate_autoyast, :achivable_settings
+
+    include_examples "check proposal return",
+      :calculate_autoyast, :achivable_settings, :impossible_settings
+
+    include_examples "check early proposal", :calculate_autoyast, :achivable_settings
+  end
+
+  describe "#calculate_from_json" do
+    context "if the JSON contains storage guided settings" do
+      let(:config_json) do
+        {
+          storage: {
+            guided: {
+              target: {
+                disk: "/dev/vda"
+              }
+            }
+          }
+        }
+      end
+
+      it "calculates a proposal with the guided strategy and with the expected settings" do
+        expect(subject).to receive(:calculate_guided) do |settings|
+          expect(settings).to be_a(Agama::Storage::ProposalSettings)
+          expect(settings.device.name).to eq("/dev/vda")
+        end
+
+        subject.calculate_from_json(config_json)
+      end
+    end
+
+    context "if the JSON contains storage settings" do
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                filesystem: {
+                  type: "xfs"
+                }
+              }
+            ]
+          }
+        }
+      end
+
+      it "calculates a proposal with the agama strategy and with the expected config" do
+        expect(subject).to receive(:calculate_agama) do |config|
+          expect(config).to be_a(Agama::Storage::Config)
+          expect(config.drives.size).to eq(1)
+
+          drive = config.drives.first
+          expect(drive.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::XFS)
+        end
+
+        subject.calculate_from_json(config_json)
+      end
+    end
+
+    context "if the JSON contains autoyast settings" do
+      let(:config_json) do
+        {
+          legacyAutoyastStorage: [
+            {
+              partitions: [
+                {
+                  mount: "/",
+                  size:  "10 GiB"
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "calculates a proposal with the autoyast strategy and with the given settings" do
+        expect(subject).to receive(:calculate_autoyast) do |settings|
+          expect(settings).to eq(config_json[:legacyAutoyastStorage])
+        end
+
+        subject.calculate_from_json(config_json)
+      end
+    end
+
+    context "if the JSON does not contain any of the storage settings" do
+      let(:config_json) { {} }
+
+      it "raises an error" do
+        expect { subject.calculate_from_json(config_json) }.to raise_error(/Invalid storage/)
       end
     end
   end
@@ -215,7 +539,7 @@ describe Agama::Storage::Proposal do
 
     context "if the proposal failed" do
       before do
-        subject.calculate_guided(impossible_settings)
+        subject.calculate_agama(impossible_config)
       end
 
       it "returns an empty list" do
@@ -225,12 +549,12 @@ describe Agama::Storage::Proposal do
 
     context "if the proposal was successful" do
       before do
-        subject.calculate_guided(achievable_settings)
+        subject.calculate_agama(achivable_config)
       end
 
       it "returns the actions from the actiongraph" do
         expect(proposal.actions).to include(
-          an_object_having_attributes(text: /Create partition \/dev\/sdb1/)
+          an_object_having_attributes(text: /Create partition \/dev\/sda2/)
         )
       end
     end
@@ -242,20 +566,36 @@ describe Agama::Storage::Proposal do
     end
 
     it "returns an empty list if the current proposal is successful" do
-      subject.calculate_guided(achievable_settings)
+      subject.calculate_agama(achivable_config)
 
       expect(subject.issues).to eq([])
     end
 
     context "if the current proposal is failed" do
-      let(:settings) { impossible_settings }
+      let(:config) { impossible_config }
 
-      it "includes an error because the volumes cannot be accommodated" do
-        subject.calculate_guided(settings)
+      it "includes an error" do
+        subject.calculate_agama(config)
 
         expect(subject.issues).to include(
-          an_object_having_attributes(description: /Cannot accommodate/)
+          an_object_having_attributes(description: /A problem ocurred/)
         )
+      end
+    end
+
+    context "if the proposal was calculated with the guided strategy" do
+      before do
+        mock_storage(devicegraph: "partitioned_md.yml")
+      end
+
+      let(:impossible_settings) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.device.name = "/dev/sdb"
+          settings.volumes = [
+            # The boot disk size is 500 GiB, so it cannot accomodate a 1 TiB volume.
+            Agama::Storage::Volume.new("/").tap { |v| v.min_size = Y2Storage::DiskSize.TiB(1) }
+          ]
+        end
       end
 
       context "and the settings does not indicate a target device" do
@@ -294,6 +634,66 @@ describe Agama::Storage::Proposal do
             an_object_having_attributes(description: /is not found/)
           )
         end
+      end
+    end
+  end
+
+  describe "#guided?" do
+    context "if no proposal has been calculated yet" do
+      it "returns false" do
+        expect(subject.calculated?).to eq(false)
+        expect(subject.guided?).to eq(false)
+      end
+    end
+
+    context "if the proposal was calculated with the guided strategy" do
+      before do
+        settings = Agama::Storage::ProposalSettings.new
+        subject.calculate_guided(settings)
+      end
+
+      it "returns true" do
+        expect(subject.guided?).to eq(true)
+      end
+    end
+
+    context "if the proposal was calculated with any other strategy" do
+      before do
+        subject.calculate_agama(achivable_config)
+      end
+
+      it "returns false" do
+        expect(subject.guided?).to eq(false)
+      end
+    end
+  end
+
+  describe "#guided_settings" do
+    context "if no proposal has been calculated yet" do
+      it "returns nil" do
+        expect(subject.calculated?).to eq(false)
+        expect(subject.guided_settings).to be_nil
+      end
+    end
+
+    context "if the proposal was calculated with the guided strategy" do
+      before do
+        settings = Agama::Storage::ProposalSettings.new
+        subject.calculate_guided(settings)
+      end
+
+      it "returns the guided settings" do
+        expect(subject.guided_settings).to be_a(Agama::Storage::ProposalSettings)
+      end
+    end
+
+    context "if the proposal was calculated with any other strategy" do
+      before do
+        subject.calculate_agama(achivable_config)
+      end
+
+      it "returns nil" do
+        expect(subject.guided_settings).to be_nil
       end
     end
   end

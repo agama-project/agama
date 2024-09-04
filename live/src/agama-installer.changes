@@ -1,4 +1,28 @@
 -------------------------------------------------------------------
+Wed Sep  4 07:08:30 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Install Firefox on all architectures, install
+  MozillaFirefox-branding-SLE in the SLE image
+  (gh#openSUSE/agama#1574)
+
+-------------------------------------------------------------------
+Tue Sep  3 14:50:58 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Firefox: disable the initial configuration workflow
+  (gh#openSUSE/agama#1573)
+
+-------------------------------------------------------------------
+Fri Aug 30 13:05:53 UTC 2024 - Thomas Blume <Thomas.Blume@suse.com>
+
+- remove memcheck workaround in images.sh (bsc#1228621)
+
+-------------------------------------------------------------------
+Mon Aug 26 10:05:01 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Include the procps instead of the procps4 package
+  (jsc#PED-8669, gh#openSUSE/agama#1554).
+
+-------------------------------------------------------------------
 Mon Aug 19 17:54:55 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Add beside staging-build-keys also openSUSE-build-keys to not

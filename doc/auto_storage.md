@@ -3,19 +3,28 @@
 This document describes Agama's approach to configure storage using a profile for unattended
 installation.
 
-## Legacy AutoYaST Specification
+## Agama and AutoYaST
 
-The Agama profile can contain either a `storage` section or a `legacyAutoyastStorage` one.
+AutoYaST profiles can be used with Agama offering a 100% backward compatibility.
 
-The rest of this document describes the `storage` section.
+The `legacyAutoyastStorage` section of the Agama profile is a 1:1 representation of the XML
+specification of AutoYaST. No JSON validation will be performed for it.
 
-That `legacyAutoyastStorage` is a 1:1 representation of the XML specification of AutoYaST. No
-JSON validation will be performed for it.
+~~~json
+{
+  "legacyAutoyastStorage": [
+    {
+      "use": "all",
+      "partitions": []
+    }
+  ]
+}
+~~~
 
 ### Implementation Considerations for AutoYaST Specification
 
 In principle, implementing the legacy AutoYaST module is as simple as converting the corresponding
-section of the profile into a `Y2Storage::PartitioningSection` object and use 
+section of the profile into a `Y2Storage::PartitioningSection` object and use
 `Y2Storage::AutoInstProposal` to calculate the result.
 
 But there are some special cases in which AutoYaST fallbacks to read some settings from the YaST
@@ -27,7 +36,153 @@ specify the size of a partition or to determine the default list of subvolumes w
 See also the sections "Automatic Partitioning" and "Guided Partitioning" at the AutoYaST
 documentation for situations in which AutoYaST uses the standard YaST `GuidedProposal` as fallback.
 
-## Basic Structure of the Storage Section
+### Problems with the AutoYaST Schema
+
+The AutoYaST schema is far from ideal and it presents some problems.
+
+#### Everything Is a Drive or a Partition Section
+
+This could seem a minor detail, but it has several implications:
+
+* A `<type>` property is required to indicated the type of device (*RAID*, *LVM*, etc).
+* Some properties could be meaningless for the selected type.
+* Having a `<partitions>` section for describing logical volumes is weird.
+
+~~~xml
+<partitioning config:type="list">
+  <drive>
+    <type config:type="symbol">CT_LVM</type>
+    <disklabel>gpt</disklabel> <!-- It does not make sense for a volume group -->
+    <partitions config:type="list"> <!-- It really means logical volumes -->
+      <partition>
+        <partition_id>131</partition_id> <!-- It does not make sense for a logical volume -->
+      </partition>
+    </partitions>
+  </drive>
+</partitioning>
+~~~
+
+#### Directly Formatting Devices is Hammered
+
+A `<partitions>` section is still needed for directly formatting a device, which shows the abuse of
+the schema.
+
+~~~xml
+<partitioning config:type="list">
+  <drive>
+    <disklabel>none</disklabel>
+    <partitions config:type="list">
+      <partition>
+        <filesystem config:type="symbol">btrfs</filesystem>
+      </partition>
+    </partitions>
+  </drive>
+</partitioning>
+~~~
+
+#### Selecting Devices is Difficult and Limited
+
+The AutoYaST schema allows selecting specific devices by using the `<skip_list>` property. This
+forces to use inverse logic when looking for a device. For example, if you want to select a disk
+bigger than 1 GiB, then you have to skip the smaller disks:
+
+~~~xml
+<partitioning config:type="list">
+  <drive>
+    <skip_list config:type="list">
+      <!-- skip devices that are smaller than 1GB -->
+      <listentry>
+        <skip_key>size_k</skip_key>
+        <skip_value>1048576</skip_value>
+        <skip_if_less_than config:type="boolean">true</skip_if_less_than>
+      </listentry>
+    </skip_list>
+  </drive>
+</partitioning>
+~~~
+
+The partitions to remove are selected by means of the `<use>` property, which is very limited. It
+only allows removing everything, nothing, specific partition numbers or linux partitions.
+
+~~~xml
+<partitioning config:type="list">
+  <drive>
+    <device>/dev/sdc</device>
+    <use>2</use> <!-- Removes the partition number 2 -->
+    <partitions config:type="list">
+      ...
+    </partitions>
+  </drive>
+</partitioning>
+~~~
+
+The property `<partition_nr>` is used for reusing a partition. Again, this option is very limited,
+allowing selecting a partition only by its number.
+
+~~~xml
+<partitioning config:type="list">
+  <drive>
+    <device>/dev/sdc</device>
+    <partitions config:type="list">
+      <partition>
+        <partition_nr>1</partition_nr> <!-- Reuse the partition number 1 -->
+      </partition>
+    </partitions>
+  </drive>
+</partitioning>
+~~~
+
+Note that you could indicate the same partition number for deleting (`<use>`) and for reusing (`<partition_nr>`).
+
+#### Devices Are Created in a Indirect Way
+
+For creating new LVM volume groups, RAIDS, etc, it is necessary to indicate which devices to use as
+logical volumes or as RAID members. In AutoYaST, the partitions have to indicate the device they are
+going to be used by.
+
+~~~xml
+<partitioning config:type="list">
+  <drive>
+    <device>/dev/sda</device>
+    <partitions config:type="list">
+      <partition>
+        <raid_name>/dev/md/0</raid_name> <!-- Indicate what device is going to use it -->
+      </partition>
+    </partitions>
+  </drive>
+  <drive>
+    <device>/dev/sdb</device>
+    <partitions config:type="list">
+      <partition>
+        <raid_name>/dev/md/0</raid_name>
+      </partition>
+    </partitions>
+  </drive>
+  <drive>
+    <device>/dev/md/0</device>
+  </drive>
+</partitioning>
+~~~
+
+It would be more natural to indicate the used devices directly in the RAID or logical volume drive.
+
+## The New Storage Schema
+
+Agama offers its own storage schema which is more semantic, comprehensive and flexible than the
+AutoYaST one.
+
+The new schema allows:
+
+* To clearly distinguish between different types of devices and their properties.
+* To perform more advanced searches for disks, partitions, etc.
+* To indicate deleting and resizing on demand.
+
+The Agama schema is used by a new Agama specific proposal. This decouples the algorithm from the
+AutoYaST one, making much easier to support new use cases and avoiding backward compatibility with
+fringe AutoYaST scenarios. It also supports some features that are not available in the AutoYaST
+proposal like deleting or resizing partitions on demand.
+
+### Basic Structure of the Storage Section
 
 A formal specification of the outer level of the `storage` section would look like this.
 
@@ -37,14 +192,14 @@ Storage
   volumeGroups <VolumeGroup[]>
   mdRaids <MdRaid[]>
   btrfsRaids <BtrfsRaid[]>
-  bcacheDevices <BCache[]>
   nfsMounts <NFS[]>
-  guided <Guided>
+  boot [BootSettings]
+  encryption [EncryptionSettings]
 ```
 
 Thus, a `storage` section can contain several entries describing how to configure the corresponding
-storage devices and an extra entry used to execute the Guided Proposal in top of the scenario
-described by the device entries.
+storage devices and a couple of extra entries to setup some general aspects that influence the final
+layout.
 
 Each volume group, RAID, bcache device or NFS share can represent a new logical device to be created
 or an existing device from the system to be processed. Entries below `drives` represent devices
@@ -55,22 +210,33 @@ found at the system, since Agama cannot create that kind of devices.
 In fact, a single entry can represent several devices from the system. That is explained in depth at
 the section "searching existing devices" of this document.
 
-## Entries for Describing the Devices
+On the first versions of Agama, an alternative syntax will be accepted including only one `guided`
+entry.
+
+```
+Storage
+  guided <Guided>
+```
+
+That allows to rely on the YaST component known as `GuidedProposal`. That alternative will be
+removed as soon as all the capabilities of that `GuidedProposal` could be expressed in terms of a
+regular storage configuration like the one explained above.
+
+### Entries for Describing the Devices
 
 The formal specification of the previous section can be extended as we dive into the structure.
 
 ```
 Drive
-  search: [<Search>]
+  search [<Search>]
   alias [<string>]
-  encrypt [<EncryptAction>]
-  format [<FormatAction>]
-  mount [<MountAction>]
+  encryption [<Encryption>]
+  filesystem [<Filesystem>]
   ptableType [<string>]
   partitions [<Partition[]>]
 
 VolumeGroup
-  search: [<Search>]
+  search [<Search>]
   alias [<string>]
   name [<string>]
   peSize [<number>]
@@ -79,21 +245,20 @@ VolumeGroup
   delete [<boolean=false>]
 
 MdRaid
-  search: [<Search>]
+  search [<Search>]
   alias [<string>]
   name <string>
   level [<string>]
   chunkSize [<number>]
   devices [<<string|Search>[]>]
-  encrypt [<EncryptAction>]
-  format [<FormatAction>]
-  mount [<MountAction>]
+  encryption [<Encryption>]
+  filesystem [Filesystem]
   ptableType [<string>]
   partitions [<Partition[]>]
   delete [<boolean=false>]
 
 BtrfsRaid
-  search: [<Search>]
+  search [<Search>]
   alias [<string>]
   dataRaidLevel <string>
   metadataRaidLevel <string>
@@ -109,15 +274,14 @@ NFS
   mount [<MountAction>]
 
 Partition
-  search: [<Search>]
+  search [<Search>]
   alias [<string>]
   id [<string>]
-  type [<string>]
   size [<Size>]
-  encrypt [EncryptAction]
-  format [<FormatAction>]
-  mount [<MountAction>]
+  encryption [Encryption]
+  filesystem [<Filesystem>]
   delete [<boolean=false>]
+  deleteIfNeeded [<boolean=false>]
 
 LogicalVolume
   search [<Search>]
@@ -128,25 +292,36 @@ LogicalVolume
   usedPool [<string>]
   stripes [<number>]
   stripSize [<number>]
-  encrypt [<EncryptAction>]
-  format [<FormatAction>]
-  mount [<MountAction>]
+  encryption [Encryption]
+  filesystem [<Filesystem>]
   delete [<boolean=false>]
+  deleteIfNeeded [<boolean=false>]
+Encryption
+  reuse <Boolean>
+  type <EncryptionType>
 
-EncryptAction
-  method <string>
-  key [<string>]
+EncryptionType <EncryptionLUKS1|EncryptionLUKS2|EncryptionPervasiveLUKS2|"protected_swap"|"secure_swap"|"random_swap">
+
+EncryptionLUKS1
+  password <string>
+  keySize [<number>]
+  cipher [<string>]
+
+EncryptionLUKS2
+  password <string>
+  keySize [<number>]
+  cipher [<string>]
   pdkdf [<string>]
   label [<string>]
-  cipher [<string>]
-  keySize [<number>]
 
-FormatAction
-  filesystem <string|Btrfs>
+EncryptionPervasiveLUKS2
+  password <string>
+
+Filesystem
+  reuse <Boolean>
+  type <string|Btrfs>
   label [<string>]
   mkfsOptions [<string[]>]
-
-MountAction
   path <string>
   mountOptions [<string[]>]
   mountBy [<string>]
@@ -162,6 +337,17 @@ Size <'default'|string|SizeRange>
 SizeRange
   min <string>
   max <string>
+
+BootSettings
+  configure <boolean>
+  device <string>
+
+EncryptionSettings
+  method <string>
+  key [<string>]
+  pdkdf [<string>]
+  cipher [<string>]
+  keySize [<number>]
 ```
 
 To illustrate how all that fits together, let's see the following example in which the first disk of
@@ -173,13 +359,12 @@ it) to allocate two file systems.
     "drives": [
         {
             "partitions": [
-                { 
+                {
                     "alias": "pv",
                     "id": "lvm",
                     "size": { "min": "12 GiB" },
-                    "encrypt": {
-                        "method": "luks2",
-                        "key": "my secret passphrase"
+                    "encryption": {
+                        "luks2": { "password": "my secret passphrase" }
                     }
                 }
               ]
@@ -192,13 +377,11 @@ it) to allocate two file systems.
             "logicalVolumes": [
                 {
                     "size":   { "min": "10 GiB" },
-                    "format": { "filesystem": "btrfs" },
-                    "mount":  { "path": "/" }
+                    "filesystem": { "path": "/", "type": "btrfs" }
                 },
                 {
                     "size":   "2 GiB",
-                    "format": { "filesystem": "swap" },
-                    "mount":  { "path": "swap" }
+                    "filesystem": { "path": "swap", "type": "swap" }
                 }
             ]
         }
@@ -206,7 +389,7 @@ it) to allocate two file systems.
 }
 ```
 
-## Specifying the Size of a Device
+### Specifying the Size of a Device
 
 When creating some kinds of devices or resizing existing ones (if possible) it may be necessary to
 specify the desired size. As seen in the specification above, that can be done in several ways.
@@ -228,7 +411,11 @@ into the following:
  - If the product does not specify a default volume, the behavior is still not defined (there are
    several reasonable options).
 
-### Under Discussion
+It is also possible to specify "current" as a size value for partitions and logical volumes that
+already exist in the system. The usage of "current" and how it affects resizing the corresponding
+devices is explained at a separate section below.
+
+#### Under Discussion
 
 As explained, it should be possible to specify the sizes as "default", as a range or as a fixed
 value. But in the last two cases, a parseable string like "40 GiB" may not be the only option to
@@ -237,7 +424,13 @@ represent a size. The following two possibilities are also under consideration.
  - `{ "gib": 40 }`
  - `{ "value": 40, "units": "gib" }`
 
-## Searching Existing Devices
+### Partitions Needed for Booting
+
+Using a `boot` entry makes it possible to configure whether (and where, using an alias) Agama
+should calculate and create the extra partitions needed for booting. If the device is not
+specified, Agama will take the location of the root file system as a reference.
+
+### Searching Existing Devices
 
 Many sections in the profile are used to describe how some devices must be created, modified or even
 deleted. In the last two cases, it's important to match the description with one or more devices
@@ -304,7 +497,7 @@ within them and create new partitions of type RAID.
                     },
                     "delete": true
                 },
-                { 
+                {
                     "alias": "newRaidPart",
                     "id": "raid",
                     "size": { "min": "1 GiB" }
@@ -380,7 +573,7 @@ drive, it will be considered to contain the following one.
 }
 ```
 
-### Under Discussion
+#### Under Discussion
 
 Very often, `search` will be used to find a device by its name. In that case, the syntax could be
 simplified to just contain the device name as string.
@@ -420,7 +613,7 @@ above, it would be possible to use the key as name of the property, resulting in
 }
 ```
 
-## Referencing Other Devices
+### Referencing Other Devices
 
 Sometimes is necessary to reference other devices as part of the specification of an LVM volume
 group or RAID. Those can be existing system devices or devices that will be created as response to
@@ -495,7 +688,7 @@ to be a reference to all the devices. As a consequence, this two examples are eq
 }
 ```
 
-### Under Discussion
+#### Under Discussion
 
 In addition to aliases, a `search` section could be accepted in all the places in which an alias can
 be used. In that case, the scope of the search would always be the whole set of devices in the
@@ -516,23 +709,153 @@ system (so the same conditions can be matched by a disk, a partition, an LVM dev
 }
 ```
 
-## Partitions needed for Booting
+### Keeping an Existing File System or Encryption Layer
 
-When relying on the Agama proposal (see below), there are some options to configure whether (and
-where) Agama should calculate and create the extra partitions needed for booting.
+The entries for both `encryption` and `filesystem` contain a flag `reuse` with a default value of
+false. It can be used in combination with `search` to specify the device must not be re-encrypted
+or re-formatted.
 
-If the proposal is not used, Agama will always try to calculate and create those partitions taking
-the location of the root file system as a reference. That's the same approach that AutoYaST has
-followed for years.
+### Deleting and Shrinking Existing Devices
 
-## Using the Automatic Proposal
+The storage proposal must make possible to define what to do with existing partitions and logical
+volumes. Even with existing MD RAIDs or LVM volume groups.
 
-Agama can rely on the process known as Guided Proposal to calculate all the needed partitions, LVM
-devices and file systems based on some general product settings and some user preferences. That
-mechanism can also be used as part of the profile and will be executed as a last step, after
-processing all the explicit sections that describe devices.
+A `search` section allows to match the definition of a partition or an LVM logical volume with one
+(or several) devices existing in the system. In order to provide the same capabilities than the
+Guided proposal (see below) it must be possible to specify that a given partition or volume must be:
 
-The `guided` section conforms to the following specification.
+  - Deleted if needed to make space for the newly defined devices
+  - Deleted in all cases
+  - Shrunk to the necessary size to make space for new devices
+  - Shrunk or extended to a given size, maybe a range (not really possible in the current Guided
+    Proposal)
+
+It is even possible to express some combinations of the above, like "try to shrink it to make space
+but proceed to delete it if shrinking it is not enough".
+
+Deletion can be achieved with the corresponding `delete` flag or the alternative `deleteIfNeeded`.
+If any of those flags are active for a partition, it makes no sense to specify any other usage
+(like declaring a file system on it).
+
+The following example deletes the partition with the label "root" in all cases and, if needed, keeps
+deleting other partitions as needed to make space for the new partition of 30 GiB.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "root" }
+                    },
+                    "delete": true
+                },
+                { "search": {}, "deleteIfNeeded": true },
+                { "size": "30 GiB" }
+            ]
+        }
+    ]
+}
+```
+
+Often some partitions or logical volumes are shrunk only to make space for the declared devices. But
+since resizing is not a destructive operation, it can also make sense to declare a given partition
+must be resized (shrunk or extended) and then formatted and/or mounted.
+
+In any case, note that resizing a partition can be limited depending on its content, the filesystem
+type, etc.
+
+Combining `search` and `resize` is enough to indicate Agama is expected to resize a given partition
+if possible. The keyword "current" can be used eveywhere a size is expected and it is always
+equivalent to the exact original size of the device. The simplest way to use "current" is to just
+specify that the matched device should keep its original size. That's the default for searched (and
+found) devices if `size` is completely omitted.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "reuse" }
+                    },
+                    "size": "current"
+                }
+            ]
+        }
+    ]
+}
+```
+
+Using "current" for the min and max values of a size allows to specify how a device could be resized
+if possible. See the following examples with explanatory filesystem labels.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "shrinkIfNeeded" }
+                    },
+                    "size": { "min": 0, "max": "current" }
+                },
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "resizeToFixedSize" }
+                    },
+                    "size": "15 GiB"
+                },
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "resizeByRange" }
+                    },
+                    "size": { "min": "10 GiB", "max": "50 GiB" }
+                },
+                {
+                    "search": {
+                        "condition": { "property": "fsLabel", "value": "growAsMuchAsPossible" }
+                    },
+                    "size": { "min": "current" }
+                },
+            ]
+        }
+    ]
+}
+```
+
+Of course, when the size limits are specified as a combination of "current" and a fixed value, the
+user must still make sure that the resulting min is not bigger than the resulting max.
+
+Both `deleteIfNeeded` and a size range can be combined to indicate that Agama should try to make
+space first by shrinking the partitions and deleting them only if shrinking is not enough.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                {
+                    "search": {},
+                    "size": { "min": 0, "max": "current" },
+                    "deleteIfNeeded": true
+                }
+            ]
+        }
+    ]
+}
+```
+
+### Using the Automatic Proposal
+
+On the first implementations, Agama can rely on the process known as Guided Proposal to calculate
+all the needed partitions, LVM devices and file systems based on some general product settings and
+some user preferences. That mechanism is offered as a temporary alternative to the more descriptive
+syntax explained at previous sections of this document and it's implemented via a `guided` section
+that conforms to the following specification.
 
 ```
 Guided
@@ -545,22 +868,13 @@ Guided
 TargetDevice <string|TargetDisk|TargetNewLvm|TargetReusedLvm>
 
 TargetDisk
-  disk <string|Search>
- 
+  disk <string>
+
 TargetNewLvm
-  newLvmVg <<string|Search>[]>
+  newLvmVg <string[]>
 
 TargetReusedLvm
-  reusedLvmVg <string|Search>
-
-BootSettings
-  configure <boolean>
-  device <string|Search>
-
-EncryptionSettings
-  password <string>
-  method <string>
-  pbkdFunction <string>
+  reusedLvmVg <string>
 
 Volume
   mountPath <string>
@@ -575,16 +889,16 @@ Volume
 VolumeTarget <'default'|NewPartition|NewVg|UseDevice|UseFilesystem>
 
 NewPartition
-  newPartition <string|Search>
-  
+  newPartition <string>
+
 NewVg
-  newVg <string|Search>
-  
+  newVg <string>
+
 UseDevice
-  device <string|Search>
+  device <string>
 
 UseFilesystem
-  filesystem <string|Search>
+  filesystem <string>
 ```
 
 The `device` can be specified in several ways. The simplest one is using one of the strings "disk"
@@ -606,16 +920,13 @@ And this will do the same, but creating a new LVM volume group on that first can
 }
 ```
 
-It's also possible to use an alias to specify a concrete disk...
+It's also possible to use a device name to specify a concrete disk...
 
 ```json
 "storage": {
-    "drives": [
-        { "alias": "target" }
-    ],
     "guided": {
         "device": {
-            "disk": "target"
+            "disk": "/dev/sda"
         }
     }
 }
@@ -625,39 +936,16 @@ or to specify the set of disks where the LVM physical volumes can be created.
 
 ```json
 "storage": {
-    "drives": [
-        {
-            "alias": "nvme",
-            "search": { "condition": { "property": "driver", "value": "nvme" } }
-        }
-    ],
     "guided": {
         "device": {
-            "newLvmVg": ["nvme"]
+            "newLvmVg": ["/dev/vda", "/dev/vdb"]
         }
     }
 }
 ```
 
-The alias can correspond to devices that are created by Agama itself.
-
-```json
-"storage": {
-    "mdRaids": [
-        {
-            "alias": "newMd"
-            "devices": [ "..." ],
-            "level": "raid1"
-        }
-    ],
-    "guided": {
-        "device": { "disk": "newMd" }
-    }
-}
-```
-
-Apart from specifying the main target device, aliases can be used wherever a device is expected, eg.
-when indicating a special target for a given volume.
+Apart from specifying the main target device, device names must be used wherever a device is
+expected, eg. when indicating a special target for a given volume.
 
 In principle, the list of volumes will have the same format than the existing HTTP API used by
 the UI for calculating the storage proposal. That is, if the list is not provided the default
@@ -666,37 +954,9 @@ with default values. In the future we may consider more advanced mechanisms to i
 some given volumes or to customize a single volume without having to provide the full list of
 volume mount paths.
 
-Combining the `guided` section with other possible sections in the profile makes it possible to
-achieve the same results than using the Agama user interface with only one exception. The Agama UI
-allows to indicate that a given set of partitions can be resized if needed to allocate the volumes,
-without actually indicating how much those partitions should be resized. The Guided Proposal
-algorithm decides whether to resize and how much based on the other settings. Currently there is no
-way to express that in the auto-installation profile.
-
-### Under Discussion
-
-It could also be possible to accept a `search` element in all places in which an alias can be used.
-
-```json
-"storage": {
-    "guided": {
-        "device": {
-            "newLvmVg": [
-                { "search": { "condition": { "property": "driver", "value": "nvme" } } }
-            ]
-        }
-    }
-}
-```
-
-Even combining that with the string-based syntax suggested for `search`.
-
-```json
-"storage": {
-    "guided": {
-        "device": {
-            "disk": { "search": "/dev/sda" }
-        }
-    }
-}
-```
+The `guided` section makes it possible to achieve the same results than using the Agama user
+interface with only one exception. The Agama UI allows to indicate that a given set of partitions
+can be resized if needed to allocate the volumes, without actually indicating how much those
+partitions should be resized. The Guided Proposal algorithm decides whether to resize and how much
+based on the other settings. Currently there is no way to express that in the auto-installation
+profile.
