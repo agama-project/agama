@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep  4 08:55:29 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: add support for deleting partitions in the storage
+  config (gh#openSUSE/agama#1572).
+
+-------------------------------------------------------------------
 Tue Sep  3 08:14:23 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: add support for searching by device in the storage
