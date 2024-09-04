@@ -32,12 +32,17 @@ const mockSelectedDASD: string[] = [];
 jest.mock("~/queries/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
   useFilterDASD: () => mockDASDFilter,
-  useFilterDASDChange: () =>
+  useFilterDASDMutation: () =>
     jest
       .fn()
       .mockImplementation(() => ({ mutate: (data: FilterDASD) => ({ data: mockDASDFilter }) })),
   useSelectedDASD: () => mockSelectedDASD,
   useSelectedDASDChange: () => jest.fn().mockImplementation(() => ({ data: mockSelectedDASD })),
+  useEnableDASDMutation: () => jest.fn(),
+  useDisableDASDMutation: () => jest.fn(),
+  useEnableDiagMutation: () => jest.fn(),
+  useDisableDiagMutation: () => jest.fn(),
+  useFormatDASDMutation: () => jest.fn(),
 }));
 
 describe("DASDTable", () => {

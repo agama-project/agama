@@ -24,7 +24,19 @@ import { Progress, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import { useDASDDevices, useDASDRunningFormatJobs } from "~/queries/dasd";
-import { FormatSummary } from "~/types/dasd";
+import { DASDDevice, FormatSummary } from "~/types/dasd";
+
+const DeviceProgress = ({ device, progress }: { device: DASDDevice; progress: FormatSummary }) => (
+  <Progress
+    key={`progress_${device.id}`}
+    size="sm"
+    max={progress.total}
+    value={progress.step}
+    title={`${device.id} - ${device.deviceName}`}
+    measureLocation="none"
+    variant={progress.done ? "success" : undefined}
+  />
+);
 
 export default function DASDFormatProgress() {
   const devices = useDASDDevices();
@@ -32,36 +44,18 @@ export default function DASDFormatProgress() {
     (job) => Object.keys(job.summary || {}).length > 0,
   );
 
-  const ProgressContent = ({ progress }: { progress: { [key: string]: FormatSummary } }) =>
-    Object.entries(progress).map(([id, { total, step, done }]) => {
-      const device = devices.find((d) => d.id === id);
-
-      return (
-        <Progress
-          key={`progress_${id}`}
-          size="sm"
-          max={total}
-          value={step}
-          title={`${device.id} - ${device.deviceName}`}
-          measureLocation="none"
-          variant={done ? "success" : undefined}
-        />
-      );
-    });
-
   return (
     <Popup title={_("Formatting DASD devices")} isOpen={runningJobs.length > 0} disableFocusTrap>
-      {runningJobs.map((job) => {
-        return (
-          <Stack
-            key={`formatting_progress_${job.jobId}`}
-            hasGutter
-            className="dasd-format-progress"
-          >
-            <ProgressContent key={`progress_content_${job.jobId}`} progress={job.summary} />
-          </Stack>
-        );
-      })}
+      <Stack hasGutter className="dasd-format-progress">
+        {runningJobs.map((job) =>
+          Object.entries(job.summary).map(([id, progress]) => {
+            const device = devices.find((d) => d.id === id);
+            return (
+              <DeviceProgress key={`${id}-format-progress`} device={device} progress={progress} />
+            );
+          }),
+        )}
+      </Stack>
     </Popup>
   );
 }
