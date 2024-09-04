@@ -27,7 +27,7 @@ import { DASDPage, ISCSIPage } from "~/components/storage";
 import ProposalPage from "~/components/storage/ProposalPage";
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
-import { probeDASD } from "~/api/dasd";
+import { DASDSupported, probeDASD } from "~/api/dasd";
 
 const PATHS = {
   root: "/storage",
@@ -35,43 +35,49 @@ const PATHS = {
   bootingPartition: "/storage/booting-partition",
   spacePolicy: "/storage/space-policy",
   iscsi: "/storage/iscsi",
-  dasd: "/storage/dasd"
+  dasd: "/storage/dasd",
 };
 
-const routes = (): Route => ({
-  path: PATHS.root,
-  handle: { name: N_("Storage"), icon: "hard_drive" },
-  children: [
-    {
-      index: true,
-      element: <ProposalPage />,
-    },
-    {
-      path: PATHS.targetDevice,
-      element: <DeviceSelection />,
-    },
-    {
-      path: PATHS.bootingPartition,
-      element: <BootSelection />,
-    },
-    {
-      path: PATHS.spacePolicy,
-      element: <SpacePolicySelection />,
-    },
-    {
-      path: PATHS.iscsi,
-      element: <ISCSIPage />,
-      handle: { name: N_("iSCSI") },
-    },
-    {
-      path: PATHS.dasd,
-      element: <DASDPage />,
-      handle: { name: N_("DASD") },
-      //FIXME: move to the onClick of the DASD SelectOption
-      loader: async () => probeDASD()
-    },
-  ],
-});
+const routes = (): Route => {
+  const dasdRoute = {
+    path: PATHS.dasd,
+    element: <DASDPage />,
+    handle: { name: N_("DASD") },
+    loader: async () => probeDASD(),
+  };
+
+  const routes = {
+    path: PATHS.root,
+    handle: { name: N_("Storage"), icon: "hard_drive" },
+    children: [
+      {
+        index: true,
+        element: <ProposalPage />,
+      },
+      {
+        path: PATHS.targetDevice,
+        element: <DeviceSelection />,
+      },
+      {
+        path: PATHS.bootingPartition,
+        element: <BootSelection />,
+      },
+      {
+        path: PATHS.spacePolicy,
+        element: <SpacePolicySelection />,
+      },
+      {
+        path: PATHS.iscsi,
+        element: <ISCSIPage />,
+        handle: { name: N_("iSCSI") },
+      },
+    ],
+  };
+
+  if (DASDSupported()) routes.children.push(dasdRoute);
+
+  return routes;
+};
 
 export default routes;
 export { PATHS };

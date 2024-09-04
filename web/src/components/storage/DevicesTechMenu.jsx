@@ -96,7 +96,7 @@ export default function DevicesTechMenu({ label }) {
     </MenuToggle>
   );
 
-  const onSelect = (_event, value) => {
+  const onSelect = () => {
     setIsOpen(false);
   };
 
