@@ -110,7 +110,7 @@ module Y2Storage
         [find_device(search_config)].compact
       end
 
-      # Perfomrs a search in the devicegraph to find a device matching the given search config.
+      # Performs a search in the devicegraph to find a device matching the given search config.
       #
       # @param search_config [Agama::Storage::Configs::Search]
       # @return [Y2Storage::Device]
