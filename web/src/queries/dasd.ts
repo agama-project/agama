@@ -32,8 +32,8 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { hex } from "~/utils";
-import { DASDDevice, FilterDASD, FormatJob } from "~/types/dasd";
-import { fetchStorageJobs, findStorageJob } from "~/api/storage";
+import { DASDDevice, FormatJob } from "~/types/dasd";
+import { fetchStorageJobs } from "~/api/storage";
 
 /**
  * Returns a query for retrieving the dasd devices
@@ -100,9 +100,8 @@ const useDASDFormatJobChanges = () => {
         case "JobAdded": {
           const formatJob: FormatJob = { jobId: event.job.id };
           const data = queryClient.getQueryData(["dasd", "formatJobs", "running"]) as FormatJob[];
-          data.push(formatJob);
 
-          queryClient.setQueryData(["dasd", "formatJobs", "running"], data);
+          queryClient.setQueryData(["dasd", "formatJobs", "running"], [...data, formatJob]);
           break;
         }
         case "JobChanged": {
@@ -138,9 +137,7 @@ const useDASDDevicesChanges = () => {
         case "DASDDeviceAdded": {
           const device: DASDDevice = event.device;
           queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-            // do not use push here as updater has to be immutable
-            const res = prev.concat([device]);
-            return res;
+            return [...prev, device];
           });
           break;
         }
