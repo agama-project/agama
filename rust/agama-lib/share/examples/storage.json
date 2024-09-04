@@ -10,6 +10,12 @@
         "ptableType": "gpt",
         "partitions": [
           {
+            "search": {
+              "ifNotFound": "skip"
+            },
+            "delete": true
+          },
+          {
             "id": "linux",
             "size": "10 GiB",
             "encryption": {
@@ -30,12 +36,6 @@
             }
           },
           {
-            "search": {
-              "condition": {
-                "name": "/dev/vda2"
-              },
-              "ifNotFound": "skip"
-            },
             "encryption": {
               "luks2": {
                 "password": "notsecret",
@@ -48,21 +48,43 @@
             }
           },
           {
-            "search": {},
             "encryption": "random_swap",
             "filesystem": {
               "type": "swap",
               "path": "swap"
-            }
+            },
+            "size": "2 GiB"
+          }
+        ]
+      },
+      {
+        "search": "/dev/vdb",
+        "partitions": [
+          {
+            "search": {
+              "condition": { "name": "/dev/vdb1" },
+              "ifNotFound": "skip"
+            },
+            "deleteIfNeeded": true
+          },
+          {
+            "search": {
+              "ifNotFound": "skip"
+            },
+            "delete": true
+          },
+          {
+            "filesystem": {
+              "type": "xfs",
+              "path": "/data"
+            },
+            "size": { "min": "50 GiB" }
           }
         ]
       },
       {
         "search": {
-          "condition": {
-            "name": "/dev/vda"
-          },
-          "ifNotFound": "error"
+          "ifNotFound": "skip"
         },
         "filesystem": {
           "type": "ext4",
