@@ -62,7 +62,7 @@ impl<'a> ZFCPClient<'a> {
                         devices.push((path, device));
                     }
                     Err(error) => {
-                        log::warn!("Not a valid DASD device: {}", error);
+                        log::warn!("Not a valid zFCP disk: {}", error);
                     }
                 }
             }
