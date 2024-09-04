@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Sep  4 07:08:30 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Install Firefox on all architectures, install
+  MozillaFirefox-branding-SLE in the SLE image
+  (gh#openSUSE/agama#1574)
+
+-------------------------------------------------------------------
 Tue Sep  3 14:50:58 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Firefox: disable the initial configuration workflow
