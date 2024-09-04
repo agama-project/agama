@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep  4 21:00:34 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Bring back DASD management support (gh#openSUSE/1549).
+
+-------------------------------------------------------------------
 Tue Aug 13 14:57:21 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Allow links look like buttons again (gh#openSUSE/agama#1536).
