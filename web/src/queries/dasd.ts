@@ -124,48 +124,6 @@ const useDASDFormatJobChanges = () => {
 };
 
 /**
- * Returns seleced DASD ids
- */
-const selectedDASDQuery = () => ({
-  queryKey: ["dasd", "selected"],
-  queryFn: () => {
-    return Promise.resolve([]);
-  },
-  staleTime: Infinity,
-});
-
-const useSelectedDASD = (): DASDDevice[] => {
-  const { data } = useQuery(selectedDASDQuery());
-
-  return data || [];
-};
-
-const useSelectedDASDChange = () => {
-  type SelectDASD = {
-    unselect?: boolean;
-    device?: DASDDevice;
-    devices?: DASDDevice[];
-  };
-
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: (data: SelectDASD): Promise<SelectDASD> => Promise.resolve(data),
-    onSuccess: (data: SelectDASD) =>
-      queryClient.setQueryData(["dasd", "selected"], (prev: DASDDevice[]) => {
-        if (data.unselect) {
-          if (data.device) return prev.filter((d) => d.id !== data.device.id);
-          if (data.devices) return [];
-        } else {
-          if (data.device) return [...prev, data.device];
-          if (data.devices) return data.devices;
-        }
-      }),
-  });
-
-  return mutation;
-};
-
-/**
  * Listens for DASD devices changes.
  */
 const useDASDDevicesChanges = () => {
@@ -298,9 +256,6 @@ const useFormatDASDMutation = () => {
 export {
   useDASDDevices,
   useDASDDevicesChanges,
-  useSelectedDASD,
-  useSelectedDASDChange,
-  selectedDASDQuery,
   useDASDFormatJobChanges,
   useDASDRunningFormatJobs,
   useEnableDASDMutation,
