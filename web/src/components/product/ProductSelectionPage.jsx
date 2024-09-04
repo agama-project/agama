@@ -1,4 +1,3 @@
-/* eslint @typescript-eslint/no-var-requires: "off" */
 /*
  * Copyright (c) [2022-2024] SUSE LLC
  *
@@ -25,16 +24,49 @@ import { Card, CardBody, Flex, Form, Grid, GridItem, Radio, Split, Stack } from 
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
-import { _ } from "~/i18n";
 import styles from "@patternfly/react-styles/css/utilities/Text/text";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
-const Label = ({ children }) => (
-  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>{children}</span>
+const ResponsiveGridItem = ({ children }) => (
+  <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
+    {children}
+  </GridItem>
 );
 
+const Option = ({ product, isChecked, onChange }) => {
+  const logoSrc = `assets/logos/${product.icon}`;
+  // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
+  const logoAltText = sprintf(_("%s logo"), product.name);
+
+  return (
+    <ResponsiveGridItem>
+      <Card isRounded>
+        <CardBody>
+          <Radio
+            name="product"
+            id={product.name}
+            label={
+              <Split hasGutter>
+                <img src={logoSrc} alt={logoAltText} />
+                <Stack hasGutter>
+                  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>{product.name}</span>
+                  <p>{product.description}</p>
+                </Stack>
+              </Split>
+            }
+            isChecked={isChecked}
+            onChange={onChange}
+          />
+        </CardBody>
+      </Card>
+    </ResponsiveGridItem>
+  );
+};
+
 function ProductSelectionPage() {
-  const { products, selectedProduct } = useProduct({ suspense: true });
   const setConfig = useConfigMutation();
+  const { products, selectedProduct } = useProduct({ suspense: true });
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,25 +79,6 @@ function ProductSelectionPage() {
     }
   };
 
-  const Item = ({ children }) => (
-    <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
-      {children}
-    </GridItem>
-  );
-
-  const ProductIcon = ({ src, alt }) => {
-    // Ensure that we display something even if icon path is incorrect
-    const productIcon = require(`../../assets/products/${src}`);
-
-    return (
-      <img
-        src={productIcon}
-        alt={alt}
-        width="80px"
-      />
-    );
-  };
-
   const isSelectionDisabled = !nextProduct || nextProduct === selectedProduct;
 
   return (
@@ -74,36 +87,14 @@ function ProductSelectionPage() {
         <Form id="productSelectionForm" onSubmit={onSubmit}>
           <Grid hasGutter>
             {products.map((product, index) => (
-              <Item key={index}>
-                <Card
-                  key={index}
-                  isRounded
-                >
-                  <CardBody>
-                    <Radio
-                      key={index}
-                      name="product"
-                      id={product.name}
-                      label={
-                        <Split hasGutter>
-                          <ProductIcon
-                            src={product.icon}
-                            alt={`${product.name} product icon`}
-                          />
-                          <Stack hasGutter>
-                            <Label>{product.name}</Label>
-                            <p>{product.description}</p>
-                          </Stack>
-                        </Split>
-                      }
-                      isChecked={nextProduct === product}
-                      onChange={() => setNextProduct(product)}
-                    />
-                  </CardBody>
-                </Card>
-              </Item>
+              <Option
+                key={index}
+                product={product}
+                isChecked={nextProduct === product}
+                onChange={() => setNextProduct(product)}
+              />
             ))}
-            <Item>
+            <ResponsiveGridItem>
               <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
                 {selectedProduct && !isLoading && <Page.CancelAction navigateTo={-1} />}
                 <Page.Action
@@ -115,11 +106,11 @@ function ProductSelectionPage() {
                   {_("Select")}
                 </Page.Action>
               </Flex>
-            </Item>
+            </ResponsiveGridItem>
           </Grid>
         </Form>
       </Center>
-    </Page>
+    </Page >
   );
 }
 
