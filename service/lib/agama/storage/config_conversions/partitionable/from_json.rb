@@ -41,11 +41,13 @@ module Agama
 
           # Performs the conversion from Hash according to the JSON schema.
           #
-          # @param config [#ptable_type=, #partitions=]
-          def convert(config)
-            config.ptable_type = convert_ptable_type
-            config.partitions = convert_partitions
-            config
+          # @param default [Configs::Drive]
+          # @return [Configs::Drive]
+          def convert(default)
+            default.dup.tap do |config|
+              config.ptable_type = convert_ptable_type
+              config.partitions = convert_partitions
+            end
           end
 
         private

@@ -48,7 +48,7 @@ module Y2Storage
       # @return [Planned::Disk]
       def planned_full_drive(settings)
         Planned::Disk.new.tap do |planned|
-          configure_drive(planned, settings)
+          configure_reuse(planned, settings)
           configure_device(planned, settings)
         end
       end
@@ -57,15 +57,9 @@ module Y2Storage
       # @return [Planned::Disk]
       def planned_partitioned_drive(settings)
         Planned::Disk.new.tap do |planned|
-          configure_drive(planned, settings)
+          configure_reuse(planned, settings)
           configure_partitions(planned, settings)
         end
-      end
-
-      # @param planned [Planned::Disk]
-      # @param settings [Agama::Storage::Configs::Drive]
-      def configure_drive(planned, settings)
-        planned.assign_reuse(settings.found_device)
       end
     end
   end

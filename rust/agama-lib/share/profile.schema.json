@@ -671,18 +671,44 @@
         }
       ]
     },
-    "search": {
-      "title": "Search options",
+    "searchName": {
+      "title": "Device name",
+      "type": "string",
+      "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
+    },
+    "searchByName": {
+      "title": "Search by name condition",
       "type": "object",
       "additionalProperties": false,
       "required": ["name"],
       "properties": {
         "name": {
-          "title": "Device name",
-          "type": "string",
-          "examples": ["/dev/vda"]
+          "$ref": "#/$defs/searchName"
         }
       }
+    },
+    "search": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/searchName"
+        },
+        {
+          "title": "Search options",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "condition": {
+              "$ref": "#/$defs/searchByName"
+            },
+            "ifNotFound": {
+              "title": "Not found action",
+              "description": "How to handle the section if the device is not found.",
+              "enum": ["skip", "error"],
+              "default": "error"
+            }
+          }
+        }
+      ]
     },
     "boot": {
       "title": "Boot options",

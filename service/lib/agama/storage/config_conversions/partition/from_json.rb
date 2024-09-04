@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/block_device/from_json"
+require "agama/storage/config_conversions/search/from_json"
 require "agama/storage/config_conversions/size/from_json"
 require "agama/storage/configs/partition"
 require "y2storage/partition_id"
@@ -43,12 +44,19 @@ module Agama
 
           # Performs the conversion from Hash according to the JSON schema.
           #
+          # @param default [Configs::Partition, nil]
           # @return [Configs::Partition]
-          def convert
-            Configs::Partition.new.tap do |config|
-              config.id = convert_id
-              config.size = convert_size
-              convert_block_device(config)
+          def convert(default = nil)
+            default_config = default.dup || Configs::Partition.new
+
+            convert_block_device(default_config).tap do |config|
+              search = convert_search(config.search)
+              id = convert_id
+              size = convert_size(config.size)
+
+              config.search = search if search
+              config.id = id if id
+              config.size = size if size
             end
           end
 
@@ -63,6 +71,25 @@ module Agama
           # @return [VolumeTemplatesBuilder]
           attr_reader :volume_builder
 
+          # @param config [Configs::Partition]
+          # @return [Configs::Partition]
+          def convert_block_device(config)
+            converter = BlockDevice::FromJSON.new(partition_json,
+              settings: settings, volume_builder: volume_builder)
+
+            converter.convert(config)
+          end
+
+          # @param config [Configs::Search]
+          # @return [Configs::Search, nil]
+          def convert_search(config)
+            search_json = partition_json[:search]
+            return unless search_json
+
+            converter = Search::FromJSON.new(search_json)
+            converter.convert(config)
+          end
+
           # @return [Y2Storage::PartitionId, nil]
           def convert_id
             value = partition_json[:id]
@@ -71,20 +98,13 @@ module Agama
             Y2Storage::PartitionId.find(value)
           end
 
-          # @return [Configs::Size]
-          def convert_size
+          # @param config [Configs::Size]
+          # @return [Configs::Size, nil]
+          def convert_size(config)
             size_json = partition_json[:size]
-            return Configs::Size.new unless size_json
+            return unless size_json
 
-            Size::FromJSON.new(size_json).convert
-          end
-
-          # @param config [Configs::Partition]
-          def convert_block_device(config)
-            converter = BlockDevice::FromJSON.new(partition_json,
-              settings: settings, volume_builder: volume_builder)
-
-            converter.convert(config)
+            Size::FromJSON.new(size_json).convert(config)
           end
         end
       end

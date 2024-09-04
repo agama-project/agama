@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/size"
+
 module Agama
   module Storage
     module Configs
@@ -30,7 +32,7 @@ module Agama
         # @return [Y2Storage::PartitionId, nil]
         attr_accessor :id
 
-        # @return [Size, nil] can be nil for reused partitions
+        # @return [Size]
         attr_accessor :size
 
         # @return [Encryption, nil]
@@ -39,19 +41,13 @@ module Agama
         # @return [Filesystem, nil]
         attr_accessor :filesystem
 
-        # Resolves the search if the partition specification contains any, associating a partition
-        # of the given device if possible
-        #
-        # @param partitionable [Y2Storage::Partitionable] scope for the search
-        # @param used_sids [Array<Integer>] SIDs of the devices that are already associated to
-        #   another partition definition, so they cannot be associated to this
-        def search_device(partitionable, used_sids)
-          return unless search
-
-          search.find(partitionable.partitions, used_sids)
+        def initialize
+          @size = Size.new
         end
 
-        # Device resulting from a previous call to {#search_device}
+        # Assigned device according to the search.
+        #
+        # @see Y2Storage::Proposal::AgamaSearcher
         #
         # @return [Y2Storage::Device, nil]
         def found_device

@@ -6,13 +6,12 @@
     },
     "drives": [
       {
-        "search": {
-          "name": "/dev/vda"
-        },
+        "search": "/dev/vda",
         "ptableType": "gpt",
         "partitions": [
           {
-            "search": { "name": "/dev/vda2" },
+            "id": "linux",
+            "size": "10 GiB",
             "encryption": {
               "luks1": {
                 "password": "notsecret"
@@ -31,12 +30,16 @@
             }
           },
           {
-            "id": "linux",
-            "size": "10 GiB",
+            "search": {
+              "condition": {
+                "name": "/dev/vda2"
+              },
+              "ifNotFound": "skip"
+            },
             "encryption": {
               "luks2": {
                 "password": "notsecret",
-                "label": "data"
+                "label": "home"
               }
             },
             "filesystem": {
@@ -45,7 +48,7 @@
             }
           },
           {
-            "size": "2 GiB",
+            "search": {},
             "encryption": "random_swap",
             "filesystem": {
               "type": "swap",
@@ -56,7 +59,10 @@
       },
       {
         "search": {
-          "name": "/dev/vdb"
+          "condition": {
+            "name": "/dev/vda"
+          },
+          "ifNotFound": "error"
         },
         "filesystem": {
           "type": "ext4",
