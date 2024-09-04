@@ -59,6 +59,17 @@ module Y2Storage
     private
 
       # @param planned [Planned::Disk, Planned::Partition]
+      # @param settings [#found_device]
+      def configure_reuse(planned, settings)
+        device = settings.found_device
+        return unless device
+
+        planned.assign_reuse(device)
+        # TODO: Allow mounting without reformatting.
+        planned.reformat = true
+      end
+
+      # @param planned [Planned::Disk, Planned::Partition]
       # @param settings [#encryption, #filesystem]
       def configure_device(planned, settings)
         configure_encryption(planned, settings.encryption) if settings.encryption
@@ -177,20 +188,25 @@ module Y2Storage
       end
 
       # @param planned [Planned::Disk]
-      # @param settings [Agama::Storage::Configs::Drive]
-      def configure_partitions(planned, settings)
-        planned.partitions = settings.partitions.map do |partition_settings|
-          planned_partition(partition_settings).tap { |p| p.disk = settings.found_device.name }
+      # @param config [Agama::Storage::Configs::Drive]
+      def configure_partitions(planned, config)
+        partition_configs = config.partitions
+          .reject(&:delete?)
+          .reject(&:delete_if_needed?)
+
+        planned.partitions = partition_configs.map do |partition_config|
+          planned_partition(partition_config).tap { |p| p.disk = config.found_device.name }
         end
       end
 
-      # @param settings [Agama::Storage::Configs::Partition]
+      # @param config [Agama::Storage::Configs::Partition]
       # @return [Planned::Partition]
-      def planned_partition(settings)
+      def planned_partition(config)
         Planned::Partition.new(nil, nil).tap do |planned|
-          planned.partition_id = settings.id
-          configure_device(planned, settings)
-          configure_size(planned, settings.size)
+          planned.partition_id = config.id
+          configure_reuse(planned, config)
+          configure_device(planned, config)
+          configure_size(planned, config.size)
         end
       end
     end

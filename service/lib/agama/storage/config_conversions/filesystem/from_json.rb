@@ -37,7 +37,7 @@ module Agama
           # Performs the conversion from Hash according to the JSON schema.
           #
           # @param default [Configs::Filesystem, nil]
-          # @return [Configs::Format]
+          # @return [Configs::Filesystem]
           def convert(default = nil)
             default_config = default.dup || Configs::Filesystem.new
 

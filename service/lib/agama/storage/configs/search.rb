@@ -29,20 +29,39 @@ module Agama
         # @return [Y2Storage::Device, nil]
         attr_reader :device
 
+        # Name of the device to find.
+        # @return [String, nil]
+        attr_accessor :name
+
         # What to do if the search does not match with the expected number of devices
-        # @return [Symbol] :create, :skip or :error
+        # @return [:create, :skip, :error]
         attr_accessor :if_not_found
 
         # Constructor
         def initialize
-          @if_not_found = :skip
+          @if_not_found = :error
         end
 
-        # Whether {#find} was already called
+        # Whether the search does not define any specific condition.
+        #
+        # @return [Boolean]
+        def any_device?
+          name.nil?
+        end
+
+        # Whether the search was already resolved.
         #
         # @return [Boolean]
         def resolved?
           !!@resolved
+        end
+
+        # Resolves the search with the given device.
+        #
+        # @param device [Y2Storage::Device, nil]
+        def resolve(device = nil)
+          @device = device
+          @resolved = true
         end
 
         # Whether the section containing the search should be skipped
@@ -50,16 +69,6 @@ module Agama
         # @return [Boolean]
         def skip_device?
           resolved? && device.nil? && if_not_found == :skip
-        end
-
-        # Resolve the search, associating the corresponding device to {#device}
-        #
-        # @param candidate_devs [Array<Y2Storage::Device>] candidate devices
-        # @param used_sids [Array<Integer>] SIDs of the devices that are already used elsewhere
-        def find(candidate_devs, used_sids)
-          devices = candidate_devs.reject { |d| used_sids.include?(d.sid) }
-          @resolved = true
-          @device = devices.min_by(&:name)
         end
       end
     end
