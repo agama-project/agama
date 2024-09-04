@@ -51,10 +51,14 @@ module Agama
 
             convert_block_device(default_config).tap do |config|
               search = convert_search(config.search)
+              delete = partition_json[:delete]
+              delete_if_needed = partition_json[:deleteIfNeeded]
               id = convert_id
               size = convert_size(config.size)
 
               config.search = search if search
+              config.delete = delete unless delete.nil?
+              config.delete_if_needed = delete_if_needed unless delete_if_needed.nil?
               config.id = id if id
               config.size = size if size
             end

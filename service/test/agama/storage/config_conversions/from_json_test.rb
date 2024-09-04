@@ -349,6 +349,80 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       end
     end
 
+    context "setting delete for a partition" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  search: "/dev/vda1",
+                  delete: true
+                },
+                {
+                  filesystem: { path: "/" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "sets #delete to true" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+        expect(partitions).to contain_exactly(
+          an_object_having_attributes(
+            search:           have_attributes(name: "/dev/vda1"),
+            delete:           true,
+            delete_if_needed: false
+          ),
+          an_object_having_attributes(
+            filesystem:       have_attributes(path: "/"),
+            delete:           false,
+            delete_if_needed: false
+          )
+        )
+      end
+    end
+
+    context "setting delete if needed for a partition" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  search:         "/dev/vda1",
+                  deleteIfNeeded: true
+                },
+                {
+                  filesystem: { path: "/" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "sets #delete_if_needed to true" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+        expect(partitions).to contain_exactly(
+          an_object_having_attributes(
+            search:           have_attributes(name: "/dev/vda1"),
+            delete:           false,
+            delete_if_needed: true
+          ),
+          an_object_having_attributes(
+            filesystem:       have_attributes(path: "/"),
+            delete:           false,
+            delete_if_needed: false
+          )
+        )
+      end
+    end
+
     context "omitting sizes for the partitions" do
       let(:config_json) do
         {
