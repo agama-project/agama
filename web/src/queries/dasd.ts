@@ -56,8 +56,11 @@ const useDASDDevices = () => {
  */
 const DASDRunningFormatJobsQuery = () => ({
   queryKey: ["dasd", "formatJobs", "running"],
-  queryFn: () => fetchStorageJobs().then((jobs) => jobs.filter((j) => j.running).map(({ id }) => ({ jobId: id }))),
-  staleTime: 200
+  queryFn: () =>
+    fetchStorageJobs().then((jobs) =>
+      jobs.filter((j) => j.running).map(({ id }) => ({ jobId: id })),
+    ),
+  staleTime: 200,
 });
 
 /**
@@ -81,21 +84,21 @@ const useDASDFormatJobChanges = () => {
     return client.ws().onEvent((event) => {
       // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
       switch (event.type) {
-        case ("DASDFormatJobChanged"): {
+        case "DASDFormatJobChanged": {
           const data = queryClient.getQueryData(["dasd", "formatJobs", "running"]) as FormatJob[];
           const nextData = data.map((job) => {
             if (job.jobId !== event.jobId) return job;
 
             return {
               ...job,
-              summary: { ...job?.summary, ...event.summary }
-            }
+              summary: { ...job?.summary, ...event.summary },
+            };
           });
           queryClient.setQueryData(["dasd", "formatJobs", "running"], nextData);
           break;
         }
-        case ("JobAdded"): {
-          const formatJob: FormatJob = { jobId: event.job.id }
+        case "JobAdded": {
+          const formatJob: FormatJob = { jobId: event.job.id };
           const data = queryClient.getQueryData(["dasd", "formatJobs", "running"]) as FormatJob[];
           data.push(formatJob);
 
@@ -135,61 +138,28 @@ const useSelectedDASD = (): DASDDevice[] => {
   const { data } = useQuery(selectedDASDQuery());
 
   return data || [];
-}
+};
 
 const useSelectedDASDChange = () => {
   type SelectDASD = {
-    unselect?: boolean,
-    device?: DASDDevice,
-    devices?: DASDDevice[]
-  }
+    unselect?: boolean;
+    device?: DASDDevice;
+    devices?: DASDDevice[];
+  };
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data: SelectDASD): Promise<SelectDASD> => Promise.resolve(data),
-    onSuccess: (data: SelectDASD) => queryClient.setQueryData(["dasd", "selected"], (prev: DASDDevice[]) => {
-      if (data.unselect) {
-        if (data.device) return prev.filter((d) => d.id !== data.device.id);
-        if (data.devices) return [];
-
-      } else {
-        if (data.device) return [...prev, data.device];
-        if (data.devices) return data.devices;
-      }
-    }),
-  });
-
-  return mutation;
-};
-
-/**
- * Returns DASD filters
- */
-const filterDASDQuery = () => ({
-  queryKey: ["dasd", "filter"],
-  queryFn: () => {
-    return Promise.resolve({ minChannel: "", maxChannel: "" });
-  },
-  staleTime: Infinity,
-});
-
-const useFilterDASD = (): FilterDASD => {
-  const { data } = useQuery(filterDASDQuery());
-
-  return data || { minChannel: "", maxChannel: "" };
-}
-
-const useFilterDASDMutation = () => {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (data: FilterDASD): Promise<FilterDASD> => Promise.resolve(data),
-    onSuccess: (data: FilterDASD) => {
-      queryClient.setQueryData(["dasd", "filter"], (prev: FilterDASD) => ({
-        ...prev,
-        ...data
-      }));
-    },
+    onSuccess: (data: SelectDASD) =>
+      queryClient.setQueryData(["dasd", "selected"], (prev: DASDDevice[]) => {
+        if (data.unselect) {
+          if (data.device) return prev.filter((d) => d.id !== data.device.id);
+          if (data.devices) return [];
+        } else {
+          if (data.device) return [...prev, data.device];
+          if (data.devices) return data.devices;
+        }
+      }),
   });
 
   return mutation;
@@ -220,7 +190,7 @@ const useDASDDevicesChanges = () => {
           const device: DASDDevice = event.device;
           const { id } = device;
           queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-            const res = prev.filter(dev => dev.id !== id);
+            const res = prev.filter((dev) => dev.id !== id);
             return res;
           });
           break;
@@ -231,7 +201,7 @@ const useDASDDevicesChanges = () => {
           queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
             // deep copy of original to have it immutable
             const res = [...prev];
-            const index = res.findIndex(dev => dev.id === id);
+            const index = res.findIndex((dev) => dev.id === id);
             res[index] = device;
             return res;
           });
@@ -332,9 +302,17 @@ const useFormatDASDMutation = () => {
   return useMutation(query);
 };
 
-
 export {
-  useDASDDevices, useDASDDevicesChanges, useFilterDASDMutation, filterDASDQuery, useFilterDASD, useSelectedDASD, useSelectedDASDChange, selectedDASDQuery,
-  useDASDFormatJobChanges, useDASDRunningFormatJobs, useEnableDASDMutation, useDisableDASDMutation, useEnableDiagMutation, useDisableDiagMutation,
-  useFormatDASDMutation
+  useDASDDevices,
+  useDASDDevicesChanges,
+  useSelectedDASD,
+  useSelectedDASDChange,
+  selectedDASDQuery,
+  useDASDFormatJobChanges,
+  useDASDRunningFormatJobs,
+  useEnableDASDMutation,
+  useDisableDASDMutation,
+  useEnableDiagMutation,
+  useDisableDiagMutation,
+  useFormatDASDMutation,
 };

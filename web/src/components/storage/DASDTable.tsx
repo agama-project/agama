@@ -50,8 +50,6 @@ import {
   useEnableDiagMutation,
   useDisableDiagMutation,
   useFormatDASDMutation,
-  useSelectedDASD,
-  useSelectedDASDChange,
 } from "~/queries/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
@@ -172,11 +170,15 @@ type FilterOptions = {
   minChannel?: string;
   maxChannel?: string;
 };
+type SelectionOptions = {
+  unselect?: boolean;
+  device?: DASDDevice;
+  devices?: DASDDevice[];
+};
 
 export default function DASDTable() {
   const devices = useDASDDevices();
-  const { mutate: changeSelected } = useSelectedDASDChange();
-  const selectedDevices = useSelectedDASD();
+  const [selectedDASD, setSelectedDASD] = useState<DASDDevice[]>([]);
   const [{ minChannel, maxChannel }, setFilters] = useState<FilterOptions>({
     minChannel: "",
     maxChannel: "",
@@ -187,7 +189,7 @@ export default function DASDTable() {
 
   const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
   const filteredDevices = filterDevices(devices, minChannel, maxChannel);
-  const selectedDevicesIds = selectedDevices.map((d) => d.id);
+  const selectedDevicesIds = selectedDASD.map((d) => d.id);
 
   // Selecting
   const selectAll = (isSelecting = true) => {
@@ -219,6 +221,19 @@ export default function DASDTable() {
     setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
   };
 
+  const changeSelected = (newSelection: SelectionOptions) => {
+    setSelectedDASD((prevSelection) => {
+      if (newSelection.unselect) {
+        if (newSelection.device)
+          return prevSelection.filter((d) => d.id !== newSelection.device.id);
+        if (newSelection.devices) return [];
+      } else {
+        if (newSelection.device) return [...prevSelection, newSelection.device];
+        if (newSelection.devices) return newSelection.devices;
+      }
+    });
+  };
+
   const Content = () => {
     return (
       <Table variant="compact">
@@ -228,7 +243,7 @@ export default function DASDTable() {
               aria-label="dasd-select"
               select={{
                 onSelect: (_event, isSelecting) => selectAll(isSelecting),
-                isSelected: filteredDevices.length === selectedDevices.length,
+                isSelected: filteredDevices.length === selectedDASD.length,
               }}
             />
             {columns.map((column, index) => (
@@ -316,7 +331,7 @@ export default function DASDTable() {
               <ToolbarItem variant="separator" />
 
               <ToolbarItem>
-                <Actions devices={selectedDevices} isDisabled={selectedDevices.length === 0} />
+                <Actions devices={selectedDASD} isDisabled={selectedDASD.length === 0} />
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
