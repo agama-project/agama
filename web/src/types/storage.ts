@@ -105,6 +105,7 @@ type ProposalSettings = {
   defaultBootDevice: string;
   encryptionPassword: string;
   encryptionMethod: string;
+  encryptionPBKDFunction?: string,
   spacePolicy: string;
   spaceActions: SpaceAction[];
   volumes: Volume[];
@@ -113,7 +114,7 @@ type ProposalSettings = {
 
 type SpaceAction = {
   device: string;
-  action: string;
+  action: 'force_delete' | 'resize'
 };
 
 type Volume = {

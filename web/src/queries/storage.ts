@@ -19,11 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import { useQuery, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchDevices } from "~/api/storage/devices";
-import { fetchActions, fetchDefaultVolume, fetchProductParams, fetchSettings, fetchUsableDevices } from "~/api/storage/proposal";
-import { ProductParams, Volume as APIVolume, ProposalSettings, ProposalTarget as APIProposalTarget } from "~/api/storage/types";
-import { ProposalResult, ProposalTarget, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
+import { useMutation, useQuery, useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import React from "react";
+import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
+import { calculate, fetchActions, fetchDefaultVolume, fetchProductParams, fetchSettings, fetchUsableDevices } from "~/api/storage/proposal";
+import { ProductParams, Volume as APIVolume, ProposalSettings as APIProposalSettings, ProposalTarget as APIProposalTarget, ProposalSettingsPatch } from "~/api/storage/types";
+import { useInstallerClient } from "~/context/installer";
+import { ProposalSettings, ProposalResult, ProposalTarget, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 import { compact, uniq } from "~/utils";
 
 const devicesQuery = (scope: "result" | "system") => ({
@@ -153,7 +155,7 @@ const useProposalResult = (): ProposalResult | undefined => {
   }
 
   /** @todo Read installation devices from D-Bus. */
-  const buildInstallationDevices = (settings: ProposalSettings, devices: StorageDevice[]) => {
+  const buildInstallationDevices = (settings: APIProposalSettings, devices: StorageDevice[]) => {
     const findDevice = (name: string) => {
       const device = devices.find((d) => d.name === name);
 
@@ -230,11 +232,87 @@ const buildVolume = (rawVolume: APIVolume, devices: StorageDevice[], productMoun
   return volume;
 }
 
+const useProposalMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (settings: ProposalSettings) => {
+      const buildHttpVolume = (volume: Volume): APIVolume => {
+        return {
+          autoSize: volume.autoSize,
+          fsType: volume.fsType,
+          maxSize: volume.maxSize,
+          minSize: volume.minSize,
+          mountOptions: [],
+          mountPath: volume.mountPath,
+          snapshots: volume.snapshots,
+          target: volume.target,
+          targetDevice: volume.targetDevice?.name,
+        };
+      };
+
+      const buildHttpSettings = (settings: ProposalSettings): ProposalSettingsPatch => {
+        return {
+          bootDevice: settings.bootDevice,
+          configureBoot: settings.configureBoot,
+          encryptionMethod: settings.encryptionMethod,
+          encryptionPBKDFunction: settings.encryptionPBKDFunction,
+          encryptionPassword: settings.encryptionPassword,
+          spaceActions: settings.spacePolicy === "custom" ? settings.spaceActions : undefined,
+          spacePolicy: settings.spacePolicy,
+          target: settings.target,
+          targetDevice: settings.targetDevice,
+          targetPVDevices: settings.targetPVDevices,
+          volumes: settings.volumes?.map(buildHttpVolume),
+        };
+      };
+
+      const httpSettings = buildHttpSettings(settings);
+      return calculate(httpSettings);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] })
+  };
+
+  return useMutation(query);
+}
+
+const deprecatedQuery = {
+  queryKey: ["storage", "dirty"],
+  queryFn: fetchDevicesDirty
+}
+
+/**
+ * Hook that returns whether the storage devices are "dirty".
+ */
+const useDeprecated = () => {
+  const { isPending, data } = useQuery(deprecatedQuery);
+  return (isPending) ? false : data;
+}
+
+/**
+ * Hook that listens for changes to the devices dirty property.
+ */
+const useDeprecatedChanges = () => {
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.ws().onEvent(({ type, value }) => {
+      if (type === "DevicesDirty") {
+        queryClient.setQueryData(deprecatedQuery.queryKey, value);
+      }
+    });
+  });
+}
+
 export {
   useDevices,
   useAvailableDevices,
   useProductParams,
   useVolumeTemplates,
   useVolumeDevices,
-  useProposalResult
+  useProposalResult,
+  useProposalMutation,
+  useDeprecated,
+  useDeprecatedChanges
 }

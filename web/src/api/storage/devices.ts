@@ -20,7 +20,7 @@
  */
 
 import { get } from "~/api/http";
-import { Component, Device, Drive, Filesystem, LvmLv, LvmVg, Md, Multipath, Partition, PartitionTable, Raid } from "./types";
+import { Component, Device, DevicesDirtyResponse, Drive, Filesystem, LvmLv, LvmVg, Md, Multipath, Partition, PartitionTable, Raid } from "./types";
 import { StorageDevice } from "~/types/storage";
 
 /**
@@ -157,4 +157,6 @@ const fetchDevices = async (scope: "result" | "system") => {
   return jsonDevices.map((d) => buildDevice(d, jsonDevices));
 }
 
-export { fetchDevices };
+const fetchDevicesDirty = (): Promise<DevicesDirtyResponse> => get("/api/storage/devices/dirty");
+
+export { fetchDevices, fetchDevicesDirty };

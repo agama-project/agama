@@ -28,47 +28,25 @@ import ProposalResultSection from "./ProposalResultSection";
 import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _ } from "~/i18n";
-import { IDLE } from "~/client/status";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useAvailableDevices, useDevices, useProductParams, useProposalResult, useVolumeDevices, useVolumeTemplates } from "~/queries/storage";
+import { useAvailableDevices, useDeprecated, useDeprecatedChanges, useDevices, useProductParams, useProposalMutation, useProposalResult, useVolumeDevices, useVolumeTemplates } from "~/queries/storage";
 
 /**
  * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
  */
 
 const initialState = {
-  loading: true,
-  // which UI item is being changed by user
-  changing: undefined,
+  loading: false,
   settings: {},
   actions: [],
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "START_LOADING": {
-      return { ...state, loading: true };
-    }
-
-    case "STOP_LOADING": {
-      // reset the changing value after the refresh is finished
-      return { ...state, loading: false, changing: undefined };
-    }
-
-    case "UPDATE_RESULT": {
-      const { settings, actions } = action.payload.result;
-      return { ...state, settings, actions };
-    }
-
-    case "UPDATE_SETTINGS": {
-      const { settings, changing } = action.payload;
-      return { ...state, settings, changing };
-    }
-
     default: {
       return state;
     }
@@ -126,6 +104,9 @@ export default function ProposalPage() {
   const volumeTemplates = useVolumeTemplates({ suspense: true });
   const volumeDevices = useVolumeDevices();
   const { actions, settings } = useProposalResult();
+  const updateProposal = useProposalMutation();
+  const deprecated = useDeprecated();
+  useDeprecatedChanges();
 
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
@@ -138,69 +119,18 @@ export default function ProposalPage() {
     [client, cancellablePromise],
   );
 
-  const load = useCallback(async () => {
-    dispatch({ type: "START_LOADING" });
-
-    const isDeprecated = await cancellablePromise(client.isDeprecated());
-    if (isDeprecated) {
-      //const result = await loadProposalResult();
-      await cancellablePromise(client.probe());
-      // if (result?.settings) await calculateProposal(result.settings);
-      await calculateProposal(settings);
-    }
-
-    // const result = await loadProposalResult();
-    // if (result !== undefined) dispatch({ type: "UPDATE_RESULT", payload: { result } });
-
-    dispatch({ type: "STOP_LOADING" });
-  }, [
-    calculateProposal,
-    cancellablePromise,
-    client,
-  ]);
-
-  const calculate = useCallback(
-    async (settings) => {
-      dispatch({ type: "START_LOADING" });
-
-      await calculateProposal(settings);
-
-      // const result = await loadProposalResult();
-      dispatch({ type: "UPDATE_RESULT", payload: { result } });
-
-      dispatch({ type: "STOP_LOADING" });
-    },
-    [calculateProposal],
-  );
-
   useEffect(() => {
-    load().catch(console.error);
-
-    return client.onDeprecate(() => load());
-  }, [client, load]);
-
-  useEffect(() => {
-    const proposalLoaded = () => state.settings.targetDevice !== undefined;
-
-    const statusHandler = (serviceStatus) => {
-      // Load the proposal if no proposal has been loaded yet. This can happen if the proposal
-      // page is visited before probing has finished.
-      if (serviceStatus === IDLE && !proposalLoaded()) load();
-    };
-
-    if (!proposalLoaded()) {
-      return client.onStatusChange(statusHandler);
+    if (deprecated) {
+      cancellablePromise(client.probe());
     }
-  }, [client, load, state.settings]);
+  }, [deprecated]);
 
-  const changeSettings = async (changing, settings) => {
-    const newSettings = { ...state.settings, ...settings };
-
-    dispatch({ type: "UPDATE_SETTINGS", payload: { settings: newSettings, changing } });
-    calculate(newSettings).catch(console.error);
+  const changeSettings = async (changing, updated: object) => {
+    const newSettings = { ...settings, ...updated };
+    updateProposal.mutateAsync(newSettings).catch(console.error);
   };
 
-  const spacePolicy = SPACE_POLICIES.find((p) => p.id === state.settings.spacePolicy);
+  const spacePolicy = SPACE_POLICIES.find((p) => p.id === settings.spacePolicy);
 
   /**
    * @todo Enable type checking and ensure the components are called with the correct props.

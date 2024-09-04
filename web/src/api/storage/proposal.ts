@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { get } from "../http";
-import { Action, ProductParams, ProposalSettings, Volume } from "./types";
+import { get, put } from "../http";
+import { Action, ProductParams, ProposalSettings, ProposalSettingsPatch, Volume } from "./types";
 
 const fetchUsableDevices = (): Promise<number[]> => get(`/api/storage/proposal/usable_devices`);
 
@@ -35,10 +35,13 @@ const fetchSettings = (): Promise<ProposalSettings> => get("/api/storage/proposa
 
 const fetchActions = (): Promise<Action[]> => get("/api/storage/proposal/actions");
 
+const calculate = (settings: ProposalSettingsPatch) => put("/api/storage/proposal/settings", settings);
+
 export {
   fetchUsableDevices,
   fetchProductParams,
   fetchDefaultVolume,
   fetchSettings,
   fetchActions,
+  calculate,
 }
