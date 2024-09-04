@@ -20,22 +20,16 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DASDTable from "~/components/storage/DASDTable";
-import { DASDDevice, FilterDASD } from "~/types/dasd";
+import { DASDDevice } from "~/types/dasd";
 
 let mockDASDDevices: DASDDevice[] = [];
-const mockDASDFilter = { minChannel: "", maxChannel: "" };
 const mockSelectedDASD: string[] = [];
 
 jest.mock("~/queries/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
-  useFilterDASD: () => mockDASDFilter,
-  useFilterDASDMutation: () =>
-    jest
-      .fn()
-      .mockImplementation(() => ({ mutate: (data: FilterDASD) => ({ data: mockDASDFilter }) })),
   useSelectedDASD: () => mockSelectedDASD,
   useSelectedDASDChange: () => jest.fn().mockImplementation(() => ({ data: mockSelectedDASD })),
   useEnableDASDMutation: () => jest.fn(),

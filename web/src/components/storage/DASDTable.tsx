@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   CardBody,
@@ -49,8 +49,6 @@ import {
   useDisableDASDMutation,
   useEnableDiagMutation,
   useDisableDiagMutation,
-  useFilterDASD,
-  useFilterDASDMutation,
   useFormatDASDMutation,
   useSelectedDASD,
   useSelectedDASDChange,
@@ -170,12 +168,19 @@ const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDev
   return devices.filter((d) => d.hexId >= min && d.hexId <= max);
 };
 
+type FilterOptions = {
+  minChannel?: string;
+  maxChannel?: string;
+};
+
 export default function DASDTable() {
   const devices = useDASDDevices();
-  const { mutate: changeFilter } = useFilterDASDMutation();
   const { mutate: changeSelected } = useSelectedDASDChange();
-  const { minChannel, maxChannel } = useFilterDASD();
   const selectedDevices = useSelectedDASD();
+  const [{ minChannel, maxChannel }, setFilters] = useState<FilterOptions>({
+    minChannel: "",
+    maxChannel: "",
+  });
 
   const [sortingColumn, setSortingColumn] = useState(columns[0]);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -210,21 +215,8 @@ export default function DASDTable() {
     };
   };
 
-  // Filtering
-  const onMinChannelFilterChange = (_event, value) => {
-    changeFilter({ minChannel: value });
-  };
-
-  const onMaxChannelFilterChange = (_event, value) => {
-    changeFilter({ maxChannel: value });
-  };
-
-  const removeMinChannelFilter = () => {
-    changeFilter({ minChannel: "" });
-  };
-
-  const removeMaxChannelFilter = () => {
-    changeFilter({ maxChannel: "" });
+  const updateFilter = (newFilters: FilterOptions) => {
+    setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
   };
 
   const Content = () => {
@@ -283,14 +275,14 @@ export default function DASDTable() {
                     type="text"
                     aria-label={_("Filter by min channel")}
                     placeholder={_("Filter by min channel")}
-                    onChange={onMinChannelFilterChange}
+                    onChange={(_, minChannel) => updateFilter({ minChannel })}
                   />
                   {minChannel !== "" && (
                     <TextInputGroupUtilities>
                       <Button
                         variant="plain"
                         aria-label={_("Remove min channel filter")}
-                        onClick={removeMinChannelFilter}
+                        onClick={() => updateFilter({ minChannel: "" })}
                       >
                         <Icon name="backspace" size="s" />
                       </Button>
@@ -305,14 +297,14 @@ export default function DASDTable() {
                     type="text"
                     aria-label={_("Filter by max channel")}
                     placeholder={_("Filter by max channel")}
-                    onChange={onMaxChannelFilterChange}
+                    onChange={(_, maxChannel) => updateFilter({ maxChannel })}
                   />
                   {maxChannel !== "" && (
                     <TextInputGroupUtilities>
                       <Button
                         variant="plain"
                         aria-label={_("Remove max channel filter")}
-                        onClick={removeMaxChannelFilter}
+                        onClick={() => updateFilter({ maxChannel: "" })}
                       >
                         <Icon name="backspace" size="s" />
                       </Button>
