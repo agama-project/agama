@@ -287,15 +287,8 @@ const useFormatDASDMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: formatDASD,
-    onSuccess: (data: string, deviceIds: string[]) => {
+    onSuccess: (data: string) => {
       queryClient.setQueryData(["dasd", "formatJob", data], { jobId: data });
-      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-        const nextData = prev.map((dev) => {
-          if (deviceIds.includes(dev.id)) dev.formatted = false;
-          return dev;
-        });
-        return nextData;
-      });
     },
   };
 
