@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useReducer, useEffect, useRef } from "react";
+import React, { useReducer, useEffect, useRef } from "react";
 import { Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page, Drawer } from "~/components/core/";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
@@ -29,29 +29,11 @@ import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary"
 import { ProposalActionsDialog } from "~/components/storage";
 import { _ } from "~/i18n";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
 import { useAvailableDevices, useDeprecated, useDeprecatedChanges, useDevices, useProductParams, useProposalMutation, useProposalResult, useVolumeDevices, useVolumeTemplates } from "~/queries/storage";
-
-/**
- * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
- */
-
-const initialState = {
-  loading: false,
-  settings: {},
-  actions: [],
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    default: {
-      return state;
-    }
-  }
-};
+import { probe } from "~/api/storage";
 
 /**
  * Which UI item is being changed by user
@@ -77,32 +59,15 @@ export const NOT_AFFECTED = {
   ProposalActionsSummary: [CHANGING.ENCRYPTION, CHANGING.TARGET],
 };
 
-/**
- * A helper function to decide whether to show the progress skeletons or not
- * for the specified component
- *
- * FIXME: remove duplication
- *
- * @param {boolean} loading loading status
- * @param {string} component name of the component
- * @param {symbol} changing the item which is being changed
- * @returns {boolean} true if the skeleton should be displayed, false otherwise
- */
-const showSkeleton = (loading, component, changing) => {
-  return loading && !NOT_AFFECTED[component].includes(changing);
-};
-
 export default function ProposalPage() {
-  const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [state, dispatch] = useReducer(reducer, initialState);
   const drawerRef = useRef();
   const systemDevices = useDevices("system");
   const stagingDevices = useDevices("result");
   const availableDevices = useAvailableDevices();
-  const { encryptionMethods } = useProductParams({ suspense: true });
-  const volumeTemplates = useVolumeTemplates({ suspense: true });
   const volumeDevices = useVolumeDevices();
+  const volumeTemplates = useVolumeTemplates({ suspense: true });
+  const { encryptionMethods } = useProductParams({ suspense: true });
   const { actions, settings } = useProposalResult();
   const updateProposal = useProposalMutation();
   const deprecated = useDeprecated();
@@ -112,16 +77,9 @@ export default function ProposalPage() {
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
 
-  const calculateProposal = useCallback(
-    async (settings) => {
-      return await cancellablePromise(client.proposal.calculate(settings));
-    },
-    [client, cancellablePromise],
-  );
-
   useEffect(() => {
     if (deprecated) {
-      cancellablePromise(client.probe());
+      cancellablePromise(probe());
     }
   }, [deprecated]);
 
@@ -131,13 +89,6 @@ export default function ProposalPage() {
   };
 
   const spacePolicy = SPACE_POLICIES.find((p) => p.id === settings.spacePolicy);
-
-  /**
-   * @todo Enable type checking and ensure the components are called with the correct props.
-   *
-   * @note The default value for `settings` should be `undefined` instead of an empty object, and
-   * the settings prop of the components should accept both a ProposalSettings object or undefined.
-   */
 
   return (
     <Page>
@@ -157,8 +108,7 @@ export default function ProposalPage() {
               volumeTemplates={volumeTemplates}
               settings={settings}
               onChange={changeSettings}
-              isLoading={state.loading}
-              changing={state.changing}
+              isLoading={false}
             />
           </GridItem>
           <GridItem sm={12} xl={6}>
@@ -179,14 +129,14 @@ export default function ProposalPage() {
                   // @ts-expect-error: we do not know how to specify the type of
                   // drawerRef properly and TS does not find the "open" property
                   onActionsClick={drawerRef.current?.open}
-                  isLoading={showSkeleton(state.loading, "ProposalActionsSummary", state.changing)}
+                  isLoading={false}
                 />
                 <ProposalResultSection
                   system={systemDevices}
                   staging={stagingDevices}
                   actions={actions}
-                  errors={state.errors}
-                  isLoading={state.loading}
+                  errors={errors}
+                  isLoading={false}
                 />
               </Stack>
             </Drawer>

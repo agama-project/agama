@@ -23,10 +23,10 @@ import { useMutation, useQuery, useQueryClient, useSuspenseQueries, useSuspenseQ
 import React from "react";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { calculate, fetchActions, fetchDefaultVolume, fetchProductParams, fetchSettings, fetchUsableDevices } from "~/api/storage/proposal";
-import { ProductParams, Volume as APIVolume, ProposalSettings as APIProposalSettings, ProposalTarget as APIProposalTarget, ProposalSettingsPatch } from "~/api/storage/types";
 import { useInstallerClient } from "~/context/installer";
-import { ProposalSettings, ProposalResult, ProposalTarget, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 import { compact, uniq } from "~/utils";
+import { ProductParams, Volume as APIVolume, ProposalSettings as APIProposalSettings, ProposalTarget as APIProposalTarget, ProposalSettingsPatch } from "~/api/storage/types";
+import { ProposalSettings, ProposalResult, ProposalTarget, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
 const devicesQuery = (scope: "result" | "system") => ({
   queryKey: ["storage", "devices", scope],
@@ -53,7 +53,7 @@ const defaultVolumeQuery = (mountPath: string) => ({
 });
 
 /**
- * Hook that returns the list of storage devices for the given scope
+ * Hook that returns the list of storage devices for the given scope.
  *
  * @param scope - "system": devices in the current state of the system; "result":
  *   devices in the proposal ("stage")
@@ -95,9 +95,9 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
 /**
  * Hook that returns the volume templates for the current product.
  */
-const useVolumeTemplates = (options?: QueryHookOptions): Volume[] => {
+const useVolumeTemplates = (): Volume[] => {
   const systemDevices = useDevices("system", { suspense: true });
-  const product = useProductParams(options || {});
+  const product = useProductParams();
   if (!product) return [];
 
   const queries = product.mountPoints.map((p) => defaultVolumeQuery(p));
@@ -145,7 +145,7 @@ const proposalActionsQuery = {
 };
 
 /**
- * Gets the values of the current proposal
+ * Hook that returns the current proposal (settings and actions).
  */
 const useProposalResult = (): ProposalResult | undefined => {
   const buildTarget = (value: APIProposalTarget): ProposalTarget => {
