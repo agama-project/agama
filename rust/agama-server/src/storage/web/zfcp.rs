@@ -109,7 +109,7 @@ async fn controllers(
 /// Activate given zFCP controller.
 #[utoipa::path(
     post,
-    path="/controllers/:controller_id",
+    path="/controllers/:controller_id/activate",
     context_path="/api/storage/zfcp",
     responses(
         (status = OK, description = "controller activated")
