@@ -43,14 +43,7 @@ import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
-import {
-  useDASDDevices,
-  useEnableDASDMutation,
-  useDisableDASDMutation,
-  useEnableDiagMutation,
-  useDisableDiagMutation,
-  useFormatDASDMutation,
-} from "~/queries/dasd";
+import { useDASDDevices, useDASDMutation, useFormatDASDMutation } from "~/queries/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
@@ -88,10 +81,7 @@ const columns = [
 ];
 
 const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
-  const { mutate: enableDASD } = useEnableDASDMutation();
-  const { mutate: disableDASD } = useDisableDASDMutation();
-  const { mutate: enableDiag } = useEnableDiagMutation();
-  const { mutate: disableDiag } = useDisableDiagMutation();
+  const { mutate: updateDASD } = useDASDMutation();
   const { mutate: formatDASD } = useFormatDASDMutation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -99,10 +89,10 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: b
   const onSelect = () => setIsOpen(false);
 
   const deviceIds = devices.map((d) => d.id);
-  const activate = () => enableDASD(deviceIds);
-  const deactivate = () => disableDASD(deviceIds);
-  const setDiagOn = () => enableDiag(deviceIds);
-  const setDiagOff = () => disableDiag(deviceIds);
+  const activate = () => updateDASD({ action: "enable", devices: deviceIds });
+  const deactivate = () => updateDASD({ action: "disable", devices: deviceIds });
+  const setDiagOn = () => updateDASD({ action: "diagOn", devices: deviceIds });
+  const setDiagOff = () => updateDASD({ action: "diagOff", devices: deviceIds });
   const format = () => {
     const offline = devices.filter((d) => !d.enabled);
 

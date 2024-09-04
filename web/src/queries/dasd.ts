@@ -173,71 +173,57 @@ const useDASDDevicesChanges = () => {
   return devices;
 };
 
-const useEnableDASDMutation = () => {
+const useDASDMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: enableDASD,
-    onSuccess: (_: object, deviceIds: string[]) => {
+    mutationFn: ({ action, devices }: { action: string; devices: string[] }) => {
+      switch (action) {
+        case "enable": {
+          return enableDASD(devices);
+        }
+        case "disable": {
+          return disableDASD(devices);
+        }
+        case "diagOn": {
+          return enableDiag(devices);
+        }
+        case "diagOff": {
+          return disableDiag(devices);
+        }
+      }
+    },
+    onSuccess: (_: object, { action, devices }: { action: string; devices: string[] }) => {
       queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
         const nextData = prev.map((dev) => {
-          if (deviceIds.includes(dev.id)) dev.enabled = true;
-          return dev;
-        });
-        return nextData;
-      });
-    },
-  };
-  return useMutation(query);
-};
+          if (devices.includes(dev.id)) {
+            switch (action) {
+              case "enable": {
+                dev.enabled = true;
+                break;
+              }
+              case "disable": {
+                dev.enabled = false;
+                break;
+              }
+              case "diagOn": {
+                dev.diag = true;
+                break;
+              }
+              case "diagOff": {
+                dev.diag = false;
+                break;
+              }
+            }
+          }
 
-const useDisableDASDMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: disableDASD,
-    onSuccess: (_: object, deviceIds: string[]) => {
-      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-        const nextData = prev.map((dev) => {
-          if (deviceIds.includes(dev.id)) dev.enabled = false;
           return dev;
         });
-        return nextData;
-      });
-    },
-  };
-  return useMutation(query);
-};
 
-const useEnableDiagMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: enableDiag,
-    onSuccess: (_: object, deviceIds: string[]) => {
-      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-        const nextData = prev.map((dev) => {
-          if (deviceIds.includes(dev.id)) dev.diag = true;
-          return dev;
-        });
         return nextData;
       });
     },
   };
-  return useMutation(query);
-};
 
-const useDisableDiagMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: disableDiag,
-    onSuccess: (_: object, deviceIds: string[]) => {
-      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-        const nextData = prev.map((dev) => {
-          if (deviceIds.includes(dev.id)) dev.diag = false;
-          return dev;
-        });
-        return nextData;
-      });
-    },
-  };
   return useMutation(query);
 };
 
@@ -258,9 +244,6 @@ export {
   useDASDDevicesChanges,
   useDASDFormatJobChanges,
   useDASDRunningFormatJobs,
-  useEnableDASDMutation,
-  useDisableDASDMutation,
-  useEnableDiagMutation,
-  useDisableDiagMutation,
   useFormatDASDMutation,
+  useDASDMutation,
 };

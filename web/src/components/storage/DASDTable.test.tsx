@@ -26,16 +26,10 @@ import DASDTable from "~/components/storage/DASDTable";
 import { DASDDevice } from "~/types/dasd";
 
 let mockDASDDevices: DASDDevice[] = [];
-const mockSelectedDASD: string[] = [];
 
 jest.mock("~/queries/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
-  useSelectedDASD: () => mockSelectedDASD,
-  useSelectedDASDChange: () => jest.fn().mockImplementation(() => ({ data: mockSelectedDASD })),
-  useEnableDASDMutation: () => jest.fn(),
-  useDisableDASDMutation: () => jest.fn(),
-  useEnableDiagMutation: () => jest.fn(),
-  useDisableDiagMutation: () => jest.fn(),
+  useDASDMutation: () => jest.fn(),
   useFormatDASDMutation: () => jest.fn(),
 }));
 
