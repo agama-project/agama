@@ -194,7 +194,8 @@ const useDASDMutation = () => {
     },
     onSuccess: (_: object, { action, devices }: { action: string; devices: string[] }) => {
       queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
-        const nextData = prev.map((dev) => {
+        const nextData = prev.map((prevDev) => {
+          const dev = { ...prevDev };
           if (devices.includes(dev.id)) {
             switch (action) {
               case "enable": {
