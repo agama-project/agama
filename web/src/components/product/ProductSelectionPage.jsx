@@ -20,11 +20,12 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardBody, Flex, Form, Grid, GridItem, Radio, Split, Stack } from "@patternfly/react-core";
+import { Card, CardBody, Flex, Form, Grid, GridItem, Radio, List, ListItem, Split, Stack, FormGroup } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
 import styles from "@patternfly/react-styles/css/utilities/Text/text";
+import { slugify } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
@@ -35,32 +36,35 @@ const ResponsiveGridItem = ({ children }) => (
 );
 
 const Option = ({ product, isChecked, onChange }) => {
+  const id = slugify(product.name);
+  const detailsId = `${id}-details`;
   const logoSrc = `assets/logos/${product.icon}`;
   // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
   const logoAltText = sprintf(_("%s logo"), product.name);
 
   return (
-    <ResponsiveGridItem>
-      <Card isRounded>
+    <ListItem>
+      <Card isRounded onClick={onChange} className="cursor-pointer">
         <CardBody>
-          <Radio
-            name="product"
-            id={product.name}
-            label={
-              <Split hasGutter>
-                <img src={logoSrc} alt={logoAltText} />
-                <Stack hasGutter>
-                  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>{product.name}</span>
-                  <p>{product.description}</p>
-                </Stack>
-              </Split>
-            }
-            isChecked={isChecked}
-            onChange={onChange}
-          />
+          <Split hasGutter>
+            <Radio
+              id={id}
+              name="product"
+              isChecked={isChecked}
+              onChange={onChange}
+              aria-details={detailsId}
+            />
+            <img aria-hidden src={logoSrc} alt={logoAltText} />
+            <Stack hasGutter>
+              <label htmlFor={id} className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>
+                {product.name}
+              </label>
+              <p id={detailsId}>{product.description}</p>
+            </Stack>
+          </Split>
         </CardBody>
       </Card>
-    </ResponsiveGridItem>
+    </ListItem>
   );
 };
 
@@ -86,14 +90,20 @@ function ProductSelectionPage() {
       <Center>
         <Form id="productSelectionForm" onSubmit={onSubmit}>
           <Grid hasGutter>
-            {products.map((product, index) => (
-              <Option
-                key={index}
-                product={product}
-                isChecked={nextProduct === product}
-                onChange={() => setNextProduct(product)}
-              />
-            ))}
+            <ResponsiveGridItem>
+              <List isPlain>
+                <FormGroup role="radiogroup" label={_("Select a product")}>
+                  {products.map((product, index) => (
+                    <Option
+                      key={index}
+                      product={product}
+                      isChecked={nextProduct === product}
+                      onChange={() => setNextProduct(product)}
+                    />
+                  ))}
+                </FormGroup>
+              </List>
+            </ResponsiveGridItem>
             <ResponsiveGridItem>
               <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
                 {selectedProduct && !isLoading && <Page.CancelAction navigateTo={-1} />}
