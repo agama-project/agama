@@ -36,7 +36,7 @@ impl TryFrom<&HashMap<String, OwnedValue>> for ZFCPDisk {
 }
 
 /// Represents a zFCP controller (specific to s390x systems).
-#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ZFCPController {
     /// zFCP controller channel id (e.g., 0.0.fa00)

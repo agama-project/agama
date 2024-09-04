@@ -7,13 +7,14 @@
 
 use agama_lib::{
     error::ServiceError,
-    storage::{client::zfcp::ZFCPClient, model::zfcp::ZFCPController},
+    storage::{client::zfcp::ZFCPClient, model::zfcp::ZFCPDisk},
 };
 use axum::{
     extract::{Path, State},
     routing::{get, post},
     Json, Router,
 };
+use serde::Serialize;
 use stream::{ZFCPControllerStream, ZFCPDiskStream};
 
 mod stream;
@@ -43,6 +44,21 @@ struct ZFCPState<'a> {
     client: ZFCPClient<'a>,
 }
 
+/// Represents a zFCP controller (specific to s390x systems) with additional id that can be used for various method calls.
+#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ZFCPControllerWithId {
+    /// unique id for this controller
+    pub id: String,
+    /// zFCP controller channel id (e.g., 0.0.fa00)
+    pub channel: String,
+    /// flag whenever channel is performing LUN auto scan
+    #[serde(rename = "LUNScan")]
+    pub lun_scan: bool,
+    /// flag whenever channel is active
+    pub active: bool,
+}
+
 pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, ServiceError> {
     let client = ZFCPClient::new(dbus.clone()).await?;
     let state = ZFCPState { client };
@@ -66,6 +82,7 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
             "/controllers/:controller_id/wwpns/:wwpn_id/luns/:lun_id/deactivate_disk",
             post(deactivate_disk),
         )
+        .route("/disks", get(get_disks))
         .route("/probe", post(probe))
         .with_state(state);
     Ok(router)
@@ -84,24 +101,57 @@ async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Err
     Ok(Json(state.client.supported().await?))
 }
 
+/// Returns the list of known zFCP disks.
+#[utoipa::path(
+    get,
+    path="/disks",
+    context_path="/api/storage/zfcp",
+    responses(
+        (status = OK, description = "List of ZFCP disks", body = Vec<ZFCPDisk>)
+    )
+)]
+async fn get_disks(
+    State(state): State<ZFCPState<'_>>,
+) -> Result<Json<Vec<ZFCPDisk>>, Error> {
+    let devices = state
+        .client
+        .get_disks()
+        .await?
+        .into_iter()
+        .map(|(_path, device)| device)
+        .collect();
+    Ok(Json(devices))
+}
+
 /// Returns the list of known zFCP controllers.
 #[utoipa::path(
     get,
     path="/controllers",
     context_path="/api/storage/zfcp",
     responses(
-        (status = OK, description = "List of ZFCP devices", body = Vec<ZFCPController>)
+        (status = OK, description = "List of ZFCP controllers", body = Vec<ZFCPControllerWithId>)
     )
 )]
 async fn controllers(
     State(state): State<ZFCPState<'_>>,
-) -> Result<Json<Vec<ZFCPController>>, Error> {
+) -> Result<Json<Vec<ZFCPControllerWithId>>, Error> {
     let devices = state
         .client
         .get_controllers()
         .await?
         .into_iter()
-        .map(|(_path, device)| device)
+        .map(|(path, device)|
+        {
+            let mut path_s = path.to_string();
+            let slash_pos = path_s.rfind("/").unwrap_or(0);
+            path_s.drain(..slash_pos);
+            ZFCPControllerWithId {
+                id: path_s,
+                channel: device.channel,
+                lun_scan: device.lun_scan,
+                active: device.active,
+            }
+        })
         .collect();
     Ok(Json(devices))
 }
