@@ -25,19 +25,16 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useProduct } from "~/queries/software";
 import { isTransactionalSystem } from "~/components/storage/utils";
-
-/**
- * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
- */
+import { ProposalSettings } from "~/types/storage";
 
 /**
  * Information about the system being transactional, if needed
  * @component
  *
- * @param {object} props
- * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
+ * @param props
+ * @param props.settings - Settings used for calculating a proposal.
  */
-export default function ProposalTransactionalInfo({ settings }) {
+export default function ProposalTransactionalInfo({ settings }: { settings: ProposalSettings; }) {
   const { selectedProduct } = useProduct({ suspense: true });
 
   if (!isTransactionalSystem(settings?.volumes)) return;
