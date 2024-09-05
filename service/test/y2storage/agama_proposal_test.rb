@@ -24,6 +24,51 @@ require "agama/config"
 require "agama/storage/config"
 require "y2storage/agama_proposal"
 
+# @param config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
+# @param name [String, nil] e.g., "/dev/vda"
+# @param filesystem [String, nil] e.g., "xfs"
+def block_device_config(config, name: nil, filesystem: nil)
+  if name
+    config.search = Agama::Storage::Configs::Search.new.tap do |search_config|
+      search_config.name = name
+    end
+  end
+
+  if filesystem
+    config.filesystem = Agama::Storage::Configs::Filesystem.new.tap do |fs_config|
+      fs_config.type = Agama::Storage::Configs::FilesystemType.new.tap do |type_config|
+        type_config.fs_type = Y2Storage::Filesystems::Type.find(filesystem)
+      end
+    end
+  end
+
+  config
+end
+
+# @param name [String, nil] e.g., "/dev/vda"
+# @param filesystem [String, nil] e.g., "xfs"
+def drive_config(name: nil, filesystem: nil)
+  config = Agama::Storage::Configs::Drive.new
+  block_device_config(config, name: name, filesystem: filesystem)
+end
+
+# @param name [String, nil] e.g., "/dev/vda"
+# @param filesystem [String, nil] e.g., "xfs"
+# @param size [Y2Storage::DiskSize]
+def partition_config(name: nil, filesystem: nil, size: nil)
+  config = Agama::Storage::Configs::Partition.new
+  block_device_config(config, name: name, filesystem: filesystem)
+
+  if size
+    config.size = Agama::Storage::Configs::Size.new.tap do |size_config|
+      size_config.min = size
+      size_config.max = size
+    end
+  end
+
+  config
+end
+
 describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
 
@@ -117,7 +162,7 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when the config has 2 drives" do
-      let(:scenario) { "partitioned_disk.yaml" }
+      let(:scenario) { "disks.yaml" }
 
       let(:drives) { [drive0, drive1] }
 
@@ -133,6 +178,42 @@ describe Y2Storage::AgamaProposal do
 
         home = devicegraph.find_by_name("/dev/vdb1")
         expect(home.filesystem.mount_path).to eq("/home")
+      end
+    end
+
+    context "when trying to reuse a file system from a drive" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:drives) { [drive] }
+
+      let(:drive) do
+        drive_config(name: name, filesystem: "ext3").tap { |c| c.filesystem.reuse = true }
+      end
+
+      context "if the drive is already formatted" do
+        let(:name) { "/dev/vdc" }
+
+        it "reuses the file system" do
+          vdc = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vdc")
+          fs_sid = vdc.filesystem.sid
+
+          devicegraph = proposal.propose
+
+          filesystem = devicegraph.find_by_name("/dev/vdc").filesystem
+          expect(filesystem.sid).to eq(fs_sid)
+        end
+      end
+
+      context "if the drive is not formatted" do
+        let(:name) { "/dev/vdb" }
+
+        it "creates the file system" do
+          devicegraph = proposal.propose
+
+          filesystem = devicegraph.find_by_name("/dev/vdb").filesystem
+          expect(filesystem).to_not be_nil
+          expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
+        end
       end
     end
 
@@ -308,7 +389,7 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when searching for an existent drive" do
-      let(:scenario) { "partitioned_disk.yaml" }
+      let(:scenario) { "disks.yaml" }
 
       before do
         drive0.search.name = "/dev/vdb"
@@ -326,7 +407,7 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when searching for any drive" do
-      let(:scenario) { "partitioned_disk.yaml" }
+      let(:scenario) { "disks.yaml" }
 
       let(:drives) { [drive0, drive1] }
 
@@ -400,7 +481,7 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when searching for an existent partition" do
-      let(:scenario) { "partitioned_disk.yaml" }
+      let(:scenario) { "disks.yaml" }
 
       let(:partitions0) { [root_partition, home_partition] }
 
@@ -421,7 +502,7 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when searching for any partition" do
-      let(:scenario) { "partitioned_disk.yaml" }
+      let(:scenario) { "disks.yaml" }
 
       let(:partitions0) { [root_partition, home_partition] }
 
@@ -455,25 +536,17 @@ describe Y2Storage::AgamaProposal do
       end
     end
 
-    def partition_config(name)
-      Agama::Storage::Configs::Partition.new.tap do |partition_config|
-        partition_config.search = Agama::Storage::Configs::Search.new.tap do |search_config|
-          search_config.name = name
-        end
-      end
-    end
-
     context "forcing to delete some partitions" do
-      let(:scenario) { "partitioned_disk.yaml" }
+      let(:scenario) { "disks.yaml" }
 
       let(:partitions0) { [root_partition, vda2, vda3] }
 
       let(:vda2) do
-        partition_config("/dev/vda2").tap { |c| c.delete = true }
+        partition_config(name: "/dev/vda2").tap { |c| c.delete = true }
       end
 
       let(:vda3) do
-        partition_config("/dev/vda3").tap { |c| c.delete = true }
+        partition_config(name: "/dev/vda3").tap { |c| c.delete = true }
       end
 
       before do
@@ -497,12 +570,12 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "allowing to delete some partition" do
-      let(:scenario) { "partitioned_disk.yaml" }
+      let(:scenario) { "disks.yaml" }
 
       let(:partitions0) { [root_partition, vda3] }
 
       let(:vda3) do
-        partition_config("/dev/vda3").tap { |c| c.delete_if_needed = true }
+        partition_config(name: "/dev/vda3").tap { |c| c.delete_if_needed = true }
       end
 
       before do
@@ -545,12 +618,12 @@ describe Y2Storage::AgamaProposal do
 
     # Testing precedence. This configuration should not be possible.
     context "if the partition config indicates both force to delete and allow to delete" do
-      let(:scenario) { "partitioned_disk.yaml" }
+      let(:scenario) { "disks.yaml" }
 
       let(:partitions0) { [root_partition, vda3] }
 
       let(:vda3) do
-        partition_config("/dev/vda3").tap do |config|
+        partition_config(name: "/dev/vda3").tap do |config|
           config.delete = true
           config.delete_if_needed = true
         end
@@ -568,6 +641,123 @@ describe Y2Storage::AgamaProposal do
 
         root = devicegraph.find_by_name("/dev/vda3")
         expect(root.filesystem.mount_path).to eq("/")
+      end
+    end
+
+    context "when reusing a partition" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:drives) { [drive] }
+
+      let(:drive) do
+        drive_config.tap { |c| c.partitions = [partition] }
+      end
+
+      let(:partition) { partition_config(name: name, filesystem: "ext3") }
+
+      context "if trying to reuse the file system" do
+        before do
+          partition.filesystem.reuse = true
+        end
+
+        context "and the partition is already formatted" do
+          let(:name) { "/dev/vda2" }
+
+          it "reuses the file system" do
+            vda2 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda2")
+            fs_sid = vda2.filesystem.sid
+
+            devicegraph = proposal.propose
+
+            filesystem = devicegraph.find_by_name("/dev/vda2").filesystem
+            expect(filesystem.sid).to eq(fs_sid)
+          end
+        end
+
+        context "and the partition is not formatted" do
+          let(:name) { "/dev/vda1" }
+
+          it "creates the file system" do
+            devicegraph = proposal.propose
+
+            filesystem = devicegraph.find_by_name("/dev/vda1").filesystem
+            expect(filesystem).to_not be_nil
+            expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
+          end
+        end
+      end
+
+      context "if not trying to reuse the file system" do
+        before do
+          partition.filesystem.reuse = false
+        end
+
+        context "and the partition is already formatted" do
+          let(:name) { "/dev/vda2" }
+
+          it "creates the file system" do
+            vda2 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda2")
+            fs_sid = vda2.filesystem.sid
+
+            devicegraph = proposal.propose
+
+            filesystem = devicegraph.find_by_name("/dev/vda2").filesystem
+            expect(filesystem.sid).to_not eq(fs_sid)
+            expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
+          end
+        end
+
+        context "and the partition is not formatted" do
+          let(:name) { "/dev/vda1" }
+
+          it "creates the file system" do
+            devicegraph = proposal.propose
+
+            filesystem = devicegraph.find_by_name("/dev/vda1").filesystem
+            expect(filesystem).to_not be_nil
+            expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
+          end
+        end
+      end
+    end
+
+    context "when creating a new partition" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:drives) { [drive] }
+
+      let(:drive) do
+        drive_config.tap { |c| c.partitions = [partition] }
+      end
+
+      let(:partition) { partition_config(filesystem: "ext3", size: Y2Storage::DiskSize.GiB(1)) }
+
+      context "if trying to reuse the file system" do
+        before do
+          partition.filesystem.reuse = true
+        end
+
+        it "creates the file system" do
+          devicegraph = proposal.propose
+
+          filesystem = devicegraph.find_by_name("/dev/vda4").filesystem
+          expect(filesystem).to_not be_nil
+          expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
+        end
+      end
+
+      context "if not trying to reuse the file system" do
+        before do
+          partition.filesystem.reuse = false
+        end
+
+        it "creates the file system" do
+          devicegraph = proposal.propose
+
+          filesystem = devicegraph.find_by_name("/dev/vda4").filesystem
+          expect(filesystem).to_not be_nil
+          expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
+        end
       end
     end
   end

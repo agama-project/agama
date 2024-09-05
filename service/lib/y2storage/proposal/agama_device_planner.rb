@@ -59,14 +59,25 @@ module Y2Storage
     private
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [#found_device]
-      def configure_reuse(planned, settings)
-        device = settings.found_device
+      # @param config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
+      def configure_reuse(planned, config)
+        device = config.found_device
         return unless device
 
         planned.assign_reuse(device)
-        # TODO: Allow mounting without reformatting.
-        planned.reformat = true
+        planned.reformat = reformat?(device, config)
+      end
+
+      # Whether to reformat the device.
+      #
+      # @param device [Y2Storage::BlkDevice]
+      # @param config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
+      # @return [Boolean]
+      def reformat?(device, config)
+        return true if device.filesystem.nil?
+
+        # TODO: reformat if the encryption has to be created.
+        !config.filesystem&.reuse?
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
