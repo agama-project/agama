@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Show product logo in product selector (gh#openSUSE/agama#1415).
+
+-------------------------------------------------------------------
 Wed Aug 28 12:37:34 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Expose the DASD D-Bus API through HTTP (gh#openSUSE/agama#1532).
@@ -15,12 +20,6 @@ Mon Aug 26 11:19:27 UTC 2024 - Martin Vidner <mvidner@suse.com>
 - For CLI, use HTTP clients instead of D-Bus clients,
   for Software (gh#openSUSE/agama#1548)
   - added SoftwareHTTPClient
-
--------------------------------------------------------------------
-Wed Aug 21 19:07:28 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
-
-- Add product icons. Resolves Issue #1415
-  Not setting any icon will default to default.svg icon
 
 -------------------------------------------------------------------
 Thu Aug 15 08:33:02 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
