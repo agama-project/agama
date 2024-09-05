@@ -24,14 +24,9 @@
 import React from "react";
 import { Split, Switch } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { noop } from "~/utils";
 import { hasFS } from "~/components/storage/utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-
-/**
- * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
- * @typedef {import ("~/client/storage").Volume} Volume
- */
+import { Volume } from "~/types/storage";
 
 const LABEL = _("Use Btrfs snapshots for the root file system");
 const DESCRIPTION = _(
@@ -39,29 +34,29 @@ const DESCRIPTION = _(
 system after configuration changes or software upgrades.",
 );
 
+export type SnapshotsFieldProps = {
+  rootVolume: Volume;
+  onChange?: (config: SnapshotsConfig) => void;
+}
+
+export type SnapshotsConfig = {
+  active: boolean;
+}
+
 /**
  * Allows to define snapshots enablement
  * @component
- *
- * @typedef {object} SnapshotsFieldProps
- * @property {Volume} rootVolume
- * @property {(config: SnapshotsConfig) => void} onChange
- *
- * @typedef {object} SnapshotsConfig
- * @property {boolean} active
- *
- * @param {SnapshotsFieldProps} props
  */
-export default function SnapshotsField({ rootVolume, onChange = noop }) {
+export default function SnapshotsField({ rootVolume, onChange }: SnapshotsFieldProps) {
   const isChecked = hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
 
   const switchState = () => {
-    onChange({ active: !isChecked });
+    if (onChange) onChange({ active: !isChecked });
   };
 
   return (
     <Split hasGutter>
-      <Switch id="snapshots" isChecked={isChecked} onChange={switchState} hasCheckIcon />
+      <Switch id="snapshots" aria-label={LABEL} isChecked={isChecked} onChange={switchState} hasCheckIcon />
       <div>
         <div>{LABEL}</div>
         <div className={textStyles.color_200}>{DESCRIPTION}</div>
