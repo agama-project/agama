@@ -27,6 +27,7 @@ import { MenuToggle, Select, SelectList, SelectOption } from "@patternfly/react-
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 import { DASDSupported } from "~/api/dasd";
+import { ZFCPSupported } from "~/api/zfcp";
 
 /**
  * Internal component for building the link to Storage/DASD page
@@ -87,7 +88,7 @@ export default function DevicesTechMenu({ label }) {
 
   useEffect(() => {
     DASDSupported().then(setShowDasdLink);
-    client.zfcp.isSupported().then(setShowZFCPLink);
+    ZFCPSupported().then(setShowZFCPLink);
   }, [client.zfcp]);
 
   const toggle = (toggleRef) => (
