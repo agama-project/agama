@@ -24,13 +24,8 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import PartitionsField from "~/components/storage/PartitionsField";
-
-/**
- * @typedef {import("~/components/storage/PartitionsField").PartitionsFieldProps} PartitionsFieldProps
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").Volume} Volume
- */
+import PartitionsField, { PartitionsFieldProps } from "~/components/storage/PartitionsField";
+import { ProposalTarget, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");
@@ -41,10 +36,9 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-/** @type {Volume} */
-const rootVolume = {
+const rootVolume: Volume = {
   mountPath: "/",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "Btrfs",
   minSize: 1024,
   maxSize: 2048,
@@ -63,10 +57,9 @@ const rootVolume = {
   },
 };
 
-/** @type {Volume} */
-const swapVolume = {
+const swapVolume: Volume = {
   mountPath: "swap",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "Swap",
   minSize: 1024,
   maxSize: 1024,
@@ -85,10 +78,9 @@ const swapVolume = {
   },
 };
 
-/** @type {Volume} */
-const homeVolume = {
+const homeVolume: Volume = {
   mountPath: "/home",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "XFS",
   minSize: 1024,
   autoSize: false,
@@ -106,10 +98,9 @@ const homeVolume = {
   },
 };
 
-/** @type {Volume} */
-const arbitraryVolume = {
+const arbitraryVolume: Volume = {
   mountPath: "",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "XFS",
   minSize: 1024,
   maxSize: 4096,
@@ -128,8 +119,7 @@ const arbitraryVolume = {
   },
 };
 
-/** @type {StorageDevice} */
-const sda = {
+const sda: StorageDevice = {
   sid: 59,
   name: "/dev/sda",
   description: "",
@@ -141,8 +131,7 @@ const sda = {
   size: 1024,
 };
 
-/** @type {StorageDevice} */
-const sda1 = {
+const sda1: StorageDevice = {
   sid: 69,
   name: "/dev/sda1",
   description: "",
@@ -155,8 +144,7 @@ const sda1 = {
   },
 };
 
-/** @type {StorageDevice} */
-const sda2 = {
+const sda2: StorageDevice = {
   sid: 79,
   name: "/dev/sda2",
   description: "",
@@ -169,8 +157,7 @@ const sda2 = {
   },
 };
 
-/** @type {PartitionsFieldProps} */
-let props;
+let props: PartitionsFieldProps;
 
 const expandField = async () => {
   const render = plainRender(<PartitionsField {...props} />);
@@ -185,7 +172,7 @@ beforeEach(() => {
     templates: [],
     availableDevices: [],
     volumeDevices: [sda],
-    target: "DISK",
+    target: ProposalTarget.DISK,
     targetDevices: [],
     configureBoot: false,
     bootDevice: undefined,
@@ -195,7 +182,7 @@ beforeEach(() => {
   };
 });
 
-it.skip("allows to reset the file systems", async () => {
+it("allows to reset the file systems", async () => {
   const { user } = await expandField();
   const button = screen.getByRole("button", { name: "Reset to defaults" });
   await user.click(button);
@@ -372,7 +359,7 @@ describe.skip("if there are volumes", () => {
 
   describe("and a volume has a non default location", () => {
     beforeEach(() => {
-      props.volumes = [{ ...homeVolume, target: "NEW_PARTITION", targetDevice: sda }];
+      props.volumes = [{ ...homeVolume, target: VolumeTarget.NEW_PARTITION, targetDevice: sda }];
     });
 
     it("allows resetting the volume location", async () => {
@@ -439,8 +426,8 @@ describe.skip("if there are volumes", () => {
     beforeEach(() => {
       props.volumes = [
         rootVolume,
-        { ...swapVolume, target: "NEW_PARTITION", targetDevice: sda },
-        { ...homeVolume, target: "NEW_VG", targetDevice: sda },
+        { ...swapVolume, target: VolumeTarget.NEW_PARTITION, targetDevice: sda },
+        { ...homeVolume, target: VolumeTarget.NEW_VG, targetDevice: sda },
       ];
     });
 
@@ -460,8 +447,8 @@ describe.skip("if there are volumes", () => {
     beforeEach(() => {
       props.volumes = [
         rootVolume,
-        { ...swapVolume, target: "FILESYSTEM", targetDevice: sda1 },
-        { ...homeVolume, target: "DEVICE", targetDevice: sda2 },
+        { ...swapVolume, target: VolumeTarget.FILESYSTEM, targetDevice: sda1 },
+        { ...homeVolume, target: VolumeTarget.DEVICE, targetDevice: sda2 },
       ];
     });
 
