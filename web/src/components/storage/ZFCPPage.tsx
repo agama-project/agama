@@ -36,6 +36,9 @@ import { ZFCPDiskForm } from "~/components/storage";
 import { _ } from "~/i18n";
 import { noop, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
+import { useZFCPControllers, useZFCPDisks } from "~/queries/zfcp";
+import { deactivateZFCPDisk } from "~/api/zfcp";
+import { ZFCPController, ZFCPDisk } from "~/types/zfcp";
 
 /**
  * @typedef {import(~/clients/storage).ZFCPManager} ZFCPManager
@@ -235,7 +238,7 @@ class Manager {
  * @property {string} label
  * @property {function} call
  */
-const DevicesTable = ({ devices = [], columns = [], columnValue = noop, actions = noop }) => {
+const DevicesTable = (devices: ZFCPDisk[]|ZFCPController[], columns , columnValue, actions) => {
   const [loadingRow, setLoadingRow] = useState();
 
   const sortedDevices = () => {
@@ -359,49 +362,6 @@ const ControllersTable = ({ client, manager }) => {
   return (
     <DevicesTable
       devices={manager.controllers}
-      columns={columns}
-      columnValue={columnValue}
-      actions={actions}
-    />
-  );
-};
-
-/**
- * Table of zFCP disks.
- * @component
- *
- * @param {object} props
- * @param {ZFCPManager} props.client
- * @param {Manager} props.manager
- */
-const DisksTable = ({ client, manager }) => {
-  const { cancellablePromise } = useCancellablePromise();
-
-  const columns = [
-    { id: "name", label: _("Name") },
-    { id: "channel", label: _("Channel ID") },
-    { id: "wwpn", label: _("WWPN") },
-    { id: "lun", label: _("LUN") },
-  ];
-
-  const columnValue = (disk, column) => disk[column.id];
-
-  const actions = (disk) => {
-    const controller = manager.getController(disk.channel);
-    if (!controller || controller.lunScan) return [];
-
-    return [
-      {
-        label: _("Deactivate"),
-        run: async () =>
-          await cancellablePromise(client.deactivateDisk(controller, disk.wwpn, disk.lun)),
-      },
-    ];
-  };
-
-  return (
-    <DevicesTable
-      devices={manager.disks}
       columns={columns}
       columnValue={columnValue}
       actions={actions}
@@ -589,7 +549,7 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
           </ToolbarContent>
         </Toolbar>
 
-        <DisksTable client={client} manager={manager} />
+        <ZFCPDisksTable />
       </>
     );
   };

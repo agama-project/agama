@@ -82,4 +82,6 @@ export {
   activateZFCPController,
   fetchWWPNs,
   fetchLUNs,
+  activateZFCPDisk,
+  deactivateZFCPDisk,
 };
