@@ -284,6 +284,10 @@ const useDebounce = (callback, delay) => {
   return debouncedCallback;
 };
 
+/**
+ * @param {string}
+ * @returns {number}
+ */
 const hex = (value) => {
   const sanitizedValue = value.replaceAll(".", "");
   return parseInt(sanitizedValue, 16);

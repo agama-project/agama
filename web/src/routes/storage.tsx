@@ -23,10 +23,12 @@ import React from "react";
 import BootSelection from "~/components/storage/BootSelection";
 import DeviceSelection from "~/components/storage/DeviceSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
-import ISCSIPage from "~/components/storage/ISCSIPage";
+import { DASDPage, ISCSIPage } from "~/components/storage";
 import ProposalPage from "~/components/storage/ProposalPage";
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
+import { DASDSupported, probeDASD } from "~/api/dasd";
+import { redirect } from "react-router-dom";
 
 const PATHS = {
   root: "/storage",
@@ -34,6 +36,7 @@ const PATHS = {
   bootingPartition: "/storage/booting-partition",
   spacePolicy: "/storage/space-policy",
   iscsi: "/storage/iscsi",
+  dasd: "/storage/dasd",
 };
 
 const routes = (): Route => ({
@@ -60,6 +63,15 @@ const routes = (): Route => ({
       path: PATHS.iscsi,
       element: <ISCSIPage />,
       handle: { name: N_("iSCSI") },
+    },
+    {
+      path: PATHS.dasd,
+      element: <DASDPage />,
+      handle: { name: N_("DASD") },
+      loader: async () => {
+        if (!DASDSupported()) return redirect(PATHS.root);
+        return probeDASD();
+      },
     },
   ],
 });
