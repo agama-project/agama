@@ -19,9 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
-import React, { useReducer } from "react";
+import React, { FormEvent, useReducer } from "react";
 import { Alert, Button, Form, Split } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { FsField, MountPathField, SizeOptionsField } from "~/components/storage/VolumeFields";
@@ -37,45 +35,39 @@ import {
   splitSize,
   volumeLabel,
 } from "~/components/storage/utils";
+import { Volume } from "~/types/storage";
+import { SizeMethod } from "~/components/storage/utils";
 
-/**
- * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import("~/components/storage/utils").SizeMethod} SizeMethod
- *
- * @typedef {object} VolumeFormState
- * @property {Volume} volume
- * @property {VolumeFormData} formData
- * @property {VolumeFormErrors} errors
- *
- * @typedef {object} VolumeFormData
- * @property {number|string} [minSize]
- * @property {string} [minSizeUnit]
- * @property {number|string} [maxSize]
- * @property {string} [maxSizeUnit]
- * @property {SizeMethod} sizeMethod
- * @property {string} mountPath
- * @property {string} fsType
- * @property {boolean} snapshots
- *
- * @typedef {object} VolumeFormErrors
- * @property {string|null} missingMountPath
- * @property {string|null} invalidMountPath
- * @property {React.ReactElement|null} existingVolume
- * @property {React.ReactElement|null} existingTemplate
- * @property {string|null} missingSize
- * @property {string|null} missingMinSize
- * @property {string|null} invalidMaxSize
- */
+type VolumeFormState = {
+  volume: Volume;
+  formData: VolumeFormData;
+  errors: VolumeFormErrors;
+}
+type VolumeFormData = {
+  minSize?: number | string;
+  minSizeUnit?: string;
+  maxSize?: number | string;
+  maxSizeUnit?: string;
+  sizeMethod: SizeMethod;
+  mountPath: string;
+  fsType: string;
+  snapshots: boolean;
+}
+type VolumeFormErrors = {
+  missingMountPath: string | null;
+  invalidMountPath: string | null;
+  existingVolume: React.ReactElement | null;
+  existingTemplate: React.ReactElement | null;
+  missingSize: string | null;
+  missingMinSize: string | null;
+  invalidMaxSize: string | null;
+}
 
 /**
  * Renders the title for the dialog.
  * @function
- *
- * @param {Volume} volume
- * @param {Volume[]} volumes
- * @returns {string}
  */
-const renderTitle = (volume, volumes) => {
+const renderTitle = (volume: Volume, volumes: Volume[]): string => {
   const isNewVolume = !volumes.includes(volume);
   const isProductDefined = volume.outline.productDefined;
   const label = volumeLabel(volume);
@@ -88,12 +80,9 @@ const renderTitle = (volume, volumes) => {
 
 /**
  * @component
- *
- * @param {object} props
- * @param {Volume} props.volume
  */
-const VolumeAlert = ({ volume }) => {
-  let alert;
+const VolumeAlert = ({ volume }: { volume: Volume; }) => {
+  let alert: { title: string, text: string };
 
   if (mountFilesystem(volume)) {
     alert = {
@@ -137,181 +126,115 @@ const VolumeAlert = ({ volume }) => {
  *  const error = checker.existingMountPathError();
  *  const message = error?.render(onClick);
  */
-
 class MissingMountPathError {
-  /**
-   * @constructor
-   * @param {string} mountPath
-   */
-  constructor(mountPath) {
+  mountPath: string;
+
+  constructor(mountPath: string) {
     this.mountPath = mountPath;
   }
 
-  /**
-   * @method
-   * @returns {boolean}
-   */
-  check() {
+  check(): boolean {
     return this.mountPath.length === 0;
   }
 
-  /**
-   * @method
-   * @returns {String}
-   */
-  render() {
+  render(): string {
     return _("A mount point is required");
   }
 }
 
 class InvalidMountPathError {
-  /**
-   * @constructor
-   * @param {string} mountPath
-   */
-  constructor(mountPath) {
+  mountPath: string;
+
+  constructor(mountPath: string) {
     this.mountPath = mountPath;
   }
 
-  /**
-   * @method
-   * @returns {boolean}
-   */
-  check() {
+  check(): boolean {
     const regex = /^swap$|^\/$|^(\/[^/\s]+([^/]*[^/\s])*)+$/;
     return !regex.test(this.mountPath);
   }
 
-  /**
-   * @method
-   * @returns {string}
-   */
-  render() {
+  render(): string {
     return _("The mount point is invalid");
   }
 }
 
 class MissingSizeError {
-  /**
-   * @constructor
-   * @param {SizeMethod} sizeMethod
-   * @param {string|number} size
-   */
-  constructor(sizeMethod, size) {
+  sizeMethod: SizeMethod;
+  size: string | number;
+
+  constructor(sizeMethod: SizeMethod, size: string | number) {
     this.sizeMethod = sizeMethod;
     this.size = size;
   }
 
-  /**
-   * @method
-   * @returns {boolean}
-   */
-  check() {
+  check(): boolean {
     return this.sizeMethod === SIZE_METHODS.MANUAL && !this.size;
   }
 
-  /**
-   * @method
-   * @returns {string}
-   */
-  render() {
+  render(): string {
     return _("A size value is required");
   }
 }
 
 class MissingMinSizeError {
-  /**
-   * @constructor
-   * @param {SizeMethod} sizeMethod
-   * @param {string|number} minSize
-   */
-  constructor(sizeMethod, minSize) {
+  sizeMethod: SizeMethod;
+  minSize: string | number;
+
+  constructor(sizeMethod: SizeMethod, minSize: string | number) {
     this.sizeMethod = sizeMethod;
     this.minSize = minSize;
   }
 
-  /**
-   * @method
-   * @returns {boolean}
-   */
-  check() {
+  check(): boolean {
     return this.sizeMethod === SIZE_METHODS.RANGE && !this.minSize;
   }
 
-  /**
-   * @method
-   * @returns {string}
-   */
-  render() {
+  render(): string {
     return _("Minimum size is required");
   }
 }
 
 class InvalidMaxSizeError {
-  /**
-   * @constructor
-   * @param {SizeMethod} sizeMethod
-   * @param {string|number} minSize
-   * @param {string|number} maxSize
-   */
-  constructor(sizeMethod, minSize, maxSize) {
+  sizeMethod: SizeMethod;
+  minSize: string | number;
+  maxSize: string | number;
+
+  constructor(sizeMethod: SizeMethod, minSize: string | number, maxSize: string | number) {
     this.sizeMethod = sizeMethod;
     this.minSize = minSize;
     this.maxSize = maxSize;
   }
 
-  /**
-   * @method
-   * @returns {boolean}
-   */
-  check() {
+  check(): boolean {
     return (
       this.sizeMethod === SIZE_METHODS.RANGE && this.maxSize !== -1 && this.maxSize <= this.minSize
     );
   }
 
-  /**
-   * @method
-   * @returns {string}
-   */
-  render() {
+  render(): string {
     return _("Maximum must be greater than minimum");
   }
 }
 
 class ExistingVolumeError {
-  /**
-   * @constructor
-   * @param {string} mountPath
-   * @param {Volume[]} volumes
-   */
-  constructor(mountPath, volumes) {
+  mountPath: string;
+  volumes: Volume[];
+
+  constructor(mountPath: string, volumes: Volume[]) {
     this.mountPath = mountPath;
     this.volumes = volumes;
   }
 
-  /**
-   * @method
-   * @returns {Volume|undefined}
-   */
-  findVolume() {
+  findVolume(): Volume | undefined {
     return this.volumes.find((t) => t.mountPath === this.mountPath);
   }
 
-  /**
-   * @method
-   * @returns {boolean}
-   */
-  check() {
+  check(): boolean {
     return this.mountPath.length && this.findVolume() !== undefined;
   }
 
-  /**
-   * @method
-   * @param {(volume: Volume) => void} onClick
-   * @returns {React.ReactElement}
-   */
-  render(onClick) {
+  render(onClick: (volume: Volume) => void): React.ReactElement {
     const volume = this.findVolume();
     const path = this.mountPath === "/" ? "root" : this.mountPath;
 
@@ -327,38 +250,23 @@ class ExistingVolumeError {
 }
 
 class ExistingTemplateError {
-  /**
-   * @constructor
-   * @param {string} mountPath
-   * @param {Volume[]} templates
-   */
-  constructor(mountPath, templates) {
+  mountPath: string;
+  templates: Volume[];
+
+  constructor(mountPath: string, templates: Volume[]) {
     this.mountPath = mountPath;
     this.templates = templates;
   }
 
-  /**
-   * @method
-   * @returns {Volume|undefined}
-   */
-  findTemplate() {
+  findTemplate(): Volume | undefined {
     return this.templates.find((t) => t.mountPath === this.mountPath);
   }
 
-  /**
-   * @method
-   * @returns {boolean}
-   */
-  check() {
+  check(): boolean {
     return this.mountPath.length && this.findTemplate() !== undefined;
   }
 
-  /**
-   * @method
-   * @param {(template: Volume) => void} onClick
-   * @returns {React.ReactElement}
-   */
-  render(onClick) {
+  render(onClick: (template: Volume) => void): React.ReactElement {
     const template = this.findTemplate();
     const path = this.mountPath === "/" ? "root" : this.mountPath;
 
@@ -376,11 +284,8 @@ class ExistingTemplateError {
 /**
  * Error if the mount path is missing.
  * @function
- *
- * @param {string} mountPath
- * @returns {string|null}
  */
-const missingMountPathError = (mountPath) => {
+const missingMountPathError = (mountPath: string): string | null => {
   const error = new MissingMountPathError(mountPath);
   return error.check() ? error.render() : null;
 };
@@ -388,11 +293,8 @@ const missingMountPathError = (mountPath) => {
 /**
  * Error if the mount path is not valid.
  * @function
- *
- * @param {string} mountPath
- * @returns {string|null}
  */
-const invalidMountPathError = (mountPath) => {
+const invalidMountPathError = (mountPath: string): string | null => {
   const error = new InvalidMountPathError(mountPath);
   return error.check() ? error.render() : null;
 };
@@ -400,12 +302,8 @@ const invalidMountPathError = (mountPath) => {
 /**
  * Error if the size is missing.
  * @function
- *
- * @param {SizeMethod} sizeMethod
- * @param {string|number} size
- * @returns {string|null}
  */
-const missingSizeError = (sizeMethod, size) => {
+const missingSizeError = (sizeMethod: SizeMethod, size: string | number): string | null => {
   const error = new MissingSizeError(sizeMethod, size);
   return error.check() ? error.render() : null;
 };
@@ -413,12 +311,8 @@ const missingSizeError = (sizeMethod, size) => {
 /**
  * Error if the min size is missing.
  * @function
- *
- * @param {SizeMethod} sizeMethod
- * @param {string|number} minSize
- * @returns {string|null}
  */
-const missingMinSizeError = (sizeMethod, minSize) => {
+const missingMinSizeError = (sizeMethod: SizeMethod, minSize: string | number): string | null => {
   const error = new MissingMinSizeError(sizeMethod, minSize);
   return error.check() ? error.render() : null;
 };
@@ -426,13 +320,8 @@ const missingMinSizeError = (sizeMethod, minSize) => {
 /**
  * Error if the max size is not valid.
  * @function
- *
- * @param {SizeMethod} sizeMethod
- * @param {string|number} minSize
- * @param {string|number} maxSize
- * @returns {string|null}
  */
-const invalidMaxSizeError = (sizeMethod, minSize, maxSize) => {
+const invalidMaxSizeError = (sizeMethod: SizeMethod, minSize: string | number, maxSize: string | number): string | null => {
   const error = new InvalidMaxSizeError(sizeMethod, minSize, maxSize);
   return error.check() ? error.render() : null;
 };
@@ -440,13 +329,8 @@ const invalidMaxSizeError = (sizeMethod, minSize, maxSize) => {
 /**
  * Error if the given mount path exists in the list of volumes.
  * @function
- *
- * @param {string} mountPath
- * @param {Volume[]} volumes
- * @param {(volume: Volume) => void} onClick
- * @returns {React.ReactElement|null}
  */
-const existingVolumeError = (mountPath, volumes, onClick) => {
+const existingVolumeError = (mountPath: string, volumes: Volume[], onClick: (volume: Volume) => void): React.ReactElement | null => {
   const error = new ExistingVolumeError(mountPath, volumes);
   return error.check() ? error.render(onClick) : null;
 };
@@ -454,13 +338,8 @@ const existingVolumeError = (mountPath, volumes, onClick) => {
 /**
  * Error if the given mount path exists in the list of templates.
  * @function
- *
- * @param {string} mountPath
- * @param {Volume[]} templates
- * @param {(template: Volume) => void} onClick
- * @returns {React.ReactElement|null}
  */
-const existingTemplateError = (mountPath, templates, onClick) => {
+const existingTemplateError = (mountPath: string, templates: Volume[], onClick: (template: Volume) => void): React.ReactElement | null => {
   const error = new ExistingTemplateError(mountPath, templates);
   return error.check() ? error.render(onClick) : null;
 };
@@ -468,22 +347,16 @@ const existingTemplateError = (mountPath, templates, onClick) => {
 /**
  * Checks whether there is any error.
  * @function
- *
- * @param {VolumeFormErrors} errors
- * @returns {boolean}
  */
-const anyError = (errors) => {
+const anyError = (errors: VolumeFormErrors): boolean => {
   return compact(Object.values(errors)).length > 0;
 };
 
 /**
  * Remove leftover trailing slash.
  * @function
- *
- * @param {string} mountPath
- * @returns {string}
  */
-const sanitizeMountPath = (mountPath) => {
+const sanitizeMountPath = (mountPath: string): string => {
   if (mountPath === "/") return mountPath;
 
   return mountPath.replace(/\/$/, "");
@@ -492,12 +365,8 @@ const sanitizeMountPath = (mountPath) => {
 /**
  * Creates a new storage volume object based on given params.
  * @function
- *
- * @param {Volume} volume
- * @param {VolumeFormData} formData
- * @returns {Volume}
  */
-const createUpdatedVolume = (volume, formData) => {
+const createUpdatedVolume = (volume: Volume, formData: VolumeFormData): Volume => {
   let sizeAttrs = {};
   const minSize = parseToBytes(`${formData.minSize} ${formData.minSizeUnit}`);
   const maxSize = parseToBytes(`${formData.maxSize} ${formData.maxSizeUnit}`);
@@ -523,11 +392,8 @@ const createUpdatedVolume = (volume, formData) => {
 /**
  * Form-related helper for guessing the size method for given volume
  * @function
- *
- * @param {Volume} volume - a storage volume
- * @return {SizeMethod} corresponding size method
  */
-const sizeMethodFor = (volume) => {
+const sizeMethodFor = (volume: Volume): SizeMethod => {
   const { autoSize, minSize, maxSize } = volume;
 
   if (autoSize) {
@@ -542,11 +408,8 @@ const sizeMethodFor = (volume) => {
 /**
  * Form-related helper for preparing data based on given volume
  * @function
- *
- * @param {Volume} volume - a storage volume object
- * @return {VolumeFormData} an object ready to be used as a "form state"
  */
-const prepareFormData = (volume) => {
+const prepareFormData = (volume: Volume): VolumeFormData => {
   const { size: minSize = "", unit: minSizeUnit = DEFAULT_SIZE_UNIT } = splitSize(volume.minSize);
   const { size: maxSize = "", unit: maxSizeUnit = minSizeUnit || DEFAULT_SIZE_UNIT } = splitSize(
     volume.maxSize,
@@ -567,10 +430,8 @@ const prepareFormData = (volume) => {
 /**
  * Possible errors from the form data.
  * @function
- *
- * @returns {VolumeFormErrors}
  */
-const prepareErrors = () => {
+const prepareErrors = (): VolumeFormErrors => {
   return {
     missingMountPath: null,
     invalidMountPath: null,
@@ -586,10 +447,9 @@ const prepareErrors = () => {
  * Initializer function for the React#useReducer used in the {@link VolumesForm}
  * @function
  *
- * @param {Volume} volume - a storage volume object
- * @returns {VolumeFormState}
+ * @param volume - a storage volume object
  */
-const createInitialState = (volume) => {
+const createInitialState = (volume: Volume): VolumeFormState => {
   const formData = prepareFormData(volume);
   const errors = prepareErrors();
 
@@ -599,11 +459,8 @@ const createInitialState = (volume) => {
 /**
  * The VolumeForm reducer.
  * @function
- *
- * @param {VolumeFormState} state
- * @param {object} action
  */
-const reducer = (state, action) => {
+const reducer = (state: VolumeFormState, action: { type: string, payload: any }) => {
   const { type, payload } = action;
 
   switch (type) {
@@ -632,19 +489,18 @@ const reducer = (state, action) => {
   }
 };
 
+export type VolumeDialogProps = {
+  volume: Volume;
+  volumes: Volume[];
+  templates: Volume[];
+  isOpen?: boolean;
+  onCancel: () => void;
+  onAccept: (volume: Volume) => void;
+}
+
 /**
  * Renders a dialog that allows the user to add or edit a file system.
  * @component
- *
- * @typedef {object} VolumeDialogProps
- * @property {Volume} volume
- * @property {Volume[]} volumes
- * @property {Volume[]} templates
- * @property {boolean} [isOpen=false]
- * @property {() => void} onCancel
- * @property {(volume: Volume) => void} onAccept
- *
- * @param {VolumeDialogProps} props
  */
 export default function VolumeDialog({
   volume: currentVolume,
@@ -653,32 +509,25 @@ export default function VolumeDialog({
   isOpen,
   onCancel,
   onAccept,
-}) {
-  /** @type {[VolumeFormState, (action: object) => void]} */
-  const [state, dispatch] = useReducer(reducer, currentVolume, createInitialState);
+}: VolumeDialogProps) {
+  const [state, dispatch]: [VolumeFormState, (action: any) => void] = useReducer(reducer, currentVolume, createInitialState);
 
-  /** @type {Function} */
-  const delayed = useDebounce((f) => f(), 1000);
+  const delayed: Function = useDebounce((f) => f(), 1000);
 
-  /** @type {(volume: Volume) => void} */
-  const changeVolume = (volume) => {
+  const changeVolume: (volume: Volume) => void = (volume) => {
     dispatch({ type: "CHANGE_VOLUME", payload: { volume } });
   };
 
-  /** @type {(data: object) => void} */
-  const updateData = (data) => dispatch({ type: "UPDATE_DATA", payload: data });
+  const updateData: (data: object) => void = (data): void => dispatch({ type: "UPDATE_DATA", payload: data });
 
-  /** @type {(errors: object) => void} */
-  const updateErrors = (errors) => dispatch({ type: "SET_ERRORS", payload: errors });
+  const updateErrors: (errors: object) => void = (errors): void => dispatch({ type: "SET_ERRORS", payload: errors });
 
-  /** @type {() => string|React.ReactElement} */
-  const mountPathError = () => {
+  const mountPathError: () => string | React.ReactElement = () => {
     const { missingMountPath, invalidMountPath, existingVolume, existingTemplate } = state.errors;
     return missingMountPath || invalidMountPath || existingVolume || existingTemplate;
   };
 
-  /** @type {() => object} */
-  const sizeErrors = () => {
+  const sizeErrors: () => object = () => {
     return {
       size: state.errors.missingSize,
       minSize: state.errors.missingMinSize,
@@ -686,21 +535,18 @@ export default function VolumeDialog({
     };
   };
 
-  /** @type {() => boolean} */
-  const disableWidgets = () => {
+  const disableWidgets: () => boolean = () => {
     const { existingVolume, existingTemplate } = state.errors;
     return existingVolume !== null || existingTemplate !== null;
   };
 
-  /** @type {() => boolean} */
-  const isMountPathEditable = () => {
+  const isMountPathEditable: () => boolean = () => {
     const isNewVolume = !volumes.includes(state.volume);
     const isPredefined = state.volume.outline.productDefined;
     return isNewVolume && !isPredefined;
   };
 
-  /** @type {(mountPath: string) => void} */
-  const changeMountPath = (mountPath) => {
+  const changeMountPath: (mountPath: string) => void = (mountPath) => {
     // Reset current errors.
     const errors = {
       missingMountPath: null,
@@ -722,8 +568,7 @@ export default function VolumeDialog({
     updateData({ mountPath });
   };
 
-  /** @type {(data: object) => void} */
-  const changeSizeOptions = (data) => {
+  const changeSizeOptions: (data: object) => void = (data) => {
     // Reset errors.
     const errors = {
       missingSize: null,
@@ -734,8 +579,7 @@ export default function VolumeDialog({
     updateData(data);
   };
 
-  /** @type {(e: import("react").FormEvent) => void} */
-  const submitForm = (e) => {
+  const submitForm: (e: FormEvent) => void = (e) => {
     e.preventDefault();
     const { volume: originalVolume, formData } = state;
     const volume = createUpdatedVolume(originalVolume, formData);

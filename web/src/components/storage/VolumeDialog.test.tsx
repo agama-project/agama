@@ -25,17 +25,12 @@ import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { parseToBytes } from "~/components/storage/utils";
-import VolumeDialog from "~/components/storage/VolumeDialog";
+import VolumeDialog, { VolumeDialogProps } from "./VolumeDialog";
+import { Volume, VolumeTarget } from "~/types/storage";
 
-/**
- * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import ("~/components/storage/VolumeDialog").VolumeDialogProps} VolumeDialogProps
- */
-
-/** @type {Volume} */
-const rootVolume = {
+const rootVolume: Volume = {
   mountPath: "/",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "Btrfs",
   minSize: 1024,
   maxSize: 2048,
@@ -54,10 +49,9 @@ const rootVolume = {
   },
 };
 
-/** @type {Volume} */
-const swapVolume = {
+const swapVolume: Volume = {
   mountPath: "swap",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "Swap",
   minSize: 1024,
   maxSize: 1024,
@@ -76,10 +70,9 @@ const swapVolume = {
   },
 };
 
-/** @type {Volume} */
-const homeVolume = {
+const homeVolume: Volume = {
   mountPath: "/home",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "XFS",
   minSize: 1024,
   maxSize: 4096,
@@ -98,10 +91,9 @@ const homeVolume = {
   },
 };
 
-/** @type {Volume} */
-const arbitraryVolume = {
+const arbitraryVolume: Volume = {
   mountPath: "",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "XFS",
   minSize: 1024,
   maxSize: 4096,
@@ -120,8 +112,7 @@ const arbitraryVolume = {
   },
 };
 
-/** @type {VolumeDialogProps} */
-let props;
+let props: VolumeDialogProps;
 
 describe("VolumeDialog", () => {
   beforeEach(() => {
