@@ -44,22 +44,14 @@ import {
 } from "~/components/storage/device-utils";
 import { TreeTable } from "~/components/core";
 import { Icon } from "~/components/layout";
-
-/**
- * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
- * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import("../core/TreeTable").TreeTableColumn} TreeTableColumn
- */
+import { PartitionSlot, SpaceAction, StorageDevice } from "~/types/storage";
+import { TreeTableColumn } from "./ProposalResultTable";
 
 /**
  * Info about the device.
  * @component
- *
- * @param {object} props
- * @param {StorageDevice} props.device
  */
-const DeviceInfoContent = ({ device }) => {
+const DeviceInfoContent = ({ device }: { device: StorageDevice; }) => {
   const minSize = device.shrinking?.supported;
 
   if (minSize) {
@@ -91,7 +83,7 @@ const DeviceInfoContent = ({ device }) => {
  * @param {object} props
  * @param {StorageDevice} props.device
  */
-const DeviceInfo = ({ device }) => {
+const DeviceInfo = ({ device }: { device: StorageDevice; }) => {
   return (
     <Popover headerContent={device.name} bodyContent={<DeviceInfoContent device={device} />}>
       <Button
@@ -107,12 +99,13 @@ const DeviceInfo = ({ device }) => {
  * Space action selector.
  * @component
  *
- * @param {object} props
- * @param {StorageDevice} props.device
- * @param {string} props.action - Possible values: "force_delete", "resize" or "keep".
- * @param {(action: SpaceAction) => void} [props.onChange]
+ * @param props
+ * @param props.device
+ * @param props.action - Possible values: "force_delete", "resize" or "keep".
+ * @param props.onChange
  */
-const DeviceActionSelector = ({ device, action, onChange }) => {
+const DeviceActionSelector = ({ device, action, onChange }:
+  { device: StorageDevice; action: string; onChange?: (action: SpaceAction) => void; }) => {
   const changeAction = (action) => onChange({ device: device.name, action });
 
   const isResizeDisabled = device.shrinking?.supported === undefined;
@@ -157,11 +150,11 @@ const DeviceActionSelector = ({ device, action, onChange }) => {
  * @component
  *
  * @param {object} props
- * @param {PartitionSlot|StorageDevice} props.item
- * @param {string} props.action - Possible values: "force_delete", "resize" or "keep".
- * @param {(action: SpaceAction) => void} [props.onChange]
+ * @param props.item
+ * @param props.action - Possible values: "force_delete", "resize" or "keep".
+ * @param props.onChange
  */
-const DeviceAction = ({ item, action, onChange }) => {
+const DeviceAction = ({ item, action, onChange }: { item: PartitionSlot | StorageDevice; action: string; onChange?: (action: SpaceAction) => void; }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
@@ -177,26 +170,24 @@ const DeviceAction = ({ item, action, onChange }) => {
   return null;
 };
 
+export type SpaceActionsTableProps = {
+  devices: StorageDevice[];
+  expandedDevices?: StorageDevice[];
+  deviceAction: (item: PartitionSlot | StorageDevice) => string;
+  onActionChange: (action: SpaceAction) => void;
+}
+
 /**
  * Table for selecting the space actions of the given devices.
  * @component
- *
- * @typedef {object} SpaceActionsTableProps
- * @property {StorageDevice[]} devices
- * @property {StorageDevice[]} [expandedDevices=[]] - Initially expanded devices.
- * @property {(item: PartitionSlot|StorageDevice) => string} deviceAction - Gets the action for a device.
- * @property {(action: SpaceAction) => void} onActionChange
- *
- * @param {SpaceActionsTableProps} props
  */
 export default function SpaceActionsTable({
   devices,
   expandedDevices = [],
   deviceAction,
   onActionChange,
-}) {
-  /** @type {TreeTableColumn[]} */
-  const columns = [
+}: SpaceActionsTableProps) {
+  const columns: TreeTableColumn[] = [
     { name: _("Device"), value: (item) => <DeviceName item={item} /> },
     { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
     { name: _("Size"), value: (item) => <DeviceSize item={item} /> },
