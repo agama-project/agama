@@ -39,6 +39,8 @@ import { useInstallerClient } from "~/context/installer";
 import { useZFCPControllers, useZFCPDisks } from "~/queries/zfcp";
 import { deactivateZFCPDisk } from "~/api/zfcp";
 import { ZFCPController, ZFCPDisk } from "~/types/zfcp";
+import ZFCPDisksTable from "./ZFCPDisksTable";
+import ZFCPControllersTable from "./ZFCPControllersTable";
 
 /**
  * @typedef {import(~/clients/storage).ZFCPManager} ZFCPManager
@@ -313,63 +315,6 @@ const DevicesTable = (devices: ZFCPDisk[]|ZFCPController[], columns , columnValu
 };
 
 /**
- * Table of zFCP controllers.
- * @component
- *
- * @param {object} props
- * @param {ZFCPManager} props.client
- * @param {Manager} props.manager
- */
-const ControllersTable = ({ client, manager }) => {
-  const { cancellablePromise } = useCancellablePromise();
-
-  const columns = [
-    { id: "channel", label: _("Channel ID") },
-    { id: "status", label: _("Status") },
-    { id: "lunScan", label: _("Auto LUNs Scan") },
-  ];
-
-  const columnValue = (controller, column) => {
-    let value;
-
-    switch (column.id) {
-      case "channel":
-        value = controller.channel;
-        break;
-      case "status":
-        value = controller.active ? _("Activated") : _("Deactivated");
-        break;
-      case "lunScan":
-        if (controller.active) value = controller.lunScan ? _("Yes") : _("No");
-        else value = "-";
-        break;
-    }
-
-    return value;
-  };
-
-  const actions = (controller) => {
-    if (controller.active) return [];
-
-    return [
-      {
-        label: _("Activate"),
-        run: async () => await cancellablePromise(client.activateController(controller)),
-      },
-    ];
-  };
-
-  return (
-    <DevicesTable
-      devices={manager.controllers}
-      columns={columns}
-      columnValue={columnValue}
-      actions={actions}
-    />
-  );
-};
-
-/**
  * Section for zFCP controllers.
  * @component
  *
@@ -432,7 +377,7 @@ configured after activating a controller.",
     return (
       <>
         <LUNScanInfo />
-        <ControllersTable client={client} manager={manager} />
+        <ZFCPControllersTable />
       </>
     );
   };
