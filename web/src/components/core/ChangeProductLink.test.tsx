@@ -26,17 +26,17 @@ import { PATHS } from "~/routes/products";
 import { Product } from "~/types/software";
 import ChangeProductLink from "./ChangeProductLink";
 
-const tumbleweedProduct = {
+const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
+  icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
-  icon: "Tumbleweed.icon",
 };
-const microosProduct = {
+const microos: Product = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
+  icon: "MicroOS.svg",
   description: "MicroOS description",
-  icon: "MicroOS.icon",
 };
 
 let mockUseProduct: { products: Product[]; selectedProduct?: Product };
@@ -48,7 +48,7 @@ jest.mock("~/queries/software", () => ({
 describe("ChangeProductLink", () => {
   describe("when there is more than one product available", () => {
     beforeEach(() => {
-      mockUseProduct = { products: [tumbleweedProduct, microosProduct] };
+      mockUseProduct = { products: [tumbleweed, microos] };
     });
 
     it("renders a link for navigating to product selection page", () => {
@@ -60,7 +60,7 @@ describe("ChangeProductLink", () => {
 
   describe("when there is only one product available", () => {
     beforeEach(() => {
-      mockUseProduct = { products: [tumbleweedProduct] };
+      mockUseProduct = { products: [tumbleweed] };
     });
 
     it("renders nothing", () => {

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Show product logo in product selector (gh#openSUSE/agama#1415).
+
+-------------------------------------------------------------------
 Wed Sep  4 08:55:29 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: add support for deleting partitions in the storage
@@ -26,12 +31,6 @@ Mon Aug 26 10:01:27 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not depend on f2fs-tools and nilfs-utils
   (jsc#PED-8669, gh#openSUSE/agama#1554).
-
--------------------------------------------------------------------
-Wed Aug 21 19:07:28 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
-
-- Add product icons. Resolves Issue #1415
-  Not setting any icon will default to default.svg icon
 
 -------------------------------------------------------------------
 Mon Aug 19 15:13:46 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>

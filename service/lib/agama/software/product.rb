@@ -49,7 +49,7 @@ module Agama
       attr_accessor :version
 
       # Product icon. Please use specify filename with svg suffix and ensure referenced
-      # file exists inside agama/web/src/assests/product.
+      # file exists inside agama/web/src/assets/product.
       # `default.svg` will be used unless specified otherwise.
       #
       # @return [String] E.g. "leap.svg"
