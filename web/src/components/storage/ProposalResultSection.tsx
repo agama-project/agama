@@ -19,20 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { Skeleton, Stack } from "@patternfly/react-core";
 import { CardField, EmptyState } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { _ } from "~/i18n";
-
-/**
- * @typedef {import ("~/client/storage").Action} Action
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import("~/client/mixins").ValidationError} ValidationError
- */
+import { Action, StorageDevice } from "~/types/storage";
+import { ValidationError } from "~/client/mixins";
 
 /**
  * @todo Create a component for rendering a customized skeleton
@@ -48,26 +42,21 @@ const ResultSkeleton = () => (
   </Stack>
 );
 
-/**
- * Section holding the proposal result and actions to perform in the system
- * @component
- *
- * @typedef {object} ProposalResultSectionProps
- * @property {StorageDevice[]} [system=[]]
- * @property {StorageDevice[]} [staging=[]]
- * @property {Action[]} [actions=[]]
- * @property {ValidationError[]} [errors=[]] - Validation errors
- * @property {boolean} [isLoading=false] - Whether the section content should be rendered as loading
- *
- * @param {ProposalResultSectionProps} props
- */
+export type ProposalResultSectionProps = {
+  system?: StorageDevice[];
+  staging?: StorageDevice[];
+  actions?: Action[];
+  errors?: ValidationError[];
+  isLoading?: boolean;
+}
+
 export default function ProposalResultSection({
   system = [],
   staging = [],
   actions = [],
   errors = [],
   isLoading = false,
-}) {
+}: ProposalResultSectionProps) {
   return (
     <CardField
       label={_("Final layout")}
