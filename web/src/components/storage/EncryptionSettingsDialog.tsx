@@ -27,12 +27,6 @@ import { _ } from "~/i18n";
 import { PasswordAndConfirmationInput, Popup } from "~/components/core";
 import { EncryptionMethods } from "~/client/storage";
 
-/**
- * @typedef {object} EncryptionSetting
- * @property {string} password
- * @property {string} [method]
- */
-
 const DIALOG_TITLE = _("Encryption");
 const DIALOG_DESCRIPTION = _(
   "Full Disk Encryption (FDE) allows to protect the information stored \
@@ -48,20 +42,24 @@ TPM can verify the integrity of the system. TPM sealing requires the new system 
 directly on its first run.",
 );
 
+export type EncryptionSetting = {
+  password: string;
+  method?: string;
+}
+
+export type EncryptionSettingsDialogProps = {
+  password: string;
+  method: string;
+  methods: string[];
+  isOpen?: boolean;
+  isLoading?: boolean;
+  onCancel: () => void;
+  onAccept: (settings: EncryptionSetting) => void;
+}
+
 /**
  * Renders a dialog that allows the user change encryption settings
  * @component
- *
- * @typedef {object} EncryptionSettingsDialogProps
- * @property {string} password - Password for encryption.
- * @property {string} method - Encryption method.
- * @property {string[]} methods - Possible encryption methods.
- * @property {boolean} [isOpen=false] - Whether the dialog is visible or not.
- * @property {boolean} [isLoading=false] - Whether the data is loading
- * @property {() => void} onCancel - Callback to trigger when on cancel action.
- * @property {(settings: EncryptionSetting) => void} onAccept - Callback to trigger on accept action.
- *
- * @param {EncryptionSettingsDialogProps} props
  */
 export default function EncryptionSettingsDialog({
   password: passwordProp,
@@ -71,7 +69,7 @@ export default function EncryptionSettingsDialog({
   isLoading = false,
   onCancel,
   onAccept,
-}) {
+}: EncryptionSettingsDialogProps) {
   const [isEnabled, setIsEnabled] = useState(passwordProp?.length > 0);
   const [password, setPassword] = useState(passwordProp);
   const [method, setMethod] = useState(methodProp);
