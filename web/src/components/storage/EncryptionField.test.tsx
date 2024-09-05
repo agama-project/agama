@@ -19,12 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { EncryptionMethods } from "~/client/storage";
+import { EncryptionMethods } from "~/types/storage";
 import EncryptionField from "~/components/storage/EncryptionField";
 
 describe("EncryptionField", () => {

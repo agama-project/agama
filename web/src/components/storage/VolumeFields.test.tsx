@@ -19,22 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { SIZE_METHODS } from "~/components/storage/utils";
 import { FsField, MountPathField, SizeOptionsField } from "~/components/storage/VolumeFields";
+import { Volume, VolumeTarget } from "~/types/storage";
 
-/**
- * @typedef {import ("~/client/storage").Volume} Volume
- */
-
-/** @type {Volume} */
-const volume = {
+const volume: Volume = {
   mountPath: "/home",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "XFS",
   minSize: 1024,
   maxSize: 4096,

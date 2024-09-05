@@ -36,7 +36,6 @@ const DESCRIPTION = _("Main disk or LVM Volume Group for installation.");
 
 /**
  * Generates the target value.
- * @function
  */
 const targetValue = (target: ProposalTarget, targetDevice: StorageDevice, targetPVDevices: StorageDevice[]): string => {
   if (target === ProposalTarget.DISK && targetDevice) {
@@ -63,7 +62,7 @@ const targetValue = (target: ProposalTarget, targetDevice: StorageDevice, target
  * @component
  */
 
-type TargetConfig = {
+export type TargetConfig = {
   target: ProposalTarget;
   targetDevice: StorageDevice | undefined;
   targetPVDevices: StorageDevice[];

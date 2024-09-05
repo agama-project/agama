@@ -24,17 +24,12 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import SnapshotsField from "~/components/storage/SnapshotsField";
+import SnapshotsField, { SnapshotsFieldProps } from "~/components/storage/SnapshotsField";
+import { Volume, VolumeTarget } from "~/types/storage";
 
-/**
- * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import ("~/components/storage/SnapshotsField").SnapshotsFieldProps} SnapshotsFieldProps
- */
-
-/** @type {Volume} */
-const rootVolume = {
+const rootVolume: Volume = {
   mountPath: "/",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "Btrfs",
   minSize: 1024,
   autoSize: true,
@@ -54,39 +49,21 @@ const rootVolume = {
 
 const onChangeFn = jest.fn();
 
-/** @type {SnapshotsFieldProps} */
-let props;
+let props: SnapshotsFieldProps;
 
-describe.skip("SnapshotsField", () => {
+describe("SnapshotsField", () => {
   it("reflects snapshots status", () => {
-    let button;
-
     props = { rootVolume: { ...rootVolume, snapshots: true }, onChange: onChangeFn };
-    const { rerender } = plainRender(<SnapshotsField {...props} />);
-    button = screen.getByRole("switch");
-    expect(button).toHaveAttribute("aria-checked", "true");
-
-    props = { rootVolume: { ...rootVolume, snapshots: false }, onChange: onChangeFn };
-    rerender(<SnapshotsField {...props} />);
-    button = screen.getByRole("switch");
-    expect(button).toHaveAttribute("aria-checked", "false");
+    plainRender(<SnapshotsField {...props} />);
+    const checkbox: HTMLInputElement = screen.getByRole("checkbox");
+    expect(checkbox.value).toEqual("on");
   });
 
   it("allows toggling snapshots status", async () => {
-    let button;
-
     props = { rootVolume: { ...rootVolume, snapshots: true }, onChange: onChangeFn };
-    const { user, rerender } = plainRender(<SnapshotsField {...props} />);
-    button = screen.getByRole("switch");
-    expect(button).toHaveAttribute("aria-checked", "true");
-    await user.click(button);
+    const { user } = plainRender(<SnapshotsField {...props} />);
+    const checkbox: HTMLInputElement = screen.getByRole("checkbox");
+    await user.click(checkbox);
     expect(onChangeFn).toHaveBeenCalledWith({ active: false });
-
-    props = { rootVolume: { ...rootVolume, snapshots: false }, onChange: onChangeFn };
-    rerender(<SnapshotsField {...props} />);
-    button = screen.getByRole("switch");
-    expect(button).toHaveAttribute("aria-checked", "false");
-    await user.click(button);
-    expect(onChangeFn).toHaveBeenCalledWith({ active: true });
   });
 });

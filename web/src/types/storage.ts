@@ -114,7 +114,7 @@ type ProposalSettings = {
 
 type SpaceAction = {
   device: string;
-  action: 'force_delete' | 'resize'
+  action: 'force_delete' | 'resize' | 'keep'
 };
 
 type Volume = {
@@ -165,6 +165,18 @@ enum VolumeTarget {
   FILESYSTEM = "filesystem",
 };
 
+/**
+ * Enum for the encryption method values
+ *
+ * @readonly
+ * @enum { string }
+ */
+const EncryptionMethods = Object.freeze({
+  LUKS2: "luks2",
+  TPM: "tpm_fde",
+});
+
+
 export type {
   Action,
   Component,
@@ -181,6 +193,7 @@ export type {
 };
 
 export {
-  VolumeTarget,
-  ProposalTarget
+  EncryptionMethods,
+  ProposalTarget,
+  VolumeTarget
 };

@@ -19,19 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
 import { CardField } from "~/components/core";
-import { EncryptionMethods } from "~/client/storage";
-import EncryptionSettingsDialog from "~/components/storage/EncryptionSettingsDialog";
+import EncryptionSettingsDialog, { EncryptionSetting } from "~/components/storage/EncryptionSettingsDialog";
+import { EncryptionMethods } from "~/types/storage";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
-
-/**
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
 
 // Field texts at root level to avoid redefinitions every time the component
 // is rendered.
@@ -66,22 +60,22 @@ const Action = ({ isEnabled, isLoading, onClick }) => {
   );
 };
 
+export type EncryptionConfig = {
+  password: string;
+  method?: string;
+}
+
+export type EncryptionFieldProps = {
+  password?: string;
+  method?: string;
+  methods?: string[];
+  isLoading?: boolean;
+  onChange?: (config: EncryptionConfig) => void;
+}
+
 /**
  * Allows to define encryption
  * @component
- *
- * @typedef {object} EncryptionConfig
- * @property {string} password
- * @property {string} [method]
- *
- * @typedef {object} EncryptionFieldProps
- * @property {string} [password=""] - Password for encryption
- * @property {string} [method=""] - Encryption method
- * @property {string[]} [methods=[]] - Possible encryption methods
- * @property {boolean} [isLoading=false] - Whether to show the selector as loading
- * @property {(config: EncryptionConfig) => void} [onChange=noop] - On change callback
- *
- * @param {EncryptionFieldProps} props
  */
 export default function EncryptionField({
   password = "",
@@ -90,7 +84,7 @@ export default function EncryptionField({
   methods = [],
   isLoading = false,
   onChange = noop,
-}) {
+}: EncryptionFieldProps) {
   const validPassword = useCallback(() => password?.length > 0, [password]);
   const [isEnabled, setIsEnabled] = useState(validPassword());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -103,10 +97,7 @@ export default function EncryptionField({
 
   const closeDialog = () => setIsDialogOpen(false);
 
-  /**
-   * @param {import("~/components/storage/EncryptionSettingsDialog").EncryptionSetting} encryptionSetting
-   */
-  const onAccept = (encryptionSetting) => {
+  const onAccept = (encryptionSetting: EncryptionSetting) => {
     closeDialog();
     onChange(encryptionSetting);
   };

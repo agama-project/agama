@@ -19,11 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { Chip, Split } from "@patternfly/react-core";
-
 import { _ } from "~/i18n";
 import {
   DeviceName,
@@ -32,25 +29,13 @@ import {
   toStorageDevice,
 } from "~/components/storage/device-utils";
 import { ExpandableSelector } from "~/components/core";
-
-/**
- * @typedef {import ("~/components/core/ExpandableSelector").ExpandableSelectorColumn} ExpandableSelectorColumn
- * @typedef {import ("~/components/core/ExpandableSelector").ExpandableSelectorProps} ExpandableSelectorProps
- * @typedef {import ("~/client/storage").PartitionSlot} PartitionSlot
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").Volume} Volume
- */
+import { ExpandableSelectorColumn, ExpandableSelectorProps } from "~/components/core/ExpandableSelector";
+import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
 
 /**
  * Returns what (volumes, installation device) is using a device.
- * @function
- *
- * @param {PartitionSlot|StorageDevice} item
- * @param {StorageDevice[]} targetDevices
- * @param {Volume[]} volumes
- * @returns {string[]}
  */
-const deviceUsers = (item, targetDevices, volumes) => {
+const deviceUsers = (item: PartitionSlot | StorageDevice, targetDevices: StorageDevice[], volumes: Volume[]): string[] => {
   const device = toStorageDevice(item);
   if (!device) return [];
 
@@ -65,11 +50,8 @@ const deviceUsers = (item, targetDevices, volumes) => {
 
 /**
  * @component
- *
- * @param {object} props
- * @param {string[]} props.users
  */
-const DeviceUsage = ({ users }) => {
+const DeviceUsage = ({ users }: { users: string[]; }) => {
   return (
     <Split hasGutter isWrappable>
       {users.map((user, index) => (
@@ -81,19 +63,18 @@ const DeviceUsage = ({ users }) => {
   );
 };
 
+type VolumeLocationSelectorTableBaseProps = {
+  devices: StorageDevice[];
+  selectedDevices: StorageDevice[];
+  targetDevices: StorageDevice[];
+  volumes: Volume[];
+}
+
+export type VolumeLocationSelectorTableProps = VolumeLocationSelectorTableBaseProps & ExpandableSelectorProps;
+
 /**
  * Table for selecting the location for a volume.
  * @component
- *
- * @typedef {object} VolumeLocationSelectorTableBaseProps
- * @property {StorageDevice[]} devices
- * @property {StorageDevice[]} selectedDevices
- * @property {StorageDevice[]} targetDevices
- * @property {Volume[]} volumes
- *
- * @typedef {VolumeLocationSelectorTableBaseProps & ExpandableSelectorProps} VolumeLocationSelectorTableProps
- *
- * @param {VolumeLocationSelectorTableProps} props
  */
 export default function VolumeLocationSelectorTable({
   devices,
@@ -101,9 +82,8 @@ export default function VolumeLocationSelectorTable({
   targetDevices,
   volumes,
   ...props
-}) {
-  /** @type {ExpandableSelectorColumn[]} */
-  const columns = [
+}: VolumeLocationSelectorTableProps) {
+  const columns: ExpandableSelectorColumn[] = [
     { name: _("Device"), value: (item) => <DeviceName item={item} /> },
     { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
     {

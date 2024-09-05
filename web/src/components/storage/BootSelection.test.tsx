@@ -25,13 +25,9 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import BootSelection from "./BootSelection";
+import { StorageDevice } from "~/types/storage";
 
-/**
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
-
-/** @type {StorageDevice} */
-const sda = {
+const sda: StorageDevice = {
   sid: 59,
   isDrive: true,
   type: "disk",
@@ -53,8 +49,7 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-/** @type {StorageDevice} */
-const sdb = {
+const sdb: StorageDevice = {
   sid: 62,
   isDrive: true,
   type: "disk",
@@ -76,8 +71,7 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"],
 };
 
-/** @type {StorageDevice} */
-const sdc = {
+const sdc: StorageDevice = {
   sid: 63,
   isDrive: true,
   type: "disk",

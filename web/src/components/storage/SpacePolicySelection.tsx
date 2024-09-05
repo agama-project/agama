@@ -28,28 +28,21 @@ import { Loading } from "~/components/layout";
 import { Page } from "~/components/core";
 import { SpaceActionsTable } from "~/components/storage";
 import { _ } from "~/i18n";
-import { SPACE_POLICIES } from "~/components/storage/utils";
+import { SPACE_POLICIES, SpacePolicy } from "~/components/storage/utils";
 import { noop, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-
-// FIXME: Improve and refactor
-
-/**
- * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
- * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
+import { SpaceAction } from "~/types/storage";
 
 /**
  * Widget to allow user picking desired policy to make space.
  * @component
  *
- * @param {object} props
- * @param {SpacePolicy} props.currentPolicy
- * @param {(policy: SpacePolicy) => void} [props.onChange]
+ * @param props
+ * @param props.currentPolicy
+ * @param [props.onChange]
  */
-const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
+const SpacePolicyPicker = ({ currentPolicy, onChange = noop }: { currentPolicy: SpacePolicy; onChange?: (policy: SpacePolicy) => void; }) => {
   return (
     <Card isFullHeight isRounded>
       <CardBody>
@@ -85,8 +78,7 @@ const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
  */
 export default function SpacePolicySelection() {
   const [state, setState] = useState({ load: false, settings: {} });
-  /** @type ReturnType<typeof useState<SpacePolicy>> */
-  const [policy, setPolicy] = useState();
+  const [policy, setPolicy] = useState<SpacePolicy | undefined>();
   const [actions, setActions] = useState([]);
   const [expandedDevices, setExpandedDevices] = useState([]);
   const [customUsed, setCustomUsed] = useState(false);
@@ -146,7 +138,7 @@ export default function SpacePolicySelection() {
     return policyAction[policy?.id];
   };
 
-  const changeActions = (spaceAction) => {
+  const changeActions = (spaceAction: SpaceAction) => {
     const spaceActions = actions.filter((a) => a.device !== spaceAction.device);
     if (spaceAction.action !== "keep") spaceActions.push(spaceAction);
 

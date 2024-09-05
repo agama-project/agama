@@ -82,7 +82,6 @@ const partition = (collection, filter) => {
 
 /**
  * Generates a new array without null and undefined values.
- * @function
  *
  * @param {Array} collection
  * @returns {Array}
@@ -93,7 +92,6 @@ function compact(collection) {
 
 /**
  * Generates a new array without duplicates.
- * @function
  *
  * @param {Array} collection
  * @returns {Array}
@@ -248,7 +246,6 @@ const useLocalStorage = (storageKey, fallbackState) => {
 
 /**
  * Debounce hook.
- * @function
  *
  * Source {@link https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260}
  *
@@ -294,7 +291,6 @@ const hex = (value) => {
 
 /**
  * Converts an issue to a validation error
- * @function
  *
  * @todo This conversion will not be needed after adapting Section to directly work with issues.
  *
@@ -305,7 +301,6 @@ const toValidationError = (issue) => ({ message: issue.description });
 
 /**
  * Wrapper around window.location.reload
- * @function
  *
  * It's needed mainly to ease testing because we can't override window in jest with jsdom anymore
  *
@@ -319,7 +314,6 @@ const locationReload = () => {
 
 /**
  * Wrapper around window.location.search setter
- * @function
  *
  * It's needed mainly to ease testing as we can't override window in jest with jsdom anymore
  *

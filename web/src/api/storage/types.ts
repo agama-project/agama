@@ -272,7 +272,7 @@ export type ShrinkingInfo = {
     unsupported: Array<(string)>;
 };
 
-export type SpaceAction = 'force_delete' | 'resize';
+export type SpaceAction = 'force_delete' | 'resize' | 'keep';
 
 export type SpaceActionSettings = {
     action: SpaceAction;

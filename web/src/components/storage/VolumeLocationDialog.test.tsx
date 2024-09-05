@@ -19,21 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import VolumeLocationDialog from "~/components/storage/VolumeLocationDialog";
+import VolumeLocationDialog, { VolumeLocationDialogProps } from "~/components/storage/VolumeLocationDialog";
+import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
-/**
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import ("~/components/storage/VolumeLocationDialog").VolumeLocationDialogProps} VolumeLocationDialogProps
- */
-
-/** @type {StorageDevice} */
-const sda = {
+const sda: StorageDevice = {
   sid: 59,
   isDrive: true,
   type: "disk",
@@ -55,8 +47,7 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-/** @type {StorageDevice} */
-const sda1 = {
+const sda1: StorageDevice = {
   sid: 69,
   name: "/dev/sda1",
   description: "",
@@ -69,8 +60,7 @@ const sda1 = {
   },
 };
 
-/** @type {StorageDevice} */
-const sda2 = {
+const sda2: StorageDevice = {
   sid: 79,
   name: "/dev/sda2",
   description: "",
@@ -90,8 +80,7 @@ sda.partitionTable = {
   unusedSlots: [],
 };
 
-/** @type {StorageDevice} */
-const sdb = {
+const sdb: StorageDevice = {
   sid: 62,
   isDrive: true,
   type: "disk",
@@ -113,10 +102,9 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"],
 };
 
-/** @type {Volume} */
-const volume = {
+const volume: Volume = {
   mountPath: "/",
-  target: "DEFAULT",
+  target: VolumeTarget.DEFAULT,
   fsType: "Btrfs",
   minSize: 1024,
   maxSize: 2048,
@@ -135,8 +123,7 @@ const volume = {
   },
 };
 
-/** @type {VolumeLocationDialogProps} */
-let props;
+let props: VolumeLocationDialogProps;
 
 describe("VolumeLocationDialog", () => {
   beforeEach(() => {
@@ -232,7 +219,7 @@ describe("VolumeLocationDialog", () => {
     await user.click(accept);
 
     expect(props.onAccept).toHaveBeenCalledWith(
-      expect.objectContaining({ target: "DEVICE", targetDevice: sdb }),
+      expect.objectContaining({ target: VolumeTarget.DEVICE, targetDevice: sdb }),
     );
   });
 
