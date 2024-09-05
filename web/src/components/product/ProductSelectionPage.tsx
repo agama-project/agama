@@ -74,7 +74,7 @@ function ProductSelectionPage() {
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (nextProduct) {
@@ -106,7 +106,7 @@ function ProductSelectionPage() {
             </ResponsiveGridItem>
             <ResponsiveGridItem>
               <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-                {selectedProduct && !isLoading && <Page.CancelAction navigateTo={-1} />}
+                {selectedProduct && !isLoading && <Page.CancelAction navigateTo="-1" />}
                 <Page.Action
                   type="submit"
                   form="productSelectionForm"

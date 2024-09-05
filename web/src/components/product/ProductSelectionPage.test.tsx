@@ -24,16 +24,19 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import { ProductSelectionPage } from "~/components/product";
 import { createClient } from "~/client";
+import { Product } from "~/types/software";
 
-const products = [
+const products: Product[] = [
   {
     id: "Tumbleweed",
     name: "openSUSE Tumbleweed",
+    icon: "tumbleweed.svg",
     description: "Tumbleweed description...",
   },
   {
     id: "MicroOS",
     name: "openSUSE MicroOS",
+    icon: "microos.svg",
     description: "MicroOS description",
   },
 ];
@@ -57,12 +60,12 @@ const managerMock = {
 const productMock = {
   getAll: () => Promise.resolve(products),
   getSelected: jest.fn(() => Promise.resolve(products[0])),
-  select: jest.fn().mockResolvedValue(),
+  select: jest.fn().mockResolvedValue(false),
   onChange: jest.fn(),
 };
 
 beforeEach(() => {
-  createClient.mockImplementation(() => {
+  (createClient as jest.Mock).mockImplementation(() => {
     return {
       manager: managerMock,
       product: productMock,
