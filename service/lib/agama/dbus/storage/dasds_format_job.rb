@@ -119,7 +119,7 @@ module Agama
         # Current status, in the format described by the D-Bus API
         def summary
           result = {}
-          @infos.each_value { |i| result[i.path] = i.to_dbus if i.path }
+          @infos.each_value { |i| result[i.id] = i.to_dbus if i.id }
           result
         end
 

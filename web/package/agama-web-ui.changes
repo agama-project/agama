@@ -1,8 +1,12 @@
 -------------------------------------------------------------------
-Wed Aug 21 19:07:28 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
-- Add product icons. Resolves Issue #1415
-  Not setting any icon will default to default.svg icon
+- Show product logo in product selector (gh#openSUSE/agama#1415).
+
+-------------------------------------------------------------------
+Wed Sep  4 21:00:34 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Bring back DASD management support (gh#openSUSE/agama#1549).
 
 -------------------------------------------------------------------
 Tue Aug 13 14:57:21 UTC 2024 - David Diaz <dgonzalez@suse.com>

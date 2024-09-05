@@ -24,14 +24,10 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import DevicesTechMenu from "./DevicesTechMenu";
+import { DASDSupported } from "~/api/dasd";
 
 jest.mock("~/client");
-
-const isDASDSupportedFn = jest.fn();
-
-const dasd = {
-  isSupported: isDASDSupportedFn,
-};
+jest.mock("~/api/dasd");
 
 const isZFCPSupportedFn = jest.fn();
 
@@ -40,12 +36,12 @@ const zfcp = {
 };
 
 beforeEach(() => {
-  isDASDSupportedFn.mockResolvedValue(false);
+  DASDSupported.mockResolvedValue(false);
   isZFCPSupportedFn.mockResolvedValue(false);
 
   createClient.mockImplementation(() => {
     return {
-      storage: { dasd, zfcp },
+      storage: { zfcp },
     };
   });
 });
@@ -59,7 +55,7 @@ it("contains an entry for configuring iSCSI", async () => {
 });
 
 it("contains an entry for configuring DASD when is supported", async () => {
-  isDASDSupportedFn.mockResolvedValue(true);
+  DASDSupported.mockResolvedValue(true);
   const { user } = installerRender(<DevicesTechMenu />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
@@ -68,7 +64,7 @@ it("contains an entry for configuring DASD when is supported", async () => {
 });
 
 it("does not contain an entry for configuring DASD when is NOT supported", async () => {
-  isDASDSupportedFn.mockResolvedValue(false);
+  DASDSupported.mockResolvedValue(false);
   const { user } = installerRender(<DevicesTechMenu />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);

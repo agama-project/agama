@@ -22,6 +22,7 @@
 import React, { useState } from "react";
 import {
   Button,
+  CardBody,
   Divider,
   Dropdown,
   DropdownItem,
@@ -37,15 +38,16 @@ import {
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { Icon } from "~/components/layout";
-import { SectionSkeleton } from "~/components/core";
+import { CardField } from "~/components/core";
 import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
-import { useInstallerClient } from "~/context/installer";
+import { DASDDevice } from "~/types/dasd";
+import { useDASDDevices, useDASDMutation, useFormatDASDMutation } from "~/queries/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version
-const columnData = (device, column) => {
+const columnData = (device: DASDDevice, column: { id: string; sortId?: string; label: string }) => {
   let data = device[column.id];
 
   switch (column.id) {
@@ -66,10 +68,10 @@ const columnData = (device, column) => {
 };
 
 const columns = [
-  { id: "channelId", sortId: "hexId", label: _("Channel ID") },
+  { id: "id", sortId: "hexId", label: _("Channel ID") },
   { id: "status", label: _("Status") },
-  { id: "name", label: _("Device") },
-  { id: "type", label: _("Type") },
+  { id: "deviceName", label: _("Device") },
+  { id: "deviceType", label: _("Type") },
   // TRANSLATORS: table header, the column contains "Yes"/"No" values
   // for the DIAG access mode (special disk access mode on IBM mainframes),
   // usually keep untranslated
@@ -78,17 +80,19 @@ const columns = [
   { id: "partitionInfo", label: _("Partition Info") },
 ];
 
-const Actions = ({ devices, isDisabled }) => {
-  const { storage: client } = useInstallerClient();
+const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
+  const { mutate: updateDASD } = useDASDMutation();
+  const { mutate: formatDASD } = useFormatDASDMutation();
   const [isOpen, setIsOpen] = useState(false);
 
   const onToggle = () => setIsOpen(!isOpen);
   const onSelect = () => setIsOpen(false);
 
-  const activate = () => client.dasd.enableDevices(devices);
-  const deactivate = () => client.dasd.disableDevices(devices);
-  const setDiagOn = () => client.dasd.setDIAG(devices, true);
-  const setDiagOff = () => client.dasd.setDIAG(devices, false);
+  const deviceIds = devices.map((d) => d.id);
+  const activate = () => updateDASD({ action: "enable", devices: deviceIds });
+  const deactivate = () => updateDASD({ action: "disable", devices: deviceIds });
+  const setDiagOn = () => updateDASD({ action: "diagOn", devices: deviceIds });
+  const setDiagOff = () => updateDASD({ action: "diagOff", devices: deviceIds });
   const format = () => {
     const offline = devices.filter((d) => !d.enabled);
 
@@ -96,7 +100,7 @@ const Actions = ({ devices, isDisabled }) => {
       return false;
     }
 
-    return client.dasd.format(devices);
+    return formatDASD(devices.map((d) => d.id));
   };
 
   const Action = ({ children, ...props }) => (
@@ -144,7 +148,7 @@ const Actions = ({ devices, isDisabled }) => {
   );
 };
 
-const filterDevices = (devices, from, to) => {
+const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDevice[] => {
   const allChannels = devices.map((d) => d.hexId);
   const min = hex(from) || Math.min(...allChannels);
   const max = hex(to) || Math.max(...allChannels);
@@ -152,28 +156,43 @@ const filterDevices = (devices, from, to) => {
   return devices.filter((d) => d.hexId >= min && d.hexId <= max);
 };
 
-export default function DASDTable({ state, dispatch }) {
+type FilterOptions = {
+  minChannel?: string;
+  maxChannel?: string;
+};
+type SelectionOptions = {
+  unselect?: boolean;
+  device?: DASDDevice;
+  devices?: DASDDevice[];
+};
+
+export default function DASDTable() {
+  const devices = useDASDDevices();
+  const [selectedDASD, setSelectedDASD] = useState<DASDDevice[]>([]);
+  const [{ minChannel, maxChannel }, setFilters] = useState<FilterOptions>({
+    minChannel: "",
+    maxChannel: "",
+  });
+
   const [sortingColumn, setSortingColumn] = useState(columns[0]);
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
-  const filteredDevices = filterDevices(state.devices, state.minChannel, state.maxChannel);
-  const selectedDevicesIds = state.selectedDevices.map((d) => d.id);
+  const filteredDevices = filterDevices(devices, minChannel, maxChannel);
+  const selectedDevicesIds = selectedDASD.map((d) => d.id);
 
   // Selecting
   const selectAll = (isSelecting = true) => {
-    const type = isSelecting ? "SELECT_ALL_DEVICES" : "UNSELECT_ALL_DEVICES";
-    dispatch({ type, payload: { devices: filteredDevices } });
+    changeSelected({ unselect: !isSelecting, devices: filteredDevices });
   };
 
   const selectDevice = (device, isSelecting = true) => {
-    const type = isSelecting ? "SELECT_DEVICE" : "UNSELECT_DEVICE";
-    dispatch({ type, payload: { device } });
+    changeSelected({ unselect: !isSelecting, device });
   };
 
   // Sorting
   // See https://github.com/snovakovic/fast-sort
-  const sortBy = sortingColumn.sortBy || sortingColumn.id;
+  const sortBy = sortingColumn.sortId || sortingColumn.id;
   const sortedDevices = sort(filteredDevices)[sortDirection]((d) => d[sortBy]);
 
   // FIXME: this can be improved and even extracted to be used with other tables.
@@ -188,34 +207,33 @@ export default function DASDTable({ state, dispatch }) {
     };
   };
 
-  // Filtering
-  const onMinChannelFilterChange = (_event, value) => {
-    dispatch({ type: "SET_MIN_CHANNEL", payload: { minChannel: value } });
+  const updateFilter = (newFilters: FilterOptions) => {
+    setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
   };
 
-  const onMaxChannelFilterChange = (_event, value) => {
-    dispatch({ type: "SET_MAX_CHANNEL", payload: { maxChannel: value } });
-  };
-
-  const removeMinChannelFilter = () => {
-    dispatch({ type: "SET_MIN_CHANNEL", payload: { minChannel: "" } });
-  };
-
-  const removeMaxChannelFilter = () => {
-    dispatch({ type: "SET_MAX_CHANNEL", payload: { maxChannel: "" } });
+  const changeSelected = (newSelection: SelectionOptions) => {
+    setSelectedDASD((prevSelection) => {
+      if (newSelection.unselect) {
+        if (newSelection.device)
+          return prevSelection.filter((d) => d.id !== newSelection.device.id);
+        if (newSelection.devices) return [];
+      } else {
+        if (newSelection.device) return [...prevSelection, newSelection.device];
+        if (newSelection.devices) return newSelection.devices;
+      }
+    });
   };
 
   const Content = () => {
-    if (state.isLoading) return <SectionSkeleton />;
-
     return (
       <Table variant="compact">
         <Thead>
           <Tr>
             <Th
+              aria-label="dasd-select"
               select={{
                 onSelect: (_event, isSelecting) => selectAll(isSelecting),
-                isSelected: filteredDevices.length === state.selectedDevices.length,
+                isSelected: filteredDevices.length === selectedDASD.length,
               }}
             />
             {columns.map((column, index) => (
@@ -229,6 +247,7 @@ export default function DASDTable({ state, dispatch }) {
           {sortedDevices.map((device, rowIndex) => (
             <Tr key={device.id}>
               <Td
+                dataLabel={device.id}
                 select={{
                   rowIndex,
                   onSelect: (_event, isSelecting) => selectDevice(device, isSelecting),
@@ -249,68 +268,67 @@ export default function DASDTable({ state, dispatch }) {
   };
 
   return (
-    <>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarGroup align={{ default: "alignRight" }}>
-            <ToolbarItem>
-              <TextInputGroup>
-                <TextInputGroupMain
-                  value={state.minChannel}
-                  type="text"
-                  aria-label={_("Filter by min channel")}
-                  placeholder={_("Filter by min channel")}
-                  onChange={onMinChannelFilterChange}
-                />
-                {state.minChannel !== "" && (
-                  <TextInputGroupUtilities>
-                    <Button
-                      variant="plain"
-                      aria-label={_("Remove min channel filter")}
-                      onClick={removeMinChannelFilter}
-                    >
-                      <Icon name="backspace" size="s" />
-                    </Button>
-                  </TextInputGroupUtilities>
-                )}
-              </TextInputGroup>
-            </ToolbarItem>
-            <ToolbarItem>
-              <TextInputGroup>
-                <TextInputGroupMain
-                  value={state.maxChannel}
-                  type="text"
-                  aria-label={_("Filter by max channel")}
-                  placeholder={_("Filter by max channel")}
-                  onChange={onMaxChannelFilterChange}
-                />
-                {state.maxChannel !== "" && (
-                  <TextInputGroupUtilities>
-                    <Button
-                      variant="plain"
-                      aria-label={_("Remove max channel filter")}
-                      onClick={removeMaxChannelFilter}
-                    >
-                      <Icon name="backspace" size="s" />
-                    </Button>
-                  </TextInputGroupUtilities>
-                )}
-              </TextInputGroup>
-            </ToolbarItem>
+    <CardField>
+      <CardBody>
+        <Toolbar>
+          <ToolbarContent>
+            <ToolbarGroup align={{ default: "alignRight" }}>
+              <ToolbarItem>
+                <TextInputGroup>
+                  <TextInputGroupMain
+                    value={minChannel}
+                    type="text"
+                    aria-label={_("Filter by min channel")}
+                    placeholder={_("Filter by min channel")}
+                    onChange={(_, minChannel) => updateFilter({ minChannel })}
+                  />
+                  {minChannel !== "" && (
+                    <TextInputGroupUtilities>
+                      <Button
+                        variant="plain"
+                        aria-label={_("Remove min channel filter")}
+                        onClick={() => updateFilter({ minChannel: "" })}
+                      >
+                        <Icon name="backspace" size="s" />
+                      </Button>
+                    </TextInputGroupUtilities>
+                  )}
+                </TextInputGroup>
+              </ToolbarItem>
+              <ToolbarItem>
+                <TextInputGroup>
+                  <TextInputGroupMain
+                    value={maxChannel}
+                    type="text"
+                    aria-label={_("Filter by max channel")}
+                    placeholder={_("Filter by max channel")}
+                    onChange={(_, maxChannel) => updateFilter({ maxChannel })}
+                  />
+                  {maxChannel !== "" && (
+                    <TextInputGroupUtilities>
+                      <Button
+                        variant="plain"
+                        aria-label={_("Remove max channel filter")}
+                        onClick={() => updateFilter({ maxChannel: "" })}
+                      >
+                        <Icon name="backspace" size="s" />
+                      </Button>
+                    </TextInputGroupUtilities>
+                  )}
+                </TextInputGroup>
+              </ToolbarItem>
 
-            <ToolbarItem variant="separator" />
+              <ToolbarItem variant="separator" />
 
-            <ToolbarItem>
-              <Actions
-                devices={state.selectedDevices}
-                isDisabled={state.selectedDevices.length === 0}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
+              <ToolbarItem>
+                <Actions devices={selectedDASD} isDisabled={selectedDASD.length === 0} />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
 
-      <Content />
-    </>
+        <Content />
+      </CardBody>
+    </CardField>
   );
 }
