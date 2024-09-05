@@ -28,6 +28,7 @@ import ProposalPage from "~/components/storage/ProposalPage";
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 import { DASDSupported, probeDASD } from "~/api/dasd";
+import { redirect } from "react-router-dom";
 
 const PATHS = {
   root: "/storage",
@@ -38,46 +39,42 @@ const PATHS = {
   dasd: "/storage/dasd",
 };
 
-const routes = (): Route => {
-  const dasdRoute = {
-    path: PATHS.dasd,
-    element: <DASDPage />,
-    handle: { name: N_("DASD") },
-    loader: async () => probeDASD(),
-  };
-
-  const routes = {
-    path: PATHS.root,
-    handle: { name: N_("Storage"), icon: "hard_drive" },
-    children: [
-      {
-        index: true,
-        element: <ProposalPage />,
+const routes = (): Route => ({
+  path: PATHS.root,
+  handle: { name: N_("Storage"), icon: "hard_drive" },
+  children: [
+    {
+      index: true,
+      element: <ProposalPage />,
+    },
+    {
+      path: PATHS.targetDevice,
+      element: <DeviceSelection />,
+    },
+    {
+      path: PATHS.bootingPartition,
+      element: <BootSelection />,
+    },
+    {
+      path: PATHS.spacePolicy,
+      element: <SpacePolicySelection />,
+    },
+    {
+      path: PATHS.iscsi,
+      element: <ISCSIPage />,
+      handle: { name: N_("iSCSI") },
+    },
+    {
+      path: PATHS.dasd,
+      element: <DASDPage />,
+      handle: { name: N_("DASD") },
+      loader: async () => {
+        if (!DASDSupported()) return redirect(PATHS.root);
+        return probeDASD();
       },
-      {
-        path: PATHS.targetDevice,
-        element: <DeviceSelection />,
-      },
-      {
-        path: PATHS.bootingPartition,
-        element: <BootSelection />,
-      },
-      {
-        path: PATHS.spacePolicy,
-        element: <SpacePolicySelection />,
-      },
-      {
-        path: PATHS.iscsi,
-        element: <ISCSIPage />,
-        handle: { name: N_("iSCSI") },
-      },
-    ],
-  };
-
-  if (DASDSupported()) routes.children.push(dasdRoute);
-
-  return routes;
-};
+    },
+  ],
+});
 
 export default routes;
 export { PATHS };
