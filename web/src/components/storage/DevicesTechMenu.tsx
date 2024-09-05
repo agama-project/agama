@@ -19,19 +19,21 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useEffect, useState } from "react";
 import { useHref } from "react-router-dom";
-import { MenuToggle, Select, SelectList, SelectOption } from "@patternfly/react-core";
+import {
+  MenuToggle,
+  MenuToggleElement,
+  Select,
+  SelectList,
+  SelectOption,
+} from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
 import { DASDSupported } from "~/api/dasd";
 import { ZFCPSupported } from "~/api/zfcp";
 
 /**
  * Internal component for building the link to Storage/DASD page
- * @component
  */
 const DASDLink = () => {
   const href = useHref("/storage/dasd");
@@ -45,7 +47,6 @@ const DASDLink = () => {
 
 /**
  * Internal component for building the link to Storage/zFCP page
- * @component
  */
 const ZFCPLink = () => {
   const href = useHref("/storage/zfcp");
@@ -71,27 +72,23 @@ const ISCSILink = () => {
   );
 };
 
+type ProposalMenuProps = {
+  label: string;
+};
+
 /**
  * Component for rendering the options available from Storage/ProposalPage
- * @component
- *
- * @typedef {object} ProposalMenuProps
- * @property {string} label
- *
- * @param {ProposalMenuProps} props
  */
-export default function DevicesTechMenu({ label }) {
+export default function DevicesTechMenu({ label }: ProposalMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDasdLink, setShowDasdLink] = useState(false);
   const [showZFCPLink, setShowZFCPLink] = useState(false);
-  const { storage: client } = useInstallerClient();
 
   useEffect(() => {
     DASDSupported().then(setShowDasdLink);
     ZFCPSupported().then(setShowZFCPLink);
-  }, [client.zfcp]);
-
-  const toggle = (toggleRef) => (
+  }, []);
+  const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle ref={toggleRef} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>
       {label}
     </MenuToggle>
