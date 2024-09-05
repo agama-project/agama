@@ -45,7 +45,7 @@ import {
 import { TreeTable } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { PartitionSlot, SpaceAction, StorageDevice } from "~/types/storage";
-import { TreeTableColumn } from "./ProposalResultTable";
+import { TreeTableColumn } from "~/components/core/TreeTable";
 
 /**
  * Info about the device.
