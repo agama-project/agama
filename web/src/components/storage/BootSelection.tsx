@@ -27,13 +27,11 @@ import { Card, CardBody, Form, FormGroup, Radio, Stack } from "@patternfly/react
 import { _ } from "~/i18n";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page } from "~/components/core";
-import { Loading } from "~/components/layout";
 import { deviceLabel } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { StorageDevice } from "~/types/storage";
+import { useAvailableDevices, useProposalMutation, useProposalResult } from "~/queries/storage";
 
 // FIXME: improve classNames
 // FIXME: improve and rename to BootSelectionDialog
@@ -55,54 +53,40 @@ export default function BootSelectionDialog() {
     availableDevices?: StorageDevice[];
   }
 
-  const { cancellablePromise } = useCancellablePromise();
-  const { storage: client } = useInstallerClient();
   const [state, setState] = useState<BootSelectionState>({ load: false });
+  const { settings } = useProposalResult();
+  const availableDevices = useAvailableDevices();
+  const updateProposal = useProposalMutation();
   const navigate = useNavigate();
-
-  // FIXME: Repeated code, see DeviceSelection. Use a context/hook or whatever
-  // approach to avoid duplication
-  const loadProposalResult = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getResult());
-  }, [client, cancellablePromise]);
-
-  const loadAvailableDevices = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getAvailableDevices());
-  }, [client, cancellablePromise]);
 
   useEffect(() => {
     if (state.load) return;
 
-    const load = async () => {
-      let selectedOption: string;
-      const { settings } = await loadProposalResult();
-      const availableDevices: StorageDevice[] = await loadAvailableDevices();
-      const { bootDevice, configureBoot, defaultBootDevice } = settings;
+    let selectedOption: string;
+    const { bootDevice, configureBoot, defaultBootDevice } = settings;
 
-      if (!configureBoot) {
-        selectedOption = BOOT_DISABLED_ID;
-      } else if (configureBoot && bootDevice === "") {
-        selectedOption = BOOT_AUTO_ID;
-      } else {
-        selectedOption = BOOT_MANUAL_ID;
-      }
+    if (!configureBoot) {
+      selectedOption = BOOT_DISABLED_ID;
+    } else if (configureBoot && bootDevice === "") {
+      selectedOption = BOOT_AUTO_ID;
+    } else {
+      selectedOption = BOOT_MANUAL_ID;
+    }
 
-      const findDevice = (name: string) => availableDevices.find((d) => d.name === name);
+    const findDevice = (name: string) => availableDevices.find((d) => d.name === name);
 
-      setState({
-        load: true,
-        bootDevice: findDevice(bootDevice) || findDevice(defaultBootDevice) || availableDevices[0],
-        configureBoot,
-        defaultBootDevice: findDevice(defaultBootDevice),
-        availableDevices,
-        selectedOption,
-      });
-    };
+    setState({
+      load: true,
+      bootDevice: findDevice(bootDevice) || findDevice(defaultBootDevice) || availableDevices[0],
+      configureBoot,
+      defaultBootDevice: findDevice(defaultBootDevice),
+      availableDevices,
+      selectedOption,
+    });
 
-    load().catch(console.error);
-  }, [state, loadAvailableDevices, loadProposalResult]);
+  }, [availableDevices, settings]);
 
-  if (!state.load) return <Loading />;
+  if (!state.load) return;
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -110,13 +94,12 @@ export default function BootSelectionDialog() {
     // const formData = new FormData(e.target);
     // const mode = formData.get("bootMode");
     // const device = formData.get("bootDevice");
-    const { settings } = await loadProposalResult();
     const newSettings = {
       configureBoot: state.selectedOption !== BOOT_DISABLED_ID,
       bootDevice: state.selectedOption === BOOT_MANUAL_ID ? state.bootDevice.name : undefined,
     };
 
-    await client.proposal.calculate({ ...settings, ...newSettings });
+    await updateProposal.mutateAsync({ ...settings, ...newSettings });
     navigate("..");
   };
 
