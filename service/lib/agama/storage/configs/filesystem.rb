@@ -29,6 +29,10 @@ module Agama
         # @return [Pathname] Object that represents the root path.
         ROOT_PATH = Pathname.new("/").freeze
 
+        # @return [Boolean]
+        attr_accessor :reuse
+        alias_method :reuse?, :reuse
+
         # @return [String, nil]
         attr_accessor :path
 
@@ -48,6 +52,7 @@ module Agama
         attr_accessor :mount_by
 
         def initialize
+          @reuse = false
           @mount_options = []
           @mkfs_options = []
         end
