@@ -19,52 +19,44 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
-import EncryptionField from "~/components/storage/EncryptionField";
+import EncryptionField, { EncryptionConfig } from "~/components/storage/EncryptionField";
 import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
 import PartitionsField from "~/components/storage/PartitionsField";
+import { TargetConfig } from "~/components/storage/InstallationDeviceField";
+import { BootConfig } from "~/components/storage/BootConfigField";
+import { CHANGING, NOT_AFFECTED } from "~/components/storage/ProposalPage";
+import { ProposalSettings, StorageDevice, Volume } from "~/types/storage";
 import { _ } from "~/i18n";
 import { compact } from "~/utils";
-import { CHANGING, NOT_AFFECTED } from "~/components/storage/ProposalPage";
-
-/**
- * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
- * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
- * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").Volume} Volume
- */
 
 /**
  * A helper function to decide whether to show the progress skeletons or not
  * for the specified component
- * @param {boolean} loading loading status
- * @param {string} component name of the component
- * @param {symbol} changing the item which is being changed
+ * @param loading - loading status
+ * @param component - name of the component
+ * @param changing - the item which is being changed
  * @returns {boolean} true if the skeleton should be displayed, false otherwise
  */
-const showSkeleton = (loading, component, changing) => {
+const showSkeleton = (loading: boolean, component: string, changing: symbol): boolean => {
   return loading && !NOT_AFFECTED[component].includes(changing);
 };
+
+export type ProposalSettingsSectionProps = {
+  settings: ProposalSettings;
+  availableDevices: StorageDevice[];
+  volumeDevices: StorageDevice[];
+  encryptionMethods: string[];
+  volumeTemplates: Volume[];
+  isLoading?: boolean;
+  changing?: symbol;
+  onChange: (changing: symbol, settings: object) => void;
+}
 
 /**
  * Section for editing the proposal settings
  * @component
- *
- * @typedef {object} ProposalSettingsSectionProps
- * @property {ProposalSettings} settings
- * @property {StorageDevice[]} availableDevices
- * @property {StorageDevice[]} volumeDevices
- * @property {String[]} encryptionMethods
- * @property {Volume[]} volumeTemplates
- * @property {boolean} [isLoading=false]
- * @property {symbol} [changing=undefined] which part of the configuration is being changed by user
- * @property {(changing: symbol, settings: object) => void} onChange
- *
- * @param {ProposalSettingsSectionProps} props
  */
 export default function ProposalSettingsSection({
   settings,
@@ -75,9 +67,8 @@ export default function ProposalSettingsSection({
   isLoading = false,
   changing = undefined,
   onChange,
-}) {
-  /** @param {import("~/components/storage/InstallationDeviceField").TargetConfig} targetConfig */
-  const changeTarget = ({ target, targetDevice, targetPVDevices }) => {
+}: ProposalSettingsSectionProps) {
+  const changeTarget = ({ target, targetDevice, targetPVDevices }: TargetConfig) => {
     onChange(CHANGING.TARGET, {
       target,
       targetDevice: targetDevice?.name,
@@ -85,18 +76,15 @@ export default function ProposalSettingsSection({
     });
   };
 
-  /** @param {import("~/components/storage/EncryptionField").EncryptionConfig} encryptionConfig */
-  const changeEncryption = ({ password, method }) => {
+  const changeEncryption = ({ password, method }: EncryptionConfig) => {
     onChange(CHANGING.ENCRYPTION, { encryptionPassword: password, encryptionMethod: method });
   };
 
-  /** @param {Volume[]} volumes */
-  const changeVolumes = (volumes) => {
+  const changeVolumes = (volumes: Volume[]) => {
     onChange(CHANGING.VOLUMES, { volumes });
   };
 
-  /** @param {import("~/components/storage/PartitionsField").BootConfig} bootConfig */
-  const changeBoot = ({ configureBoot, bootDevice }) => {
+  const changeBoot = ({ configureBoot, bootDevice }: BootConfig) => {
     onChange(CHANGING.BOOT, {
       configureBoot,
       bootDevice: bootDevice?.name,
@@ -107,13 +95,11 @@ export default function ProposalSettingsSection({
    * @param {string} name
    * @returns {StorageDevice|undefined}
    */
-  const findDevice = (name) => availableDevices.find((a) => a.name === name);
+  const findDevice = (name: string): StorageDevice | undefined => availableDevices.find((a) => a.name === name);
 
-  /** @type {StorageDevice|undefined} */
-  const targetDevice = findDevice(settings.targetDevice);
-  /** @type {StorageDevice[]} */
-  const targetPVDevices = compact(settings.targetPVDevices?.map(findDevice) || []);
-  const { volumes = [], installationDevices = [], spaceActions = [] } = settings;
+  const targetDevice: StorageDevice | undefined = findDevice(settings.targetDevice);
+  const targetPVDevices: StorageDevice[] = compact(settings.targetPVDevices?.map(findDevice) || []);
+  const { volumes = [] } = settings;
   const bootDevice = findDevice(settings.bootDevice);
   const defaultBootDevice = findDevice(settings.defaultBootDevice);
   const targetDevices = compact([targetDevice, ...targetPVDevices]);

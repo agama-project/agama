@@ -19,17 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { ProposalSettingsSection } from "~/components/storage";
-
-/**
- * @typedef {import ("~/components/storage/ProposalSettingsSection").ProposalSettingsSectionProps} ProposalSettingsSectionProps
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
+import { ProposalTarget, StorageDevice } from "~/types/storage";
+import { ProposalSettingsSectionProps } from "./ProposalSettingsSection";
 
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");
@@ -40,8 +35,7 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-/** @type {StorageDevice} */
-const sda = {
+const sda: StorageDevice = {
   sid: 59,
   isDrive: true,
   type: "disk",
@@ -63,8 +57,7 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-/** @type {StorageDevice} */
-const sdb = {
+const sdb: StorageDevice = {
   sid: 62,
   isDrive: true,
   type: "disk",
@@ -86,13 +79,12 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"],
 };
 
-/** @type {ProposalSettingsSectionProps} */
-let props;
+let props: ProposalSettingsSectionProps;
 
 beforeEach(() => {
   props = {
     settings: {
-      target: "DISK",
+      target: ProposalTarget.DISK,
       targetDevice: "/dev/sda",
       targetPVDevices: [],
       configureBoot: false,
