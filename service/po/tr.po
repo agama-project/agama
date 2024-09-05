@@ -7,51 +7,49 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-10 02:23+0000\n"
-"PO-Revision-Date: 2024-05-16 15:46+0000\n"
-"Last-Translator: Özgür Arslan <ozgurarslln@gmail.com>\n"
-"Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/tr/>\n"
+"POT-Creation-Date: 2024-08-28 02:30+0000\n"
+"PO-Revision-Date: 2024-08-28 17:47+0000\n"
+"Last-Translator: yok <mtopac2024@gmail.com>\n"
+"Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
 msgid "Load software translations"
-msgstr ""
+msgstr "Yazılım çevirilerini yükle"
 
 #: service/lib/agama/manager.rb:89
 msgid "Load storage translations"
-msgstr ""
+msgstr "Depolama alanı çevirilerini yükleyin"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
-msgstr ""
+msgstr "Diskleri analiz et"
 
 #: service/lib/agama/manager.rb:104
-#, fuzzy
 msgid "Configure software"
-msgstr "Yazılım İnceleniyor"
+msgstr "Yazılımı yapılandırın"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
-msgstr ""
+msgstr "Diskleri hazırlayın"
 
 #: service/lib/agama/manager.rb:125
-#, fuzzy
 msgid "Install software"
-msgstr "Yazılımı Yükleme"
+msgstr "Yazılımı yükleyin"
 
 #: service/lib/agama/manager.rb:126
 msgid "Configure the system"
-msgstr ""
+msgstr "Sistemi yapılandırın"
 
 #. Callback to handle unsigned files
 #.
@@ -143,13 +141,16 @@ msgid ""
 "case the device does contain a file system or a storage system that is not "
 "supported, resizing will most likely cause data loss."
 msgstr ""
+"Cihazda ne bir dosya sistemi ne de bir depolama sistemi algılanmadı. Cihazın "
+"desteklenmeyen bir dosya sistemi veya depolama sistemi içermesi durumunda, "
+"yeniden boyutlandırma büyük olasılıkla veri kaybına neden olacaktır."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr ""
+msgstr "Bu cihaz küçültmeyi desteklemiyor"
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:115
@@ -189,16 +190,16 @@ msgstr "bootloader sysconfig yazılıyor"
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:192
+#: service/lib/agama/storage/proposal.rb:283
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "Kurulum için gerekli dosya sistemleri karşılanamıyor"
+msgstr "Kurulum için gerekli dosya sistemlerine yer verilemiyor"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:203
+#: service/lib/agama/storage/proposal.rb:294
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "Depolama kurulumu hesaplanırken bir sorun oluştu"
 
 #. Returns an issue if there is no target device.
 #.
@@ -223,6 +224,51 @@ msgstr[1] "Aşağıdaki seçilen cihazlar sistemde bulunamadı: %{devices}"
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
+"Bir kullanıcı tanımlamak, kök parolasını veya bir SSH genel anahtarını "
+"ayarlamak gerekir"
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:134
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr ""
+"Parola sağlanmadı ('%{crypt_method}' metodunu kullanmak için gereklidir)."
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:145
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr "Bu sistemde '%{crypt_method}' şifreleme yöntemi mevcut değil."
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:156
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr "'%{crypt_method}' cihazı şifrelemek için uygun bir yöntem değil."
+
+#. @see #not_found_issue
+#: service/lib/y2storage/proposal/agama_searcher.rb:98
+msgid "No device found for an optional drive"
+msgstr "İsteğe bağlı bir sürücü için aygıt bulunamadı"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:100
+msgid "No device found for a mandatory drive"
+msgstr "Zorunlu bir sürücü için cihaz bulunamadı"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:103
+msgid "No device found for an optional partition"
+msgstr "İsteğe bağlı bölüm için cihaz bulunamadı"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:105
+msgid "No device found for a mandatory partition"
+msgstr "Zorunlu bölüm için hiçbir cihaz bulunamadı"
 
 #~ msgid "Probing Storage"
 #~ msgstr "Depolama inceleniyor"

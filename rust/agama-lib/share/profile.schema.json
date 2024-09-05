@@ -671,18 +671,44 @@
         }
       ]
     },
-    "search": {
-      "title": "Search options",
+    "searchName": {
+      "title": "Device name",
+      "type": "string",
+      "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
+    },
+    "searchByName": {
+      "title": "Search by name condition",
       "type": "object",
       "additionalProperties": false,
       "required": ["name"],
       "properties": {
         "name": {
-          "title": "Device name",
-          "type": "string",
-          "examples": ["/dev/vda"]
+          "$ref": "#/$defs/searchName"
         }
       }
+    },
+    "search": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/searchName"
+        },
+        {
+          "title": "Search options",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "condition": {
+              "$ref": "#/$defs/searchByName"
+            },
+            "ifNotFound": {
+              "title": "Not found action",
+              "description": "How to handle the section if the device is not found.",
+              "enum": ["skip", "error"],
+              "default": "error"
+            }
+          }
+        }
+      ]
     },
     "boot": {
       "title": "Boot options",
@@ -883,32 +909,73 @@
     },
     "partitions": {
       "title": "Partitions",
-      "description": "Partitions to create, reuse or delete.",
       "type": "array",
       "items": {
-        "title": "Partition options",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "search": {
-            "description": "The search is limited to the partitions of the selected device scope.",
-            "$ref": "#/$defs/search"
+        "anyOf": [
+          {
+            "title": "Partition to create or reuse",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "search": {
+                "description": "The search is limited to the partitions of the selected device scope.",
+                "$ref": "#/$defs/search"
+              },
+              "id": {
+                "title": "Partition ID",
+                "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
+              },
+              "size": {
+                "title": "Partition size",
+                "$ref": "#/$defs/size"
+              },
+              "encryption": {
+                "$ref": "#/$defs/encryption"
+              },
+              "filesystem": {
+                "$ref": "#/$defs/filesystem"
+              }
+            }
           },
-          "id": {
-            "title": "Partition ID",
-            "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
+          {
+            "title": "Partition to delete if needed",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["deleteIfNeeded", "search"],
+            "properties": {
+              "deleteIfNeeded": {
+                "title": "Delete if needed",
+                "description": "Delete the partition if needed to make space.",
+                "const": true
+              },
+              "search": {
+                "description": "The search is limited to the partitions of the selected device scope.",
+                "$ref": "#/$defs/search"
+              },
+              "size": {
+                "title": "Partition size",
+                "$ref": "#/$defs/size"
+              }
+            }
           },
-          "size": {
-            "title": "Partition size",
-            "$ref": "#/$defs/sizeValue"
-          },
-          "encryption": {
-            "$ref": "#/$defs/encryption"
-          },
-          "filesystem": {
-            "$ref": "#/$defs/filesystem"
+          {
+            "title": "Partition to delete",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["delete", "search"],
+            "properties": {
+              "delete": {
+                "title": "Delete",
+                "description": "Delete the partition.",
+                "const": true
+              },
+              "search": {
+                "description": "The search is limited to the partitions of the selected device scope.",
+                "$ref": "#/$defs/search"
+              }
+            }
           }
-        }
+        ]
       }
     }
   }

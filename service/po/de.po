@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-10 02:23+0000\n"
-"PO-Revision-Date: 2024-07-13 19:47+0000\n"
+"POT-Creation-Date: 2024-08-28 02:30+0000\n"
+"PO-Revision-Date: 2024-08-29 19:47+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/de/>\n"
@@ -191,7 +191,7 @@ msgstr "Bootloader-Systemkonfiguration wird geschrieben"
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:192
+#: service/lib/agama/storage/proposal.rb:283
 msgid "Cannot accommodate the required file systems for installation"
 msgstr ""
 "Die für die Installation erforderlichen Dateisysteme können nicht "
@@ -200,7 +200,7 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:203
+#: service/lib/agama/storage/proposal.rb:294
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Bei der Berechnung der Speichereinrichtung ist ein Problem aufgetreten"
 
@@ -231,6 +231,53 @@ msgid ""
 msgstr ""
 "Die Definition eines Benutzers, das Festlegen des Root-Passworts oder eines "
 "öffentlichen SSH-Schlüssels ist erforderlich"
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:134
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr ""
+"Keine Passphrase angegeben (erforderlich für die Verwendung der Methode "
+"'%{crypt_method}')."
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:145
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr ""
+"Die Verschlüsselungsmethode '%{crypt_method}' ist auf diesem System nicht "
+"verfügbar."
+
+#. @see #check_encryption
+#. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
+#. 'luks1' or 'random_swap').
+#: service/lib/y2storage/proposal/agama_device_planner.rb:156
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr ""
+"'%{crypt_method}' ist keine geeignete Methode zur Verschlüsselung des Geräts."
+
+#. @see #not_found_issue
+#: service/lib/y2storage/proposal/agama_searcher.rb:98
+msgid "No device found for an optional drive"
+msgstr "Kein Gerät für ein optionales Laufwerk gefunden"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:100
+msgid "No device found for a mandatory drive"
+msgstr "Kein Gerät für ein obligatorisches Laufwerk gefunden"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:103
+msgid "No device found for an optional partition"
+msgstr "Kein Gerät für eine optionale Partition gefunden"
+
+#: service/lib/y2storage/proposal/agama_searcher.rb:105
+msgid "No device found for a mandatory partition"
+msgstr "Kein Gerät für eine obligatorische Partition gefunden"
 
 #~ msgid "Probing Storage"
 #~ msgstr "Speicher wird untersucht"

@@ -121,6 +121,7 @@ impl JobsStream {
         values: &HashMap<String, OwnedValue>,
     ) -> Result<&'a Job, ServiceError> {
         let job = cache.find_or_create(path);
+        job.id = path.to_string();
         property_from_dbus!(job, running, "Running", values, bool);
         property_from_dbus!(job, exit_code, "ExitCode", values, u32);
         Ok(job)
