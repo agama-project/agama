@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { Button, Skeleton, Stack, List, ListItem } from "@patternfly/react-core";
 import { CardField, Link } from "~/components/core";
@@ -29,26 +27,18 @@ import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { PATHS } from "~/routes/storage";
-
-/**
- * @typedef {import ("~/client/storage").Action} Action
- * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
- * @typedef {import("~/client/mixins").ValidationError} ValidationError
- */
+import { Action, SpaceAction, StorageDevice } from "~/types/storage";
+import { SpacePolicy } from "./utils";
+import { ValidationError } from "~/client/mixins";
 
 /**
  * Renders information about delete actions
- *
- * @param {object} props
- * @param {SpacePolicy|undefined} props.policy
- * @param {DevicesManager} props.manager
- * @param {SpaceAction[]} props.spaceActions
  */
-const DeletionsInfo = ({ policy, manager, spaceActions }) => {
-  let label;
-  let systemsLabel;
+const DeletionsInfo = (
+  { policy, manager, spaceActions }:
+    { policy: SpacePolicy | undefined; manager: DevicesManager; spaceActions: SpaceAction[]; }) => {
+  let label: React.ReactNode;
+  let systemsLabel: React.ReactNode;
   const systems = manager.deletedSystems();
   const deleteActions = manager.actions.filter((a) => a.delete && !a.subvol).length;
   const isDeletePolicy = policy?.id === "delete";
@@ -94,16 +84,12 @@ const DeletionsInfo = ({ policy, manager, spaceActions }) => {
 
 /**
  * Renders information about resize actions
- *
- * @param {object} props
- * @param {SpacePolicy|undefined} props.policy
- * @param {DevicesManager} props.manager
- * @param {boolean} props.validProposal
- * @param {SpaceAction[]} props.spaceActions
  */
-const ResizesInfo = ({ policy, manager, validProposal, spaceActions }) => {
-  let label;
-  let systemsLabel;
+const ResizesInfo = (
+  { policy, manager, validProposal, spaceActions }:
+    { policy: SpacePolicy | undefined; manager: DevicesManager; validProposal: boolean; spaceActions: SpaceAction[]; }) => {
+  let label: React.ReactNode;
+  let systemsLabel: React.ReactNode;
   const systems = manager.resizedSystems();
   const resizeActions = manager.actions.filter((a) => a.resize).length;
   const isResizePolicy = policy?.id === "resize";
@@ -145,14 +131,11 @@ const ResizesInfo = ({ policy, manager, validProposal, spaceActions }) => {
 /**
  * Renders needed UI elements to allow user check the proposal planned actions
  * @component
- *
- * @param {object} props
- * @param {Action[]} props.actions
- * @param {boolean} props.validProposal
- * @param {() => void} props.onClick
  */
-const ActionsInfo = ({ actions, validProposal, onClick }) => {
-  let label;
+const ActionsInfo = (
+  { actions, validProposal, onClick }:
+    { actions: Action[]; validProposal: boolean; onClick: () => void; }) => {
+  let label: React.ReactNode;
 
   if (!validProposal) {
     label = (
@@ -187,20 +170,23 @@ const ActionsSkeleton = () => (
   </Stack>
 );
 
+export type ProposalActionsSummaryProps = {
+  isLoading: boolean;
+  errors: ValidationError[];
+  policy: SpacePolicy | undefined;
+  system: StorageDevice[];
+  staging: StorageDevice[];
+  actions: Action[];
+  spaceActions: SpaceAction[];
+  devices: StorageDevice[];
+  onActionsClick: () => void | undefined;
+}
+
 /**
  * Allows to select the space policy.
  * @component
  *
  * @param {object} props
- * @param {boolean} props.isLoading
- * @param {ValidationError[]} [props.errors=[]] - Validation errors
- * @param {SpacePolicy|undefined} props.policy
- * @param {StorageDevice[]} [props.system=[]]
- * @param {StorageDevice[]} [props.staging=[]]
- * @param {Action[]} [props.actions=[]]
- * @param {SpaceAction[]} [props.spaceActions=[]]
- * @param {StorageDevice[]} props.devices
- * @param {() => void|undefined} props.onActionsClick
  */
 export default function ProposalActionsSummary({
   isLoading,
@@ -212,8 +198,9 @@ export default function ProposalActionsSummary({
   spaceActions = [],
   devices,
   onActionsClick,
-}) {
-  let value;
+}: ProposalActionsSummaryProps) {
+  let value: React.ReactNode;
+
   if (isLoading || !policy) {
     value = <Skeleton fontSize="sm" width="65%" />;
   } else if (policy.summaryLabels.length === 1) {

@@ -19,13 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
+import ProposalActionsSummary, { ProposalActionsSummaryProps } from "~/components/storage/ProposalActionsSummary";
 import { devices, actions } from "./test-data/full-result-example";
 
 const sda = {
@@ -54,7 +52,7 @@ const keepPolicy = SPACE_POLICIES.find((p) => p.id === "keep");
 const deletePolicy = SPACE_POLICIES.find((p) => p.id === "delete");
 const resizePolicy = SPACE_POLICIES.find((p) => p.id === "resize");
 
-const defaultProps = {
+const defaultProps: ProposalActionsSummaryProps = {
   isLoading: false,
   policy: keepPolicy,
   onActionsClick: jest.fn(),
@@ -62,6 +60,8 @@ const defaultProps = {
   staging: devices.staging,
   devices: [sda],
   actions,
+  spaceActions: [],
+  errors: []
 };
 
 describe("ProposalActionsSummary", () => {
