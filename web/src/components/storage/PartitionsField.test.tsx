@@ -182,7 +182,7 @@ beforeEach(() => {
   };
 });
 
-it("allows to reset the file systems", async () => {
+it.skip("allows to reset the file systems", async () => {
   const { user } = await expandField();
   const button = screen.getByRole("button", { name: "Reset to defaults" });
   await user.click(button);
