@@ -21,18 +21,17 @@
 
 // @ts-check
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardBody, Form, Grid, GridItem, Radio, Stack } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
-import { Loading } from "~/components/layout";
 import { Page } from "~/components/core";
 import { SpaceActionsTable } from "~/components/storage";
-import { _ } from "~/i18n";
 import { SPACE_POLICIES, SpacePolicy } from "~/components/storage/utils";
-import { noop, useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
+import { noop } from "~/utils";
+import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { SpaceAction } from "~/types/storage";
+import { useProposalMutation, useProposalResult } from "~/queries/storage";
 
 /**
  * Widget to allow user picking desired policy to make space.
@@ -77,36 +76,27 @@ const SpacePolicyPicker = ({ currentPolicy, onChange = noop }: { currentPolicy: 
  * Renders a page that allows the user to select the space policy and actions.
  */
 export default function SpacePolicySelection() {
-  const [state, setState] = useState({ load: false, settings: {} });
+  const { settings } = useProposalResult();
+  const updateProposal = useProposalMutation();
+  const [state, setState] = useState({ load: false });
   const [policy, setPolicy] = useState<SpacePolicy | undefined>();
   const [actions, setActions] = useState([]);
   const [expandedDevices, setExpandedDevices] = useState([]);
   const [customUsed, setCustomUsed] = useState(false);
   const [devices, setDevices] = useState([]);
-  const { cancellablePromise } = useCancellablePromise();
-  const { storage: client } = useInstallerClient();
   const navigate = useNavigate();
-
-  const loadProposalResult = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getResult());
-  }, [client, cancellablePromise]);
 
   useEffect(() => {
     if (state.load) return;
 
     // FIXME: move to a state/reducer
-    const load = async () => {
-      const { settings } = await loadProposalResult();
-      const policy = SPACE_POLICIES.find((p) => p.id === settings.spacePolicy);
-      setPolicy(policy);
-      setActions(settings.spaceActions);
-      setCustomUsed(policy.id === "custom");
-      setDevices(settings.installationDevices);
-      setState({ load: true, settings });
-    };
-
-    load().catch(console.error);
-  }, [state, loadProposalResult]);
+    const policy = SPACE_POLICIES.find((p) => p.id === settings.spacePolicy);
+    setPolicy(policy);
+    setActions(settings.spaceActions);
+    setCustomUsed(policy.id === "custom");
+    setDevices(settings.installationDevices);
+    setState({ load: true });
+  }, [state]);
 
   useEffect(() => {
     if (policy?.id === "custom") setExpandedDevices(devices);
@@ -123,10 +113,10 @@ export default function SpacePolicySelection() {
 
   // Resets actions (i.e., sets everything to "keep") if the custom policy has not been used yet.
   useEffect(() => {
-    if (policy?.id !== "custom" && !customUsed) setActions([]);
+    if (policy && policy?.id !== "custom" && !customUsed) setActions([]);
   }, [policy, customUsed, setActions]);
 
-  if (!state.load) return <Loading />;
+  if (!state.load) return;
 
   // Generates the action value according to the policy.
   const deviceAction = (device) => {
@@ -147,9 +137,9 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    // @ts-ignore
-    client.proposal.calculate({
-      ...state.settings,
+
+    updateProposal.mutateAsync({
+      ...settings,
       spacePolicy: policy.id,
       spaceActions: actions,
     });
