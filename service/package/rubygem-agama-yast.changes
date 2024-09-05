@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  5 17:35:04 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: add support for reusing file systems in the storage
+  config (gh#openSUSE/agama#1575).
+
+-------------------------------------------------------------------
 Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Show product logo in product selector (gh#openSUSE/agama#1415).
