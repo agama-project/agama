@@ -23,65 +23,130 @@ import React from "react";
 import { screen, within, waitForElementToBeRemoved } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalActionsDialog } from "~/components/storage";
+import { Action } from "~/types/storage";
 
-const actions = [
-  { text: "Create GPT on /dev/vdc", subvol: false, delete: false },
+const actions: Action[] = [
   {
-    text: "Create partition /dev/vdc1 (8.00 MiB) as BIOS Boot Partition",
+    text: "Create GPT on /dev/vdc",
+    device: 1,
     subvol: false,
     delete: false,
+    resize: false
+  },
+  {
+    text: "Create partition /dev/vdc1 (8.00 MiB) as BIOS Boot Partition",
+    device: 2,
+    subvol: false,
+    delete: false,
+    resize: false
   },
   {
     text: "Create encrypted partition /dev/vdc2 (29.99 GiB) as LVM physical volume",
+    device: 3,
     subvol: false,
     delete: false,
+    resize: false
   },
   {
     text: "Create volume group system0 (29.98 GiB) with /dev/mapper/cr_vdc2 (29.99 GiB)",
+    device: 4,
     subvol: false,
     delete: false,
+    resize: false
   },
   {
     text: "Create LVM logical volume /dev/system0/root (20.00 GiB) on volume group system0 for / with btrfs",
+    device: 5,
     subvol: false,
     delete: false,
+    resize: false
   },
 ];
 
-const subvolumeActions = [
-  { text: "Create subvolume @ on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
-  { text: "Create subvolume @/var on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
+const subvolumeActions: Action[] = [
   {
+    text: "Create subvolume @ on /dev/system0/root (20.00 GiB)",
+    device: 100,
+    subvol: true,
+    delete: false,
+    resize: false
+  },
+  {
+    text: "Create subvolume @/var on /dev/system0/root (20.00 GiB)",
+    device: 101,
+    subvol: true,
+    delete: false,
+    resize: false
+  },
+  {
+    device: 102,
     text: "Create subvolume @/usr/local on /dev/system0/root (20.00 GiB)",
     subvol: true,
     delete: false,
+    resize: false
   },
-  { text: "Create subvolume @/srv on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
-  { text: "Create subvolume @/root on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
-  { text: "Create subvolume @/opt on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
-  { text: "Create subvolume @/home on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
   {
+    text: "Create subvolume @/srv on /dev/system0/root (20.00 GiB)",
+    device: 103,
+    subvol: true,
+    delete: false,
+    resize: false
+  },
+  {
+    text: "Create subvolume @/root on /dev/system0/root (20.00 GiB)",
+    device: 104,
+    subvol: true,
+    delete: false,
+    resize: false
+  },
+  {
+    text: "Create subvolume @/opt on /dev/system0/root (20.00 GiB)",
+    device: 105,
+    subvol: true,
+    delete: false,
+    resize: false
+  },
+  {
+    device: 106,
+    text: "Create subvolume @/home on /dev/system0/root (20.00 GiB)",
+    subvol: true,
+    delete: false,
+    resize: false
+  },
+  {
+    device: 107,
     text: "Create subvolume @/boot/writable on /dev/system0/root (20.00 GiB)",
     subvol: true,
     delete: false,
+    resize: false
   },
   {
+    device: 108,
     text: "Create subvolume @/boot/grub2/x86_64-efi on /dev/system0/root (20.00 GiB)",
     subvol: true,
     delete: false,
+    resize: false
   },
   {
+    device: 109,
     text: "Create subvolume @/boot/grub2/i386-pc on /dev/system0/root (20.00 GiB)",
     subvol: true,
     delete: false,
+    resize: false
   },
 ];
 
-const destructiveAction = { text: "Delete ext4 on /dev/vdc", subvol: false, delete: true };
+const destructiveAction = {
+  device: 200,
+  text: "Delete ext4 on /dev/vdc",
+  subvol: false,
+  delete: true,
+  resize: false
+};
 
 const onCloseFn = jest.fn();
 
-it.skip("renders nothing by default", () => {
+it("renders nothing by default", () => {
   const { container } = plainRender(<ProposalActionsDialog onClose={onCloseFn} />);
   expect(container).toBeEmptyDOMElement();
 });
