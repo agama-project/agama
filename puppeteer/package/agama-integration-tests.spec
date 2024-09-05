@@ -61,6 +61,8 @@ cp -a %{_builddir}/agama/package.json %{buildroot}%{_datadir}/agama/integration-
 install -D -d -m 0755 %{buildroot}%{_bindir}
 cp -a %{_builddir}/agama/agama-integration-tests %{buildroot}%{_bindir}
 
+rm %{buildroot}%{_datadir}/agama/integration-tests/node_modules/.package-lock.json
+
 # symlink duplicate files
 %fdupes -s %{buildroot}/%{_datadir}/agama/integration-tests
 
