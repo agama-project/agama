@@ -29,6 +29,7 @@ import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 import { DASDSupported, probeDASD } from "~/api/dasd";
 import { ZFCPSupported, probeZFCP } from "~/api/zfcp";
+import { redirect } from "react-router-dom";
 
 const PATHS = {
   root: "/storage",
@@ -40,54 +41,52 @@ const PATHS = {
   zfcp: "/storage/zfcp"
 };
 
-const routes = (): Route => {
-  const dasdRoute = {
-    path: PATHS.dasd,
-    element: <DASDPage />,
-    handle: { name: N_("DASD") },
-    loader: async () => probeDASD(),
-  };
+const routes = (): Route => ({
+  path: PATHS.root,
+  handle: { name: N_("Storage"), icon: "hard_drive" },
+  children: [
+    {
+      index: true,
+      element: <ProposalPage />,
+    },
+    {
+      path: PATHS.targetDevice,
+      element: <DeviceSelection />,
+    },
+    {
+      path: PATHS.bootingPartition,
+      element: <BootSelection />,
+    },
+    {
+      path: PATHS.spacePolicy,
+      element: <SpacePolicySelection />,
+    },
+    {
+      path: PATHS.iscsi,
+      element: <ISCSIPage />,
+      handle: { name: N_("iSCSI") },
+    },
+    {
+      path: PATHS.dasd,
+      element: <DASDPage />,
+      handle: { name: N_("DASD") },
+      loader: async () => {
+        if (!DASDSupported()) return redirect(PATHS.root);
+        return probeDASD();
+      },
+    },
+    {
+      path: PATHS.zfcp,
+      element: <ZFCPPage />,
+      handle: { name: N_("ZFCP") },
+      loader: async () => {
+        if (!ZFCPSupported()) return redirect(PATHS.root);
+        return probeZFCP();
+      },
+    },
 
-  const zfcpRoute = {
-    path: PATHS.zfcp,
-    element: <ZFCPPage />,
-    handle: { name: N_("zFCP") },
-    loader: async () => probeZFCP(),
-  };
-
-  const routes = {
-    path: PATHS.root,
-    handle: { name: N_("Storage"), icon: "hard_drive" },
-    children: [
-      {
-        index: true,
-        element: <ProposalPage />,
-      },
-      {
-        path: PATHS.targetDevice,
-        element: <DeviceSelection />,
-      },
-      {
-        path: PATHS.bootingPartition,
-        element: <BootSelection />,
-      },
-      {
-        path: PATHS.spacePolicy,
-        element: <SpacePolicySelection />,
-      },
-      {
-        path: PATHS.iscsi,
-        element: <ISCSIPage />,
-        handle: { name: N_("iSCSI") },
-      },
-    ],
-  };
-
-  if (DASDSupported()) routes.children.push(dasdRoute);
-  if (ZFCPSupported()) routes.children.push(zfcpRoute);
-
-  return routes;
-};
+  ],
+});
 
 export default routes;
 export { PATHS };
