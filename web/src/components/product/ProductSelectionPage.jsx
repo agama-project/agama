@@ -43,8 +43,8 @@ const Option = ({ product, isChecked, onChange }) => {
   const logoAltText = sprintf(_("%s logo"), product.name);
 
   return (
-    <ListItem>
-      <Card isRounded onClick={onChange} className="cursor-pointer">
+    <ListItem aria-label={product.name}>
+      <Card isRounded>
         <CardBody>
           <Split hasGutter>
             <Radio
@@ -91,8 +91,8 @@ function ProductSelectionPage() {
         <Form id="productSelectionForm" onSubmit={onSubmit}>
           <Grid hasGutter>
             <ResponsiveGridItem>
-              <List isPlain>
-                <FormGroup role="radiogroup" label={_("Select a product")}>
+              <FormGroup role="radiogroup" label={_("Select a product")}>
+                <List isPlain aria-label={_("Available products")}>
                   {products.map((product, index) => (
                     <Option
                       key={index}
@@ -101,8 +101,8 @@ function ProductSelectionPage() {
                       onChange={() => setNextProduct(product)}
                     />
                   ))}
-                </FormGroup>
-              </List>
+                </List>
+              </FormGroup>
             </ResponsiveGridItem>
             <ResponsiveGridItem>
               <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
