@@ -200,7 +200,7 @@ const ActionsSkeleton = () => (
  * @param {Action[]} [props.actions=[]]
  * @param {SpaceAction[]} [props.spaceActions=[]]
  * @param {StorageDevice[]} props.devices
- * @param {() => void} props.onActionsClick
+ * @param {() => void|undefined} props.onActionsClick
  */
 export default function ProposalActionsSummary({
   isLoading,

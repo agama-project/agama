@@ -24,7 +24,8 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
+import InstallationDeviceField, { InstallationDeviceFieldProps } from "~/components/storage/InstallationDeviceField";
+import { ProposalTarget, StorageDevice } from "~/types/storage";
 
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");
@@ -35,16 +36,10 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-/**
- * @typedef {import ("~/components/storage/InstallationDeviceField").InstallationDeviceFieldProps} InstallationDeviceFieldProps
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
-
-/** @type {StorageDevice} */
-const sda = {
+const sda: StorageDevice = {
   sid: 59,
   isDrive: true,
-  type: "disk",
+  type: ProposalTarget.DISK,
   description: "",
   vendor: "Micron",
   model: "Micron 1100 SATA",
@@ -63,11 +58,10 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-/** @type {StorageDevice} */
-const sdb = {
+const sdb: StorageDevice = {
   sid: 62,
   isDrive: true,
-  type: "disk",
+  type: ProposalTarget.DISK,
   description: "",
   vendor: "Samsung",
   model: "Samsung Evo 8 Pro",
@@ -86,12 +80,11 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"],
 };
 
-/** @type {InstallationDeviceFieldProps} */
-let props;
+let props: InstallationDeviceFieldProps;
 
 beforeEach(() => {
   props = {
-    target: "DISK",
+    target: ProposalTarget.DISK,
     targetDevice: sda,
     targetPVDevices: [],
     devices: [sda, sdb],
@@ -115,7 +108,7 @@ describe.skip("when set as loading", () => {
 
 describe.skip("when the target is a disk", () => {
   beforeEach(() => {
-    props.target = "DISK";
+    props.target = ProposalTarget.DISK;
   });
 
   describe("and installation device is not selected yet", () => {
@@ -143,7 +136,7 @@ describe.skip("when the target is a disk", () => {
 
 describe.skip("when the target is a new LVM volume group", () => {
   beforeEach(() => {
-    props.target = "NEW_LVM_VG";
+    props.target = ProposalTarget.NEW_LVM_VG;
   });
 
   describe("and the target devices are not selected yet", () => {
@@ -197,7 +190,7 @@ it.skip("allows changing the selected device", async () => {
 
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   expect(props.onChange).toHaveBeenCalledWith({
-    target: "DISK",
+    target: ProposalTarget.DISK,
     targetDevice: sdb,
     targetPVDevices: [],
   });

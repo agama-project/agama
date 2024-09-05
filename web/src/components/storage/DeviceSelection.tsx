@@ -45,86 +45,62 @@ import { DeviceSelectorTable } from "~/components/storage";
 import DevicesTechMenu from "./DevicesTechMenu";
 import { compact, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-
-/**
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
+import { useAvailableDevices, useProposalMutation, useProposalResult } from "~/queries/storage";
+import { ProposalTarget, StorageDevice } from "~/types/storage";
 
 const SELECT_DISK_ID = "select-disk";
 const CREATE_LVM_ID = "create-lvm";
 const SELECT_DISK_PANEL_ID = "panel-for-disk-selection";
 const CREATE_LVM_PANEL_ID = "panel-for-lvm-creation";
 
+type DeviceSelectionState = {
+  target?: ProposalTarget;
+  targetDevice?: StorageDevice;
+  targetPVDevices?: StorageDevice[];
+}
+
 /**
  * Allows the user to select a target device for installation.
  * @component
  */
 export default function DeviceSelection() {
-  /**
-   * @typedef {object} DeviceSelectionState
-   * @property {boolean} load
-   * @property {string} [target]
-   * @property {StorageDevice} [targetDevice]
-   * @property {StorageDevice[]} [targetPVDevices]
-   * @property {StorageDevice[]} [availableDevices]
-   */
+  const { settings } = useProposalResult();
+  const availableDevices = useAvailableDevices();
+  const updateProposal = useProposalMutation();
   const navigate = useNavigate();
-  const { cancellablePromise } = useCancellablePromise();
-  /** @type ReturnType<typeof useState<DeviceSelectionState>> */
-  const [state, setState] = useState({ load: false });
+  const [state, setState] = useState<DeviceSelectionState>({});
 
-  const isTargetDisk = state.target === "DISK";
-  const isTargetNewLvmVg = state.target === "NEW_LVM_VG";
-  const { storage: client } = useInstallerClient();
-
-  const loadProposalResult = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getResult());
-  }, [client, cancellablePromise]);
-
-  const loadAvailableDevices = useCallback(async () => {
-    return await cancellablePromise(client.proposal.getAvailableDevices());
-  }, [client, cancellablePromise]);
+  const isTargetDisk = state.target === ProposalTarget.DISK;
+  const isTargetNewLvmVg = state.target === ProposalTarget.NEW_LVM_VG;
 
   useEffect(() => {
-    const load = async () => {
-      const { settings } = await loadProposalResult();
-      const availableDevices = await loadAvailableDevices();
+    if (state.target !== undefined) return;
 
-      // FIXME: move to a state/reducer
-      setState({
-        load: true,
-        availableDevices,
-        target: settings.target,
-        targetDevice: availableDevices.find((d) => d.name === settings.targetDevice),
-        targetPVDevices: availableDevices.filter((d) => settings.targetPVDevices?.includes(d.name)),
-      });
-    };
+    // FIXME: move to a state/reducer
+    setState({
+      target: settings.target,
+      targetDevice: availableDevices.find((d) => d.name === settings.targetDevice),
+      targetPVDevices: availableDevices.filter((d) => settings.targetPVDevices?.includes(d.name)),
+    });
+  }, [settings, availableDevices]);
 
-    if (state.load) return;
+  const selectTargetDisk = () => setState({ ...state, target: ProposalTarget.DISK });
+  const selectTargetNewLvmVG = () => setState({ ...state, target: ProposalTarget.NEW_LVM_VG });
 
-    load().catch(console.error);
-  }, [state, loadAvailableDevices, loadProposalResult]);
-
-  if (!state.load) return <Loading text={_("Loading data, please wait a second...")} />;
-
-  const selectTargetDisk = () => setState({ ...state, target: "DISK" });
-  const selectTargetNewLvmVG = () => setState({ ...state, target: "NEW_LVM_VG" });
-
-  const selectTargetDevice = (devices) => setState({ ...state, targetDevice: devices[0] });
-  const selectTargetPVDevices = (devices) => {
+  const selectTargetDevice = (devices: StorageDevice[]) => setState({ ...state, targetDevice: devices[0] });
+  const selectTargetPVDevices = (devices: StorageDevice[]) => {
     setState({ ...state, targetPVDevices: devices });
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const { settings } = await loadProposalResult();
     const newSettings = {
       target: state.target,
       targetDevice: isTargetDisk ? state.targetDevice?.name : "",
       targetPVDevices: isTargetNewLvmVg ? state.targetPVDevices.map((d) => d.name) : [],
     };
 
-    await client.proposal.calculate({ ...settings, ...newSettings });
+    updateProposal.mutateAsync({ ...settings, ...newSettings });
     navigate("..");
   };
 
@@ -135,7 +111,7 @@ export default function DeviceSelection() {
     return true;
   };
 
-  const isDeviceSelectable = (device) => device.isDrive || device.type === "md";
+  const isDeviceSelectable = (device: StorageDevice) => device.isDrive || device.type === "md";
 
   // TRANSLATORS: description for using plain partitions for installing the
   // system, the text in the square brackets [] is displayed in bold, use only
@@ -201,7 +177,7 @@ devices.",
 
                   <DeviceSelectorTable
                     aria-label={_("Device selector for target disk")}
-                    devices={state.availableDevices}
+                    devices={availableDevices}
                     selectedDevices={compact([state.targetDevice])}
                     itemChildren={deviceChildren}
                     itemSelectable={isDeviceSelectable}
@@ -225,7 +201,7 @@ devices.",
                     <DeviceSelectorTable
                       aria-label={_("Device selector for new LVM volume group")}
                       isMultiple
-                      devices={state.availableDevices}
+                      devices={availableDevices}
                       selectedDevices={state.targetPVDevices}
                       itemChildren={deviceChildren}
                       itemSelectable={isDeviceSelectable}

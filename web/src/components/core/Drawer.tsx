@@ -19,9 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// FIXME: rewrite to .tsx
-
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import React, { ReactNode, forwardRef, useImperativeHandle, useState } from "react";
 import {
   Drawer as PFDrawer,
   DrawerPanelBody,
@@ -31,7 +29,13 @@ import {
   DrawerHead,
   DrawerActions,
   DrawerCloseButton,
+  DrawerProps as PFDrawerProps
 } from "@patternfly/react-core";
+
+type DrawerProps = {
+  panelHeader: ReactNode,
+  panelContent: ReactNode,
+} & PFDrawerProps;
 
 /**
  * PF/Drawer wrapper
@@ -43,7 +47,7 @@ import {
  *
  * @todo write documentation
  */
-const Drawer = forwardRef(({ panelHeader, panelContent, isExpanded = false, children }, ref) => {
+const Drawer = forwardRef(({ panelHeader, panelContent, isExpanded = false, children }: DrawerProps, ref) => {
   const [isOpen, setIsOpen] = useState(isExpanded);
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
