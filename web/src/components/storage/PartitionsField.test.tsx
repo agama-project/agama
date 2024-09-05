@@ -178,7 +178,6 @@ beforeEach(() => {
     bootDevice: undefined,
     defaultBootDevice: undefined,
     onVolumesChange: jest.fn(),
-    onBootChange: jest.fn(),
   };
 });
 

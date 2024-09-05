@@ -47,16 +47,15 @@ const sda: StorageDevice = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-let props: BootConfigFieldProps;
+const props: BootConfigFieldProps = {
+  configureBoot: false,
+  bootDevice: undefined,
+  defaultBootDevice: undefined,
+  availableDevices: [sda],
+  isLoading: false,
+};
 
 beforeEach(() => {
-  props = {
-    configureBoot: false,
-    bootDevice: undefined,
-    defaultBootDevice: undefined,
-    availableDevices: [sda],
-    isLoading: false,
-  };
 });
 
 describe.skip("BootConfigField", () => {

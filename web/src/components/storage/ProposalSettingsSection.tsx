@@ -84,13 +84,6 @@ export default function ProposalSettingsSection({
     onChange(CHANGING.VOLUMES, { volumes });
   };
 
-  const changeBoot = ({ configureBoot, bootDevice }: BootConfig) => {
-    onChange(CHANGING.BOOT, {
-      configureBoot,
-      bootDevice: bootDevice?.name,
-    });
-  };
-
   /**
    * @param {string} name
    * @returns {StorageDevice|undefined}
@@ -140,7 +133,6 @@ export default function ProposalSettingsSection({
             showSkeleton(isLoading, "PartitionsField", changing) || settings.volumes === undefined
           }
           onVolumesChange={changeVolumes}
-          onBootChange={changeBoot}
         />
       </GridItem>
     </Grid>
