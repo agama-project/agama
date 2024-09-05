@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep  9 09:09:54 UTC 2024 - Martin Vidner <mvidner@suse.com>
+
+- For CLI, use HTTP clients instead of D-Bus clients,
+  for Product (name and registration) (gh#openSUSE/agama#1548)
+  - added ProductHTTPClient
+
+-------------------------------------------------------------------
 Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Show product logo in product selector (gh#openSUSE/agama#1415).
