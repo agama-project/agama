@@ -24,7 +24,6 @@
               }
             },
             "filesystem": {
-              "reuse": false,
               "type": {
                 "btrfs": {
                   "snapshots": true
@@ -87,6 +86,7 @@
           "ifNotFound": "skip"
         },
         "filesystem": {
+          "reuseIfPossible": true,
           "type": "ext4",
           "path": "/var/log"
         }
