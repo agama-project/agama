@@ -114,7 +114,7 @@ type ProposalSettings = {
 
 type SpaceAction = {
   device: string;
-  action: 'force_delete' | 'resize'
+  action: 'force_delete' | 'resize' | 'keep'
 };
 
 type Volume = {
