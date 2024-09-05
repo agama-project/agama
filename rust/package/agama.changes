@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Show product logo in product selector (gh#openSUSE/agama#1415).
+
+-------------------------------------------------------------------
 Wed Aug 28 12:37:34 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Expose the DASD D-Bus API through HTTP (gh#openSUSE/agama#1532).

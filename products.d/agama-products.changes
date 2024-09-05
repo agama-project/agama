@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Show product logo in product selector (gh#openSUSE/agama#1415).
+
+-------------------------------------------------------------------
 Tue Sep  3 10:24:30 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add kde to Leap 16.0, remove Xfce until it's fully submitted to 16.0

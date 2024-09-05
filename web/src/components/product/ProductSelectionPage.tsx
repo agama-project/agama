@@ -20,38 +20,67 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardBody, Flex, Form, Grid, GridItem, Radio } from "@patternfly/react-core";
+import { Card, CardBody, Flex, Form, Grid, GridItem, Radio, List, ListItem, Split, Stack, FormGroup } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
-import { _ } from "~/i18n";
 import styles from "@patternfly/react-styles/css/utilities/Text/text";
+import { slugify } from "~/utils";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
-const Label = ({ children }) => (
-  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>{children}</span>
+const ResponsiveGridItem = ({ children }) => (
+  <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
+    {children}
+  </GridItem>
 );
 
+const Option = ({ product, isChecked, onChange }) => {
+  const id = slugify(product.name);
+  const detailsId = `${id}-details`;
+  const logoSrc = `assets/logos/${product.icon}`;
+  // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
+  const logoAltText = sprintf(_("%s logo"), product.name);
+
+  return (
+    <ListItem aria-label={product.name}>
+      <Card isRounded>
+        <CardBody>
+          <Split hasGutter>
+            <Radio
+              id={id}
+              name="product"
+              isChecked={isChecked}
+              onChange={onChange}
+              aria-details={detailsId}
+            />
+            <img aria-hidden src={logoSrc} alt={logoAltText} />
+            <Stack hasGutter>
+              <label htmlFor={id} className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>
+                {product.name}
+              </label>
+              <p id={detailsId}>{product.description}</p>
+            </Stack>
+          </Split>
+        </CardBody>
+      </Card>
+    </ListItem>
+  );
+};
+
 function ProductSelectionPage() {
-  const { products, selectedProduct } = useProduct({ suspense: true });
   const setConfig = useConfigMutation();
+  const { products, selectedProduct } = useProduct({ suspense: true });
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (nextProduct) {
       setConfig.mutate({ product: nextProduct.id });
       setIsLoading(true);
     }
-  };
-
-  const Item = ({ children }) => {
-    return (
-      <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
-        {children}
-      </GridItem>
-    );
   };
 
   const isSelectionDisabled = !nextProduct || nextProduct === selectedProduct;
@@ -61,26 +90,23 @@ function ProductSelectionPage() {
       <Center>
         <Form id="productSelectionForm" onSubmit={onSubmit}>
           <Grid hasGutter>
-            {products.map((product, index) => (
-              <Item key={index}>
-                <Card key={index} isRounded>
-                  <CardBody>
-                    <Radio
+            <ResponsiveGridItem>
+              <FormGroup role="radiogroup" label={_("Select a product")}>
+                <List isPlain aria-label={_("Available products")}>
+                  {products.map((product, index) => (
+                    <Option
                       key={index}
-                      name="product"
-                      id={product.name}
-                      label={<Label>{product.name}</Label>}
-                      body={product.description}
+                      product={product}
                       isChecked={nextProduct === product}
                       onChange={() => setNextProduct(product)}
                     />
-                  </CardBody>
-                </Card>
-              </Item>
-            ))}
-            <Item>
+                  ))}
+                </List>
+              </FormGroup>
+            </ResponsiveGridItem>
+            <ResponsiveGridItem>
               <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-                {selectedProduct && !isLoading && <Page.CancelAction navigateTo={-1} />}
+                {selectedProduct && !isLoading && <Page.CancelAction navigateTo="-1" />}
                 <Page.Action
                   type="submit"
                   form="productSelectionForm"
@@ -90,11 +116,11 @@ function ProductSelectionPage() {
                   {_("Select")}
                 </Page.Action>
               </Flex>
-            </Item>
+            </ResponsiveGridItem>
           </Grid>
         </Form>
       </Center>
-    </Page>
+    </Page >
   );
 }
 

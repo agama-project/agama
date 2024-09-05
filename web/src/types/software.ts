@@ -38,6 +38,8 @@ type Product = {
   name: string;
   /** Product description */
   description: string;
+  /** Product icon (e.g., "default.svg") */
+  icon: string;
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };
@@ -53,7 +55,7 @@ type SoftwareConfig = {
   /** Product to install */
   product?: string;
   /** An object where the keys are the pattern names and the values whether to install them or not */
-  patterns: { [key: string]: boolean };
+  patterns?: { [key: string]: boolean };
 };
 
 type Pattern = {

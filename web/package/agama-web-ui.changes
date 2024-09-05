@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Show product logo in product selector (gh#openSUSE/agama#1415).
+
+-------------------------------------------------------------------
 Wed Sep  4 21:00:34 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Bring back DASD management support (gh#openSUSE/agama#1549).

@@ -40,6 +40,7 @@ const copy_files = [
   "./src/index.html",
   // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
   "./src/assets/favicon.svg",
+  { from: "./src/assets/products/*.svg", to: "assets/logos/[name][ext]" }
 ];
 
 const plugins = [
