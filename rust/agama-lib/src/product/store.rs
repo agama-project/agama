@@ -133,4 +133,54 @@ mod test {
         registration_mock.assert_hits(2);
         Ok(())
     }
+
+    #[test]
+    async fn test_setting_product_ok() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        // no product selected at first
+        let get_software_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/software/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "patterns": {},
+                    "product": ""
+                }"#,
+                );
+        });
+        let software_mock = server.mock(|when, then| {
+            when.method(PUT)
+                .path("/api/software/config")
+                .header("content-type", "application/json")
+                .body(r#"{"patterns":null,"product":"Tumbleweed"}"#);
+            then.status(200);
+        });
+        let manager_mock = server.mock(|when, then| {
+            when.method(POST)
+                .path("/api/manager/probe_sync")
+                .header("content-type", "application/json")
+                .body(r#"[]"#);
+            then.status(200);
+        });
+        let url = server.url("/api");
+
+        let store = product_store(url);
+        let settings = ProductSettings {
+            id: Some("Tumbleweed".to_owned()),
+            registration_code: None,
+            registration_email: None,
+        };
+
+        let result = store.store(&settings).await;
+
+        // main assertion
+        result?;
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        get_software_mock.assert();
+        software_mock.assert();
+        manager_mock.assert();
+        Ok(())
+    }
 }
