@@ -62,7 +62,7 @@ describe Agama::DBus::Storage::JobsTree do
         expect(job.path).to match(/#{described_class::ROOT_PATH}\/[0-9]+/)
 
         expect(job.summary).to eq(
-          { "/path/dasd1" => [1000, 0, false], "/path/dasd2" => [2000, 0, false] }
+          { "0.0.001" => [1000, 0, false], "0.0.002" => [2000, 0, false] }
         )
       end
 
