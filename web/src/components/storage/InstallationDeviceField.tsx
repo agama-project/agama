@@ -63,7 +63,7 @@ const targetValue = (target: ProposalTarget, targetDevice: StorageDevice, target
  * @component
  */
 
-type TargetConfig = {
+export type TargetConfig = {
   target: ProposalTarget;
   targetDevice: StorageDevice | undefined;
   targetPVDevices: StorageDevice[];
