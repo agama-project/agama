@@ -19,27 +19,28 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, post } from "~/api/http";
-import { Job } from "~/types/job";
+type DASDDevice = {
+  id: string;
+  enabled: boolean;
+  deviceName: string;
+  formatted: boolean;
+  diag: boolean;
+  status: string; // TODO: sync with rust when it switch to enum
+  deviceType: string; // TODO: sync with rust when it switch to enum
+  accessType: string; // TODO: sync with rust when it switch to enum
+  partitionInfo: string;
+  hexId: number;
+};
 
-/**
- * Starts the storage probing process.
- */
-const probe = (): Promise<any> => post("/api/storage/probe");
-
-export {
-  probe
+type FormatSummary = {
+  total: number,
+  step: number,
+  done: boolean
 }
 
-/**
- * Returns the list of jobs
- */
-const fetchStorageJobs = (): Promise<Job[]> => get("/api/storage/jobs");
+type FormatJob = {
+  jobId: string,
+  summary?: { [key: string]: FormatSummary }
+}
 
-/**
- * Returns the job with given id or undefined
- */
-const findStorageJob = (id: string): Promise<Job | undefined> =>
-  fetchStorageJobs().then((jobs: Job[]) => jobs.find((value) => value.id === id));
-
-export { fetchStorageJobs, findStorageJob };
+export type { DASDDevice, FormatSummary, FormatJob };

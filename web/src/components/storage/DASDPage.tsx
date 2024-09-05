@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,27 +19,27 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, post } from "~/api/http";
-import { Job } from "~/types/job";
+import React from "react";
+import DASDTable from "~/components/storage/DASDTable";
+import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
+import { _ } from "~/i18n";
+import { Page } from "~/components/core";
+import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/dasd";
 
-/**
- * Starts the storage probing process.
- */
-const probe = (): Promise<any> => post("/api/storage/probe");
+export default function DASDPage() {
+  useDASDDevicesChanges();
+  useDASDFormatJobChanges();
 
-export {
-  probe
+  return (
+    <Page>
+      <Page.Header>
+        <h2>{_("DASD")}</h2>
+      </Page.Header>
+
+      <Page.MainContent>
+        <DASDTable />
+        <DASDFormatProgress />
+      </Page.MainContent>
+    </Page>
+  );
 }
-
-/**
- * Returns the list of jobs
- */
-const fetchStorageJobs = (): Promise<Job[]> => get("/api/storage/jobs");
-
-/**
- * Returns the job with given id or undefined
- */
-const findStorageJob = (id: string): Promise<Job | undefined> =>
-  fetchStorageJobs().then((jobs: Job[]) => jobs.find((value) => value.id === id));
-
-export { fetchStorageJobs, findStorageJob };
