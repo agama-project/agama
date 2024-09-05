@@ -19,8 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
+import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 import {
   deviceSize,
   deviceBaseName,
@@ -34,22 +33,13 @@ import {
   isTransactionalSystem,
 } from "./utils";
 
-/**
- * @typedef {import("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import("~/client/storage").Volume} Volume
- */
-
 /** Volume factory.
  * @function
- *
- * @param {object} [properties={}]
- * @returns {Volume}
  */
-const volume = (properties = {}) => {
-  /** @type {Volume} */
-  const testVolume = {
+const volume = (properties: object = {}): Volume => {
+  const testVolume: Volume = {
     mountPath: "/test",
-    target: "DEFAULT",
+    target: VolumeTarget.DEFAULT,
     fsType: "Btrfs",
     minSize: 1024,
     maxSize: 2048,
@@ -71,8 +61,7 @@ const volume = (properties = {}) => {
   return { ...testVolume, ...properties };
 };
 
-/** @type {StorageDevice} */
-const sda = {
+const sda: StorageDevice = {
   sid: 59,
   isDrive: true,
   type: "disk",
@@ -92,8 +81,7 @@ const sda = {
   udevPaths: [],
 };
 
-/** @type {StorageDevice} */
-const sda1 = {
+const sda1: StorageDevice = {
   sid: 60,
   isDrive: false,
   type: "partition",
@@ -110,8 +98,7 @@ const sda1 = {
   isEFI: false,
 };
 
-/** @type {StorageDevice} */
-const sda2 = {
+const sda2: StorageDevice = {
   sid: 61,
   isDrive: false,
   type: "partition",
@@ -138,8 +125,7 @@ sda.partitionTable = {
   ],
 };
 
-/** @type {StorageDevice}  */
-const lvmVg = {
+const lvmVg: StorageDevice = {
   sid: 72,
   isDrive: false,
   type: "lvmVg",
@@ -148,8 +134,7 @@ const lvmVg = {
   size: 512,
 };
 
-/** @type {StorageDevice}  */
-const lvmLv1 = {
+const lvmLv1: StorageDevice = {
   sid: 73,
   isDrive: false,
   type: "lvmLv",
@@ -199,7 +184,7 @@ describe("deviceLabel", () => {
 
 describe("deviceChildren", () => {
   /** @type {StorageDevice} */
-  let device;
+  let device: StorageDevice;
 
   describe("if the device has partition table", () => {
     beforeEach(() => {

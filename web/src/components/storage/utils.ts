@@ -30,29 +30,25 @@
  */
 
 import xbytes from "xbytes";
-
 import { N_ } from "~/i18n";
-
-/**
- * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").PartitionSlot} PartitionSlot
- */
+import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
 
 /**
  * @note undefined for either property means unknown
- * @typedef {object} SizeObject
- * @property {number|undefined} size - The "amount" of size (10, 128, ...)
- * @property {string|undefined} unit - The size unit (MiB, GiB, ...)
- *
- * @typedef {object} SpacePolicy
- * @property {string} id
- * @property {string} label
- * @property {string} description
- * @property {string[]} summaryLabels
- *
- * @typedef {"auto"|"fixed"|"range"} SizeMethod
  */
+export type SizeObject = {
+  size: number | undefined;
+  unit: string | undefined;
+}
+
+export type SpacePolicy = {
+  id: string;
+  label: string;
+  description: string;
+  summaryLabels: string[];
+}
+
+export type SizeMethod = "auto" | "fixed" | "range";
 
 const SIZE_METHODS = Object.freeze({
   AUTO: "auto",
@@ -70,8 +66,7 @@ const SIZE_UNITS = Object.freeze({
 
 const DEFAULT_SIZE_UNIT = "GiB";
 
-/** @type {SpacePolicy[]} */
-const SPACE_POLICIES = [
+const SPACE_POLICIES: SpacePolicy[] = [
   {
     id: "delete",
     label: N_("Delete current content"),
@@ -122,11 +117,8 @@ const SPACE_POLICIES = [
  * input otherwise. Note, however, that -1 number will treated as empty string
  * since it means nothing for Agama UI although it represents the "unlimited"
  * size in the backend.
- *
- * @param {number|string|undefined} size
- * @returns {SizeObject}
  */
-const splitSize = (size) => {
+const splitSize = (size: number | string | undefined): SizeObject => {
   // From D-Bus, maxSize comes as undefined when set as "unlimited", but for Agama UI
   // it means "leave it empty"
   const sanitizedSize = size === undefined ? "" : size;
@@ -150,11 +142,8 @@ const splitSize = (size) => {
  * @example
  * deviceSize(1024)
  * // returns "1 KiB"
- *
- * @param {number} size - Number of bytes
- * @returns {string}
  */
-const deviceSize = (size) => {
+const deviceSize = (size: number): string => {
   // Sadly, we cannot returns directly the xbytes(size, { iec: true }) because
   // it does not have an option for dropping/ignoring trailing zeroes and we do
   // not want to render them.
@@ -175,11 +164,8 @@ const deviceSize = (size) => {
  *
  * parseToBytes("")
  * // returns 0
- *
- * @param {string|number} size
- * @returns {number}
  */
-const parseToBytes = (size) => {
+const parseToBytes = (size: string | number): number => {
   if (!size || size === undefined || size === "") return 0;
 
   const value = xbytes.parseSize(size.toString(), { iec: true }) || parseInt(size.toString());
@@ -191,22 +177,16 @@ const parseToBytes = (size) => {
 /**
  * Base name of a device.
  * @function
- *
- * @param {StorageDevice} device
- * @returns {string}
  */
-const deviceBaseName = (device) => {
+const deviceBaseName = (device: StorageDevice): string => {
   return device.name.split("/").pop();
 };
 
 /**
  * Generates the label for the given device
  * @function
- *
- * @param {StorageDevice} device
- * @returns {string}
  */
-const deviceLabel = (device) => {
+const deviceLabel = (device: StorageDevice): string => {
   const name = device.name;
   const size = device.size;
 
@@ -220,11 +200,8 @@ const deviceLabel = (device) => {
  * @note This method could be directly provided by the device object. For now, the method is kept
  * here because the elements considered as children (e.g., partitions + unused slots) is not a
  * semantic storage concept but a helper for UI components.
- *
- * @param {StorageDevice} device
- * @returns {(StorageDevice|PartitionSlot)[]}
  */
-const deviceChildren = (device) => {
+const deviceChildren = (device: StorageDevice): (StorageDevice | PartitionSlot)[] => {
   const partitionTableChildren = (partitionTable) => {
     const { partitions, unusedSlots } = partitionTable;
     const children = partitions.concat(unusedSlots).filter((i) => !!i);
@@ -248,7 +225,7 @@ const deviceChildren = (device) => {
  * @param {string} fs - Filesystem name to check.
  * @returns {boolean} true when volume uses given fs
  */
-const hasFS = (volume, fs) => {
+const hasFS = (volume: Volume, fs: string): boolean => {
   const volFS = volume.fsType;
 
   return volFS.toLowerCase() === fs.toLocaleLowerCase();
@@ -257,68 +234,49 @@ const hasFS = (volume, fs) => {
 /**
  * Checks whether the given volume has snapshots.
  * @function
- *
- * @param {Volume} volume
- * @returns {boolean}
  */
-const hasSnapshots = (volume) => {
+const hasSnapshots = (volume: Volume): boolean => {
   return hasFS(volume, "btrfs") && volume.snapshots;
 };
 
 /**
  * Checks whether the given volume defines a transactional root.
  * @function
- *
- * @param {Volume} volume
- * @returns {boolean}
  */
-const isTransactionalRoot = (volume) => {
+const isTransactionalRoot = (volume: Volume): boolean => {
   return volume.mountPath === "/" && volume.transactional;
 };
 
 /**
  * Checks whether the given volumes defines a transactional system.
  * @function
- *
- * @param {Volume[]} volumes
- * @returns {boolean}
  */
-const isTransactionalSystem = (volumes = []) => {
+const isTransactionalSystem = (volumes: Volume[] = []): boolean => {
   return volumes.find((v) => isTransactionalRoot(v)) !== undefined;
 };
 
 /**
  * Checks whether the given volume is configured to mount an existing file system.
  * @function
- *
- * @param {Volume} volume
- * @returns {boolean}
  */
-const mountFilesystem = (volume) => volume.target === "FILESYSTEM";
+const mountFilesystem = (volume: Volume): boolean => volume.target === "filesystem";
 
 /**
  * Checks whether the given volume is configured to reuse a device (format or mount a file system).
  * @function
- *
- * @param {Volume} volume
- * @returns {boolean}
  */
-const reuseDevice = (volume) => volume.target === "FILESYSTEM" || volume.target === "DEVICE";
+const reuseDevice = (volume: Volume): boolean => volume.target === "filesystem" || volume.target === "device";
 
 /**
  * Generates a label for the given volume.
  * @function
- *
- * @param {Volume} volume
- * @returns {string}
  */
-const volumeLabel = (volume) => (volume.mountPath === "/" ? "root" : volume.mountPath);
+const volumeLabel = (volume: Volume): string => (volume.mountPath === "/" ? "root" : volume.mountPath);
 
 /**
  * GiB to Bytes.
- *
- * @type {(value: number) => number } */
-const gib = (value) => value * 1024 ** 3;
+ */
+const gib: (value: number) => number = (value): number => value * 1024 ** 3;
 
 export {
   DEFAULT_SIZE_UNIT,
