@@ -33,13 +33,10 @@ import { sprintf } from "sprintf-js";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { StorageDevice } from "~/types/storage";
 
 // FIXME: improve classNames
 // FIXME: improve and rename to BootSelectionDialog
-
-/**
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
 
 const BOOT_AUTO_ID = "boot-auto";
 const BOOT_MANUAL_ID = "boot-manual";
@@ -49,19 +46,18 @@ const BOOT_DISABLED_ID = "boot-disabled";
  * Allows the user to select the boot configuration.
  */
 export default function BootSelectionDialog() {
-  /**
-   * @typedef {object} BootSelectionState
-   * @property {boolean} load
-   * @property {string} [selectedOption]
-   * @property {boolean} [configureBoot]
-   * @property {StorageDevice} [bootDevice]
-   * @property {StorageDevice} [defaultBootDevice]
-   * @property {StorageDevice[]} [availableDevices]
-   */
+  type BootSelectionState = {
+    load: boolean;
+    selectedOption?: string;
+    configureBoot?: boolean;
+    bootDevice?: StorageDevice;
+    defaultBootDevice?: StorageDevice;
+    availableDevices?: StorageDevice[];
+  }
+
   const { cancellablePromise } = useCancellablePromise();
   const { storage: client } = useInstallerClient();
-  /** @type ReturnType<typeof useState<BootSelectionState>> */
-  const [state, setState] = useState({ load: false });
+  const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
 
   // FIXME: Repeated code, see DeviceSelection. Use a context/hook or whatever
@@ -78,9 +74,9 @@ export default function BootSelectionDialog() {
     if (state.load) return;
 
     const load = async () => {
-      let selectedOption;
+      let selectedOption: string;
       const { settings } = await loadProposalResult();
-      const availableDevices = await loadAvailableDevices();
+      const availableDevices: StorageDevice[] = await loadAvailableDevices();
       const { bootDevice, configureBoot, defaultBootDevice } = settings;
 
       if (!configureBoot) {
@@ -91,7 +87,7 @@ export default function BootSelectionDialog() {
         selectedOption = BOOT_MANUAL_ID;
       }
 
-      const findDevice = (name) => availableDevices.find((d) => d.name === name);
+      const findDevice = (name: string) => availableDevices.find((d) => d.name === name);
 
       setState({
         load: true,
