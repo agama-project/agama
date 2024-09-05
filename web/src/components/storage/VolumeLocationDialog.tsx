@@ -28,13 +28,9 @@ import VolumeLocationSelectorTable from "~/components/storage/VolumeLocationSele
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, volumeLabel } from "~/components/storage/utils";
+import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
-/**
- * @typedef {"auto"|"device"|"reuse"} LocationOption
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import ("~/client/storage").VolumeTarget} VolumeTarget
- */
+type LocationOption = "auto" | "device" | "reuse";
 
 // TRANSLATORS: Description of the dialog for changing the location of a file system.
 const DIALOG_DESCRIPTION = _(
@@ -42,49 +38,47 @@ const DIALOG_DESCRIPTION = _(
 default. Indicate a custom location to create the file system at a specific device.",
 );
 
-/** @type {(device: StorageDevice|undefined) => VolumeTarget} */
-const defaultTarget = (device) => {
-  if (["partition", "lvmLv", "md"].includes(device?.type)) return "DEVICE";
+const defaultTarget: (device: StorageDevice | undefined) => VolumeTarget = (device): VolumeTarget => {
+  if (["partition", "lvmLv", "md"].includes(device?.type)) return VolumeTarget.DEVICE;
 
-  return "NEW_PARTITION";
+  return VolumeTarget.NEW_PARTITION;
 };
 
 /** @type {(volume: Volume, device: StorageDevice|undefined) => VolumeTarget[]} */
-const availableTargets = (volume, device) => {
+const availableTargets: (volume: Volume, device: StorageDevice | undefined) => VolumeTarget[] = (volume, device): VolumeTarget[] => {
   /** @type {VolumeTarget[]} */
-  const targets = ["DEVICE"];
+  const targets: VolumeTarget[] = [VolumeTarget.DEVICE];
 
   if (device?.isDrive) {
-    targets.push("NEW_PARTITION");
-    targets.push("NEW_VG");
+    targets.push(VolumeTarget.NEW_PARTITION);
+    targets.push(VolumeTarget.NEW_VG);
   }
 
   if (device?.filesystem && volume.outline.fsTypes.includes(device.filesystem.type))
-    targets.push("FILESYSTEM");
+    targets.push(VolumeTarget.FILESYSTEM);
 
   return targets;
 };
 
 /** @type {(volume: Volume, device: StorageDevice|undefined) => VolumeTarget} */
-const sanitizeTarget = (volume, device) => {
+const sanitizeTarget: (volume: Volume, device: StorageDevice | undefined) => VolumeTarget = (volume, device): VolumeTarget => {
   const targets = availableTargets(volume, device);
   return targets.includes(volume.target) ? volume.target : defaultTarget(device);
 };
 
+export type VolumeLocationDialogProps = {
+  volume: Volume;
+  volumes: Volume[];
+  volumeDevices: StorageDevice[];
+  targetDevices: StorageDevice[];
+  isOpen?: boolean;
+  onCancel: () => void;
+  onAccept: (volume: Volume) => void;
+}
+
 /**
  * Renders a dialog that allows the user to change the location of a volume.
  * @component
- *
- * @typedef {object} VolumeLocationDialogProps
- * @property {Volume} volume
- * @property {Volume[]} volumes
- * @property {StorageDevice[]} volumeDevices
- * @property {StorageDevice[]} targetDevices
- * @property {boolean} [isOpen=false] - Whether the dialog is visible or not.
- * @property {() => void} onCancel
- * @property {(volume: Volume) => void} onAccept
- *
- * @param {VolumeLocationDialogProps} props
  */
 export default function VolumeLocationDialog({
   volume,
@@ -95,17 +89,17 @@ export default function VolumeLocationDialog({
   onCancel,
   onAccept,
   ...props
-}) {
+}: VolumeLocationDialogProps) {
   /** @type {StorageDevice|undefined} */
-  const initialDevice = volume.targetDevice || targetDevices[0] || volumeDevices[0];
+  const initialDevice: StorageDevice | undefined = volume.targetDevice || targetDevices[0] || volumeDevices[0];
   /** @type {VolumeTarget} */
-  const initialTarget = sanitizeTarget(volume, initialDevice);
+  const initialTarget: VolumeTarget = sanitizeTarget(volume, initialDevice);
 
   const [target, setTarget] = useState(initialTarget);
   const [targetDevice, setTargetDevice] = useState(initialDevice);
 
   /** @type {(devices: StorageDevice[]) => void} */
-  const changeTargetDevice = (devices) => {
+  const changeTargetDevice: (devices: StorageDevice[]) => void = (devices): void => {
     const newTargetDevice = devices[0];
 
     if (newTargetDevice.name !== targetDevice.name) {
@@ -115,14 +109,14 @@ export default function VolumeLocationDialog({
   };
 
   /** @type {(e: import("react").FormEvent) => void} */
-  const onSubmit = (e) => {
+  const onSubmit: (e: import("react").FormEvent) => void = (e): void => {
     e.preventDefault();
     const newVolume = { ...volume, target, targetDevice };
     onAccept(newVolume);
   };
 
   /** @type {(device: StorageDevice) => boolean} */
-  const isDeviceSelectable = (device) => {
+  const isDeviceSelectable: (device: StorageDevice) => boolean = (device): boolean => {
     return device.isDrive || ["md", "partition", "lvmLv"].includes(device.type);
   };
 
@@ -169,9 +163,9 @@ export default function VolumeLocationDialog({
                 "The file system will be allocated as a new partition at the selected \
   disk.",
               )}
-              isChecked={target === "NEW_PARTITION"}
-              isDisabled={!targets.includes("NEW_PARTITION")}
-              onChange={() => setTarget("NEW_PARTITION")}
+              isChecked={target === VolumeTarget.NEW_PARTITION}
+              isDisabled={!targets.includes(VolumeTarget.NEW_PARTITION)}
+              onChange={() => setTarget(VolumeTarget.NEW_PARTITION)}
             />
             <Radio
               id="dedicated_lvm"
@@ -181,9 +175,9 @@ export default function VolumeLocationDialog({
                 "A new volume group will be allocated in the selected disk and the \
   file system will be created as a logical volume.",
               )}
-              isChecked={target === "NEW_VG"}
-              isDisabled={!targets.includes("NEW_VG")}
-              onChange={() => setTarget("NEW_VG")}
+              isChecked={target === VolumeTarget.NEW_VG}
+              isDisabled={!targets.includes(VolumeTarget.NEW_VG)}
+              onChange={() => setTarget(VolumeTarget.NEW_VG)}
             />
             <Radio
               id="format"
@@ -196,9 +190,9 @@ export default function VolumeLocationDialog({
                   volume.fsType,
                 )
               }
-              isChecked={target === "DEVICE"}
-              isDisabled={!targets.includes("DEVICE")}
-              onChange={() => setTarget("DEVICE")}
+              isChecked={target === VolumeTarget.DEVICE}
+              isDisabled={!targets.includes(VolumeTarget.DEVICE)}
+              onChange={() => setTarget(VolumeTarget.DEVICE)}
             />
             <Radio
               id="mount"
@@ -208,9 +202,9 @@ export default function VolumeLocationDialog({
                 "The current file system on the selected device will be mounted \
   without formatting the device.",
               )}
-              isChecked={target === "FILESYSTEM"}
-              isDisabled={!targets.includes("FILESYSTEM")}
-              onChange={() => setTarget("FILESYSTEM")}
+              isChecked={target === VolumeTarget.FILESYSTEM}
+              isDisabled={!targets.includes(VolumeTarget.FILESYSTEM)}
+              onChange={() => setTarget(VolumeTarget.FILESYSTEM)}
             />
           </Stack>
         </FormGroup>
