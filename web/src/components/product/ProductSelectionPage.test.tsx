@@ -23,77 +23,55 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import { ProductSelectionPage } from "~/components/product";
-import { createClient } from "~/client";
-import { Product } from "~/types/software";
+import { Product, } from "~/types/software";
+import { useProduct } from "~/queries/software";
 
-const products: Product[] = [
-  {
-    id: "Tumbleweed",
-    name: "openSUSE Tumbleweed",
-    icon: "tumbleweed.svg",
-    description: "Tumbleweed description...",
-  },
-  {
-    id: "MicroOS",
-    name: "openSUSE MicroOS",
-    icon: "microos.svg",
-    description: "MicroOS description",
-  },
-];
+const mockConfigMutation = jest.fn();
+const tumbleweed: Product = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  icon: "tumbleweed.svg",
+  description: "Tumbleweed description...",
+};
 
-jest.mock("~/client");
+const microOs: Product = {
+  id: "MicroOS",
+  name: "openSUSE MicroOS",
+  icon: "microos.svg",
+  description: "MicroOS description",
+};
+
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
-  useProduct: () => {
+  useProduct: (): ReturnType<typeof useProduct> => {
     return {
-      products,
-      selectedProduct: products[0],
+      products: [tumbleweed, microOs],
+      selectedProduct: tumbleweed,
     };
   },
   useProductChanges: () => jest.fn(),
+  useConfigMutation: () => ({ mutate: mockConfigMutation })
 }));
 
-const managerMock = {
-  startProbing: jest.fn(),
-};
-
-const productMock = {
-  getAll: () => Promise.resolve(products),
-  getSelected: jest.fn(() => Promise.resolve(products[0])),
-  select: jest.fn().mockResolvedValue(false),
-  onChange: jest.fn(),
-};
-
-beforeEach(() => {
-  (createClient as jest.Mock).mockImplementation(() => {
-    return {
-      manager: managerMock,
-      product: productMock,
-    };
-  });
-});
-
-describe.skip("when the user chooses a product", () => {
-  it("selects the product and redirects to the main page", async () => {
+describe("when the user chooses a product and hits the confirmation button", () => {
+  it("triggers the product selection", async () => {
     const { user } = installerRender(<ProductSelectionPage />);
-    const productOption = screen.getByRole("row", { name: /openSUSE MicroOS/ });
+    const productOption = screen.getByRole("radio", { name: microOs.name });
     const selectButton = screen.getByRole("button", { name: "Select" });
     await user.click(productOption);
     await user.click(selectButton);
-    expect(productMock.select).toHaveBeenCalledWith("MicroOS");
-    expect(managerMock.startProbing).toHaveBeenCalled();
-    expect(mockNavigateFn).toHaveBeenCalledWith("/");
+    expect(mockConfigMutation).toHaveBeenCalledWith({ product: microOs.id });
   });
 });
 
-describe.skip("when the user chooses does not change the product", () => {
-  it("redirects to the main page", async () => {
+describe("when the user chooses a product but hits the cancel button", () => {
+  it("does not trigger the product selection and goes back", async () => {
     const { user } = installerRender(<ProductSelectionPage />);
-    screen.getByText("openSUSE Tumbleweed");
-    const selectButton = await screen.findByRole("button", { name: "Select" });
-    await user.click(selectButton);
-    expect(productMock.select).not.toHaveBeenCalled();
-    expect(managerMock.startProbing).not.toHaveBeenCalled();
-    expect(mockNavigateFn).toHaveBeenCalledWith("/");
+    const productOption = screen.getByRole("radio", { name: microOs.name });
+    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+    await user.click(productOption);
+    await user.click(cancelButton);
+    expect(mockConfigMutation).not.toHaveBeenCalled();
+    expect(mockNavigateFn).toHaveBeenCalledWith("-1");
   });
 });
