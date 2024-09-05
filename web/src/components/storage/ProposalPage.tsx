@@ -66,7 +66,7 @@ export default function ProposalPage() {
   const stagingDevices = useDevices("result");
   const availableDevices = useAvailableDevices();
   const volumeDevices = useVolumeDevices();
-  const volumeTemplates = useVolumeTemplates({ suspense: true });
+  const volumeTemplates = useVolumeTemplates();
   const { encryptionMethods } = useProductParams({ suspense: true });
   const { actions, settings } = useProposalResult();
   const updateProposal = useProposalMutation();
