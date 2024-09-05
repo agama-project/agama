@@ -34,7 +34,6 @@ import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
 
 /**
  * Returns what (volumes, installation device) is using a device.
- * @function
  */
 const deviceUsers = (item: PartitionSlot | StorageDevice, targetDevices: StorageDevice[], volumes: Volume[]): string[] => {
   const device = toStorageDevice(item);

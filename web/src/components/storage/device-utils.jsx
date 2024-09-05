@@ -34,7 +34,6 @@ import { deviceBaseName, deviceSize } from "~/components/storage/utils";
 
 /**
  * Ensures the given item is a StorageDevice.
- * @function
  *
  * @param {PartitionSlot|StorageDevice} item
  * @returns {StorageDevice|undefined}

@@ -33,8 +33,8 @@ import {
   isTransactionalSystem,
 } from "./utils";
 
-/** Volume factory.
- * @function
+/**
+ * Volume factory.
  */
 const volume = (properties: object = {}): Volume => {
   const testVolume: Volume = {

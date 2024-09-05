@@ -111,7 +111,6 @@ const SPACE_POLICIES: SpacePolicy[] = [
 
 /**
  * Convenience method for generating a size object based on given input
- * @function
  *
  * It split given input when a string is given or the result of converting the
  * input otherwise. Note, however, that -1 number will treated as empty string
@@ -137,7 +136,6 @@ const splitSize = (size: number | string | undefined): SizeObject => {
 
 /**
  * Generates a disk size representation
- * @function
  *
  * @example
  * deviceSize(1024)
@@ -153,7 +151,6 @@ const deviceSize = (size: number): string => {
 
 /**
  * Returns the equivalent in bytes resulting from parsing given input
- * @function
  *
  * @example
  * parseToBytes(1024)
@@ -176,7 +173,6 @@ const parseToBytes = (size: string | number): number => {
 
 /**
  * Base name of a device.
- * @function
  */
 const deviceBaseName = (device: StorageDevice): string => {
   return device.name.split("/").pop();
@@ -184,7 +180,6 @@ const deviceBaseName = (device: StorageDevice): string => {
 
 /**
  * Generates the label for the given device
- * @function
  */
 const deviceLabel = (device: StorageDevice): string => {
   const name = device.name;
@@ -195,7 +190,6 @@ const deviceLabel = (device: StorageDevice): string => {
 
 /**
  * Sorted list of children devices (i.e., partitions and unused slots or logical volumes).
- * @function
  *
  * @note This method could be directly provided by the device object. For now, the method is kept
  * here because the elements considered as children (e.g., partitions + unused slots) is not a
@@ -219,7 +213,6 @@ const deviceChildren = (device: StorageDevice): (StorageDevice | PartitionSlot)[
 
 /**
  * Checks if volume uses given fs. This method works same as in backend case insensitive.
- * @function
  *
  * @param {Volume} volume
  * @param {string} fs - Filesystem name to check.
@@ -233,7 +226,6 @@ const hasFS = (volume: Volume, fs: string): boolean => {
 
 /**
  * Checks whether the given volume has snapshots.
- * @function
  */
 const hasSnapshots = (volume: Volume): boolean => {
   return hasFS(volume, "btrfs") && volume.snapshots;
@@ -241,7 +233,6 @@ const hasSnapshots = (volume: Volume): boolean => {
 
 /**
  * Checks whether the given volume defines a transactional root.
- * @function
  */
 const isTransactionalRoot = (volume: Volume): boolean => {
   return volume.mountPath === "/" && volume.transactional;
@@ -249,7 +240,6 @@ const isTransactionalRoot = (volume: Volume): boolean => {
 
 /**
  * Checks whether the given volumes defines a transactional system.
- * @function
  */
 const isTransactionalSystem = (volumes: Volume[] = []): boolean => {
   return volumes.find((v) => isTransactionalRoot(v)) !== undefined;
@@ -257,19 +247,16 @@ const isTransactionalSystem = (volumes: Volume[] = []): boolean => {
 
 /**
  * Checks whether the given volume is configured to mount an existing file system.
- * @function
  */
 const mountFilesystem = (volume: Volume): boolean => volume.target === "filesystem";
 
 /**
  * Checks whether the given volume is configured to reuse a device (format or mount a file system).
- * @function
  */
 const reuseDevice = (volume: Volume): boolean => volume.target === "filesystem" || volume.target === "device";
 
 /**
  * Generates a label for the given volume.
- * @function
  */
 const volumeLabel = (volume: Volume): string => (volume.mountPath === "/" ? "root" : volume.mountPath);
 

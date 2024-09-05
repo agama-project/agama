@@ -65,7 +65,6 @@ type VolumeFormErrors = {
 
 /**
  * Renders the title for the dialog.
- * @function
  */
 const renderTitle = (volume: Volume, volumes: Volume[]): string => {
   const isNewVolume = !volumes.includes(volume);
@@ -283,7 +282,6 @@ class ExistingTemplateError {
 
 /**
  * Error if the mount path is missing.
- * @function
  */
 const missingMountPathError = (mountPath: string): string | null => {
   const error = new MissingMountPathError(mountPath);
@@ -292,7 +290,6 @@ const missingMountPathError = (mountPath: string): string | null => {
 
 /**
  * Error if the mount path is not valid.
- * @function
  */
 const invalidMountPathError = (mountPath: string): string | null => {
   const error = new InvalidMountPathError(mountPath);
@@ -301,7 +298,6 @@ const invalidMountPathError = (mountPath: string): string | null => {
 
 /**
  * Error if the size is missing.
- * @function
  */
 const missingSizeError = (sizeMethod: SizeMethod, size: string | number): string | null => {
   const error = new MissingSizeError(sizeMethod, size);
@@ -310,7 +306,6 @@ const missingSizeError = (sizeMethod: SizeMethod, size: string | number): string
 
 /**
  * Error if the min size is missing.
- * @function
  */
 const missingMinSizeError = (sizeMethod: SizeMethod, minSize: string | number): string | null => {
   const error = new MissingMinSizeError(sizeMethod, minSize);
@@ -319,7 +314,6 @@ const missingMinSizeError = (sizeMethod: SizeMethod, minSize: string | number): 
 
 /**
  * Error if the max size is not valid.
- * @function
  */
 const invalidMaxSizeError = (sizeMethod: SizeMethod, minSize: string | number, maxSize: string | number): string | null => {
   const error = new InvalidMaxSizeError(sizeMethod, minSize, maxSize);
@@ -328,7 +322,6 @@ const invalidMaxSizeError = (sizeMethod: SizeMethod, minSize: string | number, m
 
 /**
  * Error if the given mount path exists in the list of volumes.
- * @function
  */
 const existingVolumeError = (mountPath: string, volumes: Volume[], onClick: (volume: Volume) => void): React.ReactElement | null => {
   const error = new ExistingVolumeError(mountPath, volumes);
@@ -337,7 +330,6 @@ const existingVolumeError = (mountPath: string, volumes: Volume[], onClick: (vol
 
 /**
  * Error if the given mount path exists in the list of templates.
- * @function
  */
 const existingTemplateError = (mountPath: string, templates: Volume[], onClick: (template: Volume) => void): React.ReactElement | null => {
   const error = new ExistingTemplateError(mountPath, templates);
@@ -346,7 +338,6 @@ const existingTemplateError = (mountPath: string, templates: Volume[], onClick: 
 
 /**
  * Checks whether there is any error.
- * @function
  */
 const anyError = (errors: VolumeFormErrors): boolean => {
   return compact(Object.values(errors)).length > 0;
@@ -354,7 +345,6 @@ const anyError = (errors: VolumeFormErrors): boolean => {
 
 /**
  * Remove leftover trailing slash.
- * @function
  */
 const sanitizeMountPath = (mountPath: string): string => {
   if (mountPath === "/") return mountPath;
@@ -364,7 +354,6 @@ const sanitizeMountPath = (mountPath: string): string => {
 
 /**
  * Creates a new storage volume object based on given params.
- * @function
  */
 const createUpdatedVolume = (volume: Volume, formData: VolumeFormData): Volume => {
   let sizeAttrs = {};
@@ -391,7 +380,6 @@ const createUpdatedVolume = (volume: Volume, formData: VolumeFormData): Volume =
 
 /**
  * Form-related helper for guessing the size method for given volume
- * @function
  */
 const sizeMethodFor = (volume: Volume): SizeMethod => {
   const { autoSize, minSize, maxSize } = volume;
@@ -407,7 +395,6 @@ const sizeMethodFor = (volume: Volume): SizeMethod => {
 
 /**
  * Form-related helper for preparing data based on given volume
- * @function
  */
 const prepareFormData = (volume: Volume): VolumeFormData => {
   const { size: minSize = "", unit: minSizeUnit = DEFAULT_SIZE_UNIT } = splitSize(volume.minSize);
@@ -429,7 +416,6 @@ const prepareFormData = (volume: Volume): VolumeFormData => {
 
 /**
  * Possible errors from the form data.
- * @function
  */
 const prepareErrors = (): VolumeFormErrors => {
   return {
@@ -445,7 +431,6 @@ const prepareErrors = (): VolumeFormErrors => {
 
 /**
  * Initializer function for the React#useReducer used in the {@link VolumesForm}
- * @function
  *
  * @param volume - a storage volume object
  */
@@ -458,7 +443,6 @@ const createInitialState = (volume: Volume): VolumeFormState => {
 
 /**
  * The VolumeForm reducer.
- * @function
  */
 const reducer = (state: VolumeFormState, action: { type: string, payload: any }) => {
   const { type, payload } = action;

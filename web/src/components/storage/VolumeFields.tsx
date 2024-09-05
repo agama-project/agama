@@ -105,7 +105,6 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }: { units: Array<string
 
 /**
  * Possible file system type options for a volume.
- * @function
  */
 const fsOptions = (volume: Volume): string[] => {
   return volume.outline.fsTypes;
