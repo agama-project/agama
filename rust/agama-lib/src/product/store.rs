@@ -17,6 +17,14 @@ impl ProductStore {
         })
     }
 
+    fn non_empty_string(s: String) -> Option<String> {
+        if s.is_empty() {
+            None
+        } else {
+            Some(s)
+        }
+    }
+
     pub async fn load(&self) -> Result<ProductSettings, ServiceError> {
         let product = self.product_client.product().await?;
         let registration_code = self.product_client.registration_code().await?;
@@ -24,8 +32,8 @@ impl ProductStore {
 
         Ok(ProductSettings {
             id: Some(product),
-            registration_code: Some(registration_code),
-            registration_email: Some(email),
+            registration_code: Self::non_empty_string(registration_code),
+            registration_email: Self::non_empty_string(email),
         })
     }
 
@@ -58,6 +66,71 @@ impl ProductStore {
             self.manager_client.probe().await?;
         }
 
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::base_http_client::BaseHTTPClient;
+    use httpmock::prelude::*;
+    use std::error::Error;
+    use tokio::test; // without this, "error: async functions cannot be used for tests"
+
+    fn product_store(mock_server_url: String) -> ProductStore {
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = mock_server_url;
+        let p_client = ProductHTTPClient::new_with_base(bhc.clone());
+        let m_client = ManagerHTTPClient::new_with_base(bhc);
+        ProductStore {
+            product_client: p_client,
+            manager_client: m_client,
+        }
+    }
+
+    #[test]
+    async fn test_getting_product() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let software_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/software/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "patterns": {"xfce":true},
+                    "product": "Tumbleweed"
+                }"#,
+                );
+        });
+        let registration_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/software/registration");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "key": "",
+                    "email": "",
+                    "requirement": "NotRequired"
+                }"#,
+                );
+        });
+        let url = server.url("/api");
+
+        let store = product_store(url);
+        let settings = store.load().await?;
+
+        let expected = ProductSettings {
+            id: Some("Tumbleweed".to_owned()),
+            registration_code: None,
+            registration_email: None,
+        };
+        // main assertion
+        assert_eq!(settings, expected);
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        software_mock.assert();
+        registration_mock.assert_hits(2);
         Ok(())
     }
 }

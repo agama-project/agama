@@ -20,6 +20,7 @@ use crate::{auth::AuthToken, error::ServiceError};
 ///     client.get("/questions").await
 ///   }
 /// ```
+#[derive(Clone)]
 pub struct BaseHTTPClient {
     client: reqwest::Client,
     pub base_url: String,
