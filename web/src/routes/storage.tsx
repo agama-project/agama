@@ -23,11 +23,12 @@ import React from "react";
 import BootSelection from "~/components/storage/BootSelection";
 import DeviceSelection from "~/components/storage/DeviceSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
-import { DASDPage, ISCSIPage } from "~/components/storage";
+import { DASDPage, ISCSIPage, ZFCPPage } from "~/components/storage";
 import ProposalPage from "~/components/storage/ProposalPage";
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 import { DASDSupported, probeDASD } from "~/api/dasd";
+import { ZFCPSupported, probeZFCP } from "~/api/zfcp";
 
 const PATHS = {
   root: "/storage",
@@ -36,6 +37,7 @@ const PATHS = {
   spacePolicy: "/storage/space-policy",
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
+  zfcp: "/storage/zfcp"
 };
 
 const routes = (): Route => {
@@ -44,6 +46,13 @@ const routes = (): Route => {
     element: <DASDPage />,
     handle: { name: N_("DASD") },
     loader: async () => probeDASD(),
+  };
+
+  const zfcpRoute = {
+    path: PATHS.zfcp,
+    element: <ZFCPPage />,
+    handle: { name: N_("zFCP") },
+    loader: async () => probeZFCP(),
   };
 
   const routes = {
@@ -75,6 +84,7 @@ const routes = (): Route => {
   };
 
   if (DASDSupported()) routes.children.push(dasdRoute);
+  if (ZFCPSupported()) routes.children.push(zfcpRoute);
 
   return routes;
 };
