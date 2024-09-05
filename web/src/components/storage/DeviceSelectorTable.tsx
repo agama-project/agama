@@ -34,26 +34,18 @@ import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceBaseName } from "~/components/storage/utils";
-
-/**
- * @typedef {import("../core/ExpandableSelector").ExpandableSelectorColumn} ExpandableSelectorColumn
- * @typedef {import("../core/ExpandableSelector").ExpandableSelectorProps} ExpandableSelectorProps
- * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
+import { PartitionSlot, StorageDevice } from "~/types/storage";
+import { ExpandableSelectorColumn, ExpandableSelectorProps } from "../core/ExpandableSelector";
 
 /**
  * @component
- *
- * @param {object} props
- * @param {PartitionSlot|StorageDevice} props.item
  */
-const DeviceInfo = ({ item }) => {
+const DeviceInfo = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
   const DeviceType = () => {
-    let type;
+    let type: string;
 
     switch (device.type) {
       case "multipath": {
@@ -78,7 +70,7 @@ const DeviceInfo = ({ item }) => {
           const technology = device.transport || device.bus;
           type = technology
             ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-              sprintf(_("%s disk"), technology)
+            sprintf(_("%s disk"), technology)
             : _("Disk");
         }
       }
@@ -134,11 +126,8 @@ const DeviceInfo = ({ item }) => {
 
 /**
  * @component
- *
- * @param {object} props
- * @param {PartitionSlot|StorageDevice} props.item
  */
-const DeviceExtendedDetails = ({ item }) => {
+const DeviceExtendedDetails = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
   const device = toStorageDevice(item);
 
   if (!device || ["partition", "lvmLv"].includes(device.type)) return <DeviceDetails item={item} />;
@@ -192,26 +181,23 @@ const DeviceExtendedDetails = ({ item }) => {
   );
 };
 
-/** @type {ExpandableSelectorColumn[]} */
-const columns = [
+const columns: ExpandableSelectorColumn[] = [
   { name: _("Device"), value: (item) => <DeviceInfo item={item} /> },
   { name: _("Details"), value: (item) => <DeviceExtendedDetails item={item} /> },
   { name: _("Size"), value: (item) => <DeviceSize item={item} />, classNames: "sizes-column" },
 ];
 
+type DeviceSelectorTableBaseProps = {
+  devices: StorageDevice[];
+  selectedDevices: StorageDevice[];
+}
+type DeviceSelectorTableProps = DeviceSelectorTableBaseProps & ExpandableSelectorProps;
+
 /**
  * Table for selecting the installation device.
  * @component
- *
- * @typedef {object} DeviceSelectorTableBaseProps
- * @property {StorageDevice[]} devices
- * @property {StorageDevice[]} selectedDevices
- *
- * @typedef {DeviceSelectorTableBaseProps & ExpandableSelectorProps} DeviceSelectorTableProps
- *
- * @param {DeviceSelectorTableProps} props
  */
-export default function DeviceSelectorTable({ devices, selectedDevices, ...props }) {
+export default function DeviceSelectorTable({ devices, selectedDevices, ...props }: DeviceSelectorTableProps) {
   return (
     <ExpandableSelector
       columns={columns}
