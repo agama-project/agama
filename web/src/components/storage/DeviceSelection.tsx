@@ -19,11 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
-// TODO: Improve it.
-
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -39,12 +35,10 @@ import a11y from "@patternfly/react-styles/css/utilities/Accessibility/accessibi
 
 import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
-import { Loading } from "~/components/layout";
 import { Page } from "~/components/core";
 import { DeviceSelectorTable } from "~/components/storage";
 import DevicesTechMenu from "./DevicesTechMenu";
-import { compact, useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
+import { compact } from "~/utils";
 import { useAvailableDevices, useProposalMutation, useProposalResult } from "~/queries/storage";
 import { ProposalTarget, StorageDevice } from "~/types/storage";
 
