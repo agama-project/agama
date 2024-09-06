@@ -40,7 +40,7 @@ const toStorageDevice = (item: PartitionSlot | StorageDevice): StorageDevice | u
 /**
  * @component
  */
-const FilesystemLabel = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
+const FilesystemLabel = ({ item }: { item: PartitionSlot | StorageDevice }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
@@ -57,7 +57,7 @@ const FilesystemLabel = ({ item }: { item: PartitionSlot | StorageDevice; }) => 
 /**
  * @component
  */
-const DeviceName = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
+const DeviceName = ({ item }: { item: PartitionSlot | StorageDevice }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
@@ -69,7 +69,7 @@ const DeviceName = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
 /**
  * @component
  */
-const DeviceDetails = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
+const DeviceDetails = ({ item }: { item: PartitionSlot | StorageDevice }) => {
   const device = toStorageDevice(item);
   if (!device) return _("Unused space");
 
@@ -94,7 +94,7 @@ const DeviceDetails = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
 /**
  * @component
  */
-const DeviceSize = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
+const DeviceSize = ({ item }: { item: PartitionSlot | StorageDevice }) => {
   return deviceSize(item.size);
 };
 

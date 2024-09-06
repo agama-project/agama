@@ -48,7 +48,7 @@ export type ProposalResultSectionProps = {
   actions?: Action[];
   errors?: ValidationError[];
   isLoading?: boolean;
-}
+};
 
 export default function ProposalResultSection({
   system = [],

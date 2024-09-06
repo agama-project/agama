@@ -43,4 +43,3 @@ export class InvalidMaxSizeError {
     return _("Maximum must be greater than minimum");
   }
 }
-

@@ -22,7 +22,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import VolumeLocationDialog, { VolumeLocationDialogProps } from "~/components/storage/VolumeLocationDialog";
+import VolumeLocationDialog, {
+  VolumeLocationDialogProps,
+} from "~/components/storage/VolumeLocationDialog";
 import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
 const sda: StorageDevice = {

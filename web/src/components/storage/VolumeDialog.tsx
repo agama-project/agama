@@ -42,7 +42,7 @@ type VolumeFormState = {
   volume: Volume;
   formData: VolumeFormData;
   errors: VolumeFormErrors;
-}
+};
 type VolumeFormData = {
   minSize?: number | string;
   minSizeUnit?: string;
@@ -52,7 +52,7 @@ type VolumeFormData = {
   mountPath: string;
   fsType: string;
   snapshots: boolean;
-}
+};
 type VolumeFormErrors = {
   missingMountPath: string | null;
   invalidMountPath: string | null;
@@ -61,7 +61,7 @@ type VolumeFormErrors = {
   missingSize: string | null;
   missingMinSize: string | null;
   invalidMaxSize: string | null;
-}
+};
 
 /**
  * Renders the title for the dialog.
@@ -80,8 +80,8 @@ const renderTitle = (volume: Volume, volumes: Volume[]): string => {
 /**
  * @component
  */
-const VolumeAlert = ({ volume }: { volume: Volume; }) => {
-  let alert: { title: string, text: string };
+const VolumeAlert = ({ volume }: { volume: Volume }) => {
+  let alert: { title: string; text: string };
 
   if (mountFilesystem(volume)) {
     alert = {
@@ -315,7 +315,11 @@ const missingMinSizeError = (sizeMethod: SizeMethod, minSize: string | number): 
 /**
  * Error if the max size is not valid.
  */
-const invalidMaxSizeError = (sizeMethod: SizeMethod, minSize: string | number, maxSize: string | number): string | null => {
+const invalidMaxSizeError = (
+  sizeMethod: SizeMethod,
+  minSize: string | number,
+  maxSize: string | number,
+): string | null => {
   const error = new InvalidMaxSizeError(sizeMethod, minSize, maxSize);
   return error.check() ? error.render() : null;
 };
@@ -323,7 +327,11 @@ const invalidMaxSizeError = (sizeMethod: SizeMethod, minSize: string | number, m
 /**
  * Error if the given mount path exists in the list of volumes.
  */
-const existingVolumeError = (mountPath: string, volumes: Volume[], onClick: (volume: Volume) => void): React.ReactElement | null => {
+const existingVolumeError = (
+  mountPath: string,
+  volumes: Volume[],
+  onClick: (volume: Volume) => void,
+): React.ReactElement | null => {
   const error = new ExistingVolumeError(mountPath, volumes);
   return error.check() ? error.render(onClick) : null;
 };
@@ -331,7 +339,11 @@ const existingVolumeError = (mountPath: string, volumes: Volume[], onClick: (vol
 /**
  * Error if the given mount path exists in the list of templates.
  */
-const existingTemplateError = (mountPath: string, templates: Volume[], onClick: (template: Volume) => void): React.ReactElement | null => {
+const existingTemplateError = (
+  mountPath: string,
+  templates: Volume[],
+  onClick: (template: Volume) => void,
+): React.ReactElement | null => {
   const error = new ExistingTemplateError(mountPath, templates);
   return error.check() ? error.render(onClick) : null;
 };
@@ -444,7 +456,7 @@ const createInitialState = (volume: Volume): VolumeFormState => {
 /**
  * The VolumeForm reducer.
  */
-const reducer = (state: VolumeFormState, action: { type: string, payload: any }) => {
+const reducer = (state: VolumeFormState, action: { type: string; payload: any }) => {
   const { type, payload } = action;
 
   switch (type) {
@@ -480,7 +492,7 @@ export type VolumeDialogProps = {
   isOpen?: boolean;
   onCancel: () => void;
   onAccept: (volume: Volume) => void;
-}
+};
 
 /**
  * Renders a dialog that allows the user to add or edit a file system.
@@ -494,7 +506,11 @@ export default function VolumeDialog({
   onCancel,
   onAccept,
 }: VolumeDialogProps) {
-  const [state, dispatch]: [VolumeFormState, (action: any) => void] = useReducer(reducer, currentVolume, createInitialState);
+  const [state, dispatch]: [VolumeFormState, (action: any) => void] = useReducer(
+    reducer,
+    currentVolume,
+    createInitialState,
+  );
 
   const delayed: Function = useDebounce((f) => f(), 1000);
 
@@ -502,9 +518,11 @@ export default function VolumeDialog({
     dispatch({ type: "CHANGE_VOLUME", payload: { volume } });
   };
 
-  const updateData: (data: object) => void = (data): void => dispatch({ type: "UPDATE_DATA", payload: data });
+  const updateData: (data: object) => void = (data): void =>
+    dispatch({ type: "UPDATE_DATA", payload: data });
 
-  const updateErrors: (errors: object) => void = (errors): void => dispatch({ type: "SET_ERRORS", payload: errors });
+  const updateErrors: (errors: object) => void = (errors): void =>
+    dispatch({ type: "SET_ERRORS", payload: errors });
 
   const mountPathError: () => string | React.ReactElement = () => {
     const { missingMountPath, invalidMountPath, existingVolume, existingTemplate } = state.errors;

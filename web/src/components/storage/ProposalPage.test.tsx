@@ -28,7 +28,13 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalPage } from "~/components/storage";
-import { ProposalResult, ProposalTarget, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
+import {
+  ProposalResult,
+  ProposalTarget,
+  StorageDevice,
+  Volume,
+  VolumeTarget,
+} from "~/types/storage";
 
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
@@ -119,18 +125,18 @@ const mockProposalResult: ProposalResult = {
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useDevices: () => ([vda, vdb]),
-  useAvailableDevices: () => ([vda, vdb]),
-  useVolumeDevices: () => ([vda, vdb]),
+  useDevices: () => [vda, vdb],
+  useAvailableDevices: () => [vda, vdb],
+  useVolumeDevices: () => [vda, vdb],
   useVolumeTemplates: () => [volume("/")],
   useProductParams: () => ({
     encryptionMethods: [],
-    mountPoints: ["/", "swap"]
+    mountPoints: ["/", "swap"],
   }),
   useProposalResult: () => mockProposalResult,
   useDeprecated: () => false,
   useDeprecatedChanges: jest.fn(),
-  useProposalMutation: jest.fn()
+  useProposalMutation: jest.fn(),
 }));
 
 it("renders the device, settings and result sections", () => {

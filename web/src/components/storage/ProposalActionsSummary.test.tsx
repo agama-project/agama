@@ -23,7 +23,9 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import ProposalActionsSummary, { ProposalActionsSummaryProps } from "~/components/storage/ProposalActionsSummary";
+import ProposalActionsSummary, {
+  ProposalActionsSummaryProps,
+} from "~/components/storage/ProposalActionsSummary";
 import { devices, actions } from "./test-data/full-result-example";
 
 const sda = {
@@ -61,7 +63,7 @@ const defaultProps: ProposalActionsSummaryProps = {
   devices: [sda],
   actions,
   spaceActions: [],
-  errors: []
+  errors: [],
 };
 
 describe("ProposalActionsSummary", () => {

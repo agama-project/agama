@@ -51,42 +51,42 @@ type StorageDevice = {
   component?: Component;
   physicalVolumes?: StorageDevice[];
   logicalVolumes?: StorageDevice[];
-}
+};
 
 type PartitionTable = {
-  type: string,
-  partitions: StorageDevice[],
-  unusedSlots: PartitionSlot[],
-  unpartitionedSize: number
-}
+  type: string;
+  partitions: StorageDevice[];
+  unusedSlots: PartitionSlot[];
+  unpartitionedSize: number;
+};
 
 type PartitionSlot = {
-  start: number,
-  size: number
-}
+  start: number;
+  size: number;
+};
 
 type Component = {
   // FIXME: should it be DeviceType?
-  type: string,
-  deviceNames: string[],
-}
+  type: string;
+  deviceNames: string[];
+};
 
 type Filesystem = {
-  sid: number,
-  type: string,
-  mountPath?: string,
-  label?: string
-}
+  sid: number;
+  type: string;
+  mountPath?: string;
+  label?: string;
+};
 
 type ShrinkingInfo = {
   supported?: number;
-  unsupported?: string[]
-}
+  unsupported?: string[];
+};
 
 type ProposalResult = {
-  settings: ProposalSettings,
-  actions: Action[]
-}
+  settings: ProposalSettings;
+  actions: Action[];
+};
 
 type Action = {
   device: number;
@@ -94,7 +94,7 @@ type Action = {
   subvol: boolean;
   delete: boolean;
   resize: boolean;
-}
+};
 
 type ProposalSettings = {
   target: ProposalTarget;
@@ -105,7 +105,7 @@ type ProposalSettings = {
   defaultBootDevice: string;
   encryptionPassword: string;
   encryptionMethod: string;
-  encryptionPBKDFunction?: string,
+  encryptionPBKDFunction?: string;
   spacePolicy: string;
   spaceActions: SpaceAction[];
   volumes: Volume[];
@@ -114,7 +114,7 @@ type ProposalSettings = {
 
 type SpaceAction = {
   device: string;
-  action: 'force_delete' | 'resize' | 'keep'
+  action: "force_delete" | "resize" | "keep";
 };
 
 type Volume = {
@@ -139,7 +139,7 @@ type VolumeOutline = {
   snapshotsConfigurable: boolean;
   snapshotsAffectSizes: boolean;
   sizeRelevantVolumes: string[];
-}
+};
 
 /**
  * Enum for the possible proposal targets.
@@ -150,7 +150,7 @@ enum ProposalTarget {
   DISK = "disk",
   NEW_LVM_VG = "newLvmVg",
   REUSED_LVM_VG = "reusedLvmVg",
-};
+}
 
 /**
  * Enum for the possible volume targets.
@@ -163,7 +163,7 @@ enum VolumeTarget {
   NEW_VG = "new_vg",
   DEVICE = "device",
   FILESYSTEM = "filesystem",
-};
+}
 
 /**
  * Enum for the encryption method values
@@ -175,7 +175,6 @@ const EncryptionMethods = Object.freeze({
   LUKS2: "luks2",
   TPM: "tpm_fde",
 });
-
 
 export type {
   Action,
@@ -192,8 +191,4 @@ export type {
   VolumeOutline,
 };
 
-export {
-  EncryptionMethods,
-  ProposalTarget,
-  VolumeTarget
-};
+export { EncryptionMethods, ProposalTarget, VolumeTarget };

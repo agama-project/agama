@@ -88,7 +88,7 @@ describe("if the system is not transactional", () => {
 
 describe("if the system is transactional", () => {
   beforeEach(() => {
-    settings.volumes = [{ ...rootVolume, transactional: true }]
+    settings.volumes = [{ ...rootVolume, transactional: true }];
   });
 
   it("renders an explanation about the transactional system", () => {

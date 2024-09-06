@@ -19,37 +19,63 @@
  * find current contact information at www.suse.com.
  */
 
-import { useMutation, useQuery, useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQueries,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import React from "react";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
-import { calculate, fetchActions, fetchDefaultVolume, fetchProductParams, fetchSettings, fetchUsableDevices } from "~/api/storage/proposal";
+import {
+  calculate,
+  fetchActions,
+  fetchDefaultVolume,
+  fetchProductParams,
+  fetchSettings,
+  fetchUsableDevices,
+} from "~/api/storage/proposal";
 import { useInstallerClient } from "~/context/installer";
 import { compact, uniq } from "~/utils";
-import { ProductParams, Volume as APIVolume, ProposalSettings as APIProposalSettings, ProposalTarget as APIProposalTarget, ProposalSettingsPatch } from "~/api/storage/types";
-import { ProposalSettings, ProposalResult, ProposalTarget, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
+import {
+  ProductParams,
+  Volume as APIVolume,
+  ProposalSettings as APIProposalSettings,
+  ProposalTarget as APIProposalTarget,
+  ProposalSettingsPatch,
+} from "~/api/storage/types";
+import {
+  ProposalSettings,
+  ProposalResult,
+  ProposalTarget,
+  StorageDevice,
+  Volume,
+  VolumeTarget,
+} from "~/types/storage";
 
 const devicesQuery = (scope: "result" | "system") => ({
   queryKey: ["storage", "devices", scope],
   queryFn: () => fetchDevices(scope),
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 const usableDevicesQuery = {
   queryKey: ["storage", "usableDevices"],
   queryFn: fetchUsableDevices,
-  staleTime: Infinity
+  staleTime: Infinity,
 };
 
 const productParamsQuery = {
   queryKey: ["storage", "encryptionMethods"],
   queryFn: fetchProductParams,
-  staleTime: Infinity
-}
+  staleTime: Infinity,
+};
 
 const defaultVolumeQuery = (mountPath: string) => ({
   queryKey: ["storage", "volumeFor", mountPath],
   queryFn: () => fetchDefaultVolume(mountPath),
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 /**
@@ -58,12 +84,15 @@ const defaultVolumeQuery = (mountPath: string) => ({
  * @param scope - "system": devices in the current state of the system; "result":
  *   devices in the proposal ("stage")
  */
-const useDevices = (scope: "result" | "system", options?: QueryHookOptions): StorageDevice[] | undefined => {
+const useDevices = (
+  scope: "result" | "system",
+  options?: QueryHookOptions,
+): StorageDevice[] | undefined => {
   const query = devicesQuery(scope);
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data;
-}
+};
 
 /**
  * Hook that returns the list of available devices for installation.
@@ -81,7 +110,7 @@ const useAvailableDevices = () => {
   const { data } = useSuspenseQuery(usableDevicesQuery);
 
   return data.map((sid) => findDevice(devices, sid)).filter((d) => d);
-}
+};
 
 /**
  * Hook that returns the product parameters (e.g., mount points).
@@ -90,7 +119,7 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(productParamsQuery);
   return data;
-}
+};
 
 /**
  * Hook that returns the volume templates for the current product.
@@ -104,7 +133,7 @@ const useVolumeTemplates = (): Volume[] => {
   queries.push(defaultVolumeQuery(""));
   const results = useSuspenseQueries({ queries }) as Array<{ data: APIVolume }>;
   return results.map(({ data }) => buildVolume(data, systemDevices, product.mountPoints));
-}
+};
 
 /**
  * Hook that returns the devices that can be selected as target for volume.
@@ -132,16 +161,16 @@ const useVolumeDevices = (): StorageDevice[] => {
   const vgs = system.filter((d) => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
 
   return [...availableDevices, ...mds, ...vgs];
-}
+};
 
 const proposalSettingsQuery = {
   queryKey: ["storage", "proposal", "settings"],
-  queryFn: fetchSettings
+  queryFn: fetchSettings,
 };
 
 const proposalActionsQuery = {
   queryKey: ["storage", "proposal", "actions"],
-  queryFn: fetchActions
+  queryFn: fetchActions,
 };
 
 /**
@@ -152,7 +181,7 @@ const useProposalResult = (): ProposalResult | undefined => {
     // FIXME: handle the case where they do not match
     const target = value as ProposalTarget;
     return target;
-  }
+  };
 
   /** @todo Read installation devices from D-Bus. */
   const buildInstallationDevices = (settings: APIProposalSettings, devices: StorageDevice[]) => {
@@ -186,9 +215,9 @@ const useProposalResult = (): ProposalResult | undefined => {
     return compact(names.sort().map(findDevice));
   };
 
-  const [
-    { data: settings }, { data: actions }
-  ] = useSuspenseQueries({ queries: [proposalSettingsQuery, proposalActionsQuery] });
+  const [{ data: settings }, { data: actions }] = useSuspenseQueries({
+    queries: [proposalSettingsQuery, proposalActionsQuery],
+  });
   const systemDevices = useDevices("system", { suspense: true });
   const { mountPoints: productMountPoints } = useProductParams({ suspense: true });
 
@@ -197,9 +226,7 @@ const useProposalResult = (): ProposalResult | undefined => {
       ...settings,
       targetPVDevices: settings.targetPVDevices || [],
       target: buildTarget(settings.target),
-      volumes: settings.volumes.map((v) =>
-        buildVolume(v, systemDevices, productMountPoints),
-      ),
+      volumes: settings.volumes.map((v) => buildVolume(v, systemDevices, productMountPoints)),
       // NOTE: strictly speaking, installation devices does not belong to the settings. It
       // should be a separate method instead of an attribute in the settings object.
       // Nevertheless, it was added here for simplicity and to avoid passing more props in some
@@ -208,17 +235,21 @@ const useProposalResult = (): ProposalResult | undefined => {
     },
     actions,
   };
-}
+};
 
 /**
  * @private
  * Builds a volume from the D-Bus data
  */
-const buildVolume = (rawVolume: APIVolume, devices: StorageDevice[], productMountPoints: string[]): Volume => {
+const buildVolume = (
+  rawVolume: APIVolume,
+  devices: StorageDevice[],
+  productMountPoints: string[],
+): Volume => {
   const outline = {
     ...rawVolume.outline,
     // Indicate whether a volume is defined by the product.
-    productDefined: productMountPoints.includes(rawVolume.mountPath)
+    productDefined: productMountPoints.includes(rawVolume.mountPath),
   };
   const volume: Volume = {
     ...rawVolume,
@@ -230,7 +261,7 @@ const buildVolume = (rawVolume: APIVolume, devices: StorageDevice[], productMoun
   };
 
   return volume;
-}
+};
 
 const useProposalMutation = () => {
   const queryClient = useQueryClient();
@@ -269,24 +300,24 @@ const useProposalMutation = () => {
       const httpSettings = buildHttpSettings(settings);
       return calculate(httpSettings);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
   };
 
   return useMutation(query);
-}
+};
 
 const deprecatedQuery = {
   queryKey: ["storage", "dirty"],
-  queryFn: fetchDevicesDirty
-}
+  queryFn: fetchDevicesDirty,
+};
 
 /**
  * Hook that returns whether the storage devices are "dirty".
  */
 const useDeprecated = () => {
   const { isPending, data } = useQuery(deprecatedQuery);
-  return (isPending) ? false : data;
-}
+  return isPending ? false : data;
+};
 
 /**
  * Hook that listens for changes to the devices dirty property.
@@ -303,7 +334,7 @@ const useDeprecatedChanges = () => {
       }
     });
   });
-}
+};
 
 export {
   useDevices,
@@ -314,5 +345,5 @@ export {
   useProposalResult,
   useProposalMutation,
   useDeprecated,
-  useDeprecatedChanges
-}
+  useDeprecatedChanges,
+};

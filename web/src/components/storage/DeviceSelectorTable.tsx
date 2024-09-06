@@ -40,7 +40,7 @@ import { ExpandableSelectorColumn, ExpandableSelectorProps } from "../core/Expan
 /**
  * @component
  */
-const DeviceInfo = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
+const DeviceInfo = ({ item }: { item: PartitionSlot | StorageDevice }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
@@ -70,7 +70,7 @@ const DeviceInfo = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
           const technology = device.transport || device.bus;
           type = technology
             ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-            sprintf(_("%s disk"), technology)
+              sprintf(_("%s disk"), technology)
             : _("Disk");
         }
       }
@@ -127,7 +127,7 @@ const DeviceInfo = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
 /**
  * @component
  */
-const DeviceExtendedDetails = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
+const DeviceExtendedDetails = ({ item }: { item: PartitionSlot | StorageDevice }) => {
   const device = toStorageDevice(item);
 
   if (!device || ["partition", "lvmLv"].includes(device.type)) return <DeviceDetails item={item} />;
@@ -190,14 +190,18 @@ const columns: ExpandableSelectorColumn[] = [
 type DeviceSelectorTableBaseProps = {
   devices: StorageDevice[];
   selectedDevices: StorageDevice[];
-}
+};
 type DeviceSelectorTableProps = DeviceSelectorTableBaseProps & ExpandableSelectorProps;
 
 /**
  * Table for selecting the installation device.
  * @component
  */
-export default function DeviceSelectorTable({ devices, selectedDevices, ...props }: DeviceSelectorTableProps) {
+export default function DeviceSelectorTable({
+  devices,
+  selectedDevices,
+  ...props
+}: DeviceSelectorTableProps) {
   return (
     <ExpandableSelector
       columns={columns}

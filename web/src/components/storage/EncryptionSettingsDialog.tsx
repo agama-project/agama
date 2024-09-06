@@ -45,7 +45,7 @@ directly on its first run.",
 export type EncryptionSetting = {
   password: string;
   method?: string;
-}
+};
 
 export type EncryptionSettingsDialogProps = {
   password: string;
@@ -55,7 +55,7 @@ export type EncryptionSettingsDialogProps = {
   isLoading?: boolean;
   onCancel: () => void;
   onAccept: (settings: EncryptionSetting) => void;
-}
+};
 
 /**
  * Renders a dialog that allows the user change encryption settings

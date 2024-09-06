@@ -43,7 +43,7 @@ type TableItem = StorageDevice | PartitionSlot;
 /**
  * @component
  */
-const MountPoint = ({ item }: { item: TableItem; }) => {
+const MountPoint = ({ item }: { item: TableItem }) => {
   const device = toStorageDevice(item);
 
   if (!(device && device.filesystem?.mountPath)) return null;
@@ -54,7 +54,13 @@ const MountPoint = ({ item }: { item: TableItem; }) => {
 /**
  * @component
  */
-const DeviceCustomDetails = ({ item, devicesManager }: { item: TableItem; devicesManager: DevicesManager; }) => {
+const DeviceCustomDetails = ({
+  item,
+  devicesManager,
+}: {
+  item: TableItem;
+  devicesManager: DevicesManager;
+}) => {
   const isNew = () => {
     const device = toStorageDevice(item);
     if (!device) return false;
@@ -78,7 +84,13 @@ const DeviceCustomDetails = ({ item, devicesManager }: { item: TableItem; device
 /**
  * @component
  */
-const DeviceCustomSize = ({ item, devicesManager }: { item: TableItem; devicesManager: DevicesManager; }) => {
+const DeviceCustomSize = ({
+  item,
+  devicesManager,
+}: {
+  item: TableItem;
+  devicesManager: DevicesManager;
+}) => {
   const device = toStorageDevice(item);
   const isResized = device && devicesManager.isShrunk(device);
   const sizeBefore = isResized ? devicesManager.systemDevice(device.sid).size : item.size;
@@ -100,15 +112,21 @@ const DeviceCustomSize = ({ item, devicesManager }: { item: TableItem; devicesMa
 };
 
 const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesManager) => {
-  const renderDevice: (item: TableItem) => React.ReactNode = (item): React.ReactNode => <DeviceName item={item} />;
+  const renderDevice: (item: TableItem) => React.ReactNode = (item): React.ReactNode => (
+    <DeviceName item={item} />
+  );
 
-  const renderMountPoint: (item: TableItem) => React.ReactNode = (item) => <MountPoint item={item} />;
+  const renderMountPoint: (item: TableItem) => React.ReactNode = (item) => (
+    <MountPoint item={item} />
+  );
 
   const renderDetails: (item: TableItem) => React.ReactNode = (item) => (
     <DeviceCustomDetails item={item} devicesManager={devicesManager} />
   );
 
-  const renderSize: (item: TableItem) => React.ReactNode = (item) => <DeviceCustomSize item={item} devicesManager={devicesManager} />;
+  const renderSize: (item: TableItem) => React.ReactNode = (item) => (
+    <DeviceCustomSize item={item} devicesManager={devicesManager} />
+  );
 
   return [
     { name: _("Device"), value: renderDevice },
@@ -120,7 +138,7 @@ const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesM
 
 type ProposalResultTableProps = {
   devicesManager: DevicesManager;
-}
+};
 
 /**
  * Renders the proposal result.

@@ -51,7 +51,7 @@ import { TreeTableColumn } from "~/components/core/TreeTable";
  * Info about the device.
  * @component
  */
-const DeviceInfoContent = ({ device }: { device: StorageDevice; }) => {
+const DeviceInfoContent = ({ device }: { device: StorageDevice }) => {
   const minSize = device.shrinking?.supported;
 
   if (minSize) {
@@ -83,7 +83,7 @@ const DeviceInfoContent = ({ device }: { device: StorageDevice; }) => {
  * @param {object} props
  * @param {StorageDevice} props.device
  */
-const DeviceInfo = ({ device }: { device: StorageDevice; }) => {
+const DeviceInfo = ({ device }: { device: StorageDevice }) => {
   return (
     <Popover headerContent={device.name} bodyContent={<DeviceInfoContent device={device} />}>
       <Button
@@ -104,8 +104,15 @@ const DeviceInfo = ({ device }: { device: StorageDevice; }) => {
  * @param props.action - Possible values: "force_delete", "resize" or "keep".
  * @param props.onChange
  */
-const DeviceActionSelector = ({ device, action, onChange }:
-  { device: StorageDevice; action: string; onChange?: (action: SpaceAction) => void; }) => {
+const DeviceActionSelector = ({
+  device,
+  action,
+  onChange,
+}: {
+  device: StorageDevice;
+  action: string;
+  onChange?: (action: SpaceAction) => void;
+}) => {
   const changeAction = (action) => onChange({ device: device.name, action });
 
   const isResizeDisabled = device.shrinking?.supported === undefined;
@@ -154,7 +161,15 @@ const DeviceActionSelector = ({ device, action, onChange }:
  * @param props.action - Possible values: "force_delete", "resize" or "keep".
  * @param props.onChange
  */
-const DeviceAction = ({ item, action, onChange }: { item: PartitionSlot | StorageDevice; action: string; onChange?: (action: SpaceAction) => void; }) => {
+const DeviceAction = ({
+  item,
+  action,
+  onChange,
+}: {
+  item: PartitionSlot | StorageDevice;
+  action: string;
+  onChange?: (action: SpaceAction) => void;
+}) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
@@ -175,7 +190,7 @@ export type SpaceActionsTableProps = {
   expandedDevices?: StorageDevice[];
   deviceAction: (item: PartitionSlot | StorageDevice) => string;
   onActionChange: (action: SpaceAction) => void;
-}
+};
 
 /**
  * Table for selecting the space actions of the given devices.

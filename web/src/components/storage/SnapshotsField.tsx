@@ -37,11 +37,11 @@ system after configuration changes or software upgrades.",
 export type SnapshotsFieldProps = {
   rootVolume: Volume;
   onChange?: (config: SnapshotsConfig) => void;
-}
+};
 
 export type SnapshotsConfig = {
   active: boolean;
-}
+};
 
 /**
  * Allows to define snapshots enablement
@@ -56,7 +56,13 @@ export default function SnapshotsField({ rootVolume, onChange }: SnapshotsFieldP
 
   return (
     <Split hasGutter>
-      <Switch id="snapshots" aria-label={LABEL} isChecked={isChecked} onChange={switchState} hasCheckIcon />
+      <Switch
+        id="snapshots"
+        aria-label={LABEL}
+        isChecked={isChecked}
+        onChange={switchState}
+        hasCheckIcon
+      />
       <div>
         <div>{LABEL}</div>
         <div className={textStyles.color_200}>{DESCRIPTION}</div>

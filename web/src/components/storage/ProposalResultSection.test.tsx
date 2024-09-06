@@ -30,7 +30,11 @@ import { ProposalResultSectionProps } from "./ProposalResultSection";
 
 const errorMessage = "Something went wrong, proposal not possible";
 const errors = [{ severity: 0, message: errorMessage }];
-const defaultProps: ProposalResultSectionProps = { system: devices.system, staging: devices.staging, actions };
+const defaultProps: ProposalResultSectionProps = {
+  system: devices.system,
+  staging: devices.staging,
+  actions,
+};
 
 describe.skip("ProposalResultSection", () => {
   describe("when there are errors (proposal was not possible)", () => {

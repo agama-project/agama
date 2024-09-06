@@ -52,7 +52,7 @@ export type ProposalSettingsSectionProps = {
   isLoading?: boolean;
   changing?: symbol;
   onChange: (changing: symbol, settings: object) => void;
-}
+};
 
 /**
  * Section for editing the proposal settings
@@ -88,7 +88,8 @@ export default function ProposalSettingsSection({
    * @param {string} name
    * @returns {StorageDevice|undefined}
    */
-  const findDevice = (name: string): StorageDevice | undefined => availableDevices.find((a) => a.name === name);
+  const findDevice = (name: string): StorageDevice | undefined =>
+    availableDevices.find((a) => a.name === name);
 
   const targetDevice: StorageDevice | undefined = findDevice(settings.targetDevice);
   const targetPVDevices: StorageDevice[] = compact(settings.targetPVDevices?.map(findDevice) || []);

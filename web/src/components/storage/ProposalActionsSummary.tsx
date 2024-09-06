@@ -34,9 +34,15 @@ import { ValidationError } from "~/client/mixins";
 /**
  * Renders information about delete actions
  */
-const DeletionsInfo = (
-  { policy, manager, spaceActions }:
-    { policy: SpacePolicy | undefined; manager: DevicesManager; spaceActions: SpaceAction[]; }) => {
+const DeletionsInfo = ({
+  policy,
+  manager,
+  spaceActions,
+}: {
+  policy: SpacePolicy | undefined;
+  manager: DevicesManager;
+  spaceActions: SpaceAction[];
+}) => {
   let label: React.ReactNode;
   let systemsLabel: React.ReactNode;
   const systems = manager.deletedSystems();
@@ -85,9 +91,17 @@ const DeletionsInfo = (
 /**
  * Renders information about resize actions
  */
-const ResizesInfo = (
-  { policy, manager, validProposal, spaceActions }:
-    { policy: SpacePolicy | undefined; manager: DevicesManager; validProposal: boolean; spaceActions: SpaceAction[]; }) => {
+const ResizesInfo = ({
+  policy,
+  manager,
+  validProposal,
+  spaceActions,
+}: {
+  policy: SpacePolicy | undefined;
+  manager: DevicesManager;
+  validProposal: boolean;
+  spaceActions: SpaceAction[];
+}) => {
   let label: React.ReactNode;
   let systemsLabel: React.ReactNode;
   const systems = manager.resizedSystems();
@@ -132,9 +146,15 @@ const ResizesInfo = (
  * Renders needed UI elements to allow user check the proposal planned actions
  * @component
  */
-const ActionsInfo = (
-  { actions, validProposal, onClick }:
-    { actions: Action[]; validProposal: boolean; onClick: () => void; }) => {
+const ActionsInfo = ({
+  actions,
+  validProposal,
+  onClick,
+}: {
+  actions: Action[];
+  validProposal: boolean;
+  onClick: () => void;
+}) => {
   let label: React.ReactNode;
 
   if (!validProposal) {
@@ -180,7 +200,7 @@ export type ProposalActionsSummaryProps = {
   spaceActions: SpaceAction[];
   devices: StorageDevice[];
   onActionsClick: () => void | undefined;
-}
+};
 
 /**
  * Allows to select the space policy.

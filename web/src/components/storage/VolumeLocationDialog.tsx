@@ -38,14 +38,19 @@ const DIALOG_DESCRIPTION = _(
 default. Indicate a custom location to create the file system at a specific device.",
 );
 
-const defaultTarget: (device: StorageDevice | undefined) => VolumeTarget = (device): VolumeTarget => {
+const defaultTarget: (device: StorageDevice | undefined) => VolumeTarget = (
+  device,
+): VolumeTarget => {
   if (["partition", "lvmLv", "md"].includes(device?.type)) return VolumeTarget.DEVICE;
 
   return VolumeTarget.NEW_PARTITION;
 };
 
 /** @type {(volume: Volume, device: StorageDevice|undefined) => VolumeTarget[]} */
-const availableTargets: (volume: Volume, device: StorageDevice | undefined) => VolumeTarget[] = (volume, device): VolumeTarget[] => {
+const availableTargets: (volume: Volume, device: StorageDevice | undefined) => VolumeTarget[] = (
+  volume,
+  device,
+): VolumeTarget[] => {
   /** @type {VolumeTarget[]} */
   const targets: VolumeTarget[] = [VolumeTarget.DEVICE];
 
@@ -61,7 +66,10 @@ const availableTargets: (volume: Volume, device: StorageDevice | undefined) => V
 };
 
 /** @type {(volume: Volume, device: StorageDevice|undefined) => VolumeTarget} */
-const sanitizeTarget: (volume: Volume, device: StorageDevice | undefined) => VolumeTarget = (volume, device): VolumeTarget => {
+const sanitizeTarget: (volume: Volume, device: StorageDevice | undefined) => VolumeTarget = (
+  volume,
+  device,
+): VolumeTarget => {
   const targets = availableTargets(volume, device);
   return targets.includes(volume.target) ? volume.target : defaultTarget(device);
 };
@@ -74,7 +82,7 @@ export type VolumeLocationDialogProps = {
   isOpen?: boolean;
   onCancel: () => void;
   onAccept: (volume: Volume) => void;
-}
+};
 
 /**
  * Renders a dialog that allows the user to change the location of a volume.
@@ -91,7 +99,8 @@ export default function VolumeLocationDialog({
   ...props
 }: VolumeLocationDialogProps) {
   /** @type {StorageDevice|undefined} */
-  const initialDevice: StorageDevice | undefined = volume.targetDevice || targetDevices[0] || volumeDevices[0];
+  const initialDevice: StorageDevice | undefined =
+    volume.targetDevice || targetDevices[0] || volumeDevices[0];
   /** @type {VolumeTarget} */
   const initialTarget: VolumeTarget = sanitizeTarget(volume, initialDevice);
 

@@ -37,7 +37,7 @@ import { StorageDevice } from "~/types/storage";
  * @param props
  * @param [props.isBold=false] - Whether text should be wrapped by <b>.
  */
-const Link = ({ isBold = false }: { isBold?: boolean; }) => {
+const Link = ({ isBold = false }: { isBold?: boolean }) => {
   const text = _("Change boot options");
 
   return <RouterLink to={PATHS.bootingPartition}>{isBold ? <b>{text}</b> : text}</RouterLink>;
@@ -46,7 +46,7 @@ const Link = ({ isBold = false }: { isBold?: boolean; }) => {
 export type BootConfig = {
   configureBoot: boolean;
   bootDevice: StorageDevice;
-}
+};
 
 export type BootConfigFieldProps = {
   configureBoot: boolean;
@@ -54,13 +54,17 @@ export type BootConfigFieldProps = {
   defaultBootDevice?: StorageDevice;
   availableDevices: StorageDevice[];
   isLoading: boolean;
-}
+};
 
 /**
  * Summarizes how the system will boot.
  * @component
  */
-export default function BootConfigField({ configureBoot, bootDevice, isLoading }: BootConfigFieldProps) {
+export default function BootConfigField({
+  configureBoot,
+  bootDevice,
+  isLoading,
+}: BootConfigFieldProps) {
   if (isLoading && configureBoot === undefined) {
     return <Skeleton width="75%" />;
   }

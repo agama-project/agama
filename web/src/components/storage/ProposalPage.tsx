@@ -32,7 +32,17 @@ import { SPACE_POLICIES } from "~/components/storage/utils";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useAvailableDevices, useDeprecated, useDeprecatedChanges, useDevices, useProductParams, useProposalMutation, useProposalResult, useVolumeDevices, useVolumeTemplates } from "~/queries/storage";
+import {
+  useAvailableDevices,
+  useDeprecated,
+  useDeprecatedChanges,
+  useDevices,
+  useProductParams,
+  useProposalMutation,
+  useProposalResult,
+  useVolumeDevices,
+  useVolumeTemplates,
+} from "~/queries/storage";
 import { probe } from "~/api/storage";
 
 /**

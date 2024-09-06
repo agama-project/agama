@@ -27,9 +27,7 @@ import { Job } from "~/types/job";
  */
 const probe = (): Promise<any> => post("/api/storage/probe");
 
-export {
-  probe
-}
+export { probe };
 
 /**
  * Returns the list of jobs

@@ -39,14 +39,14 @@ import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
 export type SizeObject = {
   size: number | undefined;
   unit: string | undefined;
-}
+};
 
 export type SpacePolicy = {
   id: string;
   label: string;
   description: string;
   summaryLabels: string[];
-}
+};
 
 export type SizeMethod = "auto" | "fixed" | "range";
 
@@ -253,12 +253,14 @@ const mountFilesystem = (volume: Volume): boolean => volume.target === "filesyst
 /**
  * Checks whether the given volume is configured to reuse a device (format or mount a file system).
  */
-const reuseDevice = (volume: Volume): boolean => volume.target === "filesystem" || volume.target === "device";
+const reuseDevice = (volume: Volume): boolean =>
+  volume.target === "filesystem" || volume.target === "device";
 
 /**
  * Generates a label for the given volume.
  */
-const volumeLabel = (volume: Volume): string => (volume.mountPath === "/" ? "root" : volume.mountPath);
+const volumeLabel = (volume: Volume): string =>
+  volume.mountPath === "/" ? "root" : volume.mountPath;
 
 /**
  * GiB to Bytes.

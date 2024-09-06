@@ -37,7 +37,11 @@ const DESCRIPTION = _("Main disk or LVM Volume Group for installation.");
 /**
  * Generates the target value.
  */
-const targetValue = (target: ProposalTarget, targetDevice: StorageDevice, targetPVDevices: StorageDevice[]): string => {
+const targetValue = (
+  target: ProposalTarget,
+  targetDevice: StorageDevice,
+  targetPVDevices: StorageDevice[],
+): string => {
   if (target === ProposalTarget.DISK && targetDevice) {
     // TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
     return sprintf(_("File systems created as new partitions at %s"), deviceLabel(targetDevice));
@@ -66,7 +70,7 @@ export type TargetConfig = {
   target: ProposalTarget;
   targetDevice: StorageDevice | undefined;
   targetPVDevices: StorageDevice[];
-}
+};
 
 export type InstallationDeviceFieldProps = {
   // Installation target
@@ -78,8 +82,8 @@ export type InstallationDeviceFieldProps = {
   // Available devices for installation.
   devices: StorageDevice[];
   isLoading: boolean;
-  onChange: (target: TargetConfig) => void
-}
+  onChange: (target: TargetConfig) => void;
+};
 
 export default function InstallationDeviceField({
   target,

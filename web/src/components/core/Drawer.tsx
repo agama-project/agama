@@ -29,12 +29,12 @@ import {
   DrawerHead,
   DrawerActions,
   DrawerCloseButton,
-  DrawerProps as PFDrawerProps
+  DrawerProps as PFDrawerProps,
 } from "@patternfly/react-core";
 
 type DrawerProps = {
-  panelHeader: ReactNode,
-  panelContent: ReactNode,
+  panelHeader: ReactNode;
+  panelContent: ReactNode;
 } & PFDrawerProps;
 
 /**
@@ -47,36 +47,38 @@ type DrawerProps = {
  *
  * @todo write documentation
  */
-const Drawer = forwardRef(({ panelHeader, panelContent, isExpanded = false, children }: DrawerProps, ref) => {
-  const [isOpen, setIsOpen] = useState(isExpanded);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-  const publicAPI = () => ({ open, close });
+const Drawer = forwardRef(
+  ({ panelHeader, panelContent, isExpanded = false, children }: DrawerProps, ref) => {
+    const [isOpen, setIsOpen] = useState(isExpanded);
+    const open = () => setIsOpen(true);
+    const close = () => setIsOpen(false);
+    const publicAPI = () => ({ open, close });
 
-  useImperativeHandle(ref, publicAPI, []);
+    useImperativeHandle(ref, publicAPI, []);
 
-  const onEscape = (event) => event.key === "Escape" && close();
+    const onEscape = (event) => event.key === "Escape" && close();
 
-  return (
-    <PFDrawer isExpanded={isOpen} onKeyDown={onEscape}>
-      <DrawerContent
-        panelContent={
-          <DrawerPanelContent focusTrap={{ enabled: true }}>
-            <DrawerHead>
-              {panelHeader}
-              <DrawerActions>
-                <DrawerCloseButton onClick={close} />
-              </DrawerActions>
-            </DrawerHead>
-            <DrawerPanelBody>{panelContent}</DrawerPanelBody>
-          </DrawerPanelContent>
-        }
-        colorVariant="no-background"
-      >
-        <DrawerContentBody>{children}</DrawerContentBody>
-      </DrawerContent>
-    </PFDrawer>
-  );
-});
+    return (
+      <PFDrawer isExpanded={isOpen} onKeyDown={onEscape}>
+        <DrawerContent
+          panelContent={
+            <DrawerPanelContent focusTrap={{ enabled: true }}>
+              <DrawerHead>
+                {panelHeader}
+                <DrawerActions>
+                  <DrawerCloseButton onClick={close} />
+                </DrawerActions>
+              </DrawerHead>
+              <DrawerPanelBody>{panelContent}</DrawerPanelBody>
+            </DrawerPanelContent>
+          }
+          colorVariant="no-background"
+        >
+          <DrawerContentBody>{children}</DrawerContentBody>
+        </DrawerContent>
+      </PFDrawer>
+    );
+  },
+);
 
 export default Drawer;

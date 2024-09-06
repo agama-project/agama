@@ -22,7 +22,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
 import { CardField } from "~/components/core";
-import EncryptionSettingsDialog, { EncryptionSetting } from "~/components/storage/EncryptionSettingsDialog";
+import EncryptionSettingsDialog, {
+  EncryptionSetting,
+} from "~/components/storage/EncryptionSettingsDialog";
 import { EncryptionMethods } from "~/types/storage";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
@@ -63,7 +65,7 @@ const Action = ({ isEnabled, isLoading, onClick }) => {
 export type EncryptionConfig = {
   password: string;
   method?: string;
-}
+};
 
 export type EncryptionFieldProps = {
   password?: string;
@@ -71,7 +73,7 @@ export type EncryptionFieldProps = {
   methods?: string[];
   isLoading?: boolean;
   onChange?: (config: EncryptionConfig) => void;
-}
+};
 
 /**
  * Allows to define encryption

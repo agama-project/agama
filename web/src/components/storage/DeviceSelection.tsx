@@ -51,7 +51,7 @@ type DeviceSelectionState = {
   target?: ProposalTarget;
   targetDevice?: StorageDevice;
   targetPVDevices?: StorageDevice[];
-}
+};
 
 /**
  * Allows the user to select a target device for installation.
@@ -81,7 +81,8 @@ export default function DeviceSelection() {
   const selectTargetDisk = () => setState({ ...state, target: ProposalTarget.DISK });
   const selectTargetNewLvmVG = () => setState({ ...state, target: ProposalTarget.NEW_LVM_VG });
 
-  const selectTargetDevice = (devices: StorageDevice[]) => setState({ ...state, targetDevice: devices[0] });
+  const selectTargetDevice = (devices: StorageDevice[]) =>
+    setState({ ...state, targetDevice: devices[0] });
   const selectTargetPVDevices = (devices: StorageDevice[]) => {
     setState({ ...state, targetPVDevices: devices });
   };

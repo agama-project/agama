@@ -29,13 +29,20 @@ import {
   toStorageDevice,
 } from "~/components/storage/device-utils";
 import { ExpandableSelector } from "~/components/core";
-import { ExpandableSelectorColumn, ExpandableSelectorProps } from "~/components/core/ExpandableSelector";
+import {
+  ExpandableSelectorColumn,
+  ExpandableSelectorProps,
+} from "~/components/core/ExpandableSelector";
 import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
 
 /**
  * Returns what (volumes, installation device) is using a device.
  */
-const deviceUsers = (item: PartitionSlot | StorageDevice, targetDevices: StorageDevice[], volumes: Volume[]): string[] => {
+const deviceUsers = (
+  item: PartitionSlot | StorageDevice,
+  targetDevices: StorageDevice[],
+  volumes: Volume[],
+): string[] => {
   const device = toStorageDevice(item);
   if (!device) return [];
 
@@ -51,7 +58,7 @@ const deviceUsers = (item: PartitionSlot | StorageDevice, targetDevices: Storage
 /**
  * @component
  */
-const DeviceUsage = ({ users }: { users: string[]; }) => {
+const DeviceUsage = ({ users }: { users: string[] }) => {
   return (
     <Split hasGutter isWrappable>
       {users.map((user, index) => (
@@ -68,9 +75,10 @@ type VolumeLocationSelectorTableBaseProps = {
   selectedDevices: StorageDevice[];
   targetDevices: StorageDevice[];
   volumes: Volume[];
-}
+};
 
-export type VolumeLocationSelectorTableProps = VolumeLocationSelectorTableBaseProps & ExpandableSelectorProps;
+export type VolumeLocationSelectorTableProps = VolumeLocationSelectorTableBaseProps &
+  ExpandableSelectorProps;
 
 /**
  * Table for selecting the location for a volume.

@@ -54,9 +54,13 @@ const ActionsList = ({ actions }: { actions: Action[] }) => {
  * @param [props.isOpen=false] - Whether the dialog is visible or not.
  * @param [props.onClose] - Whether the dialog is visible or not.
  */
-export default function ProposalActionsDialog(
-  { actions = [] }: { actions?: Action[]; isOpen?: boolean; onClose?: () => void; }
-) {
+export default function ProposalActionsDialog({
+  actions = [],
+}: {
+  actions?: Action[];
+  isOpen?: boolean;
+  onClose?: () => void;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (actions.length === 0) return null;
@@ -64,16 +68,15 @@ export default function ProposalActionsDialog(
   const [generalActions, subvolActions] = partition(actions, (a: Action) => !a.subvol);
   const toggleText = isExpanded
     ? // TRANSLATORS: show/hide toggle action, this is a clickable link
-    sprintf(
-      n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length),
-      subvolActions.length,
-    )
+      sprintf(
+        n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length),
+        subvolActions.length,
+      )
     : // TRANSLATORS: show/hide toggle action, this is a clickable link
-    sprintf(
-      n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length),
-      subvolActions.length,
-    );
-
+      sprintf(
+        n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length),
+        subvolActions.length,
+      );
 
   console.log(actions);
   return (

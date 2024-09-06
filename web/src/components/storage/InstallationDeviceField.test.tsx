@@ -24,7 +24,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import InstallationDeviceField, { InstallationDeviceFieldProps } from "~/components/storage/InstallationDeviceField";
+import InstallationDeviceField, {
+  InstallationDeviceFieldProps,
+} from "~/components/storage/InstallationDeviceField";
 import { ProposalTarget, StorageDevice } from "~/types/storage";
 
 jest.mock("@patternfly/react-core", () => {

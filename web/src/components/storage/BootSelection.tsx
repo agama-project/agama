@@ -51,7 +51,7 @@ export default function BootSelectionDialog() {
     bootDevice?: StorageDevice;
     defaultBootDevice?: StorageDevice;
     availableDevices?: StorageDevice[];
-  }
+  };
 
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const { settings } = useProposalResult();
@@ -83,7 +83,6 @@ export default function BootSelectionDialog() {
       availableDevices,
       selectedOption,
     });
-
   }, [availableDevices, settings]);
 
   if (!state.load) return;

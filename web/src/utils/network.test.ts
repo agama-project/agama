@@ -87,5 +87,5 @@ describe("securityFromFlags", () => {
   it("returns an array with the supported security protocols", () => {
     expect(securityFromFlags(0, 0, 0)).toEqual([]);
     expect(securityFromFlags(3, 392, 0)).toEqual([SecurityProtocols.WPA]);
-  })
+  });
 });

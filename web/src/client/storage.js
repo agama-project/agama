@@ -1223,6 +1223,6 @@ class StorageBaseClient {
 /**
  * Allows interacting with the storage settings
  */
-class StorageClient extends WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME) { }
+class StorageClient extends WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME) {}
 
 export { StorageClient, EncryptionMethods };

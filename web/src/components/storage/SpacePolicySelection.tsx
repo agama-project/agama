@@ -41,7 +41,13 @@ import { useProposalMutation, useProposalResult } from "~/queries/storage";
  * @param props.currentPolicy
  * @param [props.onChange]
  */
-const SpacePolicyPicker = ({ currentPolicy, onChange = noop }: { currentPolicy: SpacePolicy; onChange?: (policy: SpacePolicy) => void; }) => {
+const SpacePolicyPicker = ({
+  currentPolicy,
+  onChange = noop,
+}: {
+  currentPolicy: SpacePolicy;
+  onChange?: (policy: SpacePolicy) => void;
+}) => {
   return (
     <Card isFullHeight isRounded>
       <CardBody>

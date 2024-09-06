@@ -35,7 +35,8 @@ const fetchSettings = (): Promise<ProposalSettings> => get("/api/storage/proposa
 
 const fetchActions = (): Promise<Action[]> => get("/api/storage/proposal/actions");
 
-const calculate = (settings: ProposalSettingsPatch) => put("/api/storage/proposal/settings", settings);
+const calculate = (settings: ProposalSettingsPatch) =>
+  put("/api/storage/proposal/settings", settings);
 
 export {
   fetchUsableDevices,
@@ -44,4 +45,4 @@ export {
   fetchSettings,
   fetchActions,
   calculate,
-}
+};

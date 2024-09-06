@@ -142,14 +142,17 @@ const buildAddress = (address: string): IPAddress => {
   return result;
 };
 
-
 /**
  * @param flags - AP flags
  * @param wpaFlags - AP WPA1 flags
  * @param rsnFlags - AP WPA2 flags
  * @return supported security protocols
  */
-const securityFromFlags = (flags: number, wpaFlags: number, rsnFlags: number): SecurityProtocols[] => {
+const securityFromFlags = (
+  flags: number,
+  wpaFlags: number,
+  rsnFlags: number,
+): SecurityProtocols[] => {
   const security = [];
 
   if (flags & ApFlags.PRIVACY && wpaFlags === 0 && rsnFlags === 0) {

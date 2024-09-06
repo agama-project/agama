@@ -51,16 +51,22 @@ export type MountPathFieldProps = {
   isReadOnly?: boolean;
   onChange: (mountPath: string) => void;
   error?: React.ReactNode;
-}
+};
 
 /**
  * Field for the mount path of a volume.
  * @component
  */
-const MountPathField = ({ value = "", onChange, isReadOnly = false, error }: MountPathFieldProps) => {
+const MountPathField = ({
+  value = "",
+  onChange,
+  isReadOnly = false,
+  error,
+}: MountPathFieldProps) => {
   const label = _("Mount point");
 
-  const changeMountPath: (_: any, mountPath: string) => void = (_, mountPath) => onChange(mountPath);
+  const changeMountPath: (_: any, mountPath: string) => void = (_, mountPath) =>
+    onChange(mountPath);
 
   if (isReadOnly) {
     return <FormReadOnlyField label={label}>{value}</FormReadOnlyField>;
@@ -91,7 +97,13 @@ const MountPathField = ({ value = "", onChange, isReadOnly = false, error }: Mou
  * @param props.units - a collection of size units
  * @param props.formSelectProps
  */
-const SizeUnitFormSelect = ({ units, ...formSelectProps }: { units: Array<string>; formSelectProps: FormSelectProps }) => {
+const SizeUnitFormSelect = ({
+  units,
+  ...formSelectProps
+}: {
+  units: Array<string>;
+  formSelectProps: FormSelectProps;
+}) => {
   return (
     <FormSelect {...formSelectProps}>
       {units.map((unit) => {
@@ -114,7 +126,7 @@ const fsOptions = (volume: Volume): string[] => {
  * Option for selecting a file system type.
  * @component
  */
-const FsSelectOption = ({ fsOption }: { fsOption: string; }) => {
+const FsSelectOption = ({ fsOption }: { fsOption: string }) => {
   return (
     <SelectOption value={fsOption}>
       <strong>{fsOption}</strong>
@@ -134,9 +146,17 @@ const FsSelectOption = ({ fsOption }: { fsOption: string; }) => {
  * @param props.onChange - Callback for notifying input changes.
  */
 const FsSelect = ({
-  id, value, volume, isDisabled, onChange
+  id,
+  value,
+  volume,
+  isDisabled,
+  onChange,
 }: {
-  id: string; value: string; volume: Volume; isDisabled: boolean; onChange: (data: object) => void;
+  id: string;
+  value: string;
+  volume: Volume;
+  isDisabled: boolean;
+  onChange: (data: object) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -190,7 +210,7 @@ type FsFieldProps = {
   volume: Volume;
   isDisabled?: boolean;
   onChange: (data: object) => void;
-}
+};
 
 /**
  * Widget for rendering the file system configuration.
@@ -257,7 +277,7 @@ const FsField = ({ value, volume, isDisabled = false, onChange }: FsFieldProps) 
  * @param {object} props
  * @param {Volume} props.volume - a storage volume object
  */
-const SizeAuto = ({ volume }: { volume: Volume; }) => {
+const SizeAuto = ({ volume }: { volume: Volume }) => {
   const conditions = [];
 
   if (volume.outline.snapshotsAffectSizes)
@@ -307,9 +327,15 @@ const SizeAuto = ({ volume }: { volume: Volume; }) => {
  * @param props.onChange - callback for notifying input changes
  */
 const SizeManual = ({
-  errors, formData, isDisabled, onChange
+  errors,
+  formData,
+  isDisabled,
+  onChange,
 }: {
-  errors: any; formData: any; isDisabled: boolean; onChange: (v: object) => void;
+  errors: any;
+  formData: any;
+  isDisabled: boolean;
+  onChange: (v: object) => void;
 }) => {
   return (
     <Stack hasGutter>
@@ -363,11 +389,17 @@ const SizeManual = ({
  * @param props.isDisabled
  * @param props.onChange - callback for notifying input changes
  */
-const SizeRange = (
-  { errors, formData, isDisabled, onChange
-  }: {
-    errors: any; formData: any; isDisabled: boolean; onChange: (v: object) => void;
-  }) => {
+const SizeRange = ({
+  errors,
+  formData,
+  isDisabled,
+  onChange,
+}: {
+  errors: any;
+  formData: any;
+  isDisabled: boolean;
+  onChange: (v: object) => void;
+}) => {
   return (
     <Stack hasGutter>
       <p>
@@ -472,9 +504,15 @@ type SizeOptionsFieldProps = {
   errors?: object;
   isDisabled?: boolean;
   onChange: (v: object) => void;
-}
+};
 
-const SizeOptionsField = ({ volume, formData, isDisabled = false, errors = {}, onChange }: SizeOptionsFieldProps) => {
+const SizeOptionsField = ({
+  volume,
+  formData,
+  isDisabled = false,
+  errors = {},
+  onChange,
+}: SizeOptionsFieldProps) => {
   const { sizeMethod } = formData;
   const sizeWidgetProps = { errors, formData, volume, isDisabled, onChange };
 

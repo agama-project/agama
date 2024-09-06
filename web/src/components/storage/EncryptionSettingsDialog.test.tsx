@@ -25,7 +25,9 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { EncryptionMethods } from "~/client/storage";
-import EncryptionSettingsDialog, { EncryptionSettingsDialogProps } from "~/components/storage/EncryptionSettingsDialog";
+import EncryptionSettingsDialog, {
+  EncryptionSettingsDialogProps,
+} from "~/components/storage/EncryptionSettingsDialog";
 
 let props: EncryptionSettingsDialogProps;
 const onCancelFn = jest.fn();
