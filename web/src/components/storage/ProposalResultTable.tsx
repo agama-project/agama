@@ -35,20 +35,15 @@ import { TreeTable } from "~/components/core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
+import { PartitionSlot, StorageDevice } from "~/types/storage";
+import { TreeTableColumn } from "~/components/core/TreeTable";
 
-/**
- * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import("../core/TreeTable").TreeTableColumn} TreeTableColumn
- * @typedef {StorageDevice | PartitionSlot} TableItem
- */
+type TableItem = StorageDevice | PartitionSlot;
 
 /**
  * @component
- * @param {object} props
- * @param {TableItem} props.item
  */
-const MountPoint = ({ item }) => {
+const MountPoint = ({ item }: { item: TableItem; }) => {
   const device = toStorageDevice(item);
 
   if (!(device && device.filesystem?.mountPath)) return null;
@@ -58,11 +53,8 @@ const MountPoint = ({ item }) => {
 
 /**
  * @component
- * @param {object} props
- * @param {TableItem} props.item
- * @param {DevicesManager} props.devicesManager
  */
-const DeviceCustomDetails = ({ item, devicesManager }) => {
+const DeviceCustomDetails = ({ item, devicesManager }: { item: TableItem; devicesManager: DevicesManager; }) => {
   const isNew = () => {
     const device = toStorageDevice(item);
     if (!device) return false;
@@ -85,11 +77,8 @@ const DeviceCustomDetails = ({ item, devicesManager }) => {
 
 /**
  * @component
- * @param {object} props
- * @param {TableItem} props.item
- * @param {DevicesManager} props.devicesManager
  */
-const DeviceCustomSize = ({ item, devicesManager }) => {
+const DeviceCustomSize = ({ item, devicesManager }: { item: TableItem; devicesManager: DevicesManager; }) => {
   const device = toStorageDevice(item);
   const isResized = device && devicesManager.isShrunk(device);
   const sizeBefore = isResized ? devicesManager.systemDevice(device.sid).size : item.size;
@@ -110,21 +99,16 @@ const DeviceCustomSize = ({ item, devicesManager }) => {
   );
 };
 
-/** @type {(devicesManager: DevicesManager) => TreeTableColumn[] } */
-const columns = (devicesManager) => {
-  /** @type {(item: TableItem) => React.ReactNode} */
-  const renderDevice = (item) => <DeviceName item={item} />;
+const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesManager) => {
+  const renderDevice: (item: TableItem) => React.ReactNode = (item): React.ReactNode => <DeviceName item={item} />;
 
-  /** @type {(item: TableItem) => React.ReactNode} */
-  const renderMountPoint = (item) => <MountPoint item={item} />;
+  const renderMountPoint: (item: TableItem) => React.ReactNode = (item) => <MountPoint item={item} />;
 
-  /** @type {(item: TableItem) => React.ReactNode} */
-  const renderDetails = (item) => (
+  const renderDetails: (item: TableItem) => React.ReactNode = (item) => (
     <DeviceCustomDetails item={item} devicesManager={devicesManager} />
   );
 
-  /** @type {(item: TableItem) => React.ReactNode} */
-  const renderSize = (item) => <DeviceCustomSize item={item} devicesManager={devicesManager} />;
+  const renderSize: (item: TableItem) => React.ReactNode = (item) => <DeviceCustomSize item={item} devicesManager={devicesManager} />;
 
   return [
     { name: _("Device"), value: renderDevice },
@@ -134,16 +118,15 @@ const columns = (devicesManager) => {
   ];
 };
 
+type ProposalResultTableProps = {
+  devicesManager: DevicesManager;
+}
+
 /**
  * Renders the proposal result.
  * @component
- *
- * @typedef {object} ProposalResultTableProps
- * @property {DevicesManager} devicesManager
- *
- * @param {ProposalResultTableProps} props
  */
-export default function ProposalResultTable({ devicesManager }) {
+export default function ProposalResultTable({ devicesManager }: ProposalResultTableProps) {
   const devices = devicesManager.usedDevices();
 
   return (

@@ -26,32 +26,21 @@ import { Label } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
-
-/**
- * @typedef {import ("~/client/storage").PartitionSlot} PartitionSlot
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
+import { PartitionSlot, StorageDevice } from "~/types/storage";
 
 /**
  * Ensures the given item is a StorageDevice.
- *
- * @param {PartitionSlot|StorageDevice} item
- * @returns {StorageDevice|undefined}
  */
-const toStorageDevice = (item) => {
-  const { sid } = /** @type {object} */ (item);
-  if (!sid) return undefined;
-
-  return /** @type {StorageDevice} */ (item);
+const toStorageDevice = (item: PartitionSlot | StorageDevice): StorageDevice | undefined => {
+  if ("sid" in item) {
+    return item;
+  }
 };
 
 /**
  * @component
- *
- * @param {object} props
- * @param {PartitionSlot|StorageDevice} props.item
  */
-const FilesystemLabel = ({ item }) => {
+const FilesystemLabel = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
@@ -67,11 +56,8 @@ const FilesystemLabel = ({ item }) => {
 
 /**
  * @component
- *
- * @param {object} props
- * @param {PartitionSlot|StorageDevice} props.item
  */
-const DeviceName = ({ item }) => {
+const DeviceName = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
 
@@ -82,21 +68,18 @@ const DeviceName = ({ item }) => {
 
 /**
  * @component
- *
- * @param {object} props
- * @param {PartitionSlot|StorageDevice} props.item
  */
-const DeviceDetails = ({ item }) => {
+const DeviceDetails = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
   const device = toStorageDevice(item);
   if (!device) return _("Unused space");
 
-  const renderContent = (device) => {
+  const renderContent = (device: StorageDevice) => {
     if (!device.partitionTable && device.systems?.length > 0) return device.systems.join(", ");
 
     return device.description;
   };
 
-  const renderPTableType = (device) => {
+  const renderPTableType = (device: StorageDevice) => {
     const type = device.partitionTable?.type;
     if (type) return <Label isCompact>{type.toUpperCase()}</Label>;
   };
@@ -110,11 +93,8 @@ const DeviceDetails = ({ item }) => {
 
 /**
  * @component
- *
- * @param {object} props
- * @param {PartitionSlot|StorageDevice} props.item
  */
-const DeviceSize = ({ item }) => {
+const DeviceSize = ({ item }: { item: PartitionSlot | StorageDevice; }) => {
   return deviceSize(item.size);
 };
 

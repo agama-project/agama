@@ -29,51 +29,43 @@ import { sprintf } from "sprintf-js";
 import { deviceLabel } from "~/components/storage/utils";
 import { Icon } from "~/components/layout";
 import { PATHS } from "~/routes/storage";
-
-/**
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
+import { StorageDevice } from "~/types/storage";
 
 /**
  * Internal component for building the link that navigates to selector
  *
- * @param {object} props
- * @param {boolean} [props.isBold=false] - Whether text should be wrapped by <b>.
+ * @param props
+ * @param [props.isBold=false] - Whether text should be wrapped by <b>.
  */
-const Link = ({ isBold = false }) => {
+const Link = ({ isBold = false }: { isBold?: boolean; }) => {
   const text = _("Change boot options");
 
   return <RouterLink to={PATHS.bootingPartition}>{isBold ? <b>{text}</b> : text}</RouterLink>;
 };
 
-/**
- * Allows to select the boot config.
- * @component
- *
- * @typedef {object} BootConfigFieldProps
- * @property {boolean} configureBoot
- * @property {StorageDevice|undefined} bootDevice
- * @property {StorageDevice|undefined} defaultBootDevice
- * @property {StorageDevice[]} availableDevices
- * @property {boolean} isLoading
- * @property {(boot: BootConfig) => void} onChange
- *
- * @typedef {object} BootConfig
- * @property {boolean} configureBoot
- * @property {StorageDevice} bootDevice
- *
- * @param {BootConfigFieldProps} props
- */
-export default function BootConfigField({ configureBoot, bootDevice, isLoading, onChange }) {
-  const onAccept = ({ configureBoot, bootDevice }) => {
-    onChange({ configureBoot, bootDevice });
-  };
+export type BootConfig = {
+  configureBoot: boolean;
+  bootDevice: StorageDevice;
+}
 
+export type BootConfigFieldProps = {
+  configureBoot: boolean;
+  bootDevice?: StorageDevice;
+  defaultBootDevice?: StorageDevice;
+  availableDevices: StorageDevice[];
+  isLoading: boolean;
+}
+
+/**
+ * Summarizes how the system will boot.
+ * @component
+ */
+export default function BootConfigField({ configureBoot, bootDevice, isLoading }: BootConfigFieldProps) {
   if (isLoading && configureBoot === undefined) {
     return <Skeleton width="75%" />;
   }
 
-  let value;
+  let value: React.ReactNode;
 
   if (!configureBoot) {
     value = (

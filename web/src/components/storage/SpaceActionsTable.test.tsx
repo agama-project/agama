@@ -25,16 +25,10 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
-import SpaceActionsTable from "~/components/storage/SpaceActionsTable";
+import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
+import { StorageDevice } from "~/types/storage";
 
-/**
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import ("~/components/storage/SpaceActionsTable").SpaceActionsTableProps} SpaceActionsTableProps
- */
-
-/** @type {StorageDevice} */
-const sda = {
+const sda: StorageDevice = {
   sid: 59,
   isDrive: true,
   type: "disk",
@@ -56,8 +50,7 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-/** @type {StorageDevice} */
-const sda1 = {
+const sda1: StorageDevice = {
   sid: 69,
   name: "/dev/sda1",
   description: "Swap partition",
@@ -68,8 +61,7 @@ const sda1 = {
   start: 1,
 };
 
-/** @type {StorageDevice} */
-const sda2 = {
+const sda2: StorageDevice = {
   sid: 79,
   name: "/dev/sda2",
   description: "EXT4 partition",
@@ -88,7 +80,7 @@ sda.partitionTable = {
 };
 
 /** @type {StorageDevice} */
-const sdb = {
+const sdb: StorageDevice = {
   sid: 62,
   name: "/dev/sdb",
   isDrive: true,
@@ -99,7 +91,7 @@ const sdb = {
 };
 
 /** @type {StorageDevice} */
-const sdc = {
+const sdc: StorageDevice = {
   sid: 63,
   name: "/dev/sdc",
   isDrive: true,
@@ -120,8 +112,7 @@ const deviceAction = (device) => {
   return "force_delete";
 };
 
-/** @type {SpaceActionsTableProps} */
-let props;
+let props: SpaceActionsTableProps;
 
 describe("SpaceActionsTable", () => {
   beforeEach(() => {

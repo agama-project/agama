@@ -25,14 +25,13 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { EncryptionMethods } from "~/client/storage";
-import EncryptionSettingsDialog from "~/components/storage/EncryptionSettingsDialog";
+import EncryptionSettingsDialog, { EncryptionSettingsDialogProps } from "~/components/storage/EncryptionSettingsDialog";
 
-/** @type {import("~/components/storage/EncryptionSettingsDialog").EncryptionSettingsDialogProps} */
-let props;
+let props: EncryptionSettingsDialogProps;
 const onCancelFn = jest.fn();
 const onAcceptFn = jest.fn();
 
-describe.skip("EncryptionSettingsDialog", () => {
+describe("EncryptionSettingsDialog", () => {
   beforeEach(() => {
     props = {
       password: "1234",
@@ -51,20 +50,20 @@ describe.skip("EncryptionSettingsDialog", () => {
 
     it("allows settings the encryption", async () => {
       const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-      const switchField = screen.getByRole("switch", { name: "Encrypt the system" });
+      const checkbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
       const passwordInput = screen.getByLabelText("Password");
       const confirmationInput = screen.getByLabelText("Password confirmation");
       const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-      expect(switchField).not.toBeChecked();
+      expect(checkbox).not.toBeChecked();
       expect(passwordInput).toBeDisabled();
       expect(passwordInput).toBeDisabled();
       expect(tpmCheckbox).toBeDisabled();
 
-      await user.click(switchField);
+      await user.click(checkbox);
 
-      expect(switchField).toBeChecked();
+      expect(checkbox).toBeChecked();
       expect(passwordInput).toBeEnabled();
       expect(passwordInput).toBeEnabled();
       expect(tpmCheckbox).toBeEnabled();
@@ -100,11 +99,11 @@ describe.skip("EncryptionSettingsDialog", () => {
 
     it("allows unsetting the encryption", async () => {
       const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-      const switchField = screen.getByRole("switch", { name: "Encrypt the system" });
+      const checkbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
-      expect(switchField).toBeChecked();
-      await user.click(switchField);
-      expect(switchField).not.toBeChecked();
+      expect(checkbox).toBeChecked();
+      await user.click(checkbox);
+      expect(checkbox).not.toBeChecked();
       await user.click(acceptButton);
       expect(props.onAccept).toHaveBeenCalledWith({ password: "" });
     });
@@ -142,7 +141,7 @@ describe.skip("EncryptionSettingsDialog", () => {
 
   it("does not allow sending not valid settings", async () => {
     const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-    const switchField = screen.getByRole("switch", { name: "Encrypt the system" });
+    const checkbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
     const passwordInput = screen.getByLabelText("Password");
     const confirmationInput = screen.getByLabelText("Password confirmation");
     const acceptButton = screen.getByRole("button", { name: "Accept" });
@@ -151,10 +150,10 @@ describe.skip("EncryptionSettingsDialog", () => {
     await user.clear(confirmationInput);
     // Now password and passwordConfirmation do not match
     expect(acceptButton).toBeDisabled();
-    await user.click(switchField);
+    await user.click(checkbox);
     // But now the user is trying to unset the encryption
     expect(acceptButton).toBeEnabled();
-    await user.click(switchField);
+    await user.click(checkbox);
     // Back to a not valid settings state
     expect(acceptButton).toBeDisabled();
     await user.clear(passwordInput);

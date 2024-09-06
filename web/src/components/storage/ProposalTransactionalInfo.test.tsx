@@ -23,6 +23,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalTransactionalInfo } from "~/components/storage";
+import { ProposalSettings, ProposalTarget, Volume, VolumeTarget } from "~/types/storage";
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -32,17 +33,51 @@ jest.mock("~/queries/software", () => ({
   useProductChanges: () => jest.fn(),
 }));
 
-let props;
+const settings: ProposalSettings = {
+  target: ProposalTarget.DISK,
+  targetDevice: "/dev/sda",
+  targetPVDevices: [],
+  configureBoot: false,
+  bootDevice: "",
+  defaultBootDevice: "",
+  encryptionPassword: "",
+  encryptionMethod: "",
+  spacePolicy: "delete",
+  spaceActions: [],
+  volumes: [],
+  installationDevices: [],
+};
+
+const rootVolume: Volume = {
+  mountPath: "/",
+  target: VolumeTarget.DEFAULT,
+  fsType: "Btrfs",
+  minSize: 1024,
+  maxSize: 2048,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: true,
+    fsTypes: ["Btrfs", "Ext4"],
+    supportAutoSize: true,
+    snapshotsConfigurable: true,
+    snapshotsAffectSizes: true,
+    sizeRelevantVolumes: [],
+    adjustByRam: false,
+    productDefined: true,
+  },
+};
+
+const props = { settings };
 
 beforeEach(() => {
-  props = {};
+  settings.volumes = [];
 });
-
-const rootVolume = { mountPath: "/", fsType: "Btrfs" };
 
 describe("if the system is not transactional", () => {
   beforeEach(() => {
-    props.settings = { volumes: [rootVolume] };
+    settings.volumes = [rootVolume];
   });
 
   it("renders nothing", () => {
@@ -53,7 +88,7 @@ describe("if the system is not transactional", () => {
 
 describe("if the system is transactional", () => {
   beforeEach(() => {
-    props.settings = { volumes: [{ ...rootVolume, transactional: true }] };
+    settings.volumes = [{ ...rootVolume, transactional: true }]
   });
 
   it("renders an explanation about the transactional system", () => {

@@ -614,7 +614,6 @@ type AdvancedProps = {
   bootDevice: StorageDevice | undefined;
   defaultBootDevice: StorageDevice | undefined;
   onVolumesChange: (volumes: Volume[]) => void;
-  onBootChange: (boot: BootConfig) => void;
   isLoading: boolean;
 };
 
@@ -634,7 +633,6 @@ const Advanced = ({
   bootDevice,
   defaultBootDevice,
   onVolumesChange,
-  onBootChange,
   isLoading,
 }: AdvancedProps) => {
   const [isVolumeDialogOpen, setIsVolumeDialogOpen] = useState(false);
@@ -742,7 +740,6 @@ const Advanced = ({
         defaultBootDevice={defaultBootDevice}
         availableDevices={availableDevices}
         isLoading={isLoading}
-        onChange={onBootChange}
       />
     </Stack>
   );
@@ -760,7 +757,6 @@ export type PartitionsFieldProps = {
   defaultBootDevice: StorageDevice | undefined;
   isLoading?: boolean;
   onVolumesChange: (volumes: Volume[]) => void;
-  onBootChange: (boot: BootConfig) => void;
 }
 
 type BootConfig = {
@@ -787,7 +783,6 @@ export default function PartitionsField({
   defaultBootDevice,
   isLoading = false,
   onVolumesChange,
-  onBootChange,
 }: PartitionsFieldProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const onExpand = () => setIsExpanded(!isExpanded);
@@ -833,7 +828,6 @@ export default function PartitionsField({
             bootDevice={bootDevice}
             defaultBootDevice={defaultBootDevice}
             onVolumesChange={onVolumesChange}
-            onBootChange={onBootChange}
             isLoading={isLoading}
           />
         </CardBody>

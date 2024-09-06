@@ -19,20 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import BootConfigField from "~/components/storage/BootConfigField";
+import BootConfigField, { BootConfigFieldProps } from "~/components/storage/BootConfigField";
+import { StorageDevice } from "~/types/storage";
 
-/**
- * @typedef {import("~/components/storage/BootConfigField").BootConfigFieldProps} BootConfigFieldProps
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- */
-
-/** @type {StorageDevice} */
-const sda = {
+const sda: StorageDevice = {
   sid: 59,
   description: "A fake disk for testing",
   isDrive: true,
@@ -54,48 +47,15 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-/** @type {BootConfigFieldProps} */
-let props;
-
-beforeEach(() => {
-  props = {
-    configureBoot: false,
-    bootDevice: undefined,
-    defaultBootDevice: undefined,
-    availableDevices: [sda],
-    isLoading: false,
-    onChange: jest.fn(),
-  };
-});
-
-/**
- * Helper function that implicitly test that field provides a button for
- * opening the dialog
- */
-const openBootConfigDialog = async () => {
-  const { user } = plainRender(<BootConfigField {...props} />);
-  const button = screen.getByRole("button");
-  await user.click(button);
-  const dialog = screen.getByRole("dialog", { name: "Partitions for booting" });
-
-  return { user, dialog };
+const props: BootConfigFieldProps = {
+  configureBoot: false,
+  bootDevice: undefined,
+  defaultBootDevice: undefined,
+  availableDevices: [sda],
+  isLoading: false,
 };
 
 describe.skip("BootConfigField", () => {
-  it("triggers onChange callback when user confirms the dialog", async () => {
-    const { user, dialog } = await openBootConfigDialog();
-    const button = within(dialog).getByRole("button", { name: "Confirm" });
-    await user.click(button);
-    expect(props.onChange).toHaveBeenCalled();
-  });
-
-  it("does not trigger onChange callback when user cancels the dialog", async () => {
-    const { user, dialog } = await openBootConfigDialog();
-    const button = within(dialog).getByRole("button", { name: "Cancel" });
-    await user.click(button);
-    expect(props.onChange).not.toHaveBeenCalled();
-  });
-
   describe("when installation is set for not configuring boot", () => {
     it("renders a text warning about it", () => {
       plainRender(<BootConfigField {...props} />);

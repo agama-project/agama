@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
@@ -31,17 +29,11 @@ import {
   FilesystemLabel,
   toStorageDevice,
 } from "~/components/storage/device-utils";
+import { PartitionSlot, StorageDevice } from "~/types/storage";
 
-/**
- * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
- * @typedef {import("~/client/storage").StorageDevice} StorageDevice
- */
+const slot: PartitionSlot = { start: 1234, size: 256 };
 
-/** @type {PartitionSlot} */
-const slot = { start: 1234, size: 256 };
-
-/** @type {StorageDevice} */
-const vda = {
+const vda: StorageDevice = {
   sid: 59,
   isDrive: true,
   type: "disk",
@@ -61,8 +53,7 @@ const vda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-/** @type {StorageDevice} */
-const vda1 = {
+const vda1: StorageDevice = {
   sid: 60,
   isDrive: false,
   type: "partition",
@@ -80,8 +71,7 @@ const vda1 = {
   filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" },
 };
 
-/** @type {StorageDevice}  */
-const lvmLv1 = {
+const lvmLv1: StorageDevice = {
   sid: 73,
   isDrive: false,
   type: "lvmLv",
@@ -122,8 +112,7 @@ describe("DeviceName", () => {
 });
 
 describe("DeviceDetails", () => {
-  /** @type {PartitionSlot|StorageDevice} */
-  let item;
+  let item: PartitionSlot | StorageDevice;
 
   describe("if the item is a partition slot", () => {
     beforeEach(() => {
