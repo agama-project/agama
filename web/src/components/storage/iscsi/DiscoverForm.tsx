@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -83,8 +83,8 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
     return isValidAddress() && isValidPort() && isValidAuth;
   };
 
-  const showAddressError = () => data.address.length > 0 && !isValidAddress(data.address);
-  const showPortError = () => data.port.length > 0 && !isValidPort(data.port);
+  const showAddressError = () => data.address.length > 0 && !isValidAddress();
+  const showPortError = () => data.port.length > 0 && !isValidPort();
 
   const id = "iscsiDiscover";
   const isDisabled = isLoading || !isValidForm();
