@@ -55,9 +55,6 @@ const props: BootConfigFieldProps = {
   isLoading: false,
 };
 
-beforeEach(() => {
-});
-
 describe.skip("BootConfigField", () => {
   describe("when installation is set for not configuring boot", () => {
     it("renders a text warning about it", () => {
