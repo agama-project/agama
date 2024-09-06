@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config"
-require "agama/storage/config_conversions/drive/from_json"
+require "agama/storage/config_conversions/from_json_conversions/drive"
 require "agama/storage/configs/boot"
 require "agama/storage/proposal_settings_reader"
 
@@ -103,7 +103,7 @@ module Agama
 
         # @return [Configs::Drive]
         def convert_drive(drive_json)
-          Drive::FromJSON.new(drive_json,
+          FromJSONConversions::Drive.new(drive_json,
             settings: settings, volume_builder: volume_builder).convert
         end
 

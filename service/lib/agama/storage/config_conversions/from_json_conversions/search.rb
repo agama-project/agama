@@ -22,9 +22,9 @@
 module Agama
   module Storage
     module ConfigConversions
-      module Search
+      module FromJSONConversions
         # Search conversion from JSON hash according to schema.
-        class FromJSON
+        class Search
           # @param search_json [Hash, String]
           def initialize(search_json)
             @search_json = search_json

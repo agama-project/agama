@@ -19,55 +19,45 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/block_device/from_json"
-require "agama/storage/config_conversions/search/from_json"
-require "agama/storage/config_conversions/size/from_json"
-require "agama/storage/configs/partition"
-require "y2storage/partition_id"
+require "agama/storage/config_conversions/from_json_conversions/block_device"
+require "agama/storage/config_conversions/from_json_conversions/search"
+require "agama/storage/config_conversions/from_json_conversions/partitionable"
+require "agama/storage/configs/drive"
 
 module Agama
   module Storage
     module ConfigConversions
-      module Partition
-        # Partition conversion from JSON hash according to schema.
-        class FromJSON
+      module FromJSONConversions
+        # Drive conversion from JSON hash according to schema.
+        class Drive
           # @todo Replace settings and volume_builder params by a ProductDefinition.
           #
-          # @param partition_json [Hash]
+          # @param drive_json [Hash]
           # @param settings [ProposalSettings]
           # @param volume_builder [VolumeTemplatesBuilder]
-          def initialize(partition_json, settings:, volume_builder:)
-            @partition_json = partition_json
+          def initialize(drive_json, settings:, volume_builder:)
+            @drive_json = drive_json
             @settings = settings
             @volume_builder = volume_builder
           end
 
           # Performs the conversion from Hash according to the JSON schema.
           #
-          # @param default [Configs::Partition, nil]
-          # @return [Configs::Partition]
+          # @param default [Configs::Drive, nil]
+          # @return [Configs::Drive]
           def convert(default = nil)
-            default_config = default.dup || Configs::Partition.new
+            default_config = default.dup || Configs::Drive.new
 
-            convert_block_device(default_config).tap do |config|
+            convert_drive(default_config).tap do |config|
               search = convert_search(config.search)
-              delete = partition_json[:delete]
-              delete_if_needed = partition_json[:deleteIfNeeded]
-              id = convert_id
-              size = convert_size(config.size)
-
               config.search = search if search
-              config.delete = delete unless delete.nil?
-              config.delete_if_needed = delete_if_needed unless delete_if_needed.nil?
-              config.id = id if id
-              config.size = size if size
             end
           end
 
         private
 
           # @return [Hash]
-          attr_reader :partition_json
+          attr_reader :drive_json
 
           # @return [ProposalSettings]
           attr_reader :settings
@@ -75,10 +65,25 @@ module Agama
           # @return [VolumeTemplatesBuilder]
           attr_reader :volume_builder
 
-          # @param config [Configs::Partition]
-          # @return [Configs::Partition]
+          # @param config [Configs::Drive]
+          # @return [Configs::Drive]
+          def convert_drive(config)
+            convert_block_device(
+              convert_partitionable(config)
+            )
+          end
+
+          # @param config [Configs::Drive]
           def convert_block_device(config)
-            converter = BlockDevice::FromJSON.new(partition_json,
+            converter = FromJSONConversions::BlockDevice.new(drive_json,
+              settings: settings, volume_builder: volume_builder)
+
+            converter.convert(config)
+          end
+
+          # @param config [Configs::Drive]
+          def convert_partitionable(config)
+            converter = FromJSONConversions::Partitionable.new(drive_json,
               settings: settings, volume_builder: volume_builder)
 
             converter.convert(config)
@@ -87,28 +92,11 @@ module Agama
           # @param config [Configs::Search]
           # @return [Configs::Search, nil]
           def convert_search(config)
-            search_json = partition_json[:search]
+            search_json = drive_json[:search]
             return unless search_json
 
-            converter = Search::FromJSON.new(search_json)
+            converter = FromJSONConversions::Search.new(search_json)
             converter.convert(config)
-          end
-
-          # @return [Y2Storage::PartitionId, nil]
-          def convert_id
-            value = partition_json[:id]
-            return unless value
-
-            Y2Storage::PartitionId.find(value)
-          end
-
-          # @param config [Configs::Size]
-          # @return [Configs::Size, nil]
-          def convert_size(config)
-            size_json = partition_json[:size]
-            return unless size_json
-
-            Size::FromJSON.new(size_json).convert(config)
           end
         end
       end

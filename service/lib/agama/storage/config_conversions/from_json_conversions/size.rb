@@ -25,9 +25,9 @@ require "y2storage/disk_size"
 module Agama
   module Storage
     module ConfigConversions
-      module Size
+      module FromJSONConversions
         # Size conversion from JSON hash according to schema.
-        class FromJSON
+        class Size
           # @param size_json [Hash]
           def initialize(size_json)
             @size_json = size_json

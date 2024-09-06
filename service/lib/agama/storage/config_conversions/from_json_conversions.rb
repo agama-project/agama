@@ -19,13 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/encryption/from_json"
+require "agama/storage/config_conversions/from_json_conversions/block_device"
+require "agama/storage/config_conversions/from_json_conversions/drive"
+require "agama/storage/config_conversions/from_json_conversions/encryption"
+require "agama/storage/config_conversions/from_json_conversions/filesystem"
+require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
+require "agama/storage/config_conversions/from_json_conversions/partition"
+require "agama/storage/config_conversions/from_json_conversions/partitionable"
+require "agama/storage/config_conversions/from_json_conversions/search"
+require "agama/storage/config_conversions/from_json_conversions/size"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions for encryption.
-      module Encryption
+      # Conversions from JSON.
+      module FromJSONConversions
       end
     end
   end

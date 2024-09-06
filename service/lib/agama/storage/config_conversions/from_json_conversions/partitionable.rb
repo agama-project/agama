@@ -19,15 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/partition/from_json"
+require "agama/storage/config_conversions/from_json_conversions/partition"
 require "y2storage/partition_tables/type"
 
 module Agama
   module Storage
     module ConfigConversions
-      module Partitionable
+      module FromJSONConversions
         # Partitionable device conversion from JSON hash according to schema.
-        class FromJSON
+        class Partitionable
           # @todo Replace settings and volume_builder params by a ProductDefinition.
           #
           # @param partitionable_json [Hash]
@@ -80,7 +80,7 @@ module Agama
           # @param partition_json [Hash]
           # @return [Configs::Partition]
           def convert_partition(partition_json)
-            Partition::FromJSON.new(partition_json,
+            FromJSONConversions::Partition.new(partition_json,
               settings: settings, volume_builder: volume_builder).convert
           end
         end

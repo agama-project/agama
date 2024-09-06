@@ -26,9 +26,9 @@ require "y2storage/pbkd_function"
 module Agama
   module Storage
     module ConfigConversions
-      module Encryption
+      module FromJSONConversions
         # Encryption conversion from JSON hash according to schema.
-        class FromJSON
+        class Encryption
           # @param encryption_json [Hash, String]
           # @param default [Configs::Encrypt]
           def initialize(encryption_json, default: nil)

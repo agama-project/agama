@@ -19,16 +19,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/filesystem_type/from_json"
+require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
 require "agama/storage/configs/filesystem"
 require "y2storage/filesystems/mount_by_type"
 
 module Agama
   module Storage
     module ConfigConversions
-      module Filesystem
+      module FromJSONConversions
         # Filesystem conversion from JSON hash according to schema.
-        class FromJSON
+        class Filesystem
           # @param filesystem_json [Hash]
           def initialize(filesystem_json)
             @filesystem_json = filesystem_json
@@ -77,7 +77,7 @@ module Agama
             filesystem_type_json = filesystem_json[:type]
             return unless filesystem_type_json
 
-            FilesystemType::FromJSON.new(filesystem_type_json).convert(default)
+            FromJSONConversions::FilesystemType.new(filesystem_type_json).convert(default)
           end
         end
       end

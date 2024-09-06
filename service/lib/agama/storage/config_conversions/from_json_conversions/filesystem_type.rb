@@ -26,9 +26,9 @@ require "y2storage/filesystems/type"
 module Agama
   module Storage
     module ConfigConversions
-      module FilesystemType
+      module FromJSONConversions
         # Filesystem type conversion from JSON hash according to schema.
-        class FromJSON
+        class FilesystemType
           # @param filesystem_type_json [Hash, String]
           def initialize(filesystem_type_json)
             @filesystem_type_json = filesystem_type_json

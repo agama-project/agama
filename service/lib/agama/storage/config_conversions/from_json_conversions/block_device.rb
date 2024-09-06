@@ -19,9 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/encryption/from_json"
-require "agama/storage/config_conversions/filesystem/from_json"
-require "agama/storage/config_conversions/filesystem_type/from_json"
+require "agama/storage/config_conversions/from_json_conversions/encryption"
+require "agama/storage/config_conversions/from_json_conversions/filesystem"
+require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
 require "agama/storage/configs/encryption"
 require "agama/storage/configs/filesystem"
 require "agama/storage/configs/filesystem_type"
@@ -29,9 +29,9 @@ require "agama/storage/configs/filesystem_type"
 module Agama
   module Storage
     module ConfigConversions
-      module BlockDevice
+      module FromJSONConversions
         # Block device conversion from JSON hash according to schema.
-        class FromJSON
+        class BlockDevice
           # @todo Replace settings and volume_builder params by a ProductDefinition.
           #
           # @param blk_device_json [Hash]
@@ -70,7 +70,9 @@ module Agama
             encrypt_json = blk_device_json[:encryption]
             return unless encrypt_json
 
-            Encryption::FromJSON.new(encrypt_json, default: default_encrypt_config).convert
+            FromJSONConversions::Encryption
+              .new(encrypt_json, default: default_encrypt_config)
+              .convert
           end
 
           # @return [Configs::Filesystem, nil]
@@ -83,7 +85,7 @@ module Agama
             # @todo Check whether the given filesystem can be used for the mount point.
             # @todo Check whether snapshots can be configured and restore to default if needed.
 
-            Filesystem::FromJSON.new(filesystem_json).convert(default)
+            FromJSONConversions::Filesystem.new(filesystem_json).convert(default)
           end
 
           # @todo Recover values from ProductDefinition instead of ProposalSettings.
