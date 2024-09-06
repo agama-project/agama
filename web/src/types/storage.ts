@@ -176,10 +176,30 @@ const EncryptionMethods = Object.freeze({
   TPM: "tpm_fde",
 });
 
+
+type ISCSIInitiator = {
+  name: string;
+  ibft: boolean;
+  offloadCard: string;
+};
+
+type ISCSINode = {
+  id: string;
+  target: string;
+  address: string;
+  port: number;
+  interface: string;
+  ibft: boolean;
+  connected: boolean;
+  startup: string;
+}
+
 export type {
   Action,
   Component,
   Filesystem,
+  ISCSIInitiator,
+  ISCSINode,
   PartitionSlot,
   PartitionTable,
   ProposalResult,
