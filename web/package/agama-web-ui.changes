@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep  6 15:04:58 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Ensure that product icons are packaged 
+
+-------------------------------------------------------------------
 Fri Sep  6 08:06:41 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adopt TanStack Query and Axios for state management and
