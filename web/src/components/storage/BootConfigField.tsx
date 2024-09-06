@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { ReactNode } from "react";
+import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Skeleton } from "@patternfly/react-core";
 import { _ } from "~/i18n";
@@ -65,7 +65,7 @@ export default function BootConfigField({ configureBoot, bootDevice, isLoading }
     return <Skeleton width="75%" />;
   }
 
-  let value: ReactNode;
+  let value: React.ReactNode;
 
   if (!configureBoot) {
     value = (
