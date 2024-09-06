@@ -7,7 +7,10 @@
 
 use agama_lib::{
     error::ServiceError,
-    storage::{client::zfcp::ZFCPClient, model::zfcp::ZFCPDisk},
+    storage::{
+        client::zfcp::ZFCPClient,
+        model::zfcp::{ZFCPDisk, ZFCPOptions},
+    },
 };
 use axum::{
     extract::{Path, State},
@@ -84,6 +87,7 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
         )
         .route("/disks", get(get_disks))
         .route("/probe", post(probe))
+        .route("/config", get(get_config))
         .with_state(state);
     Ok(router)
 }
@@ -101,6 +105,21 @@ async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Err
     Ok(Json(state.client.supported().await?))
 }
 
+/// Returns global zFCP configuration
+#[utoipa::path(
+    get,
+    path="/config",
+    context_path="/api/storage/zfcp",
+    responses(
+        (status = OK, description = "Returns global ZFCP configuration", body=ZFCPOptions)
+    )
+)]
+async fn get_config(State(state): State<ZFCPState<'_>>) -> Result<Json<ZFCPOptions>, Error> {
+    Ok(Json(ZFCPOptions {
+        allow_lun_scan: state.client.is_lun_scan_allowed().await?,
+    }))
+}
+
 /// Returns the list of known zFCP disks.
 #[utoipa::path(
     get,
@@ -110,9 +129,7 @@ async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Err
         (status = OK, description = "List of ZFCP disks", body = Vec<ZFCPDisk>)
     )
 )]
-async fn get_disks(
-    State(state): State<ZFCPState<'_>>,
-) -> Result<Json<Vec<ZFCPDisk>>, Error> {
+async fn get_disks(State(state): State<ZFCPState<'_>>) -> Result<Json<Vec<ZFCPDisk>>, Error> {
     let devices = state
         .client
         .get_disks()
@@ -140,8 +157,7 @@ async fn controllers(
         .get_controllers()
         .await?
         .into_iter()
-        .map(|(path, device)|
-        {
+        .map(|(path, device)| {
             let mut path_s = path.to_string();
             let slash_pos = path_s.rfind("/").unwrap_or(0);
             path_s.drain(..slash_pos);

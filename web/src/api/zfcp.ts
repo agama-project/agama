@@ -20,7 +20,7 @@
  */
 
 import { post, get } from "~/api/http";
-import { ZFCPDisk, ZFCPController, ZFCPOptions } from "~/types/zfcp";
+import { ZFCPDisk, ZFCPController, ZFCPConfig } from "~/types/zfcp";
 
 /**
  * Returns the list of zFCP controllers
@@ -31,6 +31,12 @@ const fetchZFCPControllers = (): Promise<ZFCPController[]> => get("/api/storage/
  * Returns the list of zFCP disks
  */
 const fetchZFCPDisks = (): Promise<ZFCPDisk[]> => get("/api/storage/zfcp/disks");
+
+/**
+ * Returns the global options for zFCP
+ */
+const fetchZFCPConfig = (): Promise<ZFCPConfig> => get("/api/storage/zfcp/config");
+
 
 /**
  * Returns if zFCP is supported at all
@@ -72,11 +78,22 @@ const fetchLUNs = (controller_id: string, wwpn: string): Promise<string[]> => ge
  * @returns 
  */
 const activateZFCPDisk = (controller_id: string, wwpn:string, lun: string) => post(`/api/storage/zfcp/controllers/${controller_id}/wwpns/${wwpn}/luns/${lun}/activate_disk`);
+
+/**
+ * Deactives disk on given controller with WWPN and LUN
+ * @param controller_id 
+ * @param wwpn 
+ * @param lun 
+ * @returns 
+ */
 const deactivateZFCPDisk = (controller_id: string, wwpn:string, lun: string) => post(`/api/storage/zfcp/controllers/${controller_id}/wwpns/${wwpn}/luns/${lun}/deactivate_disk`);
+
+
 
 export {
   fetchZFCPControllers,
   fetchZFCPDisks,
+  fetchZFCPConfig,
   probeZFCP,
   ZFCPSupported,
   activateZFCPController,

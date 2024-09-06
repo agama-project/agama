@@ -33,9 +33,9 @@ type ZFCPController = {
     LUN: string;
   }
   
-  type ZFCPOptions = {
+  type ZFCPConfig = {
     allowLUNScan: boolean;
   }
   
-  export type { ZFCPController, ZFCPDisk, ZFCPOptions };
+  export type { ZFCPController, ZFCPDisk, ZFCPConfig };
   

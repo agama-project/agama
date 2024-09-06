@@ -36,8 +36,8 @@ import { ZFCPDiskForm } from "~/components/storage";
 import { _ } from "~/i18n";
 import { noop, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import { useZFCPControllers, useZFCPDisks } from "~/queries/zfcp";
-import { deactivateZFCPDisk } from "~/api/zfcp";
+import { useZFCPConfig, useZFCPControllers, useZFCPDisks } from "~/queries/zfcp";
+import { deactivateZFCPDisk, fetchZFCPConfig } from "~/api/zfcp";
 import { ZFCPController, ZFCPDisk } from "~/types/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
@@ -325,17 +325,9 @@ const DevicesTable = (devices: ZFCPDisk[]|ZFCPController[], columns , columnValu
  * @param {boolean} props.isLoading
  */
 const ControllersSection = ({ client, manager, load = noop, isLoading = false }) => {
-  const [allowLUNScan, setAllowLUNScan] = useState(false);
-
-  useEffect(() => {
-    const load = async () => {
-      const autoScan = await client.getAllowLUNScan();
-      setAllowLUNScan(autoScan);
-    };
-
-    load();
-  }, [client, setAllowLUNScan]);
-
+  const allowLUNScan = useZFCPConfig().allowLUNScan;
+  const controllers = useZFCPControllers();
+  
   const EmptyState = () => {
     return (
       <Stack hasGutter>
@@ -385,7 +377,7 @@ configured after activating a controller.",
   return (
     <Section title="Controllers">
       {isLoading && <SectionSkeleton />}
-      {!isLoading && manager.controllers.length === 0 ? <EmptyState /> : <Content />}
+      {!isLoading && controllers.length === 0 ? <EmptyState /> : <Content />}
     </Section>
   );
 };
