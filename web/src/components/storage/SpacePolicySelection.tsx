@@ -83,7 +83,7 @@ const SpacePolicyPicker = ({
  */
 export default function SpacePolicySelection() {
   const { settings } = useProposalResult();
-  const updateProposal = useProposalMutation();
+  const { mutateAsync: updateProposal } = useProposalMutation();
   const [state, setState] = useState({ load: false });
   const [policy, setPolicy] = useState<SpacePolicy | undefined>();
   const [actions, setActions] = useState([]);
@@ -119,7 +119,7 @@ export default function SpacePolicySelection() {
 
   // Resets actions (i.e., sets everything to "keep") if the custom policy has not been used yet.
   useEffect(() => {
-    if (policy && policy?.id !== "custom" && !customUsed) setActions([]);
+    if (policy && policy.id !== "custom" && !customUsed) setActions([]);
   }, [policy, customUsed, setActions]);
 
   if (!state.load) return;
@@ -144,7 +144,7 @@ export default function SpacePolicySelection() {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    updateProposal.mutateAsync({
+    updateProposal({
       ...settings,
       spacePolicy: policy.id,
       spaceActions: actions,
