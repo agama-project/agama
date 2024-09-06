@@ -26,21 +26,17 @@ import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { _ } from "~/i18n";
 import { RowActions } from "~/components/core";
 import { InitiatorForm } from "~/components/storage/iscsi";
+import { useInitiatorMutation } from "~/queries/storage/iscsi";
 
-export default function InitiatorPresenter({ initiator, client }) {
-  const [isLoading, setIsLoading] = useState(true);
+export default function InitiatorPresenter({ initiator }) {
+  const updateInitiator = useInitiatorMutation();
   const [isFormOpen, setIsFormOpen] = useState(false);
-
-  useEffect(() => {
-    setIsLoading(initiator === undefined);
-  }, [initiator]);
 
   const openForm = () => setIsFormOpen(true);
   const closeForm = () => setIsFormOpen(false);
-  const submitForm = async (data) => {
-    await client.iscsi.setInitiatorName(data.name);
+  const submitForm = async ({ name }) => {
+    await updateInitiator.mutateAsync({ name });
 
-    setIsLoading(true);
     closeForm();
   };
 
@@ -53,16 +49,6 @@ export default function InitiatorPresenter({ initiator, client }) {
   };
 
   const Content = () => {
-    if (isLoading || !initiator) {
-      return (
-        <Tr>
-          <Td colSpan={4}>
-            <Skeleton />
-          </Td>
-        </Tr>
-      );
-    }
-
     return (
       <Tr>
         <Td dataLabel={_("Name")}>{initiator.name}</Td>
