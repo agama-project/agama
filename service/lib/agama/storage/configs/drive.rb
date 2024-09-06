@@ -20,6 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/configs/search"
+require "agama/storage/configs/with_alias"
+require "agama/storage/configs/with_search"
 
 module Agama
   module Storage
@@ -27,8 +29,8 @@ module Agama
       # Section of the configuration representing a device that is expected to exist in the target
       # system and that can be used as a regular disk.
       class Drive
-        # @return [Search]
-        attr_accessor :search
+        include WithAlias
+        include WithSearch
 
         # @return [Encryption, nil]
         attr_accessor :encryption
@@ -47,15 +49,6 @@ module Agama
           @partitions = []
           # All drives are expected to match a real device in the system, so let's ensure a search.
           @search = Search.new
-        end
-
-        # Assigned device according to the search.
-        #
-        # @see Y2Storage::Proposal::AgamaSearcher
-        #
-        # @return [Y2Storage::Device, nil]
-        def found_device
-          search.device
         end
 
         # Whether the drive definition contains partition definitions

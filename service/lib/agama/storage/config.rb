@@ -33,7 +33,7 @@ module Agama
       # @return [Array<Configs::Drive>]
       attr_accessor :drives
 
-      # @return [Array]
+      # @return [Array<Configs::VolumeGroup>]
       attr_accessor :volume_groups
 
       # @return [Array]

@@ -19,42 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/configs/size"
-require "agama/storage/configs/with_search"
-require "agama/storage/configs/with_alias"
-
 module Agama
   module Storage
     module Configs
-      # Section of the configuration representing a partition
-      class Partition
-        include WithAlias
-        include WithSearch
+      # Mixin for configs with alias.
+      module WithAlias
+        # @return [String, nil]
+        attr_accessor :alias
 
+        # Whether the config has the given alias.
+        #
         # @return [Boolean]
-        attr_accessor :delete
-        alias_method :delete?, :delete
-
-        # @return [Boolean]
-        attr_accessor :delete_if_needed
-        alias_method :delete_if_needed?, :delete_if_needed
-
-        # @return [Y2Storage::PartitionId, nil]
-        attr_accessor :id
-
-        # @return [Size]
-        attr_accessor :size
-
-        # @return [Encryption, nil]
-        attr_accessor :encryption
-
-        # @return [Filesystem, nil]
-        attr_accessor :filesystem
-
-        def initialize
-          @size = Size.new
-          @delete = false
-          @delete_if_needed = false
+        def alias?(value)
+          self.alias == value
         end
       end
     end

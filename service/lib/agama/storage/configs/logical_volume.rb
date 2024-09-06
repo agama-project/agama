@@ -20,30 +20,33 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/configs/size"
-require "agama/storage/configs/with_search"
 require "agama/storage/configs/with_alias"
 
 module Agama
   module Storage
     module Configs
-      # Section of the configuration representing a partition
-      class Partition
+      # Section of the configuration representing a LVM logical volume.
+      class LogicalVolume
         include WithAlias
-        include WithSearch
 
-        # @return [Boolean]
-        attr_accessor :delete
-        alias_method :delete?, :delete
-
-        # @return [Boolean]
-        attr_accessor :delete_if_needed
-        alias_method :delete_if_needed?, :delete_if_needed
-
-        # @return [Y2Storage::PartitionId, nil]
-        attr_accessor :id
+        # @return [String, nil]
+        attr_accessor :name
 
         # @return [Size]
         attr_accessor :size
+
+        # @return [Integer, nil]
+        attr_accessor :stripes
+
+        # @return [Y2Storage::DiskSize, nil]
+        attr_accessor :stripe_size
+
+        # @return [Boolean]
+        attr_accessor :pool
+        alias_method :pool?, :pool
+
+        # @return [String, nil]
+        attr_accessor :used_pool
 
         # @return [Encryption, nil]
         attr_accessor :encryption
@@ -53,8 +56,14 @@ module Agama
 
         def initialize
           @size = Size.new
-          @delete = false
-          @delete_if_needed = false
+          @pool = false
+        end
+
+        # Whether the config represents a thin logical volume.
+        #
+        # @return [Boolean]
+        def thin_volume?
+          !used_pool.nil?
         end
       end
     end

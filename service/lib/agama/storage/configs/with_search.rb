@@ -21,20 +21,21 @@
 
 module Agama
   module Storage
-    # Namespace for all the supported settings to configure storage
     module Configs
+      # Mixin for configs with search.
+      module WithSearch
+        # @return [Search, nil]
+        attr_accessor :search
+
+        # Assigned device according to the search.
+        #
+        # @see Y2Storage::Proposal::AgamaSearcher
+        #
+        # @return [Y2Storage::Device, nil]
+        def found_device
+          search&.device
+        end
+      end
     end
   end
 end
-
-require "agama/storage/configs/boot"
-require "agama/storage/configs/btrfs"
-require "agama/storage/configs/drive"
-require "agama/storage/configs/encryption"
-require "agama/storage/configs/filesystem"
-require "agama/storage/configs/filesystem_type"
-require "agama/storage/configs/logical_volume"
-require "agama/storage/configs/partition"
-require "agama/storage/configs/search"
-require "agama/storage/configs/size"
-require "agama/storage/configs/volume_group"

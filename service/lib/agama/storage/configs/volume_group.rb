@@ -19,42 +19,26 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/configs/size"
-require "agama/storage/configs/with_search"
-require "agama/storage/configs/with_alias"
-
 module Agama
   module Storage
     module Configs
-      # Section of the configuration representing a partition
-      class Partition
-        include WithAlias
-        include WithSearch
+      # Section of the configuration representing a LVM volume group.
+      class VolumeGroup
+        # @return [String, nil]
+        attr_accessor :name
 
-        # @return [Boolean]
-        attr_accessor :delete
-        alias_method :delete?, :delete
+        # @return [Y2Storage::DiskSize, nil]
+        attr_accessor :extent_size
 
-        # @return [Boolean]
-        attr_accessor :delete_if_needed
-        alias_method :delete_if_needed?, :delete_if_needed
+        # @return [Array<String>]
+        attr_accessor :physical_volumes
 
-        # @return [Y2Storage::PartitionId, nil]
-        attr_accessor :id
-
-        # @return [Size]
-        attr_accessor :size
-
-        # @return [Encryption, nil]
-        attr_accessor :encryption
-
-        # @return [Filesystem, nil]
-        attr_accessor :filesystem
+        # @return [Array<LogicalVolume>]
+        attr_accessor :logical_volumes
 
         def initialize
-          @size = Size.new
-          @delete = false
-          @delete_if_needed = false
+          @physical_volumes = []
+          @logical_volumes = []
         end
       end
     end
