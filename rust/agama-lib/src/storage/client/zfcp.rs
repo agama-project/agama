@@ -1,8 +1,12 @@
 //! Implements a client to access Agama's D-Bus API related to zFCP management.
 
+use std::collections::HashMap;
+
+use futures_util::future::join_all;
 use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath, Connection};
 
 use crate::{
+    dbus::get_property,
     error::ServiceError,
     storage::{
         model::zfcp::{ZFCPController, ZFCPDisk},
@@ -78,14 +82,20 @@ impl<'a> ZFCPClient<'a> {
         let mut devices: Vec<(OwnedObjectPath, ZFCPController)> = vec![];
         for (path, ifaces) in managed_objects {
             if let Some(properties) = ifaces.get("org.opensuse.Agama.Storage1.ZFCP.Controller") {
-                match ZFCPController::try_from(properties) {
-                    Ok(device) => {
-                        devices.push((path, device));
-                    }
-                    Err(error) => {
-                        log::warn!("Not a valid DASD device: {}", error);
-                    }
-                }
+                // TODO: maybe move it to model? but it needs also additional calls to dbus
+                let mut path_s = path.to_string();
+                let slash_pos = path_s.rfind("/").unwrap_or(0);
+                path_s.drain(..slash_pos);
+                devices.push((
+                    path,
+                    ZFCPController {
+                        id: path_s.clone(),
+                        channel: get_property(properties, "Channel")?,
+                        lun_scan: get_property(properties, "LUNScan")?,
+                        active: get_property(properties, "Active")?,
+                        luns_map: self.get_luns_map(path_s.as_str()).await?,
+                    },
+                ))
             }
         }
         Ok(devices)
@@ -124,6 +134,23 @@ impl<'a> ZFCPClient<'a> {
         let controller = self.get_controller_proxy(controller_id).await?;
         let result = controller.get_luns(wwpn).await?;
         Ok(result)
+    }
+
+    pub async fn get_luns_map(
+        &self,
+        controller_id: &str,
+    ) -> Result<HashMap<String, Vec<String>>, ServiceError> {
+        let wwpns = self.get_wwpns(controller_id).await?;
+        let aresult = wwpns.into_iter().map(|wwpn| async move {
+            Ok((
+                wwpn.clone(),
+                self.get_luns(controller_id, wwpn.as_str()).await?,
+            ))
+        });
+        let sresult = join_all(aresult).await;
+        sresult
+            .into_iter()
+            .collect::<Result<HashMap<String, Vec<String>>, _>>()
     }
 
     pub async fn activate_disk(

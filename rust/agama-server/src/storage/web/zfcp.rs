@@ -9,7 +9,7 @@ use agama_lib::{
     error::ServiceError,
     storage::{
         client::zfcp::ZFCPClient,
-        model::zfcp::{ZFCPDisk, ZFCPOptions},
+        model::zfcp::{ZFCPController, ZFCPDisk, ZFCPOptions},
     },
 };
 use axum::{
@@ -17,7 +17,6 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use serde::Serialize;
 use stream::{ZFCPControllerStream, ZFCPDiskStream};
 
 mod stream;
@@ -45,21 +44,6 @@ pub async fn zfcp_stream(dbus: &zbus::Connection) -> Result<EventStreams, Error>
 #[derive(Clone)]
 struct ZFCPState<'a> {
     client: ZFCPClient<'a>,
-}
-
-/// Represents a zFCP controller (specific to s390x systems) with additional id that can be used for various method calls.
-#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ZFCPControllerWithId {
-    /// unique id for this controller
-    pub id: String,
-    /// zFCP controller channel id (e.g., 0.0.fa00)
-    pub channel: String,
-    /// flag whenever channel is performing LUN auto scan
-    #[serde(rename = "LUNScan")]
-    pub lun_scan: bool,
-    /// flag whenever channel is active
-    pub active: bool,
 }
 
 pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, ServiceError> {
@@ -146,28 +130,18 @@ async fn get_disks(State(state): State<ZFCPState<'_>>) -> Result<Json<Vec<ZFCPDi
     path="/controllers",
     context_path="/api/storage/zfcp",
     responses(
-        (status = OK, description = "List of ZFCP controllers", body = Vec<ZFCPControllerWithId>)
+        (status = OK, description = "List of ZFCP controllers", body = Vec<ZFCPController>)
     )
 )]
 async fn controllers(
     State(state): State<ZFCPState<'_>>,
-) -> Result<Json<Vec<ZFCPControllerWithId>>, Error> {
+) -> Result<Json<Vec<ZFCPController>>, Error> {
     let devices = state
         .client
         .get_controllers()
         .await?
         .into_iter()
-        .map(|(path, device)| {
-            let mut path_s = path.to_string();
-            let slash_pos = path_s.rfind("/").unwrap_or(0);
-            path_s.drain(..slash_pos);
-            ZFCPControllerWithId {
-                id: path_s,
-                channel: device.channel,
-                lun_scan: device.lun_scan,
-                active: device.active,
-            }
-        })
+        .map(|(_path, device)| device)
         .collect();
     Ok(Json(devices))
 }

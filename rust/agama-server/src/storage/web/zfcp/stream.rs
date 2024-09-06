@@ -211,6 +211,7 @@ impl ZFCPControllerStream {
         Ok(Self {
             dbus: dbus.clone(),
             cache,
+            client,
             inner: rx,
         })
     }

@@ -36,9 +36,11 @@ impl TryFrom<&HashMap<String, OwnedValue>> for ZFCPDisk {
 }
 
 /// Represents a zFCP controller (specific to s390x systems).
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ZFCPController {
+    /// unique internal ID for given controller
+    pub id: String,
     /// zFCP controller channel id (e.g., 0.0.fa00)
     pub channel: String,
     /// flag whenever channel is performing LUN auto scan
@@ -46,18 +48,9 @@ pub struct ZFCPController {
     pub lun_scan: bool,
     /// flag whenever channel is active
     pub active: bool,
-}
-
-impl TryFrom<&HashMap<String, OwnedValue>> for ZFCPController {
-    type Error = ServiceError;
-
-    fn try_from(value: &HashMap<String, OwnedValue>) -> Result<Self, Self::Error> {
-        Ok(Self {
-            channel: get_property(value, "Channel")?,
-            lun_scan: get_property(value, "LUNScan")?,
-            active: get_property(value, "Active")?,
-        })
-    }
+    /// map of associated WWPNs and its LUNs
+    #[serde(rename = "LUNsMap")]
+    pub luns_map: HashMap<String, Vec<String>>,
 }
 
 /// Represents a zFCP global options (specific to s390x systems).

@@ -107,7 +107,7 @@ use utoipa::OpenApi;
         schemas(agama_lib::storage::model::dasd::DASDFormatSummary),
         schemas(agama_lib::storage::model::zfcp::ZFCPDisk),
         schemas(agama_lib::storage::model::zfcp::ZFCPOptions),
-        schemas(crate::storage::web::zfcp::ZFCPControllerWithId),
+        schemas(agama_lib::storage::model::zfcp::ZFCPController),
         schemas(agama_lib::storage::client::iscsi::ISCSIAuth),
         schemas(agama_lib::storage::client::iscsi::ISCSIInitiator),
         schemas(agama_lib::storage::client::iscsi::ISCSINode),
