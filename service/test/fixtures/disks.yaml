@@ -21,3 +21,8 @@
 - disk:
     name: "/dev/vdb"
     size: 50 GiB
+
+- disk:
+    name: "/dev/vdc"
+    size: 50 GiB
+    file_system: "ext4"

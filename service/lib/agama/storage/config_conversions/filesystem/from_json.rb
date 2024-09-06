@@ -41,18 +41,20 @@ module Agama
           def convert(default = nil)
             default_config = default.dup || Configs::Filesystem.new
 
-            default_config.tap do |config|
-              mount_by = convert_mount_by
-              type = convert_type(config.type)
-              label = filesystem_json[:label]
-              mkfs_options = filesystem_json[:mkfsOptions]
+            values = {
+              reuse:         filesystem_json[:reuseIfPossible],
+              label:         filesystem_json[:label],
+              path:          filesystem_json[:path],
+              mount_options: filesystem_json[:mountOptions],
+              mkfs_options:  filesystem_json[:mkfsOptions],
+              mount_by:      convert_mount_by,
+              type:          convert_type(default_config.type)
+            }
 
-              config.path = filesystem_json[:path]
-              config.mount_options = filesystem_json[:mountOptions] || []
-              config.mount_by = mount_by if mount_by
-              config.type = type if type
-              config.label = label if label
-              config.mkfs_options = mkfs_options if mkfs_options
+            default_config.tap do |config|
+              values.each do |property, value|
+                config.public_send("#{property}=", value) unless value.nil?
+              end
             end
           end
 

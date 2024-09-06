@@ -211,18 +211,20 @@ describe Agama::Storage::ConfigConversions::FromJSON do
 
       let(:filesystem) do
         {
-          path:         "/",
-          type:         "xfs",
-          label:        "root",
-          mkfsOptions:  ["version=2"],
-          mountOptions: ["rw"],
-          mountBy:      "label"
+          reuseIfPossible: true,
+          path:            "/",
+          type:            "xfs",
+          label:           "root",
+          mkfsOptions:     ["version=2"],
+          mountOptions:    ["rw"],
+          mountBy:         "label"
         }
       end
 
       it "uses the specified attributes" do
         config = subject.convert
         filesystem = config.drives.first.filesystem
+        expect(filesystem.reuse?).to eq true
         expect(filesystem.path).to eq "/"
         expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::XFS
         expect(filesystem.label).to eq "root"
@@ -237,6 +239,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         it "uses the default type and btrfs attributes for that path" do
           config = subject.convert
           filesystem = config.drives.first.filesystem
+          expect(filesystem.reuse?).to eq false
           expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
           expect(filesystem.type.btrfs.snapshots).to eq true
           expect(filesystem.type.btrfs.default_subvolume).to eq "@"

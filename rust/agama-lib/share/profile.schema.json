@@ -870,9 +870,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "reuse": {
+        "reuseIfPossible": {
           "title": "Reuse file system",
-          "description": "Whether to reuse the existing file system (if any).",
+          "description": "Try to reuse the existing file system. In some cases the file system could not be reused, for example, if the device is re-encrypted.",
           "type": "boolean",
           "default": false
         },
@@ -886,7 +886,7 @@
         "path": {
           "title": "Mount path",
           "type": "string",
-          "examples": ["/dev/vda"]
+          "examples": ["/var/log"]
         },
         "mountBy": {
           "title": "How to mount the device",
