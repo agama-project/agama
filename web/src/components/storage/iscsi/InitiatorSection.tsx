@@ -30,7 +30,7 @@ import { useCancellablePromise } from "~/utils";
 export default function InitiatorSection() {
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [initiator, setInitiator] = useState();
+  const [initiator, setInitiator] = useState<any>();
 
   useEffect(() => {
     const loadInitiator = async () => {
