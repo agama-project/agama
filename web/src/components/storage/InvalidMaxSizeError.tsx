@@ -19,25 +19,27 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, post } from "~/api/http";
-import { Job } from "~/types/job";
+import { _ } from "~/i18n";
+import { SIZE_METHODS, SizeMethod } from "~/components/storage/utils";
 
-/**
- * Starts the storage probing process.
- */
-const probe = (): Promise<any> => post("/api/storage/probe");
+export class InvalidMaxSizeError {
+  sizeMethod: SizeMethod;
+  minSize: string | number;
+  maxSize: string | number;
 
-export { probe };
+  constructor(sizeMethod: SizeMethod, minSize: string | number, maxSize: string | number) {
+    this.sizeMethod = sizeMethod;
+    this.minSize = minSize;
+    this.maxSize = maxSize;
+  }
 
-/**
- * Returns the list of jobs
- */
-const fetchStorageJobs = (): Promise<Job[]> => get("/api/storage/jobs");
+  check(): boolean {
+    return (
+      this.sizeMethod === SIZE_METHODS.RANGE && this.maxSize !== -1 && this.maxSize <= this.minSize
+    );
+  }
 
-/**
- * Returns the job with given id or undefined
- */
-const findStorageJob = (id: string): Promise<Job | undefined> =>
-  fetchStorageJobs().then((jobs: Job[]) => jobs.find((value) => value.id === id));
-
-export { fetchStorageJobs, findStorageJob };
+  render(): string {
+    return _("Maximum must be greater than minimum");
+  }
+}
