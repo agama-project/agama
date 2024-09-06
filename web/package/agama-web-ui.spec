@@ -54,7 +54,5 @@ install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/asset
 %license LICENSE
 %dir %{_datadir}/agama
 %{_datadir}/agama/web_ui
-%{_datadir}/agama/assets
-%{_datadir}/agama/products
 
 %changelog
