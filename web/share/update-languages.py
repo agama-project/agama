@@ -129,7 +129,7 @@ class Languages:
             self.content[locale.code()] = locale.name(include_territory)
 
     def dump(self):
-        json.dump(self.content, sys.stdout, indent=4, ensure_ascii=False,
+        json.dump(self.content, sys.stdout, indent=2, ensure_ascii=False,
                   sort_keys=True)
 
 
