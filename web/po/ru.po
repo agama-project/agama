@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-18 02:29+0000\n"
+"POT-Creation-Date: 2024-09-08 02:38+0000\n"
 "PO-Revision-Date: 2024-07-26 12:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -138,11 +138,6 @@ msgid "Cannot be changed in remote installation"
 msgstr "Нельзя изменить при удаленной установке"
 
 #: src/components/core/InstallerOptions.jsx:142
-#: src/components/storage/BootSelection.jsx:250
-#: src/components/storage/DeviceSelection.jsx:254
-#: src/components/storage/EncryptionSettingsDialog.jsx:155
-#: src/components/storage/SpacePolicySelection.jsx:200
-#: src/components/storage/VolumeDialog.jsx:794
 #: src/components/storage/ZFCPPage.jsx:528
 #: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
@@ -240,8 +235,6 @@ msgid "Finished"
 msgstr "Завершено"
 
 #: src/components/core/RowActions.jsx:64
-#: src/components/storage/PartitionsField.jsx:491
-#: src/components/storage/ProposalActionsSummary.jsx:234
 msgid "Actions"
 msgstr "Действия"
 
@@ -278,7 +271,6 @@ msgstr "Выбор клавиатуры"
 #: src/components/l10n/L10nPage.jsx:78
 #: src/components/l10n/LocaleSelection.jsx:92
 #: src/components/l10n/TimezoneSelection.jsx:125
-#: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr "Выбор"
 
@@ -294,8 +286,6 @@ msgstr "Ещё не выбрано"
 
 #: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
 #: src/components/l10n/L10nPage.jsx:78
-#: src/components/storage/InstallationDeviceField.jsx:109
-#: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
@@ -351,8 +341,6 @@ msgstr "Пользователи"
 
 #: src/components/overview/OverviewPage.jsx:50
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:295
-#: src/components/storage/StoragePage.jsx:30
 msgid "Storage"
 msgstr "Хранилище"
 
@@ -457,7 +445,6 @@ msgstr ""
 "пространства"
 
 #: src/components/overview/StorageSection.jsx:179
-#: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
 msgstr "Устройство ещё не выбрано"
 
@@ -498,1087 +485,25 @@ msgstr ""
 msgid "Configuring the product, please wait ..."
 msgstr "Настройка продукта, пожалуйста, подождите..."
 
-#: src/components/storage/BootConfigField.jsx:44
-msgid "Change boot options"
-msgstr "Изменение параметров загрузки"
-
-#: src/components/storage/BootConfigField.jsx:82
-msgid "Installation will not configure partitions for booting."
-msgstr "Установка не будет настраивать разделы для загрузки."
-
-#: src/components/storage/BootConfigField.jsx:86
-msgid ""
-"Installation will configure partitions for booting at the installation disk."
-msgstr "Установка настроит разделы для загрузки с установочного диска."
-
-#: src/components/storage/BootConfigField.jsx:90
-#, c-format
-msgid "Installation will configure partitions for booting at %s."
-msgstr "Установка настроит разделы для загрузки по адресу %s."
-
-#: src/components/storage/BootSelection.jsx:132
-msgid ""
-"To ensure the new system is able to boot, the installer may need to create "
-"or configure some partitions in the appropriate disk."
-msgstr ""
-"Чтобы обеспечить загрузку новой системы, программе установки может "
-"потребоваться создать или настроить некоторые разделы на соответствующем "
-"диске."
-
-#: src/components/storage/BootSelection.jsx:138
-msgid "Partitions to boot will be allocated at the installation disk."
-msgstr "Загрузочные разделы будут выделены на установочном диске."
-
-#. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:143
-#, c-format
-msgid "Partitions to boot will be allocated at the installation disk (%s)."
-msgstr "Загрузочные разделы будут выделены на установочном диске (%s)."
-
-#: src/components/storage/BootSelection.jsx:159
-msgid "Select booting partition"
-msgstr "Выберите загрузочный раздел"
-
-#: src/components/storage/BootSelection.jsx:180
-#: src/components/storage/iscsi/NodeStartupOptions.js:27
-msgid "Automatic"
-msgstr "Автоматически"
-
-#: src/components/storage/BootSelection.jsx:198
-msgid "Select a disk"
-msgstr "Выберите диск"
-
-#: src/components/storage/BootSelection.jsx:204
-msgid "Partitions to boot will be allocated at the following device."
-msgstr "Загрузочные разделы будут выделены на следующем устройстве."
-
-#: src/components/storage/BootSelection.jsx:207
-msgid "Choose a disk for placing the boot loader"
-msgstr "Выберите диск для размещения загрузчика"
-
-#: src/components/storage/BootSelection.jsx:230
-msgid "Do not configure"
-msgstr "Не настраивать"
-
-#: src/components/storage/BootSelection.jsx:236
-msgid ""
-"No partitions will be automatically configured for booting. Use with caution."
-msgstr ""
-"Ни один раздел не будет автоматически настроен для загрузки. Используйте с "
-"осторожностью."
-
-#: src/components/storage/DASDFormatProgress.jsx:60
-msgid "Waiting for progress report"
-msgstr "Ожидание отчёта о процессе"
-
-#: src/components/storage/DASDFormatProgress.jsx:67
-msgid "Formatting DASD devices"
-msgstr "Форматирование устройств DASD"
-
-#: src/components/storage/DASDTable.jsx:62
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-msgid "No"
-msgstr "Нет"
-
-#: src/components/storage/DASDTable.jsx:62
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-msgid "Yes"
-msgstr "Да"
-
-#: src/components/storage/DASDTable.jsx:69
-#: src/components/storage/ZFCPDiskForm.jsx:110
-#: src/components/storage/ZFCPPage.jsx:324
-#: src/components/storage/ZFCPPage.jsx:382
-msgid "Channel ID"
-msgstr "Идентификатор канала"
-
-#. TRANSLATORS: table header
-#: src/components/storage/DASDTable.jsx:70
-#: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
-msgid "Status"
-msgstr "Состояние"
-
-#: src/components/storage/DASDTable.jsx:71
-#: src/components/storage/DeviceSelectorTable.jsx:197
-#: src/components/storage/ProposalResultTable.jsx:130
-#: src/components/storage/SpaceActionsTable.jsx:200
-#: src/components/storage/VolumeLocationSelectorTable.jsx:107
-msgid "Device"
-msgstr "Устройство"
-
-#: src/components/storage/DASDTable.jsx:72
-msgid "Type"
-msgstr "Тип"
-
-#. TRANSLATORS: table header, the column contains "Yes"/"No" values
-#. for the DIAG access mode (special disk access mode on IBM mainframes),
-#. usually keep untranslated
-#: src/components/storage/DASDTable.jsx:76
-msgid "DIAG"
-msgstr "Режим DIAG"
-
-#: src/components/storage/DASDTable.jsx:77
-msgid "Formatted"
-msgstr "Отформатированный"
-
-#: src/components/storage/DASDTable.jsx:78
-msgid "Partition Info"
-msgstr "Информация о разделе"
-
-#. TRANSLATORS: drop down menu label
-#: src/components/storage/DASDTable.jsx:115
-msgid "Perform an action"
-msgstr "Выполнить действие"
-
-#: src/components/storage/DASDTable.jsx:122
-#: src/components/storage/ZFCPPage.jsx:353
-msgid "Activate"
-msgstr "Активировать"
-
-#: src/components/storage/DASDTable.jsx:126
-#: src/components/storage/ZFCPPage.jsx:395
-msgid "Deactivate"
-msgstr "Деактивировать"
-
-#: src/components/storage/DASDTable.jsx:131
-msgid "Set DIAG On"
-msgstr "Включить DIAG"
-
-#: src/components/storage/DASDTable.jsx:135
-msgid "Set DIAG Off"
-msgstr "Отключить DIAG"
-
-#: src/components/storage/DASDTable.jsx:140
-msgid "Format"
-msgstr "Формат"
-
-#: src/components/storage/DASDTable.jsx:261
-#: src/components/storage/DASDTable.jsx:262
-msgid "Filter by min channel"
-msgstr "Фильтр по минимальному каналу"
-
-#: src/components/storage/DASDTable.jsx:269
-msgid "Remove min channel filter"
-msgstr "Удалить фильтр по минимальному каналу"
-
-#: src/components/storage/DASDTable.jsx:283
-#: src/components/storage/DASDTable.jsx:284
-msgid "Filter by max channel"
-msgstr "Фильтр по максимальному каналу"
-
-#: src/components/storage/DASDTable.jsx:291
-msgid "Remove max channel filter"
-msgstr "Удалить фильтр по максимальному каналу"
-
-#: src/components/storage/DeviceSelection.jsx:108
-msgid "Loading data, please wait a second..."
-msgstr "Загрузка данных, пожалуйста, подождите..."
-
-#: src/components/storage/DeviceSelection.jsx:144
-msgid ""
-"The file systems will be allocated by default as [new partitions in the "
-"selected device]."
-msgstr ""
-"Файловые системы будут выделены по умолчанию как [новые разделы на выбранном "
-"устройстве]."
-
-#: src/components/storage/DeviceSelection.jsx:151
-msgid ""
-"The file systems will be allocated by default as [logical volumes of a new "
-"LVM Volume Group]. The corresponding physical volumes will be created on "
-"demand as new partitions at the selected devices."
-msgstr ""
-"Файловые системы по умолчанию будут выделены как [логические тома новой "
-"группы томов LVM]. Соответствующие физические тома будут создаваться по "
-"требованию как новые разделы на выбранных устройствах."
-
-#: src/components/storage/DeviceSelection.jsx:160
-msgid "Select installation device"
-msgstr "Выберите устройство для установки"
-
-#: src/components/storage/DeviceSelection.jsx:166
-msgid "Install new system on"
-msgstr "Установить новую систему на"
-
-#: src/components/storage/DeviceSelection.jsx:169
-msgid "An existing disk"
-msgstr "существующий диск"
-
-#: src/components/storage/DeviceSelection.jsx:178
-msgid "A new LVM Volume Group"
-msgstr "новую группу томов LVM"
-
-#: src/components/storage/DeviceSelection.jsx:203
-msgid "Device selector for target disk"
-msgstr "Выбор устройств для целевого диска"
-
-#: src/components/storage/DeviceSelection.jsx:226
-msgid "Device selector for new LVM volume group"
-msgstr "Выбор устройств для новой группы томов LVM"
-
-#: src/components/storage/DeviceSelection.jsx:242
-msgid "Prepare more devices by configuring advanced"
-msgstr "Подготовьте больше устройств, настроив расширенные"
-
-#: src/components/storage/DeviceSelection.jsx:243
-msgid "storage techs"
-msgstr "технологии хранения"
-
-#. TRANSLATORS: multipath device type
-#: src/components/storage/DeviceSelectorTable.jsx:61
-msgid "Multipath"
-msgstr "Многопутевое"
-
-#. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/DeviceSelectorTable.jsx:66
-#, c-format
-msgid "DASD %s"
-msgstr "DASD %s"
-
-#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/DeviceSelectorTable.jsx:71
-#, c-format
-msgid "Software %s"
-msgstr "Программное обеспечение %s"
-
-#: src/components/storage/DeviceSelectorTable.jsx:76
-msgid "SD Card"
-msgstr "SD-карта"
-
-#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-#: src/components/storage/DeviceSelectorTable.jsx:81
-#, c-format
-msgid "%s disk"
-msgstr "Диск %s"
-
-#: src/components/storage/DeviceSelectorTable.jsx:82
-msgid "Disk"
-msgstr "Диск"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:102
-#, c-format
-msgid "Members: %s"
-msgstr "Участники: %s"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:111
-#, c-format
-msgid "Devices: %s"
-msgstr "Устройства: %s"
-
-#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/DeviceSelectorTable.jsx:120
-#, c-format
-msgid "Wires: %s"
-msgstr "Проводки: %s"
-
-#. TRANSLATORS: disk partition info, %s is replaced by partition table
-#. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/DeviceSelectorTable.jsx:155
-#, c-format
-msgid "%s with %d partitions"
-msgstr "%s с %d разделами"
-
-#. TRANSLATORS: status message, no existing content was found on the disk,
-#. i.e. the disk is completely empty
-#: src/components/storage/DeviceSelectorTable.jsx:161
-#: src/components/storage/SpaceActionsTable.jsx:175
-msgid "No content found"
-msgstr "Содержимое не найдено"
-
-#: src/components/storage/DeviceSelectorTable.jsx:198
-#: src/components/storage/PartitionsField.jsx:487
-#: src/components/storage/ProposalResultTable.jsx:132
-#: src/components/storage/SpaceActionsTable.jsx:201
-#: src/components/storage/VolumeLocationSelectorTable.jsx:108
-msgid "Details"
-msgstr "Подробности"
-
-#: src/components/storage/DeviceSelectorTable.jsx:199
-#: src/components/storage/PartitionsField.jsx:488
-#: src/components/storage/ProposalResultTable.jsx:133
-#: src/components/storage/SpaceActionsTable.jsx:202
-#: src/components/storage/VolumeFields.jsx:488
-#: src/components/storage/VolumeLocationSelectorTable.jsx:113
-msgid "Size"
-msgstr "Размер"
-
-#: src/components/storage/DevicesTechMenu.jsx:38
+#: src/components/storage/DevicesTechMenu.jsx:39
 msgid "Manage and format"
 msgstr "Управление и форматирование"
 
-#: src/components/storage/DevicesTechMenu.jsx:52
+#: src/components/storage/DevicesTechMenu.jsx:53
 msgid "Activate disks"
 msgstr "Активировать диски"
 
-#: src/components/storage/DevicesTechMenu.jsx:53
+#: src/components/storage/DevicesTechMenu.jsx:54
 msgid "zFCP"
 msgstr "zFCP"
 
-#: src/components/storage/DevicesTechMenu.jsx:66
+#: src/components/storage/DevicesTechMenu.jsx:67
 msgid "Connect to iSCSI targets"
 msgstr "Подключение к объектам iSCSI"
 
-#: src/components/storage/DevicesTechMenu.jsx:67
+#: src/components/storage/DevicesTechMenu.jsx:68
 msgid "iSCSI"
 msgstr "iSCSI"
-
-#: src/components/storage/EncryptionField.jsx:38
-#: src/components/storage/EncryptionSettingsDialog.jsx:36
-msgid "Encryption"
-msgstr "Шифрование"
-
-#: src/components/storage/EncryptionField.jsx:40
-msgid ""
-"Protection for the information stored at the device, including data, "
-"programs, and system files."
-msgstr ""
-"Защита информации, хранящейся на устройстве, включая данные, программы и "
-"системные файлы."
-
-#: src/components/storage/EncryptionField.jsx:44
-msgid "disabled"
-msgstr "отключено"
-
-#: src/components/storage/EncryptionField.jsx:45
-msgid "enabled"
-msgstr "включено"
-
-#: src/components/storage/EncryptionField.jsx:46
-msgid "using TPM unlocking"
-msgstr "используя разблокировку TPM"
-
-#: src/components/storage/EncryptionField.jsx:60
-msgid "Enable"
-msgstr "Включить"
-
-#: src/components/storage/EncryptionField.jsx:60
-msgid "Modify"
-msgstr "Изменить"
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:38
-msgid ""
-"Full Disk Encryption (FDE) allows to protect the information stored at the "
-"device, including data, programs, and system files."
-msgstr ""
-"Полнодисковое шифрование (FDE) позволяет защитить информацию, хранящуюся на "
-"устройстве, включая данные, программы и системные файлы."
-
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.jsx:42
-msgid ""
-"Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
-msgstr ""
-"Используйте Доверенный платформенный модуль (TPM) для автоматического "
-"дешифрования при каждой загрузке"
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:46
-msgid ""
-"The password will not be needed to boot and access the data if the TPM can "
-"verify the integrity of the system. TPM sealing requires the new system to "
-"be booted directly on its first run."
-msgstr ""
-"Пароль не понадобится для загрузки и доступа к данным, если TPM может "
-"проверить целостность системы. Запечатывание TPM требует непосредственной "
-"загрузки новой системы при первом запуске."
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:129
-msgid "Encrypt the system"
-msgstr "Зашифровать систему"
-
-#: src/components/storage/InstallationDeviceField.jsx:37
-#: src/components/storage/VolumeLocationSelectorTable.jsx:61
-msgid "Installation device"
-msgstr "Устройство для установки"
-
-#. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:39
-msgid "Main disk or LVM Volume Group for installation."
-msgstr "Основной диск или группа томов LVM для установки."
-
-#. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:53
-#, c-format
-msgid "File systems created as new partitions at %s"
-msgstr "Файловые системы созданы как новые разделы на %s"
-
-#: src/components/storage/InstallationDeviceField.jsx:56
-msgid "File systems created at a new LVM volume group"
-msgstr "Файловые системы созданы в новой группе томов LVM"
-
-#: src/components/storage/InstallationDeviceField.jsx:61
-#, c-format
-msgid "File systems created at a new LVM volume group on %s"
-msgstr "Файловые системы созданы в новой группе томов LVM на %s"
-
-#. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:84
-#, c-format
-msgid "at least %s"
-msgstr "не менее %s"
-
-#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:108
-#, c-format
-msgid "Transactional Btrfs root volume (%s)"
-msgstr "Корневой том Btrfs с транзакциями (%s)"
-
-#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:110
-#, c-format
-msgid "Transactional Btrfs root partition (%s)"
-msgstr "Корневой раздел Btrfs с транзакциями (%s)"
-
-#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:115
-#, c-format
-msgid "Btrfs root volume with snapshots (%s)"
-msgstr "Корневой том Btrfs с моментальными снимками (%s)"
-
-#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:117
-#, c-format
-msgid "Btrfs root partition with snapshots (%s)"
-msgstr "Корневой раздел Btrfs с моментальными снимками (%s)"
-
-#. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
-#. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:126
-#, c-format
-msgid "Mount %1$s at %2$s (%3$s)"
-msgstr "Установить %1$s в %2$s (%3$s)"
-
-#. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
-#. %1$s is replaced by the device name, and %2$s by the size
-#: src/components/storage/PartitionsField.jsx:132
-#, c-format
-msgid "Swap at %1$s (%2$s)"
-msgstr "Подкачка на %1$s (%2$s)"
-
-#. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:136
-#, c-format
-msgid "Swap volume (%s)"
-msgstr "Том для подкачки (%s)"
-
-#. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:138
-#, c-format
-msgid "Swap partition (%s)"
-msgstr "Раздел подкачки (%s)"
-
-#. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:147
-#, c-format
-msgid "%1$s root at %2$s (%3$s)"
-msgstr "%1$s корень на %2$s (%3$s)"
-
-#. TRANSLATORS: "/" is in an LVM logical volume.
-#. Results in something like "Btrfs root volume (at least 20 GiB)" since
-#. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:153
-#, c-format
-msgid "%1$s root volume (%2$s)"
-msgstr "Корневой том %1$s (%2$s)"
-
-#. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
-#. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:156
-#, c-format
-msgid "%1$s root partition (%2$s)"
-msgstr "Корневой раздел %1$s (%2$s)"
-
-#. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
-#. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
-#: src/components/storage/PartitionsField.jsx:162
-#, c-format
-msgid "%1$s %2$s at %3$s (%4$s)"
-msgstr "%1$s %2$s на %3$s (%4$s)"
-
-#. TRANSLATORS: The filesystem is in an LVM logical volume.
-#. Results in something like "Ext4 /home volume (at least 10 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:168
-#, c-format
-msgid "%1$s %2$s volume (%3$s)"
-msgstr "%1$s том %2$s (%3$s)"
-
-#. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:171
-#, c-format
-msgid "%1$s %2$s partition (%3$s)"
-msgstr "%1$s раздел %2$s (%3$s)"
-
-#: src/components/storage/PartitionsField.jsx:182
-msgid "Do not configure partitions for booting"
-msgstr "Не настраивать разделы для загрузки"
-
-#: src/components/storage/PartitionsField.jsx:184
-msgid "Boot partitions at installation disk"
-msgstr "Загрузочные разделы на диске для установки"
-
-#. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/PartitionsField.jsx:187
-#, c-format
-msgid "Boot partitions at %s"
-msgstr "Загрузочные разделы на %s"
-
-#. TRANSLATORS: header for a list of items referring to size limits for file systems
-#: src/components/storage/PartitionsField.jsx:209
-msgid "These limits are affected by:"
-msgstr "На эти ограничения влияют:"
-
-#. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/PartitionsField.jsx:213
-msgid "The configuration of snapshots"
-msgstr "Конфигурация моментальных снимков"
-
-#: src/components/storage/PartitionsField.jsx:219
-#, c-format
-msgid "Presence of other volumes (%s)"
-msgstr "Наличие других томов (%s)"
-
-#. TRANSLATORS: list item, describes a factor that affects the computed size of a
-#. file system; eg. adjusting the size of the swap
-#: src/components/storage/PartitionsField.jsx:225
-msgid "The amount of RAM in the system"
-msgstr "Объем ОЗУ в системе"
-
-#: src/components/storage/PartitionsField.jsx:292
-msgid "auto"
-msgstr "автоматически"
-
-#. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-#: src/components/storage/PartitionsField.jsx:309
-#, c-format
-msgid "Reused %s"
-msgstr "Повторно используется %s"
-
-#: src/components/storage/PartitionsField.jsx:310
-msgid "Transactional Btrfs"
-msgstr "Транзакционная Btrfs"
-
-#: src/components/storage/PartitionsField.jsx:311
-msgid "Btrfs with snapshots"
-msgstr "Btrfs с моментальными снимками"
-
-#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:325
-#, c-format
-msgid "Partition at %s"
-msgstr "Раздел на %s"
-
-#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:328
-#, c-format
-msgid "Separate LVM at %s"
-msgstr "Отдельный LVM на %s"
-
-#: src/components/storage/PartitionsField.jsx:331
-msgid "Logical volume at system LVM"
-msgstr "Логический том в системе LVM"
-
-#: src/components/storage/PartitionsField.jsx:333
-msgid "Partition at installation disk"
-msgstr "Раздел на диске для установки"
-
-#: src/components/storage/PartitionsField.jsx:347
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "Изменить"
-
-#: src/components/storage/PartitionsField.jsx:348
-msgid "Reset location"
-msgstr "Сбросить расположение"
-
-#: src/components/storage/PartitionsField.jsx:349
-msgid "Change location"
-msgstr "Изменить расположение"
-
-#: src/components/storage/PartitionsField.jsx:350
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
-msgid "Delete"
-msgstr "Удалить"
-
-#: src/components/storage/PartitionsField.jsx:486
-#: src/components/storage/VolumeFields.jsx:66
-#: src/components/storage/VolumeFields.jsx:75
-#: src/components/storage/VolumeFields.jsx:80
-msgid "Mount point"
-msgstr "Точка монтирования"
-
-#. TRANSLATORS: where (and how) the file-system is going to be created
-#: src/components/storage/PartitionsField.jsx:490
-msgid "Location"
-msgstr "Расположение"
-
-#: src/components/storage/PartitionsField.jsx:532
-msgid "Table with mount points"
-msgstr "Таблица с точками монтирования"
-
-#: src/components/storage/PartitionsField.jsx:604
-#: src/components/storage/PartitionsField.jsx:624
-#: src/components/storage/VolumeDialog.jsx:86
-msgid "Add file system"
-msgstr "Добавить файловую систему"
-
-#: src/components/storage/PartitionsField.jsx:636
-msgid "Other"
-msgstr "Другая"
-
-#: src/components/storage/PartitionsField.jsx:777
-msgid "Reset to defaults"
-msgstr "Сбросить по умолчанию"
-
-#: src/components/storage/PartitionsField.jsx:849
-msgid "Partitions and file systems"
-msgstr "Разделы и файловые системы"
-
-#: src/components/storage/PartitionsField.jsx:851
-msgid ""
-"Structure of the new system, including any additional partition needed for "
-"booting"
-msgstr ""
-"Структура новой системы, включая все дополнительные разделы, необходимые для "
-"загрузки"
-
-#: src/components/storage/PartitionsField.jsx:858
-msgid "Show partitions and file-systems actions"
-msgstr "Показать разделы и действия с файловыми системами"
-
-#: src/components/storage/ProposalActionsDialog.jsx:65
-#, c-format
-msgid "Hide %d subvolume action"
-msgid_plural "Hide %d subvolume actions"
-msgstr[0] "Скрыть %d действие подтома"
-msgstr[1] "Скрыть %d действия подтома"
-msgstr[2] "Скрыть %d действий подтома"
-
-#: src/components/storage/ProposalActionsDialog.jsx:70
-#, c-format
-msgid "Show %d subvolume action"
-msgid_plural "Show %d subvolume actions"
-msgstr[0] "Показать %d действие подтома"
-msgstr[1] "Показать %d действия подтома"
-msgstr[2] "Показать %d действий подтома"
-
-#: src/components/storage/ProposalActionsSummary.jsx:58
-msgid "Destructive actions are not allowed"
-msgstr "Разрушительные действия запрещены"
-
-#: src/components/storage/ProposalActionsSummary.jsx:60
-msgid "Destructive actions are allowed"
-msgstr "Разрушительные действия разрешены"
-
-#: src/components/storage/ProposalActionsSummary.jsx:83
-#: src/components/storage/ProposalActionsSummary.jsx:133
-msgid "affecting"
-msgstr "влияя на"
-
-#: src/components/storage/ProposalActionsSummary.jsx:113
-msgid "Shrinking partitions is not allowed"
-msgstr "Сокращение разделов запрещено"
-
-#: src/components/storage/ProposalActionsSummary.jsx:117
-msgid "Shrinking partitions is allowed"
-msgstr "Сокращение разделов разрешено"
-
-#: src/components/storage/ProposalActionsSummary.jsx:119
-msgid "Shrinking some partitions is allowed but not needed"
-msgstr "Сокращение некоторых разделов разрешено, но не нужно"
-
-#: src/components/storage/ProposalActionsSummary.jsx:122
-#, c-format
-msgid "%d partition will be shrunk"
-msgid_plural "%d partitions will be shrunk"
-msgstr[0] "%d раздел будет сокращён"
-msgstr[1] "%d раздела будут сокращены"
-msgstr[2] "%d разделов будут сокращены"
-
-#: src/components/storage/ProposalActionsSummary.jsx:160
-msgid "Cannot accommodate the required file systems for installation"
-msgstr "Невозможно разместить необходимые файловые системы для установки"
-
-#: src/components/storage/ProposalActionsSummary.jsx:168
-#, c-format
-msgid "Check the planned action"
-msgid_plural "Check the %d planned actions"
-msgstr[0] "Проверить %d запланированное действие"
-msgstr[1] "Проверить %d запланированных действия"
-msgstr[2] "Проверить %d запланированных действий"
-
-#: src/components/storage/ProposalActionsSummary.jsx:183
-msgid "Waiting for actions information..."
-msgstr "Ожидание информации о действиях..."
-
-#: src/components/storage/ProposalPage.jsx:317
-msgid "Planned Actions"
-msgstr "Планируемые действия"
-
-#: src/components/storage/ProposalResultSection.jsx:43
-msgid "Waiting for information about storage configuration"
-msgstr "Ожидание информации о конфигурации хранилища"
-
-#: src/components/storage/ProposalResultSection.jsx:73
-msgid "Final layout"
-msgstr "Окончательный вариант"
-
-#: src/components/storage/ProposalResultSection.jsx:74
-msgid "The systems will be configured as displayed below."
-msgstr "Системы будут настроены, как показано ниже."
-
-#: src/components/storage/ProposalResultSection.jsx:83
-msgid "Storage proposal not possible"
-msgstr "Не могу предложить организацию хранилища"
-
-#: src/components/storage/ProposalResultTable.jsx:79
-msgid "New"
-msgstr "Новый"
-
-#. TRANSLATORS: Label to indicate the device size before resizing, where %s is
-#. replaced by the original size (e.g., 3.00 GiB).
-#: src/components/storage/ProposalResultTable.jsx:105
-#, c-format
-msgid "Before %s"
-msgstr "До %s"
-
-#: src/components/storage/ProposalResultTable.jsx:131
-msgid "Mount Point"
-msgstr "Точка монтирования"
-
-#: src/components/storage/ProposalTransactionalInfo.jsx:45
-msgid "Transactional root file system"
-msgstr "Транзакционная корневая файловая система"
-
-#: src/components/storage/ProposalTransactionalInfo.jsx:49
-#, c-format
-msgid ""
-"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
-"file system updated via snapshots."
-msgstr ""
-"%s - это неизменяемая система с атомарными обновлениями. Она использует "
-"файловую систему Btrfs, доступную только для чтения и обновляемую с помощью "
-"моментальных снимков."
-
-#: src/components/storage/SnapshotsField.jsx:36
-msgid "Use Btrfs snapshots for the root file system"
-msgstr "Используйте моментальные снимки Btrfs для корневой файловой системы"
-
-#: src/components/storage/SnapshotsField.jsx:38
-msgid ""
-"Allows to boot to a previous version of the system after configuration "
-"changes or software upgrades."
-msgstr ""
-"Позволяет загрузиться в предыдущую версию системы после изменения "
-"конфигурации или обновления программного обеспечения."
-
-#: src/components/storage/SpaceActionsTable.jsx:68
-#, c-format
-msgid "Up to %s can be recovered by shrinking the device."
-msgstr "До %s можно освободить, сократив устройство."
-
-#: src/components/storage/SpaceActionsTable.jsx:77
-msgid "The device cannot be shrunk:"
-msgstr "Устройство не может быть сокращено:"
-
-#: src/components/storage/SpaceActionsTable.jsx:98
-#, c-format
-msgid "Show information about %s"
-msgstr "Показать сведения о %s"
-
-#: src/components/storage/SpaceActionsTable.jsx:172
-msgid "The content may be deleted"
-msgstr "Содержимое может быть удалено"
-
-#: src/components/storage/SpaceActionsTable.jsx:204
-msgid "Action"
-msgstr "Действие"
-
-#: src/components/storage/SpaceActionsTable.jsx:215
-msgid "Actions to find space"
-msgstr "Действия по поиску места"
-
-#: src/components/storage/SpacePolicySelection.jsx:172
-msgid "Space policy"
-msgstr "Политика пространства"
-
-#: src/components/storage/VolumeDialog.jsx:83
-#, c-format
-msgid "Add %s file system"
-msgstr "Добавить файловую систему %s"
-
-#: src/components/storage/VolumeDialog.jsx:84
-#, c-format
-msgid "Edit %s file system"
-msgstr "Изменить файловую систему %s"
-
-#: src/components/storage/VolumeDialog.jsx:86
-msgid "Edit file system"
-msgstr "Изменить файловую систему"
-
-#. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:101
-msgid "The type and size of the file system cannot be edited."
-msgstr "Тип и размер файловой системы редактировать нельзя."
-
-#: src/components/storage/VolumeDialog.jsx:105
-#, c-format
-msgid "The current file system on %s is selected to be mounted at %s."
-msgstr "Текущая файловая система на %s выбрана для монтирования в %s."
-
-#. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:113
-msgid "The size of the file system cannot be edited"
-msgstr "Размер файловой системы не может быть изменен"
-
-#. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:115
-#, c-format
-msgid "The file system is allocated at the device %s."
-msgstr "Файловая система выделена на устройстве %s."
-
-#: src/components/storage/VolumeDialog.jsx:163
-msgid "A mount point is required"
-msgstr "Требуется точка монтирования"
-
-#: src/components/storage/VolumeDialog.jsx:190
-msgid "The mount point is invalid"
-msgstr "Точка монтирования недопустима"
-
-#: src/components/storage/VolumeDialog.jsx:218
-msgid "A size value is required"
-msgstr "Требуется значение размера"
-
-#: src/components/storage/VolumeDialog.jsx:246
-msgid "Minimum size is required"
-msgstr "Требуется минимальный размер"
-
-#: src/components/storage/VolumeDialog.jsx:278
-msgid "Maximum must be greater than minimum"
-msgstr "Максимум должен быть больше минимума"
-
-#: src/components/storage/VolumeDialog.jsx:320
-#, c-format
-msgid "There is already a file system for %s."
-msgstr "Для %s уже существует файловая система."
-
-#: src/components/storage/VolumeDialog.jsx:322
-msgid "Do you want to edit it?"
-msgstr "Вы хотите изменить её?"
-
-#: src/components/storage/VolumeDialog.jsx:367
-#, c-format
-msgid "There is a predefined file system for %s."
-msgstr "Существует предопределенная файловая система для %s."
-
-#: src/components/storage/VolumeDialog.jsx:369
-msgid "Do you want to add it?"
-msgstr "Вы хотите добавить её?"
-
-#: src/components/storage/VolumeFields.jsx:225
-msgid ""
-"The options for the file system type depends on the product and the mount "
-"point."
-msgstr ""
-"Параметры типа файловой системы зависят от продукта и точки монтирования."
-
-#: src/components/storage/VolumeFields.jsx:232
-msgid "More info for file system types"
-msgstr "Дополнительная информация о типах файловых систем"
-
-#. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:243
-msgid "File system type"
-msgstr "Тип файловой системы"
-
-#. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:274
-msgid "the configuration of snapshots"
-msgstr "конфигурация моментальных снимков"
-
-#: src/components/storage/VolumeFields.jsx:281
-#, c-format
-msgid "the presence of the file system for %s"
-msgstr "наличие файловой системы для %s"
-
-#. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:283
-msgid ", "
-msgstr ", "
-
-#. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:289
-msgid "the amount of RAM in the system"
-msgstr "объем ОЗУ в системе"
-
-#: src/components/storage/VolumeFields.jsx:293
-#, c-format
-msgid "The final size depends on %s."
-msgstr "Итоговый размер зависит от %s."
-
-#. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:295
-msgid " and "
-msgstr " и "
-
-#: src/components/storage/VolumeFields.jsx:302
-msgid "Automatically calculated size according to the selected product."
-msgstr "Автоматический расчет размера в соответствии с выбранным продуктом."
-
-#: src/components/storage/VolumeFields.jsx:321
-msgid "Exact size for the file system."
-msgstr "Точный размер файловой системы."
-
-#. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:330
-msgid "Exact size"
-msgstr "Точный размер"
-
-#. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:347
-msgid "Size unit"
-msgstr "Единица измерения"
-
-#: src/components/storage/VolumeFields.jsx:376
-msgid ""
-"Limits for the file system size. The final size will be a value between the "
-"given minimum and maximum. If no maximum is given then the file system will "
-"be as big as possible."
-msgstr ""
-"Ограничения на размер файловой системы. Конечный размер будет равен значению "
-"между заданным минимумом и максимумом. Если максимальное значение не задано, "
-"то файловая система будет такой большой, на сколько это возможно."
-
-#. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:384
-msgid "Minimum"
-msgstr "Минимум"
-
-#. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:395
-msgid "Minimum desired size"
-msgstr "Минимальный желаемый размер"
-
-#: src/components/storage/VolumeFields.jsx:406
-msgid "Unit for the minimum size"
-msgstr "Единица для минимального размера"
-
-#. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:418
-msgid "Maximum"
-msgstr "Максимум"
-
-#. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:430
-msgid "Maximum desired size"
-msgstr "Максимальный желаемый размер"
-
-#: src/components/storage/VolumeFields.jsx:440
-msgid "Unit for the maximum size"
-msgstr "Единица для максимального размера"
-
-#. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:458
-msgid "Auto"
-msgstr "Автоматически"
-
-#. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:460
-msgid "Fixed"
-msgstr "Фиксированный"
-
-#. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:462
-msgid "Range"
-msgstr "Диапазон"
-
-#: src/components/storage/VolumeLocationDialog.jsx:41
-msgid ""
-"The file systems are allocated at the installation device by default. "
-"Indicate a custom location to create the file system at a specific device."
-msgstr ""
-"По умолчанию файловые системы распределяются на устройстве установки. "
-"Укажите пользовательское расположение, чтобы создать файловую систему на "
-"конкретном устройстве."
-
-#. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
-#. by a mount path (e.g., /home).
-#: src/components/storage/VolumeLocationDialog.jsx:137
-#, c-format
-msgid "Location for %s file system"
-msgstr "Расположение файловой системы %s"
-
-#: src/components/storage/VolumeLocationDialog.jsx:147
-msgid "Select in which device to allocate the file system"
-msgstr "Выберите, на каком устройстве разместить файловую систему"
-
-#: src/components/storage/VolumeLocationDialog.jsx:150
-msgid "Select a location"
-msgstr "Выберите расположение"
-
-#: src/components/storage/VolumeLocationDialog.jsx:162
-msgid "Select how to allocate the file system"
-msgstr "Выберите способ выделения файловой системы"
-
-#: src/components/storage/VolumeLocationDialog.jsx:167
-msgid "Create a new partition"
-msgstr "Создать новый раздел"
-
-#: src/components/storage/VolumeLocationDialog.jsx:169
-msgid ""
-"The file system will be allocated as a new partition at the selected   disk."
-msgstr ""
-"Файловая система будет выделена в качестве нового раздела на выбранном   "
-"диске."
-
-#: src/components/storage/VolumeLocationDialog.jsx:179
-msgid "Create a dedicated LVM volume group"
-msgstr "Создать выделенную группу томов LVM"
-
-#: src/components/storage/VolumeLocationDialog.jsx:181
-msgid ""
-"A new volume group will be allocated in the selected disk and the   file "
-"system will be created as a logical volume."
-msgstr ""
-"На выбранном диске будет выделена новая группа томов, а   файловая система "
-"будет создана как логический том."
-
-#: src/components/storage/VolumeLocationDialog.jsx:191
-msgid "Format the device"
-msgstr "Отформатировать устройство"
-
-#: src/components/storage/VolumeLocationDialog.jsx:195
-#, c-format
-msgid "The selected device will be formatted as %s file system."
-msgstr "Выбранное устройство будет отформатировано в файловую систему %s."
-
-#: src/components/storage/VolumeLocationDialog.jsx:206
-msgid "Mount the file system"
-msgstr "Смонтировать файловую систему"
-
-#: src/components/storage/VolumeLocationDialog.jsx:208
-msgid ""
-"The current file system on the selected device will be mounted   without "
-"formatting the device."
-msgstr ""
-"Текущая файловая система на выбранном устройстве будет смонтирована   без "
-"форматирования устройства."
-
-#: src/components/storage/VolumeLocationSelectorTable.jsx:110
-msgid "Usage"
-msgstr "Использование"
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
 #: src/components/storage/iscsi/DiscoverForm.jsx:98
@@ -1590,6 +515,12 @@ msgstr "Что-то пошло не так"
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "Диск zFCP не был активирован."
+
+#: src/components/storage/ZFCPDiskForm.jsx:110
+#: src/components/storage/ZFCPPage.jsx:324
+#: src/components/storage/ZFCPPage.jsx:382
+msgid "Channel ID"
+msgstr "Идентификатор канала"
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:123
@@ -1603,6 +534,14 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
+#. TRANSLATORS: table header
+#: src/components/storage/ZFCPPage.jsx:325
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+#: src/components/users/RootAuthMethods.jsx:124
+msgid "Status"
+msgstr "Состояние"
+
 #: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
 msgstr "Автоматическое сканирование LUN"
@@ -1615,6 +554,22 @@ msgstr "Активировано"
 msgid "Deactivated"
 msgstr "Деактивировано"
 
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+msgid "No"
+msgstr "Нет"
+
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+msgid "Yes"
+msgstr "Да"
+
+#: src/components/storage/ZFCPPage.jsx:353
+msgid "Activate"
+msgstr "Активировать"
+
 #. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
@@ -1624,6 +579,10 @@ msgstr "Деактивировано"
 #: src/components/storage/iscsi/NodesPresenter.jsx:119
 msgid "Name"
 msgstr "Имя"
+
+#: src/components/storage/ZFCPPage.jsx:395
+msgid "Deactivate"
+msgstr "Деактивировать"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
@@ -1681,10 +640,6 @@ msgstr "Активировать новый диск"
 #: src/components/storage/ZFCPPage.jsx:599
 msgid "Disks"
 msgstr "Диски"
-
-#: src/components/storage/device-utils.jsx:92
-msgid "Unused space"
-msgstr "Неиспользуемое пространство"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
@@ -1771,6 +726,12 @@ msgstr "Изменить инициатор iSCSI"
 msgid "Initiator name"
 msgstr "Имя инициатора"
 
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
+#: src/components/storage/iscsi/NodesPresenter.jsx:73
+#: src/components/users/FirstUser.jsx:86
+msgid "Edit"
+msgstr "Изменить"
+
 #. TRANSLATORS: usually just keep the original text
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
@@ -1814,6 +775,10 @@ msgstr "Вручную"
 msgid "On boot"
 msgstr "При загрузке"
 
+#: src/components/storage/iscsi/NodeStartupOptions.js:27
+msgid "Automatic"
+msgstr "Автоматически"
+
 #. TRANSLATORS: iSCSI connection status
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -1824,6 +789,10 @@ msgstr "Отключено"
 #, c-format
 msgid "Connected (%s)"
 msgstr "Подключено (%s)"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:77
+msgid "Delete"
+msgstr "Удалить"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:82
 msgid "Login"
@@ -1865,87 +834,6 @@ msgstr "Обнаружить"
 #: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
 msgstr "Цели"
-
-#: src/components/storage/utils.js:64
-msgid "KiB"
-msgstr "КиБ"
-
-#: src/components/storage/utils.js:65
-msgid "MiB"
-msgstr "МиБ"
-
-#: src/components/storage/utils.js:66
-msgid "GiB"
-msgstr "ГиБ"
-
-#: src/components/storage/utils.js:67
-msgid "TiB"
-msgstr "ТиБ"
-
-#: src/components/storage/utils.js:68
-msgid "PiB"
-msgstr "ПиБ"
-
-#: src/components/storage/utils.js:77
-msgid "Delete current content"
-msgstr "Удалить текущее содержимое"
-
-#: src/components/storage/utils.js:78
-msgid "All partitions will be removed and any data in the disks will be lost."
-msgstr "Все разделы будут удалены, а все данные на дисках будут потеряны."
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space deleting current content". Keep it short
-#: src/components/storage/utils.js:82
-msgid "deleting current content"
-msgstr "удаление текущего содержимого"
-
-#: src/components/storage/utils.js:87
-msgid "Shrink existing partitions"
-msgstr "Уменьшение существующих разделов"
-
-#: src/components/storage/utils.js:88
-msgid "The data is kept, but the current partitions will be resized as needed."
-msgstr ""
-"Данные сохраняются, но размер текущих разделов будет изменен по мере "
-"необходимости."
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space shrinking partitions". Keep it short.
-#: src/components/storage/utils.js:92
-msgid "shrinking partitions"
-msgstr "уменьшение разделов"
-
-#: src/components/storage/utils.js:97
-msgid "Use available space"
-msgstr "Использовать свободное пространство"
-
-#: src/components/storage/utils.js:98
-msgid ""
-"The data is kept. Only the space not assigned to any partition will be used."
-msgstr ""
-"Данные сохраняются. Будет использовано только пространство, не отведенное "
-"для какого-либо раздела."
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space without modifying any partition". Keep it short.
-#: src/components/storage/utils.js:102
-msgid "without modifying any partition"
-msgstr "не изменяя ни одного раздела"
-
-#: src/components/storage/utils.js:107
-msgid "Custom"
-msgstr "По-своему"
-
-#: src/components/storage/utils.js:108
-msgid "Select what to do with each partition."
-msgstr "Выберите, что делать с каждым разделом."
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space with custom actions". Keep it short.
-#: src/components/storage/utils.js:112
-msgid "with custom actions"
-msgstr "другими способами"
 
 #: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
@@ -2116,6 +1004,787 @@ msgstr "Аутентификация root"
 #: src/router.js:48
 msgid "Overview"
 msgstr "Обзор"
+
+#~ msgid "Change boot options"
+#~ msgstr "Изменение параметров загрузки"
+
+#~ msgid "Installation will not configure partitions for booting."
+#~ msgstr "Установка не будет настраивать разделы для загрузки."
+
+#~ msgid ""
+#~ "Installation will configure partitions for booting at the installation "
+#~ "disk."
+#~ msgstr "Установка настроит разделы для загрузки с установочного диска."
+
+#, c-format
+#~ msgid "Installation will configure partitions for booting at %s."
+#~ msgstr "Установка настроит разделы для загрузки по адресу %s."
+
+#~ msgid ""
+#~ "To ensure the new system is able to boot, the installer may need to "
+#~ "create or configure some partitions in the appropriate disk."
+#~ msgstr ""
+#~ "Чтобы обеспечить загрузку новой системы, программе установки может "
+#~ "потребоваться создать или настроить некоторые разделы на соответствующем "
+#~ "диске."
+
+#~ msgid "Partitions to boot will be allocated at the installation disk."
+#~ msgstr "Загрузочные разделы будут выделены на установочном диске."
+
+#, c-format
+#~ msgid "Partitions to boot will be allocated at the installation disk (%s)."
+#~ msgstr "Загрузочные разделы будут выделены на установочном диске (%s)."
+
+#~ msgid "Select booting partition"
+#~ msgstr "Выберите загрузочный раздел"
+
+#~ msgid "Select a disk"
+#~ msgstr "Выберите диск"
+
+#~ msgid "Partitions to boot will be allocated at the following device."
+#~ msgstr "Загрузочные разделы будут выделены на следующем устройстве."
+
+#~ msgid "Choose a disk for placing the boot loader"
+#~ msgstr "Выберите диск для размещения загрузчика"
+
+#~ msgid "Do not configure"
+#~ msgstr "Не настраивать"
+
+#~ msgid ""
+#~ "No partitions will be automatically configured for booting. Use with "
+#~ "caution."
+#~ msgstr ""
+#~ "Ни один раздел не будет автоматически настроен для загрузки. Используйте "
+#~ "с осторожностью."
+
+#~ msgid "Waiting for progress report"
+#~ msgstr "Ожидание отчёта о процессе"
+
+#~ msgid "Formatting DASD devices"
+#~ msgstr "Форматирование устройств DASD"
+
+#~ msgid "Device"
+#~ msgstr "Устройство"
+
+#~ msgid "Type"
+#~ msgstr "Тип"
+
+#~ msgid "DIAG"
+#~ msgstr "Режим DIAG"
+
+#~ msgid "Formatted"
+#~ msgstr "Отформатированный"
+
+#~ msgid "Partition Info"
+#~ msgstr "Информация о разделе"
+
+#~ msgid "Perform an action"
+#~ msgstr "Выполнить действие"
+
+#~ msgid "Set DIAG On"
+#~ msgstr "Включить DIAG"
+
+#~ msgid "Set DIAG Off"
+#~ msgstr "Отключить DIAG"
+
+#~ msgid "Format"
+#~ msgstr "Формат"
+
+#~ msgid "Filter by min channel"
+#~ msgstr "Фильтр по минимальному каналу"
+
+#~ msgid "Remove min channel filter"
+#~ msgstr "Удалить фильтр по минимальному каналу"
+
+#~ msgid "Filter by max channel"
+#~ msgstr "Фильтр по максимальному каналу"
+
+#~ msgid "Remove max channel filter"
+#~ msgstr "Удалить фильтр по максимальному каналу"
+
+#~ msgid "Loading data, please wait a second..."
+#~ msgstr "Загрузка данных, пожалуйста, подождите..."
+
+#~ msgid ""
+#~ "The file systems will be allocated by default as [new partitions in the "
+#~ "selected device]."
+#~ msgstr ""
+#~ "Файловые системы будут выделены по умолчанию как [новые разделы на "
+#~ "выбранном устройстве]."
+
+#~ msgid ""
+#~ "The file systems will be allocated by default as [logical volumes of a "
+#~ "new LVM Volume Group]. The corresponding physical volumes will be created "
+#~ "on demand as new partitions at the selected devices."
+#~ msgstr ""
+#~ "Файловые системы по умолчанию будут выделены как [логические тома новой "
+#~ "группы томов LVM]. Соответствующие физические тома будут создаваться по "
+#~ "требованию как новые разделы на выбранных устройствах."
+
+#~ msgid "Select installation device"
+#~ msgstr "Выберите устройство для установки"
+
+#~ msgid "Install new system on"
+#~ msgstr "Установить новую систему на"
+
+#~ msgid "An existing disk"
+#~ msgstr "существующий диск"
+
+#~ msgid "A new LVM Volume Group"
+#~ msgstr "новую группу томов LVM"
+
+#~ msgid "Device selector for target disk"
+#~ msgstr "Выбор устройств для целевого диска"
+
+#~ msgid "Device selector for new LVM volume group"
+#~ msgstr "Выбор устройств для новой группы томов LVM"
+
+#~ msgid "Prepare more devices by configuring advanced"
+#~ msgstr "Подготовьте больше устройств, настроив расширенные"
+
+#~ msgid "storage techs"
+#~ msgstr "технологии хранения"
+
+#~ msgid "Multipath"
+#~ msgstr "Многопутевое"
+
+#, c-format
+#~ msgid "DASD %s"
+#~ msgstr "DASD %s"
+
+#, c-format
+#~ msgid "Software %s"
+#~ msgstr "Программное обеспечение %s"
+
+#~ msgid "SD Card"
+#~ msgstr "SD-карта"
+
+#, c-format
+#~ msgid "%s disk"
+#~ msgstr "Диск %s"
+
+#~ msgid "Disk"
+#~ msgstr "Диск"
+
+#, c-format
+#~ msgid "Members: %s"
+#~ msgstr "Участники: %s"
+
+#, c-format
+#~ msgid "Devices: %s"
+#~ msgstr "Устройства: %s"
+
+#, c-format
+#~ msgid "Wires: %s"
+#~ msgstr "Проводки: %s"
+
+#, c-format
+#~ msgid "%s with %d partitions"
+#~ msgstr "%s с %d разделами"
+
+#~ msgid "No content found"
+#~ msgstr "Содержимое не найдено"
+
+#~ msgid "Details"
+#~ msgstr "Подробности"
+
+#~ msgid "Size"
+#~ msgstr "Размер"
+
+#~ msgid "Encryption"
+#~ msgstr "Шифрование"
+
+#~ msgid ""
+#~ "Protection for the information stored at the device, including data, "
+#~ "programs, and system files."
+#~ msgstr ""
+#~ "Защита информации, хранящейся на устройстве, включая данные, программы и "
+#~ "системные файлы."
+
+#~ msgid "disabled"
+#~ msgstr "отключено"
+
+#~ msgid "enabled"
+#~ msgstr "включено"
+
+#~ msgid "using TPM unlocking"
+#~ msgstr "используя разблокировку TPM"
+
+#~ msgid "Enable"
+#~ msgstr "Включить"
+
+#~ msgid "Modify"
+#~ msgstr "Изменить"
+
+#~ msgid ""
+#~ "Full Disk Encryption (FDE) allows to protect the information stored at "
+#~ "the device, including data, programs, and system files."
+#~ msgstr ""
+#~ "Полнодисковое шифрование (FDE) позволяет защитить информацию, хранящуюся "
+#~ "на устройстве, включая данные, программы и системные файлы."
+
+#~ msgid ""
+#~ "Use the Trusted Platform Module (TPM) to decrypt automatically on each "
+#~ "boot"
+#~ msgstr ""
+#~ "Используйте Доверенный платформенный модуль (TPM) для автоматического "
+#~ "дешифрования при каждой загрузке"
+
+#~ msgid ""
+#~ "The password will not be needed to boot and access the data if the TPM "
+#~ "can verify the integrity of the system. TPM sealing requires the new "
+#~ "system to be booted directly on its first run."
+#~ msgstr ""
+#~ "Пароль не понадобится для загрузки и доступа к данным, если TPM может "
+#~ "проверить целостность системы. Запечатывание TPM требует непосредственной "
+#~ "загрузки новой системы при первом запуске."
+
+#~ msgid "Encrypt the system"
+#~ msgstr "Зашифровать систему"
+
+#~ msgid "Installation device"
+#~ msgstr "Устройство для установки"
+
+#~ msgid "Main disk or LVM Volume Group for installation."
+#~ msgstr "Основной диск или группа томов LVM для установки."
+
+#, c-format
+#~ msgid "File systems created as new partitions at %s"
+#~ msgstr "Файловые системы созданы как новые разделы на %s"
+
+#~ msgid "File systems created at a new LVM volume group"
+#~ msgstr "Файловые системы созданы в новой группе томов LVM"
+
+#, c-format
+#~ msgid "File systems created at a new LVM volume group on %s"
+#~ msgstr "Файловые системы созданы в новой группе томов LVM на %s"
+
+#, c-format
+#~ msgid "at least %s"
+#~ msgstr "не менее %s"
+
+#, c-format
+#~ msgid "Transactional Btrfs root volume (%s)"
+#~ msgstr "Корневой том Btrfs с транзакциями (%s)"
+
+#, c-format
+#~ msgid "Transactional Btrfs root partition (%s)"
+#~ msgstr "Корневой раздел Btrfs с транзакциями (%s)"
+
+#, c-format
+#~ msgid "Btrfs root volume with snapshots (%s)"
+#~ msgstr "Корневой том Btrfs с моментальными снимками (%s)"
+
+#, c-format
+#~ msgid "Btrfs root partition with snapshots (%s)"
+#~ msgstr "Корневой раздел Btrfs с моментальными снимками (%s)"
+
+#, c-format
+#~ msgid "Mount %1$s at %2$s (%3$s)"
+#~ msgstr "Установить %1$s в %2$s (%3$s)"
+
+#, c-format
+#~ msgid "Swap at %1$s (%2$s)"
+#~ msgstr "Подкачка на %1$s (%2$s)"
+
+#, c-format
+#~ msgid "Swap volume (%s)"
+#~ msgstr "Том для подкачки (%s)"
+
+#, c-format
+#~ msgid "Swap partition (%s)"
+#~ msgstr "Раздел подкачки (%s)"
+
+#, c-format
+#~ msgid "%1$s root at %2$s (%3$s)"
+#~ msgstr "%1$s корень на %2$s (%3$s)"
+
+#, c-format
+#~ msgid "%1$s root volume (%2$s)"
+#~ msgstr "Корневой том %1$s (%2$s)"
+
+#, c-format
+#~ msgid "%1$s root partition (%2$s)"
+#~ msgstr "Корневой раздел %1$s (%2$s)"
+
+#, c-format
+#~ msgid "%1$s %2$s at %3$s (%4$s)"
+#~ msgstr "%1$s %2$s на %3$s (%4$s)"
+
+#, c-format
+#~ msgid "%1$s %2$s volume (%3$s)"
+#~ msgstr "%1$s том %2$s (%3$s)"
+
+#, c-format
+#~ msgid "%1$s %2$s partition (%3$s)"
+#~ msgstr "%1$s раздел %2$s (%3$s)"
+
+#~ msgid "Do not configure partitions for booting"
+#~ msgstr "Не настраивать разделы для загрузки"
+
+#~ msgid "Boot partitions at installation disk"
+#~ msgstr "Загрузочные разделы на диске для установки"
+
+#, c-format
+#~ msgid "Boot partitions at %s"
+#~ msgstr "Загрузочные разделы на %s"
+
+#~ msgid "These limits are affected by:"
+#~ msgstr "На эти ограничения влияют:"
+
+#~ msgid "The configuration of snapshots"
+#~ msgstr "Конфигурация моментальных снимков"
+
+#, c-format
+#~ msgid "Presence of other volumes (%s)"
+#~ msgstr "Наличие других томов (%s)"
+
+#~ msgid "The amount of RAM in the system"
+#~ msgstr "Объем ОЗУ в системе"
+
+#~ msgid "auto"
+#~ msgstr "автоматически"
+
+#, c-format
+#~ msgid "Reused %s"
+#~ msgstr "Повторно используется %s"
+
+#~ msgid "Transactional Btrfs"
+#~ msgstr "Транзакционная Btrfs"
+
+#~ msgid "Btrfs with snapshots"
+#~ msgstr "Btrfs с моментальными снимками"
+
+#, c-format
+#~ msgid "Partition at %s"
+#~ msgstr "Раздел на %s"
+
+#, c-format
+#~ msgid "Separate LVM at %s"
+#~ msgstr "Отдельный LVM на %s"
+
+#~ msgid "Logical volume at system LVM"
+#~ msgstr "Логический том в системе LVM"
+
+#~ msgid "Partition at installation disk"
+#~ msgstr "Раздел на диске для установки"
+
+#~ msgid "Reset location"
+#~ msgstr "Сбросить расположение"
+
+#~ msgid "Change location"
+#~ msgstr "Изменить расположение"
+
+#~ msgid "Mount point"
+#~ msgstr "Точка монтирования"
+
+#~ msgid "Location"
+#~ msgstr "Расположение"
+
+#~ msgid "Table with mount points"
+#~ msgstr "Таблица с точками монтирования"
+
+#~ msgid "Add file system"
+#~ msgstr "Добавить файловую систему"
+
+#~ msgid "Other"
+#~ msgstr "Другая"
+
+#~ msgid "Reset to defaults"
+#~ msgstr "Сбросить по умолчанию"
+
+#~ msgid "Partitions and file systems"
+#~ msgstr "Разделы и файловые системы"
+
+#~ msgid ""
+#~ "Structure of the new system, including any additional partition needed "
+#~ "for booting"
+#~ msgstr ""
+#~ "Структура новой системы, включая все дополнительные разделы, необходимые "
+#~ "для загрузки"
+
+#~ msgid "Show partitions and file-systems actions"
+#~ msgstr "Показать разделы и действия с файловыми системами"
+
+#, c-format
+#~ msgid "Hide %d subvolume action"
+#~ msgid_plural "Hide %d subvolume actions"
+#~ msgstr[0] "Скрыть %d действие подтома"
+#~ msgstr[1] "Скрыть %d действия подтома"
+#~ msgstr[2] "Скрыть %d действий подтома"
+
+#, c-format
+#~ msgid "Show %d subvolume action"
+#~ msgid_plural "Show %d subvolume actions"
+#~ msgstr[0] "Показать %d действие подтома"
+#~ msgstr[1] "Показать %d действия подтома"
+#~ msgstr[2] "Показать %d действий подтома"
+
+#~ msgid "Destructive actions are not allowed"
+#~ msgstr "Разрушительные действия запрещены"
+
+#~ msgid "Destructive actions are allowed"
+#~ msgstr "Разрушительные действия разрешены"
+
+#~ msgid "affecting"
+#~ msgstr "влияя на"
+
+#~ msgid "Shrinking partitions is not allowed"
+#~ msgstr "Сокращение разделов запрещено"
+
+#~ msgid "Shrinking partitions is allowed"
+#~ msgstr "Сокращение разделов разрешено"
+
+#~ msgid "Shrinking some partitions is allowed but not needed"
+#~ msgstr "Сокращение некоторых разделов разрешено, но не нужно"
+
+#, c-format
+#~ msgid "%d partition will be shrunk"
+#~ msgid_plural "%d partitions will be shrunk"
+#~ msgstr[0] "%d раздел будет сокращён"
+#~ msgstr[1] "%d раздела будут сокращены"
+#~ msgstr[2] "%d разделов будут сокращены"
+
+#~ msgid "Cannot accommodate the required file systems for installation"
+#~ msgstr "Невозможно разместить необходимые файловые системы для установки"
+
+#, c-format
+#~ msgid "Check the planned action"
+#~ msgid_plural "Check the %d planned actions"
+#~ msgstr[0] "Проверить %d запланированное действие"
+#~ msgstr[1] "Проверить %d запланированных действия"
+#~ msgstr[2] "Проверить %d запланированных действий"
+
+#~ msgid "Waiting for actions information..."
+#~ msgstr "Ожидание информации о действиях..."
+
+#~ msgid "Planned Actions"
+#~ msgstr "Планируемые действия"
+
+#~ msgid "Waiting for information about storage configuration"
+#~ msgstr "Ожидание информации о конфигурации хранилища"
+
+#~ msgid "Final layout"
+#~ msgstr "Окончательный вариант"
+
+#~ msgid "The systems will be configured as displayed below."
+#~ msgstr "Системы будут настроены, как показано ниже."
+
+#~ msgid "Storage proposal not possible"
+#~ msgstr "Не могу предложить организацию хранилища"
+
+#~ msgid "New"
+#~ msgstr "Новый"
+
+#, c-format
+#~ msgid "Before %s"
+#~ msgstr "До %s"
+
+#~ msgid "Mount Point"
+#~ msgstr "Точка монтирования"
+
+#~ msgid "Transactional root file system"
+#~ msgstr "Транзакционная корневая файловая система"
+
+#, c-format
+#~ msgid ""
+#~ "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
+#~ "file system updated via snapshots."
+#~ msgstr ""
+#~ "%s - это неизменяемая система с атомарными обновлениями. Она использует "
+#~ "файловую систему Btrfs, доступную только для чтения и обновляемую с "
+#~ "помощью моментальных снимков."
+
+#~ msgid "Use Btrfs snapshots for the root file system"
+#~ msgstr "Используйте моментальные снимки Btrfs для корневой файловой системы"
+
+#~ msgid ""
+#~ "Allows to boot to a previous version of the system after configuration "
+#~ "changes or software upgrades."
+#~ msgstr ""
+#~ "Позволяет загрузиться в предыдущую версию системы после изменения "
+#~ "конфигурации или обновления программного обеспечения."
+
+#, c-format
+#~ msgid "Up to %s can be recovered by shrinking the device."
+#~ msgstr "До %s можно освободить, сократив устройство."
+
+#~ msgid "The device cannot be shrunk:"
+#~ msgstr "Устройство не может быть сокращено:"
+
+#, c-format
+#~ msgid "Show information about %s"
+#~ msgstr "Показать сведения о %s"
+
+#~ msgid "The content may be deleted"
+#~ msgstr "Содержимое может быть удалено"
+
+#~ msgid "Action"
+#~ msgstr "Действие"
+
+#~ msgid "Actions to find space"
+#~ msgstr "Действия по поиску места"
+
+#~ msgid "Space policy"
+#~ msgstr "Политика пространства"
+
+#, c-format
+#~ msgid "Add %s file system"
+#~ msgstr "Добавить файловую систему %s"
+
+#, c-format
+#~ msgid "Edit %s file system"
+#~ msgstr "Изменить файловую систему %s"
+
+#~ msgid "Edit file system"
+#~ msgstr "Изменить файловую систему"
+
+#~ msgid "The type and size of the file system cannot be edited."
+#~ msgstr "Тип и размер файловой системы редактировать нельзя."
+
+#, c-format
+#~ msgid "The current file system on %s is selected to be mounted at %s."
+#~ msgstr "Текущая файловая система на %s выбрана для монтирования в %s."
+
+#~ msgid "The size of the file system cannot be edited"
+#~ msgstr "Размер файловой системы не может быть изменен"
+
+#, c-format
+#~ msgid "The file system is allocated at the device %s."
+#~ msgstr "Файловая система выделена на устройстве %s."
+
+#~ msgid "A mount point is required"
+#~ msgstr "Требуется точка монтирования"
+
+#~ msgid "The mount point is invalid"
+#~ msgstr "Точка монтирования недопустима"
+
+#~ msgid "A size value is required"
+#~ msgstr "Требуется значение размера"
+
+#~ msgid "Minimum size is required"
+#~ msgstr "Требуется минимальный размер"
+
+#~ msgid "Maximum must be greater than minimum"
+#~ msgstr "Максимум должен быть больше минимума"
+
+#, c-format
+#~ msgid "There is already a file system for %s."
+#~ msgstr "Для %s уже существует файловая система."
+
+#~ msgid "Do you want to edit it?"
+#~ msgstr "Вы хотите изменить её?"
+
+#, c-format
+#~ msgid "There is a predefined file system for %s."
+#~ msgstr "Существует предопределенная файловая система для %s."
+
+#~ msgid "Do you want to add it?"
+#~ msgstr "Вы хотите добавить её?"
+
+#~ msgid ""
+#~ "The options for the file system type depends on the product and the mount "
+#~ "point."
+#~ msgstr ""
+#~ "Параметры типа файловой системы зависят от продукта и точки монтирования."
+
+#~ msgid "More info for file system types"
+#~ msgstr "Дополнительная информация о типах файловых систем"
+
+#~ msgid "File system type"
+#~ msgstr "Тип файловой системы"
+
+#~ msgid "the configuration of snapshots"
+#~ msgstr "конфигурация моментальных снимков"
+
+#, c-format
+#~ msgid "the presence of the file system for %s"
+#~ msgstr "наличие файловой системы для %s"
+
+#~ msgid ", "
+#~ msgstr ", "
+
+#~ msgid "the amount of RAM in the system"
+#~ msgstr "объем ОЗУ в системе"
+
+#, c-format
+#~ msgid "The final size depends on %s."
+#~ msgstr "Итоговый размер зависит от %s."
+
+#~ msgid " and "
+#~ msgstr " и "
+
+#~ msgid "Automatically calculated size according to the selected product."
+#~ msgstr "Автоматический расчет размера в соответствии с выбранным продуктом."
+
+#~ msgid "Exact size for the file system."
+#~ msgstr "Точный размер файловой системы."
+
+#~ msgid "Exact size"
+#~ msgstr "Точный размер"
+
+#~ msgid "Size unit"
+#~ msgstr "Единица измерения"
+
+#~ msgid ""
+#~ "Limits for the file system size. The final size will be a value between "
+#~ "the given minimum and maximum. If no maximum is given then the file "
+#~ "system will be as big as possible."
+#~ msgstr ""
+#~ "Ограничения на размер файловой системы. Конечный размер будет равен "
+#~ "значению между заданным минимумом и максимумом. Если максимальное "
+#~ "значение не задано, то файловая система будет такой большой, на сколько "
+#~ "это возможно."
+
+#~ msgid "Minimum"
+#~ msgstr "Минимум"
+
+#~ msgid "Minimum desired size"
+#~ msgstr "Минимальный желаемый размер"
+
+#~ msgid "Unit for the minimum size"
+#~ msgstr "Единица для минимального размера"
+
+#~ msgid "Maximum"
+#~ msgstr "Максимум"
+
+#~ msgid "Maximum desired size"
+#~ msgstr "Максимальный желаемый размер"
+
+#~ msgid "Unit for the maximum size"
+#~ msgstr "Единица для максимального размера"
+
+#~ msgid "Auto"
+#~ msgstr "Автоматически"
+
+#~ msgid "Fixed"
+#~ msgstr "Фиксированный"
+
+#~ msgid "Range"
+#~ msgstr "Диапазон"
+
+#~ msgid ""
+#~ "The file systems are allocated at the installation device by default. "
+#~ "Indicate a custom location to create the file system at a specific device."
+#~ msgstr ""
+#~ "По умолчанию файловые системы распределяются на устройстве установки. "
+#~ "Укажите пользовательское расположение, чтобы создать файловую систему на "
+#~ "конкретном устройстве."
+
+#, c-format
+#~ msgid "Location for %s file system"
+#~ msgstr "Расположение файловой системы %s"
+
+#~ msgid "Select in which device to allocate the file system"
+#~ msgstr "Выберите, на каком устройстве разместить файловую систему"
+
+#~ msgid "Select a location"
+#~ msgstr "Выберите расположение"
+
+#~ msgid "Select how to allocate the file system"
+#~ msgstr "Выберите способ выделения файловой системы"
+
+#~ msgid "Create a new partition"
+#~ msgstr "Создать новый раздел"
+
+#~ msgid ""
+#~ "The file system will be allocated as a new partition at the selected   "
+#~ "disk."
+#~ msgstr ""
+#~ "Файловая система будет выделена в качестве нового раздела на выбранном   "
+#~ "диске."
+
+#~ msgid "Create a dedicated LVM volume group"
+#~ msgstr "Создать выделенную группу томов LVM"
+
+#~ msgid ""
+#~ "A new volume group will be allocated in the selected disk and the   file "
+#~ "system will be created as a logical volume."
+#~ msgstr ""
+#~ "На выбранном диске будет выделена новая группа томов, а   файловая "
+#~ "система будет создана как логический том."
+
+#~ msgid "Format the device"
+#~ msgstr "Отформатировать устройство"
+
+#, c-format
+#~ msgid "The selected device will be formatted as %s file system."
+#~ msgstr "Выбранное устройство будет отформатировано в файловую систему %s."
+
+#~ msgid "Mount the file system"
+#~ msgstr "Смонтировать файловую систему"
+
+#~ msgid ""
+#~ "The current file system on the selected device will be mounted   without "
+#~ "formatting the device."
+#~ msgstr ""
+#~ "Текущая файловая система на выбранном устройстве будет смонтирована   без "
+#~ "форматирования устройства."
+
+#~ msgid "Usage"
+#~ msgstr "Использование"
+
+#~ msgid "Unused space"
+#~ msgstr "Неиспользуемое пространство"
+
+#~ msgid "KiB"
+#~ msgstr "КиБ"
+
+#~ msgid "MiB"
+#~ msgstr "МиБ"
+
+#~ msgid "GiB"
+#~ msgstr "ГиБ"
+
+#~ msgid "TiB"
+#~ msgstr "ТиБ"
+
+#~ msgid "PiB"
+#~ msgstr "ПиБ"
+
+#~ msgid "Delete current content"
+#~ msgstr "Удалить текущее содержимое"
+
+#~ msgid ""
+#~ "All partitions will be removed and any data in the disks will be lost."
+#~ msgstr "Все разделы будут удалены, а все данные на дисках будут потеряны."
+
+#~ msgid "deleting current content"
+#~ msgstr "удаление текущего содержимого"
+
+#~ msgid "Shrink existing partitions"
+#~ msgstr "Уменьшение существующих разделов"
+
+#~ msgid ""
+#~ "The data is kept, but the current partitions will be resized as needed."
+#~ msgstr ""
+#~ "Данные сохраняются, но размер текущих разделов будет изменен по мере "
+#~ "необходимости."
+
+#~ msgid "shrinking partitions"
+#~ msgstr "уменьшение разделов"
+
+#~ msgid "Use available space"
+#~ msgstr "Использовать свободное пространство"
+
+#~ msgid ""
+#~ "The data is kept. Only the space not assigned to any partition will be "
+#~ "used."
+#~ msgstr ""
+#~ "Данные сохраняются. Будет использовано только пространство, не отведенное "
+#~ "для какого-либо раздела."
+
+#~ msgid "without modifying any partition"
+#~ msgstr "не изменяя ни одного раздела"
+
+#~ msgid "Custom"
+#~ msgstr "По-своему"
+
+#~ msgid "Select what to do with each partition."
+#~ msgstr "Выберите, что делать с каждым разделом."
+
+#~ msgid "with custom actions"
+#~ msgstr "другими способами"
 
 #~ msgid "Remove"
 #~ msgstr "Удалить"
