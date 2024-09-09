@@ -83,9 +83,7 @@ impl<'a> ZFCPClient<'a> {
         for (path, ifaces) in managed_objects {
             if let Some(properties) = ifaces.get("org.opensuse.Agama.Storage1.ZFCP.Controller") {
                 // TODO: maybe move it to model? but it needs also additional calls to dbus
-                let mut path_s = path.to_string();
-                let slash_pos = path_s.rfind("/").unwrap_or(0);
-                path_s.drain(..slash_pos + 1);
+                let path_s = Self::controller_id_from_path(&path);
                 devices.push((
                     path,
                     ZFCPController {
@@ -99,6 +97,28 @@ impl<'a> ZFCPClient<'a> {
             }
         }
         Ok(devices)
+    }
+
+    /// Gets controller id that can be used in other controller methods from its dbus path
+    ///
+    /// common case:
+    /// ```
+    ///     let path = zbus::zvariant::OwnedObjectPath::try_from("/test/controllers/2").unwrap();
+    ///     let id = agama_lib::storage::client::zfcp::ZFCPClient::controller_id_from_path(&path);
+    ///     assert_eq!(id, "2".to_string());
+    /// ```
+    ///
+    /// edge case with malformed path that will panic in Owned path already
+    /// ```should_panic
+    ///     let path = zbus::zvariant::OwnedObjectPath::try_from("mangled").unwrap();
+    ///     let id = agama_lib::storage::client::zfcp::ZFCPClient::controller_id_from_path(&path);
+    ///     assert_eq!(id, "mangled".to_string());
+    /// ```
+    pub fn controller_id_from_path(path: &OwnedObjectPath) -> String {
+        let mut path_s = path.to_string();
+        let slash_pos = path_s.rfind("/").unwrap_or(0);
+        path_s.drain(..slash_pos + 1);
+        path_s
     }
 
     async fn get_controller_proxy(
