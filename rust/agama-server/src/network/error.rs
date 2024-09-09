@@ -36,6 +36,10 @@ pub enum NetworkStateError {
     InvalidWEPAuthAlg(String),
     #[error("Invalid WEP key type: '{0}'")]
     InvalidWEPKeyType(u32),
+    #[error("Invalid EAP method: '{0}'")]
+    InvalidEAPMethod(String),
+    #[error("Invalid phase2 authentication method: '{0}'")]
+    InvalidPhase2AuthMethod(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {
