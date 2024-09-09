@@ -22,7 +22,7 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { _ } from "~/i18n";
 import {
-    fetchZFCPConfig,
+  fetchZFCPConfig,
   fetchZFCPControllers,
   fetchZFCPDisks,
 } from "~/api/zfcp";
@@ -42,41 +42,41 @@ const ZFCPControllersQuery = () => ({
  * Returns a query for retrieving the zFCP disks
  */
 const ZFCPDisksQuery = () => ({
-    queryKey: ["zfcp", "disks"],
-    queryFn: fetchZFCPDisks,
-  });
+  queryKey: ["zfcp", "disks"],
+  queryFn: fetchZFCPDisks,
+});
 
 /**
  * Returns a query for retrieving the zFCP config
  */
 const ZFCPConfigQuery = () => ({
-    queryKey: ["zfcp", "config"],
-    queryFn: fetchZFCPConfig,
-  });
+  queryKey: ["zfcp", "config"],
+  queryFn: fetchZFCPConfig,
+});
 
 /**
  * Hook that returns zFCP controllers.
  */
-const useZFCPControllers = () : ZFCPController[] => {
-  const { data: devices } = useSuspenseQuery(ZFCPControllersQuery());
-  return devices;
+const useZFCPControllers = (): ZFCPController[] => {
+  const { data: controllers } = useSuspenseQuery(ZFCPControllersQuery());
+  return controllers;
 };
 
 /**
  * Hook that returns zFCP disks.
  */
-const useZFCPDisks = () : ZFCPDisk[] => {
-    const { data: devices } = useSuspenseQuery(ZFCPDisksQuery());
-    return devices;
-  };
+const useZFCPDisks = (): ZFCPDisk[] => {
+  const { data: devices } = useSuspenseQuery(ZFCPDisksQuery());
+  return devices;
+};
 
 /**
  * Hook that returns zFCP config.
  */
-const useZFCPConfig = () : ZFCPConfig => {
-    const { data: config } = useSuspenseQuery(ZFCPConfigQuery());
-    return config;
-  };
+const useZFCPConfig = (): ZFCPConfig => {
+  const { data: config } = useSuspenseQuery(ZFCPConfigQuery());
+  return config;
+};
 
 /**
  * Listens for zFCP Controller changes.
@@ -131,49 +131,49 @@ const useZFCPControllersChanges = () => {
  * Listens for zFCP disks changes.
  */
 const useZFCPDisksChanges = () => {
-    const client = useInstallerClient();
-    const queryClient = useQueryClient();
-  
-    React.useEffect(() => {
-      if (!client) return;
-  
-      return client.ws().onEvent((event) => {
-        switch (event.type) {
-          case "ZFCPDiskAdded": {
-            const device: ZFCPDisk = event.device;
-            queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
-              return [...prev, device];
-            });
-            break;
-          }
-          case "ZFCPDiskRemoved": {
-            const device: ZFCPDisk = event.device;
-            const { name } = device;
-            queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
-              const res = prev.filter((dev) => dev.name !== name);
-              return res;
-            });
-            break;
-          }
-          case "ZFCPDiskChanged": {
-            const device: ZFCPDisk = event.device;
-            const { name } = device;
-            queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
-              // deep copy of original to have it immutable
-              const res = [...prev];
-              const index = res.findIndex((dev) => dev.name === name);
-              res[index] = device;
-              return res;
-            });
-            break;
-          }
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.ws().onEvent((event) => {
+      switch (event.type) {
+        case "ZFCPDiskAdded": {
+          const device: ZFCPDisk = event.device;
+          queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
+            return [...prev, device];
+          });
+          break;
         }
-      });
+        case "ZFCPDiskRemoved": {
+          const device: ZFCPDisk = event.device;
+          const { name } = device;
+          queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
+            const res = prev.filter((dev) => dev.name !== name);
+            return res;
+          });
+          break;
+        }
+        case "ZFCPDiskChanged": {
+          const device: ZFCPDisk = event.device;
+          const { name } = device;
+          queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
+            // deep copy of original to have it immutable
+            const res = [...prev];
+            const index = res.findIndex((dev) => dev.name === name);
+            res[index] = device;
+            return res;
+          });
+          break;
+        }
+      }
     });
-  
-    const { data: devices } = useSuspenseQuery(ZFCPDisksQuery());
-    return devices;
-  };
+  });
+
+  const { data: devices } = useSuspenseQuery(ZFCPDisksQuery());
+  return devices;
+};
 
 export {
   useZFCPControllers,

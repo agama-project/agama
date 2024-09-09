@@ -21,7 +21,7 @@
 
 // cspell:ignore wwpns npiv
 
-import React, { useCallback, useEffect, useReducer, useState } from "react";
+import React, { MouseEventHandler, useCallback, useEffect, useReducer, useState } from "react";
 import {
   Button,
   Skeleton,
@@ -37,32 +37,33 @@ import { _ } from "~/i18n";
 import { noop, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { useZFCPConfig, useZFCPControllers, useZFCPDisks } from "~/queries/zfcp";
-import { deactivateZFCPDisk, fetchZFCPConfig } from "~/api/zfcp";
 import { ZFCPController, ZFCPDisk } from "~/types/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
+import { fetchLUNs, fetchWWPNs } from "~/api/zfcp";
+
+type LUN = {
+  channel: string,
+  wwpn: string,
+  lun: string
+}
 
 /**
  * @typedef {import(~/clients/storage).ZFCPManager} ZFCPManager
  * @typedef {import(~/clients/storage).ZFCPController} Controller
  * @typedef {import(~/clients/storage).ZFCPDisk} Disk
  *
- * @typedef {object} LUN
- * @property {string} channel
- * @property {string} wwpn
- * @property {string} lun
  */
 
 /**
  * Internal class for managing zFCP data in a format that is useful for components.
  */
 class Manager {
-  /**
-   * @param {Controller[]} controllers
-   * @param {Disk[]} disks
-   * @param {LUN[]} luns
-   */
-  constructor(controllers = [], disks = [], luns = []) {
+  controllers: ZFCPController[];
+  disks: ZFCPDisk[];
+  luns: LUN[];
+
+  constructor(controllers: ZFCPController[] = [], disks: ZFCPDisk[] = [], luns: LUN[] = []) {
     this.controllers = controllers;
     this.disks = disks;
     this.luns = luns;
@@ -70,8 +71,6 @@ class Manager {
 
   /**
    * Gets the activated controllers.
-   *
-   * @returns {Controller[]}
    */
   getActiveControllers() {
     return this.controllers.filter((c) => c.active);
@@ -79,11 +78,8 @@ class Manager {
 
   /**
    * Gets the controller for the given channel.
-   *
-   * @param {string} channel
-   * @returns {Controller|undefined}
    */
-  getController(channel) {
+  getController(channel: string) {
     const index = this.findController(channel);
     if (index === -1) return undefined;
 
@@ -93,10 +89,8 @@ class Manager {
   /**
    * Updates the info about the given controller.
    *
-   * @param {Controller} controller
-   * @returns {void}
    */
-  updateController(controller) {
+  updateController(controller: ZFCPController) {
     const index = this.findController(controller.channel);
     if (index === -1) return;
 
@@ -105,13 +99,8 @@ class Manager {
 
   /**
    * Gets the disk for the given channel, WWPN and LUN.
-   *
-   * @param {string} channel
-   * @param {wwpn} wwpn
-   * @param {lun} lun
-   * @returns {Disk|undefined}
    */
-  getDisk(channel, wwpn, lun) {
+  getDisk(channel: string, wwpn: string, lun: string) {
     const index = this.findDisk(channel, wwpn, lun);
     if (index === -1) return undefined;
 
@@ -121,22 +110,18 @@ class Manager {
   /**
    * Adds the given disk to the list of disks.
    *
-   * @param {Disk} disk
-   * @returns {void}
    */
-  addDisk(disk) {
-    if (this.getDisk(disk.channel, disk.wwpn, disk.lun)) return;
+  addDisk(disk: ZFCPDisk) {
+    if (this.getDisk(disk.channel, disk.WWPN, disk.LUN)) return;
 
     this.disks.push(disk);
   }
 
   /**
    * Removes the given disk from the list of disks.
-   * @param {Disk} disk
-   * @returns {void}
    */
-  removeDisk(disk) {
-    const index = this.findDisk(disk.channel, disk.wwpn, disk.lun);
+  removeDisk(disk: ZFCPDisk) {
+    const index = this.findDisk(disk.channel, disk.WWPN, disk.LUN);
     if (index === -1) return;
 
     this.disks.splice(index, 1);
@@ -145,10 +130,8 @@ class Manager {
   /**
    * Adds the given LUNs
    *
-   * @param {LUN[]} luns
-   * @returns {void}
    */
-  addLUNs(luns) {
+  addLUNs(luns: LUN[]) {
     for (const lun of luns) {
       const existingLUN = this.luns.find(
         (l) => l.channel === lun.channel && l.wwpn === lun.wwpn && l.lun === lun.lun,
@@ -159,8 +142,6 @@ class Manager {
 
   /**
    * Gets the list of inactive LUNs.
-   *
-   * @returns {LUN[]}
    */
   getInactiveLUNs() {
     const luns = this.getActiveControllers().map((controller) => {
@@ -175,12 +156,8 @@ class Manager {
   /**
    * Whether the LUN is active.
    *
-   * @param {string} channel
-   * @param {string} wwpn
-   * @param {string} lun
-   * @returns {boolean}
    */
-  isLUNActive(channel, wwpn, lun) {
+  isLUNActive(channel: string, wwpn: string, lun: string) {
     const disk = this.getDisk(channel, wwpn, lun);
     return disk !== undefined;
   }
@@ -189,10 +166,8 @@ class Manager {
    * @private
    * Index of the controller for the given channel.
    *
-   * @param {string} channel
-   * @returns {number}
    */
-  findController(channel) {
+  findController(channel: string) {
     return this.controllers.findIndex((c) => c.channel === channel);
   }
 
@@ -200,134 +175,19 @@ class Manager {
    * @private
    * Index of the disk with the given channel, WWPN and LUN.
    *
-   * @param {string} channel
-   * @param {string} wwpn
-   * @param {string} lun
-   * @returns {number}
    */
-  findDisk(channel, wwpn, lun) {
-    return this.disks.findIndex((d) => d.channel === channel && d.wwpn === wwpn && d.lun === lun);
+  findDisk(channel: string, wwpn: string, lun: string) {
+    return this.disks.findIndex((d) => d.channel === channel && d.WWPN === wwpn && d.LUN === lun);
   }
 }
 
 /**
- * Generic table for zFCP devices.
- *
- * It shows a row as loading meanwhile performing an action.
- *
- * @component
- *
- * @param {object} props
- * @param {Controller[]|Disk[]} [props.devices] - Devices to show in the table.
- * @param {Column[]} [props.columns] - Columns to show.
- * @param {ColumnValueFn} [props.columnValue] - Function to get the value of a column for a given device.
- * @param {DeviceActionsFn} [props.actions] - Function to get the actions for a given device.
- *
- * @callback ColumnValueFn
- * @param {Controller} controller
- * @param {Column} Column
- * @returns {string}
- *
- * @typedef {object} Column
- * @property {string} id
- * @property {string} label
- *
- * @callback DeviceActionsFn
- * @param {Controller|Disk} device
- * @returns {DeviceAction[]}
- *
- * @typedef {DeviceAction}
- * @property {string} label
- * @property {function} call
- */
-const DevicesTable = (devices: ZFCPDisk[]|ZFCPController[], columns , columnValue, actions) => {
-  const [loadingRow, setLoadingRow] = useState();
-
-  const sortedDevices = () => {
-    return devices.sort((d1, d2) => {
-      const v1 = columnValue(d1, columns[0]);
-      const v2 = columnValue(d2, columns[0]);
-      if (v1 < v2) return -1;
-      if (v1 > v2) return 1;
-      return 0;
-    });
-  };
-
-  const Actions = ({ device }) => {
-    const deviceActions = actions(device);
-    if (deviceActions.length === 0) return null;
-
-    const items = deviceActions.map((action) => ({
-      title: action.label,
-      onClick: async () => {
-        setLoadingRow(device.id);
-        await action.run();
-        setLoadingRow(undefined);
-      },
-    }));
-
-    return <RowActions actions={items} />;
-  };
-
-  return (
-    <Table variant="compact">
-      <Thead>
-        <Tr>
-          {columns.map((column) => (
-            <Th key={column.id}>{column.label}</Th>
-          ))}
-        </Tr>
-      </Thead>
-      <Tbody>
-        {sortedDevices().map((device) => {
-          const RowContent = () => {
-            if (loadingRow === device.id) {
-              return (
-                <Td colSpan={columns.length + 1}>
-                  <Skeleton />
-                </Td>
-              );
-            }
-
-            return (
-              <>
-                {columns.map((column) => (
-                  <Td key={column.id} dataLabel={column.label}>
-                    {columnValue(device, column)}
-                  </Td>
-                ))}
-                <Td isActionCell key="device-actions">
-                  <Actions device={device} />
-                </Td>
-              </>
-            );
-          };
-
-          return (
-            <Tr key={device.id}>
-              <RowContent />
-            </Tr>
-          );
-        })}
-      </Tbody>
-    </Table>
-  );
-};
-
-/**
  * Section for zFCP controllers.
- * @component
- *
- * @param {object} props
- * @param {ZFCPManager} props.client
- * @param {Manager} props.manager
- * @param {function} props.load - Allows loading the zFCP data.
- * @param {boolean} props.isLoading
  */
-const ControllersSection = ({ client, manager, load = noop, isLoading = false }) => {
+const ControllersSection = ({ load = noop, isLoading = false }: { load: MouseEventHandler, isLoading: boolean }) => {
   const allowLUNScan = useZFCPConfig().allowLUNScan;
   const controllers = useZFCPControllers();
-  
+
   const EmptyState = () => {
     return (
       <Stack hasGutter>
@@ -345,15 +205,15 @@ const ControllersSection = ({ client, manager, load = noop, isLoading = false })
     const LUNScanInfo = () => {
       const msg = allowLUNScan
         ? // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-          _(
-            "Automatic LUN scan is [enabled]. Activating a controller which is \
+        _(
+          "Automatic LUN scan is [enabled]. Activating a controller which is \
 running in NPIV mode will automatically configures all its LUNs.",
-          )
+        )
         : // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-          _(
-            "Automatic LUN scan is [disabled]. LUNs have to be manually \
+        _(
+          "Automatic LUN scan is [disabled]. LUNs have to be manually \
 configured after activating a controller.",
-          );
+        );
 
       const [msgStart, msgBold, msgEnd] = msg.split(/[[\]]/);
 
@@ -562,11 +422,11 @@ export default function ZFCPPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const getLUNs = useCallback(
-    async (controller) => {
+    async (controller: ZFCPController) => {
       const luns = [];
-      const wwpns = await cancellablePromise(client.zfcp.getWWPNs(controller));
+      const wwpns = await cancellablePromise(fetchWWPNs(controller.id));
       for (const wwpn of wwpns) {
-        const all = await cancellablePromise(client.zfcp.getLUNs(controller, wwpn));
+        const all = await cancellablePromise(fetchLUNs(controller.id, wwpn));
         for (const lun of all) {
           luns.push({ channel: controller.channel, wwpn, lun });
         }

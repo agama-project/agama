@@ -21,35 +21,31 @@
 
 // cspell:ignore wwpns
 
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
+import { ZFCPDisk } from "~/types/zfcp";
+
+type FormData = {
+  channel?: string,
+  wwpn?: string,
+  lun?: string
+}
 
 /**
  * Form for activating a zFCP disk.
- * @component
- *
- * @param {object} props
- * @param {string} props.id - Form Id
- * @param {import(~/components/storage/ZFCPPage).LUN[]} [props.luns]
- * @param {onSubmitFn} [props.onSubmit] - Callback to be called when the form is submitted.
- * @param {onLoadingFn} [props.onValidate] - Callback to be called when the form starts/stops loading.
  *
  * @callback onSubmitFn
  * @param {FormData}
  * @returns {number} 0 on success
  *
- * @typedef {object} FormData
- * @property {string} channel
- * @property {string} wwpn
- * @property {string} lun
  *
  * @callback onLoadingFn
  * @param {boolean} isLoading - Whether the form is loading.
  */
-export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading = noop }) {
-  const [formData, setFormData] = useState({});
+export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading = noop }: { id: string, luns: ZFCPDisk[], onSubmit: Function, onLoading: Function }) {
+  const [formData, setFormData] = useState({} as FormData);
   const [isLoading, setIsLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
 
@@ -62,18 +58,18 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
     return channels.sort();
   };
 
-  const getWWPNs = (channel) => {
+  const getWWPNs = (channel: string) => {
     const selection = luns.filter((l) => l.channel === channel);
-    const wwpns = [...new Set(selection.map((l) => l.wwpn))];
+    const wwpns = [...new Set(selection.map((l) => l.WWPN))];
     return wwpns.sort();
   };
 
-  const getLUNs = (channel, wwpn) => {
-    const selection = luns.filter((l) => l.channel === channel && l.wwpn === wwpn);
-    return selection.map((l) => l.lun).sort();
+  const getLUNs = (channel: string, wwpn: string) => {
+    const selection = luns.filter((l) => l.channel === channel && l.WWPN === wwpn);
+    return selection.map((l) => l.LUN).sort();
   };
 
-  const select = (channel, wwpn, lun) => {
+  const select = (channel: string = undefined, wwpn: string = undefined, lun: string = undefined) => {
     if (!channel) channel = getChannels()[0];
     if (!wwpn) wwpn = getWWPNs(channel)[0];
     if (!lun) lun = getLUNs(channel, wwpn)[0];
@@ -81,13 +77,13 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
     if (channel) setFormData({ channel, wwpn, lun });
   };
 
-  const selectChannel = (_, channel) => select(channel);
+  const selectChannel = (_: any, channel: string) => select(channel);
 
-  const selectWWPN = (_, wwpn) => select(formData.channel, wwpn);
+  const selectWWPN = (_: any, wwpn: string) => select(formData.channel, wwpn);
 
-  const selectLUN = (_, lun) => select(formData.channel, formData.wwpn, lun);
+  const selectLUN = (_: any, lun: string) => select(formData.channel, formData.wwpn, lun);
 
-  const submit = async (event) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
 
     setIsLoading(true);
