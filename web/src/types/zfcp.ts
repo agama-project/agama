@@ -20,23 +20,22 @@
  */
 
 type ZFCPController = {
-    id: string;
-    channel: string;
-    active: boolean;
-    LUNScan: boolean;
-    LUNsMap: { [key: string] : string }
-  };
-  
-  type ZFCPDisk = {
-    name: string;
-    channel: string;
-    WWPN: string;
-    LUN: string;
-  }
-  
-  type ZFCPConfig = {
-    allowLUNScan: boolean;
-  }
-  
-  export type { ZFCPController, ZFCPDisk, ZFCPConfig };
-  
+  id: string;
+  channel: string;
+  active: boolean;
+  LUNScan: boolean;
+  LUNsMap: { [key: string]: string };
+};
+
+type ZFCPDisk = {
+  name: string;
+  channel: string;
+  WWPN: string;
+  LUN: string;
+};
+
+type ZFCPConfig = {
+  allowLUNScan: boolean;
+};
+
+export type { ZFCPController, ZFCPDisk, ZFCPConfig };
