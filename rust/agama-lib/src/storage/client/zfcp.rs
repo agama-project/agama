@@ -85,7 +85,7 @@ impl<'a> ZFCPClient<'a> {
                 // TODO: maybe move it to model? but it needs also additional calls to dbus
                 let mut path_s = path.to_string();
                 let slash_pos = path_s.rfind("/").unwrap_or(0);
-                path_s.drain(..slash_pos);
+                path_s.drain(..slash_pos + 1);
                 devices.push((
                     path,
                     ZFCPController {
