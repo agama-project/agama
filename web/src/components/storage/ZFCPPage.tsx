@@ -40,7 +40,7 @@ import { useZFCPConfig, useZFCPControllers, useZFCPDisks } from "~/queries/zfcp"
 import { ZFCPController, ZFCPDisk } from "~/types/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
-import { fetchLUNs, fetchWWPNs } from "~/api/zfcp";
+import { activateZFCPDisk, fetchLUNs, fetchWWPNs } from "~/api/zfcp";
 
 type LUN = {
   channel: string,
@@ -251,15 +251,17 @@ configured after activating a controller.",
  * @param {Manager} props.manager
  * @param {function} props.onClose - Callback to be called when closing the popup.
  */
-const DiskPopup = ({ client, manager, onClose = noop }) => {
+const DiskPopup = ({ onClose = noop }) => {
   const [isAcceptDisabled, setIsAcceptDisabled] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
+  const controllers = useZFCPControllers();
+  const disks = useZFCPDisks();
 
   const onSubmit = async (formData) => {
     setIsAcceptDisabled(true);
-    const controller = manager.getController(formData.channel);
+    const controller = controllers.find((c) => c.channel === formData.channel);
     const result = await cancellablePromise(
-      client.activateDisk(controller, formData.wwpn, formData.lun),
+      activateZFCPDisk(controller.id, formData.wwpn, formData.lun),
     );
     setIsAcceptDisabled(false);
 
@@ -271,6 +273,16 @@ const DiskPopup = ({ client, manager, onClose = noop }) => {
   };
 
   const formId = "ZFCPDiskForm";
+  const inactiveLuns: string[] = [];
+  for (const controller of controllers) {
+    for (const [wwpn, luns] of Object.entries(controller.LUNsMap)) {
+      for (const lun of luns) {
+        if (!disks.some((d) => d.LUN === lun && d.WWPN === wwpn && d.channel == controller.channel)) {
+          inactiveLuns.push(lun);
+        }
+      }
+    }
+  };
 
   return (
     <Popup isOpen title={_("Activate a zFCP disk")}>
