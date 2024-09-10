@@ -24,7 +24,7 @@ type ZFCPController = {
   channel: string;
   active: boolean;
   lunScan: boolean;
-  lunsMap: { [key: string]: string };
+  lunsMap: { [key: string]: string[] };
 };
 
 type ZFCPDisk = {
