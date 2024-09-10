@@ -19,22 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/boot"
-require "agama/storage/config_conversions/from_json_conversions/btrfs"
-require "agama/storage/config_conversions/from_json_conversions/config"
-require "agama/storage/config_conversions/from_json_conversions/drive"
-require "agama/storage/config_conversions/from_json_conversions/encryption"
 require "agama/storage/config_conversions/from_json_conversions/filesystem"
-require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
-require "agama/storage/config_conversions/from_json_conversions/partition"
-require "agama/storage/config_conversions/from_json_conversions/search"
-require "agama/storage/config_conversions/from_json_conversions/size"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions from JSON.
       module FromJSONConversions
+        # Mixin for filesystem conversion.
+        module WithFilesystem
+          # @param json [Hash]
+          # @param default [Configs::Filesystem, nil]
+          #
+          # @return [Configs::Filesystem, nil]
+          def convert_filesystem(json, default: nil)
+            filesystem_json = json[:filesystem]
+            return unless filesystem_json
+
+            # @todo Check whether the given filesystem can be used for the mount point.
+            # @todo Check whether snapshots can be configured and restore to default if needed.
+
+            FromJSONConversions::Filesystem
+              .new(filesystem_json, config_builder: config_builder)
+              .convert(default)
+          end
+        end
       end
     end
   end

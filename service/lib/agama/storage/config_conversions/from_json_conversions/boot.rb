@@ -20,65 +20,42 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
-require "agama/storage/configs/size"
-require "y2storage/disk_size"
+require "agama/storage/configs/boot"
 
 module Agama
   module Storage
     module ConfigConversions
       module FromJSONConversions
-        # Size conversion from JSON hash according to schema.
-        class Size < Base
-          # @param size_json [Hash]
-          def initialize(size_json)
+        # Boot conversion from JSON hash according to schema.
+        class Boot < Base
+          # @param boot_json [Hash]
+          def initialize(boot_json)
             super()
-            @size_json = size_json
+            @boot_json = boot_json
           end
 
           # @see Base#convert
           #
-          # @param default [Configs::Size, nil]
-          # @return [Configs::Size]
+          # @param default [Configs::Boot, nil]
+          # @return [Configs::Boot]
           def convert(default = nil)
-            super(default || Configs::Size.new)
+            super(default || Configs::Boot.new)
           end
 
         private
 
           # @return [Hash]
-          attr_reader :size_json
+          attr_reader :boot_json
 
           # @see Base#conversions
           #
-          # @param _default [Configs::Size]
+          # @param _default [Configs::Boot]
           # @return [Hash]
           def conversions(_default)
             {
-              default: false,
-              min:     convert_size(:min),
-              max:     convert_size(:max) || Y2Storage::DiskSize.unlimited
+              configure: boot_json[:configure],
+              device:    boot_json[:device]
             }
-          end
-
-          # @return [Y2Storage::DiskSize, nil]
-          def convert_size(field)
-            value = case size_json
-            when Hash
-              size_json[field]
-            when Array
-              field == :max ? size_json[1] : size_json[0]
-            else
-              size_json
-            end
-
-            return unless value
-
-            begin
-              # This parses without legacy_units, ie. "1 GiB" != "1 GB"
-              Y2Storage::DiskSize.new(value)
-            rescue TypeError
-              # JSON schema validations should prevent this from happening
-            end
           end
         end
       end

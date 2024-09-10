@@ -19,9 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/block_device"
-require "agama/storage/config_conversions/from_json_conversions/search"
-require "agama/storage/config_conversions/from_json_conversions/partitionable"
+require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/with_encryption"
+require "agama/storage/config_conversions/from_json_conversions/with_filesystem"
+require "agama/storage/config_conversions/from_json_conversions/with_partitions"
+require "agama/storage/config_conversions/from_json_conversions/with_ptable_type"
+require "agama/storage/config_conversions/from_json_conversions/with_search"
 require "agama/storage/configs/drive"
 
 module Agama
@@ -29,29 +32,26 @@ module Agama
     module ConfigConversions
       module FromJSONConversions
         # Drive conversion from JSON hash according to schema.
-        class Drive
-          # @todo Replace settings and volume_builder params by a ProductDefinition.
-          #
+        class Drive < Base
+          include WithSearch
+          include WithEncryption
+          include WithFilesystem
+          include WithPtableType
+          include WithPartitions
+
           # @param drive_json [Hash]
-          # @param settings [ProposalSettings]
-          # @param volume_builder [VolumeTemplatesBuilder]
-          def initialize(drive_json, settings:, volume_builder:)
+          # @param config_builder [ConfigBuilder, nil]
+          def initialize(drive_json, config_builder: nil)
+            super(config_builder)
             @drive_json = drive_json
-            @settings = settings
-            @volume_builder = volume_builder
           end
 
-          # Performs the conversion from Hash according to the JSON schema.
+          # @see Base#convert
           #
           # @param default [Configs::Drive, nil]
           # @return [Configs::Drive]
           def convert(default = nil)
-            default_config = default.dup || Configs::Drive.new
-
-            convert_drive(default_config).tap do |config|
-              search = convert_search(config.search)
-              config.search = search if search
-            end
+            super(default || Configs::Drive.new)
           end
 
         private
@@ -59,44 +59,18 @@ module Agama
           # @return [Hash]
           attr_reader :drive_json
 
-          # @return [ProposalSettings]
-          attr_reader :settings
-
-          # @return [VolumeTemplatesBuilder]
-          attr_reader :volume_builder
-
-          # @param config [Configs::Drive]
-          # @return [Configs::Drive]
-          def convert_drive(config)
-            convert_block_device(
-              convert_partitionable(config)
-            )
-          end
-
-          # @param config [Configs::Drive]
-          def convert_block_device(config)
-            converter = FromJSONConversions::BlockDevice.new(drive_json,
-              settings: settings, volume_builder: volume_builder)
-
-            converter.convert(config)
-          end
-
-          # @param config [Configs::Drive]
-          def convert_partitionable(config)
-            converter = FromJSONConversions::Partitionable.new(drive_json,
-              settings: settings, volume_builder: volume_builder)
-
-            converter.convert(config)
-          end
-
-          # @param config [Configs::Search]
-          # @return [Configs::Search, nil]
-          def convert_search(config)
-            search_json = drive_json[:search]
-            return unless search_json
-
-            converter = FromJSONConversions::Search.new(search_json)
-            converter.convert(config)
+          # @see Base#conversions
+          #
+          # @param default [Configs::Drive]
+          # @return [Hash]
+          def conversions(default)
+            {
+              search:      convert_search(drive_json, default: default.search),
+              encryption:  convert_encryption(drive_json, default: default.encryption),
+              filesystem:  convert_filesystem(drive_json, default: default.filesystem),
+              ptable_type: convert_ptable_type(drive_json),
+              partitions:  convert_partitions(drive_json)
+            }
           end
         end
       end

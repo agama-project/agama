@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/configs/encryption"
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
@@ -28,24 +29,20 @@ module Agama
     module ConfigConversions
       module FromJSONConversions
         # Encryption conversion from JSON hash according to schema.
-        class Encryption
+        class Encryption < Base
           # @param encryption_json [Hash, String]
-          # @param default [Configs::Encrypt]
-          def initialize(encryption_json, default: nil)
+          # @param config_builder [ConfigBuilder, nil]
+          def initialize(encryption_json, config_builder: nil)
+            super(config_builder)
             @encryption_json = encryption_json
-            @default_config = default || Configs::Encryption.new
           end
 
-          # Performs the conversion from Hash according to the JSON schema.
+          # @see Base#convert
           #
+          # @param default [Configs::Encryption, nil]
           # @return [Configs::Encryption]
-          def convert
-            default_config.dup.tap do |config|
-              convert_luks1(config) ||
-                convert_luks2(config) ||
-                convert_pervasive_luks2(config) ||
-                convert_swap_encryption(config)
-            end
+          def convert(default = nil)
+            super(default || self.default)
           end
 
         private
@@ -56,78 +53,101 @@ module Agama
           # @return [Configs::Encryption]
           attr_reader :default_config
 
-          # @param config [Configs::Encryption]
-          # @return [Configs::Encryption, nil] nil if JSON does not match LUKS1 schema.
-          def convert_luks1(config)
-            luks1_json = encryption_json.is_a?(Hash) && encryption_json[:luks1]
-            return unless luks1_json
+          # @see Base#conversions
+          #
+          # @param _default [Configs::Encryption]
+          # @return [Hash]
+          def conversions(_default)
+            return luks1_conversions if luks1?
+            return luks2_conversions if luks2?
+            return pervasive_luks2_conversions if pervasive_luks2?
 
-            key_size = convert_key_size(luks1_json)
-            cipher = convert_cipher(luks1_json)
-
-            config.method = Y2Storage::EncryptionMethod::LUKS1
-            config.password = convert_password(luks1_json)
-            config.key_size = key_size if key_size
-            config.cipher = cipher if cipher
+            swap_encryption_conversions
           end
 
-          # @param config [Configs::Encryption]
-          # @return [Configs::Encryption, nil] nil if JSON does not match LUKS2 schema.
-          def convert_luks2(config)
-            luks2_json = encryption_json.is_a?(Hash) && encryption_json[:luks2]
-            return unless luks2_json
+          def luks1?
+            return false unless encryption_json.is_a?(Hash)
 
-            key_size = convert_key_size(luks2_json)
-            cipher = convert_cipher(luks2_json)
-            label = convert_label
-            pbkdf = convert_pbkd_function
-
-            config.method = Y2Storage::EncryptionMethod::LUKS2
-            config.password = convert_password(luks2_json)
-            config.key_size = key_size if key_size
-            config.cipher = cipher if cipher
-            config.label = label if label
-            config.pbkd_function = pbkdf if pbkdf
+            !encryption_json[:luks1].nil?
           end
 
-          # @param config [Configs::Encryption]
-          # @return [Configs::Encryption, nil] nil if JSON does not match pervasive LUKS2 schema.
-          def convert_pervasive_luks2(config)
-            pervasive_json = encryption_json.is_a?(Hash) && encryption_json[:pervasive_luks2]
-            return unless pervasive_json
+          def luks2?
+            return false unless encryption_json.is_a?(Hash)
 
-            config.method = Y2Storage::EncryptionMethod::PERVASIVE_LUKS2
-            config.password = convert_password(pervasive_json)
+            !encryption_json[:luks2].nil?
           end
 
-          # @param config [Configs::Encryption]
-          # @return [Configs::Encryption, nil] nil if JSON does not match a swap encryption schema.
-          def convert_swap_encryption(config)
-            return unless encryption_json.is_a?(String)
+          def pervasive_luks2?
+            return false unless encryption_json.is_a?(Hash)
 
-            # @todo Report issue if the schema admits an unknown method.
+            !encryption_json[:pervasive_luks2].nil?
+          end
+
+          # @return [Hash]
+          def luks1_conversions
+            luks1_json = encryption_json[:luks1]
+
+            {
+              method:   Y2Storage::EncryptionMethod::LUKS1,
+              password: convert_password(luks1_json),
+              key_size: convert_key_size(luks1_json),
+              cipher:   convert_cipher(luks1_json)
+            }
+          end
+
+          # @return [Hash]
+          def luks2_conversions
+            luks2_json = encryption_json[:luks2]
+
+            {
+              method:        Y2Storage::EncryptionMethod::LUKS2,
+              password:      convert_password(luks2_json),
+              key_size:      convert_key_size(luks2_json),
+              cipher:        convert_cipher(luks2_json),
+              label:         convert_label,
+              pbkd_function: convert_pbkd_function
+            }
+          end
+
+          # @return [Hash]
+          def pervasive_luks2_conversions
+            pervasive_json = encryption_json[:pervasive_luks2]
+
+            {
+              method:   Y2Storage::EncryptionMethod::PERVASIVE_LUKS2,
+              password: convert_password(pervasive_json)
+            }
+          end
+
+          # @return [Hash]
+          def swap_encryption_conversions
+            return {} unless encryption_json.is_a?(String)
+
+            # TODO: Report issue if the schema admits an unknown method.
             method = Y2Storage::EncryptionMethod.find(encryption_json.to_sym)
-            return unless method
+            return {} unless method
 
-            config.method = method
+            {
+              method: method
+            }
           end
 
-          # @param method_json [Hash]
+          # @param json [Hash]
           # @return [String, nil]
-          def convert_password(method_json)
-            method_json[:password]
+          def convert_password(json)
+            json[:password]
           end
 
-          # @param method_json [Hash]
+          # @param json [Hash]
           # @return [Integer, nil]
-          def convert_key_size(method_json)
-            method_json[:keySize]
+          def convert_key_size(json)
+            json[:keySize]
           end
 
-          # @param method_json [Hash]
+          # @param json [Hash]
           # @return [String, nil]
-          def convert_cipher(method_json)
-            method_json[:cipher]
+          def convert_cipher(json)
+            json[:cipher]
           end
 
           # @return [String, nil]
@@ -138,6 +158,15 @@ module Agama
           # @return [Y2Storage::PbkdFunction, nil]
           def convert_pbkd_function
             Y2Storage::PbkdFunction.find(encryption_json.dig(:luks2, :pbkdFunction))
+          end
+
+          # Default encryption config.
+          #
+          # @return [Configs::Encryption]
+          def default
+            return Configs::Encryption.new unless config_builder
+
+            config_builder.default_encryption
           end
         end
       end

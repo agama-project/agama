@@ -19,22 +19,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/boot"
-require "agama/storage/config_conversions/from_json_conversions/btrfs"
-require "agama/storage/config_conversions/from_json_conversions/config"
-require "agama/storage/config_conversions/from_json_conversions/drive"
 require "agama/storage/config_conversions/from_json_conversions/encryption"
-require "agama/storage/config_conversions/from_json_conversions/filesystem"
-require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
-require "agama/storage/config_conversions/from_json_conversions/partition"
-require "agama/storage/config_conversions/from_json_conversions/search"
-require "agama/storage/config_conversions/from_json_conversions/size"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions from JSON.
       module FromJSONConversions
+        # Mixin for encryption conversion.
+        module WithEncryption
+          # @param json [Hash]
+          # @param default [Configs::Encryption, nil]
+          #
+          # @return [Configs::Encryption, nil]
+          def convert_encryption(json, default: nil)
+            encryption_json = json[:encryption]
+            return unless encryption_json
+
+            FromJSONConversions::Encryption
+              .new(encryption_json, config_builder: config_builder)
+              .convert(default)
+          end
+        end
       end
     end
   end

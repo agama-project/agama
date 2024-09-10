@@ -19,22 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/boot"
-require "agama/storage/config_conversions/from_json_conversions/btrfs"
-require "agama/storage/config_conversions/from_json_conversions/config"
-require "agama/storage/config_conversions/from_json_conversions/drive"
-require "agama/storage/config_conversions/from_json_conversions/encryption"
-require "agama/storage/config_conversions/from_json_conversions/filesystem"
-require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
 require "agama/storage/config_conversions/from_json_conversions/partition"
-require "agama/storage/config_conversions/from_json_conversions/search"
-require "agama/storage/config_conversions/from_json_conversions/size"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions from JSON.
       module FromJSONConversions
+        # Mixin for partitions conversion.
+        module WithPartitions
+          # @param json [Hash]
+          # @return [Array<Configs::Partition>, nil]
+          def convert_partitions(json)
+            partitions_json = json[:partitions]
+            return unless partitions_json
+
+            partitions_json.map { |p| convert_partition(p) }
+          end
+
+          # @param partition_json [Hash]
+          # @return [Configs::Partition]
+          def convert_partition(partition_json)
+            FromJSONConversions::Partition
+              .new(partition_json, config_builder: config_builder)
+              .convert
+          end
+        end
       end
     end
   end

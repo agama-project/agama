@@ -19,22 +19,24 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/boot"
-require "agama/storage/config_conversions/from_json_conversions/btrfs"
-require "agama/storage/config_conversions/from_json_conversions/config"
-require "agama/storage/config_conversions/from_json_conversions/drive"
-require "agama/storage/config_conversions/from_json_conversions/encryption"
-require "agama/storage/config_conversions/from_json_conversions/filesystem"
-require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
-require "agama/storage/config_conversions/from_json_conversions/partition"
-require "agama/storage/config_conversions/from_json_conversions/search"
-require "agama/storage/config_conversions/from_json_conversions/size"
+require "y2storage/partition_tables/type"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions from JSON.
       module FromJSONConversions
+        # Mixin for partition table type conversion.
+        module WithPtableType
+          # @param json [Hash]
+          #
+          # @return [Y2Storage::PartitionTables::Type, nil]
+          def convert_ptable_type(json)
+            value = json[:ptableType]
+            return unless value
+
+            Y2Storage::PartitionTables::Type.find(value)
+          end
+        end
       end
     end
   end
