@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 10 10:03:04 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Relax REXML version (gh#openSUSE/agama#1595) to build with Ruby
+  3.3.
+
+-------------------------------------------------------------------
 Thu Sep  5 17:35:04 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: add support for reusing file systems in the storage

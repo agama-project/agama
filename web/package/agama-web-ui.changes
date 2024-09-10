@@ -2,12 +2,12 @@
 Fri Sep  6 16:38:06 UTC 2024 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - Do not try to install assets/ and products/ directories (everything
-  is inside agama/web_ui/ already)
+  is inside agama/web_ui/ already) (gh#openSUSE/agama#1588).
 
 -------------------------------------------------------------------
 Fri Sep  6 15:04:58 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
-- Ensure that product icons are packaged 
+- Ensure that product icons are packaged (gh#openSUSE/agama#1587).
 
 -------------------------------------------------------------------
 Fri Sep  6 08:06:41 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
