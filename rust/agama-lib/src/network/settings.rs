@@ -63,6 +63,50 @@ impl Default for BondSettings {
     }
 }
 
+/// IEEE 802.1x (EAP) settings
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct IEEE8021XSettings {
+    /// List of EAP methods used
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub eap: Vec<String>,
+    /// Phase 2 inner auth method
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phase2_auth: Option<String>,
+    /// Identity string, often for example the user's login name
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub identity: Option<String>,
+    /// Password string used for EAP authentication
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub password: Option<String>,
+    /// Path to CA certificate
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ca_cert: Option<String>,
+    /// Password string for CA certificate if it is encrypted
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ca_cert_password: Option<String>,
+    /// Path to client certificate
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_cert: Option<String>,
+    /// Password string for client certificate if it is encrypted
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_cert_password: Option<String>,
+    /// Path to private key
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub private_key: Option<String>,
+    /// Password string for private key if it is encrypted
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub private_key_password: Option<String>,
+    /// Anonymous identity string for EAP authentication methods
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anonymous_identity: Option<String>,
+    /// Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub peap_version: Option<String>,
+    /// Force the use of the new PEAP label during key derivation
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub peap_label: bool,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NetworkDevice {
     pub id: String,
@@ -106,6 +150,8 @@ pub struct NetworkConnection {
     pub status: Option<Status>,
     #[serde(skip_serializing_if = "is_zero", default)]
     pub mtu: u32,
+    #[serde(rename = "ieee-8021x", skip_serializing_if = "Option::is_none")]
+    pub ieee_8021x: Option<IEEE8021XSettings>,
 }
 
 fn is_zero(u: &u32) -> bool {

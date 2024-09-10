@@ -231,6 +231,90 @@
                     }
                   }
                 }
+              },
+              "ieee-8021x": {
+                "type": "object",
+                "title": "IEEE 802.1x (EAP) settings",
+                "properties": {
+                  "eap": {
+                    "type": "array",
+                    "items": {
+                      "title": "List of EAP methods used",
+                      "type": "string",
+                      "enum": [
+                        "leap",
+                        "md5",
+                        "tls",
+                        "peap",
+                        "ttls",
+                        "pwd",
+                        "fast"
+                      ]
+                    }
+                  },
+                  "phase2_auth": {
+                    "title": "Phase 2 inner auth method",
+                    "type": "string",
+                    "enum": [
+                      "pap",
+                      "chap",
+                      "mschap",
+                      "mschapv2",
+                      "gtc",
+                      "otp",
+                      "md5",
+                      "tls"
+                    ]
+                  },
+                  "identity": {
+                    "title": "Identity string, often for example the user's login name",
+                    "type": "string"
+                  },
+                  "password": {
+                    "title": "Password string used for EAP authentication",
+                    "type": "string"
+                  },
+                  "ca_cert": {
+                    "title": "Path to CA certificate",
+                    "type": "string"
+                  },
+                  "ca_cert_password": {
+                    "title": "Password string for CA certificate if it is encrypted",
+                    "type": "string"
+                  },
+                  "client_cert": {
+                    "title": "Path to client certificate",
+                    "type": "string"
+                  },
+                  "client_cert_password": {
+                    "title": "Password string for client certificate if it is encrypted",
+                    "type": "string"
+                  },
+                  "private_key": {
+                    "title": "Path to private key",
+                    "type": "string"
+                  },
+                  "private_key_password": {
+                    "title": "Password string for private key if it is encrypted",
+                    "type": "string"
+                  },
+                  "anonymous_identity": {
+                    "title": "Anonymous identity string for EAP authentication methods",
+                    "type": "string"
+                  },
+                  "peap_version": {
+                    "title": "Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property",
+                    "type": "string",
+                    "enum": [
+                      "0",
+                      "1"
+                    ]
+                  },
+                  "peap_label": {
+                    "title": "Force the use of the new PEAP label during key derivation",
+                    "type": "boolean"
+                  }
+                }
               }
             }
           }

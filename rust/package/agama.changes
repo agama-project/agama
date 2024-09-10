@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 10 15:00:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Implement 802.1x (EAP) in network settings (gh#openSUSE/agama#1597).
+
+-------------------------------------------------------------------
 Mon Sep  9 09:09:54 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - For CLI, use HTTP clients instead of D-Bus clients,
