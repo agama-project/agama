@@ -17,9 +17,7 @@ impl ManagerHTTPClient {
 
     pub async fn probe(&self) -> Result<(), ServiceError> {
         // BaseHTTPClient did not anticipate POST without request body
-        let dummy_body: Vec<u8> = vec![];
-        self.client
-            .post_void("/manager/probe_sync", &dummy_body)
-            .await
+        // so we pass () which is rendered as `null`
+        self.client.post_void("/manager/probe_sync", &()).await
     }
 }

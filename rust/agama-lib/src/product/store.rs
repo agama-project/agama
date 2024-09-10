@@ -160,7 +160,7 @@ mod test {
             when.method(POST)
                 .path("/api/manager/probe_sync")
                 .header("content-type", "application/json")
-                .body(r#"[]"#);
+                .body("null");
             then.status(200);
         });
         let url = server.url("/api");
