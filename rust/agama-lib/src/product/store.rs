@@ -27,13 +27,12 @@ impl ProductStore {
 
     pub async fn load(&self) -> Result<ProductSettings, ServiceError> {
         let product = self.product_client.product().await?;
-        let registration_code = self.product_client.registration_code().await?;
-        let email = self.product_client.email().await?;
+        let registration_info = self.product_client.get_registration().await?;
 
         Ok(ProductSettings {
             id: Some(product),
-            registration_code: Self::non_empty_string(registration_code),
-            registration_email: Self::non_empty_string(email),
+            registration_code: Self::non_empty_string(registration_info.key),
+            registration_email: Self::non_empty_string(registration_info.email),
         })
     }
 
@@ -130,7 +129,7 @@ mod test {
 
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
         software_mock.assert();
-        registration_mock.assert_hits(2);
+        registration_mock.assert();
         Ok(())
     }
 

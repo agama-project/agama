@@ -50,18 +50,6 @@ impl ProductHTTPClient {
         self.client.get("/software/registration").await
     }
 
-    /// registration code used to register product
-    pub async fn registration_code(&self) -> Result<String, ServiceError> {
-        let ri = self.get_registration().await?;
-        Ok(ri.key)
-    }
-
-    /// email used to register product
-    pub async fn email(&self) -> Result<String, ServiceError> {
-        let ri = self.get_registration().await?;
-        Ok(ri.email)
-    }
-
     /// register product
     pub async fn register(&self, code: &str, email: &str) -> Result<(u32, String), ServiceError> {
         // note RegistrationParams != RegistrationInfo, fun!
