@@ -42,21 +42,21 @@ export default function ZFCPDisksTable () {
     const columns = [
       { id: "name", label: _("Name") },
       { id: "channel", label: _("Channel ID") },
-      { id: "WWPN", label: _("WWPN") },
-      { id: "LUN", label: _("LUN") },
+      { id: "wwpn", label: _("WWPN") },
+      { id: "lun", label: _("LUN") },
     ];
   
     const columnValue = (disk: ZFCPDisk, column) => disk[column.id];
   
     const actions = (disk: ZFCPDisk) => {
       const controller = controllers.find((c) => c.channel === disk.channel);
-      if (!controller || controller.LUNScan) return [];
+      if (!controller || controller.lunScan) return [];
   
       return [
         {
           label: _("Deactivate"),
           run: async () =>
-            await cancellablePromise(deactivateZFCPDisk(controller.id, disk.WWPN, disk.LUN)),
+            await cancellablePromise(deactivateZFCPDisk(controller.id, disk.wwpn, disk.lun)),
         },
       ];
     };

@@ -19,7 +19,7 @@ export default function ZFCPControllersTable() {
   const columns = [
     { id: "channel", label: _("Channel ID") },
     { id: "active", label: _("Status") },
-    { id: "LUNScan", label: _("Auto LUNs Scan") },
+    { id: "lunScan", label: _("Auto LUNs Scan") },
   ];
 
   const columnValue = (controller: ZFCPController, column: { id: string }) => {
@@ -29,11 +29,11 @@ export default function ZFCPControllersTable() {
       case "channel":
         value = controller.channel;
         break;
-      case "status":
+      case "active":
         value = controller.active ? _("Activated") : _("Deactivated");
         break;
       case "lunScan":
-        if (controller.active) value = controller.LUNScan ? _("Yes") : _("No");
+        if (controller.active) value = controller.lunScan ? _("Yes") : _("No");
         else value = "-";
         break;
       default:
