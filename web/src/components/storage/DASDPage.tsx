@@ -40,6 +40,9 @@ export default function DASDPage() {
         <DASDTable />
         <DASDFormatProgress />
       </Page.MainContent>
+      <Page.NextActions>
+        <Page.Action navigateTo="..">{_("Close")}</Page.Action>
+      </Page.NextActions>
     </Page>
   );
 }

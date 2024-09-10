@@ -21,35 +21,28 @@
 
 // cspell:ignore wwpns npiv
 
-import React, { MouseEventHandler, useCallback, useEffect, useReducer, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
-  Skeleton,
+  Grid,
+  GridItem,
   Stack,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { Popup, RowActions, Section, SectionSkeleton } from "~/components/core";
+import { Page } from "~/components/core";
+import { Popup, Section, } from "~/components/core";
 import { ZFCPDiskForm } from "~/components/storage";
 import { _ } from "~/i18n";
-import { noop, useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
+import { useCancellablePromise } from "~/utils";
 import { useZFCPConfig, useZFCPControllers, useZFCPControllersChanges, useZFCPDisks, useZFCPDisksChanges } from "~/queries/zfcp";
 import { LUNInfo, ZFCPController, ZFCPDisk } from "~/types/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
-import { activateZFCPDisk, fetchLUNs, fetchWWPNs, probeZFCP } from "~/api/zfcp";
+import { activateZFCPDisk, probeZFCP } from "~/api/zfcp";
 
-/**
- * @typedef {import(~/clients/storage).ZFCPManager} ZFCPManager
- * @typedef {import(~/clients/storage).ZFCPController} Controller
- * @typedef {import(~/clients/storage).ZFCPDisk} Disk
- *
- */
-
-const inactiveLuns = (controllers: ZFCPController[], disks: ZFCPDisk[]) : LUNInfo[] => {
+const inactiveLuns = (controllers: ZFCPController[], disks: ZFCPDisk[]): LUNInfo[] => {
   const result: LUNInfo[] = [];
   for (const controller of controllers) {
     for (const [wwpn, luns] of Object.entries(controller.lunsMap)) {
@@ -133,18 +126,14 @@ configured after activating a controller.",
 
 /**
  * Popup to show the zFCP disk form.
- * @component
- *
- * @param {object} props
- * @param {function} props.onClose - Callback to be called when closing the popup.
  */
-const DiskPopup = ({ onClose }) => {
+const DiskPopup = ({ onClose }: { onClose: any }) => {
   const [isAcceptDisabled, setIsAcceptDisabled] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
   const controllers = useZFCPControllers();
   const disks = useZFCPDisks();
 
-  const onSubmit = async (formData) => {
+  const onSubmit = async (formData: LUNInfo) => {
     setIsAcceptDisabled(true);
     const controller = controllers.find((c) => c.channel === formData.channel);
     const result = await cancellablePromise(
@@ -157,7 +146,7 @@ const DiskPopup = ({ onClose }) => {
     return result;
   };
 
-  const onLoading = (isLoading) => {
+  const onLoading = (isLoading: boolean) => {
     setIsAcceptDisabled(isLoading);
   };
 
@@ -266,13 +255,26 @@ const DisksSection = () => {
 
 /**
  * Page for managing zFCP devices.
- * @component
  */
 export default function ZFCPPage() {
   return (
-    <>
-      <ControllersSection/>
-      <DisksSection/>
-    </>
+    <Page>
+      <Page.Header>
+        <h2>{_("ZFCP")}</h2>
+      </Page.Header>
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12} xl={6}>
+            <ControllersSection />
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <DisksSection />
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
+      <Page.NextActions>
+        <Page.Action navigateTo="..">{_("Close")}</Page.Action>
+      </Page.NextActions>
+    </Page>
   );
 }
