@@ -15,10 +15,8 @@ pub struct ZFCPDisk {
     /// zFCP controller channel id (e.g., 0.0.fa00)
     pub channel: String,
     /// WWPN of the targer port (e.g., 0x500507630300c562)
-    #[serde(rename = "WWPN")]
     pub wwpn: String,
     /// LUN of the SCSI device (e.g. 0x4010403300000000)
-    #[serde(rename = "LUN")]
     pub lun: String,
 }
 
@@ -44,12 +42,10 @@ pub struct ZFCPController {
     /// zFCP controller channel id (e.g., 0.0.fa00)
     pub channel: String,
     /// flag whenever channel is performing LUN auto scan
-    #[serde(rename = "LUNScan")]
     pub lun_scan: bool,
     /// flag whenever channel is active
     pub active: bool,
     /// map of associated WWPNs and its LUNs
-    #[serde(rename = "LUNsMap")]
     pub luns_map: HashMap<String, Vec<String>>,
 }
 
@@ -58,7 +54,6 @@ pub struct ZFCPController {
 #[serde(rename_all = "camelCase")]
 pub struct ZFCPOptions {
     /// flag whenever allow_lun_scan is active
-    #[serde(rename = "allowLUNScan")]
     pub allow_lun_scan: bool,
 }
 

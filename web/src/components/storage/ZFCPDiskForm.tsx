@@ -25,7 +25,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
-import { ZFCPDisk } from "~/types/zfcp";
+import { LUNInfo, ZFCPDisk } from "~/types/zfcp";
 
 type FormData = {
   channel?: string,
@@ -44,7 +44,7 @@ type FormData = {
  * @callback onLoadingFn
  * @param {boolean} isLoading - Whether the form is loading.
  */
-export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading = noop }: { id: string, luns: ZFCPDisk[], onSubmit: Function, onLoading: Function }) {
+export default function ZFCPDiskForm({ id, luns, onSubmit, onLoading }: { id: string, luns: LUNInfo[], onSubmit: (formData: FormData) => Promise<number>, onLoading: (isLoading: boolean) => void }) {
   const [formData, setFormData] = useState({} as FormData);
   const [isLoading, setIsLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -60,13 +60,13 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
 
   const getWWPNs = (channel: string) => {
     const selection = luns.filter((l) => l.channel === channel);
-    const wwpns = [...new Set(selection.map((l) => l.WWPN))];
+    const wwpns = [...new Set(selection.map((l) => l.wwpn))];
     return wwpns.sort();
   };
 
   const getLUNs = (channel: string, wwpn: string) => {
-    const selection = luns.filter((l) => l.channel === channel && l.WWPN === wwpn);
-    return selection.map((l) => l.LUN).sort();
+    const selection = luns.filter((l) => l.channel === channel && l.wwpn === wwpn);
+    return selection.map((l) => l.lun).sort();
   };
 
   const select = (channel: string = undefined, wwpn: string = undefined, lun: string = undefined) => {
@@ -77,11 +77,11 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
     if (channel) setFormData({ channel, wwpn, lun });
   };
 
-  const selectChannel = (_: any, channel: string) => select(channel);
+  const selectChannel = (_, channel: string) => select(channel);
 
-  const selectWWPN = (_: any, wwpn: string) => select(formData.channel, wwpn);
+  const selectWWPN = (_, wwpn: string) => select(formData.channel, wwpn);
 
-  const selectLUN = (_: any, lun: string) => select(formData.channel, formData.wwpn, lun);
+  const selectLUN = (_, lun: string) => select(formData.channel, formData.wwpn, lun);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();

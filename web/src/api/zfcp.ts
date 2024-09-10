@@ -50,43 +50,43 @@ const probeZFCP = () => post("/api/storage/zfcp/probe");
 
 /**
  * Activates given controller
- * @param controller_id id of existing controller
+ * @param controllerId id of existing controller
  * @returns 
  */
-const activateZFCPController = (controller_id: string) => post(`/api/storage/zfcp/controllers/${controller_id}/activate`);
+const activateZFCPController = (controllerId: string) => post(`/api/storage/zfcp/controllers/${controllerId}/activate`);
 
 /**
  * Returns list of WWPNs for given controller
- * @param controller_id id of existing controller
+ * @param controllerId id of existing controller
  * @returns 
  */
-const fetchWWPNs = (controller_id: string): Promise<string[]> => get(`/api/storage/zfcp/controllers/${controller_id}/wwpns`);
+const fetchWWPNs = (controllerId: string): Promise<string[]> => get(`/api/storage/zfcp/controllers/${controllerId}/wwpns`);
 
 /**
  * Returns list of LUNs for give controller and WWPN
- * @param controller_id 
+ * @param controllerId 
  * @param wwpn 
  * @returns 
  */
-const fetchLUNs = (controller_id: string, wwpn: string): Promise<string[]> => get(`/api/storage/zfcp/controllers/${controller_id}/wwpns/${wwpn}/luns`);
+const fetchLUNs = (controllerId: string, wwpn: string): Promise<string[]> => get(`/api/storage/zfcp/controllers/${controllerId}/wwpns/${wwpn}/luns`);
 
 /**
  * Actives disk on given controller with WWPN and LUN
- * @param controller_id 
+ * @param controllerId 
  * @param wwpn 
  * @param lun 
  * @returns 
  */
-const activateZFCPDisk = (controller_id: string, wwpn:string, lun: string) => post(`/api/storage/zfcp/controllers/${controller_id}/wwpns/${wwpn}/luns/${lun}/activate_disk`);
+const activateZFCPDisk = (controllerId: string, wwpn:string, lun: string) => post(`/api/storage/zfcp/controllers/${controllerId}/wwpns/${wwpn}/luns/${lun}/activate_disk`);
 
 /**
  * Deactives disk on given controller with WWPN and LUN
- * @param controller_id 
+ * @param controllerId 
  * @param wwpn 
  * @param lun 
  * @returns 
  */
-const deactivateZFCPDisk = (controller_id: string, wwpn:string, lun: string) => post(`/api/storage/zfcp/controllers/${controller_id}/wwpns/${wwpn}/luns/${lun}/deactivate_disk`);
+const deactivateZFCPDisk = (controllerId: string, wwpn:string, lun: string) => post(`/api/storage/zfcp/controllers/${controllerId}/wwpns/${wwpn}/luns/${lun}/deactivate_disk`);
 
 
 

@@ -23,19 +23,25 @@ type ZFCPController = {
   id: string;
   channel: string;
   active: boolean;
-  LUNScan: boolean;
-  LUNsMap: { [key: string]: string };
+  lunScan: boolean;
+  lunsMap: { [key: string]: string };
 };
 
 type ZFCPDisk = {
   name: string;
   channel: string;
-  WWPN: string;
-  LUN: string;
+  wwpn: string;
+  lun: string;
 };
 
 type ZFCPConfig = {
-  allowLUNScan: boolean;
+  allowLunScan: boolean;
 };
 
-export type { ZFCPController, ZFCPDisk, ZFCPConfig };
+type LUNInfo = {
+  channel: string,
+  wwpn: string,
+  lun: string
+}
+
+export type { ZFCPController, ZFCPDisk, ZFCPConfig, LUNInfo };
