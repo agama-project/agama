@@ -18,18 +18,17 @@ impl ProductHTTPClient {
         Self { client: base }
     }
 
-    // FIXME get_software_config ?
-    pub async fn get_config(&self) -> Result<SoftwareConfig, ServiceError> {
+    pub async fn get_software(&self) -> Result<SoftwareConfig, ServiceError> {
         self.client.get("/software/config").await
     }
 
-    pub async fn set_config(&self, config: &SoftwareConfig) -> Result<(), ServiceError> {
+    pub async fn set_software(&self, config: &SoftwareConfig) -> Result<(), ServiceError> {
         self.client.put_void("/software/config", config).await
     }
 
     /// Returns the id of the selected product to install
     pub async fn product(&self) -> Result<String, ServiceError> {
-        let config = self.get_config().await?;
+        let config = self.get_software().await?;
         if let Some(product) = config.product {
             Ok(product)
         } else {
@@ -43,7 +42,7 @@ impl ProductHTTPClient {
             product: Some(product_id.to_owned()),
             patterns: None,
         };
-        self.set_config(&config).await
+        self.set_software(&config).await
     }
 
     pub async fn get_registration(&self) -> Result<RegistrationInfo, ServiceError> {
@@ -51,10 +50,10 @@ impl ProductHTTPClient {
     }
 
     /// register product
-    pub async fn register(&self, code: &str, email: &str) -> Result<(u32, String), ServiceError> {
+    pub async fn register(&self, key: &str, email: &str) -> Result<(u32, String), ServiceError> {
         // note RegistrationParams != RegistrationInfo, fun!
         let params = RegistrationParams {
-            key: code.to_owned(),
+            key: key.to_owned(),
             email: email.to_owned(),
         };
 
