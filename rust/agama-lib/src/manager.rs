@@ -1,5 +1,8 @@
 //! This module implements the web API for the manager module.
 
+pub mod http_client;
+pub use http_client::ManagerHTTPClient;
+
 use crate::error::ServiceError;
 use crate::proxies::ServiceStatusProxy;
 use crate::{

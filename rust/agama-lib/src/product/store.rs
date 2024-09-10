@@ -1,33 +1,38 @@
 //! Implements the store for the product settings.
-
-use super::{ProductClient, ProductSettings};
+use super::{ProductHTTPClient, ProductSettings};
 use crate::error::ServiceError;
-use crate::manager::ManagerClient;
-use zbus::Connection;
+use crate::manager::http_client::ManagerHTTPClient;
 
 /// Loads and stores the product settings from/to the D-Bus service.
-pub struct ProductStore<'a> {
-    product_client: ProductClient<'a>,
-    manager_client: ManagerClient<'a>,
+pub struct ProductStore {
+    product_client: ProductHTTPClient,
+    manager_client: ManagerHTTPClient,
 }
 
-impl<'a> ProductStore<'a> {
-    pub async fn new(connection: Connection) -> Result<ProductStore<'a>, ServiceError> {
+impl ProductStore {
+    pub fn new() -> Result<ProductStore, ServiceError> {
         Ok(Self {
-            product_client: ProductClient::new(connection.clone()).await?,
-            manager_client: ManagerClient::new(connection).await?,
+            product_client: ProductHTTPClient::new()?,
+            manager_client: ManagerHTTPClient::new()?,
         })
+    }
+
+    fn non_empty_string(s: String) -> Option<String> {
+        if s.is_empty() {
+            None
+        } else {
+            Some(s)
+        }
     }
 
     pub async fn load(&self) -> Result<ProductSettings, ServiceError> {
         let product = self.product_client.product().await?;
-        let registration_code = self.product_client.registration_code().await?;
-        let email = self.product_client.email().await?;
+        let registration_info = self.product_client.get_registration().await?;
 
         Ok(ProductSettings {
             id: Some(product),
-            registration_code: Some(registration_code),
-            registration_email: Some(email),
+            registration_code: Self::non_empty_string(registration_info.key),
+            registration_email: Self::non_empty_string(registration_info.email),
         })
     }
 
@@ -60,6 +65,121 @@ impl<'a> ProductStore<'a> {
             self.manager_client.probe().await?;
         }
 
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::base_http_client::BaseHTTPClient;
+    use httpmock::prelude::*;
+    use std::error::Error;
+    use tokio::test; // without this, "error: async functions cannot be used for tests"
+
+    fn product_store(mock_server_url: String) -> ProductStore {
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = mock_server_url;
+        let p_client = ProductHTTPClient::new_with_base(bhc.clone());
+        let m_client = ManagerHTTPClient::new_with_base(bhc);
+        ProductStore {
+            product_client: p_client,
+            manager_client: m_client,
+        }
+    }
+
+    #[test]
+    async fn test_getting_product() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let software_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/software/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "patterns": {"xfce":true},
+                    "product": "Tumbleweed"
+                }"#,
+                );
+        });
+        let registration_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/software/registration");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "key": "",
+                    "email": "",
+                    "requirement": "NotRequired"
+                }"#,
+                );
+        });
+        let url = server.url("/api");
+
+        let store = product_store(url);
+        let settings = store.load().await?;
+
+        let expected = ProductSettings {
+            id: Some("Tumbleweed".to_owned()),
+            registration_code: None,
+            registration_email: None,
+        };
+        // main assertion
+        assert_eq!(settings, expected);
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        software_mock.assert();
+        registration_mock.assert();
+        Ok(())
+    }
+
+    #[test]
+    async fn test_setting_product_ok() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        // no product selected at first
+        let get_software_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/software/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "patterns": {},
+                    "product": ""
+                }"#,
+                );
+        });
+        let software_mock = server.mock(|when, then| {
+            when.method(PUT)
+                .path("/api/software/config")
+                .header("content-type", "application/json")
+                .body(r#"{"patterns":null,"product":"Tumbleweed"}"#);
+            then.status(200);
+        });
+        let manager_mock = server.mock(|when, then| {
+            when.method(POST)
+                .path("/api/manager/probe_sync")
+                .header("content-type", "application/json")
+                .body("null");
+            then.status(200);
+        });
+        let url = server.url("/api");
+
+        let store = product_store(url);
+        let settings = ProductSettings {
+            id: Some("Tumbleweed".to_owned()),
+            registration_code: None,
+            registration_email: None,
+        };
+
+        let result = store.store(&settings).await;
+
+        // main assertion
+        result?;
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        get_software_mock.assert();
+        software_mock.assert();
+        manager_mock.assert();
         Ok(())
     }
 }

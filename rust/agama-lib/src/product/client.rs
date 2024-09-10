@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
 use crate::error::ServiceError;
+use crate::software::model::RegistrationRequirement;
 use crate::software::proxies::SoftwareProductProxy;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use zbus::Connection;
 
 use super::proxies::RegistrationProxy;
@@ -18,35 +19,6 @@ pub struct Product {
     pub description: String,
     /// Product icon (e.g., "default.svg")
     pub icon: String,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-pub enum RegistrationRequirement {
-    /// Product does not require registration
-    NotRequired = 0,
-    /// Product has optional registration
-    Optional = 1,
-    /// It is mandatory to register the product
-    Mandatory = 2,
-}
-
-impl TryFrom<u32> for RegistrationRequirement {
-    type Error = ();
-
-    fn try_from(v: u32) -> Result<Self, Self::Error> {
-        match v {
-            x if x == RegistrationRequirement::NotRequired as u32 => {
-                Ok(RegistrationRequirement::NotRequired)
-            }
-            x if x == RegistrationRequirement::Optional as u32 => {
-                Ok(RegistrationRequirement::Optional)
-            }
-            x if x == RegistrationRequirement::Mandatory as u32 => {
-                Ok(RegistrationRequirement::Mandatory)
-            }
-            _ => Err(()),
-        }
-    }
 }
 
 /// D-Bus client for the software service
