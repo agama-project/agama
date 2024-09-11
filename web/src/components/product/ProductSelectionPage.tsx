@@ -119,7 +119,7 @@ function ProductSelectionPage() {
             </ResponsiveGridItem>
             <ResponsiveGridItem>
               <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-                {selectedProduct && !isLoading && <Page.Cancel navigateTo={-1} />}
+                {selectedProduct && !isLoading && <Page.Back>{_("Cancel")}</Page.Back>}
                 <Page.Submit
                   form="productSelectionForm"
                   isDisabled={isSelectionDisabled}

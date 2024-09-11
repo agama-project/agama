@@ -56,8 +56,7 @@ type SectionProps = {
   pfCardBodyProps?: CardBodyProps;
 };
 
-// FIXME: add a Page.Back for navigationg to -1 insetad of ".."?
-type PageActionProps = { navigateTo?: string | number } & ButtonProps;
+type PageActionProps = { navigateTo?: string } & ButtonProps;
 type PageSubmitActionProps = { form: string } & ButtonProps;
 
 const defaultCardProps: CardProps = { isRounded: true, isCompact: true, isFullHeight: true };
@@ -155,13 +154,10 @@ const Action = ({ navigateTo, children, ...props }: PageActionProps) => {
 
   props.onClick = (e) => {
     if (typeof onClickFn === "function") onClickFn(e);
-    // FIXME: look for a better overloading alternative. See https://github.com/remix-run/react-router/issues/10505#issuecomment-2237126223
-    // and https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads
-    if (navigateTo) typeof navigateTo === "number" ? navigate(navigateTo) : navigate(navigateTo);
+    if (navigateTo) navigate(navigateTo);
   };
 
-  const buttonProps = { size: "lg" as const, ...props };
-  return <Button {...buttonProps}>{children}</Button>;
+  return <Button size="lg" {...props}>{children}</Button>;
 };
 
 /**
@@ -173,6 +169,15 @@ const Cancel = ({ navigateTo = "..", children, ...props }: PageActionProps) => {
       {children || _("Cancel")}
     </Action>
   );
+};
+
+/**
+ * Convenient component for a "Back" action
+ */
+const Back = ({ children, ...props }: ButtonProps) => {
+  const navigate = useNavigate();
+
+  return <Button size="lg" {...props} onClick={() => navigate(-1)}>{children || _("Back")}</Button>;
 };
 
 /**
@@ -211,6 +216,7 @@ Page.displayName = "agama/core/Page";
 Page.Header = Header;
 Page.Content = Content;
 Page.Actions = Actions;
+Page.Back = Back;
 Page.Cancel = Cancel;
 Page.Submit = Submit;
 Page.Action = Action;

@@ -72,6 +72,6 @@ describe("when the user chooses a product but hits the cancel button", () => {
     await user.click(productOption);
     await user.click(cancelButton);
     expect(mockConfigMutation).not.toHaveBeenCalled();
-    expect(mockNavigateFn).toHaveBeenCalledWith("-1");
+    expect(mockNavigateFn).toHaveBeenCalledWith(-1);
   });
 });
