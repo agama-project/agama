@@ -384,16 +384,43 @@ fn wireless_config_to_dbus<'a>(config: &'a WirelessConfig) -> NestedHash<'a> {
 
     if let Some(band) = &config.band {
         wireless.insert("band", band.to_string().into());
-        if let Some(channel) = config.channel {
-            wireless.insert("channel", channel.into());
-        }
+        wireless.insert("channel", config.channel.into());
     }
     if let Some(bssid) = &config.bssid {
         wireless.insert("bssid", bssid.as_bytes().into());
     }
 
-    let mut security: HashMap<&str, zvariant::Value> =
-        HashMap::from([("key-mgmt", config.security.to_string().into())]);
+    let mut security: HashMap<&str, zvariant::Value> = HashMap::from([
+        ("key-mgmt", config.security.to_string().into()),
+        (
+            "group",
+            config
+                .group_algorithms
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>()
+                .into(),
+        ),
+        (
+            "pairwise",
+            config
+                .pairwise_algorithms
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>()
+                .into(),
+        ),
+        (
+            "proto",
+            config
+                .wpa_protocol_versions
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>()
+                .into(),
+        ),
+        ("pmf", Value::new(config.pmf)),
+    ]);
 
     if let Some(password) = &config.password {
         security.insert("psk", password.to_string().into());
@@ -878,7 +905,7 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
         wireless_config.band = Some(band.downcast_ref::<str>()?.try_into().ok()?)
     }
     if let Some(channel) = wireless.get("channel") {
-        wireless_config.channel = Some(*channel.downcast_ref()?);
+        wireless_config.channel = *channel.downcast_ref()?;
     }
     if let Some(bssid) = wireless.get("bssid") {
         let bssid: &zvariant::Array = bssid.downcast_ref()?;
@@ -896,7 +923,6 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
             *bssid.get(5)?,
         ));
     }
-
     if let Some(hidden) = wireless.get("hidden") {
         wireless_config.hidden = *hidden.downcast_ref::<bool>()?;
     }
@@ -930,6 +956,48 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
                 });
             }
             _ => wireless_config.wep_security = None,
+        }
+        if let Some(group_algorithms) = security.get("group") {
+            let group_algorithms: &zvariant::Array = group_algorithms.downcast_ref()?;
+            let group_algorithms: Vec<&str> = group_algorithms
+                .iter()
+                .map(|x| x.downcast_ref::<str>())
+                .collect::<Option<Vec<&str>>>()?;
+            let group_algorithms: Vec<GroupAlgorithm> = group_algorithms
+                .iter()
+                .map(|x| GroupAlgorithm::from_str(x))
+                .collect::<Result<Vec<GroupAlgorithm>, InvalidGroupAlgorithm>>()
+                .ok()?;
+            wireless_config.group_algorithms = group_algorithms
+        }
+        if let Some(pairwise_algorithms) = security.get("pairwise") {
+            let pairwise_algorithms: &zvariant::Array = pairwise_algorithms.downcast_ref()?;
+            let pairwise_algorithms: Vec<&str> = pairwise_algorithms
+                .iter()
+                .map(|x| x.downcast_ref::<str>())
+                .collect::<Option<Vec<&str>>>()?;
+            let pairwise_algorithms: Vec<PairwiseAlgorithm> = pairwise_algorithms
+                .iter()
+                .map(|x| PairwiseAlgorithm::from_str(x))
+                .collect::<Result<Vec<PairwiseAlgorithm>, InvalidPairwiseAlgorithm>>()
+                .ok()?;
+            wireless_config.pairwise_algorithms = pairwise_algorithms
+        }
+        if let Some(wpa_protocol_versions) = security.get("proto") {
+            let wpa_protocol_versions: &zvariant::Array = wpa_protocol_versions.downcast_ref()?;
+            let wpa_protocol_versions: Vec<&str> = wpa_protocol_versions
+                .iter()
+                .map(|x| x.downcast_ref::<str>())
+                .collect::<Option<Vec<&str>>>()?;
+            let wpa_protocol_versions: Vec<WPAProtocolVersion> = wpa_protocol_versions
+                .iter()
+                .map(|x| WPAProtocolVersion::from_str(x))
+                .collect::<Result<Vec<WPAProtocolVersion>, InvalidWPAProtocolVersion>>()
+                .ok()?;
+            wireless_config.wpa_protocol_versions = wpa_protocol_versions
+        }
+        if let Some(pmf) = security.get("pmf") {
+            wireless_config.pmf = *pmf.downcast_ref::<i32>()?;
         }
     }
 
@@ -1369,6 +1437,16 @@ mod test {
             ),
             ("auth-alg".to_string(), Value::new("open").to_owned()),
             ("wep-tx-keyidx".to_string(), Value::new(1_u32).to_owned()),
+            (
+                "group".to_string(),
+                Value::new(vec!["wep40", "tkip"]).to_owned(),
+            ),
+            (
+                "pairwise".to_string(),
+                Value::new(vec!["tkip", "ccmp"]).to_owned(),
+            ),
+            ("proto".to_string(), Value::new(vec!["rsn"]).to_owned()),
+            ("pmf".to_string(), Value::new(2_i32).to_owned()),
         ]);
 
         let dbus_conn = HashMap::from([
@@ -1385,13 +1463,26 @@ mod test {
             assert_eq!(wireless.mode, WirelessMode::Infra);
             assert_eq!(wireless.security, SecurityProtocol::WPA2);
             assert_eq!(wireless.band, Some(WirelessBand::A));
-            assert_eq!(wireless.channel, Some(32_u32));
+            assert_eq!(wireless.channel, 32_u32);
             assert_eq!(
                 wireless.bssid,
                 Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
             );
             assert!(!wireless.hidden);
             assert_eq!(wireless.wep_security, None);
+            assert_eq!(
+                wireless.group_algorithms,
+                vec![GroupAlgorithm::Wep40, GroupAlgorithm::Tkip]
+            );
+            assert_eq!(
+                wireless.pairwise_algorithms,
+                vec![PairwiseAlgorithm::Tkip, PairwiseAlgorithm::Ccmp]
+            );
+            assert_eq!(
+                wireless.wpa_protocol_versions,
+                vec![WPAProtocolVersion::Rsn]
+            );
+            assert_eq!(wireless.pmf, 2_i32);
         }
     }
 
@@ -1569,7 +1660,7 @@ mod test {
             password: Some("wpa-password".to_string()),
             ssid: SSID(vec![97, 103, 97, 109, 97]),
             band: Some(WirelessBand::BG),
-            channel: Some(10),
+            channel: 10,
             bssid: Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap()),
             wep_security: Some(WEPSecurity {
                 auth_alg: WEPAuthAlg::Open,
@@ -1581,6 +1672,10 @@ mod test {
                 ],
             }),
             hidden: true,
+            group_algorithms: vec![GroupAlgorithm::Wep104, GroupAlgorithm::Tkip],
+            pairwise_algorithms: vec![PairwiseAlgorithm::Tkip, PairwiseAlgorithm::Ccmp],
+            wpa_protocol_versions: vec![WPAProtocolVersion::Wpa],
+            pmf: 1,
             ..Default::default()
         };
         let mut wireless = build_base_connection();
@@ -1656,6 +1751,51 @@ mod test {
         assert_eq!(wep_key0, "5b73215e232f4c577c5073455d");
         let wep_key1: &str = security.get("wep-key1").unwrap().downcast_ref().unwrap();
         assert_eq!(wep_key1, "hello");
+
+        let group_algorithms: &zvariant::Array =
+            security.get("group").unwrap().downcast_ref().unwrap();
+        let group_algorithms: Vec<GroupAlgorithm> = group_algorithms
+            .get()
+            .iter()
+            .map(|x| x.downcast_ref::<str>().unwrap())
+            .collect::<Vec<&str>>()
+            .iter()
+            .map(|x| GroupAlgorithm::from_str(x).unwrap())
+            .collect();
+        assert_eq!(
+            group_algorithms,
+            vec![GroupAlgorithm::Wep104, GroupAlgorithm::Tkip]
+        );
+
+        let pairwise_algorithms: &zvariant::Array =
+            security.get("pairwise").unwrap().downcast_ref().unwrap();
+        let pairwise_algorithms: Vec<PairwiseAlgorithm> = pairwise_algorithms
+            .get()
+            .iter()
+            .map(|x| x.downcast_ref::<str>().unwrap())
+            .collect::<Vec<&str>>()
+            .iter()
+            .map(|x| PairwiseAlgorithm::from_str(x).unwrap())
+            .collect();
+        assert_eq!(
+            pairwise_algorithms,
+            vec![PairwiseAlgorithm::Tkip, PairwiseAlgorithm::Ccmp]
+        );
+
+        let wpa_protocol_versions: &zvariant::Array =
+            security.get("proto").unwrap().downcast_ref().unwrap();
+        let wpa_protocol_versions: Vec<WPAProtocolVersion> = wpa_protocol_versions
+            .get()
+            .iter()
+            .map(|x| x.downcast_ref::<str>().unwrap())
+            .collect::<Vec<&str>>()
+            .iter()
+            .map(|x| WPAProtocolVersion::from_str(x).unwrap())
+            .collect();
+        assert_eq!(wpa_protocol_versions, vec![WPAProtocolVersion::Wpa]);
+
+        let pmf: i32 = *security.get("pmf").unwrap().downcast_ref().unwrap();
+        assert_eq!(pmf, 1);
     }
 
     #[test]

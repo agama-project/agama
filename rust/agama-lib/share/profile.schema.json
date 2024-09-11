@@ -164,6 +164,66 @@
                       "mesh",
                       "ap"
                     ]
+                  },
+                  "hidden": {
+                    "title": "Indicates that the wifi network is not broadcasting it's SSID",
+                    "type": "boolean"
+                  },
+                  "band": {
+                    "title": "Frequency band of the wifi network",
+                    "type": "string",
+                    "enum": [
+                      "a",
+                      "bg"
+                    ]
+                  },
+                  "channel": {
+                    "title": "Wireless channel of the wifi network",
+                    "type": "integer",
+                    "minimum" : 0
+                  },
+                  "bssid": {
+                    "title": "Only allow connection to this mac address",
+                    "type": "string"
+                  },
+                  "group_algorithms": {
+                    "type": "array",
+                    "items": {
+                      "title": "A list of group/broadcast encryption algorithms",
+                      "type": "string",
+                      "enum": [
+                        "wep40",
+                        "wep104",
+                        "tkip",
+                        "ccmp"
+                      ]
+                    },
+                  },
+                  "pairwise_algorithms": {
+                    "type": "array",
+                    "items": {
+                      "title": "A list of pairwise encryption algorithms",
+                      "type": "string",
+                      "enum": [
+                        "tkip",
+                        "ccmp"
+                      ]
+                    }
+                  },
+                  "wpa_protocol_versions": {
+                    "type": "array",
+                    "items": {
+                      "title": "A list of allowed WPA protocol versions",
+                      "type": "string",
+                      "enum": [
+                        "wpa",
+                        "rsn"
+                      ]
+                    }
+                  },
+                  "pmf": {
+                    "title": "Indicates whether Protected Management Frames must be enabled for the connection",
+                    "type": "integer"
                   }
                 }
               },

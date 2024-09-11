@@ -40,6 +40,16 @@ pub enum NetworkStateError {
     InvalidEAPMethod(String),
     #[error("Invalid phase2 authentication method: '{0}'")]
     InvalidPhase2AuthMethod(String),
+    #[error("Invalid group algorithm: '{0}'")]
+    InvalidGroupAlgorithm(String),
+    #[error("Invalid pairwise algorithm: '{0}'")]
+    InvalidPairwiseAlgorithm(String),
+    #[error("Invalid WPA protocol version: '{0}'")]
+    InvalidWPAProtocolVersion(String),
+    #[error("Invalid wireless band: '{0}'")]
+    InvalidWirelessBand(String),
+    #[error("Invalid bssid: '{0}'")]
+    InvalidBssid(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {
