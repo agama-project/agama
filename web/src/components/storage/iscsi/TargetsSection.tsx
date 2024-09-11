@@ -26,6 +26,7 @@ import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { useNodes, useNodesChanges } from "~/queries/storage/iscsi";
+import { discover } from "~/api/storage/iscsi";
 
 export default function TargetsSection() {
   const { storage: client } = useInstallerClient();
@@ -38,7 +39,7 @@ export default function TargetsSection() {
 
   const submitDiscoverForm = async (data) => {
     const { username, password, reverseUsername, reversePassword } = data;
-    const success = await client.iscsi.discover(data.address, parseInt(data.port), {
+    const success = await discover(data.address, parseInt(data.port), {
       username,
       password,
       reverseUsername,
@@ -76,7 +77,7 @@ export default function TargetsSection() {
             </ToolbarItem>
           </ToolbarContent>
         </Toolbar>
-        <NodesPresenter nodes={nodes} client={client} />
+        <NodesPresenter nodes={nodes} />
       </>
     );
   };

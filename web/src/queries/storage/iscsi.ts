@@ -83,9 +83,7 @@ const useNodesChanges = () => {
 
     return client.ws().onEvent(({ type }) => {
       if (["ISCSINodeAdded", "ISCSINodeChanged", "ISCSINodeRemoved"].includes(type)) {
-        console.log("cleaning-up");
         // FIXME: update with the information coming from the signal
-        queryClient.invalidateQueries({ queryKey: ["storage"] });
         queryClient.invalidateQueries({ queryKey: nodesQuery.queryKey });
       }
     });
