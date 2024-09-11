@@ -63,7 +63,7 @@ const defaultCardProps: CardProps = { isRounded: true, isCompact: true, isFullHe
 
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
-    <PageSection variant="light" stickyOnBreakpoint={{ default: "top" }} {...props}>
+    <PageSection variant="light" component="div" stickyOnBreakpoint={{ default: "top" }} {...props}>
       <Stack hasGutter={hasGutter}>{children}</Stack>
     </PageSection>
   );
@@ -196,7 +196,7 @@ const Submit = ({ children, ...props }: PageSubmitActionProps) => {
 };
 
 const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => (
-  <PageSection isFilled {...pageSectionProps}>
+  <PageSection isFilled component="div" {...pageSectionProps}>
     {children}
   </PageSection>
 );
