@@ -60,11 +60,19 @@ type SectionProps = {
 type PageActionProps = { navigateTo?: string } & ButtonProps;
 type PageSubmitActionProps = { form: string } & ButtonProps;
 
-const defaultCardProps: CardProps = { isRounded: true, isCompact: true, isFullHeight: true, component: "section" };
+const defaultCardProps: CardProps = {
+  isRounded: true,
+  isCompact: true,
+  isFullHeight: true,
+  component: "section",
+};
+
+const STICK_TO_TOP = Object.freeze({ default: "top" });
+const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
-    <PageSection variant="light" component="div" stickyOnBreakpoint={{ default: "top" }} {...props}>
+    <PageSection variant="light" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
       <Stack hasGutter={hasGutter}>{children}</Stack>
     </PageSection>
   );
@@ -135,11 +143,7 @@ const Section = ({
  */
 const Actions = ({ children }: React.PropsWithChildren) => {
   return (
-    <PageGroup
-      hasShadowTop
-      stickyOnBreakpoint={{ default: "bottom" }}
-      className={flexStyles.flexGrow_0}
-    >
+    <PageGroup hasShadowTop stickyOnBreakpoint={STICK_TO_BOTTOM} className={flexStyles.flexGrow_0}>
       <PageSection variant="light">
         <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
       </PageSection>
@@ -162,7 +166,11 @@ const Action = ({ navigateTo, children, ...props }: PageActionProps) => {
     if (navigateTo) navigate(navigateTo);
   };
 
-  return <Button size="lg" {...props}>{children}</Button>;
+  return (
+    <Button size="lg" {...props}>
+      {children}
+    </Button>
+  );
 };
 
 /**
@@ -182,7 +190,11 @@ const Cancel = ({ navigateTo = "..", children, ...props }: PageActionProps) => {
 const Back = ({ children, ...props }: ButtonProps) => {
   const navigate = useNavigate();
 
-  return <Button size="lg" {...props} onClick={() => navigate(-1)}>{children || _("Back")}</Button>;
+  return (
+    <Button size="lg" {...props} onClick={() => navigate(-1)}>
+      {children || _("Back")}
+    </Button>
+  );
 };
 
 /**
