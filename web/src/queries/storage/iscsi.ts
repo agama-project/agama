@@ -21,9 +21,10 @@
 
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
-import { fetchInitiator, updateInitiator } from "~/api/storage/iscsi";
+import { fetchInitiator, fetchNodes, updateInitiator } from "~/api/storage/iscsi";
 import { ISCSIInitiator } from "~/types/storage";
 import { useInstallerClient } from "~/context/installer";
+import { ISCSINode } from "~/api/storage/types";
 
 const initiatorQuery = {
   queryKey: ["storage", "iscsi", "initiator"],
@@ -60,11 +61,42 @@ const useInitiatorChanges = () => {
         queryClient.invalidateQueries({ queryKey: initiatorQuery.queryKey });
       }
     })
-  });
+  }, [client, queryClient]);
 };
+
+const nodesQuery = {
+  queryKey: ["storage", "iscsi", "nodes"],
+  queryFn: fetchNodes
+};
+
+const useNodes = (): ISCSINode[] => {
+  const { data } = useSuspenseQuery(nodesQuery);
+  return data;
+}
+
+const useNodesChanges = () => {
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.ws().onEvent(({ type }) => {
+      if (["ISCSINodeAdded", "ISCSINodeChanged", "ISCSINodeRemoved"].includes(type)) {
+        console.log("cleaning-up");
+        // FIXME: update with the information coming from the signal
+        queryClient.invalidateQueries({ queryKey: ["storage"] });
+        queryClient.invalidateQueries({ queryKey: nodesQuery.queryKey });
+      }
+    });
+  }, [client, queryClient]);
+};
+
 
 export {
   useInitiator,
   useInitiatorMutation,
-  useInitiatorChanges
+  useInitiatorChanges,
+  useNodes,
+  useNodesChanges
 }

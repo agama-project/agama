@@ -20,7 +20,7 @@
  */
 
 import { get, patch } from "~/api/http";
-import { ISCSIInitiator } from "./types";
+import { ISCSIInitiator, ISCSINode } from "~/api/storage/types";
 
 /**
  * Returns the iSCSI initiator.
@@ -32,7 +32,13 @@ const fetchInitiator = (): Promise<ISCSIInitiator> => get("/api/storage/iscsi/in
  */
 const updateInitiator = ({ name }) => patch("/api/storage/iscsi/initiator", { name });
 
+/**
+ * Returns the iSCSI nodes.
+ */
+const fetchNodes = (): Promise<ISCSINode[]> => get("/api/storage/iscsi/nodes");
+
 export {
   fetchInitiator,
+  fetchNodes,
   updateInitiator
 }
