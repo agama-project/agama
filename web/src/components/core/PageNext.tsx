@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useId } from "react";
 import {
   Button,
   ButtonProps,
@@ -88,18 +88,22 @@ const Section = ({
   pfCardBodyProps,
   children,
 }: React.PropsWithChildren<SectionProps>) => {
+  const titleId = useId();
   const renderTitle = !!title && title.trim() !== "";
   const renderValue = React.isValidElement(value);
   const renderDescription = !!description && description.trim() !== "";
   const renderHeader = renderTitle || renderValue;
+  // FIXME: use aria-labelledby only if there is title AND aria-label was not
+  // given
+  const props = { ...defaultCardProps, "aria-labelledby": titleId };
 
   return (
-    <Card {...defaultCardProps} {...pfCardProps}>
+    <Card {...props} {...pfCardProps}>
       {renderHeader && (
         <CardHeader {...pfCardHeaderProps}>
           <Flex direction="column" rowGap="rowGapXs" alignItems="alignItemsFlexStart">
             <Flex columnGap="columnGapSm" rowGap="rowGapXs" alignContent="alignContentFlexStart">
-              {renderTitle && <Title>{title}</Title>}
+              {renderTitle && <Title id={titleId}>{title}</Title>}
               {renderValue && (
                 <Flex.Item grow="grow" className={textStyles.fontSizeXl}>
                   {value}
