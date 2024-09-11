@@ -43,6 +43,7 @@ import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { useNavigate } from "react-router-dom";
+import { isEmpty, isObject } from "~/utils";
 
 type SectionProps = {
   title?: string;
@@ -89,28 +90,28 @@ const Section = ({
   children,
 }: React.PropsWithChildren<SectionProps>) => {
   const titleId = useId();
-  const renderTitle = !!title && title.trim() !== "";
-  const renderValue = React.isValidElement(value);
-  const renderDescription = !!description && description.trim() !== "";
-  const renderHeader = renderTitle || renderValue;
-  // FIXME: use aria-labelledby only if there is title AND aria-label was not
-  // given
-  const props = { ...defaultCardProps, "aria-labelledby": titleId };
+  const hasTitle = !isEmpty(title);
+  const hasValue = !isEmpty(value);
+  const hasDescription = !isEmpty(description);
+  const hasHeader = hasTitle || hasValue;
+  const hasAriaLabel = isObject(pfCardProps) && "aria-label" in pfCardProps;
+  const props = { ...defaultCardProps };
+  if (!hasAriaLabel && hasTitle) props["aria-labelledby"] = titleId;
 
   return (
     <Card {...props} {...pfCardProps}>
-      {renderHeader && (
+      {hasHeader && (
         <CardHeader {...pfCardHeaderProps}>
           <Flex direction="column" rowGap="rowGapXs" alignItems="alignItemsFlexStart">
             <Flex columnGap="columnGapSm" rowGap="rowGapXs" alignContent="alignContentFlexStart">
-              {renderTitle && <Title id={titleId}>{title}</Title>}
-              {renderValue && (
+              {hasTitle && <Title id={titleId}>{title}</Title>}
+              {hasValue && (
                 <Flex.Item grow="grow" className={textStyles.fontSizeXl}>
                   {value}
                 </Flex.Item>
               )}
             </Flex>
-            {renderDescription && <div className={textStyles.color_200}>{description}</div>}
+            {hasDescription && <div className={textStyles.color_200}>{description}</div>}
           </Flex>
         </CardHeader>
       )}
