@@ -50,6 +50,37 @@ const isObjectEmpty = (value) => {
 };
 
 /**
+ * Whether given value is empty or not
+ *
+ * @param {object} value - the value to be checked
+ * @return {boolean} false if value is a function, a not empty object, or a not
+ *                   empty string; true otherwise
+ */
+const isEmpty = (value) => {
+  if (value === null || value === undefined) {
+    return true;
+  }
+
+  if (typeof value === "number" && !Number.isNaN(value)) {
+    return false;
+  }
+
+  if (typeof value === "function") {
+    return false;
+  }
+
+  if (typeof value === "string") {
+    return value.trim() === "";
+  }
+
+  if (isObject(value)) {
+    return isObjectEmpty(value);
+  }
+
+  return true;
+};
+
+/**
  * Returns an empty function useful to be used as a default callback.
  *
  * @return {function} empty function
@@ -416,6 +447,7 @@ const timezoneUTCOffset = (timezone) => {
 export {
   noop,
   identity,
+  isEmpty,
   isObject,
   isObjectEmpty,
   partition,
