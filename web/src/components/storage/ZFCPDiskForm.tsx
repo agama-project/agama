@@ -90,7 +90,7 @@ export default function ZFCPDiskForm({ id, luns, onSubmit, onLoading }: { id: st
     const result = await onSubmit(formData);
     setIsLoading(false);
 
-    setIsFailed(result.data !== null);
+    setIsFailed(result.status !== 200);
   };
 
   if (!formData.channel && getChannels().length > 0) select();

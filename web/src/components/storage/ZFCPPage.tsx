@@ -141,7 +141,7 @@ const DiskPopup = ({ onClose }: { onClose: () => void }) => {
     );
     setIsAcceptDisabled(false);
 
-    if (result === 0) onClose();
+    if (result.status === 200) onClose();
 
     return result;
   };
