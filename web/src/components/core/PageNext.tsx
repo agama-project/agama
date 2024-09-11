@@ -59,7 +59,7 @@ type SectionProps = {
 type PageActionProps = { navigateTo?: string } & ButtonProps;
 type PageSubmitActionProps = { form: string } & ButtonProps;
 
-const defaultCardProps: CardProps = { isRounded: true, isCompact: true, isFullHeight: true };
+const defaultCardProps: CardProps = { isRounded: true, isCompact: true, isFullHeight: true, component: "section" };
 
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
