@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/config_conversions/from_json_conversions/boot"
 require "agama/storage/config_conversions/from_json_conversions/drive"
+require "agama/storage/config_conversions/from_json_conversions/volume_group"
 require "agama/storage/config"
 
 module Agama
@@ -56,8 +57,9 @@ module Agama
           # @return [Hash]
           def conversions(default)
             {
-              boot:   convert_boot(default.boot),
-              drives: convert_drives
+              boot:          convert_boot(default.boot),
+              drives:        convert_drives,
+              volume_groups: convert_volume_groups
             }
           end
 
@@ -82,6 +84,22 @@ module Agama
           # @return [Configs::Drive]
           def convert_drive(drive_json)
             FromJSONConversions::Drive.new(drive_json, config_builder: config_builder).convert
+          end
+
+          # @return [Array<Configs::VolumeGroup>, nil]
+          def convert_volume_groups
+            volume_groups_json = config_json[:volumeGroups]
+            return unless volume_groups_json
+
+            volume_groups_json.map { |v| convert_volume_group(v) }
+          end
+
+          # @param volume_group_json [Hash]
+          # @return [Configs::VolumeGroup]
+          def convert_volume_group(volume_group_json)
+            FromJSONConversions::VolumeGroup
+              .new(volume_group_json, config_builder: config_builder)
+              .convert
           end
         end
       end

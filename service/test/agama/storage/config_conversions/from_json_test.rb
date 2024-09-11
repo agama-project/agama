@@ -880,5 +880,129 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         )
       end
     end
+
+    context "with some LVM volume groups" do
+      let(:config_json) do
+        {
+          volumeGroups: [
+            {
+              name:            "vg0",
+              extentSize:      "2 MiB",
+              physicalVolumes: ["alias1", "alias2"],
+              logicalVolumes:  [
+                {
+                  name:       "root",
+                  filesystem: { path: "/" },
+                  encryption: {
+                    luks2: { password: "12345" }
+                  }
+                },
+                {
+                  alias:      "thin-pool",
+                  name:       "pool",
+                  pool:       true,
+                  size:       "100 GiB",
+                  stripes:    10,
+                  stripeSize: "4 KiB"
+                },
+                {
+                  name:       "data",
+                  size:       "50 GiB",
+                  usedPool:   "thin-pool",
+                  filesystem: { type: "xfs" }
+                }
+              ]
+            },
+            {
+              name: "vg1"
+            }
+          ]
+        }
+      end
+
+      it "generates the corresponding volume groups and logical volumes" do
+        config = subject.convert
+
+        expect(config.volume_groups).to contain_exactly(
+          an_object_having_attributes(
+            name:             "vg0",
+            extent_size:      2.MiB,
+            physical_volumes: ["alias1", "alias2"]
+          ),
+          an_object_having_attributes(
+            name:             "vg1",
+            extent_size:      be_nil,
+            physical_volumes: be_empty,
+            logical_volumes:  be_empty
+          )
+        )
+
+        logical_volumes = config.volume_groups
+          .find { |v| v.name == "vg0" }
+          .logical_volumes
+
+        expect(logical_volumes).to include(
+          an_object_having_attributes(
+            alias:       be_nil,
+            name:        "root",
+            encryption:  have_attributes(
+              password:      "12345",
+              method:        Y2Storage::EncryptionMethod::LUKS2,
+              pbkd_function: Y2Storage::PbkdFunction::ARGON2ID
+            ),
+            filesystem:  have_attributes(
+              path: "/",
+              type: have_attributes(
+                fs_type: Y2Storage::Filesystems::Type::BTRFS
+              )
+            ),
+            size:        have_attributes(
+              default: true,
+              min:     40.GiB,
+              max:     Y2Storage::DiskSize.unlimited
+            ),
+            stripes:     be_nil,
+            stripe_size: be_nil,
+            pool:        false,
+            used_pool:   be_nil
+          ),
+          an_object_having_attributes(
+            alias:       "thin-pool",
+            name:        "pool",
+            encryption:  be_nil,
+            filesystem:  be_nil,
+            size:        have_attributes(
+              default: false,
+              min:     100.GiB,
+              max:     100.GiB
+            ),
+            stripes:     10,
+            stripe_size: 4.KiB,
+            pool:        true,
+            used_pool:   be_nil
+          ),
+          an_object_having_attributes(
+            alias:       be_nil,
+            name:        "data",
+            encryption:  be_nil,
+            filesystem:  have_attributes(
+              path: be_nil,
+              type: have_attributes(
+                fs_type: Y2Storage::Filesystems::Type::XFS
+              )
+            ),
+            size:        have_attributes(
+              default: false,
+              min:     50.GiB,
+              max:     50.GiB
+            ),
+            stripes:     be_nil,
+            stripe_size: be_nil,
+            pool:        false,
+            used_pool:   "thin-pool"
+          )
+        )
+      end
+    end
   end
 end

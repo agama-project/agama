@@ -107,7 +107,7 @@ module Agama
 
       # return [Array<Configs::Filesystem>]
       def filesystems
-        (drives + partitions).map(&:filesystem).compact
+        (drives + partitions + logical_volumes).map(&:filesystem).compact
       end
 
       # return [Array<Configs::Partition>]
@@ -115,9 +115,14 @@ module Agama
         drives.flat_map(&:partitions)
       end
 
-      # return [Array<Configs::Partitions>]
+      # return [Array<Configs::LogicalVolume>]
+      def logical_volumes
+        volume_groups.flat_map(&:logical_volumes)
+      end
+
+      # return [Array<Configs::Partition, Configs::LogicalVolume>]
       def default_size_devices
-        partitions.select { |p| p.size&.default? }
+        (partitions + logical_volumes).select { |p| p.size&.default? }
       end
 
       # Min or max size that should be used for the given partition or logical volume

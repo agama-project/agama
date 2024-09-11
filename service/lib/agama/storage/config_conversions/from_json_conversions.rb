@@ -26,9 +26,11 @@ require "agama/storage/config_conversions/from_json_conversions/drive"
 require "agama/storage/config_conversions/from_json_conversions/encryption"
 require "agama/storage/config_conversions/from_json_conversions/filesystem"
 require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
+require "agama/storage/config_conversions/from_json_conversions/logical_volume"
 require "agama/storage/config_conversions/from_json_conversions/partition"
 require "agama/storage/config_conversions/from_json_conversions/search"
 require "agama/storage/config_conversions/from_json_conversions/size"
+require "agama/storage/config_conversions/from_json_conversions/volume_group"
 
 module Agama
   module Storage
