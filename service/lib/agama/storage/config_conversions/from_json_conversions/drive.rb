@@ -66,6 +66,7 @@ module Agama
           def conversions(default)
             {
               search:      convert_search(drive_json, default: default.search),
+              alias:       drive_json[:alias],
               encryption:  convert_encryption(drive_json, default: default.encryption),
               filesystem:  convert_filesystem(drive_json, default: default.filesystem),
               ptable_type: convert_ptable_type(drive_json),

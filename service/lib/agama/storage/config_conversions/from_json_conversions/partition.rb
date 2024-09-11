@@ -64,6 +64,7 @@ module Agama
           def conversions(default)
             {
               search:           convert_search(partition_json, default: default.search),
+              alias:            partition_json[:alias],
               encryption:       convert_encryption(partition_json, default: default.encryption),
               filesystem:       convert_filesystem(partition_json, default: default.filesystem),
               size:             convert_size(partition_json, default: default.size),

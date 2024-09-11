@@ -109,8 +109,14 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           boot:   { configure: true, device: "/dev/sdb" },
           drives: [
             {
+              alias:      "first-disk",
               ptableType: "gpt",
-              partitions: [{ filesystem: { path: "/" } }]
+              partitions: [
+                {
+                  alias:      "root",
+                  filesystem: { path: "/" }
+                }
+              ]
             }
           ]
         }
@@ -133,9 +139,11 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         expect(config.drives.size).to eq 1
         drive = config.drives.first
         expect(drive).to be_a(Agama::Storage::Configs::Drive)
+        expect(drive.alias).to eq "first-disk"
         expect(drive.ptable_type).to eq Y2Storage::PartitionTables::Type::GPT
         expect(drive.partitions.size).to eq 1
         partition = drive.partitions.first
+        expect(partition.alias).to eq "root"
         expect(partition.filesystem.path).to eq "/"
       end
 
