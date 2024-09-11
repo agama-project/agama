@@ -25,6 +25,7 @@ import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
 import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/dasd";
+import { PATHS } from "~/routes/storage";
 
 export default function DASDPage() {
   useDASDDevicesChanges();
@@ -41,7 +42,7 @@ export default function DASDPage() {
         <DASDFormatProgress />
       </Page.MainContent>
       <Page.NextActions>
-        <Page.Action navigateTo="..">{_("Close")}</Page.Action>
+        <Page.Action navigateTo={PATHS.targetDevice}>{_("Close")}</Page.Action>
       </Page.NextActions>
     </Page>
   );

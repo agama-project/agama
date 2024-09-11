@@ -41,6 +41,7 @@ import { LUNInfo, ZFCPController, ZFCPDisk } from "~/types/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
 import { activateZFCPDisk, probeZFCP } from "~/api/zfcp";
+import { PATHS } from "~/routes/storage";
 
 const inactiveLuns = (controllers: ZFCPController[], disks: ZFCPDisk[]): LUNInfo[] => {
   const result: LUNInfo[] = [];
@@ -273,7 +274,7 @@ export default function ZFCPPage() {
         </Grid>
       </Page.MainContent>
       <Page.NextActions>
-        <Page.Action navigateTo="..">{_("Close")}</Page.Action>
+        <Page.Action navigateTo={PATHS.targetDevice}>{_("Close")}</Page.Action>
       </Page.NextActions>
     </Page>
   );
