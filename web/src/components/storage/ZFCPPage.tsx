@@ -31,8 +31,7 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-import { Popup, Section, } from "~/components/core";
+import { Popup, Section, Page } from "~/components/core";
 import { ZFCPDiskForm } from "~/components/storage";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
@@ -128,7 +127,7 @@ configured after activating a controller.",
 /**
  * Popup to show the zFCP disk form.
  */
-const DiskPopup = ({ onClose }: { onClose: any }) => {
+const DiskPopup = ({ onClose }: { onClose: () => void }) => {
   const [isAcceptDisabled, setIsAcceptDisabled] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
   const controllers = useZFCPControllers();
