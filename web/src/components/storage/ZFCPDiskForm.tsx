@@ -24,8 +24,8 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { noop } from "~/utils";
-import { LUNInfo, ZFCPDisk } from "~/types/zfcp";
+import { LUNInfo } from "~/types/zfcp";
+import { AxiosResponseHeaders } from "axios";
 
 type FormData = {
   channel?: string,
@@ -44,7 +44,7 @@ type FormData = {
  * @callback onLoadingFn
  * @param {boolean} isLoading - Whether the form is loading.
  */
-export default function ZFCPDiskForm({ id, luns, onSubmit, onLoading }: { id: string, luns: LUNInfo[], onSubmit: (formData: FormData) => Promise<number>, onLoading: (isLoading: boolean) => void }) {
+export default function ZFCPDiskForm({ id, luns, onSubmit, onLoading }: { id: string, luns: LUNInfo[], onSubmit: (formData: FormData) => Promise<AxiosResponseHeaders>, onLoading: (isLoading: boolean) => void }) {
   const [formData, setFormData] = useState({} as FormData);
   const [isLoading, setIsLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -90,7 +90,7 @@ export default function ZFCPDiskForm({ id, luns, onSubmit, onLoading }: { id: st
     const result = await onSubmit(formData);
     setIsLoading(false);
 
-    setIsFailed(result !== 0);
+    setIsFailed(result.data !== null);
   };
 
   if (!formData.channel && getChannels().length > 0) select();
