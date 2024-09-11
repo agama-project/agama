@@ -158,12 +158,12 @@ async fn controllers(
 async fn activate_controller(
     State(state): State<ZFCPState<'_>>,
     Path(controller_id): Path<String>,
-) -> Result<(), Error> {
+) -> Result<Json<()>, Error> {
     state
         .client
         .activate_controller(controller_id.as_str())
         .await?;
-    Ok(())
+    Ok(Json(()))
 }
 
 /// List wwpns for given controller.
@@ -212,12 +212,12 @@ async fn get_luns(
 async fn activate_disk(
     State(state): State<ZFCPState<'_>>,
     Path((controller_id, wwpn_id, lun_id)): Path<(String, String, String)>,
-) -> Result<(), Error> {
+) -> Result<Json<()>, Error> {
     state
         .client
         .activate_disk(&controller_id, &wwpn_id, &lun_id)
         .await?;
-    Ok(())
+    Ok(Json(()))
 }
 
 /// Deactivates disk on given controller with given wwpn and lun.
@@ -232,12 +232,12 @@ async fn activate_disk(
 async fn deactivate_disk(
     State(state): State<ZFCPState<'_>>,
     Path((controller_id, wwpn_id, lun_id)): Path<(String, String, String)>,
-) -> Result<(), Error> {
+) -> Result<Json<()>, Error> {
     state
         .client
         .deactivate_disk(&controller_id, &wwpn_id, &lun_id)
         .await?;
-    Ok(())
+    Ok(Json(()))
 }
 
 /// Find zFCP devices in the system.
