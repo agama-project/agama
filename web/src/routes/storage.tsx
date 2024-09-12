@@ -21,15 +21,21 @@
 
 import React from "react";
 import BootSelection from "~/components/storage/BootSelection";
-import DeviceSelection from "~/components/storage/DeviceSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
-import { DASDPage, ISCSIPage, ZFCPPage } from "~/components/storage";
-import ProposalPage from "~/components/storage/ProposalPage";
+import {
+  DASDPage,
+  DeviceSelection,
+  ISCSIPage,
+  ProposalPage,
+  ZFCPPage,
+  ZFCPDiskForm,
+} from "~/components/storage";
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 import { DASDSupported, probeDASD } from "~/api/dasd";
 import { ZFCPSupported, probeZFCP } from "~/api/zfcp";
 import { redirect } from "react-router-dom";
+import ZFCPDiskActivationPage from "~/components/storage/ZFCPDiskActivationPage";
 
 const PATHS = {
   root: "/storage",
@@ -38,7 +44,10 @@ const PATHS = {
   spacePolicy: "/storage/space-policy",
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
-  zfcp: "/storage/zfcp"
+  zfcp: {
+    root: "/storage/zfcp",
+    activateDisk: "/storage/zfcp/active-disk",
+  },
 };
 
 const routes = (): Route => ({
@@ -71,20 +80,27 @@ const routes = (): Route => ({
       element: <DASDPage />,
       handle: { name: N_("DASD") },
       loader: async () => {
-        if (!DASDSupported()) return redirect(PATHS.root);
+        if (!DASDSupported()) return redirect(PATHS.targetDevice);
         return probeDASD();
       },
     },
     {
-      path: PATHS.zfcp,
+      path: PATHS.zfcp.root,
       element: <ZFCPPage />,
       handle: { name: N_("ZFCP") },
       loader: async () => {
-        if (!ZFCPSupported()) return redirect(PATHS.root);
+        if (!ZFCPSupported()) return redirect(PATHS.targetDevice);
         return probeZFCP();
       },
     },
-
+    {
+      path: PATHS.zfcp.activateDisk,
+      element: <ZFCPDiskActivationPage />,
+      loader: async () => {
+        if (!ZFCPSupported()) return redirect(PATHS.targetDevice);
+        return probeZFCP();
+      },
+    },
   ],
 });
 

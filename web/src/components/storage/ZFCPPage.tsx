@@ -31,34 +31,15 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Popup, Section, Page } from "~/components/core";
-import { ZFCPDiskForm } from "~/components/storage";
+import { Section, Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
-import { useZFCPConfig, useZFCPControllers, useZFCPControllersChanges, useZFCPDisks, useZFCPDisksChanges } from "~/queries/zfcp";
-import { LUNInfo, ZFCPController, ZFCPDisk } from "~/types/zfcp";
+import { useZFCPConfig, useZFCPControllersChanges, useZFCPDisksChanges } from "~/queries/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
-import { activateZFCPDisk, probeZFCP } from "~/api/zfcp";
+import { probeZFCP } from "~/api/zfcp";
 import { PATHS } from "~/routes/storage";
-
-const inactiveLuns = (controllers: ZFCPController[], disks: ZFCPDisk[]): LUNInfo[] => {
-  const result: LUNInfo[] = [];
-  for (const controller of controllers) {
-    for (const [wwpn, luns] of Object.entries(controller.lunsMap)) {
-      for (const lun of luns) {
-        if (!disks.some((d) => d.lun === lun && d.wwpn === wwpn && d.channel === controller.channel)) {
-          result.push({
-            channel: controller.channel,
-            wwpn,
-            lun,
-          });
-        }
-      }
-    }
-  };
-  return result;
-}
+import { useNavigate } from "react-router-dom";
+import { inactiveLuns } from "~/utils/zfcp";
 
 /**
  * Section for zFCP controllers.
@@ -69,7 +50,7 @@ const ControllersSection = () => {
 
   const load = () => {
     probeZFCP();
-  }
+  };
 
   const EmptyState = () => {
     return (
@@ -88,15 +69,15 @@ const ControllersSection = () => {
     const LUNScanInfo = () => {
       const msg = allowLUNScan
         ? // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-        _(
-          "Automatic LUN scan is [enabled]. Activating a controller which is \
+          _(
+            "Automatic LUN scan is [enabled]. Activating a controller which is \
 running in NPIV mode will automatically configures all its LUNs.",
-        )
+          )
         : // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-        _(
-          "Automatic LUN scan is [disabled]. LUNs have to be manually \
+          _(
+            "Automatic LUN scan is [disabled]. LUNs have to be manually \
 configured after activating a controller.",
-        );
+          );
 
       const [msgStart, msgBold, msgEnd] = msg.split(/[[\]]/);
 
@@ -118,84 +99,17 @@ configured after activating a controller.",
   };
 
   return (
-    <Section title="Controllers">
-      {controllers.length === 0 ? <EmptyState /> : <Content />}
-    </Section>
-  );
-};
-
-/**
- * Popup to show the zFCP disk form.
- */
-const DiskPopup = ({ onClose }: { onClose: () => void }) => {
-  const [isAcceptDisabled, setIsAcceptDisabled] = useState(false);
-  const { cancellablePromise } = useCancellablePromise();
-  const controllers = useZFCPControllers();
-  const disks = useZFCPDisks();
-
-  const onSubmit = async (formData: LUNInfo) => {
-    setIsAcceptDisabled(true);
-    const controller = controllers.find((c) => c.channel === formData.channel);
-    const result = await cancellablePromise(
-      activateZFCPDisk(controller.id, formData.wwpn, formData.lun),
-    );
-    setIsAcceptDisabled(false);
-
-    if (result.status === 200) onClose();
-
-    return result;
-  };
-
-  const onLoading = (isLoading: boolean) => {
-    setIsAcceptDisabled(isLoading);
-  };
-
-  const formId = "ZFCPDiskForm";
-  const inactiveLuns: LUNInfo[] = [];
-  for (const controller of controllers) {
-    for (const [wwpn, luns] of Object.entries(controller.lunsMap)) {
-      for (const lun of luns) {
-        if (!disks.some((d) => d.lun === lun && d.wwpn === wwpn && d.channel === controller.channel)) {
-          inactiveLuns.push({
-            channel: controller.channel,
-            wwpn,
-            lun,
-          });
-        }
-      }
-    }
-  };
-
-  return (
-    <Popup isOpen title={_("Activate a zFCP disk")}>
-      <ZFCPDiskForm
-        id={formId}
-        luns={inactiveLuns}
-        onSubmit={onSubmit}
-        onLoading={onLoading}
-      />
-      <Popup.Actions>
-        <Popup.Confirm form={formId} type="submit" isDisabled={isAcceptDisabled}>
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onClose} />
-      </Popup.Actions>
-    </Popup>
+    <Section title="Controllers">{controllers.length === 0 ? <EmptyState /> : <Content />}</Section>
   );
 };
 
 /**
  * Section for zFCP disks.
- * @component
- *
  */
 const DisksSection = () => {
-  const [isActivateOpen, setIsActivateOpen] = useState(false);
-
-  const openActivate = () => setIsActivateOpen(true);
-  const closeActivate = () => setIsActivateOpen(false);
   const controllers = useZFCPControllersChanges();
   const disks = useZFCPDisksChanges();
+  const navigate = useNavigate();
 
   const EmptyState = () => {
     const NoActiveControllers = () => {
@@ -207,13 +121,12 @@ const DisksSection = () => {
         <>
           <div>{_("Please, try to activate a zFCP disk.")}</div>
           {/* TRANSLATORS: button label */}
-          <Button variant="primary" onClick={openActivate}>
+          <Button variant="primary" onClick={() => navigate(PATHS.zfcp.activateDisk)}>
             {_("Activate zFCP disk")}
           </Button>
         </>
       );
     };
-
 
     return (
       <Stack hasGutter>
@@ -232,7 +145,7 @@ const DisksSection = () => {
           <ToolbarContent>
             <ToolbarItem align={{ default: "alignRight" }}>
               {/* TRANSLATORS: button label */}
-              <Button onClick={openActivate} isDisabled={isDisabled}>
+              <Button onClick={() => navigate(PATHS.zfcp.activateDisk)} isDisabled={isDisabled}>
                 {_("Activate new disk")}
               </Button>
             </ToolbarItem>
@@ -246,10 +159,7 @@ const DisksSection = () => {
 
   return (
     // TRANSLATORS: section title
-    <Section title={_("Disks")}>
-      {disks.length === 0 ? <EmptyState /> : <Content />}
-      {isActivateOpen && <DiskPopup onClose={closeActivate} />}
-    </Section>
+    <Section title={_("Disks")}>{disks.length === 0 ? <EmptyState /> : <Content />}</Section>
   );
 };
 

@@ -21,11 +21,7 @@
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { _ } from "~/i18n";
-import {
-  fetchZFCPConfig,
-  fetchZFCPControllers,
-  fetchZFCPDisks,
-} from "~/api/zfcp";
+import { fetchZFCPConfig, fetchZFCPControllers, fetchZFCPDisks } from "~/api/zfcp";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { ZFCPConfig, ZFCPController, ZFCPDisk } from "~/types/zfcp";
@@ -125,7 +121,6 @@ const useZFCPControllersChanges = () => {
   const { data: devices } = useSuspenseQuery(ZFCPControllersQuery());
   return devices;
 };
-
 
 /**
  * Listens for zFCP disks changes.
