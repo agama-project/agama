@@ -42,24 +42,44 @@ import { Flex } from "~/components/layout";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { useNavigate } from "react-router-dom";
+import { To, useNavigate } from "react-router-dom";
 import { isEmpty, isObject } from "~/utils";
 
+/**
+ * Props accepted by Page.Section
+ */
 type SectionProps = {
+  /** The section title */
   title?: string;
+  /** The value used for accessible label */
   "aria-label"?: string;
+  /** Part of the header that complements the title as a representation of the
+   * section state. E.g. "Encryption enabled", where "Encryption" is the title
+   * and "enabled" the value */
   value?: React.ReactNode;
-  description?: string;
+  /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
-  descriptionProps?: CardBodyProps;
+  /** As sort as possible yet as much as needed text for describing what the section is about, if needed */
+  description?: string;
+  /** The heading level used for the section title */
   headerLevel?: TitleProps["headingLevel"];
+  /** Props to influence PF/Card component wrapping the section */
   pfCardProps?: CardProps;
+  /** Props to influence PF/CardHeader component wrapping the section title */
   pfCardHeaderProps?: CardHeaderProps;
+  /** Props to influence PF/CardBody component wrapping the section content */
   pfCardBodyProps?: CardBodyProps;
 };
 
-type PageActionProps = { navigateTo?: string } & ButtonProps;
-type PageSubmitActionProps = { form: string } & ButtonProps;
+type ActionProps = {
+  /** Path to navigate to */
+  navigateTo?: To;
+} & ButtonProps;
+
+type SubmitActionProps = {
+  /** The id of a <form> the submit button is associated with */
+  form: string;
+} & ButtonProps;
 
 const defaultCardProps: CardProps = {
   isRounded: true,
@@ -85,7 +105,19 @@ const Header = ({ hasGutter = true, children, ...props }) => {
  *
  * @example <caption>Simple usage</caption>
  *   <Page.Section>
- *     <UserSectionContent />
+ *     <EncryptionSummmary
+ *   </Page.Section>
+ *
+ * @example <caption>Complex usage</caption>
+ *   <Page.Section
+ *     title="Encryption"
+ *     value={isEnabled ? "Enabled" : "Disabled"}
+ *     description="Whether device should be protected or not"
+ *     pfCardBodyProps={{ isFilled: true }}
+ *     actions={isEnabled ? <DisableAction /> : <EnableAction />}
+ *   >
+ *       <EncryptionSummary />
+ *     )}
  *   </Page.Section>
  */
 const Section = ({
@@ -143,14 +175,17 @@ const Section = ({
 };
 
 /**
- * Wraps given children in an PageGroup sticky at the bottom
- *
- * @example <caption>Simple usage</caption>
- *   <Page>
- *     <UserSectionContent />
- *   </Page>
+ * Wraps given children in an PF/PageGroup sticky at the bottom
  *
  * TODO: check if it contentinfo role really should have the banner role
+ *
+ * @see [PatternFly Page/PageGroup](https://www.patternfly.org/components/page#pagegroup)
+ *
+ * @example
+ *   <Page.Actions>
+ *     <Page.Action onCick={doSomething}>Let's go</Page.Action>
+ *   </Page.Actions>
+ *
  */
 const Actions = ({ children }: React.PropsWithChildren) => {
   return (
@@ -168,11 +203,11 @@ const Actions = ({ children }: React.PropsWithChildren) => {
 };
 
 /**
- * A convenient component for rendering a page action
+ * Handy component built on top of PF/Button for rendering a page action
  *
- * Built on top of {@link https://www.patternfly.org/components/button | PF/Button}
+ * @see [PatternFly Button](https://www.patternfly.org/components/button).
  */
-const Action = ({ navigateTo, children, ...props }: PageActionProps) => {
+const Action = ({ navigateTo, children, ...props }: ActionProps) => {
   const navigate = useNavigate();
 
   const onClickFn = props.onClick;
@@ -190,9 +225,13 @@ const Action = ({ navigateTo, children, ...props }: PageActionProps) => {
 };
 
 /**
- * Convenient component for a "Cancel" action
+ * Handy component for rendering a "Cancel" action
+ *
+ * NOTE: by default it navigates to the top path, which can be changed
+ * `navigateTo` prop BUT not for navigating back into the history. Use Page.Back
+ * for the latest, which behaves differently.
  */
-const Cancel = ({ navigateTo = "..", children, ...props }: PageActionProps) => {
+const Cancel = ({ navigateTo = "..", children, ...props }: ActionProps) => {
   return (
     <Action variant="link" navigateTo={navigateTo} {...props}>
       {children || _("Cancel")}
@@ -201,7 +240,16 @@ const Cancel = ({ navigateTo = "..", children, ...props }: PageActionProps) => {
 };
 
 /**
- * Convenient component for a "Back" action
+ * Handy component for rendering a "Back" action
+ *
+ * NOTE: It does not behave like Page.Cancel, since
+ *   * does not support changing the path to navigate to, and
+ *   * always goes one path back in the history (-1)
+ *
+ * NOTE: Not using Page.Cancel for practical reasons about useNavigate
+ * overloading, which kind of forces to write an ugly code for supporting both
+ * types, "To" and "number", without a TypeScript complain. To know more, see
+ * https://github.com/remix-run/react-router/issues/10505#issuecomment-2237126223
  */
 const Back = ({ children, ...props }: ButtonProps) => {
   const navigate = useNavigate();
@@ -214,9 +262,9 @@ const Back = ({ children, ...props }: ButtonProps) => {
 };
 
 /**
- * Convenient component for a "form submission" action
+ * Handy component to submit a form matching the id given in the `form` prop
  */
-const Submit = ({ children, ...props }: PageSubmitActionProps) => {
+const Submit = ({ children, ...props }: SubmitActionProps) => {
   return (
     <Action type="submit" {...props}>
       {children || _("Accept")}
@@ -224,6 +272,11 @@ const Submit = ({ children, ...props }: PageSubmitActionProps) => {
   );
 };
 
+/**
+ * Wrapper for the section content built on top of PF/Page/PageSection
+ *
+ * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
+ */
 const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => (
   <PageSection isFilled component="div" {...pageSectionProps}>
     {children}
@@ -231,11 +284,32 @@ const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<Page
 );
 
 /**
- * Wraps in a PF/PageGroup the content given by a router Outlet
+ * Component for structuing an Agama page, built on top of PF/Page/PageGroup.
  *
- * @example <caption>Simple usage</caption>
+ * @see [Patternfly Page/PageGroup](https://www.patternfly.org/components/page#pagegroup)
+ *
+ * @example
  *   <Page>
- *     <UserSectionContent />
+ *     <Page.Header>
+ *       <h2>{_("Software")}</h2>
+ *     </Page.Header>
+ *
+ *     <Page.Content>
+ *       <Stack hasGutter>
+ *         <IssuesHint issues={issues} />
+ *
+ *         <Page.Section title="Selected patterns" >
+ *           {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
+ *         </Page.Section>
+ *
+ *         <Page.Section aria-label="Used size">
+ *           <UsedSize size={proposal.size} />
+ *         </Page.Section>
+ *       </Stack>
+ *       <Page.Actions>
+ *         <Page.Back />
+ *       </Page.Actions>
+ *     </Page.Content>
  *   </Page>
  */
 const Page = ({
