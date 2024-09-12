@@ -19,8 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import { Skeleton } from "@patternfly/react-core";
+import React, { useState } from "react";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 
 import { _ } from "~/i18n";
