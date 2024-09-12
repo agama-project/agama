@@ -32,23 +32,23 @@ const initiatorQuery = {
     const initiator = await fetchInitiator();
     // FIXME: what is the offloadCard?
     return { ...initiator, offloadCard: "" };
-  }
-}
+  },
+};
 
 const useInitiator = (): ISCSIInitiator => {
   const { data } = useSuspenseQuery(initiatorQuery);
   return data;
-}
+};
 
 const useInitiatorMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: ({ name }) => updateInitiator({ name }),
     // TODO: update the name if the query already contains data
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: initiatorQuery.queryKey })
-  }
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: initiatorQuery.queryKey }),
+  };
   return useMutation(query);
-}
+};
 
 const useInitiatorChanges = () => {
   const client = useInstallerClient();
@@ -60,19 +60,19 @@ const useInitiatorChanges = () => {
       if (type === "ISCSIInitiatorChanged") {
         queryClient.invalidateQueries({ queryKey: initiatorQuery.queryKey });
       }
-    })
+    });
   }, [client, queryClient]);
 };
 
 const nodesQuery = {
   queryKey: ["storage", "iscsi", "nodes"],
-  queryFn: fetchNodes
+  queryFn: fetchNodes,
 };
 
 const useNodes = (): ISCSINode[] => {
   const { data } = useSuspenseQuery(nodesQuery);
   return data;
-}
+};
 
 const useNodesChanges = () => {
   const client = useInstallerClient();
@@ -90,11 +90,4 @@ const useNodesChanges = () => {
   }, [client, queryClient]);
 };
 
-
-export {
-  useInitiator,
-  useInitiatorMutation,
-  useInitiatorChanges,
-  useNodes,
-  useNodesChanges
-}
+export { useInitiator, useInitiatorMutation, useInitiatorChanges, useNodes, useNodesChanges };

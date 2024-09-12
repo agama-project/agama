@@ -88,7 +88,6 @@ export default function ProposalPage() {
         queryClient.invalidateQueries({ queryKey: ["storage"] });
       });
     }
-
   }, [deprecated]);
 
   const errors = useIssues("storage")

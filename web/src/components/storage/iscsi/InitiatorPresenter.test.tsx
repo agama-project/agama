@@ -29,14 +29,14 @@ import { ISCSIInitiator } from "~/types/storage";
 const initiator: ISCSIInitiator = {
   name: "iqn.1996-04.de.suse:01:62b45cf7fc",
   ibft: true,
-  offloadCard: ""
-}
+  offloadCard: "",
+};
 
 const mockInitiatorMutation = { mutateAsync: jest.fn() };
 
 jest.mock("~/queries/storage/iscsi", () => ({
   ...jest.requireActual("~/queries/storage/iscsi"),
-  useInitiatorMutation: () => mockInitiatorMutation
+  useInitiatorMutation: () => mockInitiatorMutation,
 }));
 
 describe("InitiatorPresenter", () => {

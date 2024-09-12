@@ -52,6 +52,6 @@ const refresh = async (): Promise<void> => {
   const settings = await fetchSettings();
   await probe();
   await calculate(settings);
-}
+};
 
 export { fetchStorageJobs, findStorageJob, refresh };

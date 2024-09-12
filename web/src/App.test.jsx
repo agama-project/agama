@@ -56,7 +56,7 @@ jest.mock("~/queries/issues", () => ({
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useDeprecatedChanges: () => jest.fn()
+  useDeprecatedChanges: () => jest.fn(),
 }));
 
 const mockClientStatus = {

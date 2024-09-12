@@ -176,7 +176,6 @@ const EncryptionMethods = Object.freeze({
   TPM: "tpm_fde",
 });
 
-
 type ISCSIInitiator = {
   name: string;
   ibft: boolean;
@@ -192,7 +191,7 @@ type ISCSINode = {
   ibft: boolean;
   connected: boolean;
   startup: string;
-}
+};
 
 export type {
   Action,

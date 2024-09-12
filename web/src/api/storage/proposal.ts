@@ -20,7 +20,13 @@
  */
 
 import { get, put } from "../http";
-import { Action, ProductParams, ProposalSettings, ProposalSettingsPatch, Volume } from "~/api/storage/types";
+import {
+  Action,
+  ProductParams,
+  ProposalSettings,
+  ProposalSettingsPatch,
+  Volume,
+} from "~/api/storage/types";
 
 const fetchUsableDevices = (): Promise<number[]> => get(`/api/storage/proposal/usable_devices`);
 
