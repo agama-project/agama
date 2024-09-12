@@ -23,13 +23,11 @@ import React, { useState } from "react";
 import { Button, Toolbar, ToolbarItem, ToolbarContent, Stack } from "@patternfly/react-core";
 import { Section } from "~/components/core";
 import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
-import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { useNodes, useNodesChanges } from "~/queries/storage/iscsi";
 import { discover } from "~/api/storage/iscsi";
 
 export default function TargetsSection() {
-  const { storage: client } = useInstallerClient();
   const [isDiscoverFormOpen, setIsDiscoverFormOpen] = useState<boolean>(false);
   const nodes = useNodes();
   useNodesChanges();
