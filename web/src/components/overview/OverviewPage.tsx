@@ -41,7 +41,7 @@ import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 import { useAllIssues } from "~/queries/issues";
-import { IssueSeverity } from "~/types/issues";
+import { IssuesList as IssuesListType, IssueSeverity } from "~/types/issues";
 
 const SCOPE_HEADERS = {
   users: _("Users"),
@@ -57,7 +57,7 @@ const ReadyForInstallation = () => (
   </Center>
 );
 
-const IssuesList = ({ issues }) => {
+const IssuesList = ({ issues }: { issues: IssuesListType }) => {
   const { issues: issuesByScope } = issues;
   const list = [];
   Object.entries(issuesByScope).forEach(([scope, issues], idx) => {

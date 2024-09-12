@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,18 +22,22 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
 import { OverviewPage } from "~/components/overview";
 import { IssuesList } from "~/types/issues";
+import { Product } from "~/types/software";
 
-const startInstallationFn = jest.fn();
-let mockSelectedProduct = { id: "Tumbleweed" };
+const tumbleweed: Product = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  icon: "tumbleweed.svg",
+  description: "Tumbleweed description...",
+};
+
 const mockIssuesList = new IssuesList([], [], [], []);
 
-jest.mock("~/client");
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
-  useProduct: () => ({ selectedProduct: mockSelectedProduct }),
+  useProduct: () => ({ selectedProduct: tumbleweed }),
   useProductChanges: () => jest.fn(),
 }));
 
@@ -47,21 +51,7 @@ jest.mock("~/components/overview/StorageSection", () => () => <div>Storage Secti
 jest.mock("~/components/overview/SoftwareSection", () => () => <div>Software Section</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button</div>);
 
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      manager: {
-        startInstallation: startInstallationFn,
-      },
-    };
-  });
-});
-
 describe("when a product is selected", () => {
-  beforeEach(() => {
-    mockSelectedProduct = { name: "Tumbleweed" };
-  });
-
   it("renders the overview page content and the Install button", async () => {
     installerRender(<OverviewPage />);
     screen.findByText("Localization Section");

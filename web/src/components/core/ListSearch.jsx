@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -42,7 +42,7 @@ const search = (elements, term) => {
  * @param {object} props
  * @param {string} [props.placeholder]
  * @param {object[]} [props.elements] - List of elements in which to search.
- * @param {(elements: object[]) => void} - Callback to be called with the filtered list of elements.
+ * @param {(elements: object[]) => void} [props.onChange] - Callback to be called with the filtered list of elements.
  */
 export default function ListSearch({
   placeholder = _("Search"),

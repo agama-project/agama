@@ -23,14 +23,17 @@ import React, { useState } from "react";
 import { Divider, Flex, Form, FormGroup, Radio, Text } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
-import { _ } from "~/i18n";
 import { timezoneTime } from "~/utils";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
+import { Timezone } from "~/types/l10n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { _ } from "~/i18n";
 
-let date;
+type TimezoneWithDetails = Timezone & { details: string };
 
-const timezoneWithDetails = (timezone) => {
+let date: Date;
+
+const timezoneWithDetails = (timezone: Timezone): TimezoneWithDetails => {
   const offset = timezone.utcOffset;
 
   if (offset === undefined) return { ...timezone, details: timezone.id };
@@ -42,14 +45,14 @@ const timezoneWithDetails = (timezone) => {
   return { ...timezone, details: `${timezone.id} ${utc}` };
 };
 
-const sortedTimezones = (timezones) => {
+const sortedTimezones = (timezones: Timezone[]) => {
   return timezones.sort((timezone1, timezone2) => {
-    const timezoneText = (t) => t.parts.join("").toLowerCase();
+    const timezoneText = (t: Timezone) => t.parts.join("").toLowerCase();
     return timezoneText(timezone1) > timezoneText(timezone2) ? 1 : -1;
   });
 };
 
-// TODO: Add documentation and typechecking
+// TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 // TODO: Refactor timezones/extendedTimezones thingy
 export default function TimezoneSelection() {
@@ -63,42 +66,44 @@ export default function TimezoneSelection() {
 
   const searchHelp = _("Filter by territory, time zone code or UTC offset");
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setConfig.mutate({ timezone: selected });
     navigate(-1);
   };
 
-  let timezonesList = filteredTimezones.map(({ id, country, details, parts }) => {
-    return (
-      <Radio
-        id={id}
-        key={id}
-        name="timezone"
-        onChange={() => setSelected(id)}
-        label={
-          <>
-            <span className={`${textStyles.fontSizeLg}`}>
-              <b>{parts.join("-")}</b>
-            </span>{" "}
-            <Text component="small">{country}</Text>
-          </>
-        }
-        description={
-          <Flex columnGap={{ default: "columnGapXs" }}>
-            <Text component="small">{timezoneTime(id, { date }) || ""}</Text>
-            <Divider orientation={{ default: "vertical" }} />
-            <div>{details}</div>
-          </Flex>
-        }
-        value={id}
-        isChecked={id === selected}
-      />
-    );
-  });
+  let timezonesList = filteredTimezones.map(
+    ({ id, country, details, parts }: TimezoneWithDetails) => {
+      return (
+        <Radio
+          id={id}
+          key={id}
+          name="timezone"
+          onChange={() => setSelected(id)}
+          label={
+            <>
+              <span className={`${textStyles.fontSizeLg}`}>
+                <b>{parts.join("-")}</b>
+              </span>{" "}
+              <Text component="small">{country}</Text>
+            </>
+          }
+          description={
+            <Flex columnGap={{ default: "columnGapXs" }}>
+              <Text component="small">{timezoneTime(id, { date }) || ""}</Text>
+              <Divider orientation={{ default: "vertical" }} />
+              <div>{details}</div>
+            </Flex>
+          }
+          value={id}
+          isChecked={id === selected}
+        />
+      );
+    },
+  );
 
   if (timezonesList.length === 0) {
-    timezonesList = <b>{_("None of the time zones match the filter.")}</b>;
+    timezonesList = [<b>{_("None of the time zones match the filter.")}</b>];
   }
 
   return (

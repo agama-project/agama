@@ -27,7 +27,7 @@ import { _ } from "~/i18n";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
-// TODO: Add documentation and typechecking
+// TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function LocaleSelection() {
 
   const searchHelp = _("Filter by language, territory or locale code");
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setConfig.mutate({ locales: [selected] });
     navigate(-1);
@@ -69,7 +69,7 @@ export default function LocaleSelection() {
   });
 
   if (localesList.length === 0) {
-    localesList = <b>{_("None of the locales match the filter.")}</b>;
+    localesList = [<b>{_("None of the locales match the filter.")}</b>];
   }
 
   return (

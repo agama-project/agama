@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,16 +19,25 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useEffect, useState } from "react";
 import { FormGroup } from "@patternfly/react-core";
 import { FormValidationError, PasswordInput } from "~/components/core";
 import { _ } from "~/i18n";
 
-// TODO: improve the component to allow working only in uncontrlled mode if
-// needed.
-// TODO: improve the showErrors thingy
+// TODO:
+//  * add documentation,
+//  * allow working only in uncontrlled mode if needed, and
+//  * improve the showErrors thingy
+
+type PasswordAndConfirmationInputProps = {
+  inputRef?: React.RefObject<HTMLInputElement>;
+  value?: string;
+  showErrors?: boolean;
+  isDisabled?: boolean;
+  onChange?: (e: React.SyntheticEvent, v: string) => void;
+  onValidation?: (r: boolean) => void;
+};
+
 const PasswordAndConfirmationInput = ({
   inputRef,
   showErrors = true,
@@ -36,17 +45,17 @@ const PasswordAndConfirmationInput = ({
   onChange,
   onValidation,
   isDisabled = false,
-}) => {
+}: PasswordAndConfirmationInputProps) => {
   const passwordInput = inputRef?.current;
-  const [password, setPassword] = useState(value || "");
-  const [confirmation, setConfirmation] = useState(value || "");
-  const [error, setError] = useState("");
+  const [password, setPassword] = useState<string>(value || "");
+  const [confirmation, setConfirmation] = useState<string>(value || "");
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     if (isDisabled) setError("");
   }, [isDisabled]);
 
-  const validate = (password, passwordConfirmation) => {
+  const validate = (password: string, passwordConfirmation: string) => {
     let newError = "";
     showErrors && setError(newError);
     passwordInput?.setCustomValidity(newError);
@@ -63,13 +72,13 @@ const PasswordAndConfirmationInput = ({
     }
   };
 
-  const onValueChange = (event, value) => {
+  const onValueChange = (event: React.SyntheticEvent, value: string) => {
     setPassword(value);
     validate(value, confirmation);
     if (typeof onChange === "function") onChange(event, value);
   };
 
-  const onConfirmationChange = (_, confirmationValue) => {
+  const onConfirmationChange = (_: React.SyntheticEvent, confirmationValue: string) => {
     setConfirmation(confirmationValue);
     validate(password, confirmationValue);
   };
