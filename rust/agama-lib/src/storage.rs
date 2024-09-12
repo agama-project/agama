@@ -1,6 +1,7 @@
 //! Implements support for handling the storage settings
 
 pub mod client;
+pub mod http_client;
 pub mod model;
 pub mod proxies;
 mod settings;

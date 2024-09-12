@@ -1,18 +1,18 @@
 //! Implements the store for the storage settings.
 
-use super::{StorageClient, StorageSettings};
+use super::StorageSettings;
 use crate::error::ServiceError;
-use zbus::Connection;
+use crate::storage::http_client::StorageHTTPClient;
 
-/// Loads and stores the storage settings from/to the D-Bus service.
-pub struct StorageStore<'a> {
-    storage_client: StorageClient<'a>,
+/// Loads and stores the storage settings from/to the HTTP service.
+pub struct StorageStore {
+    storage_client: StorageHTTPClient,
 }
 
-impl<'a> StorageStore<'a> {
-    pub async fn new(connection: Connection) -> Result<StorageStore<'a>, ServiceError> {
+impl StorageStore {
+    pub fn new() -> Result<StorageStore, ServiceError> {
         Ok(Self {
-            storage_client: StorageClient::new(connection).await?,
+            storage_client: StorageHTTPClient::new()?,
         })
     }
 
@@ -21,7 +21,7 @@ impl<'a> StorageStore<'a> {
     }
 
     pub async fn store(&self, settings: StorageSettings) -> Result<(), ServiceError> {
-        self.storage_client.set_config(settings).await?;
+        self.storage_client.set_config(&settings).await?;
         Ok(())
     }
 }
