@@ -61,6 +61,7 @@ module Y2Storage
 
         planned.assign_reuse(device)
         planned.reformat = reformat?(device, config)
+        planned.resize = grow?(device, config) if planned.respond_to?(:resize=)
       end
 
       # Whether to reformat the device.
@@ -73,6 +74,17 @@ module Y2Storage
 
         # TODO: reformat if the encryption has to be created.
         !config.filesystem&.reuse?
+      end
+
+      # Whether the device is a candidate to be resized (grown)
+      #
+      # @param device [Y2Storage::BlkDevice]
+      # @param config [Agama::Storage::Configs::Partition]
+      # @return [Boolean]
+      def grow?(device, config)
+        return false unless config.size
+
+        config.size.max.unlimited? || config.size.max > device.size
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
