@@ -47,6 +47,7 @@ import { isEmpty, isObject } from "~/utils";
 
 type SectionProps = {
   title?: string;
+  "aria-label"?: string;
   value?: React.ReactNode;
   description?: string;
   actions?: React.ReactNode;
@@ -70,6 +71,7 @@ const defaultCardProps: CardProps = {
 const STICK_TO_TOP = Object.freeze({ default: "top" });
 const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 
+// TODO: check if it should have the banner role
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
     <PageSection variant="light" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
@@ -88,6 +90,7 @@ const Header = ({ hasGutter = true, children, ...props }) => {
  */
 const Section = ({
   title,
+  "aria-label": ariaLabel,
   value,
   description,
   actions,
@@ -102,9 +105,15 @@ const Section = ({
   const hasValue = !isEmpty(value);
   const hasDescription = !isEmpty(description);
   const hasHeader = hasTitle || hasValue;
-  const hasAriaLabel = isObject(pfCardProps) && "aria-label" in pfCardProps;
-  const props = { ...defaultCardProps };
-  if (!hasAriaLabel && hasTitle) props["aria-labelledby"] = titleId;
+  const hasAriaLabel =
+    !isEmpty(ariaLabel) || (isObject(pfCardProps) && "aria-label" in pfCardProps);
+  const props = { ...defaultCardProps, "aria-label": ariaLabel };
+
+  if (!hasTitle && !hasAriaLabel) {
+    console.error("Page.Section must have either, a title or aria-label");
+  }
+
+  if (hasTitle && !hasAriaLabel) props["aria-labelledby"] = titleId;
 
   return (
     <Card {...props} {...pfCardProps}>
@@ -140,11 +149,18 @@ const Section = ({
  *   <Page>
  *     <UserSectionContent />
  *   </Page>
+ *
+ * TODO: check if it contentinfo role really should have the banner role
  */
 const Actions = ({ children }: React.PropsWithChildren) => {
   return (
-    <PageGroup hasShadowTop stickyOnBreakpoint={STICK_TO_BOTTOM} className={flexStyles.flexGrow_0}>
-      <PageSection variant="light">
+    <PageGroup
+      role="contentinfo"
+      hasShadowTop
+      stickyOnBreakpoint={STICK_TO_BOTTOM}
+      className={flexStyles.flexGrow_0}
+    >
+      <PageSection variant="light" component="div">
         <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
       </PageSection>
     </PageGroup>
