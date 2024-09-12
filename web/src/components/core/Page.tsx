@@ -251,11 +251,11 @@ const Cancel = ({ navigateTo = "..", children, ...props }: ActionProps) => {
  * types, "To" and "number", without a TypeScript complain. To know more, see
  * https://github.com/remix-run/react-router/issues/10505#issuecomment-2237126223
  */
-const Back = ({ children, ...props }: ButtonProps) => {
+const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
   const navigate = useNavigate();
 
   return (
-    <Button size="lg" {...props} onClick={() => navigate(-1)}>
+    <Button size="lg" variant="link" {...props} onClick={() => navigate(-1)}>
       {children || _("Back")}
     </Button>
   );

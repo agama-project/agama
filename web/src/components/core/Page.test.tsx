@@ -91,7 +91,7 @@ describe("Page", () => {
   });
 
   describe("Page.Content", () => {
-    it("renders a node that fills all the available space", async () => {
+    it("renders a node that fills all the available space", () => {
       plainRender(<Page.Content>{_("The Content")}</Page.Content>);
       const content = screen.getByText("The Content");
       expect(content.classList.contains("pf-m-fill")).toBe(true);
@@ -113,6 +113,13 @@ describe("Page", () => {
       const button = screen.getByRole("button", { name: "Back" });
       await user.click(button);
       expect(mockNavigateFn).toHaveBeenCalledWith(-1);
+    });
+
+    it("uses `lg` size and `link` variant by default", () => {
+      plainRender(<Page.Back />);
+      const button = screen.getByRole("button", { name: "Back" });
+      expect(button.classList.contains("pf-m-link")).toBe(true);
+      expect(button.classList.contains("pf-m-display-lg")).toBe(true);
     });
   });
 
@@ -140,7 +147,7 @@ describe("Page", () => {
     });
   });
   describe("Page.Header", () => {
-    it("renders a node that sticks to top", async () => {
+    it("renders a node that sticks to top", () => {
       plainRender(<Page.Header>{_("The Header")}</Page.Header>);
       const content = screen.getByText("The Header");
       const container = content.parentNode as HTMLElement;
@@ -154,13 +161,13 @@ describe("Page", () => {
       expect(console.error).toHaveBeenCalledWith(expect.stringContaining("must have either"));
     });
 
-    it("renders a section node", async () => {
+    it("renders a section node", () => {
       plainRender(<Page.Section aria-label="A Page Section">{_("The Content")}</Page.Section>);
       const section = screen.getByRole("region");
       within(section).getByText("The Content");
     });
 
-    it("adds the aria-labelledby attribute when title is given but aria-label is not", async () => {
+    it("adds the aria-labelledby attribute when title is given but aria-label is not", () => {
       const { rerender } = plainRender(
         <Page.Section title="A Page Section">{_("The Content")}</Page.Section>,
       );
@@ -188,7 +195,7 @@ describe("Page", () => {
       expect(section).not.toHaveAttribute("aria-labelledby");
     });
 
-    it("renders given content props (title, value, description, actions, and children (content)", async () => {
+    it("renders given content props (title, value, description, actions, and children (content)", () => {
       plainRender(
         <Page.Section
           title={_("A section")}
