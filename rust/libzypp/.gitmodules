@@ -1,0 +1,4 @@
+[submodule "gir"]
+	update = none
+[submodule "gir-files"]
+	update = none

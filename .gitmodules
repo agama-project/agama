@@ -1,0 +1,10 @@
+[submodule "rust/libzypp/gir"]
+	path = rust/libzypp/gir
+	url = https://github.com/gtk-rs/gir
+[submodule "./gir"]
+	branch = master
+[submodule "rust/libzypp/gir-files"]
+	path = rust/libzypp/gir-files
+	url = https://github.com/gtk-rs/gir-files
+[submodule "./gir-files"]
+	branch = master
