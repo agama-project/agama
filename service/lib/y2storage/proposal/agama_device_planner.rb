@@ -19,8 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/planned"
 require "agama/issue"
+require "yast/i18n"
+require "y2storage/planned"
 
 module Y2Storage
   module Proposal
@@ -49,10 +50,10 @@ module Y2Storage
         @issues_list = issues_list
       end
 
-      # Planned devices according to the given settings.
+      # Planned devices according to the given config.
       #
       # @return [Array] Array of planned devices.
-      def planned_devices(_setting)
+      def planned_devices(_config)
         raise NotImplementedError
       end
 
@@ -81,50 +82,50 @@ module Y2Storage
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [#encryption, #filesystem]
-      def configure_device(planned, settings)
-        configure_encryption(planned, settings.encryption) if settings.encryption
-        configure_filesystem(planned, settings.filesystem) if settings.filesystem
+      # @param config [#encryption, #filesystem]
+      def configure_block_device(planned, config)
+        configure_encryption(planned, config.encryption) if config.encryption
+        configure_filesystem(planned, config.filesystem) if config.filesystem
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Configs::Filesystem]
-      def configure_filesystem(planned, settings)
-        planned.mount_point = settings.path
-        planned.mount_by = settings.mount_by
-        planned.fstab_options = settings.mount_options
-        planned.mkfs_options = settings.mkfs_options.join(",")
-        planned.label = settings.label
-        configure_filesystem_type(planned, settings.type) if settings.type
+      # @param config [Agama::Storage::Configs::Filesystem]
+      def configure_filesystem(planned, config)
+        planned.mount_point = config.path
+        planned.mount_by = config.mount_by
+        planned.fstab_options = config.mount_options
+        planned.mkfs_options = config.mkfs_options.join(",")
+        planned.label = config.label
+        configure_filesystem_type(planned, config.type) if config.type
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Configs::FilesystemType]
-      def configure_filesystem_type(planned, settings)
-        planned.filesystem_type = settings.fs_type
-        configure_btrfs(planned, settings.btrfs) if settings.btrfs
+      # @param config [Agama::Storage::Configs::FilesystemType]
+      def configure_filesystem_type(planned, config)
+        planned.filesystem_type = config.fs_type
+        configure_btrfs(planned, config.btrfs) if config.btrfs
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Configs::Btrfs]
-      def configure_btrfs(planned, settings)
+      # @param config [Agama::Storage::Configs::Btrfs]
+      def configure_btrfs(planned, config)
         # TODO: we need to discuss what to do with transactional systems and the read_only
         # property. We are not sure whether those things should be configurable by the user.
-        # planned.read_only = settings.read_only?
-        planned.snapshots = settings.snapshots?
-        planned.default_subvolume = settings.default_subvolume
-        planned.subvolumes = settings.subvolumes
+        # planned.read_only = config.read_only?
+        planned.snapshots = config.snapshots?
+        planned.default_subvolume = config.default_subvolume
+        planned.subvolumes = config.subvolumes
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Configs::Encryption]
-      def configure_encryption(planned, settings)
-        planned.encryption_password = settings.password
-        planned.encryption_method = settings.method
-        planned.encryption_pbkdf = settings.pbkd_function
-        planned.encryption_label = settings.label
-        planned.encryption_cipher = settings.cipher
-        planned.encryption_key_size = settings.key_size
+      # @param config [Agama::Storage::Configs::Encryption]
+      def configure_encryption(planned, config)
+        planned.encryption_password = config.password
+        planned.encryption_method = config.method
+        planned.encryption_pbkdf = config.pbkd_function
+        planned.encryption_label = config.label
+        planned.encryption_cipher = config.cipher
+        planned.encryption_key_size = config.key_size
 
         check_encryption(planned)
       end
@@ -191,10 +192,10 @@ module Y2Storage
       end
 
       # @param planned [Planned::Partition]
-      # @param settings [Agama::Storage::Configs::Size]
-      def configure_size(planned, settings)
-        planned.min_size = settings.min
-        planned.max_size = settings.max
+      # @param config [Agama::Storage::Configs::Size]
+      def configure_size(planned, config)
+        planned.min_size = config.min
+        planned.max_size = config.max
         planned.weight = 100
       end
 
@@ -216,7 +217,7 @@ module Y2Storage
         Planned::Partition.new(nil, nil).tap do |planned|
           planned.partition_id = config.id
           configure_reuse(planned, config)
-          configure_device(planned, config)
+          configure_block_device(planned, config)
           configure_size(planned, config.size)
         end
       end

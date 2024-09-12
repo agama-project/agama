@@ -76,24 +76,24 @@ module Y2Storage
     include Proposal::PlannedDevicesHandler
 
     # @return [Agama::Storage::Config]
-    attr_reader :settings
+    attr_reader :config
 
     # @return [Array<Agama::Issue>] List of found issues
     attr_reader :issues_list
 
     # Constructor
     #
-    # @param initial_settings [Agama::Storage::Config] Agama storage settings
+    # @param initial_config [Agama::Storage::Config] Agama storage config
     # @param devicegraph [Devicegraph] starting point. If nil, then probed devicegraph
     #   will be used
     # @param disk_analyzer [DiskAnalyzer] by default, the method will create a new one
     #   based on the initial devicegraph or will use the one from the StorageManager if
     #   starting from probed (i.e. 'devicegraph' argument is also missing)
     # @param issues_list [Array<Agama::Issue] Array to register issues found during the process
-    def initialize(initial_settings, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
+    def initialize(initial_config, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
       super(devicegraph: devicegraph, disk_analyzer: disk_analyzer)
       @issues_list = issues_list || []
-      @settings = initial_settings
+      @config = initial_config
     end
 
   private
@@ -112,12 +112,12 @@ module Y2Storage
     #
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
-      # TODO: Could the search be moved to the devices planner? If so, the settings object might
-      #   keep untouched, directly generating planned devices associated to the found device and
-      #   skipping planned devices for searches with skip if not found.
+      # TODO: Could the search be moved to the devices planner? If so, the config object can keep
+      #   untouched, directly generating planned devices associated to the found device and skipping
+      #   planned devices for searches with skip if not found.
       Proposal::AgamaSearcher
         .new(initial_devicegraph)
-        .search(settings, issues_list)
+        .search(config, issues_list)
 
       if fatal_error?
         # This means some IfNotFound is set to "error" and we failed to find a match
@@ -125,7 +125,7 @@ module Y2Storage
         return @devices
       end
 
-      @space_maker = Proposal::AgamaSpaceMaker.new(disk_analyzer, settings)
+      @space_maker = Proposal::AgamaSpaceMaker.new(disk_analyzer, config)
       @devices = propose_devicegraph
     end
 
@@ -152,8 +152,8 @@ module Y2Storage
     #
     # @return [Planned::DevicesCollection]
     def calculate_initial_planned(devicegraph)
-      planner = Proposal::AgamaDevicesPlanner.new(settings, issues_list)
-      @planned_devices = planner.initial_planned_devices(devicegraph)
+      planner = Proposal::AgamaDevicesPlanner.new(devicegraph, issues_list)
+      @planned_devices = planner.planned_devices(config)
     end
 
     # Performs the mandatory space-making actions on the given devicegraph
@@ -171,7 +171,7 @@ module Y2Storage
     #
     # @param devicegraph [Devicegraph] the graph gets modified
     def configure_ptable_types(devicegraph)
-      configured = settings.drives.select(&:ptable_type)
+      configured = config.drives.select(&:ptable_type)
       configured.each do |drive|
         dev = device_for(drive, devicegraph)
         next unless dev
@@ -185,7 +185,7 @@ module Y2Storage
     #
     # @param devicegraph [Devicegraph]
     def complete_planned(devicegraph)
-      if settings.boot.configure?
+      if config.boot.configure?
         @planned_devices = planned_devices.prepend(boot_partitions(devicegraph))
       end
 
@@ -197,7 +197,7 @@ module Y2Storage
       checker = BootRequirementsChecker.new(
         devicegraph,
         planned_devices: planned_devices.mountable_devices,
-        boot_disk_name:  settings.boot_device
+        boot_disk_name:  config.boot_device
       )
       # NOTE: Should we try with :desired first?
       checker.needed_partitions(:min)
@@ -220,7 +220,7 @@ module Y2Storage
     # @param devicegraph [Y2Storage::Devicegraph]
     # @return [Array<Y2Storage::BlkDevice>]
     def drives_with_empty_partition_table(devicegraph)
-      devices = settings.drives.map { |d| device_for(d, devicegraph) }.compact
+      devices = config.drives.map { |d| device_for(d, devicegraph) }.compact
       devices.select { |d| d.partition_table && d.partitions.empty? }
     end
 
@@ -244,7 +244,7 @@ module Y2Storage
     # @param devicegraph [Devicegraph] the graph gets modified
     def create_devices(devicegraph)
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
-      names = settings.drives.map(&:found_device).compact.map(&:name)
+      names = config.drives.map(&:found_device).compact.map(&:name)
       protect_sids
       result = devices_creator.populated_devicegraph(planned_devices, names, space_maker)
     end

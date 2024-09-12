@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "y2storage/planned/disk"
 require "y2storage/proposal/agama_device_planner"
 
 module Y2Storage
@@ -49,7 +50,7 @@ module Y2Storage
       def planned_full_drive(settings)
         Planned::Disk.new.tap do |planned|
           configure_reuse(planned, settings)
-          configure_device(planned, settings)
+          configure_block_device(planned, settings)
         end
       end
 
