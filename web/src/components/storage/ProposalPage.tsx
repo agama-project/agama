@@ -34,6 +34,7 @@ import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
 import {
   useAvailableDevices,
+  useDeprecated,
   useDevices,
   useProductParams,
   useProposalMutation,
@@ -41,6 +42,8 @@ import {
   useVolumeDevices,
   useVolumeTemplates,
 } from "~/queries/storage";
+import { useQueryClient } from "@tanstack/react-query";
+import { refresh } from "~/api/storage";
 
 /**
  * Which UI item is being changed by user
@@ -76,6 +79,17 @@ export default function ProposalPage() {
   const { encryptionMethods } = useProductParams({ suspense: true });
   const { actions, settings } = useProposalResult();
   const updateProposal = useProposalMutation();
+  const deprecated = useDeprecated();
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    if (deprecated) {
+      refresh().then(() => {
+        queryClient.invalidateQueries({ queryKey: ["storage"] });
+      });
+    }
+
+  }, [deprecated]);
 
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)

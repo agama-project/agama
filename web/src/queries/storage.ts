@@ -326,18 +326,9 @@ const useDeprecated = () => {
 const useDeprecatedChanges = () => {
   const client = useInstallerClient();
   const queryClient = useQueryClient();
-  const deprecated = useDeprecated();
-  React.useEffect(() => {
-    if (deprecated) {
-      refresh().then(() => {
-        queryClient.invalidateQueries({ queryKey: ["storage"] });
-      });
-    }
 
-  }, [deprecated]);
   React.useEffect(() => {
     if (!client) return;
-
 
     return client.ws().onEvent(({ type, dirty: value }) => {
       if (type === "DevicesDirty") {
