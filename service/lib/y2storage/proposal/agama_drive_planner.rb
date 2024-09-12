@@ -26,10 +26,12 @@ module Y2Storage
   module Proposal
     # Drive planner for Agama.
     class AgamaDrivePlanner < AgamaDevicePlanner
-      # @param settings [Agama::Storage::Configs::Drive]
+      # @param drive_config [Agama::Storage::Configs::Drive]
+      # @param config [Agama::Storage::Config]
+      #
       # @return [Array<Planned::Device>]
-      def planned_devices(settings)
-        [planned_drive(settings)]
+      def planned_devices(drive_config, config)
+        [planned_drive(drive_config, config)]
       end
 
     private
@@ -37,29 +39,36 @@ module Y2Storage
       # Support for StrayBlkDevice is intentionally left out. As far as we know, the plan
       # for SLE/Leap 16 is to drop XEN support
       #
-      # @param settings [Agama::Storage::Configs::Drive]
+      # @param drive_config [Agama::Storage::Configs::Drive]
+      # @param config [Agama::Storage::Config]
+      #
       # @return [Planned::Disk]
-      def planned_drive(settings)
-        return planned_full_drive(settings) unless settings.partitions?
+      def planned_drive(drive_config, config)
+        return planned_full_drive(drive_config, config) unless drive_config.partitions?
 
-        planned_partitioned_drive(settings)
+        planned_partitioned_drive(drive_config, config)
       end
 
-      # @param settings [Agama::Storage::Configs::Drive]
+      # @param drive_config [Agama::Storage::Configs::Drive]
+      # @param config [Agama::Storage::Config]
+      #
       # @return [Planned::Disk]
-      def planned_full_drive(settings)
+      def planned_full_drive(drive_config, config)
         Planned::Disk.new.tap do |planned|
-          configure_reuse(planned, settings)
-          configure_block_device(planned, settings)
+          configure_reuse(planned, drive_config)
+          configure_block_device(planned, drive_config)
+          configure_pv(planned, drive_config, config)
         end
       end
 
-      # @param settings [Agama::Storage::Configs::Drive]
+      # @param drive_config [Agama::Storage::Configs::Drive]
+      # @param config [Agama::Storage::Config]
+      #
       # @return [Planned::Disk]
-      def planned_partitioned_drive(settings)
+      def planned_partitioned_drive(drive_config, config)
         Planned::Disk.new.tap do |planned|
-          configure_reuse(planned, settings)
-          configure_partitions(planned, settings)
+          configure_reuse(planned, drive_config)
+          configure_partitions(planned, drive_config, config)
         end
       end
     end

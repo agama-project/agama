@@ -200,26 +200,44 @@ module Y2Storage
       end
 
       # @param planned [Planned::Disk]
-      # @param config [Agama::Storage::Configs::Drive]
-      def configure_partitions(planned, config)
-        partition_configs = config.partitions
+      # @param device_config [Agama::Storage::Configs::Drive]
+      # @param config [Agama::Storage::Config]
+      def configure_partitions(planned, device_config, config)
+        partition_configs = device_config.partitions
           .reject(&:delete?)
           .reject(&:delete_if_needed?)
 
         planned.partitions = partition_configs.map do |partition_config|
-          planned_partition(partition_config).tap { |p| p.disk = config.found_device.name }
+          planned_partition(partition_config, device_config, config)
         end
       end
 
-      # @param config [Agama::Storage::Configs::Partition]
+      # @param partition_config [Agama::Storage::Configs::Partition]
+      # @param device_config [Agama::Storage::Configs::Drive]
+      # @param config [Agama::Storage::Config]
+      #
       # @return [Planned::Partition]
-      def planned_partition(config)
+      def planned_partition(partition_config, device_config, config)
         Planned::Partition.new(nil, nil).tap do |planned|
-          planned.partition_id = config.id
-          configure_reuse(planned, config)
-          configure_block_device(planned, config)
-          configure_size(planned, config.size)
+          planned.disk = device_config.found_device.name
+          planned.partition_id = partition_config.id
+          configure_reuse(planned, partition_config)
+          configure_block_device(planned, partition_config)
+          configure_size(planned, partition_config.size)
+          configure_pv(planned, partition_config, config)
         end
+      end
+
+      # @param planned [Planned::Disk, Planned::Partition]
+      # @param device_config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
+      # @param config [Agama::Storage::Config]
+      def configure_pv(planned, device_config, config)
+        return unless planned.respond_to?(:lvm_volume_group_name) && device_config.alias
+
+        vg = config.volume_groups.find { |v| v.physical_volumes.include?(device_config.alias) }
+        return unless vg
+
+        planned.lvm_volume_group_name = vg.name
       end
     end
   end

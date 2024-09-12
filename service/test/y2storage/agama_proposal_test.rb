@@ -22,7 +22,11 @@
 require_relative "../agama/storage/storage_helpers"
 require "agama/config"
 require "agama/storage/config"
+require "agama/storage/config_conversions/from_json"
+require "y2storage"
 require "y2storage/agama_proposal"
+
+using Y2Storage::Refinements::SizeCasts
 
 # @param config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
 # @param name [String, nil] e.g., "/dev/vda"
@@ -72,7 +76,7 @@ end
 describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
 
-  let(:initial_settings) do
+  let(:initial_config) do
     Agama::Storage::Config.new.tap do |settings|
       settings.drives = drives
     end
@@ -95,7 +99,7 @@ describe Y2Storage::AgamaProposal do
         end
       end
       part.size = Agama::Storage::Configs::Size.new.tap do |size|
-        size.min = Y2Storage::DiskSize.GiB(8.5)
+        size.min = 8.5.GiB
         size.max = Y2Storage::DiskSize.unlimited
       end
     end
@@ -110,7 +114,7 @@ describe Y2Storage::AgamaProposal do
         end
       end
       part.size = Agama::Storage::Configs::Size.new.tap do |size|
-        size.min = Y2Storage::DiskSize.GiB(10)
+        size.min = 10.GiB
         size.max = Y2Storage::DiskSize.unlimited
       end
     end
@@ -121,7 +125,7 @@ describe Y2Storage::AgamaProposal do
   end
 
   subject(:proposal) do
-    described_class.new(initial_settings, issues_list: issues_list)
+    described_class.new(initial_config, issues_list: issues_list)
   end
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
@@ -135,7 +139,7 @@ describe Y2Storage::AgamaProposal do
           expect(partitions.size).to eq 2
           expect(partitions.first.id).to eq Y2Storage::PartitionId::BIOS_BOOT
           root_part = partitions.last
-          expect(root_part.size).to be > Y2Storage::DiskSize.GiB(49)
+          expect(root_part.size).to be > 49.GiB
           root_fs = root_part.filesystem
           expect(root_fs.root?).to eq true
           expect(root_fs.type.is?(:btrfs)).to eq true
@@ -144,7 +148,7 @@ describe Y2Storage::AgamaProposal do
 
       context "if no boot devices should be created" do
         before do
-          initial_settings.boot = Agama::Storage::Configs::Boot.new.tap { |b| b.configure = false }
+          initial_config.boot = Agama::Storage::Configs::Boot.new.tap { |b| b.configure = false }
         end
 
         it "proposes to create only the root device" do
@@ -153,7 +157,7 @@ describe Y2Storage::AgamaProposal do
           expect(partitions.size).to eq 1
           root_part = partitions.first
           expect(root_part.id).to eq Y2Storage::PartitionId::LINUX
-          expect(root_part.size).to be > Y2Storage::DiskSize.GiB(49)
+          expect(root_part.size).to be > 49.GiB
           root_fs = root_part.filesystem
           expect(root_fs.root?).to eq true
           expect(root_fs.type.is?(:btrfs)).to eq true
@@ -585,7 +589,7 @@ describe Y2Storage::AgamaProposal do
 
       context "if deleting the partition is not needed" do
         before do
-          root_partition.size.min = Y2Storage::DiskSize.GiB(15)
+          root_partition.size.min = 15.GiB
         end
 
         it "does not delete the partition" do
@@ -601,7 +605,7 @@ describe Y2Storage::AgamaProposal do
 
       context "if the partition has to be deleted" do
         before do
-          root_partition.size.min = Y2Storage::DiskSize.GiB(20)
+          root_partition.size.min = 20.GiB
         end
 
         it "deletes the partition" do
@@ -730,7 +734,7 @@ describe Y2Storage::AgamaProposal do
         drive_config.tap { |c| c.partitions = [partition] }
       end
 
-      let(:partition) { partition_config(filesystem: "ext3", size: Y2Storage::DiskSize.GiB(1)) }
+      let(:partition) { partition_config(filesystem: "ext3", size: 1.GiB) }
 
       context "if trying to reuse the file system" do
         before do
@@ -758,6 +762,158 @@ describe Y2Storage::AgamaProposal do
           expect(filesystem).to_not be_nil
           expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
         end
+      end
+    end
+
+    context "when the config has LVM volume groups" do
+      let(:scenario) { "empty-hd-50GiB.yaml" }
+
+      let(:initial_config) do
+        Agama::Storage::ConfigConversions::FromJSON
+          .new(config_json, product_config: product_config)
+          .convert
+      end
+
+      let(:product_config) { Agama::Config.new }
+
+      let(:config_json) do
+        {
+          drives:       [
+            {
+              partitions: [
+                {
+                  alias: "system-pv",
+                  size:  "40 GiB"
+                },
+                {
+                  alias: "vg1-pv",
+                  size:  "5 GiB"
+                }
+              ]
+            }
+          ],
+          volumeGroups: [
+            {
+              name:            "system",
+              extentSize:      "2 MiB",
+              physicalVolumes: ["system-pv"],
+              logicalVolumes:  [
+                {
+                  name:       "root",
+                  size:       "10 GiB",
+                  filesystem: {
+                    path: "/",
+                    type: "btrfs"
+                  },
+                  encryption: {
+                    luks2: { password: "12345" }
+                  }
+                },
+                {
+                  alias:      "system-pool",
+                  name:       "pool",
+                  pool:       true,
+                  size:       "20 GiB",
+                  stripes:    10,
+                  stripeSize: "4 KiB"
+                },
+                {
+                  name:       "data",
+                  size:       "50 GiB",
+                  usedPool:   "system-pool",
+                  filesystem: { type: "xfs" }
+                }
+              ]
+            },
+            {
+              name:            "vg1",
+              physicalVolumes: ["vg1-pv"],
+              logicalVolumes:  [
+                {
+                  name:       "home",
+                  filesystem: {
+                    path: "/home",
+                    type: "xfs"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "proposes the expected devices" do
+        devicegraph = proposal.propose
+
+        expect(devicegraph.lvm_vgs).to contain_exactly(
+          an_object_having_attributes(
+            vg_name:     "system",
+            extent_size: 2.MiB
+          ),
+          an_object_having_attributes(
+            vg_name:     "vg1",
+            extent_size: 4.MiB
+          )
+        )
+
+        system_vg = devicegraph.find_by_name("/dev/system")
+        system_pvs = system_vg.lvm_pvs.map(&:plain_blk_device)
+        system_lvs = system_vg.lvm_lvs
+        expect(system_pvs).to contain_exactly(
+          an_object_having_attributes(name: "/dev/sda2", size: 40.GiB)
+        )
+        expect(system_lvs).to contain_exactly(
+          an_object_having_attributes(
+            lv_name:    "root",
+            lv_type:    Y2Storage::LvType::NORMAL,
+            size:       10.GiB,
+            filesystem: an_object_having_attributes(
+              type:       Y2Storage::Filesystems::Type::BTRFS,
+              mount_path: "/"
+            ),
+            encryption: an_object_having_attributes(
+              type:     Y2Storage::EncryptionType::LUKS2,
+              password: "12345"
+            )
+          ),
+          an_object_having_attributes(
+            lv_name:     "pool",
+            lv_type:     Y2Storage::LvType::THIN_POOL,
+            size:        20.GiB,
+            filesystem:  be_nil,
+            encryption:  be_nil,
+            stripes:     10,
+            stripe_size: 4.KiB,
+            lvm_lvs:     contain_exactly(
+              an_object_having_attributes(
+                lv_name:    "data",
+                lv_type:    Y2Storage::LvType::THIN,
+                size:       50.GiB,
+                filesystem: an_object_having_attributes(
+                  type: Y2Storage::Filesystems::Type::XFS
+                )
+              )
+            )
+          )
+        )
+
+        vg1 = devicegraph.find_by_name("/dev/vg1")
+        vg1_pvs = vg1.lvm_pvs.map(&:plain_blk_device)
+        vg1_lvs = vg1.lvm_lvs
+        expect(vg1_pvs).to contain_exactly(
+          an_object_having_attributes(name: "/dev/sda3", size: 5.GiB)
+        )
+        expect(vg1_lvs).to contain_exactly(
+          an_object_having_attributes(
+            lv_name:    "home",
+            lv_type:    Y2Storage::LvType::NORMAL,
+            size:       5.GiB - 4.MiB,
+            filesystem: an_object_having_attributes(
+              type:       Y2Storage::Filesystems::Type::XFS,
+              mount_path: "/home"
+            )
+          )
+        )
       end
     end
   end

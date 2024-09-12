@@ -19,8 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "y2storage/planned/devices_collection"
 require "y2storage/proposal/agama_drive_planner"
-require "y2storage/planned"
+require "y2storage/proposal/agama_vg_planner"
 
 module Y2Storage
   module Proposal
@@ -38,8 +39,7 @@ module Y2Storage
       # List of devices that need to be created to satisfy the settings. Does not include
       # devices needed for booting.
       #
-      # For the time being, this implements only stuff coming from partitition elements within
-      # drive elements.
+      # For the time being, this only plans for drives, partitions, and new LVM volume groups.
       #
       # @param config [Agama::Storage::Config]
       # @return [Planned::DevicesCollection]
@@ -49,7 +49,7 @@ module Y2Storage
         #  - For dedicated VGs it creates a Planned VG containing a Planned LV, but no PVs
         #  - For LVM volumes it create a Planned LV but associated to no planned VG
         #  - For partition volumes, it creates a planned partition, of course
-        planned = planned_for_drives(config)
+        planned = planned_drives(config) + planned_vgs(config)
         Planned::DevicesCollection.new(planned)
       end
 
@@ -63,10 +63,19 @@ module Y2Storage
 
       # @param config [Agama::Storage::Config]
       # @return [Array<Planned::Device>]
-      def planned_for_drives(config)
+      def planned_drives(config)
         config.drives.flat_map do |drive|
           planner = AgamaDrivePlanner.new(devicegraph, issues_list)
-          planner.planned_devices(drive)
+          planner.planned_devices(drive, config)
+        end
+      end
+
+      # @param config [Agama::Storage::Config]
+      # @return [Array<Planned::Device>]
+      def planned_vgs(config)
+        config.volume_groups.flat_map do |vg|
+          planner = AgamaVgPlanner.new(devicegraph, issues_list)
+          planner.planned_devices(vg)
         end
       end
     end
