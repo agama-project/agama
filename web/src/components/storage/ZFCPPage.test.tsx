@@ -20,12 +20,10 @@
  */
 
 import React from "react";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
 import { ZFCPPage } from "~/components/storage";
 import { ZFCPDisk, ZFCPController, ZFCPConfig } from "~/types/zfcp";
-import { useZFCPConfig, useZFCPControllersChanges, useZFCPDisksChanges } from "~/queries/zfcp";
 
 const mockZFCPConfig: ZFCPConfig = {
   allowLunScan: false,
