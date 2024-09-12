@@ -56,10 +56,17 @@ const useInitiatorChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent(({ type, name, value }) => {
-      if (type === "ISCSIInitiatorChanged") {
-        queryClient.invalidateQueries({ queryKey: initiatorQuery.queryKey });
-      }
+    return client.ws().onEvent(({ type, name, ibft }) => {
+      if (type !== "ISCSIInitiatorChanged") return;
+
+      queryClient.setQueryData(initiatorQuery.queryKey, (oldData: ISCSIInitiator | undefined) => {
+        if (oldData === undefined) return;
+
+        return {
+          name: name === null ? oldData.name : name,
+          ibft: ibft === null ? oldData.ibft : ibft,
+        };
+      });
     });
   }, [client, queryClient]);
 };
@@ -81,11 +88,26 @@ const useNodesChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent(({ type }) => {
-      if (["ISCSINodeAdded", "ISCSINodeChanged", "ISCSINodeRemoved"].includes(type)) {
-        // FIXME: update with the information coming from the signal
-        queryClient.invalidateQueries({ queryKey: nodesQuery.queryKey });
+    return client.ws().onEvent(({ type, node }) => {
+      if (!["ISCSINodeAdded", "ISCSINodeChanged", "ISCSINodeRemoved"].includes(type)) {
+        return;
       }
+
+      queryClient.setQueryData(nodesQuery.queryKey, (oldData: ISCSINode[] | undefined) => {
+        if (oldData === undefined) return;
+
+        switch (type) {
+          case "ISCSINodeAdded": {
+            return [...oldData, node];
+          }
+          case "ISCSINodeChanged": {
+            return oldData.map((n) => (n.id === node.id ? node : n));
+          }
+          case "ISCSINodeRemoved": {
+            return oldData.filter((n) => n.id !== node.id);
+          }
+        }
+      });
     });
   }, [client, queryClient]);
 };
