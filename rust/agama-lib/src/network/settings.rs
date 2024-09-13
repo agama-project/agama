@@ -39,25 +39,25 @@ impl MatchSettings {
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct WirelessSettings {
-    /// Password of the wifi network
+    /// Password of the wireless network
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     /// Security method/key management
     pub security: String,
-    /// SSID of the wifi network
+    /// SSID of the wireless network
     pub ssid: String,
-    /// Wifi network mode
+    /// Wireless network mode
     pub mode: String,
-    /// Frequency band of the wifi network
+    /// Frequency band of the wireless network
     #[serde(skip_serializing_if = "Option::is_none")]
     pub band: Option<String>,
-    /// Wireless channel of the wifi network
+    /// Wireless channel of the wireless network
     #[serde(skip_serializing_if = "is_zero", default)]
     pub channel: u32,
     /// Only allow connection to this mac address
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bssid: Option<String>,
-    /// Indicates that the wifi network is not broadcasting it's SSID
+    /// Indicates that the wireless network is not broadcasting its SSID
     #[serde(skip_serializing_if = "std::ops::Not::not", default)]
     pub hidden: bool,
     /// A list of group/broadcast encryption algorithms

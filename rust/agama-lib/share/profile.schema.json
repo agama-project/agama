@@ -139,9 +139,11 @@
                 "additionalProperties": false,
                 "properties": {
                   "password": {
+                    "title": "Password of the wireless network",
                     "type": "string"
                   },
                   "security": {
+                    "title": "Security method/key management",
                     "type": "string",
                     "enum": [
                       "none",
@@ -154,9 +156,11 @@
                     ]
                   },
                   "ssid": {
+                    "title": "SSID of the wireless network",
                     "type": "string"
                   },
                   "mode": {
+                    "title": "Wireless network mode",
                     "type": "string",
                     "enum": [
                       "infrastructure",
@@ -166,11 +170,11 @@
                     ]
                   },
                   "hidden": {
-                    "title": "Indicates that the wifi network is not broadcasting it's SSID",
+                    "title": "Indicates that the wireless network is not broadcasting its SSID",
                     "type": "boolean"
                   },
                   "band": {
-                    "title": "Frequency band of the wifi network",
+                    "title": "Frequency band of the wireless network",
                     "type": "string",
                     "enum": [
                       "a",
@@ -178,7 +182,7 @@
                     ]
                   },
                   "channel": {
-                    "title": "Wireless channel of the wifi network",
+                    "title": "Wireless channel of the wireless network",
                     "type": "integer",
                     "minimum" : 0
                   },
