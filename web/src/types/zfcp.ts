@@ -39,9 +39,9 @@ type ZFCPConfig = {
 };
 
 type LUNInfo = {
-  channel: string,
-  wwpn: string,
-  lun: string
-}
+  channel: string;
+  wwpn: string;
+  lun: string;
+};
 
 export type { ZFCPController, ZFCPDisk, ZFCPConfig, LUNInfo };

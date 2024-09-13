@@ -34,46 +34,46 @@ import { _ } from "~/i18n";
  * @component
  *
  */
-export default function ZFCPDisksTable () {
-    const disks = useZFCPDisks();
-    const controllers = useZFCPControllers();
-    const { cancellablePromise } = useCancellablePromise();
-  
-    const columns = [
-      { id: "name", label: _("Name") },
-      { id: "channel", label: _("Channel ID") },
-      { id: "wwpn", label: _("WWPN") },
-      { id: "lun", label: _("LUN") },
+export default function ZFCPDisksTable() {
+  const disks = useZFCPDisks();
+  const controllers = useZFCPControllers();
+  const { cancellablePromise } = useCancellablePromise();
+
+  const columns = [
+    { id: "name", label: _("Name") },
+    { id: "channel", label: _("Channel ID") },
+    { id: "wwpn", label: _("WWPN") },
+    { id: "lun", label: _("LUN") },
+  ];
+
+  const columnValue = (disk: ZFCPDisk, column) => disk[column.id];
+
+  const actions = (disk: ZFCPDisk) => {
+    const controller = controllers.find((c) => c.channel === disk.channel);
+    if (!controller || controller.lunScan) return [];
+
+    return [
+      {
+        label: _("Deactivate"),
+        run: async () =>
+          await cancellablePromise(deactivateZFCPDisk(controller.id, disk.wwpn, disk.lun)),
+      },
     ];
-  
-    const columnValue = (disk: ZFCPDisk, column) => disk[column.id];
-  
-    const actions = (disk: ZFCPDisk) => {
-      const controller = controllers.find((c) => c.channel === disk.channel);
-      if (!controller || controller.lunScan) return [];
-  
-      return [
-        {
-          label: _("Deactivate"),
-          run: async () =>
-            await cancellablePromise(deactivateZFCPDisk(controller.id, disk.wwpn, disk.lun)),
-        },
-      ];
-    };
-  
-    const [loadingRow, setLoadingRow] = useState("");
+  };
 
-    const sortedDisks = () => {
-        return disks.sort((d1, d2) => {
-          const v1 = columnValue(d1, columns[0]);
-          const v2 = columnValue(d2, columns[0]);
-          if (v1 < v2) return -1;
-          if (v1 > v2) return 1;
-          return 0;
-        });
-    };
+  const [loadingRow, setLoadingRow] = useState("");
 
-  const Actions = ({ device } : { device: ZFCPDisk }) => {
+  const sortedDisks = () => {
+    return disks.sort((d1, d2) => {
+      const v1 = columnValue(d1, columns[0]);
+      const v2 = columnValue(d2, columns[0]);
+      if (v1 < v2) return -1;
+      if (v1 > v2) return 1;
+      return 0;
+    });
+  };
+
+  const Actions = ({ device }: { device: ZFCPDisk }) => {
     const deviceActions = actions(device);
     if (deviceActions.length === 0) return null;
 
@@ -132,4 +132,4 @@ export default function ZFCPDisksTable () {
       </Tbody>
     </Table>
   );
-};
+}

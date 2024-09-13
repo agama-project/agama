@@ -38,48 +38,42 @@ const FormWrapper = (props) => {
 
 const mockZFCPDisk: ZFCPDisk[] = [
   {
-    "name": "/dev/sda",
-    "channel": "0.0.fa00",
-    "wwpn": "0x500507630b181216",
-    "lun": "0x4020404900000000"
+    name: "/dev/sda",
+    channel: "0.0.fa00",
+    wwpn: "0x500507630b181216",
+    lun: "0x4020404900000000",
   },
   {
-    "name": "/dev/sdb",
-    "channel": "0.0.fc00",
-    "wwpn": "0x500507630b101216",
-    "lun": "0x0001000000000000"
-  }
+    name: "/dev/sdb",
+    channel: "0.0.fc00",
+    wwpn: "0x500507630b101216",
+    lun: "0x0001000000000000",
+  },
 ];
 
 const mockZFCPControllers: ZFCPController[] = [
   {
-    "id": "1",
-    "channel": "0.0.fa00",
-    "lunScan": false,
-    "active": true,
-    "lunsMap": {
-      "0x500507630b181216": [
-        "0x4020404900000000",
-        "0x4020404900000001"
-      ],
+    id: "1",
+    channel: "0.0.fa00",
+    lunScan: false,
+    active: true,
+    lunsMap: {
+      "0x500507630b181216": ["0x4020404900000000", "0x4020404900000001"],
       "0x500507680d7e284a": [],
-      "0x500507680d0e284a": []
-    }
+      "0x500507680d0e284a": [],
+    },
   },
   {
-    "id": "2",
-    "channel": "0.0.fc00",
-    "lunScan": false,
-    "active": true,
-    "lunsMap": {
+    id: "2",
+    channel: "0.0.fc00",
+    lunScan: false,
+    active: true,
+    lunsMap: {
       "0x500507680d7e284b": [],
       "0x500507680d0e284b": [],
-      "0x500507630b101216": [
-        "0x0000000000000000",
-        "0x0001000000000000"
-      ]
-    }
-  }
+      "0x500507630b101216": ["0x0000000000000000", "0x0001000000000000"],
+    },
+  },
 ];
 
 jest.mock("~/queries/zfcp", () => ({
