@@ -19,9 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { _ } from "~/i18n";
-import { ZFCPSupported, fetchZFCPConfig, fetchZFCPControllers, fetchZFCPDisks } from "~/api/zfcp";
+import { supportedZFCP, fetchZFCPConfig, fetchZFCPControllers, fetchZFCPDisks } from "~/api/zfcp";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { ZFCPConfig, ZFCPController, ZFCPDisk } from "~/types/zfcp";
@@ -29,9 +29,10 @@ import { ZFCPConfig, ZFCPController, ZFCPDisk } from "~/types/zfcp";
 /**
  * Returns a query for retrieving the zFCP controllers
  */
-const ZFCPControllersQuery = () => ({
+const zfcpControllersQuery = () => ({
   queryKey: ["zfcp", "controllers"],
   queryFn: fetchZFCPControllers,
+  staleTime: Infinity
 });
 
 /**
@@ -40,19 +41,20 @@ const ZFCPControllersQuery = () => ({
 const ZFCPDisksQuery = () => ({
   queryKey: ["zfcp", "disks"],
   queryFn: fetchZFCPDisks,
+  staleTime: Infinity
 });
 
 /**
  * Returns a query for checking if zFCP is supported
  */
-const ZFCPSupportedQuery = () => ({
+const zfcpSupportedQuery = () => ({
   queryKey: ["zfcp", "supported"],
-  queryFn: ZFCPSupported,
+  queryFn: supportedZFCP,
 });
 /**
  * Returns a query for retrieving the zFCP config
  */
-const ZFCPConfigQuery = () => ({
+const zfcpConfigQuery = () => ({
   queryKey: ["zfcp", "config"],
   queryFn: fetchZFCPConfig,
 });
@@ -61,7 +63,7 @@ const ZFCPConfigQuery = () => ({
  * Hook that returns zFCP controllers.
  */
 const useZFCPControllers = (): ZFCPController[] => {
-  const { data: controllers } = useSuspenseQuery(ZFCPControllersQuery());
+  const { data: controllers } = useSuspenseQuery(zfcpControllersQuery());
   return controllers;
 };
 
@@ -77,14 +79,14 @@ const useZFCPDisks = (): ZFCPDisk[] => {
  * Hook that returns zFCP config.
  */
 const useZFCPSupported = (): boolean => {
-  const { data: supported } = useSuspenseQuery(ZFCPSupportedQuery());
+  const { data: supported } = useSuspenseQuery(zfcpSupportedQuery());
   return supported;
 };
 /**
  * Hook that returns zFCP config.
  */
 const useZFCPConfig = (): ZFCPConfig => {
-  const { data: config } = useSuspenseQuery(ZFCPConfigQuery());
+  const { data: config } = useSuspenseQuery(zfcpConfigQuery());
   return config;
 };
 

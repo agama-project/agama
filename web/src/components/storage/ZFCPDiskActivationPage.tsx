@@ -55,7 +55,7 @@ export default function ZFCPDiskActivationPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("ZFCP Disk Activation")}</h2>
+        <h2>{_("zFCP Disk Activation")}</h2>
       </Page.Header>
 
       <Page.Content>

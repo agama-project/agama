@@ -29,8 +29,8 @@ import {
   SelectOption,
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { DASDSupported } from "~/api/dasd";
-import { ZFCPSupported } from "~/api/zfcp";
+import { supportedDASD } from "~/api/dasd";
+import { supportedZFCP } from "~/api/zfcp";
 
 /**
  * Internal component for building the link to Storage/DASD page
@@ -85,8 +85,8 @@ export default function DevicesTechMenu({ label }: ProposalMenuProps) {
   const [showZFCPLink, setShowZFCPLink] = useState(false);
 
   useEffect(() => {
-    DASDSupported().then(setShowDasdLink);
-    ZFCPSupported().then(setShowZFCPLink);
+    supportedDASD().then(setShowDasdLink);
+    supportedZFCP().then(setShowZFCPLink);
   }, []);
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle ref={toggleRef} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>

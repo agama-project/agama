@@ -24,15 +24,15 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DevicesTechMenu from "./DevicesTechMenu";
 import { _ } from "~/i18n";
-import { DASDSupported } from "~/api/dasd";
-import { ZFCPSupported } from "~/api/zfcp";
+import { supportedDASD } from "~/api/dasd";
+import { supportedZFCP } from "~/api/zfcp";
 
 jest.mock("~/api/dasd");
 jest.mock("~/api/zfcp");
 
 beforeEach(() => {
-  (DASDSupported as jest.Mock).mockResolvedValue(false);
-  (ZFCPSupported as jest.Mock).mockResolvedValue(false);
+  (supportedDASD as jest.Mock).mockResolvedValue(false);
+  (supportedZFCP as jest.Mock).mockResolvedValue(false);
 });
 
 it("contains an entry for configuring iSCSI", async () => {
@@ -51,7 +51,7 @@ it("does not contain an entry for configuring DASD when is NOT supported", async
 });
 
 it("contains an entry for configuring DASD when is supported", async () => {
-  (DASDSupported as jest.Mock).mockResolvedValue(true);
+  (supportedDASD as jest.Mock).mockResolvedValue(true);
   const { user } = installerRender(<DevicesTechMenu label={_("storage techs")} />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
@@ -67,7 +67,7 @@ it("does not contain an entry for configuring zFCP when is NOT supported", async
 });
 
 it("contains an entry for configuring zFCP when is supported", async () => {
-  (ZFCPSupported as jest.Mock).mockResolvedValue(true);
+  (supportedZFCP as jest.Mock).mockResolvedValue(true);
   const { user } = installerRender(<DevicesTechMenu label={_("storage techs")} />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);

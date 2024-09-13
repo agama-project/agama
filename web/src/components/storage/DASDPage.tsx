@@ -43,7 +43,7 @@ export default function DASDPage() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Back>{_("Close")}</Page.Back>
+        <Page.Cancel navigateTo={PATHS.targetDevice}>{_("Back")}</Page.Cancel>
       </Page.Actions>
     </Page>
   );

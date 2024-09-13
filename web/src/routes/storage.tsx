@@ -32,8 +32,8 @@ import {
 } from "~/components/storage";
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
-import { DASDSupported, probeDASD } from "~/api/dasd";
-import { ZFCPSupported, probeZFCP } from "~/api/zfcp";
+import { supportedDASD, probeDASD } from "~/api/dasd";
+import { probeZFCP, supportedZFCP } from "~/api/zfcp";
 import { redirect } from "react-router-dom";
 
 const PATHS = {
@@ -79,7 +79,7 @@ const routes = (): Route => ({
       element: <DASDPage />,
       handle: { name: N_("DASD") },
       loader: async () => {
-        if (!DASDSupported()) return redirect(PATHS.targetDevice);
+        if (!supportedDASD()) return redirect(PATHS.targetDevice);
         return probeDASD();
       },
     },
@@ -88,7 +88,7 @@ const routes = (): Route => ({
       element: <ZFCPPage />,
       handle: { name: N_("ZFCP") },
       loader: async () => {
-        if (!ZFCPSupported()) return redirect(PATHS.targetDevice);
+        if (!supportedZFCP()) return redirect(PATHS.targetDevice);
         return probeZFCP();
       },
     },
@@ -96,7 +96,7 @@ const routes = (): Route => ({
       path: PATHS.zfcp.activateDisk,
       element: <ZFCPDiskActivationPage />,
       loader: async () => {
-        if (!ZFCPSupported()) return redirect(PATHS.targetDevice);
+        if (!supportedZFCP()) return redirect(PATHS.targetDevice);
         return probeZFCP();
       },
     },

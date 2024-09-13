@@ -187,7 +187,7 @@ export default function ZFCPPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("ZFCP")}</h2>
+        <h2>{_("zFCP")}</h2>
       </Page.Header>
 
       <Page.Content>
@@ -195,7 +195,7 @@ export default function ZFCPPage() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Back />
+        <Page.Cancel navigateTo={PATHS.targetDevice}>{_("Back")}</Page.Cancel>
       </Page.Actions>
     </Page>
   );

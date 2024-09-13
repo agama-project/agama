@@ -30,7 +30,7 @@ const fetchDASDDevices = (): Promise<DASDDevice[]> => get("/api/storage/dasd/dev
 /**
  * Returns if DASD is supported at all
  */
-const DASDSupported = (): Promise<boolean> => get("/api/storage/dasd/supported");
+const supportedDASD = (): Promise<boolean> => get("/api/storage/dasd/supported");
 
 /**
  * probes DASD devices
@@ -79,7 +79,7 @@ const disableDiag = (devicesIDs: string[]) =>
 
 export {
   fetchDASDDevices,
-  DASDSupported,
+  supportedDASD,
   formatDASD,
   probeDASD,
   enableDASD,

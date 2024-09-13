@@ -41,7 +41,7 @@ const fetchZFCPConfig = (): Promise<ZFCPConfig> => get("/api/storage/zfcp/config
 /**
  * Returns if zFCP is supported at all
  */
-const ZFCPSupported = (): Promise<boolean> => get("/api/storage/zfcp/supported");
+const supportedZFCP = (): Promise<boolean> => get("/api/storage/zfcp/supported");
 
 /**
  * probes zFCP devices
@@ -95,7 +95,7 @@ export {
   fetchZFCPDisks,
   fetchZFCPConfig,
   probeZFCP,
-  ZFCPSupported,
+  supportedZFCP,
   activateZFCPController,
   fetchWWPNs,
   fetchLUNs,
