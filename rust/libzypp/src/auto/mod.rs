@@ -8,6 +8,12 @@ pub use self::context::Context;
 mod expected;
 pub use self::expected::Expected;
 
+mod info_base;
+pub use self::info_base::InfoBase;
+
 mod enums;
 pub use self::enums::Exception;
 
+pub(crate) mod traits {
+    pub use super::info_base::InfoBaseExt;
+}

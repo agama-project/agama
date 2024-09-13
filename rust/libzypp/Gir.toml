@@ -13,6 +13,7 @@ generate = [
   "Zypp.Context",
   "Zypp.Exception",
   "Zypp.Expected",
+  "Zypp.InfoBase",
   "Zypp.*"
 ]
 
