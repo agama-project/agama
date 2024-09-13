@@ -46,7 +46,7 @@ const findStorageJob = (id: string): Promise<Job | undefined> =>
  *
  * It does the probing again and recalculates the proposal with the same
  * settings. Internally, it is composed of three different API calls
- * (retrieve the settings, probe the system and calculate the proposal).
+ * (retrieve the settings, probe the system, and calculate the proposal).
  */
 const refresh = async (): Promise<void> => {
   const settings = await fetchSettings();

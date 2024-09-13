@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchInitiator, fetchNodes, updateInitiator } from "~/api/storage/iscsi";
 import { ISCSIInitiator } from "~/types/storage";
 import { useInstallerClient } from "~/context/installer";
