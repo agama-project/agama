@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,10 +23,11 @@
 
 import React, { FormEvent, useEffect, useState } from "react";
 import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
-import { _ } from "~/i18n";
 import { AxiosResponseHeaders } from "axios";
+import { Page } from "~/components/core";
 import { useZFCPControllers, useZFCPDisks } from "~/queries/zfcp";
 import { inactiveLuns } from "~/utils/zfcp";
+import { _ } from "~/i18n";
 
 type FormData = {
   id?: string;
@@ -106,7 +107,7 @@ export default function ZFCPDiskForm({
   if (!formData.channel && getChannels().length > 0) select();
 
   return (
-    <>
+    <Page.Section>
       {isFailed && (
         <Alert variant="warning" isInline title={_("Something went wrong")}>
           <p>{_("The zFCP disk was not activated.")}</p>
@@ -142,6 +143,6 @@ export default function ZFCPDiskForm({
           </FormSelect>
         </FormGroup>
       </Form>
-    </>
+    </Page.Section>
   );
 }

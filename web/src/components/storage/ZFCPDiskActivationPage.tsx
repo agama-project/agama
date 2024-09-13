@@ -19,10 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore wwpns npiv
-
 import React, { useState } from "react";
-import { Grid, GridItem, Stack } from "@patternfly/react-core";
+import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { ZFCPDiskForm } from "~/components/storage";
 import { _ } from "~/i18n";
@@ -59,23 +57,19 @@ export default function ZFCPDiskActivationPage() {
       <Page.Header>
         <h2>{_("ZFCP Disk Activation")}</h2>
       </Page.Header>
-      <Page.MainContent>
+
+      <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12} xl={12}>
-            <Page.CardSection isFullHeight>
-              <Stack hasGutter>
-                <ZFCPDiskForm id={formId} onSubmit={onSubmit} onLoading={onLoading} />
-              </Stack>
-            </Page.CardSection>
+            <ZFCPDiskForm id={formId} onSubmit={onSubmit} onLoading={onLoading} />
           </GridItem>
         </Grid>
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.CancelAction navigateTo={PATHS.zfcp.root}>{_("Close")}</Page.CancelAction>
-        <Page.Action form={formId} type="submit" disabled={isAcceptDisabled}>
-          {_("Accept")}
-        </Page.Action>
-      </Page.NextActions>
+      </Page.Content>
+
+      <Page.Actions>
+        <Page.Cancel navigateTo={PATHS.zfcp.root} />
+        <Page.Submit form={formId} disabled={isAcceptDisabled} />
+      </Page.Actions>
     </Page>
   );
 }

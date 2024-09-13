@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore wwpns npiv
+// cspell:ignore npiv
 
 import React from "react";
 import {
@@ -181,7 +181,8 @@ export default function ZFCPPage() {
       <Page.Header>
         <h2>{_("ZFCP")}</h2>
       </Page.Header>
-      <Page.MainContent>
+
+      <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
             <ControllersSection />
@@ -190,10 +191,11 @@ export default function ZFCPPage() {
             <DisksSection />
           </GridItem>
         </Grid>
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.Action navigateTo={PATHS.targetDevice}>{_("Close")}</Page.Action>
-      </Page.NextActions>
+      </Page.Content>
+
+      <Page.Actions>
+        <Page.Back />
+      </Page.Actions>
     </Page>
   );
 }
