@@ -26,12 +26,11 @@ import {
   Button,
   Grid,
   GridItem,
-  Stack,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Section, Page } from "~/components/core";
+import { EmptyState, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import {
   useZFCPConfig,
@@ -47,65 +46,79 @@ import { PATHS } from "~/routes/storage";
 import { useNavigate } from "react-router-dom";
 import { inactiveLuns } from "~/utils/zfcp";
 
-/**
- * Section for zFCP controllers.
- */
-const ControllersSection = () => {
-  const controllers = useZFCPControllers();
-  const allowLUNScan = useZFCPConfig().allowLunScan;
+const LUNScanInfo = () => {
+  const { allowLunScan } = useZFCPConfig();
+  // TRANSLATORS: the text in the square brackets [] will be displayed in bold
+  const lunScanEnabled = _(
+    "Automatic LUN scan is [enabled]. Activating a controller which is \
+      running in NPIV mode will automatically configures all its LUNs.",
+  );
+  // TRANSLATORS: the text in the square brackets [] will be displayed in bold
+  const lunScanDisabled = _(
+    "Automatic LUN scan is [disabled]. LUNs have to be manually \
+      configured after activating a controller.",
+  );
 
-  const load = () => {
-    probeZFCP();
-  };
-
-  const EmptyState = () => {
-    return (
-      <Stack hasGutter>
-        <div>{_("No zFCP controllers found.")}</div>
-        <div>{_("Please, try to read the zFCP devices again.")}</div>
-        {/* TRANSLATORS: button label */}
-        <Button variant="primary" onClick={load}>
-          {_("Read zFCP devices")}
-        </Button>
-      </Stack>
-    );
-  };
-
-  const Content = () => {
-    const LUNScanInfo = () => {
-      const msg = allowLUNScan
-        ? // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-          _(
-            "Automatic LUN scan is [enabled]. Activating a controller which is \
-running in NPIV mode will automatically configures all its LUNs.",
-          )
-        : // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-          _(
-            "Automatic LUN scan is [disabled]. LUNs have to be manually \
-configured after activating a controller.",
-          );
-
-      const [msgStart, msgBold, msgEnd] = msg.split(/[[\]]/);
-
-      return (
-        <p>
-          {msgStart}
-          <b>{msgBold}</b>
-          {msgEnd}
-        </p>
-      );
-    };
-
-    return (
-      <>
-        <LUNScanInfo />
-        <ZFCPControllersTable />
-      </>
-    );
-  };
+  const msg = allowLunScan ? lunScanEnabled : lunScanDisabled;
+  const [msgStart, msgBold, msgEnd] = msg.split(/[[\]]/);
 
   return (
-    <Section title="Controllers">{controllers.length === 0 ? <EmptyState /> : <Content />}</Section>
+    <p>
+      {msgStart}
+      <b>{msgBold}</b>
+      {msgEnd}
+    </p>
+  );
+};
+
+const NoDisksFound = () => {
+  const navigate = useNavigate();
+  const controllers = useZFCPControllers();
+  const activeDisks = !controllers.some((c) => c.active);
+  const body = activeDisks
+    ? _("Please, try to activate a zFCP controller.")
+    : _("Please, try to activate a zFCP disk.");
+
+  return (
+    <EmptyState
+      title={_("No zFCP disks found.")}
+      icon="warning"
+      // @ts-expect-error: core/EmptyState props are not well defined
+      variant="sm"
+      actions={
+        !activeDisks && (
+          <Button variant="primary" onClick={() => navigate(PATHS.zfcp.activateDisk)}>
+            {_("Activate zFCP disk")}
+          </Button>
+        )
+      }
+    >
+      {body}
+    </EmptyState>
+  );
+};
+
+const Disks = () => {
+  const navigate = useNavigate();
+  const disks = useZFCPDisks();
+  const controllers = useZFCPControllers();
+  const isDisabled = inactiveLuns(controllers, disks).length === 0;
+
+  return (
+    <>
+      <Toolbar>
+        <ToolbarContent>
+          <ToolbarItem align={{ default: "alignRight" }}>
+            {/* TRANSLATORS: button label */}
+            <Button onClick={() => navigate(PATHS.zfcp.activateDisk)} isDisabled={isDisabled}>
+              {_("Activate new disk")}
+            </Button>
+          </ToolbarItem>
+        </ToolbarContent>
+      </Toolbar>
+
+      <ZFCPDisksTable />
+    </>
   );
 };
 
@@ -113,59 +126,54 @@ configured after activating a controller.",
  * Section for zFCP disks.
  */
 const DisksSection = () => {
-  const controllers = useZFCPControllers();
   const disks = useZFCPDisks();
-  const navigate = useNavigate();
-
-  const EmptyState = () => {
-    const NoActiveControllers = () => {
-      return <div>{_("Please, try to activate a zFCP controller.")}</div>;
-    };
-
-    const NoActiveDisks = () => {
-      return (
-        <>
-          <div>{_("Please, try to activate a zFCP disk.")}</div>
-          {/* TRANSLATORS: button label */}
-          <Button variant="primary" onClick={() => navigate(PATHS.zfcp.activateDisk)}>
-            {_("Activate zFCP disk")}
-          </Button>
-        </>
-      );
-    };
-
-    return (
-      <Stack hasGutter>
-        <div>{_("No zFCP disks found.")}</div>
-        {controllers.some((c) => c.active) ? <NoActiveDisks /> : <NoActiveControllers />}
-      </Stack>
-    );
-  };
-
-  const Content = () => {
-    const isDisabled = inactiveLuns(controllers, disks).length === 0;
-
-    return (
-      <>
-        <Toolbar>
-          <ToolbarContent>
-            <ToolbarItem align={{ default: "alignRight" }}>
-              {/* TRANSLATORS: button label */}
-              <Button onClick={() => navigate(PATHS.zfcp.activateDisk)} isDisabled={isDisabled}>
-                {_("Activate new disk")}
-              </Button>
-            </ToolbarItem>
-          </ToolbarContent>
-        </Toolbar>
-
-        <ZFCPDisksTable />
-      </>
-    );
-  };
 
   return (
-    // TRANSLATORS: section title
-    <Section title={_("Disks")}>{disks.length === 0 ? <EmptyState /> : <Content />}</Section>
+    <Page.Section title={_("Disks")}>
+      {disks.length === 0 ? <NoDisksFound /> : <Disks />}
+    </Page.Section>
+  );
+};
+
+/**
+ * Section for zFCP controllers.
+ */
+const ControllersSection = () => (
+  <Page.Section title={_("Controllers")}>
+    <LUNScanInfo />
+    <ZFCPControllersTable />
+  </Page.Section>
+);
+
+const Content = () => {
+  const controllers = useZFCPControllers();
+
+  if (controllers.length === 0) {
+    return (
+      <EmptyState
+        headingLevel="h3"
+        title={_("No zFCP controllers found.")}
+        icon="error"
+        actions={
+          <Button variant="primary" onClick={probeZFCP}>
+            {_("Read zFCP devices")}
+          </Button>
+        }
+      >
+        <div>{_("Please, try to activate a zFCP controller.")}</div>
+      </EmptyState>
+    );
+  }
+
+  return (
+    <Grid hasGutter>
+      <GridItem sm={12} xl={6}>
+        <ControllersSection />
+      </GridItem>
+      <GridItem sm={12} xl={6}>
+        <DisksSection />
+      </GridItem>
+    </Grid>
   );
 };
 
@@ -183,14 +191,7 @@ export default function ZFCPPage() {
       </Page.Header>
 
       <Page.Content>
-        <Grid hasGutter>
-          <GridItem sm={12} xl={6}>
-            <ControllersSection />
-          </GridItem>
-          <GridItem sm={12} xl={6}>
-            <DisksSection />
-          </GridItem>
-        </Grid>
+        <Content />
       </Page.Content>
 
       <Page.Actions>
