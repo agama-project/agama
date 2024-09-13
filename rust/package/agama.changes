@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 13 12:25:28 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add additional wireless settings (gh#openSUSE/agama#1602).
+
+-------------------------------------------------------------------
 Wed Sep 10 15:00:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Implement 802.1x (EAP) in network settings (gh#openSUSE/agama#1597).

@@ -971,13 +971,19 @@ pub struct WirelessConfig {
     pub security: SecurityProtocol,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub band: Option<WirelessBand>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub channel: Option<u32>,
+    pub channel: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bssid: Option<macaddr::MacAddr6>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wep_security: Option<WEPSecurity>,
     pub hidden: bool,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub group_algorithms: Vec<GroupAlgorithm>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub pairwise_algorithms: Vec<PairwiseAlgorithm>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub wpa_protocol_versions: Vec<WPAProtocolVersion>,
+    pub pmf: i32,
 }
 
 impl TryFrom<ConnectionConfig> for WirelessConfig {
@@ -998,11 +1004,60 @@ impl TryFrom<WirelessSettings> for WirelessConfig {
         let ssid = SSID(settings.ssid.as_bytes().into());
         let mode = WirelessMode::try_from(settings.mode.as_str())?;
         let security = SecurityProtocol::try_from(settings.security.as_str())?;
+        let band = if let Some(band) = &settings.band {
+            Some(
+                WirelessBand::try_from(band.as_str())
+                    .map_err(|_| NetworkStateError::InvalidWirelessBand(band.to_string()))?,
+            )
+        } else {
+            None
+        };
+        let bssid = if let Some(bssid) = &settings.bssid {
+            Some(
+                macaddr::MacAddr6::from_str(bssid)
+                    .map_err(|_| NetworkStateError::InvalidBssid(bssid.to_string()))?,
+            )
+        } else {
+            None
+        };
+        let group_algorithms = settings
+            .group_algorithms
+            .iter()
+            .map(|x| {
+                GroupAlgorithm::from_str(x)
+                    .map_err(|_| NetworkStateError::InvalidGroupAlgorithm(x.to_string()))
+            })
+            .collect::<Result<Vec<GroupAlgorithm>, NetworkStateError>>()?;
+        let pairwise_algorithms = settings
+            .pairwise_algorithms
+            .iter()
+            .map(|x| {
+                PairwiseAlgorithm::from_str(x)
+                    .map_err(|_| NetworkStateError::InvalidGroupAlgorithm(x.to_string()))
+            })
+            .collect::<Result<Vec<PairwiseAlgorithm>, NetworkStateError>>()?;
+        let wpa_protocol_versions = settings
+            .wpa_protocol_versions
+            .iter()
+            .map(|x| {
+                WPAProtocolVersion::from_str(x)
+                    .map_err(|_| NetworkStateError::InvalidGroupAlgorithm(x.to_string()))
+            })
+            .collect::<Result<Vec<WPAProtocolVersion>, NetworkStateError>>()?;
+
         Ok(WirelessConfig {
             ssid,
             mode,
             security,
             password: settings.password,
+            band,
+            channel: settings.channel,
+            bssid,
+            hidden: settings.hidden,
+            group_algorithms,
+            pairwise_algorithms,
+            wpa_protocol_versions,
+            pmf: settings.pmf,
             ..Default::default()
         })
     }
@@ -1012,11 +1067,37 @@ impl TryFrom<WirelessConfig> for WirelessSettings {
     type Error = NetworkStateError;
 
     fn try_from(wireless: WirelessConfig) -> Result<Self, Self::Error> {
+        let band = wireless.band.map(|x| x.to_string());
+        let bssid = wireless.bssid.map(|x| x.to_string());
+        let group_algorithms = wireless
+            .group_algorithms
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>();
+        let pairwise_algorithms = wireless
+            .pairwise_algorithms
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>();
+        let wpa_protocol_versions = wireless
+            .wpa_protocol_versions
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>();
+
         Ok(WirelessSettings {
             ssid: wireless.ssid.to_string(),
             mode: wireless.mode.to_string(),
             security: wireless.security.to_string(),
             password: wireless.password,
+            band,
+            channel: wireless.channel,
+            bssid,
+            hidden: wireless.hidden,
+            group_algorithms,
+            pairwise_algorithms,
+            wpa_protocol_versions,
+            pmf: wireless.pmf,
         })
     }
 }
@@ -1102,6 +1183,108 @@ impl TryFrom<&str> for SecurityProtocol {
                 value.to_string(),
             )),
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+pub enum GroupAlgorithm {
+    Wep40,
+    Wep104,
+    Tkip,
+    Ccmp,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid group algorithm: {0}")]
+pub struct InvalidGroupAlgorithm(String);
+
+impl FromStr for GroupAlgorithm {
+    type Err = InvalidGroupAlgorithm;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "wep40" => Ok(GroupAlgorithm::Wep40),
+            "wep104" => Ok(GroupAlgorithm::Wep104),
+            "tkip" => Ok(GroupAlgorithm::Tkip),
+            "ccmp" => Ok(GroupAlgorithm::Ccmp),
+            _ => Err(InvalidGroupAlgorithm(value.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for GroupAlgorithm {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            GroupAlgorithm::Wep40 => "wep40",
+            GroupAlgorithm::Wep104 => "wep104",
+            GroupAlgorithm::Tkip => "tkip",
+            GroupAlgorithm::Ccmp => "ccmp",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+pub enum PairwiseAlgorithm {
+    Tkip,
+    Ccmp,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid pairwise algorithm: {0}")]
+pub struct InvalidPairwiseAlgorithm(String);
+
+impl FromStr for PairwiseAlgorithm {
+    type Err = InvalidPairwiseAlgorithm;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "tkip" => Ok(PairwiseAlgorithm::Tkip),
+            "ccmp" => Ok(PairwiseAlgorithm::Ccmp),
+            _ => Err(InvalidPairwiseAlgorithm(value.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for PairwiseAlgorithm {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            PairwiseAlgorithm::Tkip => "tkip",
+            PairwiseAlgorithm::Ccmp => "ccmp",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+pub enum WPAProtocolVersion {
+    Wpa,
+    Rsn,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid WPA protocol version: {0}")]
+pub struct InvalidWPAProtocolVersion(String);
+
+impl FromStr for WPAProtocolVersion {
+    type Err = InvalidWPAProtocolVersion;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "wpa" => Ok(WPAProtocolVersion::Wpa),
+            "rsn" => Ok(WPAProtocolVersion::Rsn),
+            _ => Err(InvalidWPAProtocolVersion(value.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for WPAProtocolVersion {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            WPAProtocolVersion::Wpa => "wpa",
+            WPAProtocolVersion::Rsn => "rsn",
+        };
+        write!(f, "{}", name)
     }
 }
 
