@@ -80,7 +80,7 @@ const deleteNode = async (node: ISCSINode): Promise<void> => {
  *
  * @param node - ISCSI node
  * @param options - Authentication options
- * @return error code (0: success; 1: invalid startup; 2: failed)
+ * @return operation result (0: success; 1: invalid startup; 2: failed)
  */
 const login = async (node: ISCSINode, options: LoginOptions) => {
   try {

@@ -28,13 +28,13 @@ import { InitiatorForm } from "~/components/storage/iscsi";
 import { useInitiatorMutation } from "~/queries/storage/iscsi";
 
 export default function InitiatorPresenter({ initiator }) {
-  const updateInitiator = useInitiatorMutation();
+  const { mutateAsync: updateInitiator } = useInitiatorMutation();
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const openForm = () => setIsFormOpen(true);
   const closeForm = () => setIsFormOpen(false);
   const submitForm = async ({ name }) => {
-    await updateInitiator.mutateAsync({ name });
+    await updateInitiator({ name });
 
     closeForm();
   };
