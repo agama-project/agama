@@ -37,7 +37,7 @@ import { Flex as PFFlex, FlexProps, FlexItem, FlexItemProps } from "@patternfly/
  */
 
 // NOTE: PF/Flex#order prop is missing "sm" breakpoint
-// NOTE: The ommited props match the extends constraint becuase they are typed
+// NOTE: The omitted props match the extends constraint because they are typed
 // as "any", see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts#L2923-L3001
 // (FlexProps interface extends React.HTMLProps)
 type ResponsiveFlexProps = {
