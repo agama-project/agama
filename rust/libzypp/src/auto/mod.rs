@@ -5,3 +5,6 @@
 mod context;
 pub use self::context::Context;
 
+mod enums;
+pub use self::enums::Exception;
+

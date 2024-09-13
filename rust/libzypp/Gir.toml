@@ -10,9 +10,11 @@ generate_safety_asserts = true
 deprecate_by_min_version = true
 
 generate = [
-  "Zypp.Context"
+  "Zypp.Context",
+  "Zypp.Exception"
 ]
 
 manual = [
-  "GLib.Error"
+  "GLib.Error",
+  "GLib.Quark"
 ]
