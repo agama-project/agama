@@ -70,9 +70,9 @@ const mockZFCPControllers: ZFCPController[] = [
 
 jest.mock("~/queries/zfcp", () => ({
   useZFCPDisks: () => mockZFCPDisk,
-  useZFCPDisksChanges: () => mockZFCPDisk,
+  useZFCPDisksChanges: () => null,
   useZFCPControllers: () => mockZFCPControllers,
-  useZFCPControllersChanges: () => mockZFCPControllers,
+  useZFCPControllersChanges: () => null,
   useZFCPConfig: () => mockZFCPConfig,
 }));
 

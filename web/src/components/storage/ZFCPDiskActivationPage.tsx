@@ -71,7 +71,7 @@ export default function ZFCPDiskActivationPage() {
         </Grid>
       </Page.MainContent>
       <Page.NextActions>
-        <Page.Action navigateTo={PATHS.zfcp.root}>{_("Close")}</Page.Action>
+        <Page.CancelAction navigateTo={PATHS.zfcp.root}>{_("Close")}</Page.CancelAction>
         <Page.Action form={formId} type="submit" disabled={isAcceptDisabled}>
           {_("Accept")}
         </Page.Action>

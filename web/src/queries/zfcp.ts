@@ -21,7 +21,7 @@
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { _ } from "~/i18n";
-import { fetchZFCPConfig, fetchZFCPControllers, fetchZFCPDisks } from "~/api/zfcp";
+import { ZFCPSupported, fetchZFCPConfig, fetchZFCPControllers, fetchZFCPDisks } from "~/api/zfcp";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { ZFCPConfig, ZFCPController, ZFCPDisk } from "~/types/zfcp";
@@ -42,6 +42,13 @@ const ZFCPDisksQuery = () => ({
   queryFn: fetchZFCPDisks,
 });
 
+/**
+ * Returns a query for checking if zFCP is supported
+ */
+const ZFCPSupportedQuery = () => ({
+  queryKey: ["zfcp", "supported"],
+  queryFn: ZFCPSupported,
+});
 /**
  * Returns a query for retrieving the zFCP config
  */
@@ -66,6 +73,13 @@ const useZFCPDisks = (): ZFCPDisk[] => {
   return devices;
 };
 
+/**
+ * Hook that returns zFCP config.
+ */
+const useZFCPSupported = (): boolean => {
+  const { data: supported } = useSuspenseQuery(ZFCPSupportedQuery());
+  return supported;
+};
 /**
  * Hook that returns zFCP config.
  */
@@ -117,9 +131,6 @@ const useZFCPControllersChanges = () => {
       }
     });
   });
-
-  const { data: devices } = useSuspenseQuery(ZFCPControllersQuery());
-  return devices;
 };
 
 /**
@@ -165,9 +176,6 @@ const useZFCPDisksChanges = () => {
       }
     });
   });
-
-  const { data: devices } = useSuspenseQuery(ZFCPDisksQuery());
-  return devices;
 };
 
 export {
@@ -176,4 +184,5 @@ export {
   useZFCPDisks,
   useZFCPDisksChanges,
   useZFCPConfig,
+  useZFCPSupported,
 };

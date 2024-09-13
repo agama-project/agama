@@ -28,14 +28,13 @@ import {
   ISCSIPage,
   ProposalPage,
   ZFCPPage,
-  ZFCPDiskForm,
+  ZFCPDiskActivationPage
 } from "~/components/storage";
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 import { DASDSupported, probeDASD } from "~/api/dasd";
 import { ZFCPSupported, probeZFCP } from "~/api/zfcp";
 import { redirect } from "react-router-dom";
-import ZFCPDiskActivationPage from "~/components/storage/ZFCPDiskActivationPage";
 
 const PATHS = {
   root: "/storage",

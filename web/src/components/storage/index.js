@@ -29,6 +29,7 @@ export { default as DASDTable } from "./DASDTable";
 export { default as DASDFormatProgress } from "./DASDFormatProgress";
 export { default as ZFCPPage } from "./ZFCPPage";
 export { default as ZFCPDiskForm } from "./ZFCPDiskForm";
+export { default as ZFCPDiskActivationPage } from "./ZFCPDiskActivationPage";
 export { default as ISCSIPage } from "./ISCSIPage";
 export { default as BootSelection } from "./BootSelection";
 export { default as DeviceSelectorTable } from "./DeviceSelectorTable";

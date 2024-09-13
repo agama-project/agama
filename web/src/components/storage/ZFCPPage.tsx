@@ -21,7 +21,7 @@
 
 // cspell:ignore wwpns npiv
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Grid,
@@ -33,7 +33,13 @@ import {
 } from "@patternfly/react-core";
 import { Section, Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { useZFCPConfig, useZFCPControllersChanges, useZFCPDisksChanges } from "~/queries/zfcp";
+import {
+  useZFCPConfig,
+  useZFCPControllers,
+  useZFCPControllersChanges,
+  useZFCPDisks,
+  useZFCPDisksChanges,
+} from "~/queries/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
 import { probeZFCP } from "~/api/zfcp";
@@ -45,8 +51,8 @@ import { inactiveLuns } from "~/utils/zfcp";
  * Section for zFCP controllers.
  */
 const ControllersSection = () => {
+  const controllers = useZFCPControllers();
   const allowLUNScan = useZFCPConfig().allowLunScan;
-  const controllers = useZFCPControllersChanges();
 
   const load = () => {
     probeZFCP();
@@ -107,8 +113,8 @@ configured after activating a controller.",
  * Section for zFCP disks.
  */
 const DisksSection = () => {
-  const controllers = useZFCPControllersChanges();
-  const disks = useZFCPDisksChanges();
+  const controllers = useZFCPControllers();
+  const disks = useZFCPDisks();
   const navigate = useNavigate();
 
   const EmptyState = () => {
@@ -167,6 +173,9 @@ const DisksSection = () => {
  * Page for managing zFCP devices.
  */
 export default function ZFCPPage() {
+  useZFCPControllersChanges();
+  useZFCPDisksChanges();
+
   return (
     <Page>
       <Page.Header>
