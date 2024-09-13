@@ -12,11 +12,12 @@ deprecate_by_min_version = true
 generate = [
   "Zypp.Context",
   "Zypp.Exception",
-  "Zypp.Expected"
+  "Zypp.Expected",
+  "Zypp.*"
 ]
 
 manual = [
   "GLib.Error",
   "GLib.Quark",
-  "GLib.Value"
+  "GObject.Value"
 ]

@@ -23,10 +23,13 @@ impl Expected {
         }
     }
 
-    //#[doc(alias = "zypp_expected_new_value")]
-    //pub fn new_value(value: /*Ignored*/&glib::Value) -> Expected {
-    //    unsafe { TODO: call ffi:zypp_expected_new_value() }
-    //}
+    #[doc(alias = "zypp_expected_new_value")]
+    pub fn new_value(value: &glib::Value) -> Expected {
+        assert_initialized_main_thread!();
+        unsafe {
+            from_glib_full(ffi::zypp_expected_new_value(value.to_glib_none().0))
+        }
+    }
 
     #[doc(alias = "zypp_expected_get_error")]
     #[doc(alias = "get_error")]
@@ -36,11 +39,15 @@ impl Expected {
         }
     }
 
-    //#[doc(alias = "zypp_expected_get_value")]
-    //#[doc(alias = "get_value")]
-    //pub fn value(&self) -> Result</*Ignored*/Option<glib::Value>, glib::Error> {
-    //    unsafe { TODO: call ffi:zypp_expected_get_value() }
-    //}
+    #[doc(alias = "zypp_expected_get_value")]
+    #[doc(alias = "get_value")]
+    pub fn value(&self) -> Result<Option<glib::Value>, glib::Error> {
+        unsafe {
+            let mut error = std::ptr::null_mut();
+            let ret = ffi::zypp_expected_get_value(self.to_glib_none().0, &mut error);
+            if error.is_null() { Ok(from_glib_none(ret)) } else { Err(from_glib_full(error)) }
+        }
+    }
 
     #[doc(alias = "zypp_expected_has_error")]
     pub fn has_error(&self) -> bool {
