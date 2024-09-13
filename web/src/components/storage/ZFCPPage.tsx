@@ -74,8 +74,8 @@ const LUNScanInfo = () => {
 const NoDisksFound = () => {
   const navigate = useNavigate();
   const controllers = useZFCPControllers();
-  const activeDisks = !controllers.some((c) => c.active);
-  const body = activeDisks
+  const activeController = !controllers.some((c) => c.active);
+  const body = activeController
     ? _("Please, try to activate a zFCP controller.")
     : _("Please, try to activate a zFCP disk.");
 
@@ -86,7 +86,7 @@ const NoDisksFound = () => {
       // @ts-expect-error: core/EmptyState props are not well defined
       variant="sm"
       actions={
-        !activeDisks && (
+        activeController && (
           <Button variant="primary" onClick={() => navigate(PATHS.zfcp.activateDisk)}>
             {_("Activate zFCP disk")}
           </Button>
