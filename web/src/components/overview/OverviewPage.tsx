@@ -19,9 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
-  CardBody,
   Grid,
   GridItem,
   Hint,
@@ -34,16 +33,15 @@ import {
   NotificationDrawerListItemHeader,
   Stack,
 } from "@patternfly/react-core";
-import { useInstallerClient } from "~/context/installer";
 import { Link } from "react-router-dom";
 import { Center } from "~/components/layout";
-import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
+import { EmptyState, InstallButton, Page } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 import { useAllIssues } from "~/queries/issues";
-import { IssueSeverity } from "~/types/issues";
+import { IssuesList as IssuesListType, IssueSeverity } from "~/types/issues";
 
 const SCOPE_HEADERS = {
   users: _("Users"),
@@ -59,9 +57,8 @@ const ReadyForInstallation = () => (
   </Center>
 );
 
-// FIXME: improve
-const IssuesList = ({ issues }) => {
-  const { isEmpty, issues: issuesByScope } = issues;
+const IssuesList = ({ issues }: { issues: IssuesListType }) => {
+  const { issues: issuesByScope } = issues;
   const list = [];
   Object.entries(issuesByScope).forEach(([scope, issues], idx) => {
     issues.forEach((issue, subIdx) => {
@@ -92,20 +89,42 @@ const IssuesList = ({ issues }) => {
   );
 };
 
-export default function OverviewPage() {
-  const client = useInstallerClient();
+const ResultSection = () => {
   const issues = useAllIssues();
 
   const resultSectionProps = issues.isEmpty
     ? {}
     : {
-        label: _("Installation"),
+        title: _("Installation"),
         description: _("Before installing, please check the following problems."),
       };
 
   return (
+    <Page.Section {...resultSectionProps}>
+      {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}
+    </Page.Section>
+  );
+};
+
+const OverviewSection = () => (
+  <Page.Section
+    title="Overview"
+    description={_(
+      "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
+    )}
+  >
+    <Stack hasGutter>
+      <L10nSection />
+      <StorageSection />
+      <SoftwareSection />
+    </Stack>
+  </Page.Section>
+);
+
+export default function OverviewPage() {
+  return (
     <Page>
-      <Page.MainContent>
+      <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
             <Hint>
@@ -117,30 +136,13 @@ export default function OverviewPage() {
             </Hint>
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField
-              label="Overview"
-              description={_(
-                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
-              )}
-            >
-              <CardBody>
-                <Stack hasGutter>
-                  <L10nSection />
-                  <StorageSection />
-                  <SoftwareSection />
-                </Stack>
-              </CardBody>
-            </CardField>
+            <OverviewSection />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField {...resultSectionProps}>
-              <CardBody>
-                {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}
-              </CardBody>
-            </CardField>
+            <ResultSection />
           </GridItem>
         </Grid>
-      </Page.MainContent>
+      </Page.Content>
     </Page>
   );
 }

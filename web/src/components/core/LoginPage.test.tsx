@@ -25,9 +25,10 @@ import { plainRender } from "~/test-utils";
 import { LoginPage } from "~/components/core";
 import { AuthErrors } from "~/context/auth";
 
-let mockIsAuthenticated;
-const mockLoginFn = jest.fn();
+let consoleErrorSpy: jest.SpyInstance;
+let mockIsAuthenticated: boolean;
 let mockLoginError;
+const mockLoginFn = jest.fn();
 
 jest.mock("~/context/auth", () => ({
   ...jest.requireActual("~/context/auth"),
@@ -40,16 +41,16 @@ jest.mock("~/context/auth", () => ({
   },
 }));
 
-describe.skip("LoginPage", () => {
+describe("LoginPage", () => {
   beforeAll(() => {
     mockIsAuthenticated = false;
     mockLoginError = null;
     mockLoginFn.mockResolvedValue({ status: 200 });
-    jest.spyOn(console, "error").mockImplementation();
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
   });
 
   afterAll(() => {
-    console.error.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   describe("when user is not authenticated", () => {
@@ -114,7 +115,7 @@ describe.skip("LoginPage", () => {
 
     it("renders a button to know more about the project", async () => {
       const { user } = plainRender(<LoginPage />);
-      const button = screen.getByRole("button", { name: "What is this?" });
+      const button = screen.getByRole("button", { name: "More about this" });
 
       await user.click(button);
 

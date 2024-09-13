@@ -21,7 +21,6 @@
 
 import React from "react";
 import {
-  CardBody,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -30,10 +29,15 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { Link, CardField, IssuesHint, Page } from "~/components/core";
+import { Link, IssuesHint, Page } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
-import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
+import {
+  selectedProductQuery,
+  usePatterns,
+  useProposal,
+  useProposalChanges,
+} from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 import { PATHS } from "~/routes/software";
@@ -64,30 +68,26 @@ const SelectedPatternsList = ({ patterns }: { patterns: Pattern[] }): React.Reac
 };
 
 const SelectedPatterns = ({ patterns }): React.ReactNode => (
-  <CardField
-    label={_("Selected patterns")}
+  <Page.Section
+    title={_("Selected patterns")}
     actions={
       <Link to={PATHS.patternsSelection} isPrimary>
         {_("Change selection")}
       </Link>
     }
   >
-    <CardBody>
-      <SelectedPatternsList patterns={patterns} />
-    </CardBody>
-  </CardField>
+    <SelectedPatternsList patterns={patterns} />
+  </Page.Section>
 );
 
 const NoPatterns = (): React.ReactNode => (
-  <CardField label={_("Selected patterns")}>
-    <CardBody>
-      <p>
-        {_(
-          "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.",
-        )}
-      </p>
-    </CardBody>
-  </CardField>
+  <Page.Section title={_("Selected patterns")}>
+    <p>
+      {_(
+        "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.",
+      )}
+    </p>
+  </Page.Section>
 );
 
 /**
@@ -100,29 +100,33 @@ function SoftwarePage(): React.ReactNode {
 
   useProposalChanges();
 
+  // Selected patterns section should fill the full width in big screen too when
+  // tehere is no information for rendering the Proposal Size section.
+  const selectedPatternsXlSize = proposal.size ? 6 : 12;
+
   return (
     <Page>
       <Page.Header>
         <h2>{_("Software")}</h2>
       </Page.Header>
 
-      <Page.MainContent>
+      <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
             <IssuesHint issues={issues} />
           </GridItem>
-          <GridItem sm={12} xl={6}>
+          <GridItem sm={12} xl={selectedPatternsXlSize}>
             {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
           </GridItem>
-          <GridItem sm={12} xl={6}>
-            <CardField>
-              <CardBody>
+          {proposal.size && (
+            <GridItem sm={12} xl={6}>
+              <Page.Section>
                 <UsedSize size={proposal.size} />
-              </CardBody>
-            </CardField>
-          </GridItem>
+              </Page.Section>
+            </GridItem>
+          )}
         </Grid>
-      </Page.MainContent>
+      </Page.Content>
     </Page>
   );
 }

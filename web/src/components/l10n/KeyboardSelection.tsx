@@ -27,7 +27,7 @@ import { _ } from "~/i18n";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
-// TODO: Add documentation and typechecking
+// TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function KeyboardSelection() {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ export default function KeyboardSelection() {
 
   const searchHelp = _("Filter by description or keymap code");
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setConfig.mutate({ keymap: selected });
     navigate(-1);
@@ -68,7 +68,7 @@ export default function KeyboardSelection() {
   });
 
   if (keymapsList.length === 0) {
-    keymapsList = <b>{_("None of the keymaps match the filter.")}</b>;
+    keymapsList = [<b>{_("None of the keymaps match the filter.")}</b>];
   }
 
   return (
@@ -77,19 +77,19 @@ export default function KeyboardSelection() {
         <h2>{_("Keyboard selection")}</h2>
         <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
       </Page.Header>
-      <Page.MainContent>
-        <Page.CardSection>
+
+      <Page.Content>
+        <Page.Section>
           <Form id="keymapSelection" onSubmit={onSubmit}>
             <FormGroup isStack>{keymapsList}</FormGroup>
           </Form>
-        </Page.CardSection>
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action type="submit" form="keymapSelection">
-          {_("Select")}
-        </Page.Action>
-      </Page.NextActions>
+        </Page.Section>
+      </Page.Content>
+
+      <Page.Actions>
+        <Page.Cancel />
+        <Page.Submit form="keymapSelection">{_("Select")}</Page.Submit>
+      </Page.Actions>
     </Page>
   );
 }

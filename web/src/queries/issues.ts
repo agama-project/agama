@@ -20,15 +20,9 @@
  */
 
 import React from "react";
-import {
-  useQueries,
-  useQuery,
-  useQueryClient,
-  useSuspenseQueries,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { Issue, IssuesList, IssuesScope } from "~/types/issues";
+import { IssuesList, IssuesScope } from "~/types/issues";
 import { fetchIssues } from "~/api/issues";
 
 const scopesFromPath = {

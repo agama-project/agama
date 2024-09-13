@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,36 +19,33 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
-import { Split, Stack } from "@patternfly/react-core";
+import React from "react";
+import { Stack } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { useNavigate } from "react-router-dom";
-import { RowActions, Link } from "~/components/core";
+import { Link, Page, RowActions } from "~/components/core";
 import { _ } from "~/i18n";
 import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
 import { PATHS } from "~/routes/users";
 
-const UserNotDefined = ({ actionCb }) => {
-  return (
-    <>
-      <Stack hasGutter>
-        <div>{_("No user defined yet.")}</div>
-        <div>
-          <strong>
-            {_(
-              "Please, be aware that a user must be defined before installing the system to be able to log into it.",
-            )}
-          </strong>
-        </div>
-        <Split hasGutter>
-          <Link to={PATHS.firstUser.create} isPrimary>
-            {_("Define a user now")}
-          </Link>
-        </Split>
-      </Stack>
-    </>
-  );
-};
+const DefineUserNow = () => (
+  <Link to={PATHS.firstUser.create} isPrimary>
+    {_("Define a user now")}
+  </Link>
+);
+
+const UserNotDefined = () => (
+  <Stack hasGutter>
+    <div>{_("No user defined yet.")}</div>
+    <div>
+      <strong>
+        {_(
+          "Please, be aware that a user must be defined before installing the system to be able to log into it.",
+        )}
+      </strong>
+    </div>
+  </Stack>
+);
 
 const UserData = ({ user, actions }) => {
   return (
@@ -93,9 +90,9 @@ export default function FirstUser() {
     },
   ];
 
-  if (isUserDefined) {
-    return <UserData user={user} actions={actions} />;
-  } else {
-    return <UserNotDefined />;
-  }
+  return (
+    <Page.Section title={_("First user")} actions={!isUserDefined && <DefineUserNow />}>
+      {isUserDefined ? <UserData user={user} actions={actions} /> : <UserNotDefined />}
+    </Page.Section>
+  );
 }

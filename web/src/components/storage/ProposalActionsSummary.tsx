@@ -21,7 +21,7 @@
 
 import React from "react";
 import { Button, Skeleton, Stack, List, ListItem } from "@patternfly/react-core";
-import { CardField, Link } from "~/components/core";
+import { Link, Page } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -237,8 +237,8 @@ export default function ProposalActionsSummary({
   const devicesManager = new DevicesManager(system, staging, actions);
 
   return (
-    <CardField
-      label={_("Actions")}
+    <Page.Section
+      title={_("Actions")}
       actions={
         isLoading ? (
           <Skeleton fontSize="sm" width="100px" />
@@ -246,32 +246,30 @@ export default function ProposalActionsSummary({
           <Link to={PATHS.spacePolicy}>{_("Change")}</Link>
         )
       }
-      cardProps={{ isFullHeight: false }}
+      pfCardProps={{ isFullHeight: false }}
     >
-      <CardField.Content>
-        {isLoading ? (
-          <ActionsSkeleton />
-        ) : (
-          <List>
-            <DeletionsInfo
-              policy={policy}
-              manager={devicesManager}
-              spaceActions={spaceActions.filter((a) => a.action === "force_delete")}
-            />
-            <ResizesInfo
-              policy={policy}
-              manager={devicesManager}
-              validProposal={errors.length === 0}
-              spaceActions={spaceActions.filter((a) => a.action === "resize")}
-            />
-            <ActionsInfo
-              actions={actions}
-              validProposal={errors.length === 0}
-              onClick={onActionsClick}
-            />
-          </List>
-        )}
-      </CardField.Content>
-    </CardField>
+      {isLoading ? (
+        <ActionsSkeleton />
+      ) : (
+        <List>
+          <DeletionsInfo
+            policy={policy}
+            manager={devicesManager}
+            spaceActions={spaceActions.filter((a) => a.action === "force_delete")}
+          />
+          <ResizesInfo
+            policy={policy}
+            manager={devicesManager}
+            validProposal={errors.length === 0}
+            spaceActions={spaceActions.filter((a) => a.action === "resize")}
+          />
+          <ActionsInfo
+            actions={actions}
+            validProposal={errors.length === 0}
+            onClick={onActionsClick}
+          />
+        </List>
+      )}
+    </Page.Section>
   );
 }

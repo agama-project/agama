@@ -23,7 +23,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import { ProductSelectionPage } from "~/components/product";
-import { Product, } from "~/types/software";
+import { Product } from "~/types/software";
 import { useProduct } from "~/queries/software";
 
 const mockConfigMutation = jest.fn();
@@ -50,7 +50,7 @@ jest.mock("~/queries/software", () => ({
     };
   },
   useProductChanges: () => jest.fn(),
-  useConfigMutation: () => ({ mutate: mockConfigMutation })
+  useConfigMutation: () => ({ mutate: mockConfigMutation }),
 }));
 
 describe("when the user chooses a product and hits the confirmation button", () => {
@@ -72,6 +72,6 @@ describe("when the user chooses a product but hits the cancel button", () => {
     await user.click(productOption);
     await user.click(cancelButton);
     expect(mockConfigMutation).not.toHaveBeenCalled();
-    expect(mockNavigateFn).toHaveBeenCalledWith("-1");
+    expect(mockNavigateFn).toHaveBeenCalledWith(-1);
   });
 });

@@ -25,8 +25,8 @@ import { plainRender } from "~/test-utils";
 import { RootAuthMethods } from "~/components/users";
 
 const mockRootUserMutation = { mutate: jest.fn(), mutateAsync: jest.fn() };
-let mockPassword;
-let mockSSHKey;
+let mockPassword: boolean;
+let mockSSHKey: string;
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),

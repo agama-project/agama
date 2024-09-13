@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -39,10 +39,9 @@ import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
 import { PasswordAndConfirmationInput, Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
 import { suggestUsernames } from "~/components/users/utils";
 import { useFirstUser, useFirstUserMutation } from "~/queries/users";
+import { FirstUser } from "~/types/users";
 
 const UsernameSuggestions = ({
   isOpen = false,
@@ -62,7 +61,7 @@ const UsernameSuggestions = ({
     >
       <MenuContent>
         <MenuList>
-          {entries.map((suggestion, index) => (
+          {entries.map((suggestion: string, index: number) => (
             <MenuItem
               key={index}
               itemId={index}
@@ -79,24 +78,28 @@ const UsernameSuggestions = ({
   );
 };
 
+type FormState = {
+  load?: boolean;
+  user?: FirstUser;
+  isEditing?: boolean;
+};
+
 // TODO: create an object for errors using the input name as key and show them
 // close to the related input.
 // TODO: extract the suggestions logic.
 export default function FirstUserForm() {
   const firstUser = useFirstUser();
   const setFirstUser = useFirstUserMutation();
-  const client = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-  const [state, setState] = useState({});
+  const [state, setState] = useState<FormState>({});
   const [errors, setErrors] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [insideDropDown, setInsideDropDown] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState([]);
   const [changePassword, setChangePassword] = useState(true);
-  const usernameInputRef = useRef();
+  const usernameInputRef = useRef<HTMLInputElement>();
   const navigate = useNavigate();
-  const passwordRef = useRef();
+  const passwordRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
     const editing = firstUser.userName !== "";
@@ -116,13 +119,13 @@ export default function FirstUserForm() {
 
   if (!state.load) return <Loading />;
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors([]);
 
     const passwordInput = passwordRef.current;
-    const formData = new FormData(e.target);
-    const user = {};
+    const formData = new FormData(e.currentTarget);
+    const user: Partial<FirstUser> & { passwordConfirmation?: string } = {};
     // FIXME: have a look to https://www.patternfly.org/components/forms/form#form-state
     formData.forEach((value, key) => {
       user[key] = value;
@@ -151,7 +154,7 @@ export default function FirstUserForm() {
       .then(() => navigate(".."));
   };
 
-  const onSuggestionSelected = (suggestion) => {
+  const onSuggestionSelected = (suggestion: string) => {
     if (!usernameInputRef.current) return;
     usernameInputRef.current.value = suggestion;
     usernameInputRef.current.focus();
@@ -159,12 +162,12 @@ export default function FirstUserForm() {
     setShowSuggestions(false);
   };
 
-  const renderSuggestions = (e) => {
+  const renderSuggestions = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (suggestions.length === 0) return;
-    setShowSuggestions(e.target.value === "");
+    setShowSuggestions(e.currentTarget.value === "");
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault(); // Prevent page scrolling
@@ -201,7 +204,7 @@ export default function FirstUserForm() {
         <h2>{state.isEditing ? _("Edit user") : _("Create user")}</h2>
       </Page.Header>
 
-      <Page.MainContent>
+      <Page.Content>
         <Form id="firstUserForm" onSubmit={onSubmit}>
           {errors.length > 0 && (
             <Alert variant="warning" isInline title={_("Something went wrong")}>
@@ -212,7 +215,7 @@ export default function FirstUserForm() {
           )}
           <Grid hasGutter>
             <GridItem sm={12} xl={6} rowSpan={2}>
-              <Page.CardSection isFullHeight>
+              <Page.Section>
                 <Stack hasGutter>
                   <FormGroup fieldId="userFullName" label={_("Full name")}>
                     <TextInput
@@ -251,10 +254,10 @@ export default function FirstUserForm() {
                     />
                   </FormGroup>
                 </Stack>
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
             <GridItem sm={12} xl={6}>
-              <Page.CardSection>
+              <Page.Section>
                 <Stack hasGutter>
                   {state.isEditing && (
                     <Switch
@@ -269,10 +272,10 @@ export default function FirstUserForm() {
                     showErrors={false}
                   />
                 </Stack>
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
             <GridItem sm={12} xl={6}>
-              <Page.CardSection>
+              <Page.Section>
                 <Checkbox
                   aria-label={_("user autologin")}
                   id="autologin"
@@ -281,18 +284,16 @@ export default function FirstUserForm() {
                   label={_("Auto-login")}
                   defaultChecked={state.user.autologin}
                 />
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
           </Grid>
         </Form>
-      </Page.MainContent>
+      </Page.Content>
 
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action type="submit" form="firstUserForm">
-          {_("Accept")}
-        </Page.Action>
-      </Page.NextActions>
+      <Page.Actions>
+        <Page.Cancel />
+        <Page.Submit form="firstUserForm" />
+      </Page.Actions>
     </Page>
   );
 }

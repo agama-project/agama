@@ -21,7 +21,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
-import { CardField } from "~/components/core";
+import { Page } from "~/components/core";
 import EncryptionSettingsDialog, {
   EncryptionSetting,
 } from "~/components/storage/EncryptionSettingsDialog";
@@ -105,11 +105,11 @@ export default function EncryptionField({
   };
 
   return (
-    <CardField
-      label={LABEL}
+    <Page.Section
+      title={LABEL}
       value={<Value isLoading={isLoading} isEnabled={isEnabled} method={method} />}
       description={DESCRIPTION}
-      cardDescriptionProps={{ isFilled: true }}
+      pfCardBodyProps={{ isFilled: true }}
       actions={<Action isEnabled={isEnabled} isLoading={isLoading} onClick={openDialog} />}
     >
       {isDialogOpen && (
@@ -123,6 +123,6 @@ export default function EncryptionField({
           onAccept={onAccept}
         />
       )}
-    </CardField>
+    </Page.Section>
   );
 }

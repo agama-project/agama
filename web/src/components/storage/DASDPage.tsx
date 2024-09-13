@@ -36,10 +36,10 @@ export default function DASDPage() {
         <h2>{_("DASD")}</h2>
       </Page.Header>
 
-      <Page.MainContent>
+      <Page.Content>
         <DASDTable />
         <DASDFormatProgress />
-      </Page.MainContent>
+      </Page.Content>
     </Page>
   );
 }

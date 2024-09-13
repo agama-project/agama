@@ -21,8 +21,6 @@
 
 import React, { useState } from "react";
 import {
-  Card,
-  CardBody,
   Label,
   DataList,
   DataListCell,
@@ -185,29 +183,27 @@ function SoftwarePatternsSelection(): React.ReactNode {
   return (
     <Page>
       <Page.Header>
-        <Stack hasGutter>
-          <h2>{_("Software selection")}</h2>
-          <SearchInput
-            // TRANSLATORS: search field placeholder text
-            placeholder={_("Filter by pattern title or description")}
-            aria-label={_("Filter by pattern title or description")}
-            value={searchValue}
-            onChange={(_event, value) => setSearchValue(value)}
-            onClear={() => setSearchValue("")}
-            resultsCount={visiblePatterns.length}
-          />
-        </Stack>
+        <h2>{_("Software selection")}</h2>
+        <SearchInput
+          // TRANSLATORS: search field placeholder text
+          placeholder={_("Filter by pattern title or description")}
+          aria-label={_("Filter by pattern title or description")}
+          value={searchValue}
+          onChange={(_event, value) => setSearchValue(value)}
+          onClear={() => setSearchValue("")}
+          resultsCount={visiblePatterns.length}
+        />
       </Page.Header>
 
-      <Page.MainContent>
-        <Card isRounded>
-          <CardBody>{selector.length > 0 ? selector : <NoMatches />}</CardBody>
-        </Card>
-      </Page.MainContent>
+      <Page.Content>
+        <Page.Section>
+          {selector.length > 0 ? <Stack hasGutter>{selector}</Stack> : <NoMatches />}
+        </Page.Section>
+      </Page.Content>
 
-      <Page.NextActions>
-        <Page.Action navigateTo="..">{_("Close")}</Page.Action>
-      </Page.NextActions>
+      <Page.Actions>
+        <Page.Cancel>{_("Close")}</Page.Cancel>
+      </Page.Actions>
     </Page>
   );
 }

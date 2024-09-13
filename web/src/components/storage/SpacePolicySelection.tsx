@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Form, Grid, GridItem, Radio, Stack } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
@@ -49,32 +47,30 @@ const SpacePolicyPicker = ({
   onChange?: (policy: SpacePolicy) => void;
 }) => {
   return (
-    <Card isFullHeight isRounded>
-      <CardBody>
-        <Stack hasGutter>
-          {/* eslint-disable agama-i18n/string-literals */}
-          {SPACE_POLICIES.map((policy) => {
-            const isChecked = currentPolicy?.id === policy.id;
-            let labelStyle = textStyles.fontSizeLg;
-            if (isChecked) labelStyle += ` ${textStyles.fontWeightBold}`;
+    <Page.Section>
+      <Stack hasGutter>
+        {/* eslint-disable agama-i18n/string-literals */}
+        {SPACE_POLICIES.map((policy) => {
+          const isChecked = currentPolicy?.id === policy.id;
+          let labelStyle = textStyles.fontSizeLg;
+          if (isChecked) labelStyle += ` ${textStyles.fontWeightBold}`;
 
-            return (
-              <Radio
-                name="policy"
-                key={policy.id}
-                id={policy.id}
-                value={policy.id}
-                label={<span className={labelStyle}>{_(policy.label)}</span>}
-                body={<span className={textStyles.color_200}>{_(policy.description)}</span>}
-                onChange={() => onChange(policy)}
-                defaultChecked={isChecked}
-              />
-            );
-          })}
-          {/* eslint-enable agama-i18n/string-literals */}
-        </Stack>
-      </CardBody>
-    </Card>
+          return (
+            <Radio
+              name="policy"
+              key={policy.id}
+              id={policy.id}
+              value={policy.id}
+              label={<span className={labelStyle}>{_(policy.label)}</span>}
+              body={<span className={textStyles.color_200}>{_(policy.description)}</span>}
+              onChange={() => onChange(policy)}
+              defaultChecked={isChecked}
+            />
+          );
+        })}
+        {/* eslint-enable agama-i18n/string-literals */}
+      </Stack>
+    </Page.Section>
   );
 };
 
@@ -159,7 +155,8 @@ export default function SpacePolicySelection() {
       <Page.Header>
         <h2>{_("Space policy")}</h2>
       </Page.Header>
-      <Page.MainContent>
+
+      <Page.Content>
         <Form id="space-policy-form" onSubmit={onSubmit}>
           <Grid hasGutter>
             <GridItem sm={12} xl2={xl2Columns}>
@@ -181,13 +178,11 @@ export default function SpacePolicySelection() {
             )}
           </Grid>
         </Form>
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action form="space-policy-form" type="submit">
-          {_("Accept")}
-        </Page.Action>
-      </Page.NextActions>
+      </Page.Content>
+      <Page.Actions>
+        <Page.Cancel />
+        <Page.Submit form="space-policy-form" type="submit" />
+      </Page.Actions>
     </Page>
   );
 }

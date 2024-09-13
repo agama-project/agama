@@ -22,20 +22,19 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  HelperText,
-  HelperTextItem,
   Form,
   FormGroup,
+  FormHelperText,
   FormSelect,
-  FormSelectProps,
   FormSelectOption,
+  FormSelectProps,
   Grid,
   GridItem,
-  TextInput,
+  HelperText,
+  HelperTextItem,
   Stack,
-  FormHelperText,
+  TextInput,
 } from "@patternfly/react-core";
-
 import { Page } from "~/components/core";
 import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
@@ -46,6 +45,8 @@ import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
+// FIXME: rename to connedtioneditpage or so?
+// FIXME: improve the layout a bit.
 export default function IpSettingsForm() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -144,12 +145,13 @@ export default function IpSettingsForm() {
       <Page.Header>
         <h2>{sprintf(_("Edit connection %s"), connection.id)}</h2>
       </Page.Header>
-      <Page.MainContent>
+
+      <Page.Content>
         {renderError("object")}
         <Form id="editConnectionForm" onSubmit={onSubmitForm}>
           <Grid hasGutter>
             <GridItem sm={12} xl={6} rowSpan={2}>
-              <Page.CardSection isFullHeight>
+              <Page.Section>
                 <Stack hasGutter>
                   <FormGroup fieldId="method" label={_("Mode")} isRequired>
                     <FormSelect
@@ -199,34 +201,32 @@ export default function IpSettingsForm() {
                     )}
                   </FormGroup>
                 </Stack>
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
 
             <GridItem sm={12} xl={6}>
-              <Page.CardSection>
+              <Page.Section>
                 <AddressesDataList
                   addresses={addresses}
                   updateAddresses={setAddresses}
                   allowEmpty={usingDHCP(method)}
                 />
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
 
             <GridItem sm={12} xl={6}>
-              <Page.CardSection>
+              <Page.Section>
                 <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
-              </Page.CardSection>
+              </Page.Section>
             </GridItem>
           </Grid>
         </Form>
-      </Page.MainContent>
+      </Page.Content>
 
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action type="submit" form="editConnectionForm">
-          {_("Accept")}
-        </Page.Action>
-      </Page.NextActions>
+      <Page.Actions>
+        <Page.Cancel />
+        <Page.Submit form="editConnectionForm" />
+      </Page.Actions>
     </Page>
   );
 }

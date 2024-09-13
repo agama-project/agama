@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 import {
@@ -33,15 +31,12 @@ import {
   FormGroup,
   Grid,
   GridItem,
-  Stack,
 } from "@patternfly/react-core";
 import { About, EmptyState, FormValidationError, Page, PasswordInput } from "~/components/core";
 import { Center } from "~/components/layout";
 import { AuthErrors, useAuth } from "~/context/auth";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-
-// @ts-check
 
 /**
  * Renders the UI that lets the user log into the system.
@@ -52,7 +47,7 @@ export default function LoginPage() {
   const [error, setError] = useState(false);
   const { isLoggedIn, login: loginFn, error: loginError } = useAuth();
 
-  const login = async (e) => {
+  const login = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await loginFn(password);
 
@@ -82,7 +77,7 @@ user privileges.",
   ).split(/[[\]]/);
 
   return (
-    <Page.MainContent>
+    <Page.Content>
       <Center>
         <Grid>
           <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -122,6 +117,6 @@ user privileges.",
           </GridItem>
         </Grid>
       </Center>
-    </Page.MainContent>
+    </Page.Content>
   );
 }

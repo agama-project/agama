@@ -19,16 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { Skeleton } from "@patternfly/react-core";
-import { Link, CardField } from "~/components/core";
-import { deviceLabel } from "~/components/storage/utils";
-import { PATHS } from "~/routes/storage";
-import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
+import { Link, Page } from "~/components/core";
 import { ProposalTarget, StorageDevice } from "~/types/storage";
+import { PATHS } from "~/routes/storage";
+import { deviceLabel } from "~/components/storage/utils";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 const LABEL = _("Installation device");
 // TRANSLATORS: The storage "Installation device" field's description.
@@ -96,8 +94,8 @@ export default function InstallationDeviceField({
   else value = targetValue(target, targetDevice, targetPVDevices);
 
   return (
-    <CardField
-      label={LABEL}
+    <Page.Section
+      title={LABEL}
       description={DESCRIPTION}
       actions={
         isLoading ? (
@@ -109,7 +107,7 @@ export default function InstallationDeviceField({
         )
       }
     >
-      <CardField.Content isFilled={false}>{value}</CardField.Content>
-    </CardField>
+      {value}
+    </Page.Section>
   );
 }
