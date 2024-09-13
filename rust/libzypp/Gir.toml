@@ -14,6 +14,16 @@ generate = [
   "Zypp.Exception",
   "Zypp.Expected",
   "Zypp.InfoBase",
+  "Zypp.ManagedFile",
+  "Zypp.ProgressObserver",
+  "Zypp.RepoInfo",
+  "Zypp.RepoInfoType",
+  "Zypp.RepoManager",
+  "Zypp.ServiceInfo",
+  "Zypp.RepoManagerOptions",
+  "Zypp.RepoManagerError",
+  "Zypp.RepoRefreshResult",
+  "Zypp.Repository",
   "Zypp.*"
 ]
 

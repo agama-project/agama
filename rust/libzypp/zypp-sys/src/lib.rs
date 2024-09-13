@@ -208,15 +208,6 @@ impl ::std::fmt::Debug for ZyppServiceInfoClass {
     }
 }
 
-#[repr(C)]
-#[allow(dead_code)]
-pub struct _ZyppTaskStatus {
-    _data: [u8; 0],
-    _marker: core::marker::PhantomData<(*mut u8, core::marker::PhantomPinned)>,
-}
-
-pub type ZyppTaskStatus = _ZyppTaskStatus;
-
 // Classes
 #[repr(C)]
 #[allow(dead_code)]
@@ -426,7 +417,7 @@ extern "C" {
     pub fn zypp_repo_manager_get_known_repos(self_: *mut ZyppRepoManager) -> *mut glib::GList;
     pub fn zypp_repo_manager_get_known_services(self_: *mut ZyppRepoManager) -> *mut glib::GList;
     pub fn zypp_repo_manager_initialize(self_: *mut ZyppRepoManager, error: *mut *mut glib::GError) -> gboolean;
-    pub fn zypp_repo_manager_refresh_repos(self_: *mut ZyppRepoManager, repos: *mut glib::GList, forceDownload: gboolean, statusTracker: *mut ZyppTaskStatus) -> *mut glib::GList;
+    pub fn zypp_repo_manager_refresh_repos(self_: *mut ZyppRepoManager, repos: *mut glib::GList, forceDownload: gboolean, statusTracker: *mut ZyppProgressObserver) -> *mut glib::GList;
 
     //=========================================================================
     // ZyppRepository
