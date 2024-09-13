@@ -54,6 +54,11 @@ jest.mock("~/queries/issues", () => ({
   useIssuesChanges: () => jest.fn(),
 }));
 
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useDeprecatedChanges: () => jest.fn(),
+}));
+
 const mockClientStatus = {
   phase: InstallationPhase.Startup,
   isBusy: true,

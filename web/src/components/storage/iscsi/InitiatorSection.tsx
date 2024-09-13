@@ -19,35 +19,21 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import { _ } from "~/i18n";
 import { Section } from "~/components/core";
 import { InitiatorPresenter } from "~/components/storage/iscsi";
-import { useInstallerClient } from "~/context/installer";
-import { useCancellablePromise } from "~/utils";
+import { useInitiator, useInitiatorChanges } from "~/queries/storage/iscsi";
 
 export default function InitiatorSection() {
-  const { storage: client } = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-  const [initiator, setInitiator] = useState();
-
-  useEffect(() => {
-    const loadInitiator = async () => {
-      setInitiator(undefined);
-      const { name, ibft } = await cancellablePromise(client.iscsi.getInitiator());
-      setInitiator({ name, ibft, offloadCard: "" });
-    };
-
-    loadInitiator().catch(console.error);
-
-    return client.iscsi.onInitiatorChanged(loadInitiator);
-  }, [cancellablePromise, client.iscsi]);
+  const initiator = useInitiator();
+  useInitiatorChanges();
 
   return (
     // TRANSLATORS: iSCSI initiator section name
     <Section title={_("Initiator")}>
-      <InitiatorPresenter initiator={initiator} client={client} />
+      <InitiatorPresenter initiator={initiator} />
     </Section>
   );
 }

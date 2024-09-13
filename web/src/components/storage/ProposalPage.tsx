@@ -29,13 +29,12 @@ import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary"
 import { ProposalActionsDialog } from "~/components/storage";
 import { _ } from "~/i18n";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import { toValidationError, useCancellablePromise } from "~/utils";
+import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
 import {
   useAvailableDevices,
   useDeprecated,
-  useDeprecatedChanges,
   useDevices,
   useProductParams,
   useProposalMutation,
@@ -43,7 +42,8 @@ import {
   useVolumeDevices,
   useVolumeTemplates,
 } from "~/queries/storage";
-import { probe } from "~/api/storage";
+import { useQueryClient } from "@tanstack/react-query";
+import { refresh } from "~/api/storage";
 
 /**
  * Which UI item is being changed by user
@@ -70,7 +70,6 @@ export const NOT_AFFECTED = {
 };
 
 export default function ProposalPage() {
-  const { cancellablePromise } = useCancellablePromise();
   const drawerRef = useRef();
   const systemDevices = useDevices("system");
   const stagingDevices = useDevices("result");
@@ -81,17 +80,19 @@ export default function ProposalPage() {
   const { actions, settings } = useProposalResult();
   const updateProposal = useProposalMutation();
   const deprecated = useDeprecated();
-  useDeprecatedChanges();
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    if (deprecated) {
+      refresh().then(() => {
+        queryClient.invalidateQueries({ queryKey: ["storage"] });
+      });
+    }
+  }, [deprecated]);
 
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
-
-  useEffect(() => {
-    if (deprecated) {
-      cancellablePromise(probe());
-    }
-  }, [deprecated]);
 
   const changeSettings = async (changing, updated: object) => {
     const newSettings = { ...settings, ...updated };
