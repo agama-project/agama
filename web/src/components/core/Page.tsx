@@ -59,7 +59,7 @@ type SectionProps = {
   value?: React.ReactNode;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
-  /** As sort as possible yet as much as needed text for describing what the section is about, if needed */
+  /** As short as possible yet as much as needed text for describing what the section is about, if needed */
   description?: string;
   /** The heading level used for the section title */
   headerLevel?: TitleProps["headingLevel"];

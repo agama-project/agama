@@ -37,7 +37,9 @@ import { Flex as PFFlex, FlexProps, FlexItem, FlexItemProps } from "@patternfly/
  */
 
 // NOTE: PF/Flex#order prop is missing "sm" breakpoint
-// NOTE: Don't know why these ommited props are being captured otherwise
+// NOTE: The ommited props match the extends constraint becuase they are typed
+// as "any", see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts#L2923-L3001
+// (FlexProps interface extends React.HTMLProps)
 type ResponsiveFlexProps = {
   [Key in keyof Omit<FlexProps, "download" | "inlist"> as FlexProps[Key] extends {
     default?: unknown;

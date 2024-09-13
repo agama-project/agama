@@ -26,7 +26,7 @@ import { _ } from "~/i18n";
 
 // TODO:
 //  * add documentation,
-//  * allow working only in uncontrlled mode if needed, and
+//  * allow working only in uncontrolled mode if needed, and
 //  * improve the showErrors thingy
 
 type PasswordAndConfirmationInputProps = {
