@@ -37,13 +37,14 @@ export default function DASDPage() {
         <h2>{_("DASD")}</h2>
       </Page.Header>
 
-      <Page.MainContent>
+      <Page.Content>
         <DASDTable />
         <DASDFormatProgress />
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.Action navigateTo={PATHS.targetDevice}>{_("Close")}</Page.Action>
-      </Page.NextActions>
+      </Page.Content>
+
+      <Page.Actions>
+        <Page.Back>{_("Close")}</Page.Back>
+      </Page.Actions>
     </Page>
   );
 }

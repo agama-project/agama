@@ -35,3 +35,33 @@ button.remove-link:hover {
   position: relative;
   width: 100%;
 }
+
+#productSelectionForm {
+  .pf-v5-c-radio input {
+    align-self: center;
+    width: 20px;
+    height: 20px;
+  }
+
+  .pf-v5-c-card {
+    img {
+      width: 80px;
+    }
+
+    label {
+      cursor: pointer;
+    }
+
+    label::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 999;
+    }
+  }
+}

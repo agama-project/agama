@@ -8,6 +8,9 @@ user_pref("signon.generation.enabled", false);
 // disable the initial configuration workflow
 user_pref("browser.aboutwelcome.enabled", false);
 
+// disable homepage override on updates
+user_pref("browser.startup.homepage_override.mstone", "ignore");
+
 // start always in the custom homepage
 user_pref("browser.startup.page", 1);
 // custom homepage: the value is expected to be replaced with the login URL by the startup script

@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-28 02:30+0000\n"
-"PO-Revision-Date: 2024-07-12 07:47+0000\n"
+"PO-Revision-Date: 2024-09-04 11:47+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
-"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/ca/>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.7.1\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
@@ -241,6 +241,8 @@ msgstr ""
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
+"No s'ha proporcionat cap frase de contrasenya (cal per usar el mètode "
+"%{crypt_method})."
 
 #. @see #check_encryption
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
@@ -249,6 +251,7 @@ msgstr ""
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
 msgstr ""
+"El mètode d'encriptació %{crypt_method} no està disponible en aquest sistema."
 
 #. @see #check_encryption
 #. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
@@ -257,25 +260,25 @@ msgstr ""
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
 msgstr ""
+"El mètode %{crypt_method} no és un mètode adequat per encriptar el "
+"dispositiu."
 
 #. @see #not_found_issue
 #: service/lib/y2storage/proposal/agama_searcher.rb:98
 msgid "No device found for an optional drive"
-msgstr ""
+msgstr "No s'ha trobat cap dispositiu per a una unitat opcional."
 
 #: service/lib/y2storage/proposal/agama_searcher.rb:100
 msgid "No device found for a mandatory drive"
-msgstr ""
+msgstr "No s'ha trobat cap dispositiu per a una unitat obligatòria."
 
 #: service/lib/y2storage/proposal/agama_searcher.rb:103
-#, fuzzy
 msgid "No device found for an optional partition"
-msgstr "No s'ha seleccionat cap dispositiu per a la instal·lació."
+msgstr "No s'ha trobat cap dispositiu per a una partició opcional."
 
 #: service/lib/y2storage/proposal/agama_searcher.rb:105
-#, fuzzy
 msgid "No device found for a mandatory partition"
-msgstr "No s'ha seleccionat cap dispositiu per a la instal·lació."
+msgstr "No s'ha trobat cap dispositiu per a una partició obligatòria."
 
 #~ msgid "Probing Storage"
 #~ msgstr "Sondant l'emmagatzematge"

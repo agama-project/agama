@@ -34,17 +34,18 @@ function WifiSelectorPage() {
       <Page.Header>
         <h2>{_("Connect to a Wi-Fi network")}</h2>
       </Page.Header>
-      <Page.MainContent>
+
+      <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
             <WifiNetworksListPage />
           </GridItem>
         </Grid>
-      </Page.MainContent>
+      </Page.Content>
 
-      <Page.NextActions>
-        <Page.CancelAction />
-      </Page.NextActions>
+      <Page.Actions>
+        <Page.Cancel />
+      </Page.Actions>
     </Page>
   );
 }

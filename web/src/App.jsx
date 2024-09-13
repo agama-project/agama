@@ -30,6 +30,7 @@ import { useProduct, useProductChanges } from "./queries/software";
 import { useL10nConfigChanges } from "~/queries/l10n";
 import { useIssuesChanges } from "./queries/issues";
 import { useInstallerStatus, useInstallerStatusChanges } from "./queries/status";
+import { useDeprecatedChanges } from "./queries/storage";
 import { PATHS as PRODUCT_PATHS } from "./routes/products";
 import SimpleLayout from "./SimpleLayout";
 import { InstallationPhase } from "./types/status";
@@ -51,6 +52,7 @@ function App() {
   useProductChanges();
   useIssuesChanges();
   useInstallerStatusChanges();
+  useDeprecatedChanges();
 
   const Content = () => {
     if (error) return <ServerError />;

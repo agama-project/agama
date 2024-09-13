@@ -22,7 +22,6 @@
 import React, { useState } from "react";
 import {
   Button,
-  CardBody,
   Divider,
   Dropdown,
   DropdownItem,
@@ -37,8 +36,8 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
+import { Page } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { CardField } from "~/components/core";
 import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
@@ -268,67 +267,67 @@ export default function DASDTable() {
   };
 
   return (
-    <CardField>
-      <CardBody>
-        <Toolbar>
-          <ToolbarContent>
-            <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem>
-                <TextInputGroup>
-                  <TextInputGroupMain
-                    value={minChannel}
-                    type="text"
-                    aria-label={_("Filter by min channel")}
-                    placeholder={_("Filter by min channel")}
-                    onChange={(_, minChannel) => updateFilter({ minChannel })}
-                  />
-                  {minChannel !== "" && (
-                    <TextInputGroupUtilities>
-                      <Button
-                        variant="plain"
-                        aria-label={_("Remove min channel filter")}
-                        onClick={() => updateFilter({ minChannel: "" })}
-                      >
-                        <Icon name="backspace" size="s" />
-                      </Button>
-                    </TextInputGroupUtilities>
-                  )}
-                </TextInputGroup>
-              </ToolbarItem>
-              <ToolbarItem>
-                <TextInputGroup>
-                  <TextInputGroupMain
-                    value={maxChannel}
-                    type="text"
-                    aria-label={_("Filter by max channel")}
-                    placeholder={_("Filter by max channel")}
-                    onChange={(_, maxChannel) => updateFilter({ maxChannel })}
-                  />
-                  {maxChannel !== "" && (
-                    <TextInputGroupUtilities>
-                      <Button
-                        variant="plain"
-                        aria-label={_("Remove max channel filter")}
-                        onClick={() => updateFilter({ maxChannel: "" })}
-                      >
-                        <Icon name="backspace" size="s" />
-                      </Button>
-                    </TextInputGroupUtilities>
-                  )}
-                </TextInputGroup>
-              </ToolbarItem>
+    <>
+      <Toolbar>
+        <ToolbarContent>
+          <ToolbarGroup align={{ default: "alignRight" }}>
+            <ToolbarItem>
+              <TextInputGroup>
+                <TextInputGroupMain
+                  value={minChannel}
+                  type="text"
+                  aria-label={_("Filter by min channel")}
+                  placeholder={_("Filter by min channel")}
+                  onChange={(_, minChannel) => updateFilter({ minChannel })}
+                />
+                {minChannel !== "" && (
+                  <TextInputGroupUtilities>
+                    <Button
+                      variant="plain"
+                      aria-label={_("Remove min channel filter")}
+                      onClick={() => updateFilter({ minChannel: "" })}
+                    >
+                      <Icon name="backspace" size="s" />
+                    </Button>
+                  </TextInputGroupUtilities>
+                )}
+              </TextInputGroup>
+            </ToolbarItem>
+            <ToolbarItem>
+              <TextInputGroup>
+                <TextInputGroupMain
+                  value={maxChannel}
+                  type="text"
+                  aria-label={_("Filter by max channel")}
+                  placeholder={_("Filter by max channel")}
+                  onChange={(_, maxChannel) => updateFilter({ maxChannel })}
+                />
+                {maxChannel !== "" && (
+                  <TextInputGroupUtilities>
+                    <Button
+                      variant="plain"
+                      aria-label={_("Remove max channel filter")}
+                      onClick={() => updateFilter({ maxChannel: "" })}
+                    >
+                      <Icon name="backspace" size="s" />
+                    </Button>
+                  </TextInputGroupUtilities>
+                )}
+              </TextInputGroup>
+            </ToolbarItem>
 
-              <ToolbarItem variant="separator" />
+            <ToolbarItem variant="separator" />
 
-              <ToolbarItem>
-                <Actions devices={selectedDASD} isDisabled={selectedDASD.length === 0} />
-              </ToolbarItem>
-            </ToolbarGroup>
-          </ToolbarContent>
-        </Toolbar>
+            <ToolbarItem>
+              <Actions devices={selectedDASD} isDisabled={selectedDASD.length === 0} />
+            </ToolbarItem>
+          </ToolbarGroup>
+        </ToolbarContent>
+      </Toolbar>
 
+      <Page.Section>
         <Content />
-      </CardBody>
-    </CardField>
+      </Page.Section>
+    </>
   );
 }

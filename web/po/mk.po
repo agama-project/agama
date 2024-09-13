@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-18 02:29+0000\n"
+"POT-Creation-Date: 2024-09-08 02:38+0000\n"
 "PO-Revision-Date: 2024-05-09 06:43+0000\n"
 "Last-Translator: Kristijan Fremen Velkovski <me@krisfremen.com>\n"
 "Language-Team: Macedonian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -136,11 +136,6 @@ msgid "Cannot be changed in remote installation"
 msgstr "Потврдете ја инсталацијата"
 
 #: src/components/core/InstallerOptions.jsx:142
-#: src/components/storage/BootSelection.jsx:250
-#: src/components/storage/DeviceSelection.jsx:254
-#: src/components/storage/EncryptionSettingsDialog.jsx:155
-#: src/components/storage/SpacePolicySelection.jsx:200
-#: src/components/storage/VolumeDialog.jsx:794
 #: src/components/storage/ZFCPPage.jsx:528
 #: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
@@ -236,8 +231,6 @@ msgid "Finished"
 msgstr "Заврши"
 
 #: src/components/core/RowActions.jsx:64
-#: src/components/storage/PartitionsField.jsx:491
-#: src/components/storage/ProposalActionsSummary.jsx:234
 msgid "Actions"
 msgstr ""
 
@@ -277,7 +270,6 @@ msgstr ""
 #: src/components/l10n/L10nPage.jsx:78
 #: src/components/l10n/LocaleSelection.jsx:92
 #: src/components/l10n/TimezoneSelection.jsx:125
-#: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr ""
 
@@ -293,8 +285,6 @@ msgstr ""
 
 #: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
 #: src/components/l10n/L10nPage.jsx:78
-#: src/components/storage/InstallationDeviceField.jsx:109
-#: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
@@ -350,8 +340,6 @@ msgstr ""
 
 #: src/components/overview/OverviewPage.jsx:50
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:295
-#: src/components/storage/StoragePage.jsx:30
 msgid "Storage"
 msgstr ""
 
@@ -438,7 +426,6 @@ msgid ""
 msgstr ""
 
 #: src/components/overview/StorageSection.jsx:179
-#: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
 msgstr ""
 
@@ -474,1044 +461,24 @@ msgstr ""
 msgid "Configuring the product, please wait ..."
 msgstr ""
 
-#: src/components/storage/BootConfigField.jsx:44
-msgid "Change boot options"
-msgstr ""
-
-#: src/components/storage/BootConfigField.jsx:82
-msgid "Installation will not configure partitions for booting."
-msgstr ""
-
-#: src/components/storage/BootConfigField.jsx:86
-msgid ""
-"Installation will configure partitions for booting at the installation disk."
-msgstr ""
-
-#: src/components/storage/BootConfigField.jsx:90
-#, c-format
-msgid "Installation will configure partitions for booting at %s."
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:132
-msgid ""
-"To ensure the new system is able to boot, the installer may need to create "
-"or configure some partitions in the appropriate disk."
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:138
-msgid "Partitions to boot will be allocated at the installation disk."
-msgstr ""
-
-#. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:143
-#, c-format
-msgid "Partitions to boot will be allocated at the installation disk (%s)."
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:159
-msgid "Select booting partition"
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:180
-#: src/components/storage/iscsi/NodeStartupOptions.js:27
-msgid "Automatic"
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:198
-msgid "Select a disk"
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:204
-msgid "Partitions to boot will be allocated at the following device."
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:207
-msgid "Choose a disk for placing the boot loader"
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:230
-msgid "Do not configure"
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:236
-msgid ""
-"No partitions will be automatically configured for booting. Use with caution."
-msgstr ""
-
-#: src/components/storage/DASDFormatProgress.jsx:60
-msgid "Waiting for progress report"
-msgstr ""
-
-#: src/components/storage/DASDFormatProgress.jsx:67
-msgid "Formatting DASD devices"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:62
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-msgid "No"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:62
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-msgid "Yes"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:69
-#: src/components/storage/ZFCPDiskForm.jsx:110
-#: src/components/storage/ZFCPPage.jsx:324
-#: src/components/storage/ZFCPPage.jsx:382
-msgid "Channel ID"
-msgstr ""
-
-#. TRANSLATORS: table header
-#: src/components/storage/DASDTable.jsx:70
-#: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
-msgid "Status"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:71
-#: src/components/storage/DeviceSelectorTable.jsx:197
-#: src/components/storage/ProposalResultTable.jsx:130
-#: src/components/storage/SpaceActionsTable.jsx:200
-#: src/components/storage/VolumeLocationSelectorTable.jsx:107
-msgid "Device"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:72
-msgid "Type"
-msgstr ""
-
-#. TRANSLATORS: table header, the column contains "Yes"/"No" values
-#. for the DIAG access mode (special disk access mode on IBM mainframes),
-#. usually keep untranslated
-#: src/components/storage/DASDTable.jsx:76
-msgid "DIAG"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:77
-msgid "Formatted"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:78
-msgid "Partition Info"
-msgstr ""
-
-#. TRANSLATORS: drop down menu label
-#: src/components/storage/DASDTable.jsx:115
-msgid "Perform an action"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:122
-#: src/components/storage/ZFCPPage.jsx:353
-msgid "Activate"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:126
-#: src/components/storage/ZFCPPage.jsx:395
-msgid "Deactivate"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:131
-msgid "Set DIAG On"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:135
-msgid "Set DIAG Off"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:140
-msgid "Format"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:261
-#: src/components/storage/DASDTable.jsx:262
-msgid "Filter by min channel"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:269
-msgid "Remove min channel filter"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:283
-#: src/components/storage/DASDTable.jsx:284
-msgid "Filter by max channel"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:291
-msgid "Remove max channel filter"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:108
-msgid "Loading data, please wait a second..."
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:144
-msgid ""
-"The file systems will be allocated by default as [new partitions in the "
-"selected device]."
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:151
-msgid ""
-"The file systems will be allocated by default as [logical volumes of a new "
-"LVM Volume Group]. The corresponding physical volumes will be created on "
-"demand as new partitions at the selected devices."
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:160
-msgid "Select installation device"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:166
-msgid "Install new system on"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:169
-msgid "An existing disk"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:178
-msgid "A new LVM Volume Group"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:203
-msgid "Device selector for target disk"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:226
-msgid "Device selector for new LVM volume group"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:242
-msgid "Prepare more devices by configuring advanced"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:243
-msgid "storage techs"
-msgstr ""
-
-#. TRANSLATORS: multipath device type
-#: src/components/storage/DeviceSelectorTable.jsx:61
-msgid "Multipath"
-msgstr ""
-
-#. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/DeviceSelectorTable.jsx:66
-#, c-format
-msgid "DASD %s"
-msgstr ""
-
-#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/DeviceSelectorTable.jsx:71
-#, c-format
-msgid "Software %s"
-msgstr ""
-
-#: src/components/storage/DeviceSelectorTable.jsx:76
-msgid "SD Card"
-msgstr ""
-
-#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-#: src/components/storage/DeviceSelectorTable.jsx:81
-#, c-format
-msgid "%s disk"
-msgstr ""
-
-#: src/components/storage/DeviceSelectorTable.jsx:82
-msgid "Disk"
-msgstr ""
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:102
-#, c-format
-msgid "Members: %s"
-msgstr ""
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:111
-#, c-format
-msgid "Devices: %s"
-msgstr ""
-
-#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/DeviceSelectorTable.jsx:120
-#, c-format
-msgid "Wires: %s"
-msgstr ""
-
-#. TRANSLATORS: disk partition info, %s is replaced by partition table
-#. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/DeviceSelectorTable.jsx:155
-#, c-format
-msgid "%s with %d partitions"
-msgstr ""
-
-#. TRANSLATORS: status message, no existing content was found on the disk,
-#. i.e. the disk is completely empty
-#: src/components/storage/DeviceSelectorTable.jsx:161
-#: src/components/storage/SpaceActionsTable.jsx:175
-msgid "No content found"
-msgstr ""
-
-#: src/components/storage/DeviceSelectorTable.jsx:198
-#: src/components/storage/PartitionsField.jsx:487
-#: src/components/storage/ProposalResultTable.jsx:132
-#: src/components/storage/SpaceActionsTable.jsx:201
-#: src/components/storage/VolumeLocationSelectorTable.jsx:108
-msgid "Details"
-msgstr ""
-
-#: src/components/storage/DeviceSelectorTable.jsx:199
-#: src/components/storage/PartitionsField.jsx:488
-#: src/components/storage/ProposalResultTable.jsx:133
-#: src/components/storage/SpaceActionsTable.jsx:202
-#: src/components/storage/VolumeFields.jsx:488
-#: src/components/storage/VolumeLocationSelectorTable.jsx:113
-msgid "Size"
-msgstr ""
-
-#: src/components/storage/DevicesTechMenu.jsx:38
+#: src/components/storage/DevicesTechMenu.jsx:39
 msgid "Manage and format"
 msgstr ""
 
-#: src/components/storage/DevicesTechMenu.jsx:52
+#: src/components/storage/DevicesTechMenu.jsx:53
 msgid "Activate disks"
 msgstr ""
 
-#: src/components/storage/DevicesTechMenu.jsx:53
+#: src/components/storage/DevicesTechMenu.jsx:54
 msgid "zFCP"
 msgstr ""
 
-#: src/components/storage/DevicesTechMenu.jsx:66
+#: src/components/storage/DevicesTechMenu.jsx:67
 msgid "Connect to iSCSI targets"
 msgstr ""
 
-#: src/components/storage/DevicesTechMenu.jsx:67
+#: src/components/storage/DevicesTechMenu.jsx:68
 msgid "iSCSI"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:38
-#: src/components/storage/EncryptionSettingsDialog.jsx:36
-msgid "Encryption"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:40
-msgid ""
-"Protection for the information stored at the device, including data, "
-"programs, and system files."
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:44
-msgid "disabled"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:45
-msgid "enabled"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:46
-msgid "using TPM unlocking"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:60
-msgid "Enable"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:60
-msgid "Modify"
-msgstr ""
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:38
-msgid ""
-"Full Disk Encryption (FDE) allows to protect the information stored at the "
-"device, including data, programs, and system files."
-msgstr ""
-
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.jsx:42
-msgid ""
-"Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
-msgstr ""
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:46
-msgid ""
-"The password will not be needed to boot and access the data if the TPM can "
-"verify the integrity of the system. TPM sealing requires the new system to "
-"be booted directly on its first run."
-msgstr ""
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:129
-msgid "Encrypt the system"
-msgstr ""
-
-#: src/components/storage/InstallationDeviceField.jsx:37
-#: src/components/storage/VolumeLocationSelectorTable.jsx:61
-msgid "Installation device"
-msgstr ""
-
-#. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:39
-msgid "Main disk or LVM Volume Group for installation."
-msgstr ""
-
-#. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:53
-#, c-format
-msgid "File systems created as new partitions at %s"
-msgstr ""
-
-#: src/components/storage/InstallationDeviceField.jsx:56
-msgid "File systems created at a new LVM volume group"
-msgstr ""
-
-#: src/components/storage/InstallationDeviceField.jsx:61
-#, c-format
-msgid "File systems created at a new LVM volume group on %s"
-msgstr ""
-
-#. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:84
-#, c-format
-msgid "at least %s"
-msgstr ""
-
-#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:108
-#, c-format
-msgid "Transactional Btrfs root volume (%s)"
-msgstr ""
-
-#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:110
-#, c-format
-msgid "Transactional Btrfs root partition (%s)"
-msgstr ""
-
-#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:115
-#, c-format
-msgid "Btrfs root volume with snapshots (%s)"
-msgstr ""
-
-#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:117
-#, c-format
-msgid "Btrfs root partition with snapshots (%s)"
-msgstr ""
-
-#. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
-#. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:126
-#, c-format
-msgid "Mount %1$s at %2$s (%3$s)"
-msgstr ""
-
-#. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
-#. %1$s is replaced by the device name, and %2$s by the size
-#: src/components/storage/PartitionsField.jsx:132
-#, c-format
-msgid "Swap at %1$s (%2$s)"
-msgstr ""
-
-#. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:136
-#, c-format
-msgid "Swap volume (%s)"
-msgstr ""
-
-#. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:138
-#, c-format
-msgid "Swap partition (%s)"
-msgstr ""
-
-#. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:147
-#, c-format
-msgid "%1$s root at %2$s (%3$s)"
-msgstr ""
-
-#. TRANSLATORS: "/" is in an LVM logical volume.
-#. Results in something like "Btrfs root volume (at least 20 GiB)" since
-#. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:153
-#, c-format
-msgid "%1$s root volume (%2$s)"
-msgstr ""
-
-#. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
-#. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:156
-#, c-format
-msgid "%1$s root partition (%2$s)"
-msgstr ""
-
-#. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
-#. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
-#: src/components/storage/PartitionsField.jsx:162
-#, c-format
-msgid "%1$s %2$s at %3$s (%4$s)"
-msgstr ""
-
-#. TRANSLATORS: The filesystem is in an LVM logical volume.
-#. Results in something like "Ext4 /home volume (at least 10 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:168
-#, c-format
-msgid "%1$s %2$s volume (%3$s)"
-msgstr ""
-
-#. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:171
-#, c-format
-msgid "%1$s %2$s partition (%3$s)"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:182
-msgid "Do not configure partitions for booting"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:184
-msgid "Boot partitions at installation disk"
-msgstr ""
-
-#. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/PartitionsField.jsx:187
-#, c-format
-msgid "Boot partitions at %s"
-msgstr ""
-
-#. TRANSLATORS: header for a list of items referring to size limits for file systems
-#: src/components/storage/PartitionsField.jsx:209
-msgid "These limits are affected by:"
-msgstr ""
-
-#. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/PartitionsField.jsx:213
-msgid "The configuration of snapshots"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:219
-#, c-format
-msgid "Presence of other volumes (%s)"
-msgstr ""
-
-#. TRANSLATORS: list item, describes a factor that affects the computed size of a
-#. file system; eg. adjusting the size of the swap
-#: src/components/storage/PartitionsField.jsx:225
-msgid "The amount of RAM in the system"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:292
-msgid "auto"
-msgstr ""
-
-#. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-#: src/components/storage/PartitionsField.jsx:309
-#, c-format
-msgid "Reused %s"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:310
-msgid "Transactional Btrfs"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:311
-msgid "Btrfs with snapshots"
-msgstr ""
-
-#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:325
-#, c-format
-msgid "Partition at %s"
-msgstr ""
-
-#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:328
-#, c-format
-msgid "Separate LVM at %s"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:331
-msgid "Logical volume at system LVM"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:333
-msgid "Partition at installation disk"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:347
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:348
-msgid "Reset location"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:349
-msgid "Change location"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:350
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
-msgid "Delete"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:486
-#: src/components/storage/VolumeFields.jsx:66
-#: src/components/storage/VolumeFields.jsx:75
-#: src/components/storage/VolumeFields.jsx:80
-msgid "Mount point"
-msgstr ""
-
-#. TRANSLATORS: where (and how) the file-system is going to be created
-#: src/components/storage/PartitionsField.jsx:490
-msgid "Location"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:532
-msgid "Table with mount points"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:604
-#: src/components/storage/PartitionsField.jsx:624
-#: src/components/storage/VolumeDialog.jsx:86
-msgid "Add file system"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:636
-msgid "Other"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:777
-msgid "Reset to defaults"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:849
-msgid "Partitions and file systems"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:851
-msgid ""
-"Structure of the new system, including any additional partition needed for "
-"booting"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:858
-msgid "Show partitions and file-systems actions"
-msgstr ""
-
-#: src/components/storage/ProposalActionsDialog.jsx:65
-#, c-format
-msgid "Hide %d subvolume action"
-msgid_plural "Hide %d subvolume actions"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/components/storage/ProposalActionsDialog.jsx:70
-#, c-format
-msgid "Show %d subvolume action"
-msgid_plural "Show %d subvolume actions"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:58
-msgid "Destructive actions are not allowed"
-msgstr ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:60
-msgid "Destructive actions are allowed"
-msgstr ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:83
-#: src/components/storage/ProposalActionsSummary.jsx:133
-msgid "affecting"
-msgstr ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:113
-msgid "Shrinking partitions is not allowed"
-msgstr ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:117
-msgid "Shrinking partitions is allowed"
-msgstr ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:119
-msgid "Shrinking some partitions is allowed but not needed"
-msgstr ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:122
-#, c-format
-msgid "%d partition will be shrunk"
-msgid_plural "%d partitions will be shrunk"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:160
-#, fuzzy
-msgid "Cannot accommodate the required file systems for installation"
-msgstr "Потврдете ја инсталацијата"
-
-#: src/components/storage/ProposalActionsSummary.jsx:168
-#, c-format
-msgid "Check the planned action"
-msgid_plural "Check the %d planned actions"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/components/storage/ProposalActionsSummary.jsx:183
-msgid "Waiting for actions information..."
-msgstr ""
-
-#: src/components/storage/ProposalPage.jsx:317
-msgid "Planned Actions"
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:43
-msgid "Waiting for information about storage configuration"
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:73
-msgid "Final layout"
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:74
-msgid "The systems will be configured as displayed below."
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:83
-msgid "Storage proposal not possible"
-msgstr ""
-
-#: src/components/storage/ProposalResultTable.jsx:79
-msgid "New"
-msgstr ""
-
-#. TRANSLATORS: Label to indicate the device size before resizing, where %s is
-#. replaced by the original size (e.g., 3.00 GiB).
-#: src/components/storage/ProposalResultTable.jsx:105
-#, c-format
-msgid "Before %s"
-msgstr ""
-
-#: src/components/storage/ProposalResultTable.jsx:131
-msgid "Mount Point"
-msgstr ""
-
-#: src/components/storage/ProposalTransactionalInfo.jsx:45
-msgid "Transactional root file system"
-msgstr ""
-
-#: src/components/storage/ProposalTransactionalInfo.jsx:49
-#, c-format
-msgid ""
-"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
-"file system updated via snapshots."
-msgstr ""
-
-#: src/components/storage/SnapshotsField.jsx:36
-msgid "Use Btrfs snapshots for the root file system"
-msgstr ""
-
-#: src/components/storage/SnapshotsField.jsx:38
-msgid ""
-"Allows to boot to a previous version of the system after configuration "
-"changes or software upgrades."
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:68
-#, c-format
-msgid "Up to %s can be recovered by shrinking the device."
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:77
-msgid "The device cannot be shrunk:"
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:98
-#, c-format
-msgid "Show information about %s"
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:172
-msgid "The content may be deleted"
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:204
-msgid "Action"
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:215
-msgid "Actions to find space"
-msgstr ""
-
-#: src/components/storage/SpacePolicySelection.jsx:172
-msgid "Space policy"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:83
-#, c-format
-msgid "Add %s file system"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:84
-#, c-format
-msgid "Edit %s file system"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:86
-msgid "Edit file system"
-msgstr ""
-
-#. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:101
-msgid "The type and size of the file system cannot be edited."
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:105
-#, c-format
-msgid "The current file system on %s is selected to be mounted at %s."
-msgstr ""
-
-#. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:113
-msgid "The size of the file system cannot be edited"
-msgstr ""
-
-#. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:115
-#, c-format
-msgid "The file system is allocated at the device %s."
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:163
-msgid "A mount point is required"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:190
-msgid "The mount point is invalid"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:218
-msgid "A size value is required"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:246
-msgid "Minimum size is required"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:278
-msgid "Maximum must be greater than minimum"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:320
-#, c-format
-msgid "There is already a file system for %s."
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:322
-msgid "Do you want to edit it?"
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:367
-#, c-format
-msgid "There is a predefined file system for %s."
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:369
-msgid "Do you want to add it?"
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:225
-msgid ""
-"The options for the file system type depends on the product and the mount "
-"point."
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:232
-msgid "More info for file system types"
-msgstr ""
-
-#. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:243
-msgid "File system type"
-msgstr ""
-
-#. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:274
-msgid "the configuration of snapshots"
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:281
-#, c-format
-msgid "the presence of the file system for %s"
-msgstr ""
-
-#. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:283
-msgid ", "
-msgstr ""
-
-#. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:289
-msgid "the amount of RAM in the system"
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:293
-#, c-format
-msgid "The final size depends on %s."
-msgstr ""
-
-#. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:295
-msgid " and "
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:302
-msgid "Automatically calculated size according to the selected product."
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:321
-msgid "Exact size for the file system."
-msgstr ""
-
-#. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:330
-msgid "Exact size"
-msgstr ""
-
-#. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:347
-msgid "Size unit"
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:376
-msgid ""
-"Limits for the file system size. The final size will be a value between the "
-"given minimum and maximum. If no maximum is given then the file system will "
-"be as big as possible."
-msgstr ""
-
-#. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:384
-msgid "Minimum"
-msgstr ""
-
-#. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:395
-msgid "Minimum desired size"
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:406
-msgid "Unit for the minimum size"
-msgstr ""
-
-#. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:418
-msgid "Maximum"
-msgstr ""
-
-#. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:430
-msgid "Maximum desired size"
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:440
-msgid "Unit for the maximum size"
-msgstr ""
-
-#. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:458
-msgid "Auto"
-msgstr ""
-
-#. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:460
-msgid "Fixed"
-msgstr ""
-
-#. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:462
-msgid "Range"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:41
-msgid ""
-"The file systems are allocated at the installation device by default. "
-"Indicate a custom location to create the file system at a specific device."
-msgstr ""
-
-#. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
-#. by a mount path (e.g., /home).
-#: src/components/storage/VolumeLocationDialog.jsx:137
-#, c-format
-msgid "Location for %s file system"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:147
-msgid "Select in which device to allocate the file system"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:150
-msgid "Select a location"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:162
-msgid "Select how to allocate the file system"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:167
-msgid "Create a new partition"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:169
-msgid ""
-"The file system will be allocated as a new partition at the selected   disk."
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:179
-msgid "Create a dedicated LVM volume group"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:181
-msgid ""
-"A new volume group will be allocated in the selected disk and the   file "
-"system will be created as a logical volume."
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:191
-msgid "Format the device"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:195
-#, c-format
-msgid "The selected device will be formatted as %s file system."
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:206
-msgid "Mount the file system"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:208
-msgid ""
-"The current file system on the selected device will be mounted   without "
-"formatting the device."
-msgstr ""
-
-#: src/components/storage/VolumeLocationSelectorTable.jsx:110
-msgid "Usage"
 msgstr ""
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
@@ -1523,6 +490,12 @@ msgstr ""
 
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
+msgstr ""
+
+#: src/components/storage/ZFCPDiskForm.jsx:110
+#: src/components/storage/ZFCPPage.jsx:324
+#: src/components/storage/ZFCPPage.jsx:382
+msgid "Channel ID"
 msgstr ""
 
 #. TRANSLATORS: abbrev. World Wide Port Name
@@ -1537,6 +510,14 @@ msgstr ""
 msgid "LUN"
 msgstr ""
 
+#. TRANSLATORS: table header
+#: src/components/storage/ZFCPPage.jsx:325
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+#: src/components/users/RootAuthMethods.jsx:124
+msgid "Status"
+msgstr ""
+
 #: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
 msgstr ""
@@ -1549,6 +530,22 @@ msgstr ""
 msgid "Deactivated"
 msgstr ""
 
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+msgid "No"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+msgid "Yes"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:353
+msgid "Activate"
+msgstr ""
+
 #. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
@@ -1557,6 +554,10 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:98
 #: src/components/storage/iscsi/NodesPresenter.jsx:119
 msgid "Name"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:395
+msgid "Deactivate"
 msgstr ""
 
 #: src/components/storage/ZFCPPage.jsx:437
@@ -1610,10 +611,6 @@ msgstr ""
 #. TRANSLATORS: section title
 #: src/components/storage/ZFCPPage.jsx:599
 msgid "Disks"
-msgstr ""
-
-#: src/components/storage/device-utils.jsx:92
-msgid "Unused space"
 msgstr ""
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
@@ -1701,6 +698,12 @@ msgstr ""
 msgid "Initiator name"
 msgstr ""
 
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
+#: src/components/storage/iscsi/NodesPresenter.jsx:73
+#: src/components/users/FirstUser.jsx:86
+msgid "Edit"
+msgstr ""
+
 #. TRANSLATORS: usually just keep the original text
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
@@ -1744,6 +747,10 @@ msgstr ""
 msgid "On boot"
 msgstr ""
 
+#: src/components/storage/iscsi/NodeStartupOptions.js:27
+msgid "Automatic"
+msgstr ""
+
 #. TRANSLATORS: iSCSI connection status
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -1753,6 +760,10 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
 #, c-format
 msgid "Connected (%s)"
+msgstr ""
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:77
+msgid "Delete"
 msgstr ""
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:82
@@ -1794,83 +805,6 @@ msgstr ""
 #. TRANSLATORS: iSCSI targets section title
 #: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
-msgstr ""
-
-#: src/components/storage/utils.js:64
-msgid "KiB"
-msgstr ""
-
-#: src/components/storage/utils.js:65
-msgid "MiB"
-msgstr ""
-
-#: src/components/storage/utils.js:66
-msgid "GiB"
-msgstr ""
-
-#: src/components/storage/utils.js:67
-msgid "TiB"
-msgstr ""
-
-#: src/components/storage/utils.js:68
-msgid "PiB"
-msgstr ""
-
-#: src/components/storage/utils.js:77
-msgid "Delete current content"
-msgstr ""
-
-#: src/components/storage/utils.js:78
-msgid "All partitions will be removed and any data in the disks will be lost."
-msgstr ""
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space deleting current content". Keep it short
-#: src/components/storage/utils.js:82
-msgid "deleting current content"
-msgstr ""
-
-#: src/components/storage/utils.js:87
-msgid "Shrink existing partitions"
-msgstr ""
-
-#: src/components/storage/utils.js:88
-msgid "The data is kept, but the current partitions will be resized as needed."
-msgstr ""
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space shrinking partitions". Keep it short.
-#: src/components/storage/utils.js:92
-msgid "shrinking partitions"
-msgstr ""
-
-#: src/components/storage/utils.js:97
-msgid "Use available space"
-msgstr ""
-
-#: src/components/storage/utils.js:98
-msgid ""
-"The data is kept. Only the space not assigned to any partition will be used."
-msgstr ""
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space without modifying any partition". Keep it short.
-#: src/components/storage/utils.js:102
-msgid "without modifying any partition"
-msgstr ""
-
-#: src/components/storage/utils.js:107
-msgid "Custom"
-msgstr ""
-
-#: src/components/storage/utils.js:108
-msgid "Select what to do with each partition."
-msgstr ""
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space with custom actions". Keep it short.
-#: src/components/storage/utils.js:112
-msgid "with custom actions"
 msgstr ""
 
 #: src/components/users/FirstUser.jsx:35
@@ -2038,6 +972,10 @@ msgstr ""
 #: src/router.js:48
 msgid "Overview"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Cannot accommodate the required file systems for installation"
+#~ msgstr "Потврдете ја инсталацијата"
 
 #, fuzzy
 #~ msgid "Agama"

@@ -19,8 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-import { get } from "~/api/http";
+import { get, post } from "~/api/http";
 import { Job } from "~/types/job";
+import { calculate, fetchSettings } from "~/api/storage/proposal";
+
+/**
+ * Starts the storage probing process.
+ */
+const probe = (): Promise<any> => post("/api/storage/probe");
+
+export { probe };
 
 /**
  * Returns the list of jobs
@@ -33,4 +41,17 @@ const fetchStorageJobs = (): Promise<Job[]> => get("/api/storage/jobs");
 const findStorageJob = (id: string): Promise<Job | undefined> =>
   fetchStorageJobs().then((jobs: Job[]) => jobs.find((value) => value.id === id));
 
-export { fetchStorageJobs, findStorageJob };
+/**
+ * Refreshes the storage layer.
+ *
+ * It does the probing again and recalculates the proposal with the same
+ * settings. Internally, it is composed of three different API calls
+ * (retrieve the settings, probe the system, and calculate the proposal).
+ */
+const refresh = async (): Promise<void> => {
+  const settings = await fetchSettings();
+  await probe();
+  await calculate(settings);
+};
+
+export { fetchStorageJobs, findStorageJob, refresh };

@@ -1,4 +1,30 @@
 -------------------------------------------------------------------
+Fri Sep  6 16:38:06 UTC 2024 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Do not try to install assets/ and products/ directories (everything
+  is inside agama/web_ui/ already) (gh#openSUSE/agama#1588).
+
+-------------------------------------------------------------------
+Fri Sep  6 15:04:58 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Ensure that product icons are packaged (gh#openSUSE/agama#1587).
+
+-------------------------------------------------------------------
+Fri Sep  6 08:06:41 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adopt TanStack Query and Axios for state management and
+  interacting with Agama's HTTP API (gh#openSUSE/agama#1439,
+  gh#openSUSE/agama#1452, gh#openSUSE/agama#1483, gh#openSUSE/agama#1492,
+  gh#openSUSE/agama#1503, gh#openSUSE/agama#1504, gh#openSUSE/agama#1514,
+  gh#openSUSE/agama#1516, gh#openSUSE/agama#1519, gh#openSUSE/agama#1577,
+  gh#openSUSE/agama#1580).
+
+-------------------------------------------------------------------
+Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Show product logo in product selector (gh#openSUSE/agama#1415).
+
+-------------------------------------------------------------------
 Wed Sep  4 21:00:34 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Bring back DASD management support (gh#openSUSE/agama#1549).

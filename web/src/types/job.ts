@@ -20,9 +20,9 @@
  */
 
 type Job = {
-    id: string;
-    running: boolean;
-    exitCode: number;
-  };
-  
-  export type { Job };
+  id: string;
+  running: boolean;
+  exitCode: number;
+};
+
+export type { Job };

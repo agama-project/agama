@@ -5,9 +5,10 @@ name: Leap 16.0 Alpha
 # at the at translations/description key below to avoid using obsolete
 # translations!!
 # ------------------------------------------------------------------------------
-description: 'Leap 16.0 is the latest version of a community distribution based
-  on the latest SUSE Linux Enterprise Server.'
+description: 'The latest version of a community distribution based on the latest
+  SUSE Linux Enterprise Server.'
 # Do not manually change any translations! See README.md for more details.
+icon: Leap16.svg
 translations:
   description:
     ca: El Leap 16.0 és la darrera versió d'una distribució comunitària basada en

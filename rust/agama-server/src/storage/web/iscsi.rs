@@ -29,7 +29,10 @@ use serde::Deserialize;
 mod stream;
 use stream::ISCSINodeStream;
 use tokio_stream::{Stream, StreamExt};
-use zbus::fdo::{PropertiesChanged, PropertiesProxy};
+use zbus::{
+    fdo::{PropertiesChanged, PropertiesProxy},
+    names::InterfaceName,
+};
 
 /// Returns the stream of iSCSI-related events.
 ///
@@ -59,7 +62,7 @@ async fn initiator_stream(
         .receive_properties_changed()
         .await?
         .filter_map(|change| match handle_initiator_change(change) {
-            Ok(event) => Some(event),
+            Ok(event) => event,
             Err(error) => {
                 log::warn!("Could not read the initiator change: {}", error);
                 None
@@ -68,12 +71,17 @@ async fn initiator_stream(
     Ok(stream)
 }
 
-fn handle_initiator_change(change: PropertiesChanged) -> Result<Event, ServiceError> {
+fn handle_initiator_change(change: PropertiesChanged) -> Result<Option<Event>, ServiceError> {
     let args = change.args()?;
+    let iscsi_iface =
+        InterfaceName::from_str_unchecked("org.opensuse.Agama.Storage1.ISCSI.Initiator");
+    if iscsi_iface != args.interface_name {
+        return Ok(None);
+    }
     let changes = to_owned_hash(args.changed_properties());
     let name = get_optional_property(&changes, "InitiatorName")?;
     let ibft = get_optional_property(&changes, "IBFT")?;
-    Ok(Event::ISCSIInitiatorChanged { ibft, name })
+    Ok(Some(Event::ISCSIInitiatorChanged { ibft, name }))
 }
 
 #[derive(Clone)]

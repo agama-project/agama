@@ -30,6 +30,7 @@
         "id": {
           "title": "Product identifier",
           "description": "The id field from a products.d/foo.yaml file",
+          "icon": "Product Icon path specified in products.d/foo.yaml file",
           "type": "string"
         },
         "registrationCode": {
@@ -228,6 +229,90 @@
                       "title": "A list of paths to match against the ID_PATH udev property of devices",
                       "type": "string"
                     }
+                  }
+                }
+              },
+              "ieee-8021x": {
+                "type": "object",
+                "title": "IEEE 802.1x (EAP) settings",
+                "properties": {
+                  "eap": {
+                    "type": "array",
+                    "items": {
+                      "title": "List of EAP methods used",
+                      "type": "string",
+                      "enum": [
+                        "leap",
+                        "md5",
+                        "tls",
+                        "peap",
+                        "ttls",
+                        "pwd",
+                        "fast"
+                      ]
+                    }
+                  },
+                  "phase2_auth": {
+                    "title": "Phase 2 inner auth method",
+                    "type": "string",
+                    "enum": [
+                      "pap",
+                      "chap",
+                      "mschap",
+                      "mschapv2",
+                      "gtc",
+                      "otp",
+                      "md5",
+                      "tls"
+                    ]
+                  },
+                  "identity": {
+                    "title": "Identity string, often for example the user's login name",
+                    "type": "string"
+                  },
+                  "password": {
+                    "title": "Password string used for EAP authentication",
+                    "type": "string"
+                  },
+                  "ca_cert": {
+                    "title": "Path to CA certificate",
+                    "type": "string"
+                  },
+                  "ca_cert_password": {
+                    "title": "Password string for CA certificate if it is encrypted",
+                    "type": "string"
+                  },
+                  "client_cert": {
+                    "title": "Path to client certificate",
+                    "type": "string"
+                  },
+                  "client_cert_password": {
+                    "title": "Password string for client certificate if it is encrypted",
+                    "type": "string"
+                  },
+                  "private_key": {
+                    "title": "Path to private key",
+                    "type": "string"
+                  },
+                  "private_key_password": {
+                    "title": "Password string for private key if it is encrypted",
+                    "type": "string"
+                  },
+                  "anonymous_identity": {
+                    "title": "Anonymous identity string for EAP authentication methods",
+                    "type": "string"
+                  },
+                  "peap_version": {
+                    "title": "Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property",
+                    "type": "string",
+                    "enum": [
+                      "0",
+                      "1"
+                    ]
+                  },
+                  "peap_label": {
+                    "title": "Force the use of the new PEAP label during key derivation",
+                    "type": "boolean"
                   }
                 }
               }
@@ -869,9 +954,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "reuse": {
+        "reuseIfPossible": {
           "title": "Reuse file system",
-          "description": "Whether to reuse the existing file system (if any).",
+          "description": "Try to reuse the existing file system. In some cases the file system could not be reused, for example, if the device is re-encrypted.",
           "type": "boolean",
           "default": false
         },
@@ -885,7 +970,7 @@
         "path": {
           "title": "Mount path",
           "type": "string",
-          "examples": ["/dev/vda"]
+          "examples": ["/var/log"]
         },
         "mountBy": {
           "title": "How to mount the device",

@@ -64,6 +64,7 @@ module Agama
           product.description = attrs["description"]
           product.name = data[:name]
           product.version = data[:version]
+          product.icon = attrs["icon"] if attrs["icon"]
         end
       end
 
@@ -98,6 +99,7 @@ module Agama
         {
           name:               config.products.dig(id, "software", "base_product"),
           version:            config.products.dig(id, "software", "version"),
+          icon:               config.products.dig(id, "software", "icon"),
           labels:             config.arch_elements_from(
             id, "software", "installation_labels", property: :label
           ),

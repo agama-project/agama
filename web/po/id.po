@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-18 02:29+0000\n"
+"POT-Creation-Date: 2024-09-08 02:38+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -143,11 +143,6 @@ msgid "Cannot be changed in remote installation"
 msgstr "Tata letak papan ketik tidak dapat diubah dalam instalasi jarak jauh"
 
 #: src/components/core/InstallerOptions.jsx:142
-#: src/components/storage/BootSelection.jsx:250
-#: src/components/storage/DeviceSelection.jsx:254
-#: src/components/storage/EncryptionSettingsDialog.jsx:155
-#: src/components/storage/SpacePolicySelection.jsx:200
-#: src/components/storage/VolumeDialog.jsx:794
 #: src/components/storage/ZFCPPage.jsx:528
 #: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
@@ -246,8 +241,6 @@ msgid "Finished"
 msgstr "Selesai"
 
 #: src/components/core/RowActions.jsx:64
-#: src/components/storage/PartitionsField.jsx:491
-#: src/components/storage/ProposalActionsSummary.jsx:234
 msgid "Actions"
 msgstr "Tindakan"
 
@@ -289,7 +282,6 @@ msgstr "Perangkat Lunak %s"
 #: src/components/l10n/L10nPage.jsx:78
 #: src/components/l10n/LocaleSelection.jsx:92
 #: src/components/l10n/TimezoneSelection.jsx:125
-#: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr "Pilih"
 
@@ -306,8 +298,6 @@ msgstr "Belum ada perangkat yang dipilih"
 
 #: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
 #: src/components/l10n/L10nPage.jsx:78
-#: src/components/storage/InstallationDeviceField.jsx:109
-#: src/components/storage/ProposalActionsSummary.jsx:239
 #: src/components/users/RootAuthMethods.jsx:74
 #: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
@@ -365,8 +355,6 @@ msgstr "Pengguna"
 
 #: src/components/overview/OverviewPage.jsx:50
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:295
-#: src/components/storage/StoragePage.jsx:30
 msgid "Storage"
 msgstr "Penyimpanan"
 
@@ -467,7 +455,6 @@ msgstr ""
 "dibutuhkan di perangkat yang bersangkutan"
 
 #: src/components/overview/StorageSection.jsx:179
-#: src/components/storage/InstallationDeviceField.jsx:67
 msgid "No device selected yet"
 msgstr "Belum ada perangkat yang dipilih"
 
@@ -507,1125 +494,25 @@ msgstr ""
 msgid "Configuring the product, please wait ..."
 msgstr "Memuat produk yang tersedia, mohon tunggu..."
 
-#: src/components/storage/BootConfigField.jsx:44
-#, fuzzy
-msgid "Change boot options"
-msgstr "Mengubah zona waktu"
-
-#: src/components/storage/BootConfigField.jsx:82
-msgid "Installation will not configure partitions for booting."
-msgstr ""
-
-#: src/components/storage/BootConfigField.jsx:86
-#, fuzzy
-msgid ""
-"Installation will configure partitions for booting at the installation disk."
-msgstr "mengecilkan partisi dari %d disk yang dipilih"
-
-#: src/components/storage/BootConfigField.jsx:90
-#, c-format
-msgid "Installation will configure partitions for booting at %s."
-msgstr ""
-
-#: src/components/storage/BootSelection.jsx:132
-msgid ""
-"To ensure the new system is able to boot, the installer may need to create "
-"or configure some partitions in the appropriate disk."
-msgstr ""
-"Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin "
-"perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
-
-#: src/components/storage/BootSelection.jsx:138
-msgid "Partitions to boot will be allocated at the installation disk."
-msgstr "Partisi untuk boot akan dialokasikan pada disk instalasi."
-
-#. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:143
-#, c-format
-msgid "Partitions to boot will be allocated at the installation disk (%s)."
-msgstr "Partisi untuk boot akan dialokasikan pada disk instalasi (%s)."
-
-#: src/components/storage/BootSelection.jsx:159
-#, fuzzy
-msgid "Select booting partition"
-msgstr "Perkecil partisi yang ada"
-
-#: src/components/storage/BootSelection.jsx:180
-#: src/components/storage/iscsi/NodeStartupOptions.js:27
-msgid "Automatic"
-msgstr "Otomatis"
-
-#: src/components/storage/BootSelection.jsx:198
-msgid "Select a disk"
-msgstr "Pilih disk"
-
-#: src/components/storage/BootSelection.jsx:204
-msgid "Partitions to boot will be allocated at the following device."
-msgstr "Partisi untuk boot akan dialokasikan pada perangkat berikut."
-
-#: src/components/storage/BootSelection.jsx:207
-msgid "Choose a disk for placing the boot loader"
-msgstr "Pilih disk untuk menempatkan boot loader"
-
-#: src/components/storage/BootSelection.jsx:230
-msgid "Do not configure"
-msgstr "Jangan konfigurasikan"
-
-#: src/components/storage/BootSelection.jsx:236
-msgid ""
-"No partitions will be automatically configured for booting. Use with caution."
-msgstr ""
-"Tidak ada partisi yang akan dikonfigurasi secara otomatis untuk booting. "
-"Gunakan dengan hati-hati."
-
-#: src/components/storage/DASDFormatProgress.jsx:60
-msgid "Waiting for progress report"
-msgstr "Menunggu laporan kemajuan"
-
-#: src/components/storage/DASDFormatProgress.jsx:67
-msgid "Formatting DASD devices"
-msgstr "Memformat perangkat DASD"
-
-#: src/components/storage/DASDTable.jsx:62
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-msgid "No"
-msgstr "Tidak"
-
-#: src/components/storage/DASDTable.jsx:62
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-msgid "Yes"
-msgstr "Ya"
-
-#: src/components/storage/DASDTable.jsx:69
-#: src/components/storage/ZFCPDiskForm.jsx:110
-#: src/components/storage/ZFCPPage.jsx:324
-#: src/components/storage/ZFCPPage.jsx:382
-msgid "Channel ID"
-msgstr "ID saluran"
-
-#. TRANSLATORS: table header
-#: src/components/storage/DASDTable.jsx:70
-#: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
-msgid "Status"
-msgstr "Status"
-
-#: src/components/storage/DASDTable.jsx:71
-#: src/components/storage/DeviceSelectorTable.jsx:197
-#: src/components/storage/ProposalResultTable.jsx:130
-#: src/components/storage/SpaceActionsTable.jsx:200
-#: src/components/storage/VolumeLocationSelectorTable.jsx:107
-msgid "Device"
-msgstr "Perangkat"
-
-#: src/components/storage/DASDTable.jsx:72
-msgid "Type"
-msgstr "Jenis"
-
-#. TRANSLATORS: table header, the column contains "Yes"/"No" values
-#. for the DIAG access mode (special disk access mode on IBM mainframes),
-#. usually keep untranslated
-#: src/components/storage/DASDTable.jsx:76
-msgid "DIAG"
-msgstr ""
-
-#: src/components/storage/DASDTable.jsx:77
-msgid "Formatted"
-msgstr "Diformat"
-
-#: src/components/storage/DASDTable.jsx:78
-msgid "Partition Info"
-msgstr "Info Partisi"
-
-#. TRANSLATORS: drop down menu label
-#: src/components/storage/DASDTable.jsx:115
-msgid "Perform an action"
-msgstr "Melakukan tindakan"
-
-#: src/components/storage/DASDTable.jsx:122
-#: src/components/storage/ZFCPPage.jsx:353
-msgid "Activate"
-msgstr "Mengaktifkan"
-
-#: src/components/storage/DASDTable.jsx:126
-#: src/components/storage/ZFCPPage.jsx:395
-msgid "Deactivate"
-msgstr "Nonaktifkan"
-
-#: src/components/storage/DASDTable.jsx:131
-msgid "Set DIAG On"
-msgstr "Mengatur DIAG Aktif"
-
-#: src/components/storage/DASDTable.jsx:135
-msgid "Set DIAG Off"
-msgstr "Mengatur DIAG Tidak Aktif"
-
-#: src/components/storage/DASDTable.jsx:140
-msgid "Format"
-msgstr "Format"
-
-#: src/components/storage/DASDTable.jsx:261
-#: src/components/storage/DASDTable.jsx:262
-msgid "Filter by min channel"
-msgstr "Memfilter menurut saluran min"
-
-#: src/components/storage/DASDTable.jsx:269
-msgid "Remove min channel filter"
-msgstr "Menghapus filter saluran min"
-
-#: src/components/storage/DASDTable.jsx:283
-#: src/components/storage/DASDTable.jsx:284
-msgid "Filter by max channel"
-msgstr "Memfilter menurut saluran maks"
-
-#: src/components/storage/DASDTable.jsx:291
-msgid "Remove max channel filter"
-msgstr "Menghapus filter saluran maks"
-
-#: src/components/storage/DeviceSelection.jsx:108
-#, fuzzy
-msgid "Loading data, please wait a second..."
-msgstr "Memuat produk yang tersedia, mohon tunggu..."
-
-#: src/components/storage/DeviceSelection.jsx:144
-#, fuzzy
-msgid ""
-"The file systems will be allocated by default as [new partitions in the "
-"selected device]."
-msgstr ""
-"Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
-"perangkat yang dipilih</b>."
-
-#: src/components/storage/DeviceSelection.jsx:151
-#, fuzzy
-msgid ""
-"The file systems will be allocated by default as [logical volumes of a new "
-"LVM Volume Group]. The corresponding physical volumes will be created on "
-"demand as new partitions at the selected devices."
-msgstr ""
-"Sistem berkas akan dialokasikan secara baku sebagai <b>volume logis dari "
-"Grup Volume LVM baru</b>. Volume fisik yang sesuai akan dibuat sesuai "
-"permintaan sebagai partisi baru pada perangkat yang dipilih."
-
-#: src/components/storage/DeviceSelection.jsx:160
-#, fuzzy
-msgid "Select installation device"
-msgstr "di perangkat instalasi"
-
-#: src/components/storage/DeviceSelection.jsx:166
-#, fuzzy
-msgid "Install new system on"
-msgstr "Opsi Penginstal"
-
-#: src/components/storage/DeviceSelection.jsx:169
-#, fuzzy
-msgid "An existing disk"
-msgstr "Perkecil partisi yang ada"
-
-#: src/components/storage/DeviceSelection.jsx:178
-#, fuzzy
-msgid "A new LVM Volume Group"
-msgstr "grup volume LVM baru"
-
-#: src/components/storage/DeviceSelection.jsx:203
-msgid "Device selector for target disk"
-msgstr "Pemilih perangkat untuk disk target"
-
-#: src/components/storage/DeviceSelection.jsx:226
-msgid "Device selector for new LVM volume group"
-msgstr "Pemilih perangkat untuk grup volume LVM baru"
-
-#: src/components/storage/DeviceSelection.jsx:242
-msgid "Prepare more devices by configuring advanced"
-msgstr ""
-
-#: src/components/storage/DeviceSelection.jsx:243
-#, fuzzy
-msgid "storage techs"
-msgstr "Masalah penyimpanan"
-
-#. TRANSLATORS: multipath device type
-#: src/components/storage/DeviceSelectorTable.jsx:61
-msgid "Multipath"
-msgstr "Multipath"
-
-#. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/DeviceSelectorTable.jsx:66
-#, c-format
-msgid "DASD %s"
-msgstr "DASD %s"
-
-#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/DeviceSelectorTable.jsx:71
-#, c-format
-msgid "Software %s"
-msgstr "Perangkat Lunak %s"
-
-#: src/components/storage/DeviceSelectorTable.jsx:76
-msgid "SD Card"
-msgstr "Kartu SD"
-
-#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-#: src/components/storage/DeviceSelectorTable.jsx:81
-#, c-format
-msgid "%s disk"
-msgstr ""
-
-#: src/components/storage/DeviceSelectorTable.jsx:82
-#, fuzzy
-msgid "Disk"
-msgstr "Disk"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:102
-#, c-format
-msgid "Members: %s"
-msgstr "Anggota: %s"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:111
-#, c-format
-msgid "Devices: %s"
-msgstr "Perangkat: %s"
-
-#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/DeviceSelectorTable.jsx:120
-#, c-format
-msgid "Wires: %s"
-msgstr "Kabel: %s"
-
-#. TRANSLATORS: disk partition info, %s is replaced by partition table
-#. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/DeviceSelectorTable.jsx:155
-#, c-format
-msgid "%s with %d partitions"
-msgstr "%s dengan partisi %d"
-
-#. TRANSLATORS: status message, no existing content was found on the disk,
-#. i.e. the disk is completely empty
-#: src/components/storage/DeviceSelectorTable.jsx:161
-#: src/components/storage/SpaceActionsTable.jsx:175
-msgid "No content found"
-msgstr "Tidak ada konten yang ditemukan"
-
-#: src/components/storage/DeviceSelectorTable.jsx:198
-#: src/components/storage/PartitionsField.jsx:487
-#: src/components/storage/ProposalResultTable.jsx:132
-#: src/components/storage/SpaceActionsTable.jsx:201
-#: src/components/storage/VolumeLocationSelectorTable.jsx:108
-msgid "Details"
-msgstr "Detail"
-
-#: src/components/storage/DeviceSelectorTable.jsx:199
-#: src/components/storage/PartitionsField.jsx:488
-#: src/components/storage/ProposalResultTable.jsx:133
-#: src/components/storage/SpaceActionsTable.jsx:202
-#: src/components/storage/VolumeFields.jsx:488
-#: src/components/storage/VolumeLocationSelectorTable.jsx:113
-msgid "Size"
-msgstr "Ukuran"
-
-#: src/components/storage/DevicesTechMenu.jsx:38
+#: src/components/storage/DevicesTechMenu.jsx:39
 msgid "Manage and format"
 msgstr "Mengelola dan memformat"
 
-#: src/components/storage/DevicesTechMenu.jsx:52
+#: src/components/storage/DevicesTechMenu.jsx:53
 msgid "Activate disks"
 msgstr "Mengaktifkan disk"
 
-#: src/components/storage/DevicesTechMenu.jsx:53
+#: src/components/storage/DevicesTechMenu.jsx:54
 msgid "zFCP"
 msgstr "zFCP"
 
-#: src/components/storage/DevicesTechMenu.jsx:66
+#: src/components/storage/DevicesTechMenu.jsx:67
 msgid "Connect to iSCSI targets"
 msgstr "Menyambungkan ke target iSCSI"
 
-#: src/components/storage/DevicesTechMenu.jsx:67
+#: src/components/storage/DevicesTechMenu.jsx:68
 msgid "iSCSI"
 msgstr "iSCSI"
-
-#: src/components/storage/EncryptionField.jsx:38
-#: src/components/storage/EncryptionSettingsDialog.jsx:36
-#, fuzzy
-msgid "Encryption"
-msgstr "Gunakan enkripsi"
-
-#: src/components/storage/EncryptionField.jsx:40
-msgid ""
-"Protection for the information stored at the device, including data, "
-"programs, and system files."
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:44
-msgid "disabled"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:45
-msgid "enabled"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:46
-msgid "using TPM unlocking"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:60
-msgid "Enable"
-msgstr ""
-
-#: src/components/storage/EncryptionField.jsx:60
-msgid "Modify"
-msgstr ""
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:38
-msgid ""
-"Full Disk Encryption (FDE) allows to protect the information stored at the "
-"device, including data, programs, and system files."
-msgstr ""
-
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.jsx:42
-#, fuzzy
-msgid ""
-"Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
-msgstr "Gunakan TPM untuk mendekripsi secara otomatis pada setiap boot"
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:46
-#, fuzzy
-msgid ""
-"The password will not be needed to boot and access the data if the TPM can "
-"verify the integrity of the system. TPM sealing requires the new system to "
-"be booted directly on its first run."
-msgstr ""
-"Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika "
-"<abbr title='Trusted Platform Module'>TPM</abbr> dapat memverifikasi "
-"integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot "
-"secara langsung saat pertama kali dijalankan."
-
-#: src/components/storage/EncryptionSettingsDialog.jsx:129
-#, fuzzy
-msgid "Encrypt the system"
-msgstr "Edit sistem berkas"
-
-#: src/components/storage/InstallationDeviceField.jsx:37
-#: src/components/storage/VolumeLocationSelectorTable.jsx:61
-msgid "Installation device"
-msgstr "Perangkat penginstalan"
-
-#. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:39
-#, fuzzy
-msgid "Main disk or LVM Volume Group for installation."
-msgstr ""
-"Pilih disk utama atau Grup Volume <abbr title='Logical Volume Manager'>LVM</"
-"abbr> untuk penginstalan."
-
-#. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:53
-#, fuzzy, c-format
-msgid "File systems created as new partitions at %s"
-msgstr ""
-"Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
-"perangkat yang dipilih</b>."
-
-#: src/components/storage/InstallationDeviceField.jsx:56
-#, fuzzy
-msgid "File systems created at a new LVM volume group"
-msgstr "Pemilih perangkat untuk grup volume LVM baru"
-
-#: src/components/storage/InstallationDeviceField.jsx:61
-#, fuzzy, c-format
-msgid "File systems created at a new LVM volume group on %s"
-msgstr "grup volume LVM baru pada %s"
-
-#. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:84
-#, fuzzy, c-format
-msgid "at least %s"
-msgstr "Setidaknya %s"
-
-#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:108
-#, fuzzy, c-format
-msgid "Transactional Btrfs root volume (%s)"
-msgstr "Sistem file root transaksional"
-
-#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:110
-#, fuzzy, c-format
-msgid "Transactional Btrfs root partition (%s)"
-msgstr "transaksional"
-
-#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:115
-#, fuzzy, c-format
-msgid "Btrfs root volume with snapshots (%s)"
-msgstr "dengan snapshot"
-
-#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:117
-#, fuzzy, c-format
-msgid "Btrfs root partition with snapshots (%s)"
-msgstr "dengan snapshot"
-
-#. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
-#. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:126
-#, c-format
-msgid "Mount %1$s at %2$s (%3$s)"
-msgstr ""
-
-#. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
-#. %1$s is replaced by the device name, and %2$s by the size
-#: src/components/storage/PartitionsField.jsx:132
-#, c-format
-msgid "Swap at %1$s (%2$s)"
-msgstr ""
-
-#. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:136
-#, c-format
-msgid "Swap volume (%s)"
-msgstr ""
-
-#. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:138
-#, fuzzy, c-format
-msgid "Swap partition (%s)"
-msgstr "Info Partisi"
-
-#. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:147
-#, c-format
-msgid "%1$s root at %2$s (%3$s)"
-msgstr ""
-
-#. TRANSLATORS: "/" is in an LVM logical volume.
-#. Results in something like "Btrfs root volume (at least 20 GiB)" since
-#. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:153
-#, fuzzy, c-format
-msgid "%1$s root volume (%2$s)"
-msgstr "Keberadaan volume lain (%s)"
-
-#. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
-#. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:156
-#, fuzzy, c-format
-msgid "%1$s root partition (%2$s)"
-msgstr "%s dengan partisi %d"
-
-#. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
-#. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
-#: src/components/storage/PartitionsField.jsx:162
-#, c-format
-msgid "%1$s %2$s at %3$s (%4$s)"
-msgstr ""
-
-#. TRANSLATORS: The filesystem is in an LVM logical volume.
-#. Results in something like "Ext4 /home volume (at least 10 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:168
-#, c-format
-msgid "%1$s %2$s volume (%3$s)"
-msgstr ""
-
-#. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
-#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:171
-#, fuzzy, c-format
-msgid "%1$s %2$s partition (%3$s)"
-msgstr "%s dengan partisi %d"
-
-#: src/components/storage/PartitionsField.jsx:182
-#, fuzzy
-msgid "Do not configure partitions for booting"
-msgstr "Partisi untuk booting"
-
-#: src/components/storage/PartitionsField.jsx:184
-#, fuzzy
-msgid "Boot partitions at installation disk"
-msgstr "mengecilkan partisi dari %d disk yang dipilih"
-
-#. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/PartitionsField.jsx:187
-#, fuzzy, c-format
-msgid "Boot partitions at %s"
-msgstr "Info Partisi"
-
-#. TRANSLATORS: header for a list of items referring to size limits for file systems
-#: src/components/storage/PartitionsField.jsx:209
-msgid "These limits are affected by:"
-msgstr "Batasan ini dipengaruhi oleh:"
-
-#. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/PartitionsField.jsx:213
-msgid "The configuration of snapshots"
-msgstr "Konfigurasi snapshot"
-
-#: src/components/storage/PartitionsField.jsx:219
-#, c-format
-msgid "Presence of other volumes (%s)"
-msgstr "Keberadaan volume lain (%s)"
-
-#. TRANSLATORS: list item, describes a factor that affects the computed size of a
-#. file system; eg. adjusting the size of the swap
-#: src/components/storage/PartitionsField.jsx:225
-msgid "The amount of RAM in the system"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:292
-msgid "auto"
-msgstr "otomatis"
-
-#. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-#: src/components/storage/PartitionsField.jsx:309
-#, c-format
-msgid "Reused %s"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:310
-#, fuzzy
-msgid "Transactional Btrfs"
-msgstr "transaksional"
-
-#: src/components/storage/PartitionsField.jsx:311
-#, fuzzy
-msgid "Btrfs with snapshots"
-msgstr "dengan snapshot"
-
-#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:325
-#, fuzzy, c-format
-msgid "Partition at %s"
-msgstr "Info Partisi"
-
-#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:328
-#, c-format
-msgid "Separate LVM at %s"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:331
-#, fuzzy
-msgid "Logical volume at system LVM"
-msgstr "Gunakan manajemen volume logis (LVM)"
-
-#: src/components/storage/PartitionsField.jsx:333
-#, fuzzy
-msgid "Partition at installation disk"
-msgstr "mengecilkan partisi dari %d disk yang dipilih"
-
-#: src/components/storage/PartitionsField.jsx:347
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "Edit"
-
-#: src/components/storage/PartitionsField.jsx:348
-#, fuzzy
-msgid "Reset location"
-msgstr "Pendaftaran"
-
-#: src/components/storage/PartitionsField.jsx:349
-#, fuzzy
-msgid "Change location"
-msgstr "Mengubah zona waktu"
-
-#: src/components/storage/PartitionsField.jsx:350
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
-msgid "Delete"
-msgstr "Menghapus"
-
-#: src/components/storage/PartitionsField.jsx:486
-#: src/components/storage/VolumeFields.jsx:66
-#: src/components/storage/VolumeFields.jsx:75
-#: src/components/storage/VolumeFields.jsx:80
-msgid "Mount point"
-msgstr "Titik pemasangan"
-
-#. TRANSLATORS: where (and how) the file-system is going to be created
-#: src/components/storage/PartitionsField.jsx:490
-#, fuzzy
-msgid "Location"
-msgstr "Pelokalan"
-
-#: src/components/storage/PartitionsField.jsx:532
-msgid "Table with mount points"
-msgstr "Tabel dengan titik pemasangan"
-
-#: src/components/storage/PartitionsField.jsx:604
-#: src/components/storage/PartitionsField.jsx:624
-#: src/components/storage/VolumeDialog.jsx:86
-msgid "Add file system"
-msgstr "Tambahkan sistem berkas"
-
-#: src/components/storage/PartitionsField.jsx:636
-msgid "Other"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:777
-msgid "Reset to defaults"
-msgstr "Mengatur ulang ke default"
-
-#: src/components/storage/PartitionsField.jsx:849
-#, fuzzy
-msgid "Partitions and file systems"
-msgstr "Ukuran yang tepat untuk sistem berkas."
-
-#: src/components/storage/PartitionsField.jsx:851
-msgid ""
-"Structure of the new system, including any additional partition needed for "
-"booting"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:858
-#, fuzzy
-msgid "Show partitions and file-systems actions"
-msgstr "Ukuran yang tepat untuk sistem berkas."
-
-#: src/components/storage/ProposalActionsDialog.jsx:65
-#, c-format
-msgid "Hide %d subvolume action"
-msgid_plural "Hide %d subvolume actions"
-msgstr[0] "Menyembunyikan tindakan subvolume %d"
-
-#: src/components/storage/ProposalActionsDialog.jsx:70
-#, c-format
-msgid "Show %d subvolume action"
-msgid_plural "Show %d subvolume actions"
-msgstr[0] "Tampilkan tindakan subvolume %d"
-
-#: src/components/storage/ProposalActionsSummary.jsx:58
-#, fuzzy
-msgid "Destructive actions are not allowed"
-msgstr "Ada %d tindakan destruktif yang direncanakan"
-
-#: src/components/storage/ProposalActionsSummary.jsx:60
-#, fuzzy
-msgid "Destructive actions are allowed"
-msgstr "Ada %d tindakan destruktif yang direncanakan"
-
-#: src/components/storage/ProposalActionsSummary.jsx:83
-#: src/components/storage/ProposalActionsSummary.jsx:133
-#, fuzzy
-msgid "affecting"
-msgstr "Mempengaruhi"
-
-#: src/components/storage/ProposalActionsSummary.jsx:113
-#, fuzzy
-msgid "Shrinking partitions is not allowed"
-msgstr "Perkecil partisi yang ada"
-
-#: src/components/storage/ProposalActionsSummary.jsx:117
-#, fuzzy
-msgid "Shrinking partitions is allowed"
-msgstr "Perkecil partisi yang ada"
-
-#: src/components/storage/ProposalActionsSummary.jsx:119
-#, fuzzy
-msgid "Shrinking some partitions is allowed but not needed"
-msgstr "mengecilkan partisi dari %d disk yang dipilih"
-
-#: src/components/storage/ProposalActionsSummary.jsx:122
-#, fuzzy, c-format
-msgid "%d partition will be shrunk"
-msgid_plural "%d partitions will be shrunk"
-msgstr[0] "partisi"
-
-#: src/components/storage/ProposalActionsSummary.jsx:160
-#, fuzzy
-msgid "Cannot accommodate the required file systems for installation"
-msgstr "Tata letak papan ketik tidak dapat diubah dalam instalasi jarak jauh"
-
-#: src/components/storage/ProposalActionsSummary.jsx:168
-#, fuzzy, c-format
-msgid "Check the planned action"
-msgid_plural "Check the %d planned actions"
-msgstr[0] "Periksa semua tindakan yang direncanakan"
-
-#: src/components/storage/ProposalActionsSummary.jsx:183
-#, fuzzy
-msgid "Waiting for actions information..."
-msgstr "Menunggu informasi tentang konfigurasi boot"
-
-#: src/components/storage/ProposalPage.jsx:317
-msgid "Planned Actions"
-msgstr "Tindakan yang Direncanakan"
-
-#: src/components/storage/ProposalResultSection.jsx:43
-#, fuzzy
-msgid "Waiting for information about storage configuration"
-msgstr "Menunggu informasi tentang konfigurasi boot"
-
-#: src/components/storage/ProposalResultSection.jsx:73
-msgid "Final layout"
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:74
-msgid "The systems will be configured as displayed below."
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:83
-msgid "Storage proposal not possible"
-msgstr ""
-
-#: src/components/storage/ProposalResultTable.jsx:79
-msgid "New"
-msgstr "Baru"
-
-#. TRANSLATORS: Label to indicate the device size before resizing, where %s is
-#. replaced by the original size (e.g., 3.00 GiB).
-#: src/components/storage/ProposalResultTable.jsx:105
-#, c-format
-msgid "Before %s"
-msgstr "Sebelum %s"
-
-#: src/components/storage/ProposalResultTable.jsx:131
-msgid "Mount Point"
-msgstr "Mount Point"
-
-#: src/components/storage/ProposalTransactionalInfo.jsx:45
-msgid "Transactional root file system"
-msgstr "Sistem file root transaksional"
-
-#: src/components/storage/ProposalTransactionalInfo.jsx:49
-#, c-format
-msgid ""
-"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
-"file system updated via snapshots."
-msgstr ""
-
-#: src/components/storage/SnapshotsField.jsx:36
-#, fuzzy
-msgid "Use Btrfs snapshots for the root file system"
-msgstr "Ukuran yang tepat untuk sistem berkas."
-
-#: src/components/storage/SnapshotsField.jsx:38
-#, fuzzy
-msgid ""
-"Allows to boot to a previous version of the system after configuration "
-"changes or software upgrades."
-msgstr ""
-"Menggunakan Btrfs untuk sistem berkas root memungkinkan untuk melakukan "
-"booting ke versi sistem sebelumnya setelah perubahan konfigurasi atau "
-"peningkatan perangkat lunak."
-
-#: src/components/storage/SpaceActionsTable.jsx:68
-#, c-format
-msgid "Up to %s can be recovered by shrinking the device."
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:77
-msgid "The device cannot be shrunk:"
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:98
-#, fuzzy, c-format
-msgid "Show information about %s"
-msgstr "Menunggu informasi tentang kebijakan ruang"
-
-#: src/components/storage/SpaceActionsTable.jsx:172
-msgid "The content may be deleted"
-msgstr ""
-
-#: src/components/storage/SpaceActionsTable.jsx:204
-#, fuzzy
-msgid "Action"
-msgstr "Tindakan"
-
-#: src/components/storage/SpaceActionsTable.jsx:215
-#, fuzzy
-msgid "Actions to find space"
-msgstr "Tindakan untuk koneksi %s"
-
-#: src/components/storage/SpacePolicySelection.jsx:172
-#, fuzzy
-msgid "Space policy"
-msgstr "Kebijakan Ruang"
-
-#: src/components/storage/VolumeDialog.jsx:83
-#, fuzzy, c-format
-msgid "Add %s file system"
-msgstr "Tambahkan sistem berkas"
-
-#: src/components/storage/VolumeDialog.jsx:84
-#, fuzzy, c-format
-msgid "Edit %s file system"
-msgstr "Edit sistem berkas"
-
-#: src/components/storage/VolumeDialog.jsx:86
-msgid "Edit file system"
-msgstr "Edit sistem berkas"
-
-#. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:101
-#, fuzzy
-msgid "The type and size of the file system cannot be edited."
-msgstr "keberadaan sistem berkas untuk %s"
-
-#: src/components/storage/VolumeDialog.jsx:105
-#, c-format
-msgid "The current file system on %s is selected to be mounted at %s."
-msgstr ""
-
-#. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:113
-#, fuzzy
-msgid "The size of the file system cannot be edited"
-msgstr "keberadaan sistem berkas untuk %s"
-
-#. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:115
-#, fuzzy, c-format
-msgid "The file system is allocated at the device %s."
-msgstr ""
-"Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
-"perangkat yang dipilih</b>."
-
-#: src/components/storage/VolumeDialog.jsx:163
-#, fuzzy
-msgid "A mount point is required"
-msgstr "Diperlukan ukuran minimum"
-
-#: src/components/storage/VolumeDialog.jsx:190
-#, fuzzy
-msgid "The mount point is invalid"
-msgstr "Tabel dengan titik pemasangan"
-
-#: src/components/storage/VolumeDialog.jsx:218
-msgid "A size value is required"
-msgstr "Diperlukan nilai ukuran"
-
-#: src/components/storage/VolumeDialog.jsx:246
-msgid "Minimum size is required"
-msgstr "Diperlukan ukuran minimum"
-
-#: src/components/storage/VolumeDialog.jsx:278
-msgid "Maximum must be greater than minimum"
-msgstr "Maksimum harus lebih besar dari minimum"
-
-#: src/components/storage/VolumeDialog.jsx:320
-#, fuzzy, c-format
-msgid "There is already a file system for %s."
-msgstr "keberadaan sistem berkas untuk %s"
-
-#: src/components/storage/VolumeDialog.jsx:322
-#, fuzzy
-msgid "Do you want to edit it?"
-msgstr "Apakah Anda ingin membatalkan pendaftaran %s?"
-
-#: src/components/storage/VolumeDialog.jsx:367
-#, fuzzy, c-format
-msgid "There is a predefined file system for %s."
-msgstr "keberadaan sistem berkas untuk %s"
-
-#: src/components/storage/VolumeDialog.jsx:369
-#, fuzzy
-msgid "Do you want to add it?"
-msgstr "Apakah Anda ingin membatalkan pendaftaran %s?"
-
-#: src/components/storage/VolumeFields.jsx:225
-msgid ""
-"The options for the file system type depends on the product and the mount "
-"point."
-msgstr "Opsi untuk jenis sistem berkas tergantung pada produk dan titik mount."
-
-#: src/components/storage/VolumeFields.jsx:232
-msgid "More info for file system types"
-msgstr "Info lebih lanjut untuk jenis sistem berkas"
-
-#. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:243
-msgid "File system type"
-msgstr "Jenis sistem berkas"
-
-#. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:274
-msgid "the configuration of snapshots"
-msgstr "konfigurasi snapshot"
-
-#: src/components/storage/VolumeFields.jsx:281
-#, c-format
-msgid "the presence of the file system for %s"
-msgstr "keberadaan sistem berkas untuk %s"
-
-#. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:283
-msgid ", "
-msgstr ", "
-
-#. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:289
-msgid "the amount of RAM in the system"
-msgstr ""
-
-#: src/components/storage/VolumeFields.jsx:293
-#, c-format
-msgid "The final size depends on %s."
-msgstr "Ukuran akhir tergantung pada %s."
-
-#. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:295
-msgid " and "
-msgstr " dan "
-
-#: src/components/storage/VolumeFields.jsx:302
-msgid "Automatically calculated size according to the selected product."
-msgstr "Ukuran yang dihitung secara otomatis menurut produk yang dipilih."
-
-#: src/components/storage/VolumeFields.jsx:321
-msgid "Exact size for the file system."
-msgstr "Ukuran yang tepat untuk sistem berkas."
-
-#. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:330
-msgid "Exact size"
-msgstr "Ukuran yang tepat"
-
-#. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:347
-msgid "Size unit"
-msgstr "Satuan ukuran"
-
-#: src/components/storage/VolumeFields.jsx:376
-msgid ""
-"Limits for the file system size. The final size will be a value between the "
-"given minimum and maximum. If no maximum is given then the file system will "
-"be as big as possible."
-msgstr ""
-"Batas untuk ukuran sistem berkas. Ukuran akhir akan berupa nilai antara "
-"minimum dan maksimum yang diberikan. Jika tidak ada nilai maksimum yang "
-"diberikan, maka sistem berkas akan sebesar mungkin."
-
-#. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:384
-msgid "Minimum"
-msgstr "Minimum"
-
-#. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:395
-msgid "Minimum desired size"
-msgstr "Ukuran minimum yang diinginkan"
-
-#: src/components/storage/VolumeFields.jsx:406
-msgid "Unit for the minimum size"
-msgstr "Satuan untuk ukuran minimum"
-
-#. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:418
-msgid "Maximum"
-msgstr "Maksimum"
-
-#. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:430
-msgid "Maximum desired size"
-msgstr "Ukuran maksimum yang diinginkan"
-
-#: src/components/storage/VolumeFields.jsx:440
-msgid "Unit for the maximum size"
-msgstr "Satuan untuk ukuran maksimum"
-
-#. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:458
-msgid "Auto"
-msgstr "Otomatis"
-
-#. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:460
-msgid "Fixed"
-msgstr "Tetap"
-
-#. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:462
-msgid "Range"
-msgstr "Rentang"
-
-#: src/components/storage/VolumeLocationDialog.jsx:41
-msgid ""
-"The file systems are allocated at the installation device by default. "
-"Indicate a custom location to create the file system at a specific device."
-msgstr ""
-
-#. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
-#. by a mount path (e.g., /home).
-#: src/components/storage/VolumeLocationDialog.jsx:137
-#, fuzzy, c-format
-msgid "Location for %s file system"
-msgstr "Ukuran yang tepat untuk sistem berkas."
-
-#: src/components/storage/VolumeLocationDialog.jsx:147
-#, fuzzy
-msgid "Select in which device to allocate the file system"
-msgstr ""
-"Memilih cara mengosongkan ruang pada disk yang dipilih untuk mengalokasikan "
-"sistem berkas."
-
-#: src/components/storage/VolumeLocationDialog.jsx:150
-#, fuzzy
-msgid "Select a location"
-msgstr "Pilih disk"
-
-#: src/components/storage/VolumeLocationDialog.jsx:162
-#, fuzzy
-msgid "Select how to allocate the file system"
-msgstr "Ukuran yang tepat untuk sistem berkas."
-
-#: src/components/storage/VolumeLocationDialog.jsx:167
-msgid "Create a new partition"
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:169
-#, fuzzy
-msgid ""
-"The file system will be allocated as a new partition at the selected   disk."
-msgstr ""
-"Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
-"perangkat yang dipilih</b>."
-
-#: src/components/storage/VolumeLocationDialog.jsx:179
-#, fuzzy
-msgid "Create a dedicated LVM volume group"
-msgstr "Membuat Grup Volume LVM"
-
-#: src/components/storage/VolumeLocationDialog.jsx:181
-msgid ""
-"A new volume group will be allocated in the selected disk and the   file "
-"system will be created as a logical volume."
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:191
-#, fuzzy
-msgid "Format the device"
-msgstr "Memformat perangkat DASD"
-
-#: src/components/storage/VolumeLocationDialog.jsx:195
-#, c-format
-msgid "The selected device will be formatted as %s file system."
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:206
-#, fuzzy
-msgid "Mount the file system"
-msgstr "Edit sistem berkas"
-
-#: src/components/storage/VolumeLocationDialog.jsx:208
-msgid ""
-"The current file system on the selected device will be mounted   without "
-"formatting the device."
-msgstr ""
-
-#: src/components/storage/VolumeLocationSelectorTable.jsx:110
-msgid "Usage"
-msgstr ""
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
 #: src/components/storage/iscsi/DiscoverForm.jsx:98
@@ -1637,6 +524,12 @@ msgstr "Ada yang tidak beres"
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "Disk zFCP tidak diaktifkan."
+
+#: src/components/storage/ZFCPDiskForm.jsx:110
+#: src/components/storage/ZFCPPage.jsx:324
+#: src/components/storage/ZFCPPage.jsx:382
+msgid "Channel ID"
+msgstr "ID saluran"
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:123
@@ -1650,6 +543,14 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
+#. TRANSLATORS: table header
+#: src/components/storage/ZFCPPage.jsx:325
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+#: src/components/users/RootAuthMethods.jsx:124
+msgid "Status"
+msgstr "Status"
+
 #: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
 msgstr "Pemindaian LUN Otomatis"
@@ -1662,6 +563,22 @@ msgstr "Diaktifkan"
 msgid "Deactivated"
 msgstr "Dinonaktifkan"
 
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+msgid "No"
+msgstr "Tidak"
+
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+msgid "Yes"
+msgstr "Ya"
+
+#: src/components/storage/ZFCPPage.jsx:353
+msgid "Activate"
+msgstr "Mengaktifkan"
+
 #. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
@@ -1671,6 +588,10 @@ msgstr "Dinonaktifkan"
 #: src/components/storage/iscsi/NodesPresenter.jsx:119
 msgid "Name"
 msgstr "Nama"
+
+#: src/components/storage/ZFCPPage.jsx:395
+msgid "Deactivate"
+msgstr "Nonaktifkan"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
@@ -1728,10 +649,6 @@ msgstr "Aktifkan disk baru"
 #: src/components/storage/ZFCPPage.jsx:599
 msgid "Disks"
 msgstr "Disk"
-
-#: src/components/storage/device-utils.jsx:92
-msgid "Unused space"
-msgstr "Ruang tidak terpakai"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
@@ -1818,6 +735,12 @@ msgstr "Mengedit Inisiator iSCSI"
 msgid "Initiator name"
 msgstr "Nama inisiator"
 
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
+#: src/components/storage/iscsi/NodesPresenter.jsx:73
+#: src/components/users/FirstUser.jsx:86
+msgid "Edit"
+msgstr "Edit"
+
 #. TRANSLATORS: usually just keep the original text
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
@@ -1861,6 +784,10 @@ msgstr "Manual"
 msgid "On boot"
 msgstr "Saat boot"
 
+#: src/components/storage/iscsi/NodeStartupOptions.js:27
+msgid "Automatic"
+msgstr "Otomatis"
+
 #. TRANSLATORS: iSCSI connection status
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -1871,6 +798,10 @@ msgstr "Terputus"
 #, c-format
 msgid "Connected (%s)"
 msgstr "Tersambung (%s)"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:77
+msgid "Delete"
+msgstr "Menghapus"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:82
 msgid "Login"
@@ -1912,93 +843,6 @@ msgstr "Temukan"
 #: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
 msgstr "Target"
-
-#: src/components/storage/utils.js:64
-msgid "KiB"
-msgstr "KiB"
-
-#: src/components/storage/utils.js:65
-msgid "MiB"
-msgstr "MiB"
-
-#: src/components/storage/utils.js:66
-msgid "GiB"
-msgstr "GiB"
-
-#: src/components/storage/utils.js:67
-msgid "TiB"
-msgstr "TiB"
-
-#: src/components/storage/utils.js:68
-msgid "PiB"
-msgstr "PiB"
-
-#: src/components/storage/utils.js:77
-msgid "Delete current content"
-msgstr "Hapus konten saat ini"
-
-#: src/components/storage/utils.js:78
-msgid "All partitions will be removed and any data in the disks will be lost."
-msgstr "Semua partisi akan dihapus dan semua data dalam disk akan hilang."
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space deleting current content". Keep it short
-#: src/components/storage/utils.js:82
-#, fuzzy
-msgid "deleting current content"
-msgstr "Hapus konten saat ini"
-
-#: src/components/storage/utils.js:87
-msgid "Shrink existing partitions"
-msgstr "Perkecil partisi yang ada"
-
-#: src/components/storage/utils.js:88
-#, fuzzy
-msgid "The data is kept, but the current partitions will be resized as needed."
-msgstr ""
-"Data akan disimpan, namun partisi yang ada akan diubah ukurannya sesuai "
-"kebutuhan untuk menyediakan ruang yang cukup."
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space shrinking partitions". Keep it short.
-#: src/components/storage/utils.js:92
-#, fuzzy
-msgid "shrinking partitions"
-msgstr "Perkecil partisi yang ada"
-
-#: src/components/storage/utils.js:97
-msgid "Use available space"
-msgstr "Gunakan ruang yang tersedia"
-
-#: src/components/storage/utils.js:98
-#, fuzzy
-msgid ""
-"The data is kept. Only the space not assigned to any partition will be used."
-msgstr ""
-"Data akan disimpan dan partisi yang ada tidak akan diubah. Hanya ruang yang "
-"tidak ditetapkan ke partisi mana pun yang akan digunakan."
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space without modifying any partition". Keep it short.
-#: src/components/storage/utils.js:102
-msgid "without modifying any partition"
-msgstr "tanpa memodifikasi partisi apa pun"
-
-#: src/components/storage/utils.js:107
-#, fuzzy
-msgid "Custom"
-msgstr "Perangkat khusus"
-
-#: src/components/storage/utils.js:108
-msgid "Select what to do with each partition."
-msgstr ""
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space with custom actions". Keep it short.
-#: src/components/storage/utils.js:112
-#, fuzzy
-msgid "with custom actions"
-msgstr "%s dengan partisi %d"
 
 #: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
@@ -2172,6 +1016,687 @@ msgstr "Autentikasi root"
 #: src/router.js:48
 msgid "Overview"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Change boot options"
+#~ msgstr "Mengubah zona waktu"
+
+#, fuzzy
+#~ msgid ""
+#~ "Installation will configure partitions for booting at the installation "
+#~ "disk."
+#~ msgstr "mengecilkan partisi dari %d disk yang dipilih"
+
+#~ msgid ""
+#~ "To ensure the new system is able to boot, the installer may need to "
+#~ "create or configure some partitions in the appropriate disk."
+#~ msgstr ""
+#~ "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin "
+#~ "perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
+
+#~ msgid "Partitions to boot will be allocated at the installation disk."
+#~ msgstr "Partisi untuk boot akan dialokasikan pada disk instalasi."
+
+#, c-format
+#~ msgid "Partitions to boot will be allocated at the installation disk (%s)."
+#~ msgstr "Partisi untuk boot akan dialokasikan pada disk instalasi (%s)."
+
+#, fuzzy
+#~ msgid "Select booting partition"
+#~ msgstr "Perkecil partisi yang ada"
+
+#~ msgid "Select a disk"
+#~ msgstr "Pilih disk"
+
+#~ msgid "Partitions to boot will be allocated at the following device."
+#~ msgstr "Partisi untuk boot akan dialokasikan pada perangkat berikut."
+
+#~ msgid "Choose a disk for placing the boot loader"
+#~ msgstr "Pilih disk untuk menempatkan boot loader"
+
+#~ msgid "Do not configure"
+#~ msgstr "Jangan konfigurasikan"
+
+#~ msgid ""
+#~ "No partitions will be automatically configured for booting. Use with "
+#~ "caution."
+#~ msgstr ""
+#~ "Tidak ada partisi yang akan dikonfigurasi secara otomatis untuk booting. "
+#~ "Gunakan dengan hati-hati."
+
+#~ msgid "Waiting for progress report"
+#~ msgstr "Menunggu laporan kemajuan"
+
+#~ msgid "Formatting DASD devices"
+#~ msgstr "Memformat perangkat DASD"
+
+#~ msgid "Device"
+#~ msgstr "Perangkat"
+
+#~ msgid "Type"
+#~ msgstr "Jenis"
+
+#~ msgid "Formatted"
+#~ msgstr "Diformat"
+
+#~ msgid "Partition Info"
+#~ msgstr "Info Partisi"
+
+#~ msgid "Perform an action"
+#~ msgstr "Melakukan tindakan"
+
+#~ msgid "Set DIAG On"
+#~ msgstr "Mengatur DIAG Aktif"
+
+#~ msgid "Set DIAG Off"
+#~ msgstr "Mengatur DIAG Tidak Aktif"
+
+#~ msgid "Format"
+#~ msgstr "Format"
+
+#~ msgid "Filter by min channel"
+#~ msgstr "Memfilter menurut saluran min"
+
+#~ msgid "Remove min channel filter"
+#~ msgstr "Menghapus filter saluran min"
+
+#~ msgid "Filter by max channel"
+#~ msgstr "Memfilter menurut saluran maks"
+
+#~ msgid "Remove max channel filter"
+#~ msgstr "Menghapus filter saluran maks"
+
+#, fuzzy
+#~ msgid "Loading data, please wait a second..."
+#~ msgstr "Memuat produk yang tersedia, mohon tunggu..."
+
+#, fuzzy
+#~ msgid ""
+#~ "The file systems will be allocated by default as [new partitions in the "
+#~ "selected device]."
+#~ msgstr ""
+#~ "Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
+#~ "perangkat yang dipilih</b>."
+
+#, fuzzy
+#~ msgid ""
+#~ "The file systems will be allocated by default as [logical volumes of a "
+#~ "new LVM Volume Group]. The corresponding physical volumes will be created "
+#~ "on demand as new partitions at the selected devices."
+#~ msgstr ""
+#~ "Sistem berkas akan dialokasikan secara baku sebagai <b>volume logis dari "
+#~ "Grup Volume LVM baru</b>. Volume fisik yang sesuai akan dibuat sesuai "
+#~ "permintaan sebagai partisi baru pada perangkat yang dipilih."
+
+#, fuzzy
+#~ msgid "Select installation device"
+#~ msgstr "di perangkat instalasi"
+
+#, fuzzy
+#~ msgid "Install new system on"
+#~ msgstr "Opsi Penginstal"
+
+#, fuzzy
+#~ msgid "An existing disk"
+#~ msgstr "Perkecil partisi yang ada"
+
+#, fuzzy
+#~ msgid "A new LVM Volume Group"
+#~ msgstr "grup volume LVM baru"
+
+#~ msgid "Device selector for target disk"
+#~ msgstr "Pemilih perangkat untuk disk target"
+
+#~ msgid "Device selector for new LVM volume group"
+#~ msgstr "Pemilih perangkat untuk grup volume LVM baru"
+
+#, fuzzy
+#~ msgid "storage techs"
+#~ msgstr "Masalah penyimpanan"
+
+#~ msgid "Multipath"
+#~ msgstr "Multipath"
+
+#, c-format
+#~ msgid "DASD %s"
+#~ msgstr "DASD %s"
+
+#, c-format
+#~ msgid "Software %s"
+#~ msgstr "Perangkat Lunak %s"
+
+#~ msgid "SD Card"
+#~ msgstr "Kartu SD"
+
+#, fuzzy
+#~ msgid "Disk"
+#~ msgstr "Disk"
+
+#, c-format
+#~ msgid "Members: %s"
+#~ msgstr "Anggota: %s"
+
+#, c-format
+#~ msgid "Devices: %s"
+#~ msgstr "Perangkat: %s"
+
+#, c-format
+#~ msgid "Wires: %s"
+#~ msgstr "Kabel: %s"
+
+#, c-format
+#~ msgid "%s with %d partitions"
+#~ msgstr "%s dengan partisi %d"
+
+#~ msgid "No content found"
+#~ msgstr "Tidak ada konten yang ditemukan"
+
+#~ msgid "Details"
+#~ msgstr "Detail"
+
+#~ msgid "Size"
+#~ msgstr "Ukuran"
+
+#, fuzzy
+#~ msgid "Encryption"
+#~ msgstr "Gunakan enkripsi"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the Trusted Platform Module (TPM) to decrypt automatically on each "
+#~ "boot"
+#~ msgstr "Gunakan TPM untuk mendekripsi secara otomatis pada setiap boot"
+
+#, fuzzy
+#~ msgid ""
+#~ "The password will not be needed to boot and access the data if the TPM "
+#~ "can verify the integrity of the system. TPM sealing requires the new "
+#~ "system to be booted directly on its first run."
+#~ msgstr ""
+#~ "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika "
+#~ "<abbr title='Trusted Platform Module'>TPM</abbr> dapat memverifikasi "
+#~ "integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot "
+#~ "secara langsung saat pertama kali dijalankan."
+
+#, fuzzy
+#~ msgid "Encrypt the system"
+#~ msgstr "Edit sistem berkas"
+
+#~ msgid "Installation device"
+#~ msgstr "Perangkat penginstalan"
+
+#, fuzzy
+#~ msgid "Main disk or LVM Volume Group for installation."
+#~ msgstr ""
+#~ "Pilih disk utama atau Grup Volume <abbr title='Logical Volume "
+#~ "Manager'>LVM</abbr> untuk penginstalan."
+
+#, fuzzy, c-format
+#~ msgid "File systems created as new partitions at %s"
+#~ msgstr ""
+#~ "Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
+#~ "perangkat yang dipilih</b>."
+
+#, fuzzy
+#~ msgid "File systems created at a new LVM volume group"
+#~ msgstr "Pemilih perangkat untuk grup volume LVM baru"
+
+#, fuzzy, c-format
+#~ msgid "File systems created at a new LVM volume group on %s"
+#~ msgstr "grup volume LVM baru pada %s"
+
+#, fuzzy, c-format
+#~ msgid "at least %s"
+#~ msgstr "Setidaknya %s"
+
+#, fuzzy, c-format
+#~ msgid "Transactional Btrfs root volume (%s)"
+#~ msgstr "Sistem file root transaksional"
+
+#, fuzzy, c-format
+#~ msgid "Transactional Btrfs root partition (%s)"
+#~ msgstr "transaksional"
+
+#, fuzzy, c-format
+#~ msgid "Btrfs root volume with snapshots (%s)"
+#~ msgstr "dengan snapshot"
+
+#, fuzzy, c-format
+#~ msgid "Btrfs root partition with snapshots (%s)"
+#~ msgstr "dengan snapshot"
+
+#, fuzzy, c-format
+#~ msgid "Swap partition (%s)"
+#~ msgstr "Info Partisi"
+
+#, fuzzy, c-format
+#~ msgid "%1$s root volume (%2$s)"
+#~ msgstr "Keberadaan volume lain (%s)"
+
+#, fuzzy, c-format
+#~ msgid "%1$s root partition (%2$s)"
+#~ msgstr "%s dengan partisi %d"
+
+#, fuzzy, c-format
+#~ msgid "%1$s %2$s partition (%3$s)"
+#~ msgstr "%s dengan partisi %d"
+
+#, fuzzy
+#~ msgid "Do not configure partitions for booting"
+#~ msgstr "Partisi untuk booting"
+
+#, fuzzy
+#~ msgid "Boot partitions at installation disk"
+#~ msgstr "mengecilkan partisi dari %d disk yang dipilih"
+
+#, fuzzy, c-format
+#~ msgid "Boot partitions at %s"
+#~ msgstr "Info Partisi"
+
+#~ msgid "These limits are affected by:"
+#~ msgstr "Batasan ini dipengaruhi oleh:"
+
+#~ msgid "The configuration of snapshots"
+#~ msgstr "Konfigurasi snapshot"
+
+#, c-format
+#~ msgid "Presence of other volumes (%s)"
+#~ msgstr "Keberadaan volume lain (%s)"
+
+#~ msgid "auto"
+#~ msgstr "otomatis"
+
+#, fuzzy
+#~ msgid "Transactional Btrfs"
+#~ msgstr "transaksional"
+
+#, fuzzy
+#~ msgid "Btrfs with snapshots"
+#~ msgstr "dengan snapshot"
+
+#, fuzzy, c-format
+#~ msgid "Partition at %s"
+#~ msgstr "Info Partisi"
+
+#, fuzzy
+#~ msgid "Logical volume at system LVM"
+#~ msgstr "Gunakan manajemen volume logis (LVM)"
+
+#, fuzzy
+#~ msgid "Partition at installation disk"
+#~ msgstr "mengecilkan partisi dari %d disk yang dipilih"
+
+#, fuzzy
+#~ msgid "Reset location"
+#~ msgstr "Pendaftaran"
+
+#, fuzzy
+#~ msgid "Change location"
+#~ msgstr "Mengubah zona waktu"
+
+#~ msgid "Mount point"
+#~ msgstr "Titik pemasangan"
+
+#, fuzzy
+#~ msgid "Location"
+#~ msgstr "Pelokalan"
+
+#~ msgid "Table with mount points"
+#~ msgstr "Tabel dengan titik pemasangan"
+
+#~ msgid "Add file system"
+#~ msgstr "Tambahkan sistem berkas"
+
+#~ msgid "Reset to defaults"
+#~ msgstr "Mengatur ulang ke default"
+
+#, fuzzy
+#~ msgid "Partitions and file systems"
+#~ msgstr "Ukuran yang tepat untuk sistem berkas."
+
+#, fuzzy
+#~ msgid "Show partitions and file-systems actions"
+#~ msgstr "Ukuran yang tepat untuk sistem berkas."
+
+#, c-format
+#~ msgid "Hide %d subvolume action"
+#~ msgid_plural "Hide %d subvolume actions"
+#~ msgstr[0] "Menyembunyikan tindakan subvolume %d"
+
+#, c-format
+#~ msgid "Show %d subvolume action"
+#~ msgid_plural "Show %d subvolume actions"
+#~ msgstr[0] "Tampilkan tindakan subvolume %d"
+
+#, fuzzy
+#~ msgid "Destructive actions are not allowed"
+#~ msgstr "Ada %d tindakan destruktif yang direncanakan"
+
+#, fuzzy
+#~ msgid "Destructive actions are allowed"
+#~ msgstr "Ada %d tindakan destruktif yang direncanakan"
+
+#, fuzzy
+#~ msgid "affecting"
+#~ msgstr "Mempengaruhi"
+
+#, fuzzy
+#~ msgid "Shrinking partitions is not allowed"
+#~ msgstr "Perkecil partisi yang ada"
+
+#, fuzzy
+#~ msgid "Shrinking partitions is allowed"
+#~ msgstr "Perkecil partisi yang ada"
+
+#, fuzzy
+#~ msgid "Shrinking some partitions is allowed but not needed"
+#~ msgstr "mengecilkan partisi dari %d disk yang dipilih"
+
+#, fuzzy, c-format
+#~ msgid "%d partition will be shrunk"
+#~ msgid_plural "%d partitions will be shrunk"
+#~ msgstr[0] "partisi"
+
+#, fuzzy
+#~ msgid "Cannot accommodate the required file systems for installation"
+#~ msgstr ""
+#~ "Tata letak papan ketik tidak dapat diubah dalam instalasi jarak jauh"
+
+#, fuzzy, c-format
+#~ msgid "Check the planned action"
+#~ msgid_plural "Check the %d planned actions"
+#~ msgstr[0] "Periksa semua tindakan yang direncanakan"
+
+#, fuzzy
+#~ msgid "Waiting for actions information..."
+#~ msgstr "Menunggu informasi tentang konfigurasi boot"
+
+#~ msgid "Planned Actions"
+#~ msgstr "Tindakan yang Direncanakan"
+
+#, fuzzy
+#~ msgid "Waiting for information about storage configuration"
+#~ msgstr "Menunggu informasi tentang konfigurasi boot"
+
+#~ msgid "New"
+#~ msgstr "Baru"
+
+#, c-format
+#~ msgid "Before %s"
+#~ msgstr "Sebelum %s"
+
+#~ msgid "Mount Point"
+#~ msgstr "Mount Point"
+
+#~ msgid "Transactional root file system"
+#~ msgstr "Sistem file root transaksional"
+
+#, fuzzy
+#~ msgid "Use Btrfs snapshots for the root file system"
+#~ msgstr "Ukuran yang tepat untuk sistem berkas."
+
+#, fuzzy
+#~ msgid ""
+#~ "Allows to boot to a previous version of the system after configuration "
+#~ "changes or software upgrades."
+#~ msgstr ""
+#~ "Menggunakan Btrfs untuk sistem berkas root memungkinkan untuk melakukan "
+#~ "booting ke versi sistem sebelumnya setelah perubahan konfigurasi atau "
+#~ "peningkatan perangkat lunak."
+
+#, fuzzy, c-format
+#~ msgid "Show information about %s"
+#~ msgstr "Menunggu informasi tentang kebijakan ruang"
+
+#, fuzzy
+#~ msgid "Action"
+#~ msgstr "Tindakan"
+
+#, fuzzy
+#~ msgid "Actions to find space"
+#~ msgstr "Tindakan untuk koneksi %s"
+
+#, fuzzy
+#~ msgid "Space policy"
+#~ msgstr "Kebijakan Ruang"
+
+#, fuzzy, c-format
+#~ msgid "Add %s file system"
+#~ msgstr "Tambahkan sistem berkas"
+
+#, fuzzy, c-format
+#~ msgid "Edit %s file system"
+#~ msgstr "Edit sistem berkas"
+
+#~ msgid "Edit file system"
+#~ msgstr "Edit sistem berkas"
+
+#, fuzzy
+#~ msgid "The type and size of the file system cannot be edited."
+#~ msgstr "keberadaan sistem berkas untuk %s"
+
+#, fuzzy
+#~ msgid "The size of the file system cannot be edited"
+#~ msgstr "keberadaan sistem berkas untuk %s"
+
+#, fuzzy, c-format
+#~ msgid "The file system is allocated at the device %s."
+#~ msgstr ""
+#~ "Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
+#~ "perangkat yang dipilih</b>."
+
+#, fuzzy
+#~ msgid "A mount point is required"
+#~ msgstr "Diperlukan ukuran minimum"
+
+#, fuzzy
+#~ msgid "The mount point is invalid"
+#~ msgstr "Tabel dengan titik pemasangan"
+
+#~ msgid "A size value is required"
+#~ msgstr "Diperlukan nilai ukuran"
+
+#~ msgid "Minimum size is required"
+#~ msgstr "Diperlukan ukuran minimum"
+
+#~ msgid "Maximum must be greater than minimum"
+#~ msgstr "Maksimum harus lebih besar dari minimum"
+
+#, fuzzy, c-format
+#~ msgid "There is already a file system for %s."
+#~ msgstr "keberadaan sistem berkas untuk %s"
+
+#, fuzzy
+#~ msgid "Do you want to edit it?"
+#~ msgstr "Apakah Anda ingin membatalkan pendaftaran %s?"
+
+#, fuzzy, c-format
+#~ msgid "There is a predefined file system for %s."
+#~ msgstr "keberadaan sistem berkas untuk %s"
+
+#, fuzzy
+#~ msgid "Do you want to add it?"
+#~ msgstr "Apakah Anda ingin membatalkan pendaftaran %s?"
+
+#~ msgid ""
+#~ "The options for the file system type depends on the product and the mount "
+#~ "point."
+#~ msgstr ""
+#~ "Opsi untuk jenis sistem berkas tergantung pada produk dan titik mount."
+
+#~ msgid "More info for file system types"
+#~ msgstr "Info lebih lanjut untuk jenis sistem berkas"
+
+#~ msgid "File system type"
+#~ msgstr "Jenis sistem berkas"
+
+#~ msgid "the configuration of snapshots"
+#~ msgstr "konfigurasi snapshot"
+
+#, c-format
+#~ msgid "the presence of the file system for %s"
+#~ msgstr "keberadaan sistem berkas untuk %s"
+
+#~ msgid ", "
+#~ msgstr ", "
+
+#, c-format
+#~ msgid "The final size depends on %s."
+#~ msgstr "Ukuran akhir tergantung pada %s."
+
+#~ msgid " and "
+#~ msgstr " dan "
+
+#~ msgid "Automatically calculated size according to the selected product."
+#~ msgstr "Ukuran yang dihitung secara otomatis menurut produk yang dipilih."
+
+#~ msgid "Exact size for the file system."
+#~ msgstr "Ukuran yang tepat untuk sistem berkas."
+
+#~ msgid "Exact size"
+#~ msgstr "Ukuran yang tepat"
+
+#~ msgid "Size unit"
+#~ msgstr "Satuan ukuran"
+
+#~ msgid ""
+#~ "Limits for the file system size. The final size will be a value between "
+#~ "the given minimum and maximum. If no maximum is given then the file "
+#~ "system will be as big as possible."
+#~ msgstr ""
+#~ "Batas untuk ukuran sistem berkas. Ukuran akhir akan berupa nilai antara "
+#~ "minimum dan maksimum yang diberikan. Jika tidak ada nilai maksimum yang "
+#~ "diberikan, maka sistem berkas akan sebesar mungkin."
+
+#~ msgid "Minimum"
+#~ msgstr "Minimum"
+
+#~ msgid "Minimum desired size"
+#~ msgstr "Ukuran minimum yang diinginkan"
+
+#~ msgid "Unit for the minimum size"
+#~ msgstr "Satuan untuk ukuran minimum"
+
+#~ msgid "Maximum"
+#~ msgstr "Maksimum"
+
+#~ msgid "Maximum desired size"
+#~ msgstr "Ukuran maksimum yang diinginkan"
+
+#~ msgid "Unit for the maximum size"
+#~ msgstr "Satuan untuk ukuran maksimum"
+
+#~ msgid "Auto"
+#~ msgstr "Otomatis"
+
+#~ msgid "Fixed"
+#~ msgstr "Tetap"
+
+#~ msgid "Range"
+#~ msgstr "Rentang"
+
+#, fuzzy, c-format
+#~ msgid "Location for %s file system"
+#~ msgstr "Ukuran yang tepat untuk sistem berkas."
+
+#, fuzzy
+#~ msgid "Select in which device to allocate the file system"
+#~ msgstr ""
+#~ "Memilih cara mengosongkan ruang pada disk yang dipilih untuk "
+#~ "mengalokasikan sistem berkas."
+
+#, fuzzy
+#~ msgid "Select a location"
+#~ msgstr "Pilih disk"
+
+#, fuzzy
+#~ msgid "Select how to allocate the file system"
+#~ msgstr "Ukuran yang tepat untuk sistem berkas."
+
+#, fuzzy
+#~ msgid ""
+#~ "The file system will be allocated as a new partition at the selected   "
+#~ "disk."
+#~ msgstr ""
+#~ "Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
+#~ "perangkat yang dipilih</b>."
+
+#, fuzzy
+#~ msgid "Create a dedicated LVM volume group"
+#~ msgstr "Membuat Grup Volume LVM"
+
+#, fuzzy
+#~ msgid "Format the device"
+#~ msgstr "Memformat perangkat DASD"
+
+#, fuzzy
+#~ msgid "Mount the file system"
+#~ msgstr "Edit sistem berkas"
+
+#~ msgid "Unused space"
+#~ msgstr "Ruang tidak terpakai"
+
+#~ msgid "KiB"
+#~ msgstr "KiB"
+
+#~ msgid "MiB"
+#~ msgstr "MiB"
+
+#~ msgid "GiB"
+#~ msgstr "GiB"
+
+#~ msgid "TiB"
+#~ msgstr "TiB"
+
+#~ msgid "PiB"
+#~ msgstr "PiB"
+
+#~ msgid "Delete current content"
+#~ msgstr "Hapus konten saat ini"
+
+#~ msgid ""
+#~ "All partitions will be removed and any data in the disks will be lost."
+#~ msgstr "Semua partisi akan dihapus dan semua data dalam disk akan hilang."
+
+#, fuzzy
+#~ msgid "deleting current content"
+#~ msgstr "Hapus konten saat ini"
+
+#~ msgid "Shrink existing partitions"
+#~ msgstr "Perkecil partisi yang ada"
+
+#, fuzzy
+#~ msgid ""
+#~ "The data is kept, but the current partitions will be resized as needed."
+#~ msgstr ""
+#~ "Data akan disimpan, namun partisi yang ada akan diubah ukurannya sesuai "
+#~ "kebutuhan untuk menyediakan ruang yang cukup."
+
+#, fuzzy
+#~ msgid "shrinking partitions"
+#~ msgstr "Perkecil partisi yang ada"
+
+#~ msgid "Use available space"
+#~ msgstr "Gunakan ruang yang tersedia"
+
+#, fuzzy
+#~ msgid ""
+#~ "The data is kept. Only the space not assigned to any partition will be "
+#~ "used."
+#~ msgstr ""
+#~ "Data akan disimpan dan partisi yang ada tidak akan diubah. Hanya ruang "
+#~ "yang tidak ditetapkan ke partisi mana pun yang akan digunakan."
+
+#~ msgid "without modifying any partition"
+#~ msgstr "tanpa memodifikasi partisi apa pun"
+
+#, fuzzy
+#~ msgid "Custom"
+#~ msgstr "Perangkat khusus"
+
+#, fuzzy
+#~ msgid "with custom actions"
+#~ msgstr "%s dengan partisi %d"
 
 #~ msgid "Remove"
 #~ msgstr "Menghapus"

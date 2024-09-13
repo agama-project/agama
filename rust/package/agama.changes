@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Wed Sep 10 15:00:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Implement 802.1x (EAP) in network settings (gh#openSUSE/agama#1597).
+
+-------------------------------------------------------------------
+Mon Sep  9 09:09:54 UTC 2024 - Martin Vidner <mvidner@suse.com>
+
+- For CLI, use HTTP clients instead of D-Bus clients,
+  for Product (name and registration) (gh#openSUSE/agama#1548)
+  - added ProductHTTPClient
+
+-------------------------------------------------------------------
+Thu Sep  5 16:25:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Show product logo in product selector (gh#openSUSE/agama#1415).
+
+-------------------------------------------------------------------
 Wed Aug 28 12:37:34 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Expose the DASD D-Bus API through HTTP (gh#openSUSE/agama#1532).

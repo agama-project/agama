@@ -47,6 +47,7 @@ NODE_ENV="production" npm run build
 %install
 install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui %{_builddir}/agama/dist/*.{gz,html,js,map,svg}
 install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/fonts %{_builddir}/agama/dist/fonts/*.woff?
+install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/assets/logos %{_builddir}/agama/src/assets/products/*.svg
 
 %files
 %doc README.md

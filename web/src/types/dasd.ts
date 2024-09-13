@@ -33,14 +33,14 @@ type DASDDevice = {
 };
 
 type FormatSummary = {
-  total: number,
-  step: number,
-  done: boolean
-}
+  total: number;
+  step: number;
+  done: boolean;
+};
 
 type FormatJob = {
-  jobId: string,
-  summary?: { [key: string]: FormatSummary }
-}
+  jobId: string;
+  summary?: { [key: string]: FormatSummary };
+};
 
 export type { DASDDevice, FormatSummary, FormatJob };

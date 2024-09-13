@@ -25,6 +25,7 @@
 import { compact, hex, uniq } from "~/utils";
 import { WithStatus } from "./mixins";
 import { HTTPClient } from "./http";
+import { fetchDevices } from "~/api/storage/devices";
 
 const SERVICE_NAME = "org.opensuse.Agama.Storage1";
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
@@ -235,182 +236,14 @@ const EncryptionMethods = Object.freeze({
 const dbusBasename = (path) => path.split("/").slice(-1)[0];
 
 /**
- * Class providing an API for managing a devices tree through D-Bus
- */
-class DevicesManager {
-  /**
-   * @param {HTTPClient} client
-   * @param {string} rootPath - path of the devices tree, either system or staging
-   */
-  constructor(client, rootPath) {
-    this.client = client;
-    this.rootPath = rootPath;
-  }
-
-  /**
-   * Gets all the exported devices
-   *
-   * @returns {Promise<StorageDevice[]>}
-   */
-  async getDevices() {
-    const buildDevice = (jsonDevice, jsonDevices) => {
-      /** @type {() => StorageDevice} */
-      const buildDefaultDevice = () => {
-        return {
-          sid: 0,
-          name: "",
-          description: "",
-          isDrive: false,
-          type: "",
-        };
-      };
-
-      /** @type {(names: string[]) => StorageDevice[]} */
-      const buildCollectionFromNames = (names) => {
-        return names.map((name) => ({ ...buildDefaultDevice(), name }));
-      };
-
-      /** @type {(sids: String[], jsonDevices: object[]) => StorageDevice[]} */
-      const buildCollection = (sids, jsonDevices) => {
-        if (sids === null || sids === undefined) return [];
-
-        return sids.map((sid) =>
-          buildDevice(
-            jsonDevices.find((dev) => dev.deviceInfo?.sid === sid),
-            jsonDevices,
-          ),
-        );
-      };
-
-      /** @type {(device: StorageDevice, info: object) => void} */
-      const addDriveInfo = (device, info) => {
-        device.isDrive = true;
-        device.type = info.type;
-        device.vendor = info.vendor;
-        device.model = info.model;
-        device.driver = info.driver;
-        device.bus = info.bus;
-        device.busId = info.busId;
-        device.transport = info.transport;
-        device.sdCard = info.info.sdCard;
-        device.dellBOSS = info.info.dellBOSS;
-      };
-
-      /** @type {(device: StorageDevice, info: object) => void} */
-      const addRaidInfo = (device, info) => {
-        device.devices = buildCollectionFromNames(info.devices);
-      };
-
-      /** @type {(device: StorageDevice, info: object) => void} */
-      const addMultipathInfo = (device, info) => {
-        device.wires = buildCollectionFromNames(info.wires);
-      };
-
-      /** @type {(device: StorageDevice, info: object) => void} */
-      const addMDInfo = (device, info) => {
-        device.type = "md";
-        device.level = info.level;
-        device.uuid = info.uuid;
-        device.devices = buildCollection(info.devices, jsonDevices);
-      };
-
-      /** @type {(device: StorageDevice, info: object) => void} */
-      const addPartitionInfo = (device, info) => {
-        device.type = "partition";
-        device.isEFI = info.efi;
-      };
-
-      /** @type {(device: StorageDevice, info: object) => void} */
-      const addVgInfo = (device, info) => {
-        device.type = "lvmVg";
-        device.size = info.size;
-        device.physicalVolumes = buildCollection(info.physicalVolumes, jsonDevices);
-        device.logicalVolumes = buildCollection(info.logicalVolumes, jsonDevices);
-      };
-
-      /** @type {(device: StorageDevice, info: object) => void} */
-      const addLvInfo = (device, _info) => {
-        device.type = "lvmLv";
-      };
-
-      /** @type {(device: StorageDevice, tableInfo: object) => void} */
-      const addPTableInfo = (device, tableInfo) => {
-        const partitions = buildCollection(tableInfo.partitions, jsonDevices);
-        device.partitionTable = {
-          type: tableInfo.type,
-          partitions,
-          unpartitionedSize: device.size - partitions.reduce((s, p) => s + p.size, 0),
-          unusedSlots: tableInfo.unusedSlots.map((s) => Object.assign({}, s)),
-        };
-      };
-
-      /** @type {(device: StorageDevice, filesystemInfo: object) => void} */
-      const addFilesystemInfo = (device, filesystemInfo) => {
-        const buildMountPath = (path) => (path.length > 0 ? path : undefined);
-        const buildLabel = (label) => (label.length > 0 ? label : undefined);
-        device.filesystem = {
-          sid: filesystemInfo.sid,
-          type: filesystemInfo.type,
-          mountPath: buildMountPath(filesystemInfo.mountPath),
-          label: buildLabel(filesystemInfo.label),
-        };
-      };
-
-      /** @type {(device: StorageDevice, info: object) => void} */
-      const addComponentInfo = (device, info) => {
-        device.component = {
-          type: info.type,
-          deviceNames: info.deviceNames,
-        };
-      };
-
-      const device = buildDefaultDevice();
-
-      /** @type {(jsonProperty: String, info: function) => void} */
-      const process = (jsonProperty, method) => {
-        const info = jsonDevice[jsonProperty];
-        if (info === undefined || info === null) return;
-
-        method(device, info);
-      };
-
-      process("deviceInfo", Object.assign);
-      process("drive", addDriveInfo);
-      process("raid", addRaidInfo);
-      process("multipath", addMultipathInfo);
-      process("md", addMDInfo);
-      process("blockDevice", Object.assign);
-      process("partition", addPartitionInfo);
-      process("lvmVg", addVgInfo);
-      process("lvmLv", addLvInfo);
-      process("partitionTable", addPTableInfo);
-      process("filesystem", addFilesystemInfo);
-      process("component", addComponentInfo);
-
-      return device;
-    };
-
-    const response = await this.client.get(`/storage/devices/${this.rootPath}`);
-    if (!response.ok) {
-      console.warn("Failed to get storage devices: ", response);
-      return [];
-    }
-    const jsonDevices = await response.json();
-    return jsonDevices.map((d) => buildDevice(d, jsonDevices));
-  }
-}
-
-/**
  * Class providing an API for managing the storage proposal through D-Bus
  */
 class ProposalManager {
   /**
    * @param {HTTPClient} client
-   * @param {DevicesManager} system
    */
-  constructor(client, system) {
+  constructor(client) {
     this.client = client;
-    this.system = system;
   }
 
   /**
@@ -427,7 +260,7 @@ class ProposalManager {
       return device;
     };
 
-    const systemDevices = await this.system.getDevices();
+    const systemDevices = await fetchDevices("system");
 
     const response = await this.client.get("/storage/proposal/usable_devices");
     if (!response.ok) {
@@ -465,7 +298,7 @@ class ProposalManager {
     /** @type {(device: StorageDevice[]) => boolean} */
     const allAvailable = (devices) => devices.every(isAvailable);
 
-    const system = await this.system.getDevices();
+    const system = await fetchDevices("system");
     const mds = system.filter((d) => d.type === "md" && allAvailable(d.devices));
     const vgs = system.filter((d) => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
 
@@ -516,7 +349,7 @@ class ProposalManager {
       return undefined;
     }
 
-    const systemDevices = await this.system.getDevices();
+    const systemDevices = await fetchDevices("system");
     const productMountPoints = await this.getProductMountPoints();
 
     return response.json().then((volume) => {
@@ -596,7 +429,7 @@ class ProposalManager {
     const settings = await settingsResponse.json();
     const actions = await actionsResponse.json();
 
-    const systemDevices = await this.system.getDevices();
+    const systemDevices = await fetchDevices("system");
     const productMountPoints = await this.getProductMountPoints();
 
     return {
@@ -1339,9 +1172,7 @@ class StorageBaseClient {
    */
   constructor(client = undefined) {
     this.client = client;
-    this.system = new DevicesManager(this.client, "system");
-    this.staging = new DevicesManager(this.client, "result");
-    this.proposal = new ProposalManager(this.client, this.system);
+    this.proposal = new ProposalManager(this.client);
     this.iscsi = new ISCSIManager(this.client);
     // @ts-ignore
     this.zfcp = new ZFCPManager(StorageBaseClient.SERVICE, client);
@@ -1392,6 +1223,6 @@ class StorageBaseClient {
 /**
  * Allows interacting with the storage settings
  */
-class StorageClient extends WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME) { }
+class StorageClient extends WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME) {}
 
 export { StorageClient, EncryptionMethods };

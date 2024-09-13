@@ -25,6 +25,7 @@ const BRIDGE_KEY: &str = "bridge";
 const BRIDGE_PORT_KEY: &str = "bridge-port";
 const INFINIBAND_KEY: &str = "infiniband";
 const TUN_KEY: &str = "tun";
+const IEEE_8021X_KEY: &str = "802-1x";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
@@ -137,6 +138,10 @@ pub fn connection_to_dbus<'a>(
         PortConfig::None => {}
     }
 
+    if let Some(ieee_8021x_config) = &conn.ieee_8021x_config {
+        result.insert(IEEE_8021X_KEY, ieee_8021x_config_to_dbus(ieee_8021x_config));
+    }
+
     result.insert("connection", connection_dbus);
     result
 }
@@ -149,6 +154,10 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
 
     if let Some(bridge_port_config) = bridge_port_config_from_dbus(&conn) {
         connection.port_config = PortConfig::Bridge(bridge_port_config);
+    }
+
+    if let Some(ieee_8021x_config) = ieee_8021x_config_from_dbus(&conn) {
+        connection.ieee_8021x_config = Some(ieee_8021x_config);
     }
 
     if let Some(wireless_config) = wireless_config_from_dbus(&conn) {
@@ -981,6 +990,167 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Option<VlanConfig> {
     })
 }
 
+fn ieee_8021x_config_to_dbus(config: &IEEE8021XConfig) -> HashMap<&str, zvariant::Value> {
+    let mut ieee_8021x_config: HashMap<&str, zvariant::Value> = HashMap::from([(
+        "eap",
+        config
+            .eap
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>()
+            .into(),
+    )]);
+
+    if let Some(phase2_auth) = &config.phase2_auth {
+        ieee_8021x_config.insert("phase2-auth", phase2_auth.to_string().into());
+    }
+    if let Some(identity) = &config.identity {
+        ieee_8021x_config.insert("identity", identity.into());
+    }
+    if let Some(password) = &config.password {
+        ieee_8021x_config.insert("password", password.into());
+    }
+    if let Some(ca_cert) = &config.ca_cert {
+        ieee_8021x_config.insert("ca-cert", format_nm_path(ca_cert).into_bytes().into());
+    }
+    if let Some(ca_cert_password) = &config.ca_cert_password {
+        ieee_8021x_config.insert("ca-cert-password", ca_cert_password.into());
+    }
+    if let Some(client_cert) = &config.client_cert {
+        ieee_8021x_config.insert(
+            "client-cert",
+            format_nm_path(client_cert).into_bytes().into(),
+        );
+    }
+    if let Some(client_cert_password) = &config.client_cert_password {
+        ieee_8021x_config.insert("client-cert-password", client_cert_password.into());
+    }
+    if let Some(private_key) = &config.private_key {
+        ieee_8021x_config.insert(
+            "private-key",
+            format_nm_path(private_key).into_bytes().into(),
+        );
+    }
+    if let Some(private_key_password) = &config.private_key_password {
+        ieee_8021x_config.insert("private-key-password", private_key_password.into());
+    }
+    if let Some(anonymous_identity) = &config.anonymous_identity {
+        ieee_8021x_config.insert("anonymous-identity", anonymous_identity.into());
+    }
+    if let Some(peap_version) = &config.peap_version {
+        ieee_8021x_config.insert("phase1-peapver", peap_version.into());
+    }
+    ieee_8021x_config.insert(
+        "phase1-peaplabel",
+        if config.peap_label { "1" } else { "0" }.into(),
+    );
+
+    ieee_8021x_config
+}
+
+fn format_nm_path(path: &String) -> String {
+    format!("file://{path}\0")
+}
+
+fn ieee_8021x_config_from_dbus(conn: &OwnedNestedHash) -> Option<IEEE8021XConfig> {
+    let ieee_8021x = conn.get(IEEE_8021X_KEY)?;
+
+    let mut ieee_8021x_config = IEEE8021XConfig::default();
+
+    if let Some(eap) = ieee_8021x.get("eap") {
+        let eap: &zvariant::Array = eap.downcast_ref()?;
+        let eap: Vec<&str> = eap
+            .iter()
+            .map(|x| x.downcast_ref::<str>())
+            .collect::<Option<Vec<&str>>>()?;
+        let eap: Vec<EAPMethod> = eap
+            .iter()
+            .map(|x| EAPMethod::from_str(x))
+            .collect::<Result<Vec<EAPMethod>, InvalidEAPMethod>>()
+            .ok()?;
+        ieee_8021x_config.eap = eap;
+    }
+
+    if let Some(phase2_auth) = ieee_8021x.get("phase2-auth") {
+        ieee_8021x_config.phase2_auth =
+            Some(Phase2AuthMethod::from_str(phase2_auth.downcast_ref::<str>()?).ok()?);
+    }
+    if let Some(identity) = ieee_8021x.get("identity") {
+        ieee_8021x_config.identity = Some(identity.downcast_ref::<str>()?.to_string());
+    }
+    if let Some(password) = ieee_8021x.get("password") {
+        ieee_8021x_config.password = Some(password.downcast_ref::<str>()?.to_string());
+    }
+    if let Some(ca_cert) = ieee_8021x.get("ca-cert") {
+        let ca_cert: &zvariant::Array = ca_cert.downcast_ref()?;
+        let ca_cert: String = ca_cert
+            .get()
+            .iter()
+            .map(|u| u.downcast_ref::<u8>())
+            .collect::<Option<Vec<&u8>>>()?
+            .iter()
+            .map(|x| **x as char)
+            .collect();
+        ieee_8021x_config.ca_cert = strip_nm_file_path(ca_cert);
+    }
+    if let Some(ca_cert_password) = ieee_8021x.get("ca-cert-password") {
+        ieee_8021x_config.ca_cert_password =
+            Some(ca_cert_password.downcast_ref::<str>()?.to_string());
+    }
+    if let Some(client_cert) = ieee_8021x.get("client-cert") {
+        let client_cert: &zvariant::Array = client_cert.downcast_ref()?;
+        let client_cert: String = client_cert
+            .get()
+            .iter()
+            .map(|u| u.downcast_ref::<u8>())
+            .collect::<Option<Vec<&u8>>>()?
+            .iter()
+            .map(|x| **x as char)
+            .collect();
+        ieee_8021x_config.client_cert = strip_nm_file_path(client_cert);
+    }
+    if let Some(client_cert_password) = ieee_8021x.get("client-cert-password") {
+        ieee_8021x_config.client_cert_password =
+            Some(client_cert_password.downcast_ref::<str>()?.to_string());
+    }
+    if let Some(private_key) = ieee_8021x.get("private-key") {
+        let private_key: &zvariant::Array = private_key.downcast_ref()?;
+        let private_key: String = private_key
+            .get()
+            .iter()
+            .map(|u| u.downcast_ref::<u8>())
+            .collect::<Option<Vec<&u8>>>()?
+            .iter()
+            .map(|x| **x as char)
+            .collect();
+        ieee_8021x_config.private_key = strip_nm_file_path(private_key);
+    }
+    if let Some(private_key_password) = ieee_8021x.get("private-key-password") {
+        ieee_8021x_config.private_key_password =
+            Some(private_key_password.downcast_ref::<str>()?.to_string());
+    }
+    if let Some(anonymous_identity) = ieee_8021x.get("anonymous-identity") {
+        ieee_8021x_config.anonymous_identity =
+            Some(anonymous_identity.downcast_ref::<str>()?.to_string());
+    }
+    if let Some(peap_version) = ieee_8021x.get("phase1-peapver") {
+        ieee_8021x_config.peap_version = Some(peap_version.downcast_ref::<str>()?.to_string());
+    }
+    if let Some(peap_label) = ieee_8021x.get("phase1-peaplabel") {
+        ieee_8021x_config.peap_label = peap_label.downcast_ref::<str>()? == "1";
+    }
+
+    Some(ieee_8021x_config)
+}
+
+// Strips NetworkManager path from "file://{path}\0" so only path remains.
+fn strip_nm_file_path(path: String) -> Option<String> {
+    let stripped_path = path
+        .strip_prefix("file://")
+        .and_then(|x| x.strip_suffix("\0"))?;
+    Some(stripped_path.to_string())
+}
+
 /// Determines whether a value is empty.
 ///
 /// TODO: Generalize for other kind of values, like dicts or arrays.
@@ -1281,6 +1451,90 @@ mod test {
     }
 
     #[test]
+    fn test_connection_from_dbus_ieee_8021x() {
+        let connection_section = HashMap::from([
+            ("id".to_string(), Value::new("eap0").to_owned()),
+            (
+                "uuid".to_string(),
+                Value::new(Uuid::new_v4().to_string()).to_owned(),
+            ),
+        ]);
+
+        let ieee_8021x_section = HashMap::from([
+            (
+                "eap".to_string(),
+                Value::new(vec!["md5", "leap"]).to_owned(),
+            ),
+            ("phase2-auth".to_string(), Value::new("gtc").to_owned()),
+            ("identity".to_string(), Value::new("test_user").to_owned()),
+            ("password".to_string(), Value::new("test_pw").to_owned()),
+            (
+                "ca-cert".to_string(),
+                Value::new("file:///path/to/ca_cert.pem\0".as_bytes()).to_owned(),
+            ),
+            (
+                "ca-cert-password".to_string(),
+                Value::new("ca_cert_pw").to_owned(),
+            ),
+            (
+                "client-cert".to_string(),
+                Value::new("not_valid_value".as_bytes()).to_owned(),
+            ),
+            (
+                "client-cert-password".to_string(),
+                Value::new("client_cert_pw").to_owned(),
+            ),
+            (
+                "private-key".to_string(),
+                Value::new("file://relative_path/private_key\0".as_bytes()).to_owned(),
+            ),
+            (
+                "private-key-password".to_string(),
+                Value::new("private_key_pw").to_owned(),
+            ),
+            (
+                "anonymous-identity".to_string(),
+                Value::new("anon_identity").to_owned(),
+            ),
+            ("phase1-peaplabel".to_string(), Value::new("0").to_owned()),
+            ("phase1-peapver".to_string(), Value::new("1").to_owned()),
+        ]);
+
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section),
+            (super::IEEE_8021X_KEY.to_string(), ieee_8021x_section),
+            (super::LOOPBACK_KEY.to_string(), HashMap::new().to_owned()),
+        ]);
+
+        let connection = connection_from_dbus(dbus_conn).unwrap();
+        let Some(config) = &connection.ieee_8021x_config else {
+            panic!("No eap config set")
+        };
+        assert_eq!(config.eap, vec![EAPMethod::MD5, EAPMethod::LEAP]);
+        assert_eq!(config.phase2_auth, Some(Phase2AuthMethod::GTC));
+        assert_eq!(config.identity, Some("test_user".to_string()));
+        assert_eq!(config.password, Some("test_pw".to_string()));
+        assert_eq!(config.ca_cert, Some("/path/to/ca_cert.pem".to_string()));
+        assert_eq!(config.ca_cert_password, Some("ca_cert_pw".to_string()));
+        assert_eq!(config.client_cert, None);
+        assert_eq!(
+            config.client_cert_password,
+            Some("client_cert_pw".to_string())
+        );
+        assert_eq!(
+            config.private_key,
+            Some("relative_path/private_key".to_string())
+        );
+        assert_eq!(
+            config.private_key_password,
+            Some("private_key_pw".to_string())
+        );
+        assert_eq!(config.anonymous_identity, Some("anon_identity".to_string()));
+        assert_eq!(config.peap_version, Some("1".to_string()));
+        assert!(!config.peap_label);
+    }
+
+    #[test]
     fn test_dbus_from_infiniband_connection() {
         let config = InfinibandConfig {
             p_key: Some(0x8002),
@@ -1402,6 +1656,99 @@ mod test {
         assert_eq!(wep_key0, "5b73215e232f4c577c5073455d");
         let wep_key1: &str = security.get("wep-key1").unwrap().downcast_ref().unwrap();
         assert_eq!(wep_key1, "hello");
+    }
+
+    #[test]
+    fn test_dbus_from_ieee_8021x() {
+        let ieee_8021x_config = IEEE8021XConfig {
+            eap: vec![
+                EAPMethod::from_str("tls").unwrap(),
+                EAPMethod::from_str("peap").unwrap(),
+            ],
+            phase2_auth: Some(Phase2AuthMethod::MSCHAPV2),
+            identity: Some("test_user".to_string()),
+            password: Some("test_pw".to_string()),
+            ca_cert: Some("/path/to/ca_cert.pem".to_string()),
+            ca_cert_password: Some("ca_cert_pw".to_string()),
+            client_cert: Some("/client_cert".to_string()),
+            client_cert_password: Some("client_cert_pw".to_string()),
+            private_key: Some("relative_path/private_key".to_string()),
+            private_key_password: Some("private_key_pw".to_string()),
+            anonymous_identity: Some("anon_identity".to_string()),
+            peap_version: Some("0".to_string()),
+            peap_label: true,
+        };
+        let mut conn = build_base_connection();
+        conn.ieee_8021x_config = Some(ieee_8021x_config);
+        let conn_dbus = connection_to_dbus(&conn, None);
+
+        let config = conn_dbus.get(super::IEEE_8021X_KEY).unwrap();
+        let eap: &Array = config.get("eap").unwrap().downcast_ref().unwrap();
+        let eap: Vec<&str> = eap
+            .iter()
+            .map(|x| x.downcast_ref::<str>().unwrap())
+            .collect();
+        assert_eq!(eap, ["tls".to_string(), "peap".to_string()]);
+        let identity: &str = config.get("identity").unwrap().downcast_ref().unwrap();
+        assert_eq!(identity, "test_user");
+        let phase2_auth: &str = config.get("phase2-auth").unwrap().downcast_ref().unwrap();
+        assert_eq!(phase2_auth, "mschapv2");
+        let password: &str = config.get("password").unwrap().downcast_ref().unwrap();
+        assert_eq!(password, "test_pw");
+        let ca_cert: &Array = config.get("ca-cert").unwrap().downcast_ref().unwrap();
+        let ca_cert: String = ca_cert
+            .iter()
+            .map(|x| *x.downcast_ref::<u8>().unwrap() as char)
+            .collect();
+        assert_eq!(ca_cert, "file:///path/to/ca_cert.pem\0");
+        let ca_cert_password: &str = config
+            .get("ca-cert-password")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(ca_cert_password, "ca_cert_pw");
+        let client_cert: &Array = config.get("client-cert").unwrap().downcast_ref().unwrap();
+        let client_cert: String = client_cert
+            .iter()
+            .map(|x| *x.downcast_ref::<u8>().unwrap() as char)
+            .collect();
+        assert_eq!(client_cert, "file:///client_cert\0");
+        let client_cert_password: &str = config
+            .get("client-cert-password")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(client_cert_password, "client_cert_pw");
+        let private_key: &Array = config.get("private-key").unwrap().downcast_ref().unwrap();
+        let private_key: String = private_key
+            .iter()
+            .map(|x| *x.downcast_ref::<u8>().unwrap() as char)
+            .collect();
+        assert_eq!(private_key, "file://relative_path/private_key\0");
+        let private_key_password: &str = config
+            .get("private-key-password")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(private_key_password, "private_key_pw");
+        let anonymous_identity: &str = config
+            .get("anonymous-identity")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(anonymous_identity, "anon_identity");
+        let peap_version: &str = config
+            .get("phase1-peapver")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(peap_version, "0");
+        let peap_label: &str = config
+            .get("phase1-peaplabel")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(peap_label, "1");
     }
 
     #[test]

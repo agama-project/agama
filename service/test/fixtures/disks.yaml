@@ -1,0 +1,28 @@
+---
+- disk:
+    name: "/dev/vda"
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 2 MiB
+        name: "/dev/vda1"
+        id: bios_boot
+    - partition:
+        size: 20 GiB
+        name: "/dev/vda2"
+        id: linux
+        file_system: btrfs
+    - partition:
+        size: 10 GiB
+        name: "/dev/vda3"
+        id: linux
+        file_system: xfs
+- disk:
+    name: "/dev/vdb"
+    size: 50 GiB
+
+- disk:
+    name: "/dev/vdc"
+    size: 50 GiB
+    file_system: "ext4"

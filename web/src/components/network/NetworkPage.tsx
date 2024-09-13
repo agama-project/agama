@@ -20,8 +20,8 @@
  */
 
 import React from "react";
-import { CardBody, Grid, GridItem } from "@patternfly/react-core";
-import { Link, CardField, EmptyState, Page } from "~/components/core";
+import { Grid, GridItem } from "@patternfly/react-core";
+import { Link, EmptyState, Page } from "~/components/core";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { _ } from "~/i18n";
 import { connectionAddresses } from "~/utils/network";
@@ -29,65 +29,66 @@ import { sprintf } from "sprintf-js";
 import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
 import { PATHS } from "~/routes/network";
 import { partition } from "~/utils";
+import { Connection, Device } from "~/types/network";
 
 const WiredConnections = ({ connections, devices }) => {
-  const total = connections.length;
+  const wiredConnections = connections.length;
+
+  const sectionProps = wiredConnections > 0 ? { title: _("Wired") } : {};
 
   return (
-    <CardField label={total > 0 && _("Wired")}>
-      <CardBody>
-        {total === 0 ? (
-          <EmptyState title={_("No wired connections found")} icon="warning" />
-        ) : (
-          <ConnectionsTable connections={connections} devices={devices} />
-        )}
-      </CardBody>
-    </CardField>
+    <Page.Section {...sectionProps}>
+      {wiredConnections > 0 ? (
+        <ConnectionsTable connections={connections} devices={devices} />
+      ) : (
+        <EmptyState title={_("No wired connections found")} icon="warning" />
+      )}
+    </Page.Section>
   );
 };
 
 const WifiConnections = ({ connections, devices }) => {
-  const activeWifiDevice = devices.find((d) => d.type === "wireless" && d.state === "activated");
-  const activeConnection = connections.find((c) => c.id === activeWifiDevice?.connection);
+  const activeWifiDevice = devices.find(
+    (d: Device) => d.type === "wireless" && d.state === "activated",
+  );
+  const activeConnection = connections.find(
+    (c: Connection) => c.id === activeWifiDevice?.connection,
+  );
 
   return (
-    <CardField
-      label={_("Wi-Fi")}
+    <Page.Section
+      title={_("Wi-Fi")}
       actions={
         <Link isPrimary={!activeConnection} to={PATHS.wifis}>
           {activeConnection ? _("Change") : _("Connect")}
         </Link>
       }
     >
-      <CardField.Content>
-        {activeConnection ? (
-          <EmptyState
-            title={sprintf(_("Connected to %s"), activeConnection.id)}
-            icon="wifi"
-            color="success-color-100"
-          >
-            {connectionAddresses(activeConnection, devices)}
-          </EmptyState>
-        ) : (
-          <EmptyState title={_("No connected yet")} icon="wifi_off" color="color-300">
-            {_("The system has not been configured for connecting to a Wi-Fi network yet.")}
-          </EmptyState>
-        )}
-      </CardField.Content>
-    </CardField>
+      {activeConnection ? (
+        <EmptyState
+          title={sprintf(_("Connected to %s"), activeConnection.id)}
+          icon="wifi"
+          color="success-color-100"
+        >
+          {connectionAddresses(activeConnection, devices)}
+        </EmptyState>
+      ) : (
+        <EmptyState title={_("No connected yet")} icon="wifi_off" color="color-300">
+          {_("The system has not been configured for connecting to a Wi-Fi network yet.")}
+        </EmptyState>
+      )}
+    </Page.Section>
   );
 };
 
 const NoWifiAvailable = () => (
-  <CardField>
-    <CardField.Content>
-      <EmptyState title={_("No Wi-Fi supported")} icon="error">
-        {_(
-          "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.",
-        )}
-      </EmptyState>
-    </CardField.Content>
-  </CardField>
+  <Page.Section>
+    <EmptyState title={_("No Wi-Fi supported")} icon="error">
+      {_(
+        "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.",
+      )}
+    </EmptyState>
+  </Page.Section>
 );
 
 /**
@@ -104,7 +105,7 @@ export default function NetworkPage() {
         <h2>{_("Network")}</h2>
       </Page.Header>
 
-      <Page.MainContent>
+      <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
             <WiredConnections connections={wiredConnections} devices={devices} />
@@ -117,7 +118,7 @@ export default function NetworkPage() {
             )}
           </GridItem>
         </Grid>
-      </Page.MainContent>
+      </Page.Content>
     </Page>
   );
 }

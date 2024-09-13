@@ -26,8 +26,9 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { RowActions } from "~/components/core";
 import { EditNodeForm, LoginForm, NodeStartupOptions } from "~/components/storage/iscsi";
+import { login, logout, setStartup, deleteNode } from "~/api/storage/iscsi";
 
-export default function NodesPresenter({ nodes, client }) {
+export default function NodesPresenter({ nodes }) {
   const [currentNode, setCurrentNode] = useState();
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const [isLoginFormOpen, setIsLoginFormOpen] = useState(false);
@@ -40,7 +41,7 @@ export default function NodesPresenter({ nodes, client }) {
   const closeLoginForm = () => setIsLoginFormOpen(false);
 
   const submitLoginForm = async (options) => {
-    const result = await client.iscsi.login(currentNode, options);
+    const result = await login(currentNode, options);
     if (result === 0) closeLoginForm();
 
     return result;
@@ -54,7 +55,7 @@ export default function NodesPresenter({ nodes, client }) {
   const closeEditForm = () => setIsEditFormOpen(false);
 
   const submitEditForm = async (data) => {
-    await client.iscsi.setStartup(currentNode, data.startup);
+    await setStartup(currentNode, data.startup);
     closeEditForm();
   };
 
@@ -75,7 +76,7 @@ export default function NodesPresenter({ nodes, client }) {
       },
       delete: {
         title: _("Delete"),
-        onClick: () => client.iscsi.delete(node),
+        onClick: () => deleteNode(node),
         isDanger: true,
       },
       login: {
@@ -84,7 +85,7 @@ export default function NodesPresenter({ nodes, client }) {
       },
       logout: {
         title: _("Logout"),
-        onClick: () => client.iscsi.logout(node),
+        onClick: () => logout(node),
       },
     };
 
