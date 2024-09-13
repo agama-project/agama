@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import { plainRender } from "~/test-utils";
 import * as utils from "~/utils";
 import { ServerError } from "~/components/core";
 
-describe.skip("ServerError", () => {
+describe("ServerError", () => {
   it("includes a generic server problem message", () => {
     plainRender(<ServerError />);
     screen.getByText(/Cannot connect to Agama server/i);
