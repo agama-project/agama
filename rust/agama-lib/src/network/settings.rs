@@ -37,6 +37,7 @@ impl MatchSettings {
 
 /// Wireless configuration
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct WirelessSettings {
     /// Password of the wifi network
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -94,6 +95,7 @@ impl Default for BondSettings {
 
 /// IEEE 802.1x (EAP) settings
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IEEE8021XSettings {
     /// List of EAP methods used
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
