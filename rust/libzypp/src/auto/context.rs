@@ -16,6 +16,15 @@ glib::wrapper! {
 }
 
 impl Context {
+            // rustdoc-stripper-ignore-next
+            /// Creates a new builder-pattern struct instance to construct [`Context`] objects.
+            ///
+            /// This method returns an instance of [`ContextBuilder`](crate::builders::ContextBuilder) which can be used to create [`Context`] objects.
+            pub fn builder() -> ContextBuilder {
+                ContextBuilder::new()
+            }
+        
+
     #[doc(alias = "zypp_context_load_system")]
     pub fn load_system(&self, sysRoot: Option<&str>) -> Result<(), glib::Error> {
         unsafe {
@@ -56,4 +65,29 @@ impl Context {
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(notify_versionprop_trampoline::<F> as *const ())), Box_::into_raw(f))
         }
     }
+}
+
+// rustdoc-stripper-ignore-next
+        /// A [builder-pattern] type to construct [`Context`] objects.
+        ///
+        /// [builder-pattern]: https://doc.rust-lang.org/1.0.0/style/ownership/builders.html
+#[must_use = "The builder must be built to be used"]
+pub struct ContextBuilder {
+            builder: glib::object::ObjectBuilder<'static, Context>,
+        }
+
+        impl ContextBuilder {
+        fn new() -> Self {
+            Self { builder: glib::object::Object::builder() }
+        }
+
+                            //pub fn zypp_cppObj(self, zypp_cppObj: /*Unimplemented*/Basic: Pointer) -> Self {
+                        //    Self { builder: self.builder.property("zypp-cppObj", zypp_cppObj), }
+                        //}
+
+    // rustdoc-stripper-ignore-next
+    /// Build the [`Context`].
+    #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
+    pub fn build(self) -> Context {
+    self.builder.build() }
 }

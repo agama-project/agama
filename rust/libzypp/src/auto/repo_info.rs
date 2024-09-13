@@ -24,6 +24,15 @@ impl RepoInfo {
         }
     }
 
+            // rustdoc-stripper-ignore-next
+            /// Creates a new builder-pattern struct instance to construct [`RepoInfo`] objects.
+            ///
+            /// This method returns an instance of [`RepoInfoBuilder`](crate::builders::RepoInfoBuilder) which can be used to create [`RepoInfo`] objects.
+            pub fn builder() -> RepoInfoBuilder {
+                RepoInfoBuilder::new()
+            }
+        
+
     #[doc(alias = "zypp_repo_info_get_repo_type")]
     #[doc(alias = "get_repo_type")]
     pub fn repo_type(&self) -> RepoInfoType {
@@ -70,4 +79,51 @@ impl RepoInfo {
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(notify_name_trampoline::<F> as *const ())), Box_::into_raw(f))
         }
     }
+}
+
+impl Default for RepoInfo {
+                     fn default() -> Self {
+                         glib::object::Object::new::<Self>()
+                     }
+                 }
+
+// rustdoc-stripper-ignore-next
+        /// A [builder-pattern] type to construct [`RepoInfo`] objects.
+        ///
+        /// [builder-pattern]: https://doc.rust-lang.org/1.0.0/style/ownership/builders.html
+#[must_use = "The builder must be built to be used"]
+pub struct RepoInfoBuilder {
+            builder: glib::object::ObjectBuilder<'static, RepoInfo>,
+        }
+
+        impl RepoInfoBuilder {
+        fn new() -> Self {
+            Self { builder: glib::object::Object::builder() }
+        }
+
+                            pub fn alias(self, alias: impl Into<glib::GString>) -> Self {
+                            Self { builder: self.builder.property("alias", alias.into()), }
+                        }
+
+                            pub fn enabled(self, enabled: bool) -> Self {
+                            Self { builder: self.builder.property("enabled", enabled), }
+                        }
+
+                            pub fn name(self, name: impl Into<glib::GString>) -> Self {
+                            Self { builder: self.builder.property("name", name.into()), }
+                        }
+
+                            //pub fn zypp_cppObj(self, zypp_cppObj: /*Unimplemented*/Basic: Pointer) -> Self {
+                        //    Self { builder: self.builder.property("zypp-cppObj", zypp_cppObj), }
+                        //}
+
+                            pub fn zyppcontext(self, zyppcontext: &Context) -> Self {
+                            Self { builder: self.builder.property("zyppcontext", zyppcontext.clone()), }
+                        }
+
+    // rustdoc-stripper-ignore-next
+    /// Build the [`RepoInfo`].
+    #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
+    pub fn build(self) -> RepoInfo {
+    self.builder.build() }
 }

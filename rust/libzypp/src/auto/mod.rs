@@ -41,3 +41,9 @@ pub use self::enums::RepoRefreshResult;
 pub(crate) mod traits {
     pub use super::info_base::InfoBaseExt;
 }
+pub(crate) mod builders {
+    pub use super::context::ContextBuilder;
+    pub use super::progress_observer::ProgressObserverBuilder;
+    pub use super::repo_info::RepoInfoBuilder;
+    pub use super::repo_manager::RepoManagerBuilder;
+}

@@ -24,6 +24,15 @@ impl RepoManager {
         }
     }
 
+            // rustdoc-stripper-ignore-next
+            /// Creates a new builder-pattern struct instance to construct [`RepoManager`] objects.
+            ///
+            /// This method returns an instance of [`RepoManagerBuilder`](crate::builders::RepoManagerBuilder) which can be used to create [`RepoManager`] objects.
+            pub fn builder() -> RepoManagerBuilder {
+                RepoManagerBuilder::new()
+            }
+        
+
     #[doc(alias = "zypp_repo_manager_get_known_repos")]
     #[doc(alias = "get_known_repos")]
     pub fn known_repos(&self) -> Vec<RepoInfo> {
@@ -77,4 +86,43 @@ impl RepoManager {
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(notify_options_trampoline::<F> as *const ())), Box_::into_raw(f))
         }
     }
+}
+
+impl Default for RepoManager {
+                     fn default() -> Self {
+                         glib::object::Object::new::<Self>()
+                     }
+                 }
+
+// rustdoc-stripper-ignore-next
+        /// A [builder-pattern] type to construct [`RepoManager`] objects.
+        ///
+        /// [builder-pattern]: https://doc.rust-lang.org/1.0.0/style/ownership/builders.html
+#[must_use = "The builder must be built to be used"]
+pub struct RepoManagerBuilder {
+            builder: glib::object::ObjectBuilder<'static, RepoManager>,
+        }
+
+        impl RepoManagerBuilder {
+        fn new() -> Self {
+            Self { builder: glib::object::Object::builder() }
+        }
+
+                            pub fn options(self, options: &RepoManagerOptions) -> Self {
+                            Self { builder: self.builder.property("options", options), }
+                        }
+
+                            //pub fn zypp_cppObj(self, zypp_cppObj: /*Unimplemented*/Basic: Pointer) -> Self {
+                        //    Self { builder: self.builder.property("zypp-cppObj", zypp_cppObj), }
+                        //}
+
+                            pub fn zyppcontext(self, zyppcontext: &Context) -> Self {
+                            Self { builder: self.builder.property("zyppcontext", zyppcontext.clone()), }
+                        }
+
+    // rustdoc-stripper-ignore-next
+    /// Build the [`RepoManager`].
+    #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
+    pub fn build(self) -> RepoManager {
+    self.builder.build() }
 }

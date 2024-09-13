@@ -16,6 +16,15 @@ glib::wrapper! {
 }
 
 impl ProgressObserver {
+            // rustdoc-stripper-ignore-next
+            /// Creates a new builder-pattern struct instance to construct [`ProgressObserver`] objects.
+            ///
+            /// This method returns an instance of [`ProgressObserverBuilder`](crate::builders::ProgressObserverBuilder) which can be used to create [`ProgressObserver`] objects.
+            pub fn builder() -> ProgressObserverBuilder {
+                ProgressObserverBuilder::new()
+            }
+        
+
     #[doc(alias = "zypp_progress_observer_add_subtask")]
     pub fn add_subtask(&self, newChild: &ProgressObserver, weight: f32) {
         unsafe {
@@ -207,4 +216,41 @@ impl ProgressObserver {
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(notify_value_trampoline::<F> as *const ())), Box_::into_raw(f))
         }
     }
+}
+
+// rustdoc-stripper-ignore-next
+        /// A [builder-pattern] type to construct [`ProgressObserver`] objects.
+        ///
+        /// [builder-pattern]: https://doc.rust-lang.org/1.0.0/style/ownership/builders.html
+#[must_use = "The builder must be built to be used"]
+pub struct ProgressObserverBuilder {
+            builder: glib::object::ObjectBuilder<'static, ProgressObserver>,
+        }
+
+        impl ProgressObserverBuilder {
+        fn new() -> Self {
+            Self { builder: glib::object::Object::builder() }
+        }
+
+                            pub fn base_steps(self, base_steps: i32) -> Self {
+                            Self { builder: self.builder.property("base-steps", base_steps), }
+                        }
+
+                            pub fn label(self, label: impl Into<glib::GString>) -> Self {
+                            Self { builder: self.builder.property("label", label.into()), }
+                        }
+
+                            pub fn value(self, value: f64) -> Self {
+                            Self { builder: self.builder.property("value", value), }
+                        }
+
+                            //pub fn zypp_cppObj(self, zypp_cppObj: /*Unimplemented*/Basic: Pointer) -> Self {
+                        //    Self { builder: self.builder.property("zypp-cppObj", zypp_cppObj), }
+                        //}
+
+    // rustdoc-stripper-ignore-next
+    /// Build the [`ProgressObserver`].
+    #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
+    pub fn build(self) -> ProgressObserver {
+    self.builder.build() }
 }

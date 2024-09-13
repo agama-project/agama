@@ -8,6 +8,7 @@ work_mode = "normal"
 single_version_file = true
 generate_safety_asserts = true
 deprecate_by_min_version = true
+generate_builder = true
 
 generate = [
   "Zypp.Context",
@@ -24,7 +25,7 @@ generate = [
   "Zypp.RepoManagerError",
   "Zypp.RepoRefreshResult",
   "Zypp.Repository",
-  "Zypp.*"
+  "Zypp.*",
 ]
 
 manual = [
