@@ -35,21 +35,31 @@ const initiatorQuery = {
   },
 };
 
+/**
+ * Hook that returns the information about the ISCSI initiator.
+ *
+ * This hook uses the Suspense API.
+ */
 const useInitiator = (): ISCSIInitiator => {
   const { data } = useSuspenseQuery(initiatorQuery);
   return data;
 };
 
+/**
+ * Hook that builds a mutation to update the initiator information.
+ */
 const useInitiatorMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: ({ name }) => updateInitiator({ name }),
-    // TODO: update the name if the query already contains data
     onSuccess: () => queryClient.invalidateQueries({ queryKey: initiatorQuery.queryKey }),
   };
   return useMutation(query);
 };
 
+/**
+ * Subscribes to ISCSI initiator changes to keep the data up-to-date.
+ */
 const useInitiatorChanges = () => {
   const client = useInstallerClient();
   const queryClient = useQueryClient();
@@ -81,6 +91,9 @@ const useNodes = (): ISCSINode[] => {
   return data;
 };
 
+/**
+ * Subscribes to ISCSI nodes changes to keep the query up-to-date.
+ */
 const useNodesChanges = () => {
   const client = useInstallerClient();
   const queryClient = useQueryClient();
