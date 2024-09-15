@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-08 02:38+0000\n"
+"POT-Creation-Date: 2024-09-15 02:43+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: Milachew <milachew@mail.lv>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -114,7 +114,7 @@ msgstr ""
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:55
+#: src/components/l10n/L10nPage.jsx:48
 msgid "Language"
 msgstr ""
 
@@ -129,7 +129,6 @@ msgstr ""
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/storage/ZFCPPage.jsx:528
-#: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
 msgstr ""
 
@@ -140,60 +139,6 @@ msgstr ""
 
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:64
-msgid "Could not log in. Please, make sure that the password is correct."
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:66
-msgid "Could not authenticate against the server, please check it."
-msgstr ""
-
-#. TRANSLATORS: Title for a form to provide the password for the root user. %s
-#. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:74
-#, c-format
-msgid "Log in as %s"
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:80
-msgid "The installer requires [root] user privileges."
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:95
-msgid "Please, provide its password to log in to the system."
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:96
-msgid "Login form"
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:102
-msgid "Password input"
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:111
-msgid "Log in"
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:118
-msgid "More about this"
-msgstr ""
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:55
-msgid "Passwords do not match"
-msgstr ""
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/storage/iscsi/AuthFields.jsx:90
-#: src/components/storage/iscsi/AuthFields.jsx:94
-#: src/components/users/RootAuthMethods.jsx:130
-msgid "Password"
-msgstr ""
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:90
-msgid "Password confirmation"
 msgstr ""
 
 #: src/components/core/PasswordInput.jsx:61
@@ -242,73 +187,32 @@ msgstr ""
 msgid "Reload"
 msgstr ""
 
-#: src/components/l10n/KeyboardSelection.jsx:41
-msgid "Filter by description or keymap code"
-msgstr ""
-
-#: src/components/l10n/KeyboardSelection.jsx:71
-msgid "None of the keymaps match the filter."
-msgstr ""
-
-#: src/components/l10n/KeyboardSelection.jsx:77
-msgid "Keyboard selection"
-msgstr ""
-
-#: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/l10n/LocaleSelection.jsx:92
-#: src/components/l10n/TimezoneSelection.jsx:125
-msgid "Select"
-msgstr ""
-
-#: src/components/l10n/L10nPage.jsx:48
+#: src/components/l10n/L10nPage.jsx:41
 #: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
-#: src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:49 src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:71
 msgid "Not selected yet"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Change"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+msgid "Select"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:59
 msgid "Keyboard"
 msgstr ""
 
-#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/L10nPage.jsx:70
 msgid "Time zone"
-msgstr ""
-
-#: src/components/l10n/LocaleSelection.jsx:39
-msgid "Filter by language, territory or locale code"
-msgstr ""
-
-#: src/components/l10n/LocaleSelection.jsx:72
-msgid "None of the locales match the filter."
-msgstr ""
-
-#: src/components/l10n/LocaleSelection.jsx:78
-msgid "Locale selection"
-msgstr ""
-
-#: src/components/l10n/TimezoneSelection.jsx:64
-msgid "Filter by territory, time zone code or UTC offset"
-msgstr ""
-
-#: src/components/l10n/TimezoneSelection.jsx:101
-msgid "None of the time zones match the filter."
-msgstr ""
-
-#: src/components/l10n/TimezoneSelection.jsx:107
-msgid " Timezone selection"
 msgstr ""
 
 #: src/components/layout/Loading.jsx:29
@@ -320,44 +224,6 @@ msgstr ""
 #: src/components/overview/L10nSection.jsx:33
 #, c-format
 msgid "The system will use %s as its default language."
-msgstr ""
-
-#: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:35
-msgid "Users"
-msgstr ""
-
-#: src/components/overview/OverviewPage.jsx:50
-#: src/components/overview/StorageSection.jsx:111
-msgid "Storage"
-msgstr ""
-
-#: src/components/overview/OverviewPage.jsx:51
-msgid "Software"
-msgstr ""
-
-#: src/components/overview/OverviewPage.jsx:56
-msgid "Ready for installation"
-msgstr ""
-
-#: src/components/overview/OverviewPage.jsx:102
-msgid "Installation"
-msgstr ""
-
-#: src/components/overview/OverviewPage.jsx:103
-msgid "Before installing, please check the following problems."
-msgstr ""
-
-#: src/components/overview/OverviewPage.jsx:114
-msgid ""
-"Take your time to check your configuration before starting the installation "
-"process."
-msgstr ""
-
-#: src/components/overview/OverviewPage.jsx:123
-msgid ""
-"These are the most relevant installation settings. Feel free to browse the "
-"sections in the menu for further details."
 msgstr ""
 
 #: src/components/overview/StorageSection.jsx:53
@@ -410,6 +276,10 @@ msgstr ""
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s using a "
 "custom strategy to find the needed space"
+msgstr ""
+
+#: src/components/overview/StorageSection.jsx:111
+msgid "Storage"
 msgstr ""
 
 #: src/components/overview/StorageSection.jsx:179
@@ -469,9 +339,7 @@ msgid "iSCSI"
 msgstr ""
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
 #: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
 msgid "Something went wrong"
 msgstr ""
 
@@ -497,11 +365,9 @@ msgstr ""
 msgid "LUN"
 msgstr ""
 
-#. TRANSLATORS: table header
 #: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
 msgid "Status"
 msgstr ""
 
@@ -518,14 +384,12 @@ msgid "Deactivated"
 msgstr ""
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "No"
 msgstr ""
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "Yes"
 msgstr ""
 
@@ -533,13 +397,9 @@ msgstr ""
 msgid "Activate"
 msgstr ""
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
 msgid "Name"
 msgstr ""
 
@@ -622,6 +482,11 @@ msgstr ""
 msgid "Incorrect user name"
 msgstr ""
 
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+msgid "Password"
+msgstr ""
+
 #: src/components/storage/iscsi/AuthFields.jsx:99
 #: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
@@ -635,89 +500,14 @@ msgstr ""
 msgid "Target Password"
 msgstr ""
 
-#. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:94
-msgid "Discover iSCSI Targets"
-msgstr ""
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:99
-#: src/components/storage/iscsi/LoginForm.jsx:70
-msgid "Make sure you provide the correct values"
-msgstr ""
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:103
-msgid "IP address"
-msgstr ""
-
-#. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
-msgid "Address"
-msgstr ""
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
-msgid "Incorrect IP address"
-msgstr ""
-
-#. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:117
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
-msgid "Port"
-msgstr ""
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
-msgid "Incorrect port"
-msgstr ""
-
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:48
-#, c-format
-msgid "Edit %s"
-msgstr ""
-
-#: src/components/storage/iscsi/InitiatorForm.jsx:42
-msgid "Edit iSCSI Initiator"
-msgstr ""
-
-#. TRANSLATORS: iSCSI initiator name
-#: src/components/storage/iscsi/InitiatorForm.jsx:49
-msgid "Initiator name"
-msgstr ""
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr ""
-
-#. TRANSLATORS: usually just keep the original text
-#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:86
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-#: src/components/storage/iscsi/NodesPresenter.jsx:122
-msgid "iBFT"
-msgstr ""
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr ""
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:87
-msgid "Offload card"
-msgstr ""
-
-#. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:49
-msgid "Initiator"
-msgstr ""
-
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
+msgstr ""
+
+#: src/components/storage/iscsi/LoginForm.jsx:70
+msgid "Make sure you provide the correct values"
 msgstr ""
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
@@ -739,187 +529,45 @@ msgid "Automatic"
 msgstr ""
 
 #. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
+#: src/components/storage/iscsi/NodesPresenter.jsx:64
 msgid "Disconnected"
 msgstr ""
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
-#: src/components/storage/iscsi/NodesPresenter.jsx:67
+#: src/components/storage/iscsi/NodesPresenter.jsx:68
 #, c-format
 msgid "Connected (%s)"
 msgstr ""
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
+#: src/components/storage/iscsi/NodesPresenter.jsx:74
+msgid "Edit"
+msgstr ""
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:78
 msgid "Delete"
 msgstr ""
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:82
+#: src/components/storage/iscsi/NodesPresenter.jsx:83
 msgid "Login"
 msgstr ""
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:86
+#: src/components/storage/iscsi/NodesPresenter.jsx:87
 msgid "Logout"
-msgstr ""
-
-#: src/components/storage/iscsi/NodesPresenter.jsx:99
-#: src/components/storage/iscsi/NodesPresenter.jsx:120
-msgid "Portal"
 msgstr ""
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:100
 #: src/components/storage/iscsi/NodesPresenter.jsx:121
+msgid "Portal"
+msgstr ""
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Interface"
 msgstr ""
 
-#: src/components/storage/iscsi/TargetsSection.jsx:138
-msgid "No iSCSI targets found."
-msgstr ""
-
-#: src/components/storage/iscsi/TargetsSection.jsx:140
-msgid ""
-"Please, perform an iSCSI discovery in order to find available iSCSI targets."
-msgstr ""
-
-#: src/components/storage/iscsi/TargetsSection.jsx:144
-msgid "Discover iSCSI targets"
-msgstr ""
-
-#. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:156
-msgid "Discover"
-msgstr ""
-
-#. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
-msgid "Targets"
-msgstr ""
-
-#: src/components/users/FirstUser.jsx:35
-msgid "No user defined yet."
-msgstr ""
-
-#: src/components/users/FirstUser.jsx:39
-msgid ""
-"Please, be aware that a user must be defined before installing the system to "
-"be able to log into it."
-msgstr ""
-
-#: src/components/users/FirstUser.jsx:45
-msgid "Define a user now"
-msgstr ""
-
-#: src/components/users/FirstUser.jsx:58
-#: src/components/users/FirstUserForm.jsx:217
-msgid "Full name"
-msgstr ""
-
-#: src/components/users/FirstUser.jsx:59
-#: src/components/users/FirstUserForm.jsx:231
-#: src/components/users/FirstUserForm.jsx:236
-#: src/components/users/FirstUserForm.jsx:239
-msgid "Username"
-msgstr ""
-
-#: src/components/users/FirstUser.jsx:90
-#: src/components/users/RootAuthMethods.jsx:78
-#: src/components/users/RootAuthMethods.jsx:90
-msgid "Discard"
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:58
-msgid "Username suggestion dropdown"
-msgstr ""
-
-#. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:73
-msgid "Use suggested username"
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:144
-msgid "All fields are required"
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Create user"
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Edit user"
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:221
-#: src/components/users/FirstUserForm.jsx:223
-msgid "User full name"
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:261
-msgid "Edit password too"
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:277
-msgid "user autologin"
-msgstr ""
-
-#. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:281
-msgid "Auto-login"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:36
-msgid "No root authentication method defined yet."
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:40
-msgid ""
-"Please, define at least one authentication method for logging into the "
-"system as root."
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:47
-msgid "Set a password"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:51
-msgid "Upload a SSH Public Key"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
-msgid "Set"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:97
-msgid "Already set"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:97
-#: src/components/users/RootAuthMethods.jsx:101
-msgid "Not set"
-msgstr ""
-
-#. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:122
-msgid "Method"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:139
-msgid "SSH Key"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Change the root password"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Set a root password"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:168
-msgid "Edit the SSH Public Key for root"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:169
-msgid "Add a SSH Public Key for root"
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "iBFT"
 msgstr ""
 
 #: src/components/users/RootPasswordPopup.jsx:44
@@ -946,14 +594,6 @@ msgstr ""
 #. TRANSLATORS: push button label, clears the related input field
 #: src/components/users/RootSSHKeyPopup.jsx:80
 msgid "Clear"
-msgstr ""
-
-#: src/components/users/UsersPage.jsx:44
-msgid "First user"
-msgstr ""
-
-#: src/components/users/UsersPage.jsx:51
-msgid "Root authentication"
 msgstr ""
 
 #: src/router.js:48
