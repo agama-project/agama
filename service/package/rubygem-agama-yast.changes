@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 16 14:55:42 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: add support for creating LVM volume groups and logical
+  volumes (gh#openSUSE/agama#1581).
+
+-------------------------------------------------------------------
 Tue Sep 10 10:03:04 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Relax REXML version (gh#openSUSE/agama#1595) to build with Ruby
