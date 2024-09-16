@@ -25,7 +25,7 @@ require "y2storage/mount_point"
 
 module Agama
   module Storage
-    # Class for checking a config.
+    # Class for checking a storage config.
     class ConfigChecker
       include Yast::I18n
 
@@ -72,15 +72,64 @@ module Agama
       # @param config [Configs::VolumeGroup]
       # @return [Array<Issue>]
       def volume_group_issues(config)
-        config.logical_volumes.flat_map { |v| logical_volume_issues(v) }
+        lvs_issues = config.logical_volumes.flat_map { |v| logical_volume_issues(v, config) }
+        pvs_issues = config.physical_volumes.map { |v| missing_physical_volume_issue(v) }.compact
+
+        lvs_issues + pvs_issues
       end
 
       # Issues from a logical volume config.
       #
-      # @param config [Configs::LogicalVolume]
+      # @param lv_config [Configs::LogicalVolume]
+      # @param vg_config [Configs::VolumeGroup]
+      #
       # @return [Array<Issue>]
-      def logical_volume_issues(config)
-        encryption_issues(config)
+      def logical_volume_issues(lv_config, vg_config)
+        [
+          encryption_issues(lv_config),
+          missing_thin_pool_issue(lv_config, vg_config)
+        ].compact.flatten
+      end
+
+      # @see #logical_volume_issues
+      #
+      # @param lv_config [Configs::LogicalVolume]
+      # @param vg_config [Configs::VolumeGroup]
+      #
+      # @return [Issue, nil]
+      def missing_thin_pool_issue(lv_config, vg_config)
+        return unless lv_config.thin_volume?
+
+        pool = vg_config.logical_volumes
+          .select(&:pool?)
+          .find { |p| p.alias == lv_config.used_pool }
+
+        return if pool
+
+        error(
+          format(
+            # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+            _("There is no LVM thin pool volume with alias %s"),
+            lv_config.used_pool
+          )
+        )
+      end
+
+      # @see #logical_volume_issues
+      #
+      # @param pv_alias [String]
+      # @return [Issue, nil]
+      def missing_physical_volume_issue(pv_alias)
+        configs = config.drives + config.drives.flat_map(&:partitions)
+        return if configs.any? { |c| c.alias == pv_alias }
+
+        error(
+          format(
+            # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+            _("There is no LVM physical volume with alias %s"),
+            pv_alias
+          )
+        )
       end
 
       # Issues related to encryption.
@@ -98,6 +147,7 @@ module Agama
       end
 
       # @see #encryption_issues
+      #
       # @param config [Configs::Drive, Configs::Partition, Configs::LogicalVolume]
       # @return [Issue, nil]
       def missing_encryption_password_issue(config)
@@ -114,6 +164,7 @@ module Agama
       end
 
       # @see #encryption_issues
+      #
       # @param config [Configs::Drive, Configs::Partition, Configs::LogicalVolume]
       # @return [Issue, nil]
       def available_encryption_method_issue(config)
@@ -131,6 +182,7 @@ module Agama
       end
 
       # @see #encryption_issues
+      #
       # @param config [Configs::Drive, Configs::Partition, Configs::LogicalVolume]
       # @return [Issue, nil]
       def wrong_encryption_method_issue(config)

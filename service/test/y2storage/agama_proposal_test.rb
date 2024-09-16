@@ -916,5 +916,121 @@ describe Y2Storage::AgamaProposal do
         )
       end
     end
+
+    context "when a LVM physical volume is not found" do
+      let(:initial_config) do
+        Agama::Storage::ConfigConversions::FromJSON
+          .new(config_json, product_config: product_config)
+          .convert
+      end
+
+      let(:product_config) { Agama::Config.new }
+
+      let(:config_json) do
+        {
+          drives:       [
+            {
+              partitions: [
+                {
+                  size: "40 GiB"
+                },
+                {
+                  alias: "pv1",
+                  size:  "5 GiB"
+                }
+              ]
+            }
+          ],
+          volumeGroups: [
+            {
+              name:            "system",
+              extentSize:      "2 MiB",
+              physicalVolumes: ["pv1", "pv2"],
+              logicalVolumes:  [
+                {
+                  name:       "root",
+                  filesystem: {
+                    path: "/"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "aborts the proposal process" do
+        proposal.propose
+        expect(proposal.failed?).to eq true
+      end
+
+      it "reports the corresponding error" do
+        proposal.propose
+        expect(proposal.issues_list).to include an_object_having_attributes(
+          description: /no LVM physical volume with alias pv2/,
+          severity:    Agama::Issue::Severity::ERROR
+        )
+      end
+    end
+
+    context "when a LVM thin pool volume is not found" do
+      let(:initial_config) do
+        Agama::Storage::ConfigConversions::FromJSON
+          .new(config_json, product_config: product_config)
+          .convert
+      end
+
+      let(:product_config) { Agama::Config.new }
+
+      let(:config_json) do
+        {
+          drives:       [
+            {
+              partitions: [
+                {
+                  size: "40 GiB"
+                },
+                {
+                  alias: "pv1",
+                  size:  "5 GiB"
+                }
+              ]
+            }
+          ],
+          volumeGroups: [
+            {
+              name:            "system",
+              extentSize:      "2 MiB",
+              physicalVolumes: ["pv1"],
+              logicalVolumes:  [
+                {
+                  pool: true
+                },
+                {
+                  name:       "root",
+                  filesystem: {
+                    path: "/"
+                  },
+                  usedPool:   "pool"
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "aborts the proposal process" do
+        proposal.propose
+        expect(proposal.failed?).to eq true
+      end
+
+      it "reports the corresponding error" do
+        proposal.propose
+        expect(proposal.issues_list).to include an_object_having_attributes(
+          description: /no LVM thin pool volume with alias pool/,
+          severity:    Agama::Issue::Severity::ERROR
+        )
+      end
+    end
   end
 end

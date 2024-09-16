@@ -42,9 +42,6 @@ module Y2Storage
         #   automatically generated if missing?
         #
         #   @see AgamaDevicePlanner#configure_pv
-
-        # TODO: Generate issue if the config has an unknown physical volume alias.
-        # TODO: Generate issue if a thin lv config has an unknown pool alias.
         Y2Storage::Planned::LvmVg.new(volume_group_name: config.name).tap do |planned|
           planned.extent_size = config.extent_size
           planned.lvs = planned_lvs(config)
