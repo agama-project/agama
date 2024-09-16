@@ -40,7 +40,7 @@ const copy_files = [
   "./src/index.html",
   // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
   "./src/assets/favicon.svg",
-  { from: "./src/assets/products/*.svg", to: "assets/logos/[name][ext]" }
+  { from: "./src/assets/products/*.svg", to: "assets/logos/[name][ext]" },
 ];
 
 const plugins = [
@@ -58,7 +58,13 @@ const plugins = [
 ].filter(Boolean);
 
 if (eslint) {
-  plugins.push(new ESLintPlugin({ extensions: ["js", "jsx"], failOnWarning: true }));
+  plugins.push(
+    new ESLintPlugin({
+      configType: "flat",
+      extensions: ["js", "jsx", "ts", "tsx"],
+      failOnWarning: true,
+    }),
+  );
 }
 
 if (stylelint) {
