@@ -40,7 +40,7 @@
     "@svgr/plugin-jsx": "^8.1.0",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/jest-dom": "^6.2.0",
-    "@testing-library/react": "^15.0.7",
+    "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.1",
     "@types/jest": "^29.5.12",
     "@types/webpack-env": "^1.18.5",
