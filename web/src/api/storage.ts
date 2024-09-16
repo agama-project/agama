@@ -26,7 +26,7 @@ import { calculate, fetchSettings } from "~/api/storage/proposal";
 /**
  * Starts the storage probing process.
  */
-const probe = (): Promise<any> => post("/api/storage/probe");
+const probe = (): Promise<> => post("/api/storage/probe");
 
 export { probe };
 

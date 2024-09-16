@@ -319,7 +319,7 @@ const VolumeActions = ({
 };
 
 type VolumeRowProps = {
-  columns?: any;
+  columns?;
   volume?: Volume;
   volumes?: Volume[];
   templates?: Volume[];
@@ -564,7 +564,7 @@ const AddVolumeButton = ({
 
   const onToggleClick: () => void = () => setIsOpen(!isOpen);
 
-  const onSelect: (_: any, value: string) => void = (_, value): void => {
+  const onSelect: (_, value: string) => void = (_, value): void => {
     setIsOpen(false);
     onClick(value);
   };
