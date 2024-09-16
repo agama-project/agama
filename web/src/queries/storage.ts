@@ -81,6 +81,32 @@ const defaultVolumeQuery = (mountPath: string) => ({
 });
 
 /**
+ * @private
+ * Builds a volume from the D-Bus data
+ */
+const buildVolume = (
+  rawVolume: APIVolume,
+  devices: StorageDevice[],
+  productMountPoints: string[],
+): Volume => {
+  const outline = {
+    ...rawVolume.outline,
+    // Indicate whether a volume is defined by the product.
+    productDefined: productMountPoints.includes(rawVolume.mountPath),
+  };
+  const volume: Volume = {
+    ...rawVolume,
+    outline,
+    minSize: rawVolume.minSize || 0,
+    transactional: rawVolume.transactional || false,
+    target: rawVolume.target as VolumeTarget,
+    targetDevice: devices.find((d) => d.name === rawVolume.targetDevice),
+  };
+
+  return volume;
+};
+
+/**
  * Hook that returns the list of storage devices for the given scope.
  *
  * @param scope - "system": devices in the current state of the system; "result":
@@ -146,6 +172,8 @@ const useVolumeTemplates = (): Volume[] => {
  * available devices.
  */
 const useVolumeDevices = (): StorageDevice[] => {
+  const availableDevices = useAvailableDevices();
+
   const isAvailable = (device: StorageDevice) => {
     const isChildren = (device: StorageDevice, parentDevice: StorageDevice) => {
       const partitions = parentDevice.partitionTable?.partitions || [];
@@ -157,7 +185,6 @@ const useVolumeDevices = (): StorageDevice[] => {
 
   const allAvailable = (devices: StorageDevice[]) => devices.every(isAvailable);
 
-  const availableDevices = useAvailableDevices();
   const system = useDevices("system", { suspense: true });
   const mds = system.filter((d) => d.type === "md" && allAvailable(d.devices));
   const vgs = system.filter((d) => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
@@ -237,32 +264,6 @@ const useProposalResult = (): ProposalResult | undefined => {
     },
     actions,
   };
-};
-
-/**
- * @private
- * Builds a volume from the D-Bus data
- */
-const buildVolume = (
-  rawVolume: APIVolume,
-  devices: StorageDevice[],
-  productMountPoints: string[],
-): Volume => {
-  const outline = {
-    ...rawVolume.outline,
-    // Indicate whether a volume is defined by the product.
-    productDefined: productMountPoints.includes(rawVolume.mountPath),
-  };
-  const volume: Volume = {
-    ...rawVolume,
-    outline,
-    minSize: rawVolume.minSize || 0,
-    transactional: rawVolume.transactional || false,
-    target: rawVolume.target as VolumeTarget,
-    targetDevice: devices.find((d) => d.name === rawVolume.targetDevice),
-  };
-
-  return volume;
 };
 
 const useProposalMutation = () => {
