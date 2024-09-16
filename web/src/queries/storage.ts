@@ -153,13 +153,20 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
  * Hook that returns the volume templates for the current product.
  */
 const useVolumeTemplates = (): Volume[] => {
+  const buildDefaultVolumeQueries = (product: ProductParams) => {
+    const queries = product.mountPoints.map((p) => defaultVolumeQuery(p));
+    queries.push(defaultVolumeQuery(""));
+    return queries;
+  };
+
   const systemDevices = useDevices("system", { suspense: true });
   const product = useProductParams();
-  if (!product) return [];
+  const results = useSuspenseQueries({
+    queries: product ? buildDefaultVolumeQueries(product) : [],
+  }) as Array<{ data: APIVolume }>;
 
-  const queries = product.mountPoints.map((p) => defaultVolumeQuery(p));
-  queries.push(defaultVolumeQuery(""));
-  const results = useSuspenseQueries({ queries }) as Array<{ data: APIVolume }>;
+  if (results.length === 0) return [];
+
   return results.map(({ data }) => buildVolume(data, systemDevices, product.mountPoints));
 };
 
