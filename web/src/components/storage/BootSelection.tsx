@@ -81,7 +81,7 @@ export default function BootSelectionDialog() {
       availableDevices,
       selectedOption,
     });
-  }, [availableDevices, settings]);
+  }, [availableDevices, settings, state.load]);
 
   if (!state.load) return;
 
