@@ -69,7 +69,7 @@ export default function LocaleSelection() {
   });
 
   if (localesList.length === 0) {
-    localesList = [<b>{_("None of the locales match the filter.")}</b>];
+    localesList = [<b key="notfound">{_("None of the locales match the filter.")}</b>];
   }
 
   return (
