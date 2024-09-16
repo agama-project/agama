@@ -161,11 +161,13 @@ const DeviceExtendedDetails = ({ item }: { item: PartitionSlot | StorageDevice }
     if (!device.systems || device.systems.length === 0) return null;
 
     const System = ({ system }) => {
-      const logo = /windows/i.test(system) ? "windows_logo" : "linux_logo";
+      const isWindows = /windows/i.test(system);
+
+      if (isWindows) return;
 
       return (
         <div>
-          <Icon name={logo} size="14" /> {system}
+          <Icon name="linux_logo" size="14" /> {system}
         </div>
       );
     };
