@@ -15,3 +15,4 @@ macro_rules! assert_initialized_main_thread {
 
 pub use auto::*;
 mod auto;
+pub use auto::traits::InfoBaseExt;
