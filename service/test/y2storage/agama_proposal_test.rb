@@ -308,7 +308,7 @@ describe Y2Storage::AgamaProposal do
         end
       end
 
-      context "if the encryption method is not available for this system" do
+      context "if the encryption method is not suitable" do
         let(:encryption_method) { Y2Storage::EncryptionMethod::RANDOM_SWAP }
 
         it "aborts the proposal process" do

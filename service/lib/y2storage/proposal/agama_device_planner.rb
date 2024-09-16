@@ -19,16 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/issue"
-require "yast/i18n"
 require "y2storage/planned"
 
 module Y2Storage
   module Proposal
     # Base class used by Agama planners.
     class AgamaDevicePlanner
-      include Yast::I18n
-
       # @!attribute [r] devicegraph
       #   Devicegraph to be used as starting point.
       #   @return [Devicegraph]
@@ -44,8 +40,6 @@ module Y2Storage
       # @param devicegraph [Devicegraph] see {#devicegraph}
       # @param issues_list [Array<Agama::Issue>] see {#issues_list}
       def initialize(devicegraph, issues_list)
-        textdomain "agama"
-
         @devicegraph = devicegraph
         @issues_list = issues_list
       end
@@ -126,69 +120,6 @@ module Y2Storage
         planned.encryption_label = config.label
         planned.encryption_cipher = config.cipher
         planned.encryption_key_size = config.key_size
-
-        check_encryption(planned)
-      end
-
-      # @see #configure_encryption
-      def check_encryption(dev)
-        issues_list << issue_missing_enc_password(dev) if missing_enc_password?(dev)
-        issues_list << issue_available_enc_method(dev) unless dev.encryption_method.available?
-        issues_list << issue_wrong_enc_method(dev) unless supported_enc_method?(dev)
-      end
-
-      # @see #check_encryption
-      def missing_enc_password?(planned)
-        return false unless planned.encryption_method&.password_required?
-
-        planned.encryption_password.nil? || planned.encryption_password.empty?
-      end
-
-      # @see #check_encryption
-      def supported_enc_method?(planned)
-        planned.supported_encryption_method?(planned.encryption_method)
-      end
-
-      # @see #check_encryption
-      def issue_missing_enc_password(planned)
-        msg = format(
-          # TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-          # 'luks1' or 'random_swap').
-          _("No passphrase provided (required for using the method '%{crypt_method}')."),
-          crypt_method: planned.encryption_method.id.to_s
-        )
-        encryption_issue(msg)
-      end
-
-      # @see #check_encryption
-      def issue_available_enc_method(planned)
-        msg = format(
-          # TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-          # 'luks1' or 'random_swap').
-          _("Encryption method '%{crypt_method}' is not available in this system."),
-          crypt_method: planned.encryption_method.id.to_s
-        )
-        encryption_issue(msg)
-      end
-
-      # @see #check_encryption
-      def issue_wrong_enc_method(planned)
-        msg = format(
-          # TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
-          # 'luks1' or 'random_swap').
-          _("'%{crypt_method}' is not a suitable method to encrypt the device."),
-          crypt_method: planned.encryption_method.id.to_s
-        )
-        encryption_issue(msg)
-      end
-
-      # @see #check_encryption
-      def encryption_issue(message)
-        Agama::Issue.new(
-          message,
-          source:   Agama::Issue::Source::CONFIG,
-          severity: Agama::Issue::Severity::ERROR
-        )
       end
 
       # @param planned [Planned::Partition]
