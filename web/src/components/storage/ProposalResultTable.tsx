@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { Label, Flex } from "@patternfly/react-core";
 import {
@@ -29,7 +27,6 @@ import {
   DeviceSize,
   toStorageDevice,
 } from "~/components/storage/device-utils";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import DevicesManager from "~/components/storage/DevicesManager";
 import { TreeTable } from "~/components/core";
 import { _ } from "~/i18n";

@@ -28,21 +28,14 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { _ } from "~/i18n";
 import {
   AccessPoint,
   Connection,
-  APIConnection,
   Device,
-  APIDevice,
   DeviceState,
-  IPAddress,
-  Route,
-  APIRoute,
   WifiNetwork,
   WifiNetworkStatus,
 } from "~/types/network";
-import { buildAddress, formatIp, ipPrefixFor, securityFromFlags } from "~/utils/network";
 import {
   addConnection,
   applyChanges,

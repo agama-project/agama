@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Button, InputGroup, TextInput } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";

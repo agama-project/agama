@@ -32,7 +32,7 @@ const validationState = (value?: string): keyof typeof ValidatedOptions =>
 
 const IpAddressInput = ({
   label = _("IP Address"),
-  onError = (value) => null,
+  onError = () => null,
   ...props
 }: TextInputProps & { defaultValue?: string }) => {
   const [state, setState] = useState(validationState(props.defaultValue));

@@ -43,6 +43,7 @@ import {
   fetchProposal,
   updateConfig,
 } from "~/api/software";
+import { QueryHookOptions } from "~/types/queries";
 
 /**
  * Query to retrieve software configuration

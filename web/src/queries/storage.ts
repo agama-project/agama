@@ -53,7 +53,8 @@ import {
   Volume,
   VolumeTarget,
 } from "~/types/storage";
-import { refresh } from "~/api/storage";
+
+import { QueryHookOptions } from "~/types/queries";
 
 const devicesQuery = (scope: "result" | "system") => ({
   queryKey: ["storage", "devices", scope],

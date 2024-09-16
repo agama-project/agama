@@ -778,11 +778,6 @@ export type PartitionsFieldProps = {
   onVolumesChange: (volumes: Volume[]) => void;
 };
 
-type BootConfig = {
-  configureBoot: boolean;
-  bootDevice: StorageDevice | undefined;
-};
-
 /**
  * @todo This component should be restructured to use the same approach as other newer components:
  *  * Use a TreeTable, specially if we need to represent subvolumes.

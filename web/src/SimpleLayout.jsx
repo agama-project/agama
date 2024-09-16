@@ -31,7 +31,6 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import { InstallerOptions } from "./components/core";
-import { _ } from "~/i18n";
 import { Loading } from "./components/layout";
 
 /**

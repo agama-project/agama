@@ -70,7 +70,7 @@ describe("#rebootSystem", () => {
   });
 
   it("returns whether the system reboot command was called or not", async () => {
-    const reboot = await client.finishInstallation();
+    await client.finishInstallation();
     expect(mockPostFn).toHaveBeenCalledWith("/manager/finish", {});
   });
 });

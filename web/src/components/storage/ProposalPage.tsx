@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page, Drawer } from "~/components/core/";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";

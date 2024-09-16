@@ -72,8 +72,6 @@ export default function Section({
   path,
   loading,
   className,
-  id,
-  errors,
   children,
   "aria-label": ariaLabel,
 }) {

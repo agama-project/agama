@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState } from "react";
 import { Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { FormReadOnlyField, Popup } from "~/components/core";
@@ -29,8 +27,6 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, volumeLabel } from "~/components/storage/utils";
 import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
-
-type LocationOption = "auto" | "device" | "reuse";
 
 // TRANSLATORS: Description of the dialog for changing the location of a file system.
 const DIALOG_DESCRIPTION = _(
