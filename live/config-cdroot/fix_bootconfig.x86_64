@@ -1,0 +1,110 @@
+#! /bin/bash
+
+# Custom menu to ensure that we boot correctly
+# from local disk on UEFI
+# https://github.com/openSUSE/agama/issues/1609
+# KIWI config
+
+dst="$1"
+
+if [ ! -d "$dst" ] ; then
+  echo "fix_bootconfig.x86_64: image dir \"$dst\" not found"
+  exit 1
+fi
+
+# KIWI config which should normally be inherited
+# from a parent process in our case xorriso
+# but that's not the case.
+test -f $dst/.profile && . $dst/.profile
+
+#
+# Create grub.cfg
+#
+cat >$dst/boot/grub2/grub.cfg <<XXX
+# kiwi generated one time grub2 config file
+set btrfs_relative_path="y"
+export btrfs_relative_path
+search --file --set=root /boot/0xebe87947
+set default=0
+if [ -n "\$extra_cmdline" ]; then
+  submenu "Bootable snapshot \$snapshot_num" {
+    menuentry "If OK, run snapper rollback and reboot." { true; }
+  }
+fi
+if [ -n "\${iso_path}" ]; then
+    isoboot="iso-scan/filename=\${iso_path}"
+fi
+set timeout=10
+set timeout_style=menu
+if [ "\${grub_platform}" = "efi" ]; then
+    echo "Please press 't' to show the boot menu on this console"
+fi
+set gfxmode=auto
+set font=(\$root)/boot/x86_64/loader/grub2/fonts/unicode.pf2
+set ascii_font=grub2/themes/openSUSE/ascii.pf2
+set sans_bold_14_font=grub2/themes/openSUSE/DejaVuSans-Bold14.pf2
+set sans_10_font=grub2/themes/openSUSE/DejaVuSans10.pf2
+set sans_12_font=grub2/themes/openSUSE/DejaVuSans12.pf2
+if [ -f \${font} ];then
+    loadfont \${font}
+fi
+if [ -f (\$root)/boot/\${ascii_font} ];then
+    loadfont (\$root)/boot/\${ascii_font}
+fi
+if [ -f (\$root)/boot/\${sans_bold_14_font} ];then
+    loadfont (\$root)/boot/\${sans_bold_14_font}
+fi
+if [ -f (\$root)/boot/\${sans_10_font} ];then
+    loadfont (\$root)/boot/\${sans_10_font}
+fi
+if [ -f (\$root)/boot/\${sans_12_font} ];then
+    loadfont (\$root)/boot/\${sans_12_font}
+fi
+if [ -f (\$root)/boot/grub2/themes/openSUSE/theme.txt ];then
+    set theme=(\$root)/boot/grub2/themes/openSUSE/theme.txt
+fi
+terminal_input console
+terminal_output gfxterm
+menuentry "$kiwi_iname" --class os --unrestricted {
+    set gfxpayload=keep
+    echo Loading kernel...
+    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot}
+    echo Loading initrd...
+    initrd (\$root)/boot/x86_64/loader/initrd
+}
+menuentry "Failsafe -- $kiwi_iname" --class os --unrestricted {
+    set gfxpayload=keep
+    echo Loading kernel...
+    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot}   ide=nodma apm=off noresume edd=off nomodeset 3
+    echo Loading initrd...
+    initrd (\$root)/boot/x86_64/loader/initrd
+}
+menuentry "Mediacheck" --class os --unrestricted {
+    set gfxpayload=keep
+    echo Loading kernel...
+    linux (\$root)/boot/x86_64/loader/linux mediacheck=1 plymouth.enable=0 \${isoboot}
+    echo Loading initrd...
+    initrd (\$root)/boot/x86_64/loader/initrd
+}
+menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu --class os {
+  if search --no-floppy --file /efi/boot/fallback.efi --set ; then
+    for os in opensuse sles leap; do
+      if [ -f /efi/\$os/grub.efi ] ; then
+        chainloader /efi/\$os/grub.efi
+        boot
+      fi
+    done
+  fi
+  exit
+}
+if [ -f "/.snapshots/grub-snapshot.cfg" ]; then
+    source "/.snapshots/grub-snapshot.cfg"
+fi
+if [ "\${grub_platform}" = "efi" ]; then
+    hiddenentry "Text mode" --hotkey "t" {
+        set textmode=true
+        terminal_output console
+    }
+fi
+XXX
+
