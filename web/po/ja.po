@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-08 02:38+0000\n"
+"POT-Creation-Date: 2024-09-15 02:43+0000\n"
 "PO-Revision-Date: 2024-07-25 08:46+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -123,7 +123,7 @@ msgstr "インストーラのオプション"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:55
+#: src/components/l10n/L10nPage.jsx:48
 msgid "Language"
 msgstr "言語"
 
@@ -138,7 +138,6 @@ msgstr "リモートインストールの場合は変更できません"
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/storage/ZFCPPage.jsx:528
-#: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
 msgstr "受け入れる"
 
@@ -150,62 +149,6 @@ msgstr "インストールを開始する前に、下記の問題に対応する
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
 msgstr "検索"
-
-#: src/components/core/LoginPage.jsx:64
-msgid "Could not log in. Please, make sure that the password is correct."
-msgstr ""
-"ログインできませんでした。入力したパスワードが正しいかどうか、もう一度ご確認"
-"ください。"
-
-#: src/components/core/LoginPage.jsx:66
-msgid "Could not authenticate against the server, please check it."
-msgstr "サーバに対して認証できませんでした。ご確認ください。"
-
-#. TRANSLATORS: Title for a form to provide the password for the root user. %s
-#. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:74
-#, c-format
-msgid "Log in as %s"
-msgstr "%s としてログイン"
-
-#: src/components/core/LoginPage.jsx:80
-msgid "The installer requires [root] user privileges."
-msgstr "インストーラを使用するには [root] 権限が必要です。"
-
-#: src/components/core/LoginPage.jsx:95
-msgid "Please, provide its password to log in to the system."
-msgstr "システムにログインするためのパスワードを入力してください。"
-
-#: src/components/core/LoginPage.jsx:96
-msgid "Login form"
-msgstr "ログインフォーム"
-
-#: src/components/core/LoginPage.jsx:102
-msgid "Password input"
-msgstr "パスワード入力"
-
-#: src/components/core/LoginPage.jsx:111
-msgid "Log in"
-msgstr "ログイン"
-
-#: src/components/core/LoginPage.jsx:118
-msgid "More about this"
-msgstr "こちらについて詳しく"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:55
-msgid "Passwords do not match"
-msgstr "パスワードが合致しません"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/storage/iscsi/AuthFields.jsx:90
-#: src/components/storage/iscsi/AuthFields.jsx:94
-#: src/components/users/RootAuthMethods.jsx:130
-msgid "Password"
-msgstr "パスワード"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:90
-msgid "Password confirmation"
-msgstr "パスワードの確認"
 
 #: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
@@ -252,74 +195,33 @@ msgstr "問題なく動作しているかどうかご確認ください。"
 msgid "Reload"
 msgstr "再読み込み"
 
-#: src/components/l10n/KeyboardSelection.jsx:41
-msgid "Filter by description or keymap code"
-msgstr "説明またはキーマップコードでフィルタ"
-
-#: src/components/l10n/KeyboardSelection.jsx:71
-msgid "None of the keymaps match the filter."
-msgstr "フィルタに該当するキーマップがありません。"
-
-#: src/components/l10n/KeyboardSelection.jsx:77
-msgid "Keyboard selection"
-msgstr "キーボードの選択"
-
-#: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/l10n/LocaleSelection.jsx:92
-#: src/components/l10n/TimezoneSelection.jsx:125
-msgid "Select"
-msgstr "選択"
-
-#: src/components/l10n/L10nPage.jsx:48
+#: src/components/l10n/L10nPage.jsx:41
 #: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr "ローカライゼーション"
 
-#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
-#: src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:49 src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:71
 msgid "Not selected yet"
 msgstr "まだ何も選択していません"
 
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Change"
 msgstr "変更"
 
-#: src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+msgid "Select"
+msgstr "選択"
+
+#: src/components/l10n/L10nPage.jsx:59
 msgid "Keyboard"
 msgstr "キーボード"
 
-#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/L10nPage.jsx:70
 msgid "Time zone"
 msgstr "タイムゾーン"
-
-#: src/components/l10n/LocaleSelection.jsx:39
-msgid "Filter by language, territory or locale code"
-msgstr "言語／地域／ロケールコードでフィルタ"
-
-#: src/components/l10n/LocaleSelection.jsx:72
-msgid "None of the locales match the filter."
-msgstr "フィルタに該当するロケールがありません。"
-
-#: src/components/l10n/LocaleSelection.jsx:78
-msgid "Locale selection"
-msgstr "ロケールの選択"
-
-#: src/components/l10n/TimezoneSelection.jsx:64
-msgid "Filter by territory, time zone code or UTC offset"
-msgstr "地域／タイムゾーンコード／UTC オフセット値でフィルタ"
-
-#: src/components/l10n/TimezoneSelection.jsx:101
-msgid "None of the time zones match the filter."
-msgstr "フィルタに該当するタイムゾーンがありません。"
-
-#: src/components/l10n/TimezoneSelection.jsx:107
-msgid " Timezone selection"
-msgstr " タイムゾーンの選択"
 
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
@@ -331,46 +233,6 @@ msgstr "インストール環境を読み込んでいます。しばらくお待
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "システムは %s を既定の言語として使用します。"
-
-#: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:35
-msgid "Users"
-msgstr "ユーザ"
-
-#: src/components/overview/OverviewPage.jsx:50
-#: src/components/overview/StorageSection.jsx:111
-msgid "Storage"
-msgstr "ストレージ"
-
-#: src/components/overview/OverviewPage.jsx:51
-msgid "Software"
-msgstr "ソフトウエア"
-
-#: src/components/overview/OverviewPage.jsx:56
-msgid "Ready for installation"
-msgstr "インストールの準備完了"
-
-#: src/components/overview/OverviewPage.jsx:102
-msgid "Installation"
-msgstr "インストール"
-
-#: src/components/overview/OverviewPage.jsx:103
-msgid "Before installing, please check the following problems."
-msgstr "インストールを行う前に、下記の問題点をご確認ください。"
-
-#: src/components/overview/OverviewPage.jsx:114
-msgid ""
-"Take your time to check your configuration before starting the installation "
-"process."
-msgstr "インストール処理を開始する前に、設定内容をよくご確認ください。"
-
-#: src/components/overview/OverviewPage.jsx:123
-msgid ""
-"These are the most relevant installation settings. Feel free to browse the "
-"sections in the menu for further details."
-msgstr ""
-"インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を確"
-"認したい場合は、それぞれのセクションを開いてください。"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -440,6 +302,10 @@ msgstr ""
 "%s 内での必要な領域検出に際して独自の方式を利用し、新しく論理ボリュームマネー"
 "ジャのボリュームグループを作成してインストールします"
 
+#: src/components/overview/StorageSection.jsx:111
+msgid "Storage"
+msgstr "ストレージ"
+
 #: src/components/overview/StorageSection.jsx:179
 msgid "No device selected yet"
 msgstr "まだ何もデバイスを選択していません"
@@ -499,9 +365,7 @@ msgid "iSCSI"
 msgstr "iSCSI"
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
 #: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
 msgid "Something went wrong"
 msgstr "何らかの問題が発生しました"
 
@@ -527,11 +391,9 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
-#. TRANSLATORS: table header
 #: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
 msgid "Status"
 msgstr "状態"
 
@@ -548,14 +410,12 @@ msgid "Deactivated"
 msgstr "無効"
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "No"
 msgstr "いいえ"
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "Yes"
 msgstr "はい"
 
@@ -563,13 +423,9 @@ msgstr "はい"
 msgid "Activate"
 msgstr "有効化"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
 msgid "Name"
 msgstr "名前"
 
@@ -656,6 +512,11 @@ msgstr "ユーザ名"
 msgid "Incorrect user name"
 msgstr "ユーザ名が正しくありません"
 
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+msgid "Password"
+msgstr "パスワード"
+
 #: src/components/storage/iscsi/AuthFields.jsx:99
 #: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
@@ -669,90 +530,15 @@ msgstr "イニシエータによる認証"
 msgid "Target Password"
 msgstr "ターゲットのパスワード"
 
-#. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:94
-msgid "Discover iSCSI Targets"
-msgstr "iSCSI ターゲットの検出"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:99
-#: src/components/storage/iscsi/LoginForm.jsx:70
-msgid "Make sure you provide the correct values"
-msgstr "正しい値を設定しているかどうかご確認ください"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:103
-msgid "IP address"
-msgstr "IP アドレス"
-
-#. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
-msgid "Address"
-msgstr "アドレス"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
-msgid "Incorrect IP address"
-msgstr "IP アドレスが正しくありません"
-
-#. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:117
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
-msgid "Port"
-msgstr "ポート"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
-msgid "Incorrect port"
-msgstr "ポートが正しくありません"
-
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:48
-#, c-format
-msgid "Edit %s"
-msgstr "%s の編集"
-
-#: src/components/storage/iscsi/InitiatorForm.jsx:42
-msgid "Edit iSCSI Initiator"
-msgstr "iSCSI イニシエータの編集"
-
-#. TRANSLATORS: iSCSI initiator name
-#: src/components/storage/iscsi/InitiatorForm.jsx:49
-msgid "Initiator name"
-msgstr "イニシエータ名"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "編集"
-
-#. TRANSLATORS: usually just keep the original text
-#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:86
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-#: src/components/storage/iscsi/NodesPresenter.jsx:122
-msgid "iBFT"
-msgstr "iBFT"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr "無し"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:87
-msgid "Offload card"
-msgstr "オフロードカード"
-
-#. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:49
-msgid "Initiator"
-msgstr "イニシエータ"
-
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
 msgstr "%s にログイン"
+
+#: src/components/storage/iscsi/LoginForm.jsx:70
+msgid "Make sure you provide the correct values"
+msgstr "正しい値を設定しているかどうかご確認ください"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:74
@@ -773,191 +559,46 @@ msgid "Automatic"
 msgstr "自動"
 
 #. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
+#: src/components/storage/iscsi/NodesPresenter.jsx:64
 msgid "Disconnected"
 msgstr "切断済み"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
-#: src/components/storage/iscsi/NodesPresenter.jsx:67
+#: src/components/storage/iscsi/NodesPresenter.jsx:68
 #, c-format
 msgid "Connected (%s)"
 msgstr "接続済み (%s)"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
+#: src/components/storage/iscsi/NodesPresenter.jsx:74
+msgid "Edit"
+msgstr "編集"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:78
 msgid "Delete"
 msgstr "削除"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:82
+#: src/components/storage/iscsi/NodesPresenter.jsx:83
 msgid "Login"
 msgstr "ログイン"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:86
+#: src/components/storage/iscsi/NodesPresenter.jsx:87
 msgid "Logout"
 msgstr "ログアウト"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:99
-#: src/components/storage/iscsi/NodesPresenter.jsx:120
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Portal"
 msgstr "ポータル"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:100
-#: src/components/storage/iscsi/NodesPresenter.jsx:121
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Interface"
 msgstr "インターフェイス"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:138
-msgid "No iSCSI targets found."
-msgstr "iSCSI ターゲットが見つかりませんでした。"
-
-#: src/components/storage/iscsi/TargetsSection.jsx:140
-msgid ""
-"Please, perform an iSCSI discovery in order to find available iSCSI targets."
-msgstr ""
-"利用可能な iSCSI ターゲットを検出するため、 iSCSI 検索を実施してください。"
-
-#: src/components/storage/iscsi/TargetsSection.jsx:144
-msgid "Discover iSCSI targets"
-msgstr "iSCSI ターゲットの検索"
-
-#. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:156
-msgid "Discover"
-msgstr "検索"
-
-#. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
-msgid "Targets"
-msgstr "ターゲット"
-
-#: src/components/users/FirstUser.jsx:35
-msgid "No user defined yet."
-msgstr "ユーザを設定していません。"
-
-#: src/components/users/FirstUser.jsx:39
-msgid ""
-"Please, be aware that a user must be defined before installing the system to "
-"be able to log into it."
-msgstr ""
-"なお、システムにログインできるようにするには、インストールの前にユーザを設定"
-"しておかなければならないことに注意してください。"
-
-#: src/components/users/FirstUser.jsx:45
-msgid "Define a user now"
-msgstr "今すぐユーザを設定する"
-
-#: src/components/users/FirstUser.jsx:58
-#: src/components/users/FirstUserForm.jsx:217
-msgid "Full name"
-msgstr "フルネーム"
-
-#: src/components/users/FirstUser.jsx:59
-#: src/components/users/FirstUserForm.jsx:231
-#: src/components/users/FirstUserForm.jsx:236
-#: src/components/users/FirstUserForm.jsx:239
-msgid "Username"
-msgstr "ユーザ名"
-
-#: src/components/users/FirstUser.jsx:90
-#: src/components/users/RootAuthMethods.jsx:78
-#: src/components/users/RootAuthMethods.jsx:90
-msgid "Discard"
-msgstr "破棄"
-
-#: src/components/users/FirstUserForm.jsx:58
-msgid "Username suggestion dropdown"
-msgstr "ユーザ名の提案ドロップダウン"
-
-#. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:73
-msgid "Use suggested username"
-msgstr "提案されたユーザ名を使用する"
-
-#: src/components/users/FirstUserForm.jsx:144
-msgid "All fields are required"
-msgstr "全ての項目に入力する必要があります"
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Create user"
-msgstr "ユーザの作成"
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Edit user"
-msgstr "ユーザの編集"
-
-#: src/components/users/FirstUserForm.jsx:221
-#: src/components/users/FirstUserForm.jsx:223
-msgid "User full name"
-msgstr "ユーザのフルネーム"
-
-#: src/components/users/FirstUserForm.jsx:261
-msgid "Edit password too"
-msgstr "パスワードも編集する"
-
-#: src/components/users/FirstUserForm.jsx:277
-msgid "user autologin"
-msgstr "ユーザの自動ログイン"
-
-#. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:281
-msgid "Auto-login"
-msgstr "自動ログイン"
-
-#: src/components/users/RootAuthMethods.jsx:36
-msgid "No root authentication method defined yet."
-msgstr "まだ root 認証方式を設定していません。"
-
-#: src/components/users/RootAuthMethods.jsx:40
-msgid ""
-"Please, define at least one authentication method for logging into the "
-"system as root."
-msgstr "少なくとも 1 つ以上の root ログイン時の認証方式を設定してください。"
-
-#: src/components/users/RootAuthMethods.jsx:47
-msgid "Set a password"
-msgstr "パスワードの設定"
-
-#: src/components/users/RootAuthMethods.jsx:51
-msgid "Upload a SSH Public Key"
-msgstr "SSH 公開鍵のアップロード"
-
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
-msgid "Set"
-msgstr "設定"
-
-#: src/components/users/RootAuthMethods.jsx:97
-msgid "Already set"
-msgstr "設定済み"
-
-#: src/components/users/RootAuthMethods.jsx:97
-#: src/components/users/RootAuthMethods.jsx:101
-msgid "Not set"
-msgstr "未設定"
-
-#. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:122
-msgid "Method"
-msgstr "方式"
-
-#: src/components/users/RootAuthMethods.jsx:139
-msgid "SSH Key"
-msgstr "SSH 鍵"
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Change the root password"
-msgstr "root のパスワードを変更"
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Set a root password"
-msgstr "root のパスワードを設定"
-
-#: src/components/users/RootAuthMethods.jsx:168
-msgid "Edit the SSH Public Key for root"
-msgstr "root に対する SSH 公開鍵の編集"
-
-#: src/components/users/RootAuthMethods.jsx:169
-msgid "Add a SSH Public Key for root"
-msgstr "root に対する SSH 公開鍵の追加"
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "iBFT"
+msgstr "iBFT"
 
 #: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
@@ -985,17 +626,250 @@ msgstr "アップロード"
 msgid "Clear"
 msgstr "消去"
 
-#: src/components/users/UsersPage.jsx:44
-msgid "First user"
-msgstr "最初のユーザ"
-
-#: src/components/users/UsersPage.jsx:51
-msgid "Root authentication"
-msgstr "root の認証"
-
 #: src/router.js:48
 msgid "Overview"
 msgstr "概要"
+
+#~ msgid "Could not log in. Please, make sure that the password is correct."
+#~ msgstr ""
+#~ "ログインできませんでした。入力したパスワードが正しいかどうか、もう一度ご確"
+#~ "認ください。"
+
+#~ msgid "Could not authenticate against the server, please check it."
+#~ msgstr "サーバに対して認証できませんでした。ご確認ください。"
+
+#, c-format
+#~ msgid "Log in as %s"
+#~ msgstr "%s としてログイン"
+
+#~ msgid "The installer requires [root] user privileges."
+#~ msgstr "インストーラを使用するには [root] 権限が必要です。"
+
+#~ msgid "Please, provide its password to log in to the system."
+#~ msgstr "システムにログインするためのパスワードを入力してください。"
+
+#~ msgid "Login form"
+#~ msgstr "ログインフォーム"
+
+#~ msgid "Password input"
+#~ msgstr "パスワード入力"
+
+#~ msgid "Log in"
+#~ msgstr "ログイン"
+
+#~ msgid "More about this"
+#~ msgstr "こちらについて詳しく"
+
+#~ msgid "Passwords do not match"
+#~ msgstr "パスワードが合致しません"
+
+#~ msgid "Password confirmation"
+#~ msgstr "パスワードの確認"
+
+#~ msgid "Filter by description or keymap code"
+#~ msgstr "説明またはキーマップコードでフィルタ"
+
+#~ msgid "None of the keymaps match the filter."
+#~ msgstr "フィルタに該当するキーマップがありません。"
+
+#~ msgid "Keyboard selection"
+#~ msgstr "キーボードの選択"
+
+#~ msgid "Filter by language, territory or locale code"
+#~ msgstr "言語／地域／ロケールコードでフィルタ"
+
+#~ msgid "None of the locales match the filter."
+#~ msgstr "フィルタに該当するロケールがありません。"
+
+#~ msgid "Locale selection"
+#~ msgstr "ロケールの選択"
+
+#~ msgid "Filter by territory, time zone code or UTC offset"
+#~ msgstr "地域／タイムゾーンコード／UTC オフセット値でフィルタ"
+
+#~ msgid "None of the time zones match the filter."
+#~ msgstr "フィルタに該当するタイムゾーンがありません。"
+
+#~ msgid " Timezone selection"
+#~ msgstr " タイムゾーンの選択"
+
+#~ msgid "Users"
+#~ msgstr "ユーザ"
+
+#~ msgid "Software"
+#~ msgstr "ソフトウエア"
+
+#~ msgid "Ready for installation"
+#~ msgstr "インストールの準備完了"
+
+#~ msgid "Installation"
+#~ msgstr "インストール"
+
+#~ msgid "Before installing, please check the following problems."
+#~ msgstr "インストールを行う前に、下記の問題点をご確認ください。"
+
+#~ msgid ""
+#~ "Take your time to check your configuration before starting the "
+#~ "installation process."
+#~ msgstr "インストール処理を開始する前に、設定内容をよくご確認ください。"
+
+#~ msgid ""
+#~ "These are the most relevant installation settings. Feel free to browse "
+#~ "the sections in the menu for further details."
+#~ msgstr ""
+#~ "インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を"
+#~ "確認したい場合は、それぞれのセクションを開いてください。"
+
+#~ msgid "Discover iSCSI Targets"
+#~ msgstr "iSCSI ターゲットの検出"
+
+#~ msgid "IP address"
+#~ msgstr "IP アドレス"
+
+#~ msgid "Address"
+#~ msgstr "アドレス"
+
+#~ msgid "Incorrect IP address"
+#~ msgstr "IP アドレスが正しくありません"
+
+#~ msgid "Port"
+#~ msgstr "ポート"
+
+#~ msgid "Incorrect port"
+#~ msgstr "ポートが正しくありません"
+
+#, c-format
+#~ msgid "Edit %s"
+#~ msgstr "%s の編集"
+
+#~ msgid "Edit iSCSI Initiator"
+#~ msgstr "iSCSI イニシエータの編集"
+
+#~ msgid "Initiator name"
+#~ msgstr "イニシエータ名"
+
+#~ msgid "None"
+#~ msgstr "無し"
+
+#~ msgid "Offload card"
+#~ msgstr "オフロードカード"
+
+#~ msgid "Initiator"
+#~ msgstr "イニシエータ"
+
+#~ msgid "No iSCSI targets found."
+#~ msgstr "iSCSI ターゲットが見つかりませんでした。"
+
+#~ msgid ""
+#~ "Please, perform an iSCSI discovery in order to find available iSCSI "
+#~ "targets."
+#~ msgstr ""
+#~ "利用可能な iSCSI ターゲットを検出するため、 iSCSI 検索を実施してください。"
+
+#~ msgid "Discover iSCSI targets"
+#~ msgstr "iSCSI ターゲットの検索"
+
+#~ msgid "Discover"
+#~ msgstr "検索"
+
+#~ msgid "Targets"
+#~ msgstr "ターゲット"
+
+#~ msgid "No user defined yet."
+#~ msgstr "ユーザを設定していません。"
+
+#~ msgid ""
+#~ "Please, be aware that a user must be defined before installing the system "
+#~ "to be able to log into it."
+#~ msgstr ""
+#~ "なお、システムにログインできるようにするには、インストールの前にユーザを設"
+#~ "定しておかなければならないことに注意してください。"
+
+#~ msgid "Define a user now"
+#~ msgstr "今すぐユーザを設定する"
+
+#~ msgid "Full name"
+#~ msgstr "フルネーム"
+
+#~ msgid "Username"
+#~ msgstr "ユーザ名"
+
+#~ msgid "Discard"
+#~ msgstr "破棄"
+
+#~ msgid "Username suggestion dropdown"
+#~ msgstr "ユーザ名の提案ドロップダウン"
+
+#~ msgid "Use suggested username"
+#~ msgstr "提案されたユーザ名を使用する"
+
+#~ msgid "All fields are required"
+#~ msgstr "全ての項目に入力する必要があります"
+
+#~ msgid "Create user"
+#~ msgstr "ユーザの作成"
+
+#~ msgid "Edit user"
+#~ msgstr "ユーザの編集"
+
+#~ msgid "User full name"
+#~ msgstr "ユーザのフルネーム"
+
+#~ msgid "Edit password too"
+#~ msgstr "パスワードも編集する"
+
+#~ msgid "user autologin"
+#~ msgstr "ユーザの自動ログイン"
+
+#~ msgid "Auto-login"
+#~ msgstr "自動ログイン"
+
+#~ msgid "No root authentication method defined yet."
+#~ msgstr "まだ root 認証方式を設定していません。"
+
+#~ msgid ""
+#~ "Please, define at least one authentication method for logging into the "
+#~ "system as root."
+#~ msgstr "少なくとも 1 つ以上の root ログイン時の認証方式を設定してください。"
+
+#~ msgid "Set a password"
+#~ msgstr "パスワードの設定"
+
+#~ msgid "Upload a SSH Public Key"
+#~ msgstr "SSH 公開鍵のアップロード"
+
+#~ msgid "Set"
+#~ msgstr "設定"
+
+#~ msgid "Already set"
+#~ msgstr "設定済み"
+
+#~ msgid "Not set"
+#~ msgstr "未設定"
+
+#~ msgid "Method"
+#~ msgstr "方式"
+
+#~ msgid "SSH Key"
+#~ msgstr "SSH 鍵"
+
+#~ msgid "Change the root password"
+#~ msgstr "root のパスワードを変更"
+
+#~ msgid "Set a root password"
+#~ msgstr "root のパスワードを設定"
+
+#~ msgid "Edit the SSH Public Key for root"
+#~ msgstr "root に対する SSH 公開鍵の編集"
+
+#~ msgid "Add a SSH Public Key for root"
+#~ msgstr "root に対する SSH 公開鍵の追加"
+
+#~ msgid "First user"
+#~ msgstr "最初のユーザ"
+
+#~ msgid "Root authentication"
+#~ msgstr "root の認証"
 
 #~ msgid "Change boot options"
 #~ msgstr "起動オプションの変更"

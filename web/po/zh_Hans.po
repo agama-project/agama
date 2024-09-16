@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-08 02:38+0000\n"
+"POT-Creation-Date: 2024-09-15 02:43+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -115,7 +115,7 @@ msgstr "安装程序选项"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:55
+#: src/components/l10n/L10nPage.jsx:48
 msgid "Language"
 msgstr "语言"
 
@@ -130,7 +130,6 @@ msgstr "无法在远程安装中更改"
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/storage/ZFCPPage.jsx:528
-#: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
 msgstr "接受"
 
@@ -142,60 +141,6 @@ msgstr "在开始安装前，您需要解决下列问题："
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
 msgstr "搜索"
-
-#: src/components/core/LoginPage.jsx:64
-msgid "Could not log in. Please, make sure that the password is correct."
-msgstr "无法登录。请确保密码输入正确。"
-
-#: src/components/core/LoginPage.jsx:66
-msgid "Could not authenticate against the server, please check it."
-msgstr "无法对服务器进行身份验证，请检查。"
-
-#. TRANSLATORS: Title for a form to provide the password for the root user. %s
-#. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:74
-#, c-format
-msgid "Log in as %s"
-msgstr "登录为 %s"
-
-#: src/components/core/LoginPage.jsx:80
-msgid "The installer requires [root] user privileges."
-msgstr "安装程序要求 [root] 用户权限。"
-
-#: src/components/core/LoginPage.jsx:95
-msgid "Please, provide its password to log in to the system."
-msgstr "请提供其密码以登录系统。"
-
-#: src/components/core/LoginPage.jsx:96
-msgid "Login form"
-msgstr "登录表单"
-
-#: src/components/core/LoginPage.jsx:102
-msgid "Password input"
-msgstr "密码输入"
-
-#: src/components/core/LoginPage.jsx:111
-msgid "Log in"
-msgstr "登录"
-
-#: src/components/core/LoginPage.jsx:118
-msgid "More about this"
-msgstr "更多有关信息"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:55
-msgid "Passwords do not match"
-msgstr "密码不匹配"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/storage/iscsi/AuthFields.jsx:90
-#: src/components/storage/iscsi/AuthFields.jsx:94
-#: src/components/users/RootAuthMethods.jsx:130
-msgid "Password"
-msgstr "密码"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:90
-msgid "Password confirmation"
-msgstr "确认密码"
 
 #: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
@@ -242,74 +187,33 @@ msgstr "请检查它是否在运行。"
 msgid "Reload"
 msgstr "重载"
 
-#: src/components/l10n/KeyboardSelection.jsx:41
-msgid "Filter by description or keymap code"
-msgstr "按描述或键盘映射代码过滤"
-
-#: src/components/l10n/KeyboardSelection.jsx:71
-msgid "None of the keymaps match the filter."
-msgstr "没有符合此过滤器的键位映射。"
-
-#: src/components/l10n/KeyboardSelection.jsx:77
-msgid "Keyboard selection"
-msgstr "键盘选择"
-
-#: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/l10n/LocaleSelection.jsx:92
-#: src/components/l10n/TimezoneSelection.jsx:125
-msgid "Select"
-msgstr "选择"
-
-#: src/components/l10n/L10nPage.jsx:48
+#: src/components/l10n/L10nPage.jsx:41
 #: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr "本地化"
 
-#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
-#: src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:49 src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:71
 msgid "Not selected yet"
 msgstr "尚未选择"
 
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Change"
 msgstr "更改"
 
-#: src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+msgid "Select"
+msgstr "选择"
+
+#: src/components/l10n/L10nPage.jsx:59
 msgid "Keyboard"
 msgstr "键盘"
 
-#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/L10nPage.jsx:70
 msgid "Time zone"
 msgstr "时区"
-
-#: src/components/l10n/LocaleSelection.jsx:39
-msgid "Filter by language, territory or locale code"
-msgstr "按语言、地区或区域设定代码过滤"
-
-#: src/components/l10n/LocaleSelection.jsx:72
-msgid "None of the locales match the filter."
-msgstr "没有符合过滤器的区域设置。"
-
-#: src/components/l10n/LocaleSelection.jsx:78
-msgid "Locale selection"
-msgstr "区域选择"
-
-#: src/components/l10n/TimezoneSelection.jsx:64
-msgid "Filter by territory, time zone code or UTC offset"
-msgstr "按地区、时区代码或 UTC 偏移量过滤"
-
-#: src/components/l10n/TimezoneSelection.jsx:101
-msgid "None of the time zones match the filter."
-msgstr "没有符合过滤器的时区。"
-
-#: src/components/l10n/TimezoneSelection.jsx:107
-msgid " Timezone selection"
-msgstr " 时区选择"
 
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
@@ -321,44 +225,6 @@ msgstr "正在载入安装环境，请稍候。"
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "系统会使用 %s 作为默认语言。"
-
-#: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:35
-msgid "Users"
-msgstr "用户"
-
-#: src/components/overview/OverviewPage.jsx:50
-#: src/components/overview/StorageSection.jsx:111
-msgid "Storage"
-msgstr "存储"
-
-#: src/components/overview/OverviewPage.jsx:51
-msgid "Software"
-msgstr "软件"
-
-#: src/components/overview/OverviewPage.jsx:56
-msgid "Ready for installation"
-msgstr "准备好安装"
-
-#: src/components/overview/OverviewPage.jsx:102
-msgid "Installation"
-msgstr "安装"
-
-#: src/components/overview/OverviewPage.jsx:103
-msgid "Before installing, please check the following problems."
-msgstr "进行安装之前，请检查下列问题。"
-
-#: src/components/overview/OverviewPage.jsx:114
-msgid ""
-"Take your time to check your configuration before starting the installation "
-"process."
-msgstr "开始安装进程前，请花些时间检查您的配置。"
-
-#: src/components/overview/OverviewPage.jsx:123
-msgid ""
-"These are the most relevant installation settings. Feel free to browse the "
-"sections in the menu for further details."
-msgstr "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -415,6 +281,10 @@ msgid ""
 msgstr ""
 "安装在 %s 上新建的逻辑卷管理 (LVM) 卷组中，并采用自定义策略寻找磁盘上的所需空"
 "间"
+
+#: src/components/overview/StorageSection.jsx:111
+msgid "Storage"
+msgstr "存储"
 
 #: src/components/overview/StorageSection.jsx:179
 msgid "No device selected yet"
@@ -473,9 +343,7 @@ msgid "iSCSI"
 msgstr "iSCSI"
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
 #: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
 msgid "Something went wrong"
 msgstr "出了点问题"
 
@@ -501,11 +369,9 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
-#. TRANSLATORS: table header
 #: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
 msgid "Status"
 msgstr "状态"
 
@@ -522,14 +388,12 @@ msgid "Deactivated"
 msgstr "已停用"
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "No"
 msgstr "否"
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "Yes"
 msgstr "是"
 
@@ -537,13 +401,9 @@ msgstr "是"
 msgid "Activate"
 msgstr "激活"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
 msgid "Name"
 msgstr "名称"
 
@@ -627,6 +487,11 @@ msgstr "用户名"
 msgid "Incorrect user name"
 msgstr "用户名不正确"
 
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+msgid "Password"
+msgstr "密码"
+
 #: src/components/storage/iscsi/AuthFields.jsx:99
 #: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
@@ -640,90 +505,15 @@ msgstr "发起者身份认证"
 msgid "Target Password"
 msgstr "目标密码"
 
-#. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:94
-msgid "Discover iSCSI Targets"
-msgstr "发现 iSCSI 目标"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:99
-#: src/components/storage/iscsi/LoginForm.jsx:70
-msgid "Make sure you provide the correct values"
-msgstr "确保提供了正确的值"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:103
-msgid "IP address"
-msgstr "IP 地址"
-
-#. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
-msgid "Address"
-msgstr "地址"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
-msgid "Incorrect IP address"
-msgstr "不正确的 IP 地址"
-
-#. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:117
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
-msgid "Port"
-msgstr "端口"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
-msgid "Incorrect port"
-msgstr "不正确的端口"
-
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:48
-#, c-format
-msgid "Edit %s"
-msgstr "编辑 %s"
-
-#: src/components/storage/iscsi/InitiatorForm.jsx:42
-msgid "Edit iSCSI Initiator"
-msgstr "编辑 iSCSI 发起者"
-
-#. TRANSLATORS: iSCSI initiator name
-#: src/components/storage/iscsi/InitiatorForm.jsx:49
-msgid "Initiator name"
-msgstr "发起者名称"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "编辑"
-
-#. TRANSLATORS: usually just keep the original text
-#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:86
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-#: src/components/storage/iscsi/NodesPresenter.jsx:122
-msgid "iBFT"
-msgstr "iBFT"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr "无"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:87
-msgid "Offload card"
-msgstr "卸载卡"
-
-#. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:49
-msgid "Initiator"
-msgstr "发起者"
-
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
 msgstr "登录 %s"
+
+#: src/components/storage/iscsi/LoginForm.jsx:70
+msgid "Make sure you provide the correct values"
+msgstr "确保提供了正确的值"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:74
@@ -744,188 +534,46 @@ msgid "Automatic"
 msgstr "自动"
 
 #. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
+#: src/components/storage/iscsi/NodesPresenter.jsx:64
 msgid "Disconnected"
 msgstr "已断开连接"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
-#: src/components/storage/iscsi/NodesPresenter.jsx:67
+#: src/components/storage/iscsi/NodesPresenter.jsx:68
 #, c-format
 msgid "Connected (%s)"
 msgstr "已连接（%s）"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
+#: src/components/storage/iscsi/NodesPresenter.jsx:74
+msgid "Edit"
+msgstr "编辑"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:78
 msgid "Delete"
 msgstr "删除"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:82
+#: src/components/storage/iscsi/NodesPresenter.jsx:83
 msgid "Login"
 msgstr "登录"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:86
+#: src/components/storage/iscsi/NodesPresenter.jsx:87
 msgid "Logout"
 msgstr "登出"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:99
-#: src/components/storage/iscsi/NodesPresenter.jsx:120
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Portal"
 msgstr "门户"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:100
-#: src/components/storage/iscsi/NodesPresenter.jsx:121
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Interface"
 msgstr "界面"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:138
-msgid "No iSCSI targets found."
-msgstr "未找到 iSCSI 目标。"
-
-#: src/components/storage/iscsi/TargetsSection.jsx:140
-msgid ""
-"Please, perform an iSCSI discovery in order to find available iSCSI targets."
-msgstr "请执行 iSCSI 发现以查找可用的 iSCSI 目标。"
-
-#: src/components/storage/iscsi/TargetsSection.jsx:144
-msgid "Discover iSCSI targets"
-msgstr "发现 iSCSI 目标"
-
-#. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:156
-msgid "Discover"
-msgstr "发现"
-
-#. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
-msgid "Targets"
-msgstr "目标"
-
-#: src/components/users/FirstUser.jsx:35
-msgid "No user defined yet."
-msgstr "尚未设定用户。"
-
-#: src/components/users/FirstUser.jsx:39
-msgid ""
-"Please, be aware that a user must be defined before installing the system to "
-"be able to log into it."
-msgstr "请注意，在安装系统前必须设定用户才能登录。"
-
-#: src/components/users/FirstUser.jsx:45
-msgid "Define a user now"
-msgstr "现在设定用户"
-
-#: src/components/users/FirstUser.jsx:58
-#: src/components/users/FirstUserForm.jsx:217
-msgid "Full name"
-msgstr "全名"
-
-#: src/components/users/FirstUser.jsx:59
-#: src/components/users/FirstUserForm.jsx:231
-#: src/components/users/FirstUserForm.jsx:236
-#: src/components/users/FirstUserForm.jsx:239
-msgid "Username"
-msgstr "用户名"
-
-#: src/components/users/FirstUser.jsx:90
-#: src/components/users/RootAuthMethods.jsx:78
-#: src/components/users/RootAuthMethods.jsx:90
-msgid "Discard"
-msgstr "丢弃"
-
-#: src/components/users/FirstUserForm.jsx:58
-msgid "Username suggestion dropdown"
-msgstr "建议用户名下拉列表"
-
-#. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:73
-msgid "Use suggested username"
-msgstr "使用建议的用户名"
-
-#: src/components/users/FirstUserForm.jsx:144
-msgid "All fields are required"
-msgstr "需要填写全部字段"
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Create user"
-msgstr "创建用户"
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Edit user"
-msgstr "编辑用户"
-
-#: src/components/users/FirstUserForm.jsx:221
-#: src/components/users/FirstUserForm.jsx:223
-msgid "User full name"
-msgstr "用户全名"
-
-#: src/components/users/FirstUserForm.jsx:261
-msgid "Edit password too"
-msgstr "同时编辑密码"
-
-#: src/components/users/FirstUserForm.jsx:277
-msgid "user autologin"
-msgstr "用户自动登录"
-
-#. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:281
-msgid "Auto-login"
-msgstr "自动登录"
-
-#: src/components/users/RootAuthMethods.jsx:36
-msgid "No root authentication method defined yet."
-msgstr "尚未设定 Root 认证方法。"
-
-#: src/components/users/RootAuthMethods.jsx:40
-msgid ""
-"Please, define at least one authentication method for logging into the "
-"system as root."
-msgstr "请至少设定一个认证方法，以使用 Root 身份登录系统。"
-
-#: src/components/users/RootAuthMethods.jsx:47
-msgid "Set a password"
-msgstr "设置密码"
-
-#: src/components/users/RootAuthMethods.jsx:51
-msgid "Upload a SSH Public Key"
-msgstr "上传 SSH 公钥"
-
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
-msgid "Set"
-msgstr "设置"
-
-#: src/components/users/RootAuthMethods.jsx:97
-msgid "Already set"
-msgstr "已设定"
-
-#: src/components/users/RootAuthMethods.jsx:97
-#: src/components/users/RootAuthMethods.jsx:101
-msgid "Not set"
-msgstr "未设定"
-
-#. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:122
-msgid "Method"
-msgstr "方法"
-
-#: src/components/users/RootAuthMethods.jsx:139
-msgid "SSH Key"
-msgstr "SSH 密钥"
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Change the root password"
-msgstr "修改 Root 密码"
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Set a root password"
-msgstr "设定 Root 密码"
-
-#: src/components/users/RootAuthMethods.jsx:168
-msgid "Edit the SSH Public Key for root"
-msgstr "编辑 root 的 SSH 公钥"
-
-#: src/components/users/RootAuthMethods.jsx:169
-msgid "Add a SSH Public Key for root"
-msgstr "为 root 添加 SSH 公钥"
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "iBFT"
+msgstr "iBFT"
 
 #: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
@@ -953,17 +601,244 @@ msgstr "上传"
 msgid "Clear"
 msgstr "清除"
 
-#: src/components/users/UsersPage.jsx:44
-msgid "First user"
-msgstr "首个用户"
-
-#: src/components/users/UsersPage.jsx:51
-msgid "Root authentication"
-msgstr "Root 认证"
-
 #: src/router.js:48
 msgid "Overview"
 msgstr "概览"
+
+#~ msgid "Could not log in. Please, make sure that the password is correct."
+#~ msgstr "无法登录。请确保密码输入正确。"
+
+#~ msgid "Could not authenticate against the server, please check it."
+#~ msgstr "无法对服务器进行身份验证，请检查。"
+
+#, c-format
+#~ msgid "Log in as %s"
+#~ msgstr "登录为 %s"
+
+#~ msgid "The installer requires [root] user privileges."
+#~ msgstr "安装程序要求 [root] 用户权限。"
+
+#~ msgid "Please, provide its password to log in to the system."
+#~ msgstr "请提供其密码以登录系统。"
+
+#~ msgid "Login form"
+#~ msgstr "登录表单"
+
+#~ msgid "Password input"
+#~ msgstr "密码输入"
+
+#~ msgid "Log in"
+#~ msgstr "登录"
+
+#~ msgid "More about this"
+#~ msgstr "更多有关信息"
+
+#~ msgid "Passwords do not match"
+#~ msgstr "密码不匹配"
+
+#~ msgid "Password confirmation"
+#~ msgstr "确认密码"
+
+#~ msgid "Filter by description or keymap code"
+#~ msgstr "按描述或键盘映射代码过滤"
+
+#~ msgid "None of the keymaps match the filter."
+#~ msgstr "没有符合此过滤器的键位映射。"
+
+#~ msgid "Keyboard selection"
+#~ msgstr "键盘选择"
+
+#~ msgid "Filter by language, territory or locale code"
+#~ msgstr "按语言、地区或区域设定代码过滤"
+
+#~ msgid "None of the locales match the filter."
+#~ msgstr "没有符合过滤器的区域设置。"
+
+#~ msgid "Locale selection"
+#~ msgstr "区域选择"
+
+#~ msgid "Filter by territory, time zone code or UTC offset"
+#~ msgstr "按地区、时区代码或 UTC 偏移量过滤"
+
+#~ msgid "None of the time zones match the filter."
+#~ msgstr "没有符合过滤器的时区。"
+
+#~ msgid " Timezone selection"
+#~ msgstr " 时区选择"
+
+#~ msgid "Users"
+#~ msgstr "用户"
+
+#~ msgid "Software"
+#~ msgstr "软件"
+
+#~ msgid "Ready for installation"
+#~ msgstr "准备好安装"
+
+#~ msgid "Installation"
+#~ msgstr "安装"
+
+#~ msgid "Before installing, please check the following problems."
+#~ msgstr "进行安装之前，请检查下列问题。"
+
+#~ msgid ""
+#~ "Take your time to check your configuration before starting the "
+#~ "installation process."
+#~ msgstr "开始安装进程前，请花些时间检查您的配置。"
+
+#~ msgid ""
+#~ "These are the most relevant installation settings. Feel free to browse "
+#~ "the sections in the menu for further details."
+#~ msgstr ""
+#~ "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
+
+#~ msgid "Discover iSCSI Targets"
+#~ msgstr "发现 iSCSI 目标"
+
+#~ msgid "IP address"
+#~ msgstr "IP 地址"
+
+#~ msgid "Address"
+#~ msgstr "地址"
+
+#~ msgid "Incorrect IP address"
+#~ msgstr "不正确的 IP 地址"
+
+#~ msgid "Port"
+#~ msgstr "端口"
+
+#~ msgid "Incorrect port"
+#~ msgstr "不正确的端口"
+
+#, c-format
+#~ msgid "Edit %s"
+#~ msgstr "编辑 %s"
+
+#~ msgid "Edit iSCSI Initiator"
+#~ msgstr "编辑 iSCSI 发起者"
+
+#~ msgid "Initiator name"
+#~ msgstr "发起者名称"
+
+#~ msgid "None"
+#~ msgstr "无"
+
+#~ msgid "Offload card"
+#~ msgstr "卸载卡"
+
+#~ msgid "Initiator"
+#~ msgstr "发起者"
+
+#~ msgid "No iSCSI targets found."
+#~ msgstr "未找到 iSCSI 目标。"
+
+#~ msgid ""
+#~ "Please, perform an iSCSI discovery in order to find available iSCSI "
+#~ "targets."
+#~ msgstr "请执行 iSCSI 发现以查找可用的 iSCSI 目标。"
+
+#~ msgid "Discover iSCSI targets"
+#~ msgstr "发现 iSCSI 目标"
+
+#~ msgid "Discover"
+#~ msgstr "发现"
+
+#~ msgid "Targets"
+#~ msgstr "目标"
+
+#~ msgid "No user defined yet."
+#~ msgstr "尚未设定用户。"
+
+#~ msgid ""
+#~ "Please, be aware that a user must be defined before installing the system "
+#~ "to be able to log into it."
+#~ msgstr "请注意，在安装系统前必须设定用户才能登录。"
+
+#~ msgid "Define a user now"
+#~ msgstr "现在设定用户"
+
+#~ msgid "Full name"
+#~ msgstr "全名"
+
+#~ msgid "Username"
+#~ msgstr "用户名"
+
+#~ msgid "Discard"
+#~ msgstr "丢弃"
+
+#~ msgid "Username suggestion dropdown"
+#~ msgstr "建议用户名下拉列表"
+
+#~ msgid "Use suggested username"
+#~ msgstr "使用建议的用户名"
+
+#~ msgid "All fields are required"
+#~ msgstr "需要填写全部字段"
+
+#~ msgid "Create user"
+#~ msgstr "创建用户"
+
+#~ msgid "Edit user"
+#~ msgstr "编辑用户"
+
+#~ msgid "User full name"
+#~ msgstr "用户全名"
+
+#~ msgid "Edit password too"
+#~ msgstr "同时编辑密码"
+
+#~ msgid "user autologin"
+#~ msgstr "用户自动登录"
+
+#~ msgid "Auto-login"
+#~ msgstr "自动登录"
+
+#~ msgid "No root authentication method defined yet."
+#~ msgstr "尚未设定 Root 认证方法。"
+
+#~ msgid ""
+#~ "Please, define at least one authentication method for logging into the "
+#~ "system as root."
+#~ msgstr "请至少设定一个认证方法，以使用 Root 身份登录系统。"
+
+#~ msgid "Set a password"
+#~ msgstr "设置密码"
+
+#~ msgid "Upload a SSH Public Key"
+#~ msgstr "上传 SSH 公钥"
+
+#~ msgid "Set"
+#~ msgstr "设置"
+
+#~ msgid "Already set"
+#~ msgstr "已设定"
+
+#~ msgid "Not set"
+#~ msgstr "未设定"
+
+#~ msgid "Method"
+#~ msgstr "方法"
+
+#~ msgid "SSH Key"
+#~ msgstr "SSH 密钥"
+
+#~ msgid "Change the root password"
+#~ msgstr "修改 Root 密码"
+
+#~ msgid "Set a root password"
+#~ msgstr "设定 Root 密码"
+
+#~ msgid "Edit the SSH Public Key for root"
+#~ msgstr "编辑 root 的 SSH 公钥"
+
+#~ msgid "Add a SSH Public Key for root"
+#~ msgstr "为 root 添加 SSH 公钥"
+
+#~ msgid "First user"
+#~ msgstr "首个用户"
+
+#~ msgid "Root authentication"
+#~ msgstr "Root 认证"
 
 #~ msgid "Change boot options"
 #~ msgstr "更改启动选项"

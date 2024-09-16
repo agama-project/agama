@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-08 02:38+0000\n"
+"POT-Creation-Date: 2024-09-15 02:43+0000\n"
 "PO-Revision-Date: 2024-08-29 19:47+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-web/de/"
@@ -125,7 +125,7 @@ msgstr "Installationsprogrammoptionen"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:55
+#: src/components/l10n/L10nPage.jsx:48
 msgid "Language"
 msgstr "Sprache"
 
@@ -140,7 +140,6 @@ msgstr "Kann bei der Ferninstallation nicht geändert werden"
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/storage/ZFCPPage.jsx:528
-#: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
 msgstr "Annehmen"
 
@@ -154,63 +153,6 @@ msgstr ""
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
 msgstr "Suchen"
-
-#: src/components/core/LoginPage.jsx:64
-msgid "Could not log in. Please, make sure that the password is correct."
-msgstr ""
-"Die Anmeldung ist fehlgeschlagen. Bitte stellen Sie sicher, dass das "
-"Passwort korrekt ist."
-
-#: src/components/core/LoginPage.jsx:66
-msgid "Could not authenticate against the server, please check it."
-msgstr ""
-"Der Server konnte nicht authentifiziert werden, bitte überprüfen Sie dies."
-
-#. TRANSLATORS: Title for a form to provide the password for the root user. %s
-#. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:74
-#, c-format
-msgid "Log in as %s"
-msgstr "Als %s anmelden"
-
-#: src/components/core/LoginPage.jsx:80
-msgid "The installer requires [root] user privileges."
-msgstr "Das Installationsprogramm erfordert [root]-Benutzerrechte."
-
-#: src/components/core/LoginPage.jsx:95
-msgid "Please, provide its password to log in to the system."
-msgstr "Bitte geben Sie das Passwort für die Anmeldung am System an."
-
-#: src/components/core/LoginPage.jsx:96
-msgid "Login form"
-msgstr "Anmeldeformular"
-
-#: src/components/core/LoginPage.jsx:102
-msgid "Password input"
-msgstr "Passworteingabe"
-
-#: src/components/core/LoginPage.jsx:111
-msgid "Log in"
-msgstr "Anmelden"
-
-#: src/components/core/LoginPage.jsx:118
-msgid "More about this"
-msgstr "Mehr dazu"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:55
-msgid "Passwords do not match"
-msgstr "Passwörter stimmen nicht überein"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/storage/iscsi/AuthFields.jsx:90
-#: src/components/storage/iscsi/AuthFields.jsx:94
-#: src/components/users/RootAuthMethods.jsx:130
-msgid "Password"
-msgstr "Passwort"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:90
-msgid "Password confirmation"
-msgstr "Passwort bestätigen"
 
 #: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
@@ -257,74 +199,33 @@ msgstr "Bitte prüfen Sie, ob es läuft."
 msgid "Reload"
 msgstr "Neu laden"
 
-#: src/components/l10n/KeyboardSelection.jsx:41
-msgid "Filter by description or keymap code"
-msgstr "Nach Beschreibung oder Tastenzuordnungscode filtern"
-
-#: src/components/l10n/KeyboardSelection.jsx:71
-msgid "None of the keymaps match the filter."
-msgstr "Keine der Tastenzuordnungen entspricht dem Filter."
-
-#: src/components/l10n/KeyboardSelection.jsx:77
-msgid "Keyboard selection"
-msgstr "Tastaturauswahl"
-
-#: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/l10n/LocaleSelection.jsx:92
-#: src/components/l10n/TimezoneSelection.jsx:125
-msgid "Select"
-msgstr "Auswählen"
-
-#: src/components/l10n/L10nPage.jsx:48
+#: src/components/l10n/L10nPage.jsx:41
 #: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr "Lokalisierung"
 
-#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
-#: src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:49 src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:71
 msgid "Not selected yet"
 msgstr "Noch nicht ausgewählt"
 
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Change"
 msgstr "Ändern"
 
-#: src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+msgid "Select"
+msgstr "Auswählen"
+
+#: src/components/l10n/L10nPage.jsx:59
 msgid "Keyboard"
 msgstr "Tastatur"
 
-#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/L10nPage.jsx:70
 msgid "Time zone"
 msgstr "Zeitzone"
-
-#: src/components/l10n/LocaleSelection.jsx:39
-msgid "Filter by language, territory or locale code"
-msgstr "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
-
-#: src/components/l10n/LocaleSelection.jsx:72
-msgid "None of the locales match the filter."
-msgstr "Keines der Gebietsschemata entspricht dem Filter."
-
-#: src/components/l10n/LocaleSelection.jsx:78
-msgid "Locale selection"
-msgstr "Gebietsschema-Auswahl"
-
-#: src/components/l10n/TimezoneSelection.jsx:64
-msgid "Filter by territory, time zone code or UTC offset"
-msgstr "Nach Gebiet, Zeitzonencode oder UTC-Abweichung filtern"
-
-#: src/components/l10n/TimezoneSelection.jsx:101
-msgid "None of the time zones match the filter."
-msgstr "Keine der Zeitzonen entspricht dem Filter."
-
-#: src/components/l10n/TimezoneSelection.jsx:107
-msgid " Timezone selection"
-msgstr " Zeitzonenauswahl"
 
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
@@ -336,48 +237,6 @@ msgstr "Installationsumgebung wird geladen, bitte warten."
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "Das System wird %s als Standardsprache verwenden."
-
-#: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:35
-msgid "Users"
-msgstr "Benutzer"
-
-#: src/components/overview/OverviewPage.jsx:50
-#: src/components/overview/StorageSection.jsx:111
-msgid "Storage"
-msgstr "Speicherung"
-
-#: src/components/overview/OverviewPage.jsx:51
-msgid "Software"
-msgstr "Software"
-
-#: src/components/overview/OverviewPage.jsx:56
-msgid "Ready for installation"
-msgstr "Bereit zur Installation"
-
-#: src/components/overview/OverviewPage.jsx:102
-msgid "Installation"
-msgstr "Installation"
-
-#: src/components/overview/OverviewPage.jsx:103
-msgid "Before installing, please check the following problems."
-msgstr "Bitte überprüfen Sie vor der Installation die folgenden Probleme."
-
-#: src/components/overview/OverviewPage.jsx:114
-msgid ""
-"Take your time to check your configuration before starting the installation "
-"process."
-msgstr ""
-"Nehmen Sie sich die Zeit, Ihre Konfiguration zu überprüfen, bevor Sie mit "
-"der Installation beginnen."
-
-#: src/components/overview/OverviewPage.jsx:123
-msgid ""
-"These are the most relevant installation settings. Feel free to browse the "
-"sections in the menu for further details."
-msgstr ""
-"Dies sind die wichtigsten Installationseinstellungen. Weitere Einzelheiten "
-"finden Sie in den Abschnitten des Menüs."
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -445,6 +304,10 @@ msgstr ""
 "%s unter Verwendung einer benutzerdefinierten Strategie, um den benötigten "
 "Platz zu finden"
 
+#: src/components/overview/StorageSection.jsx:111
+msgid "Storage"
+msgstr "Speicherung"
+
 #: src/components/overview/StorageSection.jsx:179
 msgid "No device selected yet"
 msgstr "Noch kein Gerät ausgewählt"
@@ -510,9 +373,7 @@ msgid "iSCSI"
 msgstr "iSCSI"
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
 #: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
 msgid "Something went wrong"
 msgstr "Etwas ist schiefgelaufen"
 
@@ -538,11 +399,9 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
-#. TRANSLATORS: table header
 #: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
 msgid "Status"
 msgstr "Status"
 
@@ -559,14 +418,12 @@ msgid "Deactivated"
 msgstr "Deaktiviert"
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "No"
 msgstr "Nein"
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "Yes"
 msgstr "Ja"
 
@@ -574,13 +431,9 @@ msgstr "Ja"
 msgid "Activate"
 msgstr "Aktivieren"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
 msgid "Name"
 msgstr "Name"
 
@@ -664,6 +517,11 @@ msgstr "Benutzername"
 msgid "Incorrect user name"
 msgstr "Falscher Benutzername"
 
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+msgid "Password"
+msgstr "Passwort"
+
 #: src/components/storage/iscsi/AuthFields.jsx:99
 #: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
@@ -677,91 +535,15 @@ msgstr "Authentifizierung durch den Initiator"
 msgid "Target Password"
 msgstr "Ziel-Passwort"
 
-#. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:94
-msgid "Discover iSCSI Targets"
-msgstr "iSCSI-Ziele erkennen"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:99
-#: src/components/storage/iscsi/LoginForm.jsx:70
-msgid "Make sure you provide the correct values"
-msgstr "Stellen Sie sicher, dass Sie die richtigen Werte angeben"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:103
-msgid "IP address"
-msgstr "IP-Adresse"
-
-#. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
-msgid "Address"
-msgstr "Adresse"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
-msgid "Incorrect IP address"
-msgstr "Falsche IP-Adresse"
-
-#. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:117
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
-msgid "Port"
-msgstr "Port"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
-msgid "Incorrect port"
-msgstr "Falscher Port"
-
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:48
-#, c-format
-msgid "Edit %s"
-msgstr "%s bearbeiten"
-
-#: src/components/storage/iscsi/InitiatorForm.jsx:42
-msgid "Edit iSCSI Initiator"
-msgstr "iSCSI-Initiator bearbeiten"
-
-#. TRANSLATORS: iSCSI initiator name
-#: src/components/storage/iscsi/InitiatorForm.jsx:49
-msgid "Initiator name"
-msgstr "Name des Initiators"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "Bearbeiten"
-
-#. TRANSLATORS: usually just keep the original text
-#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:86
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-#: src/components/storage/iscsi/NodesPresenter.jsx:122
-msgid "iBFT"
-msgstr "iBFT"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr "Kein"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:87
-#, fuzzy
-msgid "Offload card"
-msgstr "Karte entladen"
-
-#. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:49
-msgid "Initiator"
-msgstr "Initiator"
-
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
 msgstr "%s anmelden"
+
+#: src/components/storage/iscsi/LoginForm.jsx:70
+msgid "Make sure you provide the correct values"
+msgstr "Stellen Sie sicher, dass Sie die richtigen Werte angeben"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:74
@@ -783,194 +565,46 @@ msgid "Automatic"
 msgstr "Automatisch"
 
 #. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
+#: src/components/storage/iscsi/NodesPresenter.jsx:64
 msgid "Disconnected"
 msgstr "Getrennt"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
-#: src/components/storage/iscsi/NodesPresenter.jsx:67
+#: src/components/storage/iscsi/NodesPresenter.jsx:68
 #, c-format
 msgid "Connected (%s)"
 msgstr "Verbunden (%s)"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
+#: src/components/storage/iscsi/NodesPresenter.jsx:74
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:78
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:82
+#: src/components/storage/iscsi/NodesPresenter.jsx:83
 msgid "Login"
 msgstr "Anmelden"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:86
+#: src/components/storage/iscsi/NodesPresenter.jsx:87
 msgid "Logout"
 msgstr "Abmelden"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:99
-#: src/components/storage/iscsi/NodesPresenter.jsx:120
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Portal"
 msgstr "Portal"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:100
-#: src/components/storage/iscsi/NodesPresenter.jsx:121
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Interface"
 msgstr "Schnittstelle"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:138
-msgid "No iSCSI targets found."
-msgstr "Keine iSCSI-Ziele gefunden."
-
-#: src/components/storage/iscsi/TargetsSection.jsx:140
-msgid ""
-"Please, perform an iSCSI discovery in order to find available iSCSI targets."
-msgstr ""
-"Bitte führen Sie eine iSCSI-Erkennung durch, um verfügbare iSCSI-Ziele zu "
-"finden."
-
-#: src/components/storage/iscsi/TargetsSection.jsx:144
-msgid "Discover iSCSI targets"
-msgstr "iSCSI-Ziele erkennen"
-
-#. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:156
-msgid "Discover"
-msgstr "Erkennen"
-
-#. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
-msgid "Targets"
-msgstr "Ziele"
-
-#: src/components/users/FirstUser.jsx:35
-msgid "No user defined yet."
-msgstr "Noch kein Benutzer definiert."
-
-#: src/components/users/FirstUser.jsx:39
-msgid ""
-"Please, be aware that a user must be defined before installing the system to "
-"be able to log into it."
-msgstr ""
-"Bitte beachten Sie, dass vor der Installation des Systems ein Benutzer "
-"definiert werden muss, um sich am System anmelden zu können."
-
-#: src/components/users/FirstUser.jsx:45
-msgid "Define a user now"
-msgstr "Definieren Sie jetzt einen Benutzer"
-
-#: src/components/users/FirstUser.jsx:58
-#: src/components/users/FirstUserForm.jsx:217
-msgid "Full name"
-msgstr "Vollständiger Name"
-
-#: src/components/users/FirstUser.jsx:59
-#: src/components/users/FirstUserForm.jsx:231
-#: src/components/users/FirstUserForm.jsx:236
-#: src/components/users/FirstUserForm.jsx:239
-msgid "Username"
-msgstr "Benutzername"
-
-#: src/components/users/FirstUser.jsx:90
-#: src/components/users/RootAuthMethods.jsx:78
-#: src/components/users/RootAuthMethods.jsx:90
-msgid "Discard"
-msgstr "Verwerfen"
-
-#: src/components/users/FirstUserForm.jsx:58
-msgid "Username suggestion dropdown"
-msgstr "Dropdown-Liste mit Vorschlägen für Benutzernamen"
-
-#. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:73
-msgid "Use suggested username"
-msgstr "Vorgeschlagenen Benutzernamen verwenden"
-
-#: src/components/users/FirstUserForm.jsx:144
-msgid "All fields are required"
-msgstr "Alle Felder sind erforderlich"
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Create user"
-msgstr "Benutzer erstellen"
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Edit user"
-msgstr "Benutzer bearbeiten"
-
-#: src/components/users/FirstUserForm.jsx:221
-#: src/components/users/FirstUserForm.jsx:223
-msgid "User full name"
-msgstr "Vollständiger Name des Benutzers"
-
-#: src/components/users/FirstUserForm.jsx:261
-msgid "Edit password too"
-msgstr "Auch Passwort bearbeiten"
-
-#: src/components/users/FirstUserForm.jsx:277
-msgid "user autologin"
-msgstr "Automatische Benutzeranmeldung"
-
-#. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:281
-msgid "Auto-login"
-msgstr "Automatisches Anmelden"
-
-#: src/components/users/RootAuthMethods.jsx:36
-msgid "No root authentication method defined yet."
-msgstr "Noch keine Root-Authentifizierungsmethode definiert."
-
-#: src/components/users/RootAuthMethods.jsx:40
-msgid ""
-"Please, define at least one authentication method for logging into the "
-"system as root."
-msgstr ""
-"Bitte definieren Sie mindestens eine Authentifizierungsmethode, um sich als "
-"root am System anmelden zu können."
-
-#: src/components/users/RootAuthMethods.jsx:47
-msgid "Set a password"
-msgstr "Passwort festlegen"
-
-#: src/components/users/RootAuthMethods.jsx:51
-msgid "Upload a SSH Public Key"
-msgstr "Öffentlichen SSH-Schlüssel hochladen"
-
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
-msgid "Set"
-msgstr "Festlegen"
-
-#: src/components/users/RootAuthMethods.jsx:97
-msgid "Already set"
-msgstr "Bereits festgelegt"
-
-#: src/components/users/RootAuthMethods.jsx:97
-#: src/components/users/RootAuthMethods.jsx:101
-msgid "Not set"
-msgstr "Nicht festgelegt"
-
-#. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:122
-msgid "Method"
-msgstr "Methode"
-
-#: src/components/users/RootAuthMethods.jsx:139
-msgid "SSH Key"
-msgstr "SSH-Schlüssel"
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Change the root password"
-msgstr "Root-Passwort ändern"
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Set a root password"
-msgstr "Root-Passwort festlegen"
-
-#: src/components/users/RootAuthMethods.jsx:168
-msgid "Edit the SSH Public Key for root"
-msgstr "Öffentlichen SSH-Schlüssel für root bearbeiten"
-
-#: src/components/users/RootAuthMethods.jsx:169
-msgid "Add a SSH Public Key for root"
-msgstr "Öffentlichen SSH-Schlüssel für root hinzufügen"
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "iBFT"
+msgstr "iBFT"
 
 #: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
@@ -998,17 +632,257 @@ msgstr "Hochladen"
 msgid "Clear"
 msgstr "Leeren"
 
-#: src/components/users/UsersPage.jsx:44
-msgid "First user"
-msgstr "Erster Benutzer"
-
-#: src/components/users/UsersPage.jsx:51
-msgid "Root authentication"
-msgstr "Root-Authentifizierung"
-
 #: src/router.js:48
 msgid "Overview"
 msgstr "Übersicht"
+
+#~ msgid "Could not log in. Please, make sure that the password is correct."
+#~ msgstr ""
+#~ "Die Anmeldung ist fehlgeschlagen. Bitte stellen Sie sicher, dass das "
+#~ "Passwort korrekt ist."
+
+#~ msgid "Could not authenticate against the server, please check it."
+#~ msgstr ""
+#~ "Der Server konnte nicht authentifiziert werden, bitte überprüfen Sie dies."
+
+#, c-format
+#~ msgid "Log in as %s"
+#~ msgstr "Als %s anmelden"
+
+#~ msgid "The installer requires [root] user privileges."
+#~ msgstr "Das Installationsprogramm erfordert [root]-Benutzerrechte."
+
+#~ msgid "Please, provide its password to log in to the system."
+#~ msgstr "Bitte geben Sie das Passwort für die Anmeldung am System an."
+
+#~ msgid "Login form"
+#~ msgstr "Anmeldeformular"
+
+#~ msgid "Password input"
+#~ msgstr "Passworteingabe"
+
+#~ msgid "Log in"
+#~ msgstr "Anmelden"
+
+#~ msgid "More about this"
+#~ msgstr "Mehr dazu"
+
+#~ msgid "Passwords do not match"
+#~ msgstr "Passwörter stimmen nicht überein"
+
+#~ msgid "Password confirmation"
+#~ msgstr "Passwort bestätigen"
+
+#~ msgid "Filter by description or keymap code"
+#~ msgstr "Nach Beschreibung oder Tastenzuordnungscode filtern"
+
+#~ msgid "None of the keymaps match the filter."
+#~ msgstr "Keine der Tastenzuordnungen entspricht dem Filter."
+
+#~ msgid "Keyboard selection"
+#~ msgstr "Tastaturauswahl"
+
+#~ msgid "Filter by language, territory or locale code"
+#~ msgstr "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
+
+#~ msgid "None of the locales match the filter."
+#~ msgstr "Keines der Gebietsschemata entspricht dem Filter."
+
+#~ msgid "Locale selection"
+#~ msgstr "Gebietsschema-Auswahl"
+
+#~ msgid "Filter by territory, time zone code or UTC offset"
+#~ msgstr "Nach Gebiet, Zeitzonencode oder UTC-Abweichung filtern"
+
+#~ msgid "None of the time zones match the filter."
+#~ msgstr "Keine der Zeitzonen entspricht dem Filter."
+
+#~ msgid " Timezone selection"
+#~ msgstr " Zeitzonenauswahl"
+
+#~ msgid "Users"
+#~ msgstr "Benutzer"
+
+#~ msgid "Software"
+#~ msgstr "Software"
+
+#~ msgid "Ready for installation"
+#~ msgstr "Bereit zur Installation"
+
+#~ msgid "Installation"
+#~ msgstr "Installation"
+
+#~ msgid "Before installing, please check the following problems."
+#~ msgstr "Bitte überprüfen Sie vor der Installation die folgenden Probleme."
+
+#~ msgid ""
+#~ "Take your time to check your configuration before starting the "
+#~ "installation process."
+#~ msgstr ""
+#~ "Nehmen Sie sich die Zeit, Ihre Konfiguration zu überprüfen, bevor Sie mit "
+#~ "der Installation beginnen."
+
+#~ msgid ""
+#~ "These are the most relevant installation settings. Feel free to browse "
+#~ "the sections in the menu for further details."
+#~ msgstr ""
+#~ "Dies sind die wichtigsten Installationseinstellungen. Weitere "
+#~ "Einzelheiten finden Sie in den Abschnitten des Menüs."
+
+#~ msgid "Discover iSCSI Targets"
+#~ msgstr "iSCSI-Ziele erkennen"
+
+#~ msgid "IP address"
+#~ msgstr "IP-Adresse"
+
+#~ msgid "Address"
+#~ msgstr "Adresse"
+
+#~ msgid "Incorrect IP address"
+#~ msgstr "Falsche IP-Adresse"
+
+#~ msgid "Port"
+#~ msgstr "Port"
+
+#~ msgid "Incorrect port"
+#~ msgstr "Falscher Port"
+
+#, c-format
+#~ msgid "Edit %s"
+#~ msgstr "%s bearbeiten"
+
+#~ msgid "Edit iSCSI Initiator"
+#~ msgstr "iSCSI-Initiator bearbeiten"
+
+#~ msgid "Initiator name"
+#~ msgstr "Name des Initiators"
+
+#~ msgid "None"
+#~ msgstr "Kein"
+
+#, fuzzy
+#~ msgid "Offload card"
+#~ msgstr "Karte entladen"
+
+#~ msgid "Initiator"
+#~ msgstr "Initiator"
+
+#~ msgid "No iSCSI targets found."
+#~ msgstr "Keine iSCSI-Ziele gefunden."
+
+#~ msgid ""
+#~ "Please, perform an iSCSI discovery in order to find available iSCSI "
+#~ "targets."
+#~ msgstr ""
+#~ "Bitte führen Sie eine iSCSI-Erkennung durch, um verfügbare iSCSI-Ziele zu "
+#~ "finden."
+
+#~ msgid "Discover iSCSI targets"
+#~ msgstr "iSCSI-Ziele erkennen"
+
+#~ msgid "Discover"
+#~ msgstr "Erkennen"
+
+#~ msgid "Targets"
+#~ msgstr "Ziele"
+
+#~ msgid "No user defined yet."
+#~ msgstr "Noch kein Benutzer definiert."
+
+#~ msgid ""
+#~ "Please, be aware that a user must be defined before installing the system "
+#~ "to be able to log into it."
+#~ msgstr ""
+#~ "Bitte beachten Sie, dass vor der Installation des Systems ein Benutzer "
+#~ "definiert werden muss, um sich am System anmelden zu können."
+
+#~ msgid "Define a user now"
+#~ msgstr "Definieren Sie jetzt einen Benutzer"
+
+#~ msgid "Full name"
+#~ msgstr "Vollständiger Name"
+
+#~ msgid "Username"
+#~ msgstr "Benutzername"
+
+#~ msgid "Discard"
+#~ msgstr "Verwerfen"
+
+#~ msgid "Username suggestion dropdown"
+#~ msgstr "Dropdown-Liste mit Vorschlägen für Benutzernamen"
+
+#~ msgid "Use suggested username"
+#~ msgstr "Vorgeschlagenen Benutzernamen verwenden"
+
+#~ msgid "All fields are required"
+#~ msgstr "Alle Felder sind erforderlich"
+
+#~ msgid "Create user"
+#~ msgstr "Benutzer erstellen"
+
+#~ msgid "Edit user"
+#~ msgstr "Benutzer bearbeiten"
+
+#~ msgid "User full name"
+#~ msgstr "Vollständiger Name des Benutzers"
+
+#~ msgid "Edit password too"
+#~ msgstr "Auch Passwort bearbeiten"
+
+#~ msgid "user autologin"
+#~ msgstr "Automatische Benutzeranmeldung"
+
+#~ msgid "Auto-login"
+#~ msgstr "Automatisches Anmelden"
+
+#~ msgid "No root authentication method defined yet."
+#~ msgstr "Noch keine Root-Authentifizierungsmethode definiert."
+
+#~ msgid ""
+#~ "Please, define at least one authentication method for logging into the "
+#~ "system as root."
+#~ msgstr ""
+#~ "Bitte definieren Sie mindestens eine Authentifizierungsmethode, um sich "
+#~ "als root am System anmelden zu können."
+
+#~ msgid "Set a password"
+#~ msgstr "Passwort festlegen"
+
+#~ msgid "Upload a SSH Public Key"
+#~ msgstr "Öffentlichen SSH-Schlüssel hochladen"
+
+#~ msgid "Set"
+#~ msgstr "Festlegen"
+
+#~ msgid "Already set"
+#~ msgstr "Bereits festgelegt"
+
+#~ msgid "Not set"
+#~ msgstr "Nicht festgelegt"
+
+#~ msgid "Method"
+#~ msgstr "Methode"
+
+#~ msgid "SSH Key"
+#~ msgstr "SSH-Schlüssel"
+
+#~ msgid "Change the root password"
+#~ msgstr "Root-Passwort ändern"
+
+#~ msgid "Set a root password"
+#~ msgstr "Root-Passwort festlegen"
+
+#~ msgid "Edit the SSH Public Key for root"
+#~ msgstr "Öffentlichen SSH-Schlüssel für root bearbeiten"
+
+#~ msgid "Add a SSH Public Key for root"
+#~ msgstr "Öffentlichen SSH-Schlüssel für root hinzufügen"
+
+#~ msgid "First user"
+#~ msgstr "Erster Benutzer"
+
+#~ msgid "Root authentication"
+#~ msgstr "Root-Authentifizierung"
 
 #~ msgid "Change boot options"
 #~ msgstr "Boot-Optionen ändern"

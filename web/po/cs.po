@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-08 02:38+0000\n"
+"POT-Creation-Date: 2024-09-15 02:43+0000\n"
 "PO-Revision-Date: 2024-08-02 09:47+0000\n"
 "Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
@@ -122,7 +122,7 @@ msgstr "Možnosti instalace"
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:55
+#: src/components/l10n/L10nPage.jsx:48
 msgid "Language"
 msgstr "Jazyk"
 
@@ -137,7 +137,6 @@ msgstr "U instalace na dálku nelze změnit"
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/storage/ZFCPPage.jsx:528
-#: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
 msgstr "Přijmout"
 
@@ -149,60 +148,6 @@ msgstr "Před zahájením instalace vyřešte tyto problémy:"
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
 msgstr "Hledat"
-
-#: src/components/core/LoginPage.jsx:64
-msgid "Could not log in. Please, make sure that the password is correct."
-msgstr "Nelze se přhlásit. Zkontrolujte správnost hesla."
-
-#: src/components/core/LoginPage.jsx:66
-msgid "Could not authenticate against the server, please check it."
-msgstr "Nezdařilo se ověřit Vás u serveru, zkontrolujte to prosím."
-
-#. TRANSLATORS: Title for a form to provide the password for the root user. %s
-#. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:74
-#, c-format
-msgid "Log in as %s"
-msgstr "Přihlásit se jako %s"
-
-#: src/components/core/LoginPage.jsx:80
-msgid "The installer requires [root] user privileges."
-msgstr "Instalátor vyžaduje oprávnění uživatele [root]."
-
-#: src/components/core/LoginPage.jsx:95
-msgid "Please, provide its password to log in to the system."
-msgstr "Zadejte heslo pro přihlášení do systému."
-
-#: src/components/core/LoginPage.jsx:96
-msgid "Login form"
-msgstr "Přihlašovací formulář"
-
-#: src/components/core/LoginPage.jsx:102
-msgid "Password input"
-msgstr "Zadejte heslo"
-
-#: src/components/core/LoginPage.jsx:111
-msgid "Log in"
-msgstr "Přihlásit se"
-
-#: src/components/core/LoginPage.jsx:118
-msgid "More about this"
-msgstr "Více o tom"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:55
-msgid "Passwords do not match"
-msgstr "Hesla se neshodují"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/storage/iscsi/AuthFields.jsx:90
-#: src/components/storage/iscsi/AuthFields.jsx:94
-#: src/components/users/RootAuthMethods.jsx:130
-msgid "Password"
-msgstr "Heslo"
-
-#: src/components/core/PasswordAndConfirmationInput.jsx:90
-msgid "Password confirmation"
-msgstr "Potvrzení hesla"
 
 #: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
@@ -249,74 +194,33 @@ msgstr "Zkontrolujte, zda je spuštěn."
 msgid "Reload"
 msgstr "Znovu načíst"
 
-#: src/components/l10n/KeyboardSelection.jsx:41
-msgid "Filter by description or keymap code"
-msgstr "Filtrování podle popisu nebo kódu mapy kláves"
-
-#: src/components/l10n/KeyboardSelection.jsx:71
-msgid "None of the keymaps match the filter."
-msgstr "Žádná z map kláves neodpovídá filtru."
-
-#: src/components/l10n/KeyboardSelection.jsx:77
-msgid "Keyboard selection"
-msgstr "Výběr klávesnice"
-
-#: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/l10n/LocaleSelection.jsx:92
-#: src/components/l10n/TimezoneSelection.jsx:125
-msgid "Select"
-msgstr "Zvolit"
-
-#: src/components/l10n/L10nPage.jsx:48
+#: src/components/l10n/L10nPage.jsx:41
 #: src/components/overview/L10nSection.jsx:37
 msgid "Localization"
 msgstr "Lokalizace"
 
-#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
-#: src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:49 src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:71
 msgid "Not selected yet"
 msgstr "Dosud nevybráno"
 
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
 msgid "Change"
 msgstr "Změnit"
 
-#: src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+msgid "Select"
+msgstr "Zvolit"
+
+#: src/components/l10n/L10nPage.jsx:59
 msgid "Keyboard"
 msgstr "Klávesnice"
 
-#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/L10nPage.jsx:70
 msgid "Time zone"
 msgstr "Časové pásmo"
-
-#: src/components/l10n/LocaleSelection.jsx:39
-msgid "Filter by language, territory or locale code"
-msgstr "Filtrování podle jazyka, území nebo kódu lokality"
-
-#: src/components/l10n/LocaleSelection.jsx:72
-msgid "None of the locales match the filter."
-msgstr "Žádné umístění neodpovídá filtru."
-
-#: src/components/l10n/LocaleSelection.jsx:78
-msgid "Locale selection"
-msgstr "Výběr lokality"
-
-#: src/components/l10n/TimezoneSelection.jsx:64
-msgid "Filter by territory, time zone code or UTC offset"
-msgstr "Filtrování podle území, kódu časového pásma nebo posunu od UTC"
-
-#: src/components/l10n/TimezoneSelection.jsx:101
-msgid "None of the time zones match the filter."
-msgstr "Žádné z časových pásem neodpovídá filtru."
-
-#: src/components/l10n/TimezoneSelection.jsx:107
-msgid " Timezone selection"
-msgstr " Výběr časového pásma"
 
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
@@ -328,46 +232,6 @@ msgstr "Načítá se instalační prostředí, vyčkejte prosím."
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "Systém použije jako výchozí jazyk %s."
-
-#: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:35
-msgid "Users"
-msgstr "Uživatelé"
-
-#: src/components/overview/OverviewPage.jsx:50
-#: src/components/overview/StorageSection.jsx:111
-msgid "Storage"
-msgstr "Paměť"
-
-#: src/components/overview/OverviewPage.jsx:51
-msgid "Software"
-msgstr "Software"
-
-#: src/components/overview/OverviewPage.jsx:56
-msgid "Ready for installation"
-msgstr "Připraveno k instalaci"
-
-#: src/components/overview/OverviewPage.jsx:102
-msgid "Installation"
-msgstr "Instalace"
-
-#: src/components/overview/OverviewPage.jsx:103
-msgid "Before installing, please check the following problems."
-msgstr "Před instalací zkontrolujte tyto problémy."
-
-#: src/components/overview/OverviewPage.jsx:114
-msgid ""
-"Take your time to check your configuration before starting the installation "
-"process."
-msgstr "Před zahájením instalace zkontrolujte konfiguraci."
-
-#: src/components/overview/OverviewPage.jsx:123
-msgid ""
-"These are the most relevant installation settings. Feel free to browse the "
-"sections in the menu for further details."
-msgstr ""
-"Toto je nejdůležitější nastavení instalace. Další podrobnosti najdete v "
-"sekcích v nabídce."
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -437,6 +301,10 @@ msgstr ""
 "Instalace do nové skupiny svazků LVM (Logical Volume Manager) na %s s "
 "použitím vlastní strategie pro nalezení potřebného místa"
 
+#: src/components/overview/StorageSection.jsx:111
+msgid "Storage"
+msgstr "Paměť"
+
 #: src/components/overview/StorageSection.jsx:179
 msgid "No device selected yet"
 msgstr "Zatím nebylo vybráno žádné zařízení"
@@ -497,9 +365,7 @@ msgid "iSCSI"
 msgstr "iSCSI"
 
 #: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
 #: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
 msgid "Something went wrong"
 msgstr "Něco se nezdařilo"
 
@@ -525,11 +391,9 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
-#. TRANSLATORS: table header
 #: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
 msgid "Status"
 msgstr "Stav"
 
@@ -546,14 +410,12 @@ msgid "Deactivated"
 msgstr "Deaktivováno"
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "No"
 msgstr "Ne"
 
 #: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
 msgid "Yes"
 msgstr "Ano"
 
@@ -561,13 +423,9 @@ msgstr "Ano"
 msgid "Activate"
 msgstr "Aktivace"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
 msgid "Name"
 msgstr "Název"
 
@@ -654,6 +512,11 @@ msgstr "Uživatelské jméno"
 msgid "Incorrect user name"
 msgstr "Nesprávné uživatelské jméno"
 
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+msgid "Password"
+msgstr "Heslo"
+
 #: src/components/storage/iscsi/AuthFields.jsx:99
 #: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
@@ -667,90 +530,15 @@ msgstr "Ověření iniciátorem"
 msgid "Target Password"
 msgstr "Cílové heslo"
 
-#. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:94
-msgid "Discover iSCSI Targets"
-msgstr "Najít cílové stanice iSCSI"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:99
-#: src/components/storage/iscsi/LoginForm.jsx:70
-msgid "Make sure you provide the correct values"
-msgstr "Ujistěte se, že jste zadali správné hodnoty"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:103
-msgid "IP address"
-msgstr "adresa IP"
-
-#. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
-msgid "Address"
-msgstr "Adresa"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
-msgid "Incorrect IP address"
-msgstr "Nesprávná IP adresa"
-
-#. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:117
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
-msgid "Port"
-msgstr "Port"
-
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
-msgid "Incorrect port"
-msgstr "Nesprávný port"
-
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:48
-#, c-format
-msgid "Edit %s"
-msgstr "Upravit %s"
-
-#: src/components/storage/iscsi/InitiatorForm.jsx:42
-msgid "Edit iSCSI Initiator"
-msgstr "Upravit iniciátor iSCSI"
-
-#. TRANSLATORS: iSCSI initiator name
-#: src/components/storage/iscsi/InitiatorForm.jsx:49
-msgid "Initiator name"
-msgstr "Název iniciátora"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "Upravit"
-
-#. TRANSLATORS: usually just keep the original text
-#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:86
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-#: src/components/storage/iscsi/NodesPresenter.jsx:122
-msgid "iBFT"
-msgstr "iBFT"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr "Žádná"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:87
-msgid "Offload card"
-msgstr "Karta k přesměrování části (mobilního) provozu"
-
-#. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:49
-msgid "Initiator"
-msgstr "Iniciátor"
-
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
 msgstr "Přihlášení %s"
+
+#: src/components/storage/iscsi/LoginForm.jsx:70
+msgid "Make sure you provide the correct values"
+msgstr "Ujistěte se, že jste zadali správné hodnoty"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:74
@@ -771,191 +559,46 @@ msgid "Automatic"
 msgstr "Automatický"
 
 #. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
+#: src/components/storage/iscsi/NodesPresenter.jsx:64
 msgid "Disconnected"
 msgstr "Odpojeno"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
-#: src/components/storage/iscsi/NodesPresenter.jsx:67
+#: src/components/storage/iscsi/NodesPresenter.jsx:68
 #, c-format
 msgid "Connected (%s)"
 msgstr "Připojeno (%s)"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
+#: src/components/storage/iscsi/NodesPresenter.jsx:74
+msgid "Edit"
+msgstr "Upravit"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:78
 msgid "Delete"
 msgstr "Smazat"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:82
+#: src/components/storage/iscsi/NodesPresenter.jsx:83
 msgid "Login"
 msgstr "Přihlášení"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:86
+#: src/components/storage/iscsi/NodesPresenter.jsx:87
 msgid "Logout"
 msgstr "Odhlášení"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:99
-#: src/components/storage/iscsi/NodesPresenter.jsx:120
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Portal"
 msgstr "Portál"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:100
-#: src/components/storage/iscsi/NodesPresenter.jsx:121
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Interface"
 msgstr "Rozhraní"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:138
-msgid "No iSCSI targets found."
-msgstr "Nebyly nalezeny žádné cíle iSCSI."
-
-#: src/components/storage/iscsi/TargetsSection.jsx:140
-msgid ""
-"Please, perform an iSCSI discovery in order to find available iSCSI targets."
-msgstr "Spusťte vyhledávání iSCSI a tím najděte dostupné cíle iSCSI."
-
-#: src/components/storage/iscsi/TargetsSection.jsx:144
-msgid "Discover iSCSI targets"
-msgstr "Zjištění cílů iSCSI"
-
-#. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:156
-msgid "Discover"
-msgstr "Objevit"
-
-#. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
-msgid "Targets"
-msgstr "Cíle"
-
-#: src/components/users/FirstUser.jsx:35
-msgid "No user defined yet."
-msgstr "Zatím není definován žádný uživatel."
-
-#: src/components/users/FirstUser.jsx:39
-msgid ""
-"Please, be aware that a user must be defined before installing the system to "
-"be able to log into it."
-msgstr ""
-"Pozor, před instalací systému musí být definován uživatel, aby se pak do "
-"systému dalo přihlásit."
-
-#: src/components/users/FirstUser.jsx:45
-msgid "Define a user now"
-msgstr "Nyní definujte uživatele"
-
-#: src/components/users/FirstUser.jsx:58
-#: src/components/users/FirstUserForm.jsx:217
-msgid "Full name"
-msgstr "Celé jméno"
-
-#: src/components/users/FirstUser.jsx:59
-#: src/components/users/FirstUserForm.jsx:231
-#: src/components/users/FirstUserForm.jsx:236
-#: src/components/users/FirstUserForm.jsx:239
-msgid "Username"
-msgstr "Uživatelské jméno"
-
-#: src/components/users/FirstUser.jsx:90
-#: src/components/users/RootAuthMethods.jsx:78
-#: src/components/users/RootAuthMethods.jsx:90
-msgid "Discard"
-msgstr "Vyřadit"
-
-#: src/components/users/FirstUserForm.jsx:58
-msgid "Username suggestion dropdown"
-msgstr "Rozbalovací nabídka uživatelských jmen"
-
-#. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:73
-msgid "Use suggested username"
-msgstr "Použijte navrhované uživatelské jméno"
-
-#: src/components/users/FirstUserForm.jsx:144
-msgid "All fields are required"
-msgstr "Všechna pole jsou povinná"
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Create user"
-msgstr "Vytvořit uživatele"
-
-#: src/components/users/FirstUserForm.jsx:201
-msgid "Edit user"
-msgstr "Upravit uživatele"
-
-#: src/components/users/FirstUserForm.jsx:221
-#: src/components/users/FirstUserForm.jsx:223
-msgid "User full name"
-msgstr "Celé jméno uživatele"
-
-#: src/components/users/FirstUserForm.jsx:261
-msgid "Edit password too"
-msgstr "Upravit také heslo"
-
-#: src/components/users/FirstUserForm.jsx:277
-msgid "user autologin"
-msgstr "automatické přihlášení uživatele"
-
-#. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:281
-msgid "Auto-login"
-msgstr "Automatické přihlášení"
-
-#: src/components/users/RootAuthMethods.jsx:36
-msgid "No root authentication method defined yet."
-msgstr "Zatím není definována žádná metoda ověřování superuživatele root."
-
-#: src/components/users/RootAuthMethods.jsx:40
-msgid ""
-"Please, define at least one authentication method for logging into the "
-"system as root."
-msgstr ""
-"Definujte alespoň jednu metodu ověřování pro přihlášení do systému jako root."
-
-#: src/components/users/RootAuthMethods.jsx:47
-msgid "Set a password"
-msgstr "Nastavte heslo"
-
-#: src/components/users/RootAuthMethods.jsx:51
-msgid "Upload a SSH Public Key"
-msgstr "Nahrátí veřejného klíče SSH"
-
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
-msgid "Set"
-msgstr "Nastavit"
-
-#: src/components/users/RootAuthMethods.jsx:97
-msgid "Already set"
-msgstr "Již nastaveno"
-
-#: src/components/users/RootAuthMethods.jsx:97
-#: src/components/users/RootAuthMethods.jsx:101
-msgid "Not set"
-msgstr "Nenastaveno"
-
-#. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:122
-msgid "Method"
-msgstr "Metoda"
-
-#: src/components/users/RootAuthMethods.jsx:139
-msgid "SSH Key"
-msgstr "Klíč SSH"
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Change the root password"
-msgstr "Změna hesla roota"
-
-#: src/components/users/RootAuthMethods.jsx:158
-msgid "Set a root password"
-msgstr "Nastavte heslo roota"
-
-#: src/components/users/RootAuthMethods.jsx:168
-msgid "Edit the SSH Public Key for root"
-msgstr "Úprava veřejného klíče SSH pro uživatele root"
-
-#: src/components/users/RootAuthMethods.jsx:169
-msgid "Add a SSH Public Key for root"
-msgstr "Přidat veřejný klíč SSH pro uživatele root"
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "iBFT"
+msgstr "iBFT"
 
 #: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
@@ -983,17 +626,249 @@ msgstr "Nahrát"
 msgid "Clear"
 msgstr "Smazat"
 
-#: src/components/users/UsersPage.jsx:44
-msgid "First user"
-msgstr "První uživatel"
-
-#: src/components/users/UsersPage.jsx:51
-msgid "Root authentication"
-msgstr "Ověření superuživatele root"
-
 #: src/router.js:48
 msgid "Overview"
 msgstr "Přehled"
+
+#~ msgid "Could not log in. Please, make sure that the password is correct."
+#~ msgstr "Nelze se přhlásit. Zkontrolujte správnost hesla."
+
+#~ msgid "Could not authenticate against the server, please check it."
+#~ msgstr "Nezdařilo se ověřit Vás u serveru, zkontrolujte to prosím."
+
+#, c-format
+#~ msgid "Log in as %s"
+#~ msgstr "Přihlásit se jako %s"
+
+#~ msgid "The installer requires [root] user privileges."
+#~ msgstr "Instalátor vyžaduje oprávnění uživatele [root]."
+
+#~ msgid "Please, provide its password to log in to the system."
+#~ msgstr "Zadejte heslo pro přihlášení do systému."
+
+#~ msgid "Login form"
+#~ msgstr "Přihlašovací formulář"
+
+#~ msgid "Password input"
+#~ msgstr "Zadejte heslo"
+
+#~ msgid "Log in"
+#~ msgstr "Přihlásit se"
+
+#~ msgid "More about this"
+#~ msgstr "Více o tom"
+
+#~ msgid "Passwords do not match"
+#~ msgstr "Hesla se neshodují"
+
+#~ msgid "Password confirmation"
+#~ msgstr "Potvrzení hesla"
+
+#~ msgid "Filter by description or keymap code"
+#~ msgstr "Filtrování podle popisu nebo kódu mapy kláves"
+
+#~ msgid "None of the keymaps match the filter."
+#~ msgstr "Žádná z map kláves neodpovídá filtru."
+
+#~ msgid "Keyboard selection"
+#~ msgstr "Výběr klávesnice"
+
+#~ msgid "Filter by language, territory or locale code"
+#~ msgstr "Filtrování podle jazyka, území nebo kódu lokality"
+
+#~ msgid "None of the locales match the filter."
+#~ msgstr "Žádné umístění neodpovídá filtru."
+
+#~ msgid "Locale selection"
+#~ msgstr "Výběr lokality"
+
+#~ msgid "Filter by territory, time zone code or UTC offset"
+#~ msgstr "Filtrování podle území, kódu časového pásma nebo posunu od UTC"
+
+#~ msgid "None of the time zones match the filter."
+#~ msgstr "Žádné z časových pásem neodpovídá filtru."
+
+#~ msgid " Timezone selection"
+#~ msgstr " Výběr časového pásma"
+
+#~ msgid "Users"
+#~ msgstr "Uživatelé"
+
+#~ msgid "Software"
+#~ msgstr "Software"
+
+#~ msgid "Ready for installation"
+#~ msgstr "Připraveno k instalaci"
+
+#~ msgid "Installation"
+#~ msgstr "Instalace"
+
+#~ msgid "Before installing, please check the following problems."
+#~ msgstr "Před instalací zkontrolujte tyto problémy."
+
+#~ msgid ""
+#~ "Take your time to check your configuration before starting the "
+#~ "installation process."
+#~ msgstr "Před zahájením instalace zkontrolujte konfiguraci."
+
+#~ msgid ""
+#~ "These are the most relevant installation settings. Feel free to browse "
+#~ "the sections in the menu for further details."
+#~ msgstr ""
+#~ "Toto je nejdůležitější nastavení instalace. Další podrobnosti najdete v "
+#~ "sekcích v nabídce."
+
+#~ msgid "Discover iSCSI Targets"
+#~ msgstr "Najít cílové stanice iSCSI"
+
+#~ msgid "IP address"
+#~ msgstr "adresa IP"
+
+#~ msgid "Address"
+#~ msgstr "Adresa"
+
+#~ msgid "Incorrect IP address"
+#~ msgstr "Nesprávná IP adresa"
+
+#~ msgid "Port"
+#~ msgstr "Port"
+
+#~ msgid "Incorrect port"
+#~ msgstr "Nesprávný port"
+
+#, c-format
+#~ msgid "Edit %s"
+#~ msgstr "Upravit %s"
+
+#~ msgid "Edit iSCSI Initiator"
+#~ msgstr "Upravit iniciátor iSCSI"
+
+#~ msgid "Initiator name"
+#~ msgstr "Název iniciátora"
+
+#~ msgid "None"
+#~ msgstr "Žádná"
+
+#~ msgid "Offload card"
+#~ msgstr "Karta k přesměrování části (mobilního) provozu"
+
+#~ msgid "Initiator"
+#~ msgstr "Iniciátor"
+
+#~ msgid "No iSCSI targets found."
+#~ msgstr "Nebyly nalezeny žádné cíle iSCSI."
+
+#~ msgid ""
+#~ "Please, perform an iSCSI discovery in order to find available iSCSI "
+#~ "targets."
+#~ msgstr "Spusťte vyhledávání iSCSI a tím najděte dostupné cíle iSCSI."
+
+#~ msgid "Discover iSCSI targets"
+#~ msgstr "Zjištění cílů iSCSI"
+
+#~ msgid "Discover"
+#~ msgstr "Objevit"
+
+#~ msgid "Targets"
+#~ msgstr "Cíle"
+
+#~ msgid "No user defined yet."
+#~ msgstr "Zatím není definován žádný uživatel."
+
+#~ msgid ""
+#~ "Please, be aware that a user must be defined before installing the system "
+#~ "to be able to log into it."
+#~ msgstr ""
+#~ "Pozor, před instalací systému musí být definován uživatel, aby se pak do "
+#~ "systému dalo přihlásit."
+
+#~ msgid "Define a user now"
+#~ msgstr "Nyní definujte uživatele"
+
+#~ msgid "Full name"
+#~ msgstr "Celé jméno"
+
+#~ msgid "Username"
+#~ msgstr "Uživatelské jméno"
+
+#~ msgid "Discard"
+#~ msgstr "Vyřadit"
+
+#~ msgid "Username suggestion dropdown"
+#~ msgstr "Rozbalovací nabídka uživatelských jmen"
+
+#~ msgid "Use suggested username"
+#~ msgstr "Použijte navrhované uživatelské jméno"
+
+#~ msgid "All fields are required"
+#~ msgstr "Všechna pole jsou povinná"
+
+#~ msgid "Create user"
+#~ msgstr "Vytvořit uživatele"
+
+#~ msgid "Edit user"
+#~ msgstr "Upravit uživatele"
+
+#~ msgid "User full name"
+#~ msgstr "Celé jméno uživatele"
+
+#~ msgid "Edit password too"
+#~ msgstr "Upravit také heslo"
+
+#~ msgid "user autologin"
+#~ msgstr "automatické přihlášení uživatele"
+
+#~ msgid "Auto-login"
+#~ msgstr "Automatické přihlášení"
+
+#~ msgid "No root authentication method defined yet."
+#~ msgstr "Zatím není definována žádná metoda ověřování superuživatele root."
+
+#~ msgid ""
+#~ "Please, define at least one authentication method for logging into the "
+#~ "system as root."
+#~ msgstr ""
+#~ "Definujte alespoň jednu metodu ověřování pro přihlášení do systému jako "
+#~ "root."
+
+#~ msgid "Set a password"
+#~ msgstr "Nastavte heslo"
+
+#~ msgid "Upload a SSH Public Key"
+#~ msgstr "Nahrátí veřejného klíče SSH"
+
+#~ msgid "Set"
+#~ msgstr "Nastavit"
+
+#~ msgid "Already set"
+#~ msgstr "Již nastaveno"
+
+#~ msgid "Not set"
+#~ msgstr "Nenastaveno"
+
+#~ msgid "Method"
+#~ msgstr "Metoda"
+
+#~ msgid "SSH Key"
+#~ msgstr "Klíč SSH"
+
+#~ msgid "Change the root password"
+#~ msgstr "Změna hesla roota"
+
+#~ msgid "Set a root password"
+#~ msgstr "Nastavte heslo roota"
+
+#~ msgid "Edit the SSH Public Key for root"
+#~ msgstr "Úprava veřejného klíče SSH pro uživatele root"
+
+#~ msgid "Add a SSH Public Key for root"
+#~ msgstr "Přidat veřejný klíč SSH pro uživatele root"
+
+#~ msgid "First user"
+#~ msgstr "První uživatel"
+
+#~ msgid "Root authentication"
+#~ msgstr "Ověření superuživatele root"
 
 #~ msgid "Change boot options"
 #~ msgstr "Změna možností spouštění systému"
