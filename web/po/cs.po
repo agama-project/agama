@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-15 02:43+0000\n"
+"POT-Creation-Date: 2024-09-16 07:57+0000\n"
 "PO-Revision-Date: 2024-08-02 09:47+0000\n"
 "Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
@@ -19,6 +19,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Weblate 5.6.2\n"
+
+#: src/components/core/About.tsx:46
+msgid "About"
+msgstr "O"
+
+#: src/components/core/About.tsx:64
+msgid "About Agama"
+msgstr "O Agamě"
+
+#: src/components/core/About.tsx:69
+msgid ""
+"Agama is an experimental installer for (open)SUSE systems. It is still under "
+"development so, please, do not use it in production environments. If you "
+"want to give it a try, we recommend using a virtual machine to prevent any "
+"possible data loss."
+msgstr ""
+"Agama je experimentální instalátor pro (otevřené) systémy SUSE. Je stále ve "
+"fázi vývoje, proto ji prosím nepoužívejte v produkčních prostředích. Pokud "
+"ji chcete vyzkoušet, doporučujeme použít virtuální počítač, abyste předešli "
+"případné ztrátě dat."
+
+#. TRANSLATORS: content of the "About" popup (2/2)
+#. %s is replaced by the project URL
+#: src/components/core/About.tsx:81
+#, c-format
+msgid "For more information, please visit the project's repository at %s."
+msgstr "Další informace najdete v úložišti projektu na %s."
+
+#: src/components/core/About.tsx:87 src/components/core/LogsButton.tsx:123
+#: src/components/software/SoftwarePatternsSelection.tsx:205
+msgid "Close"
+msgstr "Zavřít"
+
+#: src/components/core/ChangeProductLink.tsx:38
+msgid "Change product"
+msgstr "Změnit produkt"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -42,7 +78,10 @@ msgid "Continue"
 msgstr "Pokračovat"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
+#: src/components/core/InstallButton.jsx:49 src/components/core/Page.tsx:237
+#: src/components/core/Popup.jsx:132
+#: src/components/network/WifiConnectionForm.tsx:146
+#: src/components/product/ProductSelectionPage.tsx:122
 msgid "Cancel"
 msgstr "Zrušit/Storno"
 
@@ -136,6 +175,9 @@ msgid "Cannot be changed in remote installation"
 msgstr "U instalace na dálku nelze změnit"
 
 #: src/components/core/InstallerOptions.jsx:142
+#: src/components/core/Page.tsx:270
+#: src/components/storage/EncryptionSettingsDialog.tsx:153
+#: src/components/storage/VolumeDialog.tsx:640
 #: src/components/storage/ZFCPPage.jsx:528
 msgid "Accept"
 msgstr "Přijmout"
@@ -148,6 +190,85 @@ msgstr "Před zahájením instalace vyřešte tyto problémy:"
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
 msgstr "Hledat"
+
+#: src/components/core/LoginPage.tsx:59
+msgid "Could not log in. Please, make sure that the password is correct."
+msgstr "Nelze se přhlásit. Zkontrolujte správnost hesla."
+
+#: src/components/core/LoginPage.tsx:61
+msgid "Could not authenticate against the server, please check it."
+msgstr "Nezdařilo se ověřit Vás u serveru, zkontrolujte to prosím."
+
+#. TRANSLATORS: Title for a form to provide the password for the root user. %s
+#. will be replaced by "root"
+#: src/components/core/LoginPage.tsx:69
+#, c-format
+msgid "Log in as %s"
+msgstr "Přihlásit se jako %s"
+
+#: src/components/core/LoginPage.tsx:75
+msgid "The installer requires [root] user privileges."
+msgstr "Instalátor vyžaduje oprávnění uživatele [root]."
+
+#: src/components/core/LoginPage.tsx:90
+msgid "Please, provide its password to log in to the system."
+msgstr "Zadejte heslo pro přihlášení do systému."
+
+#: src/components/core/LoginPage.tsx:91
+msgid "Login form"
+msgstr "Přihlašovací formulář"
+
+#: src/components/core/LoginPage.tsx:97
+msgid "Password input"
+msgstr "Zadejte heslo"
+
+#: src/components/core/LoginPage.tsx:106
+msgid "Log in"
+msgstr "Přihlásit se"
+
+#: src/components/core/LoginPage.tsx:113
+msgid "More about this"
+msgstr "Více o tom"
+
+#: src/components/core/LogsButton.tsx:98
+msgid "Collecting logs..."
+msgstr "Shromažďuji záznamy..."
+
+#: src/components/core/LogsButton.tsx:98 src/components/core/LogsButton.tsx:101
+msgid "Download logs"
+msgstr "Stahuji zázbamy"
+
+#: src/components/core/LogsButton.tsx:108
+msgid ""
+"The browser will run the logs download as soon as they are ready. Please, be "
+"patient."
+msgstr "Prohlížeč stáhne záznamy, jakmile budou připraveny. Čekejte prosím."
+
+#: src/components/core/LogsButton.tsx:118
+msgid "Something went wrong while collecting logs. Please, try again."
+msgstr "Stahování záznamů se nezdařilo. Zkuste to znovu."
+
+#: src/components/core/Page.tsx:259
+msgid "Back"
+msgstr ""
+
+#: src/components/core/PasswordAndConfirmationInput.tsx:64
+msgid "Passwords do not match"
+msgstr "Hesla se neshodují"
+
+#. TRANSLATORS: field label
+#: src/components/core/PasswordAndConfirmationInput.tsx:88
+#: src/components/network/WifiConnectionForm.tsx:133
+#: src/components/questions/QuestionWithPassword.tsx:62
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+#: src/components/users/RootAuthMethods.tsx:76
+msgid "Password"
+msgstr "Heslo"
+
+#: src/components/core/PasswordAndConfirmationInput.tsx:99
+msgid "Password confirmation"
+msgstr "Potvrzení hesla"
 
 #: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
@@ -175,6 +296,8 @@ msgid "Finished"
 msgstr "Dokončeno"
 
 #: src/components/core/RowActions.jsx:64
+#: src/components/storage/PartitionsField.tsx:457
+#: src/components/storage/ProposalActionsSummary.tsx:241
 msgid "Actions"
 msgstr "Akce"
 
@@ -194,8 +317,30 @@ msgstr "Zkontrolujte, zda je spuštěn."
 msgid "Reload"
 msgstr "Znovu načíst"
 
+#: src/components/l10n/KeyboardSelection.tsx:41
+msgid "Filter by description or keymap code"
+msgstr "Filtrování podle popisu nebo kódu mapy kláves"
+
+#: src/components/l10n/KeyboardSelection.tsx:71
+msgid "None of the keymaps match the filter."
+msgstr "Žádná z map kláves neodpovídá filtru."
+
+#: src/components/l10n/KeyboardSelection.tsx:77
+msgid "Keyboard selection"
+msgstr "Výběr klávesnice"
+
+#: src/components/l10n/KeyboardSelection.tsx:91
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/LocaleSelection.tsx:92
+#: src/components/l10n/TimezoneSelection.tsx:130
+#: src/components/product/ProductSelectionPage.tsx:128
+#: src/components/software/SoftwarePatternsSelection.tsx:166
+msgid "Select"
+msgstr "Zvolit"
+
 #: src/components/l10n/L10nPage.jsx:41
-#: src/components/overview/L10nSection.jsx:37
+#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.tsx:37
 msgid "Localization"
 msgstr "Lokalizace"
 
@@ -206,13 +351,13 @@ msgstr "Dosud nevybráno"
 
 #: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
 #: src/components/l10n/L10nPage.jsx:74
+#: src/components/network/NetworkPage.tsx:63
+#: src/components/storage/InstallationDeviceField.tsx:105
+#: src/components/storage/ProposalActionsSummary.tsx:246
+#: src/components/users/RootAuthMethods.tsx:113
+#: src/components/users/RootAuthMethods.tsx:125
 msgid "Change"
 msgstr "Změnit"
-
-#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
-#: src/components/l10n/L10nPage.jsx:74
-msgid "Select"
-msgstr "Zvolit"
 
 #: src/components/l10n/L10nPage.jsx:59
 msgid "Keyboard"
@@ -222,9 +367,326 @@ msgstr "Klávesnice"
 msgid "Time zone"
 msgstr "Časové pásmo"
 
+#: src/components/l10n/LocaleSelection.tsx:39
+msgid "Filter by language, territory or locale code"
+msgstr "Filtrování podle jazyka, území nebo kódu lokality"
+
+#: src/components/l10n/LocaleSelection.tsx:72
+msgid "None of the locales match the filter."
+msgstr "Žádné umístění neodpovídá filtru."
+
+#: src/components/l10n/LocaleSelection.tsx:78
+msgid "Locale selection"
+msgstr "Výběr lokality"
+
+#: src/components/l10n/TimezoneSelection.tsx:67
+msgid "Filter by territory, time zone code or UTC offset"
+msgstr "Filtrování podle území, kódu časového pásma nebo posunu od UTC"
+
+#: src/components/l10n/TimezoneSelection.tsx:106
+msgid "None of the time zones match the filter."
+msgstr "Žádné z časových pásem neodpovídá filtru."
+
+#: src/components/l10n/TimezoneSelection.tsx:112
+msgid " Timezone selection"
+msgstr " Výběr časového pásma"
+
+#: src/components/layout/Header.tsx:61
+msgid "Main navigation"
+msgstr ""
+
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "Načítá se instalační prostředí, vyčkejte prosím."
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.tsx:102
+#: src/components/network/DnsDataList.tsx:106
+msgid "Remove"
+msgstr "Odstranit"
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.tsx:112
+#: src/components/network/IpAddressInput.tsx:34
+msgid "IP Address"
+msgstr "IP adresa"
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.tsx:120
+msgid "Prefix length or netmask"
+msgstr "Délka předpony nebo maska sítě"
+
+#: src/components/network/AddressesDataList.tsx:138
+msgid "Add an address"
+msgstr "Přidat adresu"
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.tsx:138
+msgid "Add another address"
+msgstr "Přidat další adresu"
+
+#: src/components/network/AddressesDataList.tsx:143
+msgid "Addresses"
+msgstr "Adresy"
+
+#: src/components/network/AddressesDataList.tsx:146
+msgid "Addresses data list"
+msgstr "Seznam údajů o adresách"
+
+#. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
+#: src/components/network/ConnectionsTable.tsx:65
+#: src/components/network/ConnectionsTable.tsx:94
+#: src/components/storage/ZFCPPage.jsx:381
+#: src/components/storage/iscsi/InitiatorForm.tsx:52
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:53
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:70
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
+msgid "Name"
+msgstr "Název"
+
+#. TRANSLATORS: table header
+#: src/components/network/ConnectionsTable.tsx:67
+#: src/components/network/ConnectionsTable.tsx:95
+msgid "IP addresses"
+msgstr "IP adresy"
+
+#. TRANSLATORS: table header aria label
+#: src/components/network/ConnectionsTable.tsx:69
+msgid "Connection actions"
+msgstr "Akce připojení"
+
+#: src/components/network/ConnectionsTable.tsx:76
+#: src/components/network/WifiNetworksListPage.tsx:127
+#: src/components/network/WifiNetworksListPage.tsx:151
+#: src/components/storage/PartitionsField.tsx:312
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:44
+#: src/components/storage/iscsi/NodesPresenter.jsx:74
+#: src/components/users/FirstUser.tsx:83
+msgid "Edit"
+msgstr "Upravit"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:79
+#: src/components/network/IpSettingsForm.tsx:146
+#, c-format
+msgid "Edit connection %s"
+msgstr "Upravit připojení %s"
+
+#: src/components/network/ConnectionsTable.tsx:83
+#: src/components/network/WifiNetworksListPage.tsx:130
+#: src/components/network/WifiNetworksListPage.tsx:154
+msgid "Forget"
+msgstr "Zapomenout"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:85
+#, c-format
+msgid "Forget connection %s"
+msgstr "Zapomenout připojení %s"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:100
+#, c-format
+msgid "Actions for connection %s"
+msgstr "Akce pro připojení %s"
+
+#. TRANSLATORS: input field name
+#: src/components/network/DnsDataList.tsx:90
+msgid "Server IP"
+msgstr "IP serveru"
+
+#: src/components/network/DnsDataList.tsx:115
+msgid "Add DNS"
+msgstr "Přidat DNS"
+
+#. TRANSLATORS: button label
+#: src/components/network/DnsDataList.tsx:115
+msgid "Add another DNS"
+msgstr "Přidat další DNS"
+
+#: src/components/network/DnsDataList.tsx:120
+msgid "DNS"
+msgstr "DNS"
+
+#: src/components/network/IpPrefixInput.tsx:34
+#, fuzzy
+msgid "Ip prefix or netmask"
+msgstr "Předpona IP nebo maska sítě"
+
+#. TRANSLATORS: error message
+#: src/components/network/IpSettingsForm.tsx:102
+msgid "At least one address must be provided for selected mode"
+msgstr "Pro zvolený režim musí být uvedena alespoň jedna adresa"
+
+#. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+#: src/components/network/IpSettingsForm.tsx:156
+#: src/components/network/IpSettingsForm.tsx:161
+#: src/components/network/IpSettingsForm.tsx:163
+msgid "Mode"
+msgstr "Režim"
+
+#: src/components/network/IpSettingsForm.tsx:170
+msgid "Automatic (DHCP)"
+msgstr "Automatický (DHCP)"
+
+#: src/components/network/IpSettingsForm.tsx:176
+#: src/components/storage/iscsi/NodeStartupOptions.js:25
+msgid "Manual"
+msgstr "Manuální"
+
+#. TRANSLATORS: network gateway configuration
+#: src/components/network/IpSettingsForm.tsx:185
+#: src/components/network/IpSettingsForm.tsx:188
+msgid "Gateway"
+msgstr "Brána"
+
+#: src/components/network/IpSettingsForm.tsx:197
+msgid "Gateway can be defined only in 'Manual' mode"
+msgstr "Bránu lze definovat pouze v režimu 'Manual'"
+
+#: src/components/network/NetworkPage.tsx:37
+msgid "Wired"
+msgstr "Připojení kabelem (Ethernet)"
+
+#: src/components/network/NetworkPage.tsx:44
+msgid "No wired connections found"
+msgstr "Nebyla nalezena žádná kabelová připojení"
+
+#: src/components/network/NetworkPage.tsx:60
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.tsx:63
+#: src/components/network/WifiConnectionForm.tsx:142
+#: src/components/network/WifiNetworksListPage.tsx:125
+msgid "Connect"
+msgstr "Připojit"
+
+#: src/components/network/NetworkPage.tsx:69
+#, fuzzy, c-format
+msgid "Connected to %s"
+msgstr "Připojit k %s"
+
+#: src/components/network/NetworkPage.tsx:76
+msgid "No connected yet"
+msgstr "Dosud nepřipojeno"
+
+#: src/components/network/NetworkPage.tsx:77
+msgid ""
+"The system has not been configured for connecting to a Wi-Fi network yet."
+msgstr "Systém zatím nebyl konfigurován pro připojení k síti Wi-Fi."
+
+#: src/components/network/NetworkPage.tsx:86
+msgid "No Wi-Fi supported"
+msgstr "Wi-Fi není podporováno"
+
+#: src/components/network/NetworkPage.tsx:88
+msgid ""
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
+msgstr ""
+"Systém nepodporuje připojení Wi-Fi, pravděpodobně chybí hardware nebo je "
+"zakázán."
+
+#: src/components/network/NetworkPage.tsx:105 src/routes/network.tsx:36
+msgid "Network"
+msgstr "Síť"
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.tsx:50
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:57
+msgid "None"
+msgstr "Žádná"
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.tsx:52
+msgid "WPA & WPA2 Personal"
+msgstr "WPA & WPA2 Osobní"
+
+#. TRANSLATORS: accessible name for the WiFi connection form
+#: src/components/network/WifiConnectionForm.tsx:94
+#, fuzzy
+msgid "WiFi connection form"
+msgstr "Upravit připojení %s"
+
+#: src/components/network/WifiConnectionForm.tsx:101
+#, fuzzy
+msgid "Authentication failed, please try again"
+msgstr "Ověřování cílem"
+
+#: src/components/network/WifiConnectionForm.tsx:102
+#: src/components/storage/ZFCPDiskForm.jsx:105
+#: src/components/storage/iscsi/DiscoverForm.tsx:98
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/users/FirstUserForm.tsx:210
+msgid "Something went wrong"
+msgstr "Něco se nezdařilo"
+
+#: src/components/network/WifiConnectionForm.tsx:105
+msgid "Please, review provided settings and try again."
+msgstr "Zkontrolujte poskytnutá nastavení a zkuste to znovu."
+
+#. TRANSLATORS: SSID (Wifi network name) configuration
+#: src/components/network/WifiConnectionForm.tsx:111
+msgid "SSID"
+msgstr "SSID"
+
+#. TRANSLATORS: Wifi security configuration (password protected or not)
+#: src/components/network/WifiConnectionForm.tsx:117
+#: src/components/network/WifiConnectionForm.tsx:120
+msgid "Security"
+msgstr "Zabezpečení"
+
+#. TRANSLATORS: WiFi password
+#: src/components/network/WifiConnectionForm.tsx:129
+msgid "WPA Password"
+msgstr "Heslo k WPA"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworksListPage.tsx:72
+#: src/components/network/WifiNetworksListPage.tsx:138
+msgid "Connecting"
+msgstr "Připojuji"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworksListPage.tsx:75
+#: src/components/network/WifiNetworksListPage.tsx:142
+#: src/components/network/WifiNetworksListPage.tsx:181
+msgid "Connected"
+msgstr "Připojeno"
+
+#. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
+#: src/components/network/WifiNetworksListPage.tsx:80
+#: src/components/network/WifiNetworksListPage.tsx:140
+#: src/components/storage/iscsi/NodesPresenter.jsx:64
+msgid "Disconnected"
+msgstr "Odpojeno"
+
+#: src/components/network/WifiNetworksListPage.tsx:148
+msgid "Disconnect"
+msgstr "Odpojit"
+
+#: src/components/network/WifiNetworksListPage.tsx:167
+#: src/components/network/WifiNetworksListPage.tsx:285
+msgid "Connect to hidden network"
+msgstr "Připojit ke skryté síti"
+
+#: src/components/network/WifiNetworksListPage.tsx:178
+msgid "configured"
+msgstr "konfigurováno"
+
+#: src/components/network/WifiNetworksListPage.tsx:270
+#, fuzzy
+msgid "Visible Wi-Fi networks"
+msgstr "Připojení k síti Wi-Fi"
+
+#: src/components/network/WifiSelectorPage.tsx:35
+msgid "Connect to a Wi-Fi network"
+msgstr "Připojení k síti Wi-Fi"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -232,6 +694,59 @@ msgstr "Načítá se instalační prostředí, vyčkejte prosím."
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "Systém použije jako výchozí jazyk %s."
+
+#: src/components/overview/OverviewPage.tsx:47
+#: src/components/users/UsersPage.tsx:35 src/routes/users.tsx:38
+msgid "Users"
+msgstr "Uživatelé"
+
+#: src/components/overview/OverviewPage.tsx:48
+#: src/components/overview/StorageSection.jsx:111
+#: src/components/storage/ProposalPage.tsx:107 src/routes/storage.tsx:44
+msgid "Storage"
+msgstr "Paměť"
+
+#: src/components/overview/OverviewPage.tsx:49
+#: src/components/overview/SoftwareSection.tsx:69
+#: src/components/software/SoftwarePage.tsx:110 src/routes/software.tsx:36
+msgid "Software"
+msgstr "Software"
+
+#: src/components/overview/OverviewPage.tsx:54
+msgid "Ready for installation"
+msgstr "Připraveno k instalaci"
+
+#: src/components/overview/OverviewPage.tsx:98
+msgid "Installation"
+msgstr "Instalace"
+
+#: src/components/overview/OverviewPage.tsx:99
+msgid "Before installing, please check the following problems."
+msgstr "Před instalací zkontrolujte tyto problémy."
+
+#: src/components/overview/OverviewPage.tsx:113
+msgid ""
+"These are the most relevant installation settings. Feel free to browse the "
+"sections in the menu for further details."
+msgstr ""
+"Toto je nejdůležitější nastavení instalace. Další podrobnosti najdete v "
+"sekcích v nabídce."
+
+#: src/components/overview/OverviewPage.tsx:133
+msgid ""
+"Take your time to check your configuration before starting the installation "
+"process."
+msgstr "Před zahájením instalace zkontrolujte konfiguraci."
+
+#: src/components/overview/SoftwareSection.tsx:41
+msgid "The installation will take"
+msgstr "Instalace zabere"
+
+#. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
+#: src/components/overview/SoftwareSection.tsx:48
+#, c-format
+msgid "The installation will take %s including:"
+msgstr "Instalace bude trvat %s včetně:"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -301,11 +816,8 @@ msgstr ""
 "Instalace do nové skupiny svazků LVM (Logical Volume Manager) na %s s "
 "použitím vlastní strategie pro nalezení potřebného místa"
 
-#: src/components/overview/StorageSection.jsx:111
-msgid "Storage"
-msgstr "Paměť"
-
 #: src/components/overview/StorageSection.jsx:179
+#: src/components/storage/InstallationDeviceField.tsx:59
 msgid "No device selected yet"
 msgstr "Zatím nebylo vybráno žádné zařízení"
 
@@ -340,9 +852,421 @@ msgstr ""
 "Instalace pomocí zařízení %s s vlastní strategií pro vyhledání potřebného "
 "místa"
 
+#. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
+#: src/components/product/ProductSelectionPage.tsx:56
+#, c-format
+msgid "%s logo"
+msgstr ""
+
+#: src/components/product/ProductSelectionPage.tsx:107
+#, fuzzy
+msgid "Select a product"
+msgstr "Vyberte umístění"
+
+#: src/components/product/ProductSelectionPage.tsx:108
+#, fuzzy
+msgid "Available products"
+msgstr "Změnit produkt"
+
 #: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
 msgstr "Konfigurace produktu, počkejte prosím..."
+
+#: src/components/questions/GenericQuestion.tsx:48
+#: src/components/questions/LuksActivationQuestion.tsx:69
+msgid "Question"
+msgstr "Dotaz"
+
+#. TRANSLATORS: error message, user entered a wrong password
+#: src/components/questions/LuksActivationQuestion.tsx:37
+#, fuzzy
+msgid "The encryption password did not work"
+msgstr "Zadané šifrovací heslo nefungovalo"
+
+#: src/components/questions/LuksActivationQuestion.tsx:68
+msgid "Encrypted Device"
+msgstr "Šifrované zařízení"
+
+#. TRANSLATORS: field label
+#: src/components/questions/LuksActivationQuestion.tsx:77
+msgid "Encryption Password"
+msgstr "Heslo pro šifrování"
+
+#: src/components/questions/QuestionWithPassword.tsx:55
+msgid "Password Required"
+msgstr "Vyžadováno heslo"
+
+#: src/components/software/SoftwarePage.tsx:52
+msgid "No additional software was selected."
+msgstr "Nebyl vybrán žádný další software."
+
+#: src/components/software/SoftwarePage.tsx:57
+msgid "The following software patterns are selected for installation:"
+msgstr "Pro instalaci jsou vybrány tyto softwarové vzory:"
+
+#: src/components/software/SoftwarePage.tsx:72
+#: src/components/software/SoftwarePage.tsx:84
+msgid "Selected patterns"
+msgstr "Vybrané vzory"
+
+#: src/components/software/SoftwarePage.tsx:75
+msgid "Change selection"
+msgstr "Změnit výběr"
+
+#: src/components/software/SoftwarePage.tsx:87
+msgid ""
+"This product does not allow to select software patterns during installation. "
+"However, you can add additional software once the installation is finished."
+msgstr ""
+"Tento produkt neumožňuje výběr softwarových vzorů během instalace. Po "
+"dokončení instalace však můžete přidat další software."
+
+#: src/components/software/SoftwarePatternsSelection.tsx:97
+msgid "None of the patterns match the filter."
+msgstr "Žádný ze vzorů neodpovídá filtru."
+
+#: src/components/software/SoftwarePatternsSelection.tsx:162
+msgid "auto selected"
+msgstr "automaticky vybráno"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:166
+#, fuzzy
+msgid "Unselect"
+msgstr "Zvolit"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:186
+msgid "Software selection"
+msgstr "Výběr softwaru"
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/software/SoftwarePatternsSelection.tsx:189
+#: src/components/software/SoftwarePatternsSelection.tsx:190
+msgid "Filter by pattern title or description"
+msgstr "Filtrování podle názvu nebo popisu vzoru"
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.tsx:32
+#, c-format
+msgid "Installation will take %s."
+msgstr "Instalace bude trvat %s."
+
+#: src/components/software/UsedSize.tsx:36
+msgid ""
+"This space includes the base system and the selected software patterns, if "
+"any."
+msgstr ""
+"Tento prostor zahrnuje základní systém a vybrané softwarové vzory, pokud "
+"existují."
+
+#: src/components/storage/BootConfigField.tsx:41
+msgid "Change boot options"
+msgstr "Změna možností spouštění systému"
+
+#: src/components/storage/BootConfigField.tsx:78
+msgid "Installation will not configure partitions for booting."
+msgstr "Instalace nenakonfiguruje oddíly pro zavádění systému."
+
+#: src/components/storage/BootConfigField.tsx:82
+msgid ""
+"Installation will configure partitions for booting at the installation disk."
+msgstr "Instalace nakonfiguruje oddíly pro zavádění na instalačním disku."
+
+#: src/components/storage/BootConfigField.tsx:86
+#, c-format
+msgid "Installation will configure partitions for booting at %s."
+msgstr "Instalace nakonfiguruje oddíly pro zavádění v %s."
+
+#: src/components/storage/BootSelection.tsx:108
+msgid ""
+"To ensure the new system is able to boot, the installer may need to create "
+"or configure some partitions in the appropriate disk."
+msgstr ""
+"Aby bylo možné nový systém spustit, může být nutné, aby instalační program "
+"vytvořil nebo nakonfiguroval některé oddíly na příslušném disku."
+
+#: src/components/storage/BootSelection.tsx:114
+msgid "Partitions to boot will be allocated at the installation disk."
+msgstr "Oddíly pro zavádění budou přiděleny na instalačním disku."
+
+#. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
+#: src/components/storage/BootSelection.tsx:119
+#, c-format
+msgid "Partitions to boot will be allocated at the installation disk (%s)."
+msgstr "Oddíly pro zavádění budou přiděleny na instalačním disku (%s)."
+
+#: src/components/storage/BootSelection.tsx:135
+msgid "Select booting partition"
+msgstr "Výběr zaváděcího oddílu"
+
+#: src/components/storage/BootSelection.tsx:156
+#: src/components/storage/iscsi/NodeStartupOptions.js:27
+msgid "Automatic"
+msgstr "Automatický"
+
+#: src/components/storage/BootSelection.tsx:174
+msgid "Select a disk"
+msgstr "Výběr disku"
+
+#: src/components/storage/BootSelection.tsx:179
+msgid "Partitions to boot will be allocated at the following device."
+msgstr "Oddíly pro zavádění budou přiděleny na tomto zařízení."
+
+#: src/components/storage/BootSelection.tsx:181
+msgid "Choose a disk for placing the boot loader"
+msgstr "Výběr disku pro umístění zavaděče"
+
+#: src/components/storage/BootSelection.tsx:204
+msgid "Do not configure"
+msgstr "Nekonfigurujte"
+
+#: src/components/storage/BootSelection.tsx:210
+msgid ""
+"No partitions will be automatically configured for booting. Use with caution."
+msgstr ""
+"Žádné oddíly nebudou automaticky konfigurovány pro zavádění systému. "
+"Používejte opatrně."
+
+#: src/components/storage/DASDFormatProgress.tsx:48
+msgid "Formatting DASD devices"
+msgstr "Formátuji zařízení DASD"
+
+#: src/components/storage/DASDPage.tsx:36 src/routes/storage.tsx:70
+#, fuzzy
+msgid "DASD"
+msgstr "DASD %s"
+
+#: src/components/storage/DASDTable.tsx:63
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+msgid "No"
+msgstr "Ne"
+
+#: src/components/storage/DASDTable.tsx:63
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+msgid "Yes"
+msgstr "Ano"
+
+#: src/components/storage/DASDTable.tsx:70
+#: src/components/storage/ZFCPDiskForm.jsx:110
+#: src/components/storage/ZFCPPage.jsx:324
+#: src/components/storage/ZFCPPage.jsx:382
+msgid "Channel ID"
+msgstr "ID kanálu"
+
+#. TRANSLATORS: table header
+#: src/components/storage/DASDTable.tsx:71
+#: src/components/storage/ZFCPPage.jsx:325
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
+#: src/components/users/RootAuthMethods.tsx:70
+msgid "Status"
+msgstr "Stav"
+
+#: src/components/storage/DASDTable.tsx:72
+#: src/components/storage/DeviceSelectorTable.tsx:185
+#: src/components/storage/ProposalResultTable.tsx:132
+#: src/components/storage/SpaceActionsTable.tsx:206
+#: src/components/storage/VolumeLocationSelectorTable.tsx:95
+msgid "Device"
+msgstr "Zařízení"
+
+#: src/components/storage/DASDTable.tsx:73
+msgid "Type"
+msgstr "Typ"
+
+#. TRANSLATORS: table header, the column contains "Yes"/"No" values
+#. for the DIAG access mode (special disk access mode on IBM mainframes),
+#. usually keep untranslated
+#: src/components/storage/DASDTable.tsx:77
+msgid "DIAG"
+msgstr "DIAG"
+
+#: src/components/storage/DASDTable.tsx:78
+msgid "Formatted"
+msgstr "Formátován"
+
+#: src/components/storage/DASDTable.tsx:79
+msgid "Partition Info"
+msgstr "Údaje o oddílech"
+
+#. TRANSLATORS: drop down menu label
+#: src/components/storage/DASDTable.tsx:118
+msgid "Perform an action"
+msgstr "Provést akci"
+
+#: src/components/storage/DASDTable.tsx:125
+#: src/components/storage/ZFCPPage.jsx:353
+msgid "Activate"
+msgstr "Aktivace"
+
+#: src/components/storage/DASDTable.tsx:129
+#: src/components/storage/ZFCPPage.jsx:395
+msgid "Deactivate"
+msgstr "Deaktivace"
+
+#: src/components/storage/DASDTable.tsx:134
+msgid "Set DIAG On"
+msgstr "Zapnout DIAG"
+
+#: src/components/storage/DASDTable.tsx:138
+msgid "Set DIAG Off"
+msgstr "Vypnout DIAG"
+
+#: src/components/storage/DASDTable.tsx:143
+msgid "Format"
+msgstr "Formát"
+
+#: src/components/storage/DASDTable.tsx:279
+#: src/components/storage/DASDTable.tsx:280
+msgid "Filter by min channel"
+msgstr "Filtrování podle min. kanálu"
+
+#: src/components/storage/DASDTable.tsx:287
+msgid "Remove min channel filter"
+msgstr "Odstranění filtru min. kanálu"
+
+#: src/components/storage/DASDTable.tsx:301
+#: src/components/storage/DASDTable.tsx:302
+msgid "Filter by max channel"
+msgstr "Filtrování podle max. kanálu"
+
+#: src/components/storage/DASDTable.tsx:309
+msgid "Remove max channel filter"
+msgstr "Odstranění filtru max. kanálu"
+
+#: src/components/storage/DeviceSelection.tsx:105
+msgid ""
+"The file systems will be allocated by default as [new partitions in the "
+"selected device]."
+msgstr ""
+"Souborové systémy budou ve výchozím nastavení přiděleny jako [nové oddíly ve "
+"vybraném zařízení]."
+
+#: src/components/storage/DeviceSelection.tsx:112
+msgid ""
+"The file systems will be allocated by default as [logical volumes of a new "
+"LVM Volume Group]. The corresponding physical volumes will be created on "
+"demand as new partitions at the selected devices."
+msgstr ""
+"Souborové systémy budou ve výchozím nastavení přiděleny jako [logické svazky "
+"nové skupiny svazků LVM]. Odpovídající fyzické svazky budou na vyžádání "
+"vytvořeny jako nové oddíly na vybraných zařízeních."
+
+#: src/components/storage/DeviceSelection.tsx:121
+msgid "Select installation device"
+msgstr "Výběr instalačního zařízení"
+
+#: src/components/storage/DeviceSelection.tsx:127
+msgid "Install new system on"
+msgstr "Instalace nového systému na"
+
+#: src/components/storage/DeviceSelection.tsx:130
+msgid "An existing disk"
+msgstr "Existující disk"
+
+#: src/components/storage/DeviceSelection.tsx:139
+msgid "A new LVM Volume Group"
+msgstr "Nová skupina svazků LVM"
+
+#: src/components/storage/DeviceSelection.tsx:162
+msgid "Device selector for target disk"
+msgstr "Výběr zařízení pro cílový disk"
+
+#: src/components/storage/DeviceSelection.tsx:185
+msgid "Device selector for new LVM volume group"
+msgstr "Výběr zařízení pro novou skupinu svazků LVM"
+
+#: src/components/storage/DeviceSelection.tsx:198
+msgid "Prepare more devices by configuring advanced"
+msgstr "Připravte další zařízení pomocí pokročilé konfigurace"
+
+#: src/components/storage/DeviceSelection.tsx:199
+msgid "storage techs"
+msgstr "technologie úložiště"
+
+#. TRANSLATORS: multipath device type
+#: src/components/storage/DeviceSelectorTable.tsx:53
+msgid "Multipath"
+msgstr "Vícecestný"
+
+#. TRANSLATORS: %s is replaced by the device bus ID
+#: src/components/storage/DeviceSelectorTable.tsx:58
+#, c-format
+msgid "DASD %s"
+msgstr "DASD %s"
+
+#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+#: src/components/storage/DeviceSelectorTable.tsx:63
+#, c-format
+msgid "Software %s"
+msgstr "Software %s"
+
+#: src/components/storage/DeviceSelectorTable.tsx:68
+msgid "SD Card"
+msgstr "Karta SD"
+
+#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+#: src/components/storage/DeviceSelectorTable.tsx:73
+#, c-format
+msgid "%s disk"
+msgstr "%s disk"
+
+#: src/components/storage/DeviceSelectorTable.tsx:74
+msgid "Disk"
+msgstr "Disk"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.tsx:94
+#, c-format
+msgid "Members: %s"
+msgstr "Členové: %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.tsx:103
+#, c-format
+msgid "Devices: %s"
+msgstr "Zařízení: %s"
+
+#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+#: src/components/storage/DeviceSelectorTable.tsx:112
+#, c-format
+msgid "Wires: %s"
+msgstr "Kabely: %s"
+
+#. TRANSLATORS: disk partition info, %s is replaced by partition table
+#. type (MS-DOS or GPT), %d is the number of the partitions
+#: src/components/storage/DeviceSelectorTable.tsx:144
+#, c-format
+msgid "%s with %d partitions"
+msgstr "%s s %d oddíly"
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
+#: src/components/storage/DeviceSelectorTable.tsx:150
+#: src/components/storage/SpaceActionsTable.tsx:183
+msgid "No content found"
+msgstr "Nebyl nalezen žádný obsah"
+
+#: src/components/storage/DeviceSelectorTable.tsx:186
+#: src/components/storage/PartitionsField.tsx:453
+#: src/components/storage/ProposalResultTable.tsx:134
+#: src/components/storage/SpaceActionsTable.tsx:207
+#: src/components/storage/VolumeLocationSelectorTable.tsx:96
+msgid "Details"
+msgstr "Podrobnosti"
+
+#: src/components/storage/DeviceSelectorTable.tsx:187
+#: src/components/storage/PartitionsField.tsx:454
+#: src/components/storage/ProposalResultTable.tsx:135
+#: src/components/storage/SpaceActionsTable.tsx:208
+#: src/components/storage/VolumeFields.tsx:524
+#: src/components/storage/VolumeLocationSelectorTable.tsx:101
+msgid "Size"
+msgstr "Velikost"
 
 #: src/components/storage/DevicesTechMenu.jsx:39
 msgid "Manage and format"
@@ -360,24 +1284,752 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Připojení k cílům iSCSI"
 
-#: src/components/storage/DevicesTechMenu.jsx:68
+#: src/components/storage/DevicesTechMenu.jsx:68 src/routes/storage.tsx:65
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/LoginForm.jsx:69
-msgid "Something went wrong"
-msgstr "Něco se nezdařilo"
+#: src/components/storage/EncryptionField.tsx:34
+#: src/components/storage/EncryptionSettingsDialog.tsx:30
+msgid "Encryption"
+msgstr "Šifrování"
+
+#: src/components/storage/EncryptionField.tsx:36
+msgid ""
+"Protection for the information stored at the device, including data, "
+"programs, and system files."
+msgstr ""
+"Ochrana informací uložených v zařízení, včetně dat, programů a systémových "
+"souborů."
+
+#: src/components/storage/EncryptionField.tsx:40
+msgid "disabled"
+msgstr "odpojeno"
+
+#: src/components/storage/EncryptionField.tsx:41
+msgid "enabled"
+msgstr "zapojeno"
+
+#: src/components/storage/EncryptionField.tsx:42
+msgid "using TPM unlocking"
+msgstr "odemykání čipem TPM"
+
+#: src/components/storage/EncryptionField.tsx:56
+msgid "Enable"
+msgstr "Zapojit"
+
+#: src/components/storage/EncryptionField.tsx:56
+msgid "Modify"
+msgstr "Upravit"
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:32
+msgid ""
+"Full Disk Encryption (FDE) allows to protect the information stored at the "
+"device, including data, programs, and system files."
+msgstr ""
+"Šifrování celého disku (FDE) umožňuje chránit informace uložené v zařízení, "
+"včetně dat, programů a systémových souborů."
+
+#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
+#: src/components/storage/EncryptionSettingsDialog.tsx:36
+msgid ""
+"Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
+msgstr ""
+"Použití modulu TPM (Trusted Platform Module) k automatickému dešifrování při "
+"každém spuštění systému"
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:40
+msgid ""
+"The password will not be needed to boot and access the data if the TPM can "
+"verify the integrity of the system. TPM sealing requires the new system to "
+"be booted directly on its first run."
+msgstr ""
+"Dokáže-li čip TPM ověřit integritu systému, nebude heslo pro spuštění "
+"systému a přístup k datům potřebné. Zapečetění TPM vyžaduje, aby byl nový "
+"systém spuštěn hned při prvním použití."
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:127
+msgid "Encrypt the system"
+msgstr "Šifrování systému"
+
+#: src/components/storage/InstallationDeviceField.tsx:31
+#: src/components/storage/VolumeLocationSelectorTable.tsx:53
+msgid "Installation device"
+msgstr "Instalační zařízení"
+
+#. TRANSLATORS: The storage "Installation device" field's description.
+#: src/components/storage/InstallationDeviceField.tsx:33
+msgid "Main disk or LVM Volume Group for installation."
+msgstr "Hlavní disk nebo skupina svazků LVM pro instalaci."
+
+#. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
+#: src/components/storage/InstallationDeviceField.tsx:45
+#, c-format
+msgid "File systems created as new partitions at %s"
+msgstr "Souborové systémy vytvořené jako nové oddíly v %s"
+
+#: src/components/storage/InstallationDeviceField.tsx:48
+msgid "File systems created at a new LVM volume group"
+msgstr "Souborové systémy vytvořené v nové skupině svazků LVM"
+
+#: src/components/storage/InstallationDeviceField.tsx:53
+#, c-format
+msgid "File systems created at a new LVM volume group on %s"
+msgstr "Souborové systémy vytvořené v nové skupině svazků LVM na %s"
+
+#: src/components/storage/InvalidMaxSizeError.tsx:43
+#: src/components/storage/VolumeDialog.tsx:215
+msgid "Maximum must be greater than minimum"
+msgstr "Maximum musí být větší než minimum"
+
+#. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:72
+#, c-format
+msgid "at least %s"
+msgstr "alespoň %s"
+
+#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:90
+#, c-format
+msgid "Transactional Btrfs root volume (%s)"
+msgstr "Transakční kořenový svazek Btrfs (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:92
+#, c-format
+msgid "Transactional Btrfs root partition (%s)"
+msgstr "Transakční kořenový oddíl Btrfs (%s)"
+
+#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:97
+#, c-format
+msgid "Btrfs root volume with snapshots (%s)"
+msgstr "Kořenový svazek Btrfs se snímky (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:99
+#, c-format
+msgid "Btrfs root partition with snapshots (%s)"
+msgstr "Kořenový oddíl Btrfs se snímky (%s)"
+
+#. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
+#. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
+#: src/components/storage/PartitionsField.tsx:108
+#, c-format
+msgid "Mount %1$s at %2$s (%3$s)"
+msgstr "Připojit %1$s at %2$s (%3$s)"
+
+#. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
+#. %1$s is replaced by the device name, and %2$s by the size
+#: src/components/storage/PartitionsField.tsx:114
+#, c-format
+msgid "Swap at %1$s (%2$s)"
+msgstr "Přepnout na %1$s (%2$s)"
+
+#. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
+#: src/components/storage/PartitionsField.tsx:118
+#, c-format
+msgid "Swap volume (%s)"
+msgstr "Přepnout svazek (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
+#: src/components/storage/PartitionsField.tsx:120
+#, c-format
+msgid "Swap partition (%s)"
+msgstr "Přepnout oddíl (%s)"
+
+#. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
+#: src/components/storage/PartitionsField.tsx:129
+#, c-format
+msgid "%1$s root at %2$s (%3$s)"
+msgstr "%1$s kořen na %2$s (%3$s)"
+
+#. TRANSLATORS: "/" is in an LVM logical volume.
+#. Results in something like "Btrfs root volume (at least 20 GiB)" since
+#. $1$s is replaced by filesystem type and %2$s by size description
+#: src/components/storage/PartitionsField.tsx:135
+#, c-format
+msgid "%1$s root volume (%2$s)"
+msgstr "%1$s kořenový svazek (%2$s)"
+
+#. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
+#. $1$s is replaced by filesystem type and %2$s by size description
+#: src/components/storage/PartitionsField.tsx:138
+#, c-format
+msgid "%1$s root partition (%2$s)"
+msgstr "%1$s kořenový oddíl (%2$s)"
+
+#. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
+#. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
+#: src/components/storage/PartitionsField.tsx:144
+#, c-format
+msgid "%1$s %2$s at %3$s (%4$s)"
+msgstr "%1$s %2$s na %3$s (%4$s)"
+
+#. TRANSLATORS: The filesystem is in an LVM logical volume.
+#. Results in something like "Ext4 /home volume (at least 10 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
+#: src/components/storage/PartitionsField.tsx:150
+#, c-format
+msgid "%1$s %2$s volume (%3$s)"
+msgstr "%1$s %2$s svazek (%3$s)"
+
+#. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
+#: src/components/storage/PartitionsField.tsx:153
+#, c-format
+msgid "%1$s %2$s partition (%3$s)"
+msgstr "%1$s %2$s oddíl (%3$s)"
+
+#: src/components/storage/PartitionsField.tsx:161
+msgid "Do not configure partitions for booting"
+msgstr "Nekonfigurujte oddíly pro zavádění systému"
+
+#: src/components/storage/PartitionsField.tsx:163
+msgid "Boot partitions at installation disk"
+msgstr "Oddíly zavádějící systém na instalačním disku"
+
+#. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
+#: src/components/storage/PartitionsField.tsx:166
+#, c-format
+msgid "Boot partitions at %s"
+msgstr "Zaváděcí oddíly na %s"
+
+#. TRANSLATORS: header for a list of items referring to size limits for file systems
+#: src/components/storage/PartitionsField.tsx:185
+msgid "These limits are affected by:"
+msgstr "Tyto limity jsou ovlivněny (čím):"
+
+#. TRANSLATORS: list item, this affects the computed partition size limits
+#: src/components/storage/PartitionsField.tsx:189
+msgid "The configuration of snapshots"
+msgstr "Konfigurace snímků"
+
+#: src/components/storage/PartitionsField.tsx:195
+#, c-format
+msgid "Presence of other volumes (%s)"
+msgstr "Přítomnost dalších svazků (%s)"
+
+#. TRANSLATORS: list item, describes a factor that affects the computed size of a
+#. file system; eg. adjusting the size of the swap
+#: src/components/storage/PartitionsField.tsx:201
+msgid "The amount of RAM in the system"
+msgstr "Množství paměti RAM v systému"
+
+#: src/components/storage/PartitionsField.tsx:258
+msgid "auto"
+msgstr "auto"
+
+#. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
+#: src/components/storage/PartitionsField.tsx:270
+#, c-format
+msgid "Reused %s"
+msgstr "Opětovné použití %s"
+
+#: src/components/storage/PartitionsField.tsx:271
+msgid "Transactional Btrfs"
+msgstr "Transakční systém Btrfs"
+
+#: src/components/storage/PartitionsField.tsx:272
+msgid "Btrfs with snapshots"
+msgstr "Btrfs se snímky"
+
+#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+#: src/components/storage/PartitionsField.tsx:285
+#, c-format
+msgid "Partition at %s"
+msgstr "Oddíl na %s"
+
+#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+#: src/components/storage/PartitionsField.tsx:288
+#, c-format
+msgid "Separate LVM at %s"
+msgstr "Oddělené LVM na %s"
+
+#: src/components/storage/PartitionsField.tsx:291
+msgid "Logical volume at system LVM"
+msgstr "Logický svazek na systému LVM"
+
+#: src/components/storage/PartitionsField.tsx:293
+msgid "Partition at installation disk"
+msgstr "Oddíl na instalačním disku"
+
+#: src/components/storage/PartitionsField.tsx:313
+msgid "Reset location"
+msgstr "Výmaz umístění"
+
+#: src/components/storage/PartitionsField.tsx:314
+msgid "Change location"
+msgstr "Změna umístění"
+
+#: src/components/storage/PartitionsField.tsx:315
+#: src/components/storage/iscsi/NodesPresenter.jsx:78
+msgid "Delete"
+msgstr "Smazat"
+
+#: src/components/storage/PartitionsField.tsx:452
+#: src/components/storage/VolumeFields.tsx:66
+#: src/components/storage/VolumeFields.tsx:76
+#: src/components/storage/VolumeFields.tsx:81
+msgid "Mount point"
+msgstr "Přípojný bod"
+
+#. TRANSLATORS: where (and how) the file-system is going to be created
+#: src/components/storage/PartitionsField.tsx:456
+msgid "Location"
+msgstr "Umístění"
+
+#: src/components/storage/PartitionsField.tsx:495
+msgid "Table with mount points"
+msgstr "Tabulka s přípojnými body"
+
+#: src/components/storage/PartitionsField.tsx:576
+#: src/components/storage/PartitionsField.tsx:596
+#: src/components/storage/VolumeDialog.tsx:77
+msgid "Add file system"
+msgstr "Přidat souborový systém"
+
+#: src/components/storage/PartitionsField.tsx:608
+msgid "Other"
+msgstr "Ostatní/jiné"
+
+#: src/components/storage/PartitionsField.tsx:742
+msgid "Reset to defaults"
+msgstr "Návrat k standardním hodnotám"
+
+#: src/components/storage/PartitionsField.tsx:811
+msgid "Partitions and file systems"
+msgstr "Oddíly a souborové systémy"
+
+#: src/components/storage/PartitionsField.tsx:813
+msgid ""
+"Structure of the new system, including any additional partition needed for "
+"booting"
+msgstr ""
+"Struktura nového systému, včetně případných dalších oddílů potřebných pro "
+"zavádění systému"
+
+#: src/components/storage/PartitionsField.tsx:820
+msgid "Show partitions and file-systems actions"
+msgstr "Zobrazení oddílů a akcí souborových systémů"
+
+#: src/components/storage/ProposalActionsDialog.tsx:72
+#, c-format
+msgid "Hide %d subvolume action"
+msgid_plural "Hide %d subvolume actions"
+msgstr[0] "Skrýt %d akci podsvazku"
+msgstr[1] "Skrýt %d akce podsvazku"
+msgstr[2] "Skrýt %d akcí podsvazku"
+
+#: src/components/storage/ProposalActionsDialog.tsx:77
+#, c-format
+msgid "Show %d subvolume action"
+msgid_plural "Show %d subvolume actions"
+msgstr[0] "Zobrazit %d akci podsvazku"
+msgstr[1] "Zobrazit %d akce podsvazku"
+msgstr[2] "Zobrazit %d akcí podsvazku"
+
+#: src/components/storage/ProposalActionsSummary.tsx:54
+msgid "Destructive actions are not allowed"
+msgstr "Destruktivní akce nejsou povoleny"
+
+#: src/components/storage/ProposalActionsSummary.tsx:56
+msgid "Destructive actions are allowed"
+msgstr "Destruktivní akce jsou povoleny"
+
+#: src/components/storage/ProposalActionsSummary.tsx:79
+#: src/components/storage/ProposalActionsSummary.tsx:133
+msgid "affecting"
+msgstr "ovlivňující"
+
+#: src/components/storage/ProposalActionsSummary.tsx:113
+msgid "Shrinking partitions is not allowed"
+msgstr "Zmenšování oddílů není povoleno"
+
+#: src/components/storage/ProposalActionsSummary.tsx:117
+msgid "Shrinking partitions is allowed"
+msgstr "Zmenšování oddílů je povoleno"
+
+#: src/components/storage/ProposalActionsSummary.tsx:119
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr "Zmenšení některých oddílů je povoleno, ale není nutné"
+
+#: src/components/storage/ProposalActionsSummary.tsx:122
+#, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "%d oddíl bude zmenšen"
+msgstr[1] "%d oddíly budou zmenšeny"
+msgstr[2] "%d oddílů bude zmenšeno"
+
+#: src/components/storage/ProposalActionsSummary.tsx:163
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "Nelze umístit požadované souborové systémy pro instalaci"
+
+#: src/components/storage/ProposalActionsSummary.tsx:171
+#, c-format
+msgid "Check the planned action"
+msgid_plural "Check the %d planned actions"
+msgstr[0] "Zkontrolujte plánovanou akci"
+msgstr[1] "Zkontrolujte %d plánované akce"
+msgstr[2] "Zkontrolujte %d plánovaných akcí"
+
+#: src/components/storage/ProposalActionsSummary.tsx:186
+msgid "Waiting for actions information..."
+msgstr "Čekáme na informace o akcích..."
+
+#: src/components/storage/ProposalPage.tsx:129
+msgid "Planned Actions"
+msgstr "Plánované akce"
+
+#: src/components/storage/ProposalResultSection.tsx:37
+msgid "Waiting for information about storage configuration"
+msgstr "Čekání na informace o konfiguraci úložiště"
+
+#: src/components/storage/ProposalResultSection.tsx:62
+msgid "Final layout"
+msgstr "Konečné rozvržení"
+
+#: src/components/storage/ProposalResultSection.tsx:63
+msgid "The systems will be configured as displayed below."
+msgstr "Systémy budou konfigurovány tak, jak je zobrazeno níže."
+
+#: src/components/storage/ProposalResultSection.tsx:71
+msgid "Storage proposal not possible"
+msgstr "Návrh úložiště není možný"
+
+#: src/components/storage/ProposalResultTable.tsx:77
+msgid "New"
+msgstr "Nový"
+
+#. TRANSLATORS: Label to indicate the device size before resizing, where %s is
+#. replaced by the original size (e.g., 3.00 GiB).
+#: src/components/storage/ProposalResultTable.tsx:106
+#, c-format
+msgid "Before %s"
+msgstr "Před %s"
+
+#: src/components/storage/ProposalResultTable.tsx:133
+msgid "Mount Point"
+msgstr "Přípojný bod"
+
+#: src/components/storage/ProposalTransactionalInfo.tsx:42
+msgid "Transactional root file system"
+msgstr "Transakční kořenový souborový systém"
+
+#: src/components/storage/ProposalTransactionalInfo.tsx:46
+#, c-format
+msgid ""
+"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
+"file system updated via snapshots."
+msgstr ""
+"%s je neměnný systém s atomickými aktualizacemi. Používá souborový systém "
+"Btrfs pouze pro čtení aktualizovaný pomocí snímků."
+
+#: src/components/storage/SnapshotsField.tsx:31
+msgid "Use Btrfs snapshots for the root file system"
+msgstr "Použití snímků Btrfs pro kořenový souborový systém"
+
+#: src/components/storage/SnapshotsField.tsx:33
+msgid ""
+"Allows to boot to a previous version of the system after configuration "
+"changes or software upgrades."
+msgstr ""
+"Umožňuje zavést předchozí verzi systému po změně konfigurace nebo "
+"aktualizaci softwaru."
+
+#: src/components/storage/SpaceActionsTable.tsx:60
+#, c-format
+msgid "Up to %s can be recovered by shrinking the device."
+msgstr "Zmenšením zařízení lze obnovit až %s."
+
+#: src/components/storage/SpaceActionsTable.tsx:69
+msgid "The device cannot be shrunk:"
+msgstr "Zařízení nelze zmenšit:"
+
+#: src/components/storage/SpaceActionsTable.tsx:90
+#, c-format
+msgid "Show information about %s"
+msgstr "Zobrazit informace o %s"
+
+#: src/components/storage/SpaceActionsTable.tsx:180
+msgid "The content may be deleted"
+msgstr "Obsah může být smazán"
+
+#: src/components/storage/SpaceActionsTable.tsx:210
+msgid "Action"
+msgstr "Akce"
+
+#: src/components/storage/SpaceActionsTable.tsx:221
+msgid "Actions to find space"
+msgstr "Akce k nalezení prostoru"
+
+#: src/components/storage/SpacePolicySelection.tsx:156
+msgid "Space policy"
+msgstr "Zásady pro volné místo"
+
+#: src/components/storage/VolumeDialog.tsx:74
+#, c-format
+msgid "Add %s file system"
+msgstr "Přidání souborového systému %s"
+
+#: src/components/storage/VolumeDialog.tsx:75
+#, c-format
+msgid "Edit %s file system"
+msgstr "Upravit souborový systém %s"
+
+#: src/components/storage/VolumeDialog.tsx:77
+msgid "Edit file system"
+msgstr "Úprava souborového systému"
+
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.tsx:89
+msgid "The type and size of the file system cannot be edited."
+msgstr "Typ a velikost souborového systému nelze upravovat."
+
+#: src/components/storage/VolumeDialog.tsx:93
+#, c-format
+msgid "The current file system on %s is selected to be mounted at %s."
+msgstr "Aktuální souborový systém na %s je vybrán k připojení k %s."
+
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.tsx:101
+msgid "The size of the file system cannot be edited"
+msgstr "Velikost souborového systému nelze měnit"
+
+#. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
+#: src/components/storage/VolumeDialog.tsx:103
+#, c-format
+msgid "The file system is allocated at the device %s."
+msgstr "Souborový systém je přidělen na zařízení %s."
+
+#: src/components/storage/VolumeDialog.tsx:140
+msgid "A mount point is required"
+msgstr "Je vyžadován přípojný bod"
+
+#: src/components/storage/VolumeDialog.tsx:157
+msgid "The mount point is invalid"
+msgstr "Přípojný bod je neplatný"
+
+#: src/components/storage/VolumeDialog.tsx:175
+msgid "A size value is required"
+msgstr "Je vyžadována hodnota velikosti"
+
+#: src/components/storage/VolumeDialog.tsx:193
+msgid "Minimum size is required"
+msgstr "Je vyžadována minimální velikost"
+
+#: src/components/storage/VolumeDialog.tsx:242
+#, c-format
+msgid "There is already a file system for %s."
+msgstr "Pro %s již existuje souborový systém."
+
+#: src/components/storage/VolumeDialog.tsx:244
+msgid "Do you want to edit it?"
+msgstr "Chcete to upravit?"
+
+#: src/components/storage/VolumeDialog.tsx:274
+#, c-format
+msgid "There is a predefined file system for %s."
+msgstr "Pro %s existuje předdefinovaný souborový systém."
+
+#: src/components/storage/VolumeDialog.tsx:276
+msgid "Do you want to add it?"
+msgstr "Chcete ho přidat?"
+
+#: src/components/storage/VolumeFields.tsx:236
+msgid ""
+"The options for the file system type depends on the product and the mount "
+"point."
+msgstr "Možnosti typu souborového systému závisí na produktu a přípojném bodu."
+
+#: src/components/storage/VolumeFields.tsx:243
+msgid "More info for file system types"
+msgstr "Další informace o typech souborových systémů"
+
+#. TRANSLATORS: label for the file system selector.
+#: src/components/storage/VolumeFields.tsx:254
+msgid "File system type"
+msgstr "Typ systému souborů"
+
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeFields.tsx:285
+msgid "the configuration of snapshots"
+msgstr "konfigurace snímků"
+
+#: src/components/storage/VolumeFields.tsx:292
+#, c-format
+msgid "the presence of the file system for %s"
+msgstr "přítomnost souborového systému pro %s"
+
+#. TRANSLATORS: conjunction for merging two list items
+#: src/components/storage/VolumeFields.tsx:294
+msgid ", "
+msgstr ", "
+
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeFields.tsx:300
+msgid "the amount of RAM in the system"
+msgstr "velikost paměti RAM v systému"
+
+#: src/components/storage/VolumeFields.tsx:304
+#, c-format
+msgid "The final size depends on %s."
+msgstr "Konečná velikost závisí na %s."
+
+#. TRANSLATORS: conjunction for merging two texts
+#: src/components/storage/VolumeFields.tsx:306
+msgid " and "
+msgstr " a "
+
+#: src/components/storage/VolumeFields.tsx:313
+msgid "Automatically calculated size according to the selected product."
+msgstr "Automatický výpočet velikosti podle vybraného produktu."
+
+#: src/components/storage/VolumeFields.tsx:342
+msgid "Exact size for the file system."
+msgstr "Přesná velikost souborového systému."
+
+#. TRANSLATORS: requested partition size
+#: src/components/storage/VolumeFields.tsx:351
+msgid "Exact size"
+msgstr "Přesná velikost"
+
+#. TRANSLATORS: units selector (like KiB, MiB, GiB...)
+#: src/components/storage/VolumeFields.tsx:368
+msgid "Size unit"
+msgstr "Jednotka velikosti"
+
+#: src/components/storage/VolumeFields.tsx:407
+msgid ""
+"Limits for the file system size. The final size will be a value between the "
+"given minimum and maximum. If no maximum is given then the file system will "
+"be as big as possible."
+msgstr ""
+"Omezení velikosti souborového systému. Konečná velikost bude hodnota mezi "
+"zadaným minimem a maximem. Pokud není zadáno žádné maximum, bude souborový "
+"systém co největší."
+
+#. TRANSLATORS: the minimal partition size
+#: src/components/storage/VolumeFields.tsx:415
+msgid "Minimum"
+msgstr "Minimum"
+
+#. TRANSLATORS: the minium partition size
+#: src/components/storage/VolumeFields.tsx:426
+msgid "Minimum desired size"
+msgstr "Minimální požadovaná velikost"
+
+#: src/components/storage/VolumeFields.tsx:437
+msgid "Unit for the minimum size"
+msgstr "Jednotka pro minimální velikost"
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeFields.tsx:449
+msgid "Maximum"
+msgstr "Maximum"
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeFields.tsx:461
+msgid "Maximum desired size"
+msgstr "Maximální požadovaná velikost"
+
+#: src/components/storage/VolumeFields.tsx:471
+msgid "Unit for the maximum size"
+msgstr "Jednotka pro maximální velikost"
+
+#. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
+#: src/components/storage/VolumeFields.tsx:489
+msgid "Auto"
+msgstr "Auto"
+
+#. TRANSLATORS: radio button label, exact partition size requested by user
+#: src/components/storage/VolumeFields.tsx:491
+msgid "Fixed"
+msgstr "Opraveno"
+
+#. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
+#: src/components/storage/VolumeFields.tsx:493
+msgid "Range"
+msgstr "Rozsah"
+
+#: src/components/storage/VolumeLocationDialog.tsx:37
+msgid ""
+"The file systems are allocated at the installation device by default. "
+"Indicate a custom location to create the file system at a specific device."
+msgstr ""
+"Souborové systémy jsou ve výchozím nastavení vytvořeny v instalačním "
+"zařízení. Chcete-li vytvořit souborový systém na konkrétním zařízení, "
+"zadejte vlastní umístění."
+
+#. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
+#. by a mount path (e.g., /home).
+#: src/components/storage/VolumeLocationDialog.tsx:140
+#, c-format
+msgid "Location for %s file system"
+msgstr "Umístění souborového systému %s"
+
+#: src/components/storage/VolumeLocationDialog.tsx:150
+msgid "Select in which device to allocate the file system"
+msgstr "Vyberte, ve kterém zařízení se má vytvořit systém souborů"
+
+#: src/components/storage/VolumeLocationDialog.tsx:153
+msgid "Select a location"
+msgstr "Vyberte umístění"
+
+#: src/components/storage/VolumeLocationDialog.tsx:165
+msgid "Select how to allocate the file system"
+msgstr "Zvolte způsob vytvoření souborového systému"
+
+#: src/components/storage/VolumeLocationDialog.tsx:170
+msgid "Create a new partition"
+msgstr "Vytvořit nový oddíl"
+
+#: src/components/storage/VolumeLocationDialog.tsx:172
+msgid ""
+"The file system will be allocated as a new partition at the selected   disk."
+msgstr "Souborový systém bude přidělen jako nový oddíl na vybraném   disku."
+
+#: src/components/storage/VolumeLocationDialog.tsx:182
+msgid "Create a dedicated LVM volume group"
+msgstr "Vytvoření vyhrazené skupiny svazků LVM"
+
+#: src/components/storage/VolumeLocationDialog.tsx:184
+msgid ""
+"A new volume group will be allocated in the selected disk and the   file "
+"system will be created as a logical volume."
+msgstr ""
+"Na vybraném disku bude vytvořena nová skupina svazků a   systém souborů bude "
+"vytvořen jako logický svazek."
+
+#: src/components/storage/VolumeLocationDialog.tsx:194
+msgid "Format the device"
+msgstr "Formátovat zařízení"
+
+#: src/components/storage/VolumeLocationDialog.tsx:198
+#, c-format
+msgid "The selected device will be formatted as %s file system."
+msgstr "Vybrané zařízení bude formátováno jako souborový systém %s."
+
+#: src/components/storage/VolumeLocationDialog.tsx:209
+msgid "Mount the file system"
+msgstr "Připojit souborový systém"
+
+#: src/components/storage/VolumeLocationDialog.tsx:211
+msgid ""
+"The current file system on the selected device will be mounted   without "
+"formatting the device."
+msgstr ""
+"Aktuální souborový systém na vybraném zařízení bude připojen   bez "
+"formátování zařízení."
+
+#: src/components/storage/VolumeLocationSelectorTable.tsx:98
+msgid "Usage"
+msgstr "Použití"
 
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "Disk zFCP nebyl aktivován."
-
-#: src/components/storage/ZFCPDiskForm.jsx:110
-#: src/components/storage/ZFCPPage.jsx:324
-#: src/components/storage/ZFCPPage.jsx:382
-msgid "Channel ID"
-msgstr "ID kanálu"
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:123
@@ -391,12 +2043,6 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
-#: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:103
-#: src/components/storage/iscsi/NodesPresenter.jsx:124
-msgid "Status"
-msgstr "Stav"
-
 #: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
 msgstr "Automatické skenování jednotek LUN"
@@ -408,30 +2054,6 @@ msgstr "Aktivováno"
 #: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
 msgstr "Deaktivováno"
-
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-msgid "No"
-msgstr "Ne"
-
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-msgid "Yes"
-msgstr "Ano"
-
-#: src/components/storage/ZFCPPage.jsx:353
-msgid "Activate"
-msgstr "Aktivace"
-
-#: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/NodesPresenter.jsx:99
-#: src/components/storage/iscsi/NodesPresenter.jsx:120
-msgid "Name"
-msgstr "Název"
-
-#: src/components/storage/ZFCPPage.jsx:395
-msgid "Deactivate"
-msgstr "Deaktivace"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
@@ -490,6 +2112,10 @@ msgstr "Aktivace nového disku"
 msgid "Disks"
 msgstr "Disky"
 
+#: src/components/storage/device-utils.tsx:74
+msgid "Unused space"
+msgstr "Nevyužitý prostor"
+
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
 msgstr "K dispozici, jen když je zadáno ověřování cílem"
@@ -512,11 +2138,6 @@ msgstr "Uživatelské jméno"
 msgid "Incorrect user name"
 msgstr "Nesprávné uživatelské jméno"
 
-#: src/components/storage/iscsi/AuthFields.jsx:90
-#: src/components/storage/iscsi/AuthFields.jsx:94
-msgid "Password"
-msgstr "Heslo"
-
 #: src/components/storage/iscsi/AuthFields.jsx:99
 #: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
@@ -530,15 +2151,80 @@ msgstr "Ověření iniciátorem"
 msgid "Target Password"
 msgstr "Cílové heslo"
 
+#. TRANSLATORS: popup title
+#: src/components/storage/iscsi/DiscoverForm.tsx:94
+msgid "Discover iSCSI Targets"
+msgstr "Najít cílové stanice iSCSI"
+
+#: src/components/storage/iscsi/DiscoverForm.tsx:99
+#: src/components/storage/iscsi/LoginForm.jsx:70
+msgid "Make sure you provide the correct values"
+msgstr "Ujistěte se, že jste zadali správné hodnoty"
+
+#: src/components/storage/iscsi/DiscoverForm.tsx:103
+msgid "IP address"
+msgstr "adresa IP"
+
+#. TRANSLATORS: network address
+#: src/components/storage/iscsi/DiscoverForm.tsx:108
+#: src/components/storage/iscsi/DiscoverForm.tsx:110
+msgid "Address"
+msgstr "Adresa"
+
+#: src/components/storage/iscsi/DiscoverForm.tsx:115
+msgid "Incorrect IP address"
+msgstr "Nesprávná IP adresa"
+
+#. TRANSLATORS: network port number
+#: src/components/storage/iscsi/DiscoverForm.tsx:117
+#: src/components/storage/iscsi/DiscoverForm.tsx:122
+#: src/components/storage/iscsi/DiscoverForm.tsx:124
+msgid "Port"
+msgstr "Port"
+
+#: src/components/storage/iscsi/DiscoverForm.tsx:129
+msgid "Incorrect port"
+msgstr "Nesprávný port"
+
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/storage/iscsi/EditNodeForm.tsx:48
+#, c-format
+msgid "Edit %s"
+msgstr "Upravit %s"
+
+#: src/components/storage/iscsi/InitiatorForm.tsx:42
+msgid "Edit iSCSI Initiator"
+msgstr "Upravit iniciátor iSCSI"
+
+#. TRANSLATORS: iSCSI initiator name
+#: src/components/storage/iscsi/InitiatorForm.tsx:49
+msgid "Initiator name"
+msgstr "Název iniciátora"
+
+#. TRANSLATORS: usually just keep the original text
+#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "iBFT"
+msgstr "iBFT"
+
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:57
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:72
+msgid "Offload card"
+msgstr "Karta k přesměrování části (mobilního) provozu"
+
+#. TRANSLATORS: iSCSI initiator section name
+#: src/components/storage/iscsi/InitiatorSection.tsx:35
+msgid "Initiator"
+msgstr "Iniciátor"
+
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
 msgstr "Přihlášení %s"
-
-#: src/components/storage/iscsi/LoginForm.jsx:70
-msgid "Make sure you provide the correct values"
-msgstr "Ujistěte se, že jste zadali správné hodnoty"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:74
@@ -546,36 +2232,15 @@ msgstr "Ujistěte se, že jste zadali správné hodnoty"
 msgid "Startup"
 msgstr "Typ startu iSCSI"
 
-#: src/components/storage/iscsi/NodeStartupOptions.js:25
-msgid "Manual"
-msgstr "Manuální"
-
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
 msgstr "Při spuštění systému"
-
-#: src/components/storage/iscsi/NodeStartupOptions.js:27
-msgid "Automatic"
-msgstr "Automatický"
-
-#. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:64
-msgid "Disconnected"
-msgstr "Odpojeno"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:68
 #, c-format
 msgid "Connected (%s)"
 msgstr "Připojeno (%s)"
-
-#: src/components/storage/iscsi/NodesPresenter.jsx:74
-msgid "Edit"
-msgstr "Upravit"
-
-#: src/components/storage/iscsi/NodesPresenter.jsx:78
-msgid "Delete"
-msgstr "Smazat"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:83
 msgid "Login"
@@ -595,10 +2260,249 @@ msgstr "Portál"
 msgid "Interface"
 msgstr "Rozhraní"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-msgid "iBFT"
-msgstr "iBFT"
+#: src/components/storage/iscsi/TargetsSection.tsx:56
+msgid "No iSCSI targets found."
+msgstr "Nebyly nalezeny žádné cíle iSCSI."
+
+#: src/components/storage/iscsi/TargetsSection.tsx:58
+msgid ""
+"Please, perform an iSCSI discovery in order to find available iSCSI targets."
+msgstr "Spusťte vyhledávání iSCSI a tím najděte dostupné cíle iSCSI."
+
+#: src/components/storage/iscsi/TargetsSection.tsx:62
+msgid "Discover iSCSI targets"
+msgstr "Zjištění cílů iSCSI"
+
+#. TRANSLATORS: button label, starts iSCSI discovery
+#: src/components/storage/iscsi/TargetsSection.tsx:74
+msgid "Discover"
+msgstr "Objevit"
+
+#. TRANSLATORS: iSCSI targets section title
+#: src/components/storage/iscsi/TargetsSection.tsx:85
+msgid "Targets"
+msgstr "Cíle"
+
+#: src/components/storage/utils.ts:60
+msgid "KiB"
+msgstr "KiB"
+
+#: src/components/storage/utils.ts:61
+msgid "MiB"
+msgstr "MiB"
+
+#: src/components/storage/utils.ts:62
+msgid "GiB"
+msgstr "GiB"
+
+#: src/components/storage/utils.ts:63
+msgid "TiB"
+msgstr "TiB"
+
+#: src/components/storage/utils.ts:64
+msgid "PiB"
+msgstr "PiB"
+
+#: src/components/storage/utils.ts:72
+msgid "Delete current content"
+msgstr "Odstranit aktuální obsah"
+
+#: src/components/storage/utils.ts:73
+msgid "All partitions will be removed and any data in the disks will be lost."
+msgstr ""
+"Všechny oddíly budou odstraněny a veškerá data na discích budou ztracena."
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space deleting current content". Keep it short
+#: src/components/storage/utils.ts:77
+msgid "deleting current content"
+msgstr "odstranění aktuálního obsahu"
+
+#: src/components/storage/utils.ts:82
+msgid "Shrink existing partitions"
+msgstr "Zmenšit stávající oddíly"
+
+#: src/components/storage/utils.ts:83
+msgid "The data is kept, but the current partitions will be resized as needed."
+msgstr ""
+"Data zůstanou zachována, ale velikost aktuálních oddílů se podle potřeby "
+"změní."
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space shrinking partitions". Keep it short.
+#: src/components/storage/utils.ts:87
+msgid "shrinking partitions"
+msgstr "zmenšování oddílů"
+
+#: src/components/storage/utils.ts:92
+msgid "Use available space"
+msgstr "Využít dostupný prostor"
+
+#: src/components/storage/utils.ts:93
+msgid ""
+"The data is kept. Only the space not assigned to any partition will be used."
+msgstr ""
+"Data jsou uchována. Využije se pouze prostor, který není přiřazen žádnému "
+"oddílu."
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space without modifying any partition". Keep it short.
+#: src/components/storage/utils.ts:97
+msgid "without modifying any partition"
+msgstr "bez úpravy jakéhokoli oddílu"
+
+#: src/components/storage/utils.ts:102
+msgid "Custom"
+msgstr "Vlastní"
+
+#: src/components/storage/utils.ts:103
+msgid "Select what to do with each partition."
+msgstr "Vyberte, co se má s jednotlivými oddíly dělat."
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space with custom actions". Keep it short.
+#: src/components/storage/utils.ts:107
+msgid "with custom actions"
+msgstr "s vlastními akcemi"
+
+#: src/components/users/FirstUser.tsx:33
+msgid "Define a user now"
+msgstr "Nyní definujte uživatele"
+
+#: src/components/users/FirstUser.tsx:39
+msgid "No user defined yet."
+msgstr "Zatím není definován žádný uživatel."
+
+#: src/components/users/FirstUser.tsx:43
+msgid ""
+"Please, be aware that a user must be defined before installing the system to "
+"be able to log into it."
+msgstr ""
+"Pozor, před instalací systému musí být definován uživatel, aby se pak do "
+"systému dalo přihlásit."
+
+#: src/components/users/FirstUser.tsx:55
+#: src/components/users/FirstUserForm.tsx:220
+msgid "Full name"
+msgstr "Celé jméno"
+
+#: src/components/users/FirstUser.tsx:56
+#: src/components/users/FirstUserForm.tsx:234
+#: src/components/users/FirstUserForm.tsx:239
+#: src/components/users/FirstUserForm.tsx:242
+msgid "Username"
+msgstr "Uživatelské jméno"
+
+#: src/components/users/FirstUser.tsx:87
+#: src/components/users/RootAuthMethods.tsx:117
+#: src/components/users/RootAuthMethods.tsx:129
+msgid "Discard"
+msgstr "Vyřadit"
+
+#: src/components/users/FirstUser.tsx:94
+msgid "First user"
+msgstr "První uživatel"
+
+#: src/components/users/FirstUserForm.tsx:57
+msgid "Username suggestion dropdown"
+msgstr "Rozbalovací nabídka uživatelských jmen"
+
+#. TRANSLATORS: dropdown username suggestions
+#: src/components/users/FirstUserForm.tsx:72
+msgid "Use suggested username"
+msgstr "Použijte navrhované uživatelské jméno"
+
+#: src/components/users/FirstUserForm.tsx:147
+msgid "All fields are required"
+msgstr "Všechna pole jsou povinná"
+
+#: src/components/users/FirstUserForm.tsx:204
+msgid "Create user"
+msgstr "Vytvořit uživatele"
+
+#: src/components/users/FirstUserForm.tsx:204
+msgid "Edit user"
+msgstr "Upravit uživatele"
+
+#: src/components/users/FirstUserForm.tsx:224
+#: src/components/users/FirstUserForm.tsx:226
+msgid "User full name"
+msgstr "Celé jméno uživatele"
+
+#: src/components/users/FirstUserForm.tsx:264
+msgid "Edit password too"
+msgstr "Upravit také heslo"
+
+#: src/components/users/FirstUserForm.tsx:280
+msgid "user autologin"
+msgstr "automatické přihlášení uživatele"
+
+#. TRANSLATORS: check box label
+#: src/components/users/FirstUserForm.tsx:284
+msgid "Auto-login"
+msgstr "Automatické přihlášení"
+
+#: src/components/users/RootAuthMethods.tsx:33
+msgid "No root authentication method defined yet."
+msgstr "Zatím není definována žádná metoda ověřování superuživatele root."
+
+#: src/components/users/RootAuthMethods.tsx:37
+msgid ""
+"Please, define at least one authentication method for logging into the "
+"system as root."
+msgstr ""
+"Definujte alespoň jednu metodu ověřování pro přihlášení do systému jako root."
+
+#. TRANSLATORS: table header, user authentication method
+#: src/components/users/RootAuthMethods.tsx:68
+msgid "Method"
+msgstr "Metoda"
+
+#: src/components/users/RootAuthMethods.tsx:77
+msgid "Already set"
+msgstr "Již nastaveno"
+
+#: src/components/users/RootAuthMethods.tsx:77
+#: src/components/users/RootAuthMethods.tsx:85
+msgid "Not set"
+msgstr "Nenastaveno"
+
+#: src/components/users/RootAuthMethods.tsx:83
+msgid "SSH Key"
+msgstr "Klíč SSH"
+
+#: src/components/users/RootAuthMethods.tsx:113
+#: src/components/users/RootAuthMethods.tsx:125
+msgid "Set"
+msgstr "Nastavit"
+
+#: src/components/users/RootAuthMethods.tsx:137
+msgid "Root authentication"
+msgstr "Ověření superuživatele root"
+
+#: src/components/users/RootAuthMethods.tsx:144
+msgid "Set a password"
+msgstr "Nastavte heslo"
+
+#: src/components/users/RootAuthMethods.tsx:148
+msgid "Upload a SSH Public Key"
+msgstr "Nahrátí veřejného klíče SSH"
+
+#: src/components/users/RootAuthMethods.tsx:165
+msgid "Change the root password"
+msgstr "Změna hesla roota"
+
+#: src/components/users/RootAuthMethods.tsx:165
+msgid "Set a root password"
+msgstr "Nastavte heslo roota"
+
+#: src/components/users/RootAuthMethods.tsx:175
+msgid "Edit the SSH Public Key for root"
+msgstr "Úprava veřejného klíče SSH pro uživatele root"
+
+#: src/components/users/RootAuthMethods.tsx:176
+msgid "Add a SSH Public Key for root"
+msgstr "Přidat veřejný klíč SSH pro uživatele root"
 
 #: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
@@ -630,1225 +2534,17 @@ msgstr "Smazat"
 msgid "Overview"
 msgstr "Přehled"
 
-#~ msgid "Could not log in. Please, make sure that the password is correct."
-#~ msgstr "Nelze se přhlásit. Zkontrolujte správnost hesla."
-
-#~ msgid "Could not authenticate against the server, please check it."
-#~ msgstr "Nezdařilo se ověřit Vás u serveru, zkontrolujte to prosím."
-
-#, c-format
-#~ msgid "Log in as %s"
-#~ msgstr "Přihlásit se jako %s"
-
-#~ msgid "The installer requires [root] user privileges."
-#~ msgstr "Instalátor vyžaduje oprávnění uživatele [root]."
-
-#~ msgid "Please, provide its password to log in to the system."
-#~ msgstr "Zadejte heslo pro přihlášení do systému."
-
-#~ msgid "Login form"
-#~ msgstr "Přihlašovací formulář"
-
-#~ msgid "Password input"
-#~ msgstr "Zadejte heslo"
-
-#~ msgid "Log in"
-#~ msgstr "Přihlásit se"
-
-#~ msgid "More about this"
-#~ msgstr "Více o tom"
-
-#~ msgid "Passwords do not match"
-#~ msgstr "Hesla se neshodují"
-
-#~ msgid "Password confirmation"
-#~ msgstr "Potvrzení hesla"
-
-#~ msgid "Filter by description or keymap code"
-#~ msgstr "Filtrování podle popisu nebo kódu mapy kláves"
-
-#~ msgid "None of the keymaps match the filter."
-#~ msgstr "Žádná z map kláves neodpovídá filtru."
-
-#~ msgid "Keyboard selection"
-#~ msgstr "Výběr klávesnice"
-
-#~ msgid "Filter by language, territory or locale code"
-#~ msgstr "Filtrování podle jazyka, území nebo kódu lokality"
-
-#~ msgid "None of the locales match the filter."
-#~ msgstr "Žádné umístění neodpovídá filtru."
-
-#~ msgid "Locale selection"
-#~ msgstr "Výběr lokality"
-
-#~ msgid "Filter by territory, time zone code or UTC offset"
-#~ msgstr "Filtrování podle území, kódu časového pásma nebo posunu od UTC"
-
-#~ msgid "None of the time zones match the filter."
-#~ msgstr "Žádné z časových pásem neodpovídá filtru."
-
-#~ msgid " Timezone selection"
-#~ msgstr " Výběr časového pásma"
-
-#~ msgid "Users"
-#~ msgstr "Uživatelé"
-
-#~ msgid "Software"
-#~ msgstr "Software"
-
-#~ msgid "Ready for installation"
-#~ msgstr "Připraveno k instalaci"
-
-#~ msgid "Installation"
-#~ msgstr "Instalace"
-
-#~ msgid "Before installing, please check the following problems."
-#~ msgstr "Před instalací zkontrolujte tyto problémy."
-
-#~ msgid ""
-#~ "Take your time to check your configuration before starting the "
-#~ "installation process."
-#~ msgstr "Před zahájením instalace zkontrolujte konfiguraci."
-
-#~ msgid ""
-#~ "These are the most relevant installation settings. Feel free to browse "
-#~ "the sections in the menu for further details."
-#~ msgstr ""
-#~ "Toto je nejdůležitější nastavení instalace. Další podrobnosti najdete v "
-#~ "sekcích v nabídce."
-
-#~ msgid "Discover iSCSI Targets"
-#~ msgstr "Najít cílové stanice iSCSI"
-
-#~ msgid "IP address"
-#~ msgstr "adresa IP"
-
-#~ msgid "Address"
-#~ msgstr "Adresa"
-
-#~ msgid "Incorrect IP address"
-#~ msgstr "Nesprávná IP adresa"
-
-#~ msgid "Port"
-#~ msgstr "Port"
-
-#~ msgid "Incorrect port"
-#~ msgstr "Nesprávný port"
-
-#, c-format
-#~ msgid "Edit %s"
-#~ msgstr "Upravit %s"
-
-#~ msgid "Edit iSCSI Initiator"
-#~ msgstr "Upravit iniciátor iSCSI"
-
-#~ msgid "Initiator name"
-#~ msgstr "Název iniciátora"
-
-#~ msgid "None"
-#~ msgstr "Žádná"
-
-#~ msgid "Offload card"
-#~ msgstr "Karta k přesměrování části (mobilního) provozu"
-
-#~ msgid "Initiator"
-#~ msgstr "Iniciátor"
-
-#~ msgid "No iSCSI targets found."
-#~ msgstr "Nebyly nalezeny žádné cíle iSCSI."
-
-#~ msgid ""
-#~ "Please, perform an iSCSI discovery in order to find available iSCSI "
-#~ "targets."
-#~ msgstr "Spusťte vyhledávání iSCSI a tím najděte dostupné cíle iSCSI."
-
-#~ msgid "Discover iSCSI targets"
-#~ msgstr "Zjištění cílů iSCSI"
-
-#~ msgid "Discover"
-#~ msgstr "Objevit"
-
-#~ msgid "Targets"
-#~ msgstr "Cíle"
-
-#~ msgid "No user defined yet."
-#~ msgstr "Zatím není definován žádný uživatel."
-
-#~ msgid ""
-#~ "Please, be aware that a user must be defined before installing the system "
-#~ "to be able to log into it."
-#~ msgstr ""
-#~ "Pozor, před instalací systému musí být definován uživatel, aby se pak do "
-#~ "systému dalo přihlásit."
-
-#~ msgid "Define a user now"
-#~ msgstr "Nyní definujte uživatele"
-
-#~ msgid "Full name"
-#~ msgstr "Celé jméno"
-
-#~ msgid "Username"
-#~ msgstr "Uživatelské jméno"
-
-#~ msgid "Discard"
-#~ msgstr "Vyřadit"
-
-#~ msgid "Username suggestion dropdown"
-#~ msgstr "Rozbalovací nabídka uživatelských jmen"
-
-#~ msgid "Use suggested username"
-#~ msgstr "Použijte navrhované uživatelské jméno"
-
-#~ msgid "All fields are required"
-#~ msgstr "Všechna pole jsou povinná"
-
-#~ msgid "Create user"
-#~ msgstr "Vytvořit uživatele"
-
-#~ msgid "Edit user"
-#~ msgstr "Upravit uživatele"
-
-#~ msgid "User full name"
-#~ msgstr "Celé jméno uživatele"
-
-#~ msgid "Edit password too"
-#~ msgstr "Upravit také heslo"
-
-#~ msgid "user autologin"
-#~ msgstr "automatické přihlášení uživatele"
-
-#~ msgid "Auto-login"
-#~ msgstr "Automatické přihlášení"
-
-#~ msgid "No root authentication method defined yet."
-#~ msgstr "Zatím není definována žádná metoda ověřování superuživatele root."
-
-#~ msgid ""
-#~ "Please, define at least one authentication method for logging into the "
-#~ "system as root."
-#~ msgstr ""
-#~ "Definujte alespoň jednu metodu ověřování pro přihlášení do systému jako "
-#~ "root."
-
-#~ msgid "Set a password"
-#~ msgstr "Nastavte heslo"
-
-#~ msgid "Upload a SSH Public Key"
-#~ msgstr "Nahrátí veřejného klíče SSH"
-
-#~ msgid "Set"
-#~ msgstr "Nastavit"
-
-#~ msgid "Already set"
-#~ msgstr "Již nastaveno"
-
-#~ msgid "Not set"
-#~ msgstr "Nenastaveno"
-
-#~ msgid "Method"
-#~ msgstr "Metoda"
-
-#~ msgid "SSH Key"
-#~ msgstr "Klíč SSH"
-
-#~ msgid "Change the root password"
-#~ msgstr "Změna hesla roota"
-
-#~ msgid "Set a root password"
-#~ msgstr "Nastavte heslo roota"
-
-#~ msgid "Edit the SSH Public Key for root"
-#~ msgstr "Úprava veřejného klíče SSH pro uživatele root"
-
-#~ msgid "Add a SSH Public Key for root"
-#~ msgstr "Přidat veřejný klíč SSH pro uživatele root"
-
-#~ msgid "First user"
-#~ msgstr "První uživatel"
-
-#~ msgid "Root authentication"
-#~ msgstr "Ověření superuživatele root"
-
-#~ msgid "Change boot options"
-#~ msgstr "Změna možností spouštění systému"
-
-#~ msgid "Installation will not configure partitions for booting."
-#~ msgstr "Instalace nenakonfiguruje oddíly pro zavádění systému."
-
-#~ msgid ""
-#~ "Installation will configure partitions for booting at the installation "
-#~ "disk."
-#~ msgstr "Instalace nakonfiguruje oddíly pro zavádění na instalačním disku."
-
-#, c-format
-#~ msgid "Installation will configure partitions for booting at %s."
-#~ msgstr "Instalace nakonfiguruje oddíly pro zavádění v %s."
-
-#~ msgid ""
-#~ "To ensure the new system is able to boot, the installer may need to "
-#~ "create or configure some partitions in the appropriate disk."
-#~ msgstr ""
-#~ "Aby bylo možné nový systém spustit, může být nutné, aby instalační "
-#~ "program vytvořil nebo nakonfiguroval některé oddíly na příslušném disku."
-
-#~ msgid "Partitions to boot will be allocated at the installation disk."
-#~ msgstr "Oddíly pro zavádění budou přiděleny na instalačním disku."
-
-#, c-format
-#~ msgid "Partitions to boot will be allocated at the installation disk (%s)."
-#~ msgstr "Oddíly pro zavádění budou přiděleny na instalačním disku (%s)."
-
-#~ msgid "Select booting partition"
-#~ msgstr "Výběr zaváděcího oddílu"
-
-#~ msgid "Select a disk"
-#~ msgstr "Výběr disku"
-
-#~ msgid "Partitions to boot will be allocated at the following device."
-#~ msgstr "Oddíly pro zavádění budou přiděleny na tomto zařízení."
-
-#~ msgid "Choose a disk for placing the boot loader"
-#~ msgstr "Výběr disku pro umístění zavaděče"
-
-#~ msgid "Do not configure"
-#~ msgstr "Nekonfigurujte"
-
-#~ msgid ""
-#~ "No partitions will be automatically configured for booting. Use with "
-#~ "caution."
-#~ msgstr ""
-#~ "Žádné oddíly nebudou automaticky konfigurovány pro zavádění systému. "
-#~ "Používejte opatrně."
-
 #~ msgid "Waiting for progress report"
 #~ msgstr "Čekám na zprávu o postupu"
-
-#~ msgid "Formatting DASD devices"
-#~ msgstr "Formátuji zařízení DASD"
-
-#~ msgid "Device"
-#~ msgstr "Zařízení"
-
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgid "DIAG"
-#~ msgstr "DIAG"
-
-#~ msgid "Formatted"
-#~ msgstr "Formátován"
-
-#~ msgid "Partition Info"
-#~ msgstr "Údaje o oddílech"
-
-#~ msgid "Perform an action"
-#~ msgstr "Provést akci"
-
-#~ msgid "Set DIAG On"
-#~ msgstr "Zapnout DIAG"
-
-#~ msgid "Set DIAG Off"
-#~ msgstr "Vypnout DIAG"
-
-#~ msgid "Format"
-#~ msgstr "Formát"
-
-#~ msgid "Filter by min channel"
-#~ msgstr "Filtrování podle min. kanálu"
-
-#~ msgid "Remove min channel filter"
-#~ msgstr "Odstranění filtru min. kanálu"
-
-#~ msgid "Filter by max channel"
-#~ msgstr "Filtrování podle max. kanálu"
-
-#~ msgid "Remove max channel filter"
-#~ msgstr "Odstranění filtru max. kanálu"
 
 #~ msgid "Loading data, please wait a second..."
 #~ msgstr "Načítání dat chvíli trvá..."
 
-#~ msgid ""
-#~ "The file systems will be allocated by default as [new partitions in the "
-#~ "selected device]."
-#~ msgstr ""
-#~ "Souborové systémy budou ve výchozím nastavení přiděleny jako [nové oddíly "
-#~ "ve vybraném zařízení]."
-
-#~ msgid ""
-#~ "The file systems will be allocated by default as [logical volumes of a "
-#~ "new LVM Volume Group]. The corresponding physical volumes will be created "
-#~ "on demand as new partitions at the selected devices."
-#~ msgstr ""
-#~ "Souborové systémy budou ve výchozím nastavení přiděleny jako [logické "
-#~ "svazky nové skupiny svazků LVM]. Odpovídající fyzické svazky budou na "
-#~ "vyžádání vytvořeny jako nové oddíly na vybraných zařízeních."
-
-#~ msgid "Select installation device"
-#~ msgstr "Výběr instalačního zařízení"
-
-#~ msgid "Install new system on"
-#~ msgstr "Instalace nového systému na"
-
-#~ msgid "An existing disk"
-#~ msgstr "Existující disk"
-
-#~ msgid "A new LVM Volume Group"
-#~ msgstr "Nová skupina svazků LVM"
-
-#~ msgid "Device selector for target disk"
-#~ msgstr "Výběr zařízení pro cílový disk"
-
-#~ msgid "Device selector for new LVM volume group"
-#~ msgstr "Výběr zařízení pro novou skupinu svazků LVM"
-
-#~ msgid "Prepare more devices by configuring advanced"
-#~ msgstr "Připravte další zařízení pomocí pokročilé konfigurace"
-
-#~ msgid "storage techs"
-#~ msgstr "technologie úložiště"
-
-#~ msgid "Multipath"
-#~ msgstr "Vícecestný"
-
-#, c-format
-#~ msgid "DASD %s"
-#~ msgstr "DASD %s"
-
-#, c-format
-#~ msgid "Software %s"
-#~ msgstr "Software %s"
-
-#~ msgid "SD Card"
-#~ msgstr "Karta SD"
-
-#, c-format
-#~ msgid "%s disk"
-#~ msgstr "%s disk"
-
-#~ msgid "Disk"
-#~ msgstr "Disk"
-
-#, c-format
-#~ msgid "Members: %s"
-#~ msgstr "Členové: %s"
-
-#, c-format
-#~ msgid "Devices: %s"
-#~ msgstr "Zařízení: %s"
-
-#, c-format
-#~ msgid "Wires: %s"
-#~ msgstr "Kabely: %s"
-
-#, c-format
-#~ msgid "%s with %d partitions"
-#~ msgstr "%s s %d oddíly"
-
-#~ msgid "No content found"
-#~ msgstr "Nebyl nalezen žádný obsah"
-
-#~ msgid "Details"
-#~ msgstr "Podrobnosti"
-
-#~ msgid "Size"
-#~ msgstr "Velikost"
-
-#~ msgid "Encryption"
-#~ msgstr "Šifrování"
-
-#~ msgid ""
-#~ "Protection for the information stored at the device, including data, "
-#~ "programs, and system files."
-#~ msgstr ""
-#~ "Ochrana informací uložených v zařízení, včetně dat, programů a "
-#~ "systémových souborů."
-
-#~ msgid "disabled"
-#~ msgstr "odpojeno"
-
-#~ msgid "enabled"
-#~ msgstr "zapojeno"
-
-#~ msgid "using TPM unlocking"
-#~ msgstr "odemykání čipem TPM"
-
-#~ msgid "Enable"
-#~ msgstr "Zapojit"
-
-#~ msgid "Modify"
-#~ msgstr "Upravit"
-
-#~ msgid ""
-#~ "Full Disk Encryption (FDE) allows to protect the information stored at "
-#~ "the device, including data, programs, and system files."
-#~ msgstr ""
-#~ "Šifrování celého disku (FDE) umožňuje chránit informace uložené v "
-#~ "zařízení, včetně dat, programů a systémových souborů."
-
-#~ msgid ""
-#~ "Use the Trusted Platform Module (TPM) to decrypt automatically on each "
-#~ "boot"
-#~ msgstr ""
-#~ "Použití modulu TPM (Trusted Platform Module) k automatickému dešifrování "
-#~ "při každém spuštění systému"
-
-#~ msgid ""
-#~ "The password will not be needed to boot and access the data if the TPM "
-#~ "can verify the integrity of the system. TPM sealing requires the new "
-#~ "system to be booted directly on its first run."
-#~ msgstr ""
-#~ "Dokáže-li čip TPM ověřit integritu systému, nebude heslo pro spuštění "
-#~ "systému a přístup k datům potřebné. Zapečetění TPM vyžaduje, aby byl nový "
-#~ "systém spuštěn hned při prvním použití."
-
-#~ msgid "Encrypt the system"
-#~ msgstr "Šifrování systému"
-
-#~ msgid "Installation device"
-#~ msgstr "Instalační zařízení"
-
-#~ msgid "Main disk or LVM Volume Group for installation."
-#~ msgstr "Hlavní disk nebo skupina svazků LVM pro instalaci."
-
-#, c-format
-#~ msgid "File systems created as new partitions at %s"
-#~ msgstr "Souborové systémy vytvořené jako nové oddíly v %s"
-
-#~ msgid "File systems created at a new LVM volume group"
-#~ msgstr "Souborové systémy vytvořené v nové skupině svazků LVM"
-
-#, c-format
-#~ msgid "File systems created at a new LVM volume group on %s"
-#~ msgstr "Souborové systémy vytvořené v nové skupině svazků LVM na %s"
-
-#, c-format
-#~ msgid "at least %s"
-#~ msgstr "alespoň %s"
-
-#, c-format
-#~ msgid "Transactional Btrfs root volume (%s)"
-#~ msgstr "Transakční kořenový svazek Btrfs (%s)"
-
-#, c-format
-#~ msgid "Transactional Btrfs root partition (%s)"
-#~ msgstr "Transakční kořenový oddíl Btrfs (%s)"
-
-#, c-format
-#~ msgid "Btrfs root volume with snapshots (%s)"
-#~ msgstr "Kořenový svazek Btrfs se snímky (%s)"
-
-#, c-format
-#~ msgid "Btrfs root partition with snapshots (%s)"
-#~ msgstr "Kořenový oddíl Btrfs se snímky (%s)"
-
-#, c-format
-#~ msgid "Mount %1$s at %2$s (%3$s)"
-#~ msgstr "Připojit %1$s at %2$s (%3$s)"
-
-#, c-format
-#~ msgid "Swap at %1$s (%2$s)"
-#~ msgstr "Přepnout na %1$s (%2$s)"
-
-#, c-format
-#~ msgid "Swap volume (%s)"
-#~ msgstr "Přepnout svazek (%s)"
-
-#, c-format
-#~ msgid "Swap partition (%s)"
-#~ msgstr "Přepnout oddíl (%s)"
-
-#, c-format
-#~ msgid "%1$s root at %2$s (%3$s)"
-#~ msgstr "%1$s kořen na %2$s (%3$s)"
-
-#, c-format
-#~ msgid "%1$s root volume (%2$s)"
-#~ msgstr "%1$s kořenový svazek (%2$s)"
-
-#, c-format
-#~ msgid "%1$s root partition (%2$s)"
-#~ msgstr "%1$s kořenový oddíl (%2$s)"
-
-#, c-format
-#~ msgid "%1$s %2$s at %3$s (%4$s)"
-#~ msgstr "%1$s %2$s na %3$s (%4$s)"
-
-#, c-format
-#~ msgid "%1$s %2$s volume (%3$s)"
-#~ msgstr "%1$s %2$s svazek (%3$s)"
-
-#, c-format
-#~ msgid "%1$s %2$s partition (%3$s)"
-#~ msgstr "%1$s %2$s oddíl (%3$s)"
-
-#~ msgid "Do not configure partitions for booting"
-#~ msgstr "Nekonfigurujte oddíly pro zavádění systému"
-
-#~ msgid "Boot partitions at installation disk"
-#~ msgstr "Oddíly zavádějící systém na instalačním disku"
-
-#, c-format
-#~ msgid "Boot partitions at %s"
-#~ msgstr "Zaváděcí oddíly na %s"
-
-#~ msgid "These limits are affected by:"
-#~ msgstr "Tyto limity jsou ovlivněny (čím):"
-
-#~ msgid "The configuration of snapshots"
-#~ msgstr "Konfigurace snímků"
-
-#, c-format
-#~ msgid "Presence of other volumes (%s)"
-#~ msgstr "Přítomnost dalších svazků (%s)"
-
-#~ msgid "The amount of RAM in the system"
-#~ msgstr "Množství paměti RAM v systému"
-
-#~ msgid "auto"
-#~ msgstr "auto"
-
-#, c-format
-#~ msgid "Reused %s"
-#~ msgstr "Opětovné použití %s"
-
-#~ msgid "Transactional Btrfs"
-#~ msgstr "Transakční systém Btrfs"
-
-#~ msgid "Btrfs with snapshots"
-#~ msgstr "Btrfs se snímky"
-
-#, c-format
-#~ msgid "Partition at %s"
-#~ msgstr "Oddíl na %s"
-
-#, c-format
-#~ msgid "Separate LVM at %s"
-#~ msgstr "Oddělené LVM na %s"
-
-#~ msgid "Logical volume at system LVM"
-#~ msgstr "Logický svazek na systému LVM"
-
-#~ msgid "Partition at installation disk"
-#~ msgstr "Oddíl na instalačním disku"
-
-#~ msgid "Reset location"
-#~ msgstr "Výmaz umístění"
-
-#~ msgid "Change location"
-#~ msgstr "Změna umístění"
-
-#~ msgid "Mount point"
-#~ msgstr "Přípojný bod"
-
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgid "Table with mount points"
-#~ msgstr "Tabulka s přípojnými body"
-
-#~ msgid "Add file system"
-#~ msgstr "Přidat souborový systém"
-
-#~ msgid "Other"
-#~ msgstr "Ostatní/jiné"
-
-#~ msgid "Reset to defaults"
-#~ msgstr "Návrat k standardním hodnotám"
-
-#~ msgid "Partitions and file systems"
-#~ msgstr "Oddíly a souborové systémy"
-
-#~ msgid ""
-#~ "Structure of the new system, including any additional partition needed "
-#~ "for booting"
-#~ msgstr ""
-#~ "Struktura nového systému, včetně případných dalších oddílů potřebných pro "
-#~ "zavádění systému"
-
-#~ msgid "Show partitions and file-systems actions"
-#~ msgstr "Zobrazení oddílů a akcí souborových systémů"
-
-#, c-format
-#~ msgid "Hide %d subvolume action"
-#~ msgid_plural "Hide %d subvolume actions"
-#~ msgstr[0] "Skrýt %d akci podsvazku"
-#~ msgstr[1] "Skrýt %d akce podsvazku"
-#~ msgstr[2] "Skrýt %d akcí podsvazku"
-
-#, c-format
-#~ msgid "Show %d subvolume action"
-#~ msgid_plural "Show %d subvolume actions"
-#~ msgstr[0] "Zobrazit %d akci podsvazku"
-#~ msgstr[1] "Zobrazit %d akce podsvazku"
-#~ msgstr[2] "Zobrazit %d akcí podsvazku"
-
-#~ msgid "Destructive actions are not allowed"
-#~ msgstr "Destruktivní akce nejsou povoleny"
-
-#~ msgid "Destructive actions are allowed"
-#~ msgstr "Destruktivní akce jsou povoleny"
-
-#~ msgid "affecting"
-#~ msgstr "ovlivňující"
-
-#~ msgid "Shrinking partitions is not allowed"
-#~ msgstr "Zmenšování oddílů není povoleno"
-
-#~ msgid "Shrinking partitions is allowed"
-#~ msgstr "Zmenšování oddílů je povoleno"
-
-#~ msgid "Shrinking some partitions is allowed but not needed"
-#~ msgstr "Zmenšení některých oddílů je povoleno, ale není nutné"
-
-#, c-format
-#~ msgid "%d partition will be shrunk"
-#~ msgid_plural "%d partitions will be shrunk"
-#~ msgstr[0] "%d oddíl bude zmenšen"
-#~ msgstr[1] "%d oddíly budou zmenšeny"
-#~ msgstr[2] "%d oddílů bude zmenšeno"
-
-#~ msgid "Cannot accommodate the required file systems for installation"
-#~ msgstr "Nelze umístit požadované souborové systémy pro instalaci"
-
-#, c-format
-#~ msgid "Check the planned action"
-#~ msgid_plural "Check the %d planned actions"
-#~ msgstr[0] "Zkontrolujte plánovanou akci"
-#~ msgstr[1] "Zkontrolujte %d plánované akce"
-#~ msgstr[2] "Zkontrolujte %d plánovaných akcí"
-
-#~ msgid "Waiting for actions information..."
-#~ msgstr "Čekáme na informace o akcích..."
-
-#~ msgid "Planned Actions"
-#~ msgstr "Plánované akce"
-
-#~ msgid "Waiting for information about storage configuration"
-#~ msgstr "Čekání na informace o konfiguraci úložiště"
-
-#~ msgid "Final layout"
-#~ msgstr "Konečné rozvržení"
-
-#~ msgid "The systems will be configured as displayed below."
-#~ msgstr "Systémy budou konfigurovány tak, jak je zobrazeno níže."
-
-#~ msgid "Storage proposal not possible"
-#~ msgstr "Návrh úložiště není možný"
-
-#~ msgid "New"
-#~ msgstr "Nový"
-
-#, c-format
-#~ msgid "Before %s"
-#~ msgstr "Před %s"
-
-#~ msgid "Mount Point"
-#~ msgstr "Přípojný bod"
-
-#~ msgid "Transactional root file system"
-#~ msgstr "Transakční kořenový souborový systém"
-
-#, c-format
-#~ msgid ""
-#~ "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
-#~ "file system updated via snapshots."
-#~ msgstr ""
-#~ "%s je neměnný systém s atomickými aktualizacemi. Používá souborový systém "
-#~ "Btrfs pouze pro čtení aktualizovaný pomocí snímků."
-
-#~ msgid "Use Btrfs snapshots for the root file system"
-#~ msgstr "Použití snímků Btrfs pro kořenový souborový systém"
-
-#~ msgid ""
-#~ "Allows to boot to a previous version of the system after configuration "
-#~ "changes or software upgrades."
-#~ msgstr ""
-#~ "Umožňuje zavést předchozí verzi systému po změně konfigurace nebo "
-#~ "aktualizaci softwaru."
-
-#, c-format
-#~ msgid "Up to %s can be recovered by shrinking the device."
-#~ msgstr "Zmenšením zařízení lze obnovit až %s."
-
-#~ msgid "The device cannot be shrunk:"
-#~ msgstr "Zařízení nelze zmenšit:"
-
-#, c-format
-#~ msgid "Show information about %s"
-#~ msgstr "Zobrazit informace o %s"
-
-#~ msgid "The content may be deleted"
-#~ msgstr "Obsah může být smazán"
-
-#~ msgid "Action"
-#~ msgstr "Akce"
-
-#~ msgid "Actions to find space"
-#~ msgstr "Akce k nalezení prostoru"
-
-#~ msgid "Space policy"
-#~ msgstr "Zásady pro volné místo"
-
-#, c-format
-#~ msgid "Add %s file system"
-#~ msgstr "Přidání souborového systému %s"
-
-#, c-format
-#~ msgid "Edit %s file system"
-#~ msgstr "Upravit souborový systém %s"
-
-#~ msgid "Edit file system"
-#~ msgstr "Úprava souborového systému"
-
-#~ msgid "The type and size of the file system cannot be edited."
-#~ msgstr "Typ a velikost souborového systému nelze upravovat."
-
-#, c-format
-#~ msgid "The current file system on %s is selected to be mounted at %s."
-#~ msgstr "Aktuální souborový systém na %s je vybrán k připojení k %s."
-
-#~ msgid "The size of the file system cannot be edited"
-#~ msgstr "Velikost souborového systému nelze měnit"
-
-#, c-format
-#~ msgid "The file system is allocated at the device %s."
-#~ msgstr "Souborový systém je přidělen na zařízení %s."
-
-#~ msgid "A mount point is required"
-#~ msgstr "Je vyžadován přípojný bod"
-
-#~ msgid "The mount point is invalid"
-#~ msgstr "Přípojný bod je neplatný"
-
-#~ msgid "A size value is required"
-#~ msgstr "Je vyžadována hodnota velikosti"
-
-#~ msgid "Minimum size is required"
-#~ msgstr "Je vyžadována minimální velikost"
-
-#~ msgid "Maximum must be greater than minimum"
-#~ msgstr "Maximum musí být větší než minimum"
-
-#, c-format
-#~ msgid "There is already a file system for %s."
-#~ msgstr "Pro %s již existuje souborový systém."
-
-#~ msgid "Do you want to edit it?"
-#~ msgstr "Chcete to upravit?"
-
-#, c-format
-#~ msgid "There is a predefined file system for %s."
-#~ msgstr "Pro %s existuje předdefinovaný souborový systém."
-
-#~ msgid "Do you want to add it?"
-#~ msgstr "Chcete ho přidat?"
-
-#~ msgid ""
-#~ "The options for the file system type depends on the product and the mount "
-#~ "point."
-#~ msgstr ""
-#~ "Možnosti typu souborového systému závisí na produktu a přípojném bodu."
-
-#~ msgid "More info for file system types"
-#~ msgstr "Další informace o typech souborových systémů"
-
-#~ msgid "File system type"
-#~ msgstr "Typ systému souborů"
-
-#~ msgid "the configuration of snapshots"
-#~ msgstr "konfigurace snímků"
-
-#, c-format
-#~ msgid "the presence of the file system for %s"
-#~ msgstr "přítomnost souborového systému pro %s"
-
-#~ msgid ", "
-#~ msgstr ", "
-
-#~ msgid "the amount of RAM in the system"
-#~ msgstr "velikost paměti RAM v systému"
-
-#, c-format
-#~ msgid "The final size depends on %s."
-#~ msgstr "Konečná velikost závisí na %s."
-
-#~ msgid " and "
-#~ msgstr " a "
-
-#~ msgid "Automatically calculated size according to the selected product."
-#~ msgstr "Automatický výpočet velikosti podle vybraného produktu."
-
-#~ msgid "Exact size for the file system."
-#~ msgstr "Přesná velikost souborového systému."
-
-#~ msgid "Exact size"
-#~ msgstr "Přesná velikost"
-
-#~ msgid "Size unit"
-#~ msgstr "Jednotka velikosti"
-
-#~ msgid ""
-#~ "Limits for the file system size. The final size will be a value between "
-#~ "the given minimum and maximum. If no maximum is given then the file "
-#~ "system will be as big as possible."
-#~ msgstr ""
-#~ "Omezení velikosti souborového systému. Konečná velikost bude hodnota mezi "
-#~ "zadaným minimem a maximem. Pokud není zadáno žádné maximum, bude "
-#~ "souborový systém co největší."
-
-#~ msgid "Minimum"
-#~ msgstr "Minimum"
-
-#~ msgid "Minimum desired size"
-#~ msgstr "Minimální požadovaná velikost"
-
-#~ msgid "Unit for the minimum size"
-#~ msgstr "Jednotka pro minimální velikost"
-
-#~ msgid "Maximum"
-#~ msgstr "Maximum"
-
-#~ msgid "Maximum desired size"
-#~ msgstr "Maximální požadovaná velikost"
-
-#~ msgid "Unit for the maximum size"
-#~ msgstr "Jednotka pro maximální velikost"
-
-#~ msgid "Auto"
-#~ msgstr "Auto"
-
-#~ msgid "Fixed"
-#~ msgstr "Opraveno"
-
-#~ msgid "Range"
-#~ msgstr "Rozsah"
-
-#~ msgid ""
-#~ "The file systems are allocated at the installation device by default. "
-#~ "Indicate a custom location to create the file system at a specific device."
-#~ msgstr ""
-#~ "Souborové systémy jsou ve výchozím nastavení vytvořeny v instalačním "
-#~ "zařízení. Chcete-li vytvořit souborový systém na konkrétním zařízení, "
-#~ "zadejte vlastní umístění."
-
-#, c-format
-#~ msgid "Location for %s file system"
-#~ msgstr "Umístění souborového systému %s"
-
-#~ msgid "Select in which device to allocate the file system"
-#~ msgstr "Vyberte, ve kterém zařízení se má vytvořit systém souborů"
-
-#~ msgid "Select a location"
-#~ msgstr "Vyberte umístění"
-
-#~ msgid "Select how to allocate the file system"
-#~ msgstr "Zvolte způsob vytvoření souborového systému"
-
-#~ msgid "Create a new partition"
-#~ msgstr "Vytvořit nový oddíl"
-
-#~ msgid ""
-#~ "The file system will be allocated as a new partition at the selected   "
-#~ "disk."
-#~ msgstr "Souborový systém bude přidělen jako nový oddíl na vybraném   disku."
-
-#~ msgid "Create a dedicated LVM volume group"
-#~ msgstr "Vytvoření vyhrazené skupiny svazků LVM"
-
-#~ msgid ""
-#~ "A new volume group will be allocated in the selected disk and the   file "
-#~ "system will be created as a logical volume."
-#~ msgstr ""
-#~ "Na vybraném disku bude vytvořena nová skupina svazků a   systém souborů "
-#~ "bude vytvořen jako logický svazek."
-
-#~ msgid "Format the device"
-#~ msgstr "Formátovat zařízení"
-
-#, c-format
-#~ msgid "The selected device will be formatted as %s file system."
-#~ msgstr "Vybrané zařízení bude formátováno jako souborový systém %s."
-
-#~ msgid "Mount the file system"
-#~ msgstr "Připojit souborový systém"
-
-#~ msgid ""
-#~ "The current file system on the selected device will be mounted   without "
-#~ "formatting the device."
-#~ msgstr ""
-#~ "Aktuální souborový systém na vybraném zařízení bude připojen   bez "
-#~ "formátování zařízení."
-
-#~ msgid "Usage"
-#~ msgstr "Použití"
-
-#~ msgid "Unused space"
-#~ msgstr "Nevyužitý prostor"
-
-#~ msgid "KiB"
-#~ msgstr "KiB"
-
-#~ msgid "MiB"
-#~ msgstr "MiB"
-
-#~ msgid "GiB"
-#~ msgstr "GiB"
-
-#~ msgid "TiB"
-#~ msgstr "TiB"
-
-#~ msgid "PiB"
-#~ msgstr "PiB"
-
-#~ msgid "Delete current content"
-#~ msgstr "Odstranit aktuální obsah"
-
-#~ msgid ""
-#~ "All partitions will be removed and any data in the disks will be lost."
-#~ msgstr ""
-#~ "Všechny oddíly budou odstraněny a veškerá data na discích budou ztracena."
-
-#~ msgid "deleting current content"
-#~ msgstr "odstranění aktuálního obsahu"
-
-#~ msgid "Shrink existing partitions"
-#~ msgstr "Zmenšit stávající oddíly"
-
-#~ msgid ""
-#~ "The data is kept, but the current partitions will be resized as needed."
-#~ msgstr ""
-#~ "Data zůstanou zachována, ale velikost aktuálních oddílů se podle potřeby "
-#~ "změní."
-
-#~ msgid "shrinking partitions"
-#~ msgstr "zmenšování oddílů"
-
-#~ msgid "Use available space"
-#~ msgstr "Využít dostupný prostor"
-
-#~ msgid ""
-#~ "The data is kept. Only the space not assigned to any partition will be "
-#~ "used."
-#~ msgstr ""
-#~ "Data jsou uchována. Využije se pouze prostor, který není přiřazen žádnému "
-#~ "oddílu."
-
-#~ msgid "without modifying any partition"
-#~ msgstr "bez úpravy jakéhokoli oddílu"
-
-#~ msgid "Custom"
-#~ msgstr "Vlastní"
-
-#~ msgid "Select what to do with each partition."
-#~ msgstr "Vyberte, co se má s jednotlivými oddíly dělat."
-
-#~ msgid "with custom actions"
-#~ msgstr "s vlastními akcemi"
-
-#~ msgid "Remove"
-#~ msgstr "Odstranit"
-
-#~ msgid "IP Address"
-#~ msgstr "IP adresa"
-
-#~ msgid "Prefix length or netmask"
-#~ msgstr "Délka předpony nebo maska sítě"
-
-#~ msgid "Add an address"
-#~ msgstr "Přidat adresu"
-
-#~ msgid "Add another address"
-#~ msgstr "Přidat další adresu"
-
-#~ msgid "Addresses"
-#~ msgstr "Adresy"
-
-#~ msgid "Addresses data list"
-#~ msgstr "Seznam údajů o adresách"
-
-#~ msgid "IP addresses"
-#~ msgstr "IP adresy"
-
-#~ msgid "Connection actions"
-#~ msgstr "Akce připojení"
-
-#, c-format
-#~ msgid "Edit connection %s"
-#~ msgstr "Upravit připojení %s"
-
-#~ msgid "Forget"
-#~ msgstr "Zapomenout"
-
-#, c-format
-#~ msgid "Forget connection %s"
-#~ msgstr "Zapomenout připojení %s"
-
-#, c-format
-#~ msgid "Actions for connection %s"
-#~ msgstr "Akce pro připojení %s"
-
-#~ msgid "Server IP"
-#~ msgstr "IP serveru"
-
-#~ msgid "Add DNS"
-#~ msgstr "Přidat DNS"
-
-#~ msgid "Add another DNS"
-#~ msgstr "Přidat další DNS"
-
-#~ msgid "DNS"
-#~ msgstr "DNS"
-
-#~ msgid "IP prefix or netmask"
-#~ msgstr "Předpona IP nebo maska sítě"
-
-#~ msgid "At least one address must be provided for selected mode"
-#~ msgstr "Pro zvolený režim musí být uvedena alespoň jedna adresa"
-
-#~ msgid "Mode"
-#~ msgstr "Režim"
-
-#~ msgid "Automatic (DHCP)"
-#~ msgstr "Automatický (DHCP)"
-
-#~ msgid "Gateway"
-#~ msgstr "Brána"
-
-#~ msgid "Gateway can be defined only in 'Manual' mode"
-#~ msgstr "Bránu lze definovat pouze v režimu 'Manual'"
-
-#~ msgid "No Wi-Fi supported"
-#~ msgstr "Wi-Fi není podporováno"
-
-#~ msgid ""
-#~ "The system does not support Wi-Fi connections, probably because of "
-#~ "missing or disabled hardware."
-#~ msgstr ""
-#~ "Systém nepodporuje připojení Wi-Fi, pravděpodobně chybí hardware nebo je "
-#~ "zakázán."
-
-#~ msgid "Wi-Fi"
-#~ msgstr "Wi-Fi"
-
-#~ msgid "Connect"
-#~ msgstr "Připojit"
-
-#, c-format
-#~ msgid "Conected to %s"
-#~ msgstr "Připojit k %s"
-
-#~ msgid "No connected yet"
-#~ msgstr "Dosud nepřipojeno"
-
-#~ msgid ""
-#~ "The system has not been configured for connecting to a Wi-Fi network yet."
-#~ msgstr "Systém zatím nebyl konfigurován pro připojení k síti Wi-Fi."
-
-#~ msgid "Wired"
-#~ msgstr "Připojení kabelem (Ethernet)"
-
-#~ msgid "No wired connections found"
-#~ msgstr "Nebyla nalezena žádná kabelová připojení"
-
-#~ msgid "Network"
-#~ msgstr "Síť"
-
-#~ msgid "WPA & WPA2 Personal"
-#~ msgstr "WPA & WPA2 Osobní"
-
-#~ msgid "Please, review provided settings and try again."
-#~ msgstr "Zkontrolujte poskytnutá nastavení a zkuste to znovu."
-
-#~ msgid "SSID"
-#~ msgstr "SSID"
-
-#~ msgid "Security"
-#~ msgstr "Zabezpečení"
-
-#~ msgid "WPA Password"
-#~ msgstr "Heslo k WPA"
-
-#~ msgid "Connecting"
-#~ msgstr "Připojuji"
-
-#~ msgid "Connected"
-#~ msgstr "Připojeno"
-
-#~ msgid "Disconnect"
-#~ msgstr "Odpojit"
-
 #~ msgid "Connect to a hidden network"
 #~ msgstr "Připojení ke skryté síti"
 
-#~ msgid "configured"
-#~ msgstr "konfigurováno"
-
-#~ msgid "Connect to hidden network"
-#~ msgstr "Připojit ke skryté síti"
-
-#~ msgid "Connect to a Wi-Fi network"
-#~ msgstr "Připojení k síti Wi-Fi"
-
-#~ msgid "Question"
-#~ msgstr "Dotaz"
-
-#~ msgid "Given encryption password didn't work"
-#~ msgstr "Zadané šifrovací heslo nefungovalo"
-
-#~ msgid "Encrypted Device"
-#~ msgstr "Šifrované zařízení"
-
-#~ msgid "Encryption Password"
-#~ msgstr "Heslo pro šifrování"
-
-#~ msgid "Password Required"
-#~ msgstr "Vyžadováno heslo"
-
 #~ msgid "Agama"
 #~ msgstr "Agama"
-
-#~ msgid "Change product"
-#~ msgstr "Změnit produkt"
-
-#~ msgid "About"
-#~ msgstr "O"
-
-#~ msgid "About Agama"
-#~ msgstr "O Agamě"
-
-#~ msgid ""
-#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
-#~ "under development so, please, do not use it in production environments. "
-#~ "If you want to give it a try, we recommend using a virtual machine to "
-#~ "prevent any possible data loss."
-#~ msgstr ""
-#~ "Agama je experimentální instalátor pro (otevřené) systémy SUSE. Je stále "
-#~ "ve fázi vývoje, proto ji prosím nepoužívejte v produkčních prostředích. "
-#~ "Pokud ji chcete vyzkoušet, doporučujeme použít virtuální počítač, abyste "
-#~ "předešli případné ztrátě dat."
-
-#, c-format
-#~ msgid "For more information, please visit the project's repository at %s."
-#~ msgstr "Další informace najdete v úložišti projektu na %s."
-
-#~ msgid "Close"
-#~ msgstr "Zavřít"
-
-#~ msgid "Collecting logs..."
-#~ msgstr "Shromažďuji záznamy..."
-
-#~ msgid "Download logs"
-#~ msgstr "Stahuji zázbamy"
-
-#~ msgid ""
-#~ "The browser will run the logs download as soon as they are ready. Please, "
-#~ "be patient."
-#~ msgstr "Prohlížeč stáhne záznamy, jakmile budou připraveny. Čekejte prosím."
-
-#~ msgid "Something went wrong while collecting logs. Please, try again."
-#~ msgstr "Stahování záznamů se nezdařilo. Zkuste to znovu."
 
 #~ msgid "Waiting for progress status..."
 #~ msgstr "Čekáme na stav postupu..."
@@ -1865,56 +2561,6 @@ msgstr "Přehled"
 
 #~ msgid "Email"
 #~ msgstr "E-mail"
-
-#~ msgid "The installation will take"
-#~ msgstr "Instalace zabere"
-
-#, c-format
-#~ msgid "The installation will take %s including:"
-#~ msgstr "Instalace bude trvat %s včetně:"
-
-#~ msgid "No additional software was selected."
-#~ msgstr "Nebyl vybrán žádný další software."
-
-#~ msgid "The following software patterns are selected for installation:"
-#~ msgstr "Pro instalaci jsou vybrány tyto softwarové vzory:"
-
-#~ msgid "Selected patterns"
-#~ msgstr "Vybrané vzory"
-
-#~ msgid "Change selection"
-#~ msgstr "Změnit výběr"
-
-#~ msgid ""
-#~ "This product does not allow to select software patterns during "
-#~ "installation. However, you can add additional software once the "
-#~ "installation is finished."
-#~ msgstr ""
-#~ "Tento produkt neumožňuje výběr softwarových vzorů během instalace. Po "
-#~ "dokončení instalace však můžete přidat další software."
-
-#~ msgid "auto selected"
-#~ msgstr "automaticky vybráno"
-
-#~ msgid "None of the patterns match the filter."
-#~ msgstr "Žádný ze vzorů neodpovídá filtru."
-
-#~ msgid "Software selection"
-#~ msgstr "Výběr softwaru"
-
-#~ msgid "Filter by pattern title or description"
-#~ msgstr "Filtrování podle názvu nebo popisu vzoru"
-
-#, c-format
-#~ msgid "Installation will take %s."
-#~ msgstr "Instalace bude trvat %s."
-
-#~ msgid ""
-#~ "This space includes the base system and the selected software patterns, "
-#~ "if any."
-#~ msgstr ""
-#~ "Tento prostor zahrnuje základní systém a vybrané softwarové vzory, pokud "
-#~ "existují."
 
 #~ msgid "Reading file..."
 #~ msgstr "Soubor se načítá…"

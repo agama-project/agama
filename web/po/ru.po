@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-15 02:43+0000\n"
+"POT-Creation-Date: 2024-09-16 07:57+0000\n"
 "PO-Revision-Date: 2024-07-26 12:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -19,6 +19,44 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.6.2\n"
+
+#: src/components/core/About.tsx:46
+msgid "About"
+msgstr "Об Agama"
+
+#: src/components/core/About.tsx:64
+msgid "About Agama"
+msgstr "Об Agama"
+
+#: src/components/core/About.tsx:69
+msgid ""
+"Agama is an experimental installer for (open)SUSE systems. It is still under "
+"development so, please, do not use it in production environments. If you "
+"want to give it a try, we recommend using a virtual machine to prevent any "
+"possible data loss."
+msgstr ""
+"Agama - это экспериментальный установщик для систем (open)SUSE. Он все еще "
+"находится в стадии разработки, поэтому, пожалуйста, не используйте его в "
+"производственных средах. Если вы хотите попробовать, мы рекомендуем "
+"использовать виртуальную машину, чтобы предотвратить возможную потерю данных."
+
+#. TRANSLATORS: content of the "About" popup (2/2)
+#. %s is replaced by the project URL
+#: src/components/core/About.tsx:81
+#, c-format
+msgid "For more information, please visit the project's repository at %s."
+msgstr ""
+"Для получения дополнительной информации посетите репозиторий проекта по "
+"адресу %s."
+
+#: src/components/core/About.tsx:87 src/components/core/LogsButton.tsx:123
+#: src/components/software/SoftwarePatternsSelection.tsx:205
+msgid "Close"
+msgstr "Закрыть"
+
+#: src/components/core/ChangeProductLink.tsx:38
+msgid "Change product"
+msgstr "Изменить продукт"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -42,7 +80,10 @@ msgid "Continue"
 msgstr "Продолжить"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
+#: src/components/core/InstallButton.jsx:49 src/components/core/Page.tsx:237
+#: src/components/core/Popup.jsx:132
+#: src/components/network/WifiConnectionForm.tsx:146
+#: src/components/product/ProductSelectionPage.tsx:122
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -138,6 +179,9 @@ msgid "Cannot be changed in remote installation"
 msgstr "Нельзя изменить при удаленной установке"
 
 #: src/components/core/InstallerOptions.jsx:142
+#: src/components/core/Page.tsx:270
+#: src/components/storage/EncryptionSettingsDialog.tsx:153
+#: src/components/storage/VolumeDialog.tsx:640
 #: src/components/storage/ZFCPPage.jsx:528
 msgid "Accept"
 msgstr "Подтвердить"
@@ -150,6 +194,91 @@ msgstr "До начала установки нужно устранить сл�
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
 msgstr "Поиск"
+
+#: src/components/core/LoginPage.tsx:59
+msgid "Could not log in. Please, make sure that the password is correct."
+msgstr ""
+"Не удалось войти в систему. Пожалуйста, убедитесь, что пароль введен "
+"правильно."
+
+#: src/components/core/LoginPage.tsx:61
+msgid "Could not authenticate against the server, please check it."
+msgstr ""
+"Не удалось пройти аутентификацию на сервере, пожалуйста, проверьте его."
+
+#. TRANSLATORS: Title for a form to provide the password for the root user. %s
+#. will be replaced by "root"
+#: src/components/core/LoginPage.tsx:69
+#, c-format
+msgid "Log in as %s"
+msgstr "Вход как %s"
+
+#: src/components/core/LoginPage.tsx:75
+msgid "The installer requires [root] user privileges."
+msgstr "Программа установки требует привилегий пользователя [root]."
+
+#: src/components/core/LoginPage.tsx:90
+msgid "Please, provide its password to log in to the system."
+msgstr "Пожалуйста, укажите его пароль для входа в систему."
+
+#: src/components/core/LoginPage.tsx:91
+msgid "Login form"
+msgstr "Форма входа"
+
+#: src/components/core/LoginPage.tsx:97
+msgid "Password input"
+msgstr "Ввод пароля"
+
+#: src/components/core/LoginPage.tsx:106
+msgid "Log in"
+msgstr "Вход"
+
+#: src/components/core/LoginPage.tsx:113
+msgid "More about this"
+msgstr "Подробнее об этом"
+
+#: src/components/core/LogsButton.tsx:98
+msgid "Collecting logs..."
+msgstr "Сбор журналов..."
+
+#: src/components/core/LogsButton.tsx:98 src/components/core/LogsButton.tsx:101
+msgid "Download logs"
+msgstr "Скачать журналы"
+
+#: src/components/core/LogsButton.tsx:108
+msgid ""
+"The browser will run the logs download as soon as they are ready. Please, be "
+"patient."
+msgstr ""
+"Браузер запустит загрузку журналов, как только они будут готовы. Пожалуйста, "
+"подождите."
+
+#: src/components/core/LogsButton.tsx:118
+msgid "Something went wrong while collecting logs. Please, try again."
+msgstr ""
+"Что-то пошло не так при сборе журналов. Пожалуйста, попробуйте ещё раз."
+
+#: src/components/core/Page.tsx:259
+msgid "Back"
+msgstr "Назад"
+
+#: src/components/core/PasswordAndConfirmationInput.tsx:64
+msgid "Passwords do not match"
+msgstr "Пароли не совпадают"
+
+#. TRANSLATORS: field label
+#: src/components/core/PasswordAndConfirmationInput.tsx:88
+#: src/components/network/WifiConnectionForm.tsx:133
+#: src/components/questions/QuestionWithPassword.tsx:62
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+#: src/components/users/RootAuthMethods.tsx:76
+msgid "Password"
+msgstr "Пароль"
+
+#: src/components/core/PasswordAndConfirmationInput.tsx:99
+msgid "Password confirmation"
+msgstr "Подтверждение пароля"
 
 #: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
@@ -177,6 +306,8 @@ msgid "Finished"
 msgstr "Завершено"
 
 #: src/components/core/RowActions.jsx:64
+#: src/components/storage/PartitionsField.tsx:457
+#: src/components/storage/ProposalActionsSummary.tsx:241
 msgid "Actions"
 msgstr "Действия"
 
@@ -196,8 +327,30 @@ msgstr "Пожалуйста, проверьте, запущен ли он."
 msgid "Reload"
 msgstr "Обновить"
 
+#: src/components/l10n/KeyboardSelection.tsx:41
+msgid "Filter by description or keymap code"
+msgstr "Фильтр по описанию или коду карты клавиш"
+
+#: src/components/l10n/KeyboardSelection.tsx:71
+msgid "None of the keymaps match the filter."
+msgstr "Ни одна из карт не соответствует фильтру."
+
+#: src/components/l10n/KeyboardSelection.tsx:77
+msgid "Keyboard selection"
+msgstr "Выбор клавиатуры"
+
+#: src/components/l10n/KeyboardSelection.tsx:91
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/LocaleSelection.tsx:92
+#: src/components/l10n/TimezoneSelection.tsx:130
+#: src/components/product/ProductSelectionPage.tsx:128
+#: src/components/software/SoftwarePatternsSelection.tsx:166
+msgid "Select"
+msgstr "Выбор"
+
 #: src/components/l10n/L10nPage.jsx:41
-#: src/components/overview/L10nSection.jsx:37
+#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.tsx:37
 msgid "Localization"
 msgstr "Локализация"
 
@@ -208,13 +361,13 @@ msgstr "Ещё не выбрано"
 
 #: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
 #: src/components/l10n/L10nPage.jsx:74
+#: src/components/network/NetworkPage.tsx:63
+#: src/components/storage/InstallationDeviceField.tsx:105
+#: src/components/storage/ProposalActionsSummary.tsx:246
+#: src/components/users/RootAuthMethods.tsx:113
+#: src/components/users/RootAuthMethods.tsx:125
 msgid "Change"
 msgstr "Изменить"
-
-#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
-#: src/components/l10n/L10nPage.jsx:74
-msgid "Select"
-msgstr "Выбор"
 
 #: src/components/l10n/L10nPage.jsx:59
 msgid "Keyboard"
@@ -224,9 +377,326 @@ msgstr "Клавиатура"
 msgid "Time zone"
 msgstr "Часовой пояс"
 
+#: src/components/l10n/LocaleSelection.tsx:39
+msgid "Filter by language, territory or locale code"
+msgstr "Фильтр по языку, территории или коду локали"
+
+#: src/components/l10n/LocaleSelection.tsx:72
+msgid "None of the locales match the filter."
+msgstr "Ни одна из локалей не соответствует фильтру."
+
+#: src/components/l10n/LocaleSelection.tsx:78
+msgid "Locale selection"
+msgstr "Выбор локали"
+
+#: src/components/l10n/TimezoneSelection.tsx:67
+msgid "Filter by territory, time zone code or UTC offset"
+msgstr "Фильтр по территории, коду часового пояса или смещению UTC"
+
+#: src/components/l10n/TimezoneSelection.tsx:106
+msgid "None of the time zones match the filter."
+msgstr "Ни один из часовых поясов не соответствует фильтру."
+
+#: src/components/l10n/TimezoneSelection.tsx:112
+msgid " Timezone selection"
+msgstr " Выбор часового пояса"
+
+#: src/components/layout/Header.tsx:61
+msgid "Main navigation"
+msgstr ""
+
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr "Загрузка установочной среды, пожалуйста, подождите."
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.tsx:102
+#: src/components/network/DnsDataList.tsx:106
+msgid "Remove"
+msgstr "Удалить"
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.tsx:112
+#: src/components/network/IpAddressInput.tsx:34
+msgid "IP Address"
+msgstr "IP-адрес"
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.tsx:120
+msgid "Prefix length or netmask"
+msgstr "Длина префикса или маска сети"
+
+#: src/components/network/AddressesDataList.tsx:138
+msgid "Add an address"
+msgstr "Добавить адрес"
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.tsx:138
+msgid "Add another address"
+msgstr "Добавить другой адрес"
+
+#: src/components/network/AddressesDataList.tsx:143
+msgid "Addresses"
+msgstr "Адреса"
+
+#: src/components/network/AddressesDataList.tsx:146
+msgid "Addresses data list"
+msgstr "Список данных адресов"
+
+#. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
+#: src/components/network/ConnectionsTable.tsx:65
+#: src/components/network/ConnectionsTable.tsx:94
+#: src/components/storage/ZFCPPage.jsx:381
+#: src/components/storage/iscsi/InitiatorForm.tsx:52
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:53
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:70
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
+msgid "Name"
+msgstr "Имя"
+
+#. TRANSLATORS: table header
+#: src/components/network/ConnectionsTable.tsx:67
+#: src/components/network/ConnectionsTable.tsx:95
+msgid "IP addresses"
+msgstr "IP-адреса"
+
+#. TRANSLATORS: table header aria label
+#: src/components/network/ConnectionsTable.tsx:69
+msgid "Connection actions"
+msgstr "Действия подключения"
+
+#: src/components/network/ConnectionsTable.tsx:76
+#: src/components/network/WifiNetworksListPage.tsx:127
+#: src/components/network/WifiNetworksListPage.tsx:151
+#: src/components/storage/PartitionsField.tsx:312
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:44
+#: src/components/storage/iscsi/NodesPresenter.jsx:74
+#: src/components/users/FirstUser.tsx:83
+msgid "Edit"
+msgstr "Изменить"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:79
+#: src/components/network/IpSettingsForm.tsx:146
+#, c-format
+msgid "Edit connection %s"
+msgstr "Отредактировать соединение %s"
+
+#: src/components/network/ConnectionsTable.tsx:83
+#: src/components/network/WifiNetworksListPage.tsx:130
+#: src/components/network/WifiNetworksListPage.tsx:154
+msgid "Forget"
+msgstr "Забыть"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:85
+#, c-format
+msgid "Forget connection %s"
+msgstr "Забыть соединение %s"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:100
+#, c-format
+msgid "Actions for connection %s"
+msgstr "Действия для соединения %s"
+
+#. TRANSLATORS: input field name
+#: src/components/network/DnsDataList.tsx:90
+msgid "Server IP"
+msgstr "IP сервера"
+
+#: src/components/network/DnsDataList.tsx:115
+msgid "Add DNS"
+msgstr "Добавить DNS"
+
+#. TRANSLATORS: button label
+#: src/components/network/DnsDataList.tsx:115
+msgid "Add another DNS"
+msgstr "Добавить другой DNS"
+
+#: src/components/network/DnsDataList.tsx:120
+msgid "DNS"
+msgstr "DNS"
+
+#: src/components/network/IpPrefixInput.tsx:34
+#, fuzzy
+msgid "Ip prefix or netmask"
+msgstr "Префикс или маска сети"
+
+#. TRANSLATORS: error message
+#: src/components/network/IpSettingsForm.tsx:102
+msgid "At least one address must be provided for selected mode"
+msgstr "Для выбранного режима необходимо предоставить не менее одного адреса"
+
+#. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+#: src/components/network/IpSettingsForm.tsx:156
+#: src/components/network/IpSettingsForm.tsx:161
+#: src/components/network/IpSettingsForm.tsx:163
+msgid "Mode"
+msgstr "Режим"
+
+#: src/components/network/IpSettingsForm.tsx:170
+msgid "Automatic (DHCP)"
+msgstr "Автоматически (DHCP)"
+
+#: src/components/network/IpSettingsForm.tsx:176
+#: src/components/storage/iscsi/NodeStartupOptions.js:25
+msgid "Manual"
+msgstr "Вручную"
+
+#. TRANSLATORS: network gateway configuration
+#: src/components/network/IpSettingsForm.tsx:185
+#: src/components/network/IpSettingsForm.tsx:188
+msgid "Gateway"
+msgstr "Шлюз"
+
+#: src/components/network/IpSettingsForm.tsx:197
+msgid "Gateway can be defined only in 'Manual' mode"
+msgstr "Шлюз можно указать только в ручном режиме"
+
+#: src/components/network/NetworkPage.tsx:37
+msgid "Wired"
+msgstr "Проводное"
+
+#: src/components/network/NetworkPage.tsx:44
+msgid "No wired connections found"
+msgstr "Проводные соединения не обнаружены"
+
+#: src/components/network/NetworkPage.tsx:60
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.tsx:63
+#: src/components/network/WifiConnectionForm.tsx:142
+#: src/components/network/WifiNetworksListPage.tsx:125
+msgid "Connect"
+msgstr "Подключиться"
+
+#: src/components/network/NetworkPage.tsx:69
+#, fuzzy, c-format
+msgid "Connected to %s"
+msgstr "Подключено к %s"
+
+#: src/components/network/NetworkPage.tsx:76
+msgid "No connected yet"
+msgstr "Ещё не подключено"
+
+#: src/components/network/NetworkPage.tsx:77
+msgid ""
+"The system has not been configured for connecting to a Wi-Fi network yet."
+msgstr "Система ещё не настроена на подключение к сети Wi-Fi."
+
+#: src/components/network/NetworkPage.tsx:86
+msgid "No Wi-Fi supported"
+msgstr "Нет поддержки Wi-Fi"
+
+#: src/components/network/NetworkPage.tsx:88
+msgid ""
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
+msgstr ""
+"Система не поддерживает соединение по WiFi, вероятно, из-за отсутствующего "
+"или отключённого оборудования."
+
+#: src/components/network/NetworkPage.tsx:105 src/routes/network.tsx:36
+msgid "Network"
+msgstr "Сеть"
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.tsx:50
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:57
+msgid "None"
+msgstr "Отсутствует"
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.tsx:52
+msgid "WPA & WPA2 Personal"
+msgstr "WPA и WPA2 Personal"
+
+#. TRANSLATORS: accessible name for the WiFi connection form
+#: src/components/network/WifiConnectionForm.tsx:94
+#, fuzzy
+msgid "WiFi connection form"
+msgstr "WiFi соединения"
+
+#: src/components/network/WifiConnectionForm.tsx:101
+#, fuzzy
+msgid "Authentication failed, please try again"
+msgstr "Аутентификация по цели"
+
+#: src/components/network/WifiConnectionForm.tsx:102
+#: src/components/storage/ZFCPDiskForm.jsx:105
+#: src/components/storage/iscsi/DiscoverForm.tsx:98
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/users/FirstUserForm.tsx:210
+msgid "Something went wrong"
+msgstr "Что-то пошло не так"
+
+#: src/components/network/WifiConnectionForm.tsx:105
+msgid "Please, review provided settings and try again."
+msgstr "Пожалуйста, проверьте предоставленные настройки и попробуйте ещё раз."
+
+#. TRANSLATORS: SSID (Wifi network name) configuration
+#: src/components/network/WifiConnectionForm.tsx:111
+msgid "SSID"
+msgstr "Имя сети"
+
+#. TRANSLATORS: Wifi security configuration (password protected or not)
+#: src/components/network/WifiConnectionForm.tsx:117
+#: src/components/network/WifiConnectionForm.tsx:120
+msgid "Security"
+msgstr "Защита"
+
+#. TRANSLATORS: WiFi password
+#: src/components/network/WifiConnectionForm.tsx:129
+msgid "WPA Password"
+msgstr "Пароль WPA"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworksListPage.tsx:72
+#: src/components/network/WifiNetworksListPage.tsx:138
+msgid "Connecting"
+msgstr "Подключение"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworksListPage.tsx:75
+#: src/components/network/WifiNetworksListPage.tsx:142
+#: src/components/network/WifiNetworksListPage.tsx:181
+msgid "Connected"
+msgstr "Подключено"
+
+#. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
+#: src/components/network/WifiNetworksListPage.tsx:80
+#: src/components/network/WifiNetworksListPage.tsx:140
+#: src/components/storage/iscsi/NodesPresenter.jsx:64
+msgid "Disconnected"
+msgstr "Отключено"
+
+#: src/components/network/WifiNetworksListPage.tsx:148
+msgid "Disconnect"
+msgstr "Отключить"
+
+#: src/components/network/WifiNetworksListPage.tsx:167
+#: src/components/network/WifiNetworksListPage.tsx:285
+msgid "Connect to hidden network"
+msgstr "Подключиться к скрытой сети"
+
+#: src/components/network/WifiNetworksListPage.tsx:178
+msgid "configured"
+msgstr "настроено"
+
+#: src/components/network/WifiNetworksListPage.tsx:270
+#, fuzzy
+msgid "Visible Wi-Fi networks"
+msgstr "Сети WiFi"
+
+#: src/components/network/WifiSelectorPage.tsx:35
+msgid "Connect to a Wi-Fi network"
+msgstr "Подключиться к сети Wi-Fi"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -234,6 +704,59 @@ msgstr "Загрузка установочной среды, пожалуйст
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "Система будет использовать %s в качестве языка по умолчанию."
+
+#: src/components/overview/OverviewPage.tsx:47
+#: src/components/users/UsersPage.tsx:35 src/routes/users.tsx:38
+msgid "Users"
+msgstr "Пользователи"
+
+#: src/components/overview/OverviewPage.tsx:48
+#: src/components/overview/StorageSection.jsx:111
+#: src/components/storage/ProposalPage.tsx:107 src/routes/storage.tsx:44
+msgid "Storage"
+msgstr "Хранилище"
+
+#: src/components/overview/OverviewPage.tsx:49
+#: src/components/overview/SoftwareSection.tsx:69
+#: src/components/software/SoftwarePage.tsx:110 src/routes/software.tsx:36
+msgid "Software"
+msgstr "Программы"
+
+#: src/components/overview/OverviewPage.tsx:54
+msgid "Ready for installation"
+msgstr "Готов к установке"
+
+#: src/components/overview/OverviewPage.tsx:98
+msgid "Installation"
+msgstr "Установка"
+
+#: src/components/overview/OverviewPage.tsx:99
+msgid "Before installing, please check the following problems."
+msgstr "Проверьте следующие проблемы перед установкой."
+
+#: src/components/overview/OverviewPage.tsx:113
+msgid ""
+"These are the most relevant installation settings. Feel free to browse the "
+"sections in the menu for further details."
+msgstr ""
+"Это наиболее актуальные настройки установки. Более подробные сведения "
+"приведены в разделах меню."
+
+#: src/components/overview/OverviewPage.tsx:133
+msgid ""
+"Take your time to check your configuration before starting the installation "
+"process."
+msgstr "Проверьте свои настройки до начала процесса установки."
+
+#: src/components/overview/SoftwareSection.tsx:41
+msgid "The installation will take"
+msgstr "Установка займёт"
+
+#. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
+#: src/components/overview/SoftwareSection.tsx:48
+#, c-format
+msgid "The installation will take %s including:"
+msgstr "Установка займёт %s, в том числе:"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -305,11 +828,8 @@ msgstr ""
 "использованием пользовательской стратегии для поиска необходимого "
 "пространства"
 
-#: src/components/overview/StorageSection.jsx:111
-msgid "Storage"
-msgstr "Хранилище"
-
 #: src/components/overview/StorageSection.jsx:179
+#: src/components/storage/InstallationDeviceField.tsx:59
 msgid "No device selected yet"
 msgstr "Устройство ещё не выбрано"
 
@@ -346,9 +866,422 @@ msgstr ""
 "Установка с использованием устройства %s с помощью пользовательской "
 "стратегии поиска необходимого пространства"
 
+#. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
+#: src/components/product/ProductSelectionPage.tsx:56
+#, c-format
+msgid "%s logo"
+msgstr ""
+
+#: src/components/product/ProductSelectionPage.tsx:107
+#, fuzzy
+msgid "Select a product"
+msgstr "Выберите расположение"
+
+#: src/components/product/ProductSelectionPage.tsx:108
+msgid "Available products"
+msgstr "Доступные продукты"
+
 #: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
 msgstr "Настройка продукта, пожалуйста, подождите..."
+
+#: src/components/questions/GenericQuestion.tsx:48
+#: src/components/questions/LuksActivationQuestion.tsx:69
+msgid "Question"
+msgstr "Вопрос"
+
+#. TRANSLATORS: error message, user entered a wrong password
+#: src/components/questions/LuksActivationQuestion.tsx:37
+#, fuzzy
+msgid "The encryption password did not work"
+msgstr "Заданный пароль шифрования не сработал"
+
+#: src/components/questions/LuksActivationQuestion.tsx:68
+msgid "Encrypted Device"
+msgstr "Зашифрованное устройство"
+
+#. TRANSLATORS: field label
+#: src/components/questions/LuksActivationQuestion.tsx:77
+msgid "Encryption Password"
+msgstr "Пароль шифрования"
+
+#: src/components/questions/QuestionWithPassword.tsx:55
+msgid "Password Required"
+msgstr "Необходим пароль"
+
+#: src/components/software/SoftwarePage.tsx:52
+msgid "No additional software was selected."
+msgstr "Никакого дополнительного программного обеспечения выбрано не было."
+
+#: src/components/software/SoftwarePage.tsx:57
+msgid "The following software patterns are selected for installation:"
+msgstr "Для установки выбраны следующие образцы программного обеспечения:"
+
+#: src/components/software/SoftwarePage.tsx:72
+#: src/components/software/SoftwarePage.tsx:84
+msgid "Selected patterns"
+msgstr "Выбранные шаблоны"
+
+#: src/components/software/SoftwarePage.tsx:75
+msgid "Change selection"
+msgstr "Изменить выбор"
+
+#: src/components/software/SoftwarePage.tsx:87
+msgid ""
+"This product does not allow to select software patterns during installation. "
+"However, you can add additional software once the installation is finished."
+msgstr ""
+"Данный продукт не позволяет выбирать шаблоны программного обеспечения во "
+"время установки. Однако Вы можете добавить дополнительное программное "
+"обеспечение после завершения установки."
+
+#: src/components/software/SoftwarePatternsSelection.tsx:97
+msgid "None of the patterns match the filter."
+msgstr "Ни один из шаблонов не соответствует фильтру."
+
+#: src/components/software/SoftwarePatternsSelection.tsx:162
+msgid "auto selected"
+msgstr "автоматический выбор"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:166
+#, fuzzy
+msgid "Unselect"
+msgstr "Выбор"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:186
+msgid "Software selection"
+msgstr "Выбор программного обеспечения"
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/software/SoftwarePatternsSelection.tsx:189
+#: src/components/software/SoftwarePatternsSelection.tsx:190
+msgid "Filter by pattern title or description"
+msgstr "Фильтр по названию или описанию шаблона"
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.tsx:32
+#, c-format
+msgid "Installation will take %s."
+msgstr "Установка займёт %s."
+
+#: src/components/software/UsedSize.tsx:36
+msgid ""
+"This space includes the base system and the selected software patterns, if "
+"any."
+msgstr ""
+"Это пространство включает в себя базовую систему и выбранные шаблоны "
+"программного обеспечения, если таковые имеются."
+
+#: src/components/storage/BootConfigField.tsx:41
+msgid "Change boot options"
+msgstr "Изменение параметров загрузки"
+
+#: src/components/storage/BootConfigField.tsx:78
+msgid "Installation will not configure partitions for booting."
+msgstr "Установка не будет настраивать разделы для загрузки."
+
+#: src/components/storage/BootConfigField.tsx:82
+msgid ""
+"Installation will configure partitions for booting at the installation disk."
+msgstr "Установка настроит разделы для загрузки с установочного диска."
+
+#: src/components/storage/BootConfigField.tsx:86
+#, c-format
+msgid "Installation will configure partitions for booting at %s."
+msgstr "Установка настроит разделы для загрузки по адресу %s."
+
+#: src/components/storage/BootSelection.tsx:108
+msgid ""
+"To ensure the new system is able to boot, the installer may need to create "
+"or configure some partitions in the appropriate disk."
+msgstr ""
+"Чтобы обеспечить загрузку новой системы, программе установки может "
+"потребоваться создать или настроить некоторые разделы на соответствующем "
+"диске."
+
+#: src/components/storage/BootSelection.tsx:114
+msgid "Partitions to boot will be allocated at the installation disk."
+msgstr "Загрузочные разделы будут выделены на установочном диске."
+
+#. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
+#: src/components/storage/BootSelection.tsx:119
+#, c-format
+msgid "Partitions to boot will be allocated at the installation disk (%s)."
+msgstr "Загрузочные разделы будут выделены на установочном диске (%s)."
+
+#: src/components/storage/BootSelection.tsx:135
+msgid "Select booting partition"
+msgstr "Выберите загрузочный раздел"
+
+#: src/components/storage/BootSelection.tsx:156
+#: src/components/storage/iscsi/NodeStartupOptions.js:27
+msgid "Automatic"
+msgstr "Автоматически"
+
+#: src/components/storage/BootSelection.tsx:174
+msgid "Select a disk"
+msgstr "Выберите диск"
+
+#: src/components/storage/BootSelection.tsx:179
+msgid "Partitions to boot will be allocated at the following device."
+msgstr "Загрузочные разделы будут выделены на следующем устройстве."
+
+#: src/components/storage/BootSelection.tsx:181
+msgid "Choose a disk for placing the boot loader"
+msgstr "Выберите диск для размещения загрузчика"
+
+#: src/components/storage/BootSelection.tsx:204
+msgid "Do not configure"
+msgstr "Не настраивать"
+
+#: src/components/storage/BootSelection.tsx:210
+msgid ""
+"No partitions will be automatically configured for booting. Use with caution."
+msgstr ""
+"Ни один раздел не будет автоматически настроен для загрузки. Используйте с "
+"осторожностью."
+
+#: src/components/storage/DASDFormatProgress.tsx:48
+msgid "Formatting DASD devices"
+msgstr "Форматирование устройств DASD"
+
+#: src/components/storage/DASDPage.tsx:36 src/routes/storage.tsx:70
+#, fuzzy
+msgid "DASD"
+msgstr "DASD %s"
+
+#: src/components/storage/DASDTable.tsx:63
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+msgid "No"
+msgstr "Нет"
+
+#: src/components/storage/DASDTable.tsx:63
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+msgid "Yes"
+msgstr "Да"
+
+#: src/components/storage/DASDTable.tsx:70
+#: src/components/storage/ZFCPDiskForm.jsx:110
+#: src/components/storage/ZFCPPage.jsx:324
+#: src/components/storage/ZFCPPage.jsx:382
+msgid "Channel ID"
+msgstr "Идентификатор канала"
+
+#. TRANSLATORS: table header
+#: src/components/storage/DASDTable.tsx:71
+#: src/components/storage/ZFCPPage.jsx:325
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
+#: src/components/users/RootAuthMethods.tsx:70
+msgid "Status"
+msgstr "Состояние"
+
+#: src/components/storage/DASDTable.tsx:72
+#: src/components/storage/DeviceSelectorTable.tsx:185
+#: src/components/storage/ProposalResultTable.tsx:132
+#: src/components/storage/SpaceActionsTable.tsx:206
+#: src/components/storage/VolumeLocationSelectorTable.tsx:95
+msgid "Device"
+msgstr "Устройство"
+
+#: src/components/storage/DASDTable.tsx:73
+msgid "Type"
+msgstr "Тип"
+
+#. TRANSLATORS: table header, the column contains "Yes"/"No" values
+#. for the DIAG access mode (special disk access mode on IBM mainframes),
+#. usually keep untranslated
+#: src/components/storage/DASDTable.tsx:77
+msgid "DIAG"
+msgstr "Режим DIAG"
+
+#: src/components/storage/DASDTable.tsx:78
+msgid "Formatted"
+msgstr "Отформатированный"
+
+#: src/components/storage/DASDTable.tsx:79
+msgid "Partition Info"
+msgstr "Информация о разделе"
+
+#. TRANSLATORS: drop down menu label
+#: src/components/storage/DASDTable.tsx:118
+msgid "Perform an action"
+msgstr "Выполнить действие"
+
+#: src/components/storage/DASDTable.tsx:125
+#: src/components/storage/ZFCPPage.jsx:353
+msgid "Activate"
+msgstr "Активировать"
+
+#: src/components/storage/DASDTable.tsx:129
+#: src/components/storage/ZFCPPage.jsx:395
+msgid "Deactivate"
+msgstr "Деактивировать"
+
+#: src/components/storage/DASDTable.tsx:134
+msgid "Set DIAG On"
+msgstr "Включить DIAG"
+
+#: src/components/storage/DASDTable.tsx:138
+msgid "Set DIAG Off"
+msgstr "Отключить DIAG"
+
+#: src/components/storage/DASDTable.tsx:143
+msgid "Format"
+msgstr "Формат"
+
+#: src/components/storage/DASDTable.tsx:279
+#: src/components/storage/DASDTable.tsx:280
+msgid "Filter by min channel"
+msgstr "Фильтр по минимальному каналу"
+
+#: src/components/storage/DASDTable.tsx:287
+msgid "Remove min channel filter"
+msgstr "Удалить фильтр по минимальному каналу"
+
+#: src/components/storage/DASDTable.tsx:301
+#: src/components/storage/DASDTable.tsx:302
+msgid "Filter by max channel"
+msgstr "Фильтр по максимальному каналу"
+
+#: src/components/storage/DASDTable.tsx:309
+msgid "Remove max channel filter"
+msgstr "Удалить фильтр по максимальному каналу"
+
+#: src/components/storage/DeviceSelection.tsx:105
+msgid ""
+"The file systems will be allocated by default as [new partitions in the "
+"selected device]."
+msgstr ""
+"Файловые системы будут выделены по умолчанию как [новые разделы на выбранном "
+"устройстве]."
+
+#: src/components/storage/DeviceSelection.tsx:112
+msgid ""
+"The file systems will be allocated by default as [logical volumes of a new "
+"LVM Volume Group]. The corresponding physical volumes will be created on "
+"demand as new partitions at the selected devices."
+msgstr ""
+"Файловые системы по умолчанию будут выделены как [логические тома новой "
+"группы томов LVM]. Соответствующие физические тома будут создаваться по "
+"требованию как новые разделы на выбранных устройствах."
+
+#: src/components/storage/DeviceSelection.tsx:121
+msgid "Select installation device"
+msgstr "Выберите устройство для установки"
+
+#: src/components/storage/DeviceSelection.tsx:127
+msgid "Install new system on"
+msgstr "Установить новую систему на"
+
+#: src/components/storage/DeviceSelection.tsx:130
+msgid "An existing disk"
+msgstr "существующий диск"
+
+#: src/components/storage/DeviceSelection.tsx:139
+msgid "A new LVM Volume Group"
+msgstr "новую группу томов LVM"
+
+#: src/components/storage/DeviceSelection.tsx:162
+msgid "Device selector for target disk"
+msgstr "Выбор устройств для целевого диска"
+
+#: src/components/storage/DeviceSelection.tsx:185
+msgid "Device selector for new LVM volume group"
+msgstr "Выбор устройств для новой группы томов LVM"
+
+#: src/components/storage/DeviceSelection.tsx:198
+msgid "Prepare more devices by configuring advanced"
+msgstr "Подготовьте больше устройств, настроив расширенные"
+
+#: src/components/storage/DeviceSelection.tsx:199
+msgid "storage techs"
+msgstr "технологии хранения"
+
+#. TRANSLATORS: multipath device type
+#: src/components/storage/DeviceSelectorTable.tsx:53
+msgid "Multipath"
+msgstr "Многопутевое"
+
+#. TRANSLATORS: %s is replaced by the device bus ID
+#: src/components/storage/DeviceSelectorTable.tsx:58
+#, c-format
+msgid "DASD %s"
+msgstr "DASD %s"
+
+#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+#: src/components/storage/DeviceSelectorTable.tsx:63
+#, c-format
+msgid "Software %s"
+msgstr "Программное обеспечение %s"
+
+#: src/components/storage/DeviceSelectorTable.tsx:68
+msgid "SD Card"
+msgstr "SD-карта"
+
+#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+#: src/components/storage/DeviceSelectorTable.tsx:73
+#, c-format
+msgid "%s disk"
+msgstr "Диск %s"
+
+#: src/components/storage/DeviceSelectorTable.tsx:74
+msgid "Disk"
+msgstr "Диск"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.tsx:94
+#, c-format
+msgid "Members: %s"
+msgstr "Участники: %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.tsx:103
+#, c-format
+msgid "Devices: %s"
+msgstr "Устройства: %s"
+
+#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+#: src/components/storage/DeviceSelectorTable.tsx:112
+#, c-format
+msgid "Wires: %s"
+msgstr "Проводки: %s"
+
+#. TRANSLATORS: disk partition info, %s is replaced by partition table
+#. type (MS-DOS or GPT), %d is the number of the partitions
+#: src/components/storage/DeviceSelectorTable.tsx:144
+#, c-format
+msgid "%s with %d partitions"
+msgstr "%s с %d разделами"
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
+#: src/components/storage/DeviceSelectorTable.tsx:150
+#: src/components/storage/SpaceActionsTable.tsx:183
+msgid "No content found"
+msgstr "Содержимое не найдено"
+
+#: src/components/storage/DeviceSelectorTable.tsx:186
+#: src/components/storage/PartitionsField.tsx:453
+#: src/components/storage/ProposalResultTable.tsx:134
+#: src/components/storage/SpaceActionsTable.tsx:207
+#: src/components/storage/VolumeLocationSelectorTable.tsx:96
+msgid "Details"
+msgstr "Подробности"
+
+#: src/components/storage/DeviceSelectorTable.tsx:187
+#: src/components/storage/PartitionsField.tsx:454
+#: src/components/storage/ProposalResultTable.tsx:135
+#: src/components/storage/SpaceActionsTable.tsx:208
+#: src/components/storage/VolumeFields.tsx:524
+#: src/components/storage/VolumeLocationSelectorTable.tsx:101
+msgid "Size"
+msgstr "Размер"
 
 #: src/components/storage/DevicesTechMenu.jsx:39
 msgid "Manage and format"
@@ -366,24 +1299,756 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Подключение к объектам iSCSI"
 
-#: src/components/storage/DevicesTechMenu.jsx:68
+#: src/components/storage/DevicesTechMenu.jsx:68 src/routes/storage.tsx:65
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/LoginForm.jsx:69
-msgid "Something went wrong"
-msgstr "Что-то пошло не так"
+#: src/components/storage/EncryptionField.tsx:34
+#: src/components/storage/EncryptionSettingsDialog.tsx:30
+msgid "Encryption"
+msgstr "Шифрование"
+
+#: src/components/storage/EncryptionField.tsx:36
+msgid ""
+"Protection for the information stored at the device, including data, "
+"programs, and system files."
+msgstr ""
+"Защита информации, хранящейся на устройстве, включая данные, программы и "
+"системные файлы."
+
+#: src/components/storage/EncryptionField.tsx:40
+msgid "disabled"
+msgstr "отключено"
+
+#: src/components/storage/EncryptionField.tsx:41
+msgid "enabled"
+msgstr "включено"
+
+#: src/components/storage/EncryptionField.tsx:42
+msgid "using TPM unlocking"
+msgstr "используя разблокировку TPM"
+
+#: src/components/storage/EncryptionField.tsx:56
+msgid "Enable"
+msgstr "Включить"
+
+#: src/components/storage/EncryptionField.tsx:56
+msgid "Modify"
+msgstr "Изменить"
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:32
+msgid ""
+"Full Disk Encryption (FDE) allows to protect the information stored at the "
+"device, including data, programs, and system files."
+msgstr ""
+"Полнодисковое шифрование (FDE) позволяет защитить информацию, хранящуюся на "
+"устройстве, включая данные, программы и системные файлы."
+
+#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
+#: src/components/storage/EncryptionSettingsDialog.tsx:36
+msgid ""
+"Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
+msgstr ""
+"Используйте Доверенный платформенный модуль (TPM) для автоматического "
+"дешифрования при каждой загрузке"
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:40
+msgid ""
+"The password will not be needed to boot and access the data if the TPM can "
+"verify the integrity of the system. TPM sealing requires the new system to "
+"be booted directly on its first run."
+msgstr ""
+"Пароль не понадобится для загрузки и доступа к данным, если TPM может "
+"проверить целостность системы. Запечатывание TPM требует непосредственной "
+"загрузки новой системы при первом запуске."
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:127
+msgid "Encrypt the system"
+msgstr "Зашифровать систему"
+
+#: src/components/storage/InstallationDeviceField.tsx:31
+#: src/components/storage/VolumeLocationSelectorTable.tsx:53
+msgid "Installation device"
+msgstr "Устройство для установки"
+
+#. TRANSLATORS: The storage "Installation device" field's description.
+#: src/components/storage/InstallationDeviceField.tsx:33
+msgid "Main disk or LVM Volume Group for installation."
+msgstr "Основной диск или группа томов LVM для установки."
+
+#. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
+#: src/components/storage/InstallationDeviceField.tsx:45
+#, c-format
+msgid "File systems created as new partitions at %s"
+msgstr "Файловые системы созданы как новые разделы на %s"
+
+#: src/components/storage/InstallationDeviceField.tsx:48
+msgid "File systems created at a new LVM volume group"
+msgstr "Файловые системы созданы в новой группе томов LVM"
+
+#: src/components/storage/InstallationDeviceField.tsx:53
+#, c-format
+msgid "File systems created at a new LVM volume group on %s"
+msgstr "Файловые системы созданы в новой группе томов LVM на %s"
+
+#: src/components/storage/InvalidMaxSizeError.tsx:43
+#: src/components/storage/VolumeDialog.tsx:215
+msgid "Maximum must be greater than minimum"
+msgstr "Максимум должен быть больше минимума"
+
+#. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:72
+#, c-format
+msgid "at least %s"
+msgstr "не менее %s"
+
+#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:90
+#, c-format
+msgid "Transactional Btrfs root volume (%s)"
+msgstr "Корневой том Btrfs с транзакциями (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:92
+#, c-format
+msgid "Transactional Btrfs root partition (%s)"
+msgstr "Корневой раздел Btrfs с транзакциями (%s)"
+
+#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:97
+#, c-format
+msgid "Btrfs root volume with snapshots (%s)"
+msgstr "Корневой том Btrfs с моментальными снимками (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:99
+#, c-format
+msgid "Btrfs root partition with snapshots (%s)"
+msgstr "Корневой раздел Btrfs с моментальными снимками (%s)"
+
+#. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
+#. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
+#: src/components/storage/PartitionsField.tsx:108
+#, c-format
+msgid "Mount %1$s at %2$s (%3$s)"
+msgstr "Установить %1$s в %2$s (%3$s)"
+
+#. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
+#. %1$s is replaced by the device name, and %2$s by the size
+#: src/components/storage/PartitionsField.tsx:114
+#, c-format
+msgid "Swap at %1$s (%2$s)"
+msgstr "Подкачка на %1$s (%2$s)"
+
+#. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
+#: src/components/storage/PartitionsField.tsx:118
+#, c-format
+msgid "Swap volume (%s)"
+msgstr "Том для подкачки (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
+#: src/components/storage/PartitionsField.tsx:120
+#, c-format
+msgid "Swap partition (%s)"
+msgstr "Раздел подкачки (%s)"
+
+#. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
+#: src/components/storage/PartitionsField.tsx:129
+#, c-format
+msgid "%1$s root at %2$s (%3$s)"
+msgstr "%1$s корень на %2$s (%3$s)"
+
+#. TRANSLATORS: "/" is in an LVM logical volume.
+#. Results in something like "Btrfs root volume (at least 20 GiB)" since
+#. $1$s is replaced by filesystem type and %2$s by size description
+#: src/components/storage/PartitionsField.tsx:135
+#, c-format
+msgid "%1$s root volume (%2$s)"
+msgstr "Корневой том %1$s (%2$s)"
+
+#. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
+#. $1$s is replaced by filesystem type and %2$s by size description
+#: src/components/storage/PartitionsField.tsx:138
+#, c-format
+msgid "%1$s root partition (%2$s)"
+msgstr "Корневой раздел %1$s (%2$s)"
+
+#. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
+#. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
+#: src/components/storage/PartitionsField.tsx:144
+#, c-format
+msgid "%1$s %2$s at %3$s (%4$s)"
+msgstr "%1$s %2$s на %3$s (%4$s)"
+
+#. TRANSLATORS: The filesystem is in an LVM logical volume.
+#. Results in something like "Ext4 /home volume (at least 10 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
+#: src/components/storage/PartitionsField.tsx:150
+#, c-format
+msgid "%1$s %2$s volume (%3$s)"
+msgstr "%1$s том %2$s (%3$s)"
+
+#. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
+#: src/components/storage/PartitionsField.tsx:153
+#, c-format
+msgid "%1$s %2$s partition (%3$s)"
+msgstr "%1$s раздел %2$s (%3$s)"
+
+#: src/components/storage/PartitionsField.tsx:161
+msgid "Do not configure partitions for booting"
+msgstr "Не настраивать разделы для загрузки"
+
+#: src/components/storage/PartitionsField.tsx:163
+msgid "Boot partitions at installation disk"
+msgstr "Загрузочные разделы на диске для установки"
+
+#. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
+#: src/components/storage/PartitionsField.tsx:166
+#, c-format
+msgid "Boot partitions at %s"
+msgstr "Загрузочные разделы на %s"
+
+#. TRANSLATORS: header for a list of items referring to size limits for file systems
+#: src/components/storage/PartitionsField.tsx:185
+msgid "These limits are affected by:"
+msgstr "На эти ограничения влияют:"
+
+#. TRANSLATORS: list item, this affects the computed partition size limits
+#: src/components/storage/PartitionsField.tsx:189
+msgid "The configuration of snapshots"
+msgstr "Конфигурация моментальных снимков"
+
+#: src/components/storage/PartitionsField.tsx:195
+#, c-format
+msgid "Presence of other volumes (%s)"
+msgstr "Наличие других томов (%s)"
+
+#. TRANSLATORS: list item, describes a factor that affects the computed size of a
+#. file system; eg. adjusting the size of the swap
+#: src/components/storage/PartitionsField.tsx:201
+msgid "The amount of RAM in the system"
+msgstr "Объем ОЗУ в системе"
+
+#: src/components/storage/PartitionsField.tsx:258
+msgid "auto"
+msgstr "автоматически"
+
+#. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
+#: src/components/storage/PartitionsField.tsx:270
+#, c-format
+msgid "Reused %s"
+msgstr "Повторно используется %s"
+
+#: src/components/storage/PartitionsField.tsx:271
+msgid "Transactional Btrfs"
+msgstr "Транзакционная Btrfs"
+
+#: src/components/storage/PartitionsField.tsx:272
+msgid "Btrfs with snapshots"
+msgstr "Btrfs с моментальными снимками"
+
+#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+#: src/components/storage/PartitionsField.tsx:285
+#, c-format
+msgid "Partition at %s"
+msgstr "Раздел на %s"
+
+#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+#: src/components/storage/PartitionsField.tsx:288
+#, c-format
+msgid "Separate LVM at %s"
+msgstr "Отдельный LVM на %s"
+
+#: src/components/storage/PartitionsField.tsx:291
+msgid "Logical volume at system LVM"
+msgstr "Логический том в системе LVM"
+
+#: src/components/storage/PartitionsField.tsx:293
+msgid "Partition at installation disk"
+msgstr "Раздел на диске для установки"
+
+#: src/components/storage/PartitionsField.tsx:313
+msgid "Reset location"
+msgstr "Сбросить расположение"
+
+#: src/components/storage/PartitionsField.tsx:314
+msgid "Change location"
+msgstr "Изменить расположение"
+
+#: src/components/storage/PartitionsField.tsx:315
+#: src/components/storage/iscsi/NodesPresenter.jsx:78
+msgid "Delete"
+msgstr "Удалить"
+
+#: src/components/storage/PartitionsField.tsx:452
+#: src/components/storage/VolumeFields.tsx:66
+#: src/components/storage/VolumeFields.tsx:76
+#: src/components/storage/VolumeFields.tsx:81
+msgid "Mount point"
+msgstr "Точка монтирования"
+
+#. TRANSLATORS: where (and how) the file-system is going to be created
+#: src/components/storage/PartitionsField.tsx:456
+msgid "Location"
+msgstr "Расположение"
+
+#: src/components/storage/PartitionsField.tsx:495
+msgid "Table with mount points"
+msgstr "Таблица с точками монтирования"
+
+#: src/components/storage/PartitionsField.tsx:576
+#: src/components/storage/PartitionsField.tsx:596
+#: src/components/storage/VolumeDialog.tsx:77
+msgid "Add file system"
+msgstr "Добавить файловую систему"
+
+#: src/components/storage/PartitionsField.tsx:608
+msgid "Other"
+msgstr "Другая"
+
+#: src/components/storage/PartitionsField.tsx:742
+msgid "Reset to defaults"
+msgstr "Сбросить по умолчанию"
+
+#: src/components/storage/PartitionsField.tsx:811
+msgid "Partitions and file systems"
+msgstr "Разделы и файловые системы"
+
+#: src/components/storage/PartitionsField.tsx:813
+msgid ""
+"Structure of the new system, including any additional partition needed for "
+"booting"
+msgstr ""
+"Структура новой системы, включая все дополнительные разделы, необходимые для "
+"загрузки"
+
+#: src/components/storage/PartitionsField.tsx:820
+msgid "Show partitions and file-systems actions"
+msgstr "Показать разделы и действия с файловыми системами"
+
+#: src/components/storage/ProposalActionsDialog.tsx:72
+#, c-format
+msgid "Hide %d subvolume action"
+msgid_plural "Hide %d subvolume actions"
+msgstr[0] "Скрыть %d действие подтома"
+msgstr[1] "Скрыть %d действия подтома"
+msgstr[2] "Скрыть %d действий подтома"
+
+#: src/components/storage/ProposalActionsDialog.tsx:77
+#, c-format
+msgid "Show %d subvolume action"
+msgid_plural "Show %d subvolume actions"
+msgstr[0] "Показать %d действие подтома"
+msgstr[1] "Показать %d действия подтома"
+msgstr[2] "Показать %d действий подтома"
+
+#: src/components/storage/ProposalActionsSummary.tsx:54
+msgid "Destructive actions are not allowed"
+msgstr "Разрушительные действия запрещены"
+
+#: src/components/storage/ProposalActionsSummary.tsx:56
+msgid "Destructive actions are allowed"
+msgstr "Разрушительные действия разрешены"
+
+#: src/components/storage/ProposalActionsSummary.tsx:79
+#: src/components/storage/ProposalActionsSummary.tsx:133
+msgid "affecting"
+msgstr "влияя на"
+
+#: src/components/storage/ProposalActionsSummary.tsx:113
+msgid "Shrinking partitions is not allowed"
+msgstr "Сокращение разделов запрещено"
+
+#: src/components/storage/ProposalActionsSummary.tsx:117
+msgid "Shrinking partitions is allowed"
+msgstr "Сокращение разделов разрешено"
+
+#: src/components/storage/ProposalActionsSummary.tsx:119
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr "Сокращение некоторых разделов разрешено, но не нужно"
+
+#: src/components/storage/ProposalActionsSummary.tsx:122
+#, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "%d раздел будет сокращён"
+msgstr[1] "%d раздела будут сокращены"
+msgstr[2] "%d разделов будут сокращены"
+
+#: src/components/storage/ProposalActionsSummary.tsx:163
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "Невозможно разместить необходимые файловые системы для установки"
+
+#: src/components/storage/ProposalActionsSummary.tsx:171
+#, c-format
+msgid "Check the planned action"
+msgid_plural "Check the %d planned actions"
+msgstr[0] "Проверить %d запланированное действие"
+msgstr[1] "Проверить %d запланированных действия"
+msgstr[2] "Проверить %d запланированных действий"
+
+#: src/components/storage/ProposalActionsSummary.tsx:186
+msgid "Waiting for actions information..."
+msgstr "Ожидание информации о действиях..."
+
+#: src/components/storage/ProposalPage.tsx:129
+msgid "Planned Actions"
+msgstr "Планируемые действия"
+
+#: src/components/storage/ProposalResultSection.tsx:37
+msgid "Waiting for information about storage configuration"
+msgstr "Ожидание информации о конфигурации хранилища"
+
+#: src/components/storage/ProposalResultSection.tsx:62
+msgid "Final layout"
+msgstr "Окончательный вариант"
+
+#: src/components/storage/ProposalResultSection.tsx:63
+msgid "The systems will be configured as displayed below."
+msgstr "Системы будут настроены, как показано ниже."
+
+#: src/components/storage/ProposalResultSection.tsx:71
+msgid "Storage proposal not possible"
+msgstr "Не могу предложить организацию хранилища"
+
+#: src/components/storage/ProposalResultTable.tsx:77
+msgid "New"
+msgstr "Новый"
+
+#. TRANSLATORS: Label to indicate the device size before resizing, where %s is
+#. replaced by the original size (e.g., 3.00 GiB).
+#: src/components/storage/ProposalResultTable.tsx:106
+#, c-format
+msgid "Before %s"
+msgstr "До %s"
+
+#: src/components/storage/ProposalResultTable.tsx:133
+msgid "Mount Point"
+msgstr "Точка монтирования"
+
+#: src/components/storage/ProposalTransactionalInfo.tsx:42
+msgid "Transactional root file system"
+msgstr "Транзакционная корневая файловая система"
+
+#: src/components/storage/ProposalTransactionalInfo.tsx:46
+#, c-format
+msgid ""
+"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
+"file system updated via snapshots."
+msgstr ""
+"%s - это неизменяемая система с атомарными обновлениями. Она использует "
+"файловую систему Btrfs, доступную только для чтения и обновляемую с помощью "
+"моментальных снимков."
+
+#: src/components/storage/SnapshotsField.tsx:31
+msgid "Use Btrfs snapshots for the root file system"
+msgstr "Используйте моментальные снимки Btrfs для корневой файловой системы"
+
+#: src/components/storage/SnapshotsField.tsx:33
+msgid ""
+"Allows to boot to a previous version of the system after configuration "
+"changes or software upgrades."
+msgstr ""
+"Позволяет загрузиться в предыдущую версию системы после изменения "
+"конфигурации или обновления программного обеспечения."
+
+#: src/components/storage/SpaceActionsTable.tsx:60
+#, c-format
+msgid "Up to %s can be recovered by shrinking the device."
+msgstr "До %s можно освободить, сократив устройство."
+
+#: src/components/storage/SpaceActionsTable.tsx:69
+msgid "The device cannot be shrunk:"
+msgstr "Устройство не может быть сокращено:"
+
+#: src/components/storage/SpaceActionsTable.tsx:90
+#, c-format
+msgid "Show information about %s"
+msgstr "Показать сведения о %s"
+
+#: src/components/storage/SpaceActionsTable.tsx:180
+msgid "The content may be deleted"
+msgstr "Содержимое может быть удалено"
+
+#: src/components/storage/SpaceActionsTable.tsx:210
+msgid "Action"
+msgstr "Действие"
+
+#: src/components/storage/SpaceActionsTable.tsx:221
+msgid "Actions to find space"
+msgstr "Действия по поиску места"
+
+#: src/components/storage/SpacePolicySelection.tsx:156
+msgid "Space policy"
+msgstr "Политика пространства"
+
+#: src/components/storage/VolumeDialog.tsx:74
+#, c-format
+msgid "Add %s file system"
+msgstr "Добавить файловую систему %s"
+
+#: src/components/storage/VolumeDialog.tsx:75
+#, c-format
+msgid "Edit %s file system"
+msgstr "Изменить файловую систему %s"
+
+#: src/components/storage/VolumeDialog.tsx:77
+msgid "Edit file system"
+msgstr "Изменить файловую систему"
+
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.tsx:89
+msgid "The type and size of the file system cannot be edited."
+msgstr "Тип и размер файловой системы редактировать нельзя."
+
+#: src/components/storage/VolumeDialog.tsx:93
+#, c-format
+msgid "The current file system on %s is selected to be mounted at %s."
+msgstr "Текущая файловая система на %s выбрана для монтирования в %s."
+
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.tsx:101
+msgid "The size of the file system cannot be edited"
+msgstr "Размер файловой системы не может быть изменен"
+
+#. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
+#: src/components/storage/VolumeDialog.tsx:103
+#, c-format
+msgid "The file system is allocated at the device %s."
+msgstr "Файловая система выделена на устройстве %s."
+
+#: src/components/storage/VolumeDialog.tsx:140
+msgid "A mount point is required"
+msgstr "Требуется точка монтирования"
+
+#: src/components/storage/VolumeDialog.tsx:157
+msgid "The mount point is invalid"
+msgstr "Точка монтирования недопустима"
+
+#: src/components/storage/VolumeDialog.tsx:175
+msgid "A size value is required"
+msgstr "Требуется значение размера"
+
+#: src/components/storage/VolumeDialog.tsx:193
+msgid "Minimum size is required"
+msgstr "Требуется минимальный размер"
+
+#: src/components/storage/VolumeDialog.tsx:242
+#, c-format
+msgid "There is already a file system for %s."
+msgstr "Для %s уже существует файловая система."
+
+#: src/components/storage/VolumeDialog.tsx:244
+msgid "Do you want to edit it?"
+msgstr "Вы хотите изменить её?"
+
+#: src/components/storage/VolumeDialog.tsx:274
+#, c-format
+msgid "There is a predefined file system for %s."
+msgstr "Существует предопределенная файловая система для %s."
+
+#: src/components/storage/VolumeDialog.tsx:276
+msgid "Do you want to add it?"
+msgstr "Вы хотите добавить её?"
+
+#: src/components/storage/VolumeFields.tsx:236
+msgid ""
+"The options for the file system type depends on the product and the mount "
+"point."
+msgstr ""
+"Параметры типа файловой системы зависят от продукта и точки монтирования."
+
+#: src/components/storage/VolumeFields.tsx:243
+msgid "More info for file system types"
+msgstr "Дополнительная информация о типах файловых систем"
+
+#. TRANSLATORS: label for the file system selector.
+#: src/components/storage/VolumeFields.tsx:254
+msgid "File system type"
+msgstr "Тип файловой системы"
+
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeFields.tsx:285
+msgid "the configuration of snapshots"
+msgstr "конфигурация моментальных снимков"
+
+#: src/components/storage/VolumeFields.tsx:292
+#, c-format
+msgid "the presence of the file system for %s"
+msgstr "наличие файловой системы для %s"
+
+#. TRANSLATORS: conjunction for merging two list items
+#: src/components/storage/VolumeFields.tsx:294
+msgid ", "
+msgstr ", "
+
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeFields.tsx:300
+msgid "the amount of RAM in the system"
+msgstr "объем ОЗУ в системе"
+
+#: src/components/storage/VolumeFields.tsx:304
+#, c-format
+msgid "The final size depends on %s."
+msgstr "Итоговый размер зависит от %s."
+
+#. TRANSLATORS: conjunction for merging two texts
+#: src/components/storage/VolumeFields.tsx:306
+msgid " and "
+msgstr " и "
+
+#: src/components/storage/VolumeFields.tsx:313
+msgid "Automatically calculated size according to the selected product."
+msgstr "Автоматический расчет размера в соответствии с выбранным продуктом."
+
+#: src/components/storage/VolumeFields.tsx:342
+msgid "Exact size for the file system."
+msgstr "Точный размер файловой системы."
+
+#. TRANSLATORS: requested partition size
+#: src/components/storage/VolumeFields.tsx:351
+msgid "Exact size"
+msgstr "Точный размер"
+
+#. TRANSLATORS: units selector (like KiB, MiB, GiB...)
+#: src/components/storage/VolumeFields.tsx:368
+msgid "Size unit"
+msgstr "Единица измерения"
+
+#: src/components/storage/VolumeFields.tsx:407
+msgid ""
+"Limits for the file system size. The final size will be a value between the "
+"given minimum and maximum. If no maximum is given then the file system will "
+"be as big as possible."
+msgstr ""
+"Ограничения на размер файловой системы. Конечный размер будет равен значению "
+"между заданным минимумом и максимумом. Если максимальное значение не задано, "
+"то файловая система будет такой большой, на сколько это возможно."
+
+#. TRANSLATORS: the minimal partition size
+#: src/components/storage/VolumeFields.tsx:415
+msgid "Minimum"
+msgstr "Минимум"
+
+#. TRANSLATORS: the minium partition size
+#: src/components/storage/VolumeFields.tsx:426
+msgid "Minimum desired size"
+msgstr "Минимальный желаемый размер"
+
+#: src/components/storage/VolumeFields.tsx:437
+msgid "Unit for the minimum size"
+msgstr "Единица для минимального размера"
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeFields.tsx:449
+msgid "Maximum"
+msgstr "Максимум"
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeFields.tsx:461
+msgid "Maximum desired size"
+msgstr "Максимальный желаемый размер"
+
+#: src/components/storage/VolumeFields.tsx:471
+msgid "Unit for the maximum size"
+msgstr "Единица для максимального размера"
+
+#. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
+#: src/components/storage/VolumeFields.tsx:489
+msgid "Auto"
+msgstr "Автоматически"
+
+#. TRANSLATORS: radio button label, exact partition size requested by user
+#: src/components/storage/VolumeFields.tsx:491
+msgid "Fixed"
+msgstr "Фиксированный"
+
+#. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
+#: src/components/storage/VolumeFields.tsx:493
+msgid "Range"
+msgstr "Диапазон"
+
+#: src/components/storage/VolumeLocationDialog.tsx:37
+msgid ""
+"The file systems are allocated at the installation device by default. "
+"Indicate a custom location to create the file system at a specific device."
+msgstr ""
+"По умолчанию файловые системы распределяются на устройстве установки. "
+"Укажите пользовательское расположение, чтобы создать файловую систему на "
+"конкретном устройстве."
+
+#. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
+#. by a mount path (e.g., /home).
+#: src/components/storage/VolumeLocationDialog.tsx:140
+#, c-format
+msgid "Location for %s file system"
+msgstr "Расположение файловой системы %s"
+
+#: src/components/storage/VolumeLocationDialog.tsx:150
+msgid "Select in which device to allocate the file system"
+msgstr "Выберите, на каком устройстве разместить файловую систему"
+
+#: src/components/storage/VolumeLocationDialog.tsx:153
+msgid "Select a location"
+msgstr "Выберите расположение"
+
+#: src/components/storage/VolumeLocationDialog.tsx:165
+msgid "Select how to allocate the file system"
+msgstr "Выберите способ выделения файловой системы"
+
+#: src/components/storage/VolumeLocationDialog.tsx:170
+msgid "Create a new partition"
+msgstr "Создать новый раздел"
+
+#: src/components/storage/VolumeLocationDialog.tsx:172
+msgid ""
+"The file system will be allocated as a new partition at the selected   disk."
+msgstr ""
+"Файловая система будет выделена в качестве нового раздела на выбранном   "
+"диске."
+
+#: src/components/storage/VolumeLocationDialog.tsx:182
+msgid "Create a dedicated LVM volume group"
+msgstr "Создать выделенную группу томов LVM"
+
+#: src/components/storage/VolumeLocationDialog.tsx:184
+msgid ""
+"A new volume group will be allocated in the selected disk and the   file "
+"system will be created as a logical volume."
+msgstr ""
+"На выбранном диске будет выделена новая группа томов, а   файловая система "
+"будет создана как логический том."
+
+#: src/components/storage/VolumeLocationDialog.tsx:194
+msgid "Format the device"
+msgstr "Отформатировать устройство"
+
+#: src/components/storage/VolumeLocationDialog.tsx:198
+#, c-format
+msgid "The selected device will be formatted as %s file system."
+msgstr "Выбранное устройство будет отформатировано в файловую систему %s."
+
+#: src/components/storage/VolumeLocationDialog.tsx:209
+msgid "Mount the file system"
+msgstr "Смонтировать файловую систему"
+
+#: src/components/storage/VolumeLocationDialog.tsx:211
+msgid ""
+"The current file system on the selected device will be mounted   without "
+"formatting the device."
+msgstr ""
+"Текущая файловая система на выбранном устройстве будет смонтирована   без "
+"форматирования устройства."
+
+#: src/components/storage/VolumeLocationSelectorTable.tsx:98
+msgid "Usage"
+msgstr "Использование"
 
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "Диск zFCP не был активирован."
-
-#: src/components/storage/ZFCPDiskForm.jsx:110
-#: src/components/storage/ZFCPPage.jsx:324
-#: src/components/storage/ZFCPPage.jsx:382
-msgid "Channel ID"
-msgstr "Идентификатор канала"
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:123
@@ -397,12 +2062,6 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
-#: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:103
-#: src/components/storage/iscsi/NodesPresenter.jsx:124
-msgid "Status"
-msgstr "Состояние"
-
 #: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
 msgstr "Автоматическое сканирование LUN"
@@ -414,30 +2073,6 @@ msgstr "Активировано"
 #: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
 msgstr "Деактивировано"
-
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-msgid "No"
-msgstr "Нет"
-
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-msgid "Yes"
-msgstr "Да"
-
-#: src/components/storage/ZFCPPage.jsx:353
-msgid "Activate"
-msgstr "Активировать"
-
-#: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/NodesPresenter.jsx:99
-#: src/components/storage/iscsi/NodesPresenter.jsx:120
-msgid "Name"
-msgstr "Имя"
-
-#: src/components/storage/ZFCPPage.jsx:395
-msgid "Deactivate"
-msgstr "Деактивировать"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
@@ -496,6 +2131,10 @@ msgstr "Активировать новый диск"
 msgid "Disks"
 msgstr "Диски"
 
+#: src/components/storage/device-utils.tsx:74
+msgid "Unused space"
+msgstr "Неиспользуемое пространство"
+
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
 msgstr "Доступно только при условии аутентификации по цели"
@@ -518,11 +2157,6 @@ msgstr "Имя пользователя"
 msgid "Incorrect user name"
 msgstr "Некорректное имя пользователя"
 
-#: src/components/storage/iscsi/AuthFields.jsx:90
-#: src/components/storage/iscsi/AuthFields.jsx:94
-msgid "Password"
-msgstr "Пароль"
-
 #: src/components/storage/iscsi/AuthFields.jsx:99
 #: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
@@ -536,15 +2170,80 @@ msgstr "Аутентификация инициатором"
 msgid "Target Password"
 msgstr "Пароль цели"
 
+#. TRANSLATORS: popup title
+#: src/components/storage/iscsi/DiscoverForm.tsx:94
+msgid "Discover iSCSI Targets"
+msgstr "Знакомство с целевыми устройствами iSCSI"
+
+#: src/components/storage/iscsi/DiscoverForm.tsx:99
+#: src/components/storage/iscsi/LoginForm.jsx:70
+msgid "Make sure you provide the correct values"
+msgstr "Убедитесь, что вы указали правильные значения"
+
+#: src/components/storage/iscsi/DiscoverForm.tsx:103
+msgid "IP address"
+msgstr "IP-адрес"
+
+#. TRANSLATORS: network address
+#: src/components/storage/iscsi/DiscoverForm.tsx:108
+#: src/components/storage/iscsi/DiscoverForm.tsx:110
+msgid "Address"
+msgstr "Адрес"
+
+#: src/components/storage/iscsi/DiscoverForm.tsx:115
+msgid "Incorrect IP address"
+msgstr "Некорректный IP-адрес"
+
+#. TRANSLATORS: network port number
+#: src/components/storage/iscsi/DiscoverForm.tsx:117
+#: src/components/storage/iscsi/DiscoverForm.tsx:122
+#: src/components/storage/iscsi/DiscoverForm.tsx:124
+msgid "Port"
+msgstr "Порт"
+
+#: src/components/storage/iscsi/DiscoverForm.tsx:129
+msgid "Incorrect port"
+msgstr "Некорректный порт"
+
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/storage/iscsi/EditNodeForm.tsx:48
+#, c-format
+msgid "Edit %s"
+msgstr "Изменить %s"
+
+#: src/components/storage/iscsi/InitiatorForm.tsx:42
+msgid "Edit iSCSI Initiator"
+msgstr "Изменить инициатор iSCSI"
+
+#. TRANSLATORS: iSCSI initiator name
+#: src/components/storage/iscsi/InitiatorForm.tsx:49
+msgid "Initiator name"
+msgstr "Имя инициатора"
+
+#. TRANSLATORS: usually just keep the original text
+#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "iBFT"
+msgstr "iBFT"
+
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:57
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:72
+msgid "Offload card"
+msgstr "Разгрузочная карта"
+
+#. TRANSLATORS: iSCSI initiator section name
+#: src/components/storage/iscsi/InitiatorSection.tsx:35
+msgid "Initiator"
+msgstr "Инициатор"
+
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
 msgstr "Логин %s"
-
-#: src/components/storage/iscsi/LoginForm.jsx:70
-msgid "Make sure you provide the correct values"
-msgstr "Убедитесь, что вы указали правильные значения"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:74
@@ -552,36 +2251,15 @@ msgstr "Убедитесь, что вы указали правильные зн
 msgid "Startup"
 msgstr "Запуск"
 
-#: src/components/storage/iscsi/NodeStartupOptions.js:25
-msgid "Manual"
-msgstr "Вручную"
-
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
 msgstr "При загрузке"
-
-#: src/components/storage/iscsi/NodeStartupOptions.js:27
-msgid "Automatic"
-msgstr "Автоматически"
-
-#. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:64
-msgid "Disconnected"
-msgstr "Отключено"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:68
 #, c-format
 msgid "Connected (%s)"
 msgstr "Подключено (%s)"
-
-#: src/components/storage/iscsi/NodesPresenter.jsx:74
-msgid "Edit"
-msgstr "Изменить"
-
-#: src/components/storage/iscsi/NodesPresenter.jsx:78
-msgid "Delete"
-msgstr "Удалить"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:83
 msgid "Login"
@@ -601,10 +2279,249 @@ msgstr "Портал"
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-msgid "iBFT"
-msgstr "iBFT"
+#: src/components/storage/iscsi/TargetsSection.tsx:56
+msgid "No iSCSI targets found."
+msgstr "Цели iSCSI не найдены."
+
+#: src/components/storage/iscsi/TargetsSection.tsx:58
+msgid ""
+"Please, perform an iSCSI discovery in order to find available iSCSI targets."
+msgstr "Выполните обнаружение iSCSI, чтобы найти доступные цели iSCSI."
+
+#: src/components/storage/iscsi/TargetsSection.tsx:62
+msgid "Discover iSCSI targets"
+msgstr "Обнаружение целей iSCSI"
+
+#. TRANSLATORS: button label, starts iSCSI discovery
+#: src/components/storage/iscsi/TargetsSection.tsx:74
+msgid "Discover"
+msgstr "Обнаружить"
+
+#. TRANSLATORS: iSCSI targets section title
+#: src/components/storage/iscsi/TargetsSection.tsx:85
+msgid "Targets"
+msgstr "Цели"
+
+#: src/components/storage/utils.ts:60
+msgid "KiB"
+msgstr "КиБ"
+
+#: src/components/storage/utils.ts:61
+msgid "MiB"
+msgstr "МиБ"
+
+#: src/components/storage/utils.ts:62
+msgid "GiB"
+msgstr "ГиБ"
+
+#: src/components/storage/utils.ts:63
+msgid "TiB"
+msgstr "ТиБ"
+
+#: src/components/storage/utils.ts:64
+msgid "PiB"
+msgstr "ПиБ"
+
+#: src/components/storage/utils.ts:72
+msgid "Delete current content"
+msgstr "Удалить текущее содержимое"
+
+#: src/components/storage/utils.ts:73
+msgid "All partitions will be removed and any data in the disks will be lost."
+msgstr "Все разделы будут удалены, а все данные на дисках будут потеряны."
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space deleting current content". Keep it short
+#: src/components/storage/utils.ts:77
+msgid "deleting current content"
+msgstr "удаление текущего содержимого"
+
+#: src/components/storage/utils.ts:82
+msgid "Shrink existing partitions"
+msgstr "Уменьшение существующих разделов"
+
+#: src/components/storage/utils.ts:83
+msgid "The data is kept, but the current partitions will be resized as needed."
+msgstr ""
+"Данные сохраняются, но размер текущих разделов будет изменен по мере "
+"необходимости."
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space shrinking partitions". Keep it short.
+#: src/components/storage/utils.ts:87
+msgid "shrinking partitions"
+msgstr "уменьшение разделов"
+
+#: src/components/storage/utils.ts:92
+msgid "Use available space"
+msgstr "Использовать свободное пространство"
+
+#: src/components/storage/utils.ts:93
+msgid ""
+"The data is kept. Only the space not assigned to any partition will be used."
+msgstr ""
+"Данные сохраняются. Будет использовано только пространство, не отведенное "
+"для какого-либо раздела."
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space without modifying any partition". Keep it short.
+#: src/components/storage/utils.ts:97
+msgid "without modifying any partition"
+msgstr "не изменяя ни одного раздела"
+
+#: src/components/storage/utils.ts:102
+msgid "Custom"
+msgstr "По-своему"
+
+#: src/components/storage/utils.ts:103
+msgid "Select what to do with each partition."
+msgstr "Выберите, что делать с каждым разделом."
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space with custom actions". Keep it short.
+#: src/components/storage/utils.ts:107
+msgid "with custom actions"
+msgstr "другими способами"
+
+#: src/components/users/FirstUser.tsx:33
+msgid "Define a user now"
+msgstr "Определить пользователя"
+
+#: src/components/users/FirstUser.tsx:39
+msgid "No user defined yet."
+msgstr "Пользователь еще не определен."
+
+#: src/components/users/FirstUser.tsx:43
+msgid ""
+"Please, be aware that a user must be defined before installing the system to "
+"be able to log into it."
+msgstr ""
+"Обратите внимание, что перед установкой системы необходимо определить "
+"пользователя, чтобы он мог войти в систему."
+
+#: src/components/users/FirstUser.tsx:55
+#: src/components/users/FirstUserForm.tsx:220
+msgid "Full name"
+msgstr "Полное имя"
+
+#: src/components/users/FirstUser.tsx:56
+#: src/components/users/FirstUserForm.tsx:234
+#: src/components/users/FirstUserForm.tsx:239
+#: src/components/users/FirstUserForm.tsx:242
+msgid "Username"
+msgstr "Имя пользователя"
+
+#: src/components/users/FirstUser.tsx:87
+#: src/components/users/RootAuthMethods.tsx:117
+#: src/components/users/RootAuthMethods.tsx:129
+msgid "Discard"
+msgstr "Отказаться"
+
+#: src/components/users/FirstUser.tsx:94
+msgid "First user"
+msgstr "Первый пользователь"
+
+#: src/components/users/FirstUserForm.tsx:57
+msgid "Username suggestion dropdown"
+msgstr "Выпадающий список с предложением имени пользователя"
+
+#. TRANSLATORS: dropdown username suggestions
+#: src/components/users/FirstUserForm.tsx:72
+msgid "Use suggested username"
+msgstr "Используйте предложенное имя пользователя"
+
+#: src/components/users/FirstUserForm.tsx:147
+msgid "All fields are required"
+msgstr "Все поля обязательны"
+
+#: src/components/users/FirstUserForm.tsx:204
+msgid "Create user"
+msgstr "Создать пользователя"
+
+#: src/components/users/FirstUserForm.tsx:204
+msgid "Edit user"
+msgstr "Изменить пользователя"
+
+#: src/components/users/FirstUserForm.tsx:224
+#: src/components/users/FirstUserForm.tsx:226
+msgid "User full name"
+msgstr "Полное имя пользователя"
+
+#: src/components/users/FirstUserForm.tsx:264
+msgid "Edit password too"
+msgstr "Также изменить пароль"
+
+#: src/components/users/FirstUserForm.tsx:280
+msgid "user autologin"
+msgstr "автоматический вход пользователя"
+
+#. TRANSLATORS: check box label
+#: src/components/users/FirstUserForm.tsx:284
+msgid "Auto-login"
+msgstr "Автологин"
+
+#: src/components/users/RootAuthMethods.tsx:33
+msgid "No root authentication method defined yet."
+msgstr "Метод корневой аутентификации пока не определен."
+
+#: src/components/users/RootAuthMethods.tsx:37
+msgid ""
+"Please, define at least one authentication method for logging into the "
+"system as root."
+msgstr ""
+"Пожалуйста, определите хотя бы один метод аутентификации для входа в систему "
+"с правами root."
+
+#. TRANSLATORS: table header, user authentication method
+#: src/components/users/RootAuthMethods.tsx:68
+msgid "Method"
+msgstr "Метод"
+
+#: src/components/users/RootAuthMethods.tsx:77
+msgid "Already set"
+msgstr "Уже установлен"
+
+#: src/components/users/RootAuthMethods.tsx:77
+#: src/components/users/RootAuthMethods.tsx:85
+msgid "Not set"
+msgstr "Не установлен"
+
+#: src/components/users/RootAuthMethods.tsx:83
+msgid "SSH Key"
+msgstr "Ключ SSH"
+
+#: src/components/users/RootAuthMethods.tsx:113
+#: src/components/users/RootAuthMethods.tsx:125
+msgid "Set"
+msgstr "Установить"
+
+#: src/components/users/RootAuthMethods.tsx:137
+msgid "Root authentication"
+msgstr "Аутентификация root"
+
+#: src/components/users/RootAuthMethods.tsx:144
+msgid "Set a password"
+msgstr "Установить пароль"
+
+#: src/components/users/RootAuthMethods.tsx:148
+msgid "Upload a SSH Public Key"
+msgstr "Загрузить публичный ключ SSH"
+
+#: src/components/users/RootAuthMethods.tsx:165
+msgid "Change the root password"
+msgstr "Изменить пароль root"
+
+#: src/components/users/RootAuthMethods.tsx:165
+msgid "Set a root password"
+msgstr "Установить пароль root"
+
+#: src/components/users/RootAuthMethods.tsx:175
+msgid "Edit the SSH Public Key for root"
+msgstr "Изменить публичный ключ SSH для root"
+
+#: src/components/users/RootAuthMethods.tsx:176
+msgid "Add a SSH Public Key for root"
+msgstr "Добавить публичный ключ SSH для root"
 
 #: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
@@ -636,1240 +2553,17 @@ msgstr "Очистить"
 msgid "Overview"
 msgstr "Обзор"
 
-#~ msgid "Could not log in. Please, make sure that the password is correct."
-#~ msgstr ""
-#~ "Не удалось войти в систему. Пожалуйста, убедитесь, что пароль введен "
-#~ "правильно."
-
-#~ msgid "Could not authenticate against the server, please check it."
-#~ msgstr ""
-#~ "Не удалось пройти аутентификацию на сервере, пожалуйста, проверьте его."
-
-#, c-format
-#~ msgid "Log in as %s"
-#~ msgstr "Вход как %s"
-
-#~ msgid "The installer requires [root] user privileges."
-#~ msgstr "Программа установки требует привилегий пользователя [root]."
-
-#~ msgid "Please, provide its password to log in to the system."
-#~ msgstr "Пожалуйста, укажите его пароль для входа в систему."
-
-#~ msgid "Login form"
-#~ msgstr "Форма входа"
-
-#~ msgid "Password input"
-#~ msgstr "Ввод пароля"
-
-#~ msgid "Log in"
-#~ msgstr "Вход"
-
-#~ msgid "More about this"
-#~ msgstr "Подробнее об этом"
-
-#~ msgid "Passwords do not match"
-#~ msgstr "Пароли не совпадают"
-
-#~ msgid "Password confirmation"
-#~ msgstr "Подтверждение пароля"
-
-#~ msgid "Filter by description or keymap code"
-#~ msgstr "Фильтр по описанию или коду карты клавиш"
-
-#~ msgid "None of the keymaps match the filter."
-#~ msgstr "Ни одна из карт не соответствует фильтру."
-
-#~ msgid "Keyboard selection"
-#~ msgstr "Выбор клавиатуры"
-
-#~ msgid "Filter by language, territory or locale code"
-#~ msgstr "Фильтр по языку, территории или коду локали"
-
-#~ msgid "None of the locales match the filter."
-#~ msgstr "Ни одна из локалей не соответствует фильтру."
-
-#~ msgid "Locale selection"
-#~ msgstr "Выбор локали"
-
-#~ msgid "Filter by territory, time zone code or UTC offset"
-#~ msgstr "Фильтр по территории, коду часового пояса или смещению UTC"
-
-#~ msgid "None of the time zones match the filter."
-#~ msgstr "Ни один из часовых поясов не соответствует фильтру."
-
-#~ msgid " Timezone selection"
-#~ msgstr " Выбор часового пояса"
-
-#~ msgid "Users"
-#~ msgstr "Пользователи"
-
-#~ msgid "Software"
-#~ msgstr "Программы"
-
-#~ msgid "Ready for installation"
-#~ msgstr "Готов к установке"
-
-#~ msgid "Installation"
-#~ msgstr "Установка"
-
-#~ msgid "Before installing, please check the following problems."
-#~ msgstr "Проверьте следующие проблемы перед установкой."
-
-#~ msgid ""
-#~ "Take your time to check your configuration before starting the "
-#~ "installation process."
-#~ msgstr "Проверьте свои настройки до начала процесса установки."
-
-#~ msgid ""
-#~ "These are the most relevant installation settings. Feel free to browse "
-#~ "the sections in the menu for further details."
-#~ msgstr ""
-#~ "Это наиболее актуальные настройки установки. Более подробные сведения "
-#~ "приведены в разделах меню."
-
-#~ msgid "Discover iSCSI Targets"
-#~ msgstr "Знакомство с целевыми устройствами iSCSI"
-
-#~ msgid "IP address"
-#~ msgstr "IP-адрес"
-
-#~ msgid "Address"
-#~ msgstr "Адрес"
-
-#~ msgid "Incorrect IP address"
-#~ msgstr "Некорректный IP-адрес"
-
-#~ msgid "Port"
-#~ msgstr "Порт"
-
-#~ msgid "Incorrect port"
-#~ msgstr "Некорректный порт"
-
-#, c-format
-#~ msgid "Edit %s"
-#~ msgstr "Изменить %s"
-
-#~ msgid "Edit iSCSI Initiator"
-#~ msgstr "Изменить инициатор iSCSI"
-
-#~ msgid "Initiator name"
-#~ msgstr "Имя инициатора"
-
-#~ msgid "None"
-#~ msgstr "Отсутствует"
-
-#~ msgid "Offload card"
-#~ msgstr "Разгрузочная карта"
-
-#~ msgid "Initiator"
-#~ msgstr "Инициатор"
-
-#~ msgid "No iSCSI targets found."
-#~ msgstr "Цели iSCSI не найдены."
-
-#~ msgid ""
-#~ "Please, perform an iSCSI discovery in order to find available iSCSI "
-#~ "targets."
-#~ msgstr "Выполните обнаружение iSCSI, чтобы найти доступные цели iSCSI."
-
-#~ msgid "Discover iSCSI targets"
-#~ msgstr "Обнаружение целей iSCSI"
-
-#~ msgid "Discover"
-#~ msgstr "Обнаружить"
-
-#~ msgid "Targets"
-#~ msgstr "Цели"
-
-#~ msgid "No user defined yet."
-#~ msgstr "Пользователь еще не определен."
-
-#~ msgid ""
-#~ "Please, be aware that a user must be defined before installing the system "
-#~ "to be able to log into it."
-#~ msgstr ""
-#~ "Обратите внимание, что перед установкой системы необходимо определить "
-#~ "пользователя, чтобы он мог войти в систему."
-
-#~ msgid "Define a user now"
-#~ msgstr "Определить пользователя"
-
-#~ msgid "Full name"
-#~ msgstr "Полное имя"
-
-#~ msgid "Username"
-#~ msgstr "Имя пользователя"
-
-#~ msgid "Discard"
-#~ msgstr "Отказаться"
-
-#~ msgid "Username suggestion dropdown"
-#~ msgstr "Выпадающий список с предложением имени пользователя"
-
-#~ msgid "Use suggested username"
-#~ msgstr "Используйте предложенное имя пользователя"
-
-#~ msgid "All fields are required"
-#~ msgstr "Все поля обязательны"
-
-#~ msgid "Create user"
-#~ msgstr "Создать пользователя"
-
-#~ msgid "Edit user"
-#~ msgstr "Изменить пользователя"
-
-#~ msgid "User full name"
-#~ msgstr "Полное имя пользователя"
-
-#~ msgid "Edit password too"
-#~ msgstr "Также изменить пароль"
-
-#~ msgid "user autologin"
-#~ msgstr "автоматический вход пользователя"
-
-#~ msgid "Auto-login"
-#~ msgstr "Автологин"
-
-#~ msgid "No root authentication method defined yet."
-#~ msgstr "Метод корневой аутентификации пока не определен."
-
-#~ msgid ""
-#~ "Please, define at least one authentication method for logging into the "
-#~ "system as root."
-#~ msgstr ""
-#~ "Пожалуйста, определите хотя бы один метод аутентификации для входа в "
-#~ "систему с правами root."
-
-#~ msgid "Set a password"
-#~ msgstr "Установить пароль"
-
-#~ msgid "Upload a SSH Public Key"
-#~ msgstr "Загрузить публичный ключ SSH"
-
-#~ msgid "Set"
-#~ msgstr "Установить"
-
-#~ msgid "Already set"
-#~ msgstr "Уже установлен"
-
-#~ msgid "Not set"
-#~ msgstr "Не установлен"
-
-#~ msgid "Method"
-#~ msgstr "Метод"
-
-#~ msgid "SSH Key"
-#~ msgstr "Ключ SSH"
-
-#~ msgid "Change the root password"
-#~ msgstr "Изменить пароль root"
-
-#~ msgid "Set a root password"
-#~ msgstr "Установить пароль root"
-
-#~ msgid "Edit the SSH Public Key for root"
-#~ msgstr "Изменить публичный ключ SSH для root"
-
-#~ msgid "Add a SSH Public Key for root"
-#~ msgstr "Добавить публичный ключ SSH для root"
-
-#~ msgid "First user"
-#~ msgstr "Первый пользователь"
-
-#~ msgid "Root authentication"
-#~ msgstr "Аутентификация root"
-
-#~ msgid "Change boot options"
-#~ msgstr "Изменение параметров загрузки"
-
-#~ msgid "Installation will not configure partitions for booting."
-#~ msgstr "Установка не будет настраивать разделы для загрузки."
-
-#~ msgid ""
-#~ "Installation will configure partitions for booting at the installation "
-#~ "disk."
-#~ msgstr "Установка настроит разделы для загрузки с установочного диска."
-
-#, c-format
-#~ msgid "Installation will configure partitions for booting at %s."
-#~ msgstr "Установка настроит разделы для загрузки по адресу %s."
-
-#~ msgid ""
-#~ "To ensure the new system is able to boot, the installer may need to "
-#~ "create or configure some partitions in the appropriate disk."
-#~ msgstr ""
-#~ "Чтобы обеспечить загрузку новой системы, программе установки может "
-#~ "потребоваться создать или настроить некоторые разделы на соответствующем "
-#~ "диске."
-
-#~ msgid "Partitions to boot will be allocated at the installation disk."
-#~ msgstr "Загрузочные разделы будут выделены на установочном диске."
-
-#, c-format
-#~ msgid "Partitions to boot will be allocated at the installation disk (%s)."
-#~ msgstr "Загрузочные разделы будут выделены на установочном диске (%s)."
-
-#~ msgid "Select booting partition"
-#~ msgstr "Выберите загрузочный раздел"
-
-#~ msgid "Select a disk"
-#~ msgstr "Выберите диск"
-
-#~ msgid "Partitions to boot will be allocated at the following device."
-#~ msgstr "Загрузочные разделы будут выделены на следующем устройстве."
-
-#~ msgid "Choose a disk for placing the boot loader"
-#~ msgstr "Выберите диск для размещения загрузчика"
-
-#~ msgid "Do not configure"
-#~ msgstr "Не настраивать"
-
-#~ msgid ""
-#~ "No partitions will be automatically configured for booting. Use with "
-#~ "caution."
-#~ msgstr ""
-#~ "Ни один раздел не будет автоматически настроен для загрузки. Используйте "
-#~ "с осторожностью."
-
 #~ msgid "Waiting for progress report"
 #~ msgstr "Ожидание отчёта о процессе"
-
-#~ msgid "Formatting DASD devices"
-#~ msgstr "Форматирование устройств DASD"
-
-#~ msgid "Device"
-#~ msgstr "Устройство"
-
-#~ msgid "Type"
-#~ msgstr "Тип"
-
-#~ msgid "DIAG"
-#~ msgstr "Режим DIAG"
-
-#~ msgid "Formatted"
-#~ msgstr "Отформатированный"
-
-#~ msgid "Partition Info"
-#~ msgstr "Информация о разделе"
-
-#~ msgid "Perform an action"
-#~ msgstr "Выполнить действие"
-
-#~ msgid "Set DIAG On"
-#~ msgstr "Включить DIAG"
-
-#~ msgid "Set DIAG Off"
-#~ msgstr "Отключить DIAG"
-
-#~ msgid "Format"
-#~ msgstr "Формат"
-
-#~ msgid "Filter by min channel"
-#~ msgstr "Фильтр по минимальному каналу"
-
-#~ msgid "Remove min channel filter"
-#~ msgstr "Удалить фильтр по минимальному каналу"
-
-#~ msgid "Filter by max channel"
-#~ msgstr "Фильтр по максимальному каналу"
-
-#~ msgid "Remove max channel filter"
-#~ msgstr "Удалить фильтр по максимальному каналу"
 
 #~ msgid "Loading data, please wait a second..."
 #~ msgstr "Загрузка данных, пожалуйста, подождите..."
 
-#~ msgid ""
-#~ "The file systems will be allocated by default as [new partitions in the "
-#~ "selected device]."
-#~ msgstr ""
-#~ "Файловые системы будут выделены по умолчанию как [новые разделы на "
-#~ "выбранном устройстве]."
-
-#~ msgid ""
-#~ "The file systems will be allocated by default as [logical volumes of a "
-#~ "new LVM Volume Group]. The corresponding physical volumes will be created "
-#~ "on demand as new partitions at the selected devices."
-#~ msgstr ""
-#~ "Файловые системы по умолчанию будут выделены как [логические тома новой "
-#~ "группы томов LVM]. Соответствующие физические тома будут создаваться по "
-#~ "требованию как новые разделы на выбранных устройствах."
-
-#~ msgid "Select installation device"
-#~ msgstr "Выберите устройство для установки"
-
-#~ msgid "Install new system on"
-#~ msgstr "Установить новую систему на"
-
-#~ msgid "An existing disk"
-#~ msgstr "существующий диск"
-
-#~ msgid "A new LVM Volume Group"
-#~ msgstr "новую группу томов LVM"
-
-#~ msgid "Device selector for target disk"
-#~ msgstr "Выбор устройств для целевого диска"
-
-#~ msgid "Device selector for new LVM volume group"
-#~ msgstr "Выбор устройств для новой группы томов LVM"
-
-#~ msgid "Prepare more devices by configuring advanced"
-#~ msgstr "Подготовьте больше устройств, настроив расширенные"
-
-#~ msgid "storage techs"
-#~ msgstr "технологии хранения"
-
-#~ msgid "Multipath"
-#~ msgstr "Многопутевое"
-
-#, c-format
-#~ msgid "DASD %s"
-#~ msgstr "DASD %s"
-
-#, c-format
-#~ msgid "Software %s"
-#~ msgstr "Программное обеспечение %s"
-
-#~ msgid "SD Card"
-#~ msgstr "SD-карта"
-
-#, c-format
-#~ msgid "%s disk"
-#~ msgstr "Диск %s"
-
-#~ msgid "Disk"
-#~ msgstr "Диск"
-
-#, c-format
-#~ msgid "Members: %s"
-#~ msgstr "Участники: %s"
-
-#, c-format
-#~ msgid "Devices: %s"
-#~ msgstr "Устройства: %s"
-
-#, c-format
-#~ msgid "Wires: %s"
-#~ msgstr "Проводки: %s"
-
-#, c-format
-#~ msgid "%s with %d partitions"
-#~ msgstr "%s с %d разделами"
-
-#~ msgid "No content found"
-#~ msgstr "Содержимое не найдено"
-
-#~ msgid "Details"
-#~ msgstr "Подробности"
-
-#~ msgid "Size"
-#~ msgstr "Размер"
-
-#~ msgid "Encryption"
-#~ msgstr "Шифрование"
-
-#~ msgid ""
-#~ "Protection for the information stored at the device, including data, "
-#~ "programs, and system files."
-#~ msgstr ""
-#~ "Защита информации, хранящейся на устройстве, включая данные, программы и "
-#~ "системные файлы."
-
-#~ msgid "disabled"
-#~ msgstr "отключено"
-
-#~ msgid "enabled"
-#~ msgstr "включено"
-
-#~ msgid "using TPM unlocking"
-#~ msgstr "используя разблокировку TPM"
-
-#~ msgid "Enable"
-#~ msgstr "Включить"
-
-#~ msgid "Modify"
-#~ msgstr "Изменить"
-
-#~ msgid ""
-#~ "Full Disk Encryption (FDE) allows to protect the information stored at "
-#~ "the device, including data, programs, and system files."
-#~ msgstr ""
-#~ "Полнодисковое шифрование (FDE) позволяет защитить информацию, хранящуюся "
-#~ "на устройстве, включая данные, программы и системные файлы."
-
-#~ msgid ""
-#~ "Use the Trusted Platform Module (TPM) to decrypt automatically on each "
-#~ "boot"
-#~ msgstr ""
-#~ "Используйте Доверенный платформенный модуль (TPM) для автоматического "
-#~ "дешифрования при каждой загрузке"
-
-#~ msgid ""
-#~ "The password will not be needed to boot and access the data if the TPM "
-#~ "can verify the integrity of the system. TPM sealing requires the new "
-#~ "system to be booted directly on its first run."
-#~ msgstr ""
-#~ "Пароль не понадобится для загрузки и доступа к данным, если TPM может "
-#~ "проверить целостность системы. Запечатывание TPM требует непосредственной "
-#~ "загрузки новой системы при первом запуске."
-
-#~ msgid "Encrypt the system"
-#~ msgstr "Зашифровать систему"
-
-#~ msgid "Installation device"
-#~ msgstr "Устройство для установки"
-
-#~ msgid "Main disk or LVM Volume Group for installation."
-#~ msgstr "Основной диск или группа томов LVM для установки."
-
-#, c-format
-#~ msgid "File systems created as new partitions at %s"
-#~ msgstr "Файловые системы созданы как новые разделы на %s"
-
-#~ msgid "File systems created at a new LVM volume group"
-#~ msgstr "Файловые системы созданы в новой группе томов LVM"
-
-#, c-format
-#~ msgid "File systems created at a new LVM volume group on %s"
-#~ msgstr "Файловые системы созданы в новой группе томов LVM на %s"
-
-#, c-format
-#~ msgid "at least %s"
-#~ msgstr "не менее %s"
-
-#, c-format
-#~ msgid "Transactional Btrfs root volume (%s)"
-#~ msgstr "Корневой том Btrfs с транзакциями (%s)"
-
-#, c-format
-#~ msgid "Transactional Btrfs root partition (%s)"
-#~ msgstr "Корневой раздел Btrfs с транзакциями (%s)"
-
-#, c-format
-#~ msgid "Btrfs root volume with snapshots (%s)"
-#~ msgstr "Корневой том Btrfs с моментальными снимками (%s)"
-
-#, c-format
-#~ msgid "Btrfs root partition with snapshots (%s)"
-#~ msgstr "Корневой раздел Btrfs с моментальными снимками (%s)"
-
-#, c-format
-#~ msgid "Mount %1$s at %2$s (%3$s)"
-#~ msgstr "Установить %1$s в %2$s (%3$s)"
-
-#, c-format
-#~ msgid "Swap at %1$s (%2$s)"
-#~ msgstr "Подкачка на %1$s (%2$s)"
-
-#, c-format
-#~ msgid "Swap volume (%s)"
-#~ msgstr "Том для подкачки (%s)"
-
-#, c-format
-#~ msgid "Swap partition (%s)"
-#~ msgstr "Раздел подкачки (%s)"
-
-#, c-format
-#~ msgid "%1$s root at %2$s (%3$s)"
-#~ msgstr "%1$s корень на %2$s (%3$s)"
-
-#, c-format
-#~ msgid "%1$s root volume (%2$s)"
-#~ msgstr "Корневой том %1$s (%2$s)"
-
-#, c-format
-#~ msgid "%1$s root partition (%2$s)"
-#~ msgstr "Корневой раздел %1$s (%2$s)"
-
-#, c-format
-#~ msgid "%1$s %2$s at %3$s (%4$s)"
-#~ msgstr "%1$s %2$s на %3$s (%4$s)"
-
-#, c-format
-#~ msgid "%1$s %2$s volume (%3$s)"
-#~ msgstr "%1$s том %2$s (%3$s)"
-
-#, c-format
-#~ msgid "%1$s %2$s partition (%3$s)"
-#~ msgstr "%1$s раздел %2$s (%3$s)"
-
-#~ msgid "Do not configure partitions for booting"
-#~ msgstr "Не настраивать разделы для загрузки"
-
-#~ msgid "Boot partitions at installation disk"
-#~ msgstr "Загрузочные разделы на диске для установки"
-
-#, c-format
-#~ msgid "Boot partitions at %s"
-#~ msgstr "Загрузочные разделы на %s"
-
-#~ msgid "These limits are affected by:"
-#~ msgstr "На эти ограничения влияют:"
-
-#~ msgid "The configuration of snapshots"
-#~ msgstr "Конфигурация моментальных снимков"
-
-#, c-format
-#~ msgid "Presence of other volumes (%s)"
-#~ msgstr "Наличие других томов (%s)"
-
-#~ msgid "The amount of RAM in the system"
-#~ msgstr "Объем ОЗУ в системе"
-
-#~ msgid "auto"
-#~ msgstr "автоматически"
-
-#, c-format
-#~ msgid "Reused %s"
-#~ msgstr "Повторно используется %s"
-
-#~ msgid "Transactional Btrfs"
-#~ msgstr "Транзакционная Btrfs"
-
-#~ msgid "Btrfs with snapshots"
-#~ msgstr "Btrfs с моментальными снимками"
-
-#, c-format
-#~ msgid "Partition at %s"
-#~ msgstr "Раздел на %s"
-
-#, c-format
-#~ msgid "Separate LVM at %s"
-#~ msgstr "Отдельный LVM на %s"
-
-#~ msgid "Logical volume at system LVM"
-#~ msgstr "Логический том в системе LVM"
-
-#~ msgid "Partition at installation disk"
-#~ msgstr "Раздел на диске для установки"
-
-#~ msgid "Reset location"
-#~ msgstr "Сбросить расположение"
-
-#~ msgid "Change location"
-#~ msgstr "Изменить расположение"
-
-#~ msgid "Mount point"
-#~ msgstr "Точка монтирования"
-
-#~ msgid "Location"
-#~ msgstr "Расположение"
-
-#~ msgid "Table with mount points"
-#~ msgstr "Таблица с точками монтирования"
-
-#~ msgid "Add file system"
-#~ msgstr "Добавить файловую систему"
-
-#~ msgid "Other"
-#~ msgstr "Другая"
-
-#~ msgid "Reset to defaults"
-#~ msgstr "Сбросить по умолчанию"
-
-#~ msgid "Partitions and file systems"
-#~ msgstr "Разделы и файловые системы"
-
-#~ msgid ""
-#~ "Structure of the new system, including any additional partition needed "
-#~ "for booting"
-#~ msgstr ""
-#~ "Структура новой системы, включая все дополнительные разделы, необходимые "
-#~ "для загрузки"
-
-#~ msgid "Show partitions and file-systems actions"
-#~ msgstr "Показать разделы и действия с файловыми системами"
-
-#, c-format
-#~ msgid "Hide %d subvolume action"
-#~ msgid_plural "Hide %d subvolume actions"
-#~ msgstr[0] "Скрыть %d действие подтома"
-#~ msgstr[1] "Скрыть %d действия подтома"
-#~ msgstr[2] "Скрыть %d действий подтома"
-
-#, c-format
-#~ msgid "Show %d subvolume action"
-#~ msgid_plural "Show %d subvolume actions"
-#~ msgstr[0] "Показать %d действие подтома"
-#~ msgstr[1] "Показать %d действия подтома"
-#~ msgstr[2] "Показать %d действий подтома"
-
-#~ msgid "Destructive actions are not allowed"
-#~ msgstr "Разрушительные действия запрещены"
-
-#~ msgid "Destructive actions are allowed"
-#~ msgstr "Разрушительные действия разрешены"
-
-#~ msgid "affecting"
-#~ msgstr "влияя на"
-
-#~ msgid "Shrinking partitions is not allowed"
-#~ msgstr "Сокращение разделов запрещено"
-
-#~ msgid "Shrinking partitions is allowed"
-#~ msgstr "Сокращение разделов разрешено"
-
-#~ msgid "Shrinking some partitions is allowed but not needed"
-#~ msgstr "Сокращение некоторых разделов разрешено, но не нужно"
-
-#, c-format
-#~ msgid "%d partition will be shrunk"
-#~ msgid_plural "%d partitions will be shrunk"
-#~ msgstr[0] "%d раздел будет сокращён"
-#~ msgstr[1] "%d раздела будут сокращены"
-#~ msgstr[2] "%d разделов будут сокращены"
-
-#~ msgid "Cannot accommodate the required file systems for installation"
-#~ msgstr "Невозможно разместить необходимые файловые системы для установки"
-
-#, c-format
-#~ msgid "Check the planned action"
-#~ msgid_plural "Check the %d planned actions"
-#~ msgstr[0] "Проверить %d запланированное действие"
-#~ msgstr[1] "Проверить %d запланированных действия"
-#~ msgstr[2] "Проверить %d запланированных действий"
-
-#~ msgid "Waiting for actions information..."
-#~ msgstr "Ожидание информации о действиях..."
-
-#~ msgid "Planned Actions"
-#~ msgstr "Планируемые действия"
-
-#~ msgid "Waiting for information about storage configuration"
-#~ msgstr "Ожидание информации о конфигурации хранилища"
-
-#~ msgid "Final layout"
-#~ msgstr "Окончательный вариант"
-
-#~ msgid "The systems will be configured as displayed below."
-#~ msgstr "Системы будут настроены, как показано ниже."
-
-#~ msgid "Storage proposal not possible"
-#~ msgstr "Не могу предложить организацию хранилища"
-
-#~ msgid "New"
-#~ msgstr "Новый"
-
-#, c-format
-#~ msgid "Before %s"
-#~ msgstr "До %s"
-
-#~ msgid "Mount Point"
-#~ msgstr "Точка монтирования"
-
-#~ msgid "Transactional root file system"
-#~ msgstr "Транзакционная корневая файловая система"
-
-#, c-format
-#~ msgid ""
-#~ "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
-#~ "file system updated via snapshots."
-#~ msgstr ""
-#~ "%s - это неизменяемая система с атомарными обновлениями. Она использует "
-#~ "файловую систему Btrfs, доступную только для чтения и обновляемую с "
-#~ "помощью моментальных снимков."
-
-#~ msgid "Use Btrfs snapshots for the root file system"
-#~ msgstr "Используйте моментальные снимки Btrfs для корневой файловой системы"
-
-#~ msgid ""
-#~ "Allows to boot to a previous version of the system after configuration "
-#~ "changes or software upgrades."
-#~ msgstr ""
-#~ "Позволяет загрузиться в предыдущую версию системы после изменения "
-#~ "конфигурации или обновления программного обеспечения."
-
-#, c-format
-#~ msgid "Up to %s can be recovered by shrinking the device."
-#~ msgstr "До %s можно освободить, сократив устройство."
-
-#~ msgid "The device cannot be shrunk:"
-#~ msgstr "Устройство не может быть сокращено:"
-
-#, c-format
-#~ msgid "Show information about %s"
-#~ msgstr "Показать сведения о %s"
-
-#~ msgid "The content may be deleted"
-#~ msgstr "Содержимое может быть удалено"
-
-#~ msgid "Action"
-#~ msgstr "Действие"
-
-#~ msgid "Actions to find space"
-#~ msgstr "Действия по поиску места"
-
-#~ msgid "Space policy"
-#~ msgstr "Политика пространства"
-
-#, c-format
-#~ msgid "Add %s file system"
-#~ msgstr "Добавить файловую систему %s"
-
-#, c-format
-#~ msgid "Edit %s file system"
-#~ msgstr "Изменить файловую систему %s"
-
-#~ msgid "Edit file system"
-#~ msgstr "Изменить файловую систему"
-
-#~ msgid "The type and size of the file system cannot be edited."
-#~ msgstr "Тип и размер файловой системы редактировать нельзя."
-
-#, c-format
-#~ msgid "The current file system on %s is selected to be mounted at %s."
-#~ msgstr "Текущая файловая система на %s выбрана для монтирования в %s."
-
-#~ msgid "The size of the file system cannot be edited"
-#~ msgstr "Размер файловой системы не может быть изменен"
-
-#, c-format
-#~ msgid "The file system is allocated at the device %s."
-#~ msgstr "Файловая система выделена на устройстве %s."
-
-#~ msgid "A mount point is required"
-#~ msgstr "Требуется точка монтирования"
-
-#~ msgid "The mount point is invalid"
-#~ msgstr "Точка монтирования недопустима"
-
-#~ msgid "A size value is required"
-#~ msgstr "Требуется значение размера"
-
-#~ msgid "Minimum size is required"
-#~ msgstr "Требуется минимальный размер"
-
-#~ msgid "Maximum must be greater than minimum"
-#~ msgstr "Максимум должен быть больше минимума"
-
-#, c-format
-#~ msgid "There is already a file system for %s."
-#~ msgstr "Для %s уже существует файловая система."
-
-#~ msgid "Do you want to edit it?"
-#~ msgstr "Вы хотите изменить её?"
-
-#, c-format
-#~ msgid "There is a predefined file system for %s."
-#~ msgstr "Существует предопределенная файловая система для %s."
-
-#~ msgid "Do you want to add it?"
-#~ msgstr "Вы хотите добавить её?"
-
-#~ msgid ""
-#~ "The options for the file system type depends on the product and the mount "
-#~ "point."
-#~ msgstr ""
-#~ "Параметры типа файловой системы зависят от продукта и точки монтирования."
-
-#~ msgid "More info for file system types"
-#~ msgstr "Дополнительная информация о типах файловых систем"
-
-#~ msgid "File system type"
-#~ msgstr "Тип файловой системы"
-
-#~ msgid "the configuration of snapshots"
-#~ msgstr "конфигурация моментальных снимков"
-
-#, c-format
-#~ msgid "the presence of the file system for %s"
-#~ msgstr "наличие файловой системы для %s"
-
-#~ msgid ", "
-#~ msgstr ", "
-
-#~ msgid "the amount of RAM in the system"
-#~ msgstr "объем ОЗУ в системе"
-
-#, c-format
-#~ msgid "The final size depends on %s."
-#~ msgstr "Итоговый размер зависит от %s."
-
-#~ msgid " and "
-#~ msgstr " и "
-
-#~ msgid "Automatically calculated size according to the selected product."
-#~ msgstr "Автоматический расчет размера в соответствии с выбранным продуктом."
-
-#~ msgid "Exact size for the file system."
-#~ msgstr "Точный размер файловой системы."
-
-#~ msgid "Exact size"
-#~ msgstr "Точный размер"
-
-#~ msgid "Size unit"
-#~ msgstr "Единица измерения"
-
-#~ msgid ""
-#~ "Limits for the file system size. The final size will be a value between "
-#~ "the given minimum and maximum. If no maximum is given then the file "
-#~ "system will be as big as possible."
-#~ msgstr ""
-#~ "Ограничения на размер файловой системы. Конечный размер будет равен "
-#~ "значению между заданным минимумом и максимумом. Если максимальное "
-#~ "значение не задано, то файловая система будет такой большой, на сколько "
-#~ "это возможно."
-
-#~ msgid "Minimum"
-#~ msgstr "Минимум"
-
-#~ msgid "Minimum desired size"
-#~ msgstr "Минимальный желаемый размер"
-
-#~ msgid "Unit for the minimum size"
-#~ msgstr "Единица для минимального размера"
-
-#~ msgid "Maximum"
-#~ msgstr "Максимум"
-
-#~ msgid "Maximum desired size"
-#~ msgstr "Максимальный желаемый размер"
-
-#~ msgid "Unit for the maximum size"
-#~ msgstr "Единица для максимального размера"
-
-#~ msgid "Auto"
-#~ msgstr "Автоматически"
-
-#~ msgid "Fixed"
-#~ msgstr "Фиксированный"
-
-#~ msgid "Range"
-#~ msgstr "Диапазон"
-
-#~ msgid ""
-#~ "The file systems are allocated at the installation device by default. "
-#~ "Indicate a custom location to create the file system at a specific device."
-#~ msgstr ""
-#~ "По умолчанию файловые системы распределяются на устройстве установки. "
-#~ "Укажите пользовательское расположение, чтобы создать файловую систему на "
-#~ "конкретном устройстве."
-
-#, c-format
-#~ msgid "Location for %s file system"
-#~ msgstr "Расположение файловой системы %s"
-
-#~ msgid "Select in which device to allocate the file system"
-#~ msgstr "Выберите, на каком устройстве разместить файловую систему"
-
-#~ msgid "Select a location"
-#~ msgstr "Выберите расположение"
-
-#~ msgid "Select how to allocate the file system"
-#~ msgstr "Выберите способ выделения файловой системы"
-
-#~ msgid "Create a new partition"
-#~ msgstr "Создать новый раздел"
-
-#~ msgid ""
-#~ "The file system will be allocated as a new partition at the selected   "
-#~ "disk."
-#~ msgstr ""
-#~ "Файловая система будет выделена в качестве нового раздела на выбранном   "
-#~ "диске."
-
-#~ msgid "Create a dedicated LVM volume group"
-#~ msgstr "Создать выделенную группу томов LVM"
-
-#~ msgid ""
-#~ "A new volume group will be allocated in the selected disk and the   file "
-#~ "system will be created as a logical volume."
-#~ msgstr ""
-#~ "На выбранном диске будет выделена новая группа томов, а   файловая "
-#~ "система будет создана как логический том."
-
-#~ msgid "Format the device"
-#~ msgstr "Отформатировать устройство"
-
-#, c-format
-#~ msgid "The selected device will be formatted as %s file system."
-#~ msgstr "Выбранное устройство будет отформатировано в файловую систему %s."
-
-#~ msgid "Mount the file system"
-#~ msgstr "Смонтировать файловую систему"
-
-#~ msgid ""
-#~ "The current file system on the selected device will be mounted   without "
-#~ "formatting the device."
-#~ msgstr ""
-#~ "Текущая файловая система на выбранном устройстве будет смонтирована   без "
-#~ "форматирования устройства."
-
-#~ msgid "Usage"
-#~ msgstr "Использование"
-
-#~ msgid "Unused space"
-#~ msgstr "Неиспользуемое пространство"
-
-#~ msgid "KiB"
-#~ msgstr "КиБ"
-
-#~ msgid "MiB"
-#~ msgstr "МиБ"
-
-#~ msgid "GiB"
-#~ msgstr "ГиБ"
-
-#~ msgid "TiB"
-#~ msgstr "ТиБ"
-
-#~ msgid "PiB"
-#~ msgstr "ПиБ"
-
-#~ msgid "Delete current content"
-#~ msgstr "Удалить текущее содержимое"
-
-#~ msgid ""
-#~ "All partitions will be removed and any data in the disks will be lost."
-#~ msgstr "Все разделы будут удалены, а все данные на дисках будут потеряны."
-
-#~ msgid "deleting current content"
-#~ msgstr "удаление текущего содержимого"
-
-#~ msgid "Shrink existing partitions"
-#~ msgstr "Уменьшение существующих разделов"
-
-#~ msgid ""
-#~ "The data is kept, but the current partitions will be resized as needed."
-#~ msgstr ""
-#~ "Данные сохраняются, но размер текущих разделов будет изменен по мере "
-#~ "необходимости."
-
-#~ msgid "shrinking partitions"
-#~ msgstr "уменьшение разделов"
-
-#~ msgid "Use available space"
-#~ msgstr "Использовать свободное пространство"
-
-#~ msgid ""
-#~ "The data is kept. Only the space not assigned to any partition will be "
-#~ "used."
-#~ msgstr ""
-#~ "Данные сохраняются. Будет использовано только пространство, не отведенное "
-#~ "для какого-либо раздела."
-
-#~ msgid "without modifying any partition"
-#~ msgstr "не изменяя ни одного раздела"
-
-#~ msgid "Custom"
-#~ msgstr "По-своему"
-
-#~ msgid "Select what to do with each partition."
-#~ msgstr "Выберите, что делать с каждым разделом."
-
-#~ msgid "with custom actions"
-#~ msgstr "другими способами"
-
-#~ msgid "Remove"
-#~ msgstr "Удалить"
-
-#~ msgid "IP Address"
-#~ msgstr "IP-адрес"
-
-#~ msgid "Prefix length or netmask"
-#~ msgstr "Длина префикса или маска сети"
-
-#~ msgid "Add an address"
-#~ msgstr "Добавить адрес"
-
-#~ msgid "Add another address"
-#~ msgstr "Добавить другой адрес"
-
-#~ msgid "Addresses"
-#~ msgstr "Адреса"
-
-#~ msgid "Addresses data list"
-#~ msgstr "Список данных адресов"
-
-#~ msgid "IP addresses"
-#~ msgstr "IP-адреса"
-
-#~ msgid "Connection actions"
-#~ msgstr "Действия подключения"
-
-#, c-format
-#~ msgid "Edit connection %s"
-#~ msgstr "Отредактировать соединение %s"
-
-#~ msgid "Forget"
-#~ msgstr "Забыть"
-
-#, c-format
-#~ msgid "Forget connection %s"
-#~ msgstr "Забыть соединение %s"
-
-#, c-format
-#~ msgid "Actions for connection %s"
-#~ msgstr "Действия для соединения %s"
-
-#~ msgid "Server IP"
-#~ msgstr "IP сервера"
-
-#~ msgid "Add DNS"
-#~ msgstr "Добавить DNS"
-
-#~ msgid "Add another DNS"
-#~ msgstr "Добавить другой DNS"
-
-#~ msgid "DNS"
-#~ msgstr "DNS"
-
-#~ msgid "IP prefix or netmask"
-#~ msgstr "Префикс или маска сети"
-
-#~ msgid "At least one address must be provided for selected mode"
-#~ msgstr ""
-#~ "Для выбранного режима необходимо предоставить не менее одного адреса"
-
-#~ msgid "Mode"
-#~ msgstr "Режим"
-
-#~ msgid "Automatic (DHCP)"
-#~ msgstr "Автоматически (DHCP)"
-
-#~ msgid "Gateway"
-#~ msgstr "Шлюз"
-
-#~ msgid "Gateway can be defined only in 'Manual' mode"
-#~ msgstr "Шлюз можно указать только в ручном режиме"
-
-#~ msgid "No Wi-Fi supported"
-#~ msgstr "Нет поддержки Wi-Fi"
-
-#~ msgid ""
-#~ "The system does not support Wi-Fi connections, probably because of "
-#~ "missing or disabled hardware."
-#~ msgstr ""
-#~ "Система не поддерживает соединение по WiFi, вероятно, из-за "
-#~ "отсутствующего или отключённого оборудования."
-
-#~ msgid "Wi-Fi"
-#~ msgstr "Wi-Fi"
-
-#~ msgid "Connect"
-#~ msgstr "Подключиться"
-
-#, c-format
-#~ msgid "Conected to %s"
-#~ msgstr "Подключено к %s"
-
-#~ msgid "No connected yet"
-#~ msgstr "Ещё не подключено"
-
-#~ msgid ""
-#~ "The system has not been configured for connecting to a Wi-Fi network yet."
-#~ msgstr "Система ещё не настроена на подключение к сети Wi-Fi."
-
-#~ msgid "Wired"
-#~ msgstr "Проводное"
-
-#~ msgid "No wired connections found"
-#~ msgstr "Проводные соединения не обнаружены"
-
-#~ msgid "Network"
-#~ msgstr "Сеть"
-
-#~ msgid "WPA & WPA2 Personal"
-#~ msgstr "WPA и WPA2 Personal"
-
-#~ msgid "Please, review provided settings and try again."
-#~ msgstr ""
-#~ "Пожалуйста, проверьте предоставленные настройки и попробуйте ещё раз."
-
-#~ msgid "SSID"
-#~ msgstr "Имя сети"
-
-#~ msgid "Security"
-#~ msgstr "Защита"
-
-#~ msgid "WPA Password"
-#~ msgstr "Пароль WPA"
-
-#~ msgid "Connecting"
-#~ msgstr "Подключение"
-
-#~ msgid "Connected"
-#~ msgstr "Подключено"
-
-#~ msgid "Disconnect"
-#~ msgstr "Отключить"
-
 #~ msgid "Connect to a hidden network"
 #~ msgstr "Подключиться к скрытой сети"
 
-#~ msgid "configured"
-#~ msgstr "настроено"
-
-#~ msgid "Connect to hidden network"
-#~ msgstr "Подключиться к скрытой сети"
-
-#~ msgid "Connect to a Wi-Fi network"
-#~ msgstr "Подключиться к сети Wi-Fi"
-
-#~ msgid "Question"
-#~ msgstr "Вопрос"
-
-#~ msgid "Given encryption password didn't work"
-#~ msgstr "Заданный пароль шифрования не сработал"
-
-#~ msgid "Encrypted Device"
-#~ msgstr "Зашифрованное устройство"
-
-#~ msgid "Encryption Password"
-#~ msgstr "Пароль шифрования"
-
-#~ msgid "Password Required"
-#~ msgstr "Необходим пароль"
-
 #~ msgid "Agama"
 #~ msgstr "Agama"
-
-#~ msgid "Change product"
-#~ msgstr "Изменить продукт"
-
-#~ msgid "About"
-#~ msgstr "Об Agama"
-
-#~ msgid "About Agama"
-#~ msgstr "Об Agama"
-
-#~ msgid ""
-#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
-#~ "under development so, please, do not use it in production environments. "
-#~ "If you want to give it a try, we recommend using a virtual machine to "
-#~ "prevent any possible data loss."
-#~ msgstr ""
-#~ "Agama - это экспериментальный установщик для систем (open)SUSE. Он все "
-#~ "еще находится в стадии разработки, поэтому, пожалуйста, не используйте "
-#~ "его в производственных средах. Если вы хотите попробовать, мы рекомендуем "
-#~ "использовать виртуальную машину, чтобы предотвратить возможную потерю "
-#~ "данных."
-
-#, c-format
-#~ msgid "For more information, please visit the project's repository at %s."
-#~ msgstr ""
-#~ "Для получения дополнительной информации посетите репозиторий проекта по "
-#~ "адресу %s."
-
-#~ msgid "Close"
-#~ msgstr "Закрыть"
-
-#~ msgid "Collecting logs..."
-#~ msgstr "Сбор журналов..."
-
-#~ msgid "Download logs"
-#~ msgstr "Скачать журналы"
-
-#~ msgid ""
-#~ "The browser will run the logs download as soon as they are ready. Please, "
-#~ "be patient."
-#~ msgstr ""
-#~ "Браузер запустит загрузку журналов, как только они будут готовы. "
-#~ "Пожалуйста, подождите."
-
-#~ msgid "Something went wrong while collecting logs. Please, try again."
-#~ msgstr ""
-#~ "Что-то пошло не так при сборе журналов. Пожалуйста, попробуйте ещё раз."
 
 #~ msgid "Waiting for progress status..."
 #~ msgstr "Ожидание отчёта о процессе…"
@@ -1886,57 +2580,6 @@ msgstr "Обзор"
 
 #~ msgid "Email"
 #~ msgstr "Электронная почта"
-
-#~ msgid "The installation will take"
-#~ msgstr "Установка займёт"
-
-#, c-format
-#~ msgid "The installation will take %s including:"
-#~ msgstr "Установка займёт %s, в том числе:"
-
-#~ msgid "No additional software was selected."
-#~ msgstr "Никакого дополнительного программного обеспечения выбрано не было."
-
-#~ msgid "The following software patterns are selected for installation:"
-#~ msgstr "Для установки выбраны следующие образцы программного обеспечения:"
-
-#~ msgid "Selected patterns"
-#~ msgstr "Выбранные шаблоны"
-
-#~ msgid "Change selection"
-#~ msgstr "Изменить выбор"
-
-#~ msgid ""
-#~ "This product does not allow to select software patterns during "
-#~ "installation. However, you can add additional software once the "
-#~ "installation is finished."
-#~ msgstr ""
-#~ "Данный продукт не позволяет выбирать шаблоны программного обеспечения во "
-#~ "время установки. Однако Вы можете добавить дополнительное программное "
-#~ "обеспечение после завершения установки."
-
-#~ msgid "auto selected"
-#~ msgstr "автоматический выбор"
-
-#~ msgid "None of the patterns match the filter."
-#~ msgstr "Ни один из шаблонов не соответствует фильтру."
-
-#~ msgid "Software selection"
-#~ msgstr "Выбор программного обеспечения"
-
-#~ msgid "Filter by pattern title or description"
-#~ msgstr "Фильтр по названию или описанию шаблона"
-
-#, c-format
-#~ msgid "Installation will take %s."
-#~ msgstr "Установка займёт %s."
-
-#~ msgid ""
-#~ "This space includes the base system and the selected software patterns, "
-#~ "if any."
-#~ msgstr ""
-#~ "Это пространство включает в себя базовую систему и выбранные шаблоны "
-#~ "программного обеспечения, если таковые имеются."
 
 #~ msgid "Please, try again."
 #~ msgstr "Попробуйте ещё раз."
@@ -1981,9 +2624,6 @@ msgstr "Обзор"
 
 #~ msgid "Wired connections"
 #~ msgstr "Проводные соединения"
-
-#~ msgid "WiFi connections"
-#~ msgstr "WiFi соединения"
 
 #~ msgid "Disconnecting"
 #~ msgstr "Отключение"
@@ -2059,9 +2699,6 @@ msgstr "Обзор"
 
 #~ msgid "What is this?"
 #~ msgstr "Что это?"
-
-#~ msgid "Back"
-#~ msgstr "Назад"
 
 #~ msgid "Show global options"
 #~ msgstr "Показать общие параметры"
@@ -2156,9 +2793,6 @@ msgstr "Обзор"
 #~ msgid "Wired networks"
 #~ msgstr "Проводные сети"
 
-#~ msgid "WiFi networks"
-#~ msgstr "Сети WiFi"
-
 #~ msgid "No network devices detected"
 #~ msgstr "Сетевые устройства не обнаружены"
 
@@ -2251,9 +2885,6 @@ msgstr "Обзор"
 
 #~ msgid "No products available for selection"
 #~ msgstr "Нет продуктов, доступных для выбора"
-
-#~ msgid "Available products"
-#~ msgstr "Доступные продукты"
 
 #~ msgid "Software summary and filter options"
 #~ msgstr "Сводка по программному обеспечению и параметры фильтрации"
