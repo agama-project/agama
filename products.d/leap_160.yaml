@@ -11,25 +11,25 @@ description: 'The latest version of a community distribution based on the latest
 icon: Leap16.svg
 translations:
   description:
-    ca: El Leap 16.0 és la darrera versió d'una distribució comunitària basada en
-      l'últim SUSE Linux Enterprise Server.
-    cs: Leap 16.0 je nejnovější verze komunitní distribuce založené na nejnovějším
-      SUSE Linux Enterprise Serveru.
+    ca: La darrera versió d'una distribució comunitària basada en l'últim SUSE Linux
+      Enterprise Server.
+    cs: Nejnovější verze komunitní distribuce založené na nejnovějším SUSE Linux
+      Enterprise Serveru.
     de: Leap 16.0 ist die neueste Version einer Community-Distribution, die auf dem
       aktuellen SUSE Linux Enterprise Server basiert.
     es: Leap 16.0 es la última versión de una distribución comunitaria basada en el
       último SUSE Linux Enterprise Server.
-    ja: Leap 16.0 は最新のSUSE Linux Enterprise Server をベースにしたコミュニティディストリビューションの最新版です。
+    ja: 最新のSUSE Linux Enterprise Server をベースにした、コミュニティディストリビューションの最新版です。
     nb_NO: Leap 16.0 er den nyeste versjonen av den fellesskapte distribusjon basert
       på den nyeste SUSE Linux Enterprise Server.
-    pt_BR: Leap 16.0 é a versão mais recente de uma distribuição comunitária baseada
-      no mais recente SUSE Linux Enterprise Server.
+    pt_BR: A versão mais recente de uma distribuição comunitária baseada no mais
+      recente SUSE Linux Enterprise Server.
     ru: Leap 16.0 - это последняя версия дистрибутива от сообщества, основанного на
       последней версии SUSE Linux Enterprise Server.
-    sv: Leap 16.0 är den senaste versionen av en distribution skapad av gemenskapen
-      som baseras på den senaste SUSE Linux Enterprise Server.
-    tr: Leap 16.0, en son SUSE Linux Enterprise Server'ı temel alan bir topluluk
-      dağıtımının en son sürümüdür.
+    sv: Den senaste versionen av en gemenskapsdistribution baserad på den senaste
+      SUSE Linux Enterprise Server.
+    tr: En son SUSE Linux Enterprise Server'ı temel alan bir topluluk dağıtımının en
+      son sürümü.
     zh_Hans: Leap 16.0 是基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
 software:
   installation_repositories:
