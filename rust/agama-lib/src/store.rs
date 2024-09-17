@@ -73,7 +73,7 @@ impl Store {
             self.users.store(user).await?;
         }
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
-            self.storage.store(settings.into()).await?
+            self.storage.store(&settings.into()).await?
         }
         Ok(())
     }

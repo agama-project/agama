@@ -20,8 +20,8 @@ impl StorageStore {
         Ok(self.storage_client.get_config().await?)
     }
 
-    pub async fn store(&self, settings: StorageSettings) -> Result<(), ServiceError> {
-        self.storage_client.set_config(&settings).await?;
+    pub async fn store(&self, settings: &StorageSettings) -> Result<(), ServiceError> {
+        self.storage_client.set_config(settings).await?;
         Ok(())
     }
 }
@@ -90,7 +90,7 @@ mod test {
             storage_autoyast: Some(boxed_raw_value),
         };
 
-        let result = store.store(settings).await;
+        let result = store.store(&settings).await;
 
         // main assertion
         result?;
