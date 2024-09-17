@@ -29,13 +29,13 @@ import { ZFCPConfig, ZFCPController, ZFCPDisk } from "~/types/zfcp";
 const zfcpControllersQuery = {
   queryKey: ["zfcp", "controllers"],
   queryFn: fetchZFCPControllers,
-  staleTime: Infinity
+  staleTime: Infinity,
 };
 
 const zfcpDisksQuery = {
   queryKey: ["zfcp", "disks"],
   queryFn: fetchZFCPDisks,
-  staleTime: Infinity
+  staleTime: Infinity,
 };
 
 const zfcpSupportedQuery = {
@@ -93,33 +93,42 @@ const useZFCPControllersChanges = () => {
       switch (event.type) {
         case "ZFCPControllerAdded": {
           const device: ZFCPController = event.device;
-          queryClient.setQueryData(zfcpControllersQuery.queryKey, (prev: ZFCPController[] | undefined) => {
-            if (prev === undefined) return;
-            return [...prev, device];
-          });
+          queryClient.setQueryData(
+            zfcpControllersQuery.queryKey,
+            (prev: ZFCPController[] | undefined) => {
+              if (prev === undefined) return;
+              return [...prev, device];
+            },
+          );
           break;
         }
         case "ZFCPControllerRemoved": {
           const device: ZFCPController = event.device;
           const { id } = device;
-          queryClient.setQueryData(zfcpControllersQuery.queryKey, (prev: ZFCPController[] | undefined) => {
-            if (prev === undefined) return;
-            const res = prev.filter((dev) => dev.id !== id);
-            return res;
-          });
+          queryClient.setQueryData(
+            zfcpControllersQuery.queryKey,
+            (prev: ZFCPController[] | undefined) => {
+              if (prev === undefined) return;
+              const res = prev.filter((dev) => dev.id !== id);
+              return res;
+            },
+          );
           break;
         }
         case "ZFCPControllerChanged": {
           const device: ZFCPController = event.device;
           const { id } = device;
-          queryClient.setQueryData(zfcpControllersQuery.queryKey, (prev: ZFCPController[] | undefined) => {
-            if (prev === undefined) return;
-            // deep copy of original to have it immutable
-            const res = [...prev];
-            const index = res.findIndex((dev) => dev.id === id);
-            res[index] = device;
-            return res;
-          });
+          queryClient.setQueryData(
+            zfcpControllersQuery.queryKey,
+            (prev: ZFCPController[] | undefined) => {
+              if (prev === undefined) return;
+              // deep copy of original to have it immutable
+              const res = [...prev];
+              const index = res.findIndex((dev) => dev.id === id);
+              res[index] = device;
+              return res;
+            },
+          );
           break;
         }
       }
