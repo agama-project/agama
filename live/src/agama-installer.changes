@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Mon Sep 16 15:46:23 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Define boot menu for all arches by scripts in config-cdroot
+  newly added x86_64 and aarch64 write stock copies from kiwi
+  generated grub.cfg
+
+- intel uefi boot fix from "Boot from disk item" (gh#openSUSE/agama#1609)
+
+- Keep -x on purpose for future trubleshooting (advice from Marcus)
+
+- Use $kiwi_iname instead of static agama-live reference in all of
+  config-cdroom/* with exception of s390x, where for some reason
+  we use SUSE Linux... string instead
+  
+
+-------------------------------------------------------------------
 Mon Sep  9 15:55:16 UTC 2024 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - Firefox: set browser.startup.homepage_override.mstone to ignore
