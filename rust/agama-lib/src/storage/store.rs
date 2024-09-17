@@ -25,3 +25,78 @@ impl StorageStore {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::base_http_client::BaseHTTPClient;
+    use httpmock::prelude::*;
+    use std::error::Error;
+    use tokio::test; // without this, "error: async functions cannot be used for tests"
+
+    fn storage_store(mock_server_url: String) -> StorageStore {
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = mock_server_url;
+        let client = StorageHTTPClient::new_with_base(bhc);
+        StorageStore {
+            storage_client: client,
+        }
+    }
+
+    #[test]
+    async fn test_getting_storage() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let storage_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/storage/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "storage": { "some": "stuff" }
+                }"#,
+                );
+        });
+        let url = server.url("/api");
+
+        let store = storage_store(url);
+        let settings = store.load().await?;
+
+        // main assertion
+        assert_eq!(settings.storage.unwrap().get(), r#"{ "some": "stuff" }"#);
+        assert!(settings.storage_autoyast.is_none());
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        storage_mock.assert();
+        Ok(())
+    }
+
+    #[test]
+    async fn test_setting_storage_ok() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let storage_mock = server.mock(|when, then| {
+            when.method(PUT)
+                .path("/api/storage/config")
+                .header("content-type", "application/json")
+                .body(r#"{"legacyAutoyastStorage":{ "some" : "data" }}"#);
+            then.status(200);
+        });
+        let url = server.url("/api");
+
+        let store = storage_store(url);
+        let boxed_raw_value =
+            serde_json::value::RawValue::from_string(r#"{ "some" : "data" }"#.to_owned())?;
+        let settings = StorageSettings {
+            storage: None,
+            storage_autoyast: Some(boxed_raw_value),
+        };
+
+        let result = store.store(settings).await;
+
+        // main assertion
+        result?;
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        storage_mock.assert();
+        Ok(())
+    }
+}
