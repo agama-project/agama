@@ -26,44 +26,33 @@ import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { ZFCPConfig, ZFCPController, ZFCPDisk } from "~/types/zfcp";
 
-/**
- * Returns a query for retrieving the zFCP controllers
- */
-const zfcpControllersQuery = () => ({
+const zfcpControllersQuery = {
   queryKey: ["zfcp", "controllers"],
   queryFn: fetchZFCPControllers,
   staleTime: Infinity
-});
+};
 
-/**
- * Returns a query for retrieving the zFCP disks
- */
-const ZFCPDisksQuery = () => ({
+const zfcpDisksQuery = {
   queryKey: ["zfcp", "disks"],
   queryFn: fetchZFCPDisks,
   staleTime: Infinity
-});
+};
 
-/**
- * Returns a query for checking if zFCP is supported
- */
-const zfcpSupportedQuery = () => ({
+const zfcpSupportedQuery = {
   queryKey: ["zfcp", "supported"],
   queryFn: supportedZFCP,
-});
-/**
- * Returns a query for retrieving the zFCP config
- */
-const zfcpConfigQuery = () => ({
+};
+
+const zfcpConfigQuery = {
   queryKey: ["zfcp", "config"],
   queryFn: fetchZFCPConfig,
-});
+};
 
 /**
  * Hook that returns zFCP controllers.
  */
 const useZFCPControllers = (): ZFCPController[] => {
-  const { data: controllers } = useSuspenseQuery(zfcpControllersQuery());
+  const { data: controllers } = useSuspenseQuery(zfcpControllersQuery);
   return controllers;
 };
 
@@ -71,7 +60,7 @@ const useZFCPControllers = (): ZFCPController[] => {
  * Hook that returns zFCP disks.
  */
 const useZFCPDisks = (): ZFCPDisk[] => {
-  const { data: devices } = useSuspenseQuery(ZFCPDisksQuery());
+  const { data: devices } = useSuspenseQuery(zfcpDisksQuery);
   return devices;
 };
 
@@ -79,14 +68,14 @@ const useZFCPDisks = (): ZFCPDisk[] => {
  * Hook that returns zFCP config.
  */
 const useZFCPSupported = (): boolean => {
-  const { data: supported } = useSuspenseQuery(zfcpSupportedQuery());
+  const { data: supported } = useSuspenseQuery(zfcpSupportedQuery);
   return supported;
 };
 /**
  * Hook that returns zFCP config.
  */
 const useZFCPConfig = (): ZFCPConfig => {
-  const { data: config } = useSuspenseQuery(zfcpConfigQuery());
+  const { data: config } = useSuspenseQuery(zfcpConfigQuery);
   return config;
 };
 
@@ -104,7 +93,8 @@ const useZFCPControllersChanges = () => {
       switch (event.type) {
         case "ZFCPControllerAdded": {
           const device: ZFCPController = event.device;
-          queryClient.setQueryData(["zfcp", "controllers"], (prev: ZFCPController[]) => {
+          queryClient.setQueryData(zfcpControllersQuery.queryKey, (prev: ZFCPController[] | undefined) => {
+            if (prev === undefined) return;
             return [...prev, device];
           });
           break;
@@ -112,7 +102,8 @@ const useZFCPControllersChanges = () => {
         case "ZFCPControllerRemoved": {
           const device: ZFCPController = event.device;
           const { id } = device;
-          queryClient.setQueryData(["zfcp", "controllers"], (prev: ZFCPController[]) => {
+          queryClient.setQueryData(zfcpControllersQuery.queryKey, (prev: ZFCPController[] | undefined) => {
+            if (prev === undefined) return;
             const res = prev.filter((dev) => dev.id !== id);
             return res;
           });
@@ -121,7 +112,8 @@ const useZFCPControllersChanges = () => {
         case "ZFCPControllerChanged": {
           const device: ZFCPController = event.device;
           const { id } = device;
-          queryClient.setQueryData(["zfcp", "controllers"], (prev: ZFCPController[]) => {
+          queryClient.setQueryData(zfcpControllersQuery.queryKey, (prev: ZFCPController[] | undefined) => {
+            if (prev === undefined) return;
             // deep copy of original to have it immutable
             const res = [...prev];
             const index = res.findIndex((dev) => dev.id === id);
