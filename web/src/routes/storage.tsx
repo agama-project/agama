@@ -23,18 +23,18 @@ import React from "react";
 import BootSelection from "~/components/storage/BootSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import {
-  DASDPage,
   DeviceSelection,
   ISCSIPage,
   ProposalPage,
-  ZFCPPage,
-  ZFCPDiskActivationPage
 } from "~/components/storage";
+
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 import { supportedDASD, probeDASD } from "~/api/dasd";
 import { probeZFCP, supportedZFCP } from "~/api/zfcp";
 import { redirect } from "react-router-dom";
+import { ZFCPPage, ZFCPDiskActivationPage } from "~/components/storage/zfcp";
+import { DASDPage } from "~/components/storage/dasd";
 
 const PATHS = {
   root: "/storage",
