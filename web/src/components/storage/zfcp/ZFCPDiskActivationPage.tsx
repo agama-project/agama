@@ -29,8 +29,11 @@ import { activateZFCPDisk } from "~/api/zfcp";
 import { PATHS } from "~/routes/storage";
 import { useNavigate } from "react-router-dom";
 import ZFCPDiskForm from "./ZFCPDiskForm";
+import { useZFCPControllersChanges, useZFCPDisksChanges } from "~/queries/zfcp";
 
 export default function ZFCPDiskActivationPage() {
+  useZFCPControllersChanges();
+  useZFCPDisksChanges();
   const [isAcceptDisabled, setIsAcceptDisabled] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
   const navigate = useNavigate();

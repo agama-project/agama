@@ -149,7 +149,8 @@ const useZFCPDisksChanges = () => {
       switch (event.type) {
         case "ZFCPDiskAdded": {
           const device: ZFCPDisk = event.device;
-          queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
+          queryClient.setQueryData(zfcpDisksQuery.queryKey, (prev: ZFCPDisk[]) => {
+            if (prev === undefined) return;
             return [...prev, device];
           });
           break;
@@ -157,7 +158,8 @@ const useZFCPDisksChanges = () => {
         case "ZFCPDiskRemoved": {
           const device: ZFCPDisk = event.device;
           const { name } = device;
-          queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
+          queryClient.setQueryData(zfcpDisksQuery.queryKey, (prev: ZFCPDisk[]) => {
+            if (prev === undefined) return;
             const res = prev.filter((dev) => dev.name !== name);
             return res;
           });
@@ -166,7 +168,8 @@ const useZFCPDisksChanges = () => {
         case "ZFCPDiskChanged": {
           const device: ZFCPDisk = event.device;
           const { name } = device;
-          queryClient.setQueryData(["zfcp", "disks"], (prev: ZFCPDisk[]) => {
+          queryClient.setQueryData(zfcpDisksQuery.queryKey, (prev: ZFCPDisk[]) => {
+            if (prev === undefined) return;
             // deep copy of original to have it immutable
             const res = [...prev];
             const index = res.findIndex((dev) => dev.name === name);
