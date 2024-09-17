@@ -9,6 +9,7 @@
 :root {
   /* SUSE colors, https://brand.suse.com/brand-system/color-palette */
   --pineGreeColor: #0c322c;
+  --jungleGreenColor: #30ba78;
 
   --ifm-color-primary: var(--pineGreeColor);
   --ifm-color-primary-dark: #29784c;
@@ -22,6 +23,7 @@
 
   .footer--dark {
     --ifm-footer-background-color: var(--pineGreeColor);
+    --ifm-footer-link-hover-color: var(--jungleGreenColor);
   }
 }
 
