@@ -19,13 +19,25 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/partition/from_json"
+require "agama/storage/config_conversions/from_json_conversions/size"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions for partition.
-      module Partition
+      module FromJSONConversions
+        # Mixin for size conversion.
+        module WithSize
+          # @param json [Hash]
+          # @param default [Configs::Size, nil]
+          #
+          # @return [Configs::Size, nil]
+          def convert_size(json, default: nil)
+            size_json = json[:size]
+            return unless size_json
+
+            FromJSONConversions::Size.new(size_json).convert(default)
+          end
+        end
       end
     end
   end

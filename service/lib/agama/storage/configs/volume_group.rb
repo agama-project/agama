@@ -19,13 +19,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/encryption/from_json"
-
 module Agama
   module Storage
-    module ConfigConversions
-      # Conversions for encryption.
-      module Encryption
+    module Configs
+      # Section of the configuration representing a LVM volume group.
+      class VolumeGroup
+        # @return [String, nil]
+        attr_accessor :name
+
+        # @return [Y2Storage::DiskSize, nil]
+        attr_accessor :extent_size
+
+        # @return [Array<String>]
+        attr_accessor :physical_volumes
+
+        # @return [Array<LogicalVolume>]
+        attr_accessor :logical_volumes
+
+        def initialize
+          @physical_volumes = []
+          @logical_volumes = []
+        end
       end
     end
   end

@@ -1,0 +1,71 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "partitions": [
+          {
+            "alias": "pv1",
+            "id": "lvm",
+            "size": { "min": "10 GiB" }
+          }
+        ]
+      },
+      {
+        "partitions": [
+          {
+            "alias": "pv2",
+            "id": "lvm",
+            "size": { "min": "10 GiB" }
+          }
+        ]
+      }
+    ],
+    "volumeGroups": [
+      {
+        "name": "system",
+        "physicalVolumes": ["pv1", "pv2"],
+        "extentSize": "8 MiB",
+        "logicalVolumes": [
+          {
+            "name": "root",
+            "size": {
+              "min": "10 GiB"
+            },
+            "encryption": {
+              "luks2": {
+                "password": "notsecret"
+              }
+            },
+            "filesystem": {
+              "type": "btrfs",
+              "path": "/"
+            }
+          },
+          {
+            "name": "home",
+            "size": "5 GiB",
+            "filesystem": {
+              "type": "xfs",
+              "path": "/home"
+            }
+          },
+          {
+            "alias": "lvm_thin_pool",
+            "pool": true,
+            "name": "pool",
+            "size": {
+              "min": "5 GiB"
+            },
+            "stripes": 10,
+            "stripeSize": "4 KiB"
+          },
+          {
+            "name": "data",
+            "size": "100 GiB",
+            "usedPool": "lvm_thin_pool"
+          }
+        ]
+      }
+    ]
+  }
+}

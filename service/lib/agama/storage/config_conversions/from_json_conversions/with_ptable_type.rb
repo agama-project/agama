@@ -19,13 +19,24 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/filesystem_type/from_json"
+require "y2storage/partition_tables/type"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions for filesystem types
-      module FilesystemType
+      module FromJSONConversions
+        # Mixin for partition table type conversion.
+        module WithPtableType
+          # @param json [Hash]
+          #
+          # @return [Y2Storage::PartitionTables::Type, nil]
+          def convert_ptable_type(json)
+            value = json[:ptableType]
+            return unless value
+
+            Y2Storage::PartitionTables::Type.find(value)
+          end
+        end
       end
     end
   end

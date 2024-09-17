@@ -19,13 +19,26 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/block_device/from_json"
+require "agama/storage/config_conversions/from_json_conversions/search"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions for block device.
-      module BlockDevice
+      module FromJSONConversions
+        # Mixin for search conversion.
+        module WithSearch
+          # @param json [Hash]
+          # @param default [Configs::Search, nil]
+          #
+          # @return [Configs::Search, nil]
+          def convert_search(json, default: nil)
+            search_json = json[:search]
+            return unless search_json
+
+            converter = FromJSONConversions::Search.new(search_json)
+            converter.convert(default)
+          end
+        end
       end
     end
   end

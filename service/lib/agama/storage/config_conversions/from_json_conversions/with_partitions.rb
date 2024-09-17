@@ -19,13 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/search/from_json"
+require "agama/storage/config_conversions/from_json_conversions/partition"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions for search.
-      module Search
+      module FromJSONConversions
+        # Mixin for partitions conversion.
+        module WithPartitions
+          # @param json [Hash]
+          # @return [Array<Configs::Partition>, nil]
+          def convert_partitions(json)
+            partitions_json = json[:partitions]
+            return unless partitions_json
+
+            partitions_json.map { |p| convert_partition(p) }
+          end
+
+          # @param partition_json [Hash]
+          # @return [Configs::Partition]
+          def convert_partition(partition_json)
+            FromJSONConversions::Partition
+              .new(partition_json, config_builder: config_builder)
+              .convert
+          end
+        end
       end
     end
   end

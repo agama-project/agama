@@ -19,13 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/size/from_json"
-
 module Agama
   module Storage
-    module ConfigConversions
-      # Conversions for size.
-      module Size
+    module Configs
+      # Mixin for configs with alias.
+      module WithAlias
+        # @return [String, nil]
+        attr_accessor :alias
+
+        # Whether the config has the given alias.
+        #
+        # @return [Boolean]
+        def alias?(value)
+          self.alias == value
+        end
       end
     end
   end

@@ -471,6 +471,9 @@
                     "description": "The search is limited to drives scope.",
                     "$ref": "#/$defs/search"
                   },
+                  "alias": {
+                    "$ref": "#/$defs/alias"
+                  },
                   "encryption": {
                     "$ref": "#/$defs/encryption"
                   },
@@ -489,6 +492,9 @@
                     "description": "The search is limited to drives scope.",
                     "$ref": "#/$defs/search"
                   },
+                  "alias": {
+                    "$ref": "#/$defs/alias"
+                  },
                   "ptableType": {
                     "title": "Partition table type",
                     "description": "The partition table is created only if all the current partitions are deleted.",
@@ -500,6 +506,140 @@
                 }
               }
             ]
+          }
+        },
+        "volumeGroups": {
+          "title": "LVM volume groups",
+          "description": "Section describing the LVM volume groups.",
+          "type": "array",
+          "items": {
+            "title": "LVM volume group",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "title": "Volume group name",
+                "type": "string",
+                "examples": ["vg0"]
+              },
+              "extentSize": {
+                "title": "Extent size",
+                "$ref": "#/$defs/sizeValue"
+              },
+              "physicalVolumes": {
+                "title": "Physical volumes",
+                "description": "Devices to use as physical volumes.",
+                "type": "array",
+                "items": {
+                  "title": "Device alias",
+                  "type": "string"
+                }
+              },
+              "logicalVolumes": {
+                "title": "Logical volumes",
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "title": "Logical volume",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "name": {
+                          "title": "Logical volume name",
+                          "type": "string",
+                          "examples": ["lv0"]
+                        },
+                        "size": {
+                          "title": "Logical volume size",
+                          "$ref": "#/$defs/size"
+                        },
+                        "stripes": {
+                          "title": "Number of stripes",
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 128
+                        },
+                        "stripeSize": {
+                          "title": "Stripe size",
+                          "$ref": "#/$defs/sizeValue"
+                        },
+                        "encryption": {
+                          "$ref": "#/$defs/encryption"
+                        },
+                        "filesystem": {
+                          "$ref": "#/$defs/filesystem"
+                        }
+                      }
+                    },
+                    {
+                      "title": "Thin pool logical volume",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "pool": {
+                          "title": "LVM thin pool",
+                          "const": true
+                        },
+                        "alias": {
+                          "$ref": "#/$defs/alias"
+                        },
+                        "name": {
+                          "title": "Logical volume name",
+                          "type": "string",
+                          "examples": ["lv0"]
+                        },
+                        "size": {
+                          "title": "Logical volume size",
+                          "$ref": "#/$defs/size"
+                        },
+                        "stripes": {
+                          "title": "Number of stripes",
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 128
+                        },
+                        "stripeSize": {
+                          "title": "Stripe size",
+                          "$ref": "#/$defs/sizeValue"
+                        },
+                        "encryption": {
+                          "$ref": "#/$defs/encryption"
+                        }
+                      }
+                    },
+                    {
+                      "title": "Thin logical volume",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["usedPool"],
+                      "properties": {
+                        "name": {
+                          "title": "Thin logical volume name",
+                          "type": "string",
+                          "examples": ["lv0"]
+                        },
+                        "size": {
+                          "title": "Thin logical volume size",
+                          "$ref": "#/$defs/size"
+                        },
+                        "usedPool": {
+                          "title": "Used LVM thin pool",
+                          "description": "Alias of a LVM thin pool.",
+                          "type": "string"
+                        },
+                        "encryption": {
+                          "$ref": "#/$defs/encryption"
+                        },
+                        "filesystem": {
+                          "$ref": "#/$defs/filesystem"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           }
         },
         "guided": {
@@ -859,6 +999,11 @@
         }
       ]
     },
+    "alias": {
+      "title": "Alias",
+      "description": "Name used to reference a device.",
+      "type": "string"
+    },
     "boot": {
       "title": "Boot options",
       "description": "Allows configuring boot partitions automatically.",
@@ -1069,6 +1214,9 @@
               "search": {
                 "description": "The search is limited to the partitions of the selected device scope.",
                 "$ref": "#/$defs/search"
+              },
+              "alias": {
+                "$ref": "#/$defs/alias"
               },
               "id": {
                 "title": "Partition ID",

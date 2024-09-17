@@ -19,37 +19,44 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/configs/search"
+
 module Agama
   module Storage
     module ConfigConversions
-      module Search
+      module FromJSONConversions
         # Search conversion from JSON hash according to schema.
-        class FromJSON
+        class Search < Base
           # @param search_json [Hash, String]
           def initialize(search_json)
+            super()
             @search_json = search_json
           end
 
-          # Performs the conversion from Hash according to the JSON schema.
+          # @see Base#convert
           #
           # @param default [Configs::Search, nil]
           # @return [Configs::Search]
           def convert(default = nil)
-            default_config = default.dup || Configs::Search.new
-
-            default_config.tap do |config|
-              name = convert_name
-              not_found = convert_not_found
-
-              config.name = name if name
-              config.if_not_found = not_found if not_found
-            end
+            super(default || Configs::Search.new)
           end
 
         private
 
           # @return [Hash, String]
           attr_reader :search_json
+
+          # @see Base#conversions
+          #
+          # @param _default [Configs::Partition]
+          # @return [Hash]
+          def conversions(_default)
+            {
+              name:         convert_name,
+              if_not_found: convert_not_found
+            }
+          end
 
           # @return [String, nil]
           def convert_name
