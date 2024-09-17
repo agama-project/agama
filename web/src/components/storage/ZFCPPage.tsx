@@ -74,10 +74,10 @@ const LUNScanInfo = () => {
 const NoDisksFound = () => {
   const navigate = useNavigate();
   const controllers = useZFCPControllers();
-  const activeController = !controllers.some((c) => c.active);
+  const activeController = controllers.some((c) => c.active);
   const body = activeController
-    ? _("Please, try to activate a zFCP controller.")
-    : _("Please, try to activate a zFCP disk.");
+    ? _("Please, try to activate a zFCP disk.")
+    : _("Please, try to activate a zFCP controller.");
 
   return (
     <EmptyState
@@ -195,7 +195,9 @@ export default function ZFCPPage() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel navigateTo={PATHS.targetDevice}>{_("Back")}</Page.Cancel>
+        <Page.Action variant="secondary" navigateTo={PATHS.targetDevice}>
+          {_("Back to device selection")}
+        </Page.Action>
       </Page.Actions>
     </Page>
   );

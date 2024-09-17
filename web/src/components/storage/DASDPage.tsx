@@ -21,6 +21,7 @@
 
 import React from "react";
 import DASDTable from "~/components/storage/DASDTable";
+import { Stack } from "@patternfly/react-core";
 import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
@@ -38,12 +39,18 @@ export default function DASDPage() {
       </Page.Header>
 
       <Page.Content>
-        <DASDTable />
+        <Page.Section aria-label="dasd-devices">
+          <Stack>
+            <DASDTable />
+          </Stack>
+        </Page.Section>
         <DASDFormatProgress />
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel navigateTo={PATHS.targetDevice}>{_("Back")}</Page.Cancel>
+        <Page.Action variant="secondary" navigateTo={PATHS.targetDevice}>
+          {_("Back to device selection")}
+        </Page.Action>
       </Page.Actions>
     </Page>
   );
