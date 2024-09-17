@@ -920,14 +920,19 @@
         { "$ref": "#/$defs/sizeInteger" }
       ]
     },
+    "sizeValueWithCurrent": {
+      "anyOf": [
+        { "$ref": "#/$defs/sizeValue" },
+        {
+          "title": "Current size",
+          "description": "The current size of the device.",
+          "const": "current"
+        }
+      ]
+    },
     "size": {
       "title": "Size options",
       "anyOf": [
-        {
-          "title": "Automatic size",
-          "description": "The size is auto calculated according to the product.",
-          "const": "auto"
-        },
         {
           "$ref": "#/$defs/sizeValue"
         },
@@ -936,11 +941,11 @@
           "description": "Lower size limit and optionally upper size limit.",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/sizeValue"
+            "$ref": "#/$defs/sizeValueWithCurrent"
           },
           "minItems": 1,
           "maxItems": 2,
-          "examples": [[1024, 2048], ["1 GiB", "5 GiB"], [1024, "2 GiB"], ["2 GiB"]]
+          "examples": [[1024, "current"], ["1 GiB", "5 GiB"], [1024, "2 GiB"], ["2 GiB"]]
         },
         {
           "title": "Size range",
@@ -950,11 +955,11 @@
           "properties": {
             "min": {
               "title": "Mandatory lower size limit",
-              "$ref": "#/$defs/sizeValue"
+              "$ref": "#/$defs/sizeValueWithCurrent"
             },
             "max": {
               "title": "Optional upper size limit",
-              "$ref": "#/$defs/sizeValue"
+              "$ref": "#/$defs/sizeValueWithCurrent"
             }
           }
         }
