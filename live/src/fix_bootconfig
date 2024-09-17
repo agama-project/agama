@@ -13,7 +13,7 @@
 #    This script (a) adjusts the boot config, (b) runs xorriso, and (c) makes
 #    it zIPL bootable on s390x.
 #
-set -x
+set -ex
 
 
 dst=${1#iso:}
