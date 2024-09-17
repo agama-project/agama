@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
 import { Connection, ConnectionMethod, ConnectionStatus, ConnectionType } from "~/types/network";
 

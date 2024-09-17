@@ -456,7 +456,7 @@ const createInitialState = (volume: Volume): VolumeFormState => {
 /**
  * The VolumeForm reducer.
  */
-const reducer = (state: VolumeFormState, action: { type: string; payload: any }) => {
+const reducer = (state: VolumeFormState, action: { type: string; payload }) => {
   const { type, payload } = action;
 
   switch (type) {
@@ -506,7 +506,7 @@ export default function VolumeDialog({
   onCancel,
   onAccept,
 }: VolumeDialogProps) {
-  const [state, dispatch]: [VolumeFormState, (action: any) => void] = useReducer(
+  const [state, dispatch]: [VolumeFormState, (action) => void] = useReducer(
     reducer,
     currentVolume,
     createInitialState,

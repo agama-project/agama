@@ -23,6 +23,7 @@ import React from "react";
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { Progress } from "~/types/progress";
+import { QueryHookOptions } from "~/types/queries";
 import { fetchProgress } from "~/api/progress";
 
 const servicesMap = {

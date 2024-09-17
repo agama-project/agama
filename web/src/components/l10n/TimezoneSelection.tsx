@@ -103,7 +103,7 @@ export default function TimezoneSelection() {
   );
 
   if (timezonesList.length === 0) {
-    timezonesList = [<b>{_("None of the time zones match the filter.")}</b>];
+    timezonesList = [<b key="notfound">{_("None of the time zones match the filter.")}</b>];
   }
 
   return (

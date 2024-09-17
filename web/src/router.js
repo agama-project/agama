@@ -27,13 +27,13 @@ import MainLayout from "~/components/layout/Main";
 import SimpleLayout from "./SimpleLayout";
 import { LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
-import { _, N_ } from "~/i18n";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
+import { N_ } from "~/i18n";
 
 const PATHS = {
   root: "/",

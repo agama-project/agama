@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import mockTestingPatterns from "~/components/software/patterns.test.json";
 import testingProposal from "~/components/software/proposal.test.json";

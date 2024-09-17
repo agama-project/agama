@@ -20,9 +20,9 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { createDefaultClient } from "~/client";
-import { plainRender, createCallbackMock } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { InstallerClientProvider, useInstallerClientStatus } from "./installer";
 
 jest.mock("~/client");

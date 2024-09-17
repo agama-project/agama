@@ -26,8 +26,7 @@ import { Form } from "@patternfly/react-core";
 import { PasswordAndConfirmationInput, Popup } from "~/components/core";
 
 import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
-import { useRootUser, useRootUserMutation } from "~/queries/users";
+import { useRootUserMutation } from "~/queries/users";
 
 /**
  * A dialog holding the form to change the root password

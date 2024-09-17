@@ -24,7 +24,7 @@
     "no-descending-specificity": null,
     "no-duplicate-selectors": null,
     "scss/at-extend-no-missing-placeholder": null,
-    "scss/at-import-partial-extension": null,
+    "scss/load-partial-extension": "always",
     "scss/at-mixin-pattern": null,
     "scss/comment-no-empty": null,
     "scss/dollar-variable-pattern": null,

@@ -22,6 +22,6 @@
 /**
  * Typical options for our queries hooks.
  */
-type QueryHookOptions = {
+export type QueryHookOptions = {
   suspense?: boolean;
 };

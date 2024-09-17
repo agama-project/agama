@@ -32,7 +32,7 @@ const validationState = (value?: string | number): keyof typeof ValidatedOptions
 
 const IpPrefixInput = ({
   label = _("Ip prefix or netmask"),
-  onError = (value) => null,
+  onError = () => null,
   ...props
 }: Omit<TextInputProps, "defaultValue"> & { defaultValue?: string | number }) => {
   const [state, setState] = useState(validationState(props.defaultValue));

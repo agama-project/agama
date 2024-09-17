@@ -66,7 +66,7 @@ export default function DeviceSelection() {
       targetDevice: availableDevices.find((d) => d.name === settings.targetDevice),
       targetPVDevices: availableDevices.filter((d) => settings.targetPVDevices?.includes(d.name)),
     });
-  }, [settings, availableDevices]);
+  }, [settings, availableDevices, state.target]);
 
   const selectTargetDisk = () => setState({ ...state, target: ProposalTarget.DISK });
   const selectTargetNewLvmVG = () => setState({ ...state, target: ProposalTarget.NEW_LVM_VG });

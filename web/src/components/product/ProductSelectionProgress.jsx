@@ -19,15 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
-import { _ } from "~/i18n";
-import { useProduct } from "~/queries/software";
 import { Page, ProgressReport } from "~/components/core";
-import { IDLE } from "~/client/status";
-import { useInstallerClient } from "~/context/installer";
-import { PATHS } from "~/router";
+import { useProduct } from "~/queries/software";
 import { useInstallerStatus } from "~/queries/status";
+import { PATHS } from "~/router";
+import { _ } from "~/i18n";
 
 /**
  * @component

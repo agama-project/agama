@@ -28,7 +28,6 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
-  FormSelectProps,
   TextInput,
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
@@ -38,7 +37,6 @@ import {
   useSelectedWifiChange,
 } from "~/queries/network";
 import { Connection, WifiNetwork, Wireless } from "~/types/network";
-import sprintf from "sprintf-js";
 import { _ } from "~/i18n";
 
 /*

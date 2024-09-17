@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { useReducer, useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Text, TextContent, TextVariants } from "@patternfly/react-core";
 
 import { deviceLabel } from "~/components/storage/utils";
