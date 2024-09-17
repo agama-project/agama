@@ -13,11 +13,17 @@
 #    This script (a) adjusts the boot config, (b) runs xorriso, and (c) makes
 #    it zIPL bootable on s390x.
 #
+set -x
 
-# KIWI config
-test -f .profile && . .profile
 
 dst=${1#iso:}
+
+# KIWI config
+# Copy it to $dst from where it can be later read by xorriso
+if [ -f .profile ]; then
+    source .profile
+    cp .profile "$dst"
+fi
 
 arch=`uname -m`
 
