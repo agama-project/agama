@@ -20,5 +20,3 @@
  */
 
 export { default as DASDPage } from "./DASDPage";
-export { default as DASDTable } from "./DASDTable";
-export { default as DASDFormatProgress } from "./DASDFormatProgress";

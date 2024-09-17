@@ -20,12 +20,13 @@
  */
 
 import React from "react";
-import { DASDTable, DASDFormatProgress } from "~/components/storage/dasd";
 import { Stack } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
 import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/dasd";
 import { PATHS } from "~/routes/storage";
+import DASDTable from "./DASDTable";
+import DASDFormatProgress from "./DASDFormatProgress";
 
 export default function DASDPage() {
   useDASDDevicesChanges();

@@ -22,13 +22,13 @@
 import React, { useState } from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import { ZFCPDiskForm } from "~/components/storage/zfcp";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { LUNInfo } from "~/types/zfcp";
 import { activateZFCPDisk } from "~/api/zfcp";
 import { PATHS } from "~/routes/storage";
 import { useNavigate } from "react-router-dom";
+import ZFCPDiskForm from "./ZFCPDiskForm";
 
 export default function ZFCPDiskActivationPage() {
   const [isAcceptDisabled, setIsAcceptDisabled] = useState(false);

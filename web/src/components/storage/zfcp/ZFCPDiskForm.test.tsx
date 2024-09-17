@@ -23,8 +23,8 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { plainRender } from "~/test-utils";
-import { ZFCPDiskForm } from "~/components/storage/zfcp";
 import { ZFCPDisk, ZFCPController } from "~/types/zfcp";
+import ZFCPDiskForm from "./ZFCPDiskForm";
 
 // The form does not provide a submit button by itself.
 const FormWrapper = (props) => {

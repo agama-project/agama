@@ -21,4 +21,3 @@
 
 export { default as ZFCPPage } from "./ZFCPPage";
 export { default as ZFCPDiskActivationPage } from "./ZFCPDiskActivationPage";
-export { default as ZFCPDiskForm } from "./ZFCPDiskForm";

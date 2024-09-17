@@ -22,8 +22,8 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { DASDTable } from "~/components/storage/dasd";
 import { DASDDevice } from "~/types/dasd";
+import DASDTable from "./DASDTable";
 
 let mockDASDDevices: DASDDevice[] = [];
 
