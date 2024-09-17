@@ -24,6 +24,7 @@ import React from "react";
 import { fetchInstallerStatus } from "~/api/status";
 import { useInstallerClient } from "~/context/installer";
 import { InstallerStatus } from "~/types/status";
+import { QueryHookOptions } from "~/types/queries";
 
 const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 

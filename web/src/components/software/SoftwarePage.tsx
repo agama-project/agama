@@ -32,12 +32,7 @@ import {
 import { Link, IssuesHint, Page } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
-import {
-  selectedProductQuery,
-  usePatterns,
-  useProposal,
-  useProposalChanges,
-} from "~/queries/software";
+import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 import { PATHS } from "~/routes/software";

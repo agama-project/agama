@@ -81,9 +81,11 @@ describe("uniq", () => {
 
 describe("classNames", () => {
   it("join given arguments, ignoring falsy values", () => {
-    expect(classNames("bg-yellow", false && "h-24", undefined, null, true && "w-24")).toEqual(
-      "bg-yellow w-24",
-    );
+    const includeClass = true;
+
+    expect(
+      classNames("bg-yellow", !includeClass && "h-24", undefined, null, includeClass && "w-24"),
+    ).toEqual("bg-yellow w-24");
   });
 });
 

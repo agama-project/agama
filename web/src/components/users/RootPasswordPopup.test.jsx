@@ -27,7 +27,6 @@ import { RootPasswordPopup } from "~/components/users";
 
 const mockRootUserMutation = { mutateAsync: jest.fn() };
 let mockPassword;
-let mockSSHKey;
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),

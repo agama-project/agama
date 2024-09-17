@@ -53,7 +53,8 @@ import {
   Volume,
   VolumeTarget,
 } from "~/types/storage";
-import { refresh } from "~/api/storage";
+
+import { QueryHookOptions } from "~/types/queries";
 
 const devicesQuery = (scope: "result" | "system") => ({
   queryKey: ["storage", "devices", scope],
@@ -78,6 +79,32 @@ const defaultVolumeQuery = (mountPath: string) => ({
   queryFn: () => fetchDefaultVolume(mountPath),
   staleTime: Infinity,
 });
+
+/**
+ * @private
+ * Builds a volume from the D-Bus data
+ */
+const buildVolume = (
+  rawVolume: APIVolume,
+  devices: StorageDevice[],
+  productMountPoints: string[],
+): Volume => {
+  const outline = {
+    ...rawVolume.outline,
+    // Indicate whether a volume is defined by the product.
+    productDefined: productMountPoints.includes(rawVolume.mountPath),
+  };
+  const volume: Volume = {
+    ...rawVolume,
+    outline,
+    minSize: rawVolume.minSize || 0,
+    transactional: rawVolume.transactional || false,
+    target: rawVolume.target as VolumeTarget,
+    targetDevice: devices.find((d) => d.name === rawVolume.targetDevice),
+  };
+
+  return volume;
+};
 
 /**
  * Hook that returns the list of storage devices for the given scope.
@@ -126,13 +153,20 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
  * Hook that returns the volume templates for the current product.
  */
 const useVolumeTemplates = (): Volume[] => {
+  const buildDefaultVolumeQueries = (product: ProductParams) => {
+    const queries = product.mountPoints.map((p) => defaultVolumeQuery(p));
+    queries.push(defaultVolumeQuery(""));
+    return queries;
+  };
+
   const systemDevices = useDevices("system", { suspense: true });
   const product = useProductParams();
-  if (!product) return [];
+  const results = useSuspenseQueries({
+    queries: product ? buildDefaultVolumeQueries(product) : [],
+  }) as Array<{ data: APIVolume }>;
 
-  const queries = product.mountPoints.map((p) => defaultVolumeQuery(p));
-  queries.push(defaultVolumeQuery(""));
-  const results = useSuspenseQueries({ queries }) as Array<{ data: APIVolume }>;
+  if (results.length === 0) return [];
+
   return results.map(({ data }) => buildVolume(data, systemDevices, product.mountPoints));
 };
 
@@ -145,6 +179,8 @@ const useVolumeTemplates = (): Volume[] => {
  * available devices.
  */
 const useVolumeDevices = (): StorageDevice[] => {
+  const availableDevices = useAvailableDevices();
+
   const isAvailable = (device: StorageDevice) => {
     const isChildren = (device: StorageDevice, parentDevice: StorageDevice) => {
       const partitions = parentDevice.partitionTable?.partitions || [];
@@ -156,7 +192,6 @@ const useVolumeDevices = (): StorageDevice[] => {
 
   const allAvailable = (devices: StorageDevice[]) => devices.every(isAvailable);
 
-  const availableDevices = useAvailableDevices();
   const system = useDevices("system", { suspense: true });
   const mds = system.filter((d) => d.type === "md" && allAvailable(d.devices));
   const vgs = system.filter((d) => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
@@ -236,32 +271,6 @@ const useProposalResult = (): ProposalResult | undefined => {
     },
     actions,
   };
-};
-
-/**
- * @private
- * Builds a volume from the D-Bus data
- */
-const buildVolume = (
-  rawVolume: APIVolume,
-  devices: StorageDevice[],
-  productMountPoints: string[],
-): Volume => {
-  const outline = {
-    ...rawVolume.outline,
-    // Indicate whether a volume is defined by the product.
-    productDefined: productMountPoints.includes(rawVolume.mountPath),
-  };
-  const volume: Volume = {
-    ...rawVolume,
-    outline,
-    minSize: rawVolume.minSize || 0,
-    transactional: rawVolume.transactional || false,
-    target: rawVolume.target as VolumeTarget,
-    targetDevice: devices.find((d) => d.name === rawVolume.targetDevice),
-  };
-
-  return volume;
 };
 
 const useProposalMutation = () => {

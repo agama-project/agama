@@ -180,6 +180,19 @@ export default function DASDTable() {
   const filteredDevices = filterDevices(devices, minChannel, maxChannel);
   const selectedDevicesIds = selectedDASD.map((d) => d.id);
 
+  const changeSelected = (newSelection: SelectionOptions) => {
+    setSelectedDASD((prevSelection) => {
+      if (newSelection.unselect) {
+        if (newSelection.device)
+          return prevSelection.filter((d) => d.id !== newSelection.device.id);
+        if (newSelection.devices) return [];
+      } else {
+        if (newSelection.device) return [...prevSelection, newSelection.device];
+        if (newSelection.devices) return newSelection.devices;
+      }
+    });
+  };
+
   // Selecting
   const selectAll = (isSelecting = true) => {
     changeSelected({ unselect: !isSelecting, devices: filteredDevices });
@@ -208,19 +221,6 @@ export default function DASDTable() {
 
   const updateFilter = (newFilters: FilterOptions) => {
     setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
-  };
-
-  const changeSelected = (newSelection: SelectionOptions) => {
-    setSelectedDASD((prevSelection) => {
-      if (newSelection.unselect) {
-        if (newSelection.device)
-          return prevSelection.filter((d) => d.id !== newSelection.device.id);
-        if (newSelection.devices) return [];
-      } else {
-        if (newSelection.device) return [...prevSelection, newSelection.device];
-        if (newSelection.devices) return newSelection.devices;
-      }
-    });
   };
 
   const Content = () => {

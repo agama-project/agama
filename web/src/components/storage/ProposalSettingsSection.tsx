@@ -25,10 +25,8 @@ import EncryptionField, { EncryptionConfig } from "~/components/storage/Encrypti
 import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
 import PartitionsField from "~/components/storage/PartitionsField";
 import { TargetConfig } from "~/components/storage/InstallationDeviceField";
-import { BootConfig } from "~/components/storage/BootConfigField";
 import { CHANGING, NOT_AFFECTED } from "~/components/storage/ProposalPage";
 import { ProposalSettings, StorageDevice, Volume } from "~/types/storage";
-import { _ } from "~/i18n";
 import { compact } from "~/utils";
 
 /**

@@ -239,6 +239,7 @@ export default function ProposalActionsSummary({
   return (
     <Page.Section
       title={_("Actions")}
+      value={value}
       actions={
         isLoading ? (
           <Skeleton fontSize="sm" width="100px" />

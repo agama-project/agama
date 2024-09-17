@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
-import { _, n_ } from "~/i18n";
+import { n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { partition } from "~/utils";
 import { Action } from "~/types/storage";

@@ -21,7 +21,7 @@
 
 import React from "react";
 import { EmptyState, EmptyStateIcon, EmptyStateHeader, Spinner } from "@patternfly/react-core";
-import { Center, Icon } from "~/components/layout";
+import { Center } from "~/components/layout";
 import { _ } from "~/i18n";
 
 const LoadingIcon = () => <Spinner size="xl" />;

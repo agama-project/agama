@@ -68,7 +68,7 @@ export default function KeyboardSelection() {
   });
 
   if (keymapsList.length === 0) {
-    keymapsList = [<b>{_("None of the keymaps match the filter.")}</b>];
+    keymapsList = [<b key="notfound">{_("None of the keymaps match the filter.")}</b>];
   }
 
   return (

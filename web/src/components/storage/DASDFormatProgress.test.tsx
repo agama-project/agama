@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import DASDFormatProgress from "./DASDFormatProgress";
 import { DASDDevice, FormatJob } from "~/types/dasd";
 
