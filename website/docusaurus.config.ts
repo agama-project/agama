@@ -96,6 +96,10 @@ const config: Config = {
               label: 'Development',
               to: '/docs/devel',
             },
+            {
+              label: 'FAQ',
+              to: '/docs/faq',
+            },
           ],
         },
         {
