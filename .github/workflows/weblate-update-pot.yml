@@ -29,7 +29,7 @@ jobs:
       - name: Install tools
         run: |
           RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
-          zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(ruby:$RUBY_VERSION:yast-rake)" "rubygem(ruby:$RUBY_VERSION:gettext)" yast2-devtools
+          zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(ruby:$RUBY_VERSION:yast-rake)" "rubygem(ruby:$RUBY_VERSION:gettext)" yast2-devtools which
 
       - name: Checkout Agama sources
         uses: actions/checkout@v4

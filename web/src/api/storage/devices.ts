@@ -26,7 +26,6 @@ import {
   DevicesDirtyResponse,
   Drive,
   Filesystem,
-  LvmLv,
   LvmVg,
   Md,
   Multipath,
@@ -109,7 +108,7 @@ const fetchDevices = async (scope: "result" | "system") => {
       device.logicalVolumes = buildCollection(info.logicalVolumes, jsonDevices);
     };
 
-    const addLvInfo = (device: StorageDevice, _info: LvmLv) => {
+    const addLvInfo = (device: StorageDevice) => {
       device.type = "lvmLv";
     };
 

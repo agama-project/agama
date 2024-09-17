@@ -44,6 +44,11 @@ if [ ! -d "$dst" ] ; then
   exit 1
 fi
 
+# KIWI config which should normally be inherited
+# from a parent process in our case xorriso
+# but that's not the case.
+test -f $dst/.profile && . $dst/.profile
+
 # ----------------
 
 # Note:
@@ -74,7 +79,7 @@ chmod 644 $boot_dir/{initrd,linux}
 cat >$dst/boot/grub2/grub.cfg <<XXX
 gfxmode=auto
 
-set default='Agama Live'
+set default="$kiwi_iname"
 
 insmod gettext
 
@@ -82,14 +87,14 @@ if sleep --interruptible 0 ; then
   timeout=60
 fi
 
-menuentry 'Agama Live' --class os --unrestricted {
+menuentry "$kiwi_iname" --class os --unrestricted {
   echo 'Loading kernel...'
   linux /boot/ppc64le/linux
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }
 
-menuentry 'Check Installation Media -- Agama Live' --class os --unrestricted {
+menuentry "Check Installation Media -- $kiwi_iname" --class os --unrestricted {
   echo 'Loading kernel...'
   linux /boot/ppc64le/linux mediacheck=1 plymouth.enable=0
   echo 'Loading initrd...'
@@ -115,7 +120,7 @@ XXX
 #
 cat >$dst/ppc/bootinfo.txt <<XXX
 <chrp-boot>
-<description>Agama Live</description>
+<description>$kiwi_iname</description>
 <os-name>openSuSE Tumbleweed</os-name>
 <boot-script>boot &device;:1,\boot\grub2\grub.elf</boot-script>
 </chrp-boot>

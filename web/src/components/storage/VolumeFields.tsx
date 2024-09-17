@@ -65,8 +65,7 @@ const MountPathField = ({
 }: MountPathFieldProps) => {
   const label = _("Mount point");
 
-  const changeMountPath: (_: any, mountPath: string) => void = (_, mountPath) =>
-    onChange(mountPath);
+  const changeMountPath: (_, mountPath: string) => void = (_, mountPath) => onChange(mountPath);
 
   if (isReadOnly) {
     return <FormReadOnlyField label={label}>{value}</FormReadOnlyField>;
@@ -332,8 +331,8 @@ const SizeManual = ({
   isDisabled,
   onChange,
 }: {
-  errors: any;
-  formData: any;
+  errors;
+  formData;
   isDisabled: boolean;
   onChange: (v: object) => void;
 }) => {
@@ -395,8 +394,8 @@ const SizeRange = ({
   isDisabled,
   onChange,
 }: {
-  errors: any;
-  formData: any;
+  errors;
+  formData;
   isDisabled: boolean;
   onChange: (v: object) => void;
 }) => {
@@ -500,7 +499,7 @@ const SIZE_OPTION_LABELS = Object.freeze({
 
 type SizeOptionsFieldProps = {
   volume: Volume;
-  formData: any;
+  formData;
   errors?: object;
   isDisabled?: boolean;
   onChange: (v: object) => void;

@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 
 import { ProgressReport } from "~/components/core";

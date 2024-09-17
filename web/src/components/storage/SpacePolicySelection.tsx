@@ -98,7 +98,7 @@ export default function SpacePolicySelection() {
     setCustomUsed(policy.id === "custom");
     setDevices(settings.installationDevices);
     setState({ load: true });
-  }, [state]);
+  }, [settings, state.load]);
 
   useEffect(() => {
     if (policy?.id === "custom") setExpandedDevices(devices);

@@ -21,7 +21,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardBody, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
+import { Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
@@ -81,7 +81,7 @@ export default function BootSelectionDialog() {
       availableDevices,
       selectedOption,
     });
-  }, [availableDevices, settings]);
+  }, [availableDevices, settings, state.load]);
 
   if (!state.load) return;
 

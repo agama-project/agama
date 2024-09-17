@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-08 02:38+0000\n"
+"POT-Creation-Date: 2024-09-16 07:57+0000\n"
 "PO-Revision-Date: 2024-06-28 16:46+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -18,6 +18,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.6\n"
+
+#: src/components/core/About.tsx:46
+msgid "About"
+msgstr "შესახებ"
+
+#: src/components/core/About.tsx:64
+msgid "About Agama"
+msgstr "Agama-ის შესახებ"
+
+#: src/components/core/About.tsx:69
+msgid ""
+"Agama is an experimental installer for (open)SUSE systems. It is still under "
+"development so, please, do not use it in production environments. If you "
+"want to give it a try, we recommend using a virtual machine to prevent any "
+"possible data loss."
+msgstr ""
+
+#. TRANSLATORS: content of the "About" popup (2/2)
+#. %s is replaced by the project URL
+#: src/components/core/About.tsx:81
+#, c-format
+msgid "For more information, please visit the project's repository at %s."
+msgstr ""
+
+#: src/components/core/About.tsx:87 src/components/core/LogsButton.tsx:123
+#: src/components/software/SoftwarePatternsSelection.tsx:205
+msgid "Close"
+msgstr "დახურვა"
+
+#: src/components/core/ChangeProductLink.tsx:38
+msgid "Change product"
+msgstr "პროდუქტის შეცვლა"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -39,7 +71,10 @@ msgid "Continue"
 msgstr "გაგრძელება"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Popup.jsx:132
+#: src/components/core/InstallButton.jsx:49 src/components/core/Page.tsx:237
+#: src/components/core/Popup.jsx:132
+#: src/components/network/WifiConnectionForm.tsx:146
+#: src/components/product/ProductSelectionPage.tsx:122
 msgid "Cancel"
 msgstr "გაუქმება"
 
@@ -113,7 +148,7 @@ msgstr "დაყენების პროგრამის მორგე�
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
-#: src/components/l10n/L10nPage.jsx:55
+#: src/components/l10n/L10nPage.jsx:48
 msgid "Language"
 msgstr "ენა"
 
@@ -127,8 +162,10 @@ msgid "Cannot be changed in remote installation"
 msgstr "ვერ შეიცვლება დაშორებული დაყენებისას"
 
 #: src/components/core/InstallerOptions.jsx:142
+#: src/components/core/Page.tsx:270
+#: src/components/storage/EncryptionSettingsDialog.tsx:153
+#: src/components/storage/VolumeDialog.tsx:640
 #: src/components/storage/ZFCPPage.jsx:528
-#: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
 msgstr "დასტური"
 
@@ -141,57 +178,82 @@ msgstr ""
 msgid "Search"
 msgstr "ძებნა"
 
-#: src/components/core/LoginPage.jsx:64
+#: src/components/core/LoginPage.tsx:59
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
 
-#: src/components/core/LoginPage.jsx:66
+#: src/components/core/LoginPage.tsx:61
 msgid "Could not authenticate against the server, please check it."
 msgstr ""
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:74
-#, c-format
+#: src/components/core/LoginPage.tsx:69
+#, fuzzy, c-format
 msgid "Log in as %s"
-msgstr ""
+msgstr "შესვლა"
 
-#: src/components/core/LoginPage.jsx:80
+#: src/components/core/LoginPage.tsx:75
 msgid "The installer requires [root] user privileges."
 msgstr ""
 
-#: src/components/core/LoginPage.jsx:95
+#: src/components/core/LoginPage.tsx:90
 msgid "Please, provide its password to log in to the system."
 msgstr ""
 
-#: src/components/core/LoginPage.jsx:96
+#: src/components/core/LoginPage.tsx:91
 msgid "Login form"
 msgstr "შესვლის ფორმა"
 
-#: src/components/core/LoginPage.jsx:102
+#: src/components/core/LoginPage.tsx:97
 msgid "Password input"
 msgstr "პაროლის შეყვანა"
 
-#: src/components/core/LoginPage.jsx:111
+#: src/components/core/LoginPage.tsx:106
 msgid "Log in"
 msgstr "შესვლა"
 
-#: src/components/core/LoginPage.jsx:118
+#: src/components/core/LoginPage.tsx:113
 msgid "More about this"
 msgstr ""
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:55
+#: src/components/core/LogsButton.tsx:98
+msgid "Collecting logs..."
+msgstr "ჟურნალის შეგროვება..."
+
+#: src/components/core/LogsButton.tsx:98 src/components/core/LogsButton.tsx:101
+msgid "Download logs"
+msgstr "ჟურნალის გადმოწერა"
+
+#: src/components/core/LogsButton.tsx:108
+msgid ""
+"The browser will run the logs download as soon as they are ready. Please, be "
+"patient."
+msgstr ""
+
+#: src/components/core/LogsButton.tsx:118
+msgid "Something went wrong while collecting logs. Please, try again."
+msgstr ""
+
+#: src/components/core/Page.tsx:259
+msgid "Back"
+msgstr "უკან"
+
+#: src/components/core/PasswordAndConfirmationInput.tsx:64
 msgid "Passwords do not match"
 msgstr "პაროლები არ ემთხვევა"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:79
+#. TRANSLATORS: field label
+#: src/components/core/PasswordAndConfirmationInput.tsx:88
+#: src/components/network/WifiConnectionForm.tsx:133
+#: src/components/questions/QuestionWithPassword.tsx:62
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
-#: src/components/users/RootAuthMethods.jsx:130
+#: src/components/users/RootAuthMethods.tsx:76
 msgid "Password"
 msgstr "პაროლი"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:90
+#: src/components/core/PasswordAndConfirmationInput.tsx:99
 msgid "Password confirmation"
 msgstr "პაროლის დადასტურება"
 
@@ -221,6 +283,8 @@ msgid "Finished"
 msgstr "დასრულებულია"
 
 #: src/components/core/RowActions.jsx:64
+#: src/components/storage/PartitionsField.tsx:457
+#: src/components/storage/ProposalActionsSummary.tsx:241
 msgid "Actions"
 msgstr "ქმედებები"
 
@@ -240,78 +304,376 @@ msgstr ""
 msgid "Reload"
 msgstr "თავიდან ჩატვირთვა"
 
-#: src/components/l10n/KeyboardSelection.jsx:41
+#: src/components/l10n/KeyboardSelection.tsx:41
 msgid "Filter by description or keymap code"
 msgstr ""
 
-#: src/components/l10n/KeyboardSelection.jsx:71
+#: src/components/l10n/KeyboardSelection.tsx:71
 msgid "None of the keymaps match the filter."
 msgstr ""
 
-#: src/components/l10n/KeyboardSelection.jsx:77
+#: src/components/l10n/KeyboardSelection.tsx:77
 msgid "Keyboard selection"
 msgstr "კლავიატურის არჩევანი"
 
-#: src/components/l10n/KeyboardSelection.jsx:90
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/l10n/LocaleSelection.jsx:92
-#: src/components/l10n/TimezoneSelection.jsx:125
+#: src/components/l10n/KeyboardSelection.tsx:91
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/LocaleSelection.tsx:92
+#: src/components/l10n/TimezoneSelection.tsx:130
+#: src/components/product/ProductSelectionPage.tsx:128
+#: src/components/software/SoftwarePatternsSelection.tsx:166
 msgid "Select"
 msgstr "აირჩიეთ"
 
-#: src/components/l10n/L10nPage.jsx:48
-#: src/components/overview/L10nSection.jsx:37
+#: src/components/l10n/L10nPage.jsx:41
+#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.tsx:37
 msgid "Localization"
 msgstr "ლოკალიზაცია"
 
-#: src/components/l10n/L10nPage.jsx:56 src/components/l10n/L10nPage.jsx:65
-#: src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:49 src/components/l10n/L10nPage.jsx:60
+#: src/components/l10n/L10nPage.jsx:71
 msgid "Not selected yet"
 msgstr "ჯერ არჩეული არაა"
 
-#: src/components/l10n/L10nPage.jsx:59 src/components/l10n/L10nPage.jsx:67
-#: src/components/l10n/L10nPage.jsx:78
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
+#: src/components/l10n/L10nPage.jsx:52 src/components/l10n/L10nPage.jsx:63
+#: src/components/l10n/L10nPage.jsx:74
+#: src/components/network/NetworkPage.tsx:63
+#: src/components/storage/InstallationDeviceField.tsx:105
+#: src/components/storage/ProposalActionsSummary.tsx:246
+#: src/components/users/RootAuthMethods.tsx:113
+#: src/components/users/RootAuthMethods.tsx:125
 msgid "Change"
 msgstr "შეცვლა"
 
-#: src/components/l10n/L10nPage.jsx:65
+#: src/components/l10n/L10nPage.jsx:59
 msgid "Keyboard"
 msgstr "კლავიატურა"
 
-#: src/components/l10n/L10nPage.jsx:74
+#: src/components/l10n/L10nPage.jsx:70
 msgid "Time zone"
 msgstr "დროის სარტყელი"
 
-#: src/components/l10n/LocaleSelection.jsx:39
+#: src/components/l10n/LocaleSelection.tsx:39
 msgid "Filter by language, territory or locale code"
 msgstr ""
 
-#: src/components/l10n/LocaleSelection.jsx:72
+#: src/components/l10n/LocaleSelection.tsx:72
 msgid "None of the locales match the filter."
 msgstr ""
 
-#: src/components/l10n/LocaleSelection.jsx:78
+#: src/components/l10n/LocaleSelection.tsx:78
 msgid "Locale selection"
 msgstr "ლოკალის არჩევანი"
 
-#: src/components/l10n/TimezoneSelection.jsx:64
+#: src/components/l10n/TimezoneSelection.tsx:67
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr ""
 
-#: src/components/l10n/TimezoneSelection.jsx:101
+#: src/components/l10n/TimezoneSelection.tsx:106
 msgid "None of the time zones match the filter."
 msgstr ""
 
-#: src/components/l10n/TimezoneSelection.jsx:107
+#: src/components/l10n/TimezoneSelection.tsx:112
 msgid " Timezone selection"
 msgstr " დროის სარტყლის არჩევანი"
+
+#: src/components/layout/Header.tsx:61
+msgid "Main navigation"
+msgstr ""
 
 #: src/components/layout/Loading.jsx:29
 msgid "Loading installation environment, please wait."
 msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.tsx:102
+#: src/components/network/DnsDataList.tsx:106
+msgid "Remove"
+msgstr "წაშლა"
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.tsx:112
+#: src/components/network/IpAddressInput.tsx:34
+msgid "IP Address"
+msgstr "IP მისამართი"
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.tsx:120
+msgid "Prefix length or netmask"
+msgstr "პრეფიქსის სიგრძე ან ნეტმასკა"
+
+#: src/components/network/AddressesDataList.tsx:138
+msgid "Add an address"
+msgstr "მისამართის დამატება"
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.tsx:138
+msgid "Add another address"
+msgstr "სხვა მისამართის დამატება"
+
+#: src/components/network/AddressesDataList.tsx:143
+msgid "Addresses"
+msgstr "მისამართები"
+
+#: src/components/network/AddressesDataList.tsx:146
+msgid "Addresses data list"
+msgstr "მისამართის მონაცემების სია"
+
+#. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
+#: src/components/network/ConnectionsTable.tsx:65
+#: src/components/network/ConnectionsTable.tsx:94
+#: src/components/storage/ZFCPPage.jsx:381
+#: src/components/storage/iscsi/InitiatorForm.tsx:52
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:53
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:70
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
+msgid "Name"
+msgstr "სახელი"
+
+#. TRANSLATORS: table header
+#: src/components/network/ConnectionsTable.tsx:67
+#: src/components/network/ConnectionsTable.tsx:95
+msgid "IP addresses"
+msgstr "IP მისამართები"
+
+#. TRANSLATORS: table header aria label
+#: src/components/network/ConnectionsTable.tsx:69
+#, fuzzy
+msgid "Connection actions"
+msgstr "დაკავშირება"
+
+#: src/components/network/ConnectionsTable.tsx:76
+#: src/components/network/WifiNetworksListPage.tsx:127
+#: src/components/network/WifiNetworksListPage.tsx:151
+#: src/components/storage/PartitionsField.tsx:312
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:44
+#: src/components/storage/iscsi/NodesPresenter.jsx:74
+#: src/components/users/FirstUser.tsx:83
+msgid "Edit"
+msgstr "ჩასწორება"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:79
+#: src/components/network/IpSettingsForm.tsx:146
+#, c-format
+msgid "Edit connection %s"
+msgstr "%s მიერთების ჩასწორება"
+
+#: src/components/network/ConnectionsTable.tsx:83
+#: src/components/network/WifiNetworksListPage.tsx:130
+#: src/components/network/WifiNetworksListPage.tsx:154
+msgid "Forget"
+msgstr "დავიწყება"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:85
+#, c-format
+msgid "Forget connection %s"
+msgstr "%s მიერთების დავიწყება"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.tsx:100
+#, fuzzy, c-format
+msgid "Actions for connection %s"
+msgstr "%s მიერთების დავიწყება"
+
+#. TRANSLATORS: input field name
+#: src/components/network/DnsDataList.tsx:90
+msgid "Server IP"
+msgstr "სერვერის IP"
+
+#: src/components/network/DnsDataList.tsx:115
+msgid "Add DNS"
+msgstr "DNS-ის დამატება"
+
+#. TRANSLATORS: button label
+#: src/components/network/DnsDataList.tsx:115
+msgid "Add another DNS"
+msgstr "კიდევ ერთი DNS-ის დამატება"
+
+#: src/components/network/DnsDataList.tsx:120
+msgid "DNS"
+msgstr "DNS"
+
+#: src/components/network/IpPrefixInput.tsx:34
+#, fuzzy
+msgid "Ip prefix or netmask"
+msgstr "პრეფიქსის სიგრძე ან ნეტმასკა"
+
+#. TRANSLATORS: error message
+#: src/components/network/IpSettingsForm.tsx:102
+msgid "At least one address must be provided for selected mode"
+msgstr ""
+
+#. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+#: src/components/network/IpSettingsForm.tsx:156
+#: src/components/network/IpSettingsForm.tsx:161
+#: src/components/network/IpSettingsForm.tsx:163
+msgid "Mode"
+msgstr "რეჟიმი"
+
+#: src/components/network/IpSettingsForm.tsx:170
+msgid "Automatic (DHCP)"
+msgstr "ავტომატური (მხოლოდ DHCP)"
+
+#: src/components/network/IpSettingsForm.tsx:176
+#: src/components/storage/iscsi/NodeStartupOptions.js:25
+msgid "Manual"
+msgstr "ხელით"
+
+#. TRANSLATORS: network gateway configuration
+#: src/components/network/IpSettingsForm.tsx:185
+#: src/components/network/IpSettingsForm.tsx:188
+msgid "Gateway"
+msgstr "ნაგულისხმევი რაუტერი"
+
+#: src/components/network/IpSettingsForm.tsx:197
+msgid "Gateway can be defined only in 'Manual' mode"
+msgstr ""
+
+#: src/components/network/NetworkPage.tsx:37
+msgid "Wired"
+msgstr "მავთულიანი"
+
+#: src/components/network/NetworkPage.tsx:44
+msgid "No wired connections found"
+msgstr "მავთულიანი მიერთება აღმოჩენილი არაა"
+
+#: src/components/network/NetworkPage.tsx:60
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.tsx:63
+#: src/components/network/WifiConnectionForm.tsx:142
+#: src/components/network/WifiNetworksListPage.tsx:125
+msgid "Connect"
+msgstr "დაკავშირება"
+
+#: src/components/network/NetworkPage.tsx:69
+#, fuzzy, c-format
+msgid "Connected to %s"
+msgstr "მიერთებულია %s-ზე"
+
+#: src/components/network/NetworkPage.tsx:76
+msgid "No connected yet"
+msgstr "ჯერ მიერთებული არაა"
+
+#: src/components/network/NetworkPage.tsx:77
+msgid ""
+"The system has not been configured for connecting to a Wi-Fi network yet."
+msgstr ""
+
+#: src/components/network/NetworkPage.tsx:86
+msgid "No Wi-Fi supported"
+msgstr ""
+
+#: src/components/network/NetworkPage.tsx:88
+msgid ""
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
+msgstr ""
+
+#: src/components/network/NetworkPage.tsx:105 src/routes/network.tsx:36
+msgid "Network"
+msgstr "ქსელი"
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.tsx:50
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:57
+msgid "None"
+msgstr "არაფერი"
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.tsx:52
+msgid "WPA & WPA2 Personal"
+msgstr "WPA & WPA2 პერსონალური"
+
+#. TRANSLATORS: accessible name for the WiFi connection form
+#: src/components/network/WifiConnectionForm.tsx:94
+#, fuzzy
+msgid "WiFi connection form"
+msgstr "%s მიერთების ჩასწორება"
+
+#: src/components/network/WifiConnectionForm.tsx:101
+#, fuzzy
+msgid "Authentication failed, please try again"
+msgstr "ავთენტიკაცია სამიზნით"
+
+#: src/components/network/WifiConnectionForm.tsx:102
+#: src/components/storage/ZFCPDiskForm.jsx:105
+#: src/components/storage/iscsi/DiscoverForm.tsx:98
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/users/FirstUserForm.tsx:210
+msgid "Something went wrong"
+msgstr "რაღაც არასწორია"
+
+#: src/components/network/WifiConnectionForm.tsx:105
+msgid "Please, review provided settings and try again."
+msgstr ""
+
+#. TRANSLATORS: SSID (Wifi network name) configuration
+#: src/components/network/WifiConnectionForm.tsx:111
+msgid "SSID"
+msgstr "SSID"
+
+#. TRANSLATORS: Wifi security configuration (password protected or not)
+#: src/components/network/WifiConnectionForm.tsx:117
+#: src/components/network/WifiConnectionForm.tsx:120
+msgid "Security"
+msgstr "უსაფრთხოება"
+
+#. TRANSLATORS: WiFi password
+#: src/components/network/WifiConnectionForm.tsx:129
+msgid "WPA Password"
+msgstr "WPA პაროლი"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworksListPage.tsx:72
+#: src/components/network/WifiNetworksListPage.tsx:138
+msgid "Connecting"
+msgstr "დაკავშირება"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworksListPage.tsx:75
+#: src/components/network/WifiNetworksListPage.tsx:142
+#: src/components/network/WifiNetworksListPage.tsx:181
+msgid "Connected"
+msgstr "დაკავშირებულია"
+
+#. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
+#: src/components/network/WifiNetworksListPage.tsx:80
+#: src/components/network/WifiNetworksListPage.tsx:140
+#: src/components/storage/iscsi/NodesPresenter.jsx:64
+msgid "Disconnected"
+msgstr "გამოერთებული"
+
+#: src/components/network/WifiNetworksListPage.tsx:148
+msgid "Disconnect"
+msgstr "გამოერთება"
+
+#: src/components/network/WifiNetworksListPage.tsx:167
+#: src/components/network/WifiNetworksListPage.tsx:285
+msgid "Connect to hidden network"
+msgstr "დამალულ ქსელთან მიერთება"
+
+#: src/components/network/WifiNetworksListPage.tsx:178
+msgid "configured"
+msgstr "მორგებულია"
+
+#: src/components/network/WifiNetworksListPage.tsx:270
+#, fuzzy
+msgid "Visible Wi-Fi networks"
+msgstr "WiFi ქსელები"
+
+#: src/components/network/WifiSelectorPage.tsx:35
+#, fuzzy
+msgid "Connect to a Wi-Fi network"
+msgstr "დამალულ ქსელთან მიერთება"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -320,43 +682,56 @@ msgstr ""
 msgid "The system will use %s as its default language."
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:49
-#: src/components/users/UsersPage.jsx:35
+#: src/components/overview/OverviewPage.tsx:47
+#: src/components/users/UsersPage.tsx:35 src/routes/users.tsx:38
 msgid "Users"
 msgstr "მომხმარებლები"
 
-#: src/components/overview/OverviewPage.jsx:50
+#: src/components/overview/OverviewPage.tsx:48
 #: src/components/overview/StorageSection.jsx:111
+#: src/components/storage/ProposalPage.tsx:107 src/routes/storage.tsx:44
 msgid "Storage"
 msgstr "საცავი"
 
-#: src/components/overview/OverviewPage.jsx:51
+#: src/components/overview/OverviewPage.tsx:49
+#: src/components/overview/SoftwareSection.tsx:69
+#: src/components/software/SoftwarePage.tsx:110 src/routes/software.tsx:36
 msgid "Software"
 msgstr "პროგრამები"
 
-#: src/components/overview/OverviewPage.jsx:56
+#: src/components/overview/OverviewPage.tsx:54
 msgid "Ready for installation"
 msgstr "მზადაა დასაყენებლად"
 
-#: src/components/overview/OverviewPage.jsx:102
+#: src/components/overview/OverviewPage.tsx:98
 msgid "Installation"
 msgstr "დაყენება"
 
-#: src/components/overview/OverviewPage.jsx:103
+#: src/components/overview/OverviewPage.tsx:99
 msgid "Before installing, please check the following problems."
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:114
+#: src/components/overview/OverviewPage.tsx:113
+msgid ""
+"These are the most relevant installation settings. Feel free to browse the "
+"sections in the menu for further details."
+msgstr ""
+
+#: src/components/overview/OverviewPage.tsx:133
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:123
-msgid ""
-"These are the most relevant installation settings. Feel free to browse the "
-"sections in the menu for further details."
-msgstr ""
+#: src/components/overview/SoftwareSection.tsx:41
+msgid "The installation will take"
+msgstr "დაყენებას დასჭირდება"
+
+#. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
+#: src/components/overview/SoftwareSection.tsx:48
+#, fuzzy, c-format
+msgid "The installation will take %s including:"
+msgstr "დაყენებას დასჭირდება"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -411,6 +786,7 @@ msgid ""
 msgstr ""
 
 #: src/components/overview/StorageSection.jsx:179
+#: src/components/storage/InstallationDeviceField.tsx:59
 msgid "No device selected yet"
 msgstr ""
 
@@ -442,9 +818,414 @@ msgstr ""
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr ""
 
+#. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
+#: src/components/product/ProductSelectionPage.tsx:56
+#, c-format
+msgid "%s logo"
+msgstr ""
+
+#: src/components/product/ProductSelectionPage.tsx:107
+#, fuzzy
+msgid "Select a product"
+msgstr "აირჩიეთ მდებარეობა"
+
+#: src/components/product/ProductSelectionPage.tsx:108
+#, fuzzy
+msgid "Available products"
+msgstr "ხელმისაწვდომი ლოკალიზაციები"
+
 #: src/components/product/ProductSelectionProgress.jsx:46
 msgid "Configuring the product, please wait ..."
 msgstr ""
+
+#: src/components/questions/GenericQuestion.tsx:48
+#: src/components/questions/LuksActivationQuestion.tsx:69
+msgid "Question"
+msgstr "კითხვა"
+
+#. TRANSLATORS: error message, user entered a wrong password
+#: src/components/questions/LuksActivationQuestion.tsx:37
+#, fuzzy
+msgid "The encryption password did not work"
+msgstr "დაშიფვრის პაროლი"
+
+#: src/components/questions/LuksActivationQuestion.tsx:68
+msgid "Encrypted Device"
+msgstr "დაშიფრული მოწყობილობა"
+
+#. TRANSLATORS: field label
+#: src/components/questions/LuksActivationQuestion.tsx:77
+msgid "Encryption Password"
+msgstr "დაშიფვრის პაროლი"
+
+#: src/components/questions/QuestionWithPassword.tsx:55
+#, fuzzy
+msgid "Password Required"
+msgstr "პაროლის შეყვანა"
+
+#: src/components/software/SoftwarePage.tsx:52
+msgid "No additional software was selected."
+msgstr ""
+
+#: src/components/software/SoftwarePage.tsx:57
+msgid "The following software patterns are selected for installation:"
+msgstr ""
+
+#: src/components/software/SoftwarePage.tsx:72
+#: src/components/software/SoftwarePage.tsx:84
+msgid "Selected patterns"
+msgstr "მონიშნული ნიმუშები"
+
+#: src/components/software/SoftwarePage.tsx:75
+msgid "Change selection"
+msgstr "მონიშნულის შეცვლა"
+
+#: src/components/software/SoftwarePage.tsx:87
+msgid ""
+"This product does not allow to select software patterns during installation. "
+"However, you can add additional software once the installation is finished."
+msgstr ""
+
+#: src/components/software/SoftwarePatternsSelection.tsx:97
+msgid "None of the patterns match the filter."
+msgstr ""
+
+#: src/components/software/SoftwarePatternsSelection.tsx:162
+msgid "auto selected"
+msgstr "ავტომატურად არჩეული"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:166
+#, fuzzy
+msgid "Unselect"
+msgstr "არჩეულია"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:186
+msgid "Software selection"
+msgstr "პროგრამების არჩევანი"
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/software/SoftwarePatternsSelection.tsx:189
+#: src/components/software/SoftwarePatternsSelection.tsx:190
+msgid "Filter by pattern title or description"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.tsx:32
+#, c-format
+msgid "Installation will take %s."
+msgstr "დაყენებას დასჭირდება %s."
+
+#: src/components/software/UsedSize.tsx:36
+msgid ""
+"This space includes the base system and the selected software patterns, if "
+"any."
+msgstr ""
+
+#: src/components/storage/BootConfigField.tsx:41
+msgid "Change boot options"
+msgstr "ჩატვირთვის პარამეტრების შეცვლა"
+
+#: src/components/storage/BootConfigField.tsx:78
+#, fuzzy
+msgid "Installation will not configure partitions for booting."
+msgstr "ჩატვირთვადი დანაყოფები მორგებული არ იქნება"
+
+#: src/components/storage/BootConfigField.tsx:82
+#, fuzzy
+msgid ""
+"Installation will configure partitions for booting at the installation disk."
+msgstr "ჩატვირთვადი დანაყოფები მორგებული არ იქნება"
+
+#: src/components/storage/BootConfigField.tsx:86
+#, fuzzy, c-format
+msgid "Installation will configure partitions for booting at %s."
+msgstr "ჩატვირთვადი დანაყოფები მორგებული არ იქნება"
+
+#: src/components/storage/BootSelection.tsx:108
+msgid ""
+"To ensure the new system is able to boot, the installer may need to create "
+"or configure some partitions in the appropriate disk."
+msgstr ""
+
+#: src/components/storage/BootSelection.tsx:114
+#, fuzzy
+msgid "Partitions to boot will be allocated at the installation disk."
+msgstr "ჩატვირთვადი დანაყოფები დაყენების დისკზე"
+
+#. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
+#: src/components/storage/BootSelection.tsx:119
+#, c-format
+msgid "Partitions to boot will be allocated at the installation disk (%s)."
+msgstr ""
+
+#: src/components/storage/BootSelection.tsx:135
+msgid "Select booting partition"
+msgstr "აირჩიეთ ჩატვირთვადი დანაყოფი"
+
+#: src/components/storage/BootSelection.tsx:156
+#: src/components/storage/iscsi/NodeStartupOptions.js:27
+msgid "Automatic"
+msgstr "ავტომატური"
+
+#: src/components/storage/BootSelection.tsx:174
+msgid "Select a disk"
+msgstr "აირჩიეთ დისკი"
+
+#: src/components/storage/BootSelection.tsx:179
+msgid "Partitions to boot will be allocated at the following device."
+msgstr ""
+
+#: src/components/storage/BootSelection.tsx:181
+msgid "Choose a disk for placing the boot loader"
+msgstr ""
+
+#: src/components/storage/BootSelection.tsx:204
+#, fuzzy
+msgid "Do not configure"
+msgstr "მორგებულია"
+
+#: src/components/storage/BootSelection.tsx:210
+msgid ""
+"No partitions will be automatically configured for booting. Use with caution."
+msgstr ""
+
+#: src/components/storage/DASDFormatProgress.tsx:48
+msgid "Formatting DASD devices"
+msgstr "DASD მოწყობილობების დაფორმატება"
+
+#: src/components/storage/DASDPage.tsx:36 src/routes/storage.tsx:70
+#, fuzzy
+msgid "DASD"
+msgstr "DASD %s"
+
+#: src/components/storage/DASDTable.tsx:63
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+msgid "No"
+msgstr "არა"
+
+#: src/components/storage/DASDTable.tsx:63
+#: src/components/storage/ZFCPPage.jsx:340
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+msgid "Yes"
+msgstr "დიახ"
+
+#: src/components/storage/DASDTable.tsx:70
+#: src/components/storage/ZFCPDiskForm.jsx:110
+#: src/components/storage/ZFCPPage.jsx:324
+#: src/components/storage/ZFCPPage.jsx:382
+msgid "Channel ID"
+msgstr "არხის ID"
+
+#. TRANSLATORS: table header
+#: src/components/storage/DASDTable.tsx:71
+#: src/components/storage/ZFCPPage.jsx:325
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
+#: src/components/users/RootAuthMethods.tsx:70
+msgid "Status"
+msgstr "სტატუსი"
+
+#: src/components/storage/DASDTable.tsx:72
+#: src/components/storage/DeviceSelectorTable.tsx:185
+#: src/components/storage/ProposalResultTable.tsx:132
+#: src/components/storage/SpaceActionsTable.tsx:206
+#: src/components/storage/VolumeLocationSelectorTable.tsx:95
+msgid "Device"
+msgstr "მოწყობილობა"
+
+#: src/components/storage/DASDTable.tsx:73
+msgid "Type"
+msgstr "ტიპი"
+
+#. TRANSLATORS: table header, the column contains "Yes"/"No" values
+#. for the DIAG access mode (special disk access mode on IBM mainframes),
+#. usually keep untranslated
+#: src/components/storage/DASDTable.tsx:77
+msgid "DIAG"
+msgstr "დიაგ"
+
+#: src/components/storage/DASDTable.tsx:78
+msgid "Formatted"
+msgstr "დაფორმატებული"
+
+#: src/components/storage/DASDTable.tsx:79
+msgid "Partition Info"
+msgstr "დანაყოფის ინფორმაცია"
+
+#. TRANSLATORS: drop down menu label
+#: src/components/storage/DASDTable.tsx:118
+msgid "Perform an action"
+msgstr "ქმედების შესრულება"
+
+#: src/components/storage/DASDTable.tsx:125
+#: src/components/storage/ZFCPPage.jsx:353
+msgid "Activate"
+msgstr "აქტივაცია"
+
+#: src/components/storage/DASDTable.tsx:129
+#: src/components/storage/ZFCPPage.jsx:395
+msgid "Deactivate"
+msgstr "დეაქტივაცია"
+
+#: src/components/storage/DASDTable.tsx:134
+msgid "Set DIAG On"
+msgstr "დიაგნოსტიკის ჩართვა"
+
+#: src/components/storage/DASDTable.tsx:138
+msgid "Set DIAG Off"
+msgstr "დიაგნოსტიკის გამორთვა"
+
+#: src/components/storage/DASDTable.tsx:143
+msgid "Format"
+msgstr "დაფორმატება"
+
+#: src/components/storage/DASDTable.tsx:279
+#: src/components/storage/DASDTable.tsx:280
+msgid "Filter by min channel"
+msgstr ""
+
+#: src/components/storage/DASDTable.tsx:287
+msgid "Remove min channel filter"
+msgstr ""
+
+#: src/components/storage/DASDTable.tsx:301
+#: src/components/storage/DASDTable.tsx:302
+msgid "Filter by max channel"
+msgstr ""
+
+#: src/components/storage/DASDTable.tsx:309
+msgid "Remove max channel filter"
+msgstr ""
+
+#: src/components/storage/DeviceSelection.tsx:105
+msgid ""
+"The file systems will be allocated by default as [new partitions in the "
+"selected device]."
+msgstr ""
+
+#: src/components/storage/DeviceSelection.tsx:112
+msgid ""
+"The file systems will be allocated by default as [logical volumes of a new "
+"LVM Volume Group]. The corresponding physical volumes will be created on "
+"demand as new partitions at the selected devices."
+msgstr ""
+
+#: src/components/storage/DeviceSelection.tsx:121
+msgid "Select installation device"
+msgstr "აირჩიეთ დაყენების მოწყობილობა"
+
+#: src/components/storage/DeviceSelection.tsx:127
+msgid "Install new system on"
+msgstr "ახალი სისტემის დაყენება დისკზე"
+
+#: src/components/storage/DeviceSelection.tsx:130
+#, fuzzy
+msgid "An existing disk"
+msgstr "არსებული დანაყოფების დაპატარავება"
+
+#: src/components/storage/DeviceSelection.tsx:139
+msgid "A new LVM Volume Group"
+msgstr ""
+
+#: src/components/storage/DeviceSelection.tsx:162
+msgid "Device selector for target disk"
+msgstr ""
+
+#: src/components/storage/DeviceSelection.tsx:185
+msgid "Device selector for new LVM volume group"
+msgstr ""
+
+#: src/components/storage/DeviceSelection.tsx:198
+msgid "Prepare more devices by configuring advanced"
+msgstr ""
+
+#: src/components/storage/DeviceSelection.tsx:199
+msgid "storage techs"
+msgstr "საცავის ტექნოლოგიები"
+
+#. TRANSLATORS: multipath device type
+#: src/components/storage/DeviceSelectorTable.tsx:53
+msgid "Multipath"
+msgstr "Multipath"
+
+#. TRANSLATORS: %s is replaced by the device bus ID
+#: src/components/storage/DeviceSelectorTable.tsx:58
+#, c-format
+msgid "DASD %s"
+msgstr "DASD %s"
+
+#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+#: src/components/storage/DeviceSelectorTable.tsx:63
+#, c-format
+msgid "Software %s"
+msgstr "პროგრამული %s"
+
+#: src/components/storage/DeviceSelectorTable.tsx:68
+msgid "SD Card"
+msgstr "SD ბარათი"
+
+#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+#: src/components/storage/DeviceSelectorTable.tsx:73
+#, c-format
+msgid "%s disk"
+msgstr "%s დისკი"
+
+#: src/components/storage/DeviceSelectorTable.tsx:74
+msgid "Disk"
+msgstr "დისკი"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.tsx:94
+#, c-format
+msgid "Members: %s"
+msgstr "წევრები: %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.tsx:103
+#, c-format
+msgid "Devices: %s"
+msgstr "მოწყობილობები: %s"
+
+#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+#: src/components/storage/DeviceSelectorTable.tsx:112
+#, c-format
+msgid "Wires: %s"
+msgstr "მავთულები: %s"
+
+#. TRANSLATORS: disk partition info, %s is replaced by partition table
+#. type (MS-DOS or GPT), %d is the number of the partitions
+#: src/components/storage/DeviceSelectorTable.tsx:144
+#, fuzzy, c-format
+msgid "%s with %d partitions"
+msgstr "დანაყოფების შემცირება"
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
+#: src/components/storage/DeviceSelectorTable.tsx:150
+#: src/components/storage/SpaceActionsTable.tsx:183
+msgid "No content found"
+msgstr "შემცველობა აღმოჩენილი არაა"
+
+#: src/components/storage/DeviceSelectorTable.tsx:186
+#: src/components/storage/PartitionsField.tsx:453
+#: src/components/storage/ProposalResultTable.tsx:134
+#: src/components/storage/SpaceActionsTable.tsx:207
+#: src/components/storage/VolumeLocationSelectorTable.tsx:96
+msgid "Details"
+msgstr "დეტალები"
+
+#: src/components/storage/DeviceSelectorTable.tsx:187
+#: src/components/storage/PartitionsField.tsx:454
+#: src/components/storage/ProposalResultTable.tsx:135
+#: src/components/storage/SpaceActionsTable.tsx:208
+#: src/components/storage/VolumeFields.tsx:524
+#: src/components/storage/VolumeLocationSelectorTable.tsx:101
+msgid "Size"
+msgstr "ზომა"
 
 #: src/components/storage/DevicesTechMenu.jsx:39
 msgid "Manage and format"
@@ -462,26 +1243,732 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr ""
 
-#: src/components/storage/DevicesTechMenu.jsx:68
+#: src/components/storage/DevicesTechMenu.jsx:68 src/routes/storage.tsx:65
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/components/storage/ZFCPDiskForm.jsx:105
-#: src/components/storage/iscsi/DiscoverForm.jsx:98
-#: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:207
-msgid "Something went wrong"
-msgstr "რაღაც არასწორია"
+#: src/components/storage/EncryptionField.tsx:34
+#: src/components/storage/EncryptionSettingsDialog.tsx:30
+msgid "Encryption"
+msgstr "დაშიფვრა"
+
+#: src/components/storage/EncryptionField.tsx:36
+msgid ""
+"Protection for the information stored at the device, including data, "
+"programs, and system files."
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:40
+msgid "disabled"
+msgstr "გათიშულია"
+
+#: src/components/storage/EncryptionField.tsx:41
+msgid "enabled"
+msgstr "ჩართულია"
+
+#: src/components/storage/EncryptionField.tsx:42
+msgid "using TPM unlocking"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:56
+msgid "Enable"
+msgstr "ჩართვა"
+
+#: src/components/storage/EncryptionField.tsx:56
+msgid "Modify"
+msgstr "შეცვლა"
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:32
+msgid ""
+"Full Disk Encryption (FDE) allows to protect the information stored at the "
+"device, including data, programs, and system files."
+msgstr ""
+
+#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
+#: src/components/storage/EncryptionSettingsDialog.tsx:36
+msgid ""
+"Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
+msgstr ""
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:40
+msgid ""
+"The password will not be needed to boot and access the data if the TPM can "
+"verify the integrity of the system. TPM sealing requires the new system to "
+"be booted directly on its first run."
+msgstr ""
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:127
+#, fuzzy
+msgid "Encrypt the system"
+msgstr "ფაილური სისტემის მიმაგრება"
+
+#: src/components/storage/InstallationDeviceField.tsx:31
+#: src/components/storage/VolumeLocationSelectorTable.tsx:53
+msgid "Installation device"
+msgstr "დაყენების მოწყობილობა"
+
+#. TRANSLATORS: The storage "Installation device" field's description.
+#: src/components/storage/InstallationDeviceField.tsx:33
+msgid "Main disk or LVM Volume Group for installation."
+msgstr ""
+
+#. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
+#: src/components/storage/InstallationDeviceField.tsx:45
+#, c-format
+msgid "File systems created as new partitions at %s"
+msgstr ""
+
+#: src/components/storage/InstallationDeviceField.tsx:48
+msgid "File systems created at a new LVM volume group"
+msgstr ""
+
+#: src/components/storage/InstallationDeviceField.tsx:53
+#, c-format
+msgid "File systems created at a new LVM volume group on %s"
+msgstr ""
+
+#: src/components/storage/InvalidMaxSizeError.tsx:43
+#: src/components/storage/VolumeDialog.tsx:215
+msgid "Maximum must be greater than minimum"
+msgstr ""
+
+#. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:72
+#, c-format
+msgid "at least %s"
+msgstr "%s მაინც"
+
+#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:90
+#, c-format
+msgid "Transactional Btrfs root volume (%s)"
+msgstr "ტრანზაქციული Btrfs ძირითადი ტომი (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:92
+#, c-format
+msgid "Transactional Btrfs root partition (%s)"
+msgstr "ტრანზაქციული Btrfs ძირითადი დანაყოფი (%s)"
+
+#. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:97
+#, c-format
+msgid "Btrfs root volume with snapshots (%s)"
+msgstr "Btrfs ძირითადი ტომი სწრაფი ასლებით (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/PartitionsField.tsx:99
+#, c-format
+msgid "Btrfs root partition with snapshots (%s)"
+msgstr "Btrfs ძირითადი დანაყოფი სწრაფი ასლებით (%s)"
+
+#. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
+#. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
+#: src/components/storage/PartitionsField.tsx:108
+#, c-format
+msgid "Mount %1$s at %2$s (%3$s)"
+msgstr ""
+
+#. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
+#. %1$s is replaced by the device name, and %2$s by the size
+#: src/components/storage/PartitionsField.tsx:114
+#, fuzzy, c-format
+msgid "Swap at %1$s (%2$s)"
+msgstr "სვოპის დანაყოფი (%s)"
+
+#. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
+#: src/components/storage/PartitionsField.tsx:118
+#, fuzzy, c-format
+msgid "Swap volume (%s)"
+msgstr "სვოპის დანაყოფი (%s)"
+
+#. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
+#: src/components/storage/PartitionsField.tsx:120
+#, c-format
+msgid "Swap partition (%s)"
+msgstr "სვოპის დანაყოფი (%s)"
+
+#. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
+#: src/components/storage/PartitionsField.tsx:129
+#, c-format
+msgid "%1$s root at %2$s (%3$s)"
+msgstr ""
+
+#. TRANSLATORS: "/" is in an LVM logical volume.
+#. Results in something like "Btrfs root volume (at least 20 GiB)" since
+#. $1$s is replaced by filesystem type and %2$s by size description
+#: src/components/storage/PartitionsField.tsx:135
+#, fuzzy, c-format
+msgid "%1$s root volume (%2$s)"
+msgstr "ტრანზაქციული Btrfs ძირითადი ტომი (%s)"
+
+#. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
+#. $1$s is replaced by filesystem type and %2$s by size description
+#: src/components/storage/PartitionsField.tsx:138
+#, fuzzy, c-format
+msgid "%1$s root partition (%2$s)"
+msgstr "ჩატვირთვადი დანაყოფები მისამართზე %s"
+
+#. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
+#. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
+#: src/components/storage/PartitionsField.tsx:144
+#, c-format
+msgid "%1$s %2$s at %3$s (%4$s)"
+msgstr ""
+
+#. TRANSLATORS: The filesystem is in an LVM logical volume.
+#. Results in something like "Ext4 /home volume (at least 10 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
+#: src/components/storage/PartitionsField.tsx:150
+#, c-format
+msgid "%1$s %2$s volume (%3$s)"
+msgstr ""
+
+#. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
+#. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
+#: src/components/storage/PartitionsField.tsx:153
+#, fuzzy, c-format
+msgid "%1$s %2$s partition (%3$s)"
+msgstr "სვოპის დანაყოფი (%s)"
+
+#: src/components/storage/PartitionsField.tsx:161
+msgid "Do not configure partitions for booting"
+msgstr "ჩატვირთვადი დანაყოფები მორგებული არ იქნება"
+
+#: src/components/storage/PartitionsField.tsx:163
+msgid "Boot partitions at installation disk"
+msgstr "ჩატვირთვადი დანაყოფები დაყენების დისკზე"
+
+#. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
+#: src/components/storage/PartitionsField.tsx:166
+#, c-format
+msgid "Boot partitions at %s"
+msgstr "ჩატვირთვადი დანაყოფები მისამართზე %s"
+
+#. TRANSLATORS: header for a list of items referring to size limits for file systems
+#: src/components/storage/PartitionsField.tsx:185
+msgid "These limits are affected by:"
+msgstr ""
+
+#. TRANSLATORS: list item, this affects the computed partition size limits
+#: src/components/storage/PartitionsField.tsx:189
+msgid "The configuration of snapshots"
+msgstr ""
+
+#: src/components/storage/PartitionsField.tsx:195
+#, fuzzy, c-format
+msgid "Presence of other volumes (%s)"
+msgstr "ტრანზაქციული Btrfs ძირითადი ტომი (%s)"
+
+#. TRANSLATORS: list item, describes a factor that affects the computed size of a
+#. file system; eg. adjusting the size of the swap
+#: src/components/storage/PartitionsField.tsx:201
+msgid "The amount of RAM in the system"
+msgstr ""
+
+#: src/components/storage/PartitionsField.tsx:258
+msgid "auto"
+msgstr "ავტომატური"
+
+#. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
+#: src/components/storage/PartitionsField.tsx:270
+#, c-format
+msgid "Reused %s"
+msgstr "თავიდან გამოიყენება %s"
+
+#: src/components/storage/PartitionsField.tsx:271
+msgid "Transactional Btrfs"
+msgstr "ტრანზაქციული Btrfs"
+
+#: src/components/storage/PartitionsField.tsx:272
+msgid "Btrfs with snapshots"
+msgstr "Btrfs სწრაფი ასლებით"
+
+#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+#: src/components/storage/PartitionsField.tsx:285
+#, c-format
+msgid "Partition at %s"
+msgstr "დანაყოფი მისამართზე %s"
+
+#. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+#: src/components/storage/PartitionsField.tsx:288
+#, c-format
+msgid "Separate LVM at %s"
+msgstr ""
+
+#: src/components/storage/PartitionsField.tsx:291
+msgid "Logical volume at system LVM"
+msgstr "ლოგიკური ტომი სისტემურ LVM-ზე"
+
+#: src/components/storage/PartitionsField.tsx:293
+#, fuzzy
+msgid "Partition at installation disk"
+msgstr "ჩატვირთვადი დანაყოფები დაყენების დისკზე"
+
+#: src/components/storage/PartitionsField.tsx:313
+msgid "Reset location"
+msgstr "მდებარეობის ჩამოყრა"
+
+#: src/components/storage/PartitionsField.tsx:314
+msgid "Change location"
+msgstr "მდებარეობის შეცვლა"
+
+#: src/components/storage/PartitionsField.tsx:315
+#: src/components/storage/iscsi/NodesPresenter.jsx:78
+msgid "Delete"
+msgstr "წაშლა"
+
+#: src/components/storage/PartitionsField.tsx:452
+#: src/components/storage/VolumeFields.tsx:66
+#: src/components/storage/VolumeFields.tsx:76
+#: src/components/storage/VolumeFields.tsx:81
+msgid "Mount point"
+msgstr "მიმაგრების წერტილი"
+
+#. TRANSLATORS: where (and how) the file-system is going to be created
+#: src/components/storage/PartitionsField.tsx:456
+msgid "Location"
+msgstr "მდებარეობა"
+
+#: src/components/storage/PartitionsField.tsx:495
+msgid "Table with mount points"
+msgstr ""
+
+#: src/components/storage/PartitionsField.tsx:576
+#: src/components/storage/PartitionsField.tsx:596
+#: src/components/storage/VolumeDialog.tsx:77
+msgid "Add file system"
+msgstr "ფაილური სისტემის დამატება"
+
+#: src/components/storage/PartitionsField.tsx:608
+msgid "Other"
+msgstr "სხვა"
+
+#: src/components/storage/PartitionsField.tsx:742
+msgid "Reset to defaults"
+msgstr "ნაგულისხმები პარამეტრების დაყენება"
+
+#: src/components/storage/PartitionsField.tsx:811
+msgid "Partitions and file systems"
+msgstr "დანაყოფები და ფაილური სისტემები"
+
+#: src/components/storage/PartitionsField.tsx:813
+msgid ""
+"Structure of the new system, including any additional partition needed for "
+"booting"
+msgstr ""
+
+#: src/components/storage/PartitionsField.tsx:820
+msgid "Show partitions and file-systems actions"
+msgstr "დანაყოფების და ფაილური სისტემის ქმედებების ჩვენება"
+
+#: src/components/storage/ProposalActionsDialog.tsx:72
+#, c-format
+msgid "Hide %d subvolume action"
+msgid_plural "Hide %d subvolume actions"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/components/storage/ProposalActionsDialog.tsx:77
+#, c-format
+msgid "Show %d subvolume action"
+msgid_plural "Show %d subvolume actions"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/components/storage/ProposalActionsSummary.tsx:54
+#, fuzzy
+msgid "Destructive actions are not allowed"
+msgstr "დანაყოფების დაპატარავება დაშვებული არაა"
+
+#: src/components/storage/ProposalActionsSummary.tsx:56
+msgid "Destructive actions are allowed"
+msgstr ""
+
+#: src/components/storage/ProposalActionsSummary.tsx:79
+#: src/components/storage/ProposalActionsSummary.tsx:133
+msgid "affecting"
+msgstr "გავლენა"
+
+#: src/components/storage/ProposalActionsSummary.tsx:113
+msgid "Shrinking partitions is not allowed"
+msgstr "დანაყოფების დაპატარავება დაშვებული არაა"
+
+#: src/components/storage/ProposalActionsSummary.tsx:117
+msgid "Shrinking partitions is allowed"
+msgstr "დანაყოფების დაპატარავება დაშვებულია"
+
+#: src/components/storage/ProposalActionsSummary.tsx:119
+#, fuzzy
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr "დანაყოფების დაპატარავება დაშვებულია"
+
+#: src/components/storage/ProposalActionsSummary.tsx:122
+#, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "შემცირდება %d დანაყოფი"
+msgstr[1] "შემცირდება %d დანაყოფი"
+
+#: src/components/storage/ProposalActionsSummary.tsx:163
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "დაყენებისთვის საჭირო ფაილური სისტემების შეგროვება შეუძლებელია"
+
+#: src/components/storage/ProposalActionsSummary.tsx:171
+#, c-format
+msgid "Check the planned action"
+msgid_plural "Check the %d planned actions"
+msgstr[0] "დაგეგმილი ქმედების შემოწმება"
+msgstr[1] "%d დაგეგმილი ქმედების შემოწმება"
+
+#: src/components/storage/ProposalActionsSummary.tsx:186
+msgid "Waiting for actions information..."
+msgstr ""
+
+#: src/components/storage/ProposalPage.tsx:129
+msgid "Planned Actions"
+msgstr "დაგეგმილი ქმედებები"
+
+#: src/components/storage/ProposalResultSection.tsx:37
+msgid "Waiting for information about storage configuration"
+msgstr ""
+
+#: src/components/storage/ProposalResultSection.tsx:62
+msgid "Final layout"
+msgstr "საბოლოო განლაგება"
+
+#: src/components/storage/ProposalResultSection.tsx:63
+msgid "The systems will be configured as displayed below."
+msgstr ""
+
+#: src/components/storage/ProposalResultSection.tsx:71
+msgid "Storage proposal not possible"
+msgstr ""
+
+#: src/components/storage/ProposalResultTable.tsx:77
+msgid "New"
+msgstr "ახალი"
+
+#. TRANSLATORS: Label to indicate the device size before resizing, where %s is
+#. replaced by the original size (e.g., 3.00 GiB).
+#: src/components/storage/ProposalResultTable.tsx:106
+#, c-format
+msgid "Before %s"
+msgstr "%s-მდე"
+
+#: src/components/storage/ProposalResultTable.tsx:133
+msgid "Mount Point"
+msgstr "მიმაგრების წერტილი"
+
+#: src/components/storage/ProposalTransactionalInfo.tsx:42
+msgid "Transactional root file system"
+msgstr "ტრანზაქციული საწყისი ფაილური სისტემა"
+
+#: src/components/storage/ProposalTransactionalInfo.tsx:46
+#, c-format
+msgid ""
+"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
+"file system updated via snapshots."
+msgstr ""
+
+#: src/components/storage/SnapshotsField.tsx:31
+msgid "Use Btrfs snapshots for the root file system"
+msgstr ""
+
+#: src/components/storage/SnapshotsField.tsx:33
+msgid ""
+"Allows to boot to a previous version of the system after configuration "
+"changes or software upgrades."
+msgstr ""
+
+#: src/components/storage/SpaceActionsTable.tsx:60
+#, c-format
+msgid "Up to %s can be recovered by shrinking the device."
+msgstr ""
+
+#: src/components/storage/SpaceActionsTable.tsx:69
+msgid "The device cannot be shrunk:"
+msgstr ""
+
+#: src/components/storage/SpaceActionsTable.tsx:90
+#, c-format
+msgid "Show information about %s"
+msgstr ""
+
+#: src/components/storage/SpaceActionsTable.tsx:180
+msgid "The content may be deleted"
+msgstr ""
+
+#: src/components/storage/SpaceActionsTable.tsx:210
+msgid "Action"
+msgstr "ქმედება"
+
+#: src/components/storage/SpaceActionsTable.tsx:221
+msgid "Actions to find space"
+msgstr ""
+
+#: src/components/storage/SpacePolicySelection.tsx:156
+msgid "Space policy"
+msgstr "ადგილის პოლიტიკა"
+
+#: src/components/storage/VolumeDialog.tsx:74
+#, c-format
+msgid "Add %s file system"
+msgstr "%s ფაილური სისტემის დამატება"
+
+#: src/components/storage/VolumeDialog.tsx:75
+#, c-format
+msgid "Edit %s file system"
+msgstr "%s ფაილური სისტემის ჩასწორება"
+
+#: src/components/storage/VolumeDialog.tsx:77
+msgid "Edit file system"
+msgstr "ფაილური სისტემის ჩასწორება"
+
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.tsx:89
+msgid "The type and size of the file system cannot be edited."
+msgstr ""
+
+#: src/components/storage/VolumeDialog.tsx:93
+#, c-format
+msgid "The current file system on %s is selected to be mounted at %s."
+msgstr ""
+
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.tsx:101
+msgid "The size of the file system cannot be edited"
+msgstr ""
+
+#. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
+#: src/components/storage/VolumeDialog.tsx:103
+#, c-format
+msgid "The file system is allocated at the device %s."
+msgstr ""
+
+#: src/components/storage/VolumeDialog.tsx:140
+msgid "A mount point is required"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.tsx:157
+msgid "The mount point is invalid"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.tsx:175
+msgid "A size value is required"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.tsx:193
+#, fuzzy
+msgid "Minimum size is required"
+msgstr "მინიმალური სასურველი ზომა"
+
+#: src/components/storage/VolumeDialog.tsx:242
+#, c-format
+msgid "There is already a file system for %s."
+msgstr ""
+
+#: src/components/storage/VolumeDialog.tsx:244
+msgid "Do you want to edit it?"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.tsx:274
+#, c-format
+msgid "There is a predefined file system for %s."
+msgstr ""
+
+#: src/components/storage/VolumeDialog.tsx:276
+msgid "Do you want to add it?"
+msgstr ""
+
+#: src/components/storage/VolumeFields.tsx:236
+msgid ""
+"The options for the file system type depends on the product and the mount "
+"point."
+msgstr ""
+
+#: src/components/storage/VolumeFields.tsx:243
+#, fuzzy
+msgid "More info for file system types"
+msgstr "მდებარეობა %s ფაილური სისტემისთვის"
+
+#. TRANSLATORS: label for the file system selector.
+#: src/components/storage/VolumeFields.tsx:254
+msgid "File system type"
+msgstr "ფაილური სისტემის ტიპი"
+
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeFields.tsx:285
+msgid "the configuration of snapshots"
+msgstr ""
+
+#: src/components/storage/VolumeFields.tsx:292
+#, c-format
+msgid "the presence of the file system for %s"
+msgstr ""
+
+#. TRANSLATORS: conjunction for merging two list items
+#: src/components/storage/VolumeFields.tsx:294
+msgid ", "
+msgstr ", "
+
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeFields.tsx:300
+msgid "the amount of RAM in the system"
+msgstr ""
+
+#: src/components/storage/VolumeFields.tsx:304
+#, c-format
+msgid "The final size depends on %s."
+msgstr ""
+
+#. TRANSLATORS: conjunction for merging two texts
+#: src/components/storage/VolumeFields.tsx:306
+msgid " and "
+msgstr " და "
+
+#: src/components/storage/VolumeFields.tsx:313
+msgid "Automatically calculated size according to the selected product."
+msgstr ""
+
+#: src/components/storage/VolumeFields.tsx:342
+#, fuzzy
+msgid "Exact size for the file system."
+msgstr "მდებარეობა %s ფაილური სისტემისთვის"
+
+#. TRANSLATORS: requested partition size
+#: src/components/storage/VolumeFields.tsx:351
+msgid "Exact size"
+msgstr "ზუსტი ზომა"
+
+#. TRANSLATORS: units selector (like KiB, MiB, GiB...)
+#: src/components/storage/VolumeFields.tsx:368
+msgid "Size unit"
+msgstr "ზომის ერთეული"
+
+#: src/components/storage/VolumeFields.tsx:407
+msgid ""
+"Limits for the file system size. The final size will be a value between the "
+"given minimum and maximum. If no maximum is given then the file system will "
+"be as big as possible."
+msgstr ""
+
+#. TRANSLATORS: the minimal partition size
+#: src/components/storage/VolumeFields.tsx:415
+msgid "Minimum"
+msgstr "მინიმუმი"
+
+#. TRANSLATORS: the minium partition size
+#: src/components/storage/VolumeFields.tsx:426
+msgid "Minimum desired size"
+msgstr "მინიმალური სასურველი ზომა"
+
+#: src/components/storage/VolumeFields.tsx:437
+msgid "Unit for the minimum size"
+msgstr ""
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeFields.tsx:449
+msgid "Maximum"
+msgstr "მაქსიმუმი"
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeFields.tsx:461
+msgid "Maximum desired size"
+msgstr "მაქსიმალური სასურველი ზომა"
+
+#: src/components/storage/VolumeFields.tsx:471
+msgid "Unit for the maximum size"
+msgstr ""
+
+#. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
+#: src/components/storage/VolumeFields.tsx:489
+msgid "Auto"
+msgstr "ავტო"
+
+#. TRANSLATORS: radio button label, exact partition size requested by user
+#: src/components/storage/VolumeFields.tsx:491
+msgid "Fixed"
+msgstr "ფიქსირებული"
+
+#. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
+#: src/components/storage/VolumeFields.tsx:493
+msgid "Range"
+msgstr "დიაპაზონი"
+
+#: src/components/storage/VolumeLocationDialog.tsx:37
+msgid ""
+"The file systems are allocated at the installation device by default. "
+"Indicate a custom location to create the file system at a specific device."
+msgstr ""
+
+#. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
+#. by a mount path (e.g., /home).
+#: src/components/storage/VolumeLocationDialog.tsx:140
+#, c-format
+msgid "Location for %s file system"
+msgstr "მდებარეობა %s ფაილური სისტემისთვის"
+
+#: src/components/storage/VolumeLocationDialog.tsx:150
+msgid "Select in which device to allocate the file system"
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.tsx:153
+msgid "Select a location"
+msgstr "აირჩიეთ მდებარეობა"
+
+#: src/components/storage/VolumeLocationDialog.tsx:165
+#, fuzzy
+msgid "Select how to allocate the file system"
+msgstr "ფაილური სისტემის მიმაგრება"
+
+#: src/components/storage/VolumeLocationDialog.tsx:170
+#, fuzzy
+msgid "Create a new partition"
+msgstr "აირჩიეთ ჩატვირთვადი დანაყოფი"
+
+#: src/components/storage/VolumeLocationDialog.tsx:172
+msgid ""
+"The file system will be allocated as a new partition at the selected   disk."
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.tsx:182
+msgid "Create a dedicated LVM volume group"
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.tsx:184
+msgid ""
+"A new volume group will be allocated in the selected disk and the   file "
+"system will be created as a logical volume."
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.tsx:194
+msgid "Format the device"
+msgstr "მოწყობილობების დაფორმატება"
+
+#: src/components/storage/VolumeLocationDialog.tsx:198
+#, c-format
+msgid "The selected device will be formatted as %s file system."
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.tsx:209
+msgid "Mount the file system"
+msgstr "ფაილური სისტემის მიმაგრება"
+
+#: src/components/storage/VolumeLocationDialog.tsx:211
+msgid ""
+"The current file system on the selected device will be mounted   without "
+"formatting the device."
+msgstr ""
+
+#: src/components/storage/VolumeLocationSelectorTable.tsx:98
+msgid "Usage"
+msgstr "გამოყენება"
 
 #: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr ""
-
-#: src/components/storage/ZFCPDiskForm.jsx:110
-#: src/components/storage/ZFCPPage.jsx:324
-#: src/components/storage/ZFCPPage.jsx:382
-msgid "Channel ID"
-msgstr "არხის ID"
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:123
@@ -495,14 +1982,6 @@ msgstr "WWPN"
 msgid "LUN"
 msgstr "LUN"
 
-#. TRANSLATORS: table header
-#: src/components/storage/ZFCPPage.jsx:325
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:124
-msgid "Status"
-msgstr "სტატუსი"
-
 #: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
 msgstr "LUN-ების ავტომატური სკანირება"
@@ -514,36 +1993,6 @@ msgstr "აქტივირებულია"
 #: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
 msgstr "დეაქტივირებულია"
-
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-msgid "No"
-msgstr "არა"
-
-#: src/components/storage/ZFCPPage.jsx:340
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-msgid "Yes"
-msgstr "დიახ"
-
-#: src/components/storage/ZFCPPage.jsx:353
-msgid "Activate"
-msgstr "აქტივაცია"
-
-#. TRANSLATORS: input field for the iSCSI initiator name
-#: src/components/storage/ZFCPPage.jsx:381
-#: src/components/storage/iscsi/InitiatorForm.jsx:52
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:98
-#: src/components/storage/iscsi/NodesPresenter.jsx:119
-msgid "Name"
-msgstr "სახელი"
-
-#: src/components/storage/ZFCPPage.jsx:395
-msgid "Deactivate"
-msgstr "დეაქტივაცია"
 
 #: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
@@ -598,6 +2047,10 @@ msgstr "ახალი დისკის გააქტიურება"
 msgid "Disks"
 msgstr "დისკები"
 
+#: src/components/storage/device-utils.tsx:74
+msgid "Unused space"
+msgstr "გამოუყენებელი ადგილი"
+
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
 msgstr ""
@@ -634,81 +2087,72 @@ msgid "Target Password"
 msgstr "სამიზნე პაროლი"
 
 #. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:94
+#: src/components/storage/iscsi/DiscoverForm.tsx:94
 msgid "Discover iSCSI Targets"
 msgstr ""
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:99
+#: src/components/storage/iscsi/DiscoverForm.tsx:99
 #: src/components/storage/iscsi/LoginForm.jsx:70
 msgid "Make sure you provide the correct values"
 msgstr ""
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:103
+#: src/components/storage/iscsi/DiscoverForm.tsx:103
 msgid "IP address"
 msgstr "IP-მისამართი"
 
 #. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
+#: src/components/storage/iscsi/DiscoverForm.tsx:108
+#: src/components/storage/iscsi/DiscoverForm.tsx:110
 msgid "Address"
 msgstr "მისამართი"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
+#: src/components/storage/iscsi/DiscoverForm.tsx:115
 msgid "Incorrect IP address"
 msgstr "არასწორი IP მისამართი"
 
 #. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:117
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
+#: src/components/storage/iscsi/DiscoverForm.tsx:117
+#: src/components/storage/iscsi/DiscoverForm.tsx:122
+#: src/components/storage/iscsi/DiscoverForm.tsx:124
 msgid "Port"
 msgstr "პორტი"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
+#: src/components/storage/iscsi/DiscoverForm.tsx:129
 msgid "Incorrect port"
 msgstr "არასწორი პორტი"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:48
+#: src/components/storage/iscsi/EditNodeForm.tsx:48
 #, c-format
 msgid "Edit %s"
 msgstr "%s-ის ჩასწორება"
 
-#: src/components/storage/iscsi/InitiatorForm.jsx:42
+#: src/components/storage/iscsi/InitiatorForm.tsx:42
+#, fuzzy
 msgid "Edit iSCSI Initiator"
-msgstr ""
+msgstr "ინიციატორი"
 
 #. TRANSLATORS: iSCSI initiator name
-#: src/components/storage/iscsi/InitiatorForm.jsx:49
+#: src/components/storage/iscsi/InitiatorForm.tsx:49
 msgid "Initiator name"
 msgstr "ინიციატორის სახელი"
 
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
-#: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:86
-msgid "Edit"
-msgstr "ჩასწორება"
-
 #. TRANSLATORS: usually just keep the original text
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:86
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-#: src/components/storage/iscsi/NodesPresenter.jsx:122
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:56
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
 msgid "iBFT"
 msgstr "iBFT"
 
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-msgid "None"
-msgstr "არაფერი"
-
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
-#: src/components/storage/iscsi/InitiatorPresenter.jsx:87
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:57
+#: src/components/storage/iscsi/InitiatorPresenter.tsx:72
 msgid "Offload card"
 msgstr "განტვირთვის ბარათი"
 
 #. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:49
+#: src/components/storage/iscsi/InitiatorSection.tsx:35
 msgid "Initiator"
 msgstr "ინიციატორი"
 
@@ -724,199 +2168,274 @@ msgstr "%s-ზე შესვლა"
 msgid "Startup"
 msgstr "გაშვება"
 
-#: src/components/storage/iscsi/NodeStartupOptions.js:25
-msgid "Manual"
-msgstr "ხელით"
-
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
 msgstr "ჩატვირთვისას"
 
-#: src/components/storage/iscsi/NodeStartupOptions.js:27
-msgid "Automatic"
-msgstr "ავტომატური"
-
-#. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
-msgid "Disconnected"
-msgstr "გამოერთებული"
-
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
-#: src/components/storage/iscsi/NodesPresenter.jsx:67
+#: src/components/storage/iscsi/NodesPresenter.jsx:68
 #, c-format
 msgid "Connected (%s)"
 msgstr "მიერთებულია (%s)"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
-msgid "Delete"
-msgstr "წაშლა"
-
-#: src/components/storage/iscsi/NodesPresenter.jsx:82
+#: src/components/storage/iscsi/NodesPresenter.jsx:83
 msgid "Login"
 msgstr "შესვლა"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:86
+#: src/components/storage/iscsi/NodesPresenter.jsx:87
 msgid "Logout"
 msgstr "გასვლა"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:99
-#: src/components/storage/iscsi/NodesPresenter.jsx:120
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Portal"
 msgstr "პორტალი"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:100
-#: src/components/storage/iscsi/NodesPresenter.jsx:121
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Interface"
 msgstr "ინტერფეისი"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:138
+#: src/components/storage/iscsi/TargetsSection.tsx:56
+#, fuzzy
 msgid "No iSCSI targets found."
-msgstr ""
+msgstr "მოწყობილობები ვერ ვიპოვე."
 
-#: src/components/storage/iscsi/TargetsSection.jsx:140
+#: src/components/storage/iscsi/TargetsSection.tsx:58
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
 msgstr ""
 
-#: src/components/storage/iscsi/TargetsSection.jsx:144
+#: src/components/storage/iscsi/TargetsSection.tsx:62
 msgid "Discover iSCSI targets"
 msgstr ""
 
 #. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:156
+#: src/components/storage/iscsi/TargetsSection.tsx:74
 msgid "Discover"
 msgstr "აღმოაჩინეთ"
 
 #. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
+#: src/components/storage/iscsi/TargetsSection.tsx:85
 msgid "Targets"
 msgstr "სამიზნეები"
 
-#: src/components/users/FirstUser.jsx:35
-msgid "No user defined yet."
+#: src/components/storage/utils.ts:60
+msgid "KiB"
+msgstr "კიბ"
+
+#: src/components/storage/utils.ts:61
+msgid "MiB"
+msgstr "მიბ"
+
+#: src/components/storage/utils.ts:62
+msgid "GiB"
+msgstr "გიბ"
+
+#: src/components/storage/utils.ts:63
+msgid "TiB"
+msgstr "ტიბ"
+
+#: src/components/storage/utils.ts:64
+msgid "PiB"
+msgstr "პიბ"
+
+#: src/components/storage/utils.ts:72
+msgid "Delete current content"
+msgstr "მიმდინარე შემცველობის წაშლა"
+
+#: src/components/storage/utils.ts:73
+msgid "All partitions will be removed and any data in the disks will be lost."
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:39
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space deleting current content". Keep it short
+#: src/components/storage/utils.ts:77
+#, fuzzy
+msgid "deleting current content"
+msgstr "მიმდინარე შემცველობის წაშლა"
+
+#: src/components/storage/utils.ts:82
+msgid "Shrink existing partitions"
+msgstr "არსებული დანაყოფების დაპატარავება"
+
+#: src/components/storage/utils.ts:83
+msgid "The data is kept, but the current partitions will be resized as needed."
+msgstr ""
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space shrinking partitions". Keep it short.
+#: src/components/storage/utils.ts:87
+msgid "shrinking partitions"
+msgstr "დანაყოფების შემცირება"
+
+#: src/components/storage/utils.ts:92
+msgid "Use available space"
+msgstr "ხელმისაწვდომი ადგილის გამოყენება"
+
+#: src/components/storage/utils.ts:93
+msgid ""
+"The data is kept. Only the space not assigned to any partition will be used."
+msgstr ""
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space without modifying any partition". Keep it short.
+#: src/components/storage/utils.ts:97
+msgid "without modifying any partition"
+msgstr ""
+
+#: src/components/storage/utils.ts:102
+msgid "Custom"
+msgstr "მორგებული"
+
+#: src/components/storage/utils.ts:103
+#, fuzzy
+msgid "Select what to do with each partition."
+msgstr "აირჩიეთ ჩატვირთვადი დანაყოფი"
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space with custom actions". Keep it short.
+#: src/components/storage/utils.ts:107
+msgid "with custom actions"
+msgstr ""
+
+#: src/components/users/FirstUser.tsx:33
+msgid "Define a user now"
+msgstr ""
+
+#: src/components/users/FirstUser.tsx:39
+#, fuzzy
+msgid "No user defined yet."
+msgstr "ჯერ არჩეული არაა"
+
+#: src/components/users/FirstUser.tsx:43
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:45
-msgid "Define a user now"
-msgstr ""
-
-#: src/components/users/FirstUser.jsx:58
-#: src/components/users/FirstUserForm.jsx:217
+#: src/components/users/FirstUser.tsx:55
+#: src/components/users/FirstUserForm.tsx:220
 msgid "Full name"
 msgstr "სრული სახელი"
 
-#: src/components/users/FirstUser.jsx:59
-#: src/components/users/FirstUserForm.jsx:231
-#: src/components/users/FirstUserForm.jsx:236
-#: src/components/users/FirstUserForm.jsx:239
+#: src/components/users/FirstUser.tsx:56
+#: src/components/users/FirstUserForm.tsx:234
+#: src/components/users/FirstUserForm.tsx:239
+#: src/components/users/FirstUserForm.tsx:242
 msgid "Username"
 msgstr "მომხმარებლის სახელი"
 
-#: src/components/users/FirstUser.jsx:90
-#: src/components/users/RootAuthMethods.jsx:78
-#: src/components/users/RootAuthMethods.jsx:90
+#: src/components/users/FirstUser.tsx:87
+#: src/components/users/RootAuthMethods.tsx:117
+#: src/components/users/RootAuthMethods.tsx:129
 msgid "Discard"
 msgstr "მოცილება"
 
-#: src/components/users/FirstUserForm.jsx:58
+#: src/components/users/FirstUser.tsx:94
+msgid "First user"
+msgstr "პირველი მომხმარებელი"
+
+#: src/components/users/FirstUserForm.tsx:57
 msgid "Username suggestion dropdown"
 msgstr ""
 
 #. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:73
+#: src/components/users/FirstUserForm.tsx:72
 msgid "Use suggested username"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:144
+#: src/components/users/FirstUserForm.tsx:147
 msgid "All fields are required"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:201
+#: src/components/users/FirstUserForm.tsx:204
 msgid "Create user"
 msgstr "მომხმარებლის შექმნა"
 
-#: src/components/users/FirstUserForm.jsx:201
+#: src/components/users/FirstUserForm.tsx:204
 msgid "Edit user"
 msgstr "მომხმარებლის ჩასწორება"
 
-#: src/components/users/FirstUserForm.jsx:221
-#: src/components/users/FirstUserForm.jsx:223
+#: src/components/users/FirstUserForm.tsx:224
+#: src/components/users/FirstUserForm.tsx:226
 msgid "User full name"
 msgstr "მომხმარებლის სრული სახელი"
 
-#: src/components/users/FirstUserForm.jsx:261
+#: src/components/users/FirstUserForm.tsx:264
+#, fuzzy
 msgid "Edit password too"
-msgstr ""
+msgstr "Root-ის პაროლი"
 
-#: src/components/users/FirstUserForm.jsx:277
+#: src/components/users/FirstUserForm.tsx:280
 msgid "user autologin"
 msgstr "მომხმარებლის ავტოშესვლა"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:281
+#: src/components/users/FirstUserForm.tsx:284
 msgid "Auto-login"
 msgstr "ავტომატური შესვლა"
 
-#: src/components/users/RootAuthMethods.jsx:36
+#: src/components/users/RootAuthMethods.tsx:33
 msgid "No root authentication method defined yet."
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:40
+#: src/components/users/RootAuthMethods.tsx:37
 msgid ""
 "Please, define at least one authentication method for logging into the "
 "system as root."
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:47
-msgid "Set a password"
-msgstr "პაროლის დაყენება"
-
-#: src/components/users/RootAuthMethods.jsx:51
-msgid "Upload a SSH Public Key"
-msgstr ""
-
-#: src/components/users/RootAuthMethods.jsx:74
-#: src/components/users/RootAuthMethods.jsx:86
-msgid "Set"
-msgstr "დაყენება"
-
-#: src/components/users/RootAuthMethods.jsx:97
-msgid "Already set"
-msgstr "უკვე დაყენებულია"
-
-#: src/components/users/RootAuthMethods.jsx:97
-#: src/components/users/RootAuthMethods.jsx:101
-msgid "Not set"
-msgstr "დაყენებული არაა"
-
 #. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:122
+#: src/components/users/RootAuthMethods.tsx:68
 msgid "Method"
 msgstr "მეთოდი"
 
-#: src/components/users/RootAuthMethods.jsx:139
+#: src/components/users/RootAuthMethods.tsx:77
+msgid "Already set"
+msgstr "უკვე დაყენებულია"
+
+#: src/components/users/RootAuthMethods.tsx:77
+#: src/components/users/RootAuthMethods.tsx:85
+msgid "Not set"
+msgstr "დაყენებული არაა"
+
+#: src/components/users/RootAuthMethods.tsx:83
 msgid "SSH Key"
 msgstr "SSH გასაღები"
 
-#: src/components/users/RootAuthMethods.jsx:158
+#: src/components/users/RootAuthMethods.tsx:113
+#: src/components/users/RootAuthMethods.tsx:125
+msgid "Set"
+msgstr "დაყენება"
+
+#: src/components/users/RootAuthMethods.tsx:137
+msgid "Root authentication"
+msgstr "Root-ით ავთენტიკაცია"
+
+#: src/components/users/RootAuthMethods.tsx:144
+msgid "Set a password"
+msgstr "პაროლის დაყენება"
+
+#: src/components/users/RootAuthMethods.tsx:148
+msgid "Upload a SSH Public Key"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.tsx:165
+#, fuzzy
 msgid "Change the root password"
-msgstr ""
+msgstr "Root-ის პაროლი"
 
-#: src/components/users/RootAuthMethods.jsx:158
+#: src/components/users/RootAuthMethods.tsx:165
+#, fuzzy
 msgid "Set a root password"
-msgstr ""
+msgstr "პაროლის დაყენება"
 
-#: src/components/users/RootAuthMethods.jsx:168
+#: src/components/users/RootAuthMethods.tsx:175
 msgid "Edit the SSH Public Key for root"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:169
+#: src/components/users/RootAuthMethods.tsx:176
 msgid "Add a SSH Public Key for root"
 msgstr ""
 
@@ -946,497 +2465,12 @@ msgstr "ატვირთვა"
 msgid "Clear"
 msgstr "გაწმენდა"
 
-#: src/components/users/UsersPage.jsx:44
-msgid "First user"
-msgstr "პირველი მომხმარებელი"
-
-#: src/components/users/UsersPage.jsx:51
-msgid "Root authentication"
-msgstr "Root-ით ავთენტიკაცია"
-
 #: src/router.js:48
 msgid "Overview"
 msgstr "გადახედვა"
 
-#~ msgid "Change boot options"
-#~ msgstr "ჩატვირთვის პარამეტრების შეცვლა"
-
-#~ msgid "Select booting partition"
-#~ msgstr "აირჩიეთ ჩატვირთვადი დანაყოფი"
-
-#~ msgid "Select a disk"
-#~ msgstr "აირჩიეთ დისკი"
-
-#~ msgid "Formatting DASD devices"
-#~ msgstr "DASD მოწყობილობების დაფორმატება"
-
-#~ msgid "Device"
-#~ msgstr "მოწყობილობა"
-
-#~ msgid "Type"
-#~ msgstr "ტიპი"
-
-#~ msgid "DIAG"
-#~ msgstr "დიაგ"
-
-#~ msgid "Formatted"
-#~ msgstr "დაფორმატებული"
-
-#~ msgid "Partition Info"
-#~ msgstr "დანაყოფის ინფორმაცია"
-
-#~ msgid "Perform an action"
-#~ msgstr "ქმედების შესრულება"
-
-#~ msgid "Set DIAG On"
-#~ msgstr "დიაგნოსტიკის ჩართვა"
-
-#~ msgid "Set DIAG Off"
-#~ msgstr "დიაგნოსტიკის გამორთვა"
-
-#~ msgid "Format"
-#~ msgstr "დაფორმატება"
-
-#~ msgid "Select installation device"
-#~ msgstr "აირჩიეთ დაყენების მოწყობილობა"
-
-#~ msgid "Install new system on"
-#~ msgstr "ახალი სისტემის დაყენება დისკზე"
-
-#~ msgid "storage techs"
-#~ msgstr "საცავის ტექნოლოგიები"
-
-#~ msgid "Multipath"
-#~ msgstr "Multipath"
-
-#, c-format
-#~ msgid "DASD %s"
-#~ msgstr "DASD %s"
-
-#, c-format
-#~ msgid "Software %s"
-#~ msgstr "პროგრამული %s"
-
-#~ msgid "SD Card"
-#~ msgstr "SD ბარათი"
-
-#, c-format
-#~ msgid "%s disk"
-#~ msgstr "%s დისკი"
-
-#~ msgid "Disk"
-#~ msgstr "დისკი"
-
-#, c-format
-#~ msgid "Members: %s"
-#~ msgstr "წევრები: %s"
-
-#, c-format
-#~ msgid "Devices: %s"
-#~ msgstr "მოწყობილობები: %s"
-
-#, c-format
-#~ msgid "Wires: %s"
-#~ msgstr "მავთულები: %s"
-
-#~ msgid "No content found"
-#~ msgstr "შემცველობა აღმოჩენილი არაა"
-
-#~ msgid "Details"
-#~ msgstr "დეტალები"
-
-#~ msgid "Size"
-#~ msgstr "ზომა"
-
-#~ msgid "Encryption"
-#~ msgstr "დაშიფვრა"
-
-#~ msgid "disabled"
-#~ msgstr "გათიშულია"
-
-#~ msgid "enabled"
-#~ msgstr "ჩართულია"
-
-#~ msgid "Enable"
-#~ msgstr "ჩართვა"
-
-#~ msgid "Modify"
-#~ msgstr "შეცვლა"
-
-#~ msgid "Installation device"
-#~ msgstr "დაყენების მოწყობილობა"
-
-#, c-format
-#~ msgid "at least %s"
-#~ msgstr "%s მაინც"
-
-#, c-format
-#~ msgid "Transactional Btrfs root volume (%s)"
-#~ msgstr "ტრანზაქციული Btrfs ძირითადი ტომი (%s)"
-
-#, c-format
-#~ msgid "Transactional Btrfs root partition (%s)"
-#~ msgstr "ტრანზაქციული Btrfs ძირითადი დანაყოფი (%s)"
-
-#, c-format
-#~ msgid "Btrfs root volume with snapshots (%s)"
-#~ msgstr "Btrfs ძირითადი ტომი სწრაფი ასლებით (%s)"
-
-#, c-format
-#~ msgid "Btrfs root partition with snapshots (%s)"
-#~ msgstr "Btrfs ძირითადი დანაყოფი სწრაფი ასლებით (%s)"
-
-#, c-format
-#~ msgid "Swap partition (%s)"
-#~ msgstr "სვოპის დანაყოფი (%s)"
-
-#~ msgid "Do not configure partitions for booting"
-#~ msgstr "ჩატვირთვადი დანაყოფები მორგებული არ იქნება"
-
-#~ msgid "Boot partitions at installation disk"
-#~ msgstr "ჩატვირთვადი დანაყოფები დაყენების დისკზე"
-
-#, c-format
-#~ msgid "Boot partitions at %s"
-#~ msgstr "ჩატვირთვადი დანაყოფები მისამართზე %s"
-
-#~ msgid "auto"
-#~ msgstr "ავტომატური"
-
-#, c-format
-#~ msgid "Reused %s"
-#~ msgstr "თავიდან გამოიყენება %s"
-
-#~ msgid "Transactional Btrfs"
-#~ msgstr "ტრანზაქციული Btrfs"
-
-#~ msgid "Btrfs with snapshots"
-#~ msgstr "Btrfs სწრაფი ასლებით"
-
-#, c-format
-#~ msgid "Partition at %s"
-#~ msgstr "დანაყოფი მისამართზე %s"
-
-#~ msgid "Logical volume at system LVM"
-#~ msgstr "ლოგიკური ტომი სისტემურ LVM-ზე"
-
-#~ msgid "Reset location"
-#~ msgstr "მდებარეობის ჩამოყრა"
-
-#~ msgid "Change location"
-#~ msgstr "მდებარეობის შეცვლა"
-
-#~ msgid "Mount point"
-#~ msgstr "მიმაგრების წერტილი"
-
-#~ msgid "Location"
-#~ msgstr "მდებარეობა"
-
-#~ msgid "Add file system"
-#~ msgstr "ფაილური სისტემის დამატება"
-
-#~ msgid "Other"
-#~ msgstr "სხვა"
-
-#~ msgid "Reset to defaults"
-#~ msgstr "ნაგულისხმები პარამეტრების დაყენება"
-
-#~ msgid "Partitions and file systems"
-#~ msgstr "დანაყოფები და ფაილური სისტემები"
-
-#~ msgid "Show partitions and file-systems actions"
-#~ msgstr "დანაყოფების და ფაილური სისტემის ქმედებების ჩვენება"
-
-#~ msgid "affecting"
-#~ msgstr "გავლენა"
-
-#~ msgid "Shrinking partitions is not allowed"
-#~ msgstr "დანაყოფების დაპატარავება დაშვებული არაა"
-
-#~ msgid "Shrinking partitions is allowed"
-#~ msgstr "დანაყოფების დაპატარავება დაშვებულია"
-
-#, c-format
-#~ msgid "%d partition will be shrunk"
-#~ msgid_plural "%d partitions will be shrunk"
-#~ msgstr[0] "შემცირდება %d დანაყოფი"
-#~ msgstr[1] "შემცირდება %d დანაყოფი"
-
-#~ msgid "Cannot accommodate the required file systems for installation"
-#~ msgstr "დაყენებისთვის საჭირო ფაილური სისტემების შეგროვება შეუძლებელია"
-
-#, c-format
-#~ msgid "Check the planned action"
-#~ msgid_plural "Check the %d planned actions"
-#~ msgstr[0] "დაგეგმილი ქმედების შემოწმება"
-#~ msgstr[1] "%d დაგეგმილი ქმედების შემოწმება"
-
-#~ msgid "Planned Actions"
-#~ msgstr "დაგეგმილი ქმედებები"
-
-#~ msgid "Final layout"
-#~ msgstr "საბოლოო განლაგება"
-
-#~ msgid "New"
-#~ msgstr "ახალი"
-
-#, c-format
-#~ msgid "Before %s"
-#~ msgstr "%s-მდე"
-
-#~ msgid "Mount Point"
-#~ msgstr "მიმაგრების წერტილი"
-
-#~ msgid "Transactional root file system"
-#~ msgstr "ტრანზაქციული საწყისი ფაილური სისტემა"
-
-#~ msgid "Action"
-#~ msgstr "ქმედება"
-
-#~ msgid "Space policy"
-#~ msgstr "ადგილის პოლიტიკა"
-
-#, c-format
-#~ msgid "Add %s file system"
-#~ msgstr "%s ფაილური სისტემის დამატება"
-
-#, c-format
-#~ msgid "Edit %s file system"
-#~ msgstr "%s ფაილური სისტემის ჩასწორება"
-
-#~ msgid "Edit file system"
-#~ msgstr "ფაილური სისტემის ჩასწორება"
-
-#~ msgid "File system type"
-#~ msgstr "ფაილური სისტემის ტიპი"
-
-#~ msgid ", "
-#~ msgstr ", "
-
-#~ msgid " and "
-#~ msgstr " და "
-
-#~ msgid "Exact size"
-#~ msgstr "ზუსტი ზომა"
-
-#~ msgid "Size unit"
-#~ msgstr "ზომის ერთეული"
-
-#~ msgid "Minimum"
-#~ msgstr "მინიმუმი"
-
-#~ msgid "Minimum desired size"
-#~ msgstr "მინიმალური სასურველი ზომა"
-
-#~ msgid "Maximum"
-#~ msgstr "მაქსიმუმი"
-
-#~ msgid "Maximum desired size"
-#~ msgstr "მაქსიმალური სასურველი ზომა"
-
-#~ msgid "Auto"
-#~ msgstr "ავტო"
-
-#~ msgid "Fixed"
-#~ msgstr "ფიქსირებული"
-
-#~ msgid "Range"
-#~ msgstr "დიაპაზონი"
-
-#, c-format
-#~ msgid "Location for %s file system"
-#~ msgstr "მდებარეობა %s ფაილური სისტემისთვის"
-
-#~ msgid "Select a location"
-#~ msgstr "აირჩიეთ მდებარეობა"
-
-#~ msgid "Format the device"
-#~ msgstr "მოწყობილობების დაფორმატება"
-
-#~ msgid "Mount the file system"
-#~ msgstr "ფაილური სისტემის მიმაგრება"
-
-#~ msgid "Usage"
-#~ msgstr "გამოყენება"
-
-#~ msgid "Unused space"
-#~ msgstr "გამოუყენებელი ადგილი"
-
-#~ msgid "KiB"
-#~ msgstr "კიბ"
-
-#~ msgid "MiB"
-#~ msgstr "მიბ"
-
-#~ msgid "GiB"
-#~ msgstr "გიბ"
-
-#~ msgid "TiB"
-#~ msgstr "ტიბ"
-
-#~ msgid "PiB"
-#~ msgstr "პიბ"
-
-#~ msgid "Delete current content"
-#~ msgstr "მიმდინარე შემცველობის წაშლა"
-
-#~ msgid "Shrink existing partitions"
-#~ msgstr "არსებული დანაყოფების დაპატარავება"
-
-#~ msgid "shrinking partitions"
-#~ msgstr "დანაყოფების შემცირება"
-
-#~ msgid "Use available space"
-#~ msgstr "ხელმისაწვდომი ადგილის გამოყენება"
-
-#~ msgid "Custom"
-#~ msgstr "მორგებული"
-
-#~ msgid "Remove"
-#~ msgstr "წაშლა"
-
-#~ msgid "IP Address"
-#~ msgstr "IP მისამართი"
-
-#~ msgid "Prefix length or netmask"
-#~ msgstr "პრეფიქსის სიგრძე ან ნეტმასკა"
-
-#~ msgid "Add an address"
-#~ msgstr "მისამართის დამატება"
-
-#~ msgid "Add another address"
-#~ msgstr "სხვა მისამართის დამატება"
-
-#~ msgid "Addresses"
-#~ msgstr "მისამართები"
-
-#~ msgid "Addresses data list"
-#~ msgstr "მისამართის მონაცემების სია"
-
-#~ msgid "IP addresses"
-#~ msgstr "IP მისამართები"
-
-#, fuzzy
-#~ msgid "Connection actions"
-#~ msgstr "დაკავშირება"
-
-#, c-format
-#~ msgid "Edit connection %s"
-#~ msgstr "%s მიერთების ჩასწორება"
-
-#~ msgid "Forget"
-#~ msgstr "დავიწყება"
-
-#, c-format
-#~ msgid "Forget connection %s"
-#~ msgstr "%s მიერთების დავიწყება"
-
-#~ msgid "Server IP"
-#~ msgstr "სერვერის IP"
-
-#~ msgid "Add DNS"
-#~ msgstr "DNS-ის დამატება"
-
-#~ msgid "Add another DNS"
-#~ msgstr "კიდევ ერთი DNS-ის დამატება"
-
-#~ msgid "DNS"
-#~ msgstr "DNS"
-
-#~ msgid "Mode"
-#~ msgstr "რეჟიმი"
-
-#~ msgid "Automatic (DHCP)"
-#~ msgstr "ავტომატური (მხოლოდ DHCP)"
-
-#~ msgid "Gateway"
-#~ msgstr "ნაგულისხმევი რაუტერი"
-
-#~ msgid "Wi-Fi"
-#~ msgstr "Wi-Fi"
-
-#~ msgid "Connect"
-#~ msgstr "დაკავშირება"
-
-#, c-format
-#~ msgid "Conected to %s"
-#~ msgstr "მიერთებულია %s-ზე"
-
-#~ msgid "No connected yet"
-#~ msgstr "ჯერ მიერთებული არაა"
-
-#~ msgid "Wired"
-#~ msgstr "მავთულიანი"
-
-#~ msgid "No wired connections found"
-#~ msgstr "მავთულიანი მიერთება აღმოჩენილი არაა"
-
-#~ msgid "Network"
-#~ msgstr "ქსელი"
-
-#~ msgid "WPA & WPA2 Personal"
-#~ msgstr "WPA & WPA2 პერსონალური"
-
-#~ msgid "SSID"
-#~ msgstr "SSID"
-
-#~ msgid "Security"
-#~ msgstr "უსაფრთხოება"
-
-#~ msgid "WPA Password"
-#~ msgstr "WPA პაროლი"
-
-#~ msgid "Connecting"
-#~ msgstr "დაკავშირება"
-
-#~ msgid "Connected"
-#~ msgstr "დაკავშირებულია"
-
-#~ msgid "Disconnect"
-#~ msgstr "გამოერთება"
-
-#~ msgid "Connect to a hidden network"
-#~ msgstr "დამალულ ქსელთან მიერთება"
-
-#~ msgid "configured"
-#~ msgstr "მორგებულია"
-
-#~ msgid "Connect to hidden network"
-#~ msgstr "დამალულ ქსელთან მიერთება"
-
-#~ msgid "Question"
-#~ msgstr "კითხვა"
-
-#~ msgid "Encrypted Device"
-#~ msgstr "დაშიფრული მოწყობილობა"
-
-#~ msgid "Encryption Password"
-#~ msgstr "დაშიფვრის პაროლი"
-
-#, fuzzy
-#~ msgid "Password Required"
-#~ msgstr "პაროლის შეყვანა"
-
 #~ msgid "Agama"
 #~ msgstr "Agama"
-
-#~ msgid "Change product"
-#~ msgstr "პროდუქტის შეცვლა"
-
-#~ msgid "About"
-#~ msgstr "შესახებ"
-
-#~ msgid "About Agama"
-#~ msgstr "Agama-ის შესახებ"
-
-#~ msgid "Close"
-#~ msgstr "დახურვა"
-
-#~ msgid "Collecting logs..."
-#~ msgstr "ჟურნალის შეგროვება..."
-
-#~ msgid "Download logs"
-#~ msgstr "ჟურნალის გადმოწერა"
 
 #~ msgid "Proposal"
 #~ msgstr "შეთავაზება"
@@ -1450,25 +2484,6 @@ msgstr "გადახედვა"
 
 #~ msgid "Email"
 #~ msgstr "ელფოსტა"
-
-#~ msgid "The installation will take"
-#~ msgstr "დაყენებას დასჭირდება"
-
-#~ msgid "Selected patterns"
-#~ msgstr "მონიშნული ნიმუშები"
-
-#~ msgid "Change selection"
-#~ msgstr "მონიშნულის შეცვლა"
-
-#~ msgid "auto selected"
-#~ msgstr "ავტომატურად არჩეული"
-
-#~ msgid "Software selection"
-#~ msgstr "პროგრამების არჩევანი"
-
-#, c-format
-#~ msgid "Installation will take %s."
-#~ msgstr "დაყენებას დასჭირდება %s."
 
 #~ msgid "Reading file..."
 #~ msgstr "ფაილის წაკითხვა..."
@@ -1489,10 +2504,6 @@ msgstr "გადახედვა"
 #~ msgid "Choose a language"
 #~ msgstr "ენის შეცვლა"
 
-#, fuzzy
-#~ msgid "WiFi connections"
-#~ msgstr "%s მიერთების ჩასწორება"
-
 #~ msgid "Disconnecting"
 #~ msgstr "გათიშვა"
 
@@ -1512,9 +2523,6 @@ msgstr "გადახედვა"
 
 #~ msgid "Installation Finished"
 #~ msgstr "დაყენება დასრულდა"
-
-#~ msgid "Back"
-#~ msgstr "უკან"
 
 #~ msgid "Show global options"
 #~ msgstr "გლობალური პარამეტრების ჩვენება"
@@ -1576,9 +2584,6 @@ msgstr "გადახედვა"
 #~ msgid "Wired networks"
 #~ msgstr "მავთულიანი ქსელები"
 
-#~ msgid "WiFi networks"
-#~ msgstr "WiFi ქსელები"
-
 #, c-format
 #~ msgid "%d device set:"
 #~ msgid_plural "%d devices set:"
@@ -1634,10 +2639,6 @@ msgstr "გადახედვა"
 #~ msgstr "პროდუქტის არჩევანი"
 
 #, fuzzy
-#~ msgid "Available products"
-#~ msgstr "ხელმისაწვდომი ლოკალიზაციები"
-
-#, fuzzy
 #~ msgid "Partitions for booting"
 #~ msgstr "დანაყოფის ინფორმაცია"
 
@@ -1677,9 +2678,6 @@ msgstr "გადახედვა"
 #~ msgstr[0] "%d მიერთება დაყენებულია:"
 #~ msgstr[1] "%d მიერთება დაყენებულია:"
 
-#~ msgid "selected"
-#~ msgstr "არჩეულია"
-
 #~ msgid "automatically selected"
 #~ msgstr "ავტომატურად მონიშნული"
 
@@ -1717,9 +2715,6 @@ msgstr "გადახედვა"
 #, fuzzy
 #~ msgid "Find Space"
 #~ msgstr "ადგილის პოვნა"
-
-#~ msgid "No devices found."
-#~ msgstr "მოწყობილობები ვერ ვიპოვე."
 
 #~ msgid "Custom devices"
 #~ msgstr "მომხმარებლის მოწყობილობები"

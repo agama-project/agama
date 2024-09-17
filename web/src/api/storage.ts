@@ -26,6 +26,8 @@ import { calculate, fetchSettings } from "~/api/storage/proposal";
 /**
  * Starts the storage probing process.
  */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const probe = (): Promise<any> => post("/api/storage/probe");
 
 export { probe };

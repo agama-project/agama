@@ -8,7 +8,8 @@ cd "$(dirname "$0")"
 
 OUTPUT="${1:-agama.pot}"
 
-find . ! -name cockpit.js ! -name '*.test.js' -name '*.js' -o ! -name '*.test.jsx' -name '*.jsx' |
+find . ! -name cockpit.js ! -name '*.test.js' -name '*.js' -o ! -name '*.test.jsx' -name '*.jsx' \
+  -o ! -name '*.test.ts' -name '*.ts' -o ! -name '*.test.tsx' -name '*.tsx' |
 grep -vE "node_modules/|dist/|coverage/" | \
 xgettext --default-domain=agama --output="$OUTPUT" --language=C --files-from=- \
   --keyword= --keyword=_:1 --keyword=N_:1 --keyword=n_:1,2,3t --keyword=Nn_:1,2,3t \

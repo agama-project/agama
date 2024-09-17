@@ -24,7 +24,6 @@ import { Outlet } from "react-router-dom";
 import { Page } from "@patternfly/react-core";
 import { Header, Loading, Sidebar } from "~/components/layout";
 import { useProduct } from "~/queries/software";
-import { _ } from "~/i18n";
 
 /**
  * Wrapper application component for laying out the content.

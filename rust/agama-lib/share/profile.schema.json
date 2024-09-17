@@ -139,9 +139,11 @@
                 "additionalProperties": false,
                 "properties": {
                   "password": {
+                    "title": "Password of the wireless network",
                     "type": "string"
                   },
                   "security": {
+                    "title": "Security method/key management",
                     "type": "string",
                     "enum": [
                       "none",
@@ -154,9 +156,11 @@
                     ]
                   },
                   "ssid": {
+                    "title": "SSID of the wireless network",
                     "type": "string"
                   },
                   "mode": {
+                    "title": "Wireless network mode",
                     "type": "string",
                     "enum": [
                       "infrastructure",
@@ -164,6 +168,66 @@
                       "mesh",
                       "ap"
                     ]
+                  },
+                  "hidden": {
+                    "title": "Indicates that the wireless network is not broadcasting its SSID",
+                    "type": "boolean"
+                  },
+                  "band": {
+                    "title": "Frequency band of the wireless network",
+                    "type": "string",
+                    "enum": [
+                      "a",
+                      "bg"
+                    ]
+                  },
+                  "channel": {
+                    "title": "Wireless channel of the wireless network",
+                    "type": "integer",
+                    "minimum" : 0
+                  },
+                  "bssid": {
+                    "title": "Only allow connection to this mac address",
+                    "type": "string"
+                  },
+                  "groupAlgorithms": {
+                    "type": "array",
+                    "items": {
+                      "title": "A list of group/broadcast encryption algorithms",
+                      "type": "string",
+                      "enum": [
+                        "wep40",
+                        "wep104",
+                        "tkip",
+                        "ccmp"
+                      ]
+                    },
+                  },
+                  "pairwiseAlgorithms": {
+                    "type": "array",
+                    "items": {
+                      "title": "A list of pairwise encryption algorithms",
+                      "type": "string",
+                      "enum": [
+                        "tkip",
+                        "ccmp"
+                      ]
+                    }
+                  },
+                  "wpaProtocolVersions": {
+                    "type": "array",
+                    "items": {
+                      "title": "A list of allowed WPA protocol versions",
+                      "type": "string",
+                      "enum": [
+                        "wpa",
+                        "rsn"
+                      ]
+                    }
+                  },
+                  "pmf": {
+                    "title": "Indicates whether Protected Management Frames must be enabled for the connection",
+                    "type": "integer"
                   }
                 }
               },
@@ -252,7 +316,7 @@
                       ]
                     }
                   },
-                  "phase2_auth": {
+                  "phase2Auth": {
                     "title": "Phase 2 inner auth method",
                     "type": "string",
                     "enum": [
@@ -274,35 +338,35 @@
                     "title": "Password string used for EAP authentication",
                     "type": "string"
                   },
-                  "ca_cert": {
+                  "caCert": {
                     "title": "Path to CA certificate",
                     "type": "string"
                   },
-                  "ca_cert_password": {
+                  "caCertPassword": {
                     "title": "Password string for CA certificate if it is encrypted",
                     "type": "string"
                   },
-                  "client_cert": {
+                  "clientCert": {
                     "title": "Path to client certificate",
                     "type": "string"
                   },
-                  "client_cert_password": {
+                  "clientCertPassword": {
                     "title": "Password string for client certificate if it is encrypted",
                     "type": "string"
                   },
-                  "private_key": {
+                  "privateKey": {
                     "title": "Path to private key",
                     "type": "string"
                   },
-                  "private_key_password": {
+                  "privateKeyPassword": {
                     "title": "Password string for private key if it is encrypted",
                     "type": "string"
                   },
-                  "anonymous_identity": {
+                  "anonymousIdentity": {
                     "title": "Anonymous identity string for EAP authentication methods",
                     "type": "string"
                   },
-                  "peap_version": {
+                  "peapVersion": {
                     "title": "Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property",
                     "type": "string",
                     "enum": [
@@ -310,7 +374,7 @@
                       "1"
                     ]
                   },
-                  "peap_label": {
+                  "peapLabel": {
                     "title": "Force the use of the new PEAP label during key derivation",
                     "type": "boolean"
                   }

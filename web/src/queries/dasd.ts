@@ -19,8 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { _ } from "~/i18n";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import {
   disableDASD,
   disableDiag,

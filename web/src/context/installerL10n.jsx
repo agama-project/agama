@@ -24,7 +24,6 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useCancellablePromise, locationReload, setLocationSearch } from "~/utils";
-import cockpit from "../lib/cockpit";
 import { useInstallerClient } from "./installer";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";

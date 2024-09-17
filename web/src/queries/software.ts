@@ -43,6 +43,7 @@ import {
   fetchProposal,
   updateConfig,
 } from "~/api/software";
+import { QueryHookOptions } from "~/types/queries";
 
 /**
  * Query to retrieve software configuration
@@ -97,7 +98,7 @@ const useConfigMutation = () => {
 
   const query = {
     mutationFn: updateConfig,
-    onSuccess: (_: any, config: SoftwareConfig) => {
+    onSuccess: (_, config: SoftwareConfig) => {
       queryClient.invalidateQueries({ queryKey: ["software/config"] });
       queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       if (config.product) {

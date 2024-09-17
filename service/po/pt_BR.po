@@ -7,49 +7,49 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-28 02:30+0000\n"
-"PO-Revision-Date: 2024-09-11 08:47+0000\n"
-"Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
-"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/sv/>\n"
-"Language: sv\n"
+"POT-Creation-Date: 2024-09-01 02:44+0000\n"
+"PO-Revision-Date: 2024-09-09 19:47+0000\n"
+"Last-Translator: Rodrigo Macedo <sottomaiormacedotec@sottomaiormacedo.tech>\n"
+"Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/pt_BR/>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 5.7.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
 msgid "Load software translations"
-msgstr "Laddar översättningar av programvara"
+msgstr "Carregar traduções de software"
 
 #: service/lib/agama/manager.rb:89
 msgid "Load storage translations"
-msgstr "Laddar översättningar för lagring"
+msgstr "Traduções de armazenamento de carga"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
-msgstr "Analysera diskar"
+msgstr "Analizar discos"
 
 #: service/lib/agama/manager.rb:104
 msgid "Configure software"
-msgstr "Konfigurera programvara"
+msgstr "Configurar software"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
-msgstr "Förbered diskar"
+msgstr "Preparar discos"
 
 #: service/lib/agama/manager.rb:125
 msgid "Install software"
-msgstr "Installera programvara"
+msgstr "Instalar software"
 
 #: service/lib/agama/manager.rb:126
 msgid "Configure the system"
-msgstr "Konfigurera systemet"
+msgstr "Configurar o sistema"
 
 #. Callback to handle unsigned files
 #.
@@ -58,21 +58,21 @@ msgstr "Konfigurera systemet"
 #: service/lib/agama/software/callbacks/signature.rb:63
 #, perl-brace-format
 msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-msgstr "Filen %{filename} från förråd %{repo_name} (%{repo_url})"
+msgstr "O arquivo %{filename} do repositório %{repo_name} (%{repo_url})"
 
 #: service/lib/agama/software/callbacks/signature.rb:67
 #, perl-brace-format
 msgid "The file %{filename}"
-msgstr "Filen %{filename}"
+msgstr "O arquivo %{filename}"
 
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file "
-"cannot be verified. Use it anyway?"
+"%{source} is not digitally signed. The origin and integrity of the file cannot"
+" be verified. Use it anyway?"
 msgstr ""
-"%{source} är inte digitalt signerad. Filens ursprung och integritet kan inte "
-"verifieras. Använd den ändå?"
+"%{source} não está assinado digitalmente. A origem e a integridade do "
+"arquivo não podem ser verificadas. Usar mesmo assim?"
 
 #. Callback to handle signature verification failures
 #.
@@ -81,24 +81,24 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
-"want to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
+"t to trust this key?"
 msgstr ""
-"Nyckeln %{id} (%{name}) med fingeravtrycket %{fingerprint} är okänd. Vill du "
-"lita på den här nyckeln?"
+"A chave %{id} (%{name}) com impressão digital %{fingerprint} é desconhecida. "
+"Você quer confiar nessa chave?"
 
 #. Should an error be raised?
 #: service/lib/agama/software/manager.rb:141
 msgid "Initializing sources"
-msgstr "Initierar källor"
+msgstr "Inicializando fontes"
 
 #: service/lib/agama/software/manager.rb:146
 msgid "Refreshing repositories metadata"
-msgstr "Uppdaterar metadata för förråd"
+msgstr "Atualizando metadados de repositórios"
 
 #: service/lib/agama/software/manager.rb:147
 msgid "Calculating the software proposal"
-msgstr "Beräknar programvaruförslaget"
+msgstr "Calculando a proposta de software"
 
 #. Issues related to the software proposal.
 #.
@@ -108,21 +108,21 @@ msgstr "Beräknar programvaruförslaget"
 #: service/lib/agama/software/manager.rb:563
 #, c-format
 msgid "Could not read repository \"%s\""
-msgstr "Kunde inte läsa förråd \"%s\""
+msgstr "Não foi possível ler o repositório \"%s\""
 
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:573
 msgid "Product not selected yet"
-msgstr "Produkt har inte valts ännu"
+msgstr "Produto ainda não selecionado"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:582
 msgid "Product must be registered"
-msgstr "Produkt måste registreras"
+msgstr "O produto deve ser registrado"
 
 #. Returns solver error messages from the last attempt
 #.
@@ -130,83 +130,85 @@ msgstr "Produkt måste registreras"
 #: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
-msgstr "Hittade %s beroendeproblem."
+msgstr "Foram encontrados %s problemas de dependência."
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In "
-"case the device does contain a file system or a storage system that is not "
-"supported, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In case"
+" the device does contain a file system or a storage system that is not support"
+"ed, resizing will most likely cause data loss."
 msgstr ""
-"Varken ett filsystem eller ett lagringssystem upptäcktes på enheten. Om "
-"enheten innehåller ett filsystem eller ett lagringssystem som inte stöds, "
-"kommer storleksändring med största sannolikhet orsaka dataförlust."
+"Nem um sistema de arquivo nem um sistema de armazenamento foi detectado no "
+"dispositivo. Caso o dispositivo contenha um sistema de arquivo ou um sistema "
+"de armazenamento que não seja suportado, o redimensionamento provavelmente "
+"causará perda de dados."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr "Krympning stöds inte på den här enheten"
+msgstr "O encolhimento não é suportado por este dispositivo"
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:115
 msgid "Activating storage devices"
-msgstr "Aktiverar lagringsenheter"
+msgstr "Ativando dispositivos de armazenamento"
 
 #: service/lib/agama/storage/manager.rb:116
 msgid "Probing storage devices"
-msgstr "Undersöker lagringsenheter"
+msgstr "Sondando dispositivos de armazenamento"
 
 #: service/lib/agama/storage/manager.rb:117
 msgid "Calculating the storage proposal"
-msgstr "Beräknar lagringsförslag"
+msgstr "Calculando a proposta de armazenamento"
 
 #: service/lib/agama/storage/manager.rb:118
 msgid "Selecting Linux Security Modules"
-msgstr "Väljer Linux säkerhetsmoduler"
+msgstr "Selecionando módulos de segurança do Linux"
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:126
 msgid "Preparing bootloader proposal"
-msgstr "Förbereder starthanterare förslag"
+msgstr "Preparando proposta de bootloader"
 
 #. first make bootloader proposal to be sure that required packages are installed
 #: service/lib/agama/storage/manager.rb:131
 msgid "Adding storage-related packages"
-msgstr "Lägger till lagrings-relaterade paket"
+msgstr "Adicionando pacotes relacionados ao armazenamento"
 
 #: service/lib/agama/storage/manager.rb:132
 msgid "Preparing the storage devices"
-msgstr "Förbereder lagringsenheter"
+msgstr "Preparando os dispositivos de armazenamento"
 
 #: service/lib/agama/storage/manager.rb:133
 msgid "Writing bootloader sysconfig"
-msgstr "Skriver starthanterarens sysconfig"
+msgstr "Escrevendo sysconfig do bootloader"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:283
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "Kan inte ta emot de filsystem som krävs för installation"
+msgstr ""
+"Não é possível acomodar os sistemas de arquivos necessários para a instalação"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:294
 msgid "A problem ocurred while calculating the storage setup"
-msgstr "Ett problem uppstod vid beräkning av lagringskonfigurationen"
+msgstr "Ocorreu um problema ao calcular a configuração de armazenamento"
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal_strategies/guided.rb:124
 msgid "No device selected for installation"
-msgstr "Ingen enhet har valts för installation"
+msgstr "Nenhum dispositivo selecionado para instalação"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -214,29 +216,28 @@ msgstr "Ingen enhet har valts för installation"
 #: service/lib/agama/storage/proposal_strategies/guided.rb:140
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural ""
-"The following selected devices are not found in the system: %{devices}"
-msgstr[0] "Följande valda enhet hittades inte i systemet: %{devices}"
-msgstr[1] "Följande valda enheter hittades inte i systemet: %{devices}"
+msgid_plural "The following selected devices are not found in the system: %{devices}"
+msgstr[0] ""
+"O seguinte dispositivo selecionado não foi encontrado no sistema: %{devices}"
+msgstr[1] ""
+"Os seguintes dispositivos selecionados não foram encontrados no sistema: "
+"%{devices}"
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:152
-msgid ""
-"Defining a user, setting the root password or a SSH public key is required"
+msgid "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Definiera en användare, för att ställa in root-lösenordet eller en offentlig "
-"SSH-nyckel krävs"
+"É necessário definir um usuário, definir a senha root ou uma chave pública "
+"SSH"
 
 #. @see #check_encryption
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
 #. 'luks1' or 'random_swap').
 #: service/lib/y2storage/proposal/agama_device_planner.rb:134
 #, perl-brace-format
-msgid ""
-"No passphrase provided (required for using the method '%{crypt_method}')."
+msgid "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
-"Ingen lösenordsfras tillhandahålls (krävs för att använda %{crypt_method}') "
-"metoden."
+"Nenhuma senha fornecida (necessária para usar o método '%{crypt_method}')."
 
 #. @see #check_encryption
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
@@ -245,7 +246,7 @@ msgstr ""
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
 msgstr ""
-"Krypteringsmetod '%{crypt_method}' är inte tillgänglig i det här systemet."
+"O método de criptografia '%{crypt_method}' não está disponível neste sistema."
 
 #. @see #check_encryption
 #. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
@@ -253,51 +254,22 @@ msgstr ""
 #: service/lib/y2storage/proposal/agama_device_planner.rb:156
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr "'%{crypt_method}' är inte en lämplig metod för att kryptera enheten."
+msgstr ""
+"'%{crypt_method}' não é um método adequado para criptografar o dispositivo."
 
 #. @see #not_found_issue
 #: service/lib/y2storage/proposal/agama_searcher.rb:98
 msgid "No device found for an optional drive"
-msgstr "Ingen enhet hittades för en tillvalsenhet"
+msgstr "Nenhum dispositivo encontrado para uma unidade opcional"
 
 #: service/lib/y2storage/proposal/agama_searcher.rb:100
 msgid "No device found for a mandatory drive"
-msgstr "Ingen enhet hittades för en obligatorisk enhet"
+msgstr "Nenhum dispositivo encontrado para uma unidade obrigatória"
 
 #: service/lib/y2storage/proposal/agama_searcher.rb:103
 msgid "No device found for an optional partition"
-msgstr "Ingen enhet hittades för en valfri partition"
+msgstr "Nenhum dispositivo encontrado para uma partição opcional"
 
 #: service/lib/y2storage/proposal/agama_searcher.rb:105
 msgid "No device found for a mandatory partition"
-msgstr "Ingen enhet hittades för en obligatorisk partition"
-
-#~ msgid "Probing Storage"
-#~ msgstr "Undersöker lagring"
-
-#~ msgid "Partitioning"
-#~ msgstr "Partitionerar"
-
-#~ msgid "Writing Users"
-#~ msgstr "Skriver användare"
-
-#~ msgid "Writing Network Configuration"
-#~ msgstr "Skriver nätverkskonfiguration"
-
-#~ msgid "Saving Language Settings"
-#~ msgstr "Sparar språkinställningar"
-
-#~ msgid "Writing repositories information"
-#~ msgstr "Skriver information om förråd"
-
-#~ msgid "Finishing storage configuration"
-#~ msgstr "Slutför lagringskonfiguration"
-
-#~ msgid "Writing repositories to the target system"
-#~ msgstr "Skriver förråd till målsystemet"
-
-#~ msgid "Initializing target repositories"
-#~ msgstr "Initierar målförråd"
-
-#~ msgid "Restoring original repositories"
-#~ msgstr "Återställer ursprungliga förråd"
+msgstr "Nenhum dispositivo encontrado para uma partição obrigatória"

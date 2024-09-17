@@ -61,17 +61,6 @@
  * @return {void}
  */
 
-const ISSUES_SOURCES = ["unknown", "system", "config"];
-
-const buildIssue = ({ description, details, source, severity }) => {
-  return {
-    description,
-    details,
-    source: ISSUES_SOURCES[source],
-    severity: severity === 0 ? "warn" : "error",
-  };
-};
-
 /**
  * Extends the given class with methods to get and track the service status
  *
@@ -123,12 +112,5 @@ const WithStatus = (superclass, status_path, service_name) =>
  * @param {ValidationError[]} errors - validation errors
  * @return {void}
  */
-
-/**
- * @param {string} message - Error message
- */
-const createError = (message) => {
-  return { message };
-};
 
 export { WithStatus };

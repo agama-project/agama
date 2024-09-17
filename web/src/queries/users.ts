@@ -22,8 +22,7 @@
 import React from "react";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { _ } from "~/i18n";
-import { RootUser, RootUserChanges } from "~/types/users";
+import { RootUser } from "~/types/users";
 import {
   fetchFirstUser,
   fetchRoot,
