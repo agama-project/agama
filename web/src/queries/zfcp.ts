@@ -20,7 +20,6 @@
  */
 
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { _ } from "~/i18n";
 import { supportedZFCP, fetchZFCPConfig, fetchZFCPControllers, fetchZFCPDisks } from "~/api/zfcp";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";

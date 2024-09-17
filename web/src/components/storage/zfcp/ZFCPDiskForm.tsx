@@ -88,11 +88,11 @@ export default function ZFCPDiskForm({
     if (channel) setFormData({ channel, wwpn, lun });
   };
 
-  const selectChannel = (_: any, channel: string) => select(channel);
+  const selectChannel = (_, channel: string) => select(channel);
 
-  const selectWWPN = (_: any, wwpn: string) => select(formData.channel, wwpn);
+  const selectWWPN = (_, wwpn: string) => select(formData.channel, wwpn);
 
-  const selectLUN = (_: any, lun: string) => select(formData.channel, formData.wwpn, lun);
+  const selectLUN = (_, lun: string) => select(formData.channel, formData.wwpn, lun);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();

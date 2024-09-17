@@ -22,11 +22,7 @@
 import React from "react";
 import BootSelection from "~/components/storage/BootSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
-import {
-  DeviceSelection,
-  ISCSIPage,
-  ProposalPage,
-} from "~/components/storage";
+import { DeviceSelection, ISCSIPage, ProposalPage } from "~/components/storage";
 
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
