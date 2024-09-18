@@ -10,12 +10,12 @@ use agama_lib::{
     storage::{
         model::{Action, Device, DeviceSid, ProposalSettings, ProposalSettingsPatch, Volume},
         proxies::Storage1Proxy,
-        StorageClient,
+        StorageClient, StorageSettings,
     },
 };
 use axum::{
     extract::{Query, State},
-    routing::{get, post},
+    routing::{get, post, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -71,7 +71,7 @@ struct StorageState<'a> {
     client: StorageClient<'a>,
 }
 
-/// Sets up and returns the axum service for the software module.
+/// Sets up and returns the axum service for the storage module.
 pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Storage1";
@@ -87,6 +87,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let client = StorageClient::new(dbus.clone()).await?;
     let state = StorageState { client };
     let router = Router::new()
+        .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
@@ -107,6 +108,51 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .nest("/dasd", dasd_router)
         .with_state(state);
     Ok(router)
+}
+
+/// Returns the storage configuration.
+///
+/// * `state` : service state.
+#[utoipa::path(
+    get,
+    path = "/config",
+    context_path = "/api/storage",
+    operation_id = "get_storage_config",
+    responses(
+        (status = 200, description = "storage configuration", body = StorageSettings),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_config(State(state): State<StorageState<'_>>) -> Result<Json<StorageSettings>, Error> {
+    // StorageSettings is just a wrapper over serde_json::value::RawValue
+    let settings = state.client.get_config().await.map_err(Error::Service)?;
+    Ok(Json(settings))
+}
+
+/// Sets the storage configuration.
+///
+/// * `state`: service state.
+/// * `config`: storage configuration.
+#[utoipa::path(
+    put,
+    path = "/config",
+    context_path = "/api/storage",
+    operation_id = "set_storage_config",
+    responses(
+        (status = 200, description = "Set the storage configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn set_config(
+    State(state): State<StorageState<'_>>,
+    Json(settings): Json<StorageSettings>,
+) -> Result<Json<()>, Error> {
+    let _status: u32 = state
+        .client
+        .set_config(settings)
+        .await
+        .map_err(Error::Service)?;
+    Ok(Json(()))
 }
 
 /// Probes the storage devices.

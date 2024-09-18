@@ -5,9 +5,7 @@ use std::{
 };
 
 use crate::show_progress;
-use agama_lib::{
-    auth::AuthToken, connection, install_settings::InstallSettings, Store as SettingsStore,
-};
+use agama_lib::{auth::AuthToken, install_settings::InstallSettings, Store as SettingsStore};
 use anyhow::anyhow;
 use clap::Subcommand;
 use std::io::Write;
@@ -48,7 +46,7 @@ pub async fn run(subcommand: ConfigCommands) -> anyhow::Result<()> {
     };
 
     let client = agama_lib::http_client(token.as_str())?;
-    let store = SettingsStore::new(connection().await?, client).await?;
+    let store = SettingsStore::new(client).await?;
 
     match subcommand {
         ConfigCommands::Show => {

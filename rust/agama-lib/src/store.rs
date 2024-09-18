@@ -7,7 +7,6 @@ use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
     software::SoftwareStore, storage::StorageStore, users::UsersStore,
 };
-use zbus::Connection;
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
 ///
@@ -15,27 +14,24 @@ use zbus::Connection;
 /// settings for each service.
 ///
 /// This struct uses the default connection built by [connection function](super::connection).
-pub struct Store<'a> {
+pub struct Store {
     users: UsersStore,
     network: NetworkStore,
     product: ProductStore,
     software: SoftwareStore,
-    storage: StorageStore<'a>,
+    storage: StorageStore,
     localization: LocalizationStore,
 }
 
-impl<'a> Store<'a> {
-    pub async fn new(
-        connection: Connection,
-        http_client: reqwest::Client,
-    ) -> Result<Store<'a>, ServiceError> {
+impl Store {
+    pub async fn new(http_client: reqwest::Client) -> Result<Store, ServiceError> {
         Ok(Self {
             localization: LocalizationStore::new()?,
             users: UsersStore::new()?,
             network: NetworkStore::new(http_client).await?,
             product: ProductStore::new()?,
             software: SoftwareStore::new()?,
-            storage: StorageStore::new(connection).await?,
+            storage: StorageStore::new()?,
         })
     }
 
@@ -77,7 +73,7 @@ impl<'a> Store<'a> {
             self.users.store(user).await?;
         }
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
-            self.storage.store(settings.into()).await?
+            self.storage.store(&settings.into()).await?
         }
         Ok(())
     }
