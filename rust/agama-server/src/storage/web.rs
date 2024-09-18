@@ -125,11 +125,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
 )]
 async fn get_config(State(state): State<StorageState<'_>>) -> Result<Json<StorageSettings>, Error> {
     // StorageSettings is just a wrapper over serde_json::value::RawValue
-    let settings = state
-        .client
-        .get_config()
-        .await
-        .map_err(|e| Error::Service(e))?;
+    let settings = state.client.get_config().await.map_err(Error::Service)?;
     Ok(Json(settings))
 }
 
@@ -155,7 +151,7 @@ async fn set_config(
         .client
         .set_config(settings)
         .await
-        .map_err(|e| Error::Service(e))?;
+        .map_err(Error::Service)?;
     Ok(Json(()))
 }
 
