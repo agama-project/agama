@@ -21,6 +21,11 @@
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
+  .flex-container {
+    display: flex;
+    gap: calc(var(--ifm-button-group-spacing) * 2);
+  }
+
   .footer--dark {
     --ifm-footer-background-color: var(--pineGreeColor);
     --ifm-footer-link-hover-color: var(--jungleGreenColor);

@@ -1,3 +1,24 @@
+import Link from "@docusaurus/Link";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+export const ISOLinks = ({ arch }) => (
+  <div className="flex-container">
+    <Link
+      className="button button--primary"
+      to={`https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.${arch}-openSUSE.iso`}
+    >
+      ISO
+    </Link>
+    <Link
+      className="button button--secondary"
+      to={`https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.${arch}-openSUSE.iso.sha256`}
+    >
+      Checksum
+    </Link>
+  </div>
+);
+
 # Official Agama Live ISO
 
 Agama **is a multi-product installer**. It means that you can install different distributions using
@@ -7,39 +28,32 @@ Alpha](https://www.opensuse.org/#Leap) and [openSUSE Micro OS](https://get.opens
 
 ## Download the Agama Live ISO
 
-The first step is to download the ISO image. Please, choose the one that matches your architecture:
+The first step is to download the ISO image that matches your architecture.
 
-* aarch64
-[ISO](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.aarch64-openSUSE.iso)
-[checksum](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.aarch64-openSUSE.sha256)
-
-* [x86_64
-ISO](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.x86_64-openSUSE.iso)
-[checksum](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.x86_64-openSUSE.sha256)
-
-* [ppc64le
-ISO](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.ppc64le-openSUSE.iso)
-[checksum](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.ppc64le-openSUSE.sha256)
-
-* [s390x
-ISO](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.s390x-openSUSE.iso)
-[checksum](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-installer.s390x-openSUSE.sha256)
-
-:::warning
-Organize the links above in a better way.
-:::
-
-## Check the ISO (optional)
+<Tabs className="unique-tabs">
+  <TabItem value="x86_64" label="x86_64" default>
+    <ISOLinks arch="x86_64" />
+  </TabItem>
+  <TabItem value="aarch64" label="aarch64">
+    <ISOLinks arch="aarch64" />
+  </TabItem>
+  <TabItem value="ppc64le" label="ppc64le">
+    <ISOLinks arch="ppc64le" />
+  </TabItem>
+  <TabItem value="s390x" label="s390x">
+    <ISOLinks arch="s390x" />
+  </TabItem>
+</Tabs>
 
 You might want to check whether the ISO was correctly downloaded. If that's the case, you can
-download the checksum file from the previous section and use the
+download the checksum file too and use the
 [sha256sum](https://manpages.opensuse.org/Tumbleweed/coreutils-doc/sha256sum.1.en.html) command:
 
 ```shell
 sha256sum -c agama-installer.x86_64-openSUSE.sha256
 ```
 
-Obviously, use the checksum that correponds with your architecture.
+Obviously, use the checksum that correponds with downloaded ISO.
 
 ## Creating a bootable medium
 
