@@ -298,7 +298,14 @@ describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
       context "when the space policy is set to :resize" do
         before do
           settings.space.policy = :resize
+
+          allow(Agama::Storage::DeviceShrinking).to receive(:new) do |dev|
+            dev.name == "/dev/sda2" ? shrink_true : shrink_false
+          end
         end
+
+        let(:shrink_false) { instance_double(Agama::Storage::DeviceShrinking, supported?: false) }
+        let(:shrink_true) { instance_double(Agama::Storage::DeviceShrinking, supported?: true) }
 
         it "generates resize actions for the partitions that support shrinking" do
           y2storage_settings = subject.convert
