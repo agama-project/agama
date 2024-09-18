@@ -24,11 +24,11 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DevicesTechMenu from "./DevicesTechMenu";
 import { _ } from "~/i18n";
-import { supportedDASD } from "~/api/dasd";
-import { supportedZFCP } from "~/api/zfcp";
+import { supportedDASD } from "~/api/storage/dasd";
+import { supportedZFCP } from "~/api/storage/zfcp";
 
-jest.mock("~/api/dasd");
-jest.mock("~/api/zfcp");
+jest.mock("~/api/storage/dasd");
+jest.mock("~/api/storage/zfcp");
 
 beforeEach(() => {
   (supportedDASD as jest.Mock).mockResolvedValue(false);
