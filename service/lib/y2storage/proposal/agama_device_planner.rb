@@ -46,8 +46,8 @@ module Y2Storage
 
       # Planned devices according to the given config.
       #
-      # @return [Array] Array of planned devices.
-      def planned_devices(_config)
+      # @return [Array<Planned::Device>]
+      def planned_devices
         raise NotImplementedError
       end
 
@@ -149,6 +149,7 @@ module Y2Storage
         partition_configs = device_config.partitions
           .reject(&:delete?)
           .reject(&:delete_if_needed?)
+          .reject { |c| c.search&.skip_device? }
 
         planned.partitions = partition_configs.map do |partition_config|
           planned_partition(partition_config, device_config, config)

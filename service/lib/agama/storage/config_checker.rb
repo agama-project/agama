@@ -53,10 +53,19 @@ module Agama
       # @param config [Configs::Drive]
       # @return [Array<Issue>]
       def drive_issues(config)
-        issues = encryption_issues(config)
-        partitions_issues = config.partitions.flat_map { |p| partition_issues(p) }
+        [
+          search_issue(config),
+          encryption_issues(config),
+          partitions_issues(config)
+        ].flatten.compact
+      end
 
-        issues + partitions_issues
+      # Issues from partitions.
+      #
+      # @param config [Configs::Drive]
+      # @return [Array<Issue>]
+      def partitions_issues(config)
+        config.partitions.flat_map { |p| partition_issues(p) }
       end
 
       # Issues from a partition config.
@@ -64,7 +73,10 @@ module Agama
       # @param config [Configs::Partition]
       # @return [Array<Issue>]
       def partition_issues(config)
-        encryption_issues(config)
+        [
+          search_issue(config),
+          encryption_issues(config)
+        ].flatten.compact
       end
 
       # Issues from a volume group config.
@@ -89,6 +101,26 @@ module Agama
           encryption_issues(lv_config),
           missing_thin_pool_issue(lv_config, vg_config)
         ].compact.flatten
+      end
+
+      # Issue for not found device.
+      #
+      # @param config [Configs::Drive, Configs::Partition]
+      # @return [Agama::Issue]
+      def search_issue(config)
+        return if !config.search || config.found_device
+
+        if config.is_a?(Agama::Storage::Configs::Drive)
+          if config.search.skip_device?
+            warning(_("No device found for an optional drive"))
+          else
+            error(_("No device found for a mandatory drive"))
+          end
+        elsif config.search.skip_device?
+          warning(_("No device found for an optional partition"))
+        else
+          error(_("No device found for a mandatory partition"))
+        end
       end
 
       # @see #logical_volume_issues
@@ -197,6 +229,18 @@ module Agama
             _("'%{crypt_method}' is not a suitable method to encrypt the device."),
             crypt_method: method.id.to_s
           )
+        )
+      end
+
+      # Creates a warning issue.
+      #
+      # @param message [String]
+      # @return [Issue]
+      def warning(message)
+        Agama::Issue.new(
+          message,
+          source:   Agama::Issue::Source::CONFIG,
+          severity: Agama::Issue::Severity::WARN
         )
       end
 

@@ -31,6 +31,8 @@ module Y2Storage
       #
       # @return [Array<Planned::Device>]
       def planned_devices(drive_config, config)
+        return [] if drive_config.search&.skip_device?
+
         [planned_drive(drive_config, config)]
       end
 
