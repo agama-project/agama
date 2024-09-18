@@ -166,7 +166,7 @@ async fn activate_controller(
     Ok(Json(()))
 }
 
-/// List wwpns for given controller.
+/// List WWPNs for given controller.
 #[utoipa::path(
     post,
     path="/controllers/:controller_id/wwpns",
@@ -183,7 +183,7 @@ async fn get_wwpns(
     Ok(Json(result))
 }
 
-/// List luns for given controller and wwpn.
+/// List LUNS for given controller and wwpn.
 #[utoipa::path(
     post,
     path="/controllers/:controller_id/wwpns/:wwpn_id/luns",
@@ -200,7 +200,7 @@ async fn get_luns(
     Ok(Json(result))
 }
 
-/// Activates disk on given controller with given wwpn and lun.
+/// Activates a disk on given controller with given WWPN id and LUN id.
 #[utoipa::path(
     post,
     path="/controllers/:controller_id/wwpns/:wwpn_id/luns/:lun_id/activate_disk",
@@ -220,7 +220,7 @@ async fn activate_disk(
     Ok(Json(()))
 }
 
-/// Deactivates disk on given controller with given wwpn and lun.
+/// Deactivates disk on given controller with given WWPN id and LUN id.
 #[utoipa::path(
     post,
     path="/controllers/:controller_id/wwpns/:wwpn_id/luns/:lun_id/deactivate_disk",

@@ -6,7 +6,7 @@ use futures_util::future::join_all;
 use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath, Connection};
 
 use crate::{
-    dbus::get_property,
+    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
     storage::{
         model::zfcp::{ZFCPController, ZFCPDisk},
@@ -82,43 +82,20 @@ impl<'a> ZFCPClient<'a> {
         let mut devices: Vec<(OwnedObjectPath, ZFCPController)> = vec![];
         for (path, ifaces) in managed_objects {
             if let Some(properties) = ifaces.get("org.opensuse.Agama.Storage1.ZFCP.Controller") {
-                // TODO: maybe move it to model? but it needs also additional calls to dbus
-                let path_s = Self::controller_id_from_path(&path);
+                let id = extract_id_from_path(&path)?.to_string();
                 devices.push((
                     path,
                     ZFCPController {
-                        id: path_s.clone(),
+                        id: id.clone(),
                         channel: get_property(properties, "Channel")?,
                         lun_scan: get_property(properties, "LUNScan")?,
                         active: get_property(properties, "Active")?,
-                        luns_map: self.get_luns_map(path_s.as_str()).await?,
+                        luns_map: self.get_luns_map(id.as_str()).await?,
                     },
                 ))
             }
         }
         Ok(devices)
-    }
-
-    /// Gets controller id that can be used in other controller methods from its D-Bus path
-    ///
-    /// common case:
-    /// ```
-    ///     let path = zbus::zvariant::OwnedObjectPath::try_from("/test/controllers/2").unwrap();
-    ///     let id = agama_lib::storage::client::zfcp::ZFCPClient::controller_id_from_path(&path);
-    ///     assert_eq!(id, "2".to_string());
-    /// ```
-    ///
-    /// edge case with malformed path that will panic in Owned path already
-    /// ```should_panic
-    ///     let path = zbus::zvariant::OwnedObjectPath::try_from("mangled").unwrap();
-    ///     let id = agama_lib::storage::client::zfcp::ZFCPClient::controller_id_from_path(&path);
-    ///     assert_eq!(id, "mangled".to_string());
-    /// ```
-    pub fn controller_id_from_path(path: &OwnedObjectPath) -> String {
-        let mut path_s = path.to_string();
-        let slash_pos = path_s.rfind("/").unwrap_or(0);
-        path_s.drain(..slash_pos + 1);
-        path_s
     }
 
     async fn get_controller_proxy(
@@ -131,8 +108,6 @@ impl<'a> ZFCPClient<'a> {
             .await?;
         Ok(dbus)
     }
-
-    // TODO: does all those method with controller id as parameter deserve to be moved to controller model?
 
     pub async fn activate_controller(&self, controller_id: &str) -> Result<(), ServiceError> {
         let controller = self.get_controller_proxy(controller_id).await?;
