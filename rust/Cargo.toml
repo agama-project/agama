@@ -8,6 +8,10 @@ members = [
   "libzypp/zypp-sys",
 ]
 
+exclude = [
+  "libzypp/gir"
+]
+
 resolver = "2"
 
 [workspace.package]
