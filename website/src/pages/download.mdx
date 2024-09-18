@@ -19,6 +19,17 @@ export const ISOLinks = ({ arch }) => (
   </div>
 );
 
+export const HelpLinks = ({ dvdHelp, usbHelp }) => (
+  <div className="flex-container">
+    <Link className="button button--primary" to={usbHelp}>
+      Prepare a USB stick
+    </Link>
+    <Link className="button button--secondary" to={dvdHelp}>
+      Burn a DVD
+    </Link>
+  </div>
+);
+
 # Official Agama Live ISO
 
 Agama **is a multi-product installer**. It means that you can install different distributions using
@@ -55,21 +66,35 @@ sha256sum -c agama-installer.x86_64-openSUSE.iso.sha256
 
 Obviously, use the checksum that correponds with the downloaded ISO.
 
-## Creating a bootable medium
+## Create a bootable medium
 
 Once you have the ISO, it is time to [create a bootable USB
 stick](https://en.opensuse.org/SDB:Live_USB_stick) (recommended) or [burn a
 DVD](https://en.opensuse.org/SDB:Download_help#Using_Linux).
 
-## Starting the installation
+<Tabs className="unique-tabs">
+  <TabItem value="linux" label="From Linux" default>
+    <HelpLinks
+      dvdHelp="https://en.opensuse.org/SDB:Download_help#Using_Linux"
+      usbHelp="https://en.opensuse.org/SDB:Live_USB_stick"
+    />
+  </TabItem>
+  <TabItem value="windows" label="From Windows" default>
+    <HelpLinks
+      dvdHelp="https://en.opensuse.org/SDB:Download_help#Using_Microsoft_Windows"
+      usbHelp="https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Windows"
+    />
+  </TabItem>
+  <TabItem value="osx" label="From OS X" default>
+    <HelpLinks
+      dvdHelp="https://en.opensuse.org/SDB:Download_help#Using_MacOS_X_.2810.3_and_above.29"
+      usbHelp="https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Mac_OS_x"
+    />
+  </TabItem>
+</Tabs>
+
+## Start the installation
 
 Starting the system using the bootable medium should take you to the product selection screen.
-Please, bear in mind that it may take a few seconds.
-
-![Display the product selection screen with options for installing openSUSE Tumbleweed, Leap and
-MicroOS](./img/product-selection.png)
-
-:::tip
-The Agama Live ISO allows some customizations during boot (e.g., setting up the network, changing
-the `root` password, etc.). Please, check the **boot options** (link) for further information.
-:::
+Please, bear in mind that it may take a few seconds. You might want to review the [user's
+documentation](docs/user) to know how to continue from here.
