@@ -20,8 +20,8 @@
  */
 
 import React, { useState } from "react";
-import { deactivateZFCPDisk } from "~/api/zfcp";
-import { useZFCPControllers, useZFCPDisks } from "~/queries/zfcp";
+import { deactivateZFCPDisk } from "~/api/storage/zfcp";
+import { useZFCPControllers, useZFCPDisks } from "~/queries/storage/zfcp";
 import { ZFCPDisk } from "~/types/zfcp";
 import { useCancellablePromise } from "~/utils";
 import RowActions from "../../core/RowActions";
@@ -31,8 +31,6 @@ import { _ } from "~/i18n";
 
 /**
  * Table of zFCP disks.
- * @component
- *
  */
 export default function ZFCPDisksTable() {
   const disks = useZFCPDisks();

@@ -25,7 +25,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { AxiosResponseHeaders } from "axios";
 import { Page } from "~/components/core";
-import { useZFCPControllers, useZFCPDisks } from "~/queries/zfcp";
+import { useZFCPControllers, useZFCPDisks } from "~/queries/storage/zfcp";
 import { inactiveLuns } from "~/utils/zfcp";
 import { _ } from "~/i18n";
 

@@ -25,11 +25,11 @@ import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { LUNInfo } from "~/types/zfcp";
-import { activateZFCPDisk } from "~/api/zfcp";
+import { activateZFCPDisk } from "~/api/storage/zfcp";
 import { PATHS } from "~/routes/storage";
 import { useNavigate } from "react-router-dom";
 import ZFCPDiskForm from "./ZFCPDiskForm";
-import { useZFCPControllersChanges, useZFCPDisksChanges } from "~/queries/zfcp";
+import { useZFCPControllersChanges, useZFCPDisksChanges } from "~/queries/storage/zfcp";
 
 export default function ZFCPDiskActivationPage() {
   useZFCPControllersChanges();

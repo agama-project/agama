@@ -27,7 +27,7 @@ import {
   enableDiag,
   fetchDASDDevices,
   formatDASD,
-} from "~/api/dasd";
+} from "~/api/storage/dasd";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { hex } from "~/utils";

@@ -5,8 +5,8 @@ import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { RowActions } from "../../core";
 import { ZFCPController } from "~/types/zfcp";
-import { activateZFCPController } from "~/api/zfcp";
-import { useZFCPControllers } from "~/queries/zfcp";
+import { activateZFCPController } from "~/api/storage/zfcp";
+import { useZFCPControllers } from "~/queries/storage/zfcp";
 
 /**
  * Table of zFCP controllers.

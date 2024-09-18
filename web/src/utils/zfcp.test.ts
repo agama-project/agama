@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import { inactiveLuns } from "./zfcp";
 
 import { ZFCPController, ZFCPDisk } from "~/types/zfcp";

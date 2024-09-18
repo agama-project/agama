@@ -27,7 +27,7 @@ import DASDTable from "./DASDTable";
 
 let mockDASDDevices: DASDDevice[] = [];
 
-jest.mock("~/queries/dasd", () => ({
+jest.mock("~/queries/storage/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
   useDASDMutation: () => jest.fn(),
   useFormatDASDMutation: () => jest.fn(),

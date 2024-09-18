@@ -38,10 +38,10 @@ import {
   useZFCPControllersChanges,
   useZFCPDisks,
   useZFCPDisksChanges,
-} from "~/queries/zfcp";
+} from "~/queries/storage/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
-import { probeZFCP } from "~/api/zfcp";
+import { probeZFCP } from "~/api/storage/zfcp";
 import { PATHS } from "~/routes/storage";
 import { useNavigate } from "react-router-dom";
 import { inactiveLuns } from "~/utils/zfcp";

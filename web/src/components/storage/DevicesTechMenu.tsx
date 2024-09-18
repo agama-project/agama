@@ -29,8 +29,8 @@ import {
   SelectOption,
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { supportedDASD } from "~/api/dasd";
-import { supportedZFCP } from "~/api/zfcp";
+import { supportedDASD } from "~/api/storage/dasd";
+import { supportedZFCP } from "~/api/storage/zfcp";
 
 /**
  * Internal component for building the link to Storage/DASD page

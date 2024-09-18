@@ -26,8 +26,8 @@ import { DeviceSelection, ISCSIPage, ProposalPage } from "~/components/storage";
 
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
-import { supportedDASD, probeDASD } from "~/api/dasd";
-import { probeZFCP, supportedZFCP } from "~/api/zfcp";
+import { supportedDASD, probeDASD } from "~/api/storage/dasd";
+import { probeZFCP, supportedZFCP } from "~/api/storage/zfcp";
 import { redirect } from "react-router-dom";
 import { ZFCPPage, ZFCPDiskActivationPage } from "~/components/storage/zfcp";
 import { DASDPage } from "~/components/storage/dasd";
