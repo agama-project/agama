@@ -11,13 +11,14 @@
   --pineGreeColor: #0c322c;
   --jungleGreenColor: #30ba78;
 
-  --ifm-color-primary: var(--pineGreeColor);
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #0c322c;
+  --ifm-color-primary-dark: #0b2d28;
+  --ifm-color-primary-darker: #0a2a25;
+  --ifm-color-primary-darkest: #08231f;
+  --ifm-color-primary-light: #0d3730;
+  --ifm-color-primary-lighter: #0e3933;
+  --ifm-color-primary-lightest: #104139;
+
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
@@ -31,7 +32,6 @@
   }
 
   .footer--dark {
-    --ifm-footer-background-color: var(--pineGreeColor);
     --ifm-footer-link-hover-color: var(--jungleGreenColor);
   }
 }
