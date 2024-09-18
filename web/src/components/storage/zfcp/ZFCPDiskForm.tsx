@@ -107,7 +107,8 @@ export default function ZFCPDiskForm({
   if (!formData.channel && getChannels().length > 0) select();
 
   return (
-    <Page.Section aria-label="zfcp-activation-form">
+    // TRANSLATORS: zFCP disk activation form
+    <Page.Section aria-label={_("zFCP Disk activation form")}>
       {isFailed && (
         <Alert variant="warning" isInline title={_("Something went wrong")}>
           <p>{_("The zFCP disk was not activated.")}</p>

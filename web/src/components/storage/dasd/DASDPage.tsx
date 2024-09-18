@@ -39,7 +39,8 @@ export default function DASDPage() {
       </Page.Header>
 
       <Page.Content>
-        <Page.Section aria-label="dasd-devices">
+        {/** TRANSLATORS: DASD devices selection table */}
+        <Page.Section aria-label={_("DASD devices selection table")}>
           <Stack>
             <DASDTable />
           </Stack>

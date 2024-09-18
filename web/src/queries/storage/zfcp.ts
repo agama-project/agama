@@ -93,51 +93,32 @@ const useZFCPControllersChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
-      switch (event.type) {
-        case "ZFCPControllerAdded": {
-          const device: ZFCPController = event.device;
-          queryClient.setQueryData(
-            zfcpControllersQuery.queryKey,
-            (prev: ZFCPController[] | undefined) => {
-              if (prev === undefined) return;
-              return [...prev, device];
-            },
-          );
-          break;
-        }
-        case "ZFCPControllerRemoved": {
-          const device: ZFCPController = event.device;
-          const { id } = device;
-          queryClient.setQueryData(
-            zfcpControllersQuery.queryKey,
-            (prev: ZFCPController[] | undefined) => {
-              if (prev === undefined) return;
-              const res = prev.filter((dev) => dev.id !== id);
-              return res;
-            },
-          );
-          break;
-        }
-        case "ZFCPControllerChanged": {
-          const device: ZFCPController = event.device;
-          const { id } = device;
-          queryClient.setQueryData(
-            zfcpControllersQuery.queryKey,
-            (prev: ZFCPController[] | undefined) => {
-              if (prev === undefined) return;
-              // deep copy of original to have it immutable
-              const res = [...prev];
-              const index = res.findIndex((dev) => dev.id === id);
-              res[index] = device;
-              return res;
-            },
-          );
-          break;
-        }
+    return client.ws().onEvent(({ type, device }) => {
+      if (
+        !["ZFCPControllerAdded", "ZFCPControllerChanged", "ZFCPControllerRemoved"].includes(type)
+      ) {
+        return;
       }
+      queryClient.setQueryData(
+        zfcpControllersQuery.queryKey,
+        (prev: ZFCPController[] | undefined) => {
+          if (prev === undefined) return;
+
+          switch (type) {
+            case "ZFCPControllerAdded": {
+              return [...prev, device];
+            }
+            case "ZFCPControllerRemoved": {
+              return prev.filter((dev) => dev.id !== device.id);
+            }
+            case "ZFCPControllerChanged": {
+              return prev.map((d) => (d.id === device.id ? device : d));
+            }
+          }
+        },
+      );
     });
-  });
+  }, [client, queryClient]);
 };
 
 /**
@@ -150,42 +131,27 @@ const useZFCPDisksChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
-      switch (event.type) {
-        case "ZFCPDiskAdded": {
-          const device: ZFCPDisk = event.device;
-          queryClient.setQueryData(zfcpDisksQuery.queryKey, (prev: ZFCPDisk[]) => {
-            if (prev === undefined) return;
-            return [...prev, device];
-          });
-          break;
-        }
-        case "ZFCPDiskRemoved": {
-          const device: ZFCPDisk = event.device;
-          const { name } = device;
-          queryClient.setQueryData(zfcpDisksQuery.queryKey, (prev: ZFCPDisk[]) => {
-            if (prev === undefined) return;
-            const res = prev.filter((dev) => dev.name !== name);
-            return res;
-          });
-          break;
-        }
-        case "ZFCPDiskChanged": {
-          const device: ZFCPDisk = event.device;
-          const { name } = device;
-          queryClient.setQueryData(zfcpDisksQuery.queryKey, (prev: ZFCPDisk[]) => {
-            if (prev === undefined) return;
-            // deep copy of original to have it immutable
-            const res = [...prev];
-            const index = res.findIndex((dev) => dev.name === name);
-            res[index] = device;
-            return res;
-          });
-          break;
-        }
+    return client.ws().onEvent(({ type, device }) => {
+      if (!["ZFCPDiskAdded", "ZFCPDiskChanged", "ZFCPDiskRemoved"].includes(type)) {
+        return;
       }
+      queryClient.setQueryData(zfcpDisksQuery.queryKey, (prev: ZFCPDisk[] | undefined) => {
+        if (prev === undefined) return;
+
+        switch (type) {
+          case "ZFCPDiskAdded": {
+            return [...prev, device];
+          }
+          case "ZFCPDiskRemoved": {
+            return prev.filter((dev) => dev.name !== device.name);
+          }
+          case "ZFCPDiskChanged": {
+            return prev.map((d) => (d.name === device.name ? device : d));
+          }
+        }
+      });
     });
-  });
+  }, [client, queryClient]);
 };
 
 export {
