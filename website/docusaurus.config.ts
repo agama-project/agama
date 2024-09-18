@@ -75,6 +75,10 @@ const config: Config = {
           title: "Docs",
           items: [
             {
+              label: "User",
+              to: "/docs/user",
+            },
+            {
               label: "Development",
               to: "/docs/devel",
             },
@@ -90,6 +94,10 @@ const config: Config = {
             {
               label: "GitHub",
               href: "https://github.com/openSUSE/agama",
+            },
+            {
+              label: "IRC",
+              href: "https://chat.opensuse.org/#/room/#yast:opensuse.org",
             },
           ],
         },
