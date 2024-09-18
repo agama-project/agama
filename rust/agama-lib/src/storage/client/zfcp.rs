@@ -131,6 +131,14 @@ impl<'a> ZFCPClient<'a> {
         Ok(result)
     }
 
+    /// Obtains a LUNs map for the given controller
+    ///
+    /// Given a controller id it returns a HashMap with each of its WWPNs as keys and the list of
+    /// LUNS corresponding to that specific WWPN as values.
+    ///
+    /// Arguments:
+    ///
+    /// `controller_id`: controller id
     pub async fn get_luns_map(
         &self,
         controller_id: &str,

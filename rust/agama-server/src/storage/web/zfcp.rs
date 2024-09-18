@@ -8,15 +8,17 @@
 use agama_lib::{
     error::ServiceError,
     storage::{
-        client::zfcp::ZFCPClient,
-        model::zfcp::{ZFCPController, ZFCPDisk, ZFCPOptions},
+        model::zfcp::{ZFCPController, ZFCPDisk},
+        ZFCPClient,
     },
 };
+
 use axum::{
     extract::{Path, State},
     routing::{get, post},
     Json, Router,
 };
+use serde::Serialize;
 use stream::{ZFCPControllerStream, ZFCPDiskStream};
 
 mod stream;
@@ -82,11 +84,19 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
     path="/supported",
     context_path="/api/storage/zfcp",
     responses(
-        (status = OK, description = "Returns whether ZFCP technology is supported")
+        (status = OK, description = "Returns whether zFCP technology is supported")
     )
 )]
 async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Error> {
     Ok(Json(state.client.supported().await?))
+}
+
+/// Represents a zFCP global config (specific to s390x systems).
+#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ZFCPConfig {
+    /// flag whenever allow_lun_scan is active
+    pub allow_lun_scan: bool,
 }
 
 /// Returns global zFCP configuration
@@ -95,12 +105,13 @@ async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Err
     path="/config",
     context_path="/api/storage/zfcp",
     responses(
-        (status = OK, description = "Returns global ZFCP configuration", body=ZFCPOptions)
+        (status = OK, description = "Returns global zFCP configuration", body=ZFCPConfig)
     )
 )]
-async fn get_config(State(state): State<ZFCPState<'_>>) -> Result<Json<ZFCPOptions>, Error> {
-    Ok(Json(ZFCPOptions {
-        allow_lun_scan: state.client.is_lun_scan_allowed().await?,
+async fn get_config(State(state): State<ZFCPState<'_>>) -> Result<Json<ZFCPConfig>, Error> {
+    let lun_scan = state.client.is_lun_scan_allowed().await?;
+    Ok(Json(ZFCPConfig {
+        allow_lun_scan: lun_scan,
     }))
 }
 
@@ -130,7 +141,7 @@ async fn get_disks(State(state): State<ZFCPState<'_>>) -> Result<Json<Vec<ZFCPDi
     path="/controllers",
     context_path="/api/storage/zfcp",
     responses(
-        (status = OK, description = "List of ZFCP controllers", body = Vec<ZFCPController>)
+        (status = OK, description = "List of zFCP controllers", body = Vec<ZFCPController>)
     )
 )]
 async fn controllers(
@@ -172,7 +183,7 @@ async fn activate_controller(
     path="/controllers/:controller_id/wwpns",
     context_path="/api/storage/zfcp",
     responses(
-        (status = OK, description = "list of wwpns", body=Vec<String>)
+        (status = OK, description = "List of WWPNs", body=Vec<String>)
     )
 )]
 async fn get_wwpns(

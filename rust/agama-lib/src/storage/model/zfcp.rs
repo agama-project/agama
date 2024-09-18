@@ -1,4 +1,4 @@
-//! Implements a data model for DASD devices management.
+//! Implements a data model for zFCP devices management.
 use std::collections::HashMap;
 
 use serde::Serialize;
@@ -47,22 +47,4 @@ pub struct ZFCPController {
     pub active: bool,
     /// map of associated WWPNs and its LUNs
     pub luns_map: HashMap<String, Vec<String>>,
-}
-
-/// Represents a zFCP global options (specific to s390x systems).
-#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ZFCPOptions {
-    /// flag whenever allow_lun_scan is active
-    pub allow_lun_scan: bool,
-}
-
-impl TryFrom<&HashMap<String, OwnedValue>> for ZFCPOptions {
-    type Error = ServiceError;
-
-    fn try_from(value: &HashMap<String, OwnedValue>) -> Result<Self, Self::Error> {
-        Ok(Self {
-            allow_lun_scan: get_property(value, "AllowLUNScan")?,
-        })
-    }
 }
