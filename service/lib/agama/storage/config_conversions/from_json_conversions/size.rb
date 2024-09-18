@@ -55,30 +55,48 @@ module Agama
           def conversions(_default)
             {
               default: false,
-              min:     convert_size(:min),
-              max:     convert_size(:max) || Y2Storage::DiskSize.unlimited
+              min:     convert_min_size,
+              max:     convert_max_size
             }
           end
 
           # @return [Y2Storage::DiskSize, nil]
-          def convert_size(field)
+          def convert_min_size
             value = case size_json
             when Hash
-              size_json[field]
+              size_json[:min]
             when Array
-              field == :max ? size_json[1] : size_json[0]
+              size_json[0]
             else
               size_json
             end
 
-            return unless value
+            disk_size(value)
+          end
 
-            begin
-              # This parses without legacy_units, ie. "1 GiB" != "1 GB"
-              Y2Storage::DiskSize.new(value)
-            rescue TypeError
-              # JSON schema validations should prevent this from happening
+          # @return [Y2Storage::DiskSize, nil]
+          def convert_max_size
+            value = case size_json
+            when Hash
+              size_json[:max]
+            when Array
+              size_json[1]
+            else
+              size_json
             end
+
+            return Y2Storage::DiskSize.unlimited unless value
+
+            disk_size(value)
+          end
+
+          # @param value [String, Integer] e.g., "2 GiB".
+          # @return [Y2Storage::DiskSize, nil] nil if value is "current".
+          def disk_size(value)
+            return if value == "current"
+
+            # This parses without legacy_units, ie. "1 GiB" != "1 GB".
+            Y2Storage::DiskSize.new(value)
           end
         end
       end

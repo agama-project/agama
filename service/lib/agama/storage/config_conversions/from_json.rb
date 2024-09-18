@@ -28,21 +28,19 @@ module Agama
     module ConfigConversions
       # Config conversion from JSON hash according to schema.
       class FromJSON
-        # @todo Replace product_config param by a ProductDefinition.
-        #
         # @param config_json [Hash]
         # @param product_config [Agama::Config]
         def initialize(config_json, product_config:)
+          # TODO: Replace product_config param by a ProductDefinition.
           @config_json = config_json
           @product_config = product_config
         end
 
         # Performs the conversion from Hash according to the JSON schema.
         #
-        # @todo Raise error if config_json does not match the JSON schema.
-        #
         # @return [Storage::Config]
         def convert
+          # TODO: Raise error if config_json does not match the JSON schema.
           config = FromJSONConversions::Config
             .new(config_json, config_builder: config_builder)
             .convert
