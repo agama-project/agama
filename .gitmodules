@@ -3,8 +3,16 @@
 	url = https://github.com/gtk-rs/gir
 [submodule "./gir"]
 	branch = master
+	update = none
 [submodule "rust/libzypp/gir-files"]
 	path = rust/libzypp/gir-files
 	url = https://github.com/gtk-rs/gir-files
 [submodule "./gir-files"]
 	branch = master
+	update = none
+[submodule "rust/libzypp/libzypp"]
+	path = rust/libzypp/libzypp
+	url = https://github.com/openSUSE/libzypp
+[submodule "./libzypp"]
+	branch = zyppng-staging
+	update = none
