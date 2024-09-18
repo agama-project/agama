@@ -19,13 +19,22 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/drive/from_json"
-
 module Agama
   module Storage
-    module ConfigConversions
-      # Conversions for drive.
-      module Drive
+    module Configs
+      # Mixin for configs with search.
+      module WithSearch
+        # @return [Search, nil]
+        attr_accessor :search
+
+        # Assigned device according to the search.
+        #
+        # @see Y2Storage::Proposal::AgamaSearcher
+        #
+        # @return [Y2Storage::Device, nil]
+        def found_device
+          search&.device
+        end
       end
     end
   end

@@ -28,7 +28,7 @@ module Agama
       class Encryption
         include Y2Storage::SecretAttributes
 
-        # @return [Y2Storage::EncryptionMethod::Base]
+        # @return [Y2Storage::EncryptionMethod::Base, nil]
         attr_accessor :method
 
         # @!attribute password
@@ -53,9 +53,18 @@ module Agama
 
         # Specific key size (in bits) if LUKS is going to be used
         #
-        # @return [Integer,nil] If nil, the default key size will be used. If an integer
+        # @return [Integer, nil] If nil, the default key size will be used. If an integer
         #     value is used, it has to be a multiple of 8
         attr_accessor :key_size
+
+        # Whether the password is missing.
+        #
+        # @return [Boolean]
+        def missing_password?
+          return false unless method&.password_required?
+
+          password.nil? || password.empty?
+        end
       end
     end
   end

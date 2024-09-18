@@ -19,38 +19,46 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/configs/size"
 require "y2storage/disk_size"
 
 module Agama
   module Storage
     module ConfigConversions
-      module Size
+      module FromJSONConversions
         # Size conversion from JSON hash according to schema.
-        class FromJSON
+        class Size < Base
           # @param size_json [Hash]
           def initialize(size_json)
+            super()
             @size_json = size_json
           end
 
-          # Performs the conversion from Hash according to the JSON schema.
+          # @see Base#convert
           #
           # @param default [Configs::Size, nil]
           # @return [Configs::Size]
           def convert(default = nil)
-            default_config = default.dup || Configs::Size.new
-
-            default_config.tap do |config|
-              config.default = false
-              config.min = convert_size(:min)
-              config.max = convert_size(:max) || Y2Storage::DiskSize.unlimited
-            end
+            super(default || Configs::Size.new)
           end
 
         private
 
           # @return [Hash]
           attr_reader :size_json
+
+          # @see Base#conversions
+          #
+          # @param _default [Configs::Size]
+          # @return [Hash]
+          def conversions(_default)
+            {
+              default: false,
+              min:     convert_size(:min),
+              max:     convert_size(:max) || Y2Storage::DiskSize.unlimited
+            }
+          end
 
           # @return [Y2Storage::DiskSize, nil]
           def convert_size(field)

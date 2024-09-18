@@ -19,15 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/block_device"
-require "agama/storage/config_conversions/drive"
-require "agama/storage/config_conversions/encryption"
-require "agama/storage/config_conversions/filesystem"
 require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/partition"
-require "agama/storage/config_conversions/partitionable"
-require "agama/storage/config_conversions/search"
-require "agama/storage/config_conversions/size"
 
 module Agama
   module Storage

@@ -20,14 +20,11 @@
 # find current contact information at www.suse.com.
 
 require "y2storage/planned"
-require "agama/issue"
 
 module Y2Storage
   module Proposal
     # Base class used by Agama planners.
     class AgamaDevicePlanner
-      include Yast::I18n
-
       # @!attribute [r] devicegraph
       #   Devicegraph to be used as starting point.
       #   @return [Devicegraph]
@@ -43,16 +40,14 @@ module Y2Storage
       # @param devicegraph [Devicegraph] see {#devicegraph}
       # @param issues_list [Array<Agama::Issue>] see {#issues_list}
       def initialize(devicegraph, issues_list)
-        textdomain "agama"
-
         @devicegraph = devicegraph
         @issues_list = issues_list
       end
 
-      # Planned devices according to the given settings.
+      # Planned devices according to the given config.
       #
       # @return [Array] Array of planned devices.
-      def planned_devices(_setting)
+      def planned_devices(_config)
         raise NotImplementedError
       end
 
@@ -81,144 +76,99 @@ module Y2Storage
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [#encryption, #filesystem]
-      def configure_device(planned, settings)
-        configure_encryption(planned, settings.encryption) if settings.encryption
-        configure_filesystem(planned, settings.filesystem) if settings.filesystem
+      # @param config [#encryption, #filesystem]
+      def configure_block_device(planned, config)
+        configure_encryption(planned, config.encryption) if config.encryption
+        configure_filesystem(planned, config.filesystem) if config.filesystem
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Configs::Filesystem]
-      def configure_filesystem(planned, settings)
-        planned.mount_point = settings.path
-        planned.mount_by = settings.mount_by
-        planned.fstab_options = settings.mount_options
-        planned.mkfs_options = settings.mkfs_options.join(",")
-        planned.label = settings.label
-        configure_filesystem_type(planned, settings.type) if settings.type
+      # @param config [Agama::Storage::Configs::Filesystem]
+      def configure_filesystem(planned, config)
+        planned.mount_point = config.path
+        planned.mount_by = config.mount_by
+        planned.fstab_options = config.mount_options
+        planned.mkfs_options = config.mkfs_options.join(",")
+        planned.label = config.label
+        configure_filesystem_type(planned, config.type) if config.type
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Configs::FilesystemType]
-      def configure_filesystem_type(planned, settings)
-        planned.filesystem_type = settings.fs_type
-        configure_btrfs(planned, settings.btrfs) if settings.btrfs
+      # @param config [Agama::Storage::Configs::FilesystemType]
+      def configure_filesystem_type(planned, config)
+        planned.filesystem_type = config.fs_type
+        configure_btrfs(planned, config.btrfs) if config.btrfs
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Configs::Btrfs]
-      def configure_btrfs(planned, settings)
+      # @param config [Agama::Storage::Configs::Btrfs]
+      def configure_btrfs(planned, config)
         # TODO: we need to discuss what to do with transactional systems and the read_only
         # property. We are not sure whether those things should be configurable by the user.
-        # planned.read_only = settings.read_only?
-        planned.snapshots = settings.snapshots?
-        planned.default_subvolume = settings.default_subvolume
-        planned.subvolumes = settings.subvolumes
+        # planned.read_only = config.read_only?
+        planned.snapshots = config.snapshots?
+        planned.default_subvolume = config.default_subvolume
+        planned.subvolumes = config.subvolumes
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Configs::Encryption]
-      def configure_encryption(planned, settings)
-        planned.encryption_password = settings.password
-        planned.encryption_method = settings.method
-        planned.encryption_pbkdf = settings.pbkd_function
-        planned.encryption_label = settings.label
-        planned.encryption_cipher = settings.cipher
-        planned.encryption_key_size = settings.key_size
-
-        check_encryption(planned)
-      end
-
-      # @see #configure_encryption
-      def check_encryption(dev)
-        issues_list << issue_missing_enc_password(dev) if missing_enc_password?(dev)
-        issues_list << issue_available_enc_method(dev) unless dev.encryption_method.available?
-        issues_list << issue_wrong_enc_method(dev) unless supported_enc_method?(dev)
-      end
-
-      # @see #check_encryption
-      def missing_enc_password?(planned)
-        return false unless planned.encryption_method&.password_required?
-
-        planned.encryption_password.nil? || planned.encryption_password.empty?
-      end
-
-      # @see #check_encryption
-      def supported_enc_method?(planned)
-        planned.supported_encryption_method?(planned.encryption_method)
-      end
-
-      # @see #check_encryption
-      def issue_missing_enc_password(planned)
-        msg = format(
-          # TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-          # 'luks1' or 'random_swap').
-          _("No passphrase provided (required for using the method '%{crypt_method}')."),
-          crypt_method: planned.encryption_method.id.to_s
-        )
-        encryption_issue(msg)
-      end
-
-      # @see #check_encryption
-      def issue_available_enc_method(planned)
-        msg = format(
-          # TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-          # 'luks1' or 'random_swap').
-          _("Encryption method '%{crypt_method}' is not available in this system."),
-          crypt_method: planned.encryption_method.id.to_s
-        )
-        encryption_issue(msg)
-      end
-
-      # @see #check_encryption
-      def issue_wrong_enc_method(planned)
-        msg = format(
-          # TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
-          # 'luks1' or 'random_swap').
-          _("'%{crypt_method}' is not a suitable method to encrypt the device."),
-          crypt_method: planned.encryption_method.id.to_s
-        )
-        encryption_issue(msg)
-      end
-
-      # @see #check_encryption
-      def encryption_issue(message)
-        Agama::Issue.new(
-          message,
-          source:   Agama::Issue::Source::CONFIG,
-          severity: Agama::Issue::Severity::ERROR
-        )
+      # @param config [Agama::Storage::Configs::Encryption]
+      def configure_encryption(planned, config)
+        planned.encryption_password = config.password
+        planned.encryption_method = config.method
+        planned.encryption_pbkdf = config.pbkd_function
+        planned.encryption_label = config.label
+        planned.encryption_cipher = config.cipher
+        planned.encryption_key_size = config.key_size
       end
 
       # @param planned [Planned::Partition]
-      # @param settings [Agama::Storage::Configs::Size]
-      def configure_size(planned, settings)
-        planned.min_size = settings.min
-        planned.max_size = settings.max
+      # @param config [Agama::Storage::Configs::Size]
+      def configure_size(planned, config)
+        planned.min_size = config.min
+        planned.max_size = config.max
         planned.weight = 100
       end
 
       # @param planned [Planned::Disk]
-      # @param config [Agama::Storage::Configs::Drive]
-      def configure_partitions(planned, config)
-        partition_configs = config.partitions
+      # @param device_config [Agama::Storage::Configs::Drive]
+      # @param config [Agama::Storage::Config]
+      def configure_partitions(planned, device_config, config)
+        partition_configs = device_config.partitions
           .reject(&:delete?)
           .reject(&:delete_if_needed?)
 
         planned.partitions = partition_configs.map do |partition_config|
-          planned_partition(partition_config).tap { |p| p.disk = config.found_device.name }
+          planned_partition(partition_config, device_config, config)
         end
       end
 
-      # @param config [Agama::Storage::Configs::Partition]
+      # @param partition_config [Agama::Storage::Configs::Partition]
+      # @param device_config [Agama::Storage::Configs::Drive]
+      # @param config [Agama::Storage::Config]
+      #
       # @return [Planned::Partition]
-      def planned_partition(config)
+      def planned_partition(partition_config, device_config, config)
         Planned::Partition.new(nil, nil).tap do |planned|
-          planned.partition_id = config.id
-          configure_reuse(planned, config)
-          configure_device(planned, config)
-          configure_size(planned, config.size)
+          planned.disk = device_config.found_device.name
+          planned.partition_id = partition_config.id
+          configure_reuse(planned, partition_config)
+          configure_block_device(planned, partition_config)
+          configure_size(planned, partition_config.size)
+          configure_pv(planned, partition_config, config)
         end
+      end
+
+      # @param planned [Planned::Disk, Planned::Partition]
+      # @param device_config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
+      # @param config [Agama::Storage::Config]
+      def configure_pv(planned, device_config, config)
+        return unless planned.respond_to?(:lvm_volume_group_name) && device_config.alias
+
+        vg = config.volume_groups.find { |v| v.physical_volumes.include?(device_config.alias) }
+        return unless vg
+
+        planned.lvm_volume_group_name = vg.name
       end
     end
   end

@@ -19,13 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/partitionable/from_json"
+require "agama/storage/config_conversions/from_json_conversions/filesystem"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions for partitionable.
-      module Partitionable
+      module FromJSONConversions
+        # Mixin for filesystem conversion.
+        module WithFilesystem
+          # @param json [Hash]
+          # @param default [Configs::Filesystem, nil]
+          #
+          # @return [Configs::Filesystem, nil]
+          def convert_filesystem(json, default: nil)
+            filesystem_json = json[:filesystem]
+            return unless filesystem_json
+
+            # @todo Check whether the given filesystem can be used for the mount point.
+            # @todo Check whether snapshots can be configured and restore to default if needed.
+
+            FromJSONConversions::Filesystem
+              .new(filesystem_json, config_builder: config_builder)
+              .convert(default)
+          end
+        end
       end
     end
   end

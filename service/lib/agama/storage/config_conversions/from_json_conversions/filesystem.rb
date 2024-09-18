@@ -19,49 +19,52 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/filesystem_type/from_json"
+require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
 require "agama/storage/configs/filesystem"
 require "y2storage/filesystems/mount_by_type"
 
 module Agama
   module Storage
     module ConfigConversions
-      module Filesystem
+      module FromJSONConversions
         # Filesystem conversion from JSON hash according to schema.
-        class FromJSON
+        class Filesystem < Base
           # @param filesystem_json [Hash]
-          def initialize(filesystem_json)
+          # @param config_builder [ConfigBuilder, nil]
+          def initialize(filesystem_json, config_builder: nil)
+            super(config_builder)
             @filesystem_json = filesystem_json
           end
 
-          # Performs the conversion from Hash according to the JSON schema.
+          # @see Base#convert
           #
           # @param default [Configs::Filesystem, nil]
           # @return [Configs::Filesystem]
           def convert(default = nil)
-            default_config = default.dup || Configs::Filesystem.new
-
-            values = {
-              reuse:         filesystem_json[:reuseIfPossible],
-              label:         filesystem_json[:label],
-              path:          filesystem_json[:path],
-              mount_options: filesystem_json[:mountOptions],
-              mkfs_options:  filesystem_json[:mkfsOptions],
-              mount_by:      convert_mount_by,
-              type:          convert_type(default_config.type)
-            }
-
-            default_config.tap do |config|
-              values.each do |property, value|
-                config.public_send("#{property}=", value) unless value.nil?
-              end
-            end
+            super(default || self.default)
           end
 
         private
 
           # @return [Hash]
           attr_reader :filesystem_json
+
+          # @see Base#conversions
+          #
+          # @param default [Configs::Filesystem]
+          # @return [Hash]
+          def conversions(default)
+            {
+              reuse:         filesystem_json[:reuseIfPossible],
+              label:         filesystem_json[:label],
+              path:          filesystem_json[:path],
+              mount_options: filesystem_json[:mountOptions],
+              mkfs_options:  filesystem_json[:mkfsOptions],
+              mount_by:      convert_mount_by,
+              type:          convert_type(default.type)
+            }
+          end
 
           # @return [Y2Storage::Filesystems::MountByType, nil]
           def convert_mount_by
@@ -77,7 +80,16 @@ module Agama
             filesystem_type_json = filesystem_json[:type]
             return unless filesystem_type_json
 
-            FilesystemType::FromJSON.new(filesystem_type_json).convert(default)
+            FromJSONConversions::FilesystemType.new(filesystem_type_json).convert(default)
+          end
+
+          # Default filesystem config.
+          #
+          # @return [Configs::Filesystem]
+          def default
+            return Configs::Filesystem.new unless config_builder
+
+            config_builder.default_filesystem(filesystem_json[:path])
           end
         end
       end
