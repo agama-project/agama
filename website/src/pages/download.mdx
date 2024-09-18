@@ -1,6 +1,6 @@
 import Link from "@docusaurus/Link";
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 export const ISOLinks = ({ arch }) => (
   <div className="flex-container">
@@ -50,17 +50,16 @@ download the checksum file too and use the
 [sha256sum](https://manpages.opensuse.org/Tumbleweed/coreutils-doc/sha256sum.1.en.html) command:
 
 ```shell
-sha256sum -c agama-installer.x86_64-openSUSE.sha256
+sha256sum -c agama-installer.x86_64-openSUSE.iso.sha256
 ```
 
-Obviously, use the checksum that correponds with downloaded ISO.
+Obviously, use the checksum that correponds with the downloaded ISO.
 
 ## Creating a bootable medium
 
 Once you have the ISO, it is time to [create a bootable USB
 stick](https://en.opensuse.org/SDB:Live_USB_stick) (recommended) or [burn a
-worry, we have you covered:
-DVD](https://en.opensuse.org/SDB:Download_help#Using_Linux). If you are not using Linux, do not
+DVD](https://en.opensuse.org/SDB:Download_help#Using_Linux).
 
 ## Starting the installation
 
