@@ -5,3 +5,5 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+agama-cli = { path = "../agama-cli" }
+clap-markdown = "0.1.4"
