@@ -66,6 +66,8 @@ cd -
 rustup install stable
 # lets install gir
 cd gir
+# workaround for badly working exclude in cargo see https://github.com/rust-lang/cargo/issues/6745
+printf '\n[workspace]' >> Cargo.toml
 cargo install --path .
 cd -
 
@@ -73,4 +75,4 @@ cd -
 
 cargo build
 
-echo "To test if everything work run `../target/debug/zypprs`"
+echo 'To test if everything work run `../target/debug/zypprs`'
