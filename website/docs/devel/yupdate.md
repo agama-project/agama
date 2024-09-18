@@ -92,8 +92,10 @@ not handle all corner cases.
 
 ## Implementation Details
 
-The support is implemented in the main [Rakefile](../Rakefile) and in the
-[.yupdate.pre](../.yupdate.pre) and [.yupdate.post](../.yupdate.post) hook scripts.
+The support is implemented in the main
+[Rakefile](https://github.com/openSUSE/agama/blob/master/Rakefile) and in the
+[.yupdate.pre](https://github.com/openSUSE/agama/blob/master/.yupdate.pre) and
+[.yupdate.post](https://github.com/openSUSE/agama/blob/master/.yupdate.post) hook scripts.
 
 - The `.yupdate.pre` script prepares the system for compiling and installing new Agama files.
 - The `Rakefile` code builds and installs both backend and frontend parts.
