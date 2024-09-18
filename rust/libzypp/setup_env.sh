@@ -6,8 +6,8 @@
 
 BASEDIR=$(dirname "$0")
 
-# install all required packages
-sudo zypper --non-interactive install \
+# install all required packages and only required as recommends are really huge
+sudo zypper --non-interactive install --no-recommends \
   git \
   cmake \
   openssl \
@@ -43,7 +43,7 @@ sudo zypper --non-interactive install \
   libgpgme-devel \
   FastCGI-devel \
   libcurl-devel \
-  "rubygem(ruby:3.3.0:abstract_method)" \
+  "rubygem(asciidoctor)" \
   libzck-devel \
   libzstd-devel \
   libbz2-devel \
@@ -52,6 +52,7 @@ sudo zypper --non-interactive install \
 
 cd "$BASEDIR"
 # checkout submodules
+git submodule init
 git submodule update --checkout
 
 # lets build libzypp
