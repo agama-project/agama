@@ -21,6 +21,10 @@
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
+  article a:where(:not(.button)) {
+    text-decoration: underline;
+  }
+
   .flex-container {
     display: flex;
     gap: calc(var(--ifm-button-group-spacing) * 2);
