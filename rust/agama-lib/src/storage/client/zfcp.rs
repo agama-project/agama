@@ -99,7 +99,7 @@ impl<'a> ZFCPClient<'a> {
         Ok(devices)
     }
 
-    /// Gets controller id that can be used in other controller methods from its dbus path
+    /// Gets controller id that can be used in other controller methods from its D-Bus path
     ///
     /// common case:
     /// ```
