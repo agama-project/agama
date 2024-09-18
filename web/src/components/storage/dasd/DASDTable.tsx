@@ -42,7 +42,7 @@ import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
-import { useDASDDevices, useDASDMutation, useFormatDASDMutation } from "~/queries/dasd";
+import { useDASDDevices, useDASDMutation, useFormatDASDMutation } from "~/queries/storage/dasd";
 
 // FIXME: please, note that this file still requiring refinements until reach a
 //   reasonable stable version

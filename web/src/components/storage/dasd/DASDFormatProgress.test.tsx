@@ -28,7 +28,7 @@ import { DASDDevice, FormatJob } from "~/types/dasd";
 let mockDASDFormatJobs: FormatJob[];
 let mockDASDDevices: DASDDevice[];
 
-jest.mock("~/queries/dasd", () => ({
+jest.mock("~/queries/storage/dasd", () => ({
   useDASDRunningFormatJobs: () => mockDASDFormatJobs,
   useDASDDevices: () => mockDASDDevices,
 }));

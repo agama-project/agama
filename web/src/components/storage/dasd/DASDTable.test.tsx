@@ -22,12 +22,12 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import DASDTable from "~/components/storage/DASDTable";
 import { DASDDevice } from "~/types/dasd";
+import DASDTable from "./DASDTable";
 
 let mockDASDDevices: DASDDevice[] = [];
 
-jest.mock("~/queries/dasd", () => ({
+jest.mock("~/queries/storage/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
   useDASDMutation: () => jest.fn(),
   useFormatDASDMutation: () => jest.fn(),

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 17 21:19:45 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Bring back zFCP management support (gh#openSUSE/agama#1570).
+
+-------------------------------------------------------------------
 Mon Sep 16 05:40:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Consider TypeScript files for translation

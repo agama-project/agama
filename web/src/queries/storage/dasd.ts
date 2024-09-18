@@ -27,7 +27,7 @@ import {
   enableDiag,
   fetchDASDDevices,
   formatDASD,
-} from "~/api/dasd";
+} from "~/api/storage/dasd";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { hex } from "~/utils";
@@ -37,7 +37,7 @@ import { fetchStorageJobs } from "~/api/storage";
 /**
  * Returns a query for retrieving the dasd devices
  */
-const DASDDevicesQuery = () => ({
+const dasdDevicesQuery = () => ({
   queryKey: ["dasd", "devices"],
   queryFn: fetchDASDDevices,
 });
@@ -46,14 +46,14 @@ const DASDDevicesQuery = () => ({
  * Hook that returns DASD devices.
  */
 const useDASDDevices = () => {
-  const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
+  const { data: devices } = useSuspenseQuery(dasdDevicesQuery());
   return devices.map((d) => ({ ...d, hexId: hex(d.id) }));
 };
 
 /**
  * Returns a query for retrieving the running dasd format jobs
  */
-const DASDRunningFormatJobsQuery = () => ({
+const dasdRunningFormatJobsQuery = () => ({
   queryKey: ["dasd", "formatJobs", "running"],
   queryFn: () =>
     fetchStorageJobs().then((jobs) =>
@@ -66,7 +66,7 @@ const DASDRunningFormatJobsQuery = () => ({
  * Hook that returns and specific DASD format job.
  */
 const useDASDRunningFormatJobs = (): FormatJob[] => {
-  const { data: jobs } = useSuspenseQuery(DASDRunningFormatJobsQuery());
+  const { data: jobs } = useSuspenseQuery(dasdRunningFormatJobsQuery());
   return jobs;
 };
 
@@ -117,7 +117,7 @@ const useDASDFormatJobChanges = () => {
     });
   });
 
-  const { data: jobs } = useSuspenseQuery(DASDRunningFormatJobsQuery());
+  const { data: jobs } = useSuspenseQuery(dasdRunningFormatJobsQuery());
   return jobs;
 };
 
@@ -165,7 +165,7 @@ const useDASDDevicesChanges = () => {
     });
   });
 
-  const { data: devices } = useSuspenseQuery(DASDDevicesQuery());
+  const { data: devices } = useSuspenseQuery(dasdDevicesQuery());
   return devices;
 };
 

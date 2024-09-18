@@ -9,6 +9,7 @@ mod store;
 
 pub use client::{
     iscsi::{ISCSIAuth, ISCSIClient, ISCSIInitiator, ISCSINode},
+    zfcp::ZFCPClient,
     StorageClient,
 };
 pub use settings::StorageSettings;

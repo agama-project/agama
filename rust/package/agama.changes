@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 18 13:20:47 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Expose the zFCP D-Bus API through HTTP (gh#openSUSE/agama#1570).
+
+-------------------------------------------------------------------
 Wed Sep 18 08:27:13 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - For CLI, use HTTP clients instead of D-Bus clients,

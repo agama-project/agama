@@ -21,14 +21,16 @@
 
 import React from "react";
 import BootSelection from "~/components/storage/BootSelection";
-import DeviceSelection from "~/components/storage/DeviceSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
-import { DASDPage, ISCSIPage } from "~/components/storage";
-import ProposalPage from "~/components/storage/ProposalPage";
+import { DeviceSelection, ISCSIPage, ProposalPage } from "~/components/storage";
+
 import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
-import { DASDSupported, probeDASD } from "~/api/dasd";
+import { supportedDASD, probeDASD } from "~/api/storage/dasd";
+import { probeZFCP, supportedZFCP } from "~/api/storage/zfcp";
 import { redirect } from "react-router-dom";
+import { ZFCPPage, ZFCPDiskActivationPage } from "~/components/storage/zfcp";
+import { DASDPage } from "~/components/storage/dasd";
 
 const PATHS = {
   root: "/storage",
@@ -37,6 +39,10 @@ const PATHS = {
   spacePolicy: "/storage/space-policy",
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
+  zfcp: {
+    root: "/storage/zfcp",
+    activateDisk: "/storage/zfcp/active-disk",
+  },
 };
 
 const routes = (): Route => ({
@@ -69,8 +75,25 @@ const routes = (): Route => ({
       element: <DASDPage />,
       handle: { name: N_("DASD") },
       loader: async () => {
-        if (!DASDSupported()) return redirect(PATHS.root);
+        if (!supportedDASD()) return redirect(PATHS.targetDevice);
         return probeDASD();
+      },
+    },
+    {
+      path: PATHS.zfcp.root,
+      element: <ZFCPPage />,
+      handle: { name: N_("ZFCP") },
+      loader: async () => {
+        if (!supportedZFCP()) return redirect(PATHS.targetDevice);
+        return probeZFCP();
+      },
+    },
+    {
+      path: PATHS.zfcp.activateDisk,
+      element: <ZFCPDiskActivationPage />,
+      loader: async () => {
+        if (!supportedZFCP()) return redirect(PATHS.targetDevice);
+        return probeZFCP();
       },
     },
   ],

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,27 +19,29 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import DASDTable from "~/components/storage/DASDTable";
-import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
-import { _ } from "~/i18n";
-import { Page } from "~/components/core";
-import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/dasd";
+type ZFCPController = {
+  id: string;
+  channel: string;
+  active: boolean;
+  lunScan: boolean;
+  lunsMap: { [key: string]: string[] };
+};
 
-export default function DASDPage() {
-  useDASDDevicesChanges();
-  useDASDFormatJobChanges();
+type ZFCPDisk = {
+  name: string;
+  channel: string;
+  wwpn: string;
+  lun: string;
+};
 
-  return (
-    <Page>
-      <Page.Header>
-        <h2>{_("DASD")}</h2>
-      </Page.Header>
+type ZFCPConfig = {
+  allowLunScan: boolean;
+};
 
-      <Page.Content>
-        <DASDTable />
-        <DASDFormatProgress />
-      </Page.Content>
-    </Page>
-  );
-}
+type LUNInfo = {
+  channel: string;
+  wwpn: string;
+  lun: string;
+};
+
+export type { ZFCPController, ZFCPDisk, ZFCPConfig, LUNInfo };

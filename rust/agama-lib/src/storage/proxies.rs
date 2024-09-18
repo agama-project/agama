@@ -228,3 +228,76 @@ trait DASDDevice {
     #[dbus_proxy(property)]
     fn type_(&self) -> zbus::Result<String>;
 }
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.ZFCP.Manager",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
+)]
+trait ZFCPManager {
+    /// Probe method
+    fn probe(&self) -> zbus::Result<()>;
+
+    /// AllowLUNScan property
+    #[dbus_proxy(property, name = "AllowLUNScan")]
+    fn allow_lunscan(&self) -> zbus::Result<bool>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.ZFCP.Controller",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
+)]
+trait ZFCPController {
+    /// Activate method
+    fn activate(&self) -> zbus::Result<u32>;
+
+    /// ActivateDisk method
+    fn activate_disk(&self, wwpn: &str, lun: &str) -> zbus::Result<u32>;
+
+    /// DeactivateDisk method
+    fn deactivate_disk(&self, wwpn: &str, lun: &str) -> zbus::Result<u32>;
+
+    /// GetLUNs method
+    #[dbus_proxy(name = "GetLUNs")]
+    fn get_luns(&self, wwpn: &str) -> zbus::Result<Vec<String>>;
+
+    /// GetWWPNs method
+    #[dbus_proxy(name = "GetWWPNs")]
+    fn get_wwpns(&self) -> zbus::Result<Vec<String>>;
+
+    /// Active property
+    #[dbus_proxy(property)]
+    fn active(&self) -> zbus::Result<bool>;
+
+    /// Channel property
+    #[dbus_proxy(property)]
+    fn channel(&self) -> zbus::Result<String>;
+
+    /// LUNScan property
+    #[dbus_proxy(property, name = "LUNScan")]
+    fn lunscan(&self) -> zbus::Result<bool>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.ZFCP.Disk",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
+)]
+trait Disk {
+    /// Channel property
+    #[dbus_proxy(property)]
+    fn channel(&self) -> zbus::Result<String>;
+
+    /// LUN property
+    #[dbus_proxy(property, name = "LUN")]
+    fn lun(&self) -> zbus::Result<String>;
+
+    /// Name property
+    #[dbus_proxy(property)]
+    fn name(&self) -> zbus::Result<String>;
+
+    /// WWPN property
+    #[dbus_proxy(property, name = "WWPN")]
+    fn wwpn(&self) -> zbus::Result<String>;
+}

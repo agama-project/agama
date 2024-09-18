@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -32,29 +32,29 @@ import SimpleLayout from "~/SimpleLayout";
 import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
 
-// TODO: refactor, and if possible use a route for it. Related with needed
-// changes in src/App.jsx
-
 const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
 
 function ServerError() {
   return (
     <SimpleLayout showOutlet={false}>
-      <Page.MainContent>
-        <Center>
-          <EmptyState variant="xl">
-            <EmptyStateHeader
-              titleText={_("Cannot connect to Agama server")}
-              headingLevel="h2"
-              icon={<EmptyStateIcon icon={ErrorIcon} />}
-            />
-            <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
-          </EmptyState>
-        </Center>
-      </Page.MainContent>
-      <Page.NextActions>
-        <Page.Action onClick={locationReload}>{_("Reload")}</Page.Action>
-      </Page.NextActions>
+      <Page>
+        <Page.Content>
+          <Center>
+            <EmptyState variant="xl">
+              <EmptyStateHeader
+                titleText={_("Cannot connect to Agama server")}
+                headingLevel="h2"
+                icon={<EmptyStateIcon icon={ErrorIcon} />}
+              />
+              <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+            </EmptyState>
+          </Center>
+        </Page.Content>
+
+        <Page.Actions>
+          <Page.Action onClick={locationReload}>{_("Reload")}</Page.Action>
+        </Page.Actions>
+      </Page>
     </SimpleLayout>
   );
 }

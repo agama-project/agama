@@ -23,7 +23,7 @@ import React from "react";
 import { Progress, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
-import { useDASDDevices, useDASDRunningFormatJobs } from "~/queries/dasd";
+import { useDASDDevices, useDASDRunningFormatJobs } from "~/queries/storage/dasd";
 import { DASDDevice, FormatSummary } from "~/types/dasd";
 
 const DeviceProgress = ({ device, progress }: { device: DASDDevice; progress: FormatSummary }) => (
