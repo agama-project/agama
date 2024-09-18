@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
 import styles from "./styles.module.css";
 
@@ -11,7 +12,7 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: "Modern web-based UI",
-    img: "img/webui_on_laptop_and_mobile.png",
+    img: "img/agama_web_ui.png",
     description: (
       <>
         Interact with the installer either, locally on the computer where the
@@ -22,7 +23,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Powerful CLI",
-    img: "img/cli.png",
+    img: "img/agama_cli.png",
     description: (
       <>
         Drive the installation with its easy, yet powerful, out of the box
@@ -32,7 +33,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Fully unattended",
-    img: "img/profile.png",
+    img: "img/agama_profile.png",
     description: (
       <>
         Let Agama handle the installation without requiring any other input
@@ -44,28 +45,24 @@ const FeatureList: FeatureItem[] = [
 
 function Feature({ title, img, description }: FeatureItem) {
   return (
-    <div className={clsx("col col--4")}>
-      <div className="text--center">
-        <img className="feature-image" src={img} aria-hidden />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
+    <li>
+      <img src={img} aria-hidden />
+      <div>
+        <Heading as="h2">{title}</Heading>
         <p>{description}</p>
       </div>
-    </div>
+    </li>
   );
 }
 
 export default function HomepageFeatures(): JSX.Element {
   return (
-    <section className={styles.features}>
-      <div className="container">
-        <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
-          ))}
-        </div>
-      </div>
+    <section className="container padding-top--lg">
+      <ul className={styles.features} aria-label="Agama key features">
+        {FeatureList.map((props, idx) => (
+          <Feature key={idx} {...props} />
+        ))}
+      </ul>
     </section>
   );
 }

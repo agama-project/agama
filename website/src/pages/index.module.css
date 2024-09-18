@@ -21,3 +21,7 @@
   align-items: center;
   justify-content: center;
 }
+
+.bigButton {
+  font-size: 2rem;
+}

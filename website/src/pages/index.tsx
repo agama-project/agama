@@ -4,7 +4,6 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import HomepageFeatures from "@site/src/components/HomepageFeatures";
 import Heading from "@theme/Heading";
-
 import styles from "./index.module.css";
 
 function HomepageHeader() {
@@ -17,10 +16,7 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/download"
-          >
+          <Link className="button button--secondary button--lg" to="/download">
             Download the latest ISO
           </Link>
         </div>
@@ -39,6 +35,17 @@ export default function Home(): JSX.Element {
       <HomepageHeader />
       <main>
         <HomepageFeatures />
+        <div className="text--center padding-bottom--xl">
+          <Link
+            className={clsx(
+              "button button--primary button--outline",
+              styles.bigButton,
+            )}
+            to="/download"
+          >
+            Give it a try
+          </Link>
+        </div>
       </main>
     </Layout>
   );

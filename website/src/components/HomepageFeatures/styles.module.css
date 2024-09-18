@@ -1,11 +1,33 @@
 .features {
-  display: flex;
-  align-items: center;
-  padding: 2rem 0;
-  width: 100%;
+  list-style-type: none;
+  padding-block: 2rem;
 }
 
-.featureSvg {
-  height: 200px;
-  width: 200px;
+.features li {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 1rem;
+}
+
+.features li p {
+  font-size: 18px;
+}
+
+.features li img {
+  align-self: center;
+}
+
+@media screen and (min-width: 996px) {
+  .features li {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .features li:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+
+  .features li img {
+    max-inline-size: 35vw;
+  }
 }
