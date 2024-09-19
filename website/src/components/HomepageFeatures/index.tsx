@@ -1,5 +1,9 @@
 import Heading from "@theme/Heading";
+import CodeBlock from "@theme/CodeBlock";
 import BrowserWindow from "@site/src/components/BrowserWindow";
+import clsx from "clsx";
+import profile from "!!raw-loader!@site/static/profiles/tw.json";
+
 import styles from "./styles.module.css";
 
 type FeatureItem = {
@@ -61,10 +65,15 @@ const FeatureList: FeatureItem[] = [
       </>
     ),
     asset: (
-      <img
-        src={require("@site/static/img/agama_profile.png").default}
+      <CodeBlock
         aria-hidden
-      />
+        showLineNumbers
+        language="json"
+        title="profile.json"
+        className={clsx(styles.codeBlock, "shadow--tl")}
+      >
+        {profile}
+      </CodeBlock>
     ),
   },
 ];

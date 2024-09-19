@@ -17,6 +17,10 @@
   align-self: center;
 }
 
+.codeBlock pre {
+  max-block-size: 400px;
+}
+
 @media screen and (min-width: 996px) {
   .features li {
     flex-direction: row;
