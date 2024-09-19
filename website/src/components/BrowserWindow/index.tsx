@@ -14,6 +14,7 @@ interface Props {
   children: ReactNode;
   minHeight?: number;
   url?: string;
+  paddingLess?: boolean;
   style?: CSSProperties;
   bodyStyle?: CSSProperties;
 }
@@ -22,11 +23,15 @@ export default function BrowserWindow({
   children,
   minHeight,
   url = "http://localhost:3000",
+  paddingLess = false,
   style,
   bodyStyle,
 }: Props): JSX.Element {
   return (
-    <div className={styles.browserWindow} style={{ ...style, minHeight }}>
+    <div
+      className={clsx(styles.browserWindow, paddingLess && styles.paddingLess)}
+      style={{ ...style, minHeight }}
+    >
       <div className={styles.browserWindowHeader}>
         <div className={styles.buttons}>
           <span className={styles.dot} style={{ background: "#f25f58" }} />
