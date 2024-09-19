@@ -29,11 +29,8 @@ const FeatureList: FeatureItem[] = [
       </>
     ),
     asset: (
-      <BrowserWindow url="https://agama.local" paddingLess>
-        <img
-          src={require("@site/static/img/storage.png").default}
-          aria-hidden
-        />
+      <BrowserWindow aria-hidden url="https://agama.local" paddingLess>
+        <img src={require("@site/static/img/storage.png").default} />
       </BrowserWindow>
     ),
   },
