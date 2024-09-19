@@ -58,6 +58,7 @@ git submodule update --checkout
 # lets build libzypp
 cd libzypp
 make -f Makefile.cvs
+cmake -D BUILD_GLIB_API=ON
 make
 sudo make install
 cd -
