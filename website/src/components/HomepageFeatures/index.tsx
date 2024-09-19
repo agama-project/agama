@@ -1,18 +1,16 @@
-import clsx from "clsx";
-import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
+import BrowserWindow from "@site/src/components/BrowserWindow";
 import styles from "./styles.module.css";
 
 type FeatureItem = {
   title: string;
-  img: React.ComponentProps<"img">["src"];
   description: JSX.Element;
+  asset?: React.ReactNode;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: "Modern web-based UI",
-    img: "img/agama_web_ui.png",
     description: (
       <>
         Interact with the installer either, locally on the computer where the
@@ -20,33 +18,51 @@ const FeatureList: FeatureItem[] = [
         browser.
       </>
     ),
+    asset: (
+      <BrowserWindow url="https://agama.local" paddingLess>
+        <img
+          src={require("@site/static/img/storage.png").default}
+          aria-hidden
+        />
+      </BrowserWindow>
+    ),
   },
   {
     title: "Powerful CLI",
-    img: "img/agama_cli.png",
     description: (
       <>
         Drive the installation with its easy, yet powerful, out of the box
         command line tool.
       </>
     ),
+    asset: (
+      <img
+        src={require("@site/static/img/agama_cli.png").default}
+        aria-hidden
+      />
+    ),
   },
   {
     title: "Fully unattended",
-    img: "img/agama_profile.png",
     description: (
       <>
         Let Agama handle the installation without requiring any other input
         other than an installation profile.
       </>
     ),
+    asset: (
+      <img
+        src={require("@site/static/img/agama_profile.png").default}
+        aria-hidden
+      />
+    ),
   },
 ];
 
-function Feature({ title, img, description }: FeatureItem) {
+function Feature({ title, asset, description }: FeatureItem) {
   return (
     <li>
-      <img src={img} aria-hidden />
+      {asset}
       <div>
         <Heading as="h2">{title}</Heading>
         <p>{description}</p>
