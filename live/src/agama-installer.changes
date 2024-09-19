@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep  8 13:26:00 UTC 2024 - Joaquín Rivera <jeriveramoya@suse.com>
+
+- Revert to use tty7 (gh#openSUSE/agama#1582)
+  openQA tty expectations for installer are always in this tty.
+  The change to tty2 created an sporadic failure assigning tty2
+  as a non-grafical one anyway in ppc64le and aarch64.
+
+-------------------------------------------------------------------
 Mon Sep 16 15:46:23 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Define boot menu for all arches by scripts in config-cdroot
