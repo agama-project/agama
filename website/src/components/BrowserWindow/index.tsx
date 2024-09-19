@@ -1,8 +1,6 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * Based on the original BrowserWindow docusaurus component,
+ * https://github.com/facebook/docusaurus/blob/main/website/src/components/BrowserWindow/index.tsx,
  */
 
 import React, { type CSSProperties, type ReactNode } from "react";
@@ -14,6 +12,9 @@ interface Props {
   children: ReactNode;
   minHeight?: number;
   url?: string;
+  hideAddressBar?: boolean;
+  hideMenu?: boolean;
+  hideDots?: boolean;
   paddingLess?: boolean;
   style?: CSSProperties;
   bodyStyle?: CSSProperties;
@@ -23,6 +24,9 @@ export default function BrowserWindow({
   children,
   minHeight,
   url = "http://localhost:3000",
+  hideAddressBar = false,
+  hideMenu = false,
+  hideDots = false,
   paddingLess = false,
   style,
   bodyStyle,
@@ -33,21 +37,29 @@ export default function BrowserWindow({
       style={{ ...style, minHeight }}
     >
       <div className={styles.browserWindowHeader}>
-        <div className={styles.buttons}>
-          <span className={styles.dot} style={{ background: "#f25f58" }} />
-          <span className={styles.dot} style={{ background: "#fbbe3c" }} />
-          <span className={styles.dot} style={{ background: "#58cb42" }} />
-        </div>
-        <div className={clsx(styles.browserWindowAddressBar, "text--truncate")}>
-          {url}
-        </div>
-        <div className={styles.browserWindowMenuIcon}>
-          <div>
-            <span className={styles.bar} />
-            <span className={styles.bar} />
-            <span className={styles.bar} />
+        {!hideDots && (
+          <div className={styles.buttons}>
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+            <span className={styles.dot} />
           </div>
-        </div>
+        )}
+        {!hideAddressBar && (
+          <div
+            className={clsx(styles.browserWindowAddressBar, "text--truncate")}
+          >
+            {url}
+          </div>
+        )}
+        {!hideMenu && (
+          <div className={styles.browserWindowMenuIcon}>
+            <div>
+              <span className={styles.bar} />
+              <span className={styles.bar} />
+              <span className={styles.bar} />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles.browserWindowBody} style={bodyStyle}>
