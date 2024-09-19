@@ -12,6 +12,12 @@ type FeatureItem = {
   asset?: React.ReactNode;
 };
 
+const TerminalWindow = ({ children, ...props }): JSX.Element => (
+  <BrowserWindow aria-hidden paddingLess hideAddressBar hideMenu {...props}>
+    {children}
+  </BrowserWindow>
+);
+
 const FeatureList: FeatureItem[] = [
   {
     title: "Modern web-based UI",
@@ -40,20 +46,22 @@ const FeatureList: FeatureItem[] = [
       </>
     ),
     asset: (
-      <video controls autoPlay width={620}>
-        <source
-          src={require("@site/static/video/agama-cli.webm").default}
-          type="video/webm"
-        />
-        <source
-          src={require("@site/static/video/agama-cli.ogv").default}
-          type="video/ogg"
-        />
-        <source
-          src={require("@site/static/video/agama-cli.mp4").default}
-          type="video/mp4"
-        />
-      </video>
+      <TerminalWindow>
+        <video controls autoPlay>
+          <source
+            src={require("@site/static/video/agama-cli.webm").default}
+            type="video/webm"
+          />
+          <source
+            src={require("@site/static/video/agama-cli.ogv").default}
+            type="video/ogg"
+          />
+          <source
+            src={require("@site/static/video/agama-cli.mp4").default}
+            type="video/mp4"
+          />
+        </video>
+      </TerminalWindow>
     ),
   },
   {
