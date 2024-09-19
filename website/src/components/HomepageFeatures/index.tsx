@@ -36,10 +36,20 @@ const FeatureList: FeatureItem[] = [
       </>
     ),
     asset: (
-      <img
-        src={require("@site/static/img/agama_cli.png").default}
-        aria-hidden
-      />
+      <video controls autoPlay width={620}>
+        <source
+          src={require("@site/static/video/agama-cli.webm").default}
+          type="video/webm"
+        />
+        <source
+          src={require("@site/static/video/agama-cli.ogv").default}
+          type="video/ogg"
+        />
+        <source
+          src={require("@site/static/video/agama-cli.mp4").default}
+          type="video/mp4"
+        />
+      </video>
     ),
   },
   {
