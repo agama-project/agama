@@ -27,6 +27,7 @@ import {
   DropdownItem,
   DropdownList,
   MenuToggle,
+  Text,
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
@@ -35,6 +36,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
+import { Popup } from "~/components/core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { Page } from "~/components/core";
 import { Icon } from "~/components/layout";
@@ -55,7 +57,7 @@ const columnData = (device: DASDDevice, column: { id: string; sortId?: string; l
       if (!device.enabled) data = "";
       break;
     case "partitionInfo":
-      data = data.split(",").map((d) => <div key={d}>{d}</div>);
+      data = data.split(",").map((d: string) => <div key={d}>{d}</div>);
       break;
   }
 
@@ -79,12 +81,29 @@ const columns = [
   { id: "partitionInfo", label: _("Partition Info") },
 ];
 
+const ConfirmFormat = ({ devices, isOpen, toggle, action }) => {
+  return (
+    <Popup isOpen={isOpen}>
+      <Text>
+        {_("The DASD devices listed below are going to be formatted, do you want to proceed?")}
+      </Text>
+      <Text>{devices.join(", ")}</Text>
+      <Popup.Actions>
+        <Popup.Confirm onClick={() => action()} />
+        <Popup.Cancel onClick={() => toggle()} />
+      </Popup.Actions>
+    </Popup>
+  );
+};
+
 const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
   const { mutate: updateDASD } = useDASDMutation();
   const { mutate: formatDASD } = useFormatDASDMutation();
   const [isOpen, setIsOpen] = useState(false);
+  const [confirmFormat, setConfirmFormat] = useState(false);
 
   const onToggle = () => setIsOpen(!isOpen);
+  const onToggleConfirm = () => setConfirmFormat(!confirmFormat);
   const onSelect = () => setIsOpen(false);
 
   const deviceIds = devices.map((d) => d.id);
@@ -99,7 +118,8 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: b
       return false;
     }
 
-    return formatDASD(devices.map((d) => d.id));
+    formatDASD(devices.map((d) => d.id));
+    onToggleConfirm();
   };
 
   const Action = ({ children, ...props }) => (
@@ -109,41 +129,49 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: b
   );
 
   return (
-    <Dropdown
-      isOpen={isOpen}
-      onSelect={onSelect}
-      toggle={(toggleRef) => (
-        <MenuToggle ref={toggleRef} variant="primary" isDisabled={isDisabled} onClick={onToggle}>
-          {/* TRANSLATORS: drop down menu label */}
-          {_("Perform an action")}
-        </MenuToggle>
-      )}
-    >
-      <DropdownList>
-        {/** TRANSLATORS: drop down menu action, activate the device */}
-        <Action key="activate" onClick={activate}>
-          {_("Activate")}
-        </Action>
-        {/** TRANSLATORS: drop down menu action, deactivate the device */}
-        <Action key="deactivate" onClick={deactivate}>
-          {_("Deactivate")}
-        </Action>
-        <Divider key="first-separator" />
-        {/** TRANSLATORS: drop down menu action, enable DIAG access method */}
-        <Action key="set_diag_on" onClick={setDiagOn}>
-          {_("Set DIAG On")}
-        </Action>
-        {/** TRANSLATORS: drop down menu action, disable DIAG access method */}
-        <Action key="set_diag_off" onClick={setDiagOff}>
-          {_("Set DIAG Off")}
-        </Action>
-        <Divider key="second-separator" />
-        {/** TRANSLATORS: drop down menu action, format the disk */}
-        <Action key="format" onClick={format}>
-          {_("Format")}
-        </Action>
-      </DropdownList>
-    </Dropdown>
+    <>
+      <ConfirmFormat
+        devices={deviceIds}
+        isOpen={confirmFormat}
+        toggle={onToggleConfirm}
+        action={format}
+      />
+      <Dropdown
+        isOpen={isOpen}
+        onSelect={onSelect}
+        toggle={(toggleRef) => (
+          <MenuToggle ref={toggleRef} variant="primary" isDisabled={isDisabled} onClick={onToggle}>
+            {/* TRANSLATORS: drop down menu label */}
+            {_("Perform an action")}
+          </MenuToggle>
+        )}
+      >
+        <DropdownList>
+          {/** TRANSLATORS: drop down menu action, activate the device */}
+          <Action key="activate" onClick={activate}>
+            {_("Activate")}
+          </Action>
+          {/** TRANSLATORS: drop down menu action, deactivate the device */}
+          <Action key="deactivate" onClick={deactivate}>
+            {_("Deactivate")}
+          </Action>
+          <Divider key="first-separator" />
+          {/** TRANSLATORS: drop down menu action, enable DIAG access method */}
+          <Action key="set_diag_on" onClick={setDiagOn}>
+            {_("Set DIAG On")}
+          </Action>
+          {/** TRANSLATORS: drop down menu action, disable DIAG access method */}
+          <Action key="set_diag_off" onClick={setDiagOff}>
+            {_("Set DIAG Off")}
+          </Action>
+          <Divider key="second-separator" />
+          {/** TRANSLATORS: drop down menu action, format the disk */}
+          <Action key="format" onClick={() => setConfirmFormat(true)}>
+            {_("Format")}
+          </Action>
+        </DropdownList>
+      </Dropdown>
+    </>
   );
 };
 
