@@ -46,6 +46,43 @@ to extend.
   Setting this variable will impact all products.
   :::
 
+- `live.password` and `live.password_hash` Set the `root` password of the live system.
+  `live.password` accepts a plain text password, while `live.password_hash` is expected to receive a
+  hashed password, which is more secure. The disadvantage of a hashed password is that it is quite
+  long and is not easy to type it into the boot prompt manually. It makes sense in environments where
+  you can prepare the boot parameters in advance like in PXE boot or some virtual machines.
+
+  ```text
+  live.password=nots3cr3t
+  ```
+
+  :::warning Setting a password enables SSH
+  The SSH service is not started unless a password is provided using any of the available options
+  (`live.password`, `live.password_hash`, `live.password_dialog`, or `live.password_systemd`). This
+  avoids accidentally using the default password from the medium.
+  :::
+
+- `live.password_dialog` Start an interactive dialog during the boot process. This uses a nice
+  dialog for entering and confirming the password. However, in some situations the full screen dialog
+  might not be displayed correctly or some messages might be displayed over it. In that case you might
+  use the `Ctrl+L` key shortcut to refresh the screen. If it still does not work then try using the
+  other option below.
+
+  ```text
+  live.password_dialog
+  live.password_dialog=1
+  ```
+
+- `live.password_systemd` Ask for a password using a simple prompt. This is
+  similar to the option above, but the advantage is that this solution does not use a full screen
+  dialog but a single line prompt so it should work better in special environments like a serial
+  console.
+
+  ```text
+  live.password_systemd
+  live.password_systemd=1
+  ```
+
 - `proxy`: sets up a network proxy. The supported proxy URL format is `protocol://[user[:password]@]host[:port]`.
 
   ```text
