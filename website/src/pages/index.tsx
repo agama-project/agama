@@ -9,7 +9,9 @@ import styles from "./index.module.css";
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <header className={clsx("hero hero--primary", styles.heroBanner)}>
+    <header
+      className={clsx("hero hero--primary shadow--md", styles.heroBanner)}
+    >
       <div className="container">
         <Heading as="h1" className="hero__title">
           {siteConfig.title}
@@ -17,7 +19,7 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link className="button button--secondary button--lg" to="/download">
-            Download the latest ISO
+            Give it a try
           </Link>
         </div>
       </div>
@@ -35,12 +37,13 @@ export default function Home(): JSX.Element {
       <HomepageHeader />
       <main>
         <HomepageFeatures />
-        <div className="text--center padding-bottom--xl">
+        <div
+          className="contianer text--center margin-vert--xl"
+          style={{ width: "100%" }}
+        >
+          <p className="hero__subtitle">Don't be shy</p>
           <Link
-            className={clsx(
-              "button button--primary button--outline",
-              styles.bigButton,
-            )}
+            className={clsx("button button--primary", styles.bigButton)}
             to="/download"
           >
             Give it a try
