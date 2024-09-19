@@ -6,6 +6,11 @@ use crate::{ffi,Context,InfoBase};
 use glib::{translate::*};
 
 glib::wrapper! {
+    ///
+    ///
+    /// # Implements
+    ///
+    /// [`InfoBaseExt`][trait@crate::prelude::InfoBaseExt]
     #[doc(alias = "ZyppServiceInfo")]
     pub struct ServiceInfo(Object<ffi::ZyppServiceInfo, ffi::ZyppServiceInfoClass>) @implements InfoBase;
 

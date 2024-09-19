@@ -7,6 +7,33 @@ use glib::{prelude::*,signal::{connect_raw, SignalHandlerId},translate::*};
 use std::{boxed::Box as Box_};
 
 glib::wrapper! {
+    ///
+    ///
+    /// ## Properties
+    ///
+    ///
+    /// #### `alias`
+    ///  Readable | Writeable
+    ///
+    ///
+    /// #### `enabled`
+    ///  Readable | Writeable
+    ///
+    ///
+    /// #### `name`
+    ///  Readable | Writeable
+    ///
+    ///
+    /// #### `zypp-cppObj`
+    ///  Writeable | Construct Only
+    ///
+    ///
+    /// #### `zyppcontext`
+    ///  Writeable | Construct Only
+    ///
+    /// # Implements
+    ///
+    /// [`InfoBaseExt`][trait@crate::prelude::InfoBaseExt]
     #[doc(alias = "ZyppRepoInfo")]
     pub struct RepoInfo(Object<ffi::ZyppRepoInfo, ffi::ZyppRepoInfoClass>) @implements InfoBase;
 
@@ -33,6 +60,10 @@ impl RepoInfo {
             }
         
 
+    ///
+    /// # Returns
+    ///
+    /// The type of repository
     #[doc(alias = "zypp_repo_info_get_repo_type")]
     #[doc(alias = "get_repo_type")]
     pub fn repo_type(&self) -> RepoInfoType {

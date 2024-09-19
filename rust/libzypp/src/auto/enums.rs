@@ -10,6 +10,9 @@ use glib::{prelude::*,translate::*};
 #[non_exhaustive]
 #[doc(alias = "ZyppException")]
 pub enum Exception {
+    /// Error domain for the zypp exception handling. Errors in this domain will
+    /// be from the [`Exception`][crate::Exception] enumeration. See [`glib::Error`][crate::glib::Error] for information
+    /// on error domains.
     #[doc(alias = "ZYPP_ERROR")]
     Error,
 #[doc(hidden)]

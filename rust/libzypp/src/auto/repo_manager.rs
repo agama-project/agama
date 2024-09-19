@@ -7,6 +7,21 @@ use glib::{prelude::*,signal::{connect_raw, SignalHandlerId},translate::*};
 use std::{boxed::Box as Box_};
 
 glib::wrapper! {
+    ///
+    ///
+    /// ## Properties
+    ///
+    ///
+    /// #### `options`
+    ///  Readable | Writeable | Construct
+    ///
+    ///
+    /// #### `zypp-cppObj`
+    ///  Writeable | Construct Only
+    ///
+    ///
+    /// #### `zyppcontext`
+    ///  Writeable | Construct Only
     #[doc(alias = "ZyppRepoManager")]
     pub struct RepoManager(Object<ffi::ZyppRepoManager, ffi::ZyppRepoManagerClass>);
 
@@ -16,6 +31,12 @@ glib::wrapper! {
 }
 
 impl RepoManager {
+    /// ## `ctx`
+    /// The [`Context`][crate::Context] the RepoManager should operate on
+    ///
+    /// # Returns
+    ///
+    /// newly created [`RepoManager`][crate::RepoManager]
     #[doc(alias = "zypp_repo_manager_new")]
     pub fn new(ctx: &Context) -> RepoManager {
         skip_assert_initialized!();
@@ -33,6 +54,11 @@ impl RepoManager {
             }
         
 
+    ///
+    /// # Returns
+    ///
+    /// list of repositories,
+    ///  free the list with g_list_free and the elements with gobject_unref when done.
     #[doc(alias = "zypp_repo_manager_get_known_repos")]
     #[doc(alias = "get_known_repos")]
     pub fn known_repos(&self) -> Vec<RepoInfo> {
@@ -41,6 +67,11 @@ impl RepoManager {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// list of existing services,
+    ///  free the list with g_list_free and the elements with gobject_unref when done.
     #[doc(alias = "zypp_repo_manager_get_known_services")]
     #[doc(alias = "get_known_services")]
     pub fn known_services(&self) -> Vec<ServiceInfo> {
@@ -49,6 +80,11 @@ impl RepoManager {
         }
     }
 
+    /// Loads the known repositories and services.
+    ///
+    /// # Returns
+    ///
+    /// True if init was successful, otherwise returns false and sets the error
     #[doc(alias = "zypp_repo_manager_initialize")]
     pub fn initialize(&self) -> Result<(), glib::Error> {
         unsafe {
@@ -59,6 +95,16 @@ impl RepoManager {
         }
     }
 
+    /// ## `repos`
+    /// the repositories to refresh
+    /// ## `forceDownload`
+    /// Force downloading the repository even if its up 2 date
+    /// ## `statusTracker`
+    /// Progress tracker
+    ///
+    /// # Returns
+    ///
+    /// list of results for the refreshed repos
     #[doc(alias = "zypp_repo_manager_refresh_repos")]
     pub fn refresh_repos(&self, repos: &[RepoInfo], forceDownload: bool, statusTracker: Option<ProgressObserver>) -> Vec<Expected> {
         unsafe {

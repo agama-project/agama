@@ -6,6 +6,7 @@ use crate::{ffi,RepoInfo};
 use glib::{translate::*};
 
 glib::wrapper! {
+    ///
     #[doc(alias = "ZyppRepository")]
     pub struct Repository(Object<ffi::ZyppRepository, ffi::ZyppRepositoryClass>);
 
@@ -15,6 +16,10 @@ glib::wrapper! {
 }
 
 impl Repository {
+    ///
+    /// # Returns
+    ///
+    /// Name of the repository
     #[doc(alias = "zypp_repository_get_name")]
     #[doc(alias = "get_name")]
     pub fn name(&self) -> Option<glib::GString> {
@@ -23,6 +28,10 @@ impl Repository {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The corresponding ZyppRepoInfo
     #[doc(alias = "zypp_repository_get_repoinfo")]
     #[doc(alias = "get_repoinfo")]
     pub fn repoinfo(&self) -> Option<RepoInfo> {

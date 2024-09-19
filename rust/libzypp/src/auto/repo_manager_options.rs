@@ -17,6 +17,12 @@ glib::wrapper! {
 }
 
 impl RepoManagerOptions {
+    /// ## `root`
+    /// The prefix for all paths
+    ///
+    /// # Returns
+    ///
+    /// newly created [`RepoManagerOptions`][crate::RepoManagerOptions]
     #[doc(alias = "zypp_repo_manager_options_new")]
     pub fn new(root: &str) -> RepoManagerOptions {
         assert_initialized_main_thread!();
@@ -25,6 +31,10 @@ impl RepoManagerOptions {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The currently managed path
     #[doc(alias = "zypp_repo_manager_options_get_root")]
     #[doc(alias = "get_root")]
     pub fn root(&mut self) -> Option<glib::GString> {

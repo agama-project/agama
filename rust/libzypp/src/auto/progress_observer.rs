@@ -7,6 +7,43 @@ use glib::{prelude::*,signal::{connect_raw, SignalHandlerId},translate::*};
 use std::{boxed::Box as Box_};
 
 glib::wrapper! {
+    ///
+    ///
+    /// ## Properties
+    ///
+    ///
+    /// #### `base-steps`
+    ///  Readable | Writeable
+    ///
+    ///
+    /// #### `label`
+    ///  Readable | Writeable
+    ///
+    ///
+    /// #### `progress`
+    ///  Readable
+    ///
+    ///
+    /// #### `steps`
+    ///  Readable
+    ///
+    ///
+    /// #### `value`
+    ///  Readable | Writeable
+    ///
+    ///
+    /// #### `zypp-cppObj`
+    ///  Writeable | Construct Only
+    ///
+    /// ## Signals
+    ///
+    ///
+    /// #### `finished`
+    ///
+    ///
+    ///
+    /// #### `new-subtask`
+    ///
     #[doc(alias = "ZyppProgressObserver")]
     pub struct ProgressObserver(Object<ffi::ZyppProgressObserver, ffi::ZyppProgressObserverClass>);
 
@@ -25,6 +62,11 @@ impl ProgressObserver {
             }
         
 
+    /// Registers a subtask as a child to the current one
+    /// ## `newChild`
+    /// A reference to the new subtask, the parent takes a reference to it
+    /// ## `weight`
+    /// The weight how the subtasks steps should be calculated into the parents percentage
     #[doc(alias = "zypp_progress_observer_add_subtask")]
     pub fn add_subtask(&self, newChild: &ProgressObserver, weight: f32) {
         unsafe {
@@ -32,6 +74,10 @@ impl ProgressObserver {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The number of steps for this `ZyppProgressObserver` excluding possible substasks
     #[doc(alias = "zypp_progress_observer_get_base_steps")]
     #[doc(alias = "get_base_steps")]
     #[doc(alias = "base-steps")]
@@ -41,6 +87,10 @@ impl ProgressObserver {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The direct children of this Task
     #[doc(alias = "zypp_progress_observer_get_children")]
     #[doc(alias = "get_children")]
     pub fn children(&self) -> Vec<ProgressObserver> {
@@ -49,6 +99,10 @@ impl ProgressObserver {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The current effective value of the task progress including subtasks, by default this is 0
     #[doc(alias = "zypp_progress_observer_get_current")]
     #[doc(alias = "get_current")]
     pub fn current(&self) -> f64 {
@@ -57,6 +111,10 @@ impl ProgressObserver {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The task label or NULL if none was set
     #[doc(alias = "zypp_progress_observer_get_label")]
     #[doc(alias = "get_label")]
     pub fn label(&self) -> Option<glib::GString> {
@@ -65,6 +123,10 @@ impl ProgressObserver {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The current percentage value of the task progress including subtasks, by default this is 0
     #[doc(alias = "zypp_progress_observer_get_progress")]
     #[doc(alias = "get_progress")]
     pub fn progress(&self) -> f64 {
@@ -73,6 +135,10 @@ impl ProgressObserver {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The effective number of steps for this `ZyppProgressObserver` including possible substasks
     #[doc(alias = "zypp_progress_observer_get_steps")]
     #[doc(alias = "get_steps")]
     pub fn steps(&self) -> f64 {
@@ -81,6 +147,9 @@ impl ProgressObserver {
         }
     }
 
+    /// Increases the current progress value by the number of given steps
+    /// ## `increase`
+    /// Number of steps to increase the value
     #[doc(alias = "zypp_progress_observer_inc")]
     pub fn inc(&self, increase: i32) {
         unsafe {
@@ -88,6 +157,10 @@ impl ProgressObserver {
         }
     }
 
+    /// Changes the currently used nr of expected steps for this `ZyppProgressObserver`, if the given value is less than
+    /// 0 nothing is changed.
+    /// ## `stepCount`
+    /// New number of steps
     #[doc(alias = "zypp_progress_observer_set_base_steps")]
     #[doc(alias = "base-steps")]
     pub fn set_base_steps(&self, stepCount: i32) {
@@ -103,6 +176,7 @@ impl ProgressObserver {
         }
     }
 
+    /// Fills the progress and all its children up to 100% and emits the finished signal
     #[doc(alias = "zypp_progress_observer_set_finished")]
     pub fn set_finished(&self) {
         unsafe {
@@ -110,6 +184,9 @@ impl ProgressObserver {
         }
     }
 
+    /// Changes the currently used label
+    /// ## `label`
+    /// The new label
     #[doc(alias = "zypp_progress_observer_set_label")]
     #[doc(alias = "label")]
     pub fn set_label(&self, label: &str) {

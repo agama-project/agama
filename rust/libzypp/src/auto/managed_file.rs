@@ -17,6 +17,10 @@ glib::wrapper! {
 }
 
 impl ManagedFile {
+    /// ## `path`
+    /// The path of the file we want to manage
+    /// ## `dispose`
+    /// If set to true the file is cleaned up when the [`ManagedFile`][crate::ManagedFile] gets out of scope
     #[doc(alias = "zypp_managed_file_new")]
     pub fn new(path: &str, dispose: bool) -> ManagedFile {
         assert_initialized_main_thread!();
@@ -25,6 +29,10 @@ impl ManagedFile {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The currently managed path
     #[doc(alias = "zypp_managed_file_get_path")]
     #[doc(alias = "get_path")]
     pub fn path(&mut self) -> Option<glib::GString> {
@@ -33,6 +41,7 @@ impl ManagedFile {
         }
     }
 
+    /// Enables or disables dispose for this object
     #[doc(alias = "zypp_managed_file_set_dispose_enabled")]
     pub fn set_dispose_enabled(&mut self, enabled: bool) {
         unsafe {

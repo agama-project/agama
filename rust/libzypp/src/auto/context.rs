@@ -7,6 +7,26 @@ use glib::{prelude::*,signal::{connect_raw, SignalHandlerId},translate::*};
 use std::{boxed::Box as Box_};
 
 glib::wrapper! {
+    /// This class is the basic building block for the zypp glib API. It defines the path of the
+    /// root filesystem we are operating on. This is usually "/" but to support chroot use cases it
+    /// can point to any directory in a filesystem where packages should be installed into. If the rootfs
+    /// is not defined as "/" then zypp will install packages using chroot into the directory.
+    ///
+    /// Settings for zypp are loaded from the rootfs directory and locks are also applied relative to it.
+    /// Meaning that one context can operate on "/" while another one can operate on "/tmp/rootfs".
+    ///
+    /// \note Currently only one ZyppContext is supported until we have refactored the underlying code to support
+    ///  having multiple of them. Mixing them atm will not work due to locks and libsolv limitations
+    ///
+    /// ## Properties
+    ///
+    ///
+    /// #### `versionprop`
+    ///  Readable
+    ///
+    ///
+    /// #### `zypp-cppObj`
+    ///  Writeable | Construct Only
     #[doc(alias = "ZyppContext")]
     pub struct Context(Object<ffi::ZyppContext, ffi::ZyppContextClass>);
 
@@ -25,6 +45,9 @@ impl Context {
             }
         
 
+    /// Loads the system at the given sysroot, returns TRUE on success, otherwise FALSE
+    /// ## `sysRoot`
+    /// The system sysroot to load, if a nullptr is given "/" is used
     #[doc(alias = "zypp_context_load_system")]
     pub fn load_system(&self, sysRoot: Option<&str>) -> Result<(), glib::Error> {
         unsafe {
@@ -35,6 +58,10 @@ impl Context {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The context root as requested when loading the system
     #[doc(alias = "zypp_context_sysroot")]
     pub fn sysroot(&self) -> Option<glib::GString> {
         unsafe {

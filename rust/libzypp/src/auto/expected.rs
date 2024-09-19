@@ -6,6 +6,7 @@ use crate::{ffi};
 use glib::{translate::*};
 
 glib::wrapper! {
+    ///
     #[doc(alias = "ZyppExpected")]
     pub struct Expected(Object<ffi::ZyppExpected, ffi::ZyppExpectedClass>);
 
@@ -15,6 +16,7 @@ glib::wrapper! {
 }
 
 impl Expected {
+    /// Creates a new ZyppExcpected containing a error
     #[doc(alias = "zypp_expected_new_error")]
     pub fn new_error(error: &mut glib::Error) -> Expected {
         assert_initialized_main_thread!();
@@ -23,6 +25,7 @@ impl Expected {
         }
     }
 
+    /// Creates a new ZyppExcpected containing a value
     #[doc(alias = "zypp_expected_new_value")]
     pub fn new_value(value: &glib::Value) -> Expected {
         assert_initialized_main_thread!();
@@ -31,6 +34,10 @@ impl Expected {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The error or NULL if there is no error
     #[doc(alias = "zypp_expected_get_error")]
     #[doc(alias = "get_error")]
     pub fn error(&self) -> Option<glib::Error> {
@@ -39,6 +46,10 @@ impl Expected {
         }
     }
 
+    ///
+    /// # Returns
+    ///
+    /// The value or NULL if there is none or a error
     #[doc(alias = "zypp_expected_get_value")]
     #[doc(alias = "get_value")]
     pub fn value(&self) -> Result<Option<glib::Value>, glib::Error> {

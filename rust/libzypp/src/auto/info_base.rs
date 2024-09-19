@@ -24,6 +24,11 @@ mod sealed {
     impl<T: super::IsA<super::InfoBase>> Sealed for T {}
 }
 
+/// Trait containing all [`struct@InfoBase`] methods.
+///
+/// # Implementors
+///
+/// [`InfoBase`][struct@crate::InfoBase], [`RepoInfo`][struct@crate::RepoInfo], [`ServiceInfo`][struct@crate::ServiceInfo]
 pub trait InfoBaseExt: IsA<InfoBase> + sealed::Sealed + 'static {
     #[doc(alias = "zypp_info_base_alias")]
     fn alias(&self) -> Option<glib::GString> {
