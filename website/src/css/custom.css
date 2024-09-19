@@ -9,7 +9,6 @@
 
 :root {
   /* SUSE colors, https://brand.suse.com/brand-system/color-palette */
-  --pineGreeColor: #0c322c;
   --jungleGreenColor: #30ba78;
 
   --ifm-color-primary: #0c322c;
@@ -22,6 +21,7 @@
 
   --ifm-heading-font-family: "Poppins", var(--ifm-font-family-base);
   --ifm-heading-font-weight: 500;
+  --ifm-h1-font-size: 3rem;
   --ifm-h2-font-size: 2rem;
 
   --ifm-code-font-size: 95%;
@@ -41,17 +41,28 @@
   }
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/**
+ * For readability concerns, you should choose a lighter palette in dark mode
+ *
+ * NOTE: #40ce8a is a lighter variant of SUSE Jungle Green color (#30BA78).
+ * Needed such a lighter version as primary color in order to achieve
+ * acceptable constrast ratings for the other dark and light variants.
+ * Variants calculated with the help of
+ * https://docusaurus.io/docs/styling-layout#styling-your-site-with-infima
+ */
 [data-theme="dark"] {
-  --ifm-color-primary: #fff;
-  --ifm-color-primary-dark: var(--pineGreeColor);
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #40ce8a;
+  --ifm-color-primary-dark: #35cb83;
+  --ifm-color-primary-darker: #32c17d;
+  --ifm-color-primary-darkest: #2cac6f;
+  --ifm-color-primary-light: #4bd191;
+  --ifm-color-primary-lighter: #76dcab;
+  --ifm-color-primary-lightest: #96e4bf;
+  --ifm-background-color: #0c322c;
+
   .footer--dark {
     --ifm-footer-background-color: var(--ifm-navbar-background-color);
   }
+
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
