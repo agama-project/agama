@@ -82,12 +82,30 @@ const columns = [
 ];
 
 const ConfirmFormat = ({ devices, isOpen, toggle, action }) => {
+  const offline = devices.filter((d: DASDDevice) => !d.enabled);
+
+  if (offline.length > 0) {
+    return (
+      <Popup isOpen={isOpen}>
+        <Text>
+          {_(
+            "The DASD devices listed below are offline and cannot be formatted, please unselect or activate them in order to continue",
+          )}
+        </Text>
+        <Text>{offline.map((d: DASDDevice) => d.id).join(", ")}</Text>
+        <Popup.Actions>
+          <Popup.Confirm onClick={() => toggle()}>{_("Accept")}</Popup.Confirm>
+        </Popup.Actions>
+      </Popup>
+    );
+  }
+
   return (
     <Popup isOpen={isOpen}>
       <Text>
         {_("The DASD devices listed below are going to be formatted, do you want to proceed?")}
       </Text>
-      <Text>{devices.join(", ")}</Text>
+      <Text>{devices.map((d: DASDDevice) => d.id).join(", ")}</Text>
       <Popup.Actions>
         <Popup.Confirm onClick={() => action()} />
         <Popup.Cancel onClick={() => toggle()} />
@@ -131,7 +149,7 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: b
   return (
     <>
       <ConfirmFormat
-        devices={deviceIds}
+        devices={devices}
         isOpen={confirmFormat}
         toggle={onToggleConfirm}
         action={format}
