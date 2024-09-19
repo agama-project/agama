@@ -86,7 +86,7 @@ const ConfirmFormat = ({ devices, isOpen, toggle, action }) => {
 
   if (offline.length > 0) {
     return (
-      <Popup isOpen={isOpen}>
+      <Popup isOpen={isOpen} aria-label="DASD format offline warning dialog">
         <Text>
           {_(
             "The DASD devices listed below are offline and cannot be formatted, please unselect or activate them in order to continue",
@@ -101,7 +101,7 @@ const ConfirmFormat = ({ devices, isOpen, toggle, action }) => {
   }
 
   return (
-    <Popup isOpen={isOpen}>
+    <Popup isOpen={isOpen} aria-label="DASD format confirmation dialog">
       <Text>
         {_("The DASD devices listed below are going to be formatted, do you want to proceed?")}
       </Text>
@@ -371,7 +371,7 @@ export default function DASDTable() {
         </ToolbarContent>
       </Toolbar>
 
-      <Page.Section>
+      <Page.Section aria-label="DASDs table section">
         <Content />
       </Page.Section>
     </>
