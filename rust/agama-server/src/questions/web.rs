@@ -147,10 +147,8 @@ impl<'a> QuestionsClient<'a> {
     }
 
     pub async fn delete(&self, id: u32) -> Result<(), ServiceError> {
-        let question_path = ObjectPath::from(
-            ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
-                .context("Failed to create dbus path")?,
-        );
+        let question_path = ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
+            .context("Failed to create a D-Bus path")?;
 
         self.questions_proxy
             .delete(&question_path)

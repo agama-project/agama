@@ -116,7 +116,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
        )
     )
 )]
-async fn probe_action<'a>(State(state): State<ManagerState<'a>>) -> Result<(), Error> {
+async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
     let dbus = state.dbus.clone();
     tokio::spawn(async move {
         let result = dbus

@@ -75,7 +75,7 @@ impl DASDDeviceStream {
         let mut cache: ObjectsCache<DASDDevice> = Default::default();
         let client = DASDClient::new(dbus.clone()).await?;
         for (path, device) in client.devices().await? {
-            cache.add(path.into(), device);
+            cache.add(path, device);
         }
 
         Ok(Self {
@@ -250,13 +250,7 @@ impl Stream for DASDFormatJobStream {
         Poll::Ready(loop {
             let item = ready!(pinned.inner.as_mut().poll_next(cx));
             let next_value = match item {
-                Some(change) => {
-                    if let Some(event) = Self::handle_change(change) {
-                        Some(event)
-                    } else {
-                        None
-                    }
-                }
+                Some(change) => Self::handle_change(change),
                 None => break None,
             };
             if next_value.is_some() {

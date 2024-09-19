@@ -91,10 +91,10 @@ fn validate(path: &PathBuf) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn evaluate(path: &PathBuf) -> anyhow::Result<()> {
+fn evaluate(path: &Path) -> anyhow::Result<()> {
     let evaluator = ProfileEvaluator {};
     evaluator
-        .evaluate(&path, stdout())
+        .evaluate(path, stdout())
         .context("Could not evaluate the profile".to_string())?;
     Ok(())
 }

@@ -46,8 +46,8 @@ impl Certificate {
         let cert_bytes = std::fs::read(cert)?;
         let key_bytes = std::fs::read(key)?;
 
-        let cert = X509::from_pem(&cert_bytes.as_slice());
-        let key = PKey::private_key_from_pem(&key_bytes.as_slice());
+        let cert = X509::from_pem(&cert_bytes);
+        let key = PKey::private_key_from_pem(&key_bytes);
 
         match (cert, key) {
             (Ok(c), Ok(k)) => Ok(Certificate { cert: c, key: k }),
@@ -106,10 +106,7 @@ impl Certificate {
         builder.sign(&key, MessageDigest::sha256())?;
         let cert = builder.build();
 
-        Ok(Certificate {
-            cert: cert,
-            key: key,
-        })
+        Ok(Certificate { cert, key })
     }
 }
 
