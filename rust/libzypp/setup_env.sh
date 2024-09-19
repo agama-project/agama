@@ -67,7 +67,9 @@ rustup install stable
 # lets install gir
 cd gir
 # workaround for badly working exclude in cargo see https://github.com/rust-lang/cargo/issues/6745
-printf '\n[workspace]' >> Cargo.toml
+if ! grep -q '\[workspace\]' Cargo.toml; then
+  printf '\n[workspace]' >> Cargo.toml
+fi
 cargo install --path .
 cd -
 
