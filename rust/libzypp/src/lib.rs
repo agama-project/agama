@@ -1,6 +1,6 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-pub use ffi;
+use ffi;
 
 /// No-op.
 macro_rules! skip_assert_initialized {
@@ -15,4 +15,4 @@ macro_rules! assert_initialized_main_thread {
 
 pub use auto::*;
 mod auto;
-pub use auto::traits::InfoBaseExt;
+pub use auto::traits::*;
