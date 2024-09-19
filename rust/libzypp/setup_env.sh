@@ -3,6 +3,14 @@
 # Script that do initial setup for libzypp ng bindings development.
 # To update git submodules use
 # git submodule update --remote
+#
+# It needs TW as dev env. One of option is to use distrobox as shown:
+# ```sh
+#   distrobox create --image tumbleweed --name zyppng
+#   distrobox enter zyppng # if stuck see https://github.com/89luca89/distrobox/issues/1530 and kill and run again
+#   # and now you are inside dev env where you run this script
+#   # to clean use distrobox stop zyppng and if no longer image is needed use distrobox rm zyppng
+# ```
 
 BASEDIR=$(dirname "$0")
 
