@@ -1,16 +1,16 @@
 .features {
   list-style-type: none;
-  padding-block: 2rem;
 }
 
 .features li {
   display: flex;
   flex-direction: column-reverse;
-  gap: 1rem;
+  gap: 3rem;
+  padding-block-start: 3rem;
 }
 
 .features li p {
-  font-size: 18px;
+  font-size: 24px;
 }
 
 .features li img {

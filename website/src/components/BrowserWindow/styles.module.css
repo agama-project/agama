@@ -8,7 +8,7 @@
 .browserWindow {
   border: 3px solid var(--ifm-color-emphasis-200);
   border-radius: var(--ifm-global-radius);
-  box-shadow: var(--ifm-global-shadow-lw);
+  box-shadow: var(--ifm-global-shadow-tl);
   margin-bottom: var(--ifm-leading);
 }
 
