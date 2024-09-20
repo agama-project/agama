@@ -8,12 +8,12 @@ OBS project. These packages are automatically updated whenever the master branch
 a new version is released.
 
 You can find more details the automatic OBS synchronization in the
-[obs_integration.md](doc/obs_integration.md) file.
+[obs_integration.md](./obs_integration) section.
 
 The process to build each package is slightly different depending on the technology we are using.
 While the Ruby-based one (`rubygem-agama-yast`) is built as any other YaST package, the Agama server
-(`agama`), the CLI (`agama-cli`), and the web UI (`agama-web-ui`) rely on
-[OBS source services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html).
+(`agama`), the CLI (`agama-cli`), and the web UI (`agama-web-ui`) rely on [OBS source
+services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html).
 
 ## Versioning Policy
 
@@ -58,12 +58,16 @@ You can check the current package in
 
 Use `rake` to update the package in OBS as you would do with any other YaST package:
 
-    cd service
-    rake osc:commit
+```shell
+cd service
+rake osc:commit
+```
 
 If you just want to build the package locally, run:
 
-    rake osc:build
+```shell
+rake osc:build
+```
 
 ### Agama server, command-line and web-based user interface
 
@@ -78,21 +82,24 @@ As mentioned before, those packages are built using a service-based approach. Yo
 you installed the required OBS services: `obs-service-obs_scm`, `osb-service-cargo`, and
 `obs-service-node_modules`.
 
-    zypper --non-interactive install --no-recommends \
-      obs-service-download_files obs-service-format_spec_file \
-      obs-service-obs_scm obs-service-cargo obs-service-node_modules
+```shell
+zypper --non-interactive install --no-recommends \
+  obs-service-download_files obs-service-format_spec_file \
+  obs-service-obs_scm obs-service-cargo obs-service-node_modules
+```
 
 After checking out or branching the package, you need to run the following commands.
 
-    osc service manualrun
-    osc commit -m "Update sources" # or osc build
+```shell
+osc service manualrun
+osc commit -m "Update sources" # or osc build
+```
 
 If you want to use a different Git branch, set another version, etc. just adapt the `_service`
 accordingly before running the `osc service manualrun` command.
 
-The version number is inferred from the repository tags (see
-[Releasing a new version](#releasing-a-new-version)): it uses the latest tag and the offset of the
-latest commit respect such a tag. (e.g. `2.1+42`).
+The version number is inferred from the repository tags: it uses the latest tag and the offset of
+the latest commit respect such a tag. (e.g. `2.1+42`).
 
 You can read more about the overall approach of this package in the following article:
 [Git work flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_git_in_27/).
@@ -101,5 +108,4 @@ You can read more about the overall approach of this package in the following ar
 
 The ISO for openSUSE products is built in the
 [systemsmanagement:Agama:Devel/agama-installer-openSUSE](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-installer-openSUSE)
-OBS project. The sources are maintained in the [live](live) subdirectory. See
-[live/README.md](live/README.md) for more details.
+OBS project. See [Live ISO](./live_iso) for more details.

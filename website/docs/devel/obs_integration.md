@@ -20,16 +20,19 @@ is released. See more details below.
 ## Releasing a new version
 
 For releasing a new version just create a new version tag. The process is then fully automated. See
-more details in the [Packaging documentation](../PACKAGING.md#bumping-the-version).
+more details in the [Packaging documentation section](./packaging.md#bumping-the-version).
 
 ## OBS synchronization
 
 The automatic OBS synchronization is implemented using the [GitHub
 Actions](https://github.com/features/actions). The actions are defined in the `obs-staging-*.yml`
-files in the [.github/workflows](../.github/workflows) directory.
+files in the [.github/workflows](https://github.com/openSUSE/agama/tree/master/.github/workflows)
+directory.
 
 Because the process of updating a package is the same for several packages the definition is shared
-in the [obs-staging-shared.yml](../.github/workflows/obs-staging-shared.yml) file.
+in the
+[obs-staging-shared.yml](https://github.com/openSUSE/agama/blob/master/.github/workflows/obs-staging-shared.yml)
+file.
 
 The packages in the devel project are updated only when a respective source file is changed. That
 saves some resources for rebuilding and makes synchronization faster. But that also means the
