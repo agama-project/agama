@@ -45,25 +45,6 @@ You can download the ISO from the
 > Make sure to download the correct ISO file according to your system architecture (eg. you would
 > need to choose a file including `x86_64` if you use an Intel or AMD 64-bit processor).
 
-## Remote access
-
-The Live ISO automatically starts a graphical interface (using the local browser). However, you
-might want to access remotely to the installer. If you know the IP address of the system, you just
-need to point your browser to `https://$IP`.
-
-For the case you do not know the address, or just for convenience, the Live ISO is configured to use
-mDNS (sometimes called Avahi, Zeroconf, Bonjour) for hostname resolution. Therefore, connecting to
-`https://agama.local` should do the trick.
-
-> [!WARNING]
-> Do not use the `.local` hostnames in untrusted networks (like public WiFi networks, shared
-> networks), it is a security risk. An attacker can easily send malicious responses for the `.local`
-> hostname resolutions and point you to a wrong Agama instance which could for example steal your
-> root password!
-
-If you have troubles or you want to know more about this feature, check our
-[Avahi/mDNS](./doc/avahi.md) documentation.
-
 ## Other Resources
 
 - If you want to know how Agama works, you should read about
