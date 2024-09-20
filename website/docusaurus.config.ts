@@ -67,6 +67,11 @@ const config: Config = {
           label: "Documentation",
         },
         {
+          href: "/download",
+          label: "Download",
+          position: "left",
+        },
+        {
           href: "https://github.com/openSUSE/agama",
           label: "GitHub",
           position: "right",
