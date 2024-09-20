@@ -20,7 +20,7 @@ BASEDIR=$(dirname "$0")
 # In a testing container, we are root but there is no sudo.
 if [ $(id --user) != 0 ]; then
   SUDO=sudo
-  if [ $($SUDO id --user) != 0 ]; then
+  if [ "$($SUDO id --user)" != 0 ]; then
     echo "We are not root and cannot sudo, cannot continue."
     exit 1
   fi
