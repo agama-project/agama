@@ -28,6 +28,8 @@ else
   SUDO=""
 fi
 
+$SUDO zypper --non-interactive rm rust\* || true
+
 # install all required packages and only required as recommends are really huge
 $SUDO zypper --non-interactive install --no-recommends \
   git \
