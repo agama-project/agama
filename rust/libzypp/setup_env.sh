@@ -41,12 +41,6 @@ $SUDO zypper --non-interactive install --no-recommends \
   libboost_test-devel \
   libboost_thread-devel \
   dejagnu \
-  doxygen \
-  texlive-latex \
-  texlive-xcolor \
-  texlive-newunicodechar \
-  texlive-dvips \
-  ghostscript \
   gcc-c++ \
   gettext-devel \
   graphviz \
@@ -82,7 +76,7 @@ git submodule update --checkout
 # lets build libzypp
 cd libzypp
 make -f Makefile.cvs
-cmake -D BUILD_GLIB_API=ON
+cmake -D BUILD_GLIB_API=ON -D DISABLE_AUTODOCS=ON
 make -j$(nproc)
 $SUDO make install
 cd -
