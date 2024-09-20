@@ -64,7 +64,9 @@ describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
       expect(y2storage_settings.encryption_method).to eq(Y2Storage::EncryptionMethod::LUKS2)
       expect(y2storage_settings.encryption_pbkdf).to eq(Y2Storage::PbkdFunction::ARGON2ID)
       expect(y2storage_settings.space_settings.strategy).to eq(:bigger_resize)
-      expect(y2storage_settings.space_settings.actions).to eq({ "/dev/sda" => :force_delete })
+      expect(y2storage_settings.space_settings.actions).to eq(
+        [Y2Storage::SpaceActions::Delete.new("/dev/sda", mandatory: true)]
+      )
       expect(y2storage_settings.volumes).to include(
         an_object_having_attributes(
           mount_point: "/test",
@@ -286,11 +288,11 @@ describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
 
           expect(y2storage_settings.space_settings).to have_attributes(
             strategy: :bigger_resize,
-            actions:  {
-              "/dev/sda1" => :force_delete,
-              "/dev/sda2" => :force_delete,
-              "/dev/sda3" => :force_delete
-            }
+            actions:  [
+              Y2Storage::SpaceActions::Delete.new("/dev/sda1", mandatory: true),
+              Y2Storage::SpaceActions::Delete.new("/dev/sda2", mandatory: true),
+              Y2Storage::SpaceActions::Delete.new("/dev/sda3", mandatory: true)
+            ]
           )
         end
       end
@@ -312,9 +314,7 @@ describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
 
           expect(y2storage_settings.space_settings).to have_attributes(
             strategy: :bigger_resize,
-            actions:  {
-              "/dev/sda2" => :resize
-            }
+            actions:  [Y2Storage::SpaceActions::Resize.new("/dev/sda2")]
           )
         end
       end

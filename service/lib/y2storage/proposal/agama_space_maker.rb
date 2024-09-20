@@ -66,12 +66,12 @@ module Y2Storage
       # Space actions for devices that must be deleted.
       #
       # @param config [Agama::Storage::Config]
-      # @return [Hash]
+      # @return [Array<Y2Storage::SpaceActions::Delete>]
       def force_delete_actions(config)
         partition_configs = partitions(config).select(&:delete?)
         partition_names = device_names(partition_configs)
 
-        partition_names.each_with_object({}) { |p, a| a[p] = :force_delete }
+        partition_names.map { |p| Y2Storage::SpaceActions::Delete.new(p, mandatory: true) }
       end
 
       # Space actions for devices that might be deleted.
@@ -79,12 +79,12 @@ module Y2Storage
       # @note #delete? takes precedence over #delete_if_needed?.
       #
       # @param config [Agama::Storage::Config]
-      # @return [Hash]
+      # @return [Array<Y2Storage::SpaceActions::Delete>]
       def delete_actions(config)
         partition_configs = partitions(config).select(&:delete_if_needed?).reject(&:delete?)
         partition_names = device_names(partition_configs)
 
-        partition_names.each_with_object({}) { |p, a| a[p] = :delete }
+        partition_names.map { |p| Y2Storage::SpaceActions::Delete.new(p) }
       end
 
       # All partition configs from the given config.
