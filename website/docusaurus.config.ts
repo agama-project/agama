@@ -84,7 +84,7 @@ const config: Config = {
             },
             {
               label: "FAQ",
-              to: "/docs/faq",
+              to: "/faq",
             },
           ],
         },
