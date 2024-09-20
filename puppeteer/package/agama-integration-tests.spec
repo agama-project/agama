@@ -19,7 +19,7 @@ Name:           agama-integration-tests
 Version:        0
 Release:        0
 Summary:        Support for running Agama integration tests
-License:        GPL-2.0-only
+License:        GPL-2.0-or-later
 URL:            https://github.com/openSUSE/agama
 # source_validator insists that if obscpio has no version then
 # tarball must neither
