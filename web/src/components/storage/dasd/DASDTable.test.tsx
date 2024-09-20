@@ -65,19 +65,19 @@ describe("DASDTable", () => {
     });
 
     it("renders those devices", () => {
-      installerRender(<DASDTable aria-label="DASDs table" />);
+      installerRender(<DASDTable />);
       screen.getByText("active");
     });
 
     it("does not allow to perform any action if not selected any device", () => {
-      installerRender(<DASDTable aria-label="DASDs table" />);
+      installerRender(<DASDTable />);
       const button = screen.getByRole("button", { name: "Perform an action" });
       expect(button).toHaveAttribute("disabled");
     });
 
     describe("when there are some DASD selected", () => {
       it("allows to perform a set of actions over them", async () => {
-        const { user } = installerRender(<DASDTable aria-label="DASDs table" />);
+        const { user } = installerRender(<DASDTable />);
         const selection = screen.getByRole("checkbox", { name: "Select row 0" });
         await user.click(selection);
         const button = screen.getByRole("button", { name: "Perform an action" });
@@ -88,7 +88,7 @@ describe("DASDTable", () => {
 
       describe("and the user click on format", () => {
         it("shows a confirmation dialog if all the devices are online", async () => {
-          const { user } = installerRender(<DASDTable aria-label="DASDs table" />);
+          const { user } = installerRender(<DASDTable />);
           const selection = screen.getByRole("checkbox", { name: "Select row 1" });
           await user.click(selection);
           const button = screen.getByRole("button", { name: "Perform an action" });
@@ -100,7 +100,7 @@ describe("DASDTable", () => {
         });
 
         it("shows a warning dialog if some device is offline", async () => {
-          const { user } = installerRender(<DASDTable aria-label="DASDs table" />);
+          const { user } = installerRender(<DASDTable />);
           let selection = screen.getByRole("checkbox", { name: "Select row 0" });
           await user.click(selection);
           selection = screen.getByRole("checkbox", { name: "Select row 1" });
