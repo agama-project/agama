@@ -81,7 +81,7 @@ git submodule update --checkout
 cd libzypp
 make -f Makefile.cvs
 cmake -D BUILD_GLIB_API=ON
-make
+make -j$(nproc)
 $SUDO make install
 cd -
 
