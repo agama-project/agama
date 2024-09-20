@@ -14,7 +14,7 @@
         <profile name="openSUSE-PXE" description="openSUSE OEM image for remote instalaltion" import="true" />
     </profiles>
     <preferences>
-        <version>9.0.0</version>
+        <version>10.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
