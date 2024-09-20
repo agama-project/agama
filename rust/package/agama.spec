@@ -22,7 +22,7 @@ Release:        0
 Summary:        Agama Installer
 #               If you know the license, put it's SPDX string here.
 #               Alternately, you can use cargo lock2rpmprovides to help generate this.
-License:        GPL-2.0-only
+License:        GPL-2.0-or-later
 Url:            https://github.com/opensuse/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst

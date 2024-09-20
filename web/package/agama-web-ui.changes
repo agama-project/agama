@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 20 11:17:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change the license to GPL-2.0-or-later (gh#openSUSE/agama#1621).
+
+-------------------------------------------------------------------
 Tue Sep 17 21:19:45 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Bring back zFCP management support (gh#openSUSE/agama#1570).
