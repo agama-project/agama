@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 20 11:27:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change the license to GPL-2.0-or-later (gh#openSUSE/agama#1621).
+
+-------------------------------------------------------------------
 Thu Aug 15 08:35:31 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - change agama-auto systemd service depedencies to reflect changes
