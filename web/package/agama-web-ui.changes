@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 20 09:04:56 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Added confirmation dialog when formatting DASD devices as it is
+  considered a dangerous action (gh#openSUSE/agama#1618).
+
+-------------------------------------------------------------------
 Tue Sep 17 21:19:45 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Bring back zFCP management support (gh#openSUSE/agama#1570).
