@@ -1,6 +1,6 @@
 # AutoYaST Support
 
-Agama offers a mechanism to perform [unattended installations](../autoinstallation/). However, we
+Agama offers a mechanism to perform [unattended installations](./unattended). However, we
 would like AutoYaST users to be able to use their profiles in Agama. This document describes how
 Agama could support, to some extent, such profiles.
 
@@ -24,7 +24,7 @@ Nevertheless, we want to cover:
 We still need to decide how to handle other sections like `firewall`, `bootloader`, `report`,
 `general` or even some elements from `security` or `kdump`.
 
-Finally, we plan to "ignore" many other sections (e.g., all *-server elements) and sysconfig-like
+Finally, we plan to "ignore" many other sections (e.g., all \*-server elements) and sysconfig-like
 elements. See [Unsupported sections](#unsupported-sections).
 
 ## Dynamic profiles
@@ -202,7 +202,7 @@ format is not exactly the same.
 | prefixlen                  | Yes       | addresses   | Part of `addresses`                     |
 | remote_ipaddr              | Undecided |             |                                         |
 | netmask                    | Yes       | addresses   | Part of `addresses`                     |
-| bonding_*                  | Yes       | bond        | Use a different format to define bonds  |
+| bonding\_\*                | Yes       | bond        | Use a different format to define bonds  |
 | aliases                    | Yes       |             | Part of `addresses`                     |
 | broadcast                  | No        |             | Part of `addresses`                     |
 | network                    | No        |             | Part of `addresses`                     |

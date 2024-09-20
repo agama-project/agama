@@ -2,9 +2,9 @@
 sidebar_position: 4
 ---
 
-# Startup Process
+# Startup process
 
-As described in the [architecture section](./architecture.md), Agama is composed of a web server, a
+As described in the [architecture section](./architecture), Agama is composed of a web server, a
 set of D-Bus services, a web client and a command-line interface. The startup process aims to get
 those D-Bus services up and running and make the web server available. Additionally, the
 auto-installation procedure could be started if required by the user.
@@ -14,8 +14,9 @@ browser in the Agama Live image.
 
 ## Starting the D-Bus Services
 
-[agama.service](../service/share/agama.service) is responsible for starting up Agama's D-Bus daemon
-process using the `agamactl --daemon` command. This process uses a dedicated bus with a [specific
+[agama.service](https://github.com/openSUSE/agama/blob/master/service/share/agama.service) is
+responsible for starting up Agama's D-Bus daemon process using the `agamactl --daemon` command. This
+process uses a dedicated bus with a [specific
 configuration](https://github.com/openSUSE/agama/blob/master/service/share/dbus.conf).
 
 Once the daemon process is running, each D-Bus service will be automatically activated when
@@ -40,7 +41,8 @@ are ready.
 
 When discussing the web user interface, we can distinguish two sides: the server process and the web
 browser. Regarding the server, Agama's web UI is implemented as a React application which is served
-by the web server. You can connect to the UI using the http://$SERVER_IP` address.
+by the web server. You can connect to the UI using the `http://$SERVER_IP` address.
 
 When using Agama Live, a local web browser is automatically started. In the default image, it is
-launched using an [IceWM startup script](../live/root/root/.icewm/startup)
+launched using an [IceWM startup
+script](https://github.com/openSUSE/agama/blob/master/live/root/root/.icewm/startup).

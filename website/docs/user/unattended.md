@@ -9,9 +9,10 @@ One of the main use cases of Agama is unatteded installation. The user provides 
 selection, etc.) and Agama takes care of installing the system according to such a description. This
 approach might sound familiar to AutoYaST users.
 
-Although Agama defines its own [profile format](../rust/agama-lib/share/profile.schema.json), it is
-able to partially handle AutoYaST profiles. Please, check the [AutoYaST support
-section](autoyast.md) for further information.
+Although Agama defines its own [profile
+format](https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json), it
+is able to partially handle AutoYaST profiles. Please, check the [AutoYaST support
+section](./autoyast) for further information.
 
 ## Profile format
 
@@ -50,8 +51,9 @@ included in the repository to get an impression of how a profile looks like.
 
 ### Supported configuration values
 
-Check the [JSON Schema](../rust/agama-lib/share/profile.schema.json) to learn about the supported
-elements.
+Check the [JSON
+Schema](https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json) to
+learn about the supported elements.
 
 ### Dynamic profiles
 

@@ -5,7 +5,7 @@ sidebar_position: 1
 # Interactive installation
 
 Agama features a web-based user interface that you can use to install the system either locally or
-from a remote device. For local installations, once you boot [the Live image](../download), you
+from a remote device. For local installations, once you boot [the Live image](/download), you
 should get to the product selection screen. If you want to connect from a remote device, please
 check the [connecting remotely] section.
 
@@ -17,7 +17,7 @@ the installation workflow.
 ### Product selection
 
 Agama allows installing several SUSE and openSUSE-based distributions. The [openSUSE-based
-image](../download) image includes [openSUSE Tumbleweed](https://www.opensuse.org/#Tumbleweed),
+image](/download) image includes [openSUSE Tumbleweed](https://www.opensuse.org/#Tumbleweed),
 [openSUSE Leap 16.0 Alpha](https://www.opensuse.org/#Leap) and [openSUSE Micro
 OS](https://get.opensuse.org/microos/).
 
