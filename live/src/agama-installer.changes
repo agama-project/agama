@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 20 11:44:43 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 10
+
+-------------------------------------------------------------------
 Thu Sep 19 12:02:59 UTC 2024 - Joaquín Rivera <jeriveramoya@suse.com>
 
 - Revert to use tty7 (gh#openSUSE/agama#1582)
