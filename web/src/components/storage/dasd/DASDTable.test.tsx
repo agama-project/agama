@@ -27,7 +27,6 @@ import DASDTable from "./DASDTable";
 
 let mockDASDDevices: DASDDevice[] = [];
 
-let consoleErrorSpy;
 jest.mock("~/queries/storage/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
   useDASDMutation: () => jest.fn(),
@@ -35,14 +34,6 @@ jest.mock("~/queries/storage/dasd", () => ({
 }));
 
 describe("DASDTable", () => {
-  beforeAll(() => {
-    consoleErrorSpy = jest.spyOn(console, "error");
-    consoleErrorSpy.mockImplementation();
-  });
-
-  afterAll(() => {
-    consoleErrorSpy.mockRestore();
-  });
   describe("when there is some DASD devices available", () => {
     beforeEach(() => {
       mockDASDDevices = [
@@ -105,7 +96,7 @@ describe("DASDTable", () => {
           await user.click(button);
           const format = screen.getByRole("menuitem", { name: "Format" });
           await user.click(format);
-          screen.getByRole("dialog", { name: "DASD format confirmation dialog" });
+          screen.getByRole("dialog", { name: "Format confirmation" });
         });
 
         it("shows a warning dialog if some device is offline", async () => {
@@ -119,7 +110,7 @@ describe("DASDTable", () => {
           await user.click(button);
           const format = screen.getByRole("menuitem", { name: "Format" });
           await user.click(format);
-          screen.getByRole("dialog", { name: "DASD format offline warning dialog" });
+          screen.getByRole("dialog", { name: "Offline DASD devices" });
         });
       });
     });

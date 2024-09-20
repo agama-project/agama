@@ -80,65 +80,58 @@ const columns = [
   { id: "formatted", label: _("Formatted") },
   { id: "partitionInfo", label: _("Partition Info") },
 ];
+const DevicesList = ({ devices }) => (
+  <ul>
+    {devices.map((d: DASDDevice) => (
+      <li key={d.id}>{d.id}</li>
+    ))}
+  </ul>
+);
+const FormatNotPossible = ({ devices, onAccept }) => (
+  <Popup isOpen title={_("Offline DASD devices")}>
+    <Text>
+      {_(
+        "The DASD devices listed below are offline and cannot be formatted, please unselect or activate them in order to continue",
+      )}
+    </Text>
+    <DevicesList devices={devices} />
+    <Popup.Actions>
+      <Popup.Confirm onClick={onAccept}>{_("Accept")}</Popup.Confirm>
+    </Popup.Actions>
+  </Popup>
+);
 
-const ConfirmFormat = ({ devices, isOpen, toggle, action }) => {
-  const offline = devices.filter((d: DASDDevice) => !d.enabled);
-
-  if (offline.length > 0) {
-    return (
-      <Popup isOpen={isOpen} aria-label="DASD format offline warning dialog">
-        <Text>
-          {_(
-            "The DASD devices listed below are offline and cannot be formatted, please unselect or activate them in order to continue",
-          )}
-        </Text>
-        <Text>{offline.map((d: DASDDevice) => d.id).join(", ")}</Text>
-        <Popup.Actions>
-          <Popup.Confirm onClick={() => toggle()}>{_("Accept")}</Popup.Confirm>
-        </Popup.Actions>
-      </Popup>
-    );
-  }
-
-  return (
-    <Popup isOpen={isOpen} aria-label="DASD format confirmation dialog">
-      <Text>
-        {_("The DASD devices listed below are going to be formatted, do you want to proceed?")}
-      </Text>
-      <Text>{devices.map((d: DASDDevice) => d.id).join(", ")}</Text>
-      <Popup.Actions>
-        <Popup.Confirm onClick={() => action()} />
-        <Popup.Cancel onClick={() => toggle()} />
-      </Popup.Actions>
-    </Popup>
-  );
-};
+const FormatConfirmation = ({ devices, onCancel, onConfirm }) => (
+  <Popup isOpen title={_("Format confirmation")}>
+    <Text>
+      {_("The DASD devices listed below are going to be formatted, do you want to proceed?")}
+    </Text>
+    <DevicesList devices={devices} />
+    <Popup.Actions>
+      <Popup.Confirm onClick={onConfirm} />
+      <Popup.Cancel onClick={onCancel} />
+    </Popup.Actions>
+  </Popup>
+);
 
 const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
   const { mutate: updateDASD } = useDASDMutation();
   const { mutate: formatDASD } = useFormatDASDMutation();
   const [isOpen, setIsOpen] = useState(false);
-  const [confirmFormat, setConfirmFormat] = useState(false);
+  const [requestFormat, setRequestFormat] = useState(false);
 
   const onToggle = () => setIsOpen(!isOpen);
-  const onToggleConfirm = () => setConfirmFormat(!confirmFormat);
   const onSelect = () => setIsOpen(false);
+  const cancelFormatRequest = () => setRequestFormat(false);
 
   const deviceIds = devices.map((d) => d.id);
+  const offlineDevices = devices.filter((d) => !d.enabled);
+  const offlineDevicesSelected = offlineDevices.length > 0;
   const activate = () => updateDASD({ action: "enable", devices: deviceIds });
   const deactivate = () => updateDASD({ action: "disable", devices: deviceIds });
   const setDiagOn = () => updateDASD({ action: "diagOn", devices: deviceIds });
   const setDiagOff = () => updateDASD({ action: "diagOff", devices: deviceIds });
-  const format = () => {
-    const offline = devices.filter((d) => !d.enabled);
-
-    if (offline.length > 0) {
-      return false;
-    }
-
-    formatDASD(devices.map((d) => d.id));
-    onToggleConfirm();
-  };
+  const format = () => formatDASD(devices.map((d) => d.id));
 
   const Action = ({ children, ...props }) => (
     <DropdownItem component="button" {...props}>
@@ -148,12 +141,20 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: b
 
   return (
     <>
-      <ConfirmFormat
-        devices={devices}
-        isOpen={confirmFormat}
-        toggle={onToggleConfirm}
-        action={format}
-      />
+      {requestFormat && offlineDevicesSelected && (
+        <FormatNotPossible devices={offlineDevices} onAccept={cancelFormatRequest} />
+      )}
+
+      {requestFormat && !offlineDevicesSelected && (
+        <FormatConfirmation
+          devices={devices}
+          onCancel={cancelFormatRequest}
+          onConfirm={() => {
+            cancelFormatRequest();
+            format();
+          }}
+        />
+      )}
       <Dropdown
         isOpen={isOpen}
         onSelect={onSelect}
@@ -184,7 +185,7 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: b
           </Action>
           <Divider key="second-separator" />
           {/** TRANSLATORS: drop down menu action, format the disk */}
-          <Action key="format" onClick={() => setConfirmFormat(true)}>
+          <Action key="format" onClick={() => setRequestFormat(true)}>
             {_("Format")}
           </Action>
         </DropdownList>
@@ -371,7 +372,7 @@ export default function DASDTable() {
         </ToolbarContent>
       </Toolbar>
 
-      <Page.Section aria-label="DASDs table section">
+      <Page.Section aria-label={_("DASDs table section")}>
         <Content />
       </Page.Section>
     </>
