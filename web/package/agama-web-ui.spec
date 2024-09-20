@@ -20,7 +20,7 @@ Name:           agama-web-ui
 Version:        0
 Release:        0
 Summary:        Web UI for Agama installer
-License:        GPL-2.0-only
+License:        GPL-2.0-or-later
 URL:            https://github.com/openSUSE/agama
 # source_validator insists that if obscpio has no version then
 # tarball must neither
