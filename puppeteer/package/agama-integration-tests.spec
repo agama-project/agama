@@ -69,6 +69,7 @@ rm %{buildroot}%{_datadir}/agama/integration-tests/node_modules/.package-lock.js
 %files
 %defattr(-,root,root,-)
 %doc README.md
+%license LICENSE
 %dir %{_datadir}/agama
 %{_datadir}/agama/integration-tests
 %attr(0755,root,root) %{_bindir}/agama-integration-tests
