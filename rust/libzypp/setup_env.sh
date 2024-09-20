@@ -84,6 +84,9 @@ cd -
 
 # to use gir follow https://gtk-rs.org/gir/book/tutorial/sys_library.html
 
+# install doc tool
+cargo install rustdoc-stripper
+
 cargo build
 
 echo 'To test if everything work run `../target/debug/zypprs`'
