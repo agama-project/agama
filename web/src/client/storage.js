@@ -238,7 +238,7 @@ const dbusBasename = (path) => path.split("/").slice(-1)[0];
  */
 class ProposalManager {
   /**
-   * @param {import("./http").HTTPClien} client
+   * @param {import("./http").HTTPClient} client
    */
   constructor(client) {
     this.client = client;
