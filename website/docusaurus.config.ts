@@ -56,6 +56,11 @@ const config: Config = {
       // },
       items: [
         {
+          href: "/about",
+          label: "About",
+          position: "left",
+        },
+        {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "left",
