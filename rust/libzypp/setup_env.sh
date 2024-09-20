@@ -12,10 +12,24 @@
 #   # to clean use distrobox stop zyppng and if no longer image is needed use distrobox rm zyppng
 # ```
 
+set -eu
 BASEDIR=$(dirname "$0")
 
+# Helper:
+# Ensure root privileges for the installation.
+# In a testing container, we are root but there is no sudo.
+if [ $(id --user) != 0 ]; then
+  SUDO=sudo
+  if [ $($SUDO id --user) != 0 ]; then
+    echo "We are not root and cannot sudo, cannot continue."
+    exit 1
+  fi
+else
+  SUDO=""
+fi
+
 # install all required packages and only required as recommends are really huge
-sudo zypper --non-interactive install --no-recommends \
+$SUDO zypper --non-interactive install --no-recommends \
   git \
   cmake \
   openssl \
@@ -68,7 +82,7 @@ cd libzypp
 make -f Makefile.cvs
 cmake -D BUILD_GLIB_API=ON
 make
-sudo make install
+$SUDO make install
 cd -
 
 # now lets make rust working
