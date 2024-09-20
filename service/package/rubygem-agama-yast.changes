@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 20 13:09:47 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Storage: preliminary support for resizing partitions based on
+  limits specified at the config (gh#openSUSE/agama#1599).
+
+-------------------------------------------------------------------
 Fri Sep 20 11:40:53 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 10

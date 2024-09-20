@@ -38,6 +38,7 @@ describe Agama::Storage::Action do
     sda2.filesystem.delete_btrfs_subvolume("home")
 
     # Resize sda2
+    allow(sda2).to receive(:resize_info).and_return(resize_info)
     sda2.resize(Y2Storage::DiskSize.GiB(30))
   end
 
@@ -57,6 +58,13 @@ describe Agama::Storage::Action do
       .find { |a| a.target_device.is?(:btrfs_subvolume) }
 
     described_class.new(action, system_graph)
+  end
+
+  let(:resize_info) do
+    instance_double(
+      Y2Storage::ResizeInfo, resize_ok?: true,
+      min_size: Y2Storage::DiskSize.GiB(20), max_size: Y2Storage::DiskSize.GiB(40)
+    )
   end
 
   describe "#device_sid" do

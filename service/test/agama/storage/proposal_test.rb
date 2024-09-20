@@ -204,6 +204,7 @@ describe Agama::Storage::Proposal do
       let(:config_json) do
         {
           storage: {
+            boot:   { configure: false },
             drives: [
               {
                 filesystem: {
