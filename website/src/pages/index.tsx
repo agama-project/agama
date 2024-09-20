@@ -19,7 +19,7 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link className="button button--secondary button--lg" to="/download">
-            Give it a try
+            Download Agama Live ISO
           </Link>
         </div>
       </div>
@@ -41,12 +41,11 @@ export default function Home(): JSX.Element {
           className="contianer text--center margin-vert--xl"
           style={{ width: "100%" }}
         >
-          <p className="hero__subtitle">Don't be shy</p>
           <Link
-            className={clsx("button button--primary", styles.bigButton)}
+            className={clsx("button button--primary button--lg")}
             to="/download"
           >
-            Give it a try
+            Download Agama Live ISO
           </Link>
         </div>
       </main>
