@@ -173,8 +173,7 @@ module.exports = {
               getCustomTransformers: () => ({
                 before: [development && ReactRefreshTypeScript()].filter(Boolean),
               }),
-              // FIXME: temporarily disable the type checking.
-              transpileOnly: true,
+              transpileOnly: development,
             },
           },
         ],
