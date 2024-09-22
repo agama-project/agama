@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-28 02:30+0000\n"
+"POT-Creation-Date: 2024-09-18 02:35+0000\n"
 "PO-Revision-Date: 2024-06-26 10:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -133,6 +133,40 @@ msgstr "Продукт должен быть зарегистрирован"
 msgid "Found %s dependency issues."
 msgstr "Найдено %s проблем с зависимостями."
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:112
+#, c-format
+msgid "There is no LVM thin pool volume with alias %s"
+msgstr ""
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:129
+#, c-format
+msgid "There is no LVM physical volume with alias %s"
+msgstr ""
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:160
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr ""
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:178
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr ""
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:197
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr ""
+
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
@@ -226,46 +260,21 @@ msgstr ""
 "Необходимо определить пользователя, установить пароль root или открытый ключ "
 "SSH"
 
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:134
-#, perl-brace-format
-msgid ""
-"No passphrase provided (required for using the method '%{crypt_method}')."
-msgstr ""
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:145
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr ""
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:156
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr ""
-
 #. @see #not_found_issue
-#: service/lib/y2storage/proposal/agama_searcher.rb:98
+#: service/lib/y2storage/proposal/agama_searcher.rb:158
 msgid "No device found for an optional drive"
 msgstr ""
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:100
+#: service/lib/y2storage/proposal/agama_searcher.rb:160
 msgid "No device found for a mandatory drive"
 msgstr ""
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:103
+#: service/lib/y2storage/proposal/agama_searcher.rb:163
 #, fuzzy
 msgid "No device found for an optional partition"
 msgstr "Не выбрано устройство для установки"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:105
+#: service/lib/y2storage/proposal/agama_searcher.rb:165
 #, fuzzy
 msgid "No device found for a mandatory partition"
 msgstr "Не выбрано устройство для установки"
