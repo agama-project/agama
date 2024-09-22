@@ -64,7 +64,16 @@ module Agama
         #
         # @param target [Agama::Storage::ProposalSettings]
         def space_actions_conversion(target)
-          target.space.actions = y2storage_settings.space_settings.actions
+          target.space.actions = y2storage_settings.space_settings.actions.map do |action|
+            [action.device, action_to_symbol(action)]
+          end.to_h
+        end
+
+        # @see #space_action_conversion
+        def action_to_symbol(action)
+          return :resize if action.is?(:resize)
+
+          action.mandatory ? :force_delete : :delete
         end
 
         # Some values of the volumes have to be recovered from Y2Storage proposal.
