@@ -88,10 +88,10 @@ const DevicesList = ({ devices }) => (
   </ul>
 );
 const FormatNotPossible = ({ devices, onAccept }) => (
-  <Popup isOpen title={_("Offline DASD devices")}>
+  <Popup isOpen title={_("Cannot format all selected devices")}>
     <Text>
       {_(
-        "The DASD devices listed below are offline and cannot be formatted, please unselect or activate them in order to continue",
+        "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again",
       )}
     </Text>
     <DevicesList devices={devices} />
@@ -102,9 +102,11 @@ const FormatNotPossible = ({ devices, onAccept }) => (
 );
 
 const FormatConfirmation = ({ devices, onCancel, onConfirm }) => (
-  <Popup isOpen title={_("Format confirmation")}>
+  <Popup isOpen title={_("Format selected devices?")}>
     <Text>
-      {_("The DASD devices listed below are going to be formatted, do you want to proceed?")}
+      {_(
+        "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.",
+      )}
     </Text>
     <DevicesList devices={devices} />
     <Popup.Actions>
