@@ -97,7 +97,7 @@ describe("DASDTable", () => {
           await user.click(button);
           const format = screen.getByRole("menuitem", { name: "Format" });
           await user.click(format);
-          screen.getByRole("dialog", { name: "Format confirmation" });
+          screen.getByRole("dialog", { name: "Format selected devices?" });
         });
 
         it("shows a warning dialog if some device is offline", async () => {
@@ -111,7 +111,7 @@ describe("DASDTable", () => {
           await user.click(button);
           const format = screen.getByRole("menuitem", { name: "Format" });
           await user.click(format);
-          screen.getByRole("dialog", { name: "Offline DASD devices" });
+          screen.getByRole("dialog", { name: "Cannot format all selected devices" });
         });
       });
     });
