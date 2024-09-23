@@ -1,6 +1,11 @@
 # Frequently Asked Questions
 
-## Why a New Installer
+## What is Agama?
+
+Short answer - a Linux installer intended as the evolution of YaST. For a longer answer, check
+the [About](/about) section.
+
+## Why a new installer?
 
 This new project follows two main motivations: to overcome some of the limitations of YaST and to
 serve as installer for new projects, like those based on SUSE Linux Framework One.
@@ -14,3 +19,23 @@ cases. But time goes by, and the good old YaST is starting to show its age in so
 - Sharing logic with other tools like Salt or Ansible is very difficult.
 - Some in-house solutions like [libyui](https://github.com/libyui/libyui) make more difficult to
   contribute to the project.
+
+## How is Agama different from YaST?
+
+TBD.
+
+## Will Agama replace YaST as the main installer for SUSE Linux or openSUSE distributions?
+
+TBD.
+
+## What can I configure with Agama?
+
+TBD.
+
+## Where is the nCurses interface?
+
+TBD.
+
+## Can I use my existing AutoYaST profiles and infrastructure?
+
+TBD.
