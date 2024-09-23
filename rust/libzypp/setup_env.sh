@@ -74,12 +74,18 @@ git submodule init
 git submodule update --checkout
 
 # lets build libzypp
+(
 cd libzypp
-make -f Makefile.cvs
-cmake -D BUILD_GLIB_API=ON -D DISABLE_AUTODOCS=ON
+mkdir -p build
+cd build
+# With /usr/local, we have to set a path: LD_LIBRARY_PATH=/usr/local/lib64 zypprs
+# but the plus side is that the /usr zypper keeps working :)
+#
+# cmake -D CMAKE_INSTALL_PREFIX=/usr/local -D BUILD_GLIB_API=ON -D DISABLE_AUTODOCS=ON ..
+cmake -D BUILD_GLIB_API=ON -D DISABLE_AUTODOCS=ON ..
 make -j$(nproc)
 $SUDO make install
-cd -
+)
 
 # now lets make rust working
 rustup install stable
