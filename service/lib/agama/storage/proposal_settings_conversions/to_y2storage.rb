@@ -126,16 +126,30 @@ module Agama
 
           actions = case settings.space.policy
           when :delete
-            all_devices.each_with_object({}) { |d, a| a[d] = :force_delete }
+            all_devices.map { |d| Y2Storage::SpaceActions::Delete.new(d, mandatory: true) }
           when :resize
-            all_devices.each_with_object({}) { |d, a| a[d] = :resize }
+            all_devices.map { |d| Y2Storage::SpaceActions::Resize.new(d) }
           when :keep
             {}
           when :custom
-            settings.space.actions
+            custom_space_actions
           end
 
           target.space_settings.actions = remove_unsupported_actions(actions)
+        end
+
+        # @see #space_policy_conversion
+        def custom_space_actions
+          settings.space.actions.map do |device, action|
+            case action
+            when :force_delete
+              Y2Storage::SpaceActions::Delete.new(device, mandatory: true)
+            when :delete
+              Y2Storage::SpaceActions::Delete.new(device)
+            when :resize
+              Y2Storage::SpaceActions::Resize.new(device)
+            end
+          end
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -228,7 +242,7 @@ module Agama
         # @param actions [Hash]
         # @return [Hash]
         def remove_unsupported_actions(actions)
-          actions.reject { |d, a| a == :resize && !support_shrinking?(d) }
+          actions.reject { |a| a.is?(:resize) && !support_shrinking?(a.device) }
         end
 
         # Whether the device supports shrinking.

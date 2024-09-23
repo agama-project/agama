@@ -84,7 +84,7 @@ module Y2Storage
       attr_reader :creator_result
 
       # @return [Devicegraph] Current devicegraph
-      attr_reader :devicegraph
+      attr_accessor :devicegraph
 
     private
 
@@ -133,21 +133,11 @@ module Y2Storage
         # Check whether there is any chance of getting an unwanted order for the planned partitions
         # within a disk
         space_result = provide_space(partitions, original_graph, lvm_helper)
+        self.devicegraph = space_result[:devicegraph]
+        distribution = space_result[:partitions_distribution]
 
-        partition_creator = PartitionCreator.new(space_result[:devicegraph])
-        self.creator_result =
-          partition_creator.create_partitions(space_result[:partitions_distribution])
-
-        # This may be here or before create_partitions.
-        #
-        # What about resizing if needed?
-        # Likely shrinking is fine and should be always handled at the SpaceMaker.
-        # But I'm not so sure if growing is so fine (we may need to make some space first).
-        # I don't think we have the growing case covered by SpaceMaker, the distribution
-        # calculator, etc.
-        planned_devices
-          .select(&:reuse?)
-          .map { |d| d.reuse!(devicegraph) }
+        grow_and_reuse_devices(distribution)
+        self.creator_result = PartitionCreator.new(devicegraph).create_partitions(distribution)
       end
 
       # @see #process_devices
@@ -189,6 +179,29 @@ module Y2Storage
         result = space_maker.provide_space(devicegraph, planned_partitions, lvm_helper)
         log.info "Found enough space"
         result
+      end
+
+      # @see #process_existing_partitionables
+      def grow_and_reuse_devices(distribution)
+        planned_devices.select(&:reuse?).each do |planned|
+          space = assigned_space_next_to(planned, distribution)
+
+          planned.limit_grow(space.disposable_size, devicegraph) if space
+          planned.reuse!(devicegraph)
+          # TODO: Check if the final size is smaller than the min and... abort? register issue?
+          space&.update_disk_space
+        end
+      end
+
+      # Assigned space that is located next to the given planned device, only if that device
+      # points to an existing partition that needs to grow
+      #
+      # @return [Y2Storage::Planned::AssignedSpace]
+      def assigned_space_next_to(planned, distribution)
+        return unless planned.respond_to?(:subsequent_slot?)
+        return unless planned.resize?
+
+        distribution.spaces.find { |s| planned.subsequent_slot?(s) }
       end
 
       # @see #process_existing_partitionables

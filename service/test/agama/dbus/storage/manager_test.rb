@@ -608,8 +608,13 @@ describe Agama::DBus::Storage::Manager do
           d.filesystem = filesystem
         end
 
+        boot = Agama::Storage::Configs::Boot.new.tap do |b|
+          b.configure = false
+        end
+
         Agama::Storage::Config.new.tap do |config|
           config.drives = [drive]
+          config.boot = boot
         end
       end
 

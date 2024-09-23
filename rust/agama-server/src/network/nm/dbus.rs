@@ -1,3 +1,23 @@
+// Copyright (c) [2024] SUSE LLC
+//
+// All Rights Reserved.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, contact SUSE LLC.
+//
+// To contact SUSE LLC about this file by physical or electronic mail, you may
+// find current contact information at www.suse.com.
+
 //! This module implements some functions to convert from/to D-Bus types
 //!
 //! Working with hash maps coming from D-Bus is rather tedious and it is even worse when working
@@ -375,7 +395,7 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
     ipv6_dbus
 }
 
-fn wireless_config_to_dbus<'a>(config: &'a WirelessConfig) -> NestedHash<'a> {
+fn wireless_config_to_dbus(config: &'_ WirelessConfig) -> NestedHash<'_> {
     let mut wireless: HashMap<&str, zvariant::Value> = HashMap::from([
         ("mode", Value::new(config.mode.to_string())),
         ("ssid", Value::new(config.ssid.to_vec())),

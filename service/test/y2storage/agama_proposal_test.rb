@@ -63,11 +63,9 @@ def partition_config(name: nil, filesystem: nil, size: nil)
   config = Agama::Storage::Configs::Partition.new
   block_device_config(config, name: name, filesystem: filesystem)
 
-  if size
-    config.size = Agama::Storage::Configs::Size.new.tap do |size_config|
-      size_config.min = size
-      size_config.max = size
-    end
+  config.size = Agama::Storage::Configs::Size.new.tap do |size_config|
+    size_config.min = size || Y2Storage::DiskSize.zero
+    size_config.max = size || Y2Storage::DiskSize.unlimited
   end
 
   config
@@ -75,6 +73,7 @@ end
 
 describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
+  using Y2Storage::Refinements::SizeCasts
 
   let(:initial_config) do
     Agama::Storage::Config.new.tap do |settings|
@@ -657,7 +656,7 @@ describe Y2Storage::AgamaProposal do
         drive_config.tap { |c| c.partitions = [partition] }
       end
 
-      let(:partition) { partition_config(name: name, filesystem: "ext3") }
+      let(:partition) { partition_config(name: name, filesystem: "ext3", size: 20.GiB) }
 
       context "if trying to reuse the file system" do
         before do
@@ -761,6 +760,160 @@ describe Y2Storage::AgamaProposal do
           filesystem = devicegraph.find_by_name("/dev/vda4").filesystem
           expect(filesystem).to_not be_nil
           expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
+        end
+      end
+    end
+
+    context "resizing an existing partition" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:partitions0) { [root_partition, vda3] }
+
+      let(:vda3) do
+        Agama::Storage::Configs::Partition.new.tap do |config|
+          block_device_config(config, name: "/dev/vda3")
+          config.size = Agama::Storage::Configs::Size.new.tap do |size_config|
+            size_config.min = vda3_min
+            size_config.max = vda3_max
+          end
+        end
+      end
+
+      before do
+        drive0.search.name = "/dev/vda"
+
+        allow_any_instance_of(Y2Storage::Partition).to receive(:detect_resize_info)
+          .and_return(resize_info)
+      end
+
+      let(:resize_info) do
+        instance_double(
+          Y2Storage::ResizeInfo, resize_ok?: true,
+          min_size: Y2Storage::DiskSize::GiB(3), max_size: Y2Storage::DiskSize::GiB(35)
+        )
+      end
+
+      context "when the reused partition is expected to grow with no enforced limit" do
+        # Initial size, so no shrinking
+        let(:vda3_min) { 10.GiB }
+        let(:vda3_max) { Y2Storage::DiskSize.unlimited }
+
+        it "grows the device as much as allowed by the min size of the new partitions" do
+          vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+          devicegraph = proposal.propose
+
+          vda3 = devicegraph.find_device(vda3_sid)
+          expect(vda3).to_not be_nil
+
+          root = devicegraph.find_by_name("/dev/vda4")
+          expect(root.filesystem.mount_path).to eq("/")
+          expect(vda3.size).to be > 21.GiB
+          gpt_adjustment = 1.MiB - 16.5.KiB
+          expect(root.size).to eq(8.5.GiB + gpt_adjustment)
+        end
+      end
+
+      context "when the reused partition is expected to grow up to a limit" do
+        # Initial size, so no shrinking
+        let(:vda3_min) { 10.GiB }
+        let(:vda3_max) { 15.GiB }
+
+        it "grows the device up to the limit so the new partitions can exceed their mins" do
+          vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+          devicegraph = proposal.propose
+
+          vda3 = devicegraph.find_device(vda3_sid)
+          expect(vda3).to_not be_nil
+
+          root = devicegraph.find_by_name("/dev/vda4")
+          expect(root.filesystem.mount_path).to eq("/")
+          expect(vda3.size).to eq 15.GiB
+          expect(root.size).to be > 10.GiB
+        end
+      end
+
+      context "when the reused partition is expected to shrink as much as needed" do
+        let(:vda3_min) { 0.KiB }
+        # Initial size, so no growing
+        let(:vda3_max) { 10.GiB }
+
+        context "if there is no need to shrink the partition" do
+          it "does not modify the size of the partition" do
+            vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+            devicegraph = proposal.propose
+
+            vda3 = devicegraph.find_device(vda3_sid)
+            expect(vda3).to_not be_nil
+            root = devicegraph.find_by_name("/dev/vda4")
+            expect(root).to_not be_nil
+
+            expect(vda3.size).to eq 10.GiB
+          end
+        end
+
+        context "if the partition needs to be shrunk to allocate the new ones" do
+          before do
+            root_partition.size.min = 24.GiB
+          end
+
+          it "shrinks the partition as needed" do
+            vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+            devicegraph = proposal.propose
+
+            vda3 = devicegraph.find_device(vda3_sid)
+            expect(vda3).to_not be_nil
+            root = devicegraph.find_by_name("/dev/vda4")
+            expect(root).to_not be_nil
+
+            expect(vda3.size).to be < 6.GiB
+            gpt_adjustment = 1.MiB - 16.5.KiB
+            expect(root.size).to eq(24.GiB + gpt_adjustment)
+          end
+        end
+      end
+
+      context "when the reused partition is expected to shrink in all cases" do
+        let(:vda3_min) { 0.KiB }
+        let(:vda3_max) { 6.GiB }
+
+        context "if there is no need to shrink the partition" do
+          it "shrinks the partition to the specified max size" do
+            vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+            devicegraph = proposal.propose
+
+            vda3 = devicegraph.find_device(vda3_sid)
+            expect(vda3).to_not be_nil
+            root = devicegraph.find_by_name("/dev/vda4")
+            expect(root).to_not be_nil
+
+            expect(vda3.size).to eq 6.GiB
+          end
+        end
+
+        context "if the partition needs to be shrunk to allocate the new ones" do
+          before do
+            root_partition.size.min = 25.GiB
+          end
+
+          it "shrinks the partition as needed" do
+            vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+            devicegraph = proposal.propose
+
+            vda3 = devicegraph.find_device(vda3_sid)
+            expect(vda3).to_not be_nil
+            root = devicegraph.find_by_name("/dev/vda4")
+            expect(root).to_not be_nil
+
+            expect(vda3.size).to be < 5.GiB
+            gpt_adjustment = 1.MiB - 16.5.KiB
+            expect(root.size).to eq(25.GiB + gpt_adjustment)
+          end
         end
       end
     end

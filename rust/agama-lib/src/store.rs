@@ -1,3 +1,23 @@
+// Copyright (c) [2024] SUSE LLC
+//
+// All Rights Reserved.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, contact SUSE LLC.
+//
+// To contact SUSE LLC about this file by physical or electronic mail, you may
+// find current contact information at www.suse.com.
+
 //! Load/store the settings from/to the D-Bus services.
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
@@ -37,16 +57,18 @@ impl Store {
 
     /// Loads the installation settings from the HTTP interface.
     pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
-        let mut settings: InstallSettings = Default::default();
-        settings.network = Some(self.network.load().await?);
-        settings.software = Some(self.software.load().await?);
-        settings.user = Some(self.users.load().await?);
-        settings.product = Some(self.product.load().await?);
-        settings.localization = Some(self.localization.load().await?);
+        let mut settings = InstallSettings {
+            network: Some(self.network.load().await?),
+            software: Some(self.software.load().await?),
+            user: Some(self.users.load().await?),
+            product: Some(self.product.load().await?),
+            localization: Some(self.localization.load().await?),
+            ..Default::default()
+        };
 
         let storage_settings = self.storage.load().await?;
-        settings.storage = storage_settings.storage.clone();
-        settings.storage_autoyast = storage_settings.storage_autoyast.clone();
+        settings.storage = storage_settings.storage;
+        settings.storage_autoyast = storage_settings.storage_autoyast;
 
         // TODO: use try_join here
         Ok(settings)

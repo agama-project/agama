@@ -161,7 +161,6 @@ module Y2Storage
     # @param devicegraph [Devicegraph] the graph gets modified
     def clean_graph(devicegraph)
       remove_empty_partition_tables(devicegraph)
-      protect_sids
       # {Proposal::SpaceMaker#prepare_devicegraph} returns a copy of the given devicegraph.
       space_maker.prepare_devicegraph(devicegraph, partitions_for_clean)
     end
@@ -234,18 +233,12 @@ module Y2Storage
       planned_devices.partitions
     end
 
-    # Configures SpaceMaker#protected_sids according to the given list of planned devices
-    def protect_sids
-      space_maker.protected_sids = planned_devices.all.select(&:reuse?).map(&:reuse_sid)
-    end
-
     # Creates the planned devices on a given devicegraph
     #
     # @param devicegraph [Devicegraph] the graph gets modified
     def create_devices(devicegraph)
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
       names = config.drives.map(&:found_device).compact.map(&:name)
-      protect_sids
       result = devices_creator.populated_devicegraph(planned_devices, names, space_maker)
     end
 

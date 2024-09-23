@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Sep 20 11:42:06 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 10
+
+-------------------------------------------------------------------
+Fri Sep 20 11:24:56 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change the license to GPL-2.0-or-later (gh#openSUSE/agama#1621).
+
+-------------------------------------------------------------------
 Tue Sep 18 13:20:47 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Expose the zFCP D-Bus API through HTTP (gh#openSUSE/agama#1570).

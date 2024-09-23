@@ -20,7 +20,7 @@ Name:           agama-auto
 Version:        0
 Release:        0
 Summary:        Agama auto-installation service
-License:        GPL-2.0-only
+License:        GPL-2.0-or-later
 Url:            https://github.com/opensuse/agama
 Source0:        agama.tar
 BuildArch:      noarch

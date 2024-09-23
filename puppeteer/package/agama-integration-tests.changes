@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 20 11:29:10 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change the license to GPL-2.0-or-later (gh#openSUSE/agama#1621).
+
+-------------------------------------------------------------------
 Wed Jul 24 15:03:25 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Reduce the node_modules size, delete not needed files

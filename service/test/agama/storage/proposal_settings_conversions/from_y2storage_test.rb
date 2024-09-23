@@ -30,10 +30,11 @@ describe Agama::Storage::ProposalSettingsConversions::FromY2Storage do
 
   let(:y2storage_settings) do
     Y2Storage::ProposalSettings.new.tap do |settings|
-      settings.space_settings.actions = {
-        "/dev/sda"  => :force_delete,
-        "/dev/sdb1" => :resize
-      }
+      settings.space_settings.actions = [
+        Y2Storage::SpaceActions::Delete.new("/dev/sda", mandatory: true),
+        Y2Storage::SpaceActions::Resize.new("/dev/sdb1"),
+        Y2Storage::SpaceActions::Delete.new("/dev/sdb2")
+      ]
     end
   end
 
@@ -45,7 +46,7 @@ describe Agama::Storage::ProposalSettingsConversions::FromY2Storage do
       settings.encryption.method = Y2Storage::EncryptionMethod::LUKS2
       settings.encryption.pbkd_function = Y2Storage::PbkdFunction::ARGON2ID
       settings.space.policy = :delete
-      settings.space.actions = []
+      settings.space.actions = {}
       settings.volumes = [Agama::Storage::Volume.new("/test")]
     end
   end
@@ -72,7 +73,8 @@ describe Agama::Storage::ProposalSettingsConversions::FromY2Storage do
 
       expect(settings.space.actions).to eq(
         "/dev/sda"  => :force_delete,
-        "/dev/sdb1" => :resize
+        "/dev/sdb1" => :resize,
+        "/dev/sdb2" => :delete
       )
     end
   end
