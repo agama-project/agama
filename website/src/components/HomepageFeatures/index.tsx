@@ -20,12 +20,11 @@ const TerminalWindow = ({ children, ...props }): JSX.Element => (
 
 const FeatureList: FeatureItem[] = [
   {
-    title: "Modern web-based UI",
+    title: "Modern web-based user interface",
     description: (
       <>
-        Interact with the installer either, locally on the computer where the
-        system will be installed or remotely from another device running a web
-        browser.
+        Connect to the installer either locally or from a remote device using a
+        regular web browser.
       </>
     ),
     asset: (
@@ -35,11 +34,11 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: "Powerful CLI",
+    title: "Powerful command-line interface",
     description: (
       <>
-        Drive the installation with its easy, yet powerful, out of the box
-        command line tool.
+        Drive and monitor the installation process using its 1st class
+        command-line interface.
       </>
     ),
     asset: (
@@ -62,11 +61,11 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: "Fully unattended",
+    title: "Easy automation and integration",
     description: (
       <>
-        Let Agama handle the installation without requiring any other input
-        other than an installation profile.
+        Automate the installation process using either the command-line
+        interface or the HTTP API and integrate it into your worklow.
       </>
     ),
     asset: (
