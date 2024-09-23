@@ -19,7 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/configs"
+require "agama/storage/configs/boot"
+require "agama/storage/config_conversions/from_json"
 
 module Agama
   module Storage
@@ -92,24 +93,6 @@ module Agama
         root_drive&.found_device&.name
       end
 
-      # Sets min and max sizes for all partitions and logical volumes with default size
-      #
-      # @param volume_builder [VolumeTemplatesBuilder] used to check the configuration of the
-      #   product volume templates
-      def calculate_default_sizes(volume_builder)
-        default_size_devices.each do |dev|
-          dev.size.min = default_size(dev, :min, volume_builder)
-          dev.size.max = default_size(dev, :max, volume_builder)
-        end
-      end
-
-    private
-
-      # return [Array<Configs::Filesystem>]
-      def filesystems
-        (drives + partitions + logical_volumes).map(&:filesystem).compact
-      end
-
       # return [Array<Configs::Partition>]
       def partitions
         drives.flat_map(&:partitions)
@@ -118,83 +101,6 @@ module Agama
       # return [Array<Configs::LogicalVolume>]
       def logical_volumes
         volume_groups.flat_map(&:logical_volumes)
-      end
-
-      # return [Array<Configs::Partition, Configs::LogicalVolume>]
-      def default_size_devices
-        (partitions + logical_volumes).select { |p| p.size&.default? }
-      end
-
-      # Min or max size that should be used for the given partition or logical volume
-      #
-      # @param device [Configs::Partition] device configured to have a default size
-      # @param attr [Symbol] :min or :max
-      # @param builder [VolumeTemplatesBuilder] see {#calculate_default_sizes}
-      def default_size(device, attr, builder)
-        path = device.filesystem&.path || ""
-        vol = builder.for(path)
-        return fallback_size(attr) unless vol
-
-        # Theoretically, neither Volume#min_size or Volume#max_size can be nil
-        # At most they will be zero or unlimited, respectively
-        return vol.send(:"#{attr}_size") unless vol.auto_size?
-
-        outline = vol.outline
-        size = size_with_fallbacks(outline, attr, builder)
-        size = size_with_ram(size, outline)
-        size_with_snapshots(size, device, outline)
-      end
-
-      # TODO: these are the fallbacks used when constructing volumes, not sure if repeating them
-      # here is right
-      def fallback_size(attr)
-        return Y2Storage::DiskSize.zero if attr == :min
-
-        Y2Storage::DiskSize.unlimited
-      end
-
-      # @see #default_size
-      def size_with_fallbacks(outline, attr, builder)
-        fallback_paths = outline.send(:"#{attr}_size_fallback_for")
-        missing_paths = fallback_paths.reject { |p| proposed_path?(p) }
-
-        size = outline.send(:"base_#{attr}_size")
-        missing_paths.inject(size) { |total, p| total + builder.for(p).send(:"#{attr}_size") }
-      end
-
-      # @see #default_size
-      def size_with_ram(initial_size, outline)
-        return initial_size unless outline.adjust_by_ram?
-
-        [initial_size, ram_size].max
-      end
-
-      # @see #default_size
-      def size_with_snapshots(initial_size, device, outline)
-        return initial_size unless device.filesystem.btrfs_snapshots?
-        return initial_size unless outline.snapshots_affect_sizes?
-
-        if outline.snapshots_size && outline.snapshots_size > DiskSize.zero
-          initial_size + outline.snapshots_size
-        else
-          multiplicator = 1.0 + (outline.snapshots_percentage / 100.0)
-          initial_size * multiplicator
-        end
-      end
-
-      # Whether there is a separate filesystem configured for the given path
-      #
-      # @param path [String, Pathname]
-      # @return [Boolean]
-      def proposed_path?(path)
-        filesystems.any? { |fs| fs.path?(path) }
-      end
-
-      # Return the total amount of RAM as DiskSize
-      #
-      # @return [DiskSize] current RAM size
-      def ram_size
-        @ram_size ||= Y2Storage::DiskSize.new(Y2Storage::StorageManager.instance.arch.ram_size)
       end
     end
   end

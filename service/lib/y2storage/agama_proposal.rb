@@ -56,20 +56,27 @@ module Y2Storage
 
     # @note The storage config (first param) is modified in several ways:
     #   * The search configs are solved.
+    #   * The sizes are solved (setting the size of the selected device, assigning fallbacks, etc).
     #
     # @param config [Agama::Storage::Config]
+    # @param product_config [Agama::Config]
     # @param devicegraph [Devicegraph] Starting point. If nil, then probed devicegraph will be used.
     # @param disk_analyzer [DiskAnalyzer] By default, the method will create a new one based on the
     #   initial devicegraph or will use the one from the StorageManager if starting from probed
     #   (i.e. 'devicegraph' argument is also missing).
     # @param issues_list [Array<Agama::Issue] Array to register issues found during the process.
-    def initialize(config, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
+    def initialize(config,
+      product_config: nil, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
       super(devicegraph: devicegraph, disk_analyzer: disk_analyzer)
-      @issues_list = issues_list || []
       @config = config
+      @product_config = product_config || Agama::Config.new
+      @issues_list = issues_list || []
     end
 
   private
+
+    # @return [Agama::Config]
+    attr_reader :product_config
 
     # @return [Proposal::AgamaSpaceMaker]
     attr_reader :space_maker
@@ -85,7 +92,10 @@ module Y2Storage
     #
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
-      Agama::Storage::ConfigSolver.new(initial_devicegraph).solve(config)
+      Agama::Storage::ConfigSolver
+        .new(initial_devicegraph, product_config)
+        .solve(config)
+
       issues = Agama::Storage::ConfigChecker.new(config).issues
       issues_list.concat(issues)
 

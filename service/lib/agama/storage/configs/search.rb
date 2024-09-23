@@ -71,6 +71,13 @@ module Agama
         def skip_device?
           solved? && device.nil? && if_not_found == :skip
         end
+
+        # Whether the device is not found and it has to be created.
+        #
+        # @return [Boolean]
+        def create_device?
+          solved? && device.nil? && if_not_found == :create
+        end
       end
     end
   end

@@ -68,9 +68,10 @@ module Agama
         # @return [Y2Storage::AgamaProposal]
         def agama_proposal
           Y2Storage::AgamaProposal.new(storage_config,
-            issues_list:   [],
-            devicegraph:   probed_devicegraph,
-            disk_analyzer: disk_analyzer)
+            product_config: config,
+            devicegraph:    probed_devicegraph,
+            disk_analyzer:  disk_analyzer,
+            issues_list:    [])
         end
       end
     end

@@ -20,29 +20,38 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_search_solver"
+require "agama/storage/config_size_solver"
 
 module Agama
   module Storage
     # Class for solving a storage config.
+    #
+    # It assigns proper devices and size values according to the product and the system.
     class ConfigSolver
       # @param devicegraph [Y2Storage::Devicegraph]
-      def initialize(devicegraph)
+      # @param product_config [Agama::Config]
+      def initialize(devicegraph, product_config)
         @devicegraph = devicegraph
+        @product_config = product_config
       end
 
-      # Solves the given config with information from the devicegrah.
+      # Solves all the search and size configs within a given config.
       #
       # @note The config object is modified.
       #
       # @param config [Config]
       def solve(config)
         ConfigSearchSolver.new(devicegraph).solve(config)
+        ConfigSizeSolver.new(devicegraph, product_config).solve(config)
       end
 
     private
 
       # @return [Y2Storage::Devicegraph]
       attr_reader :devicegraph
+
+      # @return [Agama::Config]
+      attr_reader :product_config
     end
   end
 end

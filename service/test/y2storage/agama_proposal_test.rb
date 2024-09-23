@@ -75,10 +75,66 @@ describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
   using Y2Storage::Refinements::SizeCasts
 
-  let(:initial_config) do
+  subject(:proposal) do
+    described_class.new(config, product_config: product_config, issues_list: issues_list)
+  end
+
+  let(:config) { config_json ? config_from_json : default_config }
+
+  let(:config_from_json) do
+    Agama::Storage::ConfigConversions::FromJSON
+      .new(config_json, product_config: product_config)
+      .convert
+  end
+
+  let(:default_config) do
     Agama::Storage::Config.new.tap do |settings|
       settings.drives = drives
     end
+  end
+
+  let(:config_json) { nil }
+
+  let(:product_config) { Agama::Config.new(product_data) }
+
+  let(:product_data) do
+    {
+      "storage" => {
+        "lvm"              => false,
+        "space_policy"     => "delete",
+        "encryption"       => {
+          "method" => "luks2"
+        },
+        "volumes"          => ["/", "swap"],
+        "volume_templates" => [
+          {
+            "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
+            "btrfs" => {
+              "snapshots" => true, "default_subvolume" => "@",
+              "subvolumes" => ["home", "opt", "root", "srv"]
+            },
+            "outline" => {
+              "required" => true, "snapshots_configurable" => true,
+              "auto_size" => {
+                "base_min" => "5 GiB", "base_max" => "10 GiB",
+                "min_fallback_for" => ["/home"], "max_fallback_for" => ["/home"],
+                "snapshots_increment" => "300%"
+              }
+            }
+          },
+          {
+            "mount_path" => "/home", "size" => { "auto" => false, "min" => "5 GiB" },
+            "filesystem" => "xfs", "outline" => { "required" => false }
+          },
+          {
+            "mount_path" => "swap", "filesystem" => "swap",
+            "outline"    => { "required" => false }
+          },
+          { "mount_path" => "", "filesystem" => "ext4",
+            "size" => { "min" => "100 MiB" } }
+        ]
+      }
+    }
   end
 
   let(:issues_list) { [] }
@@ -98,6 +154,7 @@ describe Y2Storage::AgamaProposal do
         end
       end
       part.size = Agama::Storage::Configs::Size.new.tap do |size|
+        size.default = false
         size.min = 8.5.GiB
         size.max = Y2Storage::DiskSize.unlimited
       end
@@ -121,10 +178,8 @@ describe Y2Storage::AgamaProposal do
 
   before do
     mock_storage(devicegraph: scenario)
-  end
-
-  subject(:proposal) do
-    described_class.new(initial_config, issues_list: issues_list)
+    # To speed-up the tests
+    allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
   end
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
@@ -147,7 +202,7 @@ describe Y2Storage::AgamaProposal do
 
       context "if no boot devices should be created" do
         before do
-          initial_config.boot = Agama::Storage::Configs::Boot.new.tap { |b| b.configure = false }
+          config.boot = Agama::Storage::Configs::Boot.new.tap { |b| b.configure = false }
         end
 
         it "proposes to create only the root device" do
@@ -650,18 +705,37 @@ describe Y2Storage::AgamaProposal do
     context "when reusing a partition" do
       let(:scenario) { "disks.yaml" }
 
-      let(:drives) { [drive] }
-
-      let(:drive) do
-        drive_config.tap { |c| c.partitions = [partition] }
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  search:     name,
+                  filesystem: {
+                    reuseIfPossible: reuse,
+                    path:            "/",
+                    type:            "ext3"
+                  },
+                  size:       size
+                },
+                {
+                  filesystem: {
+                    path: "/home"
+                  }
+                }
+              ]
+            }
+          ]
+        }
       end
 
-      let(:partition) { partition_config(name: name, filesystem: "ext3", size: 20.GiB) }
+      let(:reuse) { nil }
+
+      let(:size) { nil }
 
       context "if trying to reuse the file system" do
-        before do
-          partition.filesystem.reuse = true
-        end
+        let(:reuse) { true }
 
         context "and the partition is already formatted" do
           let(:name) { "/dev/vda2" }
@@ -691,9 +765,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       context "if not trying to reuse the file system" do
-        before do
-          partition.filesystem.reuse = false
-        end
+        let(:reuse) { false }
 
         context "and the partition is already formatted" do
           let(:name) { "/dev/vda2" }
@@ -722,23 +794,54 @@ describe Y2Storage::AgamaProposal do
           end
         end
       end
+
+      context "if no size is indicated" do
+        let(:name) { "/dev/vda2" }
+
+        let(:size) { nil }
+
+        it "does not resize the partition" do
+          devicegraph = proposal.propose
+
+          vda2 = devicegraph.find_by_name("/dev/vda2")
+          expect(vda2.size).to eq(20.GiB)
+        end
+      end
     end
 
     context "when creating a new partition" do
       let(:scenario) { "disks.yaml" }
 
-      let(:drives) { [drive] }
-
-      let(:drive) do
-        drive_config.tap { |c| c.partitions = [partition] }
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  filesystem: {
+                    reuseIfPossible: reuse,
+                    path:            "/",
+                    type:            "ext3"
+                  },
+                  size:       size
+                },
+                {
+                  filesystem: {
+                    path: "/home"
+                  }
+                }
+              ]
+            }
+          ]
+        }
       end
 
-      let(:partition) { partition_config(filesystem: "ext3", size: 1.GiB) }
+      let(:reuse) { nil }
+
+      let(:size) { nil }
 
       context "if trying to reuse the file system" do
-        before do
-          partition.filesystem.reuse = true
-        end
+        let(:reuse) { true }
 
         it "creates the file system" do
           devicegraph = proposal.propose
@@ -750,9 +853,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       context "if not trying to reuse the file system" do
-        before do
-          partition.filesystem.reuse = false
-        end
+        let(:reuse) { false }
 
         it "creates the file system" do
           devicegraph = proposal.propose
@@ -762,27 +863,250 @@ describe Y2Storage::AgamaProposal do
           expect(filesystem.type).to eq(Y2Storage::Filesystems::Type::EXT3)
         end
       end
+
+      context "if no size is indicated" do
+        let(:size) { nil }
+
+        it "creates the partition according to the size from the product definition" do
+          devicegraph = proposal.propose
+
+          expect(devicegraph.partitions).to include(
+            an_object_having_attributes(
+              filesystem: an_object_having_attributes(mount_path: "/"),
+              size:       10.GiB - 1.MiB
+            )
+          )
+        end
+      end
+
+      context "if a size is indicated" do
+        let(:size) { "5 GiB" }
+
+        it "creates the partition according to the given size" do
+          devicegraph = proposal.propose
+
+          expect(devicegraph.partitions).to include(
+            an_object_having_attributes(
+              filesystem: an_object_having_attributes(mount_path: "/"),
+              size:       5.GiB
+            )
+          )
+        end
+      end
+
+      context "if 'current' size is indicated" do
+        let(:size) { { min: "current" } }
+
+        it "creates the partition according to the size from the product definition" do
+          devicegraph = proposal.propose
+
+          expect(devicegraph.partitions).to include(
+            an_object_having_attributes(
+              filesystem: an_object_having_attributes(mount_path: "/"),
+              size:       10.GiB - 1.MiB
+            )
+          )
+        end
+      end
+
+      context "if the size is not indicated for some partition with fallbacks" do
+        let(:scenario) { "empty-hd-50GiB.yaml" }
+
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  {
+                    filesystem: {
+                      path: "/",
+                      type: {
+                        btrfs: { snapshots: snapshots }
+                      }
+                    }
+                  },
+                  {
+                    filesystem: { path: other_path }
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        context "and the other partitions are omitted" do
+          let(:other_path) { nil }
+          let(:snapshots) { false }
+
+          it "creates the partition adding the fallback sizes" do
+            devicegraph = proposal.propose
+
+            expect(devicegraph.partitions).to include(
+              an_object_having_attributes(
+                filesystem: an_object_having_attributes(mount_path: "/"),
+                size:       29.95.GiB - 2.80.MiB
+              )
+            )
+          end
+
+          context "and snapshots are enabled" do
+            let(:snapshots) { true }
+
+            it "creates the partition adding the fallback and snapshots sizes" do
+              devicegraph = proposal.propose
+
+              expect(devicegraph.partitions).to include(
+                an_object_having_attributes(
+                  filesystem: an_object_having_attributes(mount_path: "/"),
+                  size:       44.95.GiB - 2.80.MiB
+                )
+              )
+            end
+          end
+        end
+
+        context "and the other partitions are present" do
+          let(:other_path) { "/home" }
+          let(:snapshots) { false }
+
+          it "creates the partition ignoring the fallback sizes" do
+            devicegraph = proposal.propose
+
+            expect(devicegraph.partitions).to include(
+              an_object_having_attributes(
+                filesystem: an_object_having_attributes(mount_path: "/"),
+                size:       10.GiB
+              )
+            )
+          end
+
+          context "and snapshots are enabled" do
+            let(:snapshots) { true }
+
+            it "creates the partition adding the snapshots sizes" do
+              devicegraph = proposal.propose
+
+              expect(devicegraph.partitions).to include(
+                an_object_having_attributes(
+                  filesystem: an_object_having_attributes(mount_path: "/"),
+                  size:       32.50.GiB - 4.MiB
+                )
+              )
+            end
+          end
+        end
+      end
+
+      context "if the partition has to be enlarged according to RAM size" do
+        let(:scenario) { "empty-hd-50GiB.yaml" }
+
+        let(:product_data) do
+          {
+            "storage" => {
+              "volume_templates" => [
+                {
+                  "mount_path" => "swap",
+                  "filesystem" => "swap",
+                  "size"       => { "auto" => true },
+                  "outline"    => {
+                    "auto_size" => {
+                      "adjust_by_ram" => true,
+                      "base_min"      => "2 GiB",
+                      "base_max"      => "4 GiB"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        end
+
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  {
+                    filesystem: {
+                      path: "swap"
+                    },
+                    size:       size
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        before do
+          allow_any_instance_of(Y2Storage::Arch).to receive(:ram_size).and_return(8.GiB)
+        end
+
+        context "and the partition size is not indicated" do
+          let(:size) { nil }
+
+          it "creates the partition as big as the RAM" do
+            devicegraph = proposal.propose
+
+            expect(devicegraph.partitions).to include(
+              an_object_having_attributes(
+                filesystem: an_object_having_attributes(mount_path: "swap"),
+                size:       8.GiB
+              )
+            )
+          end
+        end
+
+        context "and the partition size is indicated" do
+          let(:size) { "2 GiB" }
+
+          it "creates the partition with the given size" do
+            devicegraph = proposal.propose
+
+            expect(devicegraph.partitions).to include(
+              an_object_having_attributes(
+                filesystem: an_object_having_attributes(mount_path: "swap"),
+                size:       2.GiB
+              )
+            )
+          end
+        end
+      end
     end
 
     context "resizing an existing partition" do
       let(:scenario) { "disks.yaml" }
 
-      let(:partitions0) { [root_partition, vda3] }
-
-      let(:vda3) do
-        Agama::Storage::Configs::Partition.new.tap do |config|
-          block_device_config(config, name: "/dev/vda3")
-          config.size = Agama::Storage::Configs::Size.new.tap do |size_config|
-            size_config.min = vda3_min
-            size_config.max = vda3_max
-          end
-        end
+      let(:config_json) do
+        {
+          drives: [
+            {
+              search:     "/dev/vda",
+              partitions: [
+                {
+                  filesystem: {
+                    type: "btrfs",
+                    path: "/"
+                  },
+                  size:       root_size
+                },
+                {
+                  search: "/dev/vda3",
+                  size:   vda3_size
+                }
+              ]
+            }
+          ]
+        }
       end
 
-      before do
-        drive0.search.name = "/dev/vda"
+      let(:root_size) { ["8.5 GiB"] }
 
-        allow_any_instance_of(Y2Storage::Partition).to receive(:detect_resize_info)
+      let(:vda3_size) { nil }
+
+      before do
+        allow_any_instance_of(Y2Storage::Partition)
+          .to(receive(:detect_resize_info))
           .and_return(resize_info)
       end
 
@@ -794,9 +1118,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       context "when the reused partition is expected to grow with no enforced limit" do
-        # Initial size, so no shrinking
-        let(:vda3_min) { 10.GiB }
-        let(:vda3_max) { Y2Storage::DiskSize.unlimited }
+        let(:vda3_size) { ["current"] }
 
         it "grows the device as much as allowed by the min size of the new partitions" do
           vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
@@ -815,9 +1137,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       context "when the reused partition is expected to grow up to a limit" do
-        # Initial size, so no shrinking
-        let(:vda3_min) { 10.GiB }
-        let(:vda3_max) { 15.GiB }
+        let(:vda3_size) { ["10 GiB", "15 GiB"] }
 
         it "grows the device up to the limit so the new partitions can exceed their mins" do
           vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
@@ -835,9 +1155,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       context "when the reused partition is expected to shrink as much as needed" do
-        let(:vda3_min) { 0.KiB }
-        # Initial size, so no growing
-        let(:vda3_max) { 10.GiB }
+        let(:vda3_size) { ["0 KiB", "current"] }
 
         context "if there is no need to shrink the partition" do
           it "does not modify the size of the partition" do
@@ -855,9 +1173,7 @@ describe Y2Storage::AgamaProposal do
         end
 
         context "if the partition needs to be shrunk to allocate the new ones" do
-          before do
-            root_partition.size.min = 24.GiB
-          end
+          let(:root_size) { "24 GiB" }
 
           it "shrinks the partition as needed" do
             vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
@@ -877,8 +1193,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       context "when the reused partition is expected to shrink in all cases" do
-        let(:vda3_min) { 0.KiB }
-        let(:vda3_max) { 6.GiB }
+        let(:vda3_size) { ["0 KiB", "6 GiB"] }
 
         context "if there is no need to shrink the partition" do
           it "shrinks the partition to the specified max size" do
@@ -896,9 +1211,7 @@ describe Y2Storage::AgamaProposal do
         end
 
         context "if the partition needs to be shrunk to allocate the new ones" do
-          before do
-            root_partition.size.min = 25.GiB
-          end
+          let(:root_size) { "25 Gib" }
 
           it "shrinks the partition as needed" do
             vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
@@ -920,14 +1233,6 @@ describe Y2Storage::AgamaProposal do
 
     context "when the config has LVM volume groups" do
       let(:scenario) { "empty-hd-50GiB.yaml" }
-
-      let(:initial_config) do
-        Agama::Storage::ConfigConversions::FromJSON
-          .new(config_json, product_config: product_config)
-          .convert
-      end
-
-      let(:product_config) { Agama::Config.new }
 
       let(:config_json) do
         {
@@ -987,7 +1292,8 @@ describe Y2Storage::AgamaProposal do
                   filesystem: {
                     path: "/home",
                     type: "xfs"
-                  }
+                  },
+                  size:       "2 GiB"
                 }
               ]
             }
@@ -1012,6 +1318,7 @@ describe Y2Storage::AgamaProposal do
         system_vg = devicegraph.find_by_name("/dev/system")
         system_pvs = system_vg.lvm_pvs.map(&:plain_blk_device)
         system_lvs = system_vg.lvm_lvs
+
         expect(system_pvs).to contain_exactly(
           an_object_having_attributes(name: "/dev/sda2", size: 40.GiB)
         )
@@ -1060,7 +1367,7 @@ describe Y2Storage::AgamaProposal do
           an_object_having_attributes(
             lv_name:    "home",
             lv_type:    Y2Storage::LvType::NORMAL,
-            size:       5.GiB - 4.MiB,
+            size:       2.GiB,
             filesystem: an_object_having_attributes(
               type:       Y2Storage::Filesystems::Type::XFS,
               mount_path: "/home"
@@ -1071,14 +1378,6 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when a LVM physical volume is not found" do
-      let(:initial_config) do
-        Agama::Storage::ConfigConversions::FromJSON
-          .new(config_json, product_config: product_config)
-          .convert
-      end
-
-      let(:product_config) { Agama::Config.new }
-
       let(:config_json) do
         {
           drives:       [
@@ -1127,14 +1426,6 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when a LVM thin pool volume is not found" do
-      let(:initial_config) do
-        Agama::Storage::ConfigConversions::FromJSON
-          .new(config_json, product_config: product_config)
-          .convert
-      end
-
-      let(:product_config) { Agama::Config.new }
-
       let(:config_json) do
         {
           drives:       [
