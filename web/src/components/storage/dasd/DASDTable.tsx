@@ -27,7 +27,10 @@ import {
   Dropdown,
   DropdownItem,
   DropdownList,
+  List,
+  ListItem,
   MenuToggle,
+  Stack,
   Text,
   TextInputGroup,
   TextInputGroupMain,
@@ -82,20 +85,22 @@ const columns = [
   { id: "partitionInfo", label: _("Partition Info") },
 ];
 const DevicesList = ({ devices }) => (
-  <ul>
+  <List>
     {devices.map((d: DASDDevice) => (
-      <li key={d.id}>{d.id}</li>
+      <ListItem key={d.id}>{d.id}</ListItem>
     ))}
-  </ul>
+  </List>
 );
 const FormatNotPossible = ({ devices, onAccept }) => (
   <Popup isOpen title={_("Cannot format all selected devices")}>
-    <Text>
-      {_(
-        "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again",
-      )}
-    </Text>
-    <DevicesList devices={devices} />
+    <Stack hasGutter>
+      <Text>
+        {_(
+          "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again",
+        )}
+      </Text>
+      <DevicesList devices={devices} />
+    </Stack>
     <Popup.Actions>
       <Popup.Confirm onClick={onAccept}>{_("Accept")}</Popup.Confirm>
     </Popup.Actions>
@@ -104,12 +109,14 @@ const FormatNotPossible = ({ devices, onAccept }) => (
 
 const FormatConfirmation = ({ devices, onCancel, onConfirm }) => (
   <Popup isOpen title={_("Format selected devices?")}>
-    <Text>
-      {_(
-        "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.",
-      )}
-    </Text>
-    <DevicesList devices={devices} />
+    <Stack hasGutter>
+      <Text>
+        {_(
+          "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.",
+        )}
+      </Text>
+      <DevicesList devices={devices} />
+    </Stack>
     <Popup.Actions>
       <Popup.Confirm onClick={onConfirm} />
       <Popup.Cancel onClick={onCancel} autoFocus />
