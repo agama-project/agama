@@ -116,7 +116,7 @@ fi
       sed -e '/gemspec/a gem "ruby-dbus", path: "/checkout-ruby-dbus"' -i Gemfile
   fi
 
-  if [ -n "$CI" ]; then
+  if [ -n "${CI-}" ]; then
     # in CI reuse the pre-installed system gems from RPMs
     bundle config set --local disable_shared_gems 0
   else
