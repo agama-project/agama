@@ -112,7 +112,7 @@ const FormatConfirmation = ({ devices, onCancel, onConfirm }) => (
     <DevicesList devices={devices} />
     <Popup.Actions>
       <Popup.Confirm onClick={onConfirm} />
-      <Popup.Cancel onClick={onCancel} />
+      <Popup.Cancel onClick={onCancel} autoFocus />
     </Popup.Actions>
   </Popup>
 );
