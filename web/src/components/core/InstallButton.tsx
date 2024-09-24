@@ -67,13 +67,10 @@ according to the provided installation settings.",
  * @param {object} props
  * @param {() => void} [props.onClick] - function to call when the user clicks the button
  */
-const InstallButton = ({ onClick }) => {
+const InstallButton = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const open = async () => {
-    if (onClick) onClick();
-    setIsOpen(true);
-  };
+  const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   return (
