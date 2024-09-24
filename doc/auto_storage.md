@@ -332,7 +332,7 @@ Btrfs
   snapshots [<boolean=false>]
   quotas [<boolean=false>]
 
-Size <'default'|string|SizeRange>
+Size <string|SizeRange>
 
 SizeRange
   min <string>
@@ -400,9 +400,18 @@ The second option is to provide a minimum size and an optional maximum one. The 
 be between those thresholds. If the maximum is omitted or set to `null`, the device will grow as
 much as possible, taking into account the available spaces and all the other specified sizes.
 
-The third option is to use the string "default". That means Agama will decide the size based on the
-mount point and the settings of the product. From a more technical point of view, that translates
-into the following:
+It is also possible to specify "current" as a minimum or maximum size limit for partitions and
+logical volumes that already exist in the system (so "current" can only be used for device
+specifications that contain a `search` section). The usage of "current" and how it affects
+resizing the corresponding devices is explained at a separate section below.
+
+If the size is completely omitted for a device that already exists (ie. combined with `search`),
+then Agama would act as if both min and max limits would have been set to "current" (which implies
+the partition or logical volume will not be resized).
+
+On the other hand, if the size is omitted for a device that will be created, Agama will decide the
+size based on the mount point and the settings of the product. From a more technical point of view,
+that translates into the following:
 
  - If the mount path corresponds to a volume supporting `auto_size`, that feature will be used.
  - If it corresponds to a volume without `auto_size`, the min and max sizes of the volumes will be
@@ -411,15 +420,12 @@ into the following:
  - If the product does not specify a default volume, the behavior is still not defined (there are
    several reasonable options).
 
-It is also possible to specify "current" as a size value for partitions and logical volumes that
-already exist in the system. The usage of "current" and how it affects resizing the corresponding
-devices is explained at a separate section below.
 
 #### Under Discussion
 
-As explained, it should be possible to specify the sizes as "default", as a range or as a fixed
-value. But in the last two cases, a parseable string like "40 GiB" may not be the only option to
-represent a size. The following two possibilities are also under consideration.
+As explained, it should be possible to specify the sizes as a fixed value or as a range. But a
+a parseable string like "40 GiB" may not be the only option to represent a size or a range limit.
+The following two possibilities are also under consideration.
 
  - `{ "gib": 40 }`
  - `{ "value": 40, "units": "gib" }`
@@ -767,7 +773,7 @@ In any case, note that resizing a partition can be limited depending on its cont
 type, etc.
 
 Combining `search` and `resize` is enough to indicate Agama is expected to resize a given partition
-if possible. The keyword "current" can be used eveywhere a size is expected and it is always
+if possible. The keyword "current" can be used as min and/or max for the size range and it is always
 equivalent to the exact original size of the device. The simplest way to use "current" is to just
 specify that the matched device should keep its original size. That's the default for searched (and
 found) devices if `size` is completely omitted.
@@ -781,7 +787,7 @@ found) devices if `size` is completely omitted.
                     "search": {
                         "condition": { "property": "fsLabel", "value": "reuse" }
                     },
-                    "size": "current"
+                    "size": { "min": "current", "max": "current" }
                 }
             ]
         }
@@ -789,8 +795,8 @@ found) devices if `size` is completely omitted.
 }
 ```
 
-Using "current" for the min and max values of a size allows to specify how a device could be resized
-if possible. See the following examples with explanatory filesystem labels.
+Other combinations can be used to specify how a device could be resized if possible. See the
+following examples with explanatory filesystem labels.
 
 ```json
 "storage": {
