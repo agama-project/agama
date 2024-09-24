@@ -19,36 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/config"
 require "agama/storage/config_builder"
 require "agama/storage/config_conversions/from_json_conversions/config"
-require "agama/storage/volume_templates_builder"
 
 module Agama
   module Storage
     module ConfigConversions
       # Config conversion from JSON hash according to schema.
       class FromJSON
-        # @todo Replace product_config param by a ProductDefinition.
-        #
         # @param config_json [Hash]
-        # @param product_config [Agama::Config]
-        def initialize(config_json, product_config:)
+        # @param product_config [Agama::Config, nil]
+        def initialize(config_json, product_config: nil)
+          # TODO: Replace product_config param by a ProductDefinition.
           @config_json = config_json
-          @product_config = product_config
+          @product_config = product_config || Agama::Config.new
         end
 
         # Performs the conversion from Hash according to the JSON schema.
         #
-        # @todo Raise error if config_json does not match the JSON schema.
-        #
         # @return [Storage::Config]
         def convert
-          config = FromJSONConversions::Config
+          # TODO: Raise error if config_json does not match the JSON schema.
+          FromJSONConversions::Config
             .new(config_json, config_builder: config_builder)
             .convert
-
-          config.calculate_default_sizes(volume_builder)
-          config
         end
 
       private
@@ -62,11 +57,6 @@ module Agama
         # @return [ConfigBuilder]
         def config_builder
           @config_builder ||= ConfigBuilder.new(product_config)
-        end
-
-        # @return [VolumeTemplatesBuilder]
-        def volume_builder
-          @volume_builder ||= VolumeTemplatesBuilder.new_from_config(product_config)
         end
       end
     end

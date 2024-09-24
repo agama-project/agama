@@ -19,46 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_checker"
+require "agama/storage/config_solver"
 require "yast"
-require "y2storage/proposal"
-require "y2storage/proposal/agama_searcher"
-require "y2storage/proposal/agama_space_maker"
-require "y2storage/proposal/agama_devices_planner"
-require "y2storage/proposal/agama_devices_creator"
-require "y2storage/proposal/planned_devices_handler"
 require "y2storage/exceptions"
 require "y2storage/planned"
+require "y2storage/proposal"
+require "y2storage/proposal/agama_devices_creator"
+require "y2storage/proposal/agama_devices_planner"
+require "y2storage/proposal/agama_space_maker"
+require "y2storage/proposal/planned_devices_handler"
 
 module Y2Storage
-  # Class to calculate a storage proposal for auto-installation using Agama.
-  #
-  # @note The storage config (initial_settings param in constructor) is modified in several ways:
-  #   * The search configs are resolved.
-  #   * Every config with an unfound search (e.g., a drive config, a partition config) is removed if
-  #     its search has #if_not_found set to skip.
-  #
-  #   It would be preferable to work over a copy instead of modifying the given config. In some
-  #   cases, the config object is needed to generate its JSON format. The JSON result would not
-  #   be 100% accurate if some elements are removed.
-  #
-  #   The original config without removing elements is needed if:
-  #     * The current proposal is the initial proposal automatically calculated by Agama. In
-  #       this case, the config is generated from the product definition. The config JSON format is
-  #       obtained by converting the config object to JSON.
-  #     * The current proposal was calculated from a settings following the guided schema. This
-  #       usually happens when a proposal is calculated from the UI. In this case, a config is
-  #       generated from the guided settings. The config JSON format is obtained by converting the
-  #       config object to JSON.
-  #
-  #   In those two cases (initial proposal and proposal from guided settings) no elements are
-  #   removed from the config because it has no searches with skip:
-  #     * The config from the product definition has a drive that fails with unfound search (i.e.,
-  #       there is no candidate device for installing the system).
-  #     * The config from the guided settings has all drives and partitions with search set to
-  #       error. The proposal fails if the selected devices are not found.
-  #
-  #   In the future there could be any other scenario in which it would be needed to keep all the
-  #   elements from an initial config containing searches with skip.
+  # Class to calculate a storage proposal for Agama.
   #
   # @example Creating a proposal from the current Agama configuration
   #   config = Agama::Storage::Config.new_from_json(config_json)
@@ -81,22 +54,29 @@ module Y2Storage
     # @return [Array<Agama::Issue>] List of found issues
     attr_reader :issues_list
 
-    # Constructor
+    # @note The storage config (first param) is modified in several ways:
+    #   * The search configs are solved.
+    #   * The sizes are solved (setting the size of the selected device, assigning fallbacks, etc).
     #
-    # @param initial_config [Agama::Storage::Config] Agama storage config
-    # @param devicegraph [Devicegraph] starting point. If nil, then probed devicegraph
-    #   will be used
-    # @param disk_analyzer [DiskAnalyzer] by default, the method will create a new one
-    #   based on the initial devicegraph or will use the one from the StorageManager if
-    #   starting from probed (i.e. 'devicegraph' argument is also missing)
-    # @param issues_list [Array<Agama::Issue] Array to register issues found during the process
-    def initialize(initial_config, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
+    # @param config [Agama::Storage::Config]
+    # @param product_config [Agama::Config]
+    # @param devicegraph [Devicegraph] Starting point. If nil, then probed devicegraph will be used.
+    # @param disk_analyzer [DiskAnalyzer] By default, the method will create a new one based on the
+    #   initial devicegraph or will use the one from the StorageManager if starting from probed
+    #   (i.e. 'devicegraph' argument is also missing).
+    # @param issues_list [Array<Agama::Issue] Array to register issues found during the process.
+    def initialize(config,
+      product_config: nil, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
       super(devicegraph: devicegraph, disk_analyzer: disk_analyzer)
+      @config = config
+      @product_config = product_config || Agama::Config.new
       @issues_list = issues_list || []
-      @config = initial_config
     end
 
   private
+
+    # @return [Agama::Config]
+    attr_reader :product_config
 
     # @return [Proposal::AgamaSpaceMaker]
     attr_reader :space_maker
@@ -112,12 +92,12 @@ module Y2Storage
     #
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
-      # TODO: Could the search be moved to the devices planner? If so, the config object can keep
-      #   untouched, directly generating planned devices associated to the found device and skipping
-      #   planned devices for searches with skip if not found.
-      Proposal::AgamaSearcher
-        .new(initial_devicegraph)
-        .search(config, issues_list)
+      Agama::Storage::ConfigSolver
+        .new(initial_devicegraph, product_config)
+        .solve(config)
+
+      issues = Agama::Storage::ConfigChecker.new(config).issues
+      issues_list.concat(issues)
 
       if fatal_error?
         # This means some IfNotFound is set to "error" and we failed to find a match
