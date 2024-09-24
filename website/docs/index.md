@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# About
+# Agama's documentation
 
 This section covers a wide range of Agama-related topics. To make it easy to find the information
 you are looking for, the documentation is organized in two different parts, depending on your

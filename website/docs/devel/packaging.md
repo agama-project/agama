@@ -15,14 +15,14 @@ While the Ruby-based one (`rubygem-agama-yast`) is built as any other YaST packa
 (`agama`), the CLI (`agama-cli`), and the web UI (`agama-web-ui`) rely on [OBS source
 services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html).
 
-## Versioning Policy
+## Versioning policy
 
 We have decided to follow a single number schema: 1, 2, 3, etc. However, if we need to release a
 hot-fix, we might use a dotted version (e.g., 2.1). Moreover, all the components share the same
 version number. Releasing a new version implies that all of them get the new number, no matter if
 they contain changes or not.
 
-## Bumping the Version
+## Bumping the version
 
 In order to release a new version, we need to:
 
@@ -47,7 +47,7 @@ After creating the tag on the server the GitHub Actions will publish the package
 [systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)
 project and create submit requests to openSUSE Factory.
 
-## Building the Packages
+## Building the packages
 
 The packages are updated automatically using the GitHub actions. Here are details for manual update.
 
@@ -104,7 +104,7 @@ the latest commit respect such a tag. (e.g. `2.1+42`).
 You can read more about the overall approach of this package in the following article:
 [Git work flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_git_in_27/).
 
-### The Live ISO
+### The live ISO
 
 The ISO for openSUSE products is built in the
 [systemsmanagement:Agama:Devel/agama-installer-openSUSE](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-installer-openSUSE)

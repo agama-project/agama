@@ -27,7 +27,7 @@ yupdate patch openSUSE/agama master
 
 You can replace the `master` branch with any branch containing a fix or a new feature.
 
-## Patching from a Local Git Checkout
+## Patching from a local Git checkout
 
 First you need to run the `rake server` command in your Agama Git checkout.
 
@@ -56,10 +56,11 @@ You can modify the update process with these environment variables:
 - `NODE_ENV=development` - The web front-end will be built in the development mode. The files will
   not be minimized and additional `*.map` files will be generated. This helps with debugging in the
   browser, you can get the locations in the original source files.
-- `YUPDATE_SKIP_FRONTEND=1` - Skip updating the web frontend. Use this option when you use the
-  webpack development server for running the web frontend. In that case updating the web frontend does
-  not make sense because it is running in a different server. This saves some time and disk/RAM space.
-- `YUPDATE_SKIP_BACKEND=1` - Skip updating the D-Bus service backend. This is similar to the
+- `YUPDATE_SKIP_FRONTEND=1` - Skip updating the web front-end. Use this option when you use the
+  webpack development server for running the web front-end. In that case updating the web front-end
+  does not make sense because it is running in a different server. This saves some time and disk/RAM
+  space.
+- `YUPDATE_SKIP_BACKEND=1` - Skip updating the D-Bus service back-end. This is similar to the
   previous option, use it when you do want to keep the D-Bus service unchanged.
 
 ## Notes
@@ -74,12 +75,12 @@ system becomes completely frozen and might not respond to any input event.
 Currently the minimum for a safe operation is around 4GB RAM. If you use the `NPM_CACHE=1` option
 then recommended minimum is around 5GB.
 
-## Activating the Changes
+## Activating the changes
 
 After patching the files the DBus service is restarted if any related file has been changed. That
 means the configured settings will be lost.
 
-To activate the changes in the web frontend you need to reload the page in the browser.
+To activate the changes in the web front-end you need to reload the page in the browser.
 
 :::warning
 _In the Firefox browser you need to use the `Ctrl+F5` combination for reloading the page,
@@ -90,7 +91,7 @@ update on the server!_
 In some special cases you might need to do some additional actions manually, the update script might
 not handle all corner cases.
 
-## Implementation Details
+## Implementation details
 
 The support is implemented in the main
 [Rakefile](https://github.com/openSUSE/agama/blob/master/Rakefile) and in the
@@ -98,5 +99,5 @@ The support is implemented in the main
 [.yupdate.post](https://github.com/openSUSE/agama/blob/master/.yupdate.post) hook scripts.
 
 - The `.yupdate.pre` script prepares the system for compiling and installing new Agama files.
-- The `Rakefile` code builds and installs both backend and frontend parts.
-- The `.yupdate.pre` script activates the changes, it restarts the backend if needed.
+- The `Rakefile` code builds and installs both back-end and front-end parts.
+- The `.yupdate.pre` script activates the changes, it restarts the back-end if needed.
