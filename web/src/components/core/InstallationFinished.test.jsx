@@ -46,10 +46,14 @@ jest.mock("~/queries/storage", () => ({
   }),
 }));
 
-jest.mock("~/client");
-jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
-
 const finishInstallationFn = jest.fn();
+
+jest.mock("~/api/manager", () => ({
+  ...jest.requireActual("~/api/manager"),
+  finishInstallation: () => finishInstallationFn(),
+}));
+
+jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
 
 describe("InstallationFinished", () => {
   beforeEach(() => {

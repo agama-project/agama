@@ -45,6 +45,7 @@ import {
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
+import { startProbing } from "~/api/manager";
 
 /**
  * Query to retrieve software configuration
@@ -95,7 +96,6 @@ const patternsQuery = () => ({
  */
 const useConfigMutation = () => {
   const queryClient = useQueryClient();
-  const client = useInstallerClient();
 
   const query = {
     mutationFn: updateConfig,
@@ -104,7 +104,7 @@ const useConfigMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       if (config.product) {
         queryClient.invalidateQueries({ queryKey: ["software/product"] });
-        client.manager.startProbing();
+        startProbing();
       }
     },
   };

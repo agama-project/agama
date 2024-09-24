@@ -41,10 +41,10 @@ import SimpleLayout from "~/SimpleLayout";
 import { Center, Icon } from "~/components/layout";
 import { EncryptionMethods } from "~/types/storage";
 import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
 import { useProposalResult } from "~/queries/storage";
+import { finishInstallation } from "~/api/manager";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -76,9 +76,7 @@ the machine needs to boot directly to the new boot loader.",
 const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-success" />;
 
 function InstallationFinished() {
-  const client = useInstallerClient();
   const { useIguana } = useInstallerStatus({ suspense: true });
-  const closingAction = () => client.manager.finishInstallation();
   const {
     settings: { encryptionPassword, encryptionMethod },
   } = useProposalResult();
@@ -116,7 +114,7 @@ function InstallationFinished() {
                     </EmptyStateBody>
                   </EmptyState>
                   <Flex direction={{ default: "rowReverse" }}>
-                    <Button size="lg" variant="primary" onClick={closingAction}>
+                    <Button size="lg" variant="primary" onClick={finishInstallation}>
                       {useIguana ? _("Finish") : _("Reboot")}
                     </Button>
                   </Flex>

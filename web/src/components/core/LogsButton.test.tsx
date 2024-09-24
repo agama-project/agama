@@ -23,15 +23,17 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
 import { LogsButton } from "~/components/core";
-
-jest.mock("~/client");
 
 const originalCreateElement = document.createElement;
 
 const executor = jest.fn();
 const fetchLogsFn = jest.fn();
+
+jest.mock("~/api/manager", () => ({
+  ...jest.requireActual("~/api/manager"),
+  fetchLogs: () => fetchLogsFn(),
+}));
 
 beforeAll(() => {
   jest.spyOn(console, "error").mockImplementation();
@@ -39,14 +41,6 @@ beforeAll(() => {
   window.URL.revokeObjectURL = jest.fn();
 
   fetchLogsFn.mockImplementation(() => new Promise(executor));
-
-  (createClient as jest.Mock).mockImplementation(() => {
-    return {
-      manager: {
-        fetchLogs: fetchLogsFn,
-      },
-    };
-  });
 });
 
 afterAll(() => {

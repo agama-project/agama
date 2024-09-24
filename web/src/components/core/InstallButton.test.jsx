@@ -22,45 +22,35 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
+import { plainRender } from "~/test-utils";
 import { InstallButton } from "~/components/core";
 
-const startInstallationFn = jest.fn().mockName("startInstallation");
+const mockStartInstallationFn = jest.fn();
 
-jest.mock("~/client", () => ({
-  createClient: jest.fn(),
+jest.mock("~/api/manager", () => ({
+  ...jest.requireActual("~/api/manager"),
+  startInstallation: () => mockStartInstallationFn(),
 }));
 
 describe("when the button is clicked and there are not errors", () => {
-  beforeEach(() => {
-    createClient.mockImplementation(() => {
-      return {
-        manager: {
-          startInstallation: startInstallationFn,
-        },
-      };
-    });
-  });
-
   it("starts the installation after user confirmation", async () => {
-    const { user } = installerRender(<InstallButton />);
+    const { user } = plainRender(<InstallButton />);
     const button = await screen.findByRole("button", { name: "Install" });
     await user.click(button);
 
     const continueButton = await screen.findByRole("button", { name: "Continue" });
     await user.click(continueButton);
-    expect(startInstallationFn).toHaveBeenCalled();
+    expect(mockStartInstallationFn).toHaveBeenCalled();
   });
 
   it("does not start the installation if the user cancels", async () => {
-    const { user } = installerRender(<InstallButton />);
+    const { user } = plainRender(<InstallButton />);
     const button = await screen.findByRole("button", { name: "Install" });
     await user.click(button);
 
     const cancelButton = await screen.findByRole("button", { name: "Cancel" });
     await user.click(cancelButton);
-    expect(startInstallationFn).not.toHaveBeenCalled();
+    expect(mockStartInstallationFn).not.toHaveBeenCalled();
 
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();

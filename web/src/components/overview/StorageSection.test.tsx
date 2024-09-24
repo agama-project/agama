@@ -25,14 +25,12 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
 
-jest.mock("~/client");
-
 const mockAvailableDevices = [
   { name: "/dev/sda", size: 536870912000 },
   { name: "/dev/sdb", size: 697932185600 },
 ];
 
-let mockResultSettings = { target: "disk", targetDevice: "/dev/sda", spacePolicy: "delete" };
+const mockResultSettings = { target: "disk", targetDevice: "/dev/sda", spacePolicy: "delete" };
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
