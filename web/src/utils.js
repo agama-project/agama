@@ -331,7 +331,7 @@ const hex = (value) => {
  * @todo This conversion will not be needed after adapting Section to directly work with issues.
  *
  * @param {import("~/types/issues").Issue} issue
- * @returns {import("~/client/mixins").ValidationError}
+ * @returns {import("~/types/issues").ValidationError}
  */
 const toValidationError = (issue) => ({ message: issue.description });
 

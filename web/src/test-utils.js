@@ -34,7 +34,6 @@ import { render } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { noop, isObject } from "./utils";
-import cockpit from "./lib/cockpit";
 import { InstallerL10nProvider } from "./context/installerL10n";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -93,10 +92,6 @@ const Providers = ({ children, withL10n }) => {
   // the client instead of mocking `createClient`.
   if (!client.onDisconnect) {
     client.onDisconnect = noop;
-  }
-
-  if (!client.manager) {
-    client.manager = {};
   }
 
   if (withL10n) {
@@ -178,19 +173,6 @@ const createCallbackMock = () => {
 };
 
 /**
- * Mocks the cockpit.gettext() method with an identity function (returns
- * the original untranslated text)
- */
-const mockGettext = () => {
-  const gettextFn = jest.fn();
-  gettextFn.mockImplementation((text) => {
-    return text;
-  });
-
-  cockpit.gettext.mockImplementation(gettextFn);
-};
-
-/**
  * Helper for clearing window.localStorage and setting an initial state if needed.
  *
  * @param {Object.<string, string>} [initialState] - a collection of keys/values as
@@ -210,7 +192,6 @@ export {
   plainRender,
   installerRender,
   createCallbackMock,
-  mockGettext,
   mockNavigateFn,
   mockRoutes,
   mockUseRevalidator,

@@ -27,7 +27,7 @@ import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { _ } from "~/i18n";
 import { Action, StorageDevice } from "~/types/storage";
-import { ValidationError } from "~/client/mixins";
+import { ValidationError } from "~/types/issues";
 
 /**
  * @todo Create a component for rendering a customized skeleton

@@ -85,5 +85,12 @@ class IssuesList {
   }
 }
 
+/**
+ * Validation error
+ */
+type ValidationError = {
+  message: string;
+};
+
 export { IssueSource, IssuesList, IssueSeverity };
-export type { Issue, IssuesScope };
+export type { Issue, IssuesScope, ValidationError };

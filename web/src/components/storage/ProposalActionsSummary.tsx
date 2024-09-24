@@ -30,7 +30,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { PATHS } from "~/routes/storage";
 import { Action, SpaceAction, StorageDevice } from "~/types/storage";
 import { SpacePolicy } from "./utils";
-import { ValidationError } from "~/client/mixins";
+import { ValidationError } from "~/types/issues";
 
 /**
  * Renders information about delete actions

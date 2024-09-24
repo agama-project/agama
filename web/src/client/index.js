@@ -22,16 +22,10 @@
 
 // @ts-check
 
-import { L10nClient } from "./l10n";
-import { ManagerClient } from "./manager";
-import { StorageClient } from "./storage";
 import { HTTPClient } from "./http";
 
 /**
  * @typedef {object} InstallerClient
- * @property {L10nClient} l10n - localization client.
- * @property {ManagerClient} manager - manager client.
- * @property {StorageClient} storage - storage client.
  * @property {() => import("./http").WSClient} ws - Agama WebSocket client.
  * @property {() => boolean} isConnected - determines whether the client is connected
  * @property {() => boolean} isRecoverable - determines whether the client is recoverable after disconnected
@@ -49,18 +43,12 @@ import { HTTPClient } from "./http";
  */
 const createClient = (url) => {
   const client = new HTTPClient(url);
-  const l10n = new L10nClient(client);
   // TODO: unify with the manager client
-  const manager = new ManagerClient(client);
-  const storage = new StorageClient(client);
 
   const isConnected = () => client.ws().isConnected() || false;
   const isRecoverable = () => !!client.ws().isRecoverable();
 
   return {
-    l10n,
-    manager,
-    storage,
     isConnected,
     isRecoverable,
     onConnect: (handler) => client.ws().onOpen(handler),
