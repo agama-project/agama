@@ -23,13 +23,12 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
+import { plainRender } from "~/test-utils";
 import { EncryptionMethods } from "~/types/storage";
 import InstallationFinished from "./InstallationFinished";
 
-let mockEncryptionPassword;
-let mockEncryptionMethod;
+let mockEncryptionPassword: string;
+let mockEncryptionMethod: string;
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
@@ -46,11 +45,11 @@ jest.mock("~/queries/storage", () => ({
   }),
 }));
 
-const finishInstallationFn = jest.fn();
+const mockFinishInstallation = jest.fn();
 
 jest.mock("~/api/manager", () => ({
   ...jest.requireActual("~/api/manager"),
-  finishInstallation: () => finishInstallationFn(),
+  finishInstallation: () => mockFinishInstallation(),
 }));
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
@@ -59,31 +58,23 @@ describe("InstallationFinished", () => {
   beforeEach(() => {
     mockEncryptionPassword = "n0tS3cr3t";
     mockEncryptionMethod = EncryptionMethods.LUKS2;
-    createClient.mockImplementation(() => {
-      return {
-        manager: {
-          finishInstallation: finishInstallationFn,
-          useIguana: () => Promise.resolve(false),
-        },
-      };
-    });
   });
 
   it("shows the finished installation screen", () => {
-    installerRender(<InstallationFinished />);
+    plainRender(<InstallationFinished />);
     screen.getByText("Congratulations!");
   });
 
   it("shows a 'Reboot' button", () => {
-    installerRender(<InstallationFinished />);
+    plainRender(<InstallationFinished />);
     screen.getByRole("button", { name: /Reboot/i });
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    const { user } = installerRender(<InstallationFinished />);
-    const rebootButton = screen.getByRole("button", { name: /Reboot/i });
+    const { user } = plainRender(<InstallationFinished />);
+    const rebootButton = screen.getByRole("button", { name: "Reboot" });
     await user.click(rebootButton);
-    expect(finishInstallationFn).toHaveBeenCalled();
+    expect(mockFinishInstallation).toHaveBeenCalled();
   });
 
   describe("when TPM is set as encryption method", () => {
@@ -93,7 +84,7 @@ describe("InstallationFinished", () => {
 
     describe("and encryption was set", () => {
       it("shows the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
+        plainRender(<InstallationFinished />);
         await screen.findAllByText(/TPM/);
       });
     });
@@ -104,7 +95,7 @@ describe("InstallationFinished", () => {
       });
 
       it("does not show the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
+        plainRender(<InstallationFinished />);
         screen.queryAllByText(/TPM/);
       });
     });
@@ -112,7 +103,7 @@ describe("InstallationFinished", () => {
 
   describe("when TPM is not set as encryption method", () => {
     it("does not show the TPM reminder", async () => {
-      installerRender(<InstallationFinished />);
+      plainRender(<InstallationFinished />);
       expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
     });
   });
