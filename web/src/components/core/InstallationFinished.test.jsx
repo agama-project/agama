@@ -25,37 +25,41 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
-import { EncryptionMethods } from "~/client/storage";
+import { EncryptionMethods } from "~/types/storage";
 import InstallationFinished from "./InstallationFinished";
+
+let mockEncryptionPassword;
+let mockEncryptionMethod;
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
   useInstallerStatus: () => ({ isBusy: false, useIguana: false, phase: 2, canInstall: false }),
 }));
 
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useProposalResult: () => ({
+    settings: {
+      encryptionMethod: mockEncryptionMethod,
+      encryptionPassword: mockEncryptionPassword,
+    },
+  }),
+}));
+
 jest.mock("~/client");
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
 
 const finishInstallationFn = jest.fn();
-let encryptionPassword;
-let encryptionMethod;
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
-    encryptionPassword = "n0tS3cr3t";
-    encryptionMethod = EncryptionMethods.LUKS2;
+    mockEncryptionPassword = "n0tS3cr3t";
+    mockEncryptionMethod = EncryptionMethods.LUKS2;
     createClient.mockImplementation(() => {
       return {
         manager: {
           finishInstallation: finishInstallationFn,
           useIguana: () => Promise.resolve(false),
-        },
-        storage: {
-          proposal: {
-            getResult: jest.fn().mockResolvedValue({
-              settings: { encryptionMethod, encryptionPassword },
-            }),
-          },
         },
       };
     });
@@ -80,7 +84,7 @@ describe("InstallationFinished", () => {
 
   describe("when TPM is set as encryption method", () => {
     beforeEach(() => {
-      encryptionMethod = EncryptionMethods.TPM;
+      mockEncryptionMethod = EncryptionMethods.TPM;
     });
 
     describe("and encryption was set", () => {
@@ -92,7 +96,7 @@ describe("InstallationFinished", () => {
 
     describe("but encryption was not set", () => {
       beforeEach(() => {
-        encryptionPassword = "";
+        mockEncryptionPassword = "";
       });
 
       it("does not show the TPM reminder", async () => {
