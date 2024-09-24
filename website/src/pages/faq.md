@@ -20,14 +20,6 @@ cases. But time goes by, and the good old YaST is starting to show its age in so
 - Some in-house solutions like [libyui](https://github.com/libyui/libyui) make more difficult to
   contribute to the project.
 
-## How is Agama different from YaST?
-
-TBD.
-
-## Will Agama replace YaST as the main installer for SUSE Linux or openSUSE distributions?
-
-TBD.
-
 ## What can I configure with Agama?
 
 In principle Agama gives you the chance to configure every aspect that it is important at
@@ -37,23 +29,63 @@ do any additional configuration using any other tool once the system is installe
 However, that's not 100% true and Agama allows configuring other aspects of the system at
 installation time, like system localization.
 
-## Where is the NCURSES interface?
+## How does Agama look like?
 
-Agama features a powerful web-based interface that you can connect to from any device which has a
-browser. We consider this interface as the best alternative for most of the use cases, replacing the
+Agama features a powerful web-based interface that can be used for local graphical installation and
+can also be accessed from any device which has a browser.
+
+Unlike the YaST wizard, which forces the user to go through some sequential steps to configure every
+aspect of the system, the Agama interface offers a simpler workflow that is described at the
+[interactive installation guide](docs/user/interactive) (screenshots included!).
+
+We consider this interface as the best alternative for most of the use cases, replacing the
 use of VNC or a text-based interface over SSH.
 
-However, it might happen that you need a text-based interface at some point. For those use cases,
-[Agama's command-line interface](docs/user/cli) is your best option.
+## Where is the NCURSES text-mode interface?
+
+The approach to text-mode (console) installation is also different from YaST. Instead of offering a
+pseudo-graphical interface that mimics the graphical one, Agama features a powerful
+[command-line interface](docs/user/cli) that allows to drive and monitor the installation process
+in many convenient and flexible ways.
+
+## Where is the Expert Partitioner?
+
+There is currently no direct replacement for the YaST Expert Partitioner. All the capabilities are
+still there and can be used from the unattended installation, but we have still not decided how to
+expose them in the interactive interface.
+
+## What about unattended installation?
+
+The installation process can be partially or totally automated and driven by:
+
+  - A set of scripts based on Agama's command-line interface.
+  - A profile in JSON format (actually [Jsonnet](https://jsonnet.org/)), similar to AutoYaST.
+  - Any third party tool like [Uyuni](https://www.uyuni-project.org/) through the HTTP interface.
+  - Any combination of the three previous methods.
+
+For more information see the [unattended installation guide](docs/user/unattended).
 
 ## Can I use my existing AutoYaST profiles and infrastructure?
 
-Yes, but with some caveats. Bear in mind that Agama is focused on the installation and it delegates
-further configuration to other tools. Therefore it includes less features and there are many
+Yes, Agama can fetch and process AutoYaST profiles. It supports the most used AutoYaST features
+like [dynamic profiles](https://documentation.suse.com/sles/15-SP5/html/SLES-all/part-dynamic-profiles.html)
+and the most used AutoYaST sections like `partitioning`, `networking`, `software`, `scripts`, etc.
+
+But there are also some caveats. Bear in mind that Agama is focused on the installation and it delegates
+further configuration to other tools. Therefore it includes less features and there are some
 sections you can find in an AutoYaST profile that are ignored by Agama.
 
-However, it has support for the most used AutoYaST features, including [dynamic
-profiles](https://documentation.suse.com/sles/15-SP5/html/SLES-all/part-dynamic-profiles.html) and
-the most used AutoYaST sections (e.g., `partitioning`).
-
 You can find further details in the [AutoYaST support section](http://localhost:3000/docs/user/autoyast).
+
+## Will Agama replace YaST as the main installer for SUSE Linux?
+
+Although nothing is set in stone, that is the plan for SUSE Linux Enterprise Server 16. 
+
+## Will Agama replace YaST as the main installer for openSUSE distributions?
+
+There are no concrete plans in that regard.
+
+The YaST Team works in close collaboration with several openSUSE contributors to make sure Agama can
+install openSUSE Tumbleweed, openSUSE MicroOS and the first prototypes of Leap 16.0. But there is
+no concrete roadmap for the adoption of Agama as an endorsed installer for those distributions.
+
