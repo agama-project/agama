@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-28 02:30+0000\n"
-"PO-Revision-Date: 2024-08-29 07:47+0000\n"
+"POT-Creation-Date: 2024-09-18 02:35+0000\n"
+"PO-Revision-Date: 2024-09-19 06:48+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.7.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
@@ -132,6 +132,42 @@ msgstr "製品を登録しなければなりません"
 msgid "Found %s dependency issues."
 msgstr "%s 個の依存関係の問題が見つかりました。"
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:112
+#, c-format
+msgid "There is no LVM thin pool volume with alias %s"
+msgstr "%s という名前の LVM Thin プールボリュームはありません"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:129
+#, c-format
+msgid "There is no LVM physical volume with alias %s"
+msgstr "%s という名前の LVM 物理ボリュームはありません"
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:160
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr ""
+"パスフレーズが設定されていません ('%{crypt_method}' 方式を使用する際には必須"
+"です) 。"
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:178
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr "このシステムでは '%{crypt_method}' 暗号化方式は利用できません。"
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:197
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr "'%{crypt_method}' はデバイスの暗号化方式として不適切です。"
+
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
@@ -225,46 +261,20 @@ msgid ""
 msgstr ""
 "ユーザの設定、 root パスワードの設定、 SSH 公開鍵の設定のいずれかが必要です"
 
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:134
-#, perl-brace-format
-msgid ""
-"No passphrase provided (required for using the method '%{crypt_method}')."
-msgstr "パスフレーズが設定されていません ('%{crypt_method}' "
-"方式を使用する際には必須です) 。"
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:145
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr "このシステムでは '%{crypt_method}' 暗号化方式は利用できません。"
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:156
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr "'%{crypt_method}' はデバイスの暗号化方式として不適切です。"
-
 #. @see #not_found_issue
-#: service/lib/y2storage/proposal/agama_searcher.rb:98
+#: service/lib/y2storage/proposal/agama_searcher.rb:158
 msgid "No device found for an optional drive"
 msgstr "任意指定のドライブに対応するデバイスが見つかりません"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:100
+#: service/lib/y2storage/proposal/agama_searcher.rb:160
 msgid "No device found for a mandatory drive"
 msgstr "必須指定のドライブに対応するデバイスが見つかりません"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:103
+#: service/lib/y2storage/proposal/agama_searcher.rb:163
 msgid "No device found for an optional partition"
 msgstr "任意指定のパーティションに対応するデバイスが見つかりません"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:105
+#: service/lib/y2storage/proposal/agama_searcher.rb:165
 msgid "No device found for a mandatory partition"
 msgstr "必須指定のパーティションに対応するデバイスが見つかりません"
 
