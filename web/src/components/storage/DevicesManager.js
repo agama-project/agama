@@ -25,8 +25,8 @@
 import { compact, uniq } from "~/utils";
 
 /**
- * @typedef {import ("~/client/storage").Action} Action
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/types/storage").Action} Action
+ * @typedef {import ("~/types/storage").StorageDevice} StorageDevice
  */
 
 /**

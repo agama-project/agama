@@ -28,7 +28,7 @@ import { deviceSize } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("@patternfly/react-core").FormSelectProps} PFFormSelectProps
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/types/storage").StorageDevice} StorageDevice
  */
 
 /**

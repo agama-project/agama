@@ -25,7 +25,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { EncryptionMethods } from "~/client/storage";
+import { EncryptionMethods } from "~/types/storage";
 import EncryptionSettingsDialog, {
   EncryptionSettingsDialogProps,
 } from "~/components/storage/EncryptionSettingsDialog";
