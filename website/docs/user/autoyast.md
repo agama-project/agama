@@ -1,4 +1,4 @@
-# AutoYaST Support
+# AutoYaST support
 
 Agama offers a mechanism to perform [unattended installations](./unattended). However, we
 would like AutoYaST users to be able to use their profiles in Agama. This document describes how
