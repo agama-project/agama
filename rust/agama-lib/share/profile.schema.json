@@ -152,7 +152,7 @@
                       "wpa-psk",
                       "sae",
                       "wpa-eap",
-                      "wpa-eap-suite-b192"
+                      "wpa-eap-suite-b-192"
                     ]
                   },
                   "ssid": {
