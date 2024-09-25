@@ -67,7 +67,7 @@ const useInitiatorChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent(({ type, name, ibft }) => {
+    return client.onEvent(({ type, name, ibft }) => {
       if (type !== "ISCSIInitiatorChanged") return;
 
       queryClient.setQueryData(initiatorQuery.queryKey, (oldData: ISCSIInitiator | undefined) => {
@@ -102,7 +102,7 @@ const useNodesChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent(({ type, node }) => {
+    return client.onEvent(({ type, node }) => {
       if (!["ISCSINodeAdded", "ISCSINodeChanged", "ISCSINodeRemoved"].includes(type)) {
         return;
       }

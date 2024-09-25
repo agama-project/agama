@@ -340,7 +340,7 @@ const useDeprecatedChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent(({ type, dirty: value }) => {
+    return client.onEvent(({ type, dirty: value }) => {
       if (type === "DevicesDirty") {
         queryClient.setQueryData(deprecatedQuery.queryKey, value);
       }

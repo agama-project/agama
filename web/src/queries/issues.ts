@@ -71,7 +71,7 @@ const useIssuesChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "IssuesChanged") {
         const path = event.path;
         const scope = scopesFromPath[path];

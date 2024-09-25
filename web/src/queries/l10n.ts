@@ -86,7 +86,7 @@ const useL10nConfigChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "L10nConfigChanged") {
         queryClient.invalidateQueries({ queryKey: ["l10n/config"] });
       }

@@ -22,17 +22,17 @@
 
 // @ts-check
 
-import { HTTPClient } from "./http";
+import { WSClient } from "./ws";
 
 /**
  * @typedef {object} InstallerClient
- * @property {() => import("./http").WSClient} ws - Agama WebSocket client.
  * @property {() => boolean} isConnected - determines whether the client is connected
  * @property {() => boolean} isRecoverable - determines whether the client is recoverable after disconnected
  * @property {(handler: () => void) => (() => void)} onConnect - registers a handler to run
  * @property {(handler: () => void) => (() => void)} onDisconnect - registers a handler to run
  *   when the connection is lost. It returns a function to deregister the
  *   handler.
+ * @property {(handler: (any) => void) => (() => void)} onEvent - registers a handler to run on events
  */
 
 /**
@@ -42,18 +42,20 @@ import { HTTPClient } from "./http";
  * @return {InstallerClient}
  */
 const createClient = (url) => {
-  const client = new HTTPClient(url);
-  // TODO: unify with the manager client
+  url.hash = "";
+  url.pathname = url.pathname.concat("api/ws");
+  url.protocol = url.protocol === "http:" ? "ws" : "wss";
+  const ws = new WSClient(url);
 
-  const isConnected = () => client.ws().isConnected() || false;
-  const isRecoverable = () => !!client.ws().isRecoverable();
+  const isConnected = () => ws.isConnected() || false;
+  const isRecoverable = () => !!ws.isRecoverable();
 
   return {
     isConnected,
     isRecoverable,
-    onConnect: (handler) => client.ws().onOpen(handler),
-    onDisconnect: (handler) => client.ws().onClose(handler),
-    ws: () => client.ws(),
+    onConnect: (handler) => ws.onOpen(handler),
+    onDisconnect: (handler) => ws.onClose(handler),
+    onEvent: (handler) => ws.onEvent(handler),
   };
 };
 

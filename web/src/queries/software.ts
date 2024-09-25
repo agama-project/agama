@@ -184,7 +184,7 @@ const useProductChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "ProductChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/config"] });
       }
@@ -204,7 +204,7 @@ const useProposalChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "SoftwareProposalChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       }
