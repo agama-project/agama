@@ -1169,7 +1169,7 @@ pub enum SecurityProtocol {
     WPA2,           // WPA2 + WPA3 personal ("wpa-psk")
     WPA3Personal,   // WPA3 personal only ("sae")
     WPA2Enterprise, // WPA2 + WPA3 Enterprise ("wpa-eap")
-    WPA3Only,       // WPA3 only ("wpa-eap-suite-b192")
+    WPA3Only,       // WPA3 only ("wpa-eap-suite-b-192")
 }
 
 impl fmt::Display for SecurityProtocol {
@@ -1181,7 +1181,7 @@ impl fmt::Display for SecurityProtocol {
             SecurityProtocol::WPA2 => "wpa-psk",
             SecurityProtocol::WPA3Personal => "sae",
             SecurityProtocol::WPA2Enterprise => "wpa-eap",
-            SecurityProtocol::WPA3Only => "wpa-eap-suite-b192",
+            SecurityProtocol::WPA3Only => "wpa-eap-suite-b-192",
         };
         write!(f, "{}", value)
     }
@@ -1198,7 +1198,7 @@ impl TryFrom<&str> for SecurityProtocol {
             "wpa-psk" => Ok(SecurityProtocol::WPA2),
             "sae" => Ok(SecurityProtocol::WPA3Personal),
             "wpa-eap" => Ok(SecurityProtocol::WPA2Enterprise),
-            "wpa-eap-suite-b192" => Ok(SecurityProtocol::WPA3Only),
+            "wpa-eap-suite-b-192" => Ok(SecurityProtocol::WPA3Only),
             _ => Err(NetworkStateError::InvalidSecurityProtocol(
                 value.to_string(),
             )),

@@ -108,7 +108,7 @@ trait Wireless {
     /// Wireless Security property
     ///
     /// Possible values are 'none', 'owe', 'ieee8021x', 'wpa-psk', 'sae',
-    ///     'wpa-eap', 'wpa-eap-suite-b192'
+    ///     'wpa-eap', 'wpa-eap-suite-b-192'
     #[dbus_proxy(property)]
     fn security(&self) -> zbus::Result<String>;
     #[dbus_proxy(property)]

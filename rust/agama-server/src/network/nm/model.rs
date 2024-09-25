@@ -140,7 +140,7 @@ impl TryFrom<NmKeyManagement> for SecurityProtocol {
             "wpa-psk" => Ok(SecurityProtocol::WPA2),
             "wpa-eap" => Ok(SecurityProtocol::WPA3Personal),
             "sae" => Ok(SecurityProtocol::WPA2Enterprise),
-            "wpa-eap-suite-b192" => Ok(SecurityProtocol::WPA2Enterprise),
+            "wpa-eap-suite-b-192" => Ok(SecurityProtocol::WPA2Enterprise),
             "none" => Ok(SecurityProtocol::WEP),
             _ => Err(NmError::UnsupportedSecurityProtocol(value.to_string())),
         }
