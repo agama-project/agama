@@ -59,7 +59,6 @@ const createClient = (url) => {
 
 const createDefaultClient = async () => {
   const httpUrl = new URL(window.location.toString());
-  httpUrl.hash = "";
   return createClient(httpUrl);
 };
 

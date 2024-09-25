@@ -30,6 +30,15 @@ import { InstallationPhase } from "./types/status";
 
 jest.mock("~/client");
 
+jest.mock("~/api/l10n", () => ({
+  ...jest.requireActual("~/api/l10n"),
+  fetchConfig: jest.fn().mockResolvedValue({
+    uiKeymap: "en",
+    uiLocale: "en_us",
+  }),
+  updateConfig: jest.fn(),
+}));
+
 // list of available products
 let mockProducts;
 let mockSelectedProduct;
@@ -88,13 +97,7 @@ describe("App", () => {
     // setting the language through a cookie
     document.cookie = "agamaLang=en-us; path=/;";
     createClient.mockImplementation(() => {
-      return {
-        l10n: {
-          getUIKeymap: jest.fn().mockResolvedValue("en"),
-          getUILocale: jest.fn().mockResolvedValue("en_us"),
-          setUILocale: jest.fn().mockResolvedValue("en_us"),
-        },
-      };
+      return {};
     });
 
     mockProducts = [

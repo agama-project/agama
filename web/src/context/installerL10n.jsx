@@ -25,9 +25,10 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useCancellablePromise, locationReload, setLocationSearch } from "~/utils";
-import { useInstallerClient } from "./installer";
+import { useInstallerClientStatus } from "./installer";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
+import { fetchConfig, updateConfig } from "~/api/l10n";
 
 const L10nContext = React.createContext(null);
 
@@ -215,7 +216,7 @@ function reload(newLanguage) {
  * @see useInstallerL10n
  */
 function InstallerL10nProvider({ children }) {
-  const client = useInstallerClient();
+  const { connected } = useInstallerClientStatus();
   const [language, setLanguage] = useState(undefined);
   const [keymap, setKeymap] = useState(undefined);
   const [backendPending, setBackendPending] = useState(false);
@@ -223,23 +224,23 @@ function InstallerL10nProvider({ children }) {
 
   const storeInstallerLanguage = useCallback(
     async (newLanguage) => {
-      if (!client) {
+      if (!connected) {
         setBackendPending(true);
         return false;
       }
 
-      const locale = await cancellablePromise(client.l10n.getUILocale());
-      const currentLanguage = languageFromLocale(locale);
+      const config = await cancellablePromise(fetchConfig());
+      const currentLanguage = languageFromLocale(config.uiLocale);
 
       if (currentLanguage !== newLanguage) {
         // FIXME: fallback to en-US if the language is not supported.
-        await cancellablePromise(client.l10n.setUILocale(languageToLocale(newLanguage)));
+        await cancellablePromise(updateConfig({ uiLocale: languageToLocale(newLanguage) }));
         return true;
       }
 
       return false;
     },
-    [client, cancellablePromise],
+    [connected, cancellablePromise],
   );
 
   const changeLanguage = useCallback(
@@ -270,12 +271,12 @@ function InstallerL10nProvider({ children }) {
 
   const changeKeymap = useCallback(
     async (id) => {
-      if (!client) return;
+      if (!connected) return;
 
       setKeymap(id);
-      client.l10n.setUIKeymap(id);
+      updateConfig({ uiKeymap: id });
     },
-    [setKeymap, client],
+    [setKeymap, connected],
   );
 
   useEffect(() => {
@@ -283,16 +284,16 @@ function InstallerL10nProvider({ children }) {
   }, [changeLanguage, language]);
 
   useEffect(() => {
-    if (!client || !backendPending) return;
+    if (!connected || !backendPending) return;
 
     storeInstallerLanguage(language);
     setBackendPending(false);
-  }, [client, language, backendPending, storeInstallerLanguage]);
+  }, [connected, language, backendPending, storeInstallerLanguage]);
 
   useEffect(() => {
-    if (!client) return;
-    client.l10n.getUIKeymap().then(setKeymap);
-  }, [setKeymap, client]);
+    if (!connected) return;
+    fetchConfig().then((c) => setKeymap(c.uiKeymap));
+  }, [setKeymap, connected]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };
 

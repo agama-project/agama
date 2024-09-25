@@ -104,6 +104,8 @@ const useL10n = () => {
   const selectedLocale = locales.find((l) => l.id === config.locales[0]);
   const selectedKeymap = keymaps.find((k) => k.id === config.keymap);
   const selectedTimezone = timezones.find((t) => t.id === config.timezone);
+  const uiLocale = locales.find((l) => l.id === config.uiLocale);
+  const uiKeymap = keymaps.find((k) => k.id === config.uiKeymap);
 
   return {
     locales,
@@ -112,6 +114,8 @@ const useL10n = () => {
     selectedLocale,
     selectedKeymap,
     selectedTimezone,
+    uiLocale,
+    uiKeymap,
   };
 };
 
