@@ -81,13 +81,13 @@ pub struct WirelessSettings {
     #[serde(skip_serializing_if = "std::ops::Not::not", default)]
     pub hidden: bool,
     /// A list of group/broadcast encryption algorithms
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub group_algorithms: Vec<String>,
     /// A list of pairwise encryption algorithms
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub pairwise_algorithms: Vec<String>,
     /// A list of allowed WPA protocol versions
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub wpa_protocol_versions: Vec<String>,
     /// Indicates whether Protected Management Frames must be enabled for the connection
     #[serde(skip_serializing_if = "is_zero", default)]
@@ -118,7 +118,7 @@ impl Default for BondSettings {
 #[serde(rename_all = "camelCase")]
 pub struct IEEE8021XSettings {
     /// List of EAP methods used
-    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub eap: Vec<String>,
     /// Phase 2 inner auth method
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -154,7 +154,7 @@ pub struct IEEE8021XSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub peap_version: Option<String>,
     /// Force the use of the new PEAP label during key derivation
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(skip_serializing_if = "std::ops::Not::not", default)]
     pub peap_label: bool,
 }
 
