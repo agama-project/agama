@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 26 9:09:10 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Fix optional network settings (gh#openSUSE/agama#1641).
+
+-------------------------------------------------------------------
 Wed Sep 25 14:33:50 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Rename wireless key-mgmt value wpa-eap-suite-b192 to
