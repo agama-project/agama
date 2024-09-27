@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Sep 27 13:09:10 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
-- Fix optional network settings (gh#openSUSE/agama#1641).
+- Fix optional network settings (gh#agama-project/agama#1641).
 
 -------------------------------------------------------------------
 Fri Sep 27 10:44:22 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
