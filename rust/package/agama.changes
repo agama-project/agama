@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 27 10:44:22 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose keymaps localized descriptions (gh#agama-project/agama#1643).
+
+-------------------------------------------------------------------
 Wed Sep 25 14:33:50 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Rename wireless key-mgmt value wpa-eap-suite-b192 to
