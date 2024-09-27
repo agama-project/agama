@@ -45,11 +45,6 @@ module Agama
         @on_calculate_callbacks = []
       end
 
-      # List of issues.
-      #
-      # @return [Array<Issue>]
-      attr_reader :issues
-
       # Whether the proposal was already calculated.
       #
       # @return [Boolean]
@@ -192,6 +187,25 @@ module Agama
         strategy_object.settings
       end
 
+      # List of issues.
+      #
+      # @return [Array<Issue>]
+      def issues
+        items = []
+
+        case @calculate_error
+        when Y2Storage::NoDiskSpaceError
+          items << failed_issue
+        when Y2Storage::Error
+          items << exception_issue(@calculate_error)
+        else
+          items << failed_issue if proposal&.failed?
+        end
+
+        items.concat(strategy_object.issues) if strategy_object
+        items
+      end
+
     private
 
       # @return [Agama::Config]
@@ -232,16 +246,15 @@ module Agama
       def calculate
         return false unless storage_manager.probed?
 
-        @issues = []
-
+        @calculate_error = nil
         begin
           strategy_object.calculate
-          @issues << failed_issue if proposal.failed?
         rescue Y2Storage::Error => e
-          handle_exception(e)
+          @calculate_error = e
+        rescue StandardError => e
+          raise e
         end
 
-        @issues.concat(strategy_object.issues)
         @on_calculate_callbacks.each(&:call)
         success?
       end
@@ -261,18 +274,6 @@ module Agama
       # @return [Y2Storage::StorageManager]
       def storage_manager
         Y2Storage::StorageManager.instance
-      end
-
-      # Handle Y2Storage exceptions
-      def handle_exception(error)
-        case error
-        when Y2Storage::NoDiskSpaceError
-          @issues << failed_issue
-        when Y2Storage::Error
-          @issues << exception_issue(error)
-        else
-          raise error
-        end
       end
 
       # Issue representing the proposal is not valid.
