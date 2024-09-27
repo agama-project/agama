@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep 27 14:15:16 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: add support for automatically generating 'default' and
+  'mandatory' partitions or logical volumes in the storage config
+  (gh#openSUSE/agama#1634).
+
+-------------------------------------------------------------------
 Fri Sep 27 09:23:40 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Handle UI language change in users and storage
@@ -7,7 +14,7 @@ Fri Sep 27 09:23:40 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Mon Sep 23 14:55:53 UTC 2024 - José Iván López González <jlopez@suse.com>
 
-- storage: add support for resizing partitions using its current
+- Storage: add support for resizing partitions using its current
   size as min or max limit (gh#openSUSE/agama#1617).
 
 -------------------------------------------------------------------
