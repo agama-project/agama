@@ -139,10 +139,6 @@ module Agama
       end
     end
 
-  private
-
-    attr_reader :logger
-
     # Recalculates the list of issues
     def update_issues
       new_issues = []
@@ -157,6 +153,10 @@ module Agama
 
       self.issues = new_issues
     end
+
+  private
+
+    attr_reader :logger
 
     # Determines whether a first user is defined or not
     #
