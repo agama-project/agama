@@ -179,6 +179,7 @@ module Agama
       # @param locale [String] new locale
       def locale=(locale)
         change_process_locale(locale)
+        update_issues
       end
 
     private
