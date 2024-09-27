@@ -20,16 +20,13 @@
 
 use agama_locale_data::{get_localectl_keymaps, keyboard::XkbConfigRegistry, KeymapId};
 use gettextrs::*;
-use serde::Serialize;
-use serde_with::{serde_as, DisplayFromStr};
+use serde::ser::{Serialize, SerializeStruct};
 use std::collections::HashMap;
 
-#[serde_as]
 // Minimal representation of a keymap
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, utoipa::ToSchema)]
 pub struct Keymap {
     /// Keymap identifier (e.g., "us")
-    #[serde_as(as = "DisplayFromStr")]
     pub id: KeymapId,
     /// Keymap description
     description: String,
@@ -45,6 +42,18 @@ impl Keymap {
 
     pub fn localized_description(&self) -> String {
         gettext(&self.description)
+    }
+}
+
+impl Serialize for Keymap {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_struct("Keymap", 2)?;
+        state.serialize_field("id", &self.id.to_string())?;
+        state.serialize_field("description", &self.localized_description())?;
+        state.end()
     }
 }
 
