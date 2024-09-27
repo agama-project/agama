@@ -29,12 +29,6 @@ import { sprintf } from "sprintf-js";
 import { deviceChildren, volumeLabel } from "~/components/storage/utils";
 import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
-// TRANSLATORS: Description of the dialog for changing the location of a file system.
-const DIALOG_DESCRIPTION = _(
-  "The file systems are allocated at the installation device by \
-default. Indicate a custom location to create the file system at a specific device.",
-);
-
 const defaultTarget: (device: StorageDevice | undefined) => VolumeTarget = (
   device,
 ): VolumeTarget => {
@@ -130,12 +124,18 @@ export default function VolumeLocationDialog({
 
   if (!targetDevice) return null;
 
+  // TRANSLATORS: Description of the dialog for changing the location of a file system.
+  const dialogDescription = _(
+    "The file systems are allocated at the installation device by \
+default. Indicate a custom location to create the file system at a specific device.",
+  );
+
   return (
     <Popup
       // TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
       // by a mount path (e.g., /home).
       title={sprintf(_("Location for %s file system"), volumeLabel(volume))}
-      description={DIALOG_DESCRIPTION}
+      description={dialogDescription}
       inlineSize="large"
       blockSize="large"
       isOpen={isOpen}
