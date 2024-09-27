@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 27 09:23:40 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Handle language change in users and storage (gh#agama-project/agama#1642).
+
+-------------------------------------------------------------------
 Mon Sep 23 14:55:53 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - storage: add support for resizing partitions using its current
