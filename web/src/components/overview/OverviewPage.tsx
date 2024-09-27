@@ -44,12 +44,6 @@ import { _ } from "~/i18n";
 import { useAllIssues } from "~/queries/issues";
 import { IssuesList as IssuesListType, IssueSeverity } from "~/types/issues";
 
-const SCOPE_HEADERS = {
-  users: _("Users"),
-  storage: _("Storage"),
-  software: _("Software"),
-};
-
 const ReadyForInstallation = () => (
   <Center>
     <EmptyState title={_("Ready for installation")} icon="check_circle" color="success-color-100">
@@ -59,6 +53,12 @@ const ReadyForInstallation = () => (
 );
 
 const IssuesList = ({ issues }: { issues: IssuesListType }) => {
+  const scopeHeaders = {
+    users: _("Users"),
+    storage: _("Storage"),
+    software: _("Software"),
+  };
+
   const { issues: issuesByScope } = issues;
   const list = [];
   Object.entries(issuesByScope).forEach(([scope, issues], idx) => {
@@ -68,7 +68,7 @@ const IssuesList = ({ issues }: { issues: IssuesListType }) => {
       const link = (
         <NotificationDrawerListItem key={`${idx}-${subIdx}`} variant={variant} isHoverable={false}>
           <NotificationDrawerListItemHeader
-            title={SCOPE_HEADERS[scope]}
+            title={scopeHeaders[scope]}
             variant={variant}
             headingLevel="h4"
           />
@@ -109,7 +109,7 @@ const ResultSection = () => {
 
 const OverviewSection = () => (
   <Page.Section
-    title="Overview"
+    title={_("Overview")}
     description={_(
       "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
     )}
