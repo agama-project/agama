@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 27 13:00:05 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly translate the storage interface when switching
+  the language of the UI (gh#agama-project/agama#1629).
+
+-------------------------------------------------------------------
 Fri Sep 20 11:42:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 10

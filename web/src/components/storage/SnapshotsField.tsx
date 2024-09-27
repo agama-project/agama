@@ -29,12 +29,6 @@ import { hasFS } from "~/components/storage/utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Volume } from "~/types/storage";
 
-const LABEL = _("Use Btrfs snapshots for the root file system");
-const DESCRIPTION = _(
-  "Allows to boot to a previous version of the \
-system after configuration changes or software upgrades.",
-);
-
 export type SnapshotsFieldProps = {
   rootVolume: Volume;
   onChange?: (config: SnapshotsConfig) => void;
@@ -51,6 +45,8 @@ export type SnapshotsConfig = {
 export default function SnapshotsField({ rootVolume, onChange }: SnapshotsFieldProps) {
   const isChecked = hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
 
+  const label = _("Use Btrfs snapshots for the root file system");
+
   const switchState = () => {
     if (onChange) onChange({ active: !isChecked });
   };
@@ -59,14 +55,19 @@ export default function SnapshotsField({ rootVolume, onChange }: SnapshotsFieldP
     <Split hasGutter>
       <Switch
         id="snapshots"
-        aria-label={LABEL}
+        aria-label={label}
         isChecked={isChecked}
         onChange={switchState}
         hasCheckIcon
       />
       <div>
-        <div>{LABEL}</div>
-        <div className={textStyles.color_200}>{DESCRIPTION}</div>
+        <div>{label}</div>
+        <div className={textStyles.color_200}>
+          {_(
+            "Allows to boot to a previous version of the \
+system after configuration changes or software upgrades.",
+          )}
+        </div>
       </div>
     </Split>
   );

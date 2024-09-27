@@ -30,24 +30,18 @@ import { EncryptionMethods } from "~/types/storage";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
 
-// Field texts at root level to avoid redefinitions every time the component
-// is rendered.
-const LABEL = _("Encryption");
-const DESCRIPTION = _(
-  "Protection for the information stored at \
-the device, including data, programs, and system files.",
-);
-const VALUES = {
+const encryptionMethods = () => ({
   disabled: _("disabled"),
   [EncryptionMethods.LUKS2]: _("enabled"),
   [EncryptionMethods.TPM]: _("using TPM unlocking"),
-};
+});
 
 const Value = ({ isLoading, isEnabled, method }) => {
+  const values = encryptionMethods();
   if (isLoading) return <Skeleton fontSize="sm" width="75%" />;
-  if (isEnabled) return VALUES[method];
+  if (isEnabled) return values[method];
 
-  return VALUES.disabled;
+  return values.disabled;
 };
 
 const Action = ({ isEnabled, isLoading, onClick }) => {
@@ -107,9 +101,12 @@ export default function EncryptionField({
 
   return (
     <Page.Section
-      title={LABEL}
+      title={_("Encryption")}
       value={<Value isLoading={isLoading} isEnabled={isEnabled} method={method} />}
-      description={DESCRIPTION}
+      description={_(
+        "Protection for the information stored at \
+the device, including data, programs, and system files.",
+      )}
       pfCardBodyProps={{ isFilled: true }}
       actions={<Action isEnabled={isEnabled} isLoading={isLoading} onClick={openDialog} />}
     >
