@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep 30 08:52:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix timezones UTC offset calculation (gh#agama-project/agama#1335).
+
+-------------------------------------------------------------------
 Fri Sep 27 14:54:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Translate overview page headers and a missing text in the
