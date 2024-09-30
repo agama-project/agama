@@ -1,0 +1,48 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "alias": "first-disk"
+      },
+      {
+        "partitions": [
+          {
+            "alias": "pv1",
+            "id": "lvm",
+            "size": { "min": "10 GiB" }
+          }
+        ]
+      }
+    ],
+    "volumeGroups": [
+      {
+        "name": "system",
+        "physicalVolumes": ["pv1"],
+        "logicalVolumes": [
+          {
+            "filesystem": { "path": "/" }
+          }
+        ]
+      },
+      {
+        "name": "logs",
+        "physicalVolumes": [
+          { "generate": ["first-disk"] }
+        ]
+      },
+      {
+        "name": "data",
+        "physicalVolumes": [
+          {
+            "generate": {
+              "targetDevices": ["first-disk"],
+              "encryption": {
+                "luks2": { "password": "12345" }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
