@@ -35,7 +35,7 @@ pub enum QuestionsCommands {
     /// mode or change the answer in automatic mode.
     ///
     /// Please check Agama documentation for more details and examples:
-    /// <https://github.com/openSUSE/agama/blob/master/doc/questions.md>
+    /// https://github.com/openSUSE/agama/blob/master/doc/questions.md
     Answers {
         /// Path to a file containing the answers in YAML format.
         path: String,

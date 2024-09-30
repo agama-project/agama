@@ -57,7 +57,7 @@ pub enum ProfileCommands {
     /// Evaluate a profile, injecting the hardware information from D-Bus
     ///
     /// For an example of Jsonnet-based profile, see
-    /// <https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet>
+    /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
     Evaluate {
         /// Path to jsonnet file.
         path: PathBuf,
