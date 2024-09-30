@@ -27,8 +27,20 @@ import { screen } from "@testing-library/react";
 import { mockNavigateFn, plainRender } from "~/test-utils";
 
 const timezones = [
-  { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 1 },
-  { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utfOffset: 1 },
+  { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 120 },
+  { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utcOffset: 120 },
+  {
+    id: "Australia/Adelaide",
+    parts: ["Australia", "Adelaide"],
+    country: "Australia",
+    utcOffset: 570,
+  },
+  {
+    id: "America/Antigua",
+    parts: ["Americas", "Caracas"],
+    country: "Antigua & Barbuda",
+    utcOffset: -240,
+  },
 ];
 
 const mockConfigMutation = {
@@ -46,13 +58,33 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigateFn,
 }));
 
-it("allows changing the keyboard", async () => {
+beforeEach(() => {
+  const mockedDate = new Date(2024, 6, 1, 12, 0);
+
+  jest.useFakeTimers();
+  jest.setSystemTime(mockedDate);
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
+
+it("allows changing the timezone", async () => {
   plainRender(<TimezoneSelection />);
 
+  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
   const option = await screen.findByText("Europe-Madrid");
-  await userEvent.click(option);
+  await user.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
-  await userEvent.click(button);
+  await user.click(button);
   expect(mockConfigMutation.mutate).toHaveBeenCalledWith({ timezone: "Europe/Madrid" });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
+});
+
+it("displays the UTC offset", () => {
+  plainRender(<TimezoneSelection />);
+
+  expect(screen.getByText("Australia/Adelaide UTC+9:30")).toBeInTheDocument();
+  expect(screen.getByText("Europe/Madrid UTC+2")).toBeInTheDocument();
+  expect(screen.getByText("America/Antigua UTC-4")).toBeInTheDocument();
 });
