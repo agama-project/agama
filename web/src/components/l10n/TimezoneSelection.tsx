@@ -39,9 +39,16 @@ const timezoneWithDetails = (timezone: Timezone): TimezoneWithDetails => {
 
   if (offset === undefined) return { ...timezone, details: timezone.id };
 
+  const hours = Math.floor(offset / 60);
+  const minutes = offset % 60;
+  const hoursString = hours >= 0 ? `+${hours}` : `${hours}`;
+
   let utc = "UTC";
-  if (offset > 0) utc += `+${offset}`;
-  if (offset < 0) utc += `${offset}`;
+  if (minutes === 0) {
+    utc += hoursString;
+  } else {
+    utc += `${hoursString}:${minutes}`;
+  }
 
   return { ...timezone, details: `${timezone.id} ${utc}` };
 };

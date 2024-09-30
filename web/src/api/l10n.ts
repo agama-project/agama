@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
+import { tzOffset } from "@date-fns/tz/tzOffset";
 import { get, patch } from "~/api/http";
 import { Keymap, Locale, LocaleConfig, Timezone } from "~/types/l10n";
-import { timezoneUTCOffset } from "~/utils";
 
 /**
  * Returns the l10n configuration
@@ -45,7 +45,7 @@ const fetchLocales = async (): Promise<Locale[]> => {
 const fetchTimezones = async (): Promise<Timezone[]> => {
   const json = await get("/api/l10n/timezones");
   return json.map(({ code, parts, country }): Timezone => {
-    const offset = timezoneUTCOffset(code);
+    const offset = tzOffset(code, new Date());
     return { id: code, parts, country, utcOffset: offset };
   });
 };
