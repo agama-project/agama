@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - release
     paths:
       # run only when a live ISO source is changed
       - live/**

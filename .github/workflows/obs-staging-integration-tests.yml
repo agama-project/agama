@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - release
     paths:
       # run only when a source file is changed
       - puppeteer/**
