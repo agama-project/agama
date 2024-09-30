@@ -16,7 +16,7 @@ jobs:
       pull-requests: write
 
     # do not run in forks
-    if: github.repository == 'openSUSE/agama'
+    if: !github.event.repository.fork
 
     runs-on: ubuntu-latest
 
