@@ -52,7 +52,7 @@ jobs:
     - name: Install Ruby development files and XML tooling
       run: zypper --non-interactive install --no-recommends
            gcc gcc-c++ make libopenssl-devel ruby-devel augeas-devel diff
-           libxslt-devel libxml2-devel xmlstarlet
+           libxslt-devel libxml2-devel xmlstarlet 'rubygem(ruby-augeas)'
 
     - name: Cache RubyGems
       uses: actions/cache@v3
@@ -64,7 +64,7 @@ jobs:
       env:
         NOKOGIRI_USE_SYSTEM_LIBRARIES: 1
       run: |
-        bundle config set --local path 'vendor/bundle'
+        bundle config set --local disable_shared_gems 0
         bundle install
       working-directory: ./service
 
