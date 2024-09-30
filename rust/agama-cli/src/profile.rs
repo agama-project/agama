@@ -20,7 +20,6 @@
 
 use agama_lib::{
     base_http_client::BaseHTTPClient,
-    connection,
     install_settings::InstallSettings,
     profile::{AutoyastProfile, ProfileEvaluator, ProfileValidator, ValidationResult},
     transfer::Transfer,
@@ -154,7 +153,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
 }
 
 async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
-    let store = SettingsStore::new(connection().await?, BaseHTTPClient::new()?).await?;
+    let store = SettingsStore::new(BaseHTTPClient::new()?).await?;
     let settings = InstallSettings::from_file(&path)?;
     store.store(&settings).await?;
     Ok(())

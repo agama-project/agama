@@ -44,18 +44,17 @@ pub struct Store {
     localization: LocalizationStore,
 }
 
-impl<'a> Store<'a> {
+impl Store {
     pub async fn new(
-        connection: Connection,
         http_client: BaseHTTPClient,
-    ) -> Result<Store<'a>, ServiceError> {
+    ) -> Result<Store, ServiceError> {
         Ok(Self {
             localization: LocalizationStore::new(http_client.clone())?,
             users: UsersStore::new(http_client.clone())?,
             network: NetworkStore::new(http_client.clone()).await?,
-            product: ProductStore::new(connection.clone()).await?,
-            software: SoftwareStore::new(connection.clone()).await?,
-            storage: StorageStore::new(connection).await?,
+            product: ProductStore::new()?,
+            software: SoftwareStore::new()?,
+            storage: StorageStore::new()?,
         })
     }
 

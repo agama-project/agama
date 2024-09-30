@@ -26,7 +26,7 @@ use std::{
 
 use crate::show_progress;
 use agama_lib::{
-    base_http_client::BaseHTTPClient, connection, install_settings::InstallSettings,
+    base_http_client::BaseHTTPClient, install_settings::InstallSettings,
     Store as SettingsStore,
 };
 use anyhow::anyhow;
@@ -63,7 +63,7 @@ pub enum ConfigCommands {
 }
 
 pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> anyhow::Result<()> {
-    let store = SettingsStore::new(connection().await?, http_client).await?;
+    let store = SettingsStore::new(http_client).await?;
 
     match subcommand {
         ConfigCommands::Show => {
