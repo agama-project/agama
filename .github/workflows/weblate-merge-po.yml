@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: agama-weblate
-          repository: openSUSE/agama-weblate
+          repository: ${{ github.repository_owner }}/agama-weblate
 
       - name: Update PO files
         working-directory: ./agama
