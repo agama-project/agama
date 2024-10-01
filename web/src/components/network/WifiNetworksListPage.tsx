@@ -264,7 +264,7 @@ function WifiNetworksListPage() {
             <DrawerContentBody>
               <Stack hasGutter>
                 {networks.length === 0 ? (
-                  <EmptyState title="No visible Wi-Fi networks found" icon="error" />
+                  <EmptyState title={_("No visible Wi-Fi networks found")} icon="error" />
                 ) : (
                   // @ts-expect-error: related to https://github.com/patternfly/patternfly-react/issues/9823
                   <DataList

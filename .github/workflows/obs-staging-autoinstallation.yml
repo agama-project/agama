@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - release
     paths:
       # run only when an autoinstallation source is changed
       - autoinstallation/**

@@ -39,6 +39,7 @@ def root_partition(size)
   end
 
   size_config = Agama::Storage::Configs::Size.new.tap do |s|
+    s.default = false
     s.min = size
     s.max = size
   end
@@ -58,11 +59,11 @@ end
 describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
 
-  subject(:proposal) { described_class.new(config, logger: logger) }
+  subject(:proposal) { described_class.new(product_config, logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:config) { Agama::Config.new }
+  let(:product_config) { Agama::Config.new }
 
   before do
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")

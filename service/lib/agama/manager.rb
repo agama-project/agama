@@ -84,6 +84,7 @@ module Agama
     def locale=(locale)
       service_status.busy
       change_process_locale(locale)
+      users.update_issues
       start_progress_with_descriptions(
         _("Load software translations"),
         _("Load storage translations")
@@ -183,7 +184,7 @@ module Agama
 
     # Users client
     #
-    # @return [DBus::Clients::Users]
+    # @return [Agama::Users]
     def users
       @users ||= Users.new(logger)
     end

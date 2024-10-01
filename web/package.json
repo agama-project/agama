@@ -44,6 +44,8 @@
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.1",
     "@types/jest": "^29.5.12",
+    "@types/react": "^18.3.8",
+    "@types/react-dom": "^18.3.0",
     "@types/webpack-env": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^8.6.0",
     "@typescript-eslint/parser": "^8.6.0",
@@ -105,6 +107,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.1.2",
     "@icons-pack/react-simple-icons": "^10.0.0",
     "@material-symbols/svg-400": "^0.23.0",
     "@patternfly/patternfly": "^5.1.0",

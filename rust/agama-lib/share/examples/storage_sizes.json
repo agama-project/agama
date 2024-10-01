@@ -1,0 +1,62 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "partitions": [
+          {
+            "size": 2048
+          },
+          {
+            "size": "10 GiB"
+          },
+          {
+            "size": ["1 GiB"]
+          },
+          {
+            "size": [1024, "50 GiB"]
+          },
+          {
+            "size": {
+              "min": "1 GiB"
+            }
+          },
+          {
+            "size": {
+              "min": 1024,
+              "max": "50 GiB"
+            }
+          },
+          {
+            "search": {},
+            "size": ["current"]
+          },
+          {
+            "search": {},
+            "size": [0, "current"]
+          },
+          {
+            "search": {},
+            "size": ["current", "10 GiB"]
+          },
+          {
+            "size": {
+              "min": "current"
+            }
+          },
+          {
+            "size": {
+              "min": 0,
+              "max": "current"
+            }
+          },
+          {
+            "size": {
+              "min": "current",
+              "max": "10 GiB"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

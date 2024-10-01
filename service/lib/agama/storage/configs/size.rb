@@ -40,7 +40,7 @@ module Agama
 
         # @return [Boolean]
         def default?
-          !!@default
+          @default
         end
       end
     end

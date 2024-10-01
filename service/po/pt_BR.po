@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-01 02:44+0000\n"
+"POT-Creation-Date: 2024-09-18 02:35+0000\n"
 "PO-Revision-Date: 2024-09-09 19:47+0000\n"
 "Last-Translator: Rodrigo Macedo <sottomaiormacedotec@sottomaiormacedo.tech>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
@@ -68,8 +68,8 @@ msgstr "O arquivo %{filename}"
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file cannot"
-" be verified. Use it anyway?"
+"%{source} is not digitally signed. The origin and integrity of the file "
+"cannot be verified. Use it anyway?"
 msgstr ""
 "%{source} não está assinado digitalmente. A origem e a integridade do "
 "arquivo não podem ser verificadas. Usar mesmo assim?"
@@ -81,8 +81,8 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
-"t to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
+"want to trust this key?"
 msgstr ""
 "A chave %{id} (%{name}) com impressão digital %{fingerprint} é desconhecida. "
 "Você quer confiar nessa chave?"
@@ -132,14 +132,51 @@ msgstr "O produto deve ser registrado"
 msgid "Found %s dependency issues."
 msgstr "Foram encontrados %s problemas de dependência."
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:112
+#, c-format
+msgid "There is no LVM thin pool volume with alias %s"
+msgstr ""
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:129
+#, c-format
+msgid "There is no LVM physical volume with alias %s"
+msgstr ""
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:160
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr ""
+"Nenhuma senha fornecida (necessária para usar o método '%{crypt_method}')."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:178
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr ""
+"O método de criptografia '%{crypt_method}' não está disponível neste sistema."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:197
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr ""
+"'%{crypt_method}' não é um método adequado para criptografar o dispositivo."
+
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In case"
-" the device does contain a file system or a storage system that is not support"
-"ed, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
 msgstr ""
 "Nem um sistema de arquivo nem um sistema de armazenamento foi detectado no "
 "dispositivo. Caso o dispositivo contenha um sistema de arquivo ou um sistema "
@@ -216,7 +253,8 @@ msgstr "Nenhum dispositivo selecionado para instalação"
 #: service/lib/agama/storage/proposal_strategies/guided.rb:140
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural "The following selected devices are not found in the system: %{devices}"
+msgid_plural ""
+"The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
 "O seguinte dispositivo selecionado não foi encontrado no sistema: %{devices}"
 msgstr[1] ""
@@ -225,51 +263,25 @@ msgstr[1] ""
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:152
-msgid "Defining a user, setting the root password or a SSH public key is required"
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "É necessário definir um usuário, definir a senha root ou uma chave pública "
 "SSH"
 
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:134
-#, perl-brace-format
-msgid "No passphrase provided (required for using the method '%{crypt_method}')."
-msgstr ""
-"Nenhuma senha fornecida (necessária para usar o método '%{crypt_method}')."
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:145
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr ""
-"O método de criptografia '%{crypt_method}' não está disponível neste sistema."
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:156
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr ""
-"'%{crypt_method}' não é um método adequado para criptografar o dispositivo."
-
 #. @see #not_found_issue
-#: service/lib/y2storage/proposal/agama_searcher.rb:98
+#: service/lib/y2storage/proposal/agama_searcher.rb:158
 msgid "No device found for an optional drive"
 msgstr "Nenhum dispositivo encontrado para uma unidade opcional"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:100
+#: service/lib/y2storage/proposal/agama_searcher.rb:160
 msgid "No device found for a mandatory drive"
 msgstr "Nenhum dispositivo encontrado para uma unidade obrigatória"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:103
+#: service/lib/y2storage/proposal/agama_searcher.rb:163
 msgid "No device found for an optional partition"
 msgstr "Nenhum dispositivo encontrado para uma partição opcional"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:105
+#: service/lib/y2storage/proposal/agama_searcher.rb:165
 msgid "No device found for a mandatory partition"
 msgstr "Nenhum dispositivo encontrado para uma partição obrigatória"

@@ -29,10 +29,6 @@ import { deviceLabel } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
-const LABEL = _("Installation device");
-// TRANSLATORS: The storage "Installation device" field's description.
-const DESCRIPTION = _("Main disk or LVM Volume Group for installation.");
-
 /**
  * Generates the target value.
  */
@@ -94,10 +90,13 @@ export default function InstallationDeviceField({
   if (isLoading || !target) value = <Skeleton fontSize="sm" width="75%" />;
   else value = targetValue(target, targetDevice, targetPVDevices);
 
+  // TRANSLATORS: The storage "Installation device" field's description.
+  const description = _("Main disk or LVM Volume Group for installation.");
+
   return (
     <Page.Section
-      title={LABEL}
-      description={DESCRIPTION}
+      title={_("Installation device")}
+      description={description}
       actions={
         isLoading ? (
           <Skeleton fontSize="sm" width="100px" />

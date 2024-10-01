@@ -39,7 +39,23 @@ module Agama
 
         # Constructor
         def initialize
+          @solved = false
           @if_not_found = :error
+        end
+
+        # Whether the search was already solved.
+        #
+        # @return [Boolean]
+        def solved?
+          @solved
+        end
+
+        # Solves the search with the given device.
+        #
+        # @param device [Y2Storage::Device, nil]
+        def solve(device = nil)
+          @device = device
+          @solved = true
         end
 
         # Whether the search does not define any specific condition.
@@ -49,26 +65,18 @@ module Agama
           name.nil?
         end
 
-        # Whether the search was already resolved.
-        #
-        # @return [Boolean]
-        def resolved?
-          !!@resolved
-        end
-
-        # Resolves the search with the given device.
-        #
-        # @param device [Y2Storage::Device, nil]
-        def resolve(device = nil)
-          @device = device
-          @resolved = true
-        end
-
         # Whether the section containing the search should be skipped
         #
         # @return [Boolean]
         def skip_device?
-          resolved? && device.nil? && if_not_found == :skip
+          solved? && device.nil? && if_not_found == :skip
+        end
+
+        # Whether the device is not found and it has to be created.
+        #
+        # @return [Boolean]
+        def create_device?
+          solved? && device.nil? && if_not_found == :create
         end
       end
     end

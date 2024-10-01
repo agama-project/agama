@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-28 02:30+0000\n"
-"PO-Revision-Date: 2024-08-28 17:47+0000\n"
-"Last-Translator: yok <mtopac2024@gmail.com>\n"
+"POT-Creation-Date: 2024-09-18 02:35+0000\n"
+"PO-Revision-Date: 2024-09-19 18:48+0000\n"
+"Last-Translator: yok2 <y1313396@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/tr/>\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.7.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
@@ -132,6 +132,41 @@ msgstr "Ürün kayıtlı olmalı"
 msgid "Found %s dependency issues."
 msgstr "%s bağımlılık sorunu bulundu."
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:112
+#, c-format
+msgid "There is no LVM thin pool volume with alias %s"
+msgstr "%s takma adlı LVM ince havuz birimi yok"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:129
+#, c-format
+msgid "There is no LVM physical volume with alias %s"
+msgstr "%s takma adlı LVM fiziksel birimi yok"
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:160
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr ""
+"Parola sağlanmadı ('%{crypt_method}' metodunu kullanmak için gereklidir)."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:178
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr "Bu sistemde '%{crypt_method}' şifreleme yöntemi mevcut değil."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:197
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr "'%{crypt_method}' cihazı şifrelemek için uygun bir yöntem değil."
+
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
@@ -227,46 +262,20 @@ msgstr ""
 "Bir kullanıcı tanımlamak, kök parolasını veya bir SSH genel anahtarını "
 "ayarlamak gerekir"
 
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:134
-#, perl-brace-format
-msgid ""
-"No passphrase provided (required for using the method '%{crypt_method}')."
-msgstr ""
-"Parola sağlanmadı ('%{crypt_method}' metodunu kullanmak için gereklidir)."
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:145
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr "Bu sistemde '%{crypt_method}' şifreleme yöntemi mevcut değil."
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:156
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr "'%{crypt_method}' cihazı şifrelemek için uygun bir yöntem değil."
-
 #. @see #not_found_issue
-#: service/lib/y2storage/proposal/agama_searcher.rb:98
+#: service/lib/y2storage/proposal/agama_searcher.rb:158
 msgid "No device found for an optional drive"
 msgstr "İsteğe bağlı bir sürücü için aygıt bulunamadı"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:100
+#: service/lib/y2storage/proposal/agama_searcher.rb:160
 msgid "No device found for a mandatory drive"
 msgstr "Zorunlu bir sürücü için cihaz bulunamadı"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:103
+#: service/lib/y2storage/proposal/agama_searcher.rb:163
 msgid "No device found for an optional partition"
 msgstr "İsteğe bağlı bölüm için cihaz bulunamadı"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:105
+#: service/lib/y2storage/proposal/agama_searcher.rb:165
 msgid "No device found for a mandatory partition"
 msgstr "Zorunlu bölüm için hiçbir cihaz bulunamadı"
 

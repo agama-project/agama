@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     # do not run scheduled jobs in forks, in forks only allow manual run ("workflow_dispatch")
-    if: github.repository_owner == 'openSUSE' || github.event_name == 'workflow_dispatch'
+    if: (!github.event.repository.fork) || github.event_name == 'workflow_dispatch'
 
     steps:
 
@@ -101,7 +101,7 @@ jobs:
       # see https://github.com/marketplace/actions/irc-message-action
       uses: Gottox/irc-message-action@v2
       # never run in forks or when triggered manually
-      if: failure() && github.repository_owner == 'openSUSE' && github.event_name != 'workflow_dispatch'
+      if: failure() && !github.event.repository.fork && github.event_name != 'workflow_dispatch'
       with:
         channel: "#yast"
         nickname: github-action

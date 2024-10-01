@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-28 02:30+0000\n"
-"PO-Revision-Date: 2024-09-04 11:47+0000\n"
+"POT-Creation-Date: 2024-09-18 02:35+0000\n"
+"PO-Revision-Date: 2024-09-18 10:48+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.1\n"
+"X-Generator: Weblate 5.7.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
@@ -132,6 +132,45 @@ msgstr "El producte ha d'estar registrat."
 msgid "Found %s dependency issues."
 msgstr "S'han trobat %s problemes de dependències."
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:112
+#, c-format
+msgid "There is no LVM thin pool volume with alias %s"
+msgstr "No hi ha cap volum d'agrupació prim d'LVM amb l'àlies %s."
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:129
+#, c-format
+msgid "There is no LVM physical volume with alias %s"
+msgstr "No hi ha cap volum físic d'LVM amb l'àlies %s."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:160
+#, perl-brace-format
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr ""
+"No s'ha proporcionat cap frase de contrasenya (cal per usar el mètode "
+"%{crypt_method})."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:178
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr ""
+"El mètode d'encriptació %{crypt_method} no està disponible en aquest sistema."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:197
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr ""
+"El mètode %{crypt_method} no és un mètode adequat per encriptar el "
+"dispositiu."
+
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
@@ -233,50 +272,20 @@ msgstr ""
 "Cal definir un usuari, establir la contrasenya d'arrel o una clau pública "
 "SSH."
 
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:134
-#, perl-brace-format
-msgid ""
-"No passphrase provided (required for using the method '%{crypt_method}')."
-msgstr ""
-"No s'ha proporcionat cap frase de contrasenya (cal per usar el mètode "
-"%{crypt_method})."
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:145
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr ""
-"El mètode d'encriptació %{crypt_method} no està disponible en aquest sistema."
-
-#. @see #check_encryption
-#. TRANSLATORS: 'crypt_method' is the name of the method to encrypt the device (like
-#. 'luks1' or 'random_swap').
-#: service/lib/y2storage/proposal/agama_device_planner.rb:156
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr ""
-"El mètode %{crypt_method} no és un mètode adequat per encriptar el "
-"dispositiu."
-
 #. @see #not_found_issue
-#: service/lib/y2storage/proposal/agama_searcher.rb:98
+#: service/lib/y2storage/proposal/agama_searcher.rb:158
 msgid "No device found for an optional drive"
 msgstr "No s'ha trobat cap dispositiu per a una unitat opcional."
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:100
+#: service/lib/y2storage/proposal/agama_searcher.rb:160
 msgid "No device found for a mandatory drive"
 msgstr "No s'ha trobat cap dispositiu per a una unitat obligatòria."
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:103
+#: service/lib/y2storage/proposal/agama_searcher.rb:163
 msgid "No device found for an optional partition"
 msgstr "No s'ha trobat cap dispositiu per a una partició opcional."
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:105
+#: service/lib/y2storage/proposal/agama_searcher.rb:165
 msgid "No device found for a mandatory partition"
 msgstr "No s'ha trobat cap dispositiu per a una partició obligatòria."
 

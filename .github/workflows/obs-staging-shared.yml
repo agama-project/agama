@@ -28,8 +28,9 @@ on:
 
 jobs:
   update_staging_package:
-    # do not run in forks which do not set the OBS_PROJECT variable
-    if: vars.OBS_PROJECT != ''
+    # do not run in forks which do not set the OBS_PROJECT variable,
+    # for the "release" branch or a git tag use the OBS_PROJECT_RELEASE variable
+    if: vars.OBS_PROJECT != '' || ((github.ref_name == 'release' || github.ref_type == 'tag') && vars.OBS_PROJECT_RELEASE != '')
 
     runs-on: ubuntu-latest
 
@@ -37,6 +38,17 @@ jobs:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
+      - name: Select OBS project
+        id: obs_project
+        run: |-
+          if [ "${{ github.ref_name }}" = "release" -o "${{ github.ref_type }}" = "tag" ]; then
+            echo "OBS_PROJECT=${{ vars.OBS_PROJECT_RELEASE }}" >> "$GITHUB_OUTPUT"
+            echo "OBS project: ${{ vars.OBS_PROJECT_RELEASE }}"
+          else
+            echo "OBS_PROJECT=${{ vars.OBS_PROJECT }}" >> "$GITHUB_OUTPUT"
+            echo "OBS project: ${{ vars.OBS_PROJECT }}"
+          fi
+
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
@@ -64,19 +76,19 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ vars.OBS_PROJECT }} ${{ inputs.package_name }}
-        run: osc co ${{ vars.OBS_PROJECT }} ${{ inputs.package_name }}
+      - name: Checkout ${{ steps.obs_project.outputs.OBS_PROJECT }} ${{ inputs.package_name }}
+        run: osc co ${{ steps.obs_project.outputs.OBS_PROJECT }} ${{ inputs.package_name }}
 
       - name: Configure git
         run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Update service revision
-        # only when a tag has been pushed
-        if: ${{ github.ref_type == 'tag' }}
+        # only when a tag has been pushed, or "release" branch updated
+        if: github.ref_type == 'tag' || github.ref_name == 'release'
         run: |-
-          echo "Updating revision to ${{ github.ref_name }}"
+          echo "Updating revision to \"${{ github.ref_name }}\""
           sed -i -e 's#<param name="revision">.*</param>#<param name="revision">${{ github.ref_name }}</param>#' _service
-        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+        working-directory: ./${{ steps.obs_project.outputs.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Copy optional service file
         # patch the URL in the file so it works also from forks, forks also by
@@ -84,31 +96,31 @@ jobs:
         # no tag is present
         if: inputs.service_file != ''
         run: |
-          sed -e 's#<param name="url">.*</param>#<param name="url">https://github.com/${{ github.repository }}.git</param>#' ${{ inputs.service_file }} > ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service
-          if [ -z "$(git tag -l)" ]; then sed -i -e 's#<param name="versionformat">.*</param>##' ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service; fi
+          sed -e 's#<param name="url">.*</param>#<param name="url">https://github.com/${{ github.repository }}.git</param>#' ${{ inputs.service_file }} > ./${{ steps.obs_project.outputs.OBS_PROJECT }}/${{ inputs.package_name }}/_service
+          if [ -z "$(git tag -l)" ]; then sed -i -e 's#<param name="versionformat">.*</param>##' ./${{ steps.obs_project.outputs.OBS_PROJECT }}/${{ inputs.package_name }}/_service; fi
 
       - name: Run services
         run: osc service manualrun
-        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+        working-directory: ./${{ steps.obs_project.outputs.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Cleanup
         # sometimes the "osc service" run does not cleanup properly all
         # downloaded NPM package tarballs and they are accidentally added to the
         # OBS package, so delete any TGZ files present
         run: rm -vf *.tgz
-        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+        working-directory: ./${{ steps.obs_project.outputs.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Check status
         run: osc addremove && osc diff && osc status
-        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+        working-directory: ./${{ steps.obs_project.outputs.OBS_PROJECT }}/${{ inputs.package_name }}
 
-      - name: Commit ${{ inputs.package_name }} to ${{ vars.OBS_PROJECT }}
+      - name: Commit ${{ inputs.package_name }} to ${{ steps.obs_project.outputs.OBS_PROJECT }}
         run: |-
           osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
-        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+        working-directory: ./${{ steps.obs_project.outputs.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Submit the package
         # only when a tag has been pushed
-        if: ${{ github.ref_type == 'tag' }}
+        if: github.ref_type == 'tag'
         run: osc sr --yes -m "Releasing version ${{ github.ref_name }}"
-        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+        working-directory: ./${{ steps.obs_project.outputs.OBS_PROJECT }}/${{ inputs.package_name }}

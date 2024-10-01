@@ -36,7 +36,7 @@ module Agama
       ENV["LANG"] = locale
       log.info "set yast locale to #{locale}"
       # explicit call to textdomain to force fast gettext change of language ASAP
-      textdomain "installation"
+      textdomain "agama"
     end
   end
 end

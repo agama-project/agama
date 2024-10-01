@@ -420,31 +420,6 @@ const timezoneTime = (timezone, { date = new Date() }) => {
   }
 };
 
-/**
- * UTC offset for the given timezone.
- *
- * @param {string} timezone - E.g., "Atlantic/Canary".
- * @returns {number|undefined} - undefined for an unknown timezone.
- */
-const timezoneUTCOffset = (timezone) => {
-  try {
-    const date = new Date();
-    const dateLocaleString = date.toLocaleString("en-US", {
-      timeZone: timezone,
-      timeZoneName: "short",
-    });
-    const [timezoneName] = dateLocaleString.split(" ").slice(-1);
-    const dateString = date.toString();
-    const offset = Date.parse(`${dateString} UTC`) - Date.parse(`${dateString} ${timezoneName}`);
-
-    return offset / 3600000;
-  } catch (e) {
-    if (e instanceof RangeError) return undefined;
-
-    throw e;
-  }
-};
-
 export {
   noop,
   identity,
@@ -466,5 +441,4 @@ export {
   remoteConnection,
   slugify,
   timezoneTime,
-  timezoneUTCOffset,
 };
