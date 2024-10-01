@@ -39,8 +39,20 @@ describe("DASDTable", () => {
     beforeEach(() => {
       mockDASDDevices = [
         {
-          id: "0.0.0200",
+          id: "0.0.0160",
           enabled: false,
+          deviceName: "",
+          deviceType: "",
+          formatted: false,
+          diag: false,
+          status: "offline",
+          accessType: "",
+          partitionInfo: "",
+          hexId: 0x160,
+        },
+        {
+          id: "0.0.0200",
+          enabled: true,
           deviceName: "dasda",
           deviceType: "eckd",
           formatted: false,
@@ -56,6 +68,52 @@ describe("DASDTable", () => {
     it("renders those devices", () => {
       installerRender(<DASDTable />);
       screen.getByText("active");
+    });
+
+    it("does not allow to perform any action if not selected any device", () => {
+      installerRender(<DASDTable />);
+      const button = screen.getByRole("button", { name: "Perform an action" });
+      expect(button).toHaveAttribute("disabled");
+    });
+
+    describe("when there are some DASD selected", () => {
+      it("allows to perform a set of actions over them", async () => {
+        const { user } = installerRender(<DASDTable />);
+        const selection = screen.getByRole("checkbox", { name: "Select row 0" });
+        await user.click(selection);
+        const button = screen.getByRole("button", { name: "Perform an action" });
+        expect(button).not.toHaveAttribute("disabled");
+        await user.click(button);
+        screen.getByRole("menuitem", { name: "Format" });
+      });
+
+      describe("and the user click on format", () => {
+        it("shows a confirmation dialog if all the devices are online", async () => {
+          const { user } = installerRender(<DASDTable />);
+          const selection = screen.getByRole("checkbox", { name: "Select row 1" });
+          await user.click(selection);
+          const button = screen.getByRole("button", { name: "Perform an action" });
+          expect(button).not.toHaveAttribute("disabled");
+          await user.click(button);
+          const format = screen.getByRole("menuitem", { name: "Format" });
+          await user.click(format);
+          screen.getByRole("dialog", { name: "Format selected devices?" });
+        });
+
+        it("shows a warning dialog if some device is offline", async () => {
+          const { user } = installerRender(<DASDTable />);
+          let selection = screen.getByRole("checkbox", { name: "Select row 0" });
+          await user.click(selection);
+          selection = screen.getByRole("checkbox", { name: "Select row 1" });
+          await user.click(selection);
+          const button = screen.getByRole("button", { name: "Perform an action" });
+          expect(button).not.toHaveAttribute("disabled");
+          await user.click(button);
+          const format = screen.getByRole("menuitem", { name: "Format" });
+          await user.click(format);
+          screen.getByRole("dialog", { name: "Cannot format all selected devices" });
+        });
+      });
     });
   });
 });

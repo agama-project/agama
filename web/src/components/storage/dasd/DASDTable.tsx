@@ -27,7 +27,11 @@ import {
   Dropdown,
   DropdownItem,
   DropdownList,
+  List,
+  ListItem,
   MenuToggle,
+  Stack,
+  Text,
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
@@ -36,6 +40,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
+import { Popup } from "~/components/core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { Page } from "~/components/core";
 import { Icon } from "~/components/layout";
@@ -56,7 +61,7 @@ const columnData = (device: DASDDevice, column: { id: string; sortId?: string; l
       if (!device.enabled) data = "";
       break;
     case "partitionInfo":
-      data = data.split(",").map((d) => <div key={d}>{d}</div>);
+      data = data.split(",").map((d: string) => <div key={d}>{d}</div>);
       break;
   }
 
@@ -79,29 +84,64 @@ const columns = [
   { id: "formatted", label: _("Formatted") },
   { id: "partitionInfo", label: _("Partition Info") },
 ];
+const DevicesList = ({ devices }) => (
+  <List>
+    {devices.map((d: DASDDevice) => (
+      <ListItem key={d.id}>{d.id}</ListItem>
+    ))}
+  </List>
+);
+const FormatNotPossible = ({ devices, onAccept }) => (
+  <Popup isOpen title={_("Cannot format all selected devices")}>
+    <Stack hasGutter>
+      <Text>
+        {_(
+          "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again",
+        )}
+      </Text>
+      <DevicesList devices={devices} />
+    </Stack>
+    <Popup.Actions>
+      <Popup.Confirm onClick={onAccept}>{_("Accept")}</Popup.Confirm>
+    </Popup.Actions>
+  </Popup>
+);
+
+const FormatConfirmation = ({ devices, onCancel, onConfirm }) => (
+  <Popup isOpen title={_("Format selected devices?")}>
+    <Stack hasGutter>
+      <Text>
+        {_(
+          "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.",
+        )}
+      </Text>
+      <DevicesList devices={devices} />
+    </Stack>
+    <Popup.Actions>
+      <Popup.Confirm onClick={onConfirm} />
+      <Popup.Cancel onClick={onCancel} autoFocus />
+    </Popup.Actions>
+  </Popup>
+);
 
 const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
   const { mutate: updateDASD } = useDASDMutation();
   const { mutate: formatDASD } = useFormatDASDMutation();
   const [isOpen, setIsOpen] = useState(false);
+  const [requestFormat, setRequestFormat] = useState(false);
 
   const onToggle = () => setIsOpen(!isOpen);
   const onSelect = () => setIsOpen(false);
+  const cancelFormatRequest = () => setRequestFormat(false);
 
   const deviceIds = devices.map((d) => d.id);
+  const offlineDevices = devices.filter((d) => !d.enabled);
+  const offlineDevicesSelected = offlineDevices.length > 0;
   const activate = () => updateDASD({ action: "enable", devices: deviceIds });
   const deactivate = () => updateDASD({ action: "disable", devices: deviceIds });
   const setDiagOn = () => updateDASD({ action: "diagOn", devices: deviceIds });
   const setDiagOff = () => updateDASD({ action: "diagOff", devices: deviceIds });
-  const format = () => {
-    const offline = devices.filter((d) => !d.enabled);
-
-    if (offline.length > 0) {
-      return false;
-    }
-
-    return formatDASD(devices.map((d) => d.id));
-  };
+  const format = () => formatDASD(devices.map((d) => d.id));
 
   const Action = ({ children, ...props }) => (
     <DropdownItem component="button" {...props}>
@@ -110,41 +150,57 @@ const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: b
   );
 
   return (
-    <Dropdown
-      isOpen={isOpen}
-      onSelect={onSelect}
-      toggle={(toggleRef) => (
-        <MenuToggle ref={toggleRef} variant="primary" isDisabled={isDisabled} onClick={onToggle}>
-          {/* TRANSLATORS: drop down menu label */}
-          {_("Perform an action")}
-        </MenuToggle>
+    <>
+      {requestFormat && offlineDevicesSelected && (
+        <FormatNotPossible devices={offlineDevices} onAccept={cancelFormatRequest} />
       )}
-    >
-      <DropdownList>
-        {/** TRANSLATORS: drop down menu action, activate the device */}
-        <Action key="activate" onClick={activate}>
-          {_("Activate")}
-        </Action>
-        {/** TRANSLATORS: drop down menu action, deactivate the device */}
-        <Action key="deactivate" onClick={deactivate}>
-          {_("Deactivate")}
-        </Action>
-        <Divider key="first-separator" />
-        {/** TRANSLATORS: drop down menu action, enable DIAG access method */}
-        <Action key="set_diag_on" onClick={setDiagOn}>
-          {_("Set DIAG On")}
-        </Action>
-        {/** TRANSLATORS: drop down menu action, disable DIAG access method */}
-        <Action key="set_diag_off" onClick={setDiagOff}>
-          {_("Set DIAG Off")}
-        </Action>
-        <Divider key="second-separator" />
-        {/** TRANSLATORS: drop down menu action, format the disk */}
-        <Action key="format" onClick={format}>
-          {_("Format")}
-        </Action>
-      </DropdownList>
-    </Dropdown>
+
+      {requestFormat && !offlineDevicesSelected && (
+        <FormatConfirmation
+          devices={devices}
+          onCancel={cancelFormatRequest}
+          onConfirm={() => {
+            cancelFormatRequest();
+            format();
+          }}
+        />
+      )}
+      <Dropdown
+        isOpen={isOpen}
+        onSelect={onSelect}
+        toggle={(toggleRef) => (
+          <MenuToggle ref={toggleRef} variant="primary" isDisabled={isDisabled} onClick={onToggle}>
+            {/* TRANSLATORS: drop down menu label */}
+            {_("Perform an action")}
+          </MenuToggle>
+        )}
+      >
+        <DropdownList>
+          {/** TRANSLATORS: drop down menu action, activate the device */}
+          <Action key="activate" onClick={activate}>
+            {_("Activate")}
+          </Action>
+          {/** TRANSLATORS: drop down menu action, deactivate the device */}
+          <Action key="deactivate" onClick={deactivate}>
+            {_("Deactivate")}
+          </Action>
+          <Divider key="first-separator" />
+          {/** TRANSLATORS: drop down menu action, enable DIAG access method */}
+          <Action key="set_diag_on" onClick={setDiagOn}>
+            {_("Set DIAG On")}
+          </Action>
+          {/** TRANSLATORS: drop down menu action, disable DIAG access method */}
+          <Action key="set_diag_off" onClick={setDiagOff}>
+            {_("Set DIAG Off")}
+          </Action>
+          <Divider key="second-separator" />
+          {/** TRANSLATORS: drop down menu action, format the disk */}
+          <Action key="format" onClick={() => setRequestFormat(true)}>
+            {_("Format")}
+          </Action>
+        </DropdownList>
+      </Dropdown>
+    </>
   );
 };
 
@@ -326,7 +382,7 @@ export default function DASDTable() {
         </ToolbarContent>
       </Toolbar>
 
-      <Page.Section>
+      <Page.Section aria-label={_("DASDs table section")}>
         <Content />
       </Page.Section>
     </>
