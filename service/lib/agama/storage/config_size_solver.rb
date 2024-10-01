@@ -103,7 +103,7 @@ module Agama
         config_builder.default_size(path, having_paths: paths, with_snapshots: snapshots)
       end
 
-      # @param config [Configs::Partition, Configs::LogicalVolume]
+      # @param device [Y2Storage::Device]
       # @return [Configs::Size]
       def size_from_device(device)
         Configs::Size.new.tap do |config|
