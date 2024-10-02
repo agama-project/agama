@@ -45,6 +45,7 @@ import {
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
+import { startProbing } from "~/api/manager";
 
 /**
  * Query to retrieve software configuration
@@ -95,7 +96,6 @@ const patternsQuery = () => ({
  */
 const useConfigMutation = () => {
   const queryClient = useQueryClient();
-  const client = useInstallerClient();
 
   const query = {
     mutationFn: updateConfig,
@@ -104,7 +104,7 @@ const useConfigMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       if (config.product) {
         queryClient.invalidateQueries({ queryKey: ["software/product"] });
-        client.manager.startProbing();
+        startProbing();
       }
     },
   };
@@ -184,7 +184,7 @@ const useProductChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "ProductChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/config"] });
       }
@@ -204,7 +204,7 @@ const useProposalChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "SoftwareProposalChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       }

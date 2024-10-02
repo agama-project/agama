@@ -59,7 +59,7 @@ import { Icon } from "~/components/layout";
  * @property {boolean} [loading] - Whether the section is busy loading its content or not.
  * @property {string} [className] - Class name for section html tag.
  * @property {string} [id] - Id of the section ("software", "product", "storage", "storage-actions", ...)
- * @property {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
+ * @property {import("~/types/issues").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
  * @property {React.ReactNode} [children] - The section content.
  * @property {string} [aria-label] - aria-label attribute, required if title if not given
  *

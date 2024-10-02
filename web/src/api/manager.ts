@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,10 +20,28 @@
  * find current contact information at www.suse.com.
  */
 
-export const IDLE = 0;
-export const BUSY = 1;
+import { get, post } from "~/api/http";
 
-export default {
-  BUSY,
-  IDLE,
-};
+/**
+ * Starts the probing process.
+ */
+const startProbing = () => post("/api/manager/probe");
+
+/**
+ * Starts the installation process.
+ *
+ * The progress of the installation process can be tracked through installer signals.
+ */
+const startInstallation = () => post("/api/manager/install");
+
+/**
+ * Clean-up when installation is done.
+ */
+const finishInstallation = () => post("/api/manager/finish");
+
+/**
+ * Returns the binary content of the YaST logs file.
+ */
+const fetchLogs = () => get("/api/manager/logs");
+
+export { startProbing, startInstallation, finishInstallation, fetchLogs };

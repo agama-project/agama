@@ -23,80 +23,79 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
-import { EncryptionMethods } from "~/client/storage";
+import { plainRender } from "~/test-utils";
+import { EncryptionMethods } from "~/types/storage";
 import InstallationFinished from "./InstallationFinished";
+
+let mockEncryptionPassword: string;
+let mockEncryptionMethod: string;
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
   useInstallerStatus: () => ({ isBusy: false, useIguana: false, phase: 2, canInstall: false }),
 }));
 
-jest.mock("~/client");
-jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useProposalResult: () => ({
+    settings: {
+      encryptionMethod: mockEncryptionMethod,
+      encryptionPassword: mockEncryptionPassword,
+    },
+  }),
+}));
 
-const finishInstallationFn = jest.fn();
-let encryptionPassword;
-let encryptionMethod;
+const mockFinishInstallation = jest.fn();
+
+jest.mock("~/api/manager", () => ({
+  ...jest.requireActual("~/api/manager"),
+  finishInstallation: () => mockFinishInstallation(),
+}));
+
+jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
-    encryptionPassword = "n0tS3cr3t";
-    encryptionMethod = EncryptionMethods.LUKS2;
-    createClient.mockImplementation(() => {
-      return {
-        manager: {
-          finishInstallation: finishInstallationFn,
-          useIguana: () => Promise.resolve(false),
-        },
-        storage: {
-          proposal: {
-            getResult: jest.fn().mockResolvedValue({
-              settings: { encryptionMethod, encryptionPassword },
-            }),
-          },
-        },
-      };
-    });
+    mockEncryptionPassword = "n0tS3cr3t";
+    mockEncryptionMethod = EncryptionMethods.LUKS2;
   });
 
   it("shows the finished installation screen", () => {
-    installerRender(<InstallationFinished />);
+    plainRender(<InstallationFinished />);
     screen.getByText("Congratulations!");
   });
 
   it("shows a 'Reboot' button", () => {
-    installerRender(<InstallationFinished />);
+    plainRender(<InstallationFinished />);
     screen.getByRole("button", { name: /Reboot/i });
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    const { user } = installerRender(<InstallationFinished />);
-    const rebootButton = screen.getByRole("button", { name: /Reboot/i });
+    const { user } = plainRender(<InstallationFinished />);
+    const rebootButton = screen.getByRole("button", { name: "Reboot" });
     await user.click(rebootButton);
-    expect(finishInstallationFn).toHaveBeenCalled();
+    expect(mockFinishInstallation).toHaveBeenCalled();
   });
 
   describe("when TPM is set as encryption method", () => {
     beforeEach(() => {
-      encryptionMethod = EncryptionMethods.TPM;
+      mockEncryptionMethod = EncryptionMethods.TPM;
     });
 
     describe("and encryption was set", () => {
       it("shows the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
+        plainRender(<InstallationFinished />);
         await screen.findAllByText(/TPM/);
       });
     });
 
     describe("but encryption was not set", () => {
       beforeEach(() => {
-        encryptionPassword = "";
+        mockEncryptionPassword = "";
       });
 
       it("does not show the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
+        plainRender(<InstallationFinished />);
         screen.queryAllByText(/TPM/);
       });
     });
@@ -104,7 +103,7 @@ describe("InstallationFinished", () => {
 
   describe("when TPM is not set as encryption method", () => {
     it("does not show the TPM reminder", async () => {
-      installerRender(<InstallationFinished />);
+      plainRender(<InstallationFinished />);
       expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
     });
   });

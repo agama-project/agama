@@ -81,7 +81,7 @@ const useFirstUserChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "FirstUserChanged") {
         const { fullName, userName, password, autologin, data } = event;
         queryClient.setQueryData(["users", "firstUser"], {
@@ -131,7 +131,7 @@ const useRootUserChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "RootChanged") {
         const { password, sshkey } = event;
         queryClient.setQueryData(["users", "root"], (oldRoot: RootUser) => {

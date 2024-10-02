@@ -94,7 +94,7 @@ const useZFCPControllersChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent(({ type, device }) => {
+    return client.onEvent(({ type, device }) => {
       if (
         !["ZFCPControllerAdded", "ZFCPControllerChanged", "ZFCPControllerRemoved"].includes(type)
       ) {
@@ -132,7 +132,7 @@ const useZFCPDisksChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent(({ type, device }) => {
+    return client.onEvent(({ type, device }) => {
       if (!["ZFCPDiskAdded", "ZFCPDiskChanged", "ZFCPDiskRemoved"].includes(type)) {
         return;
       }

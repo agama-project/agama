@@ -20,33 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
-import React, { useEffect, useState, useCallback } from "react";
+import React from "react";
 import { Text, TextContent, TextVariants } from "@patternfly/react-core";
-
 import { deviceLabel } from "~/components/storage/utils";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
-import { IDLE } from "~/client/status";
-
-/**
- * @typedef {import ("~/client/storage").ProposalResult} ProposalResult
- * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- *
- * @typedef {object} Proposal
- * @property {StorageDevice[]} availableDevices
- * @property {ProposalResult} result
- */
+import { useAvailableDevices, useProposalResult } from "~/queries/storage";
+import { ProposalTarget } from "~/types/storage";
 
 /**
  * Build a translated summary string for installing on an LVM with multiple
  * physical partitions/disks
- * @param {String} policy Find space policy
- * @returns {String} Translated description
+ * @param policy - Find space policy
+ * @returns Translated description
  */
-const msgLvmMultipleDisks = (policy) => {
+const msgLvmMultipleDisks = (policy: string): string => {
   switch (policy) {
     case "resize":
       // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
@@ -74,11 +62,11 @@ const msgLvmMultipleDisks = (policy) => {
 /**
  * Build a translated summary string for installing on an LVM with a single
  * physical partition/disk
- * @param {String} policy Find space policy
- * @returns {String} Translated description with %s placeholder for the device
+ * @param policy - Find space policy
+ * @returns Translated description with %s placeholder for the device
  * name
  */
-const msgLvmSingleDisk = (policy) => {
+const msgLvmSingleDisk = (policy: string): string => {
   switch (policy) {
     case "resize":
       // TRANSLATORS: installing on an LVM with a single physical partition/disk,
@@ -124,26 +112,8 @@ const Content = ({ children }) => (
  * @param {Proposal} props.proposal
  */
 export default function StorageSection() {
-  const client = useInstallerClient();
-
-  const [availableDevices, setAvailableDevices] = useState([]);
-  const [result, setResult] = useState(undefined);
-
-  const loadProposal = useCallback(() => {
-    const proposal = client.storage.proposal;
-    proposal.getAvailableDevices().then(setAvailableDevices);
-    proposal.getResult().then(setResult);
-  }, [client, setAvailableDevices, setResult]);
-
-  useEffect(loadProposal, [loadProposal]);
-
-  useEffect(() => {
-    return client.storage.onStatusChange((status) => {
-      if (status === IDLE) {
-        loadProposal();
-      }
-    });
-  }, [client.storage, loadProposal]);
+  const availableDevices = useAvailableDevices();
+  const result = useProposalResult();
 
   if (result === undefined) return;
 
@@ -152,7 +122,7 @@ export default function StorageSection() {
     return device ? deviceLabel(device) : deviceName;
   };
 
-  if (result.settings.target === "NEW_LVM_VG") {
+  if (result.settings.target === ProposalTarget.NEW_LVM_VG) {
     const pvDevices = result.settings.targetPVDevices;
 
     if (pvDevices.length > 1) {
@@ -179,7 +149,7 @@ export default function StorageSection() {
   const targetDevice = result.settings.targetDevice;
   if (!targetDevice) return <Text>{_("No device selected yet")}</Text>;
 
-  const fullMsg = (policy) => {
+  const fullMsg = (policy: string): string => {
     switch (policy) {
       case "resize":
         // TRANSLATORS: %s will be replaced by the device name and its size,

@@ -26,7 +26,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Checkbox, Form, Switch, Stack } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { PasswordAndConfirmationInput, Popup } from "~/components/core";
-import { EncryptionMethods } from "~/client/storage";
+import { EncryptionMethods } from "~/types/storage";
 
 export type EncryptionSetting = {
   password: string;

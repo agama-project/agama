@@ -24,8 +24,8 @@ import React, { useState } from "react";
 import { Alert, Button, ButtonProps } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
+import { fetchLogs } from "~/api/manager";
 
 const FILENAME = "agama-installation-logs.tar.gz";
 
@@ -33,7 +33,6 @@ const FILENAME = "agama-installation-logs.tar.gz";
  * Button for collecting and downloading Agama/YaST logs
  */
 const LogsButton = (props: ButtonProps) => {
-  const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [error, setError] = useState(null);
   const [isCollecting, setIsCollecting] = useState(false);
@@ -73,7 +72,7 @@ const LogsButton = (props: ButtonProps) => {
   const collectAndDownload = () => {
     setError(null);
     setIsCollecting(true);
-    cancellablePromise(client.manager.fetchLogs().then((response) => response.blob()))
+    cancellablePromise(fetchLogs().then((response) => response.blob()))
       .then(URL.createObjectURL)
       .then(autoDownload)
       .catch((error) => {

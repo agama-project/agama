@@ -222,7 +222,7 @@ const useNetworkConfigChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       if (event.type === "NetworkChange") {
         if (event.deviceRemoved || event.deviceAdded) {
           queryClient.invalidateQueries({ queryKey: ["network"] });

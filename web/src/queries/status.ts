@@ -61,7 +61,7 @@ const useInstallerStatusChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       const { type } = event;
       const data = queryClient.getQueryData(["status"]) as object;
       if (!data) {

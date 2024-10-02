@@ -22,46 +22,33 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
+import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
 
-jest.mock("~/client");
-
-const availableDevices = [
+const mockAvailableDevices = [
   { name: "/dev/sda", size: 536870912000 },
   { name: "/dev/sdb", size: 697932185600 },
 ];
 
-const proposalResult = {
-  settings: {
-    target: "disk",
-    targetDevice: "/dev/sda",
-    spacePolicy: "delete",
-  },
-  actions: [],
-};
+const mockResultSettings = { target: "disk", targetDevice: "/dev/sda", spacePolicy: "delete" };
 
-const storageMock = {
-  probe: jest.fn().mockResolvedValue(0),
-  proposal: {
-    getAvailableDevices: jest.fn().mockResolvedValue(availableDevices),
-    getResult: jest.fn().mockResolvedValue(proposalResult),
-  },
-  onStatusChange: jest.fn(),
-};
-
-let storage;
-
-beforeEach(() => {
-  storage = { ...storageMock, proposal: { ...storageMock.proposal } };
-
-  createClient.mockImplementation(() => ({ storage }));
-});
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useAvailableDevices: () => mockAvailableDevices,
+  useProposalResult: () => ({
+    settings: mockResultSettings,
+    actions: [],
+  }),
+}));
 
 describe("when there is a proposal", () => {
+  beforeEach(() => {
+    mockResultSettings.target = "disk";
+    mockResultSettings.spacePolicy = "delete";
+  });
+
   it("renders the proposal summary", async () => {
-    installerRender(<StorageSection />);
+    plainRender(<StorageSection />);
 
     await screen.findByText(/Install using device/);
     await screen.findByText(/\/dev\/sda, 500 GiB/);
@@ -70,12 +57,13 @@ describe("when there is a proposal", () => {
 
   describe("and the space policy is set to 'resize'", () => {
     beforeEach(() => {
-      const result = { settings: { spacePolicy: "resize", targetDevice: "/dev/sda" } };
-      storage.proposal.getResult = jest.fn().mockResolvedValue(result);
+      // const result = { settings: { spacePolicy: "resize", targetDevice: "/dev/sda" } };
+      mockResultSettings.spacePolicy = "resize";
+      mockResultSettings.targetDevice = "/dev/sda";
     });
 
     it("indicates that partitions may be shrunk", async () => {
-      installerRender(<StorageSection />);
+      plainRender(<StorageSection />);
 
       await screen.findByText(/shrinking existing partitions as needed/);
     });
@@ -83,12 +71,12 @@ describe("when there is a proposal", () => {
 
   describe("and the space policy is set to 'keep'", () => {
     beforeEach(() => {
-      const result = { settings: { spacePolicy: "keep", targetDevice: "/dev/sda" } };
-      storage.proposal.getResult = jest.fn().mockResolvedValue(result);
+      mockResultSettings.spacePolicy = "keep";
+      mockResultSettings.targetDevice = "/dev/sda";
     });
 
     it("indicates that partitions will be kept", async () => {
-      installerRender(<StorageSection />);
+      plainRender(<StorageSection />);
 
       await screen.findByText(/without modifying existing partitions/);
     });
@@ -96,12 +84,11 @@ describe("when there is a proposal", () => {
 
   describe("and there is no target device", () => {
     beforeEach(() => {
-      const result = { settings: { targetDevice: "" } };
-      storage.proposal.getResult = jest.fn().mockResolvedValue(result);
+      mockResultSettings.targetDevice = "";
     });
 
     it("indicates that a device is not selected", async () => {
-      installerRender(<StorageSection />);
+      plainRender(<StorageSection />);
 
       await screen.findByText(/No device selected/);
     });

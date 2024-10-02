@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Button,
@@ -39,11 +39,12 @@ import {
 } from "@patternfly/react-core";
 import SimpleLayout from "~/SimpleLayout";
 import { Center, Icon } from "~/components/layout";
-import { EncryptionMethods } from "~/client/storage";
+import { EncryptionMethods } from "~/types/storage";
 import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
+import { useProposalResult } from "~/queries/storage";
+import { finishInstallation } from "~/api/manager";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -75,24 +76,11 @@ the machine needs to boot directly to the new boot loader.",
 const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-success" />;
 
 function InstallationFinished() {
-  const client = useInstallerClient();
   const { useIguana } = useInstallerStatus({ suspense: true });
-  const [usingTpm, setUsingTpm] = useState(false);
-  const closingAction = () => client.manager.finishInstallation();
-
-  useEffect(() => {
-    async function preparePage() {
-      // FIXME: This logic should likely not be placed here, it's too coupled to storage internals.
-      // Something to fix when this whole page is refactored in a (hopefully near) future.
-      const {
-        settings: { encryptionPassword, encryptionMethod },
-      } = await client.storage.proposal.getResult();
-      setUsingTpm(encryptionPassword?.length > 0 && encryptionMethod === EncryptionMethods.TPM);
-    }
-
-    // TODO: display the page in a loading mode while needed data is being fetched.
-    preparePage();
-  });
+  const {
+    settings: { encryptionPassword, encryptionMethod },
+  } = useProposalResult();
+  const usingTpm = encryptionPassword?.length > 0 && encryptionMethod === EncryptionMethods.TPM;
 
   return (
     <SimpleLayout showOutlet={false}>
@@ -126,7 +114,7 @@ function InstallationFinished() {
                     </EmptyStateBody>
                   </EmptyState>
                   <Flex direction={{ default: "rowReverse" }}>
-                    <Button size="lg" variant="primary" onClick={closingAction}>
+                    <Button size="lg" variant="primary" onClick={finishInstallation}>
                       {useIguana ? _("Finish") : _("Reboot")}
                     </Button>
                   </Flex>

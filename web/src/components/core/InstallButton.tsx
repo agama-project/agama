@@ -21,12 +21,12 @@
  */
 
 import React, { useState } from "react";
-import { useInstallerClient } from "~/context/installer";
 
 import { Button, Stack } from "@patternfly/react-core";
 
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
+import { startInstallation } from "~/api/manager";
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
   return (
@@ -67,16 +67,11 @@ according to the provided installation settings.",
  * @param {object} props
  * @param {() => void} [props.onClick] - function to call when the user clicks the button
  */
-const InstallButton = ({ onClick }) => {
-  const client = useInstallerClient();
+const InstallButton = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const open = async () => {
-    if (onClick) onClick();
-    setIsOpen(true);
-  };
+  const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
-  const install = () => client.manager.startInstallation();
 
   return (
     <>
@@ -85,7 +80,7 @@ const InstallButton = ({ onClick }) => {
         {_("Install")}
       </Button>
 
-      {isOpen && <InstallConfirmationPopup onAccept={install} onClose={close} />}
+      {isOpen && <InstallConfirmationPopup onAccept={startInstallation} onClose={close} />}
     </>
   );
 };

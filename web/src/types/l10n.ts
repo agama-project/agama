@@ -82,11 +82,11 @@ type LocaleConfig = {
   /**
    * Locale to be used in the UI.
    */
-  ui_locale?: string;
+  uiLocale?: string;
   /**
    * Locale to be used in the UI.
    */
-  ui_keymap?: string;
+  uiKeymap?: string;
 };
 
 export type { Keymap, Locale, Timezone, LocaleConfig };

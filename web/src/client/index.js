@@ -22,23 +22,17 @@
 
 // @ts-check
 
-import { L10nClient } from "./l10n";
-import { ManagerClient } from "./manager";
-import { StorageClient } from "./storage";
-import { HTTPClient } from "./http";
+import { WSClient } from "./ws";
 
 /**
  * @typedef {object} InstallerClient
- * @property {L10nClient} l10n - localization client.
- * @property {ManagerClient} manager - manager client.
- * @property {StorageClient} storage - storage client.
- * @property {() => import("./http").WSClient} ws - Agama WebSocket client.
  * @property {() => boolean} isConnected - determines whether the client is connected
  * @property {() => boolean} isRecoverable - determines whether the client is recoverable after disconnected
  * @property {(handler: () => void) => (() => void)} onConnect - registers a handler to run
  * @property {(handler: () => void) => (() => void)} onDisconnect - registers a handler to run
  *   when the connection is lost. It returns a function to deregister the
  *   handler.
+ * @property {(handler: (any) => void) => (() => void)} onEvent - registers a handler to run on events
  */
 
 /**
@@ -48,30 +42,25 @@ import { HTTPClient } from "./http";
  * @return {InstallerClient}
  */
 const createClient = (url) => {
-  const client = new HTTPClient(url);
-  const l10n = new L10nClient(client);
-  // TODO: unify with the manager client
-  const manager = new ManagerClient(client);
-  const storage = new StorageClient(client);
+  url.hash = "";
+  url.pathname = url.pathname.concat("api/ws");
+  url.protocol = url.protocol === "http:" ? "ws" : "wss";
+  const ws = new WSClient(url);
 
-  const isConnected = () => client.ws().isConnected() || false;
-  const isRecoverable = () => !!client.ws().isRecoverable();
+  const isConnected = () => ws.isConnected() || false;
+  const isRecoverable = () => !!ws.isRecoverable();
 
   return {
-    l10n,
-    manager,
-    storage,
     isConnected,
     isRecoverable,
-    onConnect: (handler) => client.ws().onOpen(handler),
-    onDisconnect: (handler) => client.ws().onClose(handler),
-    ws: () => client.ws(),
+    onConnect: (handler) => ws.onOpen(handler),
+    onDisconnect: (handler) => ws.onClose(handler),
+    onEvent: (handler) => ws.onEvent(handler),
   };
 };
 
 const createDefaultClient = async () => {
   const httpUrl = new URL(window.location.toString());
-  httpUrl.hash = "";
   return createClient(httpUrl);
 };
 

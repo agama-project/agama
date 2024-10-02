@@ -81,7 +81,7 @@ const useDASDFormatJobChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
       switch (event.type) {
         case "DASDFormatJobChanged": {
@@ -132,7 +132,7 @@ const useDASDDevicesChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent((event) => {
+    return client.onEvent((event) => {
       switch (event.type) {
         case "DASDDeviceAdded": {
           const device: DASDDevice = event.device;
