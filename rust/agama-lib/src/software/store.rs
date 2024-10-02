@@ -23,6 +23,7 @@
 use std::collections::HashMap;
 
 use super::{SoftwareHTTPClient, SoftwareSettings};
+use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 
 /// Loads and stores the software settings from/to the D-Bus service.
@@ -31,9 +32,9 @@ pub struct SoftwareStore {
 }
 
 impl SoftwareStore {
-    pub fn new() -> Result<SoftwareStore, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<SoftwareStore, ServiceError> {
         Ok(Self {
-            software_client: SoftwareHTTPClient::new()?,
+            software_client: SoftwareHTTPClient::new_with_base(client),
         })
     }
 

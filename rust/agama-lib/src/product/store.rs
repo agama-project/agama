@@ -20,6 +20,7 @@
 
 //! Implements the store for the product settings.
 use super::{ProductHTTPClient, ProductSettings};
+use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 use crate::manager::http_client::ManagerHTTPClient;
 
@@ -30,10 +31,10 @@ pub struct ProductStore {
 }
 
 impl ProductStore {
-    pub fn new() -> Result<ProductStore, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<ProductStore, ServiceError> {
         Ok(Self {
-            product_client: ProductHTTPClient::new()?,
-            manager_client: ManagerHTTPClient::new()?,
+            product_client: ProductHTTPClient::new_with_base(client.clone()),
+            manager_client: ManagerHTTPClient::new_with_base(client.clone()),
         })
     }
 

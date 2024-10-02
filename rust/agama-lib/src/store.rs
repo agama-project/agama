@@ -52,9 +52,9 @@ impl Store {
             localization: LocalizationStore::new(http_client.clone())?,
             users: UsersStore::new(http_client.clone())?,
             network: NetworkStore::new(http_client.clone()).await?,
-            product: ProductStore::new()?,
-            software: SoftwareStore::new()?,
-            storage: StorageStore::new()?,
+            product: ProductStore::new(http_client.clone())?,
+            software: SoftwareStore::new(http_client.clone())?,
+            storage: StorageStore::new(http_client.clone())?,
         })
     }
 
