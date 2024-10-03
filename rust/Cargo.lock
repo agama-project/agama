@@ -30,17 +30,13 @@ dependencies = [
  "fs_extra",
  "indicatif",
  "inquire",
- "log",
  "nix 0.27.1",
  "reqwest 0.11.27",
- "serde",
  "serde_json",
- "serde_yaml",
  "tempfile",
  "thiserror",
  "tokio",
  "url",
- "zbus",
 ]
 
 [[package]]
