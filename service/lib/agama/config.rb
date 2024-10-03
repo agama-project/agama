@@ -186,7 +186,30 @@ module Agama
       end.compact
     end
 
+    # Default paths to be created for the product.
+    #
+    # @return [Array<String>]
+    def default_paths
+      data.dig("storage", "volumes") || []
+    end
+
+    # Mandatory paths to be created for the product.
+    #
+    # @return [Array<String>]
+    def mandatory_paths
+      default_paths.select { |p| mandatory_path?(p) }
+    end
+
   private
+
+    def mandatory_path?(path)
+      templates = data.dig("storage", "volume_templates") || []
+      template = templates.find { |t| t["mount_path"] == path }
+
+      return false unless template
+
+      template.dig("outline", "required") || false
+    end
 
     # Simple deep merge
     #

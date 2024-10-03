@@ -27,17 +27,12 @@ module Agama
       module FromJSONConversions
         # Mixin for encryption conversion.
         module WithEncryption
-          # @param json [Hash]
-          # @param default [Configs::Encryption, nil]
-          #
           # @return [Configs::Encryption, nil]
-          def convert_encryption(json, default: nil)
-            encryption_json = json[:encryption]
+          def convert_encryption
+            encryption_json = config_json[:encryption]
             return unless encryption_json
 
-            FromJSONConversions::Encryption
-              .new(encryption_json, config_builder: config_builder)
-              .convert(default)
+            FromJSONConversions::Encryption.new(encryption_json).convert
           end
         end
       end

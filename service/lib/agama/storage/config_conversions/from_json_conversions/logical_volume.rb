@@ -36,36 +36,24 @@ module Agama
           include WithFilesystem
           include WithSize
 
-          # @param logical_volume_json [Hash]
-          # @param config_builder [ConfigBuilder, nil]
-          def initialize(logical_volume_json, config_builder: nil)
-            super(config_builder)
-            @logical_volume_json = logical_volume_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::LogicalVolume, nil]
           # @return [Configs::LogicalVolume]
-          def convert(default = nil)
-            super(default || Configs::LogicalVolume.new)
+          def convert
+            super(Configs::LogicalVolume.new)
           end
 
         private
 
-          # @return [Hash]
-          attr_reader :logical_volume_json
+          alias_method :logical_volume_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param default [Configs::LogicalVolume]
           # @return [Hash]
-          def conversions(default)
+          def conversions
             {
               alias:       logical_volume_json[:alias],
-              encryption:  convert_encryption(logical_volume_json, default: default.encryption),
-              filesystem:  convert_filesystem(logical_volume_json, default: default.filesystem),
-              size:        convert_size(logical_volume_json, default: default.size),
+              encryption:  convert_encryption,
+              filesystem:  convert_filesystem,
+              size:        convert_size,
               name:        logical_volume_json[:name],
               stripes:     logical_volume_json[:stripes],
               stripe_size: convert_stripe_size,
