@@ -234,9 +234,12 @@ module Agama
       # @param storage_json [Hash] e.g., { "drives": [] }.
       # @return [Boolean] Whether the proposal successes.
       def calculate_agama_from_json(storage_json)
-        storage_config = ConfigConversions::FromJSON
-          .new(storage_json, product_config: config)
-          .convert
+        storage_config = ConfigConversions::FromJSON.new(
+          storage_json,
+          default_paths:   config.default_paths,
+          mandatory_paths: config.mandatory_paths
+        ).convert
+
         calculate_agama(storage_config)
       end
 

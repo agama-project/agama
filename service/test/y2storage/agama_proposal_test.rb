@@ -83,7 +83,7 @@ describe Y2Storage::AgamaProposal do
 
   let(:config_from_json) do
     Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json, product_config: product_config)
+      .new(config_json, default_paths: default_paths, mandatory_paths: mandatory_paths)
       .convert
   end
 
@@ -136,6 +136,10 @@ describe Y2Storage::AgamaProposal do
       }
     }
   end
+
+  let(:default_paths) { product_config.default_paths }
+
+  let(:mandatory_paths) { product_config.mandatory_paths }
 
   let(:issues_list) { [] }
 
