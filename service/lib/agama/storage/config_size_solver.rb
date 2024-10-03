@@ -175,6 +175,10 @@ module Agama
         !config.size.default? && (config.size.min.nil? || config.size.max.nil?)
       end
 
+      # Whether the config has to be considered.
+      #
+      # Note that a config could be ignored if a device is not found for its search.
+      #
       # @param config [Object] Any config from {Configs}.
       # @return [Boolean]
       def valid?(config)

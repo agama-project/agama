@@ -26,26 +26,33 @@ module Agama
       class Btrfs
         # Whether there are snapshots.
         #
-        # @return [Boolean]
+        # @return [Boolean, nil]
         attr_accessor :snapshots
-        alias_method :snapshots?, :snapshots
 
-        # @return [Boolean]
+        # @return [Boolean, nil]
         attr_accessor :read_only
-        alias_method :read_only?, :read_only
 
         # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list
         #   may be applied depending on the mount path of the volume
         attr_accessor :subvolumes
 
-        # @return [String]
+        # @return [String, nil]
         attr_accessor :default_subvolume
 
         # Constructor
         def initialize
           @snapshots = false
           @read_only = false
-          @default_subvolume = ""
+        end
+
+        # @return [Boolean]
+        def snapshots?
+          !!snapshots
+        end
+
+        # @return [Boolean]
+        def read_only?
+          !!read_only
         end
       end
     end
