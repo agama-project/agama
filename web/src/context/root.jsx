@@ -22,8 +22,9 @@
 
 // @ts-check
 
-import React from "react";
+import React, { Suspense } from "react";
 import { AuthProvider } from "./auth";
+import { Loading } from "~/components/layout";
 
 /**
  * Combines all application providers.
@@ -32,7 +33,11 @@ import { AuthProvider } from "./auth";
  * @param {React.ReactNode} [props.children] - content to display within the provider.
  */
 function RootProviders({ children }) {
-  return <AuthProvider>{children}</AuthProvider>;
+  return (
+    <Suspense fallback={<Loading />}>
+      <AuthProvider>{children}</AuthProvider>
+    </Suspense>
+  );
 }
 
 export { RootProviders };
