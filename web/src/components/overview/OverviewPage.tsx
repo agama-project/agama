@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { Suspense } from "react";
 import {
   Grid,
   GridItem,
@@ -122,6 +122,8 @@ const OverviewSection = () => (
   </Page.Section>
 );
 
+const Section = React.lazy(() => import("/public/section.js"));
+
 export default function OverviewPage() {
   return (
     <Page>
@@ -138,6 +140,9 @@ export default function OverviewPage() {
           </GridItem>
           <GridItem sm={12} xl={6}>
             <OverviewSection />
+            <Suspense>
+              <Section />
+            </Suspense>
           </GridItem>
           <GridItem sm={12} xl={6}>
             <ResultSection />
