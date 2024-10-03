@@ -151,8 +151,8 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 }
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
-    // we need to distinguish commands on those which assume that JWT is already available
-    // and those which not (or don't need it)
+    // we need to distinguish commands on those which assume that authentication JWT is already
+    // available and those which not (or don't need it)
     let mut client = if let Commands::Auth(_) = cli.command {
         BaseHTTPClient::default()
     } else {
@@ -163,8 +163,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     client.base_url = cli
         .opts
         .api
-        .strip_suffix("/")
-        .unwrap_or(client.base_url.as_str())
+        .trim_end_matches('/')
         .to_string();
 
     match cli.command {

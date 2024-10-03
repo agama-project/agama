@@ -54,8 +54,12 @@ impl Default for BaseHTTPClient {
     /// - is NOT authenticated (maybe you want to call `new` instead)
     /// - uses `localhost`
     fn default() -> Self {
+        let default_client = reqwest::Client::new();
+
         Self {
-            client: reqwest::Client::new(),
+            client: reqwest::Client::builder()
+                .danger_accept_invalid_certs(true)
+                .build().unwrap_or(default_client),
             base_url: API_URL.to_owned(),
         }
     }
@@ -83,6 +87,7 @@ impl BaseHTTPClient {
         headers.insert(header::AUTHORIZATION, value);
 
         let client = reqwest::Client::builder()
+            .danger_accept_invalid_certs(true)
             .default_headers(headers)
             .build()?;
         Ok(client)
