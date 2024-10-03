@@ -1539,5 +1539,116 @@ describe Y2Storage::AgamaProposal do
         )
       end
     end
+
+    context "when the config has LVM volume groups with generated physical volumes" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:config_json) do
+        {
+          drives:       [
+            {
+              alias:      "vda",
+              partitions: [
+                {
+                  search: "/dev/vda2",
+                  size:   { min: "0", max: "current" }
+                },
+                {
+                  size: { min: "4 GiB" },
+                  filesystem: { path: "/foo" }
+                }
+              ]
+            },
+            {
+              alias:      "vdb"
+            },
+          ],
+          volumeGroups: [
+            {
+              name:            "system",
+              physicalVolumes: [
+                { generate: { targetDevices: ["vda"] } }
+              ],
+              logicalVolumes:  [
+                {
+                  name:       "root",
+                  size:       "10 GiB",
+                  filesystem: {
+                    path: "/",
+                    type: "btrfs"
+                  }
+                },
+                {
+                  name:       "data",
+                  size:       "10 GiB",
+                  filesystem: { type: "xfs" }
+                }
+              ]
+            },
+            {
+              name:            "vg1",
+              physicalVolumes: [
+                { generate: {
+                    targetDevices: ["vdb"],
+                    "encryption": { "luks2": { "password": "s3cr3t" } }
+                  } 
+                }
+              ],
+              logicalVolumes:  [
+                {
+                  name:       "home",
+                  filesystem: {
+                    path: "/home",
+                    type: "xfs"
+                  },
+                  size:       "20 GiB"
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      before do
+        allow_any_instance_of(Y2Storage::Partition)
+          .to(receive(:detect_resize_info))
+          .and_return(resize_info)
+      end
+
+      let(:resize_info) do
+        instance_double(
+          Y2Storage::ResizeInfo, resize_ok?: true,
+          min_size: Y2Storage::DiskSize::GiB(3), max_size: Y2Storage::DiskSize::GiB(35)
+        )
+      end
+
+      it "proposes the expected devices" do
+        devicegraph = proposal.propose
+
+        resized = devicegraph.find_by_name("/dev/vda2")
+        expect(resized.filesystem.label).to eq("previous_root")
+        expect(resized.size).to be > 15.GiB
+        expect(resized.size).to be < 16.GiB
+
+        foo = devicegraph.find_by_name("/dev/vda4")
+        expect(foo.filesystem.mount_path).to eq("/foo")
+        expect(foo.size).to be > 4.GiB
+        expect(foo.size).to be < 5.GiB
+
+        system = devicegraph.find_by_name("/dev/system")
+        expect(system.lvm_lvs.size).to eq 2
+        expect(Y2Storage::DiskSize.sum(system.lvm_lvs.map(&:size))).to eq 20.GiB
+        expect(system.lvm_pvs.size).to eq 2
+
+        vg1 = devicegraph.find_by_name("/dev/vg1")
+        expect(vg1.lvm_lvs.size).to eq 1
+        expect(vg1.lvm_lvs.first.size).to eq 20.GiB
+        expect(vg1.lvm_pvs.size).to eq 1
+
+        pv_vg1 = vg1.lvm_pvs.first
+        expect(pv_vg1.blk_device.is?(:encryption)).to eq true
+        expect(pv_vg1.blk_device.type.is?(:luks2)).to eq true
+      end
+    end
   end
 end

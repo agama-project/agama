@@ -25,30 +25,26 @@ require "y2storage/proposal_settings"
 module Y2Storage
   module Proposal
     # Space maker for Agama.
+    #
+    # FIXME: this class must dissappear. It does not implement any own logic compared to the
+    # original SpaceMaker. It simply encapsulates the conversion from Agama config to
+    # ProposalSpaceSettings.
     class AgamaSpaceMaker < SpaceMaker
       # @param disk_analyzer [DiskAnalyzer]
       # @param config [Agama::Storage::Config]
       def initialize(disk_analyzer, config)
-        super(disk_analyzer, guided_settings(config))
+        super(disk_analyzer, space_settings(config))
       end
 
     private
 
-      # Method used by the constructor to somehow simulate a typical Guided Proposal
+      # Method used by the constructor to convert the Agama config to ProposalSpaceSettings
       #
       # @param config [Agama::Storage::Config]
-      def guided_settings(config)
-        # Despite the "current_product" part in the name of the constructor, it only applies
-        # generic default values that are independent of the product (there is no YaST
-        # ProductFeatures mechanism in place).
-        Y2Storage::ProposalSettings.new_for_current_product.tap do |target|
-          target.space_settings.strategy = :bigger_resize
-          target.space_settings.actions = space_actions(config)
-
-          boot_device = config.boot_device
-
-          target.root_device = boot_device
-          target.candidate_devices = [boot_device].compact
+      def space_settings(config)
+        Y2Storage::ProposalSpaceSettings.new.tap do |target|
+          target.strategy = :bigger_resize
+          target.actions = space_actions(config)
         end
       end
 
