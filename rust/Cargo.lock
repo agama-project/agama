@@ -91,7 +91,6 @@ dependencies = [
  "async-trait",
  "axum",
  "axum-extra",
- "chrono",
  "cidr",
  "clap",
  "config",
@@ -101,11 +100,9 @@ dependencies = [
  "http-body-util",
  "hyper 1.4.1",
  "hyper-util",
- "jsonwebtoken",
  "libsystemd",
  "log",
  "macaddr",
- "once_cell",
  "openssl",
  "pam",
  "pin-project",
@@ -130,7 +127,6 @@ dependencies = [
  "utoipa",
  "uuid",
  "zbus",
- "zbus_macros",
 ]
 
 [[package]]
