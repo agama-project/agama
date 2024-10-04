@@ -41,6 +41,7 @@ Requires:       jsonnet
 Requires:       lshw
 # required by "agama logs store"
 Requires:       gzip
+# required to compress the manual pages
 Requires:       tar
 # required for translating the keyboards descriptions
 BuildRequires:  xkeyboard-config-lang
@@ -73,6 +74,39 @@ Url:            https://github.com/opensuse/agama
 %description -n agama-cli
 Command line program to interact with the Agama installer.
 
+%package -n agama-cli-bash-completion
+Summary:        Bash Completion for %{name}-cli
+Group:          System/Shells
+Supplements:    (%{name}-cli and bash-completion)
+Requires:       %{name}-cli = %{version}
+Requires:       bash-completion
+BuildArch:      noarch
+
+%description -n agama-cli-bash-completion
+Bash command-line completion support for %{name}.
+
+%package -n agama-cli-fish-completion
+Summary:        Fish Completion for %{name}-cli
+Group:          System/Shells
+Supplements:    (%{name}-cli and fish)
+Requires:       %{name}-cli = %{version}
+Requires:       fish
+BuildArch:      noarch
+
+%description -n agama-cli-fish-completion
+Fish command-line completion support for %{name}-cli.
+
+%package -n agama-cli-zsh-completion
+Summary:        Zsh Completion for %{name}-cli
+Group:          System/Shells
+Supplements:    (%{name}-cli and zsh)
+Requires:       %{name}-cli = %{version}
+Requires:       zsh
+BuildArch:      noarch
+
+%description -n agama-cli-zsh-completion
+Zsh command-line completion support for %{name}-cli.
+
 %prep
 %autosetup -a1 -n agama
 # Remove exec bits to prevent an issue in fedora shebang checking. Uncomment only if required.
@@ -80,6 +114,9 @@ Command line program to interact with the Agama installer.
 
 %build
 %{cargo_build}
+cargo run --package xtask -- manpages
+gzip out/man/*
+cargo run --package xtask -- complete
 
 %install
 install -D -d -m 0755 %{buildroot}%{_bindir}
@@ -93,6 +130,15 @@ install -m 0644 %{_builddir}/agama/share/agama.libsonnet %{buildroot}%{_datadir}
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
 install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/org.opensuse.Agama1.service
 install -D -m 0644 %{_builddir}/agama/share/agama-web-server.service %{buildroot}%{_unitdir}/agama-web-server.service
+
+# install manpages
+mkdir -p %{buildroot}%{_mandir}/man1
+install -m 0644 %{_builddir}/agama/out/man/* %{buildroot}%{_mandir}/man1/
+
+# install shell completion scripts
+install -Dm644 %{_builddir}/agama/out/shell/%{name}.bash %{buildroot}%{_datadir}/bash-completion/completions/%{name}
+install -Dm644 %{_builddir}/agama/out/shell/_%{name} %{buildroot}%{_datadir}/zsh/site-functions/_%{name}
+install -Dm644 %{_builddir}/agama/out/shell/%{name}.fish %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
 
 %check
 PATH=$PWD/share/bin:$PATH
@@ -129,5 +175,17 @@ echo $PATH
 %dir %{_datadir}/agama-cli
 %{_datadir}/agama-cli/agama.libsonnet
 %{_datadir}/agama-cli/profile.schema.json
+%{_mandir}/man1/agama*1%{?ext_man}
+
+%files -n agama-cli-bash-completion
+%{_datadir}/bash-completion/*
+
+%files -n agama-cli-fish-completion
+%dir %{_datadir}/fish
+%{_datadir}/fish/*
+
+%files -n agama-cli-zsh-completion
+%dir %{_datadir}/zsh
+%{_datadir}/zsh/*
 
 %changelog
