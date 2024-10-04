@@ -10,8 +10,8 @@ mod tasks {
 
     use crate::create_output_dir;
 
-    /// Generate auto-completion code for common shells.
-    pub fn generate_complete() -> std::io::Result<()> {
+    /// Generate auto-completion snippets for common shells.
+    pub fn generate_completions() -> std::io::Result<()> {
         let out_dir = create_output_dir("shell")?;
 
         let mut cmd = Cli::command();
@@ -68,7 +68,7 @@ fn main() -> std::io::Result<()> {
     };
 
     match task.as_str() {
-        "complete" => tasks::generate_complete(),
+        "completions" => tasks::generate_completions(),
         "markdown" => tasks::generate_markdown(),
         "manpages" => tasks::generate_manpages(),
         other => {
