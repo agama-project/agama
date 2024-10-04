@@ -34,6 +34,60 @@ use crate::{
     },
 };
 
+pub async fn get_wwpns(controller_id: &str) -> Result<Vec<String>, ServiceError> {
+    let output = std::process::Command::new("zfcp_san_disc")
+        .arg("-b")
+        .arg(controller_id)
+        .arg("-W")
+        .output()
+        .expect("zfcp_san_disc failed"); // TODO: real error handling
+    Ok(String::from_utf8_lossy(&output.stdout)
+        .split_whitespace()
+        .map(|s| s.to_string())
+        .collect())
+}
+
+pub async fn get_luns(controller_id: String, wwpn: String) -> Result<Vec<String>, ServiceError> {
+    let output = std::process::Command::new("zfcp_san_disc")
+        .arg("-b")
+        .arg(controller_id)
+        .arg("-p")
+        .arg(wwpn)
+        .arg("-W")
+        .output()
+        .expect("zfcp_san_disc failed"); // TODO: real error handling
+    Ok(String::from_utf8_lossy(&output.stdout)
+        .split_whitespace()
+        .map(|s| s.to_string())
+        .collect())
+}
+
+/// Obtains a LUNs map for the given controller
+///
+/// Given a controller id it returns a HashMap with each of its WWPNs as keys and the list of
+/// LUNS corresponding to that specific WWPN as values.
+///
+/// Arguments:
+///
+/// `controller_id`: controller id
+pub async fn get_luns_map(
+    controller_id: &str,
+) -> Result<HashMap<String, Vec<String>>, ServiceError> {
+    let wwpns = get_wwpns(controller_id).await?;
+    let mut tasks = vec![];
+    for wwpn in wwpns {
+        tasks.push((
+            wwpn.clone(),
+            tokio::spawn(get_luns(controller_id.to_string(), wwpn.clone())),
+        ));
+    }
+    let mut result = HashMap::with_capacity(tasks.len());
+    for (wwpn, task) in tasks {
+        result.insert(wwpn.clone(), task.await.expect("thread join failed")?);
+    }
+    Ok(result)
+}
+
 const ZFCP_CONTROLLER_PREFIX: &'static str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
 
 /// Client to connect to Agama's D-Bus API for zFCP management.
@@ -110,7 +164,7 @@ impl<'a> ZFCPClient<'a> {
                         channel: get_property(properties, "Channel")?,
                         lun_scan: get_property(properties, "LUNScan")?,
                         active: get_property(properties, "Active")?,
-                        luns_map: self.get_luns_map(id.as_str()).await?,
+                        luns_map: get_luns_map(id.as_str()).await?, // try to use optimized thred version here
                     },
                 ))
             }
@@ -127,12 +181,6 @@ impl<'a> ZFCPClient<'a> {
             .build()
             .await?;
         Ok(dbus)
-    }
-
-    pub async fn activate_controller(&self, controller_id: &str) -> Result<(), ServiceError> {
-        let controller = self.get_controller_proxy(controller_id).await?;
-        controller.activate().await?;
-        Ok(())
     }
 
     pub async fn get_wwpns(&self, controller_id: &str) -> Result<Vec<String>, ServiceError> {
@@ -174,6 +222,12 @@ impl<'a> ZFCPClient<'a> {
         sresult
             .into_iter()
             .collect::<Result<HashMap<String, Vec<String>>, _>>()
+    }
+
+    pub async fn activate_controller(&self, controller_id: &str) -> Result<(), ServiceError> {
+        let controller = self.get_controller_proxy(controller_id).await?;
+        controller.activate().await?;
+        Ok(())
     }
 
     pub async fn activate_disk(
