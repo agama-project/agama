@@ -41,7 +41,8 @@ module Agama
       def solve(config)
         @config = config
 
-        configs_with_encryption.each { |c| solve_encryption(c) }
+        solve_encryptions
+        solve_physical_volumes_encryptions
       end
 
     private
@@ -52,11 +53,31 @@ module Agama
       # @return [Config]
       attr_reader :config
 
+      def solve_encryptions
+        configs_with_encryption.each { |c| solve_encryption(c) }
+      end
+
       # @param config [#encryption]
       def solve_encryption(config)
         return unless config.encryption
 
         encryption = config.encryption
+        encryption.method ||= default_encryption.method
+
+        # Recovering values from the default encryption only makes sense if the encryption method is
+        # the same.
+        solve_encryption_values(encryption) if encryption.method == default_encryption.method
+      end
+
+      def solve_physical_volumes_encryptions
+        config.volume_groups.each { |c| solve_physical_volumes_encryption(c) }
+      end
+
+      # @param config [Configs::VolumeGroup]
+      def solve_physical_volumes_encryption(config)
+        return unless config.physical_volumes_encryption
+
+        encryption = config.physical_volumes_encryption
         encryption.method ||= default_encryption.method
 
         # Recovering values from the default encryption only makes sense if the encryption method is

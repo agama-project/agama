@@ -73,7 +73,6 @@ end
 
 describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
-  using Y2Storage::Refinements::SizeCasts
 
   subject(:proposal) do
     described_class.new(config, product_config: product_config, issues_list: issues_list)

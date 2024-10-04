@@ -138,6 +138,36 @@ describe Agama::Storage::ConfigSolver do
       end
     end
 
+    context "if a volume group does not specify all the pv encryption properties" do
+      let(:config_json) do
+        {
+          volumeGroups: [
+            {
+              physicalVolumes: [
+                {
+                  generate: {
+                    encryption: {
+                      luks2: { password: "12345" }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "completes the encryption config according to the product info" do
+        subject.solve(config)
+
+        volume_group = config.volume_groups.first
+        encryption = volume_group.physical_volumes_encryption
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
+        expect(encryption.password).to eq("12345")
+        expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
+      end
+    end
+
     context "if a config does not specify all the filesystem properties" do
       let(:config_json) do
         {

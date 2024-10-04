@@ -924,9 +924,19 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         context "with an empty list" do
           let(:physical_volumes) { [] }
 
-          it "sets #physical_volumes to empty" do
+          it "sets #physical_volumes to the expected value" do
             vg = vg_proc.call(subject.convert)
             expect(vg.physical_volumes).to eq([])
+          end
+
+          it "sets #physical_volumes_devices to the expected value" do
+            vg = vg_proc.call(subject.convert)
+            expect(vg.physical_volumes_devices).to eq([])
+          end
+
+          it "sets #physical_volumes_encryption to the expected value" do
+            vg = vg_proc.call(subject.convert)
+            expect(vg.physical_volumes_encryption).to be_nil
           end
         end
 
@@ -936,6 +946,112 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           it "sets #physical_volumes to the expected value" do
             vg = vg_proc.call(subject.convert)
             expect(vg.physical_volumes).to contain_exactly("pv1", "pv2")
+          end
+
+          it "sets #physical_volumes_devices to the expected value" do
+            vg = vg_proc.call(subject.convert)
+            expect(vg.physical_volumes_devices).to eq([])
+          end
+
+          it "sets #physical_volumes_encryption to the expected value" do
+            vg = vg_proc.call(subject.convert)
+            expect(vg.physical_volumes_encryption).to be_nil
+          end
+        end
+
+        context "with a list including a physical volume with 'generate' array" do
+          let(:physical_volumes) do
+            [
+              "pv1",
+              { generate: ["disk1", "disk2"] },
+              "pv2"
+            ]
+          end
+
+          it "sets #physical_volumes to the expected value" do
+            vg = vg_proc.call(subject.convert)
+            expect(vg.physical_volumes).to contain_exactly("pv1", "pv2")
+          end
+
+          it "sets #physical_volumes_devices to the expected value" do
+            vg = vg_proc.call(subject.convert)
+            expect(vg.physical_volumes_devices).to contain_exactly("disk1", "disk2")
+          end
+
+          it "does not set #physical_volumes_encryption" do
+            vg = vg_proc.call(subject.convert)
+            expect(vg.physical_volumes_encryption).to be_nil
+          end
+        end
+
+        context "with a list including a physical volume with 'generate' section" do
+          let(:physical_volumes) do
+            [
+              "pv1",
+              {
+                generate: {
+                  targetDevices: target_devices,
+                  encryption:    encryption
+                }
+              },
+              "pv2"
+            ]
+          end
+
+          let(:target_devices) { nil }
+
+          let(:encryption) { nil }
+
+          it "sets #physical_volumes to the expected value" do
+            vg = vg_proc.call(subject.convert)
+            expect(vg.physical_volumes).to contain_exactly("pv1", "pv2")
+          end
+
+          context "if the physical volume does not specify 'targetDevices'" do
+            let(:target_devices) { nil }
+
+            it "sets #physical_volumes_devices to the expected value" do
+              vg = vg_proc.call(subject.convert)
+              expect(vg.physical_volumes_devices).to eq([])
+            end
+          end
+
+          context "if the physical volume does not specify 'encryption'" do
+            let(:target_devices) { nil }
+
+            it "does not set #physical_volumes_encryption" do
+              vg = vg_proc.call(subject.convert)
+              expect(vg.physical_volumes_encryption).to be_nil
+            end
+          end
+
+          context "if the physical volume specifies 'targetDevices'" do
+            let(:target_devices) { ["disk1"] }
+
+            it "sets #physical_volumes_devices to the expected value" do
+              vg = vg_proc.call(subject.convert)
+              expect(vg.physical_volumes_devices).to contain_exactly("disk1")
+            end
+          end
+
+          context "if the physical volume specifies 'encryption'" do
+            let(:encryption) do
+              {
+                luks1: { password: "12345" }
+              }
+            end
+
+            it "sets #physical_volumes_encryption to the expected value" do
+              vg = vg_proc.call(subject.convert)
+              encryption = vg.physical_volumes_encryption
+              expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+              expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS1)
+              expect(encryption.password).to eq("12345")
+              expect(encryption.pbkd_function).to be_nil
+              expect(encryption.label).to be_nil
+              expect(encryption.cipher).to be_nil
+              expect(encryption.key_size).to be_nil
+            end
           end
         end
       end
