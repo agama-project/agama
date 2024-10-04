@@ -7,9 +7,9 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-serde = { version = "1.0.152", features = ["derive"] }
+serde = { version = "1.0.210", features = ["derive"] }
 quick-xml = { version = "0.28.2", features = ["serialize"] }
-flate2 = "1.0.25"
-chrono-tz = "0.8.2"
+flate2 = "1.0.34"
+chrono-tz = "0.8.6"
 regex = "1"
-thiserror = "1.0.50"
+thiserror = "1.0.64"

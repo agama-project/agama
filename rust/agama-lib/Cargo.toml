@@ -7,24 +7,24 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-async-trait = "0.1.77"
-cidr = { version = "0.2.2", features = ["serde"] }
-futures-util = "0.3.29"
+async-trait = "0.1.83"
+cidr = { version = "0.2.3", features = ["serde"] }
+futures-util = "0.3.30"
 jsonschema = { version = "0.16.1", default-features = false }
 log = "0.4"
-reqwest = { version = "0.12.4", features = ["json", "cookies"] }
-serde = { version = "1.0.152", features = ["derive"] }
-serde_json = { version = "1.0.94", features = ["raw_value"] }
-serde_repr = "0.1.18"
-tempfile = "3.4.0"
-thiserror = "1.0.39"
-tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
-tokio-stream = "0.1.14"
-url = "2.5.0"
-utoipa = "4.2.0"
+reqwest = { version = "0.12.8", features = ["json", "cookies"] }
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = { version = "1.0.128", features = ["raw_value"] }
+serde_repr = "0.1.19"
+tempfile = "3.13.0"
+thiserror = "1.0.64"
+tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
+tokio-stream = "0.1.16"
+url = "2.5.2"
+utoipa = "4.2.3"
 zbus = { version = "3", default-features = false, features = ["tokio"] }
 # Needed to define curl error in profile errors
-curl = { version = "0.4.44", features = ["protocol-ftp"] }
+curl = { version = "0.4.47", features = ["protocol-ftp"] }
 jsonwebtoken = "9.3.0"
 chrono = { version = "0.4.38", default-features = false, features = ["now", "std", "alloc", "clock"] }
 home = "0.5.9"
