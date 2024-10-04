@@ -45,18 +45,18 @@ module Agama
     #
     #   ConfigJSONSolver.new(product_config).solve(config_json)
     #   config_json # =>  {
-    #               #       drives: [
-    #               #         {
-    #               #           filesystem: { path: "/" }
-    #               #         },
-    #               #         {
-    #               #           filesystem: { path: "/home" }
-    #               #         },
-    #               #         {
-    #               #           filesystem: { path: "swap" }
-    #               #         }
-    #               #       ]
-    #               #     }
+    #                       drives: [
+    #                         {
+    #                           filesystem: { path: "/" }
+    #                         },
+    #                         {
+    #                           filesystem: { path: "/home" }
+    #                         },
+    #                         {
+    #                           filesystem: { path: "swap" }
+    #                         }
+    #                       ]
+    #                     }
     class ConfigJSONSolver
       # @param product_config [Agama::Config]
       def initialize(product_config = nil)
