@@ -1,5 +1,11 @@
 [workspace]
-members = ["agama-cli", "agama-server", "agama-lib", "agama-locale-data"]
+members = [
+  "agama-cli",
+  "agama-server",
+  "agama-lib",
+  "agama-locale-data",
+  "xtask",
+]
 resolver = "2"
 
 [workspace.package]
