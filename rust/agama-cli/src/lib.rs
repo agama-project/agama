@@ -154,9 +154,9 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 
 #[derive(PartialEq)]
 enum InsecureApi {
-    Secure,
-    Insecure,
-    Forbidden
+    Secure,     /// Remote api is secure
+    Insecure,   /// Remote api is insecure - e.g. self-signed certificate
+    Forbidden   /// Remote api is insecure and its use is forbidden (e.g. user decided not to use it)
 }
 
 /// Returns if insecure connection to remote api server is required and user allowed that
