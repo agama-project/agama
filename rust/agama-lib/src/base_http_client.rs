@@ -54,27 +54,37 @@ impl Default for BaseHTTPClient {
     /// - is NOT authenticated (maybe you want to call `new` instead)
     /// - uses `localhost`
     fn default() -> Self {
-        let default_client = reqwest::Client::new();
-
         Self {
-            client: reqwest::Client::builder()
-                .danger_accept_invalid_certs(true)
-                .build().unwrap_or(default_client),
+            client: reqwest::Client::new(),
             base_url: API_URL.to_owned(),
         }
     }
 }
 
 impl BaseHTTPClient {
-    /// Uses `localhost`, authenticates with [`AuthToken`].
     pub fn new() -> Result<Self, ServiceError> {
+        Self::new_with_params(false)
+    }
+
+    pub fn bare(insecure: bool) -> Self {
+        let default_client = reqwest::Client::new();
+
+        Self {
+            client: reqwest::Client::builder()
+                .danger_accept_invalid_certs(insecure)
+                .build().unwrap_or(default_client),
+            base_url: API_URL.to_owned(),
+        }
+    }
+    /// Uses `localhost`, authenticates with [`AuthToken`].
+    pub fn new_with_params(insecure: bool) -> Result<Self, ServiceError> {
         Ok(Self {
-            client: Self::authenticated_client()?,
+            client: Self::authenticated_client(insecure)?,
             ..Default::default()
         })
     }
 
-    fn authenticated_client() -> Result<reqwest::Client, ServiceError> {
+    fn authenticated_client(insecure: bool) -> Result<reqwest::Client, ServiceError> {
         // TODO: this error is subtly misleading, leading me to believe the SERVER said it,
         // but in fact it is the CLIENT not finding an auth token
         let token = AuthToken::find().ok_or(ServiceError::NotAuthenticated)?;
@@ -87,7 +97,7 @@ impl BaseHTTPClient {
         headers.insert(header::AUTHORIZATION, value);
 
         let client = reqwest::Client::builder()
-            .danger_accept_invalid_certs(true)
+            .danger_accept_invalid_certs(insecure)
             .default_headers(headers)
             .build()?;
         Ok(client)

@@ -36,11 +36,13 @@ use agama_lib::{
 use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
+use inquire::Confirm;
 use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
 use std::{
+    collections::HashMap,
     process::{ExitCode, Termination},
     thread::sleep,
     time::Duration,
@@ -150,21 +152,53 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
     Ok(ManagerClient::new(conn).await?)
 }
 
-pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
-    // we need to distinguish commands on those which assume that authentication JWT is already
-    // available and those which not (or don't need it)
-    let mut client = if let Commands::Auth(_) = cli.command {
-        BaseHTTPClient::default()
-    } else {
-        // this deals with authentication need inside
-        BaseHTTPClient::new()?
-    };
+#[derive(PartialEq)]
+enum InsecureApi {
+    Secure,
+    Insecure,
+    Forbidden
+}
 
-    client.base_url = cli
+/// Returns if insecure connection to remote api server is required and user allowed that
+async fn require_insecure(api_url: String) -> Result<InsecureApi, ServiceError> {
+    // fake client used for remote site detection
+    let mut ping_client = BaseHTTPClient::default();
+    ping_client.base_url = api_url;
+
+    // decide whether access to remote site has to be insecure (self-signed certificate or not)
+    if let Err(err) = ping_client.get::<HashMap<String, String>>("/ping").await {
+        if Confirm::new("Remote API uses self-signed certificate. Do you want to continue?")
+            .with_default(false)
+            .prompt()
+            .map_err(|_| err)? {
+            Ok(InsecureApi::Insecure)
+        } else {
+            Ok(InsecureApi::Forbidden)
+        }
+    } else {
+        Ok(InsecureApi::Secure)
+    }
+}
+
+pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
+    // somehow check whether we need to ask user for self-signed certificate acceptance
+    let api_url = cli
         .opts
         .api
         .trim_end_matches('/')
         .to_string();
+    let insecure = require_insecure(api_url.clone()).await? == InsecureApi::Insecure;
+
+    // we need to distinguish commands on those which assume that authentication JWT is already
+    // available and those which not (or don't need it)
+    let mut client = if let Commands::Auth(_) = cli.command {
+        BaseHTTPClient::bare(insecure)
+    } else {
+        // this deals with authentication need inside
+        BaseHTTPClient::new_with_params(insecure)?
+    };
+
+    client.base_url = api_url.clone();
 
     match cli.command {
         Commands::Config(subcommand) => run_config_cmd(client, subcommand).await?,
