@@ -154,29 +154,39 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 
 #[derive(PartialEq)]
 enum InsecureApi {
-    Secure,     /// Remote api is secure
-    Insecure,   /// Remote api is insecure - e.g. self-signed certificate
-    Forbidden   /// Remote api is insecure and its use is forbidden (e.g. user decided not to use it)
+    Secure,         // Remote api is secure
+    Insecure,       // Remote api is insecure - e.g. self-signed certificate
+    Forbidden,      // Remote api is insecure and its use is forbidden (e.g. user decided not to use it)
+    Unrecheable     // Remote api is unrecheable
 }
 
 /// Returns if insecure connection to remote api server is required and user allowed that
-async fn require_insecure(api_url: String) -> Result<InsecureApi, ServiceError> {
+async fn check_remote_api(api_url: String) -> Result<InsecureApi, ServiceError> {
     // fake client used for remote site detection
     let mut ping_client = BaseHTTPClient::default();
     ping_client.base_url = api_url;
 
     // decide whether access to remote site has to be insecure (self-signed certificate or not)
-    if let Err(err) = ping_client.get::<HashMap<String, String>>("/ping").await {
-        if Confirm::new("Remote API uses self-signed certificate. Do you want to continue?")
-            .with_default(false)
-            .prompt()
-            .map_err(|_| err)? {
-            Ok(InsecureApi::Insecure)
-        } else {
-            Ok(InsecureApi::Forbidden)
+    match ping_client.get::<HashMap<String, String>>("/ping").await {
+        Ok(res) => {
+            if res["status"] == "success" {
+                Ok(InsecureApi::Secure)
+            } else {
+                Ok(InsecureApi::Unrecheable)
+            }
         }
-    } else {
-        Ok(InsecureApi::Secure)
+        Err(err) => {
+            // So far we only know that we cannot communicate with the remote site, it can mean
+            // the issue with a self-signed certificate or whatever else
+            if Confirm::new("Remote API uses self-signed certificate. Do you want to continue?")
+                .with_default(false)
+                .prompt()
+                .map_err(|_| err)? {
+                Ok(InsecureApi::Insecure)
+            } else {
+                Ok(InsecureApi::Forbidden)
+            }
+        }
     }
 }
 
@@ -187,7 +197,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         .api
         .trim_end_matches('/')
         .to_string();
-    let insecure = require_insecure(api_url.clone()).await? == InsecureApi::Insecure;
+    let insecure = check_remote_api(api_url.clone()).await? == InsecureApi::Insecure;
 
     // we need to distinguish commands on those which assume that authentication JWT is already
     // available and those which not (or don't need it)
