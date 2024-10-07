@@ -83,10 +83,8 @@ impl NetworkClient {
     pub async fn apply(&self) -> Result<(), ServiceError> {
         // trying to be tricky here. If something breaks then we need a put method on
         // BaseHTTPClient which doesn't require a serialiable object for the body
-        let empty_body: [String; 0] = [];
-
         self.client
-            .put_void(&format!("/network/system/apply").as_str(), &empty_body)
+            .put_void(&format!("/network/system/apply").as_str(), &())
             .await?;
 
         Ok(())
