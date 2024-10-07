@@ -541,6 +541,37 @@
                 "items": {
                   "anyOf": [
                     {
+                      "$ref": "#/$defs/generateVolumes"
+                    },
+                    {
+                      "title": "Generate logical volumes",
+                      "description": "Creates the default or mandatory logical volumes configured by the selected product, allowing to customize some properties.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["generate"],
+                      "properties": {
+                        "generate": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": ["logicalVolumes"],
+                          "properties": {
+                            "logicalVolumes": {
+                              "enum": ["default", "mandatory"]
+                            },
+                            "encryption": {
+                              "$ref": "#/$defs/encryption"
+                            },
+                            "stripes": {
+                              "$ref": "#/$defs/lvStripes"
+                            },
+                            "stripeSize": {
+                              "$ref": "#/$defs/lvStripeSize"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
                       "title": "Logical volume",
                       "type": "object",
                       "additionalProperties": false,
@@ -555,14 +586,10 @@
                           "$ref": "#/$defs/size"
                         },
                         "stripes": {
-                          "title": "Number of stripes",
-                          "type": "integer",
-                          "minimum": 1,
-                          "maximum": 128
+                          "$ref": "#/$defs/lvStripes"
                         },
                         "stripeSize": {
-                          "title": "Stripe size",
-                          "$ref": "#/$defs/sizeValue"
+                          "$ref": "#/$defs/lvStripeSize"
                         },
                         "encryption": {
                           "$ref": "#/$defs/encryption"
@@ -594,14 +621,10 @@
                           "$ref": "#/$defs/size"
                         },
                         "stripes": {
-                          "title": "Number of stripes",
-                          "type": "integer",
-                          "minimum": 1,
-                          "maximum": 128
+                          "$ref": "#/$defs/lvStripes"
                         },
                         "stripeSize": {
-                          "title": "Stripe size",
-                          "$ref": "#/$defs/sizeValue"
+                          "$ref": "#/$defs/lvStripeSize"
                         },
                         "encryption": {
                           "$ref": "#/$defs/encryption"
@@ -1206,11 +1229,48 @@
         }
       }
     },
+    "generateVolumes": {
+      "title": "Generate volumes automatically",
+      "description": "Creates the default or mandatory volumes configured by the selected product.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate"],
+      "properties": {
+        "generate": {
+          "enum": ["default", "mandatory"]
+        }
+      }
+    },
     "partitions": {
       "title": "Partitions",
       "type": "array",
       "items": {
         "anyOf": [
+          {
+            "$ref": "#/$defs/generateVolumes"
+          },
+          {
+            "title": "Generate partitions",
+            "description": "Creates the default or mandatory partitions configured by the selected product, allowing to customize some properties.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["generate"],
+            "properties": {
+              "generate": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["partitions"],
+                "properties": {
+                  "partitions": {
+                    "enum": ["default", "mandatory"]
+                  },
+                  "encryption": {
+                    "$ref": "#/$defs/encryption"
+                  }
+                }
+              }
+            }
+          },
           {
             "title": "Partition to create or reuse",
             "type": "object",
@@ -1279,6 +1339,16 @@
           }
         ]
       }
+    },
+    "lvStripes": {
+      "title": "Number of stripes",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 128
+    },
+    "lvStripeSize": {
+      "title": "Stripe size",
+      "$ref": "#/$defs/sizeValue"
     }
   }
 }

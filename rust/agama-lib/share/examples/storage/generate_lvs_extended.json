@@ -1,0 +1,43 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "partitions": [
+          {
+            "alias": "pv1",
+            "id": "lvm",
+            "size": { "min": "10 GiB" }
+          }
+        ]
+      }
+    ],
+    "volumeGroups": [
+      {
+        "name": "system",
+        "physicalVolumes": ["pv1"],
+        "logicalVolumes": [
+          {
+            "generate": {
+              "logicalVolumes": "mandatory",
+              "encryption": {
+                "luks2": {
+                  "password": "12345"
+                }
+              },
+              "stripes": 10,
+              "stripeSize": "4 KiB"
+            }
+          },
+          {
+            "name": "data",
+            "size": "5 GiB",
+            "filesystem": {
+              "path": "/data",
+              "type": "xfs"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

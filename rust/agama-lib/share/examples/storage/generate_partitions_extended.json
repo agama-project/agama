@@ -1,0 +1,26 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "partitions": [
+          {
+            "size": "10 GiB",
+            "filesystem": {
+              "type": "vfat"
+            }
+          },
+          {
+            "generate": {
+              "partitions": "default",
+              "encryption": {
+                "luks2": {
+                  "password": "12345"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

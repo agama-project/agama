@@ -22,17 +22,20 @@
 require "agama/config"
 require "agama/storage/config_builder"
 require "agama/storage/config_conversions/from_json_conversions/config"
+require "agama/storage/config_json_solver"
 
 module Agama
   module Storage
     module ConfigConversions
       # Config conversion from JSON hash according to schema.
       class FromJSON
+        # TODO: Replace product_config param by a ProductDefinition.
+        #
         # @param config_json [Hash]
         # @param product_config [Agama::Config, nil]
         def initialize(config_json, product_config: nil)
-          # TODO: Replace product_config param by a ProductDefinition.
-          @config_json = config_json
+          # Copies the JSON hash to avoid changes in the given parameter, see {ConfigJSONSolver}.
+          @config_json = json_dup(config_json)
           @product_config = product_config || Agama::Config.new
         end
 
@@ -41,6 +44,14 @@ module Agama
         # @return [Storage::Config]
         def convert
           # TODO: Raise error if config_json does not match the JSON schema.
+          #   Implementation idea: ConfigJSONChecker class which reports issues if:
+          #   * The JSON does not match the schema.
+          #   * The JSON contains more than one "generate" for partitions and logical volumes.
+          #   * The JSON contains invalid aliases (now checked by ConfigChecker).
+          ConfigJSONSolver
+            .new(product_config)
+            .solve(config_json)
+
           FromJSONConversions::Config
             .new(config_json, config_builder: config_builder)
             .convert
@@ -53,6 +64,14 @@ module Agama
 
         # @return [Agama::Config]
         attr_reader :product_config
+
+        # Deep dup of the given JSON.
+        #
+        # @param json [Hash]
+        # @return [Hash]
+        def json_dup(json)
+          Marshal.load(Marshal.dump(json))
+        end
 
         # @return [ConfigBuilder]
         def config_builder

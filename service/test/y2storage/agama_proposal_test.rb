@@ -219,6 +219,43 @@ describe Y2Storage::AgamaProposal do
       end
     end
 
+    context "when only 'default' partitions is specified" do
+      let(:scenario) { "empty-hd-50GiB.yaml" }
+
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                { generate: "default" }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "proposes the expected devices" do
+        devicegraph = proposal.propose
+
+        expect(devicegraph.partitions.size).to eq(3)
+
+        boot = devicegraph.find_by_name("/dev/sda1")
+        expect(boot.id).to eq(Y2Storage::PartitionId::BIOS_BOOT)
+        expect(boot.filesystem).to be_nil
+        expect(boot.size).to eq(8.MiB)
+
+        root = devicegraph.find_by_name("/dev/sda2")
+        expect(root.filesystem.mount_path).to eq("/")
+        expect(root.filesystem.type.is?(:btrfs)).to eq(true)
+        expect(root.size).to be_between(44.99.GiB, 45.GiB)
+
+        swap = devicegraph.find_by_name("/dev/sda3")
+        expect(swap.filesystem.mount_path).to eq("swap")
+        expect(swap.filesystem.type.is?(:swap)).to eq(true)
+        expect(swap.size).to be_between(4.99.GiB, 5.GiB)
+      end
+    end
+
     context "when the config has 2 drives" do
       let(:scenario) { "disks.yaml" }
 

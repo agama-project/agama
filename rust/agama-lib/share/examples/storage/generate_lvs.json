@@ -1,0 +1,24 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "partitions": [
+          {
+            "alias": "pv1",
+            "id": "lvm",
+            "size": { "min": "10 GiB" }
+          }
+        ]
+      }
+    ],
+    "volumeGroups": [
+      {
+        "name": "system",
+        "physicalVolumes": ["pv1"],
+        "logicalVolumes": [
+          { "generate": "default" }
+        ]
+      }
+    ]
+  }
+}

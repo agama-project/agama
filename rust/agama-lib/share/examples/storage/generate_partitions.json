@@ -1,0 +1,13 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "partitions": [
+          {
+            "generate": "mandatory"
+          }
+        ]
+      }
+    ]
+  }
+}

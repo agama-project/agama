@@ -1036,5 +1036,466 @@ describe Agama::Storage::ConfigConversions::FromJSON do
 
       include_examples "size limits", result
     end
+
+    context "using 'generate' with 'default' for partitions in a drive" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                { generate: "default" }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "includes the default partitions defined by the product" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+
+        expect(partitions.size).to eq(2)
+
+        root = partitions.find { |p| p.filesystem.path == "/" }
+        expect(root.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+        expect(root.size.default?).to eq(true)
+
+        swap = partitions.find { |p| p.filesystem.path == "swap" }
+        expect(swap.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::SWAP)
+        expect(swap.size.default?).to eq(true)
+      end
+
+      context "if the drive already defines some of the default paths" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  { generate: "default" },
+                  {
+                    filesystem: { path: "swap" },
+                    size:       "2 GiB"
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "only includes the missing default partitions" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+
+          expect(partitions.size).to eq(2)
+
+          root = partitions.find { |p| p.filesystem.path == "/" }
+          expect(root.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+          expect(root.size.default?).to eq(true)
+
+          swap = partitions.find { |p| p.filesystem.path == "swap" }
+          expect(swap.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::SWAP)
+          expect(swap.size.default?).to eq(false)
+          expect(swap.size.min).to eq(2.GiB)
+          expect(swap.size.max).to eq(2.GiB)
+        end
+      end
+
+      context "if there are more than one 'generate'" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  { generate: "default" },
+                  { generate: "default" }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "does not include the same partition twice" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+
+          expect(partitions.size).to eq(2)
+
+          root = partitions.find { |p| p.filesystem.path == "/" }
+          expect(root).to_not be_nil
+
+          swap = partitions.find { |p| p.filesystem.path == "swap" }
+          expect(swap).to_not be_nil
+        end
+      end
+
+      context "if there is a 'generate' with 'mandatory'" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  { generate: "default" },
+                  { generate: "mandatory" }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "does not include the same partition twice" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+
+          expect(partitions.size).to eq(2)
+
+          root = partitions.find { |p| p.filesystem.path == "/" }
+          expect(root).to_not be_nil
+
+          swap = partitions.find { |p| p.filesystem.path == "swap" }
+          expect(swap).to_not be_nil
+        end
+      end
+
+      context "if other drive already defines some of the default paths" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  { generate: "default" }
+                ]
+              },
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "swap" },
+                    size:       "2 GiB"
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "only includes the missing default partitions" do
+          config = subject.convert
+          partitions0 = config.drives[0].partitions
+          partitions1 = config.drives[1].partitions
+
+          expect(partitions0.size).to eq(1)
+
+          root = partitions0.first
+          expect(root.filesystem.path).to eq("/")
+          expect(root.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+          expect(root.size.default?).to eq(true)
+
+          expect(partitions1.size).to eq(1)
+
+          swap = partitions1.first
+          expect(swap.filesystem.path).to eq("swap")
+          expect(swap.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::SWAP)
+          expect(swap.size.default?).to eq(false)
+          expect(swap.size.min).to eq(2.GiB)
+          expect(swap.size.max).to eq(2.GiB)
+        end
+      end
+
+      context "if other drive also contains a 'generate'" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  { generate: "default" }
+                ]
+              },
+              {
+                partitions: [
+                  { generate: "default" }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "only includes the default partitions in the first drive" do
+          config = subject.convert
+          partitions0 = config.drives[0].partitions
+          partitions1 = config.drives[1].partitions
+
+          expect(partitions0.size).to eq(2)
+
+          root = partitions0.find { |p| p.filesystem.path == "/" }
+          expect(root).to_not be_nil
+
+          swap = partitions0.find { |p| p.filesystem.path == "swap" }
+          expect(swap).to_not be_nil
+
+          expect(partitions1.size).to eq(0)
+        end
+      end
+    end
+
+    context "using 'generate' with more properties for partitions in a drive" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  generate: {
+                    partitions: "default",
+                    encryption: {
+                      luks1: { password: "12345" }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "includes the default partitions defined by the product with the given properties" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+
+        expect(partitions.size).to eq(2)
+
+        root = partitions.find { |p| p.filesystem.path == "/" }
+        expect(root.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+        expect(root.size.default?).to eq(true)
+        expect(root.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS1)
+        expect(root.encryption.password).to eq("12345")
+
+        swap = partitions.find { |p| p.filesystem.path == "swap" }
+        expect(swap.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::SWAP)
+        expect(swap.size.default?).to eq(true)
+        expect(swap.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS1)
+        expect(swap.encryption.password).to eq("12345")
+      end
+    end
+
+    context "using 'generate' with 'mandatory' for partitions in a drive" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                { generate: "mandatory" }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "includes the mandatory partitions defined by the product" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+
+        expect(partitions.size).to eq(1)
+
+        root = partitions.find { |p| p.filesystem.path == "/" }
+        expect(root.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+        expect(root.size.default?).to eq(true)
+      end
+
+      context "if other device already defines some of the mandatory paths" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                partitions: [
+                  { generate: "mandatory" }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                logicalVolumes: [
+                  {
+                    filesystem: { path: "/" }
+                  }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "does not include the already defined mandatory paths" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+          logical_volumes = config.volume_groups.first.logical_volumes
+
+          expect(partitions.size).to eq(0)
+        end
+      end
+    end
+
+    context "using 'generate' with 'default' for logical volumes" do
+      let(:config_json) do
+        {
+          volumeGroups: [
+            {
+              logicalVolumes: [
+                { generate: "default" }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "includes the default logical volumes defined by the product" do
+        config = subject.convert
+        logical_volumes = config.volume_groups.first.logical_volumes
+
+        expect(logical_volumes.size).to eq(2)
+
+        root = logical_volumes.find { |v| v.filesystem.path == "/" }
+        expect(root.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+        expect(root.size.default?).to eq(true)
+
+        swap = logical_volumes.find { |v| v.filesystem.path == "swap" }
+        expect(swap.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::SWAP)
+        expect(swap.size.default?).to eq(true)
+      end
+
+      context "if other device already defines any of the default paths" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                logicalVolumes: [
+                  { generate: "default" }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "does not include the already defined default paths" do
+          config = subject.convert
+          logical_volumes = config.volume_groups.first.logical_volumes
+
+          expect(logical_volumes.size).to eq(1)
+
+          swap = logical_volumes.first
+          expect(swap.filesystem.path).to eq("swap")
+        end
+      end
+    end
+
+    context "using 'generate' with 'mandatory' for logical volumes" do
+      let(:config_json) do
+        {
+          volumeGroups: [
+            {
+              logicalVolumes: [
+                { generate: "mandatory" }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "includes the mandatory logical volumes defined by the product" do
+        config = subject.convert
+        logical_volumes = config.volume_groups.first.logical_volumes
+
+        expect(logical_volumes.size).to eq(1)
+
+        root = logical_volumes.first
+        expect(root.filesystem.path).to eq("/")
+        expect(root.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+        expect(root.size.default?).to eq(true)
+      end
+
+      context "if other device already defines any of the mandatory paths" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                logicalVolumes: [
+                  { generate: "mandatory" }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "does not include the already defined mandatory paths" do
+          config = subject.convert
+          logical_volumes = config.volume_groups.first.logical_volumes
+
+          expect(logical_volumes.size).to eq(0)
+        end
+      end
+    end
+
+    context "using both 'generate' with 'default' and with 'mandatory'" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                first_generate,
+                second_generate
+              ]
+            }
+          ]
+        }
+      end
+
+      context "if 'default' appears first" do
+        let(:first_generate) { { generate: "default" } }
+        let(:second_generate) { { generate: "mandatory" } }
+
+        it "includes the default partitions defined by the product" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+
+          expect(partitions.size).to eq(2)
+
+          root = partitions.find { |p| p.filesystem.path == "/" }
+          swap = partitions.find { |p| p.filesystem.path == "swap" }
+
+          expect(root).to_not be_nil
+          expect(swap).to_not be_nil
+        end
+      end
+
+      context "if 'mandatory' appears first" do
+        let(:first_generate) { { generate: "mandatory" } }
+        let(:second_generate) { { generate: "default" } }
+
+        it "includes the mandatory partitions defined by the product" do
+          config = subject.convert
+          partitions = config.drives.first.partitions
+
+          expect(partitions.size).to eq(1)
+
+          root = partitions.find { |p| p.filesystem.path == "/" }
+          expect(root).to_not be_nil
+        end
+      end
+    end
   end
 end
