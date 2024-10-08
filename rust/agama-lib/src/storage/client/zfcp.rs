@@ -53,7 +53,7 @@ pub async fn get_luns(controller_id: String, wwpn: String) -> Result<Vec<String>
         .arg(controller_id)
         .arg("-p")
         .arg(wwpn)
-        .arg("-W")
+        .arg("-L")
         .output()
         .expect("zfcp_san_disc failed"); // TODO: real error handling
     Ok(String::from_utf8_lossy(&output.stdout)
@@ -157,14 +157,16 @@ impl<'a> ZFCPClient<'a> {
         for (path, ifaces) in managed_objects {
             if let Some(properties) = ifaces.get("org.opensuse.Agama.Storage1.ZFCP.Controller") {
                 let id = extract_id_from_path(&path)?.to_string();
+                let channel: String = get_property(properties, "Channel")?;
+                let luns_map = get_luns_map(id.as_str()).await?;
                 devices.push((
                     path,
                     ZFCPController {
-                        id: id.clone(),
-                        channel: get_property(properties, "Channel")?,
+                        id: id,
+                        channel: channel,
                         lun_scan: get_property(properties, "LUNScan")?,
                         active: get_property(properties, "Active")?,
-                        luns_map: get_luns_map(id.as_str()).await?, // try to use optimized thred version here
+                        luns_map: luns_map, // try to use optimized thred version here
                     },
                 ))
             }
