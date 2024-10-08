@@ -65,7 +65,7 @@ module Agama
           def pervasive_luks2?
             return false unless encryption_json.is_a?(Hash)
 
-            !encryption_json[:pervasive_luks2].nil?
+            !encryption_json[:pervasiveLuks2].nil?
           end
 
           # @return [Hash]
@@ -96,7 +96,7 @@ module Agama
 
           # @return [Hash]
           def pervasive_luks2_conversions
-            pervasive_json = encryption_json[:pervasive_luks2]
+            pervasive_json = encryption_json[:pervasiveLuks2]
 
             {
               method:   Y2Storage::EncryptionMethod::PERVASIVE_LUKS2,

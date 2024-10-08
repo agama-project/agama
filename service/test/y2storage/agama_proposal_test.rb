@@ -396,7 +396,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /method 'luks2' is not available/,
+            description: /method 'Regular LUKS2' is not available/,
             severity:    Agama::Issue::Severity::ERROR
           )
         end
@@ -413,7 +413,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /'random_swap' is not a suitable method/,
+            description: /'Encryption with Volatile Random Key' is not a suitable method/,
             severity:    Agama::Issue::Severity::ERROR
           )
         end
@@ -1459,7 +1459,7 @@ describe Y2Storage::AgamaProposal do
       it "reports the corresponding error" do
         proposal.propose
         expect(proposal.issues_list).to include an_object_having_attributes(
-          description: /no LVM physical volume with alias pv2/,
+          description: /no LVM physical volume with alias 'pv2'/,
           severity:    Agama::Issue::Severity::ERROR
         )
       end
@@ -1511,7 +1511,7 @@ describe Y2Storage::AgamaProposal do
       it "reports the corresponding error" do
         proposal.propose
         expect(proposal.issues_list).to include an_object_having_attributes(
-          description: /no LVM thin pool volume with alias pool/,
+          description: /no LVM thin pool volume with alias 'pool'/,
           severity:    Agama::Issue::Severity::ERROR
         )
       end
