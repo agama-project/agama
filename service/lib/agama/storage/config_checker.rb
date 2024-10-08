@@ -20,19 +20,24 @@
 # find current contact information at www.suse.com.
 
 require "agama/issue"
+require "agama/storage/volume_templates_builder"
 require "yast/i18n"
 require "y2storage/mount_point"
 
 module Agama
   module Storage
     # Class for checking a storage config.
-    class ConfigChecker
+    #
+    # TODO: Split in smaller checkers, for example: ConfigFilesystemChecker, etc.
+    class ConfigChecker # rubocop:disable Metrics/ClassLength
       include Yast::I18n
 
       # @param config [Storage::Config]
-      def initialize(config)
+      # @param product_config [Agama::Config]
+      def initialize(config, product_config)
         textdomain "agama"
         @config = config
+        @product_config = product_config || Agama::Config.new
       end
 
       # Issues detected in the config.
@@ -46,6 +51,9 @@ module Agama
 
       # @return [Storage::Config]
       attr_reader :config
+
+      # @return [Agama::Config]
+      attr_reader :product_config
 
       # Issues from drives.
       #
@@ -61,6 +69,7 @@ module Agama
       def drive_issues(config)
         [
           search_issue(config),
+          filesystem_issues(config),
           encryption_issues(config),
           partitions_issues(config)
         ].flatten.compact
@@ -86,16 +95,76 @@ module Agama
         end
       end
 
+      # Issues related to the filesystem.
+      #
+      # @param config [#filesystem]
+      # @return [Array<Issue>]
+      def filesystem_issues(config)
+        filesystem = config.filesystem
+        return [] unless filesystem
+
+        [
+          missing_filesystem_issue(filesystem),
+          invalid_filesystem_issue(filesystem)
+        ].compact
+      end
+
+      # @see #filesystem_issues
+      #
+      # @param config [Configs::Filesystem]
+      # @return [Issue, nil]
+      def missing_filesystem_issue(config)
+        return if config.reuse?
+        return if config.type&.fs_type
+
+        error(
+          format(
+            # TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
+            _("Missing file system type for '%s'"),
+            config.path
+          )
+        )
+      end
+
+      # @see #filesystem_issues
+      #
+      # @param config [Configs::Filesystem]
+      # @return [Issue, nil]
+      def invalid_filesystem_issue(config)
+        return if config.reuse?
+
+        type = config.type&.fs_type
+        return unless type
+
+        path = config.path
+        types = suitable_filesystem_types(path)
+        return if types.include?(type)
+
+        # Let's consider a type as valid if the product does not define any suitable type.
+        return if types.empty?
+
+        error(
+          format(
+            # TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
+            #   %{path} is replaced by a mount path (e.g., "/home").
+            _("The file system type '%{filesystem}' is not suitable for '%{path}'"),
+            filesystem: type.to_human_string,
+            path:       path
+          )
+        )
+      end
+
       # Issues related to encryption.
       #
       # @param config [Configs::Drive, Configs::Partition, Configs::LogicalVolume]
       # @return [Array<Issue>]
       def encryption_issues(config)
-        return [] unless config.encryption
+        encryption = config.encryption
+        return [] unless encryption
 
         [
-          missing_encryption_password_issue(config.encryption),
-          unavailable_encryption_method_issue(config.encryption),
+          missing_encryption_password_issue(encryption),
+          unavailable_encryption_method_issue(encryption),
           wrong_encryption_method_issue(config)
         ].compact
       end
@@ -169,6 +238,7 @@ module Agama
       def partition_issues(config)
         [
           search_issue(config),
+          filesystem_issues(config),
           encryption_issues(config)
         ].flatten.compact
       end
@@ -247,6 +317,7 @@ module Agama
       # @return [Array<Issue>]
       def logical_volume_issues(lv_config, vg_config)
         [
+          filesystem_issues(lv_config),
           encryption_issues(lv_config),
           missing_thin_pool_issue(lv_config, vg_config)
         ].compact.flatten
@@ -373,6 +444,19 @@ module Agama
         ]
 
         valid_methods.include?(method)
+      end
+
+      # Suitable file system types for the given path.
+      #
+      # @param path [String, nil]
+      # @return [Array<Y2Storage::Filesytems::Type>]
+      def suitable_filesystem_types(path = nil)
+        volume_builder.for(path || "").outline.filesystems
+      end
+
+      # @return [VolumeTemplatesBuilder]
+      def volume_builder
+        @volume_builder ||= VolumeTemplatesBuilder.new_from_config(product_config)
       end
 
       # Creates a warning issue.

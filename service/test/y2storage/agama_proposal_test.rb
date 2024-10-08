@@ -107,30 +107,52 @@ describe Y2Storage::AgamaProposal do
         "volumes"          => ["/", "swap"],
         "volume_templates" => [
           {
-            "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
-            "btrfs" => {
-              "snapshots" => true, "default_subvolume" => "@",
-              "subvolumes" => ["home", "opt", "root", "srv"]
+            "mount_path" => "/",
+            "filesystem" => "btrfs",
+            "size"       => { "auto" => true },
+            "btrfs"      => {
+              "snapshots"         => true,
+              "default_subvolume" => "@",
+              "subvolumes"        => ["home", "opt", "root", "srv"]
             },
-            "outline" => {
-              "required" => true, "snapshots_configurable" => true,
-              "auto_size" => {
-                "base_min" => "5 GiB", "base_max" => "10 GiB",
-                "min_fallback_for" => ["/home"], "max_fallback_for" => ["/home"],
+            "outline"    => {
+              "required"               => true,
+              "snapshots_configurable" => true,
+              "filesystems"            => ["btrfs", "xfs", "ext3", "ext4"],
+              "auto_size"              => {
+                "base_min"            => "5 GiB",
+                "base_max"            => "10 GiB",
+                "min_fallback_for"    => ["/home"],
+                "max_fallback_for"    => ["/home"],
                 "snapshots_increment" => "300%"
               }
             }
           },
           {
-            "mount_path" => "/home", "size" => { "auto" => false, "min" => "5 GiB" },
-            "filesystem" => "xfs", "outline" => { "required" => false }
+            "mount_path" => "/home",
+            "size"       => { "auto" => false, "min" => "5 GiB" },
+            "filesystem" => "xfs",
+            "outline"    => {
+              "required"    => false,
+              "filesystems" => ["xfs", "ext4"]
+            }
           },
           {
-            "mount_path" => "swap", "filesystem" => "swap",
-            "outline"    => { "required" => false }
+            "mount_path" => "swap",
+            "filesystem" => "swap",
+            "outline"    => {
+              "required"    => false,
+              "filesystems" => ["swap"]
+            }
           },
-          { "mount_path" => "", "filesystem" => "ext4",
-            "size" => { "min" => "100 MiB" } }
+          {
+            "mount_path" => "",
+            "filesystem" => "ext4",
+            "size"       => { "min" => "100 MiB" },
+            "outline"    => {
+              "filesystems" => ["xfs", "ext4"]
+            }
+          }
         ]
       }
     }
@@ -1049,7 +1071,8 @@ describe Y2Storage::AgamaProposal do
                   "filesystem" => "swap",
                   "size"       => { "auto" => true },
                   "outline"    => {
-                    "auto_size" => {
+                    "filesystems" => ["swap"],
+                    "auto_size"   => {
                       "adjust_by_ram" => true,
                       "base_min"      => "2 GiB",
                       "base_max"      => "4 GiB"

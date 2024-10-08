@@ -25,9 +25,6 @@ require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_checker"
 require "agama/storage/config_solver"
 require "y2storage"
-require "y2storage/refinements"
-
-using Y2Storage::Refinements::SizeCasts
 
 shared_examples "encryption issues" do
   let(:filesystem) { nil }
@@ -110,10 +107,91 @@ shared_examples "encryption issues" do
   end
 end
 
+shared_examples "filesystem issues" do |filesystem_proc|
+  context "with invalid type" do
+    let(:filesystem) do
+      {
+        path:            "/",
+        type:            "vfat",
+        reuseIfPossible: reuse
+      }
+    end
+
+    context "and without reusing the filesystem" do
+      let(:reuse) { false }
+
+      it "includes the expected issue" do
+        issues = subject.issues
+        expect(issues.size).to eq(1)
+
+        issue = issues.first
+        expect(issue.error?).to eq(true)
+        expect(issue.description).to match("type 'FAT' is not suitable for '/'")
+      end
+    end
+
+    context "and reusing the filesystem" do
+      let(:reuse) { true }
+
+      it "does not include an issue" do
+        expect(subject.issues.size).to eq(0)
+      end
+    end
+  end
+
+  context "with valid type" do
+    let(:filesystem) do
+      {
+        path: "/",
+        type: "btrfs"
+      }
+    end
+
+    it "does not include an issue" do
+      expect(subject.issues.size).to eq(0)
+    end
+  end
+
+  context "without a filesystem type" do
+    let(:filesystem) do
+      {
+        path:            "/",
+        reuseIfPossible: reuse
+      }
+    end
+
+    before do
+      # Explicitly remove the filesystem type. Otherwise the JSON conversion assigns a default type.
+      filesystem_proc.call(config).type = nil
+    end
+
+    context "and without reusing the filesystem" do
+      let(:reuse) { false }
+
+      it "includes the expected issue" do
+        issues = subject.issues
+        expect(issues.size).to eq(1)
+
+        issue = issues.first
+        expect(issue.error?).to eq(true)
+        expect(issue.description).to eq("Missing file system type for '/'")
+      end
+    end
+
+    context "and reusing the filesystem" do
+      let(:reuse) { true }
+
+      it "does not include an issue" do
+        expect(subject.issues.size).to eq(0)
+      end
+    end
+  end
+end
+
 describe Agama::Storage::ConfigChecker do
   include Agama::RSpec::StorageHelpers
 
-  subject { described_class.new(config) }
+  subject { described_class.new(config, product_config) }
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
@@ -122,6 +200,22 @@ describe Agama::Storage::ConfigChecker do
   end
 
   let(:config_json) { nil }
+
+  let(:product_config) { Agama::Config.new(product_data) }
+
+  let(:product_data) do
+    {
+      "storage" => {
+        "volume_templates" => [
+          {
+            "mount_path" => "/",
+            "filesystem" => "btrfs",
+            "outline"    => { "filesystems" => ["btrfs", "xfs"] }
+          }
+        ]
+      }
+    }
+  end
 
   before do
     mock_storage(devicegraph: scenario)
@@ -135,7 +229,6 @@ describe Agama::Storage::ConfigChecker do
     before do
       # Solves the config before checking.
       devicegraph = Y2Storage::StorageManager.instance.probed
-      product_config = Agama::Config.new
 
       Agama::Storage::ConfigSolver
         .new(devicegraph, product_config)
@@ -214,6 +307,22 @@ describe Agama::Storage::ConfigChecker do
       include_examples "encryption issues"
     end
 
+    context "if a drive has filesystem" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              filesystem: filesystem
+            }
+          ]
+        }
+      end
+
+      filesystem_proc = proc { |c| c.drives.first.filesystem }
+
+      include_examples "filesystem issues", filesystem_proc
+    end
+
     context "if a drive has partitions" do
       let(:config_json) do
         {
@@ -272,6 +381,16 @@ describe Agama::Storage::ConfigChecker do
         end
       end
 
+      context "if a partition has filesystem" do
+        let(:partition) do
+          { filesystem: filesystem }
+        end
+
+        filesystem_proc = proc { |c| c.drives.first.partitions.first.filesystem }
+
+        include_examples "filesystem issues", filesystem_proc
+      end
+
       context "and a partition has encryption" do
         let(:partition) do
           {
@@ -299,6 +418,16 @@ describe Agama::Storage::ConfigChecker do
             }
           ]
         }
+      end
+
+      context "if a logical volume has filesystem" do
+        let(:logical_volume) do
+          { filesystem: filesystem }
+        end
+
+        filesystem_proc = proc { |c| c.volume_groups.first.logical_volumes.first.filesystem }
+
+        include_examples "filesystem issues", filesystem_proc
       end
 
       context "and a logical volume has encryption" do
