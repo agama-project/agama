@@ -313,14 +313,14 @@ describe Y2Storage::AgamaProposal do
                   size:   { min: "0", max: "current" }
                 },
                 {
-                  size: { min: "4 GiB" },
+                  size:       { min: "4 GiB" },
                   filesystem: { path: "/foo" }
                 }
               ]
             },
             {
-              alias:      "vdb"
-            },
+              alias: "vdb"
+            }
           ],
           volumeGroups: [
             {
@@ -347,10 +347,11 @@ describe Y2Storage::AgamaProposal do
             {
               name:            "vg1",
               physicalVolumes: [
-                { generate: {
+                {
+                  generate: {
                     targetDevices: ["vdb"],
-                    "encryption": { "luks2": { "password": "s3cr3t" } }
-                  } 
+                    encryption:    { luks2: { password: "s3cr3t" } }
+                  }
                 }
               ],
               logicalVolumes:  [
@@ -407,6 +408,84 @@ describe Y2Storage::AgamaProposal do
         pv_vg1 = vg1.lvm_pvs.first
         expect(pv_vg1.blk_device.is?(:encryption)).to eq true
         expect(pv_vg1.blk_device.type.is?(:luks2)).to eq true
+      end
+    end
+
+    context "when two volume groups with generated physical volumes share a disk" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:config_json) do
+        {
+          drives:       [
+            { alias: "vda" },
+            { alias: "vdb" },
+            { alias: "vdc" }
+          ],
+          volumeGroups: [
+            {
+              name:            "system",
+              physicalVolumes: [
+                { generate: { targetDevices: ["vdb", "vdc"] } }
+              ],
+              logicalVolumes:  [
+                {
+                  name:       "root",
+                  size:       "10 GiB",
+                  filesystem: {
+                    path: "/",
+                    type: "btrfs"
+                  }
+                },
+                {
+                  name:       "home",
+                  size:       {
+                    min: "30 GiB"
+                  },
+                  filesystem: {
+                    path: "/home",
+                    type: "xfs"
+                  }
+                }
+              ]
+            },
+            {
+              name:            "vg1",
+              physicalVolumes: [
+                {
+                  generate: {
+                    targetDevices: ["vdc"],
+                    encryption:    { luks1: { password: "s3cr3t" } }
+                  }
+                }
+              ],
+              logicalVolumes:  [
+                {
+                  name:       "data",
+                  filesystem: { type: "xfs" },
+                  size:       { min: "30 GiB", max: "40 GiB" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "proposes the expected devices" do
+        devicegraph = proposal.propose
+
+        system = devicegraph.find_by_name("/dev/system")
+        expect(system.lvm_lvs.map { |lv| lv.mount_point.path }).to contain_exactly("/", "/home")
+        expect(system.lvm_pvs.map { |pv| pv.blk_device.partitionable.name })
+          .to contain_exactly("/dev/vdb", "/dev/vdc")
+
+        vg1 = devicegraph.find_by_name("/dev/vg1")
+        expect(vg1.lvm_lvs.map(&:lv_name)).to contain_exactly("data")
+        expect(vg1.lvm_pvs.map { |pv| pv.plain_blk_device.partitionable.name })
+          .to contain_exactly("/dev/vdc")
+
+        pv_vg1 = vg1.lvm_pvs.first
+        expect(pv_vg1.blk_device.is?(:encryption)).to eq true
+        expect(pv_vg1.blk_device.type.is?(:luks1)).to eq true
       end
     end
   end
