@@ -210,9 +210,7 @@ module Y2Storage
     #
     # @return [Array<String>] names of partitionable devices
     def disks_for_clean
-      return drives_names if config.boot_device.nil? || drives_names.include?(config.boot_device)
-
-      drives_names + [config.boot_device]
+      (drives_names + [config.boot_device]).compact.uniq
     end
 
     # Creates the planned devices on a given devicegraph
