@@ -30,9 +30,9 @@ mod progress;
 mod questions;
 
 use crate::error::CliError;
-use agama_lib::error::ServiceError;
-use agama_lib::manager::ManagerClient;
-use agama_lib::progress::ProgressMonitor;
+use agama_lib::{
+    error::ServiceError, manager::ManagerClient, progress::ProgressMonitor, transfer::Transfer,
+};
 use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
@@ -158,7 +158,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         Commands::Questions(subcommand) => run_questions_cmd(subcommand).await?,
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await?,
         Commands::Auth(subcommand) => run_auth_cmd(subcommand).await?,
-        Commands::Download { url } => crate::profile::download(&url, std::io::stdout())?,
+        Commands::Download { url } => Transfer::get(&url, std::io::stdout())?,
     };
 
     Ok(())

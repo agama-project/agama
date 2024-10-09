@@ -63,6 +63,7 @@ pub mod proxies;
 mod store;
 pub use store::Store;
 pub mod questions;
+pub mod transfer;
 use crate::error::ServiceError;
 use reqwest::{header, Client};
 
