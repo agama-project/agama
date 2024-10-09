@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "y2storage/exceptions"
-require "y2storage/proposal/agama_lvm_helper"
 require "y2storage/proposal/lvm_creator"
 require "y2storage/proposal/partition_creator"
 
@@ -126,13 +125,11 @@ module Y2Storage
       def process_existing_partitionables
         partitions = partitions_for_existing(planned_devices)
 
-        # lvm_lvs = system_lvm_over_existing? ? system_lvs(planned_devices) : []
-        lvm_lvs = []
-        lvm_helper = AgamaLvmHelper.new(lvm_lvs)
-
         # Check whether there is any chance of getting an unwanted order for the planned partitions
         # within a disk
-        space_result = provide_space(partitions, original_graph, lvm_helper)
+        space_result = space_maker.provide_space(
+          original_graph, partitions: partitions, volume_groups: automatic_vgs
+        )
         self.devicegraph = space_result[:devicegraph]
         distribution = space_result[:partitions_distribution]
 
@@ -144,6 +141,16 @@ module Y2Storage
       def process_volume_groups
         # TODO: Reuse volume groups.
         planned_devices.vgs.map { |v| create_volume_group(v) }
+      end
+
+      # Planned volume groups for which the proposal must automatically create the needed physical
+      # volumes
+      #
+      # @return [Array<Planned::LvmVg>]
+      def automatic_vgs
+        planned_devices.select do |dev|
+          dev.is_a?(Planned::LvmVg) && dev.pvs_candidate_devices.any?
+        end
       end
 
       # Creates a volume group for the the given planned device.
@@ -172,13 +179,6 @@ module Y2Storage
           .map(&:reuse_name)
 
         new_pvs + reused_pvs
-      end
-
-      # @see #process_existing_partitionables
-      def provide_space(planned_partitions, devicegraph, lvm_helper)
-        result = space_maker.provide_space(devicegraph, planned_partitions, lvm_helper)
-        log.info "Found enough space"
-        result
       end
 
       # @see #process_existing_partitionables

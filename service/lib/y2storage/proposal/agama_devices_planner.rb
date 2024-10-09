@@ -75,7 +75,7 @@ module Y2Storage
       def planned_vgs(config)
         config.volume_groups.flat_map do |vg|
           planner = AgamaVgPlanner.new(devicegraph, issues_list)
-          planner.planned_devices(vg)
+          planner.planned_devices(vg, config)
         end
       end
     end
