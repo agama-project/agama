@@ -25,35 +25,32 @@ module Agama
       module FromJSONConversions
         # Base class for conversions from JSON hash according to schema.
         class Base
-          # @param config_builder [ConfigBuilder, nil]
-          def initialize(config_builder = nil)
-            @config_builder = config_builder
+          def initialize(config_json)
+            @config_json = config_json
           end
 
           # Performs the conversion from Hash according to the JSON schema.
           #
-          # @param default [Object] A {Config} or any its configs from {Storage::Configs}.
+          # @param config [Object] A {Config} or any of its configs from {Storage::Configs}.
           # @return [Object] A {Config} or any its configs from {Storage::Configs}.
-          def convert(default)
-            default.dup.tap do |config|
-              conversions(config).each do |property, value|
-                next if value.nil?
+          def convert(config)
+            conversions.each do |property, value|
+              next if value.nil?
 
-                config.public_send("#{property}=", value)
-              end
+              config.public_send("#{property}=", value)
             end
+
+            config
           end
 
         private
 
-          # @return [ConfigBuilder, nil]
-          attr_reader :config_builder
+          attr_reader :config_json
 
           # Values to apply to the config.
           #
-          # @param _default [Object] A {Config} or any its configs from {Storage::Configs}.
           # @return [Hash] e.g., { name: "/dev/vda" }.
-          def conversions(_default)
+          def conversions
             {}
           end
         end

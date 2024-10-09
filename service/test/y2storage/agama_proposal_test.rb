@@ -73,7 +73,6 @@ end
 
 describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
-  using Y2Storage::Refinements::SizeCasts
 
   subject(:proposal) do
     described_class.new(config, product_config: product_config, issues_list: issues_list)
@@ -83,7 +82,7 @@ describe Y2Storage::AgamaProposal do
 
   let(:config_from_json) do
     Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json, product_config: product_config)
+      .new(config_json, default_paths: default_paths, mandatory_paths: mandatory_paths)
       .convert
   end
 
@@ -108,34 +107,60 @@ describe Y2Storage::AgamaProposal do
         "volumes"          => ["/", "swap"],
         "volume_templates" => [
           {
-            "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
-            "btrfs" => {
-              "snapshots" => true, "default_subvolume" => "@",
-              "subvolumes" => ["home", "opt", "root", "srv"]
+            "mount_path" => "/",
+            "filesystem" => "btrfs",
+            "size"       => { "auto" => true },
+            "btrfs"      => {
+              "snapshots"         => true,
+              "default_subvolume" => "@",
+              "subvolumes"        => ["home", "opt", "root", "srv"]
             },
-            "outline" => {
-              "required" => true, "snapshots_configurable" => true,
-              "auto_size" => {
-                "base_min" => "5 GiB", "base_max" => "10 GiB",
-                "min_fallback_for" => ["/home"], "max_fallback_for" => ["/home"],
+            "outline"    => {
+              "required"               => true,
+              "snapshots_configurable" => true,
+              "filesystems"            => ["btrfs", "xfs", "ext3", "ext4"],
+              "auto_size"              => {
+                "base_min"            => "5 GiB",
+                "base_max"            => "10 GiB",
+                "min_fallback_for"    => ["/home"],
+                "max_fallback_for"    => ["/home"],
                 "snapshots_increment" => "300%"
               }
             }
           },
           {
-            "mount_path" => "/home", "size" => { "auto" => false, "min" => "5 GiB" },
-            "filesystem" => "xfs", "outline" => { "required" => false }
+            "mount_path" => "/home",
+            "size"       => { "auto" => false, "min" => "5 GiB" },
+            "filesystem" => "xfs",
+            "outline"    => {
+              "required"    => false,
+              "filesystems" => ["xfs", "ext4"]
+            }
           },
           {
-            "mount_path" => "swap", "filesystem" => "swap",
-            "outline"    => { "required" => false }
+            "mount_path" => "swap",
+            "filesystem" => "swap",
+            "outline"    => {
+              "required"    => false,
+              "filesystems" => ["swap"]
+            }
           },
-          { "mount_path" => "", "filesystem" => "ext4",
-            "size" => { "min" => "100 MiB" } }
+          {
+            "mount_path" => "",
+            "filesystem" => "ext4",
+            "size"       => { "min" => "100 MiB" },
+            "outline"    => {
+              "filesystems" => ["xfs", "ext4"]
+            }
+          }
         ]
       }
     }
   end
+
+  let(:default_paths) { product_config.default_paths }
+
+  let(:mandatory_paths) { product_config.mandatory_paths }
 
   let(:issues_list) { [] }
 
@@ -393,7 +418,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /method 'luks2' is not available/,
+            description: /method 'Regular LUKS2' is not available/,
             severity:    Agama::Issue::Severity::ERROR
           )
         end
@@ -410,7 +435,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /'random_swap' is not a suitable method/,
+            description: /'Encryption with Volatile Random Key' is not a suitable method/,
             severity:    Agama::Issue::Severity::ERROR
           )
         end
@@ -1046,7 +1071,8 @@ describe Y2Storage::AgamaProposal do
                   "filesystem" => "swap",
                   "size"       => { "auto" => true },
                   "outline"    => {
-                    "auto_size" => {
+                    "filesystems" => ["swap"],
+                    "auto_size"   => {
                       "adjust_by_ram" => true,
                       "base_min"      => "2 GiB",
                       "base_max"      => "4 GiB"
@@ -1456,7 +1482,7 @@ describe Y2Storage::AgamaProposal do
       it "reports the corresponding error" do
         proposal.propose
         expect(proposal.issues_list).to include an_object_having_attributes(
-          description: /no LVM physical volume with alias pv2/,
+          description: /no LVM physical volume with alias 'pv2'/,
           severity:    Agama::Issue::Severity::ERROR
         )
       end
@@ -1508,7 +1534,7 @@ describe Y2Storage::AgamaProposal do
       it "reports the corresponding error" do
         proposal.propose
         expect(proposal.issues_list).to include an_object_having_attributes(
-          description: /no LVM thin pool volume with alias pool/,
+          description: /no LVM thin pool volume with alias 'pool'/,
           severity:    Agama::Issue::Severity::ERROR
         )
       end

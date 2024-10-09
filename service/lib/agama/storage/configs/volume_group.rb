@@ -30,6 +30,18 @@ module Agama
         # @return [Y2Storage::DiskSize, nil]
         attr_accessor :extent_size
 
+        # Aliases of the devices used for automatically creating new physical volumes.
+        #
+        # @return [Array<String>]
+        attr_accessor :physical_volumes_devices
+
+        # Encryption for the new physical volumes created at the {physical_volumes_devices}.
+        #
+        # @return [Encryption, nil]
+        attr_accessor :physical_volumes_encryption
+
+        # Aliases of the devices used as physical volumes.
+        #
         # @return [Array<String>]
         attr_accessor :physical_volumes
 
@@ -37,6 +49,7 @@ module Agama
         attr_accessor :logical_volumes
 
         def initialize
+          @physical_volumes_devices = []
           @physical_volumes = []
           @logical_volumes = []
         end

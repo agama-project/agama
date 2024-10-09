@@ -27,11 +27,9 @@ module Agama
       module FromJSONConversions
         # Mixin for partition table type conversion.
         module WithPtableType
-          # @param json [Hash]
-          #
           # @return [Y2Storage::PartitionTables::Type, nil]
-          def convert_ptable_type(json)
-            value = json[:ptableType]
+          def convert_ptable_type
+            value = config_json[:ptableType]
             return unless value
 
             Y2Storage::PartitionTables::Type.find(value)

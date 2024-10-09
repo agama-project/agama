@@ -27,16 +27,12 @@ module Agama
       module FromJSONConversions
         # Mixin for search conversion.
         module WithSearch
-          # @param json [Hash]
-          # @param default [Configs::Search, nil]
-          #
           # @return [Configs::Search, nil]
-          def convert_search(json, default: nil)
-            search_json = json[:search]
+          def convert_search
+            search_json = config_json[:search]
             return unless search_json
 
-            converter = FromJSONConversions::Search.new(search_json)
-            converter.convert(default)
+            FromJSONConversions::Search.new(search_json).convert
           end
         end
       end

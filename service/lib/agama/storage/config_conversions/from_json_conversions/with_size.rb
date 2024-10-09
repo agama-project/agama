@@ -27,15 +27,12 @@ module Agama
       module FromJSONConversions
         # Mixin for size conversion.
         module WithSize
-          # @param json [Hash]
-          # @param default [Configs::Size, nil]
-          #
           # @return [Configs::Size, nil]
-          def convert_size(json, default: nil)
-            size_json = json[:size]
+          def convert_size
+            size_json = config_json[:size]
             return unless size_json
 
-            FromJSONConversions::Size.new(size_json).convert(default)
+            FromJSONConversions::Size.new(size_json).convert
           end
         end
       end

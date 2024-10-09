@@ -27,9 +27,9 @@ module Agama
     # Class for solving a storage JSON config.
     #
     # A storage JSON config can contain a "generate" section for automatically generating partitions
-    # or logical volumes according to the product definition. That section is solved by replacing it
-    # with the corresponding configs. The solver takes into account other paths already present in
-    # the rest of the config.
+    # or logical volumes according to the indicated default and mandatory paths. The "generate"
+    # section is solved by replacing it with the corresponding configs. The solver takes into
+    # account other paths already present in the rest of the config.
     #
     # @example
     #   config_json = {
@@ -58,9 +58,11 @@ module Agama
     #                       ]
     #                     }
     class ConfigJSONSolver
-      # @param product_config [Agama::Config]
-      def initialize(product_config = nil)
-        @product_config = product_config || Agama::Config.new
+      # @param default_paths [Array<String>] Default paths of the product.
+      # @param mandatory_paths [Array<String>] Mandatory paths of the product.
+      def initialize(default_paths: [], mandatory_paths: [])
+        @default_paths = default_paths
+        @mandatory_paths = mandatory_paths
       end
 
       # Solves the generate section within a given JSON config.
@@ -76,11 +78,14 @@ module Agama
 
     private
 
+      # @return [Array<String>]
+      attr_reader :default_paths
+
+      # @return [Array<String>]
+      attr_reader :mandatory_paths
+
       # @return [Hash]
       attr_reader :config_json
-
-      # @return [Agama::Config]
-      attr_reader :product_config
 
       def solve_generate
         configs = configs_with_generate
@@ -128,11 +133,6 @@ module Agama
       end
 
       # @return [Array<String>]
-      def default_paths
-        product_config.data.dig("storage", "volumes") || []
-      end
-
-      # @return [Array<String>]
       def current_paths
         configs_with_filesystem
           .select { |c| c.is_a?(Hash) }
@@ -149,17 +149,6 @@ module Agama
       # @return [Array<String>]
       def missing_mandatory_paths
         mandatory_paths - current_paths
-      end
-
-      # @return [Array<String>]
-      def mandatory_paths
-        default_paths.select { |p| mandatory_path?(p) }
-      end
-
-      # @param path [String]
-      # @return [Volume]
-      def mandatory_path?(path)
-        volume_builder.for(path).outline.required?
       end
 
       # @param config [Hash] e.g., { generate: "default" }
@@ -259,11 +248,6 @@ module Agama
         return generate == value unless generate.is_a?(Hash)
 
         generate[:partitions] == value || generate[:logicalVolumes] == value
-      end
-
-      # @return [VolumeTemplatesBuilder]
-      def volume_builder
-        @volume_builder ||= VolumeTemplatesBuilder.new_from_config(product_config)
       end
     end
   end

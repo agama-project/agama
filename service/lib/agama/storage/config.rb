@@ -55,16 +55,6 @@ module Agama
         @nfs_mounts = []
       end
 
-      # Creates a config from JSON hash according to schema.
-      #
-      # @param config_json [Hash]
-      # @param product_config [Agama::Config]
-      #
-      # @return [Storage::Config]
-      def self.new_from_json(config_json, product_config:)
-        ConfigConversions::FromJSON.new(config_json, product_config: product_config).convert
-      end
-
       # Name of the device that will presumably be used to boot the target system
       #
       # @return [String, nil] nil if there is no enough information to infer a possible boot disk

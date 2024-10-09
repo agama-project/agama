@@ -96,7 +96,10 @@ module Y2Storage
         .new(initial_devicegraph, product_config)
         .solve(config)
 
-      issues = Agama::Storage::ConfigChecker.new(config).issues
+      issues = Agama::Storage::ConfigChecker
+        .new(config, product_config)
+        .issues
+
       issues_list.concat(issues)
 
       if fatal_error?

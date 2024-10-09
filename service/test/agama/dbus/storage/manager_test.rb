@@ -592,10 +592,10 @@ describe Agama::DBus::Storage::Manager do
 
     context "if an agama proposal has been calculated" do
       before do
-        proposal.calculate_agama(config)
+        proposal.calculate_agama(storage_config)
       end
 
-      let(:config) do
+      let(:storage_config) do
         fs_type = Agama::Storage::Configs::FilesystemType.new.tap do |t|
           t.fs_type = Y2Storage::Filesystems::Type::BTRFS
         end

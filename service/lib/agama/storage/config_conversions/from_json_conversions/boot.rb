@@ -28,30 +28,19 @@ module Agama
       module FromJSONConversions
         # Boot conversion from JSON hash according to schema.
         class Boot < Base
-          # @param boot_json [Hash]
-          def initialize(boot_json)
-            super()
-            @boot_json = boot_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::Boot, nil]
           # @return [Configs::Boot]
-          def convert(default = nil)
-            super(default || Configs::Boot.new)
+          def convert
+            super(Configs::Boot.new)
           end
 
         private
 
-          # @return [Hash]
-          attr_reader :boot_json
+          alias_method :boot_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param _default [Configs::Boot]
           # @return [Hash]
-          def conversions(_default)
+          def conversions
             {
               configure: boot_json[:configure],
               device:    boot_json[:device]
