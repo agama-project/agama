@@ -122,7 +122,10 @@ const OverviewSection = () => (
   </Page.Section>
 );
 
-const Section = React.lazy(() => import("/public/section.js"));
+const ExternalPlugin = React.lazy(
+  // tell Webpack to compile the imported code to a separate "plugin.js" file
+  () => import(/* webpackChunkName: "plugin" */ "./ExamplePluginComponent"),
+);
 
 export default function OverviewPage() {
   return (
@@ -140,12 +143,14 @@ export default function OverviewPage() {
           </GridItem>
           <GridItem sm={12} xl={6}>
             <OverviewSection />
-            <Suspense>
-              <Section />
-            </Suspense>
           </GridItem>
           <GridItem sm={12} xl={6}>
             <ResultSection />
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <Suspense fallback={<div>Loading plugin...</div>}>
+              <ExternalPlugin />
+            </Suspense>
           </GridItem>
         </Grid>
       </Page.Content>
