@@ -157,7 +157,7 @@ enum InsecureApi {
     Secure,         // Remote api is secure
     Insecure,       // Remote api is insecure - e.g. self-signed certificate
     Forbidden,      // Remote api is insecure and its use is forbidden (e.g. user decided not to use it)
-    Unrecheable     // Remote api is unrecheable
+    Unreachable     // Remote api is unrecheable
 }
 
 /// Returns if insecure connection to remote api server is required and user allowed that
@@ -172,7 +172,7 @@ async fn check_remote_api(api_url: String) -> Result<InsecureApi, ServiceError> 
             if res["status"] == "success" {
                 Ok(InsecureApi::Secure)
             } else {
-                Ok(InsecureApi::Unrecheable)
+                Ok(InsecureApi::Unreachable)
             }
         }
         Err(err) => {
