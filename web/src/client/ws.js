@@ -82,10 +82,13 @@ class WSClient {
   }
 
   isConnected() {
+    if (process.env.AGAMA_DEMO) return true;
     return this.wsState() === SocketStates.CONNECTED;
   }
 
   buildClient() {
+    if (process.env.AGAMA_DEMO) return null;
+
     const client = new WebSocket(this.url);
     client.onopen = () => {
       console.log("Websocket connected");

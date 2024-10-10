@@ -194,7 +194,7 @@ function reload(newLanguage: string) {
  */
 function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
   const { connected } = useInstallerClientStatus();
-  const [language, setLanguage] = useState(undefined);
+  const [language, setLanguage] = useState(process.env.AGAMA_DEMO ? "en-us" : undefined);
   const [keymap, setKeymap] = useState(undefined);
 
   const syncBackendLanguage = useCallback(async () => {

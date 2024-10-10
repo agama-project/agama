@@ -77,7 +77,7 @@ function useInstallerClientStatus() {
  */
 function InstallerClientProvider({ children, client = null }) {
   const [value, setValue] = useState(client);
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(process.env.AGAMA_DEMO !== undefined);
   const [error, setError] = useState(false);
 
   useEffect(() => {

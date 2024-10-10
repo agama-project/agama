@@ -49,7 +49,7 @@ const AuthErrors = Object.freeze({
  * @param {React.ReactNode} [props.children] - content to display within the provider
  */
 function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(undefined);
+  const [isLoggedIn, setIsLoggedIn] = useState(process.env.AGAMA_DEMO ? true : undefined);
   const [error, setError] = useState(null);
 
   const login = useCallback(async (password) => {
@@ -79,19 +79,21 @@ function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    fetch("/api/auth", {
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        setIsLoggedIn(response.status === 200);
-        if (response.status >= 500 && response.status < 600) {
-          setError(AuthErrors.SERVER);
-        }
-        if (response.status >= 400 && response.status < 500) {
-          setError(AuthErrors.AUTH);
-        }
+    if (!process.env.AGAMA_DEMO) {
+      fetch("/api/auth", {
+        headers: { "Content-Type": "application/json" },
       })
-      .catch(() => setIsLoggedIn(false));
+        .then((response) => {
+          setIsLoggedIn(response.status === 200);
+          if (response.status >= 500 && response.status < 600) {
+            setError(AuthErrors.SERVER);
+          }
+          if (response.status >= 400 && response.status < 500) {
+            setError(AuthErrors.AUTH);
+          }
+        })
+        .catch(() => setIsLoggedIn(false));
+    }
   }, []);
 
   return (
