@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Tue Oct  8 12:25:08 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Storage: added support for automatic creation of physical volumes
+  (gh#agama-project/agama#1655).
+
+-------------------------------------------------------------------
+Mon Oct  7 06:58:48 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: add support to the storage config for automatically
+  creating physical volumes (gh#agama-project/agama#1652).
+
+-------------------------------------------------------------------
 Fri Sep 27 14:15:16 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: add support for automatically generating 'default' and

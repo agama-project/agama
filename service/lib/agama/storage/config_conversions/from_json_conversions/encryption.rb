@@ -30,34 +30,19 @@ module Agama
       module FromJSONConversions
         # Encryption conversion from JSON hash according to schema.
         class Encryption < Base
-          # @param encryption_json [Hash, String]
-          # @param config_builder [ConfigBuilder, nil]
-          def initialize(encryption_json, config_builder: nil)
-            super(config_builder)
-            @encryption_json = encryption_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::Encryption, nil]
           # @return [Configs::Encryption]
-          def convert(default = nil)
-            super(default || self.default)
+          def convert
+            super(Configs::Encryption.new)
           end
 
         private
 
-          # @return [Hash, String]
-          attr_reader :encryption_json
-
-          # @return [Configs::Encryption]
-          attr_reader :default_config
+          alias_method :encryption_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param _default [Configs::Encryption]
           # @return [Hash]
-          def conversions(_default)
+          def conversions
             return luks1_conversions if luks1?
             return luks2_conversions if luks2?
             return pervasive_luks2_conversions if pervasive_luks2?
@@ -80,7 +65,7 @@ module Agama
           def pervasive_luks2?
             return false unless encryption_json.is_a?(Hash)
 
-            !encryption_json[:pervasive_luks2].nil?
+            !encryption_json[:pervasiveLuks2].nil?
           end
 
           # @return [Hash]
@@ -111,7 +96,7 @@ module Agama
 
           # @return [Hash]
           def pervasive_luks2_conversions
-            pervasive_json = encryption_json[:pervasive_luks2]
+            pervasive_json = encryption_json[:pervasiveLuks2]
 
             {
               method:   Y2Storage::EncryptionMethod::PERVASIVE_LUKS2,
@@ -158,15 +143,6 @@ module Agama
           # @return [Y2Storage::PbkdFunction, nil]
           def convert_pbkd_function
             Y2Storage::PbkdFunction.find(encryption_json.dig(:luks2, :pbkdFunction))
-          end
-
-          # Default encryption config.
-          #
-          # @return [Configs::Encryption]
-          def default
-            return Configs::Encryption.new unless config_builder
-
-            config_builder.default_encryption
           end
         end
       end

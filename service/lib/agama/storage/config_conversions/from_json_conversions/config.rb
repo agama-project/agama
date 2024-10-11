@@ -31,45 +31,30 @@ module Agama
       module FromJSONConversions
         # Config conversion from JSON hash according to schema.
         class Config < Base
-          # @param config_json [Hash]
-          # @param config_builder [ConfigBuilder, nil]
-          def initialize(config_json, config_builder: nil)
-            super(config_builder)
-            @config_json = config_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Config, nil]
           # @return [Config]
-          def convert(default = nil)
-            super(default || Storage::Config.new)
+          def convert
+            super(Storage::Config.new)
           end
 
         private
 
-          # @return [Hash]
-          attr_reader :config_json
-
           # @see Base#conversions
-          #
-          # @param default [Config]
           # @return [Hash]
-          def conversions(default)
+          def conversions
             {
-              boot:          convert_boot(default.boot),
+              boot:          convert_boot,
               drives:        convert_drives,
               volume_groups: convert_volume_groups
             }
           end
 
-          # @param default [Configs::Boot, nil]
           # @return [Configs::Boot, nil]
-          def convert_boot(default = nil)
+          def convert_boot
             boot_json = config_json[:boot]
             return unless boot_json
 
-            FromJSONConversions::Boot.new(boot_json).convert(default)
+            FromJSONConversions::Boot.new(boot_json).convert
           end
 
           # @return [Array<Configs::Drive>, nil]
@@ -83,7 +68,7 @@ module Agama
           # @param drive_json [Hash]
           # @return [Configs::Drive]
           def convert_drive(drive_json)
-            FromJSONConversions::Drive.new(drive_json, config_builder: config_builder).convert
+            FromJSONConversions::Drive.new(drive_json).convert
           end
 
           # @return [Array<Configs::VolumeGroup>, nil]
@@ -97,9 +82,7 @@ module Agama
           # @param volume_group_json [Hash]
           # @return [Configs::VolumeGroup]
           def convert_volume_group(volume_group_json)
-            FromJSONConversions::VolumeGroup
-              .new(volume_group_json, config_builder: config_builder)
-              .convert
+            FromJSONConversions::VolumeGroup.new(volume_group_json).convert
           end
         end
       end

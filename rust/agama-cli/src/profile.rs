@@ -22,15 +22,15 @@ use agama_lib::{
     auth::AuthToken,
     install_settings::InstallSettings,
     profile::{AutoyastProfile, ProfileEvaluator, ProfileValidator, ValidationResult},
+    transfer::Transfer,
     Store as SettingsStore,
 };
 use anyhow::Context;
 use clap::Subcommand;
-use curl::easy::Easy;
 use std::os::unix::process::CommandExt;
 use std::{
     fs::File,
-    io::{stdout, Write},
+    io::stdout,
     path::{Path, PathBuf},
     process::Command,
 };
@@ -76,19 +76,6 @@ pub enum ProfileCommands {
         /// Specific directory where all processing happens. By default it uses a temporary directory
         dir: Option<PathBuf>,
     },
-}
-
-pub fn download(url: &str, mut out_fd: impl Write) -> anyhow::Result<()> {
-    let mut handle = Easy::new();
-    handle.url(url)?;
-
-    let mut transfer = handle.transfer();
-    transfer.write_function(|buf|
-        // unwrap here is ok, as we want to kill download if we failed to write content
-        Ok(out_fd.write(buf).unwrap()))?;
-    transfer.perform()?;
-
-    Ok(())
 }
 
 fn validate(path: &PathBuf) -> anyhow::Result<()> {
@@ -138,7 +125,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
         AutoyastProfile::new(&url)?.read_into(output_fd)?;
     } else {
         // just download profile
-        download(&url_string, output_fd)?;
+        Transfer::get(&url_string, output_fd)?;
     }
 
     // exec shell scripts

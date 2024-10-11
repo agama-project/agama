@@ -944,6 +944,81 @@ The *mandatory* keyword can be used for only generating the mandatory partitions
 }
 ```
 
+### Generating Physical Volumes
+
+Volume groups can be configured to explicitly use a set of devices as physical volumes. The aliases
+of the devices to use are added to the list of physical volumes:
+
+```json
+"storage": {
+  "drives": [
+    {
+      "search": "/dev/vda",
+      "partitions": [
+        { "alias": "pv2" },
+        { "alias": "pv1" }
+      ]
+    }
+  ],
+  "volumeGroups": [
+    {
+      "physicalVolumes": ["pv1", "pv2"]
+    }
+  ]
+}
+```
+
+The physical volumes can be automatically generated too, by simply indicating the target devices in
+which to create the partitions. For that, a *generate* section is added to the list of physical
+volumes:
+
+```json
+"storage": {
+  "drives": [
+    {
+      "search": "/dev/vda",
+      "alias": "pvs-disk"
+    }
+  ],
+  "volumeGroups": [
+    {
+      "physicalVolumes": [
+        { "generate": ["pvs-disk"] }
+      ]
+    }
+  ]
+}
+```
+
+If the auto-generated physical volumes have to be encrypted, then the encryption config is added to
+the *generate* section:
+
+
+```json
+"storage": {
+  "drives": [
+    {
+      "search": "/dev/vda",
+      "alias": "pvs-disk"
+    }
+  ],
+  "volumeGroups": [
+    {
+      "physicalVolumes": [
+        {
+          "generate": {
+            "targetDevices": ["pvs-disk"],
+            "encryption": {
+              "luks2": { "password": "12345" }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### Using the Automatic Proposal
 
 On the first implementations, Agama can rely on the process known as Guided Proposal to calculate

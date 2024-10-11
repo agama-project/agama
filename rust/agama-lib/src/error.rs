@@ -18,11 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use curl;
 use serde_json;
 use std::io;
 use thiserror::Error;
 use zbus::{self, zvariant};
+
+use crate::transfer::TransferError;
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
@@ -66,12 +67,14 @@ pub enum ServiceError {
     // Specific error when something does not work as expected, but it is not user fault
     #[error("Internal error. Please report a bug and attach logs. Details: {0}")]
     InternalError(String),
+    #[error("Could not read the file: '{0}'")]
+    CouldNotTransferFile(#[from] TransferError),
 }
 
 #[derive(Error, Debug)]
 pub enum ProfileError {
     #[error("Could not read the profile")]
-    Unreachable(#[from] curl::Error),
+    Unreachable(#[from] TransferError),
     #[error("Jsonnet evaluation failed:\n{0}")]
     EvaluationError(String),
     #[error("I/O error")]

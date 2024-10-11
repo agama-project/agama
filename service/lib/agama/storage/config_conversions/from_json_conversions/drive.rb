@@ -39,38 +39,26 @@ module Agama
           include WithPtableType
           include WithPartitions
 
-          # @param drive_json [Hash]
-          # @param config_builder [ConfigBuilder, nil]
-          def initialize(drive_json, config_builder: nil)
-            super(config_builder)
-            @drive_json = drive_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::Drive, nil]
           # @return [Configs::Drive]
-          def convert(default = nil)
-            super(default || Configs::Drive.new)
+          def convert
+            super(Configs::Drive.new)
           end
 
         private
 
-          # @return [Hash]
-          attr_reader :drive_json
+          alias_method :drive_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param default [Configs::Drive]
           # @return [Hash]
-          def conversions(default)
+          def conversions
             {
-              search:      convert_search(drive_json, default: default.search),
+              search:      convert_search,
               alias:       drive_json[:alias],
-              encryption:  convert_encryption(drive_json, default: default.encryption),
-              filesystem:  convert_filesystem(drive_json, default: default.filesystem),
-              ptable_type: convert_ptable_type(drive_json),
-              partitions:  convert_partitions(drive_json)
+              encryption:  convert_encryption,
+              filesystem:  convert_filesystem,
+              ptable_type: convert_ptable_type,
+              partitions:  convert_partitions
             }
           end
         end

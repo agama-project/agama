@@ -96,7 +96,10 @@ module Y2Storage
         .new(initial_devicegraph, product_config)
         .solve(config)
 
-      issues = Agama::Storage::ConfigChecker.new(config).issues
+      issues = Agama::Storage::ConfigChecker
+        .new(config, product_config)
+        .issues
+
       issues_list.concat(issues)
 
       if fatal_error?
@@ -142,7 +145,7 @@ module Y2Storage
     def clean_graph(devicegraph)
       remove_empty_partition_tables(devicegraph)
       # {Proposal::SpaceMaker#prepare_devicegraph} returns a copy of the given devicegraph.
-      space_maker.prepare_devicegraph(devicegraph, partitions_for_clean)
+      space_maker.prepare_devicegraph(devicegraph, disks_for_clean)
     end
 
     # Configures the disk devices on the given devicegraph to prefer the appropriate partition table
@@ -203,14 +206,11 @@ module Y2Storage
       devices.select { |d| d.partition_table && d.partitions.empty? }
     end
 
-    # Planned partitions that will hold the given planned devices
+    # Devices for which the mandatory actions must be executed
     #
-    # @return [Array<Planned::Partition>]
-    def partitions_for_clean
-      # The current logic is quite trivial, but this is implemented as a separate method because
-      # some extra logic is expected in the future (eg. considering partitions on pre-existing
-      # RAIDs and more stuff). See the equivalent method at DevicegraphGenerator.
-      planned_devices.partitions
+    # @return [Array<String>] names of partitionable devices
+    def disks_for_clean
+      (drives_names + [config.boot_device]).compact.uniq
     end
 
     # Creates the planned devices on a given devicegraph
@@ -218,8 +218,14 @@ module Y2Storage
     # @param devicegraph [Devicegraph] the graph gets modified
     def create_devices(devicegraph)
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
-      names = config.drives.map(&:found_device).compact.map(&:name)
-      result = devices_creator.populated_devicegraph(planned_devices, names, space_maker)
+      result = devices_creator.populated_devicegraph(planned_devices, drives_names, space_maker)
+    end
+
+    # Names of all the devices that correspond to a drive from the config
+    #
+    # @return [Array<String>]
+    def drives_names
+      @drives_names ||= config.drives.map(&:found_device).compact.map(&:name)
     end
 
     # Equivalent device at the given devicegraph for the given configuration setting (eg. drive)

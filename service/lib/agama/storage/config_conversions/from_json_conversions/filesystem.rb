@@ -30,31 +30,19 @@ module Agama
       module FromJSONConversions
         # Filesystem conversion from JSON hash according to schema.
         class Filesystem < Base
-          # @param filesystem_json [Hash]
-          # @param config_builder [ConfigBuilder, nil]
-          def initialize(filesystem_json, config_builder: nil)
-            super(config_builder)
-            @filesystem_json = filesystem_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::Filesystem, nil]
           # @return [Configs::Filesystem]
-          def convert(default = nil)
-            super(default || self.default)
+          def convert
+            super(Configs::Filesystem.new)
           end
 
         private
 
-          # @return [Hash]
-          attr_reader :filesystem_json
+          alias_method :filesystem_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param default [Configs::Filesystem]
           # @return [Hash]
-          def conversions(default)
+          def conversions
             {
               reuse:         filesystem_json[:reuseIfPossible],
               label:         filesystem_json[:label],
@@ -62,7 +50,7 @@ module Agama
               mount_options: filesystem_json[:mountOptions],
               mkfs_options:  filesystem_json[:mkfsOptions],
               mount_by:      convert_mount_by,
-              type:          convert_type(default.type)
+              type:          convert_type
             }
           end
 
@@ -74,22 +62,12 @@ module Agama
             Y2Storage::Filesystems::MountByType.find(value.to_sym)
           end
 
-          # @param default [Configs::FilesystemType, nil]
           # @return [Configs::FilesystemType, nil]
-          def convert_type(default = nil)
+          def convert_type
             filesystem_type_json = filesystem_json[:type]
             return unless filesystem_type_json
 
-            FromJSONConversions::FilesystemType.new(filesystem_type_json).convert(default)
-          end
-
-          # Default filesystem config.
-          #
-          # @return [Configs::Filesystem]
-          def default
-            return Configs::Filesystem.new unless config_builder
-
-            config_builder.default_filesystem(filesystem_json[:path])
+            FromJSONConversions::FilesystemType.new(filesystem_type_json).convert
           end
         end
       end

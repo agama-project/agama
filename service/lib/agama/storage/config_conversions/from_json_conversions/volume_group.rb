@@ -20,8 +20,9 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/encryption"
 require "agama/storage/config_conversions/from_json_conversions/logical_volume"
-require "agama/storage/configs/drive"
+require "agama/storage/configs/volume_group"
 
 module Agama
   module Storage
@@ -29,36 +30,26 @@ module Agama
       module FromJSONConversions
         # Volume group conversion from JSON hash according to schema.
         class VolumeGroup < Base
-          # @param volume_group_json [Hash]
-          # @param config_builder [ConfigBuilder, nil]
-          def initialize(volume_group_json, config_builder: nil)
-            super(config_builder)
-            @volume_group_json = volume_group_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::VolumeGroup, nil]
           # @return [Configs::VolumeGroup]
-          def convert(default = nil)
-            super(default || Configs::VolumeGroup.new)
+          def convert
+            super(Configs::VolumeGroup.new)
           end
 
         private
 
-          # @return [Hash]
-          attr_reader :volume_group_json
+          alias_method :volume_group_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param _default [Configs::VolumeGroup]
           # @return [Hash]
-          def conversions(_default)
+          def conversions
             {
-              name:             volume_group_json[:name],
-              extent_size:      convert_extent_size,
-              physical_volumes: volume_group_json[:physicalVolumes],
-              logical_volumes:  convert_logical_volumes
+              name:                        volume_group_json[:name],
+              extent_size:                 convert_extent_size,
+              physical_volumes_devices:    convert_physical_volumes_devices,
+              physical_volumes_encryption: convert_physical_volumes_encryption,
+              physical_volumes:            convert_physical_volumes,
+              logical_volumes:             convert_logical_volumes
             }
           end
 
@@ -68,6 +59,43 @@ module Agama
             return unless value
 
             Y2Storage::DiskSize.new(value)
+          end
+
+          # @return [Array<String>, nil]
+          def convert_physical_volumes_devices
+            generate_json = physical_volume_generate_json&.fetch(:generate)
+            return unless generate_json
+
+            generate_json.is_a?(Array) ? generate_json : generate_json[:targetDevices]
+          end
+
+          # @return [Configs::Encryption, nil]
+          def convert_physical_volumes_encryption
+            generate_json = physical_volume_generate_json&.fetch(:generate)
+            return unless generate_json.is_a?(Hash)
+
+            encryption_json = generate_json[:encryption]
+            return unless encryption_json
+
+            FromJSONConversions::Encryption.new(encryption_json).convert
+          end
+
+          # JSON of the physical volume with a 'generate'.
+          #
+          # @return [Hash, nil]
+          def physical_volume_generate_json
+            physical_volumes_json = volume_group_json[:physicalVolumes]
+            return unless physical_volumes_json
+
+            physical_volumes_json.find { |p| p.is_a?(Hash) }
+          end
+
+          # @return [Array<String>, nil]
+          def convert_physical_volumes
+            physical_volumes_json = volume_group_json[:physicalVolumes]
+            return unless physical_volumes_json
+
+            physical_volumes_json.select { |c| c.is_a?(String) }
           end
 
           # @return [Array<Configs::LogicalVolume>, nil]
@@ -81,9 +109,7 @@ module Agama
           # @param logical_volume_json [Hash]
           # @return [Configs::LogicalVolume]
           def convert_logical_volume(logical_volume_json)
-            FromJSONConversions::LogicalVolume
-              .new(logical_volume_json, config_builder: config_builder)
-              .convert
+            FromJSONConversions::LogicalVolume.new(logical_volume_json).convert
           end
         end
       end

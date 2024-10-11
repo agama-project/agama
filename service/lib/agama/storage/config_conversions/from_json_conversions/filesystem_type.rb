@@ -31,33 +31,22 @@ module Agama
       module FromJSONConversions
         # Filesystem type conversion from JSON hash according to schema.
         class FilesystemType < Base
-          # @param filesystem_type_json [Hash, String]
-          def initialize(filesystem_type_json)
-            super()
-            @filesystem_type_json = filesystem_type_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::FilesystemType, nil]
           # @return [Configs::FilesystemType]
-          def convert(default = nil)
-            super(default || Configs::FilesystemType.new)
+          def convert
+            super(Configs::FilesystemType.new)
           end
 
         private
 
-          # @return [Hash, String]
-          attr_reader :filesystem_type_json
+          alias_method :filesystem_type_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param default [Configs::FilesystemType]
           # @return [Hash]
-          def conversions(default)
+          def conversions
             {
               fs_type: convert_type,
-              btrfs:   convert_btrfs(default.btrfs)
+              btrfs:   convert_btrfs
             }
           end
 
@@ -67,15 +56,14 @@ module Agama
             Y2Storage::Filesystems::Type.find(value.to_sym)
           end
 
-          # @param default [Configs::Btrfs, nil]
           # @return [Configs::Btrfs, nil]
-          def convert_btrfs(default = nil)
+          def convert_btrfs
             return if filesystem_type_json.is_a?(String)
 
             btrfs_json = filesystem_type_json[:btrfs]
             return unless btrfs_json
 
-            FromJSONConversions::Btrfs.new(btrfs_json).convert(default)
+            FromJSONConversions::Btrfs.new(btrfs_json).convert
           end
         end
       end

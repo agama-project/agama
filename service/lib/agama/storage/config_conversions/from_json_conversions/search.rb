@@ -28,30 +28,19 @@ module Agama
       module FromJSONConversions
         # Search conversion from JSON hash according to schema.
         class Search < Base
-          # @param search_json [Hash, String]
-          def initialize(search_json)
-            super()
-            @search_json = search_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::Search, nil]
           # @return [Configs::Search]
-          def convert(default = nil)
-            super(default || Configs::Search.new)
+          def convert
+            super(Configs::Search.new)
           end
 
         private
 
-          # @return [Hash, String]
-          attr_reader :search_json
+          alias_method :search_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param _default [Configs::Partition]
           # @return [Hash]
-          def conversions(_default)
+          def conversions
             {
               name:         convert_name,
               if_not_found: convert_not_found

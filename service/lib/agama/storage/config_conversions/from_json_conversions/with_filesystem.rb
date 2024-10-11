@@ -27,20 +27,12 @@ module Agama
       module FromJSONConversions
         # Mixin for filesystem conversion.
         module WithFilesystem
-          # @param json [Hash]
-          # @param default [Configs::Filesystem, nil]
-          #
           # @return [Configs::Filesystem, nil]
-          def convert_filesystem(json, default: nil)
-            filesystem_json = json[:filesystem]
+          def convert_filesystem
+            filesystem_json = config_json[:filesystem]
             return unless filesystem_json
 
-            # @todo Check whether the given filesystem can be used for the mount point.
-            # @todo Check whether snapshots can be configured and restore to default if needed.
-
-            FromJSONConversions::Filesystem
-              .new(filesystem_json, config_builder: config_builder)
-              .convert(default)
+            FromJSONConversions::Filesystem.new(filesystem_json).convert
           end
         end
       end

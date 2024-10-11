@@ -5,6 +5,11 @@ Fri Oct 11 09:46:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   (gh#agama-project/agama#1666).
 
 -------------------------------------------------------------------
+Thu Oct 10 17:55:34 UTC 2024 - Victorhck <victorhck@mailbox.org>
+
+- Update URL in About section (gh#agama-project/agama#1663).
+
+-------------------------------------------------------------------
 Thu Oct  3 10:20:34 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the old HTTPClient (gh#agama-project/agama#1639).

@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_encryption_solver"
+require "agama/storage/config_filesystem_solver"
 require "agama/storage/config_search_solver"
 require "agama/storage/config_size_solver"
 
@@ -26,7 +28,9 @@ module Agama
   module Storage
     # Class for solving a storage config.
     #
-    # It assigns proper devices and size values according to the product and the system.
+    # Solving a config means to assign proper values according to the product and the system. For
+    # example, the sizes of a partition config taking into account its fallbacks, assigning a
+    # specific device when a config has a search, etc.
     class ConfigSolver
       # @param devicegraph [Y2Storage::Devicegraph]
       # @param product_config [Agama::Config]
@@ -35,13 +39,16 @@ module Agama
         @product_config = product_config
       end
 
-      # Solves all the search and size configs within a given config.
+      # Solves the config according to the product and the system.
       #
       # @note The config object is modified.
       #
       # @param config [Config]
       def solve(config)
+        ConfigEncryptionSolver.new(product_config).solve(config)
+        ConfigFilesystemSolver.new(product_config).solve(config)
         ConfigSearchSolver.new(devicegraph).solve(config)
+        # Sizes must be solved once the searches are solved.
         ConfigSizeSolver.new(devicegraph, product_config).solve(config)
       end
 

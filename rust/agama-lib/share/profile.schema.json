@@ -529,11 +529,56 @@
               "physicalVolumes": {
                 "title": "Physical volumes",
                 "description": "Devices to use as physical volumes.",
-                "type": "array",
-                "items": {
-                  "title": "Device alias",
-                  "type": "string"
-                }
+                "$comment": "In the future it would be possible to indicate both aliases and 'generate' items together.",
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "title": "Device alias",
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "title": "Generate physical volumes",
+                      "description": "Automatically creates the needed physical volumes in the indicated devices.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["generate"],
+                      "properties": {
+                        "generate": {
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "title": "Device alias",
+                                "type": "string"
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": ["targetDevices"],
+                              "properties": {
+                                "targetDevices": {
+                                  "type": "array",
+                                  "items": {
+                                    "title": "Device alias",
+                                    "type": "string"
+                                  }
+                                },
+                                "encryption": {
+                                  "$ref": "#/$defs/encryption"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "logicalVolumes": {
                 "title": "Logical volumes",

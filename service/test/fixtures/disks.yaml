@@ -12,11 +12,13 @@
         size: 20 GiB
         name: "/dev/vda2"
         id: linux
+        label: "previous_root"
         file_system: btrfs
     - partition:
         size: 10 GiB
         name: "/dev/vda3"
         id: linux
+        label: "previous_home"
         file_system: xfs
 - disk:
     name: "/dev/vdb"

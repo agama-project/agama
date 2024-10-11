@@ -38,36 +38,25 @@ module Agama
           include WithFilesystem
           include WithSize
 
-          # @param partition_json [Hash]
-          def initialize(partition_json, config_builder: nil)
-            super(config_builder)
-            @partition_json = partition_json
-          end
-
           # @see Base#convert
-          #
-          # @param default [Configs::Partition, nil]
           # @return [Configs::Partition]
-          def convert(default = nil)
-            super(default || Configs::Partition.new)
+          def convert
+            super(Configs::Partition.new)
           end
 
         private
 
-          # @return [Hash]
-          attr_reader :partition_json
+          alias_method :partition_json, :config_json
 
           # @see Base#conversions
-          #
-          # @param default [Configs::Partition]
           # @return [Hash]
-          def conversions(default)
+          def conversions
             {
-              search:           convert_search(partition_json, default: default.search),
+              search:           convert_search,
               alias:            partition_json[:alias],
-              encryption:       convert_encryption(partition_json, default: default.encryption),
-              filesystem:       convert_filesystem(partition_json, default: default.filesystem),
-              size:             convert_size(partition_json, default: default.size),
+              encryption:       convert_encryption,
+              filesystem:       convert_filesystem,
+              size:             convert_size,
               id:               convert_id,
               delete:           partition_json[:delete],
               delete_if_needed: partition_json[:deleteIfNeeded]

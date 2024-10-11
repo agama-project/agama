@@ -79,8 +79,8 @@ data loss.",
           {sprintf(
             // TRANSLATORS: content of the "About" popup (2/2)
             // %s is replaced by the project URL
-            _("For more information, please visit the project's repository at %s."),
-            "https://github.com/openSUSE/agama",
+            _("For more information, please visit the project's page at %s."),
+            "https://agama-project.github.io/",
           )}
         </Text>
         <Popup.Actions>

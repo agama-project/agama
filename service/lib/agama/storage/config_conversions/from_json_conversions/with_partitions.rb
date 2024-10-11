@@ -27,10 +27,9 @@ module Agama
       module FromJSONConversions
         # Mixin for partitions conversion.
         module WithPartitions
-          # @param json [Hash]
           # @return [Array<Configs::Partition>, nil]
-          def convert_partitions(json)
-            partitions_json = json[:partitions]
+          def convert_partitions
+            partitions_json = config_json[:partitions]
             return unless partitions_json
 
             partitions_json.map { |p| convert_partition(p) }
@@ -39,9 +38,7 @@ module Agama
           # @param partition_json [Hash]
           # @return [Configs::Partition]
           def convert_partition(partition_json)
-            FromJSONConversions::Partition
-              .new(partition_json, config_builder: config_builder)
-              .convert
+            FromJSONConversions::Partition.new(partition_json).convert
           end
         end
       end
