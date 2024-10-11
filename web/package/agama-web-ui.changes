@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 11 09:46:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Workaround the "not found" problem in the products selection page
+  (gh#agama-project/agama#1666).
+
+-------------------------------------------------------------------
 Thu Oct  3 10:20:34 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the old HTTPClient (gh#agama-project/agama#1639).
