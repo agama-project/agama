@@ -34,6 +34,7 @@ import {
   Split,
   Stack,
   FormGroup,
+  Button,
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
@@ -42,6 +43,7 @@ import styles from "@patternfly/react-styles/css/utilities/Text/text";
 import { slugify } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { useNavigate } from "react-router-dom";
 
 const ResponsiveGridItem = ({ children }) => (
   <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -79,6 +81,15 @@ const Option = ({ product, isChecked, onChange }) => {
         </CardBody>
       </Card>
     </ListItem>
+  );
+};
+
+const BackLink = () => {
+  const navigate = useNavigate();
+  return (
+    <Button size="lg" variant="link" onClick={() => navigate("/")}>
+      {_("Cancel")}
+    </Button>
   );
 };
 
@@ -120,7 +131,7 @@ function ProductSelectionPage() {
             </ResponsiveGridItem>
             <ResponsiveGridItem>
               <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-                {selectedProduct && !isLoading && <Page.Back>{_("Cancel")}</Page.Back>}
+                {selectedProduct && !isLoading && <BackLink />}
                 <Page.Submit
                   form="productSelectionForm"
                   isDisabled={isSelectionDisabled}
