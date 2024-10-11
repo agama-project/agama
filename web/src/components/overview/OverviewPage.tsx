@@ -122,7 +122,13 @@ const OverviewSection = () => (
   </Page.Section>
 );
 
-const Section = React.lazy(() => import("/public/section.js"));
+const Section = React.lazy(
+  () =>
+    import(
+      /* webpackIgnore: true */
+      "/section.js"
+    ),
+);
 
 export default function OverviewPage() {
   return (
