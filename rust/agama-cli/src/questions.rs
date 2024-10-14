@@ -37,7 +37,7 @@ pub enum QuestionsCommands {
     /// Please check Agama documentation for more details and examples:
     /// https://github.com/openSUSE/agama/blob/master/doc/questions.md
     Answers {
-        /// Path to a file containing the answers in YAML format.
+        /// Path to a file containing the answers in JSON format.
         path: String,
     },
     /// Prints the list of questions that are waiting for an answer in JSON format
