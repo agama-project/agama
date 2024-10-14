@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "shellwords"
+
 require "yast"
 require "agama/config"
 require "agama/network"
@@ -236,7 +238,7 @@ module Agama
     #
     # @return [String] path to created archive
     def collect_logs(path: nil)
-      opt = "-d #{path}" unless path.nil? || path.empty?
+      opt = "-d #{path.shellescape}" unless path.nil? || path.empty?
 
       `agama logs store #{opt}`.strip
     end
