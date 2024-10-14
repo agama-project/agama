@@ -29,7 +29,7 @@ storage.* -> :skip. Also it is needed for matching of answers with type of gener
    Partition identification for luks password. Why: Getting data only from question text is hard and very unreadable with regexp.
    So questions need to specify some easy to match data in addition to the pure text.
    E.g. checksum and repository url for automatic repository approval.
-4. Question API has method to set answers ( TODO: lets see if it is better to get data structure or path to yaml file ). In such case if question
+4. Question API has method to set answers as path to JSON file. In such case if question
    with known answer is asked, it get immediate response.
    Why: To allow user define machine answers in advance.
 5. Questions API have property that defines if for questions without answer default one is used or if ask user.

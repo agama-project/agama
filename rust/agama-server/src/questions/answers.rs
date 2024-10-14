@@ -25,7 +25,7 @@ use serde::{Deserialize, Serialize};
 
 use super::QuestionsError;
 
-/// Data structure for single yaml answer. For variables specification see
+/// Data structure for single JSON answer. For variables specification see
 /// corresponding [agama_lib::questions::GenericQuestion] fields.
 /// The *matcher* part is: `class`, `text`, `data`.
 /// The *answer* part is: `answer`, `password`.
@@ -83,7 +83,7 @@ pub struct Answers {
 impl Answers {
     pub fn new_from_file(path: &str) -> Result<Self, QuestionsError> {
         let f = std::fs::File::open(path).map_err(QuestionsError::IO)?;
-        let result: Self = serde_yaml::from_reader(f).map_err(QuestionsError::Deserialize)?;
+        let result: Self = serde_json::from_reader(f).map_err(QuestionsError::Deserialize)?;
 
         Ok(result)
     }
@@ -298,18 +298,25 @@ mod tests {
     }
 
     #[test]
-    fn test_loading_yaml() {
+    fn test_loading_json() {
         let file = r#"
-            answers:
-              - class: "without_data"
-                answer: "OK"
-              - class: "with_data"
-                data:
-                  testk: testv
-                  testk2: testv2
-                answer: "Cancel"
+            {
+                "answers": [
+                {
+                   "class": "without_data",
+                   "answer": "OK"
+                },
+                {
+                    "class": "with_data",
+                    "data": {
+                        "testk": "testv",
+                        "testk2": "testv2"
+                    },
+                    "answer": "Cancel"
+                }]
+            }
         "#;
-        let result: Answers = serde_yaml::from_str(file).expect("failed to load yaml string");
+        let result: Answers = serde_json::from_str(file).expect("failed to load JSON string");
         assert_eq!(result.answers.len(), 2);
     }
 }

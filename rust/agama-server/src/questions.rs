@@ -32,7 +32,7 @@ pub enum QuestionsError {
     #[error("Could not read the answers file: {0}")]
     IO(std::io::Error),
     #[error("Could not deserialize the answers file: {0}")]
-    Deserialize(serde_yaml::Error),
+    Deserialize(serde_json::Error),
 }
 
 #[derive(Clone, Debug)]

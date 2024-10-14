@@ -15,7 +15,6 @@ zbus = { version = "3", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }
 thiserror = "1.0.64"
 serde = { version = "1.0.210", features = ["derive"] }
-serde_yaml = "0.9.34"
 cidr = { version = "0.2.3", features = ["serde"] }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.16"
