@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 14 13:53:10 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: change format for questions answers file from YAML to JSON
+  to be consistent with other commands
+  (gh#agama-project/agama#1667).
+
+-------------------------------------------------------------------
 Fri Sep 27 13:09:10 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Fix optional network settings (gh#agama-project/agama#1641).
