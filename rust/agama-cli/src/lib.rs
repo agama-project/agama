@@ -53,7 +53,7 @@ use std::{
 #[derive(Args)]
 pub struct GlobalOpts {
     #[clap(long, default_value = "http://localhost/api")]
-    /// uri pointing to agama's remote api. If not provided, default https://localhost/api is
+    /// URI pointing to Agama's remote API. If not provided, default https://localhost/api is
     /// used
     pub api: String,
 }
@@ -200,7 +200,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // we need to distinguish commands on those which assume that authentication JWT is already
     // available and those which not (or don't need it)
     let mut client = if let Commands::Auth(_) = cli.command {
-        BaseHTTPClient::bare(insecure)
+        BaseHTTPClient::unauthenticated(insecure)
     } else {
         // this deals with authentication need inside
         BaseHTTPClient::new_with_params(insecure)?

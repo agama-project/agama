@@ -66,7 +66,7 @@ impl BaseHTTPClient {
         Self::new_with_params(false)
     }
 
-    pub fn bare(insecure: bool) -> Self {
+    pub fn unauthenticated(insecure: bool) -> Self {
         let default_client = reqwest::Client::new();
 
         Self {
