@@ -33,8 +33,8 @@ pub struct ProductStore {
 impl ProductStore {
     pub fn new(client: BaseHTTPClient) -> Result<ProductStore, ServiceError> {
         Ok(Self {
-            product_client: ProductHTTPClient::new_with_base(client.clone()),
-            manager_client: ManagerHTTPClient::new_with_base(client.clone()),
+            product_client: ProductHTTPClient::new(client.clone()),
+            manager_client: ManagerHTTPClient::new(client.clone()),
         })
     }
 
@@ -101,8 +101,8 @@ mod test {
     fn product_store(mock_server_url: String) -> ProductStore {
         let mut bhc = BaseHTTPClient::default();
         bhc.base_url = mock_server_url;
-        let p_client = ProductHTTPClient::new_with_base(bhc.clone());
-        let m_client = ManagerHTTPClient::new_with_base(bhc);
+        let p_client = ProductHTTPClient::new(bhc.clone());
+        let m_client = ManagerHTTPClient::new(bhc);
         ProductStore {
             product_client: p_client,
             manager_client: m_client,

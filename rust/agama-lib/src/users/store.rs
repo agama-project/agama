@@ -30,7 +30,7 @@ pub struct UsersStore {
 impl UsersStore {
     pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
         Ok(Self {
-            users_client: UsersHTTPClient::new_with_base(client)?,
+            users_client: UsersHTTPClient::new(client)?,
         })
     }
 
@@ -110,7 +110,7 @@ mod test {
     fn users_store(mock_server_url: String) -> Result<UsersStore, ServiceError> {
         let mut bhc = BaseHTTPClient::default();
         bhc.base_url = mock_server_url;
-        let client = UsersHTTPClient::new_with_base(bhc)?;
+        let client = UsersHTTPClient::new(bhc)?;
         UsersStore::new_with_client(client)
     }
 

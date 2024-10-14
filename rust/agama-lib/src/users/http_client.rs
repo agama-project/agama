@@ -27,13 +27,7 @@ pub struct UsersHTTPClient {
 }
 
 impl UsersHTTPClient {
-    pub fn new() -> Result<Self, ServiceError> {
-        Ok(Self {
-            client: BaseHTTPClient::new()?,
-        })
-    }
-
-    pub fn new_with_base(client: BaseHTTPClient) -> Result<Self, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
         Ok(Self { client })
     }
 

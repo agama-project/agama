@@ -56,6 +56,10 @@ pub struct GlobalOpts {
     /// URI pointing to Agama's remote API. If not provided, default https://localhost/api is
     /// used
     pub api: String,
+
+    #[clap(long, default_value = "false")]
+    /// Whether to accept invalid (self-signed, ...) certificates or not
+    pub insecure: bool,
 }
 
 /// Agama's command-line interface
@@ -153,49 +157,31 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
     Ok(ManagerClient::new(conn).await?)
 }
 
-#[derive(PartialEq)]
-enum InsecureApi {
-    Secure,      // Remote api is secure
-    Insecure,    // Remote api is insecure - e.g. self-signed certificate
-    Forbidden, // Remote api is insecure and its use is forbidden (e.g. user decided not to use it)
-    Unreachable, // Remote api is unrecheable
-}
-
-/// Returns if insecure connection to remote api server is required and user allowed that
-async fn check_remote_api(api_url: String) -> Result<InsecureApi, ServiceError> {
+/// True if use of the remote API is allowed (yes by default when the API is secure, the user is
+/// asked if the API is insecure - e.g. when it uses self-signed certificate)
+async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<bool, ServiceError> {
     // fake client used for remote site detection
     let mut ping_client = BaseHTTPClient::default();
     ping_client.base_url = api_url;
 
     // decide whether access to remote site has to be insecure (self-signed certificate or not)
-    match ping_client.get::<HashMap<String, String>>("/ping").await {
-        Ok(res) => {
-            if res["status"] == "success" {
-                Ok(InsecureApi::Secure)
-            } else {
-                Ok(InsecureApi::Unreachable)
-            }
-        }
-        Err(err) => {
-            // So far we only know that we cannot communicate with the remote site, it can mean
-            // the issue with a self-signed certificate or whatever else
-            if Confirm::new("Remote API uses self-signed certificate. Do you want to continue?")
-                .with_default(false)
-                .prompt()
-                .map_err(|_| err)?
-            {
-                Ok(InsecureApi::Insecure)
-            } else {
-                Ok(InsecureApi::Forbidden)
-            }
-        }
+    return match ping_client.get::<HashMap<String, String>>("/ping").await {
+        // Problem with http remote API reachability
+        Err(ServiceError::HTTPError(_)) => Ok(use_insecure || Confirm::new("There was a problem with the remote API and it is treated as insecure. Do you want to continue?")
+            .with_default(false)
+            .prompt()
+            .unwrap_or(false)),
+        // another error
+        Err(e) => Err(e),
+        // success doesn't bother us here
+        Ok(_) => Ok(false)
     }
 }
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // somehow check whether we need to ask user for self-signed certificate acceptance
     let api_url = cli.opts.api.trim_end_matches('/').to_string();
-    let insecure = check_remote_api(api_url.clone()).await? == InsecureApi::Insecure;
+    let insecure = allowed_insecure_api(cli.opts.insecure, api_url.clone()).await?;
 
     // we need to distinguish commands on those which assume that authentication JWT is already
     // available and those which not (or don't need it)

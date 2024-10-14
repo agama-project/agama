@@ -34,7 +34,7 @@ pub struct SoftwareStore {
 impl SoftwareStore {
     pub fn new(client: BaseHTTPClient) -> Result<SoftwareStore, ServiceError> {
         Ok(Self {
-            software_client: SoftwareHTTPClient::new_with_base(client),
+            software_client: SoftwareHTTPClient::new(client),
         })
     }
 
@@ -66,7 +66,7 @@ mod test {
     fn software_store(mock_server_url: String) -> SoftwareStore {
         let mut bhc = BaseHTTPClient::default();
         bhc.base_url = mock_server_url;
-        let client = SoftwareHTTPClient::new_with_base(bhc);
+        let client = SoftwareHTTPClient::new(bhc);
         SoftwareStore {
             software_client: client,
         }

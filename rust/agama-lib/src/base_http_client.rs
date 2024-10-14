@@ -66,6 +66,14 @@ impl BaseHTTPClient {
         Self::new_with_params(false)
     }
 
+    /// Uses `localhost`, authenticates with [`AuthToken`].
+    pub fn new_with_params(insecure: bool) -> Result<Self, ServiceError> {
+        Ok(Self {
+            client: Self::authenticated_client(insecure)?,
+            ..Default::default()
+        })
+    }
+
     pub fn unauthenticated(insecure: bool) -> Self {
         let default_client = reqwest::Client::new();
 
@@ -76,13 +84,6 @@ impl BaseHTTPClient {
                 .unwrap_or(default_client),
             base_url: API_URL.to_owned(),
         }
-    }
-    /// Uses `localhost`, authenticates with [`AuthToken`].
-    pub fn new_with_params(insecure: bool) -> Result<Self, ServiceError> {
-        Ok(Self {
-            client: Self::authenticated_client(insecure)?,
-            ..Default::default()
-        })
     }
 
     fn authenticated_client(insecure: bool) -> Result<reqwest::Client, ServiceError> {

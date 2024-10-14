@@ -34,7 +34,7 @@ pub struct LocalizationStore {
 impl LocalizationStore {
     pub fn new(client: BaseHTTPClient) -> Result<LocalizationStore, ServiceError> {
         Ok(Self {
-            localization_client: LocalizationHTTPClient::new_with_base(client)?,
+            localization_client: LocalizationHTTPClient::new(client)?,
         })
     }
 
@@ -101,7 +101,7 @@ mod test {
     ) -> Result<LocalizationStore, ServiceError> {
         let mut bhc = BaseHTTPClient::default();
         bhc.base_url = mock_server_url;
-        let client = LocalizationHTTPClient::new_with_base(bhc)?;
+        let client = LocalizationHTTPClient::new(bhc)?;
         LocalizationStore::new_with_client(client)
     }
 

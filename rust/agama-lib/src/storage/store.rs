@@ -33,7 +33,7 @@ pub struct StorageStore {
 impl StorageStore {
     pub fn new(client: BaseHTTPClient) -> Result<StorageStore, ServiceError> {
         Ok(Self {
-            storage_client: StorageHTTPClient::new_with_base(client),
+            storage_client: StorageHTTPClient::new(client),
         })
     }
 
@@ -58,7 +58,7 @@ mod test {
     fn storage_store(mock_server_url: String) -> StorageStore {
         let mut bhc = BaseHTTPClient::default();
         bhc.base_url = mock_server_url;
-        let client = StorageHTTPClient::new_with_base(bhc);
+        let client = StorageHTTPClient::new(bhc);
         StorageStore {
             storage_client: client,
         }
