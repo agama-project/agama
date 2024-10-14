@@ -54,9 +54,9 @@ module Yast2
           data:          {}
         }
         data = { generic: question }.to_json
-        answer_yaml = Yast::Execute.locally!("agama", "questions", "ask",
+        answer_json = Yast::Execute.locally!("agama", "questions", "ask",
           stdin: data, stdout: :capture)
-        answer = JSON.parse!(answer_yaml)
+        answer = JSON.parse!(answer_json)
         answer["generic"]["answer"].to_sym
       end
 
@@ -101,9 +101,9 @@ module UI
         "data"          => {}
       }
       data = { generic: question, withPassword: {} }.to_json
-      answer_yaml = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
+      answer_json = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
 stdout: :capture)
-      answer = JSON.parse!(answer_yaml)
+      answer = JSON.parse!(answer_json)
       result = answer["generic"]["answer"].to_sym
       return nil if result == :cancel
 
