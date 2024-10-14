@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 14 14:52:26 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed shell injection vulnerability in the internal API
+  (gh#agama-project/agama#1668)
+
+-------------------------------------------------------------------
 Tue Oct  8 12:25:08 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Storage: added support for automatic creation of physical volumes
