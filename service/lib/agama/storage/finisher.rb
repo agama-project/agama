@@ -80,6 +80,7 @@ module Agama
           IguanaStep.new(logger),
           SnapshotsStep.new(logger),
           CopyLogsStep.new(logger),
+          PostScripts.new(logger),
           UnmountStep.new(logger)
         ]
       end
@@ -214,6 +215,19 @@ module Agama
 
         def run
           wfm_write("copy_logs_finish")
+        end
+      end
+
+      # Executes post-installation scripts
+      class PostScripts < Step
+        def label
+          "Running user-defined scripts"
+        end
+
+        def run
+          require "agama/http"
+          client = Agama::HTTP::Clients::Scripts.new
+          client.run("post")
         end
       end
 

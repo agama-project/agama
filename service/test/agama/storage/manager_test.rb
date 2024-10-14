@@ -31,6 +31,7 @@ require "agama/storage/volume"
 require "agama/config"
 require "agama/issue"
 require "agama/dbus/clients/questions"
+require "agama/http"
 require "y2storage/issue"
 
 describe Agama::Storage::Manager do
@@ -43,12 +44,14 @@ describe Agama::Storage::Manager do
     File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
   let(:config) { Agama::Config.from_file(config_path) }
+  let(:scripts_client) { instance_double(Agama::HTTP::Clients::Scripts, run: nil) }
 
   before do
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::DBus::Clients::Software).to receive(:instance).and_return(software)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     allow(Agama::Security).to receive(:new).and_return(security)
+    allow(Agama::HTTP::Clients::Scripts).to receive(:new).and_return(scripts_client)
   end
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
@@ -315,13 +318,14 @@ describe Agama::Storage::Manager do
     let(:devicegraph) { "staging-plain-partitions.yaml" }
 
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
-       "copy logs, and umounts the file systems" do
+       "copy logs, runs the post-installation scripts, and umounts the file systems" do
       expect(security).to receive(:write)
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("copy_logs_finish", ["Write"])
+      expect(scripts_client).to receive(:run).with("post")
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       storage.finish
     end
