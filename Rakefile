@@ -99,7 +99,7 @@ if ENV["SKIP_OSC_BUILD"] == "1"
 end
 
 # TODO: redefine :tarball instead of :package
-desc "Prepare sources for rpm build"
+desc "Prepare sources for rpm build. Invoke from service/"
 task package: [] do
   Dir.chdir(Rake.original_dir) do |dir|
     old_gems = Dir.glob(File.join(package_dir, "*.gem"))
