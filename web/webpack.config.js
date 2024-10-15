@@ -91,6 +91,15 @@ module.exports = {
     modules: ["node_modules", path.resolve(__dirname, "src/lib")],
     plugins: [new TsconfigPathsPlugin({ extensions: [".ts", ".tsx", ".js", ".jsx", ".json"] })],
     extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
+    alias: {
+      "remote-component.config.js": path.resolve(__dirname, "/remote-component.config.js"),
+    },
+    fallback: {
+      buffer: require.resolve("buffer"),
+      http: require.resolve("stream-http"),
+      https: require.resolve("https-browserify"),
+      url: require.resolve("url"),
+    },
   },
   resolveLoader: {
     modules: ["node_modules", path.resolve(__dirname, "src/lib")],

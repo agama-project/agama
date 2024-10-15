@@ -43,6 +43,7 @@ import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 import { useAllIssues } from "~/queries/issues";
 import { IssuesList as IssuesListType, IssueSeverity } from "~/types/issues";
+import ExamplePlugin from "./ExamplePlugin";
 
 const ReadyForInstallation = () => (
   <Center>
@@ -141,6 +142,9 @@ export default function OverviewPage() {
           </GridItem>
           <GridItem sm={12} xl={6}>
             <ResultSection />
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <ExamplePlugin />
           </GridItem>
         </Grid>
       </Page.Content>
