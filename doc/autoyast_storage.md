@@ -132,3 +132,24 @@ going to be used by.
 ~~~
 
 It would be more natural to indicate the used devices directly in the RAID or logical volume drive.
+
+## Actions to make space must be very explicit
+
+There is no way to specify optional actions to be performed on the existing devices, like "resize
+a given partition as much as needed to make space for the new ones" or "delete a partition only if
+necessary" or "grow the existing partition to use the rest of the available space".
+
+## MD RAIDs and LVM Volume Groups must be described exhaustively
+
+To get a volume group on top of partitions distributed across several disks, the profile must
+specify the partitions that will serve as physical volumes on each disk, including exact sizes.
+That implies that, in order to get fully precise logical volumes, the creator of the profile must
+have some knowledge about the overhead in size introduced by each partition and the corresponding
+physical volume header and also about all the rounding introduced by the LVM logical volumes.
+
+Something similar happens with MD RAIDs that sit on top of partitions. The sizes are specified at
+partition level even if the usable size of the resulting MD RAID may not obvious.
+
+Of course, the problem accumulates when defining an LVM volume group on top of an MD RAID that sits
+on top of some partitions. All the sizes may match (including all possible overheads and rounding)
+or the result will contain either wasted or surplus space.
