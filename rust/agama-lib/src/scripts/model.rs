@@ -56,7 +56,7 @@ pub struct Script {
 impl Script {
     /// Runs the script and returns the output.
     ///
-    /// * `path`: where to write assets (script, logs and exit code).
+    /// * `workdir`: where to write assets (script, logs and exit code).
     pub async fn run(&self, workdir: &Path) -> Result<(), ScriptError> {
         let dir = workdir.join(self.group.to_string());
 
