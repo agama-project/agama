@@ -19,72 +19,42 @@
 // find current contact information at www.suse.com.
 
 use super::{settings::NetworkConnection, types::Device};
+use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
-use reqwest::{Client, Response};
-use serde_json;
-
-const API_URL: &str = "http://localhost/api/network";
 
 /// HTTP/JSON client for the network service
 pub struct NetworkClient {
-    pub client: Client,
+    pub client: BaseHTTPClient,
 }
 
 impl NetworkClient {
-    pub async fn new(client: Client) -> Result<NetworkClient, ServiceError> {
+    pub async fn new(client: BaseHTTPClient) -> Result<NetworkClient, ServiceError> {
         Ok(Self { client })
-    }
-
-    async fn text_for(&self, response: Response) -> Result<String, ServiceError> {
-        let status = response.status();
-        let text = response
-            .text()
-            .await
-            .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
-
-        if status != 200 {
-            return Err(ServiceError::NetworkClientError(text));
-        }
-
-        Ok(text)
-    }
-
-    async fn get(&self, path: &str) -> Result<String, ServiceError> {
-        let response = self
-            .client
-            .get(format!("{API_URL}{path}"))
-            .send()
-            .await
-            .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
-
-        self.text_for(response).await
     }
 
     /// Returns an array of network devices
     pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
-        let text = self.get("/devices").await?;
-
-        let json: Vec<Device> = serde_json::from_str(&text)
-            .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
+        let json = self.client.get::<Vec<Device>>("/network/devices").await?;
 
         Ok(json)
     }
 
     /// Returns an array of network connections
     pub async fn connections(&self) -> Result<Vec<NetworkConnection>, ServiceError> {
-        let text = self.get("/connections").await?;
-
-        let json: Vec<NetworkConnection> = serde_json::from_str(&text)
-            .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
+        let json = self
+            .client
+            .get::<Vec<NetworkConnection>>("/network/connections")
+            .await?;
 
         Ok(json)
     }
 
     /// Returns an array of network connections
     pub async fn connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
-        let text = self.get(format!("/connections/{id}").as_str()).await?;
-        let json: NetworkConnection = serde_json::from_str(&text)
-            .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
+        let json = self
+            .client
+            .get::<NetworkConnection>(format!("/network/connections/{id}").as_str())
+            .await?;
 
         Ok(json)
     }
@@ -98,20 +68,12 @@ impl NetworkClient {
         let response = self.connection(id.as_str()).await;
 
         if response.is_ok() {
-            let path = format!("{API_URL}/connections/{id}");
-            self.client
-                .put(path)
-                .json(&connection)
-                .send()
-                .await
-                .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
+            let path = format!("/network/connections/{id}");
+            self.client.put_void(&path.as_str(), &connection).await?
         } else {
             self.client
-                .post(format!("{API_URL}/connections").as_str())
-                .json(&connection)
-                .send()
-                .await
-                .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
+                .post_void(format!("/network/connections").as_str(), &connection)
+                .await?
         }
 
         Ok(())
@@ -119,11 +81,11 @@ impl NetworkClient {
 
     /// Returns an array of network connections
     pub async fn apply(&self) -> Result<(), ServiceError> {
+        // trying to be tricky here. If something breaks then we need a put method on
+        // BaseHTTPClient which doesn't require a serialiable object for the body
         self.client
-            .put(format!("{API_URL}/system/apply"))
-            .send()
-            .await
-            .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
+            .put_void(&format!("/network/system/apply").as_str(), &())
+            .await?;
 
         Ok(())
     }

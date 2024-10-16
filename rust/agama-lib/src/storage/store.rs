@@ -21,6 +21,7 @@
 //! Implements the store for the storage settings.
 
 use super::StorageSettings;
+use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 use crate::storage::http_client::StorageHTTPClient;
 
@@ -30,9 +31,9 @@ pub struct StorageStore {
 }
 
 impl StorageStore {
-    pub fn new() -> Result<StorageStore, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<StorageStore, ServiceError> {
         Ok(Self {
-            storage_client: StorageHTTPClient::new()?,
+            storage_client: StorageHTTPClient::new(client),
         })
     }
 
@@ -57,7 +58,7 @@ mod test {
     fn storage_store(mock_server_url: String) -> StorageStore {
         let mut bhc = BaseHTTPClient::default();
         bhc.base_url = mock_server_url;
-        let client = StorageHTTPClient::new_with_base(bhc);
+        let client = StorageHTTPClient::new(bhc);
         StorageStore {
             storage_client: client,
         }

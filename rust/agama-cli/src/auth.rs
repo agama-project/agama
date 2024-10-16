@@ -18,15 +18,42 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::auth::AuthToken;
+use agama_lib::{auth::AuthToken, error::ServiceError};
 use clap::Subcommand;
 
 use crate::error::CliError;
+use agama_lib::base_http_client::BaseHTTPClient;
 use inquire::Password;
-use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
+use std::collections::HashMap;
 use std::io::{self, IsTerminal};
 
-const DEFAULT_AUTH_URL: &str = "http://localhost/api/auth";
+/// HTTP client to handle authentication
+struct AuthHTTPClient {
+    api: BaseHTTPClient,
+}
+
+impl AuthHTTPClient {
+    pub fn load(client: BaseHTTPClient) -> Result<Self, ServiceError> {
+        Ok(Self { api: client })
+    }
+
+    /// Query web server for JWT
+    pub async fn authenticate(&self, password: String) -> anyhow::Result<String> {
+        let mut auth_body = HashMap::new();
+
+        auth_body.insert("password", password);
+
+        let response = self
+            .api
+            .post::<HashMap<String, String>>("/auth", &auth_body)
+            .await?;
+
+        match response.get("token") {
+            Some(token) => Ok(token.clone()),
+            None => Err(anyhow::anyhow!("Failed to get authentication token")),
+        }
+    }
+}
 
 #[derive(Subcommand, Debug)]
 pub enum AuthCommands {
@@ -43,9 +70,11 @@ pub enum AuthCommands {
 }
 
 /// Main entry point called from agama CLI main loop
-pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
+pub async fn run(client: BaseHTTPClient, subcommand: AuthCommands) -> anyhow::Result<()> {
+    let auth_client = AuthHTTPClient::load(client)?;
+
     match subcommand {
-        AuthCommands::Login => login(read_password()?).await,
+        AuthCommands::Login => login(auth_client, read_password()?).await,
         AuthCommands::Logout => logout(),
         AuthCommands::Show => show(),
     }
@@ -57,6 +86,7 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
 /// user.
 fn read_password() -> Result<String, CliError> {
     let stdin = io::stdin();
+
     let password = if stdin.is_terminal() {
         ask_password()?
     } else {
@@ -77,40 +107,10 @@ fn ask_password() -> Result<String, CliError> {
         .map_err(CliError::InteractivePassword)
 }
 
-/// Necessary http request header for authenticate
-fn authenticate_headers() -> HeaderMap {
-    let mut headers = HeaderMap::new();
-
-    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
-
-    headers
-}
-
-/// Query web server for JWT
-async fn get_jwt(url: String, password: String) -> anyhow::Result<String> {
-    let client = reqwest::Client::new();
-    let response = client
-        .post(url)
-        .headers(authenticate_headers())
-        .body(format!("{{\"password\": \"{}\"}}", password))
-        .send()
-        .await?;
-    let body = response
-        .json::<std::collections::HashMap<String, String>>()
-        .await?;
-    let value = body.get("token");
-
-    if let Some(token) = value {
-        return Ok(token.clone());
-    }
-
-    Err(anyhow::anyhow!("Failed to get authentication token"))
-}
-
 /// Logs into the installation web server and stores JWT for later use.
-async fn login(password: String) -> anyhow::Result<()> {
+async fn login(client: AuthHTTPClient, password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
-    let res = get_jwt(DEFAULT_AUTH_URL.to_string(), password).await?;
+    let res = client.authenticate(password).await?;
     let token = AuthToken::new(&res);
     Ok(token.write_user_token()?)
 }

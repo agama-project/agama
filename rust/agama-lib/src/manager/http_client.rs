@@ -25,13 +25,7 @@ pub struct ManagerHTTPClient {
 }
 
 impl ManagerHTTPClient {
-    pub fn new() -> Result<Self, ServiceError> {
-        Ok(Self {
-            client: BaseHTTPClient::new()?,
-        })
-    }
-
-    pub fn new_with_base(base: BaseHTTPClient) -> Self {
+    pub fn new(base: BaseHTTPClient) -> Self {
         Self { client: base }
     }
 

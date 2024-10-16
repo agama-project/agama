@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersHTTPClient};
+use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 
 /// Loads and stores the users settings from/to the D-Bus service.
@@ -27,9 +28,9 @@ pub struct UsersStore {
 }
 
 impl UsersStore {
-    pub fn new() -> Result<Self, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
         Ok(Self {
-            users_client: UsersHTTPClient::new()?,
+            users_client: UsersHTTPClient::new(client)?,
         })
     }
 
@@ -109,7 +110,7 @@ mod test {
     fn users_store(mock_server_url: String) -> Result<UsersStore, ServiceError> {
         let mut bhc = BaseHTTPClient::default();
         bhc.base_url = mock_server_url;
-        let client = UsersHTTPClient::new_with_base(bhc)?;
+        let client = UsersHTTPClient::new(bhc)?;
         UsersStore::new_with_client(client)
     }
 

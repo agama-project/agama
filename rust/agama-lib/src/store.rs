@@ -21,6 +21,7 @@
 //! Load/store the settings from/to the D-Bus services.
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
+use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 use crate::install_settings::InstallSettings;
 use crate::{
@@ -44,14 +45,14 @@ pub struct Store {
 }
 
 impl Store {
-    pub async fn new(http_client: reqwest::Client) -> Result<Store, ServiceError> {
+    pub async fn new(http_client: BaseHTTPClient) -> Result<Store, ServiceError> {
         Ok(Self {
-            localization: LocalizationStore::new()?,
-            users: UsersStore::new()?,
-            network: NetworkStore::new(http_client).await?,
-            product: ProductStore::new()?,
-            software: SoftwareStore::new()?,
-            storage: StorageStore::new()?,
+            localization: LocalizationStore::new(http_client.clone())?,
+            users: UsersStore::new(http_client.clone())?,
+            network: NetworkStore::new(http_client.clone()).await?,
+            product: ProductStore::new(http_client.clone())?,
+            software: SoftwareStore::new(http_client.clone())?,
+            storage: StorageStore::new(http_client.clone())?,
         })
     }
 

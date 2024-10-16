@@ -40,9 +40,11 @@ use crate::{auth::AuthToken, error::ServiceError};
 ///     client.get("/questions").await
 ///   }
 /// ```
+
 #[derive(Clone)]
 pub struct BaseHTTPClient {
     client: reqwest::Client,
+    insecure: bool,
     pub base_url: String,
 }
 
@@ -55,21 +57,41 @@ impl Default for BaseHTTPClient {
     fn default() -> Self {
         Self {
             client: reqwest::Client::new(),
+            insecure: false,
             base_url: API_URL.to_owned(),
         }
     }
 }
 
 impl BaseHTTPClient {
+    /// Allows the client to connect to remote API with insecure certificate (e.g. self-signed)
+    pub fn insecure(self) -> Self {
+        Self {
+            insecure: true,
+            ..self
+        }
+    }
+
     /// Uses `localhost`, authenticates with [`AuthToken`].
-    pub fn new() -> Result<Self, ServiceError> {
+    pub fn authenticated(self) -> Result<Self, ServiceError> {
         Ok(Self {
-            client: Self::authenticated_client()?,
-            ..Default::default()
+            client: Self::authenticated_client(self.insecure)?,
+            ..self
         })
     }
 
-    fn authenticated_client() -> Result<reqwest::Client, ServiceError> {
+    /// Configures itself for connection(s) without authentication token
+    pub fn unauthenticated(self) -> Result<Self, ServiceError> {
+        Ok(Self {
+            client: reqwest::Client::builder()
+                .danger_accept_invalid_certs(self.insecure)
+                .build()
+                .map_err(anyhow::Error::new)?,
+            ..self
+        })
+    }
+
+    fn authenticated_client(insecure: bool) -> Result<reqwest::Client, ServiceError> {
         // TODO: this error is subtly misleading, leading me to believe the SERVER said it,
         // but in fact it is the CLIENT not finding an auth token
         let token = AuthToken::find().ok_or(ServiceError::NotAuthenticated)?;
@@ -82,6 +104,7 @@ impl BaseHTTPClient {
         headers.insert(header::AUTHORIZATION, value);
 
         let client = reqwest::Client::builder()
+            .danger_accept_invalid_certs(insecure)
             .default_headers(headers)
             .build()?;
         Ok(client)

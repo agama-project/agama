@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    auth::AuthToken,
+    base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
     profile::{AutoyastProfile, ProfileEvaluator, ProfileValidator, ValidationResult},
     transfer::Transfer,
@@ -153,9 +153,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
 }
 
 async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
-    let token = AuthToken::find().context("You are not logged in")?;
-    let client = agama_lib::http_client(token.as_str())?;
-    let store = SettingsStore::new(client).await?;
+    let store = SettingsStore::new(BaseHTTPClient::default().authenticated()?).await?;
     let settings = InstallSettings::from_file(&path)?;
     store.store(&settings).await?;
     Ok(())
