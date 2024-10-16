@@ -23,18 +23,23 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScriptsConfig {
+    /// User-defined pre-installation scripts
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub pre: Vec<ScriptConfig>,
+    /// User-defined post-installation scripts
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub post: Vec<ScriptConfig>,
 }
 
-// FIXME: it is just the same than ScriptConfig.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScriptConfig {
     /// Script's name.
     pub name: String,
     /// Script's body. Either the body or the URL must be specified.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub body: Option<String>,
     /// URL to get the script from. Either the body or the URL must be specified.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }
