@@ -209,12 +209,27 @@ module Agama
 
       # Step to copy the installation logs
       class CopyLogsStep < Step
+        SCRIPTS_DIR = "/run/agama/scripts"
+
         def label
           "Copying logs"
         end
 
         def run
           wfm_write("copy_logs_finish")
+          copy_agama_scripts
+        end
+
+      private
+
+        def copy_agama_scripts
+          return unless Dir.exist?(SCRIPTS_DIR)
+
+          Yast.import "Installation"
+          require "fileutils"
+          logs_dir = File.join(Yast::Installation.destdir, "var", "log", "agama")
+          FileUtils.mkdir_p(logs_dir)
+          FileUtils.cp_r(SCRIPTS_DIR, logs_dir)
         end
       end
 
