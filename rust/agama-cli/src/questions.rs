@@ -20,7 +20,7 @@
 
 use agama_lib::proxies::Questions1Proxy;
 use agama_lib::questions::http_client::HTTPClient;
-use agama_lib::{connection, error::ServiceError};
+use agama_lib::{base_http_client::BaseHTTPClient, connection, error::ServiceError};
 use clap::{Args, Subcommand, ValueEnum};
 
 // TODO: use for answers also JSON to be consistent
@@ -74,8 +74,8 @@ async fn set_answers(proxy: Questions1Proxy<'_>, path: String) -> Result<(), Ser
         .map_err(|e| e.into())
 }
 
-async fn list_questions() -> Result<(), ServiceError> {
-    let client = HTTPClient::new()?;
+async fn list_questions(client: BaseHTTPClient) -> Result<(), ServiceError> {
+    let client = HTTPClient::new(client)?;
     let questions = client.list_questions().await?;
     // FIXME: if performance is bad, we can skip converting json from http to struct and then
     // serialize it, but it won't be pretty string
@@ -85,8 +85,8 @@ async fn list_questions() -> Result<(), ServiceError> {
     Ok(())
 }
 
-async fn ask_question() -> Result<(), ServiceError> {
-    let client = HTTPClient::new()?;
+async fn ask_question(client: BaseHTTPClient) -> Result<(), ServiceError> {
+    let client = HTTPClient::new(client)?;
     let question = serde_json::from_reader(std::io::stdin())?;
 
     let created_question = client.create_question(&question).await?;
@@ -104,14 +104,17 @@ async fn ask_question() -> Result<(), ServiceError> {
     Ok(())
 }
 
-pub async fn run(subcommand: QuestionsCommands) -> Result<(), ServiceError> {
+pub async fn run(
+    client: BaseHTTPClient,
+    subcommand: QuestionsCommands,
+) -> Result<(), ServiceError> {
     let connection = connection().await?;
     let proxy = Questions1Proxy::new(&connection).await?;
 
     match subcommand {
         QuestionsCommands::Mode(value) => set_mode(proxy, value.value).await,
         QuestionsCommands::Answers { path } => set_answers(proxy, path).await,
-        QuestionsCommands::List => list_questions().await,
-        QuestionsCommands::Ask => ask_question().await,
+        QuestionsCommands::List => list_questions(client).await,
+        QuestionsCommands::Ask => ask_question(client).await,
     }
 }
