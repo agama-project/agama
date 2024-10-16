@@ -38,7 +38,7 @@ impl AuthHTTPClient {
     }
 
     /// Query web server for JWT
-    pub async fn receive_jwt(&self, password: String) -> anyhow::Result<String> {
+    pub async fn authenticate(&self, password: String) -> anyhow::Result<String> {
         let mut auth_body = HashMap::new();
 
         auth_body.insert("password", password);
@@ -47,15 +47,11 @@ impl AuthHTTPClient {
             .api
             .post::<HashMap<String, String>>("/auth", &auth_body)
             .await?;
-        let value = response.get("token");
 
-        if let Some(token) = value {
-            return Ok(token.clone());
+        match response.get("token") {
+            Some(token) => Ok(token.clone()),
+            None => Err(anyhow::anyhow!("Failed to get authentication token")),
         }
-
-        Err(anyhow::anyhow!(
-            "Authentication failed. Cannot get the authentication token."
-        ))
     }
 }
 
@@ -114,7 +110,7 @@ fn ask_password() -> Result<String, CliError> {
 /// Logs into the installation web server and stores JWT for later use.
 async fn login(client: AuthHTTPClient, password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
-    let res = client.receive_jwt(password).await?;
+    let res = client.authenticate(password).await?;
     let token = AuthToken::new(&res);
     Ok(token.write_user_token()?)
 }

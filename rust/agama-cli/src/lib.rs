@@ -165,7 +165,7 @@ async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<boo
     ping_client.base_url = api_url;
 
     // decide whether access to remote site has to be insecure (self-signed certificate or not)
-    return match ping_client.get::<HashMap<String, String>>("/ping").await {
+    match ping_client.get::<HashMap<String, String>>("/ping").await {
         // Problem with http remote API reachability
         Err(ServiceError::HTTPError(_)) => Ok(use_insecure || Confirm::new("There was a problem with the remote API and it is treated as insecure. Do you want to continue?")
             .with_default(false)
@@ -175,7 +175,7 @@ async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<boo
         Err(e) => Err(e),
         // success doesn't bother us here
         Ok(_) => Ok(false)
-    };
+    }
 }
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
