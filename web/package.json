@@ -110,6 +110,8 @@
     "@date-fns/tz": "^1.1.2",
     "@icons-pack/react-simple-icons": "^10.0.0",
     "@material-symbols/svg-400": "^0.23.0",
+    "@module-federation/bridge-react": "^0.6.10",
+    "@module-federation/enhanced": "^0.6.10",
     "@patternfly/patternfly": "^5.1.0",
     "@patternfly/react-core": "^5.1.1",
     "@patternfly/react-table": "^5.1.1",
