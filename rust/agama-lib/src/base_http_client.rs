@@ -72,7 +72,8 @@ impl BaseHTTPClient {
         Self {
             client: reqwest::Client::builder()
                 .danger_accept_invalid_certs(insecure)
-                .build().unwrap_or(default_client),
+                .build()
+                .unwrap_or(default_client),
             base_url: API_URL.to_owned(),
         }
     }

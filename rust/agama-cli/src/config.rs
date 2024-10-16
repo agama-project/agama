@@ -26,8 +26,7 @@ use std::{
 
 use crate::show_progress;
 use agama_lib::{
-    base_http_client::BaseHTTPClient, install_settings::InstallSettings,
-    Store as SettingsStore,
+    base_http_client::BaseHTTPClient, install_settings::InstallSettings, Store as SettingsStore,
 };
 use anyhow::anyhow;
 use clap::Subcommand;

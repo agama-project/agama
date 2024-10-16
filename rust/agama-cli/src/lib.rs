@@ -30,6 +30,7 @@ mod progress;
 mod questions;
 
 use crate::error::CliError;
+use agama_lib::base_http_client::BaseHTTPClient;
 use agama_lib::{
     error::ServiceError, manager::ManagerClient, progress::ProgressMonitor, transfer::Transfer,
 };
@@ -50,7 +51,7 @@ use std::{
 
 /// Agama's CLI global options
 #[derive(Args)]
-struct GlobalOpts {
+pub struct GlobalOpts {
     #[clap(long, default_value = "http://localhost/api")]
     /// uri pointing to agama's remote api. If not provided, default https://localhost/api is
     /// used
@@ -154,10 +155,10 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 
 #[derive(PartialEq)]
 enum InsecureApi {
-    Secure,         // Remote api is secure
-    Insecure,       // Remote api is insecure - e.g. self-signed certificate
-    Forbidden,      // Remote api is insecure and its use is forbidden (e.g. user decided not to use it)
-    Unreachable     // Remote api is unrecheable
+    Secure,      // Remote api is secure
+    Insecure,    // Remote api is insecure - e.g. self-signed certificate
+    Forbidden, // Remote api is insecure and its use is forbidden (e.g. user decided not to use it)
+    Unreachable, // Remote api is unrecheable
 }
 
 /// Returns if insecure connection to remote api server is required and user allowed that
@@ -181,7 +182,8 @@ async fn check_remote_api(api_url: String) -> Result<InsecureApi, ServiceError> 
             if Confirm::new("Remote API uses self-signed certificate. Do you want to continue?")
                 .with_default(false)
                 .prompt()
-                .map_err(|_| err)? {
+                .map_err(|_| err)?
+            {
                 Ok(InsecureApi::Insecure)
             } else {
                 Ok(InsecureApi::Forbidden)
@@ -192,11 +194,7 @@ async fn check_remote_api(api_url: String) -> Result<InsecureApi, ServiceError> 
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // somehow check whether we need to ask user for self-signed certificate acceptance
-    let api_url = cli
-        .opts
-        .api
-        .trim_end_matches('/')
-        .to_string();
+    let api_url = cli.opts.api.trim_end_matches('/').to_string();
     let insecure = check_remote_api(api_url.clone()).await? == InsecureApi::Insecure;
 
     // we need to distinguish commands on those which assume that authentication JWT is already

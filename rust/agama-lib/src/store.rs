@@ -45,9 +45,7 @@ pub struct Store {
 }
 
 impl Store {
-    pub async fn new(
-        http_client: BaseHTTPClient,
-    ) -> Result<Store, ServiceError> {
+    pub async fn new(http_client: BaseHTTPClient) -> Result<Store, ServiceError> {
         Ok(Self {
             localization: LocalizationStore::new(http_client.clone())?,
             users: UsersStore::new(http_client.clone())?,
