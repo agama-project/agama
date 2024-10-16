@@ -39,7 +39,7 @@ impl ScriptsClient {
         self.client.post_void("/scripts", &script).await
     }
 
-    /// Runs user defined scripts of the given group.
+    /// Runs user-defined scripts of the given group.
     ///
     /// * `group`: group of the scripts to run
     pub async fn run_scripts(&self, group: ScriptsGroup) -> Result<(), ServiceError> {
@@ -49,5 +49,10 @@ impl ScriptsClient {
     pub async fn scripts(&self) -> Result<Vec<Script>, ServiceError> {
         let scripts = self.client.get("/scripts").await?;
         Ok(scripts)
+    }
+
+    /// Remove all the user-defined scripts.
+    pub async fn delete_scripts(&self) -> Result<(), ServiceError> {
+        self.client.delete_void("/scripts").await
     }
 }

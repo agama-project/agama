@@ -48,6 +48,8 @@ impl ScriptsStore {
     }
 
     pub async fn store(&self, settings: &ScriptsConfig) -> Result<(), ServiceError> {
+        self.client.delete_scripts().await?;
+
         for pre in &settings.pre {
             self.client
                 .add_script(&Self::to_script(pre, ScriptsGroup::Pre))
