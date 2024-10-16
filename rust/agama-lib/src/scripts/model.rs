@@ -138,7 +138,13 @@ impl ScriptsRepository {
         std::fs::create_dir_all(&workdir)?;
         let scripts: Vec<_> = self.scripts.iter().filter(|s| s.group == group).collect();
         for script in scripts {
-            script.run(&self.workdir).await?;
+            if let Err(error) = script.run(&self.workdir).await {
+                log::error!(
+                    "Failed to run user-defined script '{}': {:?}",
+                    &script.name,
+                    error
+                );
+            }
         }
         Ok(())
     }

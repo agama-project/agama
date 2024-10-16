@@ -132,6 +132,8 @@ async fn run_scripts(
     Json(group): Json<ScriptsGroup>,
 ) -> Result<(), ScriptServiceError> {
     let scripts = state.scripts.write().await;
-    scripts.run(group).await?;
+    if let Err(error) = scripts.run(group).await {
+        tracing::error!("Could not run user-defined scripts: {error}");
+    }
     Ok(())
 }
