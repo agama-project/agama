@@ -181,18 +181,23 @@ async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<boo
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // somehow check whether we need to ask user for self-signed certificate acceptance
     let api_url = cli.opts.api.trim_end_matches('/').to_string();
-    let insecure = allowed_insecure_api(cli.opts.insecure, api_url.clone()).await?;
+
+    let mut client = BaseHTTPClient::default();
+
+    client.base_url = api_url.clone();
+
+    if allowed_insecure_api(cli.opts.insecure, api_url.clone()).await? {
+        client = client.insecure();
+    }
 
     // we need to distinguish commands on those which assume that authentication JWT is already
     // available and those which not (or don't need it)
-    let mut client = if let Commands::Auth(_) = cli.command {
-        BaseHTTPClient::unauthenticated(insecure)
+    client = if let Commands::Auth(_) = cli.command {
+        client.unauthenticated()?
     } else {
         // this deals with authentication need inside
-        BaseHTTPClient::new_with_params(insecure)?
+        client.authenticated()?
     };
-
-    client.base_url = api_url.clone();
 
     match cli.command {
         Commands::Config(subcommand) => run_config_cmd(client, subcommand).await?,

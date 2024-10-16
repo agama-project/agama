@@ -44,6 +44,7 @@ use crate::{auth::AuthToken, error::ServiceError};
 #[derive(Clone)]
 pub struct BaseHTTPClient {
     client: reqwest::Client,
+    insecure: bool,
     pub base_url: String,
 }
 
@@ -56,34 +57,38 @@ impl Default for BaseHTTPClient {
     fn default() -> Self {
         Self {
             client: reqwest::Client::new(),
+            insecure: false,
             base_url: API_URL.to_owned(),
         }
     }
 }
 
 impl BaseHTTPClient {
-    pub fn new() -> Result<Self, ServiceError> {
-        Self::new_with_params(false)
+    /// Allows the client to connect to remote API with insecure certificate (e.g. self-signed)
+    pub fn insecure(self) -> Self {
+        Self {
+            insecure: true,
+            ..self
+        }
     }
 
     /// Uses `localhost`, authenticates with [`AuthToken`].
-    pub fn new_with_params(insecure: bool) -> Result<Self, ServiceError> {
+    pub fn authenticated(self) -> Result<Self, ServiceError> {
         Ok(Self {
-            client: Self::authenticated_client(insecure)?,
-            ..Default::default()
+            client: Self::authenticated_client(self.insecure)?,
+            ..self
         })
     }
 
-    pub fn unauthenticated(insecure: bool) -> Self {
-        let default_client = reqwest::Client::new();
-
-        Self {
+    /// Configures itself for connection(s) without authentication token
+    pub fn unauthenticated(self) -> Result<Self, ServiceError> {
+        Ok(Self {
             client: reqwest::Client::builder()
-                .danger_accept_invalid_certs(insecure)
+                .danger_accept_invalid_certs(self.insecure)
                 .build()
-                .unwrap_or(default_client),
-            base_url: API_URL.to_owned(),
-        }
+                .map_err(anyhow::Error::new)?,
+            ..self
+        })
     }
 
     fn authenticated_client(insecure: bool) -> Result<reqwest::Client, ServiceError> {

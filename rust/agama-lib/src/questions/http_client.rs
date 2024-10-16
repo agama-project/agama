@@ -34,7 +34,7 @@ pub struct HTTPClient {
 impl HTTPClient {
     pub fn new() -> Result<Self, ServiceError> {
         Ok(Self {
-            client: BaseHTTPClient::new()?,
+            client: BaseHTTPClient::default().authenticated()?,
         })
     }
 

@@ -153,7 +153,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
 }
 
 async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
-    let store = SettingsStore::new(BaseHTTPClient::new()?).await?;
+    let store = SettingsStore::new(BaseHTTPClient::default().authenticated()?).await?;
     let settings = InstallSettings::from_file(&path)?;
     store.store(&settings).await?;
     Ok(())
