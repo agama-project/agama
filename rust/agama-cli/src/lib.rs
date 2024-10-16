@@ -175,7 +175,7 @@ async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<boo
         Err(e) => Err(e),
         // success doesn't bother us here
         Ok(_) => Ok(false)
-    }
+    };
 }
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {

@@ -53,7 +53,9 @@ impl AuthHTTPClient {
             return Ok(token.clone());
         }
 
-        Err(anyhow::anyhow!("Authentication failed. Cannot get the authentication token."))
+        Err(
+            anyhow::anyhow!("Authentication failed. Cannot get the authentication token."
+        ))
     }
 }
 
