@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 17 08:16:42 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed typo in the SLES product name (bsc#1231663)
+
+-------------------------------------------------------------------
 Tue Sep 24 09:30:26 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update products translations (gh#openSUSE/agama#1607).
