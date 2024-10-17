@@ -19,13 +19,39 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
+require "agama/storage/config_conversions/to_json_conversions/base"
+require "agama/storage/configs/size"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module ToJSONConversions
+        # Size conversion to JSON hash according to schema.
+        class Size < Base
+          # @see Base
+          def self.config_type
+            Configs::Size
+          end
+
+        private
+
+          # @see Base#conversions
+          def conversions
+            {
+              min: config.min&.to_i,
+              max: convert_max_size
+            }
+          end
+
+          # @return [Integer, nil]
+          def convert_max_size
+            max = config.max
+            return if max.nil? || max.unlimited?
+
+            max.to_i
+          end
+        end
+      end
     end
   end
 end

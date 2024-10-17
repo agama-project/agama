@@ -19,13 +19,23 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
+require "agama/storage/config_conversions/to_json_conversions/size"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module ToJSONConversions
+        # Mixin for size conversion to JSON.
+        module WithSize
+          # @return [Hash, nil]
+          def convert_size
+            size = config.size
+            return unless size
+
+            ToJSONConversions::Size.new(size).convert
+          end
+        end
+      end
     end
   end
 end
