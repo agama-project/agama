@@ -46,7 +46,7 @@ describe Agama::Storage::ConfigSolver do
             "mount_path" => "/", "filesystem" => "btrfs",
             "size" => { "auto" => true, "min" => "5 GiB", "max" => "10 GiB" },
             "btrfs" => {
-              "snapshots" => true, "default_subvolume" => "@",
+              "snapshots" => true, "default_subvolume" => "@", "read_only" => true,
               "subvolumes" => ["home", "opt", "root", "srv"]
             },
             "outline" => {
@@ -188,9 +188,39 @@ describe Agama::Storage::ConfigSolver do
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
         expect(filesystem.type.btrfs.snapshots?).to eq(true)
-        expect(filesystem.type.btrfs.read_only?).to eq(false)
+        expect(filesystem.type.btrfs.read_only?).to eq(true)
         expect(filesystem.type.btrfs.default_subvolume).to eq("@")
         expect(filesystem.type.btrfs.subvolumes).to all(be_a(Y2Storage::SubvolSpecification))
+      end
+    end
+
+    context "if a config does not specify all the btrfs properties" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              filesystem: {
+                path: "/",
+                type: {
+                  btrfs: {
+                    snapshots: false
+                  }
+                }
+              }
+            }
+          ]
+        }
+      end
+
+      it "completes the btrfs config according to the product info" do
+        subject.solve(config)
+
+        drive = config.drives.first
+        btrfs = drive.filesystem.type.btrfs
+        expect(btrfs.snapshots?).to eq(false)
+        expect(btrfs.read_only?).to eq(true)
+        expect(btrfs.default_subvolume).to eq("@")
+        expect(btrfs.subvolumes).to all(be_a(Y2Storage::SubvolSpecification))
       end
     end
 
