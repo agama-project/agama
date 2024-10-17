@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
+import { Alert, AlertActionCloseButton } from "@patternfly/react-core";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Loading } from "./components/layout";
 import { Questions } from "~/components/questions";
@@ -35,6 +36,7 @@ import { useDeprecatedChanges } from "./queries/storage";
 import { PATHS as PRODUCT_PATHS } from "./routes/products";
 import SimpleLayout from "./SimpleLayout";
 import { InstallationPhase } from "./types/status";
+import { _ } from "~/i18n";
 
 /**
  * Main application component.
@@ -49,6 +51,7 @@ function App() {
   const { connected, error } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
+  const [isOpen, setIsOpen] = useState(true);
   useL10nConfigChanges();
   useProductChanges();
   useIssuesChanges();
@@ -90,8 +93,33 @@ function App() {
 
   if (!language) return null;
 
+  // TRANSLATORS: the text in square brackets [] is a clickable link
+  const [msgStart, msgLink, msgEnd] = _(
+    "The demo runs in read-only mode, you cannot change any values and the installation cannot \
+be started. To find more details about Agama check the [home page].",
+  ).split(/[[\]]/);
+
+  const alert =
+    process.env.AGAMA_DEMO === "replay" && isOpen ? (
+      <Alert
+        variant="warning"
+        title={_("This is Agama installer online demo.")}
+        timeout={12000}
+        actionClose={<AlertActionCloseButton onClose={() => setIsOpen(false)} />}
+      >
+        <p>
+          {msgStart}
+          <a href="https://agama-project.github.io/" rel="noreferrer" target="_blank">
+            {msgLink}
+          </a>
+          {msgEnd}
+        </p>
+      </Alert>
+    ) : null;
+
   return (
     <>
+      {alert}
       <Content />
       <Questions />
     </>

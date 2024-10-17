@@ -1,0 +1,6696 @@
+{
+  "/api/manager/installer": {
+      "phase": 1,
+      "isBusy": false,
+      "useIguana": false,
+      "canInstall": true
+  },
+  "/api/software/config": {
+      "patterns": {
+          "kde": true
+      },
+      "product": "Tumbleweed"
+  },
+  "/api/questions": [],
+  "/api/l10n/config": {
+      "locales": [
+          "en_US.UTF-8"
+      ],
+      "keymap": "us",
+      "timezone": "Europe/Berlin",
+      "uiLocale": "en_US.UTF-8",
+      "uiKeymap": "us"
+  },
+  "/api/software/products": [
+      {
+          "id": "Leap_16.0",
+          "name": "Leap 16.0 Alpha",
+          "description": "The latest version of a community distribution based on the latest SUSE Linux Enterprise Server.",
+          "icon": "Leap16.svg"
+      },
+      {
+          "id": "MicroOS",
+          "name": "openSUSE MicroOS",
+          "description": "A quick, small distribution designed to host container workloads with automated administration & patching. openSUSE MicroOS provides transactional (atomic) updates upon a read-only btrfs root file system. As rolling release distribution the software is always up-to-date.",
+          "icon": "MicroOS.svg"
+      },
+      {
+          "id": "Tumbleweed",
+          "name": "openSUSE Tumbleweed",
+          "description": "A pure rolling release version of openSUSE containing the latest \"stable\" versions of all software instead of relying on rigid periodic release cycles. The project does this for users that want the newest stable software.",
+          "icon": "Tumbleweed.svg"
+      }
+  ],
+  "/api/l10n/locales": [
+      {
+          "id": "aa_DJ.UTF-8",
+          "language": "Afar",
+          "territory": "Djibouti"
+      },
+      {
+          "id": "af_ZA.UTF-8",
+          "language": "Afrikaans",
+          "territory": "South Africa"
+      },
+      {
+          "id": "an_ES.UTF-8",
+          "language": "Aragonese",
+          "territory": "Spain"
+      },
+      {
+          "id": "ar_AE.UTF-8",
+          "language": "Arabic",
+          "territory": "United Arab Emirates"
+      },
+      {
+          "id": "ar_BH.UTF-8",
+          "language": "Arabic",
+          "territory": "Bahrain"
+      },
+      {
+          "id": "ar_DZ.UTF-8",
+          "language": "Arabic",
+          "territory": "Algeria"
+      },
+      {
+          "id": "ar_EG.UTF-8",
+          "language": "Arabic",
+          "territory": "Egypt"
+      },
+      {
+          "id": "ar_IQ.UTF-8",
+          "language": "Arabic",
+          "territory": "Iraq"
+      },
+      {
+          "id": "ar_JO.UTF-8",
+          "language": "Arabic",
+          "territory": "Jordan"
+      },
+      {
+          "id": "ar_KW.UTF-8",
+          "language": "Arabic",
+          "territory": "Kuwait"
+      },
+      {
+          "id": "ar_LB.UTF-8",
+          "language": "Arabic",
+          "territory": "Lebanon"
+      },
+      {
+          "id": "ar_LY.UTF-8",
+          "language": "Arabic",
+          "territory": "Libya"
+      },
+      {
+          "id": "ar_MA.UTF-8",
+          "language": "Arabic",
+          "territory": "Morocco"
+      },
+      {
+          "id": "ar_OM.UTF-8",
+          "language": "Arabic",
+          "territory": "Oman"
+      },
+      {
+          "id": "ar_QA.UTF-8",
+          "language": "Arabic",
+          "territory": "Qatar"
+      },
+      {
+          "id": "ar_SA.UTF-8",
+          "language": "Arabic",
+          "territory": "Saudi Arabia"
+      },
+      {
+          "id": "ar_SD.UTF-8",
+          "language": "Arabic",
+          "territory": "Sudan"
+      },
+      {
+          "id": "ar_SY.UTF-8",
+          "language": "Arabic",
+          "territory": "Syria"
+      },
+      {
+          "id": "ar_TN.UTF-8",
+          "language": "Arabic",
+          "territory": "Tunisia"
+      },
+      {
+          "id": "ar_YE.UTF-8",
+          "language": "Arabic",
+          "territory": "Yemen"
+      },
+      {
+          "id": "ast_ES.UTF-8",
+          "language": "Asturian",
+          "territory": "Spain"
+      },
+      {
+          "id": "be_BY.UTF-8",
+          "language": "Belarusian",
+          "territory": "Belarus"
+      },
+      {
+          "id": "bg_BG.UTF-8",
+          "language": "Bulgarian",
+          "territory": "Bulgaria"
+      },
+      {
+          "id": "bhb_IN.UTF-8",
+          "language": "Bhili",
+          "territory": "India"
+      },
+      {
+          "id": "br_FR.UTF-8",
+          "language": "Breton",
+          "territory": "France"
+      },
+      {
+          "id": "bs_BA.UTF-8",
+          "language": "Bosnian",
+          "territory": "Bosnia & Herzegovina"
+      },
+      {
+          "id": "ca_AD.UTF-8",
+          "language": "Catalan",
+          "territory": "Andorra"
+      },
+      {
+          "id": "ca_ES.UTF-8",
+          "language": "Catalan",
+          "territory": "Spain"
+      },
+      {
+          "id": "ca_FR.UTF-8",
+          "language": "Catalan",
+          "territory": "France"
+      },
+      {
+          "id": "ca_IT.UTF-8",
+          "language": "Catalan",
+          "territory": "Italy"
+      },
+      {
+          "id": "cs_CZ.UTF-8",
+          "language": "Czech",
+          "territory": "Czechia"
+      },
+      {
+          "id": "cy_GB.UTF-8",
+          "language": "Welsh",
+          "territory": "United Kingdom"
+      },
+      {
+          "id": "da_DK.UTF-8",
+          "language": "Danish",
+          "territory": "Denmark"
+      },
+      {
+          "id": "de_AT.UTF-8",
+          "language": "German",
+          "territory": "Austria"
+      },
+      {
+          "id": "de_BE.UTF-8",
+          "language": "German",
+          "territory": "Belgium"
+      },
+      {
+          "id": "de_CH.UTF-8",
+          "language": "German",
+          "territory": "Switzerland"
+      },
+      {
+          "id": "de_DE.UTF-8",
+          "language": "German",
+          "territory": "Germany"
+      },
+      {
+          "id": "de_IT.UTF-8",
+          "language": "German",
+          "territory": "Italy"
+      },
+      {
+          "id": "de_LI.UTF-8",
+          "language": "German",
+          "territory": "Liechtenstein"
+      },
+      {
+          "id": "de_LU.UTF-8",
+          "language": "German",
+          "territory": "Luxembourg"
+      },
+      {
+          "id": "el_CY.UTF-8",
+          "language": "Greek",
+          "territory": "Cyprus"
+      },
+      {
+          "id": "el_GR.UTF-8",
+          "language": "Greek",
+          "territory": "Greece"
+      },
+      {
+          "id": "en_AU.UTF-8",
+          "language": "English",
+          "territory": "Australia"
+      },
+      {
+          "id": "en_BW.UTF-8",
+          "language": "English",
+          "territory": "Botswana"
+      },
+      {
+          "id": "en_CA.UTF-8",
+          "language": "English",
+          "territory": "Canada"
+      },
+      {
+          "id": "en_DK.UTF-8",
+          "language": "English",
+          "territory": "Denmark"
+      },
+      {
+          "id": "en_GB.UTF-8",
+          "language": "English",
+          "territory": "United Kingdom"
+      },
+      {
+          "id": "en_HK.UTF-8",
+          "language": "English",
+          "territory": "Hong Kong SAR China"
+      },
+      {
+          "id": "en_IE.UTF-8",
+          "language": "English",
+          "territory": "Ireland"
+      },
+      {
+          "id": "en_NZ.UTF-8",
+          "language": "English",
+          "territory": "New Zealand"
+      },
+      {
+          "id": "en_PH.UTF-8",
+          "language": "English",
+          "territory": "Philippines"
+      },
+      {
+          "id": "en_SC.UTF-8",
+          "language": "English",
+          "territory": "Seychelles"
+      },
+      {
+          "id": "en_SG.UTF-8",
+          "language": "English",
+          "territory": "Singapore"
+      },
+      {
+          "id": "en_US.UTF-8",
+          "language": "English",
+          "territory": "United States"
+      },
+      {
+          "id": "en_ZA.UTF-8",
+          "language": "English",
+          "territory": "South Africa"
+      },
+      {
+          "id": "en_ZW.UTF-8",
+          "language": "English",
+          "territory": "Zimbabwe"
+      },
+      {
+          "id": "es_AR.UTF-8",
+          "language": "Spanish",
+          "territory": "Argentina"
+      },
+      {
+          "id": "es_BO.UTF-8",
+          "language": "Spanish",
+          "territory": "Bolivia"
+      },
+      {
+          "id": "es_CL.UTF-8",
+          "language": "Spanish",
+          "territory": "Chile"
+      },
+      {
+          "id": "es_CO.UTF-8",
+          "language": "Spanish",
+          "territory": "Colombia"
+      },
+      {
+          "id": "es_CR.UTF-8",
+          "language": "Spanish",
+          "territory": "Costa Rica"
+      },
+      {
+          "id": "es_DO.UTF-8",
+          "language": "Spanish",
+          "territory": "Dominican Republic"
+      },
+      {
+          "id": "es_EC.UTF-8",
+          "language": "Spanish",
+          "territory": "Ecuador"
+      },
+      {
+          "id": "es_ES.UTF-8",
+          "language": "Spanish",
+          "territory": "Spain"
+      },
+      {
+          "id": "es_GT.UTF-8",
+          "language": "Spanish",
+          "territory": "Guatemala"
+      },
+      {
+          "id": "es_HN.UTF-8",
+          "language": "Spanish",
+          "territory": "Honduras"
+      },
+      {
+          "id": "es_MX.UTF-8",
+          "language": "Spanish",
+          "territory": "Mexico"
+      },
+      {
+          "id": "es_NI.UTF-8",
+          "language": "Spanish",
+          "territory": "Nicaragua"
+      },
+      {
+          "id": "es_PA.UTF-8",
+          "language": "Spanish",
+          "territory": "Panama"
+      },
+      {
+          "id": "es_PE.UTF-8",
+          "language": "Spanish",
+          "territory": "Peru"
+      },
+      {
+          "id": "es_PR.UTF-8",
+          "language": "Spanish",
+          "territory": "Puerto Rico"
+      },
+      {
+          "id": "es_PY.UTF-8",
+          "language": "Spanish",
+          "territory": "Paraguay"
+      },
+      {
+          "id": "es_SV.UTF-8",
+          "language": "Spanish",
+          "territory": "El Salvador"
+      },
+      {
+          "id": "es_US.UTF-8",
+          "language": "Spanish",
+          "territory": "United States"
+      },
+      {
+          "id": "es_UY.UTF-8",
+          "language": "Spanish",
+          "territory": "Uruguay"
+      },
+      {
+          "id": "es_VE.UTF-8",
+          "language": "Spanish",
+          "territory": "Venezuela"
+      },
+      {
+          "id": "et_EE.UTF-8",
+          "language": "Estonian",
+          "territory": "Estonia"
+      },
+      {
+          "id": "eu_ES.UTF-8",
+          "language": "Basque",
+          "territory": "Spain"
+      },
+      {
+          "id": "fi_FI.UTF-8",
+          "language": "Finnish",
+          "territory": "Finland"
+      },
+      {
+          "id": "fo_FO.UTF-8",
+          "language": "Faroese",
+          "territory": "Faroe Islands"
+      },
+      {
+          "id": "fr_BE.UTF-8",
+          "language": "French",
+          "territory": "Belgium"
+      },
+      {
+          "id": "fr_CA.UTF-8",
+          "language": "French",
+          "territory": "Canada"
+      },
+      {
+          "id": "fr_CH.UTF-8",
+          "language": "French",
+          "territory": "Switzerland"
+      },
+      {
+          "id": "fr_FR.UTF-8",
+          "language": "French",
+          "territory": "France"
+      },
+      {
+          "id": "fr_LU.UTF-8",
+          "language": "French",
+          "territory": "Luxembourg"
+      },
+      {
+          "id": "ga_IE.UTF-8",
+          "language": "Irish",
+          "territory": "Ireland"
+      },
+      {
+          "id": "gd_GB.UTF-8",
+          "language": "Scottish Gaelic",
+          "territory": "United Kingdom"
+      },
+      {
+          "id": "gl_ES.UTF-8",
+          "language": "Galician",
+          "territory": "Spain"
+      },
+      {
+          "id": "gv_GB.UTF-8",
+          "language": "Manx",
+          "territory": "United Kingdom"
+      },
+      {
+          "id": "he_IL.UTF-8",
+          "language": "Hebrew",
+          "territory": "Israel"
+      },
+      {
+          "id": "hr_HR.UTF-8",
+          "language": "Croatian",
+          "territory": "Croatia"
+      },
+      {
+          "id": "hsb_DE.UTF-8",
+          "language": "Upper Sorbian",
+          "territory": "Germany"
+      },
+      {
+          "id": "hu_HU.UTF-8",
+          "language": "Hungarian",
+          "territory": "Hungary"
+      },
+      {
+          "id": "id_ID.UTF-8",
+          "language": "Indonesian",
+          "territory": "Indonesia"
+      },
+      {
+          "id": "is_IS.UTF-8",
+          "language": "Icelandic",
+          "territory": "Iceland"
+      },
+      {
+          "id": "it_CH.UTF-8",
+          "language": "Italian",
+          "territory": "Switzerland"
+      },
+      {
+          "id": "it_IT.UTF-8",
+          "language": "Italian",
+          "territory": "Italy"
+      },
+      {
+          "id": "ja_JP.UTF-8",
+          "language": "Japanese",
+          "territory": "Japan"
+      },
+      {
+          "id": "ka_GE.UTF-8",
+          "language": "Georgian",
+          "territory": "Georgia"
+      },
+      {
+          "id": "kk_KZ.UTF-8",
+          "language": "Kazakh",
+          "territory": "Kazakhstan"
+      },
+      {
+          "id": "kl_GL.UTF-8",
+          "language": "Kalaallisut",
+          "territory": "Greenland"
+      },
+      {
+          "id": "ko_KR.UTF-8",
+          "language": "Korean",
+          "territory": "South Korea"
+      },
+      {
+          "id": "ku_TR.UTF-8",
+          "language": "Kurdish",
+          "territory": "Türkiye"
+      },
+      {
+          "id": "kw_GB.UTF-8",
+          "language": "Cornish",
+          "territory": "United Kingdom"
+      },
+      {
+          "id": "lg_UG.UTF-8",
+          "language": "Ganda",
+          "territory": "Uganda"
+      },
+      {
+          "id": "lt_LT.UTF-8",
+          "language": "Lithuanian",
+          "territory": "Lithuania"
+      },
+      {
+          "id": "ltg_LV.UTF-8",
+          "language": "Latgalian",
+          "territory": "Latvia"
+      },
+      {
+          "id": "lv_LV.UTF-8",
+          "language": "Latvian",
+          "territory": "Latvia"
+      },
+      {
+          "id": "mg_MG.UTF-8",
+          "language": "Malagasy",
+          "territory": "Madagascar"
+      },
+      {
+          "id": "mi_NZ.UTF-8",
+          "language": "Māori",
+          "territory": "New Zealand"
+      },
+      {
+          "id": "mk_MK.UTF-8",
+          "language": "Macedonian",
+          "territory": "North Macedonia"
+      },
+      {
+          "id": "ms_MY.UTF-8",
+          "language": "Malay",
+          "territory": "Malaysia"
+      },
+      {
+          "id": "mt_MT.UTF-8",
+          "language": "Maltese",
+          "territory": "Malta"
+      },
+      {
+          "id": "nb_NO.UTF-8",
+          "language": "Norwegian Bokmål",
+          "territory": "Norway"
+      },
+      {
+          "id": "nl_BE.UTF-8",
+          "language": "Dutch",
+          "territory": "Belgium"
+      },
+      {
+          "id": "nl_NL.UTF-8",
+          "language": "Dutch",
+          "territory": "Netherlands"
+      },
+      {
+          "id": "nn_NO.UTF-8",
+          "language": "Norwegian Nynorsk",
+          "territory": "Norway"
+      },
+      {
+          "id": "no_NO.UTF-8",
+          "language": "Norwegian",
+          "territory": "Norway"
+      },
+      {
+          "id": "oc_FR.UTF-8",
+          "language": "Occitan",
+          "territory": "France"
+      },
+      {
+          "id": "om_KE.UTF-8",
+          "language": "Oromo",
+          "territory": "Kenya"
+      },
+      {
+          "id": "pl_PL.UTF-8",
+          "language": "Polish",
+          "territory": "Poland"
+      },
+      {
+          "id": "pt_BR.UTF-8",
+          "language": "Portuguese",
+          "territory": "Brazil"
+      },
+      {
+          "id": "pt_PT.UTF-8",
+          "language": "Portuguese",
+          "territory": "Portugal"
+      },
+      {
+          "id": "ro_RO.UTF-8",
+          "language": "Romanian",
+          "territory": "Romania"
+      },
+      {
+          "id": "ru_RU.UTF-8",
+          "language": "Russian",
+          "territory": "Russia"
+      },
+      {
+          "id": "ru_UA.UTF-8",
+          "language": "Russian",
+          "territory": "Ukraine"
+      },
+      {
+          "id": "sk_SK.UTF-8",
+          "language": "Slovak",
+          "territory": "Slovakia"
+      },
+      {
+          "id": "sl_SI.UTF-8",
+          "language": "Slovenian",
+          "territory": "Slovenia"
+      },
+      {
+          "id": "so_DJ.UTF-8",
+          "language": "Somali",
+          "territory": "Djibouti"
+      },
+      {
+          "id": "so_KE.UTF-8",
+          "language": "Somali",
+          "territory": "Kenya"
+      },
+      {
+          "id": "so_SO.UTF-8",
+          "language": "Somali",
+          "territory": "Somalia"
+      },
+      {
+          "id": "sq_AL.UTF-8",
+          "language": "Albanian",
+          "territory": "Albania"
+      },
+      {
+          "id": "st_ZA.UTF-8",
+          "language": "Southern Sotho",
+          "territory": "South Africa"
+      },
+      {
+          "id": "sv_FI.UTF-8",
+          "language": "Swedish",
+          "territory": "Finland"
+      },
+      {
+          "id": "sv_SE.UTF-8",
+          "language": "Swedish",
+          "territory": "Sweden"
+      },
+      {
+          "id": "tcy_IN.UTF-8",
+          "language": "Tulu",
+          "territory": "India"
+      },
+      {
+          "id": "tg_TJ.UTF-8",
+          "language": "Tajik",
+          "territory": "Tajikistan"
+      },
+      {
+          "id": "th_TH.UTF-8",
+          "language": "Thai",
+          "territory": "Thailand"
+      },
+      {
+          "id": "tl_PH.UTF-8",
+          "language": "Tagalog",
+          "territory": "Philippines"
+      },
+      {
+          "id": "tr_CY.UTF-8",
+          "language": "Turkish",
+          "territory": "Cyprus"
+      },
+      {
+          "id": "tr_TR.UTF-8",
+          "language": "Turkish",
+          "territory": "Türkiye"
+      },
+      {
+          "id": "uk_UA.UTF-8",
+          "language": "Ukrainian",
+          "territory": "Ukraine"
+      },
+      {
+          "id": "uz_UZ.UTF-8",
+          "language": "Uzbek",
+          "territory": "Uzbekistan"
+      },
+      {
+          "id": "wa_BE.UTF-8",
+          "language": "Walloon",
+          "territory": "Belgium"
+      },
+      {
+          "id": "xh_ZA.UTF-8",
+          "language": "Xhosa",
+          "territory": "South Africa"
+      },
+      {
+          "id": "yi_US.UTF-8",
+          "language": "Yiddish",
+          "territory": "United States"
+      },
+      {
+          "id": "zh_CN.UTF-8",
+          "language": "Mandarin Chinese",
+          "territory": "China"
+      },
+      {
+          "id": "zh_HK.UTF-8",
+          "language": "Mandarin Chinese",
+          "territory": "Hong Kong SAR China"
+      },
+      {
+          "id": "zh_SG.UTF-8",
+          "language": "Mandarin Chinese",
+          "territory": "Singapore"
+      },
+      {
+          "id": "zh_TW.UTF-8",
+          "language": "Mandarin Chinese",
+          "territory": "Taiwan"
+      },
+      {
+          "id": "zu_ZA.UTF-8",
+          "language": "Zulu",
+          "territory": "South Africa"
+      }
+  ],
+  "/api/l10n/timezones": [
+      {
+          "code": "Africa/Abidjan",
+          "parts": [
+              "Africa",
+              "Abidjan"
+          ],
+          "country": "Côte d’Ivoire"
+      },
+      {
+          "code": "Africa/Accra",
+          "parts": [
+              "Africa",
+              "Accra"
+          ],
+          "country": "Ghana"
+      },
+      {
+          "code": "Africa/Addis_Ababa",
+          "parts": [
+              "Africa",
+              "Addis Ababa"
+          ],
+          "country": "Ethiopia"
+      },
+      {
+          "code": "Africa/Algiers",
+          "parts": [
+              "Africa",
+              "Algiers"
+          ],
+          "country": "Algeria"
+      },
+      {
+          "code": "Africa/Asmara",
+          "parts": [
+              "Africa",
+              "Asmara"
+          ],
+          "country": "Eritrea"
+      },
+      {
+          "code": "Africa/Bamako",
+          "parts": [
+              "Africa",
+              "Bamako"
+          ],
+          "country": "Mali"
+      },
+      {
+          "code": "Africa/Bangui",
+          "parts": [
+              "Africa",
+              "Bangui"
+          ],
+          "country": "Central African Republic"
+      },
+      {
+          "code": "Africa/Banjul",
+          "parts": [
+              "Africa",
+              "Banjul"
+          ],
+          "country": "Gambia"
+      },
+      {
+          "code": "Africa/Bissau",
+          "parts": [
+              "Africa",
+              "Bissau"
+          ],
+          "country": "Guinea-Bissau"
+      },
+      {
+          "code": "Africa/Blantyre",
+          "parts": [
+              "Africa",
+              "Blantyre"
+          ],
+          "country": "Malawi"
+      },
+      {
+          "code": "Africa/Brazzaville",
+          "parts": [
+              "Africa",
+              "Brazzaville"
+          ],
+          "country": "Congo - Brazzaville"
+      },
+      {
+          "code": "Africa/Bujumbura",
+          "parts": [
+              "Africa",
+              "Bujumbura"
+          ],
+          "country": "Burundi"
+      },
+      {
+          "code": "Africa/Cairo",
+          "parts": [
+              "Africa",
+              "Cairo"
+          ],
+          "country": "Egypt"
+      },
+      {
+          "code": "Africa/Casablanca",
+          "parts": [
+              "Africa",
+              "Casablanca"
+          ],
+          "country": "Morocco"
+      },
+      {
+          "code": "Africa/Ceuta",
+          "parts": [
+              "Africa",
+              "Ceuta"
+          ],
+          "country": "Spain"
+      },
+      {
+          "code": "Africa/Conakry",
+          "parts": [
+              "Africa",
+              "Conakry"
+          ],
+          "country": "Guinea"
+      },
+      {
+          "code": "Africa/Dakar",
+          "parts": [
+              "Africa",
+              "Dakar"
+          ],
+          "country": "Senegal"
+      },
+      {
+          "code": "Africa/Dar_es_Salaam",
+          "parts": [
+              "Africa",
+              "Dar es Salaam"
+          ],
+          "country": "Tanzania"
+      },
+      {
+          "code": "Africa/Djibouti",
+          "parts": [
+              "Africa",
+              "Djibouti"
+          ],
+          "country": "Djibouti"
+      },
+      {
+          "code": "Africa/Douala",
+          "parts": [
+              "Africa",
+              "Douala"
+          ],
+          "country": "Cameroon"
+      },
+      {
+          "code": "Africa/El_Aaiun",
+          "parts": [
+              "Africa",
+              "El Aaiun"
+          ],
+          "country": "Western Sahara"
+      },
+      {
+          "code": "Africa/Freetown",
+          "parts": [
+              "Africa",
+              "Freetown"
+          ],
+          "country": "Sierra Leone"
+      },
+      {
+          "code": "Africa/Gaborone",
+          "parts": [
+              "Africa",
+              "Gaborone"
+          ],
+          "country": "Botswana"
+      },
+      {
+          "code": "Africa/Harare",
+          "parts": [
+              "Africa",
+              "Harare"
+          ],
+          "country": "Zimbabwe"
+      },
+      {
+          "code": "Africa/Johannesburg",
+          "parts": [
+              "Africa",
+              "Johannesburg"
+          ],
+          "country": "South Africa"
+      },
+      {
+          "code": "Africa/Juba",
+          "parts": [
+              "Africa",
+              "Juba"
+          ],
+          "country": "South Sudan"
+      },
+      {
+          "code": "Africa/Kampala",
+          "parts": [
+              "Africa",
+              "Kampala"
+          ],
+          "country": "Uganda"
+      },
+      {
+          "code": "Africa/Khartoum",
+          "parts": [
+              "Africa",
+              "Khartoum"
+          ],
+          "country": "Sudan"
+      },
+      {
+          "code": "Africa/Kigali",
+          "parts": [
+              "Africa",
+              "Kigali"
+          ],
+          "country": "Rwanda"
+      },
+      {
+          "code": "Africa/Kinshasa",
+          "parts": [
+              "Africa",
+              "Kinshasa"
+          ],
+          "country": "Congo - Kinshasa"
+      },
+      {
+          "code": "Africa/Lagos",
+          "parts": [
+              "Africa",
+              "Lagos"
+          ],
+          "country": "Nigeria"
+      },
+      {
+          "code": "Africa/Libreville",
+          "parts": [
+              "Africa",
+              "Libreville"
+          ],
+          "country": "Gabon"
+      },
+      {
+          "code": "Africa/Lome",
+          "parts": [
+              "Africa",
+              "Lome"
+          ],
+          "country": "Togo"
+      },
+      {
+          "code": "Africa/Luanda",
+          "parts": [
+              "Africa",
+              "Luanda"
+          ],
+          "country": "Angola"
+      },
+      {
+          "code": "Africa/Lubumbashi",
+          "parts": [
+              "Africa",
+              "Lubumbashi"
+          ],
+          "country": "Congo - Kinshasa"
+      },
+      {
+          "code": "Africa/Lusaka",
+          "parts": [
+              "Africa",
+              "Lusaka"
+          ],
+          "country": "Zambia"
+      },
+      {
+          "code": "Africa/Malabo",
+          "parts": [
+              "Africa",
+              "Malabo"
+          ],
+          "country": "Equatorial Guinea"
+      },
+      {
+          "code": "Africa/Maputo",
+          "parts": [
+              "Africa",
+              "Maputo"
+          ],
+          "country": "Mozambique"
+      },
+      {
+          "code": "Africa/Maseru",
+          "parts": [
+              "Africa",
+              "Maseru"
+          ],
+          "country": "Lesotho"
+      },
+      {
+          "code": "Africa/Mbabane",
+          "parts": [
+              "Africa",
+              "Mbabane"
+          ],
+          "country": "Eswatini"
+      },
+      {
+          "code": "Africa/Mogadishu",
+          "parts": [
+              "Africa",
+              "Mogadishu"
+          ],
+          "country": "Somalia"
+      },
+      {
+          "code": "Africa/Monrovia",
+          "parts": [
+              "Africa",
+              "Monrovia"
+          ],
+          "country": "Liberia"
+      },
+      {
+          "code": "Africa/Nairobi",
+          "parts": [
+              "Africa",
+              "Nairobi"
+          ],
+          "country": "Kenya"
+      },
+      {
+          "code": "Africa/Ndjamena",
+          "parts": [
+              "Africa",
+              "Ndjamena"
+          ],
+          "country": "Chad"
+      },
+      {
+          "code": "Africa/Niamey",
+          "parts": [
+              "Africa",
+              "Niamey"
+          ],
+          "country": "Niger"
+      },
+      {
+          "code": "Africa/Nouakchott",
+          "parts": [
+              "Africa",
+              "Nouakchott"
+          ],
+          "country": "Mauritania"
+      },
+      {
+          "code": "Africa/Ouagadougou",
+          "parts": [
+              "Africa",
+              "Ouagadougou"
+          ],
+          "country": "Burkina Faso"
+      },
+      {
+          "code": "Africa/Porto-Novo",
+          "parts": [
+              "Africa",
+              "Porto-Novo"
+          ],
+          "country": "Benin"
+      },
+      {
+          "code": "Africa/Sao_Tome",
+          "parts": [
+              "Africa",
+              "São Tomé"
+          ],
+          "country": "São Tomé & Príncipe"
+      },
+      {
+          "code": "Africa/Tripoli",
+          "parts": [
+              "Africa",
+              "Tripoli"
+          ],
+          "country": "Libya"
+      },
+      {
+          "code": "Africa/Tunis",
+          "parts": [
+              "Africa",
+              "Tunis"
+          ],
+          "country": "Tunisia"
+      },
+      {
+          "code": "Africa/Windhoek",
+          "parts": [
+              "Africa",
+              "Windhoek"
+          ],
+          "country": "Namibia"
+      },
+      {
+          "code": "America/Adak",
+          "parts": [
+              "Americas",
+              "Adak"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Anchorage",
+          "parts": [
+              "Americas",
+              "Anchorage"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Anguilla",
+          "parts": [
+              "Americas",
+              "Anguilla"
+          ],
+          "country": "Anguilla"
+      },
+      {
+          "code": "America/Antigua",
+          "parts": [
+              "Americas",
+              "Antigua"
+          ],
+          "country": "Antigua & Barbuda"
+      },
+      {
+          "code": "America/Araguaina",
+          "parts": [
+              "Americas",
+              "Araguaina"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Argentina/Buenos_Aires",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Buenos Aires"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/Catamarca",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Catamarca"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/Cordoba",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Cordoba"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/Jujuy",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Jujuy"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/La_Rioja",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "La Rioja"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/Mendoza",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Mendoza"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/Rio_Gallegos",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Rio Gallegos"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/Salta",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Salta"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/San_Juan",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "San Juan"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/San_Luis",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "San Luis"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/Tucuman",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Tucuman"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Argentina/Ushuaia",
+          "parts": [
+              "Americas",
+              "Argentina",
+              "Ushuaia"
+          ],
+          "country": "Argentina"
+      },
+      {
+          "code": "America/Aruba",
+          "parts": [
+              "Americas",
+              "Aruba"
+          ],
+          "country": "Aruba"
+      },
+      {
+          "code": "America/Asuncion",
+          "parts": [
+              "Americas",
+              "Asunción"
+          ],
+          "country": "Paraguay"
+      },
+      {
+          "code": "America/Atikokan",
+          "parts": [
+              "Americas",
+              "Atikokan"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Bahia",
+          "parts": [
+              "Americas",
+              "Bahia"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Bahia_Banderas",
+          "parts": [
+              "Americas",
+              "Bahia Banderas"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Barbados",
+          "parts": [
+              "Americas",
+              "Barbados"
+          ],
+          "country": "Barbados"
+      },
+      {
+          "code": "America/Belem",
+          "parts": [
+              "Americas",
+              "Belem"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Belize",
+          "parts": [
+              "Americas",
+              "Belize"
+          ],
+          "country": "Belize"
+      },
+      {
+          "code": "America/Blanc-Sablon",
+          "parts": [
+              "Americas",
+              "Blanc-Sablon"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Boa_Vista",
+          "parts": [
+              "Americas",
+              "Boa Vista"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Bogota",
+          "parts": [
+              "Americas",
+              "Bogota"
+          ],
+          "country": "Colombia"
+      },
+      {
+          "code": "America/Boise",
+          "parts": [
+              "Americas",
+              "Boise"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Cambridge_Bay",
+          "parts": [
+              "Americas",
+              "Cambridge Bay"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Campo_Grande",
+          "parts": [
+              "Americas",
+              "Campo Grande"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Cancun",
+          "parts": [
+              "Americas",
+              "Cancun"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Caracas",
+          "parts": [
+              "Americas",
+              "Caracas"
+          ],
+          "country": "Venezuela"
+      },
+      {
+          "code": "America/Cayenne",
+          "parts": [
+              "Americas",
+              "Cayenne"
+          ],
+          "country": "French Guiana"
+      },
+      {
+          "code": "America/Cayman",
+          "parts": [
+              "Americas",
+              "Cayman"
+          ],
+          "country": "Cayman Islands"
+      },
+      {
+          "code": "America/Chicago",
+          "parts": [
+              "Americas",
+              "Chicago"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Chihuahua",
+          "parts": [
+              "Americas",
+              "Chihuahua"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Costa_Rica",
+          "parts": [
+              "Americas",
+              "Costa Rica"
+          ],
+          "country": "Costa Rica"
+      },
+      {
+          "code": "America/Creston",
+          "parts": [
+              "Americas",
+              "Creston"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Cuiaba",
+          "parts": [
+              "Americas",
+              "Cuiaba"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Curacao",
+          "parts": [
+              "Americas",
+              "Curaçao"
+          ],
+          "country": "Curaçao"
+      },
+      {
+          "code": "America/Danmarkshavn",
+          "parts": [
+              "Americas",
+              "Danmarkshavn"
+          ],
+          "country": "Greenland"
+      },
+      {
+          "code": "America/Dawson",
+          "parts": [
+              "Americas",
+              "Dawson"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Dawson_Creek",
+          "parts": [
+              "Americas",
+              "Dawson Creek"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Denver",
+          "parts": [
+              "Americas",
+              "Denver"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Detroit",
+          "parts": [
+              "Americas",
+              "Detroit"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Dominica",
+          "parts": [
+              "Americas",
+              "Dominica"
+          ],
+          "country": "Dominica"
+      },
+      {
+          "code": "America/Edmonton",
+          "parts": [
+              "Americas",
+              "Edmonton"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Eirunepe",
+          "parts": [
+              "Americas",
+              "Eirunepe"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/El_Salvador",
+          "parts": [
+              "Americas",
+              "El Salvador"
+          ],
+          "country": "El Salvador"
+      },
+      {
+          "code": "America/Fortaleza",
+          "parts": [
+              "Americas",
+              "Fortaleza"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Glace_Bay",
+          "parts": [
+              "Americas",
+              "Glace Bay"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Goose_Bay",
+          "parts": [
+              "Americas",
+              "Goose Bay"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Grand_Turk",
+          "parts": [
+              "Americas",
+              "Grand Turk"
+          ],
+          "country": "Turks & Caicos Islands"
+      },
+      {
+          "code": "America/Grenada",
+          "parts": [
+              "Americas",
+              "Grenada"
+          ],
+          "country": "Grenada"
+      },
+      {
+          "code": "America/Guadeloupe",
+          "parts": [
+              "Americas",
+              "Guadeloupe"
+          ],
+          "country": "Guadeloupe"
+      },
+      {
+          "code": "America/Guatemala",
+          "parts": [
+              "Americas",
+              "Guatemala"
+          ],
+          "country": "Guatemala"
+      },
+      {
+          "code": "America/Guayaquil",
+          "parts": [
+              "Americas",
+              "Guayaquil"
+          ],
+          "country": "Ecuador"
+      },
+      {
+          "code": "America/Guyana",
+          "parts": [
+              "Americas",
+              "Guyana"
+          ],
+          "country": "Guyana"
+      },
+      {
+          "code": "America/Halifax",
+          "parts": [
+              "Americas",
+              "Halifax"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Havana",
+          "parts": [
+              "Americas",
+              "Havana"
+          ],
+          "country": "Cuba"
+      },
+      {
+          "code": "America/Hermosillo",
+          "parts": [
+              "Americas",
+              "Hermosillo"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Indiana/Indianapolis",
+          "parts": [
+              "Americas",
+              "Indiana",
+              "Indianapolis"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Indiana/Knox",
+          "parts": [
+              "Americas",
+              "Indiana",
+              "Knox"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Indiana/Marengo",
+          "parts": [
+              "Americas",
+              "Indiana",
+              "Marengo"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Indiana/Petersburg",
+          "parts": [
+              "Americas",
+              "Indiana",
+              "Petersburg"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Indiana/Tell_City",
+          "parts": [
+              "Americas",
+              "Indiana",
+              "Tell City"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Indiana/Vevay",
+          "parts": [
+              "Americas",
+              "Indiana",
+              "Vevay"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Indiana/Vincennes",
+          "parts": [
+              "Americas",
+              "Indiana",
+              "Vincennes"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Indiana/Winamac",
+          "parts": [
+              "Americas",
+              "Indiana",
+              "Winamac"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Inuvik",
+          "parts": [
+              "Americas",
+              "Inuvik"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Iqaluit",
+          "parts": [
+              "Americas",
+              "Iqaluit"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Jamaica",
+          "parts": [
+              "Americas",
+              "Jamaica"
+          ],
+          "country": "Jamaica"
+      },
+      {
+          "code": "America/Juneau",
+          "parts": [
+              "Americas",
+              "Juneau"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Kentucky/Louisville",
+          "parts": [
+              "Americas",
+              "Kentucky",
+              "Louisville"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Kentucky/Monticello",
+          "parts": [
+              "Americas",
+              "Kentucky",
+              "Monticello"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Kralendijk",
+          "parts": [
+              "Americas",
+              "Kralendijk"
+          ],
+          "country": "Caribbean Netherlands"
+      },
+      {
+          "code": "America/La_Paz",
+          "parts": [
+              "Americas",
+              "La Paz"
+          ],
+          "country": "Bolivia"
+      },
+      {
+          "code": "America/Lima",
+          "parts": [
+              "Americas",
+              "Lima"
+          ],
+          "country": "Peru"
+      },
+      {
+          "code": "America/Los_Angeles",
+          "parts": [
+              "Americas",
+              "Los Angeles"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Lower_Princes",
+          "parts": [
+              "Americas",
+              "Lower Princes"
+          ],
+          "country": "Sint Maarten"
+      },
+      {
+          "code": "America/Maceio",
+          "parts": [
+              "Americas",
+              "Maceio"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Managua",
+          "parts": [
+              "Americas",
+              "Managua"
+          ],
+          "country": "Nicaragua"
+      },
+      {
+          "code": "America/Manaus",
+          "parts": [
+              "Americas",
+              "Manaus"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Marigot",
+          "parts": [
+              "Americas",
+              "Marigot"
+          ],
+          "country": "St. Martin"
+      },
+      {
+          "code": "America/Martinique",
+          "parts": [
+              "Americas",
+              "Martinique"
+          ],
+          "country": "Martinique"
+      },
+      {
+          "code": "America/Matamoros",
+          "parts": [
+              "Americas",
+              "Matamoros"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Mazatlan",
+          "parts": [
+              "Americas",
+              "Mazatlan"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Menominee",
+          "parts": [
+              "Americas",
+              "Menominee"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Merida",
+          "parts": [
+              "Americas",
+              "Merida"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Metlakatla",
+          "parts": [
+              "Americas",
+              "Metlakatla"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Mexico_City",
+          "parts": [
+              "Americas",
+              "Mexico City"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Miquelon",
+          "parts": [
+              "Americas",
+              "Miquelon"
+          ],
+          "country": "St. Pierre & Miquelon"
+      },
+      {
+          "code": "America/Moncton",
+          "parts": [
+              "Americas",
+              "Moncton"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Monterrey",
+          "parts": [
+              "Americas",
+              "Monterrey"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Montevideo",
+          "parts": [
+              "Americas",
+              "Montevideo"
+          ],
+          "country": "Uruguay"
+      },
+      {
+          "code": "America/Montserrat",
+          "parts": [
+              "Americas",
+              "Montserrat"
+          ],
+          "country": "Montserrat"
+      },
+      {
+          "code": "America/Nassau",
+          "parts": [
+              "Americas",
+              "Nassau"
+          ],
+          "country": "Bahamas"
+      },
+      {
+          "code": "America/New_York",
+          "parts": [
+              "Americas",
+              "New York"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Nome",
+          "parts": [
+              "Americas",
+              "Nome"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Noronha",
+          "parts": [
+              "Americas",
+              "Noronha"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/North_Dakota/Beulah",
+          "parts": [
+              "Americas",
+              "North Dakota",
+              "Beulah"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/North_Dakota/Center",
+          "parts": [
+              "Americas",
+              "North Dakota",
+              "Center"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/North_Dakota/New_Salem",
+          "parts": [
+              "Americas",
+              "North Dakota",
+              "New Salem"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Ojinaga",
+          "parts": [
+              "Americas",
+              "Ojinaga"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Panama",
+          "parts": [
+              "Americas",
+              "Panama"
+          ],
+          "country": "Panama"
+      },
+      {
+          "code": "America/Paramaribo",
+          "parts": [
+              "Americas",
+              "Paramaribo"
+          ],
+          "country": "Suriname"
+      },
+      {
+          "code": "America/Phoenix",
+          "parts": [
+              "Americas",
+              "Phoenix"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/Port-au-Prince",
+          "parts": [
+              "Americas",
+              "Port-au-Prince"
+          ],
+          "country": "Haiti"
+      },
+      {
+          "code": "America/Port_of_Spain",
+          "parts": [
+              "Americas",
+              "Port of Spain"
+          ],
+          "country": "Trinidad & Tobago"
+      },
+      {
+          "code": "America/Porto_Velho",
+          "parts": [
+              "Americas",
+              "Porto Velho"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Puerto_Rico",
+          "parts": [
+              "Americas",
+              "Puerto Rico"
+          ],
+          "country": "Puerto Rico"
+      },
+      {
+          "code": "America/Rankin_Inlet",
+          "parts": [
+              "Americas",
+              "Rankin Inlet"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Recife",
+          "parts": [
+              "Americas",
+              "Recife"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Regina",
+          "parts": [
+              "Americas",
+              "Regina"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Resolute",
+          "parts": [
+              "Americas",
+              "Resolute"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Rio_Branco",
+          "parts": [
+              "Americas",
+              "Rio Branco"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Santarem",
+          "parts": [
+              "Americas",
+              "Santarem"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Santiago",
+          "parts": [
+              "Americas",
+              "Santiago"
+          ],
+          "country": "Chile"
+      },
+      {
+          "code": "America/Santo_Domingo",
+          "parts": [
+              "Americas",
+              "Santo Domingo"
+          ],
+          "country": "Dominican Republic"
+      },
+      {
+          "code": "America/Sao_Paulo",
+          "parts": [
+              "Americas",
+              "Sao Paulo"
+          ],
+          "country": "Brazil"
+      },
+      {
+          "code": "America/Scoresbysund",
+          "parts": [
+              "Americas",
+              "Scoresbysund"
+          ],
+          "country": "Greenland"
+      },
+      {
+          "code": "America/Sitka",
+          "parts": [
+              "Americas",
+              "Sitka"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "America/St_Barthelemy",
+          "parts": [
+              "Americas",
+              "St. Barthélemy"
+          ],
+          "country": "St. Barthélemy"
+      },
+      {
+          "code": "America/St_Johns",
+          "parts": [
+              "Americas",
+              "St Johns"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/St_Kitts",
+          "parts": [
+              "Americas",
+              "St Kitts"
+          ],
+          "country": "St. Kitts & Nevis"
+      },
+      {
+          "code": "America/St_Lucia",
+          "parts": [
+              "Americas",
+              "St Lucia"
+          ],
+          "country": "St. Lucia"
+      },
+      {
+          "code": "America/St_Thomas",
+          "parts": [
+              "Americas",
+              "St Thomas"
+          ],
+          "country": "U.S. Virgin Islands"
+      },
+      {
+          "code": "America/St_Vincent",
+          "parts": [
+              "Americas",
+              "St Vincent"
+          ],
+          "country": "St. Vincent & Grenadines"
+      },
+      {
+          "code": "America/Swift_Current",
+          "parts": [
+              "Americas",
+              "Swift Current"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Tegucigalpa",
+          "parts": [
+              "Americas",
+              "Tegucigalpa"
+          ],
+          "country": "Honduras"
+      },
+      {
+          "code": "America/Thule",
+          "parts": [
+              "Americas",
+              "Thule"
+          ],
+          "country": "Greenland"
+      },
+      {
+          "code": "America/Tijuana",
+          "parts": [
+              "Americas",
+              "Tijuana"
+          ],
+          "country": "Mexico"
+      },
+      {
+          "code": "America/Toronto",
+          "parts": [
+              "Americas",
+              "Toronto"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Tortola",
+          "parts": [
+              "Americas",
+              "Tortola"
+          ],
+          "country": "British Virgin Islands"
+      },
+      {
+          "code": "America/Vancouver",
+          "parts": [
+              "Americas",
+              "Vancouver"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Whitehorse",
+          "parts": [
+              "Americas",
+              "Whitehorse"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Winnipeg",
+          "parts": [
+              "Americas",
+              "Winnipeg"
+          ],
+          "country": "Canada"
+      },
+      {
+          "code": "America/Yakutat",
+          "parts": [
+              "Americas",
+              "Yakutat"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "Antarctica/Casey",
+          "parts": [
+              "Antarctica",
+              "Casey"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Antarctica/Davis",
+          "parts": [
+              "Antarctica",
+              "Davis"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Antarctica/DumontDUrville",
+          "parts": [
+              "Antarctica",
+              "Dumont d’Urville"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Antarctica/Macquarie",
+          "parts": [
+              "Antarctica",
+              "Macquarie"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Antarctica/Mawson",
+          "parts": [
+              "Antarctica",
+              "Mawson"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Antarctica/McMurdo",
+          "parts": [
+              "Antarctica",
+              "McMurdo"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Antarctica/Palmer",
+          "parts": [
+              "Antarctica",
+              "Palmer"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Antarctica/Rothera",
+          "parts": [
+              "Antarctica",
+              "Rothera"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Antarctica/South_Pole",
+          "parts": [
+              "Antarctica",
+              "South Pole"
+          ],
+          "country": null
+      },
+      {
+          "code": "Antarctica/Syowa",
+          "parts": [
+              "Antarctica",
+              "Syowa"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Antarctica/Vostok",
+          "parts": [
+              "Antarctica",
+              "Vostok"
+          ],
+          "country": "Antarctica"
+      },
+      {
+          "code": "Arctic/Longyearbyen",
+          "parts": [
+              "Arctic Ocean",
+              "Longyearbyen"
+          ],
+          "country": "Svalbard & Jan Mayen"
+      },
+      {
+          "code": "Asia/Aden",
+          "parts": [
+              "Asia",
+              "Aden"
+          ],
+          "country": "Yemen"
+      },
+      {
+          "code": "Asia/Almaty",
+          "parts": [
+              "Asia",
+              "Almaty"
+          ],
+          "country": "Kazakhstan"
+      },
+      {
+          "code": "Asia/Amman",
+          "parts": [
+              "Asia",
+              "Amman"
+          ],
+          "country": "Jordan"
+      },
+      {
+          "code": "Asia/Anadyr",
+          "parts": [
+              "Asia",
+              "Anadyr"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Aqtau",
+          "parts": [
+              "Asia",
+              "Aqtau"
+          ],
+          "country": "Kazakhstan"
+      },
+      {
+          "code": "Asia/Aqtobe",
+          "parts": [
+              "Asia",
+              "Aqtobe"
+          ],
+          "country": "Kazakhstan"
+      },
+      {
+          "code": "Asia/Ashgabat",
+          "parts": [
+              "Asia",
+              "Ashgabat"
+          ],
+          "country": "Turkmenistan"
+      },
+      {
+          "code": "Asia/Baghdad",
+          "parts": [
+              "Asia",
+              "Baghdad"
+          ],
+          "country": "Iraq"
+      },
+      {
+          "code": "Asia/Bahrain",
+          "parts": [
+              "Asia",
+              "Bahrain"
+          ],
+          "country": "Bahrain"
+      },
+      {
+          "code": "Asia/Baku",
+          "parts": [
+              "Asia",
+              "Baku"
+          ],
+          "country": "Azerbaijan"
+      },
+      {
+          "code": "Asia/Bangkok",
+          "parts": [
+              "Asia",
+              "Bangkok"
+          ],
+          "country": "Thailand"
+      },
+      {
+          "code": "Asia/Beirut",
+          "parts": [
+              "Asia",
+              "Beirut"
+          ],
+          "country": "Lebanon"
+      },
+      {
+          "code": "Asia/Bishkek",
+          "parts": [
+              "Asia",
+              "Bishkek"
+          ],
+          "country": "Kyrgyzstan"
+      },
+      {
+          "code": "Asia/Brunei",
+          "parts": [
+              "Asia",
+              "Brunei"
+          ],
+          "country": "Brunei"
+      },
+      {
+          "code": "Asia/Colombo",
+          "parts": [
+              "Asia",
+              "Colombo"
+          ],
+          "country": "Sri Lanka"
+      },
+      {
+          "code": "Asia/Damascus",
+          "parts": [
+              "Asia",
+              "Damascus"
+          ],
+          "country": "Syria"
+      },
+      {
+          "code": "Asia/Dhaka",
+          "parts": [
+              "Asia",
+              "Dhaka"
+          ],
+          "country": "Bangladesh"
+      },
+      {
+          "code": "Asia/Dili",
+          "parts": [
+              "Asia",
+              "Dili"
+          ],
+          "country": "Timor-Leste"
+      },
+      {
+          "code": "Asia/Dubai",
+          "parts": [
+              "Asia",
+              "Dubai"
+          ],
+          "country": "United Arab Emirates"
+      },
+      {
+          "code": "Asia/Dushanbe",
+          "parts": [
+              "Asia",
+              "Dushanbe"
+          ],
+          "country": "Tajikistan"
+      },
+      {
+          "code": "Asia/Gaza",
+          "parts": [
+              "Asia",
+              "Gaza"
+          ],
+          "country": "Palestinian Territories"
+      },
+      {
+          "code": "Asia/Hebron",
+          "parts": [
+              "Asia",
+              "Hebron"
+          ],
+          "country": "Palestinian Territories"
+      },
+      {
+          "code": "Asia/Ho_Chi_Minh",
+          "parts": [
+              "Asia",
+              "Ho Chi Minh City"
+          ],
+          "country": "Vietnam"
+      },
+      {
+          "code": "Asia/Hong_Kong",
+          "parts": [
+              "Asia",
+              "Hong Kong"
+          ],
+          "country": "Hong Kong SAR China"
+      },
+      {
+          "code": "Asia/Hovd",
+          "parts": [
+              "Asia",
+              "Hovd"
+          ],
+          "country": "Mongolia"
+      },
+      {
+          "code": "Asia/Irkutsk",
+          "parts": [
+              "Asia",
+              "Irkutsk"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Jakarta",
+          "parts": [
+              "Asia",
+              "Jakarta"
+          ],
+          "country": "Indonesia"
+      },
+      {
+          "code": "Asia/Jayapura",
+          "parts": [
+              "Asia",
+              "Jayapura"
+          ],
+          "country": "Indonesia"
+      },
+      {
+          "code": "Asia/Jerusalem",
+          "parts": [
+              "Asia",
+              "Jerusalem"
+          ],
+          "country": "Israel"
+      },
+      {
+          "code": "Asia/Kabul",
+          "parts": [
+              "Asia",
+              "Kabul"
+          ],
+          "country": "Afghanistan"
+      },
+      {
+          "code": "Asia/Kamchatka",
+          "parts": [
+              "Asia",
+              "Kamchatka"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Karachi",
+          "parts": [
+              "Asia",
+              "Karachi"
+          ],
+          "country": "Pakistan"
+      },
+      {
+          "code": "Asia/Kathmandu",
+          "parts": [
+              "Asia",
+              "Kathmandu"
+          ],
+          "country": "Nepal"
+      },
+      {
+          "code": "Asia/Khandyga",
+          "parts": [
+              "Asia",
+              "Khandyga"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Kolkata",
+          "parts": [
+              "Asia",
+              "Kolkata"
+          ],
+          "country": "India"
+      },
+      {
+          "code": "Asia/Krasnoyarsk",
+          "parts": [
+              "Asia",
+              "Krasnoyarsk"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Kuala_Lumpur",
+          "parts": [
+              "Asia",
+              "Kuala Lumpur"
+          ],
+          "country": "Malaysia"
+      },
+      {
+          "code": "Asia/Kuching",
+          "parts": [
+              "Asia",
+              "Kuching"
+          ],
+          "country": "Malaysia"
+      },
+      {
+          "code": "Asia/Kuwait",
+          "parts": [
+              "Asia",
+              "Kuwait"
+          ],
+          "country": "Kuwait"
+      },
+      {
+          "code": "Asia/Macau",
+          "parts": [
+              "Asia",
+              "Macau"
+          ],
+          "country": "Macao SAR China"
+      },
+      {
+          "code": "Asia/Magadan",
+          "parts": [
+              "Asia",
+              "Magadan"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Makassar",
+          "parts": [
+              "Asia",
+              "Makassar"
+          ],
+          "country": "Indonesia"
+      },
+      {
+          "code": "Asia/Manila",
+          "parts": [
+              "Asia",
+              "Manila"
+          ],
+          "country": "Philippines"
+      },
+      {
+          "code": "Asia/Muscat",
+          "parts": [
+              "Asia",
+              "Muscat"
+          ],
+          "country": "Oman"
+      },
+      {
+          "code": "Asia/Nicosia",
+          "parts": [
+              "Asia",
+              "Nicosia"
+          ],
+          "country": "Cyprus"
+      },
+      {
+          "code": "Asia/Novokuznetsk",
+          "parts": [
+              "Asia",
+              "Novokuznetsk"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Novosibirsk",
+          "parts": [
+              "Asia",
+              "Novosibirsk"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Omsk",
+          "parts": [
+              "Asia",
+              "Omsk"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Oral",
+          "parts": [
+              "Asia",
+              "Oral"
+          ],
+          "country": "Kazakhstan"
+      },
+      {
+          "code": "Asia/Phnom_Penh",
+          "parts": [
+              "Asia",
+              "Phnom Penh"
+          ],
+          "country": "Cambodia"
+      },
+      {
+          "code": "Asia/Pontianak",
+          "parts": [
+              "Asia",
+              "Pontianak"
+          ],
+          "country": "Indonesia"
+      },
+      {
+          "code": "Asia/Pyongyang",
+          "parts": [
+              "Asia",
+              "Pyongyang"
+          ],
+          "country": "North Korea"
+      },
+      {
+          "code": "Asia/Qatar",
+          "parts": [
+              "Asia",
+              "Qatar"
+          ],
+          "country": "Qatar"
+      },
+      {
+          "code": "Asia/Qyzylorda",
+          "parts": [
+              "Asia",
+              "Qyzylorda"
+          ],
+          "country": "Kazakhstan"
+      },
+      {
+          "code": "Asia/Rangoon",
+          "parts": [
+              "Asia",
+              "Rangoon"
+          ],
+          "country": "Myanmar (Burma)"
+      },
+      {
+          "code": "Asia/Riyadh",
+          "parts": [
+              "Asia",
+              "Riyadh"
+          ],
+          "country": "Saudi Arabia"
+      },
+      {
+          "code": "Asia/Sakhalin",
+          "parts": [
+              "Asia",
+              "Sakhalin"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Samarkand",
+          "parts": [
+              "Asia",
+              "Samarkand"
+          ],
+          "country": "Uzbekistan"
+      },
+      {
+          "code": "Asia/Seoul",
+          "parts": [
+              "Asia",
+              "Seoul"
+          ],
+          "country": "South Korea"
+      },
+      {
+          "code": "Asia/Shanghai",
+          "parts": [
+              "Asia",
+              "Shanghai"
+          ],
+          "country": "China"
+      },
+      {
+          "code": "Asia/Singapore",
+          "parts": [
+              "Asia",
+              "Singapore"
+          ],
+          "country": "Singapore"
+      },
+      {
+          "code": "Asia/Taipei",
+          "parts": [
+              "Asia",
+              "Taipei"
+          ],
+          "country": "Taiwan"
+      },
+      {
+          "code": "Asia/Tashkent",
+          "parts": [
+              "Asia",
+              "Tashkent"
+          ],
+          "country": "Uzbekistan"
+      },
+      {
+          "code": "Asia/Tbilisi",
+          "parts": [
+              "Asia",
+              "Tbilisi"
+          ],
+          "country": "Georgia"
+      },
+      {
+          "code": "Asia/Tehran",
+          "parts": [
+              "Asia",
+              "Tehran"
+          ],
+          "country": "Iran"
+      },
+      {
+          "code": "Asia/Thimphu",
+          "parts": [
+              "Asia",
+              "Thimphu"
+          ],
+          "country": "Bhutan"
+      },
+      {
+          "code": "Asia/Tokyo",
+          "parts": [
+              "Asia",
+              "Tokyo"
+          ],
+          "country": "Japan"
+      },
+      {
+          "code": "Asia/Ulaanbaatar",
+          "parts": [
+              "Asia",
+              "Ulaanbaatar"
+          ],
+          "country": "Mongolia"
+      },
+      {
+          "code": "Asia/Urumqi",
+          "parts": [
+              "Asia",
+              "Urumqi"
+          ],
+          "country": "China"
+      },
+      {
+          "code": "Asia/Ust-Nera",
+          "parts": [
+              "Asia",
+              "Ust-Nera"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Vientiane",
+          "parts": [
+              "Asia",
+              "Vientiane"
+          ],
+          "country": "Laos"
+      },
+      {
+          "code": "Asia/Vladivostok",
+          "parts": [
+              "Asia",
+              "Vladivostok"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Yakutsk",
+          "parts": [
+              "Asia",
+              "Yakutsk"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Yekaterinburg",
+          "parts": [
+              "Asia",
+              "Yekaterinburg"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Asia/Yerevan",
+          "parts": [
+              "Asia",
+              "Yerevan"
+          ],
+          "country": "Armenia"
+      },
+      {
+          "code": "Atlantic/Azores",
+          "parts": [
+              "Atlantic Ocean",
+              "Azores"
+          ],
+          "country": "Portugal"
+      },
+      {
+          "code": "Atlantic/Bermuda",
+          "parts": [
+              "Atlantic Ocean",
+              "Bermuda"
+          ],
+          "country": "Bermuda"
+      },
+      {
+          "code": "Atlantic/Canary",
+          "parts": [
+              "Atlantic Ocean",
+              "Canary"
+          ],
+          "country": "Spain"
+      },
+      {
+          "code": "Atlantic/Cape_Verde",
+          "parts": [
+              "Atlantic Ocean",
+              "Cape Verde"
+          ],
+          "country": "Cape Verde"
+      },
+      {
+          "code": "Atlantic/Faroe",
+          "parts": [
+              "Atlantic Ocean",
+              "Faroe"
+          ],
+          "country": "Faroe Islands"
+      },
+      {
+          "code": "Atlantic/Madeira",
+          "parts": [
+              "Atlantic Ocean",
+              "Madeira"
+          ],
+          "country": "Portugal"
+      },
+      {
+          "code": "Atlantic/Reykjavik",
+          "parts": [
+              "Atlantic Ocean",
+              "Reykjavik"
+          ],
+          "country": "Iceland"
+      },
+      {
+          "code": "Atlantic/St_Helena",
+          "parts": [
+              "Atlantic Ocean",
+              "St Helena"
+          ],
+          "country": "St. Helena"
+      },
+      {
+          "code": "Atlantic/Stanley",
+          "parts": [
+              "Atlantic Ocean",
+              "Stanley"
+          ],
+          "country": "Falkland Islands"
+      },
+      {
+          "code": "Australia/Adelaide",
+          "parts": [
+              "Australia",
+              "Adelaide"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Brisbane",
+          "parts": [
+              "Australia",
+              "Brisbane"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Broken_Hill",
+          "parts": [
+              "Australia",
+              "Broken Hill"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Darwin",
+          "parts": [
+              "Australia",
+              "Darwin"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Eucla",
+          "parts": [
+              "Australia",
+              "Eucla"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Hobart",
+          "parts": [
+              "Australia",
+              "Hobart"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Lindeman",
+          "parts": [
+              "Australia",
+              "Lindeman"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Lord_Howe",
+          "parts": [
+              "Australia",
+              "Lord Howe"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Melbourne",
+          "parts": [
+              "Australia",
+              "Melbourne"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Perth",
+          "parts": [
+              "Australia",
+              "Perth"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Australia/Sydney",
+          "parts": [
+              "Australia",
+              "Sydney"
+          ],
+          "country": "Australia"
+      },
+      {
+          "code": "Europe/Amsterdam",
+          "parts": [
+              "Europe",
+              "Amsterdam"
+          ],
+          "country": "Netherlands"
+      },
+      {
+          "code": "Europe/Andorra",
+          "parts": [
+              "Europe",
+              "Andorra"
+          ],
+          "country": "Andorra"
+      },
+      {
+          "code": "Europe/Athens",
+          "parts": [
+              "Europe",
+              "Athens"
+          ],
+          "country": "Greece"
+      },
+      {
+          "code": "Europe/Belgrade",
+          "parts": [
+              "Europe",
+              "Belgrade"
+          ],
+          "country": "Serbia"
+      },
+      {
+          "code": "Europe/Berlin",
+          "parts": [
+              "Europe",
+              "Berlin"
+          ],
+          "country": "Germany"
+      },
+      {
+          "code": "Europe/Bratislava",
+          "parts": [
+              "Europe",
+              "Bratislava"
+          ],
+          "country": "Slovakia"
+      },
+      {
+          "code": "Europe/Brussels",
+          "parts": [
+              "Europe",
+              "Brussels"
+          ],
+          "country": "Belgium"
+      },
+      {
+          "code": "Europe/Bucharest",
+          "parts": [
+              "Europe",
+              "Bucharest"
+          ],
+          "country": "Romania"
+      },
+      {
+          "code": "Europe/Budapest",
+          "parts": [
+              "Europe",
+              "Budapest"
+          ],
+          "country": "Hungary"
+      },
+      {
+          "code": "Europe/Busingen",
+          "parts": [
+              "Europe",
+              "Busingen"
+          ],
+          "country": "Germany"
+      },
+      {
+          "code": "Europe/Chisinau",
+          "parts": [
+              "Europe",
+              "Chisinau"
+          ],
+          "country": "Moldova"
+      },
+      {
+          "code": "Europe/Copenhagen",
+          "parts": [
+              "Europe",
+              "Copenhagen"
+          ],
+          "country": "Denmark"
+      },
+      {
+          "code": "Europe/Dublin",
+          "parts": [
+              "Europe",
+              "Dublin"
+          ],
+          "country": "Ireland"
+      },
+      {
+          "code": "Europe/Gibraltar",
+          "parts": [
+              "Europe",
+              "Gibraltar"
+          ],
+          "country": "Gibraltar"
+      },
+      {
+          "code": "Europe/Guernsey",
+          "parts": [
+              "Europe",
+              "Guernsey"
+          ],
+          "country": "Guernsey"
+      },
+      {
+          "code": "Europe/Helsinki",
+          "parts": [
+              "Europe",
+              "Helsinki"
+          ],
+          "country": "Finland"
+      },
+      {
+          "code": "Europe/Isle_of_Man",
+          "parts": [
+              "Europe",
+              "Isle of Man"
+          ],
+          "country": "Isle of Man"
+      },
+      {
+          "code": "Europe/Istanbul",
+          "parts": [
+              "Europe",
+              "Istanbul"
+          ],
+          "country": "Türkiye"
+      },
+      {
+          "code": "Europe/Jersey",
+          "parts": [
+              "Europe",
+              "Jersey"
+          ],
+          "country": "Jersey"
+      },
+      {
+          "code": "Europe/Kaliningrad",
+          "parts": [
+              "Europe",
+              "Kaliningrad"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Europe/Kiev",
+          "parts": [
+              "Europe",
+              "Kyiv"
+          ],
+          "country": "Ukraine"
+      },
+      {
+          "code": "Europe/Lisbon",
+          "parts": [
+              "Europe",
+              "Lisbon"
+          ],
+          "country": "Portugal"
+      },
+      {
+          "code": "Europe/Ljubljana",
+          "parts": [
+              "Europe",
+              "Ljubljana"
+          ],
+          "country": "Slovenia"
+      },
+      {
+          "code": "Europe/London",
+          "parts": [
+              "Europe",
+              "London"
+          ],
+          "country": "United Kingdom"
+      },
+      {
+          "code": "Europe/Luxembourg",
+          "parts": [
+              "Europe",
+              "Luxembourg"
+          ],
+          "country": "Luxembourg"
+      },
+      {
+          "code": "Europe/Madrid",
+          "parts": [
+              "Europe",
+              "Madrid"
+          ],
+          "country": "Spain"
+      },
+      {
+          "code": "Europe/Malta",
+          "parts": [
+              "Europe",
+              "Malta"
+          ],
+          "country": "Malta"
+      },
+      {
+          "code": "Europe/Mariehamn",
+          "parts": [
+              "Europe",
+              "Mariehamn"
+          ],
+          "country": "Åland Islands"
+      },
+      {
+          "code": "Europe/Minsk",
+          "parts": [
+              "Europe",
+              "Minsk"
+          ],
+          "country": "Belarus"
+      },
+      {
+          "code": "Europe/Monaco",
+          "parts": [
+              "Europe",
+              "Monaco"
+          ],
+          "country": "Monaco"
+      },
+      {
+          "code": "Europe/Moscow",
+          "parts": [
+              "Europe",
+              "Moscow"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Europe/Oslo",
+          "parts": [
+              "Europe",
+              "Oslo"
+          ],
+          "country": "Norway"
+      },
+      {
+          "code": "Europe/Paris",
+          "parts": [
+              "Europe",
+              "Paris"
+          ],
+          "country": "France"
+      },
+      {
+          "code": "Europe/Podgorica",
+          "parts": [
+              "Europe",
+              "Podgorica"
+          ],
+          "country": "Montenegro"
+      },
+      {
+          "code": "Europe/Prague",
+          "parts": [
+              "Europe",
+              "Prague"
+          ],
+          "country": "Czechia"
+      },
+      {
+          "code": "Europe/Riga",
+          "parts": [
+              "Europe",
+              "Riga"
+          ],
+          "country": "Latvia"
+      },
+      {
+          "code": "Europe/Rome",
+          "parts": [
+              "Europe",
+              "Rome"
+          ],
+          "country": "Italy"
+      },
+      {
+          "code": "Europe/Samara",
+          "parts": [
+              "Europe",
+              "Samara"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Europe/San_Marino",
+          "parts": [
+              "Europe",
+              "San Marino"
+          ],
+          "country": "San Marino"
+      },
+      {
+          "code": "Europe/Sarajevo",
+          "parts": [
+              "Europe",
+              "Sarajevo"
+          ],
+          "country": "Bosnia & Herzegovina"
+      },
+      {
+          "code": "Europe/Simferopol",
+          "parts": [
+              "Europe",
+              "Simferopol"
+          ],
+          "country": "Ukraine"
+      },
+      {
+          "code": "Europe/Skopje",
+          "parts": [
+              "Europe",
+              "Skopje"
+          ],
+          "country": "North Macedonia"
+      },
+      {
+          "code": "Europe/Sofia",
+          "parts": [
+              "Europe",
+              "Sofia"
+          ],
+          "country": "Bulgaria"
+      },
+      {
+          "code": "Europe/Stockholm",
+          "parts": [
+              "Europe",
+              "Stockholm"
+          ],
+          "country": "Sweden"
+      },
+      {
+          "code": "Europe/Tallinn",
+          "parts": [
+              "Europe",
+              "Tallinn"
+          ],
+          "country": "Estonia"
+      },
+      {
+          "code": "Europe/Tirane",
+          "parts": [
+              "Europe",
+              "Tirane"
+          ],
+          "country": "Albania"
+      },
+      {
+          "code": "Europe/Vaduz",
+          "parts": [
+              "Europe",
+              "Vaduz"
+          ],
+          "country": "Liechtenstein"
+      },
+      {
+          "code": "Europe/Vatican",
+          "parts": [
+              "Europe",
+              "Vatican"
+          ],
+          "country": "Vatican City"
+      },
+      {
+          "code": "Europe/Vienna",
+          "parts": [
+              "Europe",
+              "Vienna"
+          ],
+          "country": "Austria"
+      },
+      {
+          "code": "Europe/Vilnius",
+          "parts": [
+              "Europe",
+              "Vilnius"
+          ],
+          "country": "Lithuania"
+      },
+      {
+          "code": "Europe/Volgograd",
+          "parts": [
+              "Europe",
+              "Volgograd"
+          ],
+          "country": "Russia"
+      },
+      {
+          "code": "Europe/Warsaw",
+          "parts": [
+              "Europe",
+              "Warsaw"
+          ],
+          "country": "Poland"
+      },
+      {
+          "code": "Europe/Zagreb",
+          "parts": [
+              "Europe",
+              "Zagreb"
+          ],
+          "country": "Croatia"
+      },
+      {
+          "code": "Europe/Zurich",
+          "parts": [
+              "Europe",
+              "Zurich"
+          ],
+          "country": "Switzerland"
+      },
+      {
+          "code": "Indian/Antananarivo",
+          "parts": [
+              "Indian Ocean",
+              "Antananarivo"
+          ],
+          "country": "Madagascar"
+      },
+      {
+          "code": "Indian/Chagos",
+          "parts": [
+              "Indian Ocean",
+              "Chagos"
+          ],
+          "country": "Chagos Archipelago"
+      },
+      {
+          "code": "Indian/Christmas",
+          "parts": [
+              "Indian Ocean",
+              "Christmas"
+          ],
+          "country": "Christmas Island"
+      },
+      {
+          "code": "Indian/Cocos",
+          "parts": [
+              "Indian Ocean",
+              "Cocos"
+          ],
+          "country": "Cocos (Keeling) Islands"
+      },
+      {
+          "code": "Indian/Comoro",
+          "parts": [
+              "Indian Ocean",
+              "Comoro"
+          ],
+          "country": "Comoros"
+      },
+      {
+          "code": "Indian/Mahe",
+          "parts": [
+              "Indian Ocean",
+              "Mahe"
+          ],
+          "country": "Seychelles"
+      },
+      {
+          "code": "Indian/Maldives",
+          "parts": [
+              "Indian Ocean",
+              "Maldives"
+          ],
+          "country": "Maldives"
+      },
+      {
+          "code": "Indian/Mauritius",
+          "parts": [
+              "Indian Ocean",
+              "Mauritius"
+          ],
+          "country": "Mauritius"
+      },
+      {
+          "code": "Indian/Mayotte",
+          "parts": [
+              "Indian Ocean",
+              "Mayotte"
+          ],
+          "country": "Mayotte"
+      },
+      {
+          "code": "Indian/Reunion",
+          "parts": [
+              "Indian Ocean",
+              "Réunion"
+          ],
+          "country": "Réunion"
+      },
+      {
+          "code": "Pacific/Apia",
+          "parts": [
+              "Pacific",
+              "Apia"
+          ],
+          "country": "Samoa"
+      },
+      {
+          "code": "Pacific/Auckland",
+          "parts": [
+              "Pacific",
+              "Auckland"
+          ],
+          "country": "New Zealand"
+      },
+      {
+          "code": "Pacific/Chatham",
+          "parts": [
+              "Pacific",
+              "Chatham"
+          ],
+          "country": "New Zealand"
+      },
+      {
+          "code": "Pacific/Chuuk",
+          "parts": [
+              "Pacific",
+              "Chuuk"
+          ],
+          "country": "Micronesia"
+      },
+      {
+          "code": "Pacific/Easter",
+          "parts": [
+              "Pacific",
+              "Easter"
+          ],
+          "country": "Chile"
+      },
+      {
+          "code": "Pacific/Efate",
+          "parts": [
+              "Pacific",
+              "Efate"
+          ],
+          "country": "Vanuatu"
+      },
+      {
+          "code": "Pacific/Fakaofo",
+          "parts": [
+              "Pacific",
+              "Fakaofo"
+          ],
+          "country": "Tokelau"
+      },
+      {
+          "code": "Pacific/Fiji",
+          "parts": [
+              "Pacific",
+              "Fiji"
+          ],
+          "country": "Fiji"
+      },
+      {
+          "code": "Pacific/Funafuti",
+          "parts": [
+              "Pacific",
+              "Funafuti"
+          ],
+          "country": "Tuvalu"
+      },
+      {
+          "code": "Pacific/Galapagos",
+          "parts": [
+              "Pacific",
+              "Galapagos"
+          ],
+          "country": "Ecuador"
+      },
+      {
+          "code": "Pacific/Gambier",
+          "parts": [
+              "Pacific",
+              "Gambier"
+          ],
+          "country": "French Polynesia"
+      },
+      {
+          "code": "Pacific/Guadalcanal",
+          "parts": [
+              "Pacific",
+              "Guadalcanal"
+          ],
+          "country": "Solomon Islands"
+      },
+      {
+          "code": "Pacific/Guam",
+          "parts": [
+              "Pacific",
+              "Guam"
+          ],
+          "country": "Guam"
+      },
+      {
+          "code": "Pacific/Honolulu",
+          "parts": [
+              "Pacific",
+              "Honolulu"
+          ],
+          "country": "United States"
+      },
+      {
+          "code": "Pacific/Kiritimati",
+          "parts": [
+              "Pacific",
+              "Kiritimati"
+          ],
+          "country": "Kiribati"
+      },
+      {
+          "code": "Pacific/Kosrae",
+          "parts": [
+              "Pacific",
+              "Kosrae"
+          ],
+          "country": "Micronesia"
+      },
+      {
+          "code": "Pacific/Kwajalein",
+          "parts": [
+              "Pacific",
+              "Kwajalein"
+          ],
+          "country": "Marshall Islands"
+      },
+      {
+          "code": "Pacific/Majuro",
+          "parts": [
+              "Pacific",
+              "Majuro"
+          ],
+          "country": "Marshall Islands"
+      },
+      {
+          "code": "Pacific/Marquesas",
+          "parts": [
+              "Pacific",
+              "Marquesas"
+          ],
+          "country": "French Polynesia"
+      },
+      {
+          "code": "Pacific/Midway",
+          "parts": [
+              "Pacific",
+              "Midway"
+          ],
+          "country": "U.S. Outlying Islands"
+      },
+      {
+          "code": "Pacific/Nauru",
+          "parts": [
+              "Pacific",
+              "Nauru"
+          ],
+          "country": "Nauru"
+      },
+      {
+          "code": "Pacific/Niue",
+          "parts": [
+              "Pacific",
+              "Niue"
+          ],
+          "country": "Niue"
+      },
+      {
+          "code": "Pacific/Norfolk",
+          "parts": [
+              "Pacific",
+              "Norfolk"
+          ],
+          "country": "Norfolk Island"
+      },
+      {
+          "code": "Pacific/Noumea",
+          "parts": [
+              "Pacific",
+              "Noumea"
+          ],
+          "country": "New Caledonia"
+      },
+      {
+          "code": "Pacific/Pago_Pago",
+          "parts": [
+              "Pacific",
+              "Pago Pago"
+          ],
+          "country": "American Samoa"
+      },
+      {
+          "code": "Pacific/Palau",
+          "parts": [
+              "Pacific",
+              "Palau"
+          ],
+          "country": "Palau"
+      },
+      {
+          "code": "Pacific/Pitcairn",
+          "parts": [
+              "Pacific",
+              "Pitcairn"
+          ],
+          "country": "Pitcairn Islands"
+      },
+      {
+          "code": "Pacific/Pohnpei",
+          "parts": [
+              "Pacific",
+              "Pohnpei"
+          ],
+          "country": "Micronesia"
+      },
+      {
+          "code": "Pacific/Port_Moresby",
+          "parts": [
+              "Pacific",
+              "Port Moresby"
+          ],
+          "country": "Papua New Guinea"
+      },
+      {
+          "code": "Pacific/Rarotonga",
+          "parts": [
+              "Pacific",
+              "Rarotonga"
+          ],
+          "country": "Cook Islands"
+      },
+      {
+          "code": "Pacific/Saipan",
+          "parts": [
+              "Pacific",
+              "Saipan"
+          ],
+          "country": "Northern Mariana Islands"
+      },
+      {
+          "code": "Pacific/Tahiti",
+          "parts": [
+              "Pacific",
+              "Tahiti"
+          ],
+          "country": "French Polynesia"
+      },
+      {
+          "code": "Pacific/Tarawa",
+          "parts": [
+              "Pacific",
+              "Tarawa"
+          ],
+          "country": "Kiribati"
+      },
+      {
+          "code": "Pacific/Tongatapu",
+          "parts": [
+              "Pacific",
+              "Tongatapu"
+          ],
+          "country": "Tonga"
+      },
+      {
+          "code": "Pacific/Wake",
+          "parts": [
+              "Pacific",
+              "Wake"
+          ],
+          "country": "U.S. Outlying Islands"
+      },
+      {
+          "code": "Pacific/Wallis",
+          "parts": [
+              "Pacific",
+              "Wallis"
+          ],
+          "country": "Wallis & Futuna"
+      },
+      {
+          "code": "UTC",
+          "parts": [
+              "Coordinated Universal Time"
+          ],
+          "country": null
+      }
+  ],
+  "/api/l10n/keymaps": [
+      {
+          "id": "al",
+          "description": "Albanian"
+      },
+      {
+          "id": "al(plisi)",
+          "description": "Albanian (Plisi)"
+      },
+      {
+          "id": "at",
+          "description": "German (Austria)"
+      },
+      {
+          "id": "at(mac)",
+          "description": "German (Austria, Macintosh)"
+      },
+      {
+          "id": "at(nodeadkeys)",
+          "description": "German (Austria, no dead keys)"
+      },
+      {
+          "id": "az",
+          "description": "Azerbaijani"
+      },
+      {
+          "id": "ba",
+          "description": "Bosnian"
+      },
+      {
+          "id": "ba(alternatequotes)",
+          "description": "Bosnian (with guillemets)"
+      },
+      {
+          "id": "ba(unicode)",
+          "description": "Bosnian (with Bosnian digraphs)"
+      },
+      {
+          "id": "ba(unicodeus)",
+          "description": "Bosnian (US, with Bosnian digraphs)"
+      },
+      {
+          "id": "ba(us)",
+          "description": "Bosnian (US)"
+      },
+      {
+          "id": "be",
+          "description": "Belgian"
+      },
+      {
+          "id": "be(iso-alternate)",
+          "description": "Belgian (ISO, alt.)"
+      },
+      {
+          "id": "be(nodeadkeys)",
+          "description": "Belgian (no dead keys)"
+      },
+      {
+          "id": "be(oss)",
+          "description": "Belgian (alt.)"
+      },
+      {
+          "id": "be(oss_latin9)",
+          "description": "Belgian (Latin-9 only, alt.)"
+      },
+      {
+          "id": "be(wang)",
+          "description": "Belgian (Wang 724 AZERTY)"
+      },
+      {
+          "id": "br",
+          "description": "Portuguese (Brazil)"
+      },
+      {
+          "id": "br(dvorak)",
+          "description": "Portuguese (Brazil, Dvorak)"
+      },
+      {
+          "id": "br(nativo)",
+          "description": "Portuguese (Brazil, Nativo)"
+      },
+      {
+          "id": "br(nativo-epo)",
+          "description": "Esperanto (Brazil, Nativo)"
+      },
+      {
+          "id": "br(nativo-us)",
+          "description": "Portuguese (Brazil, Nativo for US keyboards)"
+      },
+      {
+          "id": "br(nodeadkeys)",
+          "description": "Portuguese (Brazil, no dead keys)"
+      },
+      {
+          "id": "br(thinkpad)",
+          "description": "Portuguese (Brazil, IBM/Lenovo ThinkPad)"
+      },
+      {
+          "id": "by(latin)",
+          "description": "Belarusian (Latin)"
+      },
+      {
+          "id": "ca",
+          "description": "French (Canada)"
+      },
+      {
+          "id": "ca(eng)",
+          "description": "English (Canada)"
+      },
+      {
+          "id": "ca(fr-dvorak)",
+          "description": "French (Canada, Dvorak)"
+      },
+      {
+          "id": "ca(fr-legacy)",
+          "description": "French (Canada, legacy)"
+      },
+      {
+          "id": "ca(multix)",
+          "description": "Canadian (CSA)"
+      },
+      {
+          "id": "ch",
+          "description": "German (Switzerland)"
+      },
+      {
+          "id": "ch(de_mac)",
+          "description": "German (Switzerland, Macintosh)"
+      },
+      {
+          "id": "ch(de_nodeadkeys)",
+          "description": "German (Switzerland, no dead keys)"
+      },
+      {
+          "id": "ch(fr)",
+          "description": "French (Switzerland)"
+      },
+      {
+          "id": "ch(fr_mac)",
+          "description": "French (Switzerland, Macintosh)"
+      },
+      {
+          "id": "ch(fr_nodeadkeys)",
+          "description": "French (Switzerland, no dead keys)"
+      },
+      {
+          "id": "ch(legacy)",
+          "description": "German (Switzerland, legacy)"
+      },
+      {
+          "id": "cm",
+          "description": "English (Cameroon)"
+      },
+      {
+          "id": "cm(azerty)",
+          "description": "Cameroon (AZERTY, intl.)"
+      },
+      {
+          "id": "cm(dvorak)",
+          "description": "Cameroon (Dvorak, intl.)"
+      },
+      {
+          "id": "cm(french)",
+          "description": "French (Cameroon)"
+      },
+      {
+          "id": "cm(mmuock)",
+          "description": "Mmuock"
+      },
+      {
+          "id": "cm(qwerty)",
+          "description": "Cameroon Multilingual (QWERTY, intl.)"
+      },
+      {
+          "id": "cn",
+          "description": "Chinese"
+      },
+      {
+          "id": "cn(altgr-pinyin)",
+          "description": "Hanyu Pinyin Letters (with AltGr dead keys)"
+      },
+      {
+          "id": "cz",
+          "description": "Czech"
+      },
+      {
+          "id": "cz(bksl)",
+          "description": "Czech (extra backslash)"
+      },
+      {
+          "id": "cz(dvorak-ucw)",
+          "description": "Czech (US, Dvorak, UCW support)"
+      },
+      {
+          "id": "cz(qwerty)",
+          "description": "Czech (QWERTY)"
+      },
+      {
+          "id": "cz(qwerty-mac)",
+          "description": "Czech (QWERTY, Macintosh)"
+      },
+      {
+          "id": "cz(qwerty_bksl)",
+          "description": "Czech (QWERTY, extra backslash)"
+      },
+      {
+          "id": "cz(rus)",
+          "description": "Russian (Czechia, phonetic)"
+      },
+      {
+          "id": "cz(winkeys)",
+          "description": "Czech (QWERTZ, Windows)"
+      },
+      {
+          "id": "cz(winkeys-qwerty)",
+          "description": "Czech (QWERTY, Windows)"
+      },
+      {
+          "id": "de",
+          "description": "German"
+      },
+      {
+          "id": "de(T3)",
+          "description": "German (T3)"
+      },
+      {
+          "id": "de(deadacute)",
+          "description": "German (dead acute)"
+      },
+      {
+          "id": "de(deadgraveacute)",
+          "description": "German (dead grave acute)"
+      },
+      {
+          "id": "de(deadtilde)",
+          "description": "German (dead tilde)"
+      },
+      {
+          "id": "de(dsb)",
+          "description": "Lower Sorbian"
+      },
+      {
+          "id": "de(dsb_qwertz)",
+          "description": "Lower Sorbian (QWERTZ)"
+      },
+      {
+          "id": "de(dvorak)",
+          "description": "German (Dvorak)"
+      },
+      {
+          "id": "de(e1)",
+          "description": "German (E1)"
+      },
+      {
+          "id": "de(e2)",
+          "description": "German (E2)"
+      },
+      {
+          "id": "de(mac)",
+          "description": "German (Macintosh)"
+      },
+      {
+          "id": "de(mac_nodeadkeys)",
+          "description": "German (Macintosh, no dead keys)"
+      },
+      {
+          "id": "de(neo)",
+          "description": "German (Neo 2)"
+      },
+      {
+          "id": "de(nodeadkeys)",
+          "description": "German (no dead keys)"
+      },
+      {
+          "id": "de(qwerty)",
+          "description": "German (QWERTY)"
+      },
+      {
+          "id": "de(ro)",
+          "description": "Romanian (Germany)"
+      },
+      {
+          "id": "de(ro_nodeadkeys)",
+          "description": "Romanian (Germany, no dead keys)"
+      },
+      {
+          "id": "de(tr)",
+          "description": "Turkish (Germany)"
+      },
+      {
+          "id": "de(us)",
+          "description": "German (US)"
+      },
+      {
+          "id": "dk",
+          "description": "Danish"
+      },
+      {
+          "id": "dk(dvorak)",
+          "description": "Danish (Dvorak)"
+      },
+      {
+          "id": "dk(mac)",
+          "description": "Danish (Macintosh)"
+      },
+      {
+          "id": "dk(mac_nodeadkeys)",
+          "description": "Danish (Macintosh, no dead keys)"
+      },
+      {
+          "id": "dk(nodeadkeys)",
+          "description": "Danish (no dead keys)"
+      },
+      {
+          "id": "dk(winkeys)",
+          "description": "Danish (Windows)"
+      },
+      {
+          "id": "dz",
+          "description": "Berber (Algeria, Latin)"
+      },
+      {
+          "id": "dz(azerty-deadkeys)",
+          "description": "Kabyle (AZERTY, with dead keys)"
+      },
+      {
+          "id": "dz(qwerty-gb-deadkeys)",
+          "description": "Kabyle (QWERTY, UK, with dead keys)"
+      },
+      {
+          "id": "dz(qwerty-us-deadkeys)",
+          "description": "Kabyle (QWERTY, US, with dead keys)"
+      },
+      {
+          "id": "ee",
+          "description": "Estonian"
+      },
+      {
+          "id": "ee(dvorak)",
+          "description": "Estonian (Dvorak)"
+      },
+      {
+          "id": "ee(nodeadkeys)",
+          "description": "Estonian (no dead keys)"
+      },
+      {
+          "id": "ee(us)",
+          "description": "Estonian (US)"
+      },
+      {
+          "id": "epo",
+          "description": "Esperanto"
+      },
+      {
+          "id": "epo(legacy)",
+          "description": "Esperanto (legacy)"
+      },
+      {
+          "id": "es",
+          "description": "Spanish"
+      },
+      {
+          "id": "es(ast)",
+          "description": "Asturian (Spain, with bottom-dot H and L)"
+      },
+      {
+          "id": "es(cat)",
+          "description": "Catalan (Spain, with middle-dot L)"
+      },
+      {
+          "id": "es(deadtilde)",
+          "description": "Spanish (dead tilde)"
+      },
+      {
+          "id": "es(dvorak)",
+          "description": "Spanish (Dvorak)"
+      },
+      {
+          "id": "es(nodeadkeys)",
+          "description": "Spanish (no dead keys)"
+      },
+      {
+          "id": "es(winkeys)",
+          "description": "Spanish (Windows)"
+      },
+      {
+          "id": "fi(classic)",
+          "description": "Finnish (classic)"
+      },
+      {
+          "id": "fi(mac)",
+          "description": "Finnish (Macintosh)"
+      },
+      {
+          "id": "fi(nodeadkeys)",
+          "description": "Finnish (classic, no dead keys)"
+      },
+      {
+          "id": "fi(smi)",
+          "description": "Northern Saami (Finland)"
+      },
+      {
+          "id": "fi(winkeys)",
+          "description": "Finnish (Windows)"
+      },
+      {
+          "id": "fo",
+          "description": "Faroese"
+      },
+      {
+          "id": "fo(nodeadkeys)",
+          "description": "Faroese (no dead keys)"
+      },
+      {
+          "id": "fr",
+          "description": "French"
+      },
+      {
+          "id": "fr(afnor)",
+          "description": "French (AZERTY, AFNOR)"
+      },
+      {
+          "id": "fr(azerty)",
+          "description": "French (AZERTY)"
+      },
+      {
+          "id": "fr(bepo)",
+          "description": "French (BEPO)"
+      },
+      {
+          "id": "fr(bepo_afnor)",
+          "description": "French (BEPO, AFNOR)"
+      },
+      {
+          "id": "fr(bepo_latin9)",
+          "description": "French (BEPO, Latin-9 only)"
+      },
+      {
+          "id": "fr(bre)",
+          "description": "Breton (France)"
+      },
+      {
+          "id": "fr(dvorak)",
+          "description": "French (Dvorak)"
+      },
+      {
+          "id": "fr(latin9)",
+          "description": "French (legacy, alt.)"
+      },
+      {
+          "id": "fr(latin9_nodeadkeys)",
+          "description": "French (legacy, alt., no dead keys)"
+      },
+      {
+          "id": "fr(mac)",
+          "description": "French (Macintosh)"
+      },
+      {
+          "id": "fr(nodeadkeys)",
+          "description": "French (no dead keys)"
+      },
+      {
+          "id": "fr(oci)",
+          "description": "Occitan"
+      },
+      {
+          "id": "fr(oss)",
+          "description": "French (alt.)"
+      },
+      {
+          "id": "fr(oss_latin9)",
+          "description": "French (alt., Latin-9 only)"
+      },
+      {
+          "id": "fr(oss_nodeadkeys)",
+          "description": "French (alt., no dead keys)"
+      },
+      {
+          "id": "fr(us)",
+          "description": "French (US)"
+      },
+      {
+          "id": "gb",
+          "description": "English (UK)"
+      },
+      {
+          "id": "gb(colemak)",
+          "description": "English (UK, Colemak)"
+      },
+      {
+          "id": "gb(colemak_dh)",
+          "description": "English (UK, Colemak-DH)"
+      },
+      {
+          "id": "gb(dvorak)",
+          "description": "English (UK, Dvorak)"
+      },
+      {
+          "id": "gb(dvorakukp)",
+          "description": "English (UK, Dvorak, with UK punctuation)"
+      },
+      {
+          "id": "gb(extd)",
+          "description": "English (UK, extended, Windows)"
+      },
+      {
+          "id": "gb(gla)",
+          "description": "Scottish Gaelic"
+      },
+      {
+          "id": "gb(intl)",
+          "description": "English (UK, intl., with dead keys)"
+      },
+      {
+          "id": "gb(mac)",
+          "description": "English (UK, Macintosh)"
+      },
+      {
+          "id": "gb(mac_intl)",
+          "description": "English (UK, Macintosh, intl.)"
+      },
+      {
+          "id": "gb(pl)",
+          "description": "Polish (British keyboard)"
+      },
+      {
+          "id": "ge",
+          "description": "Georgian"
+      },
+      {
+          "id": "ge(ergonomic)",
+          "description": "Georgian (ergonomic)"
+      },
+      {
+          "id": "ge(mess)",
+          "description": "Georgian (MESS)"
+      },
+      {
+          "id": "ge(ru)",
+          "description": "Russian (Georgia)"
+      },
+      {
+          "id": "gh",
+          "description": "English (Ghana)"
+      },
+      {
+          "id": "gh(akan)",
+          "description": "Akan"
+      },
+      {
+          "id": "gh(avn)",
+          "description": "Avatime"
+      },
+      {
+          "id": "gh(ewe)",
+          "description": "Ewe"
+      },
+      {
+          "id": "gh(fula)",
+          "description": "Fula"
+      },
+      {
+          "id": "gh(ga)",
+          "description": "Ga"
+      },
+      {
+          "id": "gh(generic)",
+          "description": "English (Ghana, multilingual)"
+      },
+      {
+          "id": "gh(gillbt)",
+          "description": "English (Ghana, GILLBT)"
+      },
+      {
+          "id": "gh(hausa)",
+          "description": "Hausa (Ghana)"
+      },
+      {
+          "id": "gr",
+          "description": "Greek"
+      },
+      {
+          "id": "hr",
+          "description": "Croatian"
+      },
+      {
+          "id": "hr(alternatequotes)",
+          "description": "Croatian (with guillemets)"
+      },
+      {
+          "id": "hr(unicode)",
+          "description": "Croatian (with Croatian digraphs)"
+      },
+      {
+          "id": "hr(unicodeus)",
+          "description": "Croatian (US, with Croatian digraphs)"
+      },
+      {
+          "id": "hr(us)",
+          "description": "Croatian (US)"
+      },
+      {
+          "id": "hu",
+          "description": "Hungarian"
+      },
+      {
+          "id": "hu(101_qwerty_comma_dead)",
+          "description": "Hungarian (QWERTY, 101-key, comma, dead keys)"
+      },
+      {
+          "id": "hu(101_qwerty_comma_nodead)",
+          "description": "Hungarian (QWERTY, 101-key, comma, no dead keys)"
+      },
+      {
+          "id": "hu(101_qwerty_dot_dead)",
+          "description": "Hungarian (QWERTY, 101-key, dot, dead keys)"
+      },
+      {
+          "id": "hu(101_qwerty_dot_nodead)",
+          "description": "Hungarian (QWERTY, 101-key, dot, no dead keys)"
+      },
+      {
+          "id": "hu(101_qwertz_comma_dead)",
+          "description": "Hungarian (QWERTZ, 101-key, comma, dead keys)"
+      },
+      {
+          "id": "hu(101_qwertz_comma_nodead)",
+          "description": "Hungarian (QWERTZ, 101-key, comma, no dead keys)"
+      },
+      {
+          "id": "hu(101_qwertz_dot_dead)",
+          "description": "Hungarian (QWERTZ, 101-key, dot, dead keys)"
+      },
+      {
+          "id": "hu(101_qwertz_dot_nodead)",
+          "description": "Hungarian (QWERTZ, 101-key, dot, no dead keys)"
+      },
+      {
+          "id": "hu(102_qwerty_comma_dead)",
+          "description": "Hungarian (QWERTY, 102-key, comma, dead keys)"
+      },
+      {
+          "id": "hu(102_qwerty_comma_nodead)",
+          "description": "Hungarian (QWERTY, 102-key, comma, no dead keys)"
+      },
+      {
+          "id": "hu(102_qwerty_dot_dead)",
+          "description": "Hungarian (QWERTY, 102-key, dot, dead keys)"
+      },
+      {
+          "id": "hu(102_qwerty_dot_nodead)",
+          "description": "Hungarian (QWERTY, 102-key, dot, no dead keys)"
+      },
+      {
+          "id": "hu(102_qwertz_comma_dead)",
+          "description": "Hungarian (QWERTZ, 102-key, comma, dead keys)"
+      },
+      {
+          "id": "hu(102_qwertz_comma_nodead)",
+          "description": "Hungarian (QWERTZ, 102-key, comma, no dead keys)"
+      },
+      {
+          "id": "hu(102_qwertz_dot_dead)",
+          "description": "Hungarian (QWERTZ, 102-key, dot, dead keys)"
+      },
+      {
+          "id": "hu(102_qwertz_dot_nodead)",
+          "description": "Hungarian (QWERTZ, 102-key, dot, no dead keys)"
+      },
+      {
+          "id": "hu(nodeadkeys)",
+          "description": "Hungarian (no dead keys)"
+      },
+      {
+          "id": "hu(qwerty)",
+          "description": "Hungarian (QWERTY)"
+      },
+      {
+          "id": "hu(standard)",
+          "description": "Hungarian (standard)"
+      },
+      {
+          "id": "id",
+          "description": "Indonesian (Latin)"
+      },
+      {
+          "id": "ie",
+          "description": "Irish"
+      },
+      {
+          "id": "ie(CloGaelach)",
+          "description": "CloGaelach"
+      },
+      {
+          "id": "ie(UnicodeExpert)",
+          "description": "Irish (UnicodeExpert)"
+      },
+      {
+          "id": "ie(ogam_is434)",
+          "description": "Ogham (IS434)"
+      },
+      {
+          "id": "il",
+          "description": "Hebrew"
+      },
+      {
+          "id": "il(si2)",
+          "description": "Hebrew (SI-1452-2)"
+      },
+      {
+          "id": "in(eng)",
+          "description": "English (India, with rupee)"
+      },
+      {
+          "id": "in(iipa)",
+          "description": "Indic IPA"
+      },
+      {
+          "id": "iq(ku)",
+          "description": "Kurdish (Iraq, Latin Q)"
+      },
+      {
+          "id": "iq(ku_alt)",
+          "description": "Kurdish (Iraq, Latin Alt-Q)"
+      },
+      {
+          "id": "iq(ku_ara)",
+          "description": "Kurdish (Iraq, Arabic-Latin)"
+      },
+      {
+          "id": "iq(ku_f)",
+          "description": "Kurdish (Iraq, F)"
+      },
+      {
+          "id": "ir(ku)",
+          "description": "Kurdish (Iran, Latin Q)"
+      },
+      {
+          "id": "ir(ku_alt)",
+          "description": "Kurdish (Iran, Latin Alt-Q)"
+      },
+      {
+          "id": "ir(ku_ara)",
+          "description": "Kurdish (Iran, Arabic-Latin)"
+      },
+      {
+          "id": "ir(ku_f)",
+          "description": "Kurdish (Iran, F)"
+      },
+      {
+          "id": "is",
+          "description": "Icelandic"
+      },
+      {
+          "id": "is(dvorak)",
+          "description": "Icelandic (Dvorak)"
+      },
+      {
+          "id": "is(mac)",
+          "description": "Icelandic (Macintosh)"
+      },
+      {
+          "id": "is(mac_legacy)",
+          "description": "Icelandic (Macintosh, legacy)"
+      },
+      {
+          "id": "it",
+          "description": "Italian"
+      },
+      {
+          "id": "it(fur)",
+          "description": "Friulian (Italy)"
+      },
+      {
+          "id": "it(geo)",
+          "description": "Georgian (Italy)"
+      },
+      {
+          "id": "it(ibm)",
+          "description": "Italian (IBM 142)"
+      },
+      {
+          "id": "it(mac)",
+          "description": "Italian (Macintosh)"
+      },
+      {
+          "id": "it(nodeadkeys)",
+          "description": "Italian (no dead keys)"
+      },
+      {
+          "id": "it(scn)",
+          "description": "Sicilian"
+      },
+      {
+          "id": "it(us)",
+          "description": "Italian (US)"
+      },
+      {
+          "id": "it(winkeys)",
+          "description": "Italian (Windows)"
+      },
+      {
+          "id": "jp",
+          "description": "Japanese"
+      },
+      {
+          "id": "jp(OADG109A)",
+          "description": "Japanese (OADG 109A)"
+      },
+      {
+          "id": "jp(dvorak)",
+          "description": "Japanese (Dvorak)"
+      },
+      {
+          "id": "jp(kana86)",
+          "description": "Japanese (Kana 86)"
+      },
+      {
+          "id": "ke",
+          "description": "Swahili (Kenya)"
+      },
+      {
+          "id": "ke(kik)",
+          "description": "Kikuyu"
+      },
+      {
+          "id": "kr",
+          "description": "Korean"
+      },
+      {
+          "id": "kr(kr104)",
+          "description": "Korean (101/104-key compatible)"
+      },
+      {
+          "id": "kz(latin)",
+          "description": "Kazakh (Latin)"
+      },
+      {
+          "id": "latam",
+          "description": "Spanish (Latin American)"
+      },
+      {
+          "id": "latam(colemak)",
+          "description": "Spanish (Latin American, Colemak)"
+      },
+      {
+          "id": "latam(deadtilde)",
+          "description": "Spanish (Latin American, dead tilde)"
+      },
+      {
+          "id": "latam(dvorak)",
+          "description": "Spanish (Latin American, Dvorak)"
+      },
+      {
+          "id": "latam(nodeadkeys)",
+          "description": "Spanish (Latin American, no dead keys)"
+      },
+      {
+          "id": "lk(us)",
+          "description": "Sinhala (US)"
+      },
+      {
+          "id": "lt",
+          "description": "Lithuanian"
+      },
+      {
+          "id": "lt(ibm)",
+          "description": "Lithuanian (IBM)"
+      },
+      {
+          "id": "lt(lekp)",
+          "description": "Lithuanian (LEKP)"
+      },
+      {
+          "id": "lt(lekpa)",
+          "description": "Lithuanian (LEKPa)"
+      },
+      {
+          "id": "lt(ratise)",
+          "description": "Lithuanian (Ratise)"
+      },
+      {
+          "id": "lt(sgs)",
+          "description": "Samogitian"
+      },
+      {
+          "id": "lt(std)",
+          "description": "Lithuanian (standard)"
+      },
+      {
+          "id": "lt(us)",
+          "description": "Lithuanian (US)"
+      },
+      {
+          "id": "lv",
+          "description": "Latvian"
+      },
+      {
+          "id": "lv(adapted)",
+          "description": "Latvian (adapted)"
+      },
+      {
+          "id": "lv(apostrophe)",
+          "description": "Latvian (apostrophe)"
+      },
+      {
+          "id": "lv(ergonomic)",
+          "description": "Latvian (ergonomic, ŪGJRMV)"
+      },
+      {
+          "id": "lv(fkey)",
+          "description": "Latvian (F)"
+      },
+      {
+          "id": "lv(modern)",
+          "description": "Latvian (Modern Latin)"
+      },
+      {
+          "id": "lv(tilde)",
+          "description": "Latvian (tilde)"
+      },
+      {
+          "id": "ma(french)",
+          "description": "French (Morocco)"
+      },
+      {
+          "id": "ma(rif)",
+          "description": "Tarifit"
+      },
+      {
+          "id": "md",
+          "description": "Moldavian"
+      },
+      {
+          "id": "md(gag)",
+          "description": "Gagauz (Moldova)"
+      },
+      {
+          "id": "me",
+          "description": "Montenegrin"
+      },
+      {
+          "id": "me(latinalternatequotes)",
+          "description": "Montenegrin (Latin, with guillemets)"
+      },
+      {
+          "id": "me(latinunicode)",
+          "description": "Montenegrin (Latin, Unicode)"
+      },
+      {
+          "id": "me(latinunicodeyz)",
+          "description": "Montenegrin (Latin, Unicode, QWERTY)"
+      },
+      {
+          "id": "me(latinyz)",
+          "description": "Montenegrin (Latin, QWERTY)"
+      },
+      {
+          "id": "ml",
+          "description": "Bambara"
+      },
+      {
+          "id": "ml(fr-oss)",
+          "description": "French (Mali, alt.)"
+      },
+      {
+          "id": "ml(us-intl)",
+          "description": "English (Mali, US, intl.)"
+      },
+      {
+          "id": "ml(us-mac)",
+          "description": "English (Mali, US, Macintosh)"
+      },
+      {
+          "id": "mm",
+          "description": "Burmese"
+      },
+      {
+          "id": "mm(mnw)",
+          "description": "Mon"
+      },
+      {
+          "id": "mm(shn)",
+          "description": "Shan"
+      },
+      {
+          "id": "mt",
+          "description": "Maltese"
+      },
+      {
+          "id": "mt(alt-gb)",
+          "description": "Maltese (UK, with AltGr overrides)"
+      },
+      {
+          "id": "mt(alt-us)",
+          "description": "Maltese (US, with AltGr overrides)"
+      },
+      {
+          "id": "mt(us)",
+          "description": "Maltese (US)"
+      },
+      {
+          "id": "ng",
+          "description": "English (Nigeria)"
+      },
+      {
+          "id": "ng(hausa)",
+          "description": "Hausa (Nigeria)"
+      },
+      {
+          "id": "ng(igbo)",
+          "description": "Igbo"
+      },
+      {
+          "id": "ng(yoruba)",
+          "description": "Yoruba"
+      },
+      {
+          "id": "nl",
+          "description": "Dutch"
+      },
+      {
+          "id": "nl(mac)",
+          "description": "Dutch (Macintosh)"
+      },
+      {
+          "id": "nl(std)",
+          "description": "Dutch (standard)"
+      },
+      {
+          "id": "nl(us)",
+          "description": "Dutch (US)"
+      },
+      {
+          "id": "no",
+          "description": "Norwegian"
+      },
+      {
+          "id": "no(colemak)",
+          "description": "Norwegian (Colemak)"
+      },
+      {
+          "id": "no(colemak_dh)",
+          "description": "Norwegian (Colemak-DH)"
+      },
+      {
+          "id": "no(colemak_dh_wide)",
+          "description": "Norwegian (Colemak-DH Wide)"
+      },
+      {
+          "id": "no(dvorak)",
+          "description": "Norwegian (Dvorak)"
+      },
+      {
+          "id": "no(mac)",
+          "description": "Norwegian (Macintosh)"
+      },
+      {
+          "id": "no(mac_nodeadkeys)",
+          "description": "Norwegian (Macintosh, no dead keys)"
+      },
+      {
+          "id": "no(nodeadkeys)",
+          "description": "Norwegian (no dead keys)"
+      },
+      {
+          "id": "no(smi)",
+          "description": "Northern Saami (Norway)"
+      },
+      {
+          "id": "no(smi_nodeadkeys)",
+          "description": "Northern Saami (Norway, no dead keys)"
+      },
+      {
+          "id": "no(winkeys)",
+          "description": "Norwegian (Windows)"
+      },
+      {
+          "id": "nz",
+          "description": "English (New Zealand)"
+      },
+      {
+          "id": "nz(mao)",
+          "description": "Maori"
+      },
+      {
+          "id": "ph",
+          "description": "Filipino"
+      },
+      {
+          "id": "ph(capewell-dvorak)",
+          "description": "Filipino (Capewell-Dvorak, Latin)"
+      },
+      {
+          "id": "ph(capewell-qwerf2k6)",
+          "description": "Filipino (Capewell-QWERF 2006, Latin)"
+      },
+      {
+          "id": "ph(colemak)",
+          "description": "Filipino (Colemak, Latin)"
+      },
+      {
+          "id": "ph(dvorak)",
+          "description": "Filipino (Dvorak, Latin)"
+      },
+      {
+          "id": "pl",
+          "description": "Polish"
+      },
+      {
+          "id": "pl(csb)",
+          "description": "Kashubian"
+      },
+      {
+          "id": "pl(dvorak)",
+          "description": "Polish (Dvorak)"
+      },
+      {
+          "id": "pl(dvorak_altquotes)",
+          "description": "Polish (Dvorak, with Polish quotes on key 1)"
+      },
+      {
+          "id": "pl(dvorak_quotes)",
+          "description": "Polish (Dvorak, with Polish quotes on quotemark key)"
+      },
+      {
+          "id": "pl(dvp)",
+          "description": "Polish (programmer Dvorak)"
+      },
+      {
+          "id": "pl(legacy)",
+          "description": "Polish (legacy)"
+      },
+      {
+          "id": "pl(qwertz)",
+          "description": "Polish (QWERTZ)"
+      },
+      {
+          "id": "pl(szl)",
+          "description": "Silesian"
+      },
+      {
+          "id": "pt",
+          "description": "Portuguese"
+      },
+      {
+          "id": "pt(mac)",
+          "description": "Portuguese (Macintosh)"
+      },
+      {
+          "id": "pt(mac_nodeadkeys)",
+          "description": "Portuguese (Macintosh, no dead keys)"
+      },
+      {
+          "id": "pt(nativo)",
+          "description": "Portuguese (Nativo)"
+      },
+      {
+          "id": "pt(nativo-epo)",
+          "description": "Esperanto (Portugal, Nativo)"
+      },
+      {
+          "id": "pt(nativo-us)",
+          "description": "Portuguese (Nativo for US keyboards)"
+      },
+      {
+          "id": "pt(nodeadkeys)",
+          "description": "Portuguese (no dead keys)"
+      },
+      {
+          "id": "ro",
+          "description": "Romanian"
+      },
+      {
+          "id": "ro(std)",
+          "description": "Romanian (standard)"
+      },
+      {
+          "id": "ro(winkeys)",
+          "description": "Romanian (Windows)"
+      },
+      {
+          "id": "rs(latin)",
+          "description": "Serbian (Latin)"
+      },
+      {
+          "id": "rs(latinalternatequotes)",
+          "description": "Serbian (Latin, with guillemets)"
+      },
+      {
+          "id": "rs(latinunicode)",
+          "description": "Serbian (Latin, Unicode)"
+      },
+      {
+          "id": "rs(latinunicodeyz)",
+          "description": "Serbian (Latin, Unicode, QWERTY)"
+      },
+      {
+          "id": "rs(latinyz)",
+          "description": "Serbian (Latin, QWERTY)"
+      },
+      {
+          "id": "ru(cv_latin)",
+          "description": "Chuvash (Latin)"
+      },
+      {
+          "id": "ru(ruchey_en)",
+          "description": "Russian (engineering, EN)"
+      },
+      {
+          "id": "se",
+          "description": "Swedish"
+      },
+      {
+          "id": "se(dvorak)",
+          "description": "Swedish (Dvorak)"
+      },
+      {
+          "id": "se(mac)",
+          "description": "Swedish (Macintosh)"
+      },
+      {
+          "id": "se(nodeadkeys)",
+          "description": "Swedish (no dead keys)"
+      },
+      {
+          "id": "se(smi)",
+          "description": "Northern Saami (Sweden)"
+      },
+      {
+          "id": "se(svdvorak)",
+          "description": "Swedish (Svdvorak)"
+      },
+      {
+          "id": "se(us)",
+          "description": "Swedish (US)"
+      },
+      {
+          "id": "se(us_dvorak)",
+          "description": "Swedish (Dvorak, intl.)"
+      },
+      {
+          "id": "si",
+          "description": "Slovenian"
+      },
+      {
+          "id": "si(alternatequotes)",
+          "description": "Slovenian (with guillemets)"
+      },
+      {
+          "id": "si(us)",
+          "description": "Slovenian (US)"
+      },
+      {
+          "id": "sk",
+          "description": "Slovak"
+      },
+      {
+          "id": "sk(bksl)",
+          "description": "Slovak (extra backslash)"
+      },
+      {
+          "id": "sk(qwerty)",
+          "description": "Slovak (QWERTY)"
+      },
+      {
+          "id": "sk(qwerty_bksl)",
+          "description": "Slovak (QWERTY, extra backslash)"
+      },
+      {
+          "id": "sy(ku)",
+          "description": "Kurdish (Syria, Latin Q)"
+      },
+      {
+          "id": "sy(ku_alt)",
+          "description": "Kurdish (Syria, Latin Alt-Q)"
+      },
+      {
+          "id": "sy(ku_f)",
+          "description": "Kurdish (Syria, F)"
+      },
+      {
+          "id": "tm",
+          "description": "Turkmen"
+      },
+      {
+          "id": "tm(alt)",
+          "description": "Turkmen (Alt-Q)"
+      },
+      {
+          "id": "tr",
+          "description": "Turkish"
+      },
+      {
+          "id": "tr(alt)",
+          "description": "Turkish (Alt-Q)"
+      },
+      {
+          "id": "tr(e)",
+          "description": "Turkish (E)"
+      },
+      {
+          "id": "tr(f)",
+          "description": "Turkish (F)"
+      },
+      {
+          "id": "tr(intl)",
+          "description": "Turkish (intl., with dead keys)"
+      },
+      {
+          "id": "tr(ku)",
+          "description": "Kurdish (Turkey, Latin Q)"
+      },
+      {
+          "id": "tr(ku_alt)",
+          "description": "Kurdish (Turkey, Latin Alt-Q)"
+      },
+      {
+          "id": "tr(ku_f)",
+          "description": "Kurdish (Turkey, F)"
+      },
+      {
+          "id": "tw",
+          "description": "Taiwanese"
+      },
+      {
+          "id": "tw(indigenous)",
+          "description": "Taiwanese (indigenous)"
+      },
+      {
+          "id": "tw(saisiyat)",
+          "description": "Saisiyat (Taiwan)"
+      },
+      {
+          "id": "ua(crh)",
+          "description": "Crimean Tatar (Turkish Q)"
+      },
+      {
+          "id": "ua(crh_alt)",
+          "description": "Crimean Tatar (Turkish Alt-Q)"
+      },
+      {
+          "id": "ua(crh_f)",
+          "description": "Crimean Tatar (Turkish F)"
+      },
+      {
+          "id": "us",
+          "description": "English (US)"
+      },
+      {
+          "id": "us(alt-intl)",
+          "description": "English (US, alt. intl.)"
+      },
+      {
+          "id": "us(altgr-intl)",
+          "description": "English (intl., with AltGr dead keys)"
+      },
+      {
+          "id": "us(colemak)",
+          "description": "English (Colemak)"
+      },
+      {
+          "id": "us(colemak_dh)",
+          "description": "English (Colemak-DH)"
+      },
+      {
+          "id": "us(colemak_dh_iso)",
+          "description": "English (Colemak-DH ISO)"
+      },
+      {
+          "id": "us(colemak_dh_ortho)",
+          "description": "English (Colemak-DH Ortholinear)"
+      },
+      {
+          "id": "us(colemak_dh_wide)",
+          "description": "English (Colemak-DH Wide)"
+      },
+      {
+          "id": "us(colemak_dh_wide_iso)",
+          "description": "English (Colemak-DH Wide ISO)"
+      },
+      {
+          "id": "us(dvorak)",
+          "description": "English (Dvorak)"
+      },
+      {
+          "id": "us(dvorak-alt-intl)",
+          "description": "English (Dvorak, alt. intl.)"
+      },
+      {
+          "id": "us(dvorak-classic)",
+          "description": "English (classic Dvorak)"
+      },
+      {
+          "id": "us(dvorak-intl)",
+          "description": "English (Dvorak, intl., with dead keys)"
+      },
+      {
+          "id": "us(dvorak-l)",
+          "description": "English (Dvorak, left-handed)"
+      },
+      {
+          "id": "us(dvorak-mac)",
+          "description": "English (Dvorak, Macintosh)"
+      },
+      {
+          "id": "us(dvorak-r)",
+          "description": "English (Dvorak, right-handed)"
+      },
+      {
+          "id": "us(dvp)",
+          "description": "English (programmer Dvorak)"
+      },
+      {
+          "id": "us(euro)",
+          "description": "English (US, euro on 5)"
+      },
+      {
+          "id": "us(haw)",
+          "description": "Hawaiian"
+      },
+      {
+          "id": "us(hbs)",
+          "description": "Serbo-Croatian (US)"
+      },
+      {
+          "id": "us(intl)",
+          "description": "English (US, intl., with dead keys)"
+      },
+      {
+          "id": "us(mac)",
+          "description": "English (Macintosh)"
+      },
+      {
+          "id": "us(norman)",
+          "description": "English (Norman)"
+      },
+      {
+          "id": "us(olpc2)",
+          "description": "English (the divide/multiply toggle the layout)"
+      },
+      {
+          "id": "us(symbolic)",
+          "description": "English (US, Symbolic)"
+      },
+      {
+          "id": "us(workman)",
+          "description": "English (Workman)"
+      },
+      {
+          "id": "us(workman-intl)",
+          "description": "English (Workman, intl., with dead keys)"
+      },
+      {
+          "id": "uz(latin)",
+          "description": "Uzbek (Latin)"
+      },
+      {
+          "id": "vn",
+          "description": "Vietnamese"
+      },
+      {
+          "id": "vn(fr)",
+          "description": "Vietnamese (France)"
+      },
+      {
+          "id": "vn(us)",
+          "description": "Vietnamese (US)"
+      }
+  ],
+  "/api/software/issues/product": [],
+  "/api/software/issues/software": [],
+  "/api/storage/issues": [],
+  "/api/users/issues": [],
+  "/api/storage/devices/system": [
+      {
+          "deviceInfo": {
+              "sid": 43,
+              "name": "/dev/sda",
+              "description": "VBOX HARDDISK"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 34359738368,
+              "shrinking": {
+                  "unsupported": [
+                      "Resizing is not supported by this device."
+                  ]
+              },
+              "start": 0,
+              "systems": [
+                  "openSUSE Tumbleweed"
+              ],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VB3935ee15-b5f3a849"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-1",
+                  "pci-0000:00:0d.0-ata-1.0"
+              ]
+          },
+          "component": null,
+          "drive": {
+              "type": "disk",
+              "vendor": "VBOX",
+              "model": "VBOX HARDDISK",
+              "bus": "IDE",
+              "busId": "",
+              "driver": [
+                  "ahci",
+                  "sd"
+              ],
+              "transport": "",
+              "info": {
+                  "sdCard": false,
+                  "dellBOSS": false
+              }
+          },
+          "filesystem": null,
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": null,
+          "partitionTable": {
+              "type": "gpt",
+              "partitions": [
+                  47,
+                  48,
+                  49
+              ],
+              "unusedSlots": []
+          },
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 42,
+              "name": "/dev/sdb",
+              "description": "VBOX HARDDISK"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 17179869184,
+              "shrinking": {
+                  "unsupported": [
+                      "Resizing is not supported by this device."
+                  ]
+              },
+              "start": 0,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VBe1cb5ed4-a9b4fdc9"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-2",
+                  "pci-0000:00:0d.0-ata-2.0"
+              ]
+          },
+          "component": null,
+          "drive": {
+              "type": "disk",
+              "vendor": "VBOX",
+              "model": "VBOX HARDDISK",
+              "bus": "IDE",
+              "busId": "",
+              "driver": [
+                  "ahci",
+                  "sd"
+              ],
+              "transport": "",
+              "info": {
+                  "sdCard": false,
+                  "dellBOSS": false
+              }
+          },
+          "filesystem": null,
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": null,
+          "partitionTable": {
+              "type": "msdos",
+              "partitions": [
+                  45
+              ],
+              "unusedSlots": []
+          },
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 47,
+              "name": "/dev/sda1",
+              "description": "EFI System Partition Partition"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 536870912,
+              "shrinking": {
+                  "unsupported": [
+                      "This filesystem does not support shrinking.",
+                      "The filesystem is full.",
+                      "Combined limitations of partition and filesystem prevent resizing."
+                  ]
+              },
+              "start": 2048,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VB3935ee15-b5f3a849-part1"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-1-part1",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-partnum/1",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-partuuid/3356bdf3-1b72-43cc-a65d-ce867f3594db",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-uuid/27E4-E566",
+                  "pci-0000:00:0d.0-ata-1.0-part1"
+              ]
+          },
+          "component": null,
+          "drive": null,
+          "filesystem": {
+              "sid": 51,
+              "type": "FAT",
+              "mountPath": "",
+              "label": ""
+          },
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": {
+              "device": 43,
+              "efi": true
+          },
+          "partitionTable": null,
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 48,
+              "name": "/dev/sda2",
+              "description": "Btrfs Partition"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 29727129600,
+              "shrinking": {
+                  "supported": 2504941568
+              },
+              "start": 1050624,
+              "systems": [
+                  "openSUSE Tumbleweed"
+              ],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VB3935ee15-b5f3a849-part2"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-1-part2",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-partnum/2",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-partuuid/38030ce0-1526-4ea9-bc87-99cbbbe410eb",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-uuid/bb1b2297-89cf-46a7-ab16-ec8087a1601d",
+                  "pci-0000:00:0d.0-ata-1.0-part2"
+              ]
+          },
+          "component": null,
+          "drive": null,
+          "filesystem": {
+              "sid": 53,
+              "type": "Btrfs",
+              "mountPath": "",
+              "label": ""
+          },
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": {
+              "device": 43,
+              "efi": false
+          },
+          "partitionTable": null,
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 49,
+              "name": "/dev/sda3",
+              "description": "Swap Partition"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 4094672384,
+              "shrinking": {
+                  "supported": 40960
+              },
+              "start": 59111424,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VB3935ee15-b5f3a849-part3"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-1-part3",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-partnum/3",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-partuuid/570048e6-6513-4592-8055-0ada5460b358",
+                  "pci-0000:00:0d.0-ata-1.0-part/by-uuid/c8e62ae3-eed1-4136-b569-7efa553cbb01",
+                  "pci-0000:00:0d.0-ata-1.0-part3"
+              ]
+          },
+          "component": null,
+          "drive": null,
+          "filesystem": {
+              "sid": 52,
+              "type": "Swap",
+              "mountPath": "",
+              "label": ""
+          },
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": {
+              "device": 43,
+              "efi": false
+          },
+          "partitionTable": null,
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 45,
+              "name": "/dev/sdb1",
+              "description": "Ext4 Partition"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 17178820608,
+              "shrinking": {
+                  "supported": 128360448
+              },
+              "start": 2048,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VBe1cb5ed4-a9b4fdc9-part1"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-2-part1",
+                  "pci-0000:00:0d.0-ata-2.0-part/by-partnum/1",
+                  "pci-0000:00:0d.0-ata-2.0-part/by-partuuid/3799e94e-01",
+                  "pci-0000:00:0d.0-ata-2.0-part/by-uuid/2120d52c-33f2-4e6c-90d6-288bfe97e74b",
+                  "pci-0000:00:0d.0-ata-2.0-part1"
+              ]
+          },
+          "component": null,
+          "drive": null,
+          "filesystem": {
+              "sid": 50,
+              "type": "Ext4",
+              "mountPath": "",
+              "label": ""
+          },
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": {
+              "device": 42,
+              "efi": false
+          },
+          "partitionTable": null,
+          "raid": null
+      }
+  ],
+  "/api/storage/proposal/usable_devices": [
+      43,
+      42
+  ],
+  "/api/software/proposal": {
+      "size": "5.1 GiB",
+      "patterns": {
+          "enhanced_base": 1,
+          "kde": 0,
+          "x11_yast": 1,
+          "sw_management": 1,
+          "office": 1,
+          "fonts": 1,
+          "kde_plasma": 1,
+          "kde_multimedia": 1,
+          "apparmor": 1,
+          "kde_games": 1,
+          "kde_utilities_opt": 1,
+          "kde_internet": 1,
+          "minimal_base": 1,
+          "base": 1,
+          "kde_pim": 1,
+          "documentation": 1,
+          "kde_utilities": 1,
+          "games": 1,
+          "kde_yast": 1,
+          "x11": 1,
+          "x11_enhanced": 1,
+          "multimedia": 1,
+          "fonts_opt": 1,
+          "kde_office": 1,
+          "yast2_basis": 1,
+          "yast2_desktop": 1
+      }
+  },
+  "/api/storage/proposal/settings": {
+      "target": "disk",
+      "targetDevice": "/dev/sda",
+      "targetPVDevices": null,
+      "configureBoot": true,
+      "bootDevice": "",
+      "defaultBootDevice": "/dev/sda",
+      "encryptionPassword": "",
+      "encryptionMethod": "luks2",
+      "encryptionPBKDFunction": "pbkdf2",
+      "spacePolicy": "delete",
+      "spaceActions": [
+          {
+              "device": "/dev/sda1",
+              "action": "force_delete"
+          },
+          {
+              "device": "/dev/sda2",
+              "action": "force_delete"
+          },
+          {
+              "device": "/dev/sda3",
+              "action": "force_delete"
+          }
+      ],
+      "volumes": [
+          {
+              "mountPath": "/",
+              "mountOptions": [],
+              "target": "default",
+              "targetDevice": "",
+              "fsType": "Btrfs",
+              "minSize": 18790481920,
+              "maxSize": null,
+              "autoSize": true,
+              "snapshots": true,
+              "transactional": false,
+              "outline": {
+                  "required": true,
+                  "fsTypes": [
+                      "Btrfs",
+                      "Ext2",
+                      "Ext3",
+                      "Ext4",
+                      "XFS"
+                  ],
+                  "supportAutoSize": true,
+                  "adjustByRam": false,
+                  "snapshotsConfigurable": true,
+                  "snapshotsAffectSizes": true,
+                  "sizeRelevantVolumes": [
+                      "/home"
+                  ]
+              }
+          },
+          {
+              "mountPath": "swap",
+              "mountOptions": [],
+              "target": "default",
+              "targetDevice": "",
+              "fsType": "Swap",
+              "minSize": 8329916416,
+              "maxSize": 8329916416,
+              "autoSize": true,
+              "snapshots": false,
+              "transactional": false,
+              "outline": {
+                  "required": false,
+                  "fsTypes": [
+                      "Swap"
+                  ],
+                  "supportAutoSize": true,
+                  "adjustByRam": true,
+                  "snapshotsConfigurable": false,
+                  "snapshotsAffectSizes": false,
+                  "sizeRelevantVolumes": []
+              }
+          }
+      ]
+  },
+  "/api/storage/proposal/actions": [
+      {
+          "device": 48,
+          "text": "Delete partition /dev/sda2 (27.69 GiB)",
+          "subvol": false,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 49,
+          "text": "Delete partition /dev/sda3 (3.81 GiB)",
+          "subvol": false,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 47,
+          "text": "Delete partition /dev/sda1 (512.00 MiB)",
+          "subvol": false,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 43,
+          "text": "Delete GPT on /dev/sda",
+          "subvol": false,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 43,
+          "text": "Create GPT on /dev/sda",
+          "subvol": false,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 124,
+          "text": "Create partition /dev/sda1 (8.00 MiB) as BIOS Boot Partition",
+          "subvol": false,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 125,
+          "text": "Create partition /dev/sda2 (24.23 GiB) for / with btrfs",
+          "subvol": false,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 146,
+          "text": "Create partition /dev/sda3 (7.76 GiB) for swap",
+          "subvol": false,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 66,
+          "text": "Delete subvolume @/.snapshots/2/snapshot on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 65,
+          "text": "Delete subvolume @/.snapshots/1/snapshot on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 64,
+          "text": "Delete subvolume @/.snapshots on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 63,
+          "text": "Delete subvolume @/home on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 62,
+          "text": "Delete subvolume @/opt on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 61,
+          "text": "Delete subvolume @/root on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 60,
+          "text": "Delete subvolume @/srv on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 59,
+          "text": "Delete subvolume @/usr/local on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 58,
+          "text": "Delete subvolume @/var on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 57,
+          "text": "Delete subvolume @/boot/grub2/i386-pc on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 56,
+          "text": "Delete subvolume @/boot/grub2/x86_64-efi on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 55,
+          "text": "Delete subvolume @ on /dev/sda2 (27.69 GiB)",
+          "subvol": true,
+          "delete": true,
+          "resize": false
+      },
+      {
+          "device": 129,
+          "text": "Create subvolume @ on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 144,
+          "text": "Create subvolume @/boot/grub2/x86_64-efi on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 142,
+          "text": "Create subvolume @/boot/grub2/i386-pc on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 140,
+          "text": "Create subvolume @/var on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 138,
+          "text": "Create subvolume @/usr/local on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 136,
+          "text": "Create subvolume @/srv on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 134,
+          "text": "Create subvolume @/root on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 132,
+          "text": "Create subvolume @/opt on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      },
+      {
+          "device": 130,
+          "text": "Create subvolume @/home on /dev/sda2 (24.23 GiB)",
+          "subvol": true,
+          "delete": false,
+          "resize": false
+      }
+  ],
+  "/api/storage/product/params": {
+      "mountPoints": [
+          "/",
+          "swap",
+          "/home"
+      ],
+      "encryptionMethods": [
+          "luks2"
+      ]
+  },
+  "/api/software/patterns": [
+      {
+          "name": "yast2_desktop",
+          "category": "Base Technologies",
+          "icon": "./yast",
+          "description": "YaST tools for desktop system administration.",
+          "summary": "YaST Desktop Utilities",
+          "order": "1222"
+      },
+      {
+          "name": "office",
+          "category": "Desktop Functions",
+          "icon": "./pattern-office",
+          "description": "Office software for your desktop environment including LibreOffice.",
+          "summary": "Office Software",
+          "order": "1640"
+      },
+      {
+          "name": "xfce",
+          "category": "Graphical Environments",
+          "icon": "./pattern-xfce",
+          "description": "Xfce is a lightweight desktop environment for various *NIX systems.",
+          "summary": "XFCE Desktop Environment",
+          "order": "1310"
+      },
+      {
+          "name": "yast2_server",
+          "category": "Base Technologies",
+          "icon": "./yast",
+          "description": "YaST tools for server system administration.",
+          "summary": "YaST Server Utilities",
+          "order": "1224"
+      },
+      {
+          "name": "basic_desktop",
+          "category": "Graphical Environments",
+          "icon": "./pattern-x11",
+          "description": "This pattern installs a rather basic desktop (icewm)",
+          "summary": "A basic desktop (based on IceWM)",
+          "order": "1802"
+      },
+      {
+          "name": "gnome",
+          "category": "Graphical Environments",
+          "icon": "./pattern-gnome-wayland",
+          "description": "The GNOME desktop environment is an intuitive and attractive desktop for users.\nThis pattern installs components for GNOME to run with Wayland and X11 technologies.",
+          "summary": "GNOME Desktop Environment (Wayland)",
+          "order": "1010"
+      },
+      {
+          "name": "multimedia",
+          "category": "Desktop Functions",
+          "icon": "./pattern-multimedia",
+          "description": "Multimedia players, sound editing tools, video and image manipulation applications.",
+          "summary": "Multimedia",
+          "order": "1580"
+      },
+      {
+          "name": "yast2_basis",
+          "category": "Base Technologies",
+          "icon": "./yast",
+          "description": "YaST tools for basic system administration.",
+          "summary": "YaST Base Utilities",
+          "order": "1220"
+      },
+      {
+          "name": "kde",
+          "category": "Graphical Environments",
+          "icon": "./pattern-kde",
+          "description": "Packages providing the Plasma desktop environment and applications from KDE.",
+          "summary": "KDE Applications and Plasma Desktop",
+          "order": "1110"
+      }
+  ],
+  "/api/users/first": {
+      "fullName": "",
+      "userName": "",
+      "password": "",
+      "autologin": false,
+      "data": {}
+  },
+  "/api/users/root": {
+      "password": true,
+      "sshkey": ""
+  },
+  "/api/network/state": {
+      "hostname": "",
+      "connectivity": true,
+      "wireless_enabled": true,
+      "networking_enabled": true
+  },
+  "/api/network/devices": [
+      {
+          "name": "lo",
+          "type": "loopback",
+          "macAddress": "00:00:00:00:00:00",
+          "ipConfig": {
+              "method4": "disabled",
+              "method6": "disabled",
+              "addresses": [
+                  "127.0.0.1/8",
+                  "::1"
+              ],
+              "ignoreAutoDns": false
+          },
+          "connection": "lo",
+          "state": "activated",
+          "stateReason": 0
+      },
+      {
+          "name": "enp0s3",
+          "type": "ethernet",
+          "macAddress": "08:00:27:1C:75:41",
+          "ipConfig": {
+              "method4": "disabled",
+              "method6": "disabled",
+              "addresses": [
+                  "192.168.1.7/24",
+                  "fe80::2513:b5f:fd31:558b/64"
+              ],
+              "nameservers": [
+                  "192.168.1.1"
+              ],
+              "ignoreAutoDns": false,
+              "gateway4": "192.168.1.1",
+              "routes4": [
+                  {
+                      "destination": "0.0.0.0/0",
+                      "nextHop": "192.168.1.1",
+                      "metric": 100
+                  },
+                  {
+                      "destination": "192.168.1.0/24",
+                      "metric": 100
+                  }
+              ],
+              "routes6": [
+                  {
+                      "destination": "fe80::/64",
+                      "metric": 1024
+                  }
+              ]
+          },
+          "connection": "Wired connection 1",
+          "state": "activated",
+          "stateReason": 0
+      }
+  ],
+  "/api/network/connections": [
+      {
+          "id": "Wired connection 1",
+          "method4": "auto",
+          "method6": "auto",
+          "ignoreAutoDns": false,
+          "interface": "enp0s3",
+          "status": "up"
+      }
+  ],
+  "/api/network/wifi": [],
+  "/api/network/connections/Wired connection 1": {
+      "id": "Wired connection 1",
+      "method4": "auto",
+      "method6": "auto",
+      "ignoreAutoDns": false,
+      "interface": "enp0s3",
+      "status": "up"
+  },
+  "/api/storage/product/volume_for?mount_path=%2F": {
+      "mountPath": "/",
+      "mountOptions": [],
+      "target": "default",
+      "targetDevice": "",
+      "fsType": "Btrfs",
+      "minSize": 0,
+      "maxSize": null,
+      "autoSize": true,
+      "snapshots": true,
+      "transactional": false,
+      "outline": {
+          "required": true,
+          "fsTypes": [
+              "Btrfs",
+              "Ext2",
+              "Ext3",
+              "Ext4",
+              "XFS"
+          ],
+          "supportAutoSize": true,
+          "adjustByRam": false,
+          "snapshotsConfigurable": true,
+          "snapshotsAffectSizes": true,
+          "sizeRelevantVolumes": [
+              "/home"
+          ]
+      }
+  },
+  "/api/storage/product/volume_for?mount_path=": {
+      "mountPath": "",
+      "mountOptions": [],
+      "target": "default",
+      "targetDevice": "",
+      "fsType": "XFS",
+      "minSize": 1073741824,
+      "maxSize": null,
+      "autoSize": false,
+      "snapshots": false,
+      "transactional": false,
+      "outline": {
+          "required": false,
+          "fsTypes": [
+              "Btrfs",
+              "Ext2",
+              "Ext3",
+              "Ext4",
+              "XFS",
+              "FAT"
+          ],
+          "supportAutoSize": false,
+          "adjustByRam": false,
+          "snapshotsConfigurable": false,
+          "snapshotsAffectSizes": false,
+          "sizeRelevantVolumes": []
+      }
+  },
+  "/api/storage/product/volume_for?mount_path=swap": {
+      "mountPath": "swap",
+      "mountOptions": [],
+      "target": "default",
+      "targetDevice": "",
+      "fsType": "Swap",
+      "minSize": 0,
+      "maxSize": null,
+      "autoSize": true,
+      "snapshots": false,
+      "transactional": false,
+      "outline": {
+          "required": false,
+          "fsTypes": [
+              "Swap"
+          ],
+          "supportAutoSize": true,
+          "adjustByRam": true,
+          "snapshotsConfigurable": false,
+          "snapshotsAffectSizes": false,
+          "sizeRelevantVolumes": []
+      }
+  },
+  "/api/storage/product/volume_for?mount_path=%2Fhome": {
+      "mountPath": "/home",
+      "mountOptions": [],
+      "target": "default",
+      "targetDevice": "",
+      "fsType": "XFS",
+      "minSize": 10737418240,
+      "maxSize": null,
+      "autoSize": false,
+      "snapshots": false,
+      "transactional": false,
+      "outline": {
+          "required": false,
+          "fsTypes": [
+              "Btrfs",
+              "Ext2",
+              "Ext3",
+              "Ext4",
+              "XFS"
+          ],
+          "supportAutoSize": false,
+          "adjustByRam": false,
+          "snapshotsConfigurable": false,
+          "snapshotsAffectSizes": false,
+          "sizeRelevantVolumes": []
+      }
+  },
+  "/api/storage/devices/dirty": false,
+  "/api/storage/devices/result": [
+      {
+          "deviceInfo": {
+              "sid": 124,
+              "name": "/dev/sda1",
+              "description": "BIOS Boot Partition"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 8388608,
+              "shrinking": {
+                  "supported": 512
+              },
+              "start": 2048,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VB3935ee15-b5f3a849-part1"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-1-part1",
+                  "pci-0000:00:0d.0-ata-1.0-part1"
+              ]
+          },
+          "component": null,
+          "drive": null,
+          "filesystem": null,
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": {
+              "device": 43,
+              "efi": false
+          },
+          "partitionTable": null,
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 125,
+              "name": "/dev/sda2",
+              "description": "Btrfs Partition"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 26019364864,
+              "shrinking": {
+                  "supported": 268435456
+              },
+              "start": 18432,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VB3935ee15-b5f3a849-part2"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-1-part2",
+                  "pci-0000:00:0d.0-ata-1.0-part2"
+              ]
+          },
+          "component": null,
+          "drive": null,
+          "filesystem": {
+              "sid": 126,
+              "type": "Btrfs",
+              "mountPath": "/",
+              "label": ""
+          },
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": {
+              "device": 43,
+              "efi": false
+          },
+          "partitionTable": null,
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 45,
+              "name": "/dev/sdb1",
+              "description": "Ext4 Partition"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 17178820608,
+              "shrinking": {
+                  "supported": 128360448
+              },
+              "start": 2048,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VBe1cb5ed4-a9b4fdc9-part1"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-2-part1",
+                  "pci-0000:00:0d.0-ata-2.0-part/by-partnum/1",
+                  "pci-0000:00:0d.0-ata-2.0-part/by-partuuid/3799e94e-01",
+                  "pci-0000:00:0d.0-ata-2.0-part/by-uuid/2120d52c-33f2-4e6c-90d6-288bfe97e74b",
+                  "pci-0000:00:0d.0-ata-2.0-part1"
+              ]
+          },
+          "component": null,
+          "drive": null,
+          "filesystem": {
+              "sid": 50,
+              "type": "Ext4",
+              "mountPath": "",
+              "label": ""
+          },
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": {
+              "device": 42,
+              "efi": false
+          },
+          "partitionTable": null,
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 42,
+              "name": "/dev/sdb",
+              "description": "VBOX HARDDISK"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 17179869184,
+              "shrinking": {
+                  "unsupported": [
+                      "Resizing is not supported by this device."
+                  ]
+              },
+              "start": 0,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VBe1cb5ed4-a9b4fdc9"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-2",
+                  "pci-0000:00:0d.0-ata-2.0"
+              ]
+          },
+          "component": null,
+          "drive": {
+              "type": "disk",
+              "vendor": "VBOX",
+              "model": "VBOX HARDDISK",
+              "bus": "IDE",
+              "busId": "",
+              "driver": [
+                  "ahci",
+                  "sd"
+              ],
+              "transport": "",
+              "info": {
+                  "sdCard": false,
+                  "dellBOSS": false
+              }
+          },
+          "filesystem": null,
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": null,
+          "partitionTable": {
+              "type": "msdos",
+              "partitions": [
+                  45
+              ],
+              "unusedSlots": []
+          },
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 43,
+              "name": "/dev/sda",
+              "description": "VBOX HARDDISK"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 34359738368,
+              "shrinking": {
+                  "unsupported": [
+                      "Resizing is not supported by this device."
+                  ]
+              },
+              "start": 0,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VB3935ee15-b5f3a849"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-1",
+                  "pci-0000:00:0d.0-ata-1.0"
+              ]
+          },
+          "component": null,
+          "drive": {
+              "type": "disk",
+              "vendor": "VBOX",
+              "model": "VBOX HARDDISK",
+              "bus": "IDE",
+              "busId": "",
+              "driver": [
+                  "ahci",
+                  "sd"
+              ],
+              "transport": "",
+              "info": {
+                  "sdCard": false,
+                  "dellBOSS": false
+              }
+          },
+          "filesystem": null,
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": null,
+          "partitionTable": {
+              "type": "gpt",
+              "partitions": [
+                  124,
+                  125,
+                  146
+              ],
+              "unusedSlots": []
+          },
+          "raid": null
+      },
+      {
+          "deviceInfo": {
+              "sid": 146,
+              "name": "/dev/sda3",
+              "description": "Swap Partition"
+          },
+          "blockDevice": {
+              "active": true,
+              "encrypted": false,
+              "size": 8330919424,
+              "shrinking": {
+                  "supported": 40960
+              },
+              "start": 50837504,
+              "systems": [],
+              "udevIds": [
+                  "ata-VBOX_HARDDISK_VB3935ee15-b5f3a849-part3"
+              ],
+              "udevPaths": [
+                  "pci-0000:00:0d.0-ata-1-part3",
+                  "pci-0000:00:0d.0-ata-1.0-part3"
+              ]
+          },
+          "component": null,
+          "drive": null,
+          "filesystem": {
+              "sid": 147,
+              "type": "Swap",
+              "mountPath": "swap",
+              "label": ""
+          },
+          "lvmLv": null,
+          "lvmVg": null,
+          "md": null,
+          "multipath": null,
+          "partition": {
+              "device": 43,
+              "efi": false
+          },
+          "partitionTable": null,
+          "raid": null
+      }
+  ],
+  "/api/storage/dasd/supported": false,
+  "/api/storage/zfcp/supported": false,
+  "/api/storage/iscsi/initiator": {
+      "name": "iqn.1996-04.de.suse:01:43a1539a97",
+      "ibft": false
+  },
+  "/api/storage/iscsi/nodes": [],
+  "/api/manager/logs": ""
+}
