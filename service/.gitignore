@@ -1,6 +1,6 @@
 *.gem
 # the spec file is generated
-/package/*.spec
+/package/rubygem*.spec
 *.rbc
 /.config
 /coverage/
