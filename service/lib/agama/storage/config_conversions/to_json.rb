@@ -19,35 +19,29 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/to_json_conversions/config"
+
 module Agama
   module Storage
-    module Configs
-      # Btrfs configuration.
-      class Btrfs
-        # Whether there are snapshots.
+    module ConfigConversions
+      # Config conversion to JSON hash according to schema.
+      class ToJSON
+        # @param config [Storage::Config]
+        def initialize(config)
+          @config = config
+        end
+
+        # Performs the conversion to Hash according to the JSON schema.
         #
-        # @return [Boolean, nil]
-        attr_accessor :snapshots
-
-        # @return [Boolean, nil]
-        attr_accessor :read_only
-
-        # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list
-        #   may be applied depending on the mount path of the volume
-        attr_accessor :subvolumes
-
-        # @return [String, nil]
-        attr_accessor :default_subvolume
-
-        # @return [Boolean]
-        def snapshots?
-          !!snapshots
+        # @return [Hash]
+        def convert
+          ToJSONConversions::Config.new(config).convert
         end
 
-        # @return [Boolean]
-        def read_only?
-          !!read_only
-        end
+      private
+
+        # @return [Storage::Config]
+        attr_reader :config
       end
     end
   end

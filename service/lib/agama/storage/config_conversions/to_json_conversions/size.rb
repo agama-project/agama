@@ -19,34 +19,37 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/to_json_conversions/base"
+require "agama/storage/configs/size"
+
 module Agama
   module Storage
-    module Configs
-      # Btrfs configuration.
-      class Btrfs
-        # Whether there are snapshots.
-        #
-        # @return [Boolean, nil]
-        attr_accessor :snapshots
+    module ConfigConversions
+      module ToJSONConversions
+        # Size conversion to JSON hash according to schema.
+        class Size < Base
+          # @see Base
+          def self.config_type
+            Configs::Size
+          end
 
-        # @return [Boolean, nil]
-        attr_accessor :read_only
+        private
 
-        # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list
-        #   may be applied depending on the mount path of the volume
-        attr_accessor :subvolumes
+          # @see Base#conversions
+          def conversions
+            {
+              min: config.min&.to_i,
+              max: convert_max_size
+            }
+          end
 
-        # @return [String, nil]
-        attr_accessor :default_subvolume
+          # @return [Integer, nil]
+          def convert_max_size
+            max = config.max
+            return if max.nil? || max.unlimited?
 
-        # @return [Boolean]
-        def snapshots?
-          !!snapshots
-        end
-
-        # @return [Boolean]
-        def read_only?
-          !!read_only
+            max.to_i
+          end
         end
       end
     end

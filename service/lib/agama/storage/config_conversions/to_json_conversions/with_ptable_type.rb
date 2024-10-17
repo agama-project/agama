@@ -21,32 +21,14 @@
 
 module Agama
   module Storage
-    module Configs
-      # Btrfs configuration.
-      class Btrfs
-        # Whether there are snapshots.
-        #
-        # @return [Boolean, nil]
-        attr_accessor :snapshots
-
-        # @return [Boolean, nil]
-        attr_accessor :read_only
-
-        # @return [Array<Y2Storage::SubvolSpecification>, nil] if nil, a historical fallback list
-        #   may be applied depending on the mount path of the volume
-        attr_accessor :subvolumes
-
-        # @return [String, nil]
-        attr_accessor :default_subvolume
-
-        # @return [Boolean]
-        def snapshots?
-          !!snapshots
-        end
-
-        # @return [Boolean]
-        def read_only?
-          !!read_only
+    module ConfigConversions
+      module ToJSONConversions
+        # Mixin for partition table type conversion to JSON.
+        module WithPtableType
+          # @return [String, nil]
+          def convert_ptable_type
+            config.ptable_type&.to_s
+          end
         end
       end
     end
