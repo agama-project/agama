@@ -9,16 +9,6 @@
   # "msgfmt" tool
   BuildRequires:  gettext-runtime
   Requires:       dbus-1-common
-:post_install: |-
-  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/agama.conf
-  install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
-  install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/org.opensuse.Agama*.service
-  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/agama.service %{buildroot}%{_unitdir}/agama.service
-  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
-  install --directory %{buildroot}/usr/share/agama/conf.d
-  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
-  # run a script for installing the translations
-  sh "%{SOURCE2}" "%{SOURCE1}"
 :main:
   :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
@@ -75,16 +65,6 @@
     Requires:       yast2-schema
     # lsblk
     Requires:       util-linux-systemd
-  :filelist: "%{_datadir}/dbus-1/agama.conf\n
-    %dir %{_datadir}/dbus-1/agama-services\n
-    %{_datadir}/dbus-1/agama-services/org.opensuse.Agama*.service\n
-    %{_unitdir}/agama.service\n
-    %{_unitdir}/agama-proxy-setup.service\n
-    %dir %{_datadir}/agama\n
-    %dir %{_datadir}/agama/conf.d\n
-    %{_datadir}/agama/conf.d\n
-    %dir /usr/share/YaST2\n
-    /usr/share/YaST2/locale\n"
 :scripts:
   :pre: "%service_add_pre agama.service"
   :post: "%service_add_post agama.service"
