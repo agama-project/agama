@@ -54,9 +54,7 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "id"
-            ],
+            "required": ["id"],
             "properties": {
               "id": {
                 "title": "Connection ID",
@@ -79,22 +77,12 @@
               "method4": {
                 "title": "IPv4 configuration method",
                 "type": "string",
-                "enum": [
-                  "auto",
-                  "manual",
-                  "link-local",
-                  "disabled"
-                ]
+                "enum": ["auto", "manual", "link-local", "disabled"]
               },
               "method6": {
                 "title": "IPv6 configuration method",
                 "type": "string",
-                "enum": [
-                  "auto",
-                  "manual",
-                  "link-local",
-                  "disabled"
-                ]
+                "enum": ["auto", "manual", "link-local", "disabled"]
               },
               "gateway4": {
                 "title": "Connection gateway address",
@@ -162,12 +150,7 @@
                   "mode": {
                     "title": "Wireless network mode",
                     "type": "string",
-                    "enum": [
-                      "infrastructure",
-                      "adhoc",
-                      "mesh",
-                      "ap"
-                    ]
+                    "enum": ["infrastructure", "adhoc", "mesh", "ap"]
                   },
                   "hidden": {
                     "title": "Indicates that the wireless network is not broadcasting its SSID",
@@ -176,15 +159,12 @@
                   "band": {
                     "title": "Frequency band of the wireless network",
                     "type": "string",
-                    "enum": [
-                      "a",
-                      "bg"
-                    ]
+                    "enum": ["a", "bg"]
                   },
                   "channel": {
                     "title": "Wireless channel of the wireless network",
                     "type": "integer",
-                    "minimum" : 0
+                    "minimum": 0
                   },
                   "bssid": {
                     "title": "Only allow connection to this mac address",
@@ -195,12 +175,7 @@
                     "items": {
                       "title": "A list of group/broadcast encryption algorithms",
                       "type": "string",
-                      "enum": [
-                        "wep40",
-                        "wep104",
-                        "tkip",
-                        "ccmp"
-                      ]
+                      "enum": ["wep40", "wep104", "tkip", "ccmp"]
                     }
                   },
                   "pairwiseAlgorithms": {
@@ -208,10 +183,7 @@
                     "items": {
                       "title": "A list of pairwise encryption algorithms",
                       "type": "string",
-                      "enum": [
-                        "tkip",
-                        "ccmp"
-                      ]
+                      "enum": ["tkip", "ccmp"]
                     }
                   },
                   "wpaProtocolVersions": {
@@ -219,10 +191,7 @@
                     "items": {
                       "title": "A list of allowed WPA protocol versions",
                       "type": "string",
-                      "enum": [
-                        "wpa",
-                        "rsn"
-                      ]
+                      "enum": ["wpa", "rsn"]
                     }
                   },
                   "pmf": {
@@ -369,10 +338,7 @@
                   "peapVersion": {
                     "title": "Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property",
                     "type": "string",
-                    "enum": [
-                      "0",
-                      "1"
-                    ]
+                    "enum": ["0", "1"]
                   },
                   "peapLabel": {
                     "title": "Force the use of the new PEAP label during key derivation",
@@ -406,11 +372,7 @@
           "examples": ["nots3cr3t"]
         }
       },
-      "required": [
-        "fullName",
-        "userName",
-        "password"
-      ]
+      "required": ["fullName", "userName", "password"]
     },
     "root": {
       "title": "Root authentication settings",
@@ -906,7 +868,7 @@
                             "description": "Name of a disk device.",
                             "type": "string",
                             "examples": ["/dev/vda"]
-                            }
+                          }
                         }
                       },
                       {
@@ -967,6 +929,30 @@
       "items": {
         "type": "object"
       }
+    },
+    "scripts": {
+      "title": "User-defined installation scripts",
+      "description": "User-defined scripts to run at different points of the installation",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pre": {
+          "title": "Pre-installation scripts",
+          "description": "User-defined scripts to run before the installation starts",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/script"
+          }
+        },
+        "post": {
+          "title": "Post-installation scripts",
+          "description": "User-defined scripts to run after the installation finishes",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/script"
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -1013,7 +999,12 @@
           },
           "minItems": 1,
           "maxItems": 2,
-          "examples": [[1024, "current"], ["1 GiB", "5 GiB"], [1024, "2 GiB"], ["2 GiB"]]
+          "examples": [
+            [1024, "current"],
+            ["1 GiB", "5 GiB"],
+            [1024, "2 GiB"],
+            ["2 GiB"]
+          ]
         },
         {
           "title": "Size range",
@@ -1206,8 +1197,22 @@
         {
           "title": "File system type",
           "enum": [
-            "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
-            "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
+            "bcachefs",
+            "btrfs",
+            "exfat",
+            "ext2",
+            "ext3",
+            "ext4",
+            "f2fs",
+            "jfs",
+            "nfs",
+            "nilfs2",
+            "ntfs",
+            "reiserfs",
+            "swap",
+            "tmpfs",
+            "vfat",
+            "xfs"
           ]
         },
         {
@@ -1330,7 +1335,15 @@
               },
               "id": {
                 "title": "Partition ID",
-                "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
+                "enum": [
+                  "linux",
+                  "swap",
+                  "lvm",
+                  "raid",
+                  "esp",
+                  "prep",
+                  "bios_boot"
+                ]
               },
               "size": {
                 "title": "Partition size",
@@ -1394,6 +1407,28 @@
     "lvStripeSize": {
       "title": "Stripe size",
       "$ref": "#/$defs/sizeValue"
+    },
+    "script": {
+      "title": "User-defined installation script",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Script name, to be used as file name",
+          "type": "string"
+        },
+        "body": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang",
+          "type": "string"
+        },
+        "url": {
+          "title": "Script URL",
+          "description": "URL to fetch the script from"
+        }
+      },
+      "required": ["name"],
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
     }
   }
 }

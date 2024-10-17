@@ -26,7 +26,7 @@ use crate::error::ServiceError;
 use crate::install_settings::InstallSettings;
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
-    software::SoftwareStore, storage::StorageStore, users::UsersStore,
+    scripts::ScriptsStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
 };
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
@@ -42,6 +42,7 @@ pub struct Store {
     software: SoftwareStore,
     storage: StorageStore,
     localization: LocalizationStore,
+    scripts: ScriptsStore,
 }
 
 impl Store {
@@ -53,6 +54,7 @@ impl Store {
             product: ProductStore::new(http_client.clone())?,
             software: SoftwareStore::new(http_client.clone())?,
             storage: StorageStore::new(http_client.clone())?,
+            scripts: ScriptsStore::new(http_client),
         })
     }
 
@@ -64,6 +66,7 @@ impl Store {
             user: Some(self.users.load().await?),
             product: Some(self.product.load().await?),
             localization: Some(self.localization.load().await?),
+            scripts: Some(self.scripts.load().await?),
             ..Default::default()
         };
 
@@ -85,6 +88,9 @@ impl Store {
         if let Some(product) = &settings.product {
             self.product.store(product).await?;
         }
+        if let Some(scripts) = &settings.scripts {
+            self.scripts.store(scripts).await?;
+        }
         // ordering: localization after product as some product may miss some locales
         if let Some(localization) = &settings.localization {
             self.localization.store(localization).await?;
@@ -98,6 +104,7 @@ impl Store {
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?
         }
+
         Ok(())
     }
 }

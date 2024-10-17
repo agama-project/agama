@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 16 15:09:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for running user-defined scripts after the
+  installation (gh#agama-project/agama#1673).
+
+-------------------------------------------------------------------
 Mon Oct 14 14:52:26 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed shell injection vulnerability in the internal API

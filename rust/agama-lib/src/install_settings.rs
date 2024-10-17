@@ -23,7 +23,7 @@
 //! This module implements the mechanisms to load and store the installation settings.
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
-    software::SoftwareSettings, users::UserSettings,
+    scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
@@ -55,6 +55,8 @@ pub struct InstallSettings {
     pub network: Option<NetworkSettings>,
     #[serde(default)]
     pub localization: Option<LocalizationSettings>,
+    #[serde(default)]
+    pub scripts: Option<ScriptsConfig>,
 }
 
 impl InstallSettings {

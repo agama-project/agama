@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 16 15:07:33 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for running user-defined scripts before and after the
+  installation (gh#agama-project/agama#1673).
+
+-------------------------------------------------------------------
 Wed Oct 16 07:55:27 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - Implemented option for providing remote API address for the CLI
