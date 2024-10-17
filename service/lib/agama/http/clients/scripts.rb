@@ -21,6 +21,7 @@
 
 require "uri"
 require "net/http"
+require "json"
 
 module Agama
   module HTTP
@@ -28,12 +29,12 @@ module Agama
       # HTTP client to interact with the scripts API.
       class Scripts
         def initialize
-          @base_url = "http://localhost/api"
+          @base_url = "http://localhost/api/"
         end
 
         # Runs the scripts
         def run(group)
-          Net::HTTP.post(uri("/api/scripts/run"), group, headers)
+          Net::HTTP.post(uri("scripts/run"), group.to_json, headers)
         end
 
       private
@@ -44,8 +45,8 @@ module Agama
 
         def headers
           @headers = {
-            Accept:        "application/json",
-            Authorization: "Bearer #{auth_token}"
+            "Content-Type": "application/json",
+            Authorization:  "Bearer #{auth_token}"
           }
         end
 
