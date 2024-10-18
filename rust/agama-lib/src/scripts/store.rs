@@ -78,14 +78,7 @@ impl ScriptsStore {
         scripts
             .iter()
             .filter(|s| s.group == group)
-            .map(Self::to_script_config)
+            .map(|s| s.into())
             .collect()
-    }
-
-    fn to_script_config(script: &Script) -> ScriptConfig {
-        ScriptConfig {
-            name: script.name.clone(),
-            source: script.source.clone(),
-        }
     }
 }

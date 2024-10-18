@@ -42,3 +42,12 @@ pub struct ScriptConfig {
     #[serde(flatten)]
     pub source: ScriptSource,
 }
+
+impl From<&Script> for ScriptConfig {
+    fn from(value: &Script) -> Self {
+        ScriptConfig {
+            name: value.name.clone(),
+            source: value.source.clone(),
+        }
+    }
+}
