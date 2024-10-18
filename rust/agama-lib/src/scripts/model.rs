@@ -136,7 +136,8 @@ impl ScriptsRepository {
 
     /// Runs the scripts in the given group.
     ///
-    /// They run in the order they were added to the repository.
+    /// They run in the order they were added to the repository. If does not return an error
+    /// if running a script fails, although it logs the problem.
     pub async fn run(&self, group: ScriptsGroup) -> Result<(), ScriptError> {
         let workdir = self.workdir.join(group.to_string());
         std::fs::create_dir_all(&workdir)?;

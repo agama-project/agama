@@ -46,6 +46,7 @@ impl ScriptsClient {
         self.client.post_void("/scripts/run", &group).await
     }
 
+    /// Returns the user-defined scripts.
     pub async fn scripts(&self) -> Result<Vec<Script>, ServiceError> {
         self.client.get("/scripts").await
     }
