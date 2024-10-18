@@ -40,15 +40,21 @@ pub enum ScriptsGroup {
     Post,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum ScriptSource {
+    /// Script's body.
+    Text { body: String },
+    /// URL to get the script from.
+    Remote { url: String },
+}
+
 /// Represents a script to run as part of the installation process.
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Script {
     /// Script's name.
     pub name: String,
-    /// Script's body. Either the body or the URL must be specified.
-    pub body: Option<String>,
-    /// URL to get the script from. Either the body or the URL must be specified.
-    pub url: Option<String>,
+    #[serde(flatten)]
+    pub source: ScriptSource,
     /// Script's group
     pub group: ScriptsGroup,
 }
@@ -88,12 +94,10 @@ impl Script {
             .mode(0o500)
             .open(&path)?;
 
-        if let Some(url) = &self.url {
-            Transfer::get(url, file)?;
-        } else if let Some(body) = &self.body {
-            write!(file, "{}", &body)?;
-        }
-        // FIXME: else: invalid script definition
+        match &self.source {
+            ScriptSource::Text { body } => write!(file, "{}", &body)?,
+            ScriptSource::Remote { url } => Transfer::get(&url, file)?,
+        };
 
         Ok(())
     }
@@ -164,7 +168,7 @@ mod test {
     use tempfile::TempDir;
     use tokio::test;
 
-    use crate::scripts::Script;
+    use crate::scripts::{Script, ScriptSource};
 
     use super::{ScriptsGroup, ScriptsRepository};
 
@@ -175,8 +179,7 @@ mod test {
 
         let script = Script {
             name: "test".to_string(),
-            body: Some("".to_string()),
-            url: None,
+            source: ScriptSource::Text("".to_string()),
             group: ScriptsGroup::Pre,
         };
         repo.add(script);
@@ -193,8 +196,7 @@ mod test {
 
         let script = Script {
             name: "test".to_string(),
-            body: Some(body),
-            url: None,
+            source: ScriptSource::Text(body),
             group: ScriptsGroup::Pre,
         };
         repo.add(script);

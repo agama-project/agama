@@ -47,8 +47,7 @@ impl ScriptsClient {
     }
 
     pub async fn scripts(&self) -> Result<Vec<Script>, ServiceError> {
-        let scripts = self.client.get("/scripts").await?;
-        Ok(scripts)
+        self.client.get("/scripts").await
     }
 
     /// Remove all the user-defined scripts.

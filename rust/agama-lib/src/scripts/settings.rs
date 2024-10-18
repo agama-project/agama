@@ -20,6 +20,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::ScriptSource;
+
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScriptsConfig {
@@ -36,10 +38,7 @@ pub struct ScriptsConfig {
 pub struct ScriptConfig {
     /// Script's name.
     pub name: String,
-    /// Script's body. Either the body or the URL must be specified.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub body: Option<String>,
-    /// URL to get the script from. Either the body or the URL must be specified.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub url: Option<String>,
+    /// Script's source
+    #[serde(flatten)]
+    pub source: ScriptSource,
 }

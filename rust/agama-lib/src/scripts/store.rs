@@ -38,7 +38,6 @@ impl ScriptsStore {
     }
 
     pub async fn load(&self) -> Result<ScriptsConfig, ServiceError> {
-        // TODO: Ok(self.client.scripts().await.unwrap())
         let scripts = self.client.scripts().await?;
 
         Ok(ScriptsConfig {
@@ -70,8 +69,7 @@ impl ScriptsStore {
     fn to_script(config: &ScriptConfig, group: ScriptsGroup) -> Script {
         Script {
             name: config.name.clone(),
-            url: config.url.clone(),
-            body: config.body.clone(),
+            source: config.source.clone(),
             group,
         }
     }
@@ -87,8 +85,7 @@ impl ScriptsStore {
     fn to_script_config(script: &Script) -> ScriptConfig {
         ScriptConfig {
             name: script.name.clone(),
-            url: script.url.clone(),
-            body: script.body.clone(),
+            source: script.source.clone(),
         }
     }
 }
