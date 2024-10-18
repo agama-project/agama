@@ -83,13 +83,13 @@ impl Store {
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
         }
+        if let Some(scripts) = &settings.scripts {
+            self.scripts.store(scripts).await?;
+        }
         // order is important here as network can be critical for connection
         // to registration server and selecting product is important for rest
         if let Some(product) = &settings.product {
             self.product.store(product).await?;
-        }
-        if let Some(scripts) = &settings.scripts {
-            self.scripts.store(scripts).await?;
         }
         // ordering: localization after product as some product may miss some locales
         if let Some(localization) = &settings.localization {
