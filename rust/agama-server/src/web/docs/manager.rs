@@ -1,24 +1,27 @@
-use utoipa::openapi::{ComponentsBuilder, OpenApi, OpenApiBuilder, PathsBuilder};
+use utoipa::openapi::{ComponentsBuilder, PathsBuilder};
+
+use super::ApiDocBuilder;
 
 pub struct ManagerApiDocBuilder;
 
-impl ManagerApiDocBuilder {
-    pub fn build() -> OpenApi {
-        let paths = PathsBuilder::new()
+impl ApiDocBuilder for ManagerApiDocBuilder {
+    fn title(&self) -> String {
+        "Manager HTTP API".to_string()
+    }
+
+    fn paths(&self) -> utoipa::openapi::Paths {
+        PathsBuilder::new()
             .path_from::<crate::manager::web::__path_finish_action>()
             .path_from::<crate::manager::web::__path_install_action>()
             .path_from::<crate::manager::web::__path_installer_status>()
             .path_from::<crate::manager::web::__path_probe_action>()
-            .build();
+            .build()
+    }
 
-        let components = ComponentsBuilder::new()
+    fn components(&self) -> utoipa::openapi::Components {
+        ComponentsBuilder::new()
             .schema_from::<agama_lib::manager::InstallationPhase>()
             .schema_from::<crate::manager::web::InstallerStatus>()
-            .build();
-
-        OpenApiBuilder::new()
-            .paths(paths)
-            .components(Some(components))
             .build()
     }
 }

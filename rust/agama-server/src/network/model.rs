@@ -1569,7 +1569,7 @@ pub enum NetworkChange {
     DeviceUpdated(String, Device),
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Serialize)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct IEEE8021XConfig {
     pub eap: Vec<EAPMethod>,
     pub phase2_auth: Option<Phase2AuthMethod>,
@@ -1658,7 +1658,7 @@ impl TryFrom<IEEE8021XConfig> for IEEE8021XSettings {
 #[error("Invalid eap method: {0}")]
 pub struct InvalidEAPMethod(String);
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub enum EAPMethod {
     LEAP,
     MD5,
@@ -1705,7 +1705,7 @@ impl fmt::Display for EAPMethod {
 #[error("Invalid phase2-auth method: {0}")]
 pub struct InvalidPhase2AuthMethod(String);
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub enum Phase2AuthMethod {
     PAP,
     CHAP,

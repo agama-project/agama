@@ -57,8 +57,6 @@ enum Commands {
     /// This command starts the server in the given ports. The secondary port, if enabled, uses SSL.
     /// If no certificate is specified, agama-web-server generates a self-signed one.
     Serve(ServeArgs),
-    /// Generates the API documentation in OpenAPI format.
-    Openapi,
 }
 
 /// Manage Agama's HTTP/JSON API.
@@ -378,16 +376,9 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Display the API documentation in OpenAPI format.
-fn openapi_command() -> anyhow::Result<()> {
-    println!("{}", web::ApiDoc::build().to_pretty_json()?);
-    Ok(())
-}
-
 async fn run_command(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
         Commands::Serve(options) => serve_command(options).await,
-        Commands::Openapi => openapi_command(),
     }
 }
 

@@ -4886,6 +4886,7 @@ name = "xtask"
 version = "0.1.0"
 dependencies = [
  "agama-cli",
+ "agama-server",
  "clap",
  "clap-markdown",
  "clap_complete",

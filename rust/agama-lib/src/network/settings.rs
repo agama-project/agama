@@ -114,7 +114,7 @@ impl Default for BondSettings {
 }
 
 /// IEEE 802.1x (EAP) settings
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IEEE8021XSettings {
     /// List of EAP methods used

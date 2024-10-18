@@ -1,10 +1,16 @@
-use utoipa::openapi::{ComponentsBuilder, OpenApi, OpenApiBuilder, PathsBuilder};
+use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
+
+use super::ApiDocBuilder;
 
 pub struct StorageApiDocBuilder;
 
-impl StorageApiDocBuilder {
-    pub fn build() -> OpenApi {
-        let paths = PathsBuilder::new()
+impl ApiDocBuilder for StorageApiDocBuilder {
+    fn title(&self) -> String {
+        "Storage HTTP API".to_string()
+    }
+
+    fn paths(&self) -> Paths {
+        PathsBuilder::new()
             .path_from::<crate::storage::web::__path_actions>()
             .path_from::<crate::storage::web::__path_devices_dirty>()
             .path_from::<crate::storage::web::__path_get_proposal_settings>()
@@ -23,9 +29,11 @@ impl StorageApiDocBuilder {
             .path_from::<crate::storage::web::iscsi::__path_nodes>()
             .path_from::<crate::storage::web::iscsi::__path_update_initiator>()
             .path_from::<crate::storage::web::iscsi::__path_update_node>()
-            .build();
+            .build()
+    }
 
-        let components = ComponentsBuilder::new()
+    fn components(&self) -> Components {
+        ComponentsBuilder::new()
             .schema_from::<crate::storage::web::ProductParams>()
             .schema_from::<crate::storage::web::iscsi::DiscoverParams>()
             .schema_from::<crate::storage::web::iscsi::InitiatorParams>()
@@ -62,11 +70,6 @@ impl StorageApiDocBuilder {
             .schema_from::<agama_lib::storage::client::iscsi::ISCSIInitiator>()
             .schema_from::<agama_lib::storage::client::iscsi::ISCSINode>()
             .schema_from::<agama_lib::storage::client::iscsi::LoginResult>()
-            .build();
-
-        OpenApiBuilder::new()
-            .paths(paths)
-            .components(Some(components))
             .build()
     }
 }
