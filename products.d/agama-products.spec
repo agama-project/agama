@@ -41,7 +41,7 @@ install -m 0644 *.yaml %{buildroot}%{_datadir}/agama/products.d
 Summary:        Definition of openSUSE products for the Agama installer.
 
 %description opensuse
-Definition of openSUSE products (Tumbleweed, Leap and MicroOS) for the Agama installer.
+Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the Agama installer.
 
 %files opensuse
 %doc README.md
@@ -51,6 +51,7 @@ Definition of openSUSE products (Tumbleweed, Leap and MicroOS) for the Agama ins
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
 %{_datadir}/agama/products.d/leap_160.yaml
+%{_datadir}/agama/products.d/slowroll.yaml
 
 %package sle
 Summary:        Definition of SLE products for the Agama installer.
