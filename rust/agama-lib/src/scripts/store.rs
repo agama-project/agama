@@ -57,6 +57,7 @@ impl ScriptsStore {
                 .await?;
         }
 
+        // TODO: find a better play to run the scripts (before probing).
         self.client.run_scripts(ScriptsGroup::Pre).await?;
 
         Ok(())
