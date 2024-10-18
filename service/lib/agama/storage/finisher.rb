@@ -227,7 +227,7 @@ module Agama
 
           Yast.import "Installation"
           require "fileutils"
-          logs_dir = File.join(Yast::Installation.destdir, "var", "log", "agama")
+          logs_dir = File.join(Yast::Installation.destdir, "var", "log", "agama-installation")
           FileUtils.mkdir_p(logs_dir)
           FileUtils.cp_r(SCRIPTS_DIR, logs_dir)
         end
