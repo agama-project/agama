@@ -1,5 +1,6 @@
 id: Slowroll
 name: Slowroll
+archs: x86_64
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
