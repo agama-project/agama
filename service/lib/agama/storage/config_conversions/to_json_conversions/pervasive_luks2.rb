@@ -19,13 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
+require "agama/storage/config_conversions/to_json_conversions/base"
+require "agama/storage/configs/encryption"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module ToJSONConversions
+        # Pervasive Luks2 conversion to JSON hash according to schema.
+        class PervasiveLuks2 < Base
+          # @see Base
+          def self.config_type
+            Configs::Encryption
+          end
+
+        private
+
+          # @see Base#conversions
+          def conversions
+            {
+              password: config.password
+            }
+          end
+        end
+      end
     end
   end
 end

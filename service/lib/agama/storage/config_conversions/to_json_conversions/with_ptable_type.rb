@@ -19,13 +19,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
-
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module ToJSONConversions
+        # Mixin for partition table type conversion to JSON.
+        module WithPtableType
+          # @return [String, nil]
+          def convert_ptable_type
+            config.ptable_type&.to_s
+          end
+        end
+      end
     end
   end
 end

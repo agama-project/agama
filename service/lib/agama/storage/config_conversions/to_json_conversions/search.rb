@@ -19,13 +19,39 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
+require "agama/storage/config_conversions/to_json_conversions/base"
+require "agama/storage/configs/search"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module ToJSONConversions
+        # Search conversion to JSON hash according to schema.
+        class Search < Base
+          # @see Base
+          def self.config_type
+            Configs::Search
+          end
+
+        private
+
+          # @see Base#conversions
+          def conversions
+            {
+              condition:  convert_condition,
+              ifNotFound: config.if_not_found.to_s
+            }
+          end
+
+          # @return [Hash, nil]
+          def convert_condition
+            name = config.name || config.device&.name
+            return unless name
+
+            { name: name }
+          end
+        end
+      end
     end
   end
 end
