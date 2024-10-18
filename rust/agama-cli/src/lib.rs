@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::scripts::{ScriptsClient, ScriptsGroup};
 use clap::{Args, Parser};
 
 mod auth;
@@ -93,17 +92,8 @@ async fn probe() -> anyhow::Result<()> {
 ///
 /// Before starting, it makes sure that the manager is idle.
 ///
-/// * `client`: base HTTP client.
 /// * `manager`: the manager client.
-/// * `max_attempts`: number of attempts to start the installation.
-async fn install(
-    client: BaseHTTPClient,
-    manager: &ManagerClient<'_>,
-    max_attempts: u8,
-) -> anyhow::Result<()> {
-    let scripts = ScriptsClient::new(client);
-    scripts.run_scripts(ScriptsGroup::Pre).await?;
-
+async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Result<()> {
     if manager.is_busy().await {
         println!("Agama's manager is busy. Waiting until it is ready...");
     }
@@ -219,7 +209,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         Commands::Profile(subcommand) => run_profile_cmd(subcommand).await?,
         Commands::Install => {
             let manager = build_manager().await?;
-            install(client, &manager, 3).await?
+            install(&manager, 3).await?
         }
         Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,
         // TODO: logs command was originally designed with idea that agama's cli and agama

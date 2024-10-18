@@ -57,6 +57,8 @@ impl ScriptsStore {
                 .await?;
         }
 
+        self.client.run_scripts(ScriptsGroup::Pre).await?;
+
         Ok(())
     }
 
