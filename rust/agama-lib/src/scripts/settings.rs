@@ -20,7 +20,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::ScriptSource;
+use super::{Script, ScriptSource};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
