@@ -31,7 +31,10 @@ require "agama/storage/volume"
 require "agama/config"
 require "agama/issue"
 require "agama/dbus/clients/questions"
+require "agama/http"
 require "y2storage/issue"
+
+Yast.import "Installation"
 
 describe Agama::Storage::Manager do
   include Agama::RSpec::StorageHelpers
@@ -43,12 +46,23 @@ describe Agama::Storage::Manager do
     File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
   let(:config) { Agama::Config.from_file(config_path) }
+  let(:scripts_client) { instance_double(Agama::HTTP::Clients::Scripts, run: nil) }
+  let(:scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts") }
+  let(:tmp_dir) { Dir.mktmpdir }
 
   before do
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::DBus::Clients::Software).to receive(:instance).and_return(software)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     allow(Agama::Security).to receive(:new).and_return(security)
+    allow(Agama::HTTP::Clients::Scripts).to receive(:new).and_return(scripts_client)
+    allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
+    stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
+      File.join(tmp_dir, "run", "agama", "scripts"))
+  end
+
+  after do
+    FileUtils.remove_entry(tmp_dir)
   end
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
@@ -305,6 +319,7 @@ describe Agama::Storage::Manager do
   describe "#finish" do
     before do
       mock_storage(devicegraph: devicegraph)
+      allow(File).to receive(:directory?).and_call_original
       allow(File).to receive(:directory?).with("/iguana").and_return iguana
       allow(copy_files_class).to receive(:new).and_return(copy_files)
     end
@@ -315,15 +330,29 @@ describe Agama::Storage::Manager do
     let(:devicegraph) { "staging-plain-partitions.yaml" }
 
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
-       "copy logs, and umounts the file systems" do
+       "copy logs, runs the post-installation scripts, and umounts the file systems" do
       expect(security).to receive(:write)
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
+      expect(scripts_client).to receive(:run).with("post")
       expect(Yast::WFM).to receive(:CallFunction).with("copy_logs_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       storage.finish
+    end
+
+    context "when scripts artifacts exist" do
+      before do
+        FileUtils.mkdir_p(scripts_dir)
+        FileUtils.touch(File.join(scripts_dir, "test.sh"))
+      end
+
+      it "copies the artifacts to the installed system" do
+        storage.finish
+        expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
+          "scripts"))
+      end
     end
 
     context "when executed on top of iguana" do
