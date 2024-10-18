@@ -21,135 +21,9 @@ AutoYaST options.
 }
 ~~~
 
-### Problems with the AutoYaST Schema
-
-The AutoYaST schema is far from ideal and it presents some problems.
-
-#### Everything Is a Drive or a Partition Section
-
-This could seem a minor detail, but it has several implications:
-
-* A `<type>` property is required to indicated the type of device (*RAID*, *LVM*, etc).
-* Some properties could be meaningless for the selected type.
-* Having a `<partitions>` section for describing logical volumes is weird.
-
-~~~xml
-<partitioning config:type="list">
-  <drive>
-    <type config:type="symbol">CT_LVM</type>
-    <disklabel>gpt</disklabel> <!-- It does not make sense for a volume group -->
-    <partitions config:type="list"> <!-- It really means logical volumes -->
-      <partition>
-        <partition_id>131</partition_id> <!-- It does not make sense for a logical volume -->
-      </partition>
-    </partitions>
-  </drive>
-</partitioning>
-~~~
-
-#### Directly Formatting Devices is Hammered
-
-A `<partitions>` section is still needed for directly formatting a device, which shows the abuse of
-the schema.
-
-~~~xml
-<partitioning config:type="list">
-  <drive>
-    <disklabel>none</disklabel>
-    <partitions config:type="list">
-      <partition>
-        <filesystem config:type="symbol">btrfs</filesystem>
-      </partition>
-    </partitions>
-  </drive>
-</partitioning>
-~~~
-
-#### Selecting Devices is Difficult and Limited
-
-The AutoYaST schema allows selecting specific devices by using the `<skip_list>` property. This
-forces to use inverse logic when looking for a device. For example, if you want to select a disk
-bigger than 1 GiB, then you have to skip the smaller disks:
-
-~~~xml
-<partitioning config:type="list">
-  <drive>
-    <skip_list config:type="list">
-      <!-- skip devices that are smaller than 1GB -->
-      <listentry>
-        <skip_key>size_k</skip_key>
-        <skip_value>1048576</skip_value>
-        <skip_if_less_than config:type="boolean">true</skip_if_less_than>
-      </listentry>
-    </skip_list>
-  </drive>
-</partitioning>
-~~~
-
-The partitions to remove are selected by means of the `<use>` property, which is very limited. It
-only allows removing everything, nothing, specific partition numbers or linux partitions.
-
-~~~xml
-<partitioning config:type="list">
-  <drive>
-    <device>/dev/sdc</device>
-    <use>2</use> <!-- Removes the partition number 2 -->
-    <partitions config:type="list">
-      ...
-    </partitions>
-  </drive>
-</partitioning>
-~~~
-
-The property `<partition_nr>` is used for reusing a partition. Again, this option is very limited,
-allowing selecting a partition only by its number.
-
-~~~xml
-<partitioning config:type="list">
-  <drive>
-    <device>/dev/sdc</device>
-    <partitions config:type="list">
-      <partition>
-        <partition_nr>1</partition_nr> <!-- Reuse the partition number 1 -->
-      </partition>
-    </partitions>
-  </drive>
-</partitioning>
-~~~
-
-Note that you could indicate the same partition number for deleting (`<use>`) and for reusing (`<partition_nr>`).
-
-#### Devices Are Created in a Indirect Way
-
-For creating new LVM volume groups, RAIDS, etc, it is necessary to indicate which devices to use as
-logical volumes or as RAID members. In AutoYaST, the partitions have to indicate the device they are
-going to be used by.
-
-~~~xml
-<partitioning config:type="list">
-  <drive>
-    <device>/dev/sda</device>
-    <partitions config:type="list">
-      <partition>
-        <raid_name>/dev/md/0</raid_name> <!-- Indicate what device is going to use it -->
-      </partition>
-    </partitions>
-  </drive>
-  <drive>
-    <device>/dev/sdb</device>
-    <partitions config:type="list">
-      <partition>
-        <raid_name>/dev/md/0</raid_name>
-      </partition>
-    </partitions>
-  </drive>
-  <drive>
-    <device>/dev/md/0</device>
-  </drive>
-</partitioning>
-~~~
-
-It would be more natural to indicate the used devices directly in the RAID or logical volume drive.
+Although that special section is offered for backwards compatibility and to ease gradual migration
+from AutoYaST to Agama, there are no plans to introduce any improvement or new feature in the legacy
+mode due to the [intrinsic limitations](./autoyast_storage.md) of the original AutoYaST schema.
 
 ### Implementation Considerations for AutoYaST Specification
 
@@ -251,6 +125,7 @@ MdRaid
   level [<string>]
   chunkSize [<number>]
   devices [<<string|Search>[]>]
+  size [<Size>]
   encryption [<Encryption>]
   filesystem [Filesystem]
   ptableType [<string>]
@@ -409,9 +284,13 @@ If the size is completely omitted for a device that already exists (ie. combined
 then Agama would act as if both min and max limits would have been set to "current" (which implies
 the partition or logical volume will not be resized).
 
-On the other hand, if the size is omitted for a device that will be created, Agama will decide the
-size based on the mount point and the settings of the product. From a more technical point of view,
-that translates into the following:
+Moreover, if the size is omitted for a device that will be created, Agama will determine the size
+limits when possible. There are basically two kinds of situations in which that automatic size
+calculation can be performed.
+
+On the one hand, the device may directly contain a `filesystem` entry specifying a mount point.
+Agama will then use the settings of the product to set the size limits. From a more technical point
+of view, that translates into the following:
 
  - If the mount path corresponds to a volume supporting `auto_size`, that feature will be used.
  - If it corresponds to a volume without `auto_size`, the min and max sizes of the volumes will be
@@ -420,6 +299,52 @@ that translates into the following:
  - If the product does not specify a default volume, the behavior is still not defined (there are
    several reasonable options).
 
+On the other hand, the size limits of some devices can be omitted if they can be inferred from other
+related devices following some rules.
+
+ - For an MD RAID defined on top of new partitions, it is possible to specify the size of all the
+   partitions that will become members of the RAID but is also possible to specify the desired size
+   for the resulting MD RAID and then the size limits of each partition will be automatically
+   inferred with a small margin of error of a few MiBs.
+ - Something similar happens with a partition that acts as the **only** physical volume of a new LVM
+   volume group. Specifying the sizes of the logical volumes could be enough, the size limits of the
+   underlying partition will match the necessary values to make the logical volumes fit. In this
+   case the calculated partition size is fully accurate.
+ - The two previous scenarios can be combined. For a new MD RAID that acts as the **only** physical
+   volume of a new LVM volume group, the sizes of the logical volumes can be used to precisely
+   determine what should be the size of the MD and, based on that, what should be the almost
+   exact size of the underlying new partitions defined to act as members of the RAID.
+
+The two described mechanisms to automatically determine size limits can be combined. Even creating
+a configuration with no explicit sizes at all like the following example.
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions": [
+                { "alias": "pv" }
+              ]
+        }
+    ],
+    "volumeGroups": [
+        {
+            "name": "system",
+            "physicalVolumes": [ "pv" ],
+            "logicalVolumes": [
+                { "filesystem": { "path": "/" } },
+                { "filesystem": { "path": "swap" } }
+            ]
+        }
+    ]
+}
+```
+
+Assuming the product configuration specifies a root filesystem with a minimum size of 5 GiB and a
+max of 20 GiB and sets that the swap must have a size equivalent to the RAM on the system, then
+those values would be applied to the logical volumes and the partition with alias "pv" would be
+sized accordingly, taking into account all the overheads and roundings introduced by the different
+technologies like LVM or the used partition table type.
 
 #### Under Discussion
 
@@ -855,6 +780,82 @@ space first by shrinking the partitions and deleting them only if shrinking is n
 }
 ```
 
+### Generating Partitions as MD RAID members
+
+MD arrays can be configured to explicitly use a set of devices by adding their aliases to the
+`devices` property.
+
+```json
+"storage": {
+  "drives": [
+    {
+      "search": "/dev/sda",
+      "partitions": [
+        { "alias": "sda-40", "size": "40 GiB" }
+      ]
+    },
+    {
+      "search": "/dev/sdb",
+      "partitions": [
+        { "alias": "sdb-40", "size": "40 GiB" }
+      ]
+    }
+  ],
+  "mdRaids": [
+    {
+      "devices": [ "sda-40", "sdb-40" ],
+      "level": "raid0"
+    }
+  ]
+}
+```
+
+The partitions acting as members can be automatically generated by simply indicating the target
+disks that will hold the partitions. For that, the `devices` section must contain a `generate`
+entry.
+
+```json
+"storage": {
+  "drives": [
+    { "search": "/dev/sda", "alias": "sda" },
+    { "search": "/dev/sdb", "alias": "sdb" },
+  ],
+  "mdRaids": [
+    {
+      "devices": [
+        {
+          "generate": {
+            "targetDisks": ["sda", "sdb" ],
+            "size": "40 GiB"
+          }
+        }
+      ]
+      "level": "raid0"
+    }
+  ]
+}
+```
+
+As explained at the section about sizes, it's also possible to set the size for the new RAID letting
+Agama calculate the corresponding sizes of the partitions used as members. That allows to use the
+short syntax for `generate`.
+
+```json
+"storage": {
+  "drives": [
+    { "search": "/dev/sda", "alias": "sda" },
+    { "search": "/dev/sdb", "alias": "sdb" },
+  ],
+  "mdRaids": [
+    {
+      "devices": [ { "generate": ["sda", "sdb" ] } ],
+      "level": "raid0",
+      "size": "40 GiB"
+    }
+  ]
+}
+```
+
 ### Generating Default Volumes
 
 Every product provides a configuration which defines the storage volumes (e.g., feasible file
@@ -936,9 +937,34 @@ The *mandatory* keyword can be used for only generating the mandatory partitions
 "storage": {
   "volumeGroups": [
     {
+      "name": "system",
       "logicalVolumes": [
         { "generate": "mandatory" }
       ]
+    }
+  ]
+}
+```
+
+The *default* and *mandatory* keywords can also be used to generate a set of formatted MD arrays.
+Assuming the default volumes are "/", "/home" and "swap", the following snippet would generate three
+RAIDs of the appropriate sizes and the corresponding six partitions needed to support them.
+
+```json
+"storage": {
+  "drives": [
+    { "search": "/dev/sda", "alias": "sda" },
+    { "search": "/dev/sdb", "alias": "sdb" },
+  ],
+  "mdRaids": [
+    {
+      "generate": {
+        "mdRaids": "default",
+        "level": "raid0",
+        "devices": [
+          { "generate": ["sda", "sdb"] }
+        ]
+      }
     }
   ]
 }
@@ -955,13 +981,14 @@ of the devices to use are added to the list of physical volumes:
     {
       "search": "/dev/vda",
       "partitions": [
-        { "alias": "pv2" },
-        { "alias": "pv1" }
+        { "alias": "pv2", "size": "100 GiB" },
+        { "alias": "pv1", "size": "20 GiB" }
       ]
     }
   ],
   "volumeGroups": [
     {
+      "name": "system",
       "physicalVolumes": ["pv1", "pv2"]
     }
   ]
@@ -982,6 +1009,7 @@ volumes:
   ],
   "volumeGroups": [
     {
+      "name": "system",
       "physicalVolumes": [
         { "generate": ["pvs-disk"] }
       ]
@@ -1004,6 +1032,7 @@ the *generate* section:
   ],
   "volumeGroups": [
     {
+      "name": "system",
       "physicalVolumes": [
         {
           "generate": {
