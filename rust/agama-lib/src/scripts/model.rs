@@ -41,6 +41,7 @@ pub enum ScriptsGroup {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
 pub enum ScriptSource {
     /// Script's body.
     Text { body: String },
