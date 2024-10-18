@@ -1,0 +1,53 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "encryption": {
+          "luks1": {
+            "password": "12345",
+            "cipher": "aes-xts-plain64",
+            "keySize": 512
+          }
+        }
+      },
+      {
+        "partitions": [
+          {
+            "encryption": {
+              "luks2": {
+                "password": "12345",
+                "cipher": "aes-xts-plain64",
+                "keySize": 512,
+                "pbkdFunction": "argon2i",
+                "label": "data"
+              }
+            }
+          },
+          {
+            "encryption": {
+              "pervasiveLuks2": {
+                "password": "12345"
+              }
+            }
+          },
+          {
+            "encryption": {
+              "tpmFde": {
+                "password": "12345"
+              }
+            }
+          },
+          {
+            "encryption": "protected_swap"
+          },
+          {
+            "encryption": "secure_swap"
+          },
+          {
+            "encryption": "random_swap"
+          }
+        ]
+      }
+    ]
+  }
+}
