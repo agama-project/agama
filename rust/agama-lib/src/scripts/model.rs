@@ -179,7 +179,9 @@ mod test {
 
         let script = Script {
             name: "test".to_string(),
-            source: ScriptSource::Text("".to_string()),
+            source: ScriptSource::Text {
+                body: "".to_string(),
+            },
             group: ScriptsGroup::Pre,
         };
         repo.add(script);
@@ -196,7 +198,7 @@ mod test {
 
         let script = Script {
             name: "test".to_string(),
-            source: ScriptSource::Text(body),
+            source: ScriptSource::Text { body },
             group: ScriptsGroup::Pre,
         };
         repo.add(script);
