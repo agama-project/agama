@@ -217,7 +217,9 @@ function reload(newLanguage) {
  */
 function InstallerL10nProvider({ children }) {
   const { connected } = useInstallerClientStatus();
-  const [language, setLanguage] = useState(undefined);
+  const [language, setLanguage] = useState(
+    process.env.AGAMA_DEMO === "replay" ? "en-us" : undefined,
+  );
   const [keymap, setKeymap] = useState(undefined);
   const [backendPending, setBackendPending] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
