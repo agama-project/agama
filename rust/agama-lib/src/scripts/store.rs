@@ -33,10 +33,6 @@ impl ScriptsStore {
         }
     }
 
-    pub fn new_with_client(client: ScriptsClient) -> Result<Self, ServiceError> {
-        Ok(Self { client })
-    }
-
     pub async fn load(&self) -> Result<ScriptsConfig, ServiceError> {
         let scripts = self.client.scripts().await?;
 
