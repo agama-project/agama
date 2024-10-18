@@ -1,13 +1,15 @@
 id: Slowroll
 name: Slowroll
+archs: x86_64
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
 # translations!!
 # ------------------------------------------------------------------------------
-description: 'A slightly slower rolling release of openSUSE designed to update
-  less often than Tumbleweed but more often than Leap without forcing users to
-  choose between "stable" and newer packages'
+description:
+  'An experimental and slightly slower rolling release of openSUSE designed
+  to update less often than Tumbleweed but more often than Leap without forcing users
+  to choose between "stable" and newer packages.'
 icon: Slowroll.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
@@ -71,7 +73,7 @@ storage:
           - path: var
             copy_on_write: false
           # Architecture specific subvolumes
-         - path: boot/grub2/arm64-efi
+          - path: boot/grub2/arm64-efi
             archs: aarch64
           - path: boot/grub2/arm-efi
             archs: arm
