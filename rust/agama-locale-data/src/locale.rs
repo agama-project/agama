@@ -26,7 +26,7 @@ use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
-#[derive(Clone, Debug, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, utoipa::ToSchema)]
 pub struct LocaleId {
     // ISO-639
     pub language: String,
@@ -100,9 +100,11 @@ static KEYMAP_ID_REGEX: OnceLock<Regex> = OnceLock::new();
 /// let id_with_dashes: KeymapId = "es-ast".parse().unwrap();
 /// assert_eq!(id, id_with_dashes);
 /// ```
-#[derive(Clone, Debug, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, utoipa::ToSchema)]
 pub struct KeymapId {
+    /// Keyboard layout (e.g., "es" in "es(ast)")
     pub layout: String,
+    /// Keyboard variante (e.g., "ast" in "es(ast)")
     pub variant: Option<String>,
 }
 

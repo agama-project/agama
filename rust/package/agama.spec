@@ -107,6 +107,14 @@ BuildArch:      noarch
 %description -n agama-cli-zsh-completion
 Zsh command-line completion support for %{name}-cli.
 
+%package -n agama-openapi
+Summary:        Agama's OpenAPI Specification
+
+%description -n agama-openapi
+The OpenAPI Specification (OAS) allows describing an HTTP API in an standard and
+language-agnostic way. This package contains the specification for Agama's HTTP
+API.
+
 %prep
 %autosetup -a1 -n agama
 # Remove exec bits to prevent an issue in fedora shebang checking. Uncomment only if required.
@@ -117,6 +125,7 @@ Zsh command-line completion support for %{name}-cli.
 cargo run --package xtask -- manpages
 gzip out/man/*
 cargo run --package xtask -- completions
+cargo run --package xtask -- openapi
 
 %install
 install -D -d -m 0755 %{buildroot}%{_bindir}
@@ -139,6 +148,10 @@ install -m 0644 %{_builddir}/agama/out/man/* %{buildroot}%{_mandir}/man1/
 install -Dm644 %{_builddir}/agama/out/shell/%{name}.bash %{buildroot}%{_datadir}/bash-completion/completions/%{name}
 install -Dm644 %{_builddir}/agama/out/shell/_%{name} %{buildroot}%{_datadir}/zsh/site-functions/_%{name}
 install -Dm644 %{_builddir}/agama/out/shell/%{name}.fish %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
+
+# install OpenAPI specification
+mkdir -p %{buildroot}%{_datadir}/agama/openapi
+install -m 0644 %{_builddir}/agama/out/openapi/* %{buildroot}%{_datadir}/agama/openapi
 
 %check
 PATH=$PWD/share/bin:$PATH
@@ -187,5 +200,10 @@ echo $PATH
 %files -n agama-cli-zsh-completion
 %dir %{_datadir}/zsh
 %{_datadir}/zsh/*
+
+%files -n agama-openapi
+%dir %{_datadir}/agama
+%dir %{_datadir}/agama/openapi
+%{_datadir}/agama/openapi/*.json
 
 %changelog

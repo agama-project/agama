@@ -43,7 +43,7 @@ pub struct Pattern {
 }
 
 /// Represents the reason why a pattern is selected.
-#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr, utoipa::ToSchema)]
 #[repr(u8)]
 pub enum SelectedBy {
     /// The pattern was selected by the user.

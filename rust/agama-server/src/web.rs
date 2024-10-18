@@ -41,7 +41,7 @@ use axum::Router;
 mod auth;
 pub mod common;
 mod config;
-mod docs;
+pub mod docs;
 mod event;
 mod http;
 mod service;
@@ -50,7 +50,6 @@ mod ws;
 
 use agama_lib::{connection, error::ServiceError};
 pub use config::ServiceConfig;
-pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
 use std::path::Path;
