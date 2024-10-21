@@ -49,6 +49,8 @@ $SUDO $ZYPPER install \
 
 # Packages required by Agama Ruby services (see ./service/package/gem2rpm.yml).
 # TODO extract list from gem2rpm.yml
+# Install rubygem-ruby-augeas from RPM, installing via bundler does not work in
+# Tumbleweed as it is not compatible with Ruby 3.3.
 $SUDO $ZYPPER install \
   dbus-1-common \
   dbus-1-daemon \
@@ -85,6 +87,7 @@ $SUDO $ZYPPER install \
   ntfsprogs \
   nvme-cli \
   open-iscsi \
+  "rubygem(ruby-augeas)" \
   quota \
   snapper \
   udftools \
