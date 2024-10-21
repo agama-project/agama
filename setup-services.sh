@@ -42,6 +42,7 @@ ZYPPER="zypper --non-interactive -v"
 $SUDO $ZYPPER install \
   gcc \
   gcc-c++ \
+  git \
   make \
   openssl-devel \
   ruby-devel \
@@ -137,6 +138,7 @@ $SUDO $ZYPPER install \
   gzip \
   jsonnet \
   lshw \
+  NetworkManager \
   pam-devel \
   python-langtable-data \
   tar \
