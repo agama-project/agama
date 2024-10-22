@@ -69,6 +69,31 @@ shared_examples "encryption issues" do
     end
   end
 
+  context "if TPM FDE is not possible" do
+    let(:encryption) do
+      {
+        tpmFde: {
+          password: "12345"
+        }
+      }
+    end
+
+    before do
+      allow_any_instance_of(Y2Storage::EncryptionMethod::TpmFde)
+        .to(receive(:possible?))
+        .and_return(false)
+    end
+
+    it "includes the expected issue" do
+      issues = subject.issues
+      expect(issues.size).to eq(1)
+
+      issue = issues.first
+      expect(issue.error?).to eq(true)
+      expect(issue.description).to match("'TPM-Based Full Disk Encrytion' is not available")
+    end
+  end
+
   context "with invalid method" do
     let(:encryption) { "protected_swap" }
     let(:filesystem) { { path: "/" } }

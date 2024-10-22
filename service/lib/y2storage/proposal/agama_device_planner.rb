@@ -87,14 +87,14 @@ module Y2Storage
         config.size.max.unlimited? || config.size.max > device.size
       end
 
-      # @param planned [Planned::Disk, Planned::Partition]
+      # @param planned [Planned::Disk, Planned::Partition, Planned::LvmLv]
       # @param config [#encryption, #filesystem]
       def configure_block_device(planned, config)
         configure_encryption(planned, config.encryption) if config.encryption
         configure_filesystem(planned, config.filesystem) if config.filesystem
       end
 
-      # @param planned [Planned::Disk, Planned::Partition]
+      # @param planned [Planned::Disk, Planned::Partition, Planned::LvmLv]
       # @param config [Agama::Storage::Configs::Filesystem]
       def configure_filesystem(planned, config)
         planned.mount_point = config.path
@@ -105,14 +105,14 @@ module Y2Storage
         configure_filesystem_type(planned, config.type) if config.type
       end
 
-      # @param planned [Planned::Disk, Planned::Partition]
+      # @param planned [Planned::Disk, Planned::Partition, Planned::LvmLv]
       # @param config [Agama::Storage::Configs::FilesystemType]
       def configure_filesystem_type(planned, config)
         planned.filesystem_type = config.fs_type
         configure_btrfs(planned, config.btrfs) if config.btrfs
       end
 
-      # @param planned [Planned::Disk, Planned::Partition]
+      # @param planned [Planned::Disk, Planned::Partition, Planned::LvmLv]
       # @param config [Agama::Storage::Configs::Btrfs]
       def configure_btrfs(planned, config)
         # TODO: we need to discuss what to do with transactional systems and the read_only
@@ -123,7 +123,7 @@ module Y2Storage
         planned.subvolumes = config.subvolumes
       end
 
-      # @param planned [Planned::Disk, Planned::Partition]
+      # @param planned [Planned::Disk, Planned::Partition, Planned::LvmLv]
       # @param config [Agama::Storage::Configs::Encryption]
       def configure_encryption(planned, config)
         planned.encryption_password = config.password
@@ -134,7 +134,7 @@ module Y2Storage
         planned.encryption_key_size = config.key_size
       end
 
-      # @param planned [Planned::Partition]
+      # @param planned [Planned::Partition, Planned::LvmLv]
       # @param config [Agama::Storage::Configs::Size]
       def configure_size(planned, config)
         planned.min_size = config.min

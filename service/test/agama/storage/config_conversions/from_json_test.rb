@@ -201,6 +201,28 @@ shared_examples "with encryption" do |config_proc|
       expect(encryption.label).to be_nil
     end
   end
+
+  context "if 'encryption' is 'tmpFde'" do
+    let(:encryption) do
+      {
+        tpmFde: {
+          password: "12345"
+        }
+      }
+    end
+
+    it "sets #encryption to the expected value" do
+      config = config_proc.call(subject.convert)
+      encryption = config.encryption
+      expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+      expect(encryption.method).to eq(Y2Storage::EncryptionMethod::TPM_FDE)
+      expect(encryption.password).to eq("12345")
+      expect(encryption.key_size).to be_nil
+      expect(encryption.pbkd_function).to be_nil
+      expect(encryption.cipher).to be_nil
+      expect(encryption.label).to be_nil
+    end
+  end
 end
 
 shared_examples "with filesystem" do |config_proc|

@@ -20,9 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_json_conversions/base"
-require "agama/storage/config_conversions/to_json_conversions/luks1"
-require "agama/storage/config_conversions/to_json_conversions/luks2"
-require "agama/storage/config_conversions/to_json_conversions/pervasive_luks2"
+require "agama/storage/config_conversions/to_json_conversions/encryption_properties"
 require "agama/storage/configs/encryption"
 
 module Agama
@@ -51,29 +49,41 @@ module Agama
             method = config.method
 
             if method.is?(:luks1)
-              convert_luks1
+              luks1_conversions
             elsif method.is?(:luks2)
-              convert_luks2
+              luks2_conversions
             elsif method.is?(:pervasive_luks2)
-              convert_pervasive_luks2
+              pervasive_luks2_conversions
+            elsif method.is?(:tpm_fde)
+              tpm_fde_conversions
             else
               {}
             end
           end
 
           # @return [Hash]
-          def convert_luks1
-            { luks1: ToJSONConversions::Luks1.new(config).convert }
+          def luks1_conversions
+            { luks1: convert_encryption_properties }
           end
 
           # @return [Hash]
-          def convert_luks2
-            { luks2: ToJSONConversions::Luks2.new(config).convert }
+          def luks2_conversions
+            { luks2: convert_encryption_properties }
           end
 
           # @return [Hash]
-          def convert_pervasive_luks2
-            { pervasiveLuks2: ToJSONConversions::PervasiveLuks2.new(config).convert }
+          def pervasive_luks2_conversions
+            { pervasiveLuks2: convert_encryption_properties }
+          end
+
+          # @return [Hash]
+          def tpm_fde_conversions
+            { tpmFde: convert_encryption_properties }
+          end
+
+          # @return [Hash, nil]
+          def convert_encryption_properties
+            ToJSONConversions::EncryptionProperties.new(config).convert
           end
 
           # @return [String]

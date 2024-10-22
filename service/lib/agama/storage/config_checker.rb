@@ -192,7 +192,7 @@ module Agama
       # @return [Issue, nil]
       def unavailable_encryption_method_issue(config)
         method = config.method
-        return if !method || method.available?
+        return if !method || available_encryption_methods.include?(method)
 
         error(
           format(
@@ -202,6 +202,17 @@ module Agama
             crypt_method: method.to_human_string
           )
         )
+      end
+
+      # @see #unavailable_encryption_method_issue
+      #
+      # @return [Array<Y2Storage::EncryptionMethod::Base>]
+      def available_encryption_methods
+        tpm_fde = Y2Storage::EncryptionMethod::TPM_FDE
+
+        methods = Y2Storage::EncryptionMethod.available
+        methods << tpm_fde if tpm_fde.possible?
+        methods
       end
 
       # @see #encryption_issues

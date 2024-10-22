@@ -1180,6 +1180,24 @@
         }
       }
     },
+    "encryptionTPM": {
+      "title": "TPM-Based Full Disk Encrytion",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tpmFde"],
+      "properties": {
+        "tpmFde": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": {
+              "$ref": "#/$defs/encryptionPassword"
+            }
+          }
+        }
+      }
+    },
     "encryptionSwap": {
       "title": "Swap encryptions",
       "enum": ["protected_swap", "secure_swap", "random_swap"]
@@ -1189,6 +1207,7 @@
         { "$ref": "#/$defs/encryptionLUKS1" },
         { "$ref": "#/$defs/encryptionLUKS2" },
         { "$ref": "#/$defs/encryptionPervasiveLUKS2" },
+        { "$ref": "#/$defs/encryptionTPM" },
         { "$ref": "#/$defs/encryptionSwap" }
       ]
     },

@@ -232,6 +232,29 @@ shared_examples "with encryption" do |result_scope|
     end
   end
 
+  context "if encryption method is TMP FDE" do
+    let(:encryption) do
+      {
+        tpmFde: {
+          password: "12345"
+        }
+      }
+    end
+
+    it "generates the expected JSON" do
+      config_json = result_scope.call(subject.convert)
+      encryption_json = config_json[:encryption]
+
+      expect(encryption_json).to eq(
+        {
+          tpmFde: {
+            password: "12345"
+          }
+        }
+      )
+    end
+  end
+
   context "if encryption method is protected swap" do
     let(:encryption) { "protected_swap" }
 

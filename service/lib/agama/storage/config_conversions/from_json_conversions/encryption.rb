@@ -46,26 +46,37 @@ module Agama
             return luks1_conversions if luks1?
             return luks2_conversions if luks2?
             return pervasive_luks2_conversions if pervasive_luks2?
+            return tpm_fde_conversions if tpm_fde?
 
             swap_encryption_conversions
           end
 
+          # @return [Boolean]
           def luks1?
             return false unless encryption_json.is_a?(Hash)
 
             !encryption_json[:luks1].nil?
           end
 
+          # @return [Boolean]
           def luks2?
             return false unless encryption_json.is_a?(Hash)
 
             !encryption_json[:luks2].nil?
           end
 
+          # @return [Boolean]
           def pervasive_luks2?
             return false unless encryption_json.is_a?(Hash)
 
             !encryption_json[:pervasiveLuks2].nil?
+          end
+
+          # @return [Boolean]
+          def tpm_fde?
+            return false unless encryption_json.is_a?(Hash)
+
+            !encryption_json[:tpmFde].nil?
           end
 
           # @return [Hash]
@@ -101,6 +112,16 @@ module Agama
             {
               method:   Y2Storage::EncryptionMethod::PERVASIVE_LUKS2,
               password: convert_password(pervasive_json)
+            }
+          end
+
+          # @return [Hash]
+          def tpm_fde_conversions
+            tpm_fde_json = encryption_json[:tpmFde]
+
+            {
+              method:   Y2Storage::EncryptionMethod::TPM_FDE,
+              password: convert_password(tpm_fde_json)
             }
           end
 
