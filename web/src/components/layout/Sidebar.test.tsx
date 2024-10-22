@@ -25,7 +25,6 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import Sidebar from "./Sidebar";
 
-jest.mock("~/components/core/About", () => () => <div>About Mock</div>);
 jest.mock("~/components/core/LogsButton", () => () => <div>LogsButton Mock</div>);
 jest.mock("~/components/core/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
 
@@ -45,11 +44,6 @@ describe("Sidebar", () => {
     expect(mainNavigationLinks.length).toBe(2);
     screen.getByRole("link", { name: "Main" });
     screen.getByRole("link", { name: "L10n" });
-  });
-
-  it("mounts core/About component", () => {
-    installerRender(<Sidebar />);
-    screen.getByText("About Mock");
   });
 
   it("mounts core/LogsButton component", () => {
