@@ -28,7 +28,6 @@ import {
   Form,
   Grid,
   GridItem,
-  Radio,
   List,
   ListItem,
   Split,
@@ -39,7 +38,8 @@ import {
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
-import styles from "@patternfly/react-styles/css/utilities/Text/text";
+import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
 import { slugify } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -63,16 +63,21 @@ const Option = ({ product, isChecked, onChange }) => {
       <Card isRounded>
         <CardBody>
           <Split hasGutter>
-            <Radio
+            <input
               id={id}
+              type="radio"
               name="product"
-              isChecked={isChecked}
+              className={pfRadioStyles.radioInput}
+              checked={isChecked}
               onChange={onChange}
               aria-details={detailsId}
             />
             <img aria-hidden src={logoSrc} alt={logoAltText} />
             <Stack hasGutter>
-              <label htmlFor={id} className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>
+              <label
+                htmlFor={id}
+                className={`${pfTextStyles.fontSizeLg} ${pfTextStyles.fontWeightBold}`}
+              >
                 {product.name}
               </label>
               <p id={detailsId}>{product.description}</p>

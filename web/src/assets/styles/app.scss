@@ -37,15 +37,16 @@ button.remove-link:hover {
 }
 
 #productSelectionForm {
-  .pf-v5-c-radio input {
+  input[type="radio"] {
     align-self: center;
-    width: 20px;
-    height: 20px;
+    flex-shrink: 0;
+    inline-size: 20px;
+    block-size: 20px;
   }
 
   .pf-v5-c-card {
     img {
-      width: 80px;
+      max-inline-size: 80px;
     }
 
     label {
