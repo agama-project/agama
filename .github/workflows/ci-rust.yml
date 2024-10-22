@@ -76,6 +76,7 @@ jobs:
         openssl-3
         pam-devel
         python-langtable-data
+        python3-openapi_spec_validator
         timezone
         xkeyboard-config
 
@@ -100,6 +101,11 @@ jobs:
 
     - name: Run the tests
       run: cargo tarpaulin --out xml -- --nocapture
+
+    - name: Generate and validate the OpenAPI specification
+      run: |
+        cargo xtask openapi
+        openapi-spec-validator out/openapi/*
 
     # send the code coverage for the Rust part to the coveralls.io
     - name: Coveralls GitHub Action

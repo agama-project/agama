@@ -30,7 +30,7 @@ tracing-journald = "0.3.0"
 tracing = "0.1.40"
 clap = { version = "4.5.19", features = ["derive", "wrap_help"] }
 tower = { version = "0.4.13", features = ["util"] }
-utoipa = { version = "4.2.3", features = ["axum_extras"] }
+utoipa = { version = "4.2.0", features = ["axum_extras", "uuid"] }
 config = "0.14.0"
 rand = "0.8.5"
 axum-extra = { version = "0.9.4", features = ["cookie", "typed-header"] }

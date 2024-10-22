@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 22 09:46:41 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve OpenAPI specification generation (gh#agama-project/agama#1564):
+  - Add a lot of missing elements to make the specification valid.
+  - Use a xtask to generate the OpenAPI specification at build time.
+  - Ship the specification in a separate package (agama-openapi).
+
+-------------------------------------------------------------------
 Wed Oct 16 15:07:33 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for running user-defined scripts before and after the

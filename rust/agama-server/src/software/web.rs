@@ -456,7 +456,8 @@ async fn proposal(State(state): State<SoftwareState<'_>>) -> Result<Json<Softwar
         (status = 200, description = "Read repositories data"),
         (status = 400, description = "The D-Bus service could not perform the action
 ")
-    )
+    ),
+    operation_id = "software_probe"
 )]
 async fn probe(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, Error> {
     state.software.probe().await?;

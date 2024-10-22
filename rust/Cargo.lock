@@ -80,6 +80,7 @@ dependencies = [
  "regex",
  "serde",
  "thiserror",
+ "utoipa",
 ]
 
 [[package]]
@@ -4479,6 +4480,7 @@ dependencies = [
  "quote",
  "regex",
  "syn 2.0.79",
+ "uuid",
 ]
 
 [[package]]
@@ -4884,6 +4886,7 @@ name = "xtask"
 version = "0.1.0"
 dependencies = [
  "agama-cli",
+ "agama-server",
  "clap",
  "clap-markdown",
  "clap_complete",

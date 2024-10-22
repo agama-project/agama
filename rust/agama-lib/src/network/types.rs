@@ -36,7 +36,7 @@ pub struct Device {
     pub state: DeviceState,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct SSID(pub Vec<u8>);
 
 impl SSID {
@@ -80,7 +80,7 @@ pub enum DeviceType {
 
 // For now this mirrors NetworkManager, because it was less mental work than coming up with
 // what exactly Agama needs. Expected to be adapted.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum DeviceState {
     #[default]
@@ -145,7 +145,7 @@ impl fmt::Display for DeviceState {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Status {
     #[default]
@@ -183,7 +183,7 @@ impl TryFrom<&str> for Status {
 }
 
 /// Bond mode
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
 pub enum BondMode {
     #[serde(rename = "balance-rr")]
     RoundRobin = 0,
