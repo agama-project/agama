@@ -47,13 +47,16 @@ translations:
       bulutta ve uçta iş açısından kritik iş yüklerini çalıştırır.
 software:
   installation_repositories:
+    # Use plain HTTP repositories, HTTPS does not work without importing the SSL
+    # certificate. It is safe as the repository is GPG checked and you neeed VPN
+    # to reach the internal server anyway.
     - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-x86_64/
       archs: x86_64
     - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-aarch64/
       archs: aarch64
-    - url: https://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-ppc64le/
+    - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-ppc64le/
       archs: ppc
-    - url: https://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-s390x/
+    - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-s390x/
       archs: s390
 
   mandatory_patterns:
