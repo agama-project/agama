@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 22 09:48:57 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: extend schema to allow selecting TPM FDE as encryption
+  method (gh#agama-project/agama#1681).
+
+-------------------------------------------------------------------
 Wed Oct 16 15:09:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for running user-defined scripts after the
