@@ -26,8 +26,8 @@ module Agama
   module Storage
     module ConfigConversions
       module ToJSONConversions
-        # Luks1 conversion to JSON hash according to schema.
-        class Luks1 < Base
+        # Encryption properties conversion to JSON hash according to schema.
+        class EncryptionProperties < Base
           # @see Base
           def self.config_type
             Configs::Encryption
@@ -37,10 +37,52 @@ module Agama
 
           # @see Base#conversions
           def conversions
+            method = config.method
+
+            if method.is?(:luks1)
+              luks1_properties_conversions
+            elsif method.is?(:luks2)
+              luks2_properties_conversions
+            elsif method.is?(:pervasive_luks2)
+              pervasive_luks2_properties_conversions
+            elsif method.is?(:tpm_fde)
+              tpm_fde_properties_conversions
+            else
+              {}
+            end
+          end
+
+          # @return [Hash]
+          def luks1_properties_conversions
             {
               password: config.password,
               keySize:  config.key_size,
               cipher:   config.cipher
+            }
+          end
+
+          # @return [Hash]
+          def luks2_properties_conversions
+            {
+              password:     config.password,
+              keySize:      config.key_size,
+              cipher:       config.cipher,
+              label:        config.label,
+              pbkdFunction: config.pbkd_function&.to_s
+            }
+          end
+
+          # @return [Hash]
+          def pervasive_luks2_properties_conversions
+            {
+              password: config.password
+            }
+          end
+
+          # @return [Hash]
+          def tpm_fde_properties_conversions
+            {
+              password: config.password
             }
           end
         end
