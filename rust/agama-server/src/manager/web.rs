@@ -39,7 +39,8 @@ use axum::{
 };
 use rand::distributions::{Alphanumeric, DistString};
 use serde::Serialize;
-use std::{pin::Pin, process::Command};
+use std::pin::Pin;
+use tokio::process::Command;
 use tokio_stream::{Stream, StreamExt};
 use tower_http::services::ServeFile;
 
@@ -115,7 +116,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/install", post(install_action))
         .route("/finish", post(finish_action))
         .route("/installer", get(installer_status))
-        .route("/logs", get(download_logs))
+        .route("/logs.tar.gz", get(download_logs))
         .merge(status_router)
         .merge(progress_router)
         .with_state(state))
@@ -252,6 +253,7 @@ async fn generate_logs() -> Result<String, Error> {
     Command::new("agama")
         .args(["logs", "store", "-d", path.as_str()])
         .status()
+        .await
         .map_err(|e| ServiceError::CannotGenerateLogs(e.to_string()))?;
 
     let full_path = format!("{path}.tar.gz");
