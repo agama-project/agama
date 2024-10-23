@@ -25,8 +25,6 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { LogsButton } from "~/components/core";
 
-const originalCreateElement = document.createElement;
-
 const executor = jest.fn();
 const fetchLogsFn = jest.fn();
 
@@ -50,102 +48,8 @@ afterAll(() => {
 });
 
 describe("LogsButton", () => {
-  it("renders a button for downloading logs", () => {
+  it("renders a link for downloading logs", () => {
     installerRender(<LogsButton />);
-    screen.getByRole("button", { name: "Download logs" });
-  });
-
-  describe("when user clicks on it", () => {
-    it("inits download logs process", async () => {
-      const { user } = installerRender(<LogsButton />);
-      const button = screen.getByRole("button", { name: "Download logs" });
-      await user.click(button);
-      expect(fetchLogsFn).toHaveBeenCalled();
-    });
-
-    it("changes button text, puts it as disabled, and displays an informative alert", async () => {
-      const { user } = installerRender(<LogsButton />);
-
-      const button = screen.getByRole("button", { name: "Download logs" });
-      expect(button).not.toHaveAttribute("disabled");
-
-      await user.click(button);
-
-      expect(button.innerHTML).not.toContain("Download logs");
-      expect(button.innerHTML).toContain("Collecting logs...");
-      expect(button).toHaveAttribute("disabled");
-
-      const info = screen.queryByRole("heading", { name: /.*logs download as soon as.*/i });
-      const warning = screen.queryByRole("heading", { name: /.*went wrong*/i });
-
-      expect(info).toBeInTheDocument();
-      expect(warning).not.toBeInTheDocument();
-    });
-
-    describe("and logs are collected successfully", () => {
-      beforeEach(() => {
-        fetchLogsFn.mockResolvedValue({
-          blob: jest.fn().mockResolvedValue(new Blob(["testing"])),
-        });
-      });
-
-      it("triggers the download", async () => {
-        const { user } = installerRender(<LogsButton />);
-
-        // Ugly mocking needed here.
-        // Improvements are wanted and welcome.
-        // NOTE: document.createElement cannot mocked in beforeAll because it breaks all testsuite
-        // since its used internally by jsdom. Simply spying it is not enough because we want to
-        // mock only the call to the HTMLAnchorElement creation that happens when user clicks on the
-        // "Download logs".
-        // @ts-expect-error
-        document.originalCreateElement = originalCreateElement;
-
-        const anchorMock = document.createElement("a");
-        anchorMock.setAttribute = jest.fn();
-        anchorMock.click = jest.fn();
-
-        jest.spyOn(document, "createElement").mockImplementation((tag) => {
-          // @ts-expect-error
-          return tag === "a" ? anchorMock : document.originalCreateElement(tag);
-        });
-
-        // Now, let's simulate the "Download logs" user click
-        const button = screen.getByRole("button", { name: "Download logs" });
-        await user.click(button);
-
-        // And test what we're looking for
-        expect(document.createElement).toHaveBeenCalledWith("a");
-        expect(anchorMock).toHaveAttribute("href", "fake-blob-url");
-        expect(anchorMock).toHaveAttribute(
-          "download",
-          expect.stringMatching(/agama-installation-logs/),
-        );
-        expect(anchorMock.click).toHaveBeenCalled();
-
-        // Be polite and restore document.createElement function,
-        // although it should be done by the call to jest.restoreAllMocks()
-        // in the afterAll block
-        document.createElement = originalCreateElement;
-      });
-    });
-
-    describe("but the process fails", () => {
-      beforeEach(() => {
-        fetchLogsFn.mockRejectedValue("Sorry, something went wrong");
-      });
-
-      it("displays a warning alert along with the Download logs button", async () => {
-        const { user } = installerRender(<LogsButton />);
-
-        const button = screen.getByRole("button", { name: "Download logs" });
-        expect(button).not.toHaveAttribute("disabled");
-
-        await user.click(button);
-
-        expect(button.innerHTML).toContain("Download logs");
-        screen.getByRole("heading", { name: /.*went wrong.*try again.*/i });
-      });
-    });
+    screen.getByRole("link", { name: "Download logs" });
   });
 });
