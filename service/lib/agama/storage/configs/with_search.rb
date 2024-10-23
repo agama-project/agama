@@ -35,6 +35,14 @@ module Agama
         def found_device
           search&.device
         end
+
+        # Creates a deep copy of the config element
+        #
+        # Needed when a search returns multiple devices and the configuration needs to be replicated
+        # for each one.
+        def copy
+          Marshal.load(Marshal.dump(self))
+        end
       end
     end
   end

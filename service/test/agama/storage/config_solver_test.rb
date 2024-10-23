@@ -21,7 +21,7 @@
 
 require_relative "./storage_helpers"
 require "agama/config"
-require "agama/storage/config_conversions/from_json"
+require "agama/storage/config_conversions"
 require "agama/storage/config_solver"
 require "y2storage"
 require "y2storage/refinements"
@@ -550,7 +550,7 @@ describe Agama::Storage::ConfigSolver do
     end
   end
 
-  context "if a drive has a search without a device name" do
+  context "if a drive omits the search" do
     let(:config_json) { { drives: drives } }
 
     let(:drives) do
@@ -593,6 +593,86 @@ describe Agama::Storage::ConfigSolver do
     end
   end
 
+  context "if a drive contains an empty search" do
+    let(:config_json) { { drives: drives } }
+
+    let(:drives) do
+      [
+        { search: {} }
+      ]
+    end
+
+    let(:scenario) { "disks.yaml" }
+
+    it "expands the number of drives to match all the existing disks" do
+      subject.solve(config)
+      expect(config.drives.size).to eq 3
+      search1, search2, search3 = config.drives.map(&:search)
+      expect(search1.solved?).to eq(true)
+      expect(search1.device.name).to eq("/dev/vda")
+      expect(search2.solved?).to eq(true)
+      expect(search2.device.name).to eq("/dev/vdb")
+      expect(search3.solved?).to eq(true)
+      expect(search3.device.name).to eq("/dev/vdc")
+    end
+  end
+
+  context "if a drive contains a search with '*'" do
+    let(:config_json) { { drives: drives } }
+
+    let(:drives) do
+      [
+        { search: "*" }
+      ]
+    end
+
+    let(:scenario) { "disks.yaml" }
+
+    it "expands the number of drives to match all the existing disks" do
+      subject.solve(config)
+      expect(config.drives.size).to eq 3
+      expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
+      expect(config.drives.map(&:search).map(&:device).map(&:name))
+        .to eq ["/dev/vda", "/dev/vdb", "/dev/vdc"]
+    end
+  end
+
+  context "if a drive contains a search with no conditions but with a max" do
+    let(:config_json) { { drives: drives } }
+
+    let(:drives) do
+      [
+        { search: { max: max } }
+      ]
+    end
+
+    let(:scenario) { "disks.yaml" }
+
+    context "and the max is equal or smaller than the number of disks" do
+      let(:max) { 2 }
+
+      it "expands the number of drives to match the max" do
+        subject.solve(config)
+        expect(config.drives.size).to eq 2
+        expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
+        expect(config.drives.map(&:search).map(&:device).map(&:name))
+          .to eq ["/dev/vda", "/dev/vdb"]
+      end
+    end
+
+    context "and the max is bigger than the number of disks" do
+      let(:max) { 20 }
+
+      it "expands the number of drives to match all the existing disks" do
+        subject.solve(config)
+        expect(config.drives.size).to eq 3
+        expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
+        expect(config.drives.map(&:search).map(&:device).map(&:name))
+          .to eq ["/dev/vda", "/dev/vdb", "/dev/vdc"]
+      end
+    end
+  end
+
   context "if a drive has a search with a device name" do
     let(:config_json) { { drives: drives } }
 
@@ -617,6 +697,9 @@ describe Agama::Storage::ConfigSolver do
 
     context "and the device is not found" do
       let(:search) { "/dev/vdd" }
+
+      # Speed-up fallback search (and make sure it fails)
+      before { allow(Y2Storage::BlkDevice).to receive(:find_by_any_name) }
 
       it "does not set a device to the drive" do
         subject.solve(config)
@@ -661,28 +744,26 @@ describe Agama::Storage::ConfigSolver do
     end
   end
 
-  context "if a partition has a search without a device name" do
+  context "if a partition has an empty search" do
     let(:config_json) do
       {
-        drives: [
-          { partitions: partitions }
-        ]
+        drives: [{ partitions: partitions }]
       }
     end
 
     let(:partitions) do
       [
-        { search: {} },
-        { search: {} },
         { search: {} }
       ]
     end
 
     let(:scenario) { "disks.yaml" }
 
-    it "sets the first unassigned partition to the config" do
+    it "expands the number of partition configs to match all the existing partitions" do
       subject.solve(config)
-      search1, search2, search3 = config.drives.first.partitions.map(&:search)
+      drive_partitions = config.drives.first.partitions
+      expect(drive_partitions.size).to eq 3
+      search1, search2, search3 = drive_partitions.map(&:search)
       expect(search1.solved?).to eq(true)
       expect(search1.device.name).to eq("/dev/vda1")
       expect(search2.solved?).to eq(true)
@@ -691,31 +772,49 @@ describe Agama::Storage::ConfigSolver do
       expect(search3.device.name).to eq("/dev/vda3")
     end
 
-    context "and there is not unassigned partition" do
+    context "and there are more partition searches without name" do
       let(:partitions) do
         [
           { search: {} },
           { search: {} },
-          { search: {} },
-          { search: {} }
+          { search: "*" }
         ]
       end
 
-      it "does not set a partition to the config" do
+      it "does not set a device to the surpluss configs" do
         subject.solve(config)
-        search = config.drives.first.partitions[3].search
-        expect(search.solved?).to eq(true)
-        expect(search.device).to be_nil
+        drive_partitions = config.drives.first.partitions
+        expect(drive_partitions.size).to eq 5
+        searches = drive_partitions[3..-1].map(&:search)
+        expect(searches.map(&:solved?)).to eq [true, true]
+        expect(searches.map(&:device)).to eq [nil, nil]
       end
+    end
+  end
+
+  context "if a partition has '*' as search" do
+    let(:config_json) do
+      {
+        drives: [{ partitions: [{ search: "*" }] }]
+      }
+    end
+
+    let(:scenario) { "disks.yaml" }
+
+    it "expands the number of partition configs to match all the existing partitions" do
+      subject.solve(config)
+      drive_partitions = config.drives.first.partitions
+      expect(drive_partitions.size).to eq 3
+      expect(drive_partitions.map(&:search).map(&:solved?)).to all(eq(true))
+      expect(drive_partitions.map(&:search).map(&:device).map(&:name))
+        .to eq ["/dev/vda1", "/dev/vda2", "/dev/vda3"]
     end
   end
 
   context "if a partition has a search with a device name" do
     let(:config_json) do
       {
-        drives: [
-          { partitions: partitions }
-        ]
+        drives: [{ partitions: partitions }]
       }
     end
 
@@ -743,6 +842,9 @@ describe Agama::Storage::ConfigSolver do
     context "and the device is not found" do
       let(:search) { "/dev/vdb1" }
 
+      # Speed-up fallback search (and make sure it fails)
+      before { allow(Y2Storage::BlkDevice).to receive(:find_by_any_name) }
+
       it "does not set a partition to the config" do
         subject.solve(config)
         search = search_proc.call(config)
@@ -761,7 +863,7 @@ describe Agama::Storage::ConfigSolver do
 
       it "does not set a partition to the config" do
         subject.solve(config)
-        search = config.drives.first.partitions[1].search
+        search = config.drives.first.partitions.last.search
         expect(search.solved?).to eq(true)
         expect(search.device).to be_nil
       end
@@ -782,6 +884,42 @@ describe Agama::Storage::ConfigSolver do
         expect(search1.device.name).to eq("/dev/vda2")
         expect(search2.solved?).to eq(true)
         expect(search2.device).to be_nil
+      end
+    end
+  end
+
+  context "if a partition config contains a search with no conditions but with a max" do
+    let(:config_json) do
+      {
+        drives: [{ partitions: [{ search: { max: max } }] }]
+      }
+    end
+
+    let(:scenario) { "disks.yaml" }
+
+    context "and the max is equal or smaller than the number of partitions on the device" do
+      let(:max) { 2 }
+
+      it "expands the number of partition configs to match the max" do
+        subject.solve(config)
+        drive_partitions = config.drives.first.partitions
+        expect(drive_partitions.size).to eq 2
+        expect(drive_partitions.map(&:search).map(&:solved?)).to all(eq(true))
+        expect(drive_partitions.map(&:search).map(&:device).map(&:name))
+          .to eq ["/dev/vda1", "/dev/vda2"]
+      end
+    end
+
+    context "and the max is bigger than the number of partitions on the device" do
+      let(:max) { 20 }
+
+      it "expands the number of configs to match all the existing partitions" do
+        subject.solve(config)
+        drive_partitions = config.drives.first.partitions
+        expect(drive_partitions.size).to eq 3
+        expect(drive_partitions.map(&:search).map(&:solved?)).to all(eq(true))
+        expect(drive_partitions.map(&:search).map(&:device).map(&:name))
+          .to eq ["/dev/vda1", "/dev/vda2", "/dev/vda3"]
       end
     end
   end

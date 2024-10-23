@@ -21,7 +21,7 @@
 
 require_relative "../../../test_helper"
 require "agama/config"
-require "agama/storage/config_conversions/from_json"
+require "agama/storage/config_conversions"
 require "y2storage/encryption_method"
 require "y2storage/filesystems/mount_by_type"
 require "y2storage/filesystems/type"
@@ -107,6 +107,18 @@ shared_examples "with search" do |config_proc|
     end
   end
 
+  context "with an asterisk" do
+    let(:search) { "*" }
+
+    it "sets #search to the expected value" do
+      config = config_proc.call(subject.convert)
+      expect(config.search).to be_a(Agama::Storage::Configs::Search)
+      expect(config.search.name).to be_nil
+      expect(config.search.if_not_found).to eq(:skip)
+      expect(config.search.max).to be_nil
+    end
+  end
+
   context "with a search section" do
     let(:search) do
       {
@@ -120,6 +132,24 @@ shared_examples "with search" do |config_proc|
       expect(config.search).to be_a(Agama::Storage::Configs::Search)
       expect(config.search.name).to eq("/dev/vda1")
       expect(config.search.if_not_found).to eq(:skip)
+      expect(config.search.max).to be_nil
+    end
+  end
+
+  context "with a search section including a max" do
+    let(:search) do
+      {
+        ifNotFound: "error",
+        max:        3
+      }
+    end
+
+    it "sets #search to the expected value" do
+      config = config_proc.call(subject.convert)
+      expect(config.search).to be_a(Agama::Storage::Configs::Search)
+      expect(config.search.name).to be_nil
+      expect(config.search.if_not_found).to eq(:error)
+      expect(config.search.max).to eq 3
     end
   end
 end

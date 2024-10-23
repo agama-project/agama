@@ -48,7 +48,7 @@ module Agama
         def initialize
           @partitions = []
           # All drives are expected to match a real device in the system, so let's ensure a search.
-          @search = Search.new
+          @search = Search.new.tap { |s| s.max = 1 }
         end
 
         # Whether the drive definition contains partition definitions

@@ -33,13 +33,22 @@ module Agama
             Configs::Search
           end
 
+          # @see Base#convert
+          def convert
+            converted = super
+            return SEARCH_ANYTHING_STRING if converted.is_a?(Hash) && anything?(converted)
+
+            converted
+          end
+
         private
 
           # @see Base#conversions
           def conversions
             {
               condition:  convert_condition,
-              ifNotFound: config.if_not_found.to_s
+              ifNotFound: config.if_not_found.to_s,
+              max:        config.max
             }
           end
 
@@ -49,6 +58,14 @@ module Agama
             return unless name
 
             { name: name }
+          end
+
+          # Whether the search can be aliased with the special "*" string
+          def anything?(search_hash)
+            [
+              { ifNotFound: "skip" },
+              { condition: {}, ifNotFound: "skip" }
+            ].include?(search_hash.compact)
           end
         end
       end

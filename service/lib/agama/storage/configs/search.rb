@@ -37,6 +37,12 @@ module Agama
         # @return [:create, :skip, :error]
         attr_accessor :if_not_found
 
+        # Optional max number of devices to match
+        #
+        # return [Integer, nil] nil means no limit, ie. all devices that meet the condition are
+        #   matched
+        attr_accessor :max
+
         # Constructor
         def initialize
           @solved = false
@@ -61,7 +67,7 @@ module Agama
         # Whether the search does not define any specific condition.
         #
         # @return [Boolean]
-        def any_device?
+        def always_match?
           name.nil?
         end
 

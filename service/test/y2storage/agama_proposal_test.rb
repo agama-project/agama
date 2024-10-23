@@ -372,8 +372,11 @@ describe Y2Storage::AgamaProposal do
       let(:available?) { true }
 
       before do
-        allow(encryption_method).to receive(:available?).and_return(available?) if encryption_method
         home_partition.encryption = home_encryption
+
+        # Mocking only the object at encryption_method introduces a problem with serialization
+        allow_any_instance_of(Y2Storage::EncryptionMethod::Luks2)
+          .to receive(:available?).and_return(available?)
       end
 
       context "if the encryption settings contain all the detailed information" do
@@ -627,7 +630,7 @@ describe Y2Storage::AgamaProposal do
       let(:partitions0) { [root_partition, home_partition] }
 
       before do
-        home_partition.search = Agama::Storage::Configs::Search.new
+        home_partition.search = Agama::Storage::Configs::Search.new.tap { |s| s.max = 1 }
       end
 
       # TODO: Is this correct? The first partition (boot partition) is reused for home.
@@ -643,7 +646,7 @@ describe Y2Storage::AgamaProposal do
       it "does not reuse the same partition twice" do
         vda1 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda1")
         vda2 = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda2")
-        root_partition.search = Agama::Storage::Configs::Search.new
+        root_partition.search = Agama::Storage::Configs::Search.new.tap { |s| s.max = 1 }
         proposal.propose
 
         root = proposal.devices.find_by_name("/dev/vda1")
