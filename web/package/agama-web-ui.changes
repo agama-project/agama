@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Oct 23 15:26:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the URL to fetch the logs (gh#agama-project/agama#1693).
+
+-------------------------------------------------------------------
 Fri Oct 11 09:46:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Workaround the "not found" problem in the products selection page

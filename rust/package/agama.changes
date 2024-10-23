@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Oct 23 15:25:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the action to download the logs (gh#agama-project/agama#1693).
+
+-------------------------------------------------------------------
 Tue Oct 22 09:46:41 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve OpenAPI specification generation (gh#agama-project/agama#1564):
