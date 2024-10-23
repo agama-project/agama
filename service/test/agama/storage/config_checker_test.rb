@@ -255,6 +255,8 @@ describe Agama::Storage::ConfigChecker do
       # Solves the config before checking.
       devicegraph = Y2Storage::StorageManager.instance.probed
 
+      allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
+
       Agama::Storage::ConfigSolver
         .new(devicegraph, product_config)
         .solve(config)
