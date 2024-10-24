@@ -19,11 +19,17 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/copyable"
+
 module Agama
   module Storage
     module Configs
       # Mixin for configs with search.
       module WithSearch
+        # Needed when a search returns multiple devices and the configuration needs to be replicated
+        # for each one.
+        include Copyable
+
         # @return [Search, nil]
         attr_accessor :search
 
@@ -34,14 +40,6 @@ module Agama
         # @return [Y2Storage::Device, nil]
         def found_device
           search&.device
-        end
-
-        # Creates a deep copy of the config element
-        #
-        # Needed when a search returns multiple devices and the configuration needs to be replicated
-        # for each one.
-        def copy
-          Marshal.load(Marshal.dump(self))
         end
       end
     end
