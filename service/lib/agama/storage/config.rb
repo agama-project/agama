@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/copyable"
 require "agama/storage/configs/boot"
 require "agama/storage/config_conversions/from_json"
 
@@ -26,6 +27,8 @@ module Agama
   module Storage
     # Settings used to calculate an storage proposal.
     class Config
+      include Copyable
+
       # Boot settings.
       #
       # @return [Configs::Boot]
