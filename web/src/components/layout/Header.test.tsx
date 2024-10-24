@@ -87,8 +87,11 @@ describe("Header", () => {
     const toggler = screen.getByRole("button", { name: "Options toggle" });
     await user.click(toggler);
     const menu = screen.getByRole("menu");
+    within(menu).getByRole("menuitem", { name: "Download logs" });
     within(menu).getByRole("menuitem", { name: "Installer Options" });
   });
+
+  it.todo("allows downloading the logs");
 
   describe("at install phase", () => {
     beforeEach(() => {

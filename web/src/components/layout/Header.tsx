@@ -38,6 +38,7 @@ import {
   MenuToggle,
   DropdownList,
   DropdownItem,
+  Divider,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
@@ -46,6 +47,7 @@ import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { InstallerOptions } from "../core";
 import { useLocation } from "react-router-dom";
+import { PATHS } from "~/router";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -86,8 +88,16 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         )}
       >
         <DropdownList>
+          <DropdownItem key="download-logs" to={PATHS.logs} download="agama-logs.tar.gz">
+            {_("Download logs")}
+          </DropdownItem>
           {showInstallerOptions && (
-            <DropdownItem onClick={toggleInstallerOptions}>{_("Installer Options")}</DropdownItem>
+            <>
+              <Divider />
+              <DropdownItem key="installer-l10n" onClick={toggleInstallerOptions}>
+                {_("Installer Options")}
+              </DropdownItem>
+            </>
           )}
         </DropdownList>
       </Dropdown>

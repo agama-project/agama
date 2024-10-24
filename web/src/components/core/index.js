@@ -36,7 +36,6 @@ export { default as IssuesHint } from "./IssuesHint";
 export { default as SectionSkeleton } from "./SectionSkeleton";
 export { default as ListSearch } from "./ListSearch";
 export { default as LoginPage } from "./LoginPage";
-export { default as LogsButton } from "./LogsButton";
 export { default as RowActions } from "./RowActions";
 export { default as Page } from "./Page";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
