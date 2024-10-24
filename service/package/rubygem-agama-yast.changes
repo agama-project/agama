@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 24 13:07:50 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Storage: support to match several devices with every 'search'
+  section (gh#agama-project/agama#1691).
+
+-------------------------------------------------------------------
 Tue Oct 22 09:48:57 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: extend schema to allow selecting TPM FDE as encryption
