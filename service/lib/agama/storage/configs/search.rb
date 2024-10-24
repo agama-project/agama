@@ -71,6 +71,13 @@ module Agama
           name.nil?
         end
 
+        # Whether the search matches all the available devices, skipping if none is found
+        #
+        # @return [Boolean]
+        def all_if_any?
+          always_match? && max.nil? && if_not_found == :skip
+        end
+
         # Whether the section containing the search should be skipped
         #
         # @return [Boolean]

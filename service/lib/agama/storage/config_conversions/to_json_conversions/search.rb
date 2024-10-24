@@ -35,10 +35,9 @@ module Agama
 
           # @see Base#convert
           def convert
-            converted = super
-            return SEARCH_ANYTHING_STRING if converted.is_a?(Hash) && anything?(converted)
+            return SEARCH_ANYTHING_STRING if config.all_if_any?
 
-            converted
+            super
           end
 
         private
@@ -58,14 +57,6 @@ module Agama
             return unless name
 
             { name: name }
-          end
-
-          # Whether the search can be aliased with the special "*" string
-          def anything?(search_hash)
-            [
-              { ifNotFound: "skip" },
-              { condition: {}, ifNotFound: "skip" }
-            ].include?(search_hash.compact)
           end
         end
       end
