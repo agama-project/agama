@@ -195,7 +195,19 @@ $SUDO mkdir -p /usr/share/agama/products.d
 $SUDO cp -f $MYDIR/products.d/*.yaml /usr/share/agama/products.d
 
 # - Make sure NetworkManager is running
-$SUDO systemctl start NetworkManager
+if [ -n "${DISTROBOX_ENTER_PATH:-}" ]; then
+  AGAMA_WEB_SERVER_SVC="/usr/lib/systemd/system/agama-web-server.service"
+  grep -q DBUS_SYSTEM_BUS_ADDRESS $AGAMA_WEB_SERVER_SVC || $SUDO sed -i \
+    -e '/\[Service\]/a Environment="DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/host/run/dbus/system_bus_socket"' \
+    $AGAMA_WEB_SERVER_SVC
+
+  AGAMA_SVC="/usr/lib/systemd/system/agama.service"
+  grep -q DBUS_SYSTEM_BUS_ADDRESS $AGAMA_SVC || $SUDO sed -i \
+    -e '/\[Service\]/a Environment="DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/host/run/dbus/system_bus_socket"' \
+    $AGAMA_SVC
+else
+  $SUDO systemctl start NetworkManager
+fi
 
 # systemd reload and start of service
 (
