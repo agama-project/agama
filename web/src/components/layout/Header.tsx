@@ -20,9 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Masthead,
+  MastheadProps,
   MastheadContent,
   MastheadToggle,
   MastheadMain,
@@ -32,11 +33,72 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Dropdown,
+  MenuToggleElement,
+  MenuToggle,
+  DropdownList,
+  DropdownItem,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { InstallerOptions } from "~/components/core";
 import { useProduct } from "~/queries/software";
 import { _ } from "~/i18n";
+import { InstallationPhase } from "~/types/status";
+import { useInstallerStatus } from "~/queries/status";
+import { InstallerOptions } from "../core";
+import { useLocation } from "react-router-dom";
+
+export type HeaderProps = {
+  /** Whether the application sidebar should be mounted or not */
+  showSidebarToggle?: boolean;
+  /** Whether the selected product name should be shown */
+  showProductName?: boolean;
+  /** Whether the installer options link should be mounted */
+  showInstallerOptions?: boolean;
+  /** The background color for the top bar */
+  background?: MastheadProps["backgroundColor"];
+};
+
+const OptionsDropdown = ({ showInstallerOptions }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isInstallerOptionsOpen, setIsInstallerOptionsOpen] = useState(false);
+  const toggle = () => setIsOpen(!isOpen);
+  const toggleInstallerOptions = () => setIsInstallerOptionsOpen(!isInstallerOptionsOpen);
+
+  return (
+    <>
+      <Dropdown
+        popperProps={{ position: "right", appendTo: () => document.body }}
+        isOpen={isOpen}
+        onOpenChange={toggle}
+        onSelect={toggle}
+        onActionClick={toggle}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle
+            ref={toggleRef}
+            onClick={toggle}
+            aria-label={_("Options toggle")}
+            isExpanded={isOpen}
+            isFullHeight
+            variant="plain"
+          >
+            <Icon name="expand_circle_down" />
+          </MenuToggle>
+        )}
+      >
+        <DropdownList>
+          {showInstallerOptions && (
+            <DropdownItem onClick={toggleInstallerOptions}>{_("Installer Options")}</DropdownItem>
+          )}
+        </DropdownList>
+      </Dropdown>
+
+      <InstallerOptions
+        isOpen={isInstallerOptionsOpen}
+        onClose={() => setIsInstallerOptionsOpen(false)}
+      />
+    </>
+  );
+};
 
 /**
  * Internal component for building the layout header
@@ -45,33 +107,42 @@ import { _ } from "~/i18n";
  * its expected children components.
  */
 export default function Header({
-  hideProductName = false,
-  hideInstallerOptions = false,
-}: {
-  hideProductName?: boolean;
-  hideInstallerOptions?: boolean;
-}): React.ReactNode {
+  showSidebarToggle = true,
+  showProductName = true,
+  background = "dark",
+}: HeaderProps): React.ReactNode {
+  const location = useLocation();
   const { selectedProduct } = useProduct();
+  const { phase } = useInstallerStatus({ suspense: true });
+
+  const showInstallerOptions =
+    phase !== InstallationPhase.Install &&
+    // FIXME: Installer options should be available in the login too.
+    !["/login", "/products/progress"].includes(location.pathname);
 
   return (
-    <Masthead>
-      <MastheadToggle>
-        <PageToggleButton
-          id="uncontrolled-nav-toggle"
-          variant="plain"
-          aria-label={_("Main navigation")}
-        >
-          <Icon name="menu" color="color-light-100" />
-        </PageToggleButton>
-      </MastheadToggle>
+    <Masthead backgroundColor={background}>
+      {showSidebarToggle && (
+        <MastheadToggle>
+          <PageToggleButton
+            id="uncontrolled-nav-toggle"
+            variant="plain"
+            aria-label={_("Main navigation")}
+          >
+            <Icon name="menu" color="color-light-100" />
+          </PageToggleButton>
+        </MastheadToggle>
+      )}
       <MastheadMain>
-        {hideProductName || <MastheadBrand component="h1">{selectedProduct.name}</MastheadBrand>}
+        {showProductName && <MastheadBrand component="h1">{selectedProduct.name}</MastheadBrand>}
       </MastheadMain>
       <MastheadContent>
-        <Toolbar>
+        <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem>{hideInstallerOptions || <InstallerOptions />}</ToolbarItem>
+              <ToolbarItem>
+                <OptionsDropdown showInstallerOptions={showInstallerOptions} />
+              </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>

@@ -39,6 +39,7 @@ import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
 import ExpandAll from "@icons/expand_all.svg?component";
+import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
 import Feedback from "@icons/feedback.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
@@ -107,6 +108,7 @@ const icons = {
   edit_square: EditSquare,
   error: Error,
   expand_all: ExpandAll,
+  expand_circle_down: ExpandCircleDown,
   feedback: Feedback,
   folder: Folder,
   folder_off: FolderOff,

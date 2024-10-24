@@ -29,7 +29,6 @@ export { default as FormValidationError } from "./FormValidationError";
 export { default as Fieldset } from "./Fieldset";
 export { default as Em } from "./Em";
 export { default as EmailInput } from "./EmailInput";
-export { default as Installation } from "./Installation";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";

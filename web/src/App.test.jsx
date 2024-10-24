@@ -88,7 +88,6 @@ jest.mock("~/context/installer", () => ({
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
-jest.mock("~/components/core/Installation", () => () => <div>Installation Mock</div>);
 jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
 jest.mock("~/components/product/ProductSelectionProgress", () => () => <div>Product progress</div>);
 
@@ -163,15 +162,29 @@ describe("App", () => {
     });
   });
 
-  describe("on the installaiton phase", () => {
+  describe("on the busy installaiton phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
+      mockClientStatus.isBusy = true;
       mockSelectedProduct = { id: "Fake product" };
     });
 
-    it("renders the application content", async () => {
+    it("navigates to installation progress", async () => {
       installerRender(<App />, { withL10n: true });
-      await screen.findByText("Installation Mock");
+      await screen.findByText("Navigating to /installation/progress");
+    });
+  });
+
+  describe("on the idle installaiton phase", () => {
+    beforeEach(() => {
+      mockClientStatus.phase = InstallationPhase.Install;
+      mockClientStatus.isBusy = false;
+      mockSelectedProduct = { id: "Fake product" };
+    });
+
+    it("navigates to installation finished", async () => {
+      installerRender(<App />, { withL10n: true });
+      await screen.findByText("Navigating to /installation/finished");
     });
   });
 });
