@@ -1029,6 +1029,11 @@
       "type": "string",
       "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
     },
+    "searchAll": {
+      "title": "Search all devices",
+      "description": "Shortcut to match all devices if there is any (equivalent to specify no conditions and to skip the entry if no device is found).",
+      "const": "*"
+    },
     "searchByName": {
       "title": "Search by name condition",
       "type": "object",
@@ -1042,6 +1047,9 @@
     },
     "search": {
       "anyOf": [
+        {
+          "$ref": "#/$defs/searchAll"
+        },
         {
           "$ref": "#/$defs/searchName"
         },
