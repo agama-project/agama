@@ -27,6 +27,9 @@ require "agama/storage/device_settings"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "y2storage"
+require "y2storage/refinements"
+
+using Y2Storage::Refinements::SizeCasts
 
 def root_partition(size)
   fs_type_config = Agama::Storage::Configs::FilesystemType.new.tap do |t|
@@ -113,11 +116,11 @@ describe Agama::Storage::Proposal do
     end
   end
 
-  describe "#config_json" do
+  describe "#storage_json" do
     context "if no proposal has been calculated yet" do
       it "returns an empty hash" do
         expect(subject.calculated?).to eq(false)
-        expect(proposal.config_json).to eq({})
+        expect(proposal.storage_json).to eq({})
       end
     end
 
@@ -126,7 +129,7 @@ describe Agama::Storage::Proposal do
         subject.calculate_guided(Agama::Storage::ProposalSettings.new)
       end
 
-      it "returns the guided JSON config" do
+      it "returns the solved guided JSON config" do
         expected_json = {
           storage: {
             guided: {
@@ -144,7 +147,7 @@ describe Agama::Storage::Proposal do
           }
         }
 
-        expect(subject.config_json).to eq(expected_json)
+        expect(subject.storage_json).to eq(expected_json)
       end
     end
 
@@ -153,8 +156,83 @@ describe Agama::Storage::Proposal do
         subject.calculate_agama(achivable_config)
       end
 
-      it "returns the storage JSON config" do
-        skip "Missing conversion from Agama::Storage::Config to JSON"
+      context "and unsolved config is requested" do
+        let(:solved) { false }
+
+        it "returns the unsolved JSON config" do
+          expect(subject.storage_json(solved: solved)).to eq(
+            {
+              storage: {
+                boot:         { configure: true },
+                drives:       [
+                  {
+                    search:     {
+                      ifNotFound: "error",
+                      max:        1
+                    },
+                    partitions: [
+                      {
+                        filesystem: {
+                          reuseIfPossible: false,
+                          path:            "/",
+                          type:            "btrfs",
+                          mkfsOptions:     [],
+                          mountOptions:    []
+                        },
+                        size:       {
+                          min: 10.GiB.to_i,
+                          max: 10.GiB.to_i
+                        }
+                      }
+                    ]
+                  }
+                ],
+                volumeGroups: []
+              }
+            }
+          )
+        end
+      end
+
+      context "and solved config is requested" do
+        let(:solved) { true }
+
+        it "returns the solved JSON config" do
+          expect(subject.storage_json(solved: solved)).to eq(
+            {
+              storage: {
+                boot:         { configure: true },
+                drives:       [
+                  {
+                    search:     {
+                      condition:  { name: "/dev/sda" },
+                      ifNotFound: "error",
+                      max:        1
+                    },
+                    partitions: [
+                      {
+                        filesystem: {
+                          reuseIfPossible: false,
+                          path:            "/",
+                          type:            {
+                            btrfs: { snapshots: false }
+                          },
+                          mkfsOptions:     [],
+                          mountOptions:    []
+                        },
+                        size:       {
+                          min: 10.GiB.to_i,
+                          max: 10.GiB.to_i
+                        }
+                      }
+                    ]
+                  }
+                ],
+                volumeGroups: []
+              }
+            }
+          )
+        end
       end
     end
 
@@ -175,25 +253,37 @@ describe Agama::Storage::Proposal do
         }
       end
 
-      it "returns the full guided JSON config" do
-        expected_json = {
-          storage: {
-            guided: {
-              boot:    {
-                configure: true
-              },
-              space:   {
-                policy: "keep"
-              },
-              target:  {
-                disk: "/dev/vda"
-              },
-              volumes: []
+      context "and unsolved config is requested" do
+        let(:solved) { false }
+
+        it "returns the given guided JSON config" do
+          expect(subject.storage_json(solved: solved)).to eq(config_json)
+        end
+      end
+
+      context "and solved config is requested" do
+        let(:solved) { true }
+
+        it "returns the solved guided JSON config" do
+          expected_json = {
+            storage: {
+              guided: {
+                boot:    {
+                  configure: true
+                },
+                space:   {
+                  policy: "keep"
+                },
+                target:  {
+                  disk: "/dev/vda"
+                },
+                volumes: []
+              }
             }
           }
-        }
 
-        expect(subject.config_json).to eq(expected_json)
+          expect(subject.storage_json(solved: solved)).to eq(expected_json)
+        end
       end
     end
 
@@ -217,8 +307,45 @@ describe Agama::Storage::Proposal do
         }
       end
 
-      it "returns the given storage JSON config" do
-        expect(subject.config_json).to eq(config_json)
+      context "and unsolved config is requested" do
+        let(:solved) { false }
+
+        it "returns the given JSON config" do
+          expect(subject.storage_json(solved: solved)).to eq(config_json)
+        end
+      end
+
+      context "and solved config is requested" do
+        let(:solved) { true }
+
+        it "returns the solved JSON config" do
+          expect(subject.storage_json(solved: solved)).to eq(
+            {
+              storage: {
+                boot:         { configure: false },
+                drives:       [
+                  {
+                    search:     {
+                      condition:  { name: "/dev/sda" },
+                      ifNotFound: "error",
+                      max:        1
+                    },
+                    filesystem: {
+                      mkfsOptions:     [],
+                      mountOptions:    [],
+                      reuseIfPossible: false,
+                      type:            {
+                        btrfs: { snapshots: false }
+                      }
+                    },
+                    partitions: []
+                  }
+                ],
+                volumeGroups: []
+              }
+            }
+          )
+        end
       end
     end
 
@@ -243,7 +370,7 @@ describe Agama::Storage::Proposal do
       end
 
       it "returns the given autoyast JSON config" do
-        expect(subject.config_json).to eq(config_json)
+        expect(subject.storage_json).to eq(config_json)
       end
     end
   end
@@ -529,7 +656,7 @@ describe Agama::Storage::Proposal do
       let(:config_json) { {} }
 
       it "raises an error" do
-        expect { subject.calculate_from_json(config_json) }.to raise_error(/Invalid storage/)
+        expect { subject.calculate_from_json(config_json) }.to raise_error(/Invalid JSON/)
       end
     end
   end

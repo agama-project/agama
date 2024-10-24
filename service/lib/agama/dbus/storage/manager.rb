@@ -113,9 +113,11 @@ module Agama
 
         # Gets and serializes the storage config used to calculate the current proposal.
         #
+        # @param solved [Boolean] Whether to recover the solved config.
         # @return [String] Serialized config according to the JSON schema.
-        def recover_config
-          JSON.pretty_generate(proposal.config_json)
+        def recover_config(solved: false)
+          json = proposal.storage_json(solved: solved)
+          JSON.pretty_generate(json)
         end
 
         def install
@@ -139,6 +141,7 @@ module Agama
             busy_while { apply_config(serialized_config) }
           end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
+          dbus_method(:GetSolvedConfig, "out serialized_config:s") { recover_config(solved: true) }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_reader(:deprecated_system, "b")
