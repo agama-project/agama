@@ -37,7 +37,6 @@ import {
   Stack,
   Text,
 } from "@patternfly/react-core";
-import SimpleLayout from "~/SimpleLayout";
 import { Center, Icon } from "~/components/layout";
 import { EncryptionMethods } from "~/types/storage";
 import { _ } from "~/i18n";
@@ -45,6 +44,9 @@ import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/al
 import { useInstallerStatus } from "~/queries/status";
 import { useProposalResult } from "~/queries/storage";
 import { finishInstallation } from "~/api/manager";
+import { InstallationPhase } from "~/types/status";
+import { Navigate } from "react-router-dom";
+import { PATHS } from "~/router";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -76,55 +78,62 @@ the machine needs to boot directly to the new boot loader.",
 const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-success" />;
 
 function InstallationFinished() {
-  const { useIguana } = useInstallerStatus({ suspense: true });
+  const { phase, isBusy, useIguana } = useInstallerStatus({ suspense: true });
   const {
     settings: { encryptionPassword, encryptionMethod },
   } = useProposalResult();
+
+  if (phase !== InstallationPhase.Install) {
+    return <Navigate to={PATHS.root} />;
+  }
+
+  if (isBusy) {
+    return <Navigate to={PATHS.installationProgress} />;
+  }
+
   const usingTpm = encryptionPassword?.length > 0 && encryptionMethod === EncryptionMethods.TPM;
 
   return (
-    <SimpleLayout showOutlet={false}>
-      <Center>
-        <Grid hasGutter>
-          <GridItem sm={8} smOffset={2}>
-            <Card isRounded>
-              <CardBody>
-                <Stack hasGutter>
-                  <EmptyState variant="xl">
-                    <EmptyStateHeader
-                      titleText={_("Congratulations!")}
-                      headingLevel="h2"
-                      icon={<EmptyStateIcon icon={SuccessIcon} />}
-                    />
-                    <EmptyStateBody>
-                      <Flex
-                        rowGap={{ default: "rowGapMd" }}
-                        justifyContent={{ default: "justifyContentCenter" }}
-                      >
-                        <Text>{_("The installation on your machine is complete.")}</Text>
-                        <Text>
-                          {useIguana
-                            ? _("At this point you can power off the machine.")
-                            : _(
-                                "At this point you can reboot the machine to log in to the new system.",
-                              )}
-                        </Text>
-                        {usingTpm && <TpmHint />}
-                      </Flex>
-                    </EmptyStateBody>
-                  </EmptyState>
-                  <Flex direction={{ default: "rowReverse" }}>
-                    <Button size="lg" variant="primary" onClick={finishInstallation}>
-                      {useIguana ? _("Finish") : _("Reboot")}
-                    </Button>
-                  </Flex>
-                </Stack>
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Center>
-    </SimpleLayout>
+    <Center>
+      <Grid hasGutter>
+        <GridItem sm={8} smOffset={2}>
+          <Card isRounded>
+            <CardBody>
+              <Stack hasGutter>
+                <EmptyState variant="xl">
+                  <EmptyStateHeader
+                    titleText={_("Congratulations!")}
+                    headingLevel="h2"
+                    icon={<EmptyStateIcon icon={SuccessIcon} />}
+                  />
+                  <EmptyStateBody>
+                    <Flex
+                      rowGap={{ default: "rowGapMd" }}
+                      justifyContent={{ default: "justifyContentCenter" }}
+                    >
+                      <Text>{_("The installation on your machine is complete.")}</Text>
+                      <Text>
+                        {useIguana
+                          ? _("At this point you can power off the machine.")
+                          : _(
+                              "At this point you can reboot the machine to log in to the new system.",
+                            )}
+                      </Text>
+                      {usingTpm && <TpmHint />}
+                    </Flex>
+                  </EmptyStateBody>
+                </EmptyState>
+                <Flex direction={{ default: "rowReverse" }}>
+                  <Button size="lg" variant="primary" onClick={finishInstallation}>
+                    {useIguana ? _("Finish") : _("Reboot")}
+                  </Button>
+                </Flex>
+              </Stack>
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
+    </Center>
   );
 }
 

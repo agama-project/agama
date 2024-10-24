@@ -23,14 +23,23 @@
 import React from "react";
 import { _ } from "~/i18n";
 import ProgressReport from "./ProgressReport";
-import SimpleLayout from "~/SimpleLayout";
+import { InstallationPhase } from "~/types/status";
+import { PATHS } from "~/router";
+import { Navigate } from "react-router-dom";
+import { useInstallerClientStatus } from "~/context/installer";
 
 function InstallationProgress() {
-  return (
-    <SimpleLayout showOutlet={false}>
-      <ProgressReport title={_("Installing the system, please wait ...")} />
-    </SimpleLayout>
-  );
+  const { isBusy, phase } = useInstallerClientStatus({ suspense: true });
+
+  if (phase !== InstallationPhase.Install) {
+    return <Navigate to={PATHS.root} replace />;
+  }
+
+  if (!isBusy) {
+    return <Navigate to={PATHS.installationFinished} replace />;
+  }
+
+  return <ProgressReport title={_("Installing the system, please wait ...")} />;
 }
 
 export default InstallationProgress;

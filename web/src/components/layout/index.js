@@ -25,5 +25,5 @@ export { default as Center } from "./Center";
 export { default as Loading } from "./Loading";
 export { default as Sidebar } from "./Sidebar";
 export { default as Header } from "./Header";
-export { default as Main } from "./Main";
 export { default as Flex } from "./Flex";
+export { default as Layout, Full as FullLayout, Plain as PlainLayout } from "./Layout";

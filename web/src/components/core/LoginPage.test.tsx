@@ -113,15 +113,5 @@ describe("LoginPage", () => {
         within(form_error).getByText(/Could not authenticate/);
       });
     });
-
-    it("renders a button to know more about the project", async () => {
-      const { user } = plainRender(<LoginPage />);
-      const button = screen.getByRole("button", { name: "More about this" });
-
-      await user.click(button);
-
-      const dialog = await screen.findByRole("dialog");
-      within(dialog).getByText(/About/);
-    });
   });
 });

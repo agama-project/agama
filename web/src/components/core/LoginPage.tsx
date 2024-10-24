@@ -22,18 +22,8 @@
 
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import {
-  ActionGroup,
-  Button,
-  Card,
-  Flex,
-  FlexItem,
-  Form,
-  FormGroup,
-  Grid,
-  GridItem,
-} from "@patternfly/react-core";
-import { About, EmptyState, FormValidationError, Page, PasswordInput } from "~/components/core";
+import { ActionGroup, Button, Card, Form, FormGroup, Grid, GridItem } from "@patternfly/react-core";
+import { EmptyState, FormValidationError, Page, PasswordInput } from "~/components/core";
 import { Center } from "~/components/layout";
 import { AuthErrors, useAuth } from "~/context/auth";
 import { _ } from "~/i18n";
@@ -109,11 +99,6 @@ user privileges.",
                   </ActionGroup>
                 </Form>
               </EmptyState>
-              <Flex>
-                <FlexItem align={{ default: "alignRight" }}>
-                  <About showIcon={false} iconSize="xs" buttonText={_("More about this")} />
-                </FlexItem>
-              </Flex>
             </Card>
           </GridItem>
         </Grid>

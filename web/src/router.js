@@ -21,12 +21,11 @@
  */
 
 import React from "react";
-import { createHashRouter } from "react-router-dom";
+import { createHashRouter, Outlet } from "react-router-dom";
 import App from "~/App";
 import Protected from "~/Protected";
-import MainLayout from "~/components/layout/Main";
-import SimpleLayout from "./SimpleLayout";
-import { LoginPage } from "~/components/core";
+import { FullLayout, PlainLayout } from "~/components/layout";
+import { InstallationFinished, InstallationProgress, LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
@@ -40,6 +39,10 @@ const PATHS = {
   root: "/",
   login: "/login",
   overview: "/overview",
+  installation: "/installation",
+  installationProgress: "/installation/progress",
+  installationFinished: "/installation/finished",
+  logs: "/api/manager/logs.tar.gz",
 };
 
 const rootRoutes = () => [
@@ -61,7 +64,7 @@ const protectedRoutes = () => [
     element: <App />,
     children: [
       {
-        element: <MainLayout />,
+        element: <FullLayout />,
         children: [
           {
             index: true,
@@ -71,8 +74,25 @@ const protectedRoutes = () => [
         ],
       },
       {
-        element: <SimpleLayout showInstallerOptions />,
+        element: <PlainLayout />,
         children: [productsRoutes()],
+      },
+    ],
+  },
+  {
+    element: (
+      <PlainLayout>
+        <Outlet />
+      </PlainLayout>
+    ),
+    children: [
+      {
+        path: PATHS.installationProgress,
+        element: <InstallationProgress />,
+      },
+      {
+        path: PATHS.installationFinished,
+        element: <InstallationFinished />,
       },
     ],
   },
@@ -81,15 +101,13 @@ const protectedRoutes = () => [
 const router = () =>
   createHashRouter([
     {
-      path: PATHS.login,
       exact: true,
-      element: <SimpleLayout />,
-      children: [
-        {
-          index: true,
-          element: <LoginPage />,
-        },
-      ],
+      path: PATHS.login,
+      element: (
+        <PlainLayout mountHeader={false}>
+          <LoginPage />
+        </PlainLayout>
+      ),
     },
     {
       path: PATHS.root,
