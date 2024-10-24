@@ -28,10 +28,10 @@ module Agama
     module ProposalStrategies
       # Base class for the strategies used by the Agama proposal.
       class Base
-        # @param config [Config] Agama config
+        # @param product_config [Config] Product config
         # @param logger [Logger]
-        def initialize(config, logger)
-          @config = config
+        def initialize(product_config, logger)
+          @product_config = product_config
           @logger = logger
         end
 
@@ -58,7 +58,7 @@ module Agama
       private
 
         # @return [Config]
-        attr_reader :config
+        attr_reader :product_config
 
         # @return [Logger]
         attr_reader :logger

@@ -30,17 +30,17 @@ module Agama
         include Yast::I18n
 
         # @return [Agama::Storage::Config]
-        attr_reader :storage_config
-        alias_method :settings, :storage_config
+        attr_reader :config
+        alias_method :settings, :config
 
-        # @param config [Agama::Config]
+        # @param product_config [Agama::Config]
         # @param logger [Logger]
-        # @param storage_config [Agama::Storage::Config]
-        def initialize(config, logger, storage_config)
+        # @param config [Agama::Storage::Config]
+        def initialize(product_config, logger, config)
           textdomain "agama"
 
-          super(config, logger)
-          @storage_config = storage_config
+          super(product_config, logger)
+          @config = config
         end
 
         # @see Base#calculate
@@ -67,8 +67,8 @@ module Agama
         #
         # @return [Y2Storage::AgamaProposal]
         def agama_proposal
-          Y2Storage::AgamaProposal.new(storage_config,
-            product_config: config,
+          Y2Storage::AgamaProposal.new(config,
+            product_config: product_config,
             devicegraph:    probed_devicegraph,
             disk_analyzer:  disk_analyzer,
             issues_list:    [])

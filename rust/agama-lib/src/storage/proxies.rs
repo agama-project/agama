@@ -44,6 +44,9 @@ trait Storage1 {
     /// Get the current storage config according to the JSON schema
     fn get_config(&self) -> zbus::Result<String>;
 
+    /// Get the current storage solved config according to the JSON schema
+    fn get_solved_config(&self) -> zbus::Result<String>;
+
     /// DeprecatedSystem property
     #[dbus_proxy(property)]
     fn deprecated_system(&self) -> zbus::Result<bool>;

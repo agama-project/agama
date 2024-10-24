@@ -45,11 +45,24 @@
   <interface name="org.opensuse.Agama.Storage1">
     <method name="Probe">
     </method>
+    <method name="SetConfig">
+      <arg name="serialized_config" direction="in" type="s"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="GetConfig">
+      <arg name="serialized_config" direction="out" type="s"/>
+    </method>
+    <method name="GetSolvedConfig">
+      <arg name="serialized_config" direction="out" type="s"/>
+    </method>
     <method name="Install">
     </method>
     <method name="Finish">
     </method>
     <property type="b" name="DeprecatedSystem" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.Devices">
+    <property type="aa{sv}" name="Actions" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama.Storage1.DASD.Manager">
     <method name="Probe">

@@ -30,13 +30,13 @@ module Agama
       class Autoyast < Base
         include Yast::I18n
 
-        # @param config [Config] Agama config
+        # @param product_config [Config] Product config
         # @param logger [Logger]
         # @param partitioning [Array<Hash>]
-        def initialize(config, logger, partitioning)
+        def initialize(product_config, logger, partitioning)
           textdomain "agama"
 
-          super(config, logger)
+          super(product_config, logger)
           @partitioning = partitioning
         end
 
@@ -76,8 +76,8 @@ module Agama
         #
         # @return [Y2Storage::ProposalSettings]
         def proposal_settings
-          agama_default = ProposalSettingsReader.new(config).read
-          agama_default.to_y2storage(config: config)
+          agama_default = ProposalSettingsReader.new(product_config).read
+          agama_default.to_y2storage(config: product_config)
         end
 
         # Agama issue equivalent to the given AutoYaST issue

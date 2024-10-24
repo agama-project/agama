@@ -21,6 +21,7 @@
 
 require "yaml"
 require "yast2/arch_filter"
+require "agama/copyable"
 require "agama/config_reader"
 require "agama/product_reader"
 
@@ -31,6 +32,8 @@ module Agama
   # This also means that config needs to be re-evaluated if conditions
   # data change, like if user pick different distro to install.
   class Config
+    include Copyable
+
     # @return [Hash] configuration data
     attr_accessor :pure_data
     attr_accessor :logger
@@ -124,11 +127,11 @@ module Agama
     def copy
       logger = self.logger
       @logger = nil # cannot dump logger as it can contain IO
-      res = Marshal.load(Marshal.dump(self))
+      new_config = super
       @logger = logger
-      res.logger = logger
+      new_config.logger = logger
 
-      res
+      new_config
     end
 
     # Returns a new {Config} with the merge of the given ones

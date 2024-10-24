@@ -147,6 +147,13 @@ impl<'a> StorageClient<'a> {
         Ok(settings)
     }
 
+    /// Get the storage solved config according to the JSON schema
+    pub async fn get_solved_config(&self) -> Result<StorageSettings, ServiceError> {
+        let serialized_settings = self.storage_proxy.get_solved_config().await?;
+        let settings = serde_json::from_str(serialized_settings.as_str()).unwrap();
+        Ok(settings)
+    }
+
     pub async fn calculate(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {
         Ok(self.calculator_proxy.calculate(settings.into()).await?)
     }

@@ -19,29 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/copyable"
-
 module Agama
-  module Storage
-    module Configs
-      # Mixin for configs with search.
-      module WithSearch
-        # Needed when a search returns multiple devices and the configuration needs to be replicated
-        # for each one.
-        include Copyable
-
-        # @return [Search, nil]
-        attr_accessor :search
-
-        # Assigned device according to the search.
-        #
-        # @see Y2Storage::Proposal::AgamaSearcher
-        #
-        # @return [Y2Storage::Device, nil]
-        def found_device
-          search&.device
-        end
-      end
+  # Mixin to make a class copyable.
+  module Copyable
+    # Copies the object by doing a deep dup.
+    #
+    # @return [Object] New instance of the object's class.
+    def copy
+      Marshal.load(Marshal.dump(self))
     end
   end
 end
