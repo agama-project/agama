@@ -21,7 +21,7 @@
 
 require_relative "./storage_helpers"
 require "agama/config"
-require "agama/storage/config_conversions/from_json"
+require "agama/storage/config_conversions"
 require "agama/storage/config_checker"
 require "agama/storage/config_solver"
 require "y2storage"
@@ -281,13 +281,8 @@ describe Agama::Storage::ConfigChecker do
       context "and the drive should be skipped" do
         let(:if_not_found) { "skip" }
 
-        it "includes the expected issue" do
-          issues = subject.issues
-          expect(issues.size).to eq(1)
-
-          issue = issues.first
-          expect(issue.error?).to eq(false)
-          expect(issue.description).to eq("No device found for an optional drive")
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
         end
       end
 
@@ -374,13 +369,8 @@ describe Agama::Storage::ConfigChecker do
         context "and the partition should be skipped" do
           let(:if_not_found) { "skip" }
 
-          it "includes the expected issue" do
-            issues = subject.issues
-            expect(issues.size).to eq(1)
-
-            issue = issues.first
-            expect(issue.error?).to eq(false)
-            expect(issue.description).to eq("No device found for an optional partition")
+          it "does not include any issue" do
+            expect(subject.issues).to be_empty
           end
         end
 
