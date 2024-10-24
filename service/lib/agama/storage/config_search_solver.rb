@@ -36,22 +36,7 @@ module Agama
       # @param config [Agama::Storage::Config]
       def solve(config)
         @sids = []
-        config.drives.each do |drive_config|
-          device = find_drive(drive_config.search)
-          drive_config.search.solve(device)
-
-          add_found(drive_config)
-
-          next unless drive_config.found_device && drive_config.partitions?
-
-          drive_config.partitions.each do |partition_config|
-            next unless partition_config.search
-
-            partition = find_partition(partition_config.search, drive_config.found_device)
-            partition_config.search.solve(partition)
-            add_found(partition_config)
-          end
-        end
+        config.drives = config.drives.flat_map { |d| solve_drive(d) }
       end
 
     private
@@ -62,24 +47,87 @@ module Agama
       # @return [Array<Integer>] SIDs of the devices that are already associated to another search.
       attr_reader :sids
 
-      # Finds a drive matching the given search config.
+      # @see #solve
       #
-      # @param search_config [Agama::Storage::Configs::Search]
-      # @return [Y2Storage::Device, nil]
-      def find_drive(search_config)
-        candidates = candidate_devices(search_config, default: devicegraph.blk_devices)
-        candidates.select! { |d| d.is?(:disk_device, :stray_blk_device) }
-        next_unassigned_device(candidates)
+      # @note The given drive object can be modified
+      #
+      # @param original_drive [Configs::Drive]
+      # @return [Configs::Drive, Array<Configs::Drive>]
+      def solve_drive(original_drive)
+        devices = find_drives(original_drive.search)
+        return without_device(original_drive) if devices.empty?
+
+        devices.map do |device|
+          drive_copy(original_drive, device)
+        end
       end
 
-      # Finds a partitions matching the given search config.
+      # Marks the search of the given config object as solved
+      #
+      # @note The config object is modified.
+      #
+      # @param config [Configs::Drive, Configs::Partition]
+      # @return [Configs::Drive, Configs::Partition]
+      def without_device(config)
+        config.search.solve
+        config
+      end
+
+      # see #solve_drive
+      def drive_copy(original_drive, device)
+        drive_config = original_drive.copy
+        drive_config.search.solve(device)
+        add_found(drive_config)
+
+        return drive_config unless drive_config.partitions?
+
+        drive_config.partitions = drive_config.partitions.flat_map do |partition_config|
+          solve_partition(partition_config, device)
+        end
+
+        drive_config
+      end
+
+      # see #solve_drive
+      #
+      # @note The given partition object can be modified
+      #
+      # @param original_partition [Configs::Partition]
+      # @param drive_device [Y2Storage::Partitionable]
+      # @return [Configs::Partition, Array<Configs::Partition>]
+      def solve_partition(original_partition, drive_device)
+        return original_partition unless original_partition.search
+
+        partitions = find_partitions(original_partition.search, drive_device)
+        return without_device(original_partition) if partitions.empty?
+
+        partitions.map do |partition|
+          partition_config = original_partition.copy
+          partition_config.search.solve(partition)
+          add_found(partition_config)
+
+          partition_config
+        end
+      end
+
+      # Finds the drives matching the given search config.
       #
       # @param search_config [Agama::Storage::Configs::Search]
       # @return [Y2Storage::Device, nil]
-      def find_partition(search_config, device)
+      def find_drives(search_config)
+        candidates = candidate_devices(search_config, default: devicegraph.blk_devices)
+        candidates.select! { |d| d.is?(:disk_device, :stray_blk_device) }
+        next_unassigned_devices(candidates, search_config)
+      end
+
+      # Finds the partitions matching the given search config, if any
+      #
+      # @param search_config [Agama::Storage::Configs::Search]
+      # @return [Y2Storage::Device, nil]
+      def find_partitions(search_config, device)
         candidates = candidate_devices(search_config, default: device.partitions)
         candidates.select! { |d| d.is?(:partition) }
-        next_unassigned_device(candidates)
+        next_unassigned_devices(candidates, search_config)
       end
 
       # Candidate devices for the given search config.
@@ -89,7 +137,7 @@ module Agama
       #   conditions.
       # @return [Array<Y2Storage::Device>]
       def candidate_devices(search_config, default: [])
-        return default if search_config.any_device?
+        return default if search_config.always_match?
 
         [find_device(search_config)].compact
       end
@@ -102,14 +150,16 @@ module Agama
         devicegraph.find_by_any_name(search_config.name)
       end
 
-      # Next unassigned device from the given list.
+      # Next unassigned devices from the given list.
       #
       # @param devices [Array<Y2Storage::Device>]
+      # @param search [Config::Search]
       # @return [Y2Storage::Device, nil]
-      def next_unassigned_device(devices)
+      def next_unassigned_devices(devices, search)
         devices
           .reject { |d| sids.include?(d.sid) }
-          .min_by(&:name)
+          .sort_by(&:name)
+          .first(search.max || devices.size)
       end
 
       # @see #search

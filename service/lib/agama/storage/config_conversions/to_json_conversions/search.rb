@@ -33,13 +33,21 @@ module Agama
             Configs::Search
           end
 
+          # @see Base#convert
+          def convert
+            return SEARCH_ANYTHING_STRING if config.all_if_any?
+
+            super
+          end
+
         private
 
           # @see Base#conversions
           def conversions
             {
               condition:  convert_condition,
-              ifNotFound: config.if_not_found.to_s
+              ifNotFound: config.if_not_found.to_s,
+              max:        config.max
             }
           end
 

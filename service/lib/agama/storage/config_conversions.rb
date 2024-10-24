@@ -26,6 +26,9 @@ module Agama
   module Storage
     # Conversions for the storage config.
     module ConfigConversions
+      # Reserved string for Configs::Search meaning 'match all devices if there is any'
+      SEARCH_ANYTHING_STRING = "*"
+      private_constant :SEARCH_ANYTHING_STRING
     end
   end
 end

@@ -41,27 +41,20 @@ module Agama
           # @see Base#conversions
           # @return [Hash]
           def conversions
+            return convert_string if search_json.is_a?(String)
+
             {
-              name:         convert_name,
-              if_not_found: convert_not_found
+              name:         search_json.dig(:condition, :name),
+              max:          search_json[:max],
+              if_not_found: search_json[:ifNotFound]&.to_sym
             }
           end
 
-          # @return [String, nil]
-          def convert_name
-            return search_json if search_json.is_a?(String)
+          # @return [String]
+          def convert_string
+            return { if_not_found: :skip } if search_json == SEARCH_ANYTHING_STRING
 
-            search_json.dig(:condition, :name)
-          end
-
-          # @return [Symbol, nil]
-          def convert_not_found
-            return if search_json.is_a?(String)
-
-            value = search_json[:ifNotFound]
-            return unless value
-
-            value.to_sym
+            { name: search_json }
           end
         end
       end

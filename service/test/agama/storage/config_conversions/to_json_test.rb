@@ -20,8 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
+require "agama/storage/config_conversions"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
@@ -93,7 +92,8 @@ shared_examples "with search" do |result_scope|
   let(:search) do
     {
       condition:  { name: "/dev/vda1" },
-      ifNotFound: "skip"
+      ifNotFound: "skip",
+      max:        2
     }
   end
 
@@ -104,7 +104,8 @@ shared_examples "with search" do |result_scope|
     expect(search_json).to eq(
       {
         condition:  { name: "/dev/vda1" },
-        ifNotFound: "skip"
+        ifNotFound: "skip",
+        max:        2
       }
     )
   end
@@ -143,6 +144,17 @@ shared_examples "with search" do |result_scope|
           }
         )
       end
+    end
+  end
+
+  context "if there are no conditions or limits and errors should be skipped" do
+    let(:search) { { ifNotFound: "skip" } }
+
+    it "generates a wildcard" do
+      config_json = result_scope.call(subject.convert)
+      search_json = config_json[:search]
+
+      expect(search_json).to eq "*"
     end
   end
 end
@@ -633,9 +645,7 @@ describe Agama::Storage::ConfigConversions::ToJSON do
         drives_json = subject.convert[:drives]
 
         default_drive_json = {
-          search:     {
-            ifNotFound: "error"
-          },
+          search:     { ifNotFound: "error", max: 1 },
           partitions: []
         }
 
@@ -658,9 +668,7 @@ describe Agama::Storage::ConfigConversions::ToJSON do
           search_json = drive_json[:search]
 
           expect(search_json).to eq(
-            {
-              ifNotFound: "error"
-            }
+            { ifNotFound: "error", max: 1 }
           )
         end
       end

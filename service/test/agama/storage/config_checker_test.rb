@@ -244,8 +244,8 @@ describe Agama::Storage::ConfigChecker do
 
   before do
     mock_storage(devicegraph: scenario)
-    # To speed-up the tests
-    allow(Y2Storage::EncryptionMethod::TPM_FDE)
+    # To speed-up the tests. Use #allow_any_instance because #allow introduces marshaling problems
+    allow_any_instance_of(Y2Storage::EncryptionMethod::TpmFde)
       .to(receive(:possible?))
       .and_return(true)
   end
@@ -254,6 +254,8 @@ describe Agama::Storage::ConfigChecker do
     before do
       # Solves the config before checking.
       devicegraph = Y2Storage::StorageManager.instance.probed
+
+      allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
 
       Agama::Storage::ConfigSolver
         .new(devicegraph, product_config)

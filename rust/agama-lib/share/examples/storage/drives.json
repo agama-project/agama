@@ -67,9 +67,7 @@
             "deleteIfNeeded": true
           },
           {
-            "search": {
-              "ifNotFound": "skip"
-            },
+            "search": "*",
             "delete": true
           },
           {

@@ -59,8 +59,8 @@ module Y2Storage
       # @param config [Agama::Storage::Config]
       # @return [Array<String>]
       def devices_for_pvs(vg_config, config)
-        drives = vg_config.physical_volumes_devices.map do |dev_alias|
-          config.drives.find { |d| d.alias?(dev_alias) }
+        drives = vg_config.physical_volumes_devices.flat_map do |dev_alias|
+          config.drives.select { |d| d.alias?(dev_alias) }
         end.compact
 
         drives.map { |d| d.found_device.name }
