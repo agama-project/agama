@@ -22,11 +22,12 @@
 
 import React, { useState } from "react";
 
-import { Button, Stack } from "@patternfly/react-core";
+import { Button, ButtonProps, Stack } from "@patternfly/react-core";
 
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import { startInstallation } from "~/api/manager";
+import { useAllIssues } from "~/queries/issues";
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
   return (
@@ -59,23 +60,19 @@ according to the provided installation settings.",
  *
  * It starts the installation after asking for confirmation.
  *
- * @component
- *
- * @example
- *   <InstallButton onClick={() => console.log("clicked!")} />
- *
- * @param {object} props
- * @param {() => void} [props.onClick] - function to call when the user clicks the button
  */
-const InstallButton = () => {
+const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
+  const issues = useAllIssues();
   const [isOpen, setIsOpen] = useState(false);
+
+  if (!issues.isEmpty) return;
 
   const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   return (
     <>
-      <Button size="lg" variant="primary" onClick={open}>
+      <Button variant="primary" size="lg" {...props} onClick={open}>
         {/* TRANSLATORS: button label */}
         {_("Install")}
       </Button>

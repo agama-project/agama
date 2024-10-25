@@ -22,18 +22,57 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 import { InstallButton } from "~/components/core";
+import { IssuesList } from "~/types/issues";
 
 const mockStartInstallationFn = jest.fn();
+let mockIssuesList: IssuesList;
 
 jest.mock("~/api/manager", () => ({
   ...jest.requireActual("~/api/manager"),
   startInstallation: () => mockStartInstallationFn(),
 }));
 
-describe("when the button is clicked and there are not errors", () => {
-  it("starts the installation after user confirmation", async () => {
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useAllIssues: () => mockIssuesList,
+}));
+
+describe("when there are installation issues", () => {
+  beforeEach(() => {
+    mockIssuesList = new IssuesList(
+      [
+        {
+          description: "Fake Issue",
+          source: 0,
+          severity: 0,
+          details: "Fake Issue details",
+        },
+      ],
+      [],
+      [],
+      [],
+    );
+  });
+
+  it("renders nothing", () => {
+    const { container } = installerRender(<InstallButton />);
+    expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe("when there are not installation issues", () => {
+  beforeEach(() => {
+    mockIssuesList = new IssuesList([], [], [], []);
+  });
+
+  it("renders an Install button", () => {
+    installerRender(<InstallButton />);
+    screen.getByRole("button", { name: "Install" });
+  });
+
+  it("starts the installation after user clicks on it and accept the confirmation", async () => {
     const { user } = plainRender(<InstallButton />);
     const button = await screen.findByRole("button", { name: "Install" });
     await user.click(button);
@@ -43,7 +82,7 @@ describe("when the button is clicked and there are not errors", () => {
     expect(mockStartInstallationFn).toHaveBeenCalled();
   });
 
-  it("does not start the installation if the user cancels", async () => {
+  it("does not start the installation if the user clicks on it but cancels the confirmation", async () => {
     const { user } = plainRender(<InstallButton />);
     const button = await screen.findByRole("button", { name: "Install" });
     await user.click(button);

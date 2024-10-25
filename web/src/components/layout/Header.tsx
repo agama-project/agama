@@ -45,7 +45,7 @@ import { useProduct } from "~/queries/software";
 import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
-import { InstallerOptions } from "../core";
+import { InstallButton, InstallerOptions } from "../core";
 import { useLocation } from "react-router-dom";
 import { PATHS } from "~/router";
 
@@ -150,6 +150,9 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
+              <ToolbarItem>
+                <InstallButton className="cta" />
+              </ToolbarItem>
               <ToolbarItem>
                 <OptionsDropdown showInstallerOptions={showInstallerOptions} />
               </ToolbarItem>
