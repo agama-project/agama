@@ -35,6 +35,19 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 #[derive(Serialize, ToSchema)]
+pub struct LogsResponse {
+    /// Logs archive file name
+    logs: String,
+}
+
+#[utoipa::path(get, path = "/logs", responses(
+    (status = 200, description = "Compressed Agama logs", body = LogsResponse)
+))]
+pub async fn logs() -> Json<LogsResponse> {
+    Json(LogsResponse { logs: "/path/to/file".to_string() })
+}
+
+#[derive(Serialize, ToSchema)]
 pub struct PingResponse {
     /// API status
     status: String,
