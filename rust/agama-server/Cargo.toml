@@ -11,7 +11,7 @@ anyhow = "1.0"
 agama-locale-data = { path = "../agama-locale-data" }
 agama-lib = { path = "../agama-lib" }
 log = "0.4"
-zbus = { version = "3", default-features = false, features = ["tokio"] }
+zbus = { version = "5", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }
 thiserror = "1.0.64"
 serde = { version = "1.0.210", features = ["derive"] }
