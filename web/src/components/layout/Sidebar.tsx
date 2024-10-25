@@ -65,8 +65,8 @@ export default function Sidebar(): React.ReactNode {
         <MainNavigation />
       </PageSidebarBody>
       <PageSidebarBody isFilled={false} usePageInsets>
-        <Stack hasGutter>
-          <ChangeProductLink />
+        <Stack hasGutter className="pf-v5-u-py-sm">
+          <ChangeProductLink className="pf-v5-c-button pf-m-primary" />
         </Stack>
       </PageSidebarBody>
     </PageSidebar>
