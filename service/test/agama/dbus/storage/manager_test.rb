@@ -570,74 +570,54 @@ describe Agama::DBus::Storage::Manager do
 
     context "if a guided proposal has been calculated" do
       before do
-        proposal.calculate_guided(settings)
+        proposal.calculate_from_json(settings_json)
       end
 
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap do |settings|
-          settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
+      let(:settings_json) do
+        {
+          storage: {
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
+          }
+        }
+      end
+
+      context "and unsolved config is requested" do
+        let(:solved) { false }
+
+        it "returns serialized unsolved guided storage config" do
+          expect(subject.recover_config(solved: solved)).to eq(serialize(settings_json))
         end
       end
 
-      it "returns serialized guided storage config" do
-        expected_config = {
-          storage: {
-            guided: settings.to_json_settings
-          }
-        }
+      context "and solved config is requested" do
+        let(:solved) { true }
 
-        expect(subject.recover_config).to eq(serialize(expected_config))
+        it "returns serialized solved guided storage config" do
+          expect(subject.recover_config(solved: solved)).to eq(
+            serialize({
+              storage: {
+                guided: {
+                  target:  {
+                    disk: "/dev/vda"
+                  },
+                  boot:    {
+                    configure: true
+                  },
+                  space:   {
+                    policy: "keep"
+                  },
+                  volumes: []
+                }
+              }
+            })
+          )
+        end
       end
     end
 
     context "if an agama proposal has been calculated" do
-      before do
-        proposal.calculate_agama(storage_config)
-      end
-
-      let(:storage_config) do
-        fs_type = Agama::Storage::Configs::FilesystemType.new.tap do |t|
-          t.fs_type = Y2Storage::Filesystems::Type::BTRFS
-        end
-
-        filesystem = Agama::Storage::Configs::Filesystem.new.tap do |f|
-          f.type = fs_type
-        end
-
-        drive = Agama::Storage::Configs::Drive.new.tap do |d|
-          d.filesystem = filesystem
-        end
-
-        boot = Agama::Storage::Configs::Boot.new.tap do |b|
-          b.configure = false
-        end
-
-        Agama::Storage::Config.new.tap do |config|
-          config.drives = [drive]
-          config.boot = boot
-        end
-      end
-
-      it "returns serialized storage config" do
-        skip "Missing conversion from Agama::Storage::Config to JSON"
-
-        expected_config = {
-          storage: {
-            drives: [
-              {
-                filesystem: {
-                  type: "btrfs"
-                }
-              }
-            ]
-          }
-        }
-
-        expect(subject.recover_config).to eq(serialize(expected_config))
-      end
-    end
-
-    context "if a proposal was calculated from storage json" do
       before do
         proposal.calculate_from_json(config_json)
       end
@@ -646,26 +626,68 @@ describe Agama::DBus::Storage::Manager do
         {
           storage: {
             drives: [
-              ptableType: "gpt",
-              partitions: [
-                {
-                  filesystem: {
-                    type: "btrfs",
-                    path: "/"
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
                   }
-                }
-              ]
+                ]
+              }
             ]
           }
         }
       end
 
-      it "returns the serialized storage config" do
-        expect(subject.recover_config).to eq(serialize(config_json))
+      context "and unsolved config is requested" do
+        let(:solved) { false }
+
+        it "returns serialized unsolved storage config" do
+          expect(subject.recover_config(solved: solved)).to eq(serialize(config_json))
+        end
+      end
+
+      context "and solved config is requested" do
+        let(:solved) { true }
+
+        it "returns serialized solved guided storage config" do
+          expect(subject.recover_config(solved: solved)).to eq(
+            serialize({
+              storage: {
+                boot:         {
+                  configure: true
+                },
+                drives:       [
+                  {
+                    search:     {
+                      condition:  { name: "/dev/sda" },
+                      ifNotFound: "error",
+                      max:        1
+                    },
+                    partitions: [
+                      {
+                        filesystem: {
+                          reuseIfPossible: false,
+                          path:            "/",
+                          mountOptions:    [],
+                          mkfsOptions:     [],
+                          type:            "ext4"
+                        },
+                        size:       {
+                          min: 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                volumeGroups: []
+              }
+            })
+          )
+        end
       end
     end
 
-    context "if a proposal was calculated from AutoYaST json" do
+    context "if an AutoYaST proposal has been calculated" do
       before do
         proposal.calculate_from_json(autoyast_json)
       end

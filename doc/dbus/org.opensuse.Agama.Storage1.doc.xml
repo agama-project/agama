@@ -7,6 +7,84 @@
   <interface name="org.opensuse.Agama.Storage1">
     <method name="Probe">
     </method>
+    <!--
+      Sets the storage config.
+    -->
+    <method name="SetConfig">
+      <!--
+        E.g.,
+        {
+          "storage": {
+            "drives": [
+              {
+                "search": "/dev/vda",
+                "partitions": [
+                  { "generate": "default" }
+                ]
+              }
+            ]
+          }
+        }
+      -->
+      <arg name="serialized_config" direction="in" type="s"/>
+      <!--
+        Whether the proposal was correctly calculated:
+          0: success
+          1: failure
+      -->
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <!--
+      Gets the unsolved storage config.
+    -->
+    <method name="GetConfig">
+      <!--
+        E.g.,
+        {
+          "storage": {
+            "drives": [
+              {
+                "search": "/dev/vda",
+                "partitions": [
+                  { "generate": "default" }
+                ]
+              }
+            ]
+          }
+        }
+      -->
+      <arg name="serialized_config" direction="out" type="s"/>
+    </method>
+    <!--
+      Gets the solved storage config.
+    -->
+    <method name="GetSolvedConfig">
+      <!--
+        E.g.,
+        {
+          "storage": {
+            "drives": [
+              {
+                "search": "/dev/vda",
+                "partitions": [
+                  {
+                    "filesystem": {
+                      "path": "/home",
+                      "type": "xfs"
+                    },
+                    "size": {
+                      "min": "10 GiB",
+                      "max": "10 GiB"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      -->
+      <arg name="serialized_config" direction="out" type="s"/>
+    </method>
     <method name="Install">
     </method>
     <method name="Finish">

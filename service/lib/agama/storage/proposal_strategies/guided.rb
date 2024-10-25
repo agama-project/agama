@@ -30,13 +30,13 @@ module Agama
       class Guided < Base
         include Yast::I18n
 
-        # @param config [Config] Agama config
+        # @param product_config [Config] Product config
         # @param logger [Logger]
         # @param input_settings [ProposalSettings]
-        def initialize(config, logger, input_settings)
+        def initialize(product_config, logger, input_settings)
           textdomain "agama"
 
-          super(config, logger)
+          super(product_config, logger)
           @input_settings = input_settings
         end
 
@@ -109,7 +109,7 @@ module Agama
         # @return [Y2Storage::GuidedProposal]
         def guided_proposal(settings)
           Y2Storage::MinGuidedProposal.new(
-            settings:      settings.to_y2storage(config: config),
+            settings:      settings.to_y2storage(config: product_config),
             devicegraph:   probed_devicegraph,
             disk_analyzer: disk_analyzer
           )
