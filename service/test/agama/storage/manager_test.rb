@@ -163,8 +163,7 @@ describe Agama::Storage::Manager do
 
       allow(proposal).to receive(:issues).and_return(proposal_issues)
       allow(proposal).to receive(:available_devices).and_return(devices)
-      allow(proposal).to receive(:settings).and_return(settings)
-      allow(proposal).to receive(:calculate_guided)
+      allow(proposal).to receive(:calculate_agama)
 
       allow(config).to receive(:pick_product)
       allow(iscsi).to receive(:activate)
@@ -172,8 +171,8 @@ describe Agama::Storage::Manager do
       allow(iscsi).to receive(:probe)
       allow(y2storage_manager).to receive(:probe)
 
-      allow_any_instance_of(Agama::Storage::ProposalSettingsReader).to receive(:read)
-        .and_return(config_settings)
+      allow_any_instance_of(Agama::Storage::ConfigReader).to receive(:read)
+        .and_return(storage_config)
     end
 
     let(:raw_devicegraph) do
@@ -186,8 +185,7 @@ describe Agama::Storage::Manager do
 
     let(:devices) { [disk1, disk2] }
 
-    let(:settings) { Agama::Storage::ProposalSettings.new }
-    let(:config_settings) { Agama::Storage::ProposalSettings.new }
+    let(:storage_config) { Agama::Storage::Config.new }
 
     let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
@@ -206,7 +204,7 @@ describe Agama::Storage::Manager do
       end
       expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe)
-      expect(proposal).to receive(:calculate_guided).with(config_settings)
+      expect(proposal).to receive(:calculate_agama).with(storage_config)
       storage.probe
     end
 
