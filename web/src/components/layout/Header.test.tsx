@@ -57,6 +57,11 @@ jest.mock("~/queries/status", () => ({
   }),
 }));
 
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useAllIssues: () => ({ isEmtpy: true }),
+}));
+
 const doesNotRenderInstallerL10nOptions = () =>
   it("does not render the installer localization options", async () => {
     const { user } = installerRender(<Header />);

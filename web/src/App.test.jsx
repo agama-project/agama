@@ -62,6 +62,7 @@ jest.mock("~/queries/l10n", () => ({
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
   useIssuesChanges: () => jest.fn(),
+  useAllIssues: () => ({ isEmtpy: true }),
 }));
 
 jest.mock("~/queries/storage", () => ({
