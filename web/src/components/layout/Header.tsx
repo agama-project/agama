@@ -151,7 +151,7 @@ export default function Header({
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
               <ToolbarItem>
-                <InstallButton className="cta" />
+                <InstallButton />
               </ToolbarItem>
               <ToolbarItem>
                 <OptionsDropdown showInstallerOptions={showInstallerOptions} />
