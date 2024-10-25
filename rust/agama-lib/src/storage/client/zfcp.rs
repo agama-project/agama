@@ -71,9 +71,9 @@ pub async fn get_luns(controller_id: String, wwpn: String) -> Result<Vec<String>
 ///
 /// `controller_id`: controller id
 pub async fn get_luns_map(
-    controller_id: &str,
+    controller_id: String,
 ) -> Result<HashMap<String, Vec<String>>, ServiceError> {
-    let wwpns = get_wwpns(controller_id).await?;
+    let wwpns = get_wwpns(controller_id.as_str()).await?;
     let mut tasks = vec![];
     for wwpn in wwpns {
         tasks.push((
@@ -89,6 +89,15 @@ pub async fn get_luns_map(
 }
 
 const ZFCP_CONTROLLER_PREFIX: &'static str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
+
+/// Partial zfcp controller data used for thread processing
+/// TODO: for final version move all those thread related methods to this struct to procude final result
+struct PartialZFCPController {
+    pub id: String,
+    pub channel: String,
+    pub lun_scan: bool,
+    pub active: bool
+}
 
 /// Client to connect to Agama's D-Bus API for zFCP management.
 #[derive(Clone)]
@@ -153,25 +162,40 @@ impl<'a> ZFCPClient<'a> {
     ) -> Result<Vec<(OwnedObjectPath, ZFCPController)>, ServiceError> {
         let managed_objects = self.object_manager_proxy.get_managed_objects().await?;
 
-        let mut devices: Vec<(OwnedObjectPath, ZFCPController)> = vec![];
+        let mut devices: Vec<(OwnedObjectPath, PartialZFCPController)> = vec![];
         for (path, ifaces) in managed_objects {
             if let Some(properties) = ifaces.get("org.opensuse.Agama.Storage1.ZFCP.Controller") {
                 let id = extract_id_from_path(&path)?.to_string();
                 let channel: String = get_property(properties, "Channel")?;
-                let luns_map = get_luns_map(id.as_str()).await?;
                 devices.push((
                     path,
-                    ZFCPController {
+                    PartialZFCPController {
                         id: id,
                         channel: channel,
                         lun_scan: get_property(properties, "LUNScan")?,
                         active: get_property(properties, "Active")?,
-                        luns_map: luns_map, // try to use optimized thred version here
                     },
                 ))
             }
         }
-        Ok(devices)
+        let mut tasks = vec![];
+        for (_path, partial_controller) in &devices {
+            tasks.push(
+                tokio::spawn(get_luns_map(partial_controller.channel.clone()))
+            )
+        }
+        let mut result = Vec::with_capacity(devices.len());
+        for (index, task) in tasks.into_iter().enumerate() {
+            let (path, partial) = devices.get(index).unwrap();
+            result.push((path.clone(), ZFCPController {
+                id: partial.id.clone(),
+                channel: partial.channel.clone(),
+                lun_scan: partial.lun_scan,
+                active: partial.active,
+                luns_map: task.await.expect("thread join failed")?,
+            }));
+        }
+        Ok(result)
     }
 
     async fn get_controller_proxy(
