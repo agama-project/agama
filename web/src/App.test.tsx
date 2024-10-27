@@ -23,10 +23,10 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-
 import App from "./App";
-import { createClient } from "~/client";
 import { InstallationPhase } from "./types/status";
+import { createClient } from "~/client";
+import { Product } from "./types/software";
 
 jest.mock("~/client");
 
@@ -39,9 +39,12 @@ jest.mock("~/api/l10n", () => ({
   updateConfig: jest.fn(),
 }));
 
+const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed" };
+const microos: Product = { id: "Leap Micro", name: "openSUSE Micro" };
+
 // list of available products
-let mockProducts;
-let mockSelectedProduct;
+let mockProducts: Product[];
+let mockSelectedProduct: Product;
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -96,14 +99,11 @@ describe("App", () => {
   beforeEach(() => {
     // setting the language through a cookie
     document.cookie = "agamaLang=en-us; path=/;";
-    createClient.mockImplementation(() => {
+    (createClient as jest.Mock).mockImplementation(() => {
       return {};
     });
 
-    mockProducts = [
-      { id: "openSUSE", name: "openSUSE Tumbleweed" },
-      { id: "Leap Micro", name: "openSUSE Micro" },
-    ];
+    mockProducts = [tumbleweed, microos];
   });
 
   afterEach(() => {
@@ -142,7 +142,7 @@ describe("App", () => {
     describe("if the service is busy", () => {
       beforeEach(() => {
         mockClientStatus.isBusy = true;
-        mockSelectedProduct = { id: "Tumbleweed" };
+        mockSelectedProduct = tumbleweed;
       });
 
       it("redirects to product selection progress", async () => {
@@ -167,7 +167,7 @@ describe("App", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
       mockClientStatus.isBusy = true;
-      mockSelectedProduct = { id: "Fake product" };
+      mockSelectedProduct = tumbleweed;
     });
 
     it("navigates to installation progress", async () => {
@@ -180,7 +180,7 @@ describe("App", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
       mockClientStatus.isBusy = false;
-      mockSelectedProduct = { id: "Fake product" };
+      mockSelectedProduct = tumbleweed;
     });
 
     it("navigates to installation finished", async () => {

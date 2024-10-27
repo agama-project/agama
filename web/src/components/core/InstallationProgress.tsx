@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,23 +21,25 @@
  */
 
 import React from "react";
+import { _ } from "~/i18n";
+import ProgressReport from "./ProgressReport";
+import { InstallationPhase } from "~/types/status";
+import { PATHS } from "~/router";
+import { Navigate } from "react-router-dom";
+import { useInstallerStatus } from "~/queries/status";
 
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+function InstallationProgress() {
+  const { isBusy, phase } = useInstallerStatus({ suspense: true });
 
-import InstallationProgress from "./InstallationProgress";
+  if (phase !== InstallationPhase.Install) {
+    return <Navigate to={PATHS.root} replace />;
+  }
 
-jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mock</div>);
-jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
+  if (!isBusy) {
+    return <Navigate to={PATHS.installationFinished} replace />;
+  }
 
-describe.skip("InstallationProgress", () => {
-  it("uses 'Installing' as title", () => {
-    installerRender(<InstallationProgress />);
-    screen.getByText("Installing");
-  });
+  return <ProgressReport title={_("Installing the system, please wait...")} />;
+}
 
-  it("renders progress report", () => {
-    installerRender(<InstallationProgress />);
-    screen.getByText("ProgressReport Mock");
-  });
-});
+export default InstallationProgress;

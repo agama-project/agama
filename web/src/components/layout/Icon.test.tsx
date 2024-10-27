@@ -20,13 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { plainRender } from "~/test-utils";
 import { Icon } from "~/components/layout";
 
-let consoleErrorSpy;
+let consoleErrorSpy: jest.SpyInstance;
 
 describe("Icon", () => {
   beforeAll(() => {

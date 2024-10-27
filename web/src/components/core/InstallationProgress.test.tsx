@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,25 +21,24 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
-import ProgressReport from "./ProgressReport";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import { InstallationPhase } from "~/types/status";
-import { PATHS } from "~/router";
-import { Navigate } from "react-router-dom";
-import { useInstallerClientStatus } from "~/context/installer";
+import InstallationProgress from "./InstallationProgress";
 
-function InstallationProgress() {
-  const { isBusy, phase } = useInstallerClientStatus({ suspense: true });
+jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mock</div>);
 
-  if (phase !== InstallationPhase.Install) {
-    return <Navigate to={PATHS.root} replace />;
-  }
+jest.mock("~/queries/status", () => ({
+  ...jest.requireActual("~/queries/status"),
+  useInstallerStatus: () => ({ isBusy: true, phase: InstallationPhase.Install }),
+}));
 
-  if (!isBusy) {
-    return <Navigate to={PATHS.installationFinished} replace />;
-  }
+describe("InstallationProgress", () => {
+  it("renders progress report", () => {
+    installerRender(<InstallationProgress />);
+    screen.getByText("ProgressReport Mock");
+  });
 
-  return <ProgressReport title={_("Installing the system, please wait ...")} />;
-}
-
-export default InstallationProgress;
+  it.todo("redirects to root path when not in an installation phase");
+  it.todo("redirects to installatino finished path if in an installation phase but not busy");
+});

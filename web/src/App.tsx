@@ -38,10 +38,6 @@ import { InstallationPhase } from "~/types/status";
 
 /**
  * Main application component.
- *
- * @param {object} props
- * @param {number} [props.max_attempts=3] - Connection attempts before displaying an
- *   error (3 by default). The component will keep trying to connect.
  */
 function App() {
   const location = useLocation();
@@ -82,7 +78,7 @@ function App() {
     }
 
     if (selectedProduct === undefined && location.pathname !== PRODUCT_PATHS.root) {
-      return <Navigate to={PRODUCT_PATHS.products} />;
+      return <Navigate to={PRODUCT_PATHS.root} />;
     }
 
     if (

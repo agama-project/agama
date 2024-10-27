@@ -29,6 +29,7 @@ import {
   GridItem,
   ProgressStep,
   ProgressStepper,
+  ProgressStepProps,
   Spinner,
   Stack,
   Truncate,
@@ -37,10 +38,19 @@ import {
 import { _ } from "~/i18n";
 import { Center } from "~/components/layout";
 import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
+import { Progress as ProgressType } from "~/types/progress";
+
+type StepProps = {
+  id: string;
+  titleId: string;
+  isCurrent: boolean;
+  variant?: ProgressStepProps["variant"];
+  description?: ProgressStepProps["description"];
+};
 
 const Progress = ({ steps, step, firstStep, detail }) => {
-  const stepProperties = (stepNumber) => {
-    const properties = {
+  const stepProperties = (stepNumber: number): StepProps => {
+    const properties: StepProps = {
       isCurrent: stepNumber === step.current,
       id: `step-${stepNumber}-id`,
       titleId: `step-${stepNumber}-title`,
@@ -85,7 +95,7 @@ const Progress = ({ steps, step, firstStep, detail }) => {
           {firstStep}
         </ProgressStep>
       )}
-      {steps.map((description, idx) => {
+      {steps.map((description: StepProps["description"], idx: number) => {
         return (
           <ProgressStep key={idx} {...stepProperties(idx + 1)}>
             {description}
@@ -96,18 +106,16 @@ const Progress = ({ steps, step, firstStep, detail }) => {
   );
 };
 
-function findDetail(progresses) {
+function findDetail(progresses: ProgressType[]) {
   return progresses.find((progress) => {
     return progress?.finished === false;
   });
 }
 
 /**
- * @component
- *
  * Shows progress steps when a product is selected.
  */
-function ProgressReport({ title, firstStep }) {
+function ProgressReport({ title, firstStep }: { title: string; firstStep?: React.ReactNode }) {
   useResetProgress();
   const progress = useProgress("manager", { suspense: true });
   const [steps, setSteps] = useState(progress.steps);
@@ -123,14 +131,7 @@ function ProgressReport({ title, firstStep }) {
   const detail = findDetail([softwareProgress, storageProgress]);
 
   const Content = () => (
-    <Progress
-      titleId="progress-title"
-      steps={steps}
-      step={progress}
-      detail={detail}
-      firstStep={firstStep}
-      currentStep={false}
-    />
+    <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
   );
 
   return (

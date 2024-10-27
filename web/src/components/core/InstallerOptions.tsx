@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState } from "react";
 import { Flex, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
@@ -32,16 +30,17 @@ import supportedLanguages from "~/languages.json";
 import { useQuery } from "@tanstack/react-query";
 import { keymapsQuery } from "~/queries/l10n";
 
-/**
- * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
- */
+type InstallerOptionsProps = {
+  isOpen: boolean;
+  onClose?: () => void;
+};
 
 /**
  * Renders the installer options
  *
  * @todo Write documentation
  */
-export default function InstallerOptions({ isOpen = false, onClose }) {
+export default function InstallerOptions({ isOpen = false, onClose }: InstallerOptionsProps) {
   const {
     language: initialLanguage,
     keymap: initialKeymap,
@@ -51,7 +50,7 @@ export default function InstallerOptions({ isOpen = false, onClose }) {
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(initialKeymap);
   const { isPending, data: keymaps } = useQuery(keymapsQuery());
-  const [inProgress, setInProgress] = useState(false);
+  const [inProgress, setInProgress] = useState<boolean>(false);
 
   if (isPending) return;
 
@@ -61,7 +60,7 @@ export default function InstallerOptions({ isOpen = false, onClose }) {
     onClose();
   };
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setInProgress(true);
     changeKeymap(keymap);
