@@ -220,7 +220,7 @@ impl<'a> QuestionsClient<'a> {
         if let Some(password) = answer.with_password {
             let dbus_password = QuestionWithPasswordProxy::builder(&self.connection)
                 .path(&question_path)?
-                .cache_properties(zbus::CacheProperties::No)
+                .cache_properties(zbus::proxy::CacheProperties::No)
                 .build()
                 .await?;
             dbus_password
@@ -229,7 +229,7 @@ impl<'a> QuestionsClient<'a> {
         }
         let dbus_generic = GenericQuestionProxy::builder(&self.connection)
             .path(&question_path)?
-            .cache_properties(zbus::CacheProperties::No)
+            .cache_properties(zbus::proxy::CacheProperties::No)
             .build()
             .await?;
         dbus_generic

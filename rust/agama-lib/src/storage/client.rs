@@ -66,7 +66,7 @@ impl<'a> StorageClient<'a> {
             // Do not cache the D-Bus proposal proxy because the proposal object is reexported with
             // every new call to calculate.
             proposal_proxy: ProposalProxy::builder(&connection)
-                .cache_properties(zbus::CacheProperties::No)
+                .cache_properties(zbus::proxy::CacheProperties::No)
                 .build()
                 .await?,
             connection,
