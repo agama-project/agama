@@ -49,30 +49,30 @@ pub trait Proposal {
     /// AddResolvables method
     fn add_resolvables(
         &self,
-        Id: &str,
-        Type: u8,
-        Resolvables: &[&str],
-        Optional: bool,
+        id: &str,
+        r#type: u8,
+        resolvables: &[&str],
+        optional: bool,
     ) -> zbus::Result<()>;
 
     /// GetResolvables method
-    fn get_resolvables(&self, Id: &str, Type: u8, Optional: bool) -> zbus::Result<Vec<String>>;
+    fn get_resolvables(&self, id: &str, type_: u8, optional: bool) -> zbus::Result<Vec<String>>;
 
     /// RemoveResolvables method
     fn remove_resolvables(
         &self,
-        Id: &str,
-        Type: u8,
-        Resolvables: &[&str],
-        Optional: bool,
+        id: &str,
+        r#type: u8,
+        resolvables: &[&str],
+        optional: bool,
     ) -> zbus::Result<()>;
 
     /// SetResolvables method
     fn set_resolvables(
         &self,
-        Id: &str,
-        Type: u8,
-        Resolvables: &[&str],
-        Optional: bool,
+        id: &str,
+        r#type: u8,
+        resolvables: &[&str],
+        optional: bool,
     ) -> zbus::Result<()>;
 }
