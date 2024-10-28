@@ -45,7 +45,7 @@ import { useProduct } from "~/queries/software";
 import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
-import { InstallButton, InstallerOptions } from "../core";
+import { InstallButton, InstallerOptions, IssuesLink } from "~/components/core";
 import { useLocation } from "react-router-dom";
 import { PATHS } from "~/router";
 
@@ -151,6 +151,7 @@ export default function Header({
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
               <ToolbarItem>
+                <IssuesLink variant="warning" />
                 <InstallButton />
               </ToolbarItem>
               <ToolbarItem>
