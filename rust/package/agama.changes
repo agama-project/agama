@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 28 09:24:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the correct method to apply the network configuration from
+  the CLI (gh#agama-project/agama#1701).
+
+-------------------------------------------------------------------
 Thu Oct 24 14:19:46 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: extend the HTTP API to allow getting the solved storage

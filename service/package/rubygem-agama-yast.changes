@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 24 14:44:35 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Storage: do not report issues when intentionally skipping entries
+  at the storage config (gh#agama-project/agama#1696).
+
+-------------------------------------------------------------------
 Thu Oct 24 14:18:28 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: extend the D-Bus API to allow getting the solved storage

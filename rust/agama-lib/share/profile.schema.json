@@ -7,6 +7,30 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "scripts": {
+      "title": "User-defined installation scripts",
+      "description": "User-defined scripts to run at different points of the installation",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pre": {
+          "title": "Pre-installation scripts",
+          "description": "User-defined scripts to run before the installation starts",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/script"
+          }
+        },
+        "post": {
+          "title": "Post-installation scripts",
+          "description": "User-defined scripts to run after the installation finishes",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/script"
+          }
+        }
+      }
+    },
     "software": {
       "title": "Software settings",
       "type": "object",
@@ -928,30 +952,6 @@
       "type": "array",
       "items": {
         "type": "object"
-      }
-    },
-    "scripts": {
-      "title": "User-defined installation scripts",
-      "description": "User-defined scripts to run at different points of the installation",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "pre": {
-          "title": "Pre-installation scripts",
-          "description": "User-defined scripts to run before the installation starts",
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/script"
-          }
-        },
-        "post": {
-          "title": "Post-installation scripts",
-          "description": "User-defined scripts to run after the installation finishes",
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/script"
-          }
-        }
       }
     }
   },
