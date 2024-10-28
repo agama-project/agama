@@ -28,6 +28,8 @@ import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
+import { useLocation } from "react-router-dom";
+import { PATHS as PRODUCT_PATHS } from "~/routes/products";
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
   return (
@@ -64,8 +66,11 @@ according to the provided installation settings.",
 const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
   const issues = useAllIssues();
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   if (!issues.isEmpty) return;
+  // Do not show the button if the user is about to change the product.
+  if (location.pathname === PRODUCT_PATHS.changeProduct) return;
 
   const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
