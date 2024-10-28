@@ -97,9 +97,20 @@ describe("when there are not installation issues", () => {
     });
   });
 
-  describe("but installer is in the product selection path", () => {
+  describe("but installer is rendering the product selection", () => {
     beforeEach(() => {
       mockRoutes(PRODUCT_PATHS.changeProduct);
+    });
+
+    it("renders nothing", () => {
+      const { container } = installerRender(<InstallButton />);
+      expect(container).toBeEmptyDOMElement();
+    });
+  });
+
+  describe("but installer is configuring a product", () => {
+    beforeEach(() => {
+      mockRoutes(PRODUCT_PATHS.progress);
     });
 
     it("renders nothing", () => {

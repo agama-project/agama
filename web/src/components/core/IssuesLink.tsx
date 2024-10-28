@@ -41,8 +41,9 @@ const IssuesLink = (props: Omit<LinkProps, "to">) => {
   const location = useLocation();
 
   if (issues.isEmpty) return;
-  // Do not show the button if the user is about to change the product.
-  if (location.pathname === PRODUCT_PATHS.changeProduct) return;
+  // Do not show the button if the user is about to change the product or the
+  // installer is configuring a product.
+  if ([PRODUCT_PATHS.changeProduct, PRODUCT_PATHS.progress].includes(location.pathname)) return;
 
   return (
     <Tooltip

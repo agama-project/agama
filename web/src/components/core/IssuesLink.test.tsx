@@ -62,9 +62,20 @@ describe("when there are installation issues", () => {
     screen.getByRole("link", { name: "Installation issues" });
   });
 
-  describe("but installer is in the product selection path", () => {
+  describe("but installer is rendering the product selection", () => {
     beforeEach(() => {
       mockRoutes(PRODUCT_PATHS.changeProduct);
+    });
+
+    it("renders nothing", () => {
+      const { container } = installerRender(<IssuesLink />);
+      expect(container).toBeEmptyDOMElement();
+    });
+  });
+
+  describe("but installer is configuring the product", () => {
+    beforeEach(() => {
+      mockRoutes(PRODUCT_PATHS.progress);
     });
 
     it("renders nothing", () => {
