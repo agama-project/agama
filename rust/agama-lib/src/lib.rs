@@ -62,6 +62,7 @@ pub mod progress;
 pub mod proxies;
 mod store;
 pub use store::Store;
+use zbus::conn::Builder;
 pub mod questions;
 pub mod scripts;
 pub mod transfer;
@@ -75,7 +76,7 @@ pub async fn connection() -> Result<zbus::Connection, ServiceError> {
 }
 
 pub async fn connection_to(address: &str) -> Result<zbus::Connection, ServiceError> {
-    let connection = zbus::ConnectionBuilder::address(address)?
+    let connection = Builder::address(address)?
         .build()
         .await
         .map_err(|e| ServiceError::DBusConnectionError(address.to_string(), e))?;
