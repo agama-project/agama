@@ -28,19 +28,19 @@ use zbus::{
 
 use crate::{
     error::ServiceError,
-    storage::{model::dasd::DASDDevice, proxies::DASDManagerProxy},
+    storage::{model::dasd::DASDDevice, proxies::dasd::ManagerProxy},
 };
 
 /// Client to connect to Agama's D-Bus API for DASD management.
 #[derive(Clone)]
 pub struct DASDClient<'a> {
-    manager_proxy: DASDManagerProxy<'a>,
+    manager_proxy: ManagerProxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
 }
 
 impl<'a> DASDClient<'a> {
     pub async fn new(connection: Connection) -> Result<DASDClient<'a>, ServiceError> {
-        let manager_proxy = DASDManagerProxy::new(&connection).await?;
+        let manager_proxy = ManagerProxy::new(&connection).await?;
         let object_manager_proxy = ObjectManagerProxy::builder(&connection)
             .destination("org.opensuse.Agama.Storage1")?
             .path("/org/opensuse/Agama/Storage1")?

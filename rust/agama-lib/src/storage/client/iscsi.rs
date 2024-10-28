@@ -24,7 +24,7 @@ use std::collections::HashMap;
 use crate::{
     dbus::{extract_id_from_path, get_property},
     error::ServiceError,
-    storage::proxies::{InitiatorProxy, NodeProxy},
+    storage::proxies::iscsi::{InitiatorProxy, NodeProxy},
 };
 use serde::{Deserialize, Serialize};
 use thiserror::Error;

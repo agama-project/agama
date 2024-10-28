@@ -30,7 +30,7 @@ use crate::{
     error::ServiceError,
     storage::{
         model::zfcp::{ZFCPController, ZFCPDisk},
-        proxies::{ZFCPControllerProxy, ZFCPManagerProxy},
+        proxies::zfcp::{ControllerProxy, ManagerProxy},
     },
 };
 
@@ -39,14 +39,14 @@ const ZFCP_CONTROLLER_PREFIX: &'static str = "/org/opensuse/Agama/Storage1/zfcp_
 /// Client to connect to Agama's D-Bus API for zFCP management.
 #[derive(Clone)]
 pub struct ZFCPClient<'a> {
-    manager_proxy: ZFCPManagerProxy<'a>,
+    manager_proxy: ManagerProxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
     connection: Connection,
 }
 
 impl<'a> ZFCPClient<'a> {
     pub async fn new(connection: Connection) -> Result<Self, ServiceError> {
-        let manager_proxy = ZFCPManagerProxy::new(&connection).await?;
+        let manager_proxy = ManagerProxy::new(&connection).await?;
         let object_manager_proxy = ObjectManagerProxy::builder(&connection)
             .destination("org.opensuse.Agama.Storage1")?
             .path("/org/opensuse/Agama/Storage1")?
@@ -121,8 +121,8 @@ impl<'a> ZFCPClient<'a> {
     async fn get_controller_proxy(
         &self,
         controller_id: &str,
-    ) -> Result<ZFCPControllerProxy, ServiceError> {
-        let dbus = ZFCPControllerProxy::builder(&self.connection)
+    ) -> Result<ControllerProxy, ServiceError> {
+        let dbus = ControllerProxy::builder(&self.connection)
             .path(ZFCP_CONTROLLER_PREFIX.to_string() + "/" + controller_id)?
             .build()
             .await?;

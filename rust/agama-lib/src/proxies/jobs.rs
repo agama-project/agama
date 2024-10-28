@@ -18,11 +18,29 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod software;
-pub use software::Software1Proxy;
+use zbus::proxy;
+#[proxy(
+    interface = "org.opensuse.Agama.Storage1.Job",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1/jobs"
+)]
+trait Job {
+    #[zbus(property)]
+    fn running(&self) -> zbus::Result<bool>;
 
-mod product;
-pub use product::{Product, ProductProxy as SoftwareProductProxy};
+    #[zbus(property)]
+    fn exit_code(&self) -> zbus::Result<u32>;
 
-mod proposal;
-pub use proposal::ProposalProxy;
+    #[zbus(signal)]
+    fn finished(&self, exit_code: u32) -> zbus::Result<()>;
+}
+
+#[proxy(
+    interface = "org.opensuse.Agama.Storage1.DASD.Format",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1/jobs/1"
+)]
+trait FormatJob {
+    #[zbus(property)]
+    fn summary(&self) -> zbus::Result<std::collections::HashMap<String, (u32, u32, bool)>>;
+}

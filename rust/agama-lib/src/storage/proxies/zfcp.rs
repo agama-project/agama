@@ -18,11 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod software;
-pub use software::Software1Proxy;
+mod manager;
+pub use manager::ManagerProxy;
 
-mod product;
-pub use product::{Product, ProductProxy as SoftwareProductProxy};
+mod controller;
+pub use controller::ControllerProxy;
 
-mod proposal;
-pub use proposal::ProposalProxy;
+mod disk;
+pub use disk::DiskProxy;
