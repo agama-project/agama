@@ -84,7 +84,7 @@ impl NetworkClient {
         // trying to be tricky here. If something breaks then we need a put method on
         // BaseHTTPClient which doesn't require a serialiable object for the body
         self.client
-            .put_void(&format!("/network/system/apply").as_str(), &())
+            .post_void(&format!("/network/system/apply").as_str(), &())
             .await?;
 
         Ok(())
