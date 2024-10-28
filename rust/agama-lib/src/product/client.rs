@@ -123,9 +123,10 @@ impl<'a> ProductClient<'a> {
 
     /// register product
     pub async fn register(&self, code: &str, email: &str) -> Result<(u32, String), ServiceError> {
-        let mut options: HashMap<&str, zbus::zvariant::Value> = HashMap::new();
+        let mut options: HashMap<&str, &zbus::zvariant::Value> = HashMap::new();
+        let value = zbus::zvariant::Value::from(email.to_string());
         if !email.is_empty() {
-            options.insert("Email", zbus::zvariant::Value::new(email));
+            options.insert("Email", &value);
         }
         Ok(self.registration_proxy.register(code, options).await?)
     }
