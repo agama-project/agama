@@ -29,7 +29,7 @@ use crate::{error::Error, web::Event};
 use agama_lib::{
     dbus::{extract_id_from_path, get_property},
     error::ServiceError,
-    proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy},
+    proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
     questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
 };
 use anyhow::Context;
@@ -53,7 +53,7 @@ use zbus::{
 struct QuestionsClient<'a> {
     connection: zbus::Connection,
     objects_proxy: ObjectManagerProxy<'a>,
-    questions_proxy: Questions1Proxy<'a>,
+    questions_proxy: QuestionsProxy<'a>,
     generic_interface: OwnedInterfaceName,
     with_password_interface: OwnedInterfaceName,
 }
@@ -64,7 +64,7 @@ impl<'a> QuestionsClient<'a> {
             OwnedObjectPath::from(ObjectPath::try_from("/org/opensuse/Agama1/Questions")?);
         Ok(Self {
             connection: dbus.clone(),
-            questions_proxy: Questions1Proxy::new(&dbus).await?,
+            questions_proxy: QuestionsProxy::new(&dbus).await?,
             objects_proxy: ObjectManagerProxy::builder(&dbus)
                 .path(question_path)?
                 .destination("org.opensuse.Agama1")?
