@@ -82,6 +82,10 @@
   .pf-v5-c-button.pf-m-primary:focus:hover {
     --pf-v5-c-button--m-primary--BackgroundColor: #1ea064; // var(--color-button-primary);
   }
+
+  .pf-v5-c-button.pf-m-warning {
+    color: var(--color-button-primary);
+  }
 }
 
 .pf-v5-c-button.pf-m-primary .pf-v5-c-modal-box__body {
@@ -289,7 +293,7 @@
 
 // Allows the pf-m-current directly in the a element instead of li.
 // Needed because setting the pf-m-current in ReactRouter/NavLink (the one
-// that knowst that link "isActive")
+// that know the link "isActive")
 
 .pf-v5-c-tabs__link.pf-m-current {
   --pf-v5-c-tabs__link--after--BorderColor: var(

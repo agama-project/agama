@@ -78,7 +78,7 @@ const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
 
   return (
     <>
-      <Button variant="primary" size="lg" {...props} onClick={open}>
+      <Button variant="primary" {...props} onClick={open}>
         {/* TRANSLATORS: button label */}
         {_("Install")}
       </Button>

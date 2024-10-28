@@ -150,8 +150,8 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem>
-                <IssuesLink variant="warning" />
+              <ToolbarItem spacer={{ default: "spacerNone" }}>
+                <IssuesLink variant="warning" isInline />
                 <InstallButton />
               </ToolbarItem>
               <ToolbarItem>

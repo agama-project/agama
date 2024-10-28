@@ -59,7 +59,7 @@ jest.mock("~/queries/status", () => ({
 
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
-  useAllIssues: () => ({ isEmtpy: true }),
+  useAllIssues: () => ({ isEmpty: true }),
 }));
 
 const doesNotRenderInstallerL10nOptions = () =>
