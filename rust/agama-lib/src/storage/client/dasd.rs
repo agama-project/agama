@@ -21,7 +21,7 @@
 //! Implements a client to access Agama's D-Bus API related to DASD management.
 
 use zbus::{
-    fdo::ObjectManagerProxy,
+    fdo::{IntrospectableProxy, ObjectManagerProxy},
     zvariant::{ObjectPath, OwnedObjectPath},
     Connection,
 };
@@ -36,6 +36,7 @@ use crate::{
 pub struct DASDClient<'a> {
     manager_proxy: ManagerProxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
+    introspectable_proxy: IntrospectableProxy<'a>,
 }
 
 impl<'a> DASDClient<'a> {
@@ -46,14 +47,21 @@ impl<'a> DASDClient<'a> {
             .path("/org/opensuse/Agama/Storage1")?
             .build()
             .await?;
+        let introspectable_proxy = IntrospectableProxy::builder(&connection)
+            .destination("org.opensuse.Agama.Storage1")?
+            .path("/org/opensuse/Agama/Storage1")?
+            .build()
+            .await?;
+
         Ok(Self {
             manager_proxy,
             object_manager_proxy,
+            introspectable_proxy,
         })
     }
 
     pub async fn supported(&self) -> Result<bool, ServiceError> {
-        let introspect = self.manager_proxy.introspect().await?;
+        let introspect = self.introspectable_proxy.introspect().await?;
         // simply check if introspection contain given interface
         Ok(introspect.contains("org.opensuse.Agama.Storage1.DASD.Manager"))
     }

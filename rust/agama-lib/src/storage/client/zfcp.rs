@@ -23,7 +23,11 @@
 use std::collections::HashMap;
 
 use futures_util::future::join_all;
-use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath, Connection};
+use zbus::{
+    fdo::{IntrospectableProxy, ObjectManagerProxy},
+    zvariant::OwnedObjectPath,
+    Connection,
+};
 
 use crate::{
     dbus::{extract_id_from_path, get_property},
@@ -39,9 +43,10 @@ const ZFCP_CONTROLLER_PREFIX: &'static str = "/org/opensuse/Agama/Storage1/zfcp_
 /// Client to connect to Agama's D-Bus API for zFCP management.
 #[derive(Clone)]
 pub struct ZFCPClient<'a> {
+    connection: Connection,
     manager_proxy: ManagerProxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
-    connection: Connection,
+    introspectable_proxy: IntrospectableProxy<'a>,
 }
 
 impl<'a> ZFCPClient<'a> {
@@ -52,16 +57,21 @@ impl<'a> ZFCPClient<'a> {
             .path("/org/opensuse/Agama/Storage1")?
             .build()
             .await?;
+        let introspectable_proxy = IntrospectableProxy::builder(&connection)
+            .destination("org.opensuse.Agama.Storage1")?
+            .path("/org/opensuse/Agama/Storage1")?
+            .build()
+            .await?;
         Ok(Self {
+            connection,
             manager_proxy,
             object_manager_proxy,
-            connection,
+            introspectable_proxy,
         })
     }
 
     pub async fn supported(&self) -> Result<bool, ServiceError> {
-        let introspect = self.manager_proxy.introspect().await?;
-        // simply check if introspection contain given interface
+        let introspect = self.introspectable_proxy.introspect().await?; // simply check if introspection contain given interface
         Ok(introspect.contains("org.opensuse.Agama.Storage1.ZFCP.Manager"))
     }
 
