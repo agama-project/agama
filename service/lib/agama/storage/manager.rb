@@ -29,7 +29,7 @@ require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
 require "agama/storage/iscsi/manager"
 require "agama/storage/finisher"
-require "agama/storage/proposal_settings_reader"
+require "agama/storage/config_reader"
 require "agama/issue"
 require "agama/with_locale"
 require "agama/with_issues"
@@ -216,8 +216,8 @@ module Agama
 
       # Calculates the proposal using the settings from the config file.
       def calculate_proposal
-        settings = ProposalSettingsReader.new(config).read
-        proposal.calculate_guided(settings)
+        settings = ConfigReader.new(config).read
+        proposal.calculate_agama(settings)
       end
 
       # Adds the required packages to the list of resolvables to install

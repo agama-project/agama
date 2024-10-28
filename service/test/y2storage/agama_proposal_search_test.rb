@@ -207,12 +207,9 @@ describe Y2Storage::AgamaProposal do
             expect(disk.partitions.size).to eq 1
           end
 
-          it "register a warning about non-existent partitions" do
+          it "does not include any issue about non-existent partitions" do
             proposal.propose
-            expect(proposal.issues_list).to include an_object_having_attributes(
-              description: /optional partition/,
-              severity:    Agama::Issue::Severity::WARN
-            )
+            expect(proposal.issues_list).to be_empty
           end
         end
       end

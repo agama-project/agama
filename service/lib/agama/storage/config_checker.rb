@@ -29,7 +29,7 @@ module Agama
     # Class for checking a storage config.
     #
     # TODO: Split in smaller checkers, for example: ConfigFilesystemChecker, etc.
-    class ConfigChecker # rubocop:disable Metrics/ClassLength
+    class ConfigChecker
       include Yast::I18n
 
       # @param config [Storage::Config]
@@ -81,15 +81,10 @@ module Agama
       # @return [Agama::Issue]
       def search_issue(config)
         return if !config.search || config.found_device
+        return if config.search.skip_device?
 
         if config.is_a?(Agama::Storage::Configs::Drive)
-          if config.search.skip_device?
-            warning(_("No device found for an optional drive"))
-          else
-            error(_("No device found for a mandatory drive"))
-          end
-        elsif config.search.skip_device?
-          warning(_("No device found for an optional partition"))
+          error(_("No device found for a mandatory drive"))
         else
           error(_("No device found for a mandatory partition"))
         end
@@ -468,18 +463,6 @@ module Agama
       # @return [VolumeTemplatesBuilder]
       def volume_builder
         @volume_builder ||= VolumeTemplatesBuilder.new_from_config(product_config)
-      end
-
-      # Creates a warning issue.
-      #
-      # @param message [String]
-      # @return [Issue]
-      def warning(message)
-        Agama::Issue.new(
-          message,
-          source:   Agama::Issue::Source::CONFIG,
-          severity: Agama::Issue::Severity::WARN
-        )
       end
 
       # Creates an error issue.

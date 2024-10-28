@@ -22,7 +22,7 @@
 require_relative "../agama/storage/storage_helpers"
 require "agama/config"
 require "agama/storage/config"
-require "agama/storage/config_conversions/from_json"
+require "agama/storage/config_conversions"
 require "y2storage"
 require "y2storage/agama_proposal"
 
@@ -484,12 +484,9 @@ describe Y2Storage::AgamaProposal do
           expect(proposal.failed?).to eq false
         end
 
-        it "registers a non-critical issue" do
+        it "does not register any issue about missing disks" do
           proposal.propose
-          expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /optional drive/,
-            severity:    Agama::Issue::Severity::WARN
-          )
+          expect(proposal.issues_list).to be_empty
         end
       end
 
@@ -576,12 +573,9 @@ describe Y2Storage::AgamaProposal do
           expect(proposal.failed?).to eq false
         end
 
-        it "registers a non-critical issue" do
+        it "does not register any issue about missing partitions" do
           proposal.propose
-          expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /optional partition/,
-            severity:    Agama::Issue::Severity::WARN
-          )
+          expect(proposal.issues_list).to be_empty
         end
       end
 
