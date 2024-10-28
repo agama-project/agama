@@ -148,7 +148,11 @@ impl<'a> StorageClient<'a> {
     }
 
     pub async fn calculate(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {
-        Ok(self.calculator_proxy.calculate(settings.into()).await?)
+        let map: HashMap<&str, zbus::zvariant::Value> = settings.into();
+        let options: HashMap<&str, &zbus::zvariant::Value> =
+            map.iter().map(|(id, value)| (*id, value)).collect();
+
+        Ok(self.calculator_proxy.calculate(options).await?)
     }
 
     /// Probed devices.
