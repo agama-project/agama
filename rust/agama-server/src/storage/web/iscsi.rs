@@ -98,7 +98,7 @@ fn handle_initiator_change(change: PropertiesChanged) -> Result<Option<Event>, S
     if iscsi_iface != args.interface_name {
         return Ok(None);
     }
-    let changes = to_owned_hash(args.changed_properties());
+    let changes = to_owned_hash(args.changed_properties())?;
     let name = get_optional_property(&changes, "InitiatorName")?;
     let ibft = get_optional_property(&changes, "IBFT")?;
     Ok(Some(Event::ISCSIInitiatorChanged { ibft, name }))

@@ -90,33 +90,35 @@ pub struct ISCSIAuth {
     pub reverse_password: Option<String>,
 }
 
-impl From<ISCSIAuth> for HashMap<String, OwnedValue> {
-    fn from(value: ISCSIAuth) -> Self {
+impl TryFrom<ISCSIAuth> for HashMap<String, OwnedValue> {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: ISCSIAuth) -> Result<Self, Self::Error> {
         let mut hash = HashMap::new();
 
         if let Some(username) = value.username {
-            hash.insert("Username".to_string(), Value::new(username).to_owned());
+            hash.insert("Username".to_string(), Value::new(username).try_into()?);
         }
 
         if let Some(password) = value.password {
-            hash.insert("Password".to_string(), Value::new(password).to_owned());
+            hash.insert("Password".to_string(), Value::new(password).try_into()?);
         }
 
         if let Some(reverse_username) = value.reverse_username {
             hash.insert(
                 "ReverseUsername".to_string(),
-                Value::new(reverse_username).to_owned(),
+                Value::new(reverse_username).try_into()?,
             );
         }
 
         if let Some(reverse_password) = value.reverse_password {
             hash.insert(
                 "ReversePassword".to_string(),
-                Value::new(reverse_password).to_owned(),
+                Value::new(reverse_password).try_into()?,
             );
         }
 
-        hash
+        Ok(hash)
     }
 }
 
@@ -241,8 +243,8 @@ impl<'a> ISCSIClient<'a> {
     ) -> Result<LoginResult, ServiceError> {
         let proxy = self.get_node_proxy(id).await?;
 
-        let mut options: HashMap<String, OwnedValue> = auth.into();
-        options.insert("Startup".to_string(), Value::new(startup).to_owned());
+        let mut options: HashMap<String, OwnedValue> = auth.try_into()?;
+        options.insert("Startup".to_string(), Value::new(startup).try_to_owned()?);
 
         // FIXME: duplicated code (see discover)
         let mut options_ref: HashMap<&str, &zvariant::Value<'_>> = HashMap::new();
