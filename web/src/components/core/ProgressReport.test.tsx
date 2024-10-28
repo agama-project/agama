@@ -54,7 +54,7 @@ describe("ProgressReport", () => {
     });
 
     it("shows the progress including the details", () => {
-      plainRender(<ProgressReport />);
+      plainRender(<ProgressReport title="Testing progress" />);
 
       expect(screen.getByText(/Partition disks/)).toBeInTheDocument();
       expect(screen.getByText(/Install software/)).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe("ProgressReport", () => {
     });
 
     it("shows the progress including the details", () => {
-      plainRender(<ProgressReport />);
+      plainRender(<ProgressReport title="Testing progress" />);
 
       expect(screen.getByText(/Partition disks/)).toBeInTheDocument();
       expect(screen.getByText(/Install software/)).toBeInTheDocument();

@@ -35,22 +35,13 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
-import { Center } from "~/components/layout";
-import { EmptyState, InstallButton, Page } from "~/components/core";
+import { Page } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 import { useAllIssues } from "~/queries/issues";
 import { IssuesList as IssuesListType, IssueSeverity } from "~/types/issues";
-
-const ReadyForInstallation = () => (
-  <Center>
-    <EmptyState title={_("Ready for installation")} icon="check_circle" color="success-color-100">
-      <InstallButton />
-    </EmptyState>
-  </Center>
-);
 
 const IssuesList = ({ issues }: { issues: IssuesListType }) => {
   const scopeHeaders = {
@@ -90,19 +81,13 @@ const IssuesList = ({ issues }: { issues: IssuesListType }) => {
   );
 };
 
-const ResultSection = () => {
-  const issues = useAllIssues();
-
-  const resultSectionProps = issues.isEmpty
-    ? {}
-    : {
-        title: _("Installation"),
-        description: _("Before installing, please check the following problems."),
-      };
-
+const IssuesSection = ({ issues }: { issues: IssuesListType }) => {
   return (
-    <Page.Section {...resultSectionProps}>
-      {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}
+    <Page.Section
+      title={_("Installation blocking issues")}
+      description={_("Before installing, please check the following problems.")}
+    >
+      <IssuesList issues={issues} />
     </Page.Section>
   );
 };
@@ -123,6 +108,8 @@ const OverviewSection = () => (
 );
 
 export default function OverviewPage() {
+  const issues = useAllIssues();
+
   return (
     <Page>
       <Page.Content>
@@ -136,12 +123,14 @@ export default function OverviewPage() {
               </HintBody>
             </Hint>
           </GridItem>
-          <GridItem sm={12} xl={6}>
+          <GridItem sm={12} xl={issues.isEmpty ? 12 : 6}>
             <OverviewSection />
           </GridItem>
-          <GridItem sm={12} xl={6}>
-            <ResultSection />
-          </GridItem>
+          {!issues.isEmpty && (
+            <GridItem sm={12} xl={6}>
+              <IssuesSection issues={issues} />
+            </GridItem>
+          )}
         </Grid>
       </Page.Content>
     </Page>

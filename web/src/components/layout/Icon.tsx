@@ -39,6 +39,7 @@ import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
 import ExpandAll from "@icons/expand_all.svg?component";
+import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
 import Feedback from "@icons/feedback.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
@@ -86,11 +87,6 @@ import WifiOff from "@icons/wifi_off.svg?component";
 
 import { SiLinux } from "@icons-pack/react-simple-icons";
 
-/**
- * @typedef {string|number} IconSize
- * @typedef {keyof icons} IconName
- */
-
 const icons = {
   add_a_photo: AddAPhoto,
   apps: Apps,
@@ -107,6 +103,7 @@ const icons = {
   edit_square: EditSquare,
   error: Error,
   expand_all: ExpandAll,
+  expand_circle_down: ExpandCircleDown,
   feedback: Feedback,
   folder: Folder,
   folder_off: FolderOff,
@@ -155,6 +152,13 @@ const icons = {
 
 const PREDEFINED_SIZES = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"];
 
+type IconProps = React.SVGAttributes<SVGElement> & {
+  /** Name of the desired icon */
+  name: keyof typeof icons;
+  /** Size used for both, width and height.It can be a CSS unit or one of PREDEFINED_SIZES */
+  size?: string | number;
+};
+
 /**
  * Agama Icon component
  *
@@ -165,19 +169,11 @@ const PREDEFINED_SIZES = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl
  * @example
  *   <Icon name="warning" size="16" />
  *
- * @param {object} props - Component props
- * @param {IconName} props.name - Name of the desired icon.
- * @param {string} [props.className=""] - CSS classes.
- * @param {IconSize} [props.size] - Size used for both, width and height.
- * @param {string} [props.color] - Color for the icon, currently based on PF
- * text utils
- *   It can be a CSS unit or one of PREDEFINED_SIZES.
- * @param {object} [props.otherProps] Other props sent to SVG icon. Please, note
- *   that width and height will be overwritten by the size value if it was given.
+ * @note width and height props will be overwritten by the size value if it was given.
  *
  * @returns {JSX.Element|null} null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
-export default function Icon({ name, size, color, ...otherProps }) {
+export default function Icon({ name, size, color, ...otherProps }: IconProps) {
   // NOTE: Reaching this is unlikely, but let's be safe.
   if (!name || !icons[name]) {
     console.error(`Icon '${name}' not found.`);
@@ -186,7 +182,7 @@ export default function Icon({ name, size, color, ...otherProps }) {
 
   let classes = otherProps.className || "";
 
-  if (size && PREDEFINED_SIZES.includes(size)) {
+  if (size && typeof size === "string" && PREDEFINED_SIZES.includes(size)) {
     classes += ` icon-${size}`;
   } else if (size) {
     otherProps.width = size;

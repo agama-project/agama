@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,11 +22,14 @@
 
 import React, { useState } from "react";
 
-import { Button, Stack } from "@patternfly/react-core";
+import { Button, ButtonProps, Stack } from "@patternfly/react-core";
 
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import { startInstallation } from "~/api/manager";
+import { useAllIssues } from "~/queries/issues";
+import { useLocation } from "react-router-dom";
+import { PATHS as PRODUCT_PATHS } from "~/routes/products";
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
   return (
@@ -59,23 +62,23 @@ according to the provided installation settings.",
  *
  * It starts the installation after asking for confirmation.
  *
- * @component
- *
- * @example
- *   <InstallButton onClick={() => console.log("clicked!")} />
- *
- * @param {object} props
- * @param {() => void} [props.onClick] - function to call when the user clicks the button
  */
-const InstallButton = () => {
+const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
+  const issues = useAllIssues();
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  if (!issues.isEmpty) return;
+  // Do not show the button if the user is about to change the product or the
+  // installer is configuring a product.
+  if ([PRODUCT_PATHS.changeProduct, PRODUCT_PATHS.progress].includes(location.pathname)) return;
 
   const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   return (
     <>
-      <Button size="lg" variant="primary" onClick={open}>
+      <Button variant="primary" {...props} onClick={open}>
         {/* TRANSLATORS: button label */}
         {_("Install")}
       </Button>

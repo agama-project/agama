@@ -20,7 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as About } from "./About";
 export { default as ChangeProductLink } from "./ChangeProductLink";
 export { default as Description } from "./Description";
 export { default as Section } from "./Section";
@@ -30,15 +29,14 @@ export { default as FormValidationError } from "./FormValidationError";
 export { default as Fieldset } from "./Fieldset";
 export { default as Em } from "./Em";
 export { default as EmailInput } from "./EmailInput";
-export { default as Installation } from "./Installation";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
+export { default as IssuesLink } from "./IssuesLink";
 export { default as IssuesHint } from "./IssuesHint";
 export { default as SectionSkeleton } from "./SectionSkeleton";
 export { default as ListSearch } from "./ListSearch";
 export { default as LoginPage } from "./LoginPage";
-export { default as LogsButton } from "./LogsButton";
 export { default as RowActions } from "./RowActions";
 export { default as Page } from "./Page";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";

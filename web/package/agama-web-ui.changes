@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 28 19:26:29 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Make some general actions more accessible
+  (gh#agama-project/agama#1690).
+
+-------------------------------------------------------------------
 Wed Oct 23 16:26:29 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Fix the link to download the logs (gh#agama-project/agama#1694).

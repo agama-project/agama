@@ -220,7 +220,7 @@ module.exports = {
       },
       {
         test: /\.svg$/i,
-        issuer: /\.jsx?$/,
+        issuer: /\.(j|t)sx?$/,
         resourceQuery: /component/, // *.svg?component
         use: ["@svgr/webpack"],
       },

@@ -67,7 +67,28 @@
   --pf-v5-c-button--m-secondary--Color: var(--color-link-hover);
 }
 
-.pf-v5-c-modal-box__body {
+// Redefine style for primary buttons placed at top bar
+.pf-v5-c-masthead__content {
+  .pf-v5-c-button.pf-m-primary {
+    --pf-v5-c-button--FontSize: 120%;
+    --pf-v5-c-button--m-primary--BackgroundColor: var(--color-button-primary-hover);
+    letter-spacing: 1px;
+  }
+
+  .pf-v5-c-button.pf-m-primary:hover {
+    --pf-v5-c-button--m-primary--BackgroundColor: #1ea064; // var(--color-button-primary);
+  }
+
+  .pf-v5-c-button.pf-m-primary:focus:hover {
+    --pf-v5-c-button--m-primary--BackgroundColor: #1ea064; // var(--color-button-primary);
+  }
+
+  .pf-v5-c-button.pf-m-warning {
+    color: var(--color-button-primary);
+  }
+}
+
+.pf-v5-c-button.pf-m-primary .pf-v5-c-modal-box__body {
   padding-block: var(--pf-v5-c-modal-box__body--PaddingTop);
 }
 
@@ -272,7 +293,7 @@
 
 // Allows the pf-m-current directly in the a element instead of li.
 // Needed because setting the pf-m-current in ReactRouter/NavLink (the one
-// that knowst that link "isActive")
+// that know the link "isActive")
 
 .pf-v5-c-tabs__link.pf-m-current {
   --pf-v5-c-tabs__link--after--BorderColor: var(

@@ -17,5 +17,5 @@
       "@icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "custom.d.ts"]
 }

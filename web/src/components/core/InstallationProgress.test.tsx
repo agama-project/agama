@@ -23,33 +23,22 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { LogsButton } from "~/components/core";
+import { InstallationPhase } from "~/types/status";
+import InstallationProgress from "./InstallationProgress";
 
-const executor = jest.fn();
-const fetchLogsFn = jest.fn();
+jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mock</div>);
 
-jest.mock("~/api/manager", () => ({
-  ...jest.requireActual("~/api/manager"),
-  fetchLogs: () => fetchLogsFn(),
+jest.mock("~/queries/status", () => ({
+  ...jest.requireActual("~/queries/status"),
+  useInstallerStatus: () => ({ isBusy: true, phase: InstallationPhase.Install }),
 }));
 
-beforeAll(() => {
-  jest.spyOn(console, "error").mockImplementation();
-  window.URL.createObjectURL = jest.fn(() => "fake-blob-url");
-  window.URL.revokeObjectURL = jest.fn();
-
-  fetchLogsFn.mockImplementation(() => new Promise(executor));
-});
-
-afterAll(() => {
-  jest.restoreAllMocks(); // <-- it restore all spies
-  (window.URL.createObjectURL as jest.Mock).mockRestore();
-  (window.URL.revokeObjectURL as jest.Mock).mockRestore();
-});
-
-describe("LogsButton", () => {
-  it("renders a link for downloading logs", () => {
-    installerRender(<LogsButton />);
-    screen.getByRole("link", { name: "Download logs" });
+describe("InstallationProgress", () => {
+  it("renders progress report", () => {
+    installerRender(<InstallationProgress />);
+    screen.getByText("ProgressReport Mock");
   });
+
+  it.todo("redirects to root path when not in an installation phase");
+  it.todo("redirects to installatino finished path if in an installation phase but not busy");
 });

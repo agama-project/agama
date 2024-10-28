@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,26 +22,22 @@
 
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { Loading } from "./components/layout";
+import { ServerError } from "~/components/core";
+import { Loading, PlainLayout } from "~/components/layout";
 import { Questions } from "~/components/questions";
-import { ServerError, Installation } from "~/components/core";
-import { useInstallerL10n } from "./context/installerL10n";
+import { useInstallerL10n } from "~/context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
-import { useProduct, useProductChanges } from "./queries/software";
+import { useProduct, useProductChanges } from "~/queries/software";
 import { useL10nConfigChanges } from "~/queries/l10n";
-import { useIssuesChanges } from "./queries/issues";
-import { useInstallerStatus, useInstallerStatusChanges } from "./queries/status";
-import { useDeprecatedChanges } from "./queries/storage";
-import { PATHS as PRODUCT_PATHS } from "./routes/products";
-import SimpleLayout from "./SimpleLayout";
-import { InstallationPhase } from "./types/status";
+import { useIssuesChanges } from "~/queries/issues";
+import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
+import { useDeprecatedChanges } from "~/queries/storage";
+import { PATHS as PRODUCT_PATHS } from "~/routes/products";
+import { PATHS as ROOT_PATHS } from "~/router";
+import { InstallationPhase } from "~/types/status";
 
 /**
  * Main application component.
- *
- * @param {object} props
- * @param {number} [props.max_attempts=3] - Connection attempts before displaying an
- *   error (3 by default). The component will keep trying to connect.
  */
 function App() {
   const location = useLocation();
@@ -56,25 +52,33 @@ function App() {
   useDeprecatedChanges();
 
   const Content = () => {
-    if (error) return <ServerError />;
-
-    if (phase === InstallationPhase.Install) {
-      return <Installation isBusy={isBusy} />;
-    }
-
-    if (!products || !connected)
+    if (error)
       return (
-        <SimpleLayout showOutlet={false}>
-          <Loading />
-        </SimpleLayout>
+        <PlainLayout>
+          <ServerError />
+        </PlainLayout>
       );
 
+    if (phase === InstallationPhase.Install && isBusy) {
+      return <Navigate to={ROOT_PATHS.installationProgress} />;
+    }
+
+    if (phase === InstallationPhase.Install && !isBusy) {
+      return <Navigate to={ROOT_PATHS.installationFinished} />;
+    }
+
+    if (!products || !connected) return <Loading />;
+
     if (phase === InstallationPhase.Startup && isBusy) {
-      return <Loading />;
+      return (
+        <PlainLayout>
+          <Loading />
+        </PlainLayout>
+      );
     }
 
     if (selectedProduct === undefined && location.pathname !== PRODUCT_PATHS.root) {
-      return <Navigate to="/products" />;
+      return <Navigate to={PRODUCT_PATHS.root} />;
     }
 
     if (
