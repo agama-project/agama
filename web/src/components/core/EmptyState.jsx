@@ -34,7 +34,7 @@ import {
 import { Icon } from "~/components/layout";
 
 /**
- * @typedef {import("~/components/layout/Icon").IconName} IconName
+ * @typedef {import("~/components/layout/Icon").IconProps} IconProps
  * @typedef {import("@patternfly/react-core").EmptyStateProps} EmptyStateProps
  * @typedef {import("@patternfly/react-core").EmptyStateHeaderProps} EmptyStateHeaderProps
  */
@@ -48,7 +48,7 @@ import { Icon } from "~/components/layout";
  *
  * @param {object} props
  * @param {string} props.title
- * @param {IconName} props.icon
+ * @param {IconProps["name"]} props.icon
  * @param {string} [props.color="color-100"]
  * @param {EmptyStateHeaderProps["headingLevel"]} [props.headingLevel="h4"]
  * @param {boolean} [props.noPadding=false]
