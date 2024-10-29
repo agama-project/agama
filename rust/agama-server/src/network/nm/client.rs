@@ -201,8 +201,10 @@ impl<'a> NetworkManagerClient<'a> {
 
             let settings = proxy.get_settings().await?;
 
-            if let Some(mut connection) = connection_from_dbus(settings.clone()) {
-                if let Some(controller) = controller_from_dbus(&settings) {
+            let controller = controller_from_dbus(&settings);
+
+            if let Some(mut connection) = connection_from_dbus(settings) {
+                if let Some(controller) = controller {
                     controlled_by.insert(connection.uuid, controller.to_string());
                 }
                 if let Some(iname) = &connection.interface {
@@ -247,9 +249,9 @@ impl<'a> NetworkManagerClient<'a> {
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
-            let merged = merge_dbus_connections(&original, &new_conn);
+            let merged = merge_dbus_connections(&original, &new_conn)?;
             proxy.update(merged).await?;
-            OwnedObjectPath::from(proxy.path().to_owned())
+            OwnedObjectPath::from(proxy.inner().path().to_owned())
         } else {
             let proxy = SettingsProxy::new(&self.connection).await?;
             cleanup_dbus_connection(&mut new_conn);

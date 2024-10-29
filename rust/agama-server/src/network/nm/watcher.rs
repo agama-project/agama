@@ -33,15 +33,16 @@ use pin_project::pin_project;
 use std::{
     collections::{hash_map::Entry, HashMap},
     pin::Pin,
-    sync::Arc,
     task::{Context, Poll},
 };
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio_stream::{Stream, StreamExt, StreamMap};
 use zbus::{
     fdo::{InterfacesAdded, InterfacesRemoved, PropertiesChanged},
+    message::Type as MessageType,
+    names::InterfaceName,
     zvariant::OwnedObjectPath,
-    MatchRule, Message, MessageStream, MessageType,
+    MatchRule, Message, MessageStream,
 };
 
 use super::{builder::DeviceFromProxyBuilder, proxies::NetworkManagerProxy};
@@ -289,10 +290,8 @@ impl DeviceChangedStream {
     fn handle_removed(message: InterfacesRemoved) -> Option<DeviceChange> {
         let args = message.args().ok()?;
 
-        if args
-            .interfaces
-            .contains(&"org.freedesktop.NetworkManager.Device")
-        {
+        let interface = InterfaceName::from_str_unchecked("org.freedesktop.NetworkManager.Device");
+        if args.interfaces.contains(&interface) {
             let path = OwnedObjectPath::from(args.object_path().clone());
             return Some(DeviceChange::DeviceRemoved(path));
         }
@@ -310,8 +309,9 @@ impl DeviceChangedStream {
             "StateReason",
         ];
 
-        let path = OwnedObjectPath::from(message.path()?);
         let args = message.args().ok()?;
+        let inner = message.message();
+        let path = OwnedObjectPath::from(inner.header().path()?.to_owned());
 
         match args.interface_name.as_str() {
             "org.freedesktop.NetworkManager.IP4Config" => {
@@ -342,7 +342,7 @@ impl DeviceChangedStream {
         wanted.iter().any(|i| properties.contains(&i))
     }
 
-    fn handle_message(message: Result<Arc<Message>, zbus::Error>) -> Option<DeviceChange> {
+    fn handle_message(message: Result<Message, zbus::Error>) -> Option<DeviceChange> {
         let Ok(message) = message else {
             return None;
         };
