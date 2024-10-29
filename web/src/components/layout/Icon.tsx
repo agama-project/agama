@@ -152,7 +152,7 @@ const icons = {
 
 const PREDEFINED_SIZES = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"];
 
-type IconProps = React.SVGAttributes<SVGElement> & {
+export type IconProps = React.SVGAttributes<SVGElement> & {
   /** Name of the desired icon */
   name: keyof typeof icons;
   /** Size used for both, width and height.It can be a CSS unit or one of PREDEFINED_SIZES */
