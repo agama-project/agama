@@ -22,40 +22,25 @@
 
 import React from "react";
 import { Button, Skeleton, Stack, List, ListItem } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import { Page } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { PATHS } from "~/routes/storage";
-import { Action, SpaceAction, StorageDevice } from "~/types/storage";
-import { SpacePolicy } from "./utils";
+import { Action, StorageDevice } from "~/types/storage";
 import { ValidationError } from "~/types/issues";
 
 /**
  * Renders information about delete actions
  */
-const DeletionsInfo = ({
-  policy,
-  manager,
-  spaceActions,
-}: {
-  policy: SpacePolicy | undefined;
-  manager: DevicesManager;
-  spaceActions: SpaceAction[];
-}) => {
+const DeletionsInfo = ({ manager }: { manager: DevicesManager }) => {
   let label: React.ReactNode;
   let systemsLabel: React.ReactNode;
   const systems = manager.deletedSystems();
   const deleteActions = manager.actions.filter((a) => a.delete && !a.subvol).length;
-  const isDeletePolicy = policy?.id === "delete";
   const hasDeleteActions = deleteActions !== 0;
 
-  if (!isDeletePolicy && spaceActions.length === 0) {
-    label = _("Destructive actions are not allowed");
-  } else if ((isDeletePolicy || spaceActions.length > 0) && !hasDeleteActions) {
-    label = _("Destructive actions are allowed");
-  } else if (hasDeleteActions) {
+  if (hasDeleteActions) {
     // TRANSLATORS: %d will be replaced by the amount of destructive actions
     label = (
       <strong className={textStyles.warningColor_200}>
@@ -69,6 +54,8 @@ const DeletionsInfo = ({
         )}
       </strong>
     );
+  } else {
+    label = _("No destructive actions are planned");
   }
 
   if (systems.length) {
@@ -92,37 +79,20 @@ const DeletionsInfo = ({
 /**
  * Renders information about resize actions
  */
-const ResizesInfo = ({
-  policy,
-  manager,
-  validProposal,
-  spaceActions,
-}: {
-  policy: SpacePolicy | undefined;
-  manager: DevicesManager;
-  validProposal: boolean;
-  spaceActions: SpaceAction[];
-}) => {
+const ResizesInfo = ({ manager }: { manager: DevicesManager }) => {
   let label: React.ReactNode;
   let systemsLabel: React.ReactNode;
   const systems = manager.resizedSystems();
   const resizeActions = manager.actions.filter((a) => a.resize).length;
-  const isResizePolicy = policy?.id === "resize";
   const hasResizeActions = resizeActions !== 0;
 
-  if (!isResizePolicy && spaceActions.length === 0) {
-    label = _("Shrinking partitions is not allowed");
-  }
-
-  if (!validProposal && (isResizePolicy || spaceActions.length > 0)) {
-    label = _("Shrinking partitions is allowed");
-  } else if (validProposal && (isResizePolicy || spaceActions.length > 0) && !hasResizeActions) {
-    label = _("Shrinking some partitions is allowed but not needed");
-  } else if (hasResizeActions) {
+  if (hasResizeActions) {
     label = sprintf(
       n_("%d partition will be shrunk", "%d partitions will be shrunk", resizeActions),
       resizeActions,
     );
+  } else {
+    label = _("No partitions wil be shrunk");
   }
 
   if (systems.length) {
@@ -194,11 +164,9 @@ const ActionsSkeleton = () => (
 export type ProposalActionsSummaryProps = {
   isLoading: boolean;
   errors: ValidationError[];
-  policy: SpacePolicy | undefined;
   system: StorageDevice[];
   staging: StorageDevice[];
   actions: Action[];
-  spaceActions: SpaceAction[];
   devices: StorageDevice[];
   onActionsClick: () => void | undefined;
 };
@@ -212,59 +180,21 @@ export type ProposalActionsSummaryProps = {
 export default function ProposalActionsSummary({
   isLoading,
   errors = [],
-  policy,
   system = [],
   staging = [],
   actions = [],
-  spaceActions = [],
-  devices,
   onActionsClick,
 }: ProposalActionsSummaryProps) {
-  let value: React.ReactNode;
-
-  if (isLoading || !policy) {
-    value = <Skeleton fontSize="sm" width="65%" />;
-  } else if (policy.summaryLabels.length === 1) {
-    // eslint-disable-next-line agama-i18n/string-literals
-    value = _(policy.summaryLabels[0]);
-  } else {
-    value = sprintf(
-      // eslint-disable-next-line agama-i18n/string-literals
-      n_(policy.summaryLabels[0], policy.summaryLabels[1], devices.length),
-      devices.length,
-    );
-  }
-
   const devicesManager = new DevicesManager(system, staging, actions);
 
   return (
-    <Page.Section
-      title={_("Actions")}
-      value={value}
-      actions={
-        isLoading ? (
-          <Skeleton fontSize="sm" width="100px" />
-        ) : (
-          <Link to={PATHS.spacePolicy}>{_("Change")}</Link>
-        )
-      }
-      pfCardProps={{ isFullHeight: false }}
-    >
+    <Page.Section title={_("Actions")} pfCardProps={{ isFullHeight: false }}>
       {isLoading ? (
         <ActionsSkeleton />
       ) : (
         <List>
-          <DeletionsInfo
-            policy={policy}
-            manager={devicesManager}
-            spaceActions={spaceActions.filter((a) => a.action === "force_delete")}
-          />
-          <ResizesInfo
-            policy={policy}
-            manager={devicesManager}
-            validProposal={errors.length === 0}
-            spaceActions={spaceActions.filter((a) => a.action === "resize")}
-          />
+          <DeletionsInfo manager={devicesManager} />
+          <ResizesInfo manager={devicesManager} />
           <ActionsInfo
             actions={actions}
             validProposal={errors.length === 0}
