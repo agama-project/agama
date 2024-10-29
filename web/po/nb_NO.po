@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-22 02:43+0000\n"
+"POT-Creation-Date: 2024-10-29 09:01+0000\n"
 "PO-Revision-Date: 2024-06-29 13:46+0000\n"
 "Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
@@ -19,47 +19,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.6\n"
 
-#: src/components/core/About.tsx:47
-msgid "About"
-msgstr "Om"
-
-#: src/components/core/About.tsx:65
-msgid "About Agama"
-msgstr "Om Agama"
-
-#: src/components/core/About.tsx:70
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"Agama er en eksperimentell installasjonsprogram for (open)SUSE systemer. Den "
-"er fortsatt under utvikling, så vær så snill å, ikke bruk den i "
-"produksjonsmiljøer. Hvis du vil prøve, så anbefaler vi å bruke en virtuell "
-"maskin for å forhindre tap av data."
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.tsx:82
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr "For mer informasjon, vennligst besøk prosjektets pakkebrønn på %s."
-
-#: src/components/core/About.tsx:88 src/components/core/LogsButton.tsx:124
-#: src/components/software/SoftwarePatternsSelection.tsx:206
-msgid "Close"
-msgstr "Lukk"
-
 #: src/components/core/ChangeProductLink.tsx:39
 msgid "Change product"
 msgstr "Endre produkt"
 
-#: src/components/core/InstallButton.jsx:33
+#: src/components/core/InstallButton.tsx:36
 msgid "Confirm Installation"
 msgstr "Bekreft Installasjon"
 
-#: src/components/core/InstallButton.jsx:37
+#: src/components/core/InstallButton.tsx:40
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -67,33 +35,33 @@ msgstr ""
 "Hvis du fortsetter, så vil partisjonene på harddisken bli modifisert i tråd "
 "med de oppgitte installasjons innstillingene."
 
-#: src/components/core/InstallButton.jsx:41
+#: src/components/core/InstallButton.tsx:44
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Vennligst, avbryt og sjekk innstillingene hvis du er usikker."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:46
+#: src/components/core/InstallButton.tsx:49
 msgid "Continue"
 msgstr "Fortsett"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:50 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
-#: src/components/product/ProductSelectionPage.tsx:123
+#: src/components/product/ProductSelectionPage.tsx:96
 msgid "Cancel"
 msgstr "Avbryt"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:85
+#: src/components/core/InstallButton.tsx:83
 msgid "Install"
 msgstr "Installere"
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.tsx:53
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "TPM forsegling krever at det nye systemet startes opp direkte."
 
-#: src/components/core/InstallationFinished.jsx:55
+#: src/components/core/InstallationFinished.tsx:58
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -101,15 +69,15 @@ msgstr ""
 "Hvis ett lokalt media ble brukt til å kjøre dette installajonsprogrammet, så "
 "fjern det før neste oppstart."
 
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.tsx:62
 msgid "Hide details"
 msgstr "Skjul detaljer"
 
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.tsx:62
 msgid "See more details"
 msgstr "Se flere detaljer"
 
-#: src/components/core/InstallationFinished.jsx:64
+#: src/components/core/InstallationFinished.tsx:67
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -121,64 +89,62 @@ msgstr ""
 "nye systemet. For at det skal fungere, så må maskinen starte direkte med den "
 "nye oppstartslasteren."
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.tsx:105
 msgid "Congratulations!"
 msgstr "Gratulerer!"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.tsx:114
 msgid "The installation on your machine is complete."
 msgstr "Installasjonen på din maskin er fullført."
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.tsx:117
 msgid "At this point you can power off the machine."
 msgstr "På dette tidspunktet kan du slå av maskinen."
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.tsx:119
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "På dette tidspunktet kan du starte om maskinen for å logge inn i det nye "
 "systemet."
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.tsx:128
 msgid "Finish"
 msgstr "Fullfør"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.tsx:128
 msgid "Reboot"
 msgstr "Start om"
 
-#: src/components/core/InstallationProgress.jsx:31
-msgid "Installing the system, please wait ..."
+#: src/components/core/InstallationProgress.tsx:42
+#, fuzzy
+msgid "Installing the system, please wait..."
 msgstr "Installerer systemet, vennligst vent ..."
 
-#: src/components/core/InstallerOptions.jsx:93
-msgid "Show installer options"
-msgstr "Vis installasjonsalternativer"
-
-#: src/components/core/InstallerOptions.jsx:96
+#: src/components/core/InstallerOptions.tsx:73
 msgid "Installer options"
 msgstr "Installasjonsalternativer"
 
-#: src/components/core/InstallerOptions.jsx:99
-#: src/components/core/InstallerOptions.jsx:103
-#: src/components/core/InstallerOptions.jsx:104
+#: src/components/core/InstallerOptions.tsx:76
+#: src/components/core/InstallerOptions.tsx:80
+#: src/components/core/InstallerOptions.tsx:81
 #: src/components/l10n/L10nPage.jsx:49
 msgid "Language"
 msgstr "Språk"
 
-#: src/components/core/InstallerOptions.jsx:116
-#: src/components/core/InstallerOptions.jsx:121
+#: src/components/core/InstallerOptions.tsx:93
+#: src/components/core/InstallerOptions.tsx:98
 msgid "Keyboard layout"
 msgstr "Tastaturoppsett"
 
-#: src/components/core/InstallerOptions.jsx:130
+#: src/components/core/InstallerOptions.tsx:107
 msgid "Cannot be changed in remote installation"
 msgstr "Kan ikke endres i fjerninstallasjonen"
 
-#: src/components/core/InstallerOptions.jsx:143
+#: src/components/core/InstallerOptions.tsx:120
 #: src/components/core/Page.tsx:271
 #: src/components/storage/EncryptionSettingsDialog.tsx:154
 #: src/components/storage/VolumeDialog.tsx:641
+#: src/components/storage/dasd/DASDTable.tsx:105
 msgid "Accept"
 msgstr "Aksepter"
 
@@ -187,68 +153,54 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr "Før du starter installasjonen, må du løse følgende problemer:"
 
+#: src/components/core/IssuesLink.tsx:50
+msgid ""
+"Installation not possible yet because of issues. Check them at Overview page."
+msgstr ""
+
+#: src/components/core/IssuesLink.tsx:52
+#, fuzzy
+msgid "Installation issues"
+msgstr "Installasjon Fullført"
+
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
 msgstr "Søk"
 
-#: src/components/core/LoginPage.tsx:60
+#: src/components/core/LoginPage.tsx:50
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr "Kunne ikke logge på, Vennligst, sjekk at passordet er korrekt."
 
-#: src/components/core/LoginPage.tsx:62
+#: src/components/core/LoginPage.tsx:52
 msgid "Could not authenticate against the server, please check it."
 msgstr "Kunne ikke autentisere mot serveren, vennligst sjekk det."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.tsx:70
+#: src/components/core/LoginPage.tsx:60
 #, c-format
 msgid "Log in as %s"
 msgstr "Logg på som %s"
 
-#: src/components/core/LoginPage.tsx:76
+#: src/components/core/LoginPage.tsx:66
 msgid "The installer requires [root] user privileges."
 msgstr "Installasjonen krever [root] bruker privilegier."
 
-#: src/components/core/LoginPage.tsx:91
+#: src/components/core/LoginPage.tsx:81
 msgid "Please, provide its password to log in to the system."
 msgstr "Vennligst, oppgi passordet for å logge på systemet."
 
-#: src/components/core/LoginPage.tsx:92
+#: src/components/core/LoginPage.tsx:82
 msgid "Login form"
 msgstr "Innloggingsskjema"
 
-#: src/components/core/LoginPage.tsx:98
+#: src/components/core/LoginPage.tsx:88
 msgid "Password input"
 msgstr "Passord inntasting"
 
-#: src/components/core/LoginPage.tsx:107
+#: src/components/core/LoginPage.tsx:97
 msgid "Log in"
 msgstr "Logg inn"
-
-#: src/components/core/LoginPage.tsx:114
-msgid "More about this"
-msgstr "Mer om dette"
-
-#: src/components/core/LogsButton.tsx:99
-msgid "Collecting logs..."
-msgstr "Samler loggfiler..."
-
-#: src/components/core/LogsButton.tsx:99 src/components/core/LogsButton.tsx:102
-msgid "Download logs"
-msgstr "Last ned loggfiler"
-
-#: src/components/core/LogsButton.tsx:109
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr ""
-"Nettleseren vil kjøre nedlastingen av loggfilene så snart de er klare. "
-"Vennligst, vær tålmodig."
-
-#: src/components/core/LogsButton.tsx:119
-msgid "Something went wrong while collecting logs. Please, try again."
-msgstr "Noe gikk galt når loggfilene ble samlet. Vennligst, prøv igjen."
 
 #: src/components/core/Page.tsx:260
 msgid "Back"
@@ -285,15 +237,15 @@ msgstr "Bekreft"
 msgid "Loading data..."
 msgstr "Laster data..."
 
-#: src/components/core/ProgressReport.jsx:51
+#: src/components/core/ProgressReport.tsx:61
 msgid "Pending"
 msgstr "Avventer"
 
-#: src/components/core/ProgressReport.jsx:60
+#: src/components/core/ProgressReport.tsx:70
 msgid "In progress"
 msgstr "Pågår"
 
-#: src/components/core/ProgressReport.jsx:75
+#: src/components/core/ProgressReport.tsx:85
 msgid "Finished"
 msgstr "Fullført"
 
@@ -307,15 +259,15 @@ msgstr "Handlinger"
 msgid "Waiting"
 msgstr "Venter"
 
-#: src/components/core/ServerError.tsx:46
+#: src/components/core/ServerError.tsx:44
 msgid "Cannot connect to Agama server"
 msgstr "Kan ikke koble til Agama server"
 
-#: src/components/core/ServerError.tsx:50
+#: src/components/core/ServerError.tsx:48
 msgid "Please, check whether it is running."
 msgstr "Vennligst, sjekk om den kjører."
 
-#: src/components/core/ServerError.tsx:56
+#: src/components/core/ServerError.tsx:54
 msgid "Reload"
 msgstr "Last på nytt"
 
@@ -335,8 +287,8 @@ msgstr "Valg av tastatur"
 #: src/components/l10n/L10nPage.jsx:53 src/components/l10n/L10nPage.jsx:64
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/l10n/LocaleSelection.tsx:93
-#: src/components/l10n/TimezoneSelection.tsx:131
-#: src/components/product/ProductSelectionPage.tsx:129
+#: src/components/l10n/TimezoneSelection.tsx:138
+#: src/components/product/ProductSelectionPage.tsx:145
 #: src/components/software/SoftwarePatternsSelection.tsx:167
 msgid "Select"
 msgstr "Velg"
@@ -354,7 +306,7 @@ msgstr "Ikke valgt ennå"
 #: src/components/l10n/L10nPage.jsx:53 src/components/l10n/L10nPage.jsx:64
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/network/NetworkPage.tsx:64
-#: src/components/storage/InstallationDeviceField.tsx:106
+#: src/components/storage/InstallationDeviceField.tsx:105
 #: src/components/storage/ProposalActionsSummary.tsx:248
 #: src/components/users/RootAuthMethods.tsx:114
 #: src/components/users/RootAuthMethods.tsx:126
@@ -381,19 +333,32 @@ msgstr "Ingen av lokaliseringene passer sammen med filteret."
 msgid "Locale selection"
 msgstr "Valg av lokalisering"
 
-#: src/components/l10n/TimezoneSelection.tsx:68
+#: src/components/l10n/TimezoneSelection.tsx:75
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Filtrer etter territorium, tidssonekode eller UTC forskyvning"
 
-#: src/components/l10n/TimezoneSelection.tsx:107
+#: src/components/l10n/TimezoneSelection.tsx:114
 msgid "None of the time zones match the filter."
 msgstr "Ingen av tidssonene passer sammen med filteret."
 
-#: src/components/l10n/TimezoneSelection.tsx:113
+#: src/components/l10n/TimezoneSelection.tsx:120
 msgid " Timezone selection"
 msgstr " Valg av tidssone"
 
-#: src/components/layout/Header.tsx:62
+#: src/components/layout/Header.tsx:81
+msgid "Options toggle"
+msgstr ""
+
+#: src/components/layout/Header.tsx:92
+msgid "Download logs"
+msgstr "Last ned loggfiler"
+
+#: src/components/layout/Header.tsx:98
+#, fuzzy
+msgid "Installer Options"
+msgstr "Installasjonsalternativer"
+
+#: src/components/layout/Header.tsx:140
 msgid "Main navigation"
 msgstr ""
 
@@ -683,6 +648,11 @@ msgstr "Koble til skjult nettverk"
 msgid "configured"
 msgstr "konfigurert"
 
+#: src/components/network/WifiNetworksListPage.tsx:267
+#, fuzzy
+msgid "No visible Wi-Fi networks found"
+msgstr "WiFi nettverk"
+
 #: src/components/network/WifiNetworksListPage.tsx:271
 #, fuzzy
 msgid "Visible Wi-Fi networks"
@@ -705,7 +675,7 @@ msgid "Users"
 msgstr "Brukere"
 
 #: src/components/overview/OverviewPage.tsx:49
-#: src/components/overview/StorageSection.jsx:112
+#: src/components/overview/StorageSection.tsx:100
 #: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
 msgid "Storage"
 msgstr "Lagring"
@@ -716,19 +686,20 @@ msgstr "Lagring"
 msgid "Software"
 msgstr "Programvare"
 
-#: src/components/overview/OverviewPage.tsx:55
-msgid "Ready for installation"
-msgstr "Klar for installasjon"
+#: src/components/overview/OverviewPage.tsx:87
+#, fuzzy
+msgid "Installation blocking issues"
+msgstr "Installasjon Fullført"
 
-#: src/components/overview/OverviewPage.tsx:99
-msgid "Installation"
-msgstr "Installajon"
-
-#: src/components/overview/OverviewPage.tsx:100
+#: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
 msgstr "Før installasjon, vennligst sjekk følgende problemer."
 
-#: src/components/overview/OverviewPage.tsx:114
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+msgid "Overview"
+msgstr "Oversikt"
+
+#: src/components/overview/OverviewPage.tsx:99
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
@@ -736,7 +707,7 @@ msgstr ""
 "Disse er de mest relevante installasjonsinnstillingene, Bla gjerne gjennom "
 "seksjonene i menyen for ytterligere detaljer."
 
-#: src/components/overview/OverviewPage.tsx:134
+#: src/components/overview/OverviewPage.tsx:121
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
@@ -754,7 +725,7 @@ msgstr "Installasjonen vil ta"
 msgid "The installation will take %s including:"
 msgstr "Installasjonen vil ta %s inkludert:"
 
-#: src/components/overview/StorageSection.jsx:54
+#: src/components/overview/StorageSection.tsx:42
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group shrinking "
 "existing partitions at the underlying devices as needed"
@@ -762,7 +733,7 @@ msgstr ""
 "Installer i en ny logisk volum behandler (LVM) volumgruppe som krymper "
 "eksisterende partisjoner ved de underliggende enhetenes behov"
 
-#: src/components/overview/StorageSection.jsx:59
+#: src/components/overview/StorageSection.tsx:47
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group without modifying "
 "the partitions at the underlying devices"
@@ -770,7 +741,7 @@ msgstr ""
 "Installer i en ny Logisk Volum Behandler (LVM) volumgruppe uten å modifisere "
 "partisjonene på de underliggende enhetene"
 
-#: src/components/overview/StorageSection.jsx:64
+#: src/components/overview/StorageSection.tsx:52
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group deleting all the "
 "content of the underlying devices"
@@ -778,7 +749,7 @@ msgstr ""
 "Installer i en ny Logisk Volum Behandler (LVM) volumgruppe og slett alt av "
 "innholdet til de underliggende enhetene"
 
-#: src/components/overview/StorageSection.jsx:69
+#: src/components/overview/StorageSection.tsx:57
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group using a custom "
 "strategy to find the needed space at the underlying devices"
@@ -787,7 +758,7 @@ msgstr ""
 "tilpasset strategi for å finne den nødvendige plassen på de underliggende "
 "enhetene"
 
-#: src/components/overview/StorageSection.jsx:87
+#: src/components/overview/StorageSection.tsx:75
 #, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking "
@@ -796,7 +767,7 @@ msgstr ""
 "Installer en ny Logisk Volum Behandler (LVM) volumgruppe på %s og krymper de "
 "eksisterende partisjonene ved behov"
 
-#: src/components/overview/StorageSection.jsx:93
+#: src/components/overview/StorageSection.tsx:81
 #, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s without "
@@ -805,7 +776,7 @@ msgstr ""
 "Installer en ny Logisk Volum Behandler (LVM) volumgruppe på %s uten å "
 "modifisere eksisterende partisjoner"
 
-#: src/components/overview/StorageSection.jsx:99
+#: src/components/overview/StorageSection.tsx:87
 #, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s deleting "
@@ -814,7 +785,7 @@ msgstr ""
 "Installer en ny Logisk Volum Behandler (LVM) volumgruppe på %s sletter alt "
 "innhold"
 
-#: src/components/overview/StorageSection.jsx:105
+#: src/components/overview/StorageSection.tsx:93
 #, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s using a "
@@ -823,14 +794,14 @@ msgstr ""
 "Installer en ny Logisk Volum Behandler (LVM) volumgruppe på %s ved bruk av "
 "en tilpasset strategi for å finne nødvendig plass"
 
-#: src/components/overview/StorageSection.jsx:180
-#: src/components/storage/InstallationDeviceField.tsx:60
+#: src/components/overview/StorageSection.tsx:150
+#: src/components/storage/InstallationDeviceField.tsx:56
 msgid "No device selected yet"
 msgstr "Ingen enhet er valgt ennå"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:187
+#: src/components/overview/StorageSection.tsx:157
 #, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
 msgstr ""
@@ -838,21 +809,21 @@ msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:191
+#: src/components/overview/StorageSection.tsx:161
 #, c-format
 msgid "Install using device %s without modifying existing partitions"
 msgstr "Installer med enheten %s uten å modifisere eksisterende partisjoner"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:195
+#: src/components/overview/StorageSection.tsx:165
 #, c-format
 msgid "Install using device %s and deleting all its content"
 msgstr "Installer med enheten %s og slett alt av dens innhold"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:200
+#: src/components/overview/StorageSection.tsx:170
 #, c-format
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr ""
@@ -860,17 +831,17 @@ msgstr ""
 "nødvendig plass"
 
 #. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-#: src/components/product/ProductSelectionPage.tsx:57
+#: src/components/product/ProductSelectionPage.tsx:59
 #, c-format
 msgid "%s logo"
 msgstr ""
 
-#: src/components/product/ProductSelectionPage.tsx:108
+#: src/components/product/ProductSelectionPage.tsx:124
 #, fuzzy
 msgid "Select a product"
 msgstr "Velg en plassering"
 
-#: src/components/product/ProductSelectionPage.tsx:109
+#: src/components/product/ProductSelectionPage.tsx:125
 msgid "Available products"
 msgstr "Tilgjengelige produkter"
 
@@ -948,6 +919,10 @@ msgstr "Valg av programvare"
 #: src/components/software/SoftwarePatternsSelection.tsx:191
 msgid "Filter by pattern title or description"
 msgstr "Filtrer etter mønstertittel eller beskrivelse"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:206
+msgid "Close"
+msgstr "Lukk"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -1152,7 +1127,7 @@ msgstr "Ingen innhold funnet"
 #: src/components/storage/ProposalResultTable.tsx:130
 #: src/components/storage/SpaceActionsTable.tsx:207
 #: src/components/storage/VolumeLocationSelectorTable.tsx:96
-#: src/components/storage/dasd/DASDTable.tsx:73
+#: src/components/storage/dasd/DASDTable.tsx:78
 msgid "Device"
 msgstr "Enhet"
 
@@ -1194,12 +1169,32 @@ msgstr "Koble til iSCSI mål"
 msgid "iSCSI"
 msgstr "iSCSI"
 
+#: src/components/storage/EncryptionField.tsx:34
+msgid "disabled"
+msgstr "deaktivert"
+
 #: src/components/storage/EncryptionField.tsx:35
-#: src/components/storage/EncryptionSettingsDialog.tsx:31
+msgid "enabled"
+msgstr "aktivert"
+
+#: src/components/storage/EncryptionField.tsx:36
+msgid "using TPM unlocking"
+msgstr "ved hjelp av TPM opplåsing"
+
+#: src/components/storage/EncryptionField.tsx:51
+msgid "Enable"
+msgstr "Aktiver"
+
+#: src/components/storage/EncryptionField.tsx:51
+msgid "Modify"
+msgstr "Modifiser"
+
+#: src/components/storage/EncryptionField.tsx:104
+#: src/components/storage/EncryptionSettingsDialog.tsx:118
 msgid "Encryption"
 msgstr "Kryptering"
 
-#: src/components/storage/EncryptionField.tsx:37
+#: src/components/storage/EncryptionField.tsx:107
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
@@ -1207,43 +1202,14 @@ msgstr ""
 "Beskyttelse for informasjonen lagret på enheten, inkludert data, programmer, "
 "og systemfiler."
 
-#: src/components/storage/EncryptionField.tsx:41
-msgid "disabled"
-msgstr "deaktivert"
-
-#: src/components/storage/EncryptionField.tsx:42
-msgid "enabled"
-msgstr "aktivert"
-
-#: src/components/storage/EncryptionField.tsx:43
-msgid "using TPM unlocking"
-msgstr "ved hjelp av TPM opplåsing"
-
-#: src/components/storage/EncryptionField.tsx:57
-msgid "Enable"
-msgstr "Aktiver"
-
-#: src/components/storage/EncryptionField.tsx:57
-msgid "Modify"
-msgstr "Modifiser"
-
-#: src/components/storage/EncryptionSettingsDialog.tsx:33
-msgid ""
-"Full Disk Encryption (FDE) allows to protect the information stored at the "
-"device, including data, programs, and system files."
-msgstr ""
-"Full Disk Kryptering (FDE) tillater å beskytte informasjonen på lagret "
-"enhet, inkludert data, programmer, og systemfiler."
-
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.tsx:37
+#: src/components/storage/EncryptionSettingsDialog.tsx:104
 msgid ""
 "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
 msgstr ""
 "Bruk Trusted Platform Module (TPM) for å dekryptere automatisk ved hver "
 "oppstart"
 
-#: src/components/storage/EncryptionSettingsDialog.tsx:41
+#: src/components/storage/EncryptionSettingsDialog.tsx:109
 msgid ""
 "The password will not be needed to boot and access the data if the TPM can "
 "verify the integrity of the system. TPM sealing requires the new system to "
@@ -1253,34 +1219,42 @@ msgstr ""
 "TPM kan verifisere integriteten til systemet. TPM forsegling krever at det "
 "nye systemet startes opp direkte ved første oppstart."
 
+#: src/components/storage/EncryptionSettingsDialog.tsx:120
+msgid ""
+"Full Disk Encryption (FDE) allows to protect the information stored at the "
+"device, including data, programs, and system files."
+msgstr ""
+"Full Disk Kryptering (FDE) tillater å beskytte informasjonen på lagret "
+"enhet, inkludert data, programmer, og systemfiler."
+
 #: src/components/storage/EncryptionSettingsDialog.tsx:128
 msgid "Encrypt the system"
 msgstr "Krypter systemet"
 
-#: src/components/storage/InstallationDeviceField.tsx:32
-#: src/components/storage/VolumeLocationSelectorTable.tsx:54
-msgid "Installation device"
-msgstr "Installasjons enhet"
-
-#. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.tsx:34
-msgid "Main disk or LVM Volume Group for installation."
-msgstr "Hoveddisken eller LVM Volumgruppe for installasjon."
-
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.tsx:46
+#: src/components/storage/InstallationDeviceField.tsx:42
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "Filsystemer opprettes som nye partisjoner på %s"
 
-#: src/components/storage/InstallationDeviceField.tsx:49
+#: src/components/storage/InstallationDeviceField.tsx:45
 msgid "File systems created at a new LVM volume group"
 msgstr "Filsystemer opprettet i en ny LVM volumgruppe"
 
-#: src/components/storage/InstallationDeviceField.tsx:54
+#: src/components/storage/InstallationDeviceField.tsx:50
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "Filsystemer opprettet i en ny LVM volumgruppe på %s"
+
+#. TRANSLATORS: The storage "Installation device" field's description.
+#: src/components/storage/InstallationDeviceField.tsx:94
+msgid "Main disk or LVM Volume Group for installation."
+msgstr "Hoveddisken eller LVM Volumgruppe for installasjon."
+
+#: src/components/storage/InstallationDeviceField.tsx:98
+#: src/components/storage/VolumeLocationSelectorTable.tsx:54
+msgid "Installation device"
+msgstr "Installasjons enhet"
 
 #: src/components/storage/InvalidMaxSizeError.tsx:44
 #: src/components/storage/VolumeDialog.tsx:216
@@ -1628,11 +1602,11 @@ msgstr ""
 "%s er et uforanderlig system med atomiske oppdateringer. Den bruker et "
 "skrivebeskyttet Btrfs filsystem oppdatert via øyeblikksbilder."
 
-#: src/components/storage/SnapshotsField.tsx:32
+#: src/components/storage/SnapshotsField.tsx:48
 msgid "Use Btrfs snapshots for the root file system"
 msgstr "Bruk Btrfs øyeblikksbilder for root filsystemet"
 
-#: src/components/storage/SnapshotsField.tsx:34
+#: src/components/storage/SnapshotsField.tsx:67
 msgid ""
 "Allows to boot to a previous version of the system after configuration "
 "changes or software upgrades."
@@ -1856,7 +1830,7 @@ msgstr "Fikset"
 msgid "Range"
 msgstr "Rekkevidde"
 
-#: src/components/storage/VolumeLocationDialog.tsx:34
+#: src/components/storage/VolumeLocationDialog.tsx:129
 msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
@@ -1951,21 +1925,21 @@ msgstr "Ingen enhet er valgt ennå"
 msgid "Back to device selection"
 msgstr "Ingen enhet er valgt ennå"
 
-#: src/components/storage/dasd/DASDTable.tsx:64
+#: src/components/storage/dasd/DASDTable.tsx:69
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:57
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:36
 msgid "No"
 msgstr "Nei"
 
-#: src/components/storage/dasd/DASDTable.tsx:64
+#: src/components/storage/dasd/DASDTable.tsx:69
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:57
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:36
 msgid "Yes"
 msgstr "Ja"
 
-#: src/components/storage/dasd/DASDTable.tsx:71
+#: src/components/storage/dasd/DASDTable.tsx:76
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:20
 #: src/components/storage/zfcp/ZFCPDiskForm.tsx:119
 #: src/components/storage/zfcp/ZFCPDisksTable.tsx:43
@@ -1973,7 +1947,7 @@ msgid "Channel ID"
 msgstr "Kanal ID"
 
 #. TRANSLATORS: table header
-#: src/components/storage/dasd/DASDTable.tsx:72
+#: src/components/storage/dasd/DASDTable.tsx:77
 #: src/components/storage/iscsi/NodesPresenter.jsx:104
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:21
@@ -1981,69 +1955,95 @@ msgstr "Kanal ID"
 msgid "Status"
 msgstr "Status"
 
-#: src/components/storage/dasd/DASDTable.tsx:74
+#: src/components/storage/dasd/DASDTable.tsx:79
 msgid "Type"
 msgstr "Type"
 
 #. TRANSLATORS: table header, the column contains "Yes"/"No" values
 #. for the DIAG access mode (special disk access mode on IBM mainframes),
 #. usually keep untranslated
-#: src/components/storage/dasd/DASDTable.tsx:78
+#: src/components/storage/dasd/DASDTable.tsx:83
 msgid "DIAG"
 msgstr "DIAG"
 
-#: src/components/storage/dasd/DASDTable.tsx:79
+#: src/components/storage/dasd/DASDTable.tsx:84
 msgid "Formatted"
 msgstr "Formatert"
 
-#: src/components/storage/dasd/DASDTable.tsx:80
+#: src/components/storage/dasd/DASDTable.tsx:85
 msgid "Partition Info"
 msgstr "Partisjon Info"
 
+#: src/components/storage/dasd/DASDTable.tsx:95
+msgid "Cannot format all selected devices"
+msgstr ""
+
+#: src/components/storage/dasd/DASDTable.tsx:99
+msgid ""
+"Offline devices must be activated before formatting them. Please, unselect "
+"or activate the devices listed below and try it again"
+msgstr ""
+
+#: src/components/storage/dasd/DASDTable.tsx:111
+#, fuzzy
+msgid "Format selected devices?"
+msgstr "Formater enheten"
+
+#: src/components/storage/dasd/DASDTable.tsx:115
+msgid ""
+"This action could destroy any data stored on the devices listed below. "
+"Please, confirm that you really want to continue."
+msgstr ""
+
 #. TRANSLATORS: drop down menu label
-#: src/components/storage/dasd/DASDTable.tsx:119
+#: src/components/storage/dasd/DASDTable.tsx:174
 msgid "Perform an action"
 msgstr "Utfør en handling"
 
-#: src/components/storage/dasd/DASDTable.tsx:126
+#: src/components/storage/dasd/DASDTable.tsx:181
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:51
 msgid "Activate"
 msgstr "Aktiver"
 
-#: src/components/storage/dasd/DASDTable.tsx:130
+#: src/components/storage/dasd/DASDTable.tsx:185
 #: src/components/storage/zfcp/ZFCPDisksTable.tsx:56
 msgid "Deactivate"
 msgstr "Deaktivere"
 
-#: src/components/storage/dasd/DASDTable.tsx:135
+#: src/components/storage/dasd/DASDTable.tsx:190
 msgid "Set DIAG On"
 msgstr "Sett DIAG på"
 
-#: src/components/storage/dasd/DASDTable.tsx:139
+#: src/components/storage/dasd/DASDTable.tsx:194
 msgid "Set DIAG Off"
 msgstr "Sett DIAG av"
 
-#: src/components/storage/dasd/DASDTable.tsx:144
+#: src/components/storage/dasd/DASDTable.tsx:199
 msgid "Format"
 msgstr "Formater"
 
-#: src/components/storage/dasd/DASDTable.tsx:280
-#: src/components/storage/dasd/DASDTable.tsx:281
+#: src/components/storage/dasd/DASDTable.tsx:336
+#: src/components/storage/dasd/DASDTable.tsx:337
 msgid "Filter by min channel"
 msgstr "Filtrer etter minimum kanal"
 
-#: src/components/storage/dasd/DASDTable.tsx:288
+#: src/components/storage/dasd/DASDTable.tsx:344
 msgid "Remove min channel filter"
 msgstr "Fjern minimum kanal filter"
 
-#: src/components/storage/dasd/DASDTable.tsx:302
-#: src/components/storage/dasd/DASDTable.tsx:303
+#: src/components/storage/dasd/DASDTable.tsx:358
+#: src/components/storage/dasd/DASDTable.tsx:359
 msgid "Filter by max channel"
 msgstr "Filtrer etter maksimal kanal"
 
-#: src/components/storage/dasd/DASDTable.tsx:310
+#: src/components/storage/dasd/DASDTable.tsx:366
 msgid "Remove max channel filter"
 msgstr "Fjern maksimal kanal filter"
+
+#: src/components/storage/dasd/DASDTable.tsx:385
+#, fuzzy
+msgid "DASDs table section"
+msgstr "Valg av programvare"
 
 #: src/components/storage/device-utils.tsx:75
 msgid "Unused space"
@@ -2555,13 +2555,55 @@ msgstr "Last opp"
 msgid "Clear"
 msgstr "Tøm"
 
-#: src/router.js:49
-msgid "Overview"
-msgstr "Oversikt"
-
 #: src/routes/storage.tsx:86
 msgid "ZFCP"
 msgstr ""
+
+#~ msgid "About"
+#~ msgstr "Om"
+
+#~ msgid "About Agama"
+#~ msgstr "Om Agama"
+
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "Agama er en eksperimentell installasjonsprogram for (open)SUSE systemer. "
+#~ "Den er fortsatt under utvikling, så vær så snill å, ikke bruk den i "
+#~ "produksjonsmiljøer. Hvis du vil prøve, så anbefaler vi å bruke en "
+#~ "virtuell maskin for å forhindre tap av data."
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr "For mer informasjon, vennligst besøk prosjektets pakkebrønn på %s."
+
+#~ msgid "Show installer options"
+#~ msgstr "Vis installasjonsalternativer"
+
+#~ msgid "More about this"
+#~ msgstr "Mer om dette"
+
+#~ msgid "Collecting logs..."
+#~ msgstr "Samler loggfiler..."
+
+#~ msgid ""
+#~ "The browser will run the logs download as soon as they are ready. Please, "
+#~ "be patient."
+#~ msgstr ""
+#~ "Nettleseren vil kjøre nedlastingen av loggfilene så snart de er klare. "
+#~ "Vennligst, vær tålmodig."
+
+#~ msgid "Something went wrong while collecting logs. Please, try again."
+#~ msgstr "Noe gikk galt når loggfilene ble samlet. Vennligst, prøv igjen."
+
+#~ msgid "Ready for installation"
+#~ msgstr "Klar for installasjon"
+
+#~ msgid "Installation"
+#~ msgstr "Installajon"
 
 #~ msgid "Please, try to read the zFCP devices again."
 #~ msgstr "Vennligst, prøv å lese zFCP enhetene igjen."
@@ -2708,9 +2750,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Noen problemer ble funnet når installasjonen prøvde å starte. Vennligst, "
 #~ "sjekk de rapporterte feilene og prøv igjen."
-
-#~ msgid "Installation Finished"
-#~ msgstr "Installasjon Fullført"
 
 #~ msgid "What is this?"
 #~ msgstr "Hva er dette?"
