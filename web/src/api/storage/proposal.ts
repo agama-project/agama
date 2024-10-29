@@ -40,7 +40,7 @@ const fetchDefaultVolume = (mountPath: string): Promise<Volume | undefined> => {
 
 const fetchSettings = (): Promise<ProposalSettings> => get("/api/storage/proposal/settings");
 
-const fetchActions = (): Promise<Action[]> => get("/api/storage/proposal/actions");
+const fetchActions = (): Promise<Action[]> => get("/api/storage/devices/actions");
 
 const calculate = (settings: ProposalSettingsPatch) =>
   put("/api/storage/proposal/settings", settings);

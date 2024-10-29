@@ -206,7 +206,7 @@ const proposalSettingsQuery = {
 };
 
 const proposalActionsQuery = {
-  queryKey: ["storage", "proposal", "actions"],
+  queryKey: ["storage", "devices", "actions"],
   queryFn: fetchActions,
 };
 
