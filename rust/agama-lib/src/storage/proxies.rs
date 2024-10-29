@@ -88,17 +88,24 @@ trait ProposalCalculator {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama.Storage1.Proposal",
+    interface = "org.opensuse.Agama.Storage1.Devices",
     default_service = "org.opensuse.Agama.Storage1",
-    default_path = "/org/opensuse/Agama/Storage1/Proposal"
+    default_path = "/org/opensuse/Agama/Storage1"
 )]
-trait Proposal {
+trait Devices {
     /// Actions property
     #[dbus_proxy(property)]
     fn actions(
         &self,
     ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
+}
 
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.Proposal",
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1/Proposal"
+)]
+trait Proposal {
     /// Settings property
     #[dbus_proxy(property)]
     fn settings(

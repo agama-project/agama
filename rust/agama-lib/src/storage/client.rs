@@ -25,7 +25,7 @@ use super::model::{
     Md, Multipath, Partition, PartitionTable, ProposalSettings, ProposalSettingsPatch, Raid,
     Volume,
 };
-use super::proxies::{ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
+use super::proxies::{DevicesProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
 use crate::dbus::get_property;
 use crate::error::ServiceError;
@@ -50,6 +50,7 @@ pub struct StorageClient<'a> {
     calculator_proxy: ProposalCalculatorProxy<'a>,
     storage_proxy: Storage1Proxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
+    devices_proxy: DevicesProxy<'a>,
     proposal_proxy: ProposalProxy<'a>,
 }
 
@@ -69,6 +70,11 @@ impl<'a> StorageClient<'a> {
                 .cache_properties(zbus::CacheProperties::No)
                 .build()
                 .await?,
+            // Same than above, actions are reexported with every call to recalculate
+            devices_proxy: DevicesProxy::builder(&connection)
+                .cache_properties(zbus::CacheProperties::No)
+                .build()
+                .await?,
             connection,
         })
     }
@@ -80,7 +86,7 @@ impl<'a> StorageClient<'a> {
 
     /// Actions to perform in the storage devices.
     pub async fn actions(&self) -> Result<Vec<Action>, ServiceError> {
-        let actions = self.proposal_proxy.actions().await?;
+        let actions = self.devices_proxy.actions().await?;
         let mut result: Vec<Action> = Vec::with_capacity(actions.len());
 
         for i in actions {
