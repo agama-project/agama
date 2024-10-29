@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-18 02:35+0000\n"
+"POT-Creation-Date: 2024-10-29 09:01+0000\n"
 "PO-Revision-Date: 2024-06-28 16:46+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -20,34 +20,34 @@ msgstr ""
 "X-Generator: Weblate 5.6\n"
 
 #. Runs the startup phase
-#: service/lib/agama/manager.rb:88
+#: service/lib/agama/manager.rb:91
 msgid "Load software translations"
 msgstr ""
 
-#: service/lib/agama/manager.rb:89
+#: service/lib/agama/manager.rb:92
 msgid "Load storage translations"
 msgstr ""
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:104
+#: service/lib/agama/manager.rb:107
 msgid "Analyze disks"
 msgstr "დისკების ანალიზი"
 
-#: service/lib/agama/manager.rb:104
+#: service/lib/agama/manager.rb:107
 msgid "Configure software"
 msgstr "პროგრამების მორგება"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:124
+#: service/lib/agama/manager.rb:127
 msgid "Prepare disks"
 msgstr "დისკების მომზადება"
 
-#: service/lib/agama/manager.rb:125
+#: service/lib/agama/manager.rb:128
 msgid "Install software"
 msgstr "პროგრამების დაყენება"
 
-#: service/lib/agama/manager.rb:126
+#: service/lib/agama/manager.rb:129
 msgid "Configure the system"
 msgstr ""
 
@@ -128,21 +128,34 @@ msgstr ""
 msgid "Found %s dependency issues."
 msgstr ""
 
-#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checker.rb:112
-#, c-format
-msgid "There is no LVM thin pool volume with alias %s"
+#. Issue for not found device.
+#.
+#. @param config [Configs::Drive, Configs::Partition]
+#. @return [Agama::Issue]
+#: service/lib/agama/storage/config_checker.rb:87
+msgid "No device found for a mandatory drive"
 msgstr ""
 
-#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checker.rb:129
+#: service/lib/agama/storage/config_checker.rb:89
+msgid "No device found for a mandatory partition"
+msgstr ""
+
+#. TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checker.rb:118
 #, c-format
-msgid "There is no LVM physical volume with alias %s"
+msgid "Missing file system type for '%s'"
+msgstr ""
+
+#. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
+#. %{path} is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checker.rb:145
+#, perl-brace-format
+msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:160
+#: service/lib/agama/storage/config_checker.rb:178
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
@@ -150,16 +163,49 @@ msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:178
+#: service/lib/agama/storage/config_checker.rb:196
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
 msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:197
+#: service/lib/agama/storage/config_checker.rb:226
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr ""
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checker.rb:276
+#, c-format
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
+msgstr ""
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:350
+#, c-format
+msgid "There is no LVM thin pool volume with alias '%s'"
+msgstr ""
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:375
+#, c-format
+msgid "There is no LVM physical volume with alias '%s'"
+msgstr ""
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checker.rb:401
+#, c-format
+msgid "There is no target device for LVM physical volumes with alias '%s'"
+msgstr ""
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1').
+#: service/lib/agama/storage/config_checker.rb:434
+#, perl-brace-format
+msgid ""
+"'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
 msgstr ""
 
 #. Text of the reason preventing to shrink because there is no content.
@@ -217,14 +263,14 @@ msgstr ""
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:283
+#: service/lib/agama/storage/proposal.rb:287
 msgid "Cannot accommodate the required file systems for installation"
 msgstr "დაყენებისთვის საჭირო ფაილური სისტემების შეგროვება შეუძლებელია"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:294
+#: service/lib/agama/storage/proposal.rb:298
 msgid "A problem ocurred while calculating the storage setup"
 msgstr ""
 
@@ -247,24 +293,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:152
+#: service/lib/agama/users.rb:148
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
-msgstr ""
-
-#. @see #not_found_issue
-#: service/lib/y2storage/proposal/agama_searcher.rb:158
-msgid "No device found for an optional drive"
-msgstr ""
-
-#: service/lib/y2storage/proposal/agama_searcher.rb:160
-msgid "No device found for a mandatory drive"
-msgstr ""
-
-#: service/lib/y2storage/proposal/agama_searcher.rb:163
-msgid "No device found for an optional partition"
-msgstr ""
-
-#: service/lib/y2storage/proposal/agama_searcher.rb:165
-msgid "No device found for a mandatory partition"
 msgstr ""
