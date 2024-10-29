@@ -22,6 +22,7 @@
 
 use super::{auth::AuthError, state::ServiceState};
 use agama_lib::auth::{AuthToken, TokenClaims};
+use agama_lib::logs::{LogOptions, store as storeLogs};
 use axum::{
     body::Body,
     extract::{Query, State},
@@ -32,6 +33,7 @@ use axum::{
 use axum_extra::extract::cookie::CookieJar;
 use pam::Client;
 use serde::{Deserialize, Serialize};
+use tokio_util::io::ReaderStream;
 use utoipa::ToSchema;
 
 #[derive(Serialize, ToSchema)]
@@ -40,11 +42,40 @@ pub struct LogsResponse {
     logs: String,
 }
 
+// For development only - a mockup of logs archive creation.
+async fn store() -> Result<String, super::auth::AuthError>
+{
+    let options = LogOptions::default();
+    let path = storeLogs(options).unwrap();
+
+    Ok(path)
+}
+
 #[utoipa::path(get, path = "/logs", responses(
     (status = 200, description = "Compressed Agama logs", body = LogsResponse)
 ))]
-pub async fn logs() -> Json<LogsResponse> {
-    Json(LogsResponse { logs: "/path/to/file".to_string() })
+pub async fn logs() -> impl IntoResponse {
+    // TODO: require authorization
+    let mut headers = HeaderMap::new();
+
+    match store().await {
+        Ok(path) => {
+            let file = tokio::fs::File::open(path.clone()).await.unwrap();
+            let stream = ReaderStream::new(file);
+            let body = Body::from_stream(stream);
+            // TODO: should be only filename!
+            let disposition = format!("attachment; filename=\"{}\"", path);
+
+            headers.insert(header::CONTENT_TYPE, "text/toml; charset=utf-8".parse().unwrap());
+            headers.insert(header::CONTENT_DISPOSITION, disposition.parse().unwrap());
+
+            (headers, body)
+        }
+        Err(_) => {
+            // fill in with meaningful headers
+            (headers, Body::empty())
+        }
+    }
 }
 
 #[derive(Serialize, ToSchema)]
