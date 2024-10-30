@@ -25,8 +25,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
 import { IssuesList } from "~/types/issues";
-import { PATHS as ROOT_PATHS } from "~/router";
-import { PATHS as PRODUCT_PATHS } from "~/routes/products";
+import { PRODUCT, ROOT } from "~/routes/paths";
 
 const mockStartInstallationFn = jest.fn();
 let mockIssuesList: IssuesList;
@@ -93,11 +92,11 @@ describe("InstallButton", () => {
     });
 
     describe.each([
-      ["login", ROOT_PATHS.login],
-      ["product selection", PRODUCT_PATHS.changeProduct],
-      ["product selection progress", PRODUCT_PATHS.progress],
-      ["installation progress", ROOT_PATHS.installationProgress],
-      ["installation finished", ROOT_PATHS.installationFinished],
+      ["login", ROOT.login],
+      ["product selection", PRODUCT.changeProduct],
+      ["product selection progress", PRODUCT.progress],
+      ["installation progress", ROOT.installationProgress],
+      ["installation finished", ROOT.installationFinished],
     ])(`but the installer is rendering the %s screen`, (_, path) => {
       beforeEach(() => {
         mockRoutes(path);

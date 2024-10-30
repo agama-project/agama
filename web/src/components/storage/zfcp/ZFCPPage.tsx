@@ -43,7 +43,7 @@ import {
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
 import { probeZFCP } from "~/api/storage/zfcp";
-import { PATHS } from "~/routes/storage";
+import { STORAGE as PATHS } from "~/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { inactiveLuns } from "~/utils/zfcp";
 

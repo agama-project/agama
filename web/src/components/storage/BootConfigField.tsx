@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Skeleton } from "@patternfly/react-core";
@@ -29,8 +27,8 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "~/components/storage/utils";
 import { Icon } from "~/components/layout";
-import { PATHS } from "~/routes/storage";
 import { StorageDevice } from "~/types/storage";
+import { STORAGE as PATHS } from "~/routes/paths";
 
 /**
  * Internal component for building the link that navigates to selector

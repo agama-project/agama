@@ -29,8 +29,7 @@ import { _ } from "~/i18n";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { useLocation } from "react-router-dom";
-import { PATHS as ROOT_PATHS } from "~/router";
-import { PATHS as PRODUCT_PATHS } from "~/routes/products";
+import { PRODUCT, ROOT } from "~/routes/paths";
 
 /**
  * List of paths where the InstallButton must not be shown.
@@ -40,11 +39,11 @@ import { PATHS as PRODUCT_PATHS } from "~/routes/products";
  * when the installer is setting the chosen product.
  * */
 const EXCLUDED_FROM = [
-  ROOT_PATHS.login,
-  PRODUCT_PATHS.changeProduct,
-  PRODUCT_PATHS.progress,
-  ROOT_PATHS.installationProgress,
-  ROOT_PATHS.installationFinished,
+  ROOT.login,
+  PRODUCT.changeProduct,
+  PRODUCT.progress,
+  ROOT.installationProgress,
+  ROOT.installationFinished,
 ];
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
