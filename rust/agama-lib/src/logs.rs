@@ -29,6 +29,8 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempfile::TempDir;
 
+pub mod http_client;
+
 const DEFAULT_COMMANDS: [(&str, &str); 3] = [
     // (<command to be executed>, <file name used for storing result of the command>)
     ("journalctl -u agama", "agama"),
@@ -58,7 +60,7 @@ const DEFAULT_PATHS: [&str; 14] = [
 const DEFAULT_RESULT: &str = "/tmp/agama-logs";
 // what compression is used by default:
 // (<compression as distinguished by tar>, <an extension for resulting archive>)
-const DEFAULT_COMPRESSION: (&str, &str) = ("gzip", "tar.gz");
+pub const DEFAULT_COMPRESSION: (&str, &str) = ("gzip", "tar.gz");
 const TMP_DIR_PREFIX: &str = "agama-logs.";
 
 /// Configurable parameters of the "agama logs" which can be

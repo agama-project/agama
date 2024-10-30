@@ -22,7 +22,7 @@
 
 use super::{auth::AuthError, state::ServiceState};
 use agama_lib::auth::{AuthToken, TokenClaims};
-use agama_lib::logs::{LogOptions, store as storeLogs};
+use agama_lib::logs::{LogOptions, store as storeLogs, DEFAULT_COMPRESSION};
 use axum::{
     body::Body,
     extract::{Query, State},
@@ -64,10 +64,12 @@ pub async fn logs() -> impl IntoResponse {
             let stream = ReaderStream::new(file);
             let body = Body::from_stream(stream);
             // TODO: should be only filename!
+            // tells the browser that body contains an attachment, not web page to be displayed
             let disposition = format!("attachment; filename=\"{}\"", path);
 
             headers.insert(header::CONTENT_TYPE, "text/toml; charset=utf-8".parse().unwrap());
             headers.insert(header::CONTENT_DISPOSITION, disposition.parse().unwrap());
+            headers.insert(header::CONTENT_ENCODING, DEFAULT_COMPRESSION.1.parse().unwrap());
 
             (headers, body)
         }
