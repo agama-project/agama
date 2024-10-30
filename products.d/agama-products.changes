@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 30 18:57:26 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
+
+- sles_enhanced_base pattern was removed from SLES16, so replace
+  it with base pattern (bsc#1232618)
+
+-------------------------------------------------------------------
 Tue Oct 22 08:41:14 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Use HTTP repositories for SLES16, HTTPS does not work because
