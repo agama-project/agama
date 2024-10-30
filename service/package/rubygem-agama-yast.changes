@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Oct 30 11:33:54 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: do not generate config json with search wildcard
+  (gh#agama-project/agama#1713).
+- Storage: fix issue when setting config
+  (gh#agama-project/agama#1706).
+
+-------------------------------------------------------------------
 Thu Oct 24 14:44:35 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Storage: do not report issues when intentionally skipping entries
@@ -21,7 +29,7 @@ Wed Oct 16 15:09:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for running user-defined scripts after the
   installation (gh#agama-project/agama#1673).
-  
+
 -------------------------------------------------------------------
 Wed Oct 16 14:35:47 UTC 2024 - José Iván López González <jlopez@suse.com>
 
