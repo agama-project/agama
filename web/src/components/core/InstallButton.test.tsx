@@ -25,6 +25,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
 import { IssuesList } from "~/types/issues";
+import { PATHS as ROOT_PATHS } from "~/router";
 import { PATHS as PRODUCT_PATHS } from "~/routes/products";
 
 const mockStartInstallationFn = jest.fn();
@@ -97,20 +98,15 @@ describe("when there are not installation issues", () => {
     });
   });
 
-  describe("but installer is rendering the product selection", () => {
+  describe.each([
+    ["login", ROOT_PATHS.login],
+    ["product selection", PRODUCT_PATHS.changeProduct],
+    ["product selection progress", PRODUCT_PATHS.progress],
+    ["installation progress", ROOT_PATHS.installationProgress],
+    ["installation finished", ROOT_PATHS.installationFinished],
+  ])(`but the installer is rendering the %s screen`, (_, path) => {
     beforeEach(() => {
-      mockRoutes(PRODUCT_PATHS.changeProduct);
-    });
-
-    it("renders nothing", () => {
-      const { container } = installerRender(<InstallButton />);
-      expect(container).toBeEmptyDOMElement();
-    });
-  });
-
-  describe("but installer is configuring a product", () => {
-    beforeEach(() => {
-      mockRoutes(PRODUCT_PATHS.progress);
+      mockRoutes(path);
     });
 
     it("renders nothing", () => {
