@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
 import { IssuesList } from "~/types/issues";
@@ -41,77 +41,119 @@ jest.mock("~/queries/issues", () => ({
   useAllIssues: () => mockIssuesList,
 }));
 
-describe("when there are installation issues", () => {
-  beforeEach(() => {
-    mockIssuesList = new IssuesList(
-      [
-        {
-          description: "Fake Issue",
-          source: 0,
-          severity: 0,
-          details: "Fake Issue details",
-        },
-      ],
-      [],
-      [],
-      [],
-    );
-  });
+const clickInstallButton = async () => {
+  const { user } = installerRender(<InstallButton />);
+  const button = await screen.findByRole("button", { name: "Install" });
+  await user.click(button);
 
-  it("renders nothing", () => {
-    const { container } = installerRender(<InstallButton />);
-    expect(container).toBeEmptyDOMElement();
-  });
-});
+  const dialog = screen.getByRole("dialog", { name: "Confirm Installation" });
+  return { user, dialog };
+};
 
-describe("when there are not installation issues", () => {
-  beforeEach(() => {
-    mockIssuesList = new IssuesList([], [], [], []);
-  });
-
-  it("renders an Install button", () => {
-    installerRender(<InstallButton />);
-    screen.getByRole("button", { name: "Install" });
-  });
-
-  it("starts the installation after user clicks on it and accept the confirmation", async () => {
-    const { user } = installerRender(<InstallButton />);
-    const button = await screen.findByRole("button", { name: "Install" });
-    await user.click(button);
-
-    const continueButton = await screen.findByRole("button", { name: "Continue" });
-    await user.click(continueButton);
-    expect(mockStartInstallationFn).toHaveBeenCalled();
-  });
-
-  it("does not start the installation if the user clicks on it but cancels the confirmation", async () => {
-    const { user } = installerRender(<InstallButton />);
-    const button = await screen.findByRole("button", { name: "Install" });
-    await user.click(button);
-
-    const cancelButton = await screen.findByRole("button", { name: "Cancel" });
-    await user.click(cancelButton);
-    expect(mockStartInstallationFn).not.toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();
-    });
-  });
-
-  describe.each([
-    ["login", ROOT_PATHS.login],
-    ["product selection", PRODUCT_PATHS.changeProduct],
-    ["product selection progress", PRODUCT_PATHS.progress],
-    ["installation progress", ROOT_PATHS.installationProgress],
-    ["installation finished", ROOT_PATHS.installationFinished],
-  ])(`but the installer is rendering the %s screen`, (_, path) => {
+describe("InstallButton", () => {
+  describe("when there are installation issues", () => {
     beforeEach(() => {
-      mockRoutes(path);
+      mockIssuesList = new IssuesList(
+        [
+          {
+            description: "Fake Issue",
+            source: 0,
+            severity: 0,
+            details: "Fake Issue details",
+          },
+        ],
+        [],
+        [],
+        [],
+      );
     });
 
     it("renders nothing", () => {
       const { container } = installerRender(<InstallButton />);
       expect(container).toBeEmptyDOMElement();
+    });
+  });
+
+  describe("when there are not installation issues", () => {
+    beforeEach(() => {
+      mockIssuesList = new IssuesList([], [], [], []);
+    });
+
+    it("renders an Install button", () => {
+      installerRender(<InstallButton />);
+      screen.getByRole("button", { name: "Install" });
+    });
+
+    it("renders a confirmation dialog when clicked", async () => {
+      const { user } = installerRender(<InstallButton />);
+      const button = await screen.findByRole("button", { name: "Install" });
+      await user.click(button);
+
+      screen.getByRole("dialog", { name: "Confirm Installation" });
+    });
+
+    describe.each([
+      ["login", ROOT_PATHS.login],
+      ["product selection", PRODUCT_PATHS.changeProduct],
+      ["product selection progress", PRODUCT_PATHS.progress],
+      ["installation progress", ROOT_PATHS.installationProgress],
+      ["installation finished", ROOT_PATHS.installationFinished],
+    ])(`but the installer is rendering the %s screen`, (_, path) => {
+      beforeEach(() => {
+        mockRoutes(path);
+      });
+
+      it("renders nothing", () => {
+        const { container } = installerRender(<InstallButton />);
+        expect(container).toBeEmptyDOMElement();
+      });
+    });
+  });
+});
+
+describe("InstallConfirmationPopup", () => {
+  it("closes the dialog without triggering installation if user press {enter} before 'Continue' gets the focus", async () => {
+    const { user, dialog } = await clickInstallButton();
+    const continueButton = within(dialog).getByRole("button", { name: "Continue" });
+    expect(continueButton).not.toHaveFocus();
+    await user.keyboard("{enter}");
+    expect(mockStartInstallationFn).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+    });
+  });
+
+  it("closes the dialog and triggers installation if user {enter} when 'Continue' has the focus", async () => {
+    const { user, dialog } = await clickInstallButton();
+    const continueButton = within(dialog).getByRole("button", { name: "Continue" });
+    expect(continueButton).not.toHaveFocus();
+    await user.keyboard("{tab}");
+    expect(continueButton).toHaveFocus();
+    await user.keyboard("{enter}");
+    expect(mockStartInstallationFn).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+    });
+  });
+
+  it("closes the dialog and triggers installation if user clicks on 'Continue'", async () => {
+    const { user, dialog } = await clickInstallButton();
+    const continueButton = within(dialog).getByRole("button", { name: "Continue" });
+    await user.click(continueButton);
+    expect(mockStartInstallationFn).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+    });
+  });
+
+  it("closes the dialog without triggering installation if the user clicks on 'Cancel'", async () => {
+    const { user, dialog } = await clickInstallButton();
+    const cancelButton = within(dialog).getByRole("button", { name: "Cancel" });
+    await user.click(cancelButton);
+    expect(mockStartInstallationFn).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
     });
   });
 });

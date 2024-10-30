@@ -64,7 +64,7 @@ according to the provided installation settings.",
           {/* TRANSLATORS: button label */}
           {_("Continue")}
         </Popup.Confirm>
-        <Popup.Cancel onClick={onClose}>
+        <Popup.Cancel autoFocus onClick={onClose}>
           {/* TRANSLATORS: button label */}
           {_("Cancel")}
         </Popup.Cancel>
@@ -92,6 +92,10 @@ const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
 
   const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
+  const onAccept = () => {
+    close();
+    startInstallation();
+  };
 
   return (
     <>
@@ -100,7 +104,7 @@ const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
         {_("Install")}
       </Button>
 
-      {isOpen && <InstallConfirmationPopup onAccept={startInstallation} onClose={close} />}
+      {isOpen && <InstallConfirmationPopup onAccept={onAccept} onClose={close} />}
     </>
   );
 };
