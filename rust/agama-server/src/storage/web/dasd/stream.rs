@@ -20,7 +20,7 @@
 
 // FIXME: the code is pretty similar to iscsi::stream. Refactor the stream to reduce the repetition.
 
-use std::{collections::HashMap, sync::Arc, task::Poll};
+use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
     dbus::get_optional_property,
@@ -38,8 +38,9 @@ use tokio::sync::mpsc::unbounded_channel;
 use tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
 use zbus::{
     fdo::{PropertiesChanged, PropertiesChangedArgs},
+    message::Type as MessageType,
     zvariant::{self, ObjectPath, OwnedObjectPath, OwnedValue},
-    MatchRule, Message, MessageStream, MessageType,
+    MatchRule, Message, MessageStream,
 };
 
 use crate::{
@@ -205,7 +206,7 @@ impl DASDFormatJobStream {
         Ok(Self { inner })
     }
 
-    fn handle_change(message: Result<Arc<Message>, zbus::Error>) -> Option<Event> {
+    fn handle_change(message: Result<Message, zbus::Error>) -> Option<Event> {
         let Ok(message) = message else {
             return None;
         };
@@ -216,7 +217,8 @@ impl DASDFormatJobStream {
             return None;
         }
 
-        let id = properties.path()?.to_string();
+        let inner = properties.message();
+        let id = inner.header().path()?.to_string();
         let event = Self::to_event(id, &args);
         if event.is_none() {
             log::warn!("Could not decode the DASDFormatJobChanged event");
@@ -228,19 +230,20 @@ impl DASDFormatJobStream {
         let dict = properties_changed
             .changed_properties()
             .get("Summary")?
-            .downcast_ref::<zvariant::Dict>()?;
+            .downcast_ref::<zvariant::Dict>()
+            .ok()?;
 
         // the key is the D-Bus path of the DASD device and the value is the progress
         // of the related formatting process
-        let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict.clone()).ok()?;
+        let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict).ok()?;
         let mut format_summary = HashMap::new();
 
         for (dasd_id, summary) in map {
-            let summary_values = summary.downcast_ref::<zvariant::Structure>()?;
+            let summary_values = summary.downcast_ref::<zvariant::Structure>().ok()?;
             let fields = summary_values.fields();
-            let total: &u32 = fields.get(0)?.downcast_ref()?;
-            let step: &u32 = fields.get(1)?.downcast_ref()?;
-            let done: &bool = fields.get(2)?.downcast_ref()?;
+            let total: &u32 = fields.get(0)?.downcast_ref().ok()?;
+            let step: &u32 = fields.get(1)?.downcast_ref().ok()?;
+            let done: &bool = fields.get(2)?.downcast_ref().ok()?;
             format_summary.insert(
                 dasd_id.to_string(),
                 DASDFormatSummary {
