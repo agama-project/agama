@@ -75,12 +75,4 @@ const STORAGE = {
   },
 };
 
-export {
-  L10N,
-  NETWORK,
-  PRODUCT,
-  ROOT,
-  SOFTWARE,
-  STORAGE,
-  USER,
-};
+export { L10N, NETWORK, PRODUCT, ROOT, SOFTWARE, STORAGE, USER };
