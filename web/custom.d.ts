@@ -20,23 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Suspense } from "react";
-import { Outlet } from "react-router-dom";
-import { Page } from "@patternfly/react-core";
-import { Header, Loading, Sidebar } from "~/components/layout";
-import { useProduct } from "~/queries/software";
+declare module "*.svg" {
+  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
+  export default content;
+}
 
-/**
- * Wrapper application component for laying out the content.
- */
-export default function Main() {
-  useProduct({ suspense: true });
-
-  return (
-    <Page isManagedSidebar header={<Header />} sidebar={<Sidebar />}>
-      <Suspense fallback={<Loading />}>
-        <Outlet />
-      </Suspense>
-    </Page>
-  );
+declare module "*.svg?component" {
+  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
+  export default content;
 }

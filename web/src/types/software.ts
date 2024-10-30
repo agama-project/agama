@@ -38,9 +38,9 @@ type Product = {
   /** Product name (e.g., "openSUSE Leap 15.4") */
   name: string;
   /** Product description */
-  description: string;
+  description?: string;
   /** Product icon (e.g., "default.svg") */
-  icon: string;
+  icon?: string;
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };

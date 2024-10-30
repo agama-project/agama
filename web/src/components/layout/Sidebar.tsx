@@ -24,7 +24,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { Nav, NavItem, NavList, PageSidebar, PageSidebarBody, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { About, LogsButton, ChangeProductLink } from "~/components/core";
+import { ChangeProductLink } from "~/components/core";
 import { rootRoutes } from "~/router";
 import { _ } from "~/i18n";
 
@@ -65,10 +65,8 @@ export default function Sidebar(): React.ReactNode {
         <MainNavigation />
       </PageSidebarBody>
       <PageSidebarBody isFilled={false} usePageInsets>
-        <Stack hasGutter>
-          <ChangeProductLink />
-          <LogsButton />
-          <About showIcon={false} buttonProps={{ variant: "link", isInline: true }} />
+        <Stack hasGutter className="pf-v5-u-py-sm">
+          <ChangeProductLink className="pf-v5-c-button pf-m-primary" />
         </Stack>
       </PageSidebarBody>
     </PageSidebar>

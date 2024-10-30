@@ -24,7 +24,7 @@ import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
 import { useHref } from "react-router-dom";
 
-type LinkProps = Omit<ButtonProps, "component"> & {
+export type LinkProps = Omit<ButtonProps, "component"> & {
   /** The target route */
   to: string;
   /** Whether use PF/Button primary variant */

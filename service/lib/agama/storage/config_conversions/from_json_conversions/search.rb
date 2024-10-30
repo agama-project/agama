@@ -36,6 +36,12 @@ module Agama
 
         private
 
+          # Reserved search value meaning 'match all devices or ignore the section'.
+          #
+          # { search: "*" } is a shortcut for { search: { ifNotFound: "skip" } }.
+          SEARCH_ANYTHING_STRING = "*"
+          private_constant :SEARCH_ANYTHING_STRING
+
           alias_method :search_json, :config_json
 
           # @see Base#conversions

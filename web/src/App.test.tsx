@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,10 +23,10 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-
 import App from "./App";
-import { createClient } from "~/client";
 import { InstallationPhase } from "./types/status";
+import { createClient } from "~/client";
+import { Product } from "./types/software";
 
 jest.mock("~/client");
 
@@ -39,9 +39,12 @@ jest.mock("~/api/l10n", () => ({
   updateConfig: jest.fn(),
 }));
 
+const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed" };
+const microos: Product = { id: "Leap Micro", name: "openSUSE Micro" };
+
 // list of available products
-let mockProducts;
-let mockSelectedProduct;
+let mockProducts: Product[];
+let mockSelectedProduct: Product;
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -62,6 +65,7 @@ jest.mock("~/queries/l10n", () => ({
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
   useIssuesChanges: () => jest.fn(),
+  useAllIssues: () => ({ isEmtpy: true }),
 }));
 
 jest.mock("~/queries/storage", () => ({
@@ -88,7 +92,6 @@ jest.mock("~/context/installer", () => ({
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
-jest.mock("~/components/core/Installation", () => () => <div>Installation Mock</div>);
 jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
 jest.mock("~/components/product/ProductSelectionProgress", () => () => <div>Product progress</div>);
 
@@ -96,14 +99,11 @@ describe("App", () => {
   beforeEach(() => {
     // setting the language through a cookie
     document.cookie = "agamaLang=en-us; path=/;";
-    createClient.mockImplementation(() => {
+    (createClient as jest.Mock).mockImplementation(() => {
       return {};
     });
 
-    mockProducts = [
-      { id: "openSUSE", name: "openSUSE Tumbleweed" },
-      { id: "Leap Micro", name: "openSUSE Micro" },
-    ];
+    mockProducts = [tumbleweed, microos];
   });
 
   afterEach(() => {
@@ -142,7 +142,7 @@ describe("App", () => {
     describe("if the service is busy", () => {
       beforeEach(() => {
         mockClientStatus.isBusy = true;
-        mockSelectedProduct = { id: "Tumbleweed" };
+        mockSelectedProduct = tumbleweed;
       });
 
       it("redirects to product selection progress", async () => {
@@ -163,15 +163,29 @@ describe("App", () => {
     });
   });
 
-  describe("on the installaiton phase", () => {
+  describe("on the busy installaiton phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
-      mockSelectedProduct = { id: "Fake product" };
+      mockClientStatus.isBusy = true;
+      mockSelectedProduct = tumbleweed;
     });
 
-    it("renders the application content", async () => {
+    it("navigates to installation progress", async () => {
       installerRender(<App />, { withL10n: true });
-      await screen.findByText("Installation Mock");
+      await screen.findByText("Navigating to /installation/progress");
+    });
+  });
+
+  describe("on the idle installaiton phase", () => {
+    beforeEach(() => {
+      mockClientStatus.phase = InstallationPhase.Install;
+      mockClientStatus.isBusy = false;
+      mockSelectedProduct = tumbleweed;
+    });
+
+    it("navigates to installation finished", async () => {
+      installerRender(<App />, { withL10n: true });
+      await screen.findByText("Navigating to /installation/finished");
     });
   });
 });

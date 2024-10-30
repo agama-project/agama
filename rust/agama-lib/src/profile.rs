@@ -108,7 +108,16 @@ impl ProfileValidator {
     pub fn new(schema_path: &Path) -> Result<Self, ProfileError> {
         let contents = fs::read_to_string(schema_path)
             .context(format!("Failed to read schema at {:?}", schema_path))?;
-        let schema = serde_json::from_str(&contents)?;
+        let mut schema: serde_json::Value = serde_json::from_str(&contents)?;
+
+        // Set $id of the main schema file to allow retrieving subschema files by using relative
+        // paths, see https://stackoverflow.com/questions/70807993/are-there-recommended-ways-to-structure-multiple-json-schemas.
+        let path = fs::canonicalize(schema_path)?;
+        let id = format!("file://{}", path.to_string_lossy());
+        schema
+            .as_object_mut()
+            .and_then(|s| s.insert("$id".to_string(), serde_json::json!(id)));
+
         let schema = JSONSchema::compile(&schema).expect("A valid schema");
         Ok(Self { schema })
     }

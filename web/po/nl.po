@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-22 02:43+0000\n"
+"POT-Creation-Date: 2024-10-29 09:01+0000\n"
 "PO-Revision-Date: 2024-06-20 21:46+0000\n"
 "Last-Translator: Natasha Ament <stacheldrahtje@gmail.com>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
@@ -19,49 +19,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.6\n"
 
-#: src/components/core/About.tsx:47
-msgid "About"
-msgstr "Over"
-
-#: src/components/core/About.tsx:65
-msgid "About Agama"
-msgstr "Over Agama"
-
-#: src/components/core/About.tsx:70
-#, fuzzy
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"Agama is een experimentele installer voor (open)SUSE systemen. Het is nog in "
-"ontwikkeling, dus gebruik het alstublieft niet in productie omgevingen. "
-"Wanneer U het wil uitproberen, gebruik dan een virtuele machine om data "
-"verlies te voorkomen."
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.tsx:82
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr ""
-"Voor meer informatie kunt u de opslagruimte van het project bezoek op %s."
-
-#: src/components/core/About.tsx:88 src/components/core/LogsButton.tsx:124
-#: src/components/software/SoftwarePatternsSelection.tsx:206
-msgid "Close"
-msgstr "Sluiten"
-
 #: src/components/core/ChangeProductLink.tsx:39
 msgid "Change product"
 msgstr "Wijzig product"
 
-#: src/components/core/InstallButton.jsx:33
+#: src/components/core/InstallButton.tsx:36
 msgid "Confirm Installation"
 msgstr "Bevestig installatie"
 
-#: src/components/core/InstallButton.jsx:37
+#: src/components/core/InstallButton.tsx:40
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -69,34 +35,34 @@ msgstr ""
 "Indien u doorgaat zullen de partities op de harde schijf worden gewijzigd op "
 "basis van de opgegeven installatie instellingen."
 
-#: src/components/core/InstallButton.jsx:41
+#: src/components/core/InstallButton.tsx:44
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
 "Klik bij twijfel alstbulieft op annuleren en controleer de instellingen."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:46
+#: src/components/core/InstallButton.tsx:49
 msgid "Continue"
 msgstr "Doorgaan"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:50 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
-#: src/components/product/ProductSelectionPage.tsx:123
+#: src/components/product/ProductSelectionPage.tsx:96
 msgid "Cancel"
 msgstr "Annuleren"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:85
+#: src/components/core/InstallButton.tsx:83
 msgid "Install"
 msgstr "Installeren"
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.tsx:53
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "TPM verzegeling vereist dat het nieuwe systeem direct wordt gestart."
 
-#: src/components/core/InstallationFinished.jsx:55
+#: src/components/core/InstallationFinished.tsx:58
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -104,15 +70,15 @@ msgstr ""
 "Wanneer u gebruik maakt van lokale media om de installer te starten, "
 "verwijder deze voor de volgende herstart."
 
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.tsx:62
 msgid "Hide details"
 msgstr "Verberg details"
 
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.tsx:62
 msgid "See more details"
 msgstr "Meer details"
 
-#: src/components/core/InstallationFinished.jsx:64
+#: src/components/core/InstallationFinished.tsx:67
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -124,68 +90,64 @@ msgstr ""
 "eerste opstart van het nieuwe systeem. Om dat te laten werken is het nodig "
 "om de machine direct te laten starten naar de nieuwe boot loader."
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.tsx:105
 msgid "Congratulations!"
 msgstr "Gefeliciteerd!"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.tsx:114
 msgid "The installation on your machine is complete."
 msgstr "De installatie van uw machine is voltooid."
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.tsx:117
 msgid "At this point you can power off the machine."
 msgstr "U kunt nu de machine uitzetten."
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.tsx:119
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr "U kunt nu opnieuw opstarten om in te loggen in het nieuwe systeem."
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.tsx:128
 msgid "Finish"
 msgstr "Voltooien"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.tsx:128
 msgid "Reboot"
 msgstr "Herstarten"
 
-#: src/components/core/InstallationProgress.jsx:31
+#: src/components/core/InstallationProgress.tsx:42
 #, fuzzy
-msgid "Installing the system, please wait ..."
+msgid "Installing the system, please wait..."
 msgstr "Laad verschillende producten, wacht alstublieft..."
 
-#: src/components/core/InstallerOptions.jsx:93
-#, fuzzy
-msgid "Show installer options"
-msgstr "Verberg installer opties"
-
-#: src/components/core/InstallerOptions.jsx:96
+#: src/components/core/InstallerOptions.tsx:73
 #, fuzzy
 msgid "Installer options"
 msgstr "Installatie opties"
 
-#: src/components/core/InstallerOptions.jsx:99
-#: src/components/core/InstallerOptions.jsx:103
-#: src/components/core/InstallerOptions.jsx:104
+#: src/components/core/InstallerOptions.tsx:76
+#: src/components/core/InstallerOptions.tsx:80
+#: src/components/core/InstallerOptions.tsx:81
 #: src/components/l10n/L10nPage.jsx:49
 msgid "Language"
 msgstr "Taal"
 
-#: src/components/core/InstallerOptions.jsx:116
-#: src/components/core/InstallerOptions.jsx:121
+#: src/components/core/InstallerOptions.tsx:93
+#: src/components/core/InstallerOptions.tsx:98
 #, fuzzy
 msgid "Keyboard layout"
 msgstr "Kies een product"
 
-#: src/components/core/InstallerOptions.jsx:130
+#: src/components/core/InstallerOptions.tsx:107
 #, fuzzy
 msgid "Cannot be changed in remote installation"
 msgstr ""
 "Toetsenbordindeling kan niet worden gewijzigd in een installatie op afstand"
 
-#: src/components/core/InstallerOptions.jsx:143
+#: src/components/core/InstallerOptions.tsx:120
 #: src/components/core/Page.tsx:271
 #: src/components/storage/EncryptionSettingsDialog.tsx:154
 #: src/components/storage/VolumeDialog.tsx:641
+#: src/components/storage/dasd/DASDTable.tsx:105
 msgid "Accept"
 msgstr "Accepteren"
 
@@ -196,72 +158,57 @@ msgstr ""
 "Voordat het starten van de installatie, moeten de volgende problemen zijn "
 "opgelost:"
 
+#: src/components/core/IssuesLink.tsx:50
+msgid ""
+"Installation not possible yet because of issues. Check them at Overview page."
+msgstr ""
+
+#: src/components/core/IssuesLink.tsx:52
+#, fuzzy
+msgid "Installation issues"
+msgstr "Installatie voltooid"
+
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
 msgstr "Zoeken"
 
-#: src/components/core/LoginPage.tsx:60
+#: src/components/core/LoginPage.tsx:50
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
 "Kan niet inloggen. Zorg er alstublieft voor dat het wachtwoord juist is."
 
-#: src/components/core/LoginPage.tsx:62
+#: src/components/core/LoginPage.tsx:52
 msgid "Could not authenticate against the server, please check it."
 msgstr "Kon niet authenticeren met de server, controleer het alstublieft."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.tsx:70
+#: src/components/core/LoginPage.tsx:60
 #, c-format
 msgid "Log in as %s"
 msgstr "Inloggen als %s"
 
-#: src/components/core/LoginPage.tsx:76
+#: src/components/core/LoginPage.tsx:66
 msgid "The installer requires [root] user privileges."
 msgstr "De installer vereist [root] gebruiker privileges."
 
-#: src/components/core/LoginPage.tsx:91
+#: src/components/core/LoginPage.tsx:81
 msgid "Please, provide its password to log in to the system."
 msgstr "Voer alstublieft het wachtwoord in om u aan te melden op het systeem."
 
-#: src/components/core/LoginPage.tsx:92
+#: src/components/core/LoginPage.tsx:82
 #, fuzzy
 msgid "Login form"
 msgstr "Login %s"
 
-#: src/components/core/LoginPage.tsx:98
+#: src/components/core/LoginPage.tsx:88
 #, fuzzy
 msgid "Password input"
 msgstr "Wachtwoord"
 
-#: src/components/core/LoginPage.tsx:107
+#: src/components/core/LoginPage.tsx:97
 msgid "Log in"
 msgstr "Inloggen"
-
-#: src/components/core/LoginPage.tsx:114
-msgid "More about this"
-msgstr "Meer over dit"
-
-#: src/components/core/LogsButton.tsx:99
-msgid "Collecting logs..."
-msgstr "Verzamelen logs..."
-
-#: src/components/core/LogsButton.tsx:99 src/components/core/LogsButton.tsx:102
-msgid "Download logs"
-msgstr "Download logs"
-
-#: src/components/core/LogsButton.tsx:109
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr ""
-"De browser zal de logs downloaden wanneer ze klaar zijn. Heb geduld "
-"alstublieft."
-
-#: src/components/core/LogsButton.tsx:119
-msgid "Something went wrong while collecting logs. Please, try again."
-msgstr ""
-"Iets is verkeerd gegaan bij het verzamelen van de logs. Probeer het opnieuw."
 
 #: src/components/core/Page.tsx:260
 msgid "Back"
@@ -299,15 +246,15 @@ msgstr "Bevestigen"
 msgid "Loading data..."
 msgstr "Leest bestand..."
 
-#: src/components/core/ProgressReport.jsx:51
+#: src/components/core/ProgressReport.tsx:61
 msgid "Pending"
 msgstr ""
 
-#: src/components/core/ProgressReport.jsx:60
+#: src/components/core/ProgressReport.tsx:70
 msgid "In progress"
 msgstr ""
 
-#: src/components/core/ProgressReport.jsx:75
+#: src/components/core/ProgressReport.tsx:85
 #, fuzzy
 msgid "Finished"
 msgstr "Voltooien"
@@ -322,18 +269,18 @@ msgstr "Acties"
 msgid "Waiting"
 msgstr "Wachten"
 
-#: src/components/core/ServerError.tsx:46
+#: src/components/core/ServerError.tsx:44
 #, fuzzy
 msgid "Cannot connect to Agama server"
 msgstr "Kan niet verbinden met de Cockpit server"
 
-#: src/components/core/ServerError.tsx:50
+#: src/components/core/ServerError.tsx:48
 #, fuzzy
 msgid "Please, check whether it is running."
 msgstr ""
 "Kan niet verbinden met de D-Bus service. Controleer of deze gestart is."
 
-#: src/components/core/ServerError.tsx:56
+#: src/components/core/ServerError.tsx:54
 msgid "Reload"
 msgstr "Herladen"
 
@@ -354,8 +301,8 @@ msgstr "Software %s"
 #: src/components/l10n/L10nPage.jsx:53 src/components/l10n/L10nPage.jsx:64
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/l10n/LocaleSelection.tsx:93
-#: src/components/l10n/TimezoneSelection.tsx:131
-#: src/components/product/ProductSelectionPage.tsx:129
+#: src/components/l10n/TimezoneSelection.tsx:138
+#: src/components/product/ProductSelectionPage.tsx:145
 #: src/components/software/SoftwarePatternsSelection.tsx:167
 msgid "Select"
 msgstr "Selecteer"
@@ -374,7 +321,7 @@ msgstr "Nog geen apparaat geselecteerd"
 #: src/components/l10n/L10nPage.jsx:53 src/components/l10n/L10nPage.jsx:64
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/network/NetworkPage.tsx:64
-#: src/components/storage/InstallationDeviceField.tsx:106
+#: src/components/storage/InstallationDeviceField.tsx:105
 #: src/components/storage/ProposalActionsSummary.tsx:248
 #: src/components/users/RootAuthMethods.tsx:114
 #: src/components/users/RootAuthMethods.tsx:126
@@ -402,20 +349,34 @@ msgstr "Geen van de locales komt overeen met het filter."
 msgid "Locale selection"
 msgstr "Software %s"
 
-#: src/components/l10n/TimezoneSelection.tsx:68
+#: src/components/l10n/TimezoneSelection.tsx:75
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Filter middels territorium, tijdzone code of gecompenseerde UTC"
 
-#: src/components/l10n/TimezoneSelection.tsx:107
+#: src/components/l10n/TimezoneSelection.tsx:114
 msgid "None of the time zones match the filter."
 msgstr "Geen van de tijdzones komt overeen met het filter."
 
-#: src/components/l10n/TimezoneSelection.tsx:113
+#: src/components/l10n/TimezoneSelection.tsx:120
 #, fuzzy
 msgid " Timezone selection"
 msgstr "Wijzig product"
 
-#: src/components/layout/Header.tsx:62
+#: src/components/layout/Header.tsx:81
+#, fuzzy
+msgid "Options toggle"
+msgstr "Opties"
+
+#: src/components/layout/Header.tsx:92
+msgid "Download logs"
+msgstr "Download logs"
+
+#: src/components/layout/Header.tsx:98
+#, fuzzy
+msgid "Installer Options"
+msgstr "Installatie opties"
+
+#: src/components/layout/Header.tsx:140
 msgid "Main navigation"
 msgstr ""
 
@@ -711,6 +672,11 @@ msgstr "Verbind met een verborgen netwerk"
 msgid "configured"
 msgstr ""
 
+#: src/components/network/WifiNetworksListPage.tsx:267
+#, fuzzy
+msgid "No visible Wi-Fi networks found"
+msgstr "WiFi netwerken"
+
 #: src/components/network/WifiNetworksListPage.tsx:271
 #, fuzzy
 msgid "Visible Wi-Fi networks"
@@ -733,7 +699,7 @@ msgid "Users"
 msgstr "Gebruikers"
 
 #: src/components/overview/OverviewPage.tsx:49
-#: src/components/overview/StorageSection.jsx:112
+#: src/components/overview/StorageSection.tsx:100
 #: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
 msgid "Storage"
 msgstr "Opslag"
@@ -744,21 +710,20 @@ msgstr "Opslag"
 msgid "Software"
 msgstr "Software"
 
-#: src/components/overview/OverviewPage.tsx:55
+#: src/components/overview/OverviewPage.tsx:87
 #, fuzzy
-msgid "Ready for installation"
-msgstr "Bevestig installatie"
+msgid "Installation blocking issues"
+msgstr "Installatie voltooid"
 
-#: src/components/overview/OverviewPage.tsx:99
-#, fuzzy
-msgid "Installation"
-msgstr "Installeren"
-
-#: src/components/overview/OverviewPage.tsx:100
+#: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
 msgstr "Voor het installeren, check het volgende probleem alstublieft."
 
-#: src/components/overview/OverviewPage.tsx:114
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+msgid "Overview"
+msgstr "Overzicht"
+
+#: src/components/overview/OverviewPage.tsx:99
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
@@ -766,7 +731,7 @@ msgstr ""
 "Dit zijn de meest relevante installatie instellingen. Twijfel niet en "
 "controleer de onderdelen in het menu voor meer details."
 
-#: src/components/overview/OverviewPage.tsx:134
+#: src/components/overview/OverviewPage.tsx:121
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
@@ -783,14 +748,14 @@ msgstr "De installatie zal %s in beslag nemen"
 msgid "The installation will take %s including:"
 msgstr "De installatie zal %s in beslag nemen"
 
-#: src/components/overview/StorageSection.jsx:54
+#: src/components/overview/StorageSection.tsx:42
 #, fuzzy
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group shrinking "
 "existing partitions at the underlying devices as needed"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
-#: src/components/overview/StorageSection.jsx:59
+#: src/components/overview/StorageSection.tsx:47
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group without modifying "
 "the partitions at the underlying devices"
@@ -798,7 +763,7 @@ msgstr ""
 "Installeer in een nieuwe Logical Volume Manager (LVM) volume groep zonder de "
 "partities aan te passen van onderliggende apparaten"
 
-#: src/components/overview/StorageSection.jsx:64
+#: src/components/overview/StorageSection.tsx:52
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group deleting all the "
 "content of the underlying devices"
@@ -806,7 +771,7 @@ msgstr ""
 "Installleer in een nieuwe Logical Volume Manager (LVM) volume groep en wis "
 "alle inhoud van onderliggende apparaten"
 
-#: src/components/overview/StorageSection.jsx:69
+#: src/components/overview/StorageSection.tsx:57
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group using a custom "
 "strategy to find the needed space at the underlying devices"
@@ -815,79 +780,79 @@ msgstr ""
 "gepersonaliseerde strategie om de benodigde ruimte te vinden in de "
 "onderliggende apparaten"
 
-#: src/components/overview/StorageSection.jsx:87
+#: src/components/overview/StorageSection.tsx:75
 #, fuzzy, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking "
 "existing partitions as needed"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
-#: src/components/overview/StorageSection.jsx:93
+#: src/components/overview/StorageSection.tsx:81
 #, fuzzy, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s without "
 "modifying existing partitions"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
-#: src/components/overview/StorageSection.jsx:99
+#: src/components/overview/StorageSection.tsx:87
 #, fuzzy, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s deleting "
 "all its content"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
-#: src/components/overview/StorageSection.jsx:105
+#: src/components/overview/StorageSection.tsx:93
 #, fuzzy, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s using a "
 "custom strategy to find the needed space"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
-#: src/components/overview/StorageSection.jsx:180
-#: src/components/storage/InstallationDeviceField.tsx:60
+#: src/components/overview/StorageSection.tsx:150
+#: src/components/storage/InstallationDeviceField.tsx:56
 msgid "No device selected yet"
 msgstr "Nog geen apparaat geselecteerd"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:187
+#: src/components/overview/StorageSection.tsx:157
 #, fuzzy, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:191
+#: src/components/overview/StorageSection.tsx:161
 #, fuzzy, c-format
 msgid "Install using device %s without modifying existing partitions"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:195
+#: src/components/overview/StorageSection.tsx:165
 #, c-format
 msgid "Install using device %s and deleting all its content"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:200
+#: src/components/overview/StorageSection.tsx:170
 #, fuzzy, c-format
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
 #. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-#: src/components/product/ProductSelectionPage.tsx:57
+#: src/components/product/ProductSelectionPage.tsx:59
 #, c-format
 msgid "%s logo"
 msgstr ""
 
-#: src/components/product/ProductSelectionPage.tsx:108
+#: src/components/product/ProductSelectionPage.tsx:124
 #, fuzzy
 msgid "Select a product"
 msgstr "taal"
 
-#: src/components/product/ProductSelectionPage.tsx:109
+#: src/components/product/ProductSelectionPage.tsx:125
 #, fuzzy
 msgid "Available products"
 msgstr "Beschikbare apparaten"
@@ -971,6 +936,10 @@ msgstr "Software %s"
 #: src/components/software/SoftwarePatternsSelection.tsx:191
 msgid "Filter by pattern title or description"
 msgstr "Filter middels patroon titel of beschrijving"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:206
+msgid "Close"
+msgstr "Sluiten"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -1173,7 +1142,7 @@ msgstr "Geen inhoud gevonden"
 #: src/components/storage/ProposalResultTable.tsx:130
 #: src/components/storage/SpaceActionsTable.tsx:207
 #: src/components/storage/VolumeLocationSelectorTable.tsx:96
-#: src/components/storage/dasd/DASDTable.tsx:73
+#: src/components/storage/dasd/DASDTable.tsx:78
 msgid "Device"
 msgstr "Apparaat"
 
@@ -1215,55 +1184,54 @@ msgstr "Verbind met iSCSI doelen"
 msgid "iSCSI"
 msgstr "iSCSI"
 
+#: src/components/storage/EncryptionField.tsx:34
+msgid "disabled"
+msgstr ""
+
 #: src/components/storage/EncryptionField.tsx:35
-#: src/components/storage/EncryptionSettingsDialog.tsx:31
+msgid "enabled"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:36
+msgid "using TPM unlocking"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:51
+msgid "Enable"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:51
+msgid "Modify"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:104
+#: src/components/storage/EncryptionSettingsDialog.tsx:118
 #, fuzzy
 msgid "Encryption"
 msgstr "Gebruik encryptie"
 
-#: src/components/storage/EncryptionField.tsx:37
+#: src/components/storage/EncryptionField.tsx:107
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
 msgstr ""
 
-#: src/components/storage/EncryptionField.tsx:41
-msgid "disabled"
-msgstr ""
-
-#: src/components/storage/EncryptionField.tsx:42
-msgid "enabled"
-msgstr ""
-
-#: src/components/storage/EncryptionField.tsx:43
-msgid "using TPM unlocking"
-msgstr ""
-
-#: src/components/storage/EncryptionField.tsx:57
-msgid "Enable"
-msgstr ""
-
-#: src/components/storage/EncryptionField.tsx:57
-msgid "Modify"
-msgstr ""
-
-#: src/components/storage/EncryptionSettingsDialog.tsx:33
-msgid ""
-"Full Disk Encryption (FDE) allows to protect the information stored at the "
-"device, including data, programs, and system files."
-msgstr ""
-
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.tsx:37
+#: src/components/storage/EncryptionSettingsDialog.tsx:104
 msgid ""
 "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
 msgstr ""
 
-#: src/components/storage/EncryptionSettingsDialog.tsx:41
+#: src/components/storage/EncryptionSettingsDialog.tsx:109
 msgid ""
 "The password will not be needed to boot and access the data if the TPM can "
 "verify the integrity of the system. TPM sealing requires the new system to "
 "be booted directly on its first run."
+msgstr ""
+
+#: src/components/storage/EncryptionSettingsDialog.tsx:120
+msgid ""
+"Full Disk Encryption (FDE) allows to protect the information stored at the "
+"device, including data, programs, and system files."
 msgstr ""
 
 #: src/components/storage/EncryptionSettingsDialog.tsx:128
@@ -1271,30 +1239,30 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "Wijzig bestandssysteem"
 
-#: src/components/storage/InstallationDeviceField.tsx:32
-#: src/components/storage/VolumeLocationSelectorTable.tsx:54
-msgid "Installation device"
-msgstr "Installatie apparaat"
-
-#. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.tsx:34
-msgid "Main disk or LVM Volume Group for installation."
-msgstr ""
-
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.tsx:46
+#: src/components/storage/InstallationDeviceField.tsx:42
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr ""
 
-#: src/components/storage/InstallationDeviceField.tsx:49
+#: src/components/storage/InstallationDeviceField.tsx:45
 msgid "File systems created at a new LVM volume group"
 msgstr ""
 
-#: src/components/storage/InstallationDeviceField.tsx:54
+#: src/components/storage/InstallationDeviceField.tsx:50
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr ""
+
+#. TRANSLATORS: The storage "Installation device" field's description.
+#: src/components/storage/InstallationDeviceField.tsx:94
+msgid "Main disk or LVM Volume Group for installation."
+msgstr ""
+
+#: src/components/storage/InstallationDeviceField.tsx:98
+#: src/components/storage/VolumeLocationSelectorTable.tsx:54
+msgid "Installation device"
+msgstr "Installatie apparaat"
 
 #: src/components/storage/InvalidMaxSizeError.tsx:44
 #: src/components/storage/VolumeDialog.tsx:216
@@ -1661,12 +1629,12 @@ msgid ""
 "file system updated via snapshots."
 msgstr ""
 
-#: src/components/storage/SnapshotsField.tsx:32
+#: src/components/storage/SnapshotsField.tsx:48
 #, fuzzy
 msgid "Use Btrfs snapshots for the root file system"
 msgstr "Exacte grootte voor het bestandssysteem."
 
-#: src/components/storage/SnapshotsField.tsx:34
+#: src/components/storage/SnapshotsField.tsx:67
 msgid ""
 "Allows to boot to a previous version of the system after configuration "
 "changes or software upgrades."
@@ -1894,7 +1862,7 @@ msgstr "Vast"
 msgid "Range"
 msgstr "Reikwijdte"
 
-#: src/components/storage/VolumeLocationDialog.tsx:34
+#: src/components/storage/VolumeLocationDialog.tsx:129
 msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
@@ -1988,21 +1956,21 @@ msgstr "Nog geen apparaat geselecteerd"
 msgid "Back to device selection"
 msgstr "Nog geen apparaat geselecteerd"
 
-#: src/components/storage/dasd/DASDTable.tsx:64
+#: src/components/storage/dasd/DASDTable.tsx:69
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:57
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:36
 msgid "No"
 msgstr "Nee"
 
-#: src/components/storage/dasd/DASDTable.tsx:64
+#: src/components/storage/dasd/DASDTable.tsx:69
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:57
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:36
 msgid "Yes"
 msgstr "Ja"
 
-#: src/components/storage/dasd/DASDTable.tsx:71
+#: src/components/storage/dasd/DASDTable.tsx:76
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:20
 #: src/components/storage/zfcp/ZFCPDiskForm.tsx:119
 #: src/components/storage/zfcp/ZFCPDisksTable.tsx:43
@@ -2010,7 +1978,7 @@ msgid "Channel ID"
 msgstr "Kanaal ID"
 
 #. TRANSLATORS: table header
-#: src/components/storage/dasd/DASDTable.tsx:72
+#: src/components/storage/dasd/DASDTable.tsx:77
 #: src/components/storage/iscsi/NodesPresenter.jsx:104
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:21
@@ -2018,69 +1986,95 @@ msgstr "Kanaal ID"
 msgid "Status"
 msgstr "Status"
 
-#: src/components/storage/dasd/DASDTable.tsx:74
+#: src/components/storage/dasd/DASDTable.tsx:79
 msgid "Type"
 msgstr "Type"
 
 #. TRANSLATORS: table header, the column contains "Yes"/"No" values
 #. for the DIAG access mode (special disk access mode on IBM mainframes),
 #. usually keep untranslated
-#: src/components/storage/dasd/DASDTable.tsx:78
+#: src/components/storage/dasd/DASDTable.tsx:83
 msgid "DIAG"
 msgstr ""
 
-#: src/components/storage/dasd/DASDTable.tsx:79
+#: src/components/storage/dasd/DASDTable.tsx:84
 msgid "Formatted"
 msgstr "Geformatteerd"
 
-#: src/components/storage/dasd/DASDTable.tsx:80
+#: src/components/storage/dasd/DASDTable.tsx:85
 msgid "Partition Info"
 msgstr "Partitie informatie"
 
+#: src/components/storage/dasd/DASDTable.tsx:95
+msgid "Cannot format all selected devices"
+msgstr ""
+
+#: src/components/storage/dasd/DASDTable.tsx:99
+msgid ""
+"Offline devices must be activated before formatting them. Please, unselect "
+"or activate the devices listed below and try it again"
+msgstr ""
+
+#: src/components/storage/dasd/DASDTable.tsx:111
+#, fuzzy
+msgid "Format selected devices?"
+msgstr "Formatteren DASD apparaten"
+
+#: src/components/storage/dasd/DASDTable.tsx:115
+msgid ""
+"This action could destroy any data stored on the devices listed below. "
+"Please, confirm that you really want to continue."
+msgstr ""
+
 #. TRANSLATORS: drop down menu label
-#: src/components/storage/dasd/DASDTable.tsx:119
+#: src/components/storage/dasd/DASDTable.tsx:174
 msgid "Perform an action"
 msgstr "Voer een actie uit"
 
-#: src/components/storage/dasd/DASDTable.tsx:126
+#: src/components/storage/dasd/DASDTable.tsx:181
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:51
 msgid "Activate"
 msgstr "Activeer"
 
-#: src/components/storage/dasd/DASDTable.tsx:130
+#: src/components/storage/dasd/DASDTable.tsx:185
 #: src/components/storage/zfcp/ZFCPDisksTable.tsx:56
 msgid "Deactivate"
 msgstr "Deactiveer"
 
-#: src/components/storage/dasd/DASDTable.tsx:135
+#: src/components/storage/dasd/DASDTable.tsx:190
 msgid "Set DIAG On"
 msgstr "Zet DIAG aan"
 
-#: src/components/storage/dasd/DASDTable.tsx:139
+#: src/components/storage/dasd/DASDTable.tsx:194
 msgid "Set DIAG Off"
 msgstr "Zet DIAG uit"
 
-#: src/components/storage/dasd/DASDTable.tsx:144
+#: src/components/storage/dasd/DASDTable.tsx:199
 msgid "Format"
 msgstr "Formatteer"
 
-#: src/components/storage/dasd/DASDTable.tsx:280
-#: src/components/storage/dasd/DASDTable.tsx:281
+#: src/components/storage/dasd/DASDTable.tsx:336
+#: src/components/storage/dasd/DASDTable.tsx:337
 msgid "Filter by min channel"
 msgstr "Filter door minimum kanaal"
 
-#: src/components/storage/dasd/DASDTable.tsx:288
+#: src/components/storage/dasd/DASDTable.tsx:344
 msgid "Remove min channel filter"
 msgstr "Verwijder minimum kanaal filter"
 
-#: src/components/storage/dasd/DASDTable.tsx:302
-#: src/components/storage/dasd/DASDTable.tsx:303
+#: src/components/storage/dasd/DASDTable.tsx:358
+#: src/components/storage/dasd/DASDTable.tsx:359
 msgid "Filter by max channel"
 msgstr "Filter met maximaal kanaal"
 
-#: src/components/storage/dasd/DASDTable.tsx:310
+#: src/components/storage/dasd/DASDTable.tsx:366
 msgid "Remove max channel filter"
 msgstr "Verwijder maximaal kanaal filter"
+
+#: src/components/storage/dasd/DASDTable.tsx:385
+#, fuzzy
+msgid "DASDs table section"
+msgstr "Software %s"
 
 #: src/components/storage/device-utils.tsx:75
 #, fuzzy
@@ -2605,13 +2599,62 @@ msgstr "Upload"
 msgid "Clear"
 msgstr "Leegmaken"
 
-#: src/router.js:49
-msgid "Overview"
-msgstr "Overzicht"
-
 #: src/routes/storage.tsx:86
 msgid "ZFCP"
 msgstr ""
+
+#~ msgid "About"
+#~ msgstr "Over"
+
+#~ msgid "About Agama"
+#~ msgstr "Over Agama"
+
+#, fuzzy
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "Agama is een experimentele installer voor (open)SUSE systemen. Het is nog "
+#~ "in ontwikkeling, dus gebruik het alstublieft niet in productie "
+#~ "omgevingen. Wanneer U het wil uitproberen, gebruik dan een virtuele "
+#~ "machine om data verlies te voorkomen."
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr ""
+#~ "Voor meer informatie kunt u de opslagruimte van het project bezoek op %s."
+
+#, fuzzy
+#~ msgid "Show installer options"
+#~ msgstr "Verberg installer opties"
+
+#~ msgid "More about this"
+#~ msgstr "Meer over dit"
+
+#~ msgid "Collecting logs..."
+#~ msgstr "Verzamelen logs..."
+
+#~ msgid ""
+#~ "The browser will run the logs download as soon as they are ready. Please, "
+#~ "be patient."
+#~ msgstr ""
+#~ "De browser zal de logs downloaden wanneer ze klaar zijn. Heb geduld "
+#~ "alstublieft."
+
+#~ msgid "Something went wrong while collecting logs. Please, try again."
+#~ msgstr ""
+#~ "Iets is verkeerd gegaan bij het verzamelen van de logs. Probeer het "
+#~ "opnieuw."
+
+#, fuzzy
+#~ msgid "Ready for installation"
+#~ msgstr "Bevestig installatie"
+
+#, fuzzy
+#~ msgid "Installation"
+#~ msgstr "Installeren"
 
 #~ msgid "Please, try to read the zFCP devices again."
 #~ msgstr "Probeer de zFCP apparaten opnieuw te lezen."
@@ -2715,9 +2758,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Enkele problemen zijn geconstateerd tijdens het starten van de "
 #~ "instalatie. Check alstublieft de gemelde fouten en probeer opnieuw."
-
-#~ msgid "Installation Finished"
-#~ msgstr "Installatie voltooid"
 
 #~ msgid "Show global options"
 #~ msgstr "Toon algemene opties"
@@ -3044,9 +3084,6 @@ msgstr ""
 
 #~ msgid "Hide navigation and other options"
 #~ msgstr "Verberg navigatie en andere opties"
-
-#~ msgid "Options"
-#~ msgstr "Opties"
 
 #, fuzzy
 #~ msgid "Display Language"

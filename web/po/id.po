@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-22 02:43+0000\n"
+"POT-Creation-Date: 2024-10-29 09:01+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -19,49 +19,15 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/components/core/About.tsx:47
-#, fuzzy
-msgid "About"
-msgstr "Tentang Agama"
-
-#: src/components/core/About.tsx:65
-msgid "About Agama"
-msgstr "Tentang Agama"
-
-#: src/components/core/About.tsx:70
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"Agama adalah penginstal eksperimental untuk sistem (open)SUSE. Saat ini "
-"masih dalam tahap pengembangan, jadi mohon untuk tidak menggunakannya di "
-"lingkungan produksi. Jika Anda ingin mencobanya, kami sarankan untuk "
-"menggunakan mesin virtual untuk mencegah kemungkinan kehilangan data."
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.tsx:82
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr ""
-"Untuk informasi lebih lanjut, silakan kunjungi repositori proyek di %s."
-
-#: src/components/core/About.tsx:88 src/components/core/LogsButton.tsx:124
-#: src/components/software/SoftwarePatternsSelection.tsx:206
-msgid "Close"
-msgstr "Tutup"
-
 #: src/components/core/ChangeProductLink.tsx:39
 msgid "Change product"
 msgstr "Mengubah produk"
 
-#: src/components/core/InstallButton.jsx:33
+#: src/components/core/InstallButton.tsx:36
 msgid "Confirm Installation"
 msgstr "Konfirmasi Instalasi"
 
-#: src/components/core/InstallButton.jsx:37
+#: src/components/core/InstallButton.tsx:40
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -69,33 +35,33 @@ msgstr ""
 "Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai "
 "dengan pengaturan instalasi yang disediakan."
 
-#: src/components/core/InstallButton.jsx:41
+#: src/components/core/InstallButton.tsx:44
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Mohon batalkan dan periksa pengaturan jika Anda tidak yakin."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:46
+#: src/components/core/InstallButton.tsx:49
 msgid "Continue"
 msgstr "Lanjutkan"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:50 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
-#: src/components/product/ProductSelectionPage.tsx:123
+#: src/components/product/ProductSelectionPage.tsx:96
 msgid "Cancel"
 msgstr "Batal"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:85
+#: src/components/core/InstallButton.tsx:83
 msgid "Install"
 msgstr "Instal"
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.tsx:53
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung."
 
-#: src/components/core/InstallationFinished.jsx:55
+#: src/components/core/InstallationFinished.tsx:58
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -103,15 +69,15 @@ msgstr ""
 "Jika media lokal digunakan untuk menjalankan penginstalasi ini, hapus media "
 "tersebut sebelum boot berikutnya."
 
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.tsx:62
 msgid "Hide details"
 msgstr "Sembunyikan detail"
 
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.tsx:62
 msgid "See more details"
 msgstr "Lihat detail lebih lanjut"
 
-#: src/components/core/InstallationFinished.jsx:64
+#: src/components/core/InstallationFinished.tsx:67
 #, fuzzy
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
@@ -124,69 +90,65 @@ msgstr ""
 "akan dilakukan pada saat booting pertama dari sistem yang baru. Agar dapat "
 "berfungsi, mesin harus melakukan booting langsung ke boot loader yang baru."
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.tsx:105
 msgid "Congratulations!"
 msgstr "Selamat!"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.tsx:114
 msgid "The installation on your machine is complete."
 msgstr "Penginstalan pada mesin Anda sudah selesai."
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.tsx:117
 msgid "At this point you can power off the machine."
 msgstr "Pada titik ini, Anda dapat mematikan mesin."
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.tsx:119
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "Pada titik ini, Anda dapat menyalakan ulang mesin untuk masuk ke sistem yang "
 "baru."
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.tsx:128
 msgid "Finish"
 msgstr "Selesai"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.tsx:128
 msgid "Reboot"
 msgstr "Maut ulang"
 
-#: src/components/core/InstallationProgress.jsx:31
+#: src/components/core/InstallationProgress.tsx:42
 #, fuzzy
-msgid "Installing the system, please wait ..."
+msgid "Installing the system, please wait..."
 msgstr "Memuat produk yang tersedia, mohon tunggu..."
 
-#: src/components/core/InstallerOptions.jsx:93
-#, fuzzy
-msgid "Show installer options"
-msgstr "Sembunyikan opsi penginstal"
-
-#: src/components/core/InstallerOptions.jsx:96
+#: src/components/core/InstallerOptions.tsx:73
 #, fuzzy
 msgid "Installer options"
 msgstr "Opsi Penginstal"
 
-#: src/components/core/InstallerOptions.jsx:99
-#: src/components/core/InstallerOptions.jsx:103
-#: src/components/core/InstallerOptions.jsx:104
+#: src/components/core/InstallerOptions.tsx:76
+#: src/components/core/InstallerOptions.tsx:80
+#: src/components/core/InstallerOptions.tsx:81
 #: src/components/l10n/L10nPage.jsx:49
 msgid "Language"
 msgstr "Bahasa"
 
-#: src/components/core/InstallerOptions.jsx:116
-#: src/components/core/InstallerOptions.jsx:121
+#: src/components/core/InstallerOptions.tsx:93
+#: src/components/core/InstallerOptions.tsx:98
 #, fuzzy
 msgid "Keyboard layout"
 msgstr "Pilih produk"
 
-#: src/components/core/InstallerOptions.jsx:130
+#: src/components/core/InstallerOptions.tsx:107
 #, fuzzy
 msgid "Cannot be changed in remote installation"
 msgstr "Tata letak papan ketik tidak dapat diubah dalam instalasi jarak jauh"
 
-#: src/components/core/InstallerOptions.jsx:143
+#: src/components/core/InstallerOptions.tsx:120
 #: src/components/core/Page.tsx:271
 #: src/components/storage/EncryptionSettingsDialog.tsx:154
 #: src/components/storage/VolumeDialog.tsx:641
+#: src/components/storage/dasd/DASDTable.tsx:105
 msgid "Accept"
 msgstr "Terima"
 
@@ -195,69 +157,56 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr ""
 
+#: src/components/core/IssuesLink.tsx:50
+msgid ""
+"Installation not possible yet because of issues. Check them at Overview page."
+msgstr ""
+
+#: src/components/core/IssuesLink.tsx:52
+#, fuzzy
+msgid "Installation issues"
+msgstr "Instalasi Selesai"
+
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
 msgstr "Cari"
 
-#: src/components/core/LoginPage.tsx:60
+#: src/components/core/LoginPage.tsx:50
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
 
-#: src/components/core/LoginPage.tsx:62
+#: src/components/core/LoginPage.tsx:52
 msgid "Could not authenticate against the server, please check it."
 msgstr ""
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.tsx:70
+#: src/components/core/LoginPage.tsx:60
 #, c-format
 msgid "Log in as %s"
 msgstr ""
 
-#: src/components/core/LoginPage.tsx:76
+#: src/components/core/LoginPage.tsx:66
 msgid "The installer requires [root] user privileges."
 msgstr ""
 
-#: src/components/core/LoginPage.tsx:91
+#: src/components/core/LoginPage.tsx:81
 msgid "Please, provide its password to log in to the system."
 msgstr ""
 
-#: src/components/core/LoginPage.tsx:92
+#: src/components/core/LoginPage.tsx:82
 #, fuzzy
 msgid "Login form"
 msgstr "Login %s"
 
-#: src/components/core/LoginPage.tsx:98
+#: src/components/core/LoginPage.tsx:88
 #, fuzzy
 msgid "Password input"
 msgstr "Kata sandi"
 
-#: src/components/core/LoginPage.tsx:107
+#: src/components/core/LoginPage.tsx:97
 msgid "Log in"
 msgstr ""
-
-#: src/components/core/LoginPage.tsx:114
-msgid "More about this"
-msgstr ""
-
-#: src/components/core/LogsButton.tsx:99
-msgid "Collecting logs..."
-msgstr "Mengumpulkan log..."
-
-#: src/components/core/LogsButton.tsx:99 src/components/core/LogsButton.tsx:102
-msgid "Download logs"
-msgstr "Unduh log"
-
-#: src/components/core/LogsButton.tsx:109
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr ""
-"Browser akan menjalankan pengunduhan log segera setelah siap. Mohon bersabar."
-
-#: src/components/core/LogsButton.tsx:119
-msgid "Something went wrong while collecting logs. Please, try again."
-msgstr "Terjadi kesalahan saat mengumpulkan log. Silakan coba lagi."
 
 #: src/components/core/Page.tsx:260
 msgid "Back"
@@ -295,15 +244,15 @@ msgstr "Konfirmasi"
 msgid "Loading data..."
 msgstr "Membaca berkas..."
 
-#: src/components/core/ProgressReport.jsx:51
+#: src/components/core/ProgressReport.tsx:61
 msgid "Pending"
 msgstr ""
 
-#: src/components/core/ProgressReport.jsx:60
+#: src/components/core/ProgressReport.tsx:70
 msgid "In progress"
 msgstr ""
 
-#: src/components/core/ProgressReport.jsx:75
+#: src/components/core/ProgressReport.tsx:85
 #, fuzzy
 msgid "Finished"
 msgstr "Selesai"
@@ -318,19 +267,19 @@ msgstr "Tindakan"
 msgid "Waiting"
 msgstr "Menunggu"
 
-#: src/components/core/ServerError.tsx:46
+#: src/components/core/ServerError.tsx:44
 #, fuzzy
 msgid "Cannot connect to Agama server"
 msgstr "Tidak dapat tersambung ke server Cockpit"
 
-#: src/components/core/ServerError.tsx:50
+#: src/components/core/ServerError.tsx:48
 #, fuzzy
 msgid "Please, check whether it is running."
 msgstr ""
 "Tidak dapat tersambung ke layanan D-Bus. Silakan periksa apakah sudah "
 "berjalan."
 
-#: src/components/core/ServerError.tsx:56
+#: src/components/core/ServerError.tsx:54
 msgid "Reload"
 msgstr "Muat ulang"
 
@@ -351,8 +300,8 @@ msgstr "Perangkat Lunak %s"
 #: src/components/l10n/L10nPage.jsx:53 src/components/l10n/L10nPage.jsx:64
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/l10n/LocaleSelection.tsx:93
-#: src/components/l10n/TimezoneSelection.tsx:131
-#: src/components/product/ProductSelectionPage.tsx:129
+#: src/components/l10n/TimezoneSelection.tsx:138
+#: src/components/product/ProductSelectionPage.tsx:145
 #: src/components/software/SoftwarePatternsSelection.tsx:167
 msgid "Select"
 msgstr "Pilih"
@@ -371,7 +320,7 @@ msgstr "Belum ada perangkat yang dipilih"
 #: src/components/l10n/L10nPage.jsx:53 src/components/l10n/L10nPage.jsx:64
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/network/NetworkPage.tsx:64
-#: src/components/storage/InstallationDeviceField.tsx:106
+#: src/components/storage/InstallationDeviceField.tsx:105
 #: src/components/storage/ProposalActionsSummary.tsx:248
 #: src/components/users/RootAuthMethods.tsx:114
 #: src/components/users/RootAuthMethods.tsx:126
@@ -399,20 +348,34 @@ msgstr ""
 msgid "Locale selection"
 msgstr "Perangkat Lunak %s"
 
-#: src/components/l10n/TimezoneSelection.tsx:68
+#: src/components/l10n/TimezoneSelection.tsx:75
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Memfilter berdasarkan wilayah, kode zona waktu, atau offset UTC"
 
-#: src/components/l10n/TimezoneSelection.tsx:107
+#: src/components/l10n/TimezoneSelection.tsx:114
 msgid "None of the time zones match the filter."
 msgstr ""
 
-#: src/components/l10n/TimezoneSelection.tsx:113
+#: src/components/l10n/TimezoneSelection.tsx:120
 #, fuzzy
 msgid " Timezone selection"
 msgstr "Mengubah zona waktu"
 
-#: src/components/layout/Header.tsx:62
+#: src/components/layout/Header.tsx:81
+#, fuzzy
+msgid "Options toggle"
+msgstr "Opsi"
+
+#: src/components/layout/Header.tsx:92
+msgid "Download logs"
+msgstr "Unduh log"
+
+#: src/components/layout/Header.tsx:98
+#, fuzzy
+msgid "Installer Options"
+msgstr "Opsi Penginstal"
+
+#: src/components/layout/Header.tsx:140
 msgid "Main navigation"
 msgstr ""
 
@@ -707,6 +670,11 @@ msgstr "Sambungkan ke jaringan tersembunyi"
 msgid "configured"
 msgstr "Jangan konfigurasikan"
 
+#: src/components/network/WifiNetworksListPage.tsx:267
+#, fuzzy
+msgid "No visible Wi-Fi networks found"
+msgstr "Jaringan WiFi"
+
 #: src/components/network/WifiNetworksListPage.tsx:271
 #, fuzzy
 msgid "Visible Wi-Fi networks"
@@ -729,7 +697,7 @@ msgid "Users"
 msgstr "Pengguna"
 
 #: src/components/overview/OverviewPage.tsx:49
-#: src/components/overview/StorageSection.jsx:112
+#: src/components/overview/StorageSection.tsx:100
 #: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
 msgid "Storage"
 msgstr "Penyimpanan"
@@ -740,27 +708,26 @@ msgstr "Penyimpanan"
 msgid "Software"
 msgstr "Perangkat lunak"
 
-#: src/components/overview/OverviewPage.tsx:55
+#: src/components/overview/OverviewPage.tsx:87
 #, fuzzy
-msgid "Ready for installation"
-msgstr "Konfirmasi Instalasi"
+msgid "Installation blocking issues"
+msgstr "Instalasi Selesai"
 
-#: src/components/overview/OverviewPage.tsx:99
-#, fuzzy
-msgid "Installation"
-msgstr "Menginstal"
-
-#: src/components/overview/OverviewPage.tsx:100
+#: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
 msgstr ""
 
-#: src/components/overview/OverviewPage.tsx:114
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+msgid "Overview"
+msgstr ""
+
+#: src/components/overview/OverviewPage.tsx:99
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
 
-#: src/components/overview/OverviewPage.tsx:134
+#: src/components/overview/OverviewPage.tsx:121
 #, fuzzy
 msgid ""
 "Take your time to check your configuration before starting the installation "
@@ -778,7 +745,7 @@ msgstr "Penginstalan akan memakan waktu %s"
 msgid "The installation will take %s including:"
 msgstr "Penginstalan akan memakan waktu %s"
 
-#: src/components/overview/StorageSection.jsx:54
+#: src/components/overview/StorageSection.tsx:42
 #, fuzzy
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group shrinking "
@@ -787,19 +754,19 @@ msgstr ""
 "Instal di %1$ baru dengan menyusutkan partisi yang ada di perangkat yang "
 "bersangkutan sesuai kebutuhan"
 
-#: src/components/overview/StorageSection.jsx:59
+#: src/components/overview/StorageSection.tsx:47
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group without modifying "
 "the partitions at the underlying devices"
 msgstr ""
 
-#: src/components/overview/StorageSection.jsx:64
+#: src/components/overview/StorageSection.tsx:52
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group deleting all the "
 "content of the underlying devices"
 msgstr ""
 
-#: src/components/overview/StorageSection.jsx:69
+#: src/components/overview/StorageSection.tsx:57
 #, fuzzy
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group using a custom "
@@ -808,7 +775,7 @@ msgstr ""
 "Instal di %1$s baru menggunakan strategi khusus untuk menemukan ruang yang "
 "dibutuhkan di perangkat yang bersangkutan"
 
-#: src/components/overview/StorageSection.jsx:87
+#: src/components/overview/StorageSection.tsx:75
 #, fuzzy, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking "
@@ -817,7 +784,7 @@ msgstr ""
 "Instal di %1$ baru dengan menyusutkan partisi yang ada di perangkat yang "
 "bersangkutan sesuai kebutuhan"
 
-#: src/components/overview/StorageSection.jsx:93
+#: src/components/overview/StorageSection.tsx:81
 #, fuzzy, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s without "
@@ -825,7 +792,7 @@ msgid ""
 msgstr ""
 "Instal di %1$ baru tanpa memodifikasi partisi di perangkat yang bersangkutan"
 
-#: src/components/overview/StorageSection.jsx:99
+#: src/components/overview/StorageSection.tsx:87
 #, fuzzy, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s deleting "
@@ -834,7 +801,7 @@ msgstr ""
 "Instal di %1$ baru dengan menghapus semua konten di perangkat yang "
 "bersangkutan"
 
-#: src/components/overview/StorageSection.jsx:105
+#: src/components/overview/StorageSection.tsx:93
 #, fuzzy, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s using a "
@@ -843,14 +810,14 @@ msgstr ""
 "Instal di %1$s baru menggunakan strategi khusus untuk menemukan ruang yang "
 "dibutuhkan di perangkat yang bersangkutan"
 
-#: src/components/overview/StorageSection.jsx:180
-#: src/components/storage/InstallationDeviceField.tsx:60
+#: src/components/overview/StorageSection.tsx:150
+#: src/components/storage/InstallationDeviceField.tsx:56
 msgid "No device selected yet"
 msgstr "Belum ada perangkat yang dipilih"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:187
+#: src/components/overview/StorageSection.tsx:157
 #, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
 msgstr ""
@@ -858,21 +825,21 @@ msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:191
+#: src/components/overview/StorageSection.tsx:161
 #, c-format
 msgid "Install using device %s without modifying existing partitions"
 msgstr "Menginstal menggunakan perangkat %s tanpa mengubah partisi yang ada"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:195
+#: src/components/overview/StorageSection.tsx:165
 #, c-format
 msgid "Install using device %s and deleting all its content"
 msgstr "Menginstal menggunakan perangkat %s dan menghapus semua isinya"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:200
+#: src/components/overview/StorageSection.tsx:170
 #, c-format
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr ""
@@ -880,17 +847,17 @@ msgstr ""
 "yang dibutuhkan"
 
 #. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-#: src/components/product/ProductSelectionPage.tsx:57
+#: src/components/product/ProductSelectionPage.tsx:59
 #, c-format
 msgid "%s logo"
 msgstr ""
 
-#: src/components/product/ProductSelectionPage.tsx:108
+#: src/components/product/ProductSelectionPage.tsx:124
 #, fuzzy
 msgid "Select a product"
 msgstr "Pilih disk"
 
-#: src/components/product/ProductSelectionPage.tsx:109
+#: src/components/product/ProductSelectionPage.tsx:125
 msgid "Available products"
 msgstr "Produk yang tersedia"
 
@@ -973,6 +940,10 @@ msgstr "Perangkat Lunak %s"
 #: src/components/software/SoftwarePatternsSelection.tsx:191
 msgid "Filter by pattern title or description"
 msgstr ""
+
+#: src/components/software/SoftwarePatternsSelection.tsx:206
+msgid "Close"
+msgstr "Tutup"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -1184,7 +1155,7 @@ msgstr "Tidak ada konten yang ditemukan"
 #: src/components/storage/ProposalResultTable.tsx:130
 #: src/components/storage/SpaceActionsTable.tsx:207
 #: src/components/storage/VolumeLocationSelectorTable.tsx:96
-#: src/components/storage/dasd/DASDTable.tsx:73
+#: src/components/storage/dasd/DASDTable.tsx:78
 msgid "Device"
 msgstr "Perangkat"
 
@@ -1226,52 +1197,45 @@ msgstr "Menyambungkan ke target iSCSI"
 msgid "iSCSI"
 msgstr "iSCSI"
 
+#: src/components/storage/EncryptionField.tsx:34
+msgid "disabled"
+msgstr ""
+
 #: src/components/storage/EncryptionField.tsx:35
-#: src/components/storage/EncryptionSettingsDialog.tsx:31
+msgid "enabled"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:36
+msgid "using TPM unlocking"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:51
+msgid "Enable"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:51
+msgid "Modify"
+msgstr ""
+
+#: src/components/storage/EncryptionField.tsx:104
+#: src/components/storage/EncryptionSettingsDialog.tsx:118
 #, fuzzy
 msgid "Encryption"
 msgstr "Gunakan enkripsi"
 
-#: src/components/storage/EncryptionField.tsx:37
+#: src/components/storage/EncryptionField.tsx:107
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
 msgstr ""
 
-#: src/components/storage/EncryptionField.tsx:41
-msgid "disabled"
-msgstr ""
-
-#: src/components/storage/EncryptionField.tsx:42
-msgid "enabled"
-msgstr ""
-
-#: src/components/storage/EncryptionField.tsx:43
-msgid "using TPM unlocking"
-msgstr ""
-
-#: src/components/storage/EncryptionField.tsx:57
-msgid "Enable"
-msgstr ""
-
-#: src/components/storage/EncryptionField.tsx:57
-msgid "Modify"
-msgstr ""
-
-#: src/components/storage/EncryptionSettingsDialog.tsx:33
-msgid ""
-"Full Disk Encryption (FDE) allows to protect the information stored at the "
-"device, including data, programs, and system files."
-msgstr ""
-
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.tsx:37
+#: src/components/storage/EncryptionSettingsDialog.tsx:104
 #, fuzzy
 msgid ""
 "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
 msgstr "Gunakan TPM untuk mendekripsi secara otomatis pada setiap boot"
 
-#: src/components/storage/EncryptionSettingsDialog.tsx:41
+#: src/components/storage/EncryptionSettingsDialog.tsx:109
 #, fuzzy
 msgid ""
 "The password will not be needed to boot and access the data if the TPM can "
@@ -1283,41 +1247,47 @@ msgstr ""
 "integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot "
 "secara langsung saat pertama kali dijalankan."
 
+#: src/components/storage/EncryptionSettingsDialog.tsx:120
+msgid ""
+"Full Disk Encryption (FDE) allows to protect the information stored at the "
+"device, including data, programs, and system files."
+msgstr ""
+
 #: src/components/storage/EncryptionSettingsDialog.tsx:128
 #, fuzzy
 msgid "Encrypt the system"
 msgstr "Edit sistem berkas"
 
-#: src/components/storage/InstallationDeviceField.tsx:32
-#: src/components/storage/VolumeLocationSelectorTable.tsx:54
-msgid "Installation device"
-msgstr "Perangkat penginstalan"
-
-#. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.tsx:34
-#, fuzzy
-msgid "Main disk or LVM Volume Group for installation."
-msgstr ""
-"Pilih disk utama atau Grup Volume <abbr title='Logical Volume Manager'>LVM</"
-"abbr> untuk penginstalan."
-
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.tsx:46
+#: src/components/storage/InstallationDeviceField.tsx:42
 #, fuzzy, c-format
 msgid "File systems created as new partitions at %s"
 msgstr ""
 "Sistem berkas akan dialokasikan secara baku sebagai <b>partisi baru di "
 "perangkat yang dipilih</b>."
 
-#: src/components/storage/InstallationDeviceField.tsx:49
+#: src/components/storage/InstallationDeviceField.tsx:45
 #, fuzzy
 msgid "File systems created at a new LVM volume group"
 msgstr "Pemilih perangkat untuk grup volume LVM baru"
 
-#: src/components/storage/InstallationDeviceField.tsx:54
+#: src/components/storage/InstallationDeviceField.tsx:50
 #, fuzzy, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "grup volume LVM baru pada %s"
+
+#. TRANSLATORS: The storage "Installation device" field's description.
+#: src/components/storage/InstallationDeviceField.tsx:94
+#, fuzzy
+msgid "Main disk or LVM Volume Group for installation."
+msgstr ""
+"Pilih disk utama atau Grup Volume <abbr title='Logical Volume Manager'>LVM</"
+"abbr> untuk penginstalan."
+
+#: src/components/storage/InstallationDeviceField.tsx:98
+#: src/components/storage/VolumeLocationSelectorTable.tsx:54
+msgid "Installation device"
+msgstr "Perangkat penginstalan"
 
 #: src/components/storage/InvalidMaxSizeError.tsx:44
 #: src/components/storage/VolumeDialog.tsx:216
@@ -1677,12 +1647,12 @@ msgid ""
 "file system updated via snapshots."
 msgstr ""
 
-#: src/components/storage/SnapshotsField.tsx:32
+#: src/components/storage/SnapshotsField.tsx:48
 #, fuzzy
 msgid "Use Btrfs snapshots for the root file system"
 msgstr "Ukuran yang tepat untuk sistem berkas."
 
-#: src/components/storage/SnapshotsField.tsx:34
+#: src/components/storage/SnapshotsField.tsx:67
 #, fuzzy
 msgid ""
 "Allows to boot to a previous version of the system after configuration "
@@ -1920,7 +1890,7 @@ msgstr "Tetap"
 msgid "Range"
 msgstr "Rentang"
 
-#: src/components/storage/VolumeLocationDialog.tsx:34
+#: src/components/storage/VolumeLocationDialog.tsx:129
 msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
@@ -2024,21 +1994,21 @@ msgstr "Belum ada perangkat yang dipilih"
 msgid "Back to device selection"
 msgstr "Belum ada perangkat yang dipilih"
 
-#: src/components/storage/dasd/DASDTable.tsx:64
+#: src/components/storage/dasd/DASDTable.tsx:69
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:57
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:36
 msgid "No"
 msgstr "Tidak"
 
-#: src/components/storage/dasd/DASDTable.tsx:64
+#: src/components/storage/dasd/DASDTable.tsx:69
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:57
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:36
 msgid "Yes"
 msgstr "Ya"
 
-#: src/components/storage/dasd/DASDTable.tsx:71
+#: src/components/storage/dasd/DASDTable.tsx:76
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:20
 #: src/components/storage/zfcp/ZFCPDiskForm.tsx:119
 #: src/components/storage/zfcp/ZFCPDisksTable.tsx:43
@@ -2046,7 +2016,7 @@ msgid "Channel ID"
 msgstr "ID saluran"
 
 #. TRANSLATORS: table header
-#: src/components/storage/dasd/DASDTable.tsx:72
+#: src/components/storage/dasd/DASDTable.tsx:77
 #: src/components/storage/iscsi/NodesPresenter.jsx:104
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:21
@@ -2054,69 +2024,96 @@ msgstr "ID saluran"
 msgid "Status"
 msgstr "Status"
 
-#: src/components/storage/dasd/DASDTable.tsx:74
+#: src/components/storage/dasd/DASDTable.tsx:79
 msgid "Type"
 msgstr "Jenis"
 
 #. TRANSLATORS: table header, the column contains "Yes"/"No" values
 #. for the DIAG access mode (special disk access mode on IBM mainframes),
 #. usually keep untranslated
-#: src/components/storage/dasd/DASDTable.tsx:78
+#: src/components/storage/dasd/DASDTable.tsx:83
 msgid "DIAG"
 msgstr ""
 
-#: src/components/storage/dasd/DASDTable.tsx:79
+#: src/components/storage/dasd/DASDTable.tsx:84
 msgid "Formatted"
 msgstr "Diformat"
 
-#: src/components/storage/dasd/DASDTable.tsx:80
+#: src/components/storage/dasd/DASDTable.tsx:85
 msgid "Partition Info"
 msgstr "Info Partisi"
 
+#: src/components/storage/dasd/DASDTable.tsx:95
+#, fuzzy
+msgid "Cannot format all selected devices"
+msgstr "Menunggu informasi tentang perangkat yang dipilih"
+
+#: src/components/storage/dasd/DASDTable.tsx:99
+msgid ""
+"Offline devices must be activated before formatting them. Please, unselect "
+"or activate the devices listed below and try it again"
+msgstr ""
+
+#: src/components/storage/dasd/DASDTable.tsx:111
+#, fuzzy
+msgid "Format selected devices?"
+msgstr "Memformat perangkat DASD"
+
+#: src/components/storage/dasd/DASDTable.tsx:115
+msgid ""
+"This action could destroy any data stored on the devices listed below. "
+"Please, confirm that you really want to continue."
+msgstr ""
+
 #. TRANSLATORS: drop down menu label
-#: src/components/storage/dasd/DASDTable.tsx:119
+#: src/components/storage/dasd/DASDTable.tsx:174
 msgid "Perform an action"
 msgstr "Melakukan tindakan"
 
-#: src/components/storage/dasd/DASDTable.tsx:126
+#: src/components/storage/dasd/DASDTable.tsx:181
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:51
 msgid "Activate"
 msgstr "Mengaktifkan"
 
-#: src/components/storage/dasd/DASDTable.tsx:130
+#: src/components/storage/dasd/DASDTable.tsx:185
 #: src/components/storage/zfcp/ZFCPDisksTable.tsx:56
 msgid "Deactivate"
 msgstr "Nonaktifkan"
 
-#: src/components/storage/dasd/DASDTable.tsx:135
+#: src/components/storage/dasd/DASDTable.tsx:190
 msgid "Set DIAG On"
 msgstr "Mengatur DIAG Aktif"
 
-#: src/components/storage/dasd/DASDTable.tsx:139
+#: src/components/storage/dasd/DASDTable.tsx:194
 msgid "Set DIAG Off"
 msgstr "Mengatur DIAG Tidak Aktif"
 
-#: src/components/storage/dasd/DASDTable.tsx:144
+#: src/components/storage/dasd/DASDTable.tsx:199
 msgid "Format"
 msgstr "Format"
 
-#: src/components/storage/dasd/DASDTable.tsx:280
-#: src/components/storage/dasd/DASDTable.tsx:281
+#: src/components/storage/dasd/DASDTable.tsx:336
+#: src/components/storage/dasd/DASDTable.tsx:337
 msgid "Filter by min channel"
 msgstr "Memfilter menurut saluran min"
 
-#: src/components/storage/dasd/DASDTable.tsx:288
+#: src/components/storage/dasd/DASDTable.tsx:344
 msgid "Remove min channel filter"
 msgstr "Menghapus filter saluran min"
 
-#: src/components/storage/dasd/DASDTable.tsx:302
-#: src/components/storage/dasd/DASDTable.tsx:303
+#: src/components/storage/dasd/DASDTable.tsx:358
+#: src/components/storage/dasd/DASDTable.tsx:359
 msgid "Filter by max channel"
 msgstr "Memfilter menurut saluran maks"
 
-#: src/components/storage/dasd/DASDTable.tsx:310
+#: src/components/storage/dasd/DASDTable.tsx:366
 msgid "Remove max channel filter"
 msgstr "Menghapus filter saluran maks"
+
+#: src/components/storage/dasd/DASDTable.tsx:385
+#, fuzzy
+msgid "DASDs table section"
+msgstr "Perangkat Lunak %s"
 
 #: src/components/storage/device-utils.tsx:75
 msgid "Unused space"
@@ -2639,13 +2636,57 @@ msgstr "Unggah"
 msgid "Clear"
 msgstr "Hapus"
 
-#: src/router.js:49
-msgid "Overview"
-msgstr ""
-
 #: src/routes/storage.tsx:86
 msgid "ZFCP"
 msgstr ""
+
+#, fuzzy
+#~ msgid "About"
+#~ msgstr "Tentang Agama"
+
+#~ msgid "About Agama"
+#~ msgstr "Tentang Agama"
+
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "Agama adalah penginstal eksperimental untuk sistem (open)SUSE. Saat ini "
+#~ "masih dalam tahap pengembangan, jadi mohon untuk tidak menggunakannya di "
+#~ "lingkungan produksi. Jika Anda ingin mencobanya, kami sarankan untuk "
+#~ "menggunakan mesin virtual untuk mencegah kemungkinan kehilangan data."
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr ""
+#~ "Untuk informasi lebih lanjut, silakan kunjungi repositori proyek di %s."
+
+#, fuzzy
+#~ msgid "Show installer options"
+#~ msgstr "Sembunyikan opsi penginstal"
+
+#~ msgid "Collecting logs..."
+#~ msgstr "Mengumpulkan log..."
+
+#~ msgid ""
+#~ "The browser will run the logs download as soon as they are ready. Please, "
+#~ "be patient."
+#~ msgstr ""
+#~ "Browser akan menjalankan pengunduhan log segera setelah siap. Mohon "
+#~ "bersabar."
+
+#~ msgid "Something went wrong while collecting logs. Please, try again."
+#~ msgstr "Terjadi kesalahan saat mengumpulkan log. Silakan coba lagi."
+
+#, fuzzy
+#~ msgid "Ready for installation"
+#~ msgstr "Konfirmasi Instalasi"
+
+#, fuzzy
+#~ msgid "Installation"
+#~ msgstr "Menginstal"
 
 #~ msgid "Please, try to read the zFCP devices again."
 #~ msgstr "Coba baca kembali perangkat zFCP."
@@ -2767,9 +2808,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Beberapa masalah ditemukan ketika mencoba memulai instalasi. Silakan "
 #~ "lihat kesalahan yang dilaporkan dan coba lagi."
-
-#~ msgid "Installation Finished"
-#~ msgstr "Instalasi Selesai"
 
 #~ msgid "Show global options"
 #~ msgstr "Tampilkan opsi global"
@@ -3023,9 +3061,6 @@ msgstr ""
 #~ msgid "Content"
 #~ msgstr "Konten"
 
-#~ msgid "Waiting for information about selected device"
-#~ msgstr "Menunggu informasi tentang perangkat yang dipilih"
-
 #, fuzzy, c-format
 #~ msgid ""
 #~ "The filesystem will be allocated as a new partition at the installation "
@@ -3220,9 +3255,6 @@ msgstr ""
 
 #~ msgid "Hide navigation and other options"
 #~ msgstr "Menyembunyikan navigasi dan opsi lainnya"
-
-#~ msgid "Options"
-#~ msgstr "Opsi"
 
 #~ msgid "Display Language"
 #~ msgstr "Bahasa Tampilan"

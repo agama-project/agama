@@ -85,7 +85,7 @@ type ShrinkingInfo = {
 };
 
 type ProposalResult = {
-  settings: ProposalSettings;
+  settings?: ProposalSettings;
   actions: Action[];
 };
 
