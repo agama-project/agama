@@ -28,6 +28,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import React from "react";
+import { fetchConfig, fetchSolvedConfig, setConfig } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import {
   calculate,
@@ -37,7 +38,12 @@ import {
   fetchUsableDevices,
 } from "~/api/storage/proposal";
 import { useInstallerClient } from "~/context/installer";
-import { ProductParams, Volume as APIVolume, ProposalSettingsPatch } from "~/api/storage/types";
+import {
+  config,
+  ProductParams,
+  Volume as APIVolume,
+  ProposalSettingsPatch,
+} from "~/api/storage/types";
 import {
   ProposalSettings,
   ProposalResult,
@@ -47,6 +53,18 @@ import {
 } from "~/types/storage";
 
 import { QueryHookOptions } from "~/types/queries";
+
+const configQuery = {
+  queryKey: ["storage", "config"],
+  queryFn: fetchConfig,
+  staleTime: Infinity,
+};
+
+const solvedConfigQuery = {
+  queryKey: ["storage", "solvedConfig"],
+  queryFn: fetchSolvedConfig,
+  staleTime: Infinity,
+};
 
 const devicesQuery = (scope: "result" | "system") => ({
   queryKey: ["storage", "devices", scope],
@@ -96,6 +114,39 @@ const buildVolume = (
   };
 
   return volume;
+};
+
+/**
+ * Hook that returns the unsolved config.
+ */
+const useConfig = (options?: QueryHookOptions): config.Config => {
+  const query = configQuery;
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func(query);
+  return data;
+};
+
+/**
+ * Hook that returns the solved config.
+ */
+const useSolvedConfig = (options?: QueryHookOptions): config.Config => {
+  const query = solvedConfigQuery;
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func(query);
+  return data;
+};
+
+/**
+ * Hook for setting a new config.
+ */
+const useConfigMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (config: config.Config) => setConfig(config),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
+
+  return useMutation(query);
 };
 
 /**
@@ -280,6 +331,9 @@ const useDeprecatedChanges = () => {
 };
 
 export {
+  useConfig,
+  useSolvedConfig,
+  useConfigMutation,
   useDevices,
   useAvailableDevices,
   useProductParams,

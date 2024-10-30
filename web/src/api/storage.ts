@@ -20,9 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, post } from "~/api/http";
+import { get, post, put } from "~/api/http";
 import { Job } from "~/types/job";
 import { calculate, fetchSettings } from "~/api/storage/proposal";
+import { config } from "~/api/storage/types";
 
 /**
  * Starts the storage probing process.
@@ -31,7 +32,11 @@ import { calculate, fetchSettings } from "~/api/storage/proposal";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const probe = (): Promise<any> => post("/api/storage/probe");
 
-export { probe };
+const fetchConfig = (): Promise<config.Config> => get("/api/storage/config");
+
+const fetchSolvedConfig = (): Promise<config.Config> => get("/api/storage/solved_config");
+
+const setConfig = (config: config.Config) => put("/api/storage/config", config);
 
 /**
  * Returns the list of jobs
@@ -57,4 +62,12 @@ const refresh = async (): Promise<void> => {
   await calculate(settings);
 };
 
-export { fetchStorageJobs, findStorageJob, refresh };
+export {
+  probe,
+  fetchConfig,
+  fetchSolvedConfig,
+  setConfig,
+  fetchStorageJobs,
+  findStorageJob,
+  refresh,
+};
