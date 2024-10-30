@@ -201,9 +201,9 @@ impl<'a> NetworkManagerClient<'a> {
 
             let settings = proxy.get_settings().await?;
 
-            let controller = controller_from_dbus(&settings);
+            let controller = controller_from_dbus(&settings)?;
 
-            if let Some(mut connection) = connection_from_dbus(settings) {
+            if let Ok(mut connection) = connection_from_dbus(settings) {
                 if let Some(controller) = controller {
                     controlled_by.insert(connection.uuid, controller.to_string());
                 }

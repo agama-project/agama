@@ -22,10 +22,10 @@
 //!
 //! Working with hash maps coming from D-Bus is rather tedious and it is even worse when working
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
-use super::model::*;
+use super::{error::NmError, model::*};
 use crate::network::model::*;
 use agama_lib::{
-    dbus::{get_property, NestedHash, OwnedNestedHash},
+    dbus::{get_optional_property, get_property, to_owned_hash, NestedHash, OwnedNestedHash},
     network::types::{BondMode, SSID},
 };
 use cidr::IpInet;
@@ -169,62 +169,62 @@ pub fn connection_to_dbus<'a>(
 /// Converts an OwnedNestedHash from D-Bus into a Connection.
 ///
 /// This functions tries to turn a OwnedHashMap coming from D-Bus into a Connection.
-pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
+pub fn connection_from_dbus(conn: OwnedNestedHash) -> Result<Connection, NmError> {
     let mut connection = base_connection_from_dbus(&conn)?;
 
-    if let Some(bridge_port_config) = bridge_port_config_from_dbus(&conn) {
+    if let Some(bridge_port_config) = bridge_port_config_from_dbus(&conn)? {
         connection.port_config = PortConfig::Bridge(bridge_port_config);
     }
 
-    if let Some(ieee_8021x_config) = ieee_8021x_config_from_dbus(&conn) {
+    if let Some(ieee_8021x_config) = ieee_8021x_config_from_dbus(&conn)? {
         connection.ieee_8021x_config = Some(ieee_8021x_config);
     }
 
-    if let Some(wireless_config) = wireless_config_from_dbus(&conn) {
+    if let Some(wireless_config) = wireless_config_from_dbus(&conn)? {
         connection.config = ConnectionConfig::Wireless(wireless_config);
-        return Some(connection);
+        return Ok(connection);
     }
 
-    if let Some(bond_config) = bond_config_from_dbus(&conn) {
+    if let Some(bond_config) = bond_config_from_dbus(&conn)? {
         connection.config = ConnectionConfig::Bond(bond_config);
-        return Some(connection);
+        return Ok(connection);
     }
 
-    if let Some(vlan_config) = vlan_config_from_dbus(&conn) {
+    if let Some(vlan_config) = vlan_config_from_dbus(&conn)? {
         connection.config = ConnectionConfig::Vlan(vlan_config);
-        return Some(connection);
+        return Ok(connection);
     }
 
-    if let Some(bridge_config) = bridge_config_from_dbus(&conn) {
+    if let Some(bridge_config) = bridge_config_from_dbus(&conn)? {
         connection.config = ConnectionConfig::Bridge(bridge_config);
-        return Some(connection);
+        return Ok(connection);
     }
 
-    if let Some(infiniband_config) = infiniband_config_from_dbus(&conn) {
+    if let Some(infiniband_config) = infiniband_config_from_dbus(&conn)? {
         connection.config = ConnectionConfig::Infiniband(infiniband_config);
-        return Some(connection);
+        return Ok(connection);
     }
 
-    if let Some(tun_config) = tun_config_from_dbus(&conn) {
+    if let Some(tun_config) = tun_config_from_dbus(&conn)? {
         connection.config = ConnectionConfig::Tun(tun_config);
-        return Some(connection);
+        return Ok(connection);
     }
 
     if conn.contains_key(DUMMY_KEY) {
         connection.config = ConnectionConfig::Dummy;
-        return Some(connection);
+        return Ok(connection);
     };
 
     if conn.contains_key(LOOPBACK_KEY) {
         connection.config = ConnectionConfig::Loopback;
-        return Some(connection);
+        return Ok(connection);
     };
 
     if conn.contains_key(ETHERNET_KEY) {
-        return Some(connection);
+        return Ok(connection);
     };
 
-    None
+    Err(NmError::UnsupportedConnectionType(connection.id))
 }
 
 /// Merges a NestedHash and an OwnedNestedHash connections.
@@ -294,9 +294,11 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
 }
 
 /// Ancillary function to get the controller for a given interface.
-pub fn controller_from_dbus(conn: &OwnedNestedHash) -> Option<String> {
-    let connection = conn.get("connection")?;
-    get_property(&connection, "master").ok()
+pub fn controller_from_dbus(conn: &OwnedNestedHash) -> Result<Option<String>, zvariant::Error> {
+    let Some(connection) = conn.get("connection") else {
+        return Ok(None);
+    };
+    get_optional_property(connection, "master")
 }
 
 fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value> {
@@ -329,10 +331,11 @@ fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
         ("method", ip_config.method4.to_string().into()),
     ]);
 
-    if let Some(routes4) = &ip_config.routes4 {
+    if !ip_config.routes4.is_empty() {
         ipv4_dbus.insert(
             "route-data",
-            routes4
+            ip_config
+                .routes4
                 .iter()
                 .map(|route| route.into())
                 .collect::<Vec<HashMap<&str, Value>>>()
@@ -376,10 +379,11 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
         ("method", ip_config.method6.to_string().into()),
     ]);
 
-    if let Some(routes6) = &ip_config.routes6 {
+    if !ip_config.routes6.is_empty() {
         ipv6_dbus.insert(
             "route-data",
-            routes6
+            ip_config
+                .routes6
                 .iter()
                 .map(|route| route.into())
                 .collect::<Vec<HashMap<&str, Value>>>()
@@ -501,18 +505,20 @@ fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value
     hash
 }
 
-fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Option<BridgeConfig> {
-    let bridge = conn.get(BRIDGE_KEY)?;
+fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BridgeConfig>, NmError> {
+    let Some(bridge) = conn.get(BRIDGE_KEY) else {
+        return Ok(None);
+    };
 
-    Some(BridgeConfig {
-        stp: get_property(&bridge, "stp").ok()?,
-        priority: get_property(&bridge, "priority").ok(),
-        forward_delay: get_property(&bridge, "forward-delay").ok(),
-        hello_time: get_property(&bridge, "hello-time").ok(),
-        max_age: get_property(&bridge, "max-age").ok(),
-        ageing_time: get_property(&bridge, "ageing-time").ok(),
+    Ok(Some(BridgeConfig {
+        stp: get_property(bridge, "stp")?,
+        priority: get_optional_property(bridge, "priority")?,
+        forward_delay: get_optional_property(bridge, "forward-delay")?,
+        hello_time: get_optional_property(bridge, "hello-time")?,
+        max_age: get_optional_property(bridge, "max-age")?,
+        ageing_time: get_optional_property(bridge, "ageing-time")?,
         ..Default::default()
-    })
+    }))
 }
 
 fn bridge_port_config_to_dbus(bridge_port: &BridgePortConfig) -> HashMap<&str, zvariant::Value> {
@@ -528,14 +534,18 @@ fn bridge_port_config_to_dbus(bridge_port: &BridgePortConfig) -> HashMap<&str, z
     hash
 }
 
-fn bridge_port_config_from_dbus(conn: &OwnedNestedHash) -> Option<BridgePortConfig> {
-    let bridge_port = conn.get(BRIDGE_PORT_KEY)?;
+fn bridge_port_config_from_dbus(
+    conn: &OwnedNestedHash,
+) -> Result<Option<BridgePortConfig>, NmError> {
+    let Some(bridge_port) = conn.get(BRIDGE_PORT_KEY) else {
+        return Ok(None);
+    };
 
-    Some(BridgePortConfig {
-        priority: get_property(&bridge_port, "priority").ok(),
-        path_cost: get_property(&bridge_port, "path_cost").ok(),
+    Ok(Some(BridgePortConfig {
+        priority: get_optional_property(bridge_port, "priority")?,
+        path_cost: get_optional_property(bridge_port, "path_cost")?,
         ..Default::default()
-    })
+    }))
 }
 
 fn infiniband_config_to_dbus(config: &InfinibandConfig) -> HashMap<&str, zvariant::Value> {
@@ -554,20 +564,24 @@ fn infiniband_config_to_dbus(config: &InfinibandConfig) -> HashMap<&str, zvarian
     infiniband_config
 }
 
-fn infiniband_config_from_dbus(conn: &OwnedNestedHash) -> Option<InfinibandConfig> {
-    let infiniband = conn.get(INFINIBAND_KEY)?;
+fn infiniband_config_from_dbus(
+    conn: &OwnedNestedHash,
+) -> Result<Option<InfinibandConfig>, NmError> {
+    let Some(infiniband) = conn.get(INFINIBAND_KEY) else {
+        return Ok(None);
+    };
 
     let mut config = InfinibandConfig {
-        p_key: get_property(&infiniband, "p-key").ok(),
-        parent: get_property(&infiniband, "parent").ok(),
+        p_key: get_optional_property(infiniband, "p-key")?,
+        parent: get_optional_property(infiniband, "parent")?,
         ..Default::default()
     };
 
-    if let Ok(transport_mode) = get_property::<String>(&infiniband, "transport-mode") {
-        config.transport_mode = InfinibandTransportMode::from_str(transport_mode.as_str()).ok()?;
+    if let Some(transport_mode) = get_optional_property::<String>(infiniband, "transport-mode")? {
+        config.transport_mode = InfinibandTransportMode::from_str(transport_mode.as_str())?;
     }
 
-    Some(config)
+    Ok(Some(config))
 }
 
 fn tun_config_to_dbus(config: &TunConfig) -> HashMap<&str, zvariant::Value> {
@@ -585,20 +599,22 @@ fn tun_config_to_dbus(config: &TunConfig) -> HashMap<&str, zvariant::Value> {
     tun_config
 }
 
-fn tun_config_from_dbus(conn: &OwnedNestedHash) -> Option<TunConfig> {
-    let tun = conn.get(TUN_KEY)?;
+fn tun_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<TunConfig>, NmError> {
+    let Some(tun) = conn.get(TUN_KEY) else {
+        return Ok(None);
+    };
 
-    let mode = match get_property::<u32>(&tun, "mode").ok() {
-        Some(2) => TunMode::Tap,
+    let mode = match get_property::<u32>(tun, "mode") {
+        Ok(2) => TunMode::Tap,
         _ => TunMode::Tun,
     };
 
-    Some(TunConfig {
+    Ok(Some(TunConfig {
         mode,
-        group: get_property(&tun, "group").ok(),
-        owner: get_property(&tun, "owner").ok(),
+        group: get_optional_property(tun, "group")?,
+        owner: get_optional_property(tun, "owner")?,
         ..Default::default()
-    })
+    }))
 }
 
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
@@ -621,16 +637,18 @@ fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::V
     ])
 }
 
-fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<Connection> {
-    let connection = conn.get("connection")?;
+fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Result<Connection, NmError> {
+    let connection = conn
+        .get("connection")
+        .ok_or(NmError::MissingConnectionSection)?;
 
-    let uuid: String = get_property(&connection, "uuid").ok()?;
-    let uuid = Uuid::from_str(&uuid).ok()?;
+    let uuid: String = get_property(connection, "uuid")?;
+    let uuid = Uuid::from_str(&uuid)?;
     let mut base_connection = Connection {
-        id: get_property(&connection, "id").ok()?,
+        id: get_property(connection, "id")?,
         uuid,
-        interface: get_property(&connection, "interface-name").ok(),
-        firewall_zone: get_property(&connection, "firewall-zone").ok(),
+        interface: get_optional_property(connection, "interface-name")?,
+        firewall_zone: get_optional_property(connection, "firewall-zone")?,
         ..Default::default()
     };
 
@@ -648,78 +666,72 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<Connection> {
 
     base_connection.ip_config = ip_config_from_dbus(conn)?;
 
-    Some(base_connection)
+    Ok(base_connection)
 }
 
-fn mac_address_from_dbus(config: &HashMap<String, OwnedValue>) -> Option<MacAddress> {
+fn mac_address_from_dbus(config: &HashMap<String, OwnedValue>) -> Result<MacAddress, NmError> {
     let Ok(mac_address) = get_property::<String>(config, "assigned-mac-address") else {
-        return Some(MacAddress::Unset);
+        return Ok(MacAddress::Unset);
     };
 
-    match MacAddress::from_str(mac_address.as_str()) {
-        Ok(mac) => Some(mac),
-        Err(e) => {
-            log::warn!("Couldn't parse MAC: {}", e);
-            None
-        }
-    }
+    Ok(MacAddress::from_str(mac_address.as_str())?)
 }
 
 fn mtu_from_dbus(config: &HashMap<String, OwnedValue>) -> u32 {
-    get_property(&config, "mtu").unwrap_or(0)
+    get_property(config, "mtu").unwrap_or(0)
 }
 
 fn match_config_from_dbus(
     match_config: &HashMap<String, zvariant::OwnedValue>,
-) -> Option<MatchConfig> {
+) -> Result<MatchConfig, NmError> {
     let mut match_conf = MatchConfig::default();
 
-    if let Ok(drivers) = get_property::<zbus::zvariant::Array>(match_config, "driver") {
+    if let Some(drivers) = get_optional_property::<zbus::zvariant::Array>(match_config, "driver")? {
         for driver in drivers.iter() {
-            let driver: String = driver.try_into().ok()?;
+            let driver: String = driver.try_into()?;
             match_conf.driver.push(driver);
         }
     }
 
-    if let Ok(interface_names) =
-        get_property::<zbus::zvariant::Array>(match_config, "interface-name")
+    if let Some(interface_names) =
+        get_optional_property::<zbus::zvariant::Array>(match_config, "interface-name")?
     {
         for name in interface_names.iter() {
-            let name: String = name.try_into().ok()?;
+            let name: String = name.try_into()?;
             match_conf.interface.push(name);
         }
     }
 
-    if let Ok(paths) = get_property::<zbus::zvariant::Array>(match_config, "path") {
+    if let Some(paths) = get_optional_property::<zbus::zvariant::Array>(match_config, "path")? {
         for path in paths.iter() {
-            let path: String = path.try_into().ok()?;
+            let path: String = path.try_into()?;
             match_conf.path.push(path);
         }
     }
 
-    if let Ok(kernel_options) =
-        get_property::<zbus::zvariant::Array>(match_config, "kernel-command-line")
+    if let Some(kernel_options) =
+        get_optional_property::<zbus::zvariant::Array>(match_config, "kernel-command-line")?
     {
         for option in kernel_options.iter() {
-            let option: String = option.try_into().ok()?;
+            let option: String = option.try_into()?;
             match_conf.kernel.push(option);
         }
     }
 
-    Some(match_conf)
+    Ok(match_conf)
 }
 
-fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
+fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
     let mut ip_config = IpConfig::default();
 
     if let Some(ipv4) = conn.get("ipv4") {
-        let method4: String = get_property(ipv4, "method").ok()?;
-        ip_config.method4 = NmMethod(method4).try_into().ok()?;
+        let method4: String = get_property(ipv4, "method")?;
+        ip_config.method4 = NmMethod(method4).try_into()?;
 
-        let address_data = ipv4.get("address-data")?;
-        let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
-
-        ip_config.addresses.append(&mut addresses);
+        if let Some(address_data) = ipv4.get("address-data") {
+            let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
+            ip_config.addresses.append(&mut addresses);
+        }
 
         if let Some(dns_data) = ipv4.get("dns-data") {
             let mut servers = nameservers_from_dbus(dns_data)?;
@@ -738,27 +750,26 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
             }
         }
 
-        if let Ok(ignore_auto_dns) = get_property(&ipv4, "ignore-auto-dns") {
+        if let Some(ignore_auto_dns) = get_optional_property::<bool>(ipv4, "ignore-auto-dns")? {
             ip_config.ignore_auto_dns = ignore_auto_dns;
         }
-
         if let Some(route_data) = ipv4.get("route-data") {
-            ip_config.routes4 = routes_from_dbus(route_data);
+            ip_config.routes4 = routes_from_dbus(route_data)?;
         }
 
-        if let Ok(gateway) = get_property::<String>(&ipv4, "gateway") {
+        if let Ok(gateway) = get_property::<String>(ipv4, "gateway") {
             ip_config.gateway4 = gateway.parse().ok();
         }
     }
 
     if let Some(ipv6) = conn.get("ipv6") {
-        let method6: String = get_property(ipv6, "method").ok()?;
-        ip_config.method6 = NmMethod(method6).try_into().ok()?;
+        let method6: String = get_property(ipv6, "method")?;
+        ip_config.method6 = NmMethod(method6).try_into()?;
 
-        let address_data = ipv6.get("address-data")?;
-        let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
-
-        ip_config.addresses.append(&mut addresses);
+        if let Some(address_data) = ipv6.get("address-data") {
+            let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
+            ip_config.addresses.append(&mut addresses);
+        }
 
         if let Some(dns_data) = ipv6.get("dns-data") {
             let mut servers = nameservers_from_dbus(dns_data)?;
@@ -777,121 +788,123 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
             }
         }
 
-        if let Ok(ignore_auto_dns) = get_property(&ipv6, "ignore-auto-dns") {
+        if let Some(ignore_auto_dns) = get_optional_property::<bool>(ipv6, "ignore-auto-dns")? {
             ip_config.ignore_auto_dns = ignore_auto_dns;
         }
 
         if let Some(route_data) = ipv6.get("route-data") {
-            ip_config.routes6 = routes_from_dbus(route_data);
+            ip_config.routes6 = routes_from_dbus(route_data)?;
         }
 
-        if let Ok(gateway) = get_property::<String>(&ipv6, "gateway") {
+        if let Ok(gateway) = get_property::<String>(ipv6, "gateway") {
             ip_config.gateway6 = gateway.parse().ok();
         }
     }
 
-    Some(ip_config)
+    Ok(ip_config)
 }
 
-fn addresses_with_prefix_from_dbus(address_data: &OwnedValue) -> Option<Vec<IpInet>> {
-    let address_data = address_data.downcast_ref::<zbus::zvariant::Array>().ok()?;
+fn addresses_with_prefix_from_dbus(address_data: &OwnedValue) -> Result<Vec<IpInet>, NmError> {
+    let address_data = address_data.downcast_ref::<zbus::zvariant::Array>()?;
     let mut addresses: Vec<IpInet> = vec![];
     for addr in address_data.iter() {
-        let dict = addr.downcast_ref::<zvariant::Dict>().ok()?;
-        let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict).ok()?;
-        let addr_str: String = map.get("address")?.downcast_ref().ok()?;
-        let prefix: u32 = map.get("prefix")?.downcast_ref().ok()?;
-        let address = IpInet::new(addr_str.parse().unwrap(), prefix as u8).ok()?;
+        let dict = addr.downcast_ref::<zvariant::Dict>()?;
+        let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict)?;
+        let map = to_owned_hash(&map)?;
+        let addr_str: String = get_property(&map, "address")?;
+        let prefix: u32 = get_property(&map, "prefix")?;
+        // TODO: properly handle the errors
+        let address = IpInet::new(addr_str.parse()?, prefix as u8)?;
         addresses.push(address)
     }
-    Some(addresses)
+    Ok(addresses)
 }
 
-fn routes_from_dbus(route_data: &OwnedValue) -> Option<Vec<IpRoute>> {
-    let route_data = route_data.downcast_ref::<zbus::zvariant::Array>().ok()?;
+fn routes_from_dbus(route_data: &OwnedValue) -> Result<Vec<IpRoute>, NmError> {
+    let route_data = route_data.downcast_ref::<zbus::zvariant::Array>()?;
     let mut routes: Vec<IpRoute> = vec![];
     for route in route_data.iter() {
-        let route_dict = route.downcast_ref::<zvariant::Dict>().ok()?;
-        let route_map = <HashMap<String, zvariant::Value<'_>>>::try_from(route_dict).ok()?;
-        let dest_str: String = route_map.get("dest")?.downcast_ref().ok()?;
-        let prefix: u32 = route_map.get("prefix")?.downcast_ref().ok()?;
-        let destination = IpInet::new(dest_str.parse().unwrap(), prefix as u8).ok()?;
+        let dict = route.downcast_ref::<zvariant::Dict>()?;
+        let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict)?;
+        let map = to_owned_hash(&map)?;
+        let dest_str: String = get_property(&map, "dest")?;
+        let prefix: u32 = get_property(&map, "prefix")?;
+        let destination = IpInet::new(dest_str.parse()?, prefix as u8)?;
         let mut new_route = IpRoute {
             destination,
             next_hop: None,
             metric: None,
         };
-        if let Some(next_hop) = route_map.get("next-hop") {
-            let next_hop_str: &str = next_hop.downcast_ref().ok()?;
-            new_route.next_hop = Some(IpAddr::from_str(next_hop_str).unwrap());
+        if let Some(next_hop) = get_optional_property::<String>(&map, "next-hop")? {
+            new_route.next_hop = Some(IpAddr::from_str(next_hop.as_str()).unwrap());
         }
-        if let Some(metric) = route_map.get("metric") {
-            let metric: u32 = metric.downcast_ref().ok()?;
-            new_route.metric = Some(metric);
-        }
+        new_route.metric = get_optional_property(&map, "metric")?;
         routes.push(new_route)
     }
-    Some(routes)
+    Ok(routes)
 }
 
-fn nameservers_from_dbus(dns_data: &OwnedValue) -> Option<Vec<IpAddr>> {
-    let dns_data = dns_data.downcast_ref::<zbus::zvariant::Array>().ok()?;
+fn nameservers_from_dbus(dns_data: &OwnedValue) -> Result<Vec<IpAddr>, NmError> {
+    let dns_data = dns_data.downcast_ref::<zbus::zvariant::Array>()?;
     let mut servers: Vec<IpAddr> = vec![];
     for server in dns_data.iter() {
-        let server: &str = server.downcast_ref().ok()?;
+        let server: String = server.downcast_ref()?;
         servers.push(server.parse().unwrap());
     }
-    Some(servers)
+    Ok(servers)
 }
 
-fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
-    let wireless = conn.get(WIRELESS_KEY)?;
+fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<WirelessConfig>, NmError> {
+    let Some(wireless) = conn.get(WIRELESS_KEY) else {
+        return Ok(None);
+    };
 
-    let mode: String = get_property(&wireless, "mode").ok()?;
-    let ssid: zvariant::Array = get_property(&wireless, "ssid").ok()?;
+    let mode: String = get_property(wireless, "mode")?;
+    let ssid: zvariant::Array = get_property(wireless, "ssid")?;
     let ssid: Vec<u8> = ssid
         .iter()
         .map(|u| u.downcast_ref::<u8>().unwrap())
         .collect();
     let mut wireless_config = WirelessConfig {
-        mode: NmWirelessMode(mode).try_into().ok()?,
+        mode: NmWirelessMode(mode).try_into()?,
         ssid: SSID(ssid),
         ..Default::default()
     };
 
-    if let Ok(band) = get_property::<String>(&wireless, "band") {
+    if let Ok(band) = get_property::<String>(wireless, "band") {
         wireless_config.band = WirelessBand::try_from(band.as_str()).ok();
     }
-    wireless_config.channel = get_property(&wireless, "channel").ok()?;
+    wireless_config.channel = get_property(wireless, "channel")?;
 
-    if let Ok(bssid) = get_property::<zvariant::Array>(&wireless, "bssid") {
+    if let Ok(bssid) = get_property::<zvariant::Array>(wireless, "bssid") {
         let bssid: Vec<u8> = bssid
             .iter()
             .map(|u| u.downcast_ref::<u8>().unwrap())
             .collect();
+        // FIMXE: properly handle the failing case
         wireless_config.bssid = Some(MacAddr6::new(
-            *bssid.first()?,
-            *bssid.get(1)?,
-            *bssid.get(2)?,
-            *bssid.get(3)?,
-            *bssid.get(4)?,
-            *bssid.get(5)?,
+            *bssid.first().unwrap(),
+            *bssid.get(1).unwrap(),
+            *bssid.get(2).unwrap(),
+            *bssid.get(3).unwrap(),
+            *bssid.get(4).unwrap(),
+            *bssid.get(5).unwrap(),
         ));
     }
 
-    wireless_config.hidden = get_property(&wireless, "hidden").ok()?;
+    wireless_config.hidden = get_property(wireless, "hidden")?;
 
     if let Some(security) = conn.get(WIRELESS_SECURITY_KEY) {
-        let key_mgmt: String = get_property(&security, "key-mgmt").ok()?;
-        wireless_config.security = NmKeyManagement(key_mgmt).try_into().ok()?;
-        wireless_config.password = get_property(&security, "psk").ok();
+        let key_mgmt: String = get_property(security, "key-mgmt")?;
+        wireless_config.security = NmKeyManagement(key_mgmt).try_into()?;
+        wireless_config.password = get_optional_property(security, "psk")?;
 
         match wireless_config.security {
             SecurityProtocol::WEP => {
-                let wep_key_type = get_property::<u32>(&security, "wep-key-type").ok()?;
+                let wep_key_type = get_property::<u32>(security, "wep-key-type")?;
                 let wep_key_type = WEPKeyType::try_from(wep_key_type).unwrap_or_default();
 
-                let auth_alg = get_property::<String>(&security, "auth-alg").ok()?;
+                let auth_alg = get_property::<String>(security, "auth-alg")?;
                 let auth_alg = WEPAuthAlg::try_from(auth_alg.as_str()).unwrap_or_default();
 
                 let wep_key_index = security
@@ -908,34 +921,31 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
             _ => wireless_config.wep_security = None,
         }
         if let Some(group_algorithms) = security.get("group") {
-            let group_algorithms: &zvariant::Array = group_algorithms.downcast_ref().ok()?;
+            let group_algorithms: &zvariant::Array = group_algorithms.downcast_ref()?;
             let group_algorithms: Vec<String> = group_algorithms
                 .iter()
                 .flat_map(|x| x.downcast_ref::<String>().ok())
                 .collect();
-            let group_algorithms: Vec<GroupAlgorithm> = group_algorithms
+            let group_algorithms = group_algorithms
                 .iter()
                 .map(|x| GroupAlgorithm::from_str(x))
-                .collect::<Result<Vec<GroupAlgorithm>, InvalidGroupAlgorithm>>()
-                .ok()?;
+                .collect::<Result<Vec<GroupAlgorithm>, InvalidGroupAlgorithm>>()?;
             wireless_config.group_algorithms = group_algorithms
         }
         if let Some(pairwise_algorithms) = security.get("pairwise") {
-            let pairwise_algorithms: &zvariant::Array = pairwise_algorithms.downcast_ref().ok()?;
+            let pairwise_algorithms: &zvariant::Array = pairwise_algorithms.downcast_ref()?;
             let pairwise_algorithms: Vec<String> = pairwise_algorithms
                 .iter()
                 .flat_map(|x| x.downcast_ref::<String>().ok())
                 .collect();
-            let pairwise_algorithms: Vec<PairwiseAlgorithm> = pairwise_algorithms
+            let pairwise_algorithms = pairwise_algorithms
                 .iter()
                 .map(|x| PairwiseAlgorithm::from_str(x))
-                .collect::<Result<Vec<PairwiseAlgorithm>, InvalidPairwiseAlgorithm>>()
-                .ok()?;
+                .collect::<Result<Vec<PairwiseAlgorithm>, InvalidPairwiseAlgorithm>>()?;
             wireless_config.pairwise_algorithms = pairwise_algorithms
         }
         if let Some(wpa_protocol_versions) = security.get("proto") {
-            let wpa_protocol_versions: &zvariant::Array =
-                wpa_protocol_versions.downcast_ref().ok()?;
+            let wpa_protocol_versions: &zvariant::Array = wpa_protocol_versions.downcast_ref()?;
             let wpa_protocol_versions: Vec<String> = wpa_protocol_versions
                 .iter()
                 .flat_map(|x| x.downcast_ref::<String>().ok())
@@ -943,21 +953,22 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
             let wpa_protocol_versions: Vec<WPAProtocolVersion> = wpa_protocol_versions
                 .iter()
                 .map(|x| WPAProtocolVersion::from_str(x))
-                .collect::<Result<Vec<WPAProtocolVersion>, InvalidWPAProtocolVersion>>()
-                .ok()?;
+                .collect::<Result<Vec<WPAProtocolVersion>, InvalidWPAProtocolVersion>>()?;
             wireless_config.wpa_protocol_versions = wpa_protocol_versions
         }
-        wireless_config.pmf = get_property(&security, "pmf").ok()?;
+        wireless_config.pmf = get_property(security, "pmf")?;
     }
 
-    Some(wireless_config)
+    Ok(Some(wireless_config))
 }
 
-fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
-    let bond = conn.get(BOND_KEY)?;
+fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BondConfig>, NmError> {
+    let Some(bond) = conn.get(BOND_KEY) else {
+        return Ok(None);
+    };
 
-    let dict = get_property::<zvariant::Dict>(&bond, "options").ok()?;
-    let mut options = <HashMap<String, String>>::try_from(dict).unwrap();
+    let dict = get_property::<zvariant::Dict>(bond, "options")?;
+    let mut options = <HashMap<String, String>>::try_from(dict)?;
     let mode = options.remove("mode");
 
     let mut bond = BondConfig {
@@ -969,7 +980,7 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
         bond.mode = BondMode::try_from(mode.as_str()).unwrap_or_default();
     }
 
-    Some(bond)
+    Ok(Some(bond))
 }
 
 fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash {
@@ -982,19 +993,21 @@ fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash {
     NestedHash::from([("vlan", vlan)])
 }
 
-fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Option<VlanConfig> {
-    let vlan = conn.get(VLAN_KEY)?;
+fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<VlanConfig>, NmError> {
+    let Some(vlan) = conn.get(VLAN_KEY) else {
+        return Ok(None);
+    };
 
-    let protocol = match get_property::<String>(&vlan, "protocol") {
+    let protocol = match get_property::<String>(vlan, "protocol") {
         Ok(protocol) => VlanProtocol::from_str(protocol.as_str()).unwrap_or_default(),
         _ => Default::default(),
     };
 
-    Some(VlanConfig {
-        id: get_property(vlan, "id").ok()?,
-        parent: get_property(vlan, "parent").ok()?,
+    Ok(Some(VlanConfig {
+        id: get_property(vlan, "id")?,
+        parent: get_property(vlan, "parent")?,
         protocol,
-    })
+    }))
 }
 
 fn ieee_8021x_config_to_dbus(config: &IEEE8021XConfig) -> HashMap<&str, zvariant::Value> {
@@ -1059,12 +1072,14 @@ fn format_nm_path(path: &String) -> String {
     format!("file://{path}\0")
 }
 
-fn ieee_8021x_config_from_dbus(conn: &OwnedNestedHash) -> Option<IEEE8021XConfig> {
-    let ieee_8021x = conn.get(IEEE_8021X_KEY)?;
+fn ieee_8021x_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<IEEE8021XConfig>, NmError> {
+    let Some(ieee_8021x) = conn.get(IEEE_8021X_KEY) else {
+        return Ok(None);
+    };
 
     let mut ieee_8021x_config = IEEE8021XConfig::default();
 
-    if let Ok(eap) = get_property::<zvariant::Array>(ieee_8021x, "eap") {
+    if let Some(eap) = get_optional_property::<zvariant::Array>(ieee_8021x, "eap")? {
         let eap = eap
             .iter()
             .filter_map(|x| x.downcast_ref::<String>().ok())
@@ -1073,25 +1088,24 @@ fn ieee_8021x_config_from_dbus(conn: &OwnedNestedHash) -> Option<IEEE8021XConfig
         let eap: Vec<EAPMethod> = eap
             .iter()
             .map(|x| EAPMethod::from_str(x))
-            .collect::<Result<Vec<EAPMethod>, InvalidEAPMethod>>()
-            .ok()?;
+            .collect::<Result<Vec<EAPMethod>, InvalidEAPMethod>>()?;
 
         ieee_8021x_config.eap = eap;
     }
 
     if let Ok(phase2_auth) = get_property::<String>(ieee_8021x, "phase2-auth") {
-        ieee_8021x_config.phase2_auth =
-            Some(Phase2AuthMethod::from_str(phase2_auth.as_str()).ok()?);
+        let method = Phase2AuthMethod::from_str(phase2_auth.as_str())?;
+        ieee_8021x_config.phase2_auth = Some(method);
     }
 
-    ieee_8021x_config.identity = get_property::<String>(ieee_8021x, "identity").ok();
-    ieee_8021x_config.password = get_property::<String>(ieee_8021x, "password").ok();
+    ieee_8021x_config.identity = get_optional_property::<String>(ieee_8021x, "identity")?;
+    ieee_8021x_config.password = get_optional_property::<String>(ieee_8021x, "password")?;
 
-    if let Ok(ca_cert) = get_property::<zvariant::Array>(&ieee_8021x, "ca-cert") {
+    if let Ok(ca_cert) = get_property::<zvariant::Array>(ieee_8021x, "ca-cert") {
         let ca_cert = ca_cert
             .iter()
-            .map(|u| u.downcast_ref::<u8>().ok())
-            .collect::<Option<Vec<u8>>>()?
+            .map(|u| u.downcast_ref::<u8>())
+            .collect::<Result<Vec<u8>, zvariant::Error>>()?
             .iter()
             .map(|x| *x as char)
             .collect();
@@ -1099,40 +1113,42 @@ fn ieee_8021x_config_from_dbus(conn: &OwnedNestedHash) -> Option<IEEE8021XConfig
     }
 
     ieee_8021x_config.ca_cert_password =
-        get_property::<String>(ieee_8021x, "ca-cert-password").ok();
+        get_optional_property::<String>(ieee_8021x, "ca-cert-password")?;
 
     if let Ok(client_cert) = get_property::<zvariant::Array>(ieee_8021x, "client-cert") {
         let client_cert: String = client_cert
             .iter()
-            .map(|u| u.downcast_ref::<u8>().ok())
-            .collect::<Option<Vec<u8>>>()?
+            .map(|u| u.downcast_ref::<u8>())
+            .collect::<Result<Vec<u8>, zvariant::Error>>()?
             .iter()
             .map(|x| *x as char)
             .collect();
         ieee_8021x_config.client_cert = strip_nm_file_path(client_cert);
     }
 
-    ieee_8021x_config.client_cert_password = get_property(ieee_8021x, "client-cert-password").ok();
+    ieee_8021x_config.client_cert_password =
+        get_optional_property(ieee_8021x, "client-cert-password")?;
 
     if let Ok(private_key) = get_property::<zvariant::Array>(ieee_8021x, "private-key") {
         let private_key: String = private_key
             .iter()
-            .map(|u| u.downcast_ref::<u8>().ok())
-            .collect::<Option<Vec<u8>>>()?
+            .map(|u| u.downcast_ref::<u8>())
+            .collect::<Result<Vec<u8>, zvariant::Error>>()?
             .iter()
             .map(|x| *x as char)
             .collect();
         ieee_8021x_config.private_key = strip_nm_file_path(private_key);
     }
 
-    ieee_8021x_config.private_key_password = get_property(ieee_8021x, "private-key-password").ok();
-    ieee_8021x_config.anonymous_identity = get_property(ieee_8021x, "anonymous-identity").ok();
-    ieee_8021x_config.peap_version = get_property(ieee_8021x, "phase1-peapver").ok();
+    ieee_8021x_config.private_key_password =
+        get_optional_property(ieee_8021x, "private-key-password")?;
+    ieee_8021x_config.anonymous_identity = get_optional_property(ieee_8021x, "anonymous-identity")?;
+    ieee_8021x_config.peap_version = get_optional_property(ieee_8021x, "phase1-peapver")?;
     if let Ok(peap_label) = get_property::<String>(ieee_8021x, "phase1-peaplabel") {
         ieee_8021x_config.peap_label = peap_label == "1";
     }
 
-    Some(ieee_8021x_config)
+    Ok(Some(ieee_8021x_config))
 }
 
 // Strips NetworkManager path from "file://{path}\0" so only path remains.
@@ -1168,7 +1184,10 @@ mod test {
     };
     use crate::network::{
         model::*,
-        nm::dbus::{BOND_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
+        nm::{
+            dbus::{BOND_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
+            error::NmError,
+        },
     };
     use agama_lib::network::types::{BondMode, SSID};
     use cidr::IpInet;
@@ -1309,19 +1328,19 @@ mod test {
         assert_eq!(ip_config.method6, Ipv6Method::Auto);
         assert_eq!(
             ip_config.routes4,
-            Some(vec![IpRoute {
+            vec![IpRoute {
                 destination: IpInet::new("192.168.0.0".parse().unwrap(), 24_u8).unwrap(),
                 next_hop: Some(IpAddr::from_str("192.168.0.1").unwrap()),
                 metric: Some(100)
-            }])
+            }]
         );
         assert_eq!(
             ip_config.routes6,
-            Some(vec![IpRoute {
+            vec![IpRoute {
                 destination: IpInet::new("2001:db8::".parse().unwrap(), 64_u8).unwrap(),
                 next_hop: Some(IpAddr::from_str("2001:db8::1").unwrap()),
                 metric: Some(100)
-            }])
+            }]
         );
         Ok(())
     }
@@ -1329,8 +1348,8 @@ mod test {
     #[test]
     fn test_connection_from_dbus_missing_connection() {
         let dbus_conn: HashMap<String, HashMap<String, OwnedValue>> = HashMap::new();
-        let connection = connection_from_dbus(dbus_conn);
-        assert_eq!(connection, None);
+        let error = connection_from_dbus(dbus_conn).unwrap_err();
+        assert!(matches!(error, NmError::MissingConnectionSection));
     }
 
     #[test]
@@ -2011,16 +2030,16 @@ mod test {
             addresses,
             gateway4: Some("192.168.0.1".parse().unwrap()),
             gateway6: Some("::ffff:c0a8:1".parse().unwrap()),
-            routes4: Some(vec![IpRoute {
+            routes4: vec![IpRoute {
                 destination: IpInet::new("192.168.0.0".parse().unwrap(), 24_u8).unwrap(),
                 next_hop: Some(IpAddr::from_str("192.168.0.1").unwrap()),
                 metric: Some(100),
-            }]),
-            routes6: Some(vec![IpRoute {
+            }],
+            routes6: vec![IpRoute {
                 destination: IpInet::new("2001:db8::".parse().unwrap(), 64_u8).unwrap(),
                 next_hop: Some(IpAddr::from_str("2001:db8::1").unwrap()),
                 metric: Some(100),
-            }]),
+            }],
             dns_searchlist: vec!["suse.com".to_string(), "suse.de".to_string()],
             ..Default::default()
         };

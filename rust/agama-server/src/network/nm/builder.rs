@@ -165,14 +165,16 @@ impl<'a> DeviceFromProxyBuilder<'a> {
             }
         }
 
-        let ip4_gateway = ip4_proxy.gateway().await?;
-        let ip6_gateway = ip6_proxy.gateway().await?;
-
         let mut ip_config = IpConfig {
             addresses,
             nameservers,
+            routes4,
+            routes6,
             ..Default::default()
         };
+
+        let ip4_gateway = ip4_proxy.gateway().await?;
+        let ip6_gateway = ip6_proxy.gateway().await?;
 
         if !ip4_gateway.is_empty() {
             ip_config.gateway4 = Some(ip4_gateway.parse().unwrap());
@@ -180,14 +182,6 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         if !ip6_gateway.is_empty() {
             ip_config.gateway6 = Some(ip6_gateway.parse().unwrap());
         };
-
-        if !routes4.is_empty() {
-            ip_config.routes4 = Some(routes4);
-        }
-
-        if !routes6.is_empty() {
-            ip_config.routes6 = Some(routes6);
-        }
 
         Ok(ip_config)
     }
