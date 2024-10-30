@@ -1,16 +1,36 @@
-# ---------------
-# FIXME: SPEC header
-# simple approach: most of the files are in the binary gem anyway
+#
+# spec file for package agama-yast
+#
+# Copyright (c) 2024 SUSE LLC
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
+#
+
 
 Name:           agama-yast
-Version:        10.devel155
+Version:        10.devel54
 Release:        0
-BuildRequires:  rubygem(agama-yast)
+%define mod_name agama-yast
+%define mod_full_name %{mod_name}-%{version}
 BuildRequires:  dbus-1-common
 # "msgfmt" tool
 BuildRequires:  gettext-runtime
 Requires:       dbus-1-common
-Url:            https://github.com/openSUSE/agama
+
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildRequires:  ruby-macros >= 5
+
+URL:            https://github.com/openSUSE/agama
+Source:         %{mod_full_name}.gem
 Source1:        po.tar.bz2
 Source2:        install_translations.sh
 Summary:        YaST integration service for Agama - common files
@@ -21,22 +41,22 @@ Group:          Development/Languages/Ruby
 D-Bus service exposing some YaST features that are useful for Agama.
 
 %prep
+%{gem_unpack}
 
 %build
 
 %install
-%define mod_full_name agama-yast-*
-install -D -m 0644 %{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/agama.conf
+BASE=%{mod_full_name}
+install -D -m 0644 ${BASE}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/agama.conf
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
-install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{gem_base}/gems/%{mod_full_name}/share/org.opensuse.Agama*.service
-install -D -m 0644 %{gem_base}/gems/%{mod_full_name}/share/agama.service %{buildroot}%{_unitdir}/agama.service
-install -D -m 0644 %{gem_base}/gems/%{mod_full_name}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
+install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services ${BASE}/share/org.opensuse.Agama*.service
+install -D -m 0644 ${BASE}/share/agama.service %{buildroot}%{_unitdir}/agama.service
+install -D -m 0644 ${BASE}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
 install --directory %{buildroot}/usr/share/agama/conf.d
-install -D -m 0644 %{gem_base}/gems/%{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
+install -D -m 0644 ${BASE}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
 
 # run a script for installing the translations
 sh "%{SOURCE2}" "%{SOURCE1}"
-
 
 %pre
 %service_add_pre agama.service
