@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-22 02:43+0000\n"
+"POT-Creation-Date: 2024-10-29 09:01+0000\n"
 "PO-Revision-Date: 2024-07-26 12:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -20,49 +20,15 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.6.2\n"
 
-#: src/components/core/About.tsx:47
-msgid "About"
-msgstr "Об Agama"
-
-#: src/components/core/About.tsx:65
-msgid "About Agama"
-msgstr "Об Agama"
-
-#: src/components/core/About.tsx:70
-msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It is still under "
-"development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend using a virtual machine to prevent any "
-"possible data loss."
-msgstr ""
-"Agama - это экспериментальный установщик для систем (open)SUSE. Он все еще "
-"находится в стадии разработки, поэтому, пожалуйста, не используйте его в "
-"производственных средах. Если вы хотите попробовать, мы рекомендуем "
-"использовать виртуальную машину, чтобы предотвратить возможную потерю данных."
-
-#. TRANSLATORS: content of the "About" popup (2/2)
-#. %s is replaced by the project URL
-#: src/components/core/About.tsx:82
-#, c-format
-msgid "For more information, please visit the project's repository at %s."
-msgstr ""
-"Для получения дополнительной информации посетите репозиторий проекта по "
-"адресу %s."
-
-#: src/components/core/About.tsx:88 src/components/core/LogsButton.tsx:124
-#: src/components/software/SoftwarePatternsSelection.tsx:206
-msgid "Close"
-msgstr "Закрыть"
-
 #: src/components/core/ChangeProductLink.tsx:39
 msgid "Change product"
 msgstr "Изменить продукт"
 
-#: src/components/core/InstallButton.jsx:33
+#: src/components/core/InstallButton.tsx:36
 msgid "Confirm Installation"
 msgstr "Подтвердить установку"
 
-#: src/components/core/InstallButton.jsx:37
+#: src/components/core/InstallButton.tsx:40
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -70,33 +36,33 @@ msgstr ""
 "Если вы продолжите, разделы на вашем жестком диске будут изменены в "
 "соответствии с заданными настройками установки."
 
-#: src/components/core/InstallButton.jsx:41
+#: src/components/core/InstallButton.tsx:44
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Пожалуйста, отмените и проверьте настройки, если вы не уверены."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:46
+#: src/components/core/InstallButton.tsx:49
 msgid "Continue"
 msgstr "Продолжить"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:50 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
-#: src/components/product/ProductSelectionPage.tsx:123
+#: src/components/product/ProductSelectionPage.tsx:96
 msgid "Cancel"
 msgstr "Отмена"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:85
+#: src/components/core/InstallButton.tsx:83
 msgid "Install"
 msgstr "Установить"
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.tsx:53
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "Запечатывание TPM требует прямой загрузки новой системы."
 
-#: src/components/core/InstallationFinished.jsx:55
+#: src/components/core/InstallationFinished.tsx:58
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -104,15 +70,15 @@ msgstr ""
 "Если для запуска этой программы установки использовался локальный носитель, "
 "извлеките его перед следующей загрузкой."
 
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.tsx:62
 msgid "Hide details"
 msgstr "Скрыть подробности"
 
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.tsx:62
 msgid "See more details"
 msgstr "См. подробнее"
 
-#: src/components/core/InstallationFinished.jsx:64
+#: src/components/core/InstallationFinished.tsx:67
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -124,64 +90,62 @@ msgstr ""
 "первой загрузки новой системы. Чтобы это сработало, машина должна "
 "загрузиться непосредственно в новый загрузчик."
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.tsx:105
 msgid "Congratulations!"
 msgstr "Поздравляем!"
 
-#: src/components/core/InstallationFinished.jsx:116
+#: src/components/core/InstallationFinished.tsx:114
 msgid "The installation on your machine is complete."
 msgstr "Установка на ваш компьютер завершена."
 
-#: src/components/core/InstallationFinished.jsx:119
+#: src/components/core/InstallationFinished.tsx:117
 msgid "At this point you can power off the machine."
 msgstr "На этом этапе вы можете выключить устройство."
 
-#: src/components/core/InstallationFinished.jsx:121
+#: src/components/core/InstallationFinished.tsx:119
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "На этом этапе вы можете перезагрузить устройство, чтобы войти в новую "
 "систему."
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.tsx:128
 msgid "Finish"
 msgstr "Завершить"
 
-#: src/components/core/InstallationFinished.jsx:130
+#: src/components/core/InstallationFinished.tsx:128
 msgid "Reboot"
 msgstr "Перезагрузка"
 
-#: src/components/core/InstallationProgress.jsx:31
-msgid "Installing the system, please wait ..."
+#: src/components/core/InstallationProgress.tsx:42
+#, fuzzy
+msgid "Installing the system, please wait..."
 msgstr "Установка системы, пожалуйста, подождите..."
 
-#: src/components/core/InstallerOptions.jsx:93
-msgid "Show installer options"
-msgstr "Показать параметры установки"
-
-#: src/components/core/InstallerOptions.jsx:96
+#: src/components/core/InstallerOptions.tsx:73
 msgid "Installer options"
 msgstr "Параметры установщика"
 
-#: src/components/core/InstallerOptions.jsx:99
-#: src/components/core/InstallerOptions.jsx:103
-#: src/components/core/InstallerOptions.jsx:104
+#: src/components/core/InstallerOptions.tsx:76
+#: src/components/core/InstallerOptions.tsx:80
+#: src/components/core/InstallerOptions.tsx:81
 #: src/components/l10n/L10nPage.jsx:49
 msgid "Language"
 msgstr "Язык"
 
-#: src/components/core/InstallerOptions.jsx:116
-#: src/components/core/InstallerOptions.jsx:121
+#: src/components/core/InstallerOptions.tsx:93
+#: src/components/core/InstallerOptions.tsx:98
 msgid "Keyboard layout"
 msgstr "Раскладка клавиатуры"
 
-#: src/components/core/InstallerOptions.jsx:130
+#: src/components/core/InstallerOptions.tsx:107
 msgid "Cannot be changed in remote installation"
 msgstr "Нельзя изменить при удаленной установке"
 
-#: src/components/core/InstallerOptions.jsx:143
+#: src/components/core/InstallerOptions.tsx:120
 #: src/components/core/Page.tsx:271
 #: src/components/storage/EncryptionSettingsDialog.tsx:154
 #: src/components/storage/VolumeDialog.tsx:641
+#: src/components/storage/dasd/DASDTable.tsx:105
 msgid "Accept"
 msgstr "Подтвердить"
 
@@ -190,72 +154,57 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr "До начала установки нужно устранить следующие проблемы:"
 
+#: src/components/core/IssuesLink.tsx:50
+msgid ""
+"Installation not possible yet because of issues. Check them at Overview page."
+msgstr ""
+
+#: src/components/core/IssuesLink.tsx:52
+#, fuzzy
+msgid "Installation issues"
+msgstr "Установка завершена"
+
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
 msgstr "Поиск"
 
-#: src/components/core/LoginPage.tsx:60
+#: src/components/core/LoginPage.tsx:50
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
 "Не удалось войти в систему. Пожалуйста, убедитесь, что пароль введен "
 "правильно."
 
-#: src/components/core/LoginPage.tsx:62
+#: src/components/core/LoginPage.tsx:52
 msgid "Could not authenticate against the server, please check it."
 msgstr ""
 "Не удалось пройти аутентификацию на сервере, пожалуйста, проверьте его."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.tsx:70
+#: src/components/core/LoginPage.tsx:60
 #, c-format
 msgid "Log in as %s"
 msgstr "Вход как %s"
 
-#: src/components/core/LoginPage.tsx:76
+#: src/components/core/LoginPage.tsx:66
 msgid "The installer requires [root] user privileges."
 msgstr "Программа установки требует привилегий пользователя [root]."
 
-#: src/components/core/LoginPage.tsx:91
+#: src/components/core/LoginPage.tsx:81
 msgid "Please, provide its password to log in to the system."
 msgstr "Пожалуйста, укажите его пароль для входа в систему."
 
-#: src/components/core/LoginPage.tsx:92
+#: src/components/core/LoginPage.tsx:82
 msgid "Login form"
 msgstr "Форма входа"
 
-#: src/components/core/LoginPage.tsx:98
+#: src/components/core/LoginPage.tsx:88
 msgid "Password input"
 msgstr "Ввод пароля"
 
-#: src/components/core/LoginPage.tsx:107
+#: src/components/core/LoginPage.tsx:97
 msgid "Log in"
 msgstr "Вход"
-
-#: src/components/core/LoginPage.tsx:114
-msgid "More about this"
-msgstr "Подробнее об этом"
-
-#: src/components/core/LogsButton.tsx:99
-msgid "Collecting logs..."
-msgstr "Сбор журналов..."
-
-#: src/components/core/LogsButton.tsx:99 src/components/core/LogsButton.tsx:102
-msgid "Download logs"
-msgstr "Скачать журналы"
-
-#: src/components/core/LogsButton.tsx:109
-msgid ""
-"The browser will run the logs download as soon as they are ready. Please, be "
-"patient."
-msgstr ""
-"Браузер запустит загрузку журналов, как только они будут готовы. Пожалуйста, "
-"подождите."
-
-#: src/components/core/LogsButton.tsx:119
-msgid "Something went wrong while collecting logs. Please, try again."
-msgstr ""
-"Что-то пошло не так при сборе журналов. Пожалуйста, попробуйте ещё раз."
 
 #: src/components/core/Page.tsx:260
 msgid "Back"
@@ -292,15 +241,15 @@ msgstr "Подтвердить"
 msgid "Loading data..."
 msgstr "Загрузка данных..."
 
-#: src/components/core/ProgressReport.jsx:51
+#: src/components/core/ProgressReport.tsx:61
 msgid "Pending"
 msgstr "Ожидается"
 
-#: src/components/core/ProgressReport.jsx:60
+#: src/components/core/ProgressReport.tsx:70
 msgid "In progress"
 msgstr "В процессе"
 
-#: src/components/core/ProgressReport.jsx:75
+#: src/components/core/ProgressReport.tsx:85
 msgid "Finished"
 msgstr "Завершено"
 
@@ -314,15 +263,15 @@ msgstr "Действия"
 msgid "Waiting"
 msgstr "Ожидание"
 
-#: src/components/core/ServerError.tsx:46
+#: src/components/core/ServerError.tsx:44
 msgid "Cannot connect to Agama server"
 msgstr "Не удалось подключиться к серверу Agama"
 
-#: src/components/core/ServerError.tsx:50
+#: src/components/core/ServerError.tsx:48
 msgid "Please, check whether it is running."
 msgstr "Пожалуйста, проверьте, запущен ли он."
 
-#: src/components/core/ServerError.tsx:56
+#: src/components/core/ServerError.tsx:54
 msgid "Reload"
 msgstr "Обновить"
 
@@ -342,8 +291,8 @@ msgstr "Выбор клавиатуры"
 #: src/components/l10n/L10nPage.jsx:53 src/components/l10n/L10nPage.jsx:64
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/l10n/LocaleSelection.tsx:93
-#: src/components/l10n/TimezoneSelection.tsx:131
-#: src/components/product/ProductSelectionPage.tsx:129
+#: src/components/l10n/TimezoneSelection.tsx:138
+#: src/components/product/ProductSelectionPage.tsx:145
 #: src/components/software/SoftwarePatternsSelection.tsx:167
 msgid "Select"
 msgstr "Выбор"
@@ -361,7 +310,7 @@ msgstr "Ещё не выбрано"
 #: src/components/l10n/L10nPage.jsx:53 src/components/l10n/L10nPage.jsx:64
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/network/NetworkPage.tsx:64
-#: src/components/storage/InstallationDeviceField.tsx:106
+#: src/components/storage/InstallationDeviceField.tsx:105
 #: src/components/storage/ProposalActionsSummary.tsx:248
 #: src/components/users/RootAuthMethods.tsx:114
 #: src/components/users/RootAuthMethods.tsx:126
@@ -388,19 +337,33 @@ msgstr "Ни одна из локалей не соответствует фил
 msgid "Locale selection"
 msgstr "Выбор локали"
 
-#: src/components/l10n/TimezoneSelection.tsx:68
+#: src/components/l10n/TimezoneSelection.tsx:75
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Фильтр по территории, коду часового пояса или смещению UTC"
 
-#: src/components/l10n/TimezoneSelection.tsx:107
+#: src/components/l10n/TimezoneSelection.tsx:114
 msgid "None of the time zones match the filter."
 msgstr "Ни один из часовых поясов не соответствует фильтру."
 
-#: src/components/l10n/TimezoneSelection.tsx:113
+#: src/components/l10n/TimezoneSelection.tsx:120
 msgid " Timezone selection"
 msgstr " Выбор часового пояса"
 
-#: src/components/layout/Header.tsx:62
+#: src/components/layout/Header.tsx:81
+#, fuzzy
+msgid "Options toggle"
+msgstr "Параметры"
+
+#: src/components/layout/Header.tsx:92
+msgid "Download logs"
+msgstr "Скачать журналы"
+
+#: src/components/layout/Header.tsx:98
+#, fuzzy
+msgid "Installer Options"
+msgstr "Параметры установщика"
+
+#: src/components/layout/Header.tsx:140
 msgid "Main navigation"
 msgstr ""
 
@@ -688,6 +651,11 @@ msgstr "Подключиться к скрытой сети"
 msgid "configured"
 msgstr "настроено"
 
+#: src/components/network/WifiNetworksListPage.tsx:267
+#, fuzzy
+msgid "No visible Wi-Fi networks found"
+msgstr "Сети WiFi"
+
 #: src/components/network/WifiNetworksListPage.tsx:271
 #, fuzzy
 msgid "Visible Wi-Fi networks"
@@ -710,7 +678,7 @@ msgid "Users"
 msgstr "Пользователи"
 
 #: src/components/overview/OverviewPage.tsx:49
-#: src/components/overview/StorageSection.jsx:112
+#: src/components/overview/StorageSection.tsx:100
 #: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
 msgid "Storage"
 msgstr "Хранилище"
@@ -721,19 +689,20 @@ msgstr "Хранилище"
 msgid "Software"
 msgstr "Программы"
 
-#: src/components/overview/OverviewPage.tsx:55
-msgid "Ready for installation"
-msgstr "Готов к установке"
+#: src/components/overview/OverviewPage.tsx:87
+#, fuzzy
+msgid "Installation blocking issues"
+msgstr "Установка завершена"
 
-#: src/components/overview/OverviewPage.tsx:99
-msgid "Installation"
-msgstr "Установка"
-
-#: src/components/overview/OverviewPage.tsx:100
+#: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
 msgstr "Проверьте следующие проблемы перед установкой."
 
-#: src/components/overview/OverviewPage.tsx:114
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+msgid "Overview"
+msgstr "Обзор"
+
+#: src/components/overview/OverviewPage.tsx:99
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
@@ -741,7 +710,7 @@ msgstr ""
 "Это наиболее актуальные настройки установки. Более подробные сведения "
 "приведены в разделах меню."
 
-#: src/components/overview/OverviewPage.tsx:134
+#: src/components/overview/OverviewPage.tsx:121
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
@@ -757,7 +726,7 @@ msgstr "Установка займёт"
 msgid "The installation will take %s including:"
 msgstr "Установка займёт %s, в том числе:"
 
-#: src/components/overview/StorageSection.jsx:54
+#: src/components/overview/StorageSection.tsx:42
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group shrinking "
 "existing partitions at the underlying devices as needed"
@@ -765,7 +734,7 @@ msgstr ""
 "Установите новую группу томов Logical Volume Manager (LVM), уменьшив при "
 "необходимости существующие разделы на базовых устройствах"
 
-#: src/components/overview/StorageSection.jsx:59
+#: src/components/overview/StorageSection.tsx:47
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group without modifying "
 "the partitions at the underlying devices"
@@ -773,7 +742,7 @@ msgstr ""
 "Установка в новую группу томов Logical Volume Manager (LVM) без изменения "
 "разделов на базовых устройствах"
 
-#: src/components/overview/StorageSection.jsx:64
+#: src/components/overview/StorageSection.tsx:52
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group deleting all the "
 "content of the underlying devices"
@@ -781,7 +750,7 @@ msgstr ""
 "Установка в новую группу томов Logical Volume Manager (LVM) с удалением "
 "всего содержимого базовых устройств"
 
-#: src/components/overview/StorageSection.jsx:69
+#: src/components/overview/StorageSection.tsx:57
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group using a custom "
 "strategy to find the needed space at the underlying devices"
@@ -790,7 +759,7 @@ msgstr ""
 "пользовательской стратегии для поиска необходимого пространства на базовых "
 "устройствах"
 
-#: src/components/overview/StorageSection.jsx:87
+#: src/components/overview/StorageSection.tsx:75
 #, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking "
@@ -799,7 +768,7 @@ msgstr ""
 "Установка в новую группу томов Logical Volume Manager (LVM) на %s, уменьшив "
 "существующие разделы по мере необходимости"
 
-#: src/components/overview/StorageSection.jsx:93
+#: src/components/overview/StorageSection.tsx:81
 #, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s without "
@@ -808,7 +777,7 @@ msgstr ""
 "Установка в новую группу томов Logical Volume Manager (LVM) на %s без "
 "изменения существующих разделов"
 
-#: src/components/overview/StorageSection.jsx:99
+#: src/components/overview/StorageSection.tsx:87
 #, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s deleting "
@@ -817,7 +786,7 @@ msgstr ""
 "Установка в новую группу томов Logical Volume Manager (LVM) на %s, удалив "
 "все её содержимое"
 
-#: src/components/overview/StorageSection.jsx:105
+#: src/components/overview/StorageSection.tsx:93
 #, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s using a "
@@ -827,14 +796,14 @@ msgstr ""
 "использованием пользовательской стратегии для поиска необходимого "
 "пространства"
 
-#: src/components/overview/StorageSection.jsx:180
-#: src/components/storage/InstallationDeviceField.tsx:60
+#: src/components/overview/StorageSection.tsx:150
+#: src/components/storage/InstallationDeviceField.tsx:56
 msgid "No device selected yet"
 msgstr "Устройство ещё не выбрано"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:187
+#: src/components/overview/StorageSection.tsx:157
 #, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
 msgstr ""
@@ -843,7 +812,7 @@ msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:191
+#: src/components/overview/StorageSection.tsx:161
 #, c-format
 msgid "Install using device %s without modifying existing partitions"
 msgstr ""
@@ -851,14 +820,14 @@ msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:195
+#: src/components/overview/StorageSection.tsx:165
 #, c-format
 msgid "Install using device %s and deleting all its content"
 msgstr "Установить с использованием устройства %s и удалить все его содержимое"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:200
+#: src/components/overview/StorageSection.tsx:170
 #, c-format
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr ""
@@ -866,17 +835,17 @@ msgstr ""
 "стратегии поиска необходимого пространства"
 
 #. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-#: src/components/product/ProductSelectionPage.tsx:57
+#: src/components/product/ProductSelectionPage.tsx:59
 #, c-format
 msgid "%s logo"
 msgstr ""
 
-#: src/components/product/ProductSelectionPage.tsx:108
+#: src/components/product/ProductSelectionPage.tsx:124
 #, fuzzy
 msgid "Select a product"
 msgstr "Выберите расположение"
 
-#: src/components/product/ProductSelectionPage.tsx:109
+#: src/components/product/ProductSelectionPage.tsx:125
 msgid "Available products"
 msgstr "Доступные продукты"
 
@@ -956,6 +925,10 @@ msgstr "Выбор программного обеспечения"
 #: src/components/software/SoftwarePatternsSelection.tsx:191
 msgid "Filter by pattern title or description"
 msgstr "Фильтр по названию или описанию шаблона"
+
+#: src/components/software/SoftwarePatternsSelection.tsx:206
+msgid "Close"
+msgstr "Закрыть"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -1158,7 +1131,7 @@ msgstr "Содержимое не найдено"
 #: src/components/storage/ProposalResultTable.tsx:130
 #: src/components/storage/SpaceActionsTable.tsx:207
 #: src/components/storage/VolumeLocationSelectorTable.tsx:96
-#: src/components/storage/dasd/DASDTable.tsx:73
+#: src/components/storage/dasd/DASDTable.tsx:78
 msgid "Device"
 msgstr "Устройство"
 
@@ -1200,12 +1173,32 @@ msgstr "Подключение к объектам iSCSI"
 msgid "iSCSI"
 msgstr "iSCSI"
 
+#: src/components/storage/EncryptionField.tsx:34
+msgid "disabled"
+msgstr "отключено"
+
 #: src/components/storage/EncryptionField.tsx:35
-#: src/components/storage/EncryptionSettingsDialog.tsx:31
+msgid "enabled"
+msgstr "включено"
+
+#: src/components/storage/EncryptionField.tsx:36
+msgid "using TPM unlocking"
+msgstr "используя разблокировку TPM"
+
+#: src/components/storage/EncryptionField.tsx:51
+msgid "Enable"
+msgstr "Включить"
+
+#: src/components/storage/EncryptionField.tsx:51
+msgid "Modify"
+msgstr "Изменить"
+
+#: src/components/storage/EncryptionField.tsx:104
+#: src/components/storage/EncryptionSettingsDialog.tsx:118
 msgid "Encryption"
 msgstr "Шифрование"
 
-#: src/components/storage/EncryptionField.tsx:37
+#: src/components/storage/EncryptionField.tsx:107
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
@@ -1213,43 +1206,14 @@ msgstr ""
 "Защита информации, хранящейся на устройстве, включая данные, программы и "
 "системные файлы."
 
-#: src/components/storage/EncryptionField.tsx:41
-msgid "disabled"
-msgstr "отключено"
-
-#: src/components/storage/EncryptionField.tsx:42
-msgid "enabled"
-msgstr "включено"
-
-#: src/components/storage/EncryptionField.tsx:43
-msgid "using TPM unlocking"
-msgstr "используя разблокировку TPM"
-
-#: src/components/storage/EncryptionField.tsx:57
-msgid "Enable"
-msgstr "Включить"
-
-#: src/components/storage/EncryptionField.tsx:57
-msgid "Modify"
-msgstr "Изменить"
-
-#: src/components/storage/EncryptionSettingsDialog.tsx:33
-msgid ""
-"Full Disk Encryption (FDE) allows to protect the information stored at the "
-"device, including data, programs, and system files."
-msgstr ""
-"Полнодисковое шифрование (FDE) позволяет защитить информацию, хранящуюся на "
-"устройстве, включая данные, программы и системные файлы."
-
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.tsx:37
+#: src/components/storage/EncryptionSettingsDialog.tsx:104
 msgid ""
 "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
 msgstr ""
 "Используйте Доверенный платформенный модуль (TPM) для автоматического "
 "дешифрования при каждой загрузке"
 
-#: src/components/storage/EncryptionSettingsDialog.tsx:41
+#: src/components/storage/EncryptionSettingsDialog.tsx:109
 msgid ""
 "The password will not be needed to boot and access the data if the TPM can "
 "verify the integrity of the system. TPM sealing requires the new system to "
@@ -1259,34 +1223,42 @@ msgstr ""
 "проверить целостность системы. Запечатывание TPM требует непосредственной "
 "загрузки новой системы при первом запуске."
 
+#: src/components/storage/EncryptionSettingsDialog.tsx:120
+msgid ""
+"Full Disk Encryption (FDE) allows to protect the information stored at the "
+"device, including data, programs, and system files."
+msgstr ""
+"Полнодисковое шифрование (FDE) позволяет защитить информацию, хранящуюся на "
+"устройстве, включая данные, программы и системные файлы."
+
 #: src/components/storage/EncryptionSettingsDialog.tsx:128
 msgid "Encrypt the system"
 msgstr "Зашифровать систему"
 
-#: src/components/storage/InstallationDeviceField.tsx:32
-#: src/components/storage/VolumeLocationSelectorTable.tsx:54
-msgid "Installation device"
-msgstr "Устройство для установки"
-
-#. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.tsx:34
-msgid "Main disk or LVM Volume Group for installation."
-msgstr "Основной диск или группа томов LVM для установки."
-
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.tsx:46
+#: src/components/storage/InstallationDeviceField.tsx:42
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "Файловые системы созданы как новые разделы на %s"
 
-#: src/components/storage/InstallationDeviceField.tsx:49
+#: src/components/storage/InstallationDeviceField.tsx:45
 msgid "File systems created at a new LVM volume group"
 msgstr "Файловые системы созданы в новой группе томов LVM"
 
-#: src/components/storage/InstallationDeviceField.tsx:54
+#: src/components/storage/InstallationDeviceField.tsx:50
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "Файловые системы созданы в новой группе томов LVM на %s"
+
+#. TRANSLATORS: The storage "Installation device" field's description.
+#: src/components/storage/InstallationDeviceField.tsx:94
+msgid "Main disk or LVM Volume Group for installation."
+msgstr "Основной диск или группа томов LVM для установки."
+
+#: src/components/storage/InstallationDeviceField.tsx:98
+#: src/components/storage/VolumeLocationSelectorTable.tsx:54
+msgid "Installation device"
+msgstr "Устройство для установки"
 
 #: src/components/storage/InvalidMaxSizeError.tsx:44
 #: src/components/storage/VolumeDialog.tsx:216
@@ -1639,11 +1611,11 @@ msgstr ""
 "файловую систему Btrfs, доступную только для чтения и обновляемую с помощью "
 "моментальных снимков."
 
-#: src/components/storage/SnapshotsField.tsx:32
+#: src/components/storage/SnapshotsField.tsx:48
 msgid "Use Btrfs snapshots for the root file system"
 msgstr "Используйте моментальные снимки Btrfs для корневой файловой системы"
 
-#: src/components/storage/SnapshotsField.tsx:34
+#: src/components/storage/SnapshotsField.tsx:67
 msgid ""
 "Allows to boot to a previous version of the system after configuration "
 "changes or software upgrades."
@@ -1867,7 +1839,7 @@ msgstr "Фиксированный"
 msgid "Range"
 msgstr "Диапазон"
 
-#: src/components/storage/VolumeLocationDialog.tsx:34
+#: src/components/storage/VolumeLocationDialog.tsx:129
 msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
@@ -1964,21 +1936,21 @@ msgstr "Устройство ещё не выбрано"
 msgid "Back to device selection"
 msgstr "Устройство ещё не выбрано"
 
-#: src/components/storage/dasd/DASDTable.tsx:64
+#: src/components/storage/dasd/DASDTable.tsx:69
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:57
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:36
 msgid "No"
 msgstr "Нет"
 
-#: src/components/storage/dasd/DASDTable.tsx:64
+#: src/components/storage/dasd/DASDTable.tsx:69
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:57
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:36
 msgid "Yes"
 msgstr "Да"
 
-#: src/components/storage/dasd/DASDTable.tsx:71
+#: src/components/storage/dasd/DASDTable.tsx:76
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:20
 #: src/components/storage/zfcp/ZFCPDiskForm.tsx:119
 #: src/components/storage/zfcp/ZFCPDisksTable.tsx:43
@@ -1986,7 +1958,7 @@ msgid "Channel ID"
 msgstr "Идентификатор канала"
 
 #. TRANSLATORS: table header
-#: src/components/storage/dasd/DASDTable.tsx:72
+#: src/components/storage/dasd/DASDTable.tsx:77
 #: src/components/storage/iscsi/NodesPresenter.jsx:104
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:21
@@ -1994,69 +1966,95 @@ msgstr "Идентификатор канала"
 msgid "Status"
 msgstr "Состояние"
 
-#: src/components/storage/dasd/DASDTable.tsx:74
+#: src/components/storage/dasd/DASDTable.tsx:79
 msgid "Type"
 msgstr "Тип"
 
 #. TRANSLATORS: table header, the column contains "Yes"/"No" values
 #. for the DIAG access mode (special disk access mode on IBM mainframes),
 #. usually keep untranslated
-#: src/components/storage/dasd/DASDTable.tsx:78
+#: src/components/storage/dasd/DASDTable.tsx:83
 msgid "DIAG"
 msgstr "Режим DIAG"
 
-#: src/components/storage/dasd/DASDTable.tsx:79
+#: src/components/storage/dasd/DASDTable.tsx:84
 msgid "Formatted"
 msgstr "Отформатированный"
 
-#: src/components/storage/dasd/DASDTable.tsx:80
+#: src/components/storage/dasd/DASDTable.tsx:85
 msgid "Partition Info"
 msgstr "Информация о разделе"
 
+#: src/components/storage/dasd/DASDTable.tsx:95
+msgid "Cannot format all selected devices"
+msgstr ""
+
+#: src/components/storage/dasd/DASDTable.tsx:99
+msgid ""
+"Offline devices must be activated before formatting them. Please, unselect "
+"or activate the devices listed below and try it again"
+msgstr ""
+
+#: src/components/storage/dasd/DASDTable.tsx:111
+#, fuzzy
+msgid "Format selected devices?"
+msgstr "Отформатировать устройство"
+
+#: src/components/storage/dasd/DASDTable.tsx:115
+msgid ""
+"This action could destroy any data stored on the devices listed below. "
+"Please, confirm that you really want to continue."
+msgstr ""
+
 #. TRANSLATORS: drop down menu label
-#: src/components/storage/dasd/DASDTable.tsx:119
+#: src/components/storage/dasd/DASDTable.tsx:174
 msgid "Perform an action"
 msgstr "Выполнить действие"
 
-#: src/components/storage/dasd/DASDTable.tsx:126
+#: src/components/storage/dasd/DASDTable.tsx:181
 #: src/components/storage/zfcp/ZFCPControllersTable.tsx:51
 msgid "Activate"
 msgstr "Активировать"
 
-#: src/components/storage/dasd/DASDTable.tsx:130
+#: src/components/storage/dasd/DASDTable.tsx:185
 #: src/components/storage/zfcp/ZFCPDisksTable.tsx:56
 msgid "Deactivate"
 msgstr "Деактивировать"
 
-#: src/components/storage/dasd/DASDTable.tsx:135
+#: src/components/storage/dasd/DASDTable.tsx:190
 msgid "Set DIAG On"
 msgstr "Включить DIAG"
 
-#: src/components/storage/dasd/DASDTable.tsx:139
+#: src/components/storage/dasd/DASDTable.tsx:194
 msgid "Set DIAG Off"
 msgstr "Отключить DIAG"
 
-#: src/components/storage/dasd/DASDTable.tsx:144
+#: src/components/storage/dasd/DASDTable.tsx:199
 msgid "Format"
 msgstr "Формат"
 
-#: src/components/storage/dasd/DASDTable.tsx:280
-#: src/components/storage/dasd/DASDTable.tsx:281
+#: src/components/storage/dasd/DASDTable.tsx:336
+#: src/components/storage/dasd/DASDTable.tsx:337
 msgid "Filter by min channel"
 msgstr "Фильтр по минимальному каналу"
 
-#: src/components/storage/dasd/DASDTable.tsx:288
+#: src/components/storage/dasd/DASDTable.tsx:344
 msgid "Remove min channel filter"
 msgstr "Удалить фильтр по минимальному каналу"
 
-#: src/components/storage/dasd/DASDTable.tsx:302
-#: src/components/storage/dasd/DASDTable.tsx:303
+#: src/components/storage/dasd/DASDTable.tsx:358
+#: src/components/storage/dasd/DASDTable.tsx:359
 msgid "Filter by max channel"
 msgstr "Фильтр по максимальному каналу"
 
-#: src/components/storage/dasd/DASDTable.tsx:310
+#: src/components/storage/dasd/DASDTable.tsx:366
 msgid "Remove max channel filter"
 msgstr "Удалить фильтр по максимальному каналу"
+
+#: src/components/storage/dasd/DASDTable.tsx:385
+#, fuzzy
+msgid "DASDs table section"
+msgstr "Выбор программного обеспечения"
 
 #: src/components/storage/device-utils.tsx:75
 msgid "Unused space"
@@ -2568,13 +2566,59 @@ msgstr "Загрузить"
 msgid "Clear"
 msgstr "Очистить"
 
-#: src/router.js:49
-msgid "Overview"
-msgstr "Обзор"
-
 #: src/routes/storage.tsx:86
 msgid "ZFCP"
 msgstr ""
+
+#~ msgid "About"
+#~ msgstr "Об Agama"
+
+#~ msgid "About Agama"
+#~ msgstr "Об Agama"
+
+#~ msgid ""
+#~ "Agama is an experimental installer for (open)SUSE systems. It is still "
+#~ "under development so, please, do not use it in production environments. "
+#~ "If you want to give it a try, we recommend using a virtual machine to "
+#~ "prevent any possible data loss."
+#~ msgstr ""
+#~ "Agama - это экспериментальный установщик для систем (open)SUSE. Он все "
+#~ "еще находится в стадии разработки, поэтому, пожалуйста, не используйте "
+#~ "его в производственных средах. Если вы хотите попробовать, мы рекомендуем "
+#~ "использовать виртуальную машину, чтобы предотвратить возможную потерю "
+#~ "данных."
+
+#, c-format
+#~ msgid "For more information, please visit the project's repository at %s."
+#~ msgstr ""
+#~ "Для получения дополнительной информации посетите репозиторий проекта по "
+#~ "адресу %s."
+
+#~ msgid "Show installer options"
+#~ msgstr "Показать параметры установки"
+
+#~ msgid "More about this"
+#~ msgstr "Подробнее об этом"
+
+#~ msgid "Collecting logs..."
+#~ msgstr "Сбор журналов..."
+
+#~ msgid ""
+#~ "The browser will run the logs download as soon as they are ready. Please, "
+#~ "be patient."
+#~ msgstr ""
+#~ "Браузер запустит загрузку журналов, как только они будут готовы. "
+#~ "Пожалуйста, подождите."
+
+#~ msgid "Something went wrong while collecting logs. Please, try again."
+#~ msgstr ""
+#~ "Что-то пошло не так при сборе журналов. Пожалуйста, попробуйте ещё раз."
+
+#~ msgid "Ready for installation"
+#~ msgstr "Готов к установке"
+
+#~ msgid "Installation"
+#~ msgstr "Установка"
 
 #~ msgid "Please, try to read the zFCP devices again."
 #~ msgstr "Пожалуйста, попробуйте еще раз прочитать устройства zFCP."
@@ -2722,9 +2766,6 @@ msgstr ""
 #~ msgstr ""
 #~ "При попытке начать установку были обнаружены некоторые проблемы. "
 #~ "Пожалуйста, просмотрите заявленные ошибки и повторите попытку."
-
-#~ msgid "Installation Finished"
-#~ msgstr "Установка завершена"
 
 #~ msgid "What is this?"
 #~ msgstr "Что это?"
@@ -3018,9 +3059,6 @@ msgstr ""
 
 #~ msgid "Hide navigation and other options"
 #~ msgstr "Скрыть навигацию и другие параметры"
-
-#~ msgid "Options"
-#~ msgstr "Параметры"
 
 #, fuzzy
 #~ msgid "Display Language"

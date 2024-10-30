@@ -84,7 +84,6 @@ const NoDisksFound = () => {
     <EmptyState
       title={_("No zFCP disks found.")}
       icon="warning"
-      // @ts-expect-error: core/EmptyState props are not well defined
       variant="sm"
       actions={
         activeController && (

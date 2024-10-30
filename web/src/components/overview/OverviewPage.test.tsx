@@ -34,7 +34,7 @@ const tumbleweed: Product = {
   description: "Tumbleweed description...",
 };
 
-const mockIssuesList = new IssuesList([], [], [], []);
+let mockIssuesList: IssuesList = new IssuesList([], [], [], []);
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -45,6 +45,7 @@ jest.mock("~/queries/software", () => ({
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
   useIssuesChanges: () => jest.fn().mockResolvedValue(mockIssuesList),
+  useAllIssues: () => mockIssuesList,
 }));
 
 jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
@@ -59,5 +60,43 @@ describe("when a product is selected", () => {
     screen.findByText("Storage Section");
     screen.findByText("Software Section");
     screen.findByText("Install Button");
+  });
+
+  it("renders found issues, if any", () => {});
+});
+
+describe("when there are issues", () => {
+  beforeEach(() => {
+    mockIssuesList = new IssuesList(
+      [
+        {
+          description: "Fake Issue",
+          details: "Fake Issue details",
+          source: 0,
+          severity: 1,
+        },
+      ],
+      [],
+      [],
+      [],
+    );
+  });
+
+  it("renders the issues section", () => {
+    installerRender(<OverviewPage />);
+    screen.findByText("Installation blocking issues");
+    screen.findByText("Fake Issue");
+    screen.findByText("Fake Issue details");
+  });
+});
+
+describe("when there are no issues", () => {
+  beforeEach(() => {
+    mockIssuesList = new IssuesList([], [], [], []);
+  });
+
+  it("does not render the issues section", () => {
+    installerRender(<OverviewPage />);
+    expect(screen.queryByText("Installation blocking issues")).toBeNull();
   });
 });

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-18 02:35+0000\n"
-"PO-Revision-Date: 2024-07-28 18:47+0000\n"
+"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"PO-Revision-Date: 2024-09-30 18:48+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/es/>\n"
@@ -17,37 +17,37 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.7.2\n"
 
 #. Runs the startup phase
-#: service/lib/agama/manager.rb:88
+#: service/lib/agama/manager.rb:91
 msgid "Load software translations"
 msgstr "Cargar traducciones de software"
 
-#: service/lib/agama/manager.rb:89
+#: service/lib/agama/manager.rb:92
 msgid "Load storage translations"
 msgstr "Cargar traducciones de almacenamiento"
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:104
+#: service/lib/agama/manager.rb:107
 msgid "Analyze disks"
 msgstr "Analizar discos"
 
-#: service/lib/agama/manager.rb:104
+#: service/lib/agama/manager.rb:107
 msgid "Configure software"
 msgstr "Configurar software"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:124
+#: service/lib/agama/manager.rb:127
 msgid "Prepare disks"
 msgstr "Preparar discos"
 
-#: service/lib/agama/manager.rb:125
+#: service/lib/agama/manager.rb:128
 msgid "Install software"
 msgstr "Instalar software"
 
-#: service/lib/agama/manager.rb:126
+#: service/lib/agama/manager.rb:129
 msgid "Configure the system"
 msgstr "Configurar el sistema"
 
@@ -132,39 +132,88 @@ msgstr "El producto debe estar registrado"
 msgid "Found %s dependency issues."
 msgstr "Se encontraron %s problemas de dependencias."
 
-#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checker.rb:112
+#. Issue for not found device.
+#.
+#. @param config [Configs::Drive, Configs::Partition]
+#. @return [Agama::Issue]
+#: service/lib/agama/storage/config_checker.rb:87
+msgid "No device found for a mandatory drive"
+msgstr "No se encontró ningún dispositivo para una unidad obligatoria"
+
+#: service/lib/agama/storage/config_checker.rb:89
+msgid "No device found for a mandatory partition"
+msgstr "No se encontró ningún dispositivo para una partición obligatoria"
+
+#. TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checker.rb:118
 #, c-format
-msgid "There is no LVM thin pool volume with alias %s"
+msgid "Missing file system type for '%s'"
 msgstr ""
 
-#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checker.rb:129
-#, c-format
-msgid "There is no LVM physical volume with alias %s"
-msgstr ""
-
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:160
+#. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
+#. %{path} is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checker.rb:145
 #, perl-brace-format
-msgid ""
-"No passphrase provided (required for using the method '%{crypt_method}')."
+msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checker.rb:178
 #, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
+"No se proporcionó ninguna contraseña (obligatoria para utilizar el método "
+"'%{crypt_method}')."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:197
+#: service/lib/agama/storage/config_checker.rb:196
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr ""
+"El método de cifrado '%{crypt_method}' no está disponible en este sistema."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:226
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr "'%{crypt_method}' no es un método adecuado para cifrar el dispositivo."
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checker.rb:276
+#, c-format
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
 msgstr ""
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:350
+#, fuzzy, c-format
+msgid "There is no LVM thin pool volume with alias '%s'"
+msgstr "No hay ningún volumen de grupo ligero LVM con alias %s"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:375
+#, fuzzy, c-format
+msgid "There is no LVM physical volume with alias '%s'"
+msgstr "No existe ningún volumen físico LVM con alias %s"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checker.rb:401
+#, fuzzy, c-format
+msgid "There is no target device for LVM physical volumes with alias '%s'"
+msgstr "No existe ningún volumen físico LVM con alias %s"
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1').
+#: service/lib/agama/storage/config_checker.rb:434
+#, fuzzy, perl-brace-format
+msgid ""
+"'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
+msgstr "'%{crypt_method}' no es un método adecuado para cifrar el dispositivo."
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
@@ -225,7 +274,7 @@ msgstr "Escribiendo el gestor de arranque sysconfig"
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:283
+#: service/lib/agama/storage/proposal.rb:287
 msgid "Cannot accommodate the required file systems for installation"
 msgstr ""
 "No se pueden acomodar los sistemas de archivos necesarios para la instalación"
@@ -233,7 +282,7 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:294
+#: service/lib/agama/storage/proposal.rb:298
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Ocurrió un problema al calcular la configuración de almacenamiento"
 
@@ -260,31 +309,18 @@ msgstr[1] ""
 "%{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:152
+#: service/lib/agama/users.rb:148
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Es necesario definir un usuario, configurar la contraseña de root o una "
 "clave pública SSH"
 
-#. @see #not_found_issue
-#: service/lib/y2storage/proposal/agama_searcher.rb:158
-msgid "No device found for an optional drive"
-msgstr ""
+#~ msgid "No device found for an optional drive"
+#~ msgstr "No se encontró ningún dispositivo para una unidad opcional"
 
-#: service/lib/y2storage/proposal/agama_searcher.rb:160
-msgid "No device found for a mandatory drive"
-msgstr ""
-
-#: service/lib/y2storage/proposal/agama_searcher.rb:163
-#, fuzzy
-msgid "No device found for an optional partition"
-msgstr "No se seleccionó ningún dispositivo para la instalación"
-
-#: service/lib/y2storage/proposal/agama_searcher.rb:165
-#, fuzzy
-msgid "No device found for a mandatory partition"
-msgstr "No se seleccionó ningún dispositivo para la instalación"
+#~ msgid "No device found for an optional partition"
+#~ msgstr "No se encontró ningún dispositivo para una partición opcional"
 
 #~ msgid "Partitioning"
 #~ msgstr "Particionado"

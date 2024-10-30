@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,9 +21,9 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { InstallButton } from "~/components/core";
+import { IssuesLink } from "~/components/core";
 import { IssuesList } from "~/types/issues";
 import { PATHS as PRODUCT_PATHS } from "~/routes/products";
 
@@ -57,44 +57,9 @@ describe("when there are installation issues", () => {
     );
   });
 
-  it("renders nothing", () => {
-    const { container } = installerRender(<InstallButton />);
-    expect(container).toBeEmptyDOMElement();
-  });
-});
-
-describe("when there are not installation issues", () => {
-  beforeEach(() => {
-    mockIssuesList = new IssuesList([], [], [], []);
-  });
-
-  it("renders an Install button", () => {
-    installerRender(<InstallButton />);
-    screen.getByRole("button", { name: "Install" });
-  });
-
-  it("starts the installation after user clicks on it and accept the confirmation", async () => {
-    const { user } = installerRender(<InstallButton />);
-    const button = await screen.findByRole("button", { name: "Install" });
-    await user.click(button);
-
-    const continueButton = await screen.findByRole("button", { name: "Continue" });
-    await user.click(continueButton);
-    expect(mockStartInstallationFn).toHaveBeenCalled();
-  });
-
-  it("does not start the installation if the user clicks on it but cancels the confirmation", async () => {
-    const { user } = installerRender(<InstallButton />);
-    const button = await screen.findByRole("button", { name: "Install" });
-    await user.click(button);
-
-    const cancelButton = await screen.findByRole("button", { name: "Cancel" });
-    await user.click(cancelButton);
-    expect(mockStartInstallationFn).not.toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();
-    });
+  it("renders the issues link", () => {
+    installerRender(<IssuesLink />);
+    screen.getByRole("link", { name: "Installation issues" });
   });
 
   describe("but installer is rendering the product selection", () => {
@@ -103,19 +68,30 @@ describe("when there are not installation issues", () => {
     });
 
     it("renders nothing", () => {
-      const { container } = installerRender(<InstallButton />);
+      const { container } = installerRender(<IssuesLink />);
       expect(container).toBeEmptyDOMElement();
     });
   });
 
-  describe("but installer is configuring a product", () => {
+  describe("but installer is configuring the product", () => {
     beforeEach(() => {
       mockRoutes(PRODUCT_PATHS.progress);
     });
 
     it("renders nothing", () => {
-      const { container } = installerRender(<InstallButton />);
+      const { container } = installerRender(<IssuesLink />);
       expect(container).toBeEmptyDOMElement();
     });
+  });
+});
+
+describe("when there are no installation issues", () => {
+  beforeEach(() => {
+    mockIssuesList = new IssuesList([], [], [], []);
+  });
+
+  it("renders nothing", () => {
+    const { container } = installerRender(<IssuesLink />);
+    expect(container).toBeEmptyDOMElement();
   });
 });

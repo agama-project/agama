@@ -150,11 +150,15 @@ shared_examples "with search" do |result_scope|
   context "if there are no conditions or limits and errors should be skipped" do
     let(:search) { { ifNotFound: "skip" } }
 
-    it "generates a wildcard" do
+    it "generates the expected JSON" do
       config_json = result_scope.call(subject.convert)
       search_json = config_json[:search]
 
-      expect(search_json).to eq "*"
+      expect(search_json).to eq(
+        {
+          ifNotFound: "skip"
+        }
+      )
     end
   end
 end

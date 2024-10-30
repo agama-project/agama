@@ -33,13 +33,6 @@ module Agama
             Configs::Search
           end
 
-          # @see Base#convert
-          def convert
-            return SEARCH_ANYTHING_STRING if config.all_if_any?
-
-            super
-          end
-
         private
 
           # @see Base#conversions

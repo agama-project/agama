@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import {
   EmptyState,
@@ -30,14 +28,21 @@ import {
   Stack,
   EmptyStateFooter,
   EmptyStateActions,
+  EmptyStateProps,
+  EmptyStateHeaderProps,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
+import { IconProps } from "../layout/Icon";
 
-/**
- * @typedef {import("~/components/layout/Icon").IconName} IconName
- * @typedef {import("@patternfly/react-core").EmptyStateProps} EmptyStateProps
- * @typedef {import("@patternfly/react-core").EmptyStateHeaderProps} EmptyStateHeaderProps
- */
+type EmptyStateWrapperProps = {
+  title: string;
+  icon: IconProps["name"];
+  color?: string;
+  headingLevel?: EmptyStateHeaderProps["headingLevel"];
+  noPadding?: boolean;
+  actions?: React.ReactNode;
+  children?: React.ReactNode;
+};
 
 /**
  * Convenient wrapper for easing the use of PF/EmptyState component
@@ -46,15 +51,6 @@ import { Icon } from "~/components/layout";
  * directly when dealing with a very specific UI use case and more freedom is
  * needed.
  *
- * @param {object} props
- * @param {string} props.title
- * @param {IconName} props.icon
- * @param {string} [props.color="color-100"]
- * @param {EmptyStateHeaderProps["headingLevel"]} [props.headingLevel="h4"]
- * @param {boolean} [props.noPadding=false]
- * @param {React.ReactNode} [props.actions]
- * @param {React.ReactNode} [props.children]
- * @param {EmptyStateProps} [props.rest]
  * @todo write documentation
  */
 export default function EmptyStateWrapper({
@@ -66,7 +62,7 @@ export default function EmptyStateWrapper({
   actions,
   children,
   ...rest
-}) {
+}: Partial<EmptyStateProps> & EmptyStateWrapperProps) {
   // @ts-ignore
   if (noPadding) rest.className = [rest.className, "no-padding"].join(" ").trim();
 

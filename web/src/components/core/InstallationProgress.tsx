@@ -22,16 +22,24 @@
 
 import React from "react";
 import { _ } from "~/i18n";
+import ProgressReport from "./ProgressReport";
+import { InstallationPhase } from "~/types/status";
+import { PATHS } from "~/router";
+import { Navigate } from "react-router-dom";
+import { useInstallerStatus } from "~/queries/status";
 
-/**
- * Button for collecting and downloading Agama/YaST logs
- */
-const LogsButton = () => {
-  return (
-    <a href="api/manager/logs.tar.gz" download>
-      {_("Download logs")}
-    </a>
-  );
-};
+function InstallationProgress() {
+  const { isBusy, phase } = useInstallerStatus({ suspense: true });
 
-export default LogsButton;
+  if (phase !== InstallationPhase.Install) {
+    return <Navigate to={PATHS.root} replace />;
+  }
+
+  if (!isBusy) {
+    return <Navigate to={PATHS.installationFinished} replace />;
+  }
+
+  return <ProgressReport title={_("Installing the system, please wait...")} />;
+}
+
+export default InstallationProgress;
