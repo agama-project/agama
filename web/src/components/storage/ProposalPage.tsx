@@ -23,26 +23,14 @@
 import React, { useRef } from "react";
 import { Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page, Drawer } from "~/components/core/";
-import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
-import ProposalSettingsSection from "./ProposalSettingsSection";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _ } from "~/i18n";
-import { SPACE_POLICIES } from "~/components/storage/utils";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import {
-  useAvailableDevices,
-  useDeprecated,
-  useDevices,
-  useProductParams,
-  useProposalMutation,
-  useProposalResult,
-  useVolumeDevices,
-  useVolumeTemplates,
-} from "~/queries/storage";
+import { useDeprecated, useDevices, useProposalResult } from "~/queries/storage";
 import { useQueryClient } from "@tanstack/react-query";
 import { refresh } from "~/api/storage";
 
@@ -74,12 +62,7 @@ export default function ProposalPage() {
   const drawerRef = useRef();
   const systemDevices = useDevices("system");
   const stagingDevices = useDevices("result");
-  const availableDevices = useAvailableDevices();
-  const volumeDevices = useVolumeDevices();
-  const volumeTemplates = useVolumeTemplates();
-  const { encryptionMethods } = useProductParams({ suspense: true });
-  const { actions, settings } = useProposalResult();
-  const updateProposal = useProposalMutation();
+  const { actions } = useProposalResult();
   const deprecated = useDeprecated();
   const queryClient = useQueryClient();
 
@@ -95,13 +78,6 @@ export default function ProposalPage() {
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
 
-  const changeSettings = async (changing, updated: object) => {
-    const newSettings = { ...settings, ...updated };
-    updateProposal.mutateAsync(newSettings).catch(console.error);
-  };
-
-  const spacePolicy = SPACE_POLICIES.find((p) => p.id === settings.spacePolicy);
-
   return (
     <Page>
       <Page.Header>
@@ -111,20 +87,6 @@ export default function ProposalPage() {
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <ProposalTransactionalInfo settings={settings} />
-          </GridItem>
-          <GridItem sm={12} xl={6}>
-            <ProposalSettingsSection
-              availableDevices={availableDevices}
-              volumeDevices={volumeDevices}
-              encryptionMethods={encryptionMethods}
-              volumeTemplates={volumeTemplates}
-              settings={settings}
-              onChange={changeSettings}
-              isLoading={false}
-            />
-          </GridItem>
-          <GridItem sm={12} xl={6}>
             <Drawer
               ref={drawerRef}
               panelHeader={<h4>{_("Planned Actions")}</h4>}
@@ -132,13 +94,10 @@ export default function ProposalPage() {
             >
               <Stack hasGutter>
                 <ProposalActionsSummary
-                  policy={spacePolicy}
                   system={systemDevices}
                   staging={stagingDevices}
                   errors={errors}
                   actions={actions}
-                  spaceActions={settings.spaceActions}
-                  devices={settings.installationDevices}
                   // @ts-expect-error: we do not know how to specify the type of
                   // drawerRef properly and TS does not find the "open" property
                   onActionsClick={drawerRef.current?.open}

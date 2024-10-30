@@ -34,22 +34,13 @@ import {
   fetchActions,
   fetchDefaultVolume,
   fetchProductParams,
-  fetchSettings,
   fetchUsableDevices,
 } from "~/api/storage/proposal";
 import { useInstallerClient } from "~/context/installer";
-import { compact, uniq } from "~/utils";
-import {
-  ProductParams,
-  Volume as APIVolume,
-  ProposalSettings as APIProposalSettings,
-  ProposalTarget as APIProposalTarget,
-  ProposalSettingsPatch,
-} from "~/api/storage/types";
+import { ProductParams, Volume as APIVolume, ProposalSettingsPatch } from "~/api/storage/types";
 import {
   ProposalSettings,
   ProposalResult,
-  ProposalTarget,
   StorageDevice,
   Volume,
   VolumeTarget,
@@ -200,13 +191,8 @@ const useVolumeDevices = (): StorageDevice[] => {
   return [...availableDevices, ...mds, ...vgs];
 };
 
-const proposalSettingsQuery = {
-  queryKey: ["storage", "proposal", "settings"],
-  queryFn: fetchSettings,
-};
-
 const proposalActionsQuery = {
-  queryKey: ["storage", "proposal", "actions"],
+  queryKey: ["storage", "devices", "actions"],
   queryFn: fetchActions,
 };
 
@@ -214,64 +200,9 @@ const proposalActionsQuery = {
  * Hook that returns the current proposal (settings and actions).
  */
 const useProposalResult = (): ProposalResult | undefined => {
-  const buildTarget = (value: APIProposalTarget): ProposalTarget => {
-    // FIXME: handle the case where they do not match
-    const target = value as ProposalTarget;
-    return target;
-  };
+  const { data: actions } = useSuspenseQuery(proposalActionsQuery);
 
-  /** @todo Read installation devices from D-Bus. */
-  const buildInstallationDevices = (settings: APIProposalSettings, devices: StorageDevice[]) => {
-    const findDevice = (name: string) => {
-      const device = devices.find((d) => d.name === name);
-
-      if (device === undefined) console.error("Device object not found: ", name);
-
-      return device;
-    };
-
-    // Only consider the device assigned to a volume as installation device if it is needed
-    // to find space in that device. For example, devices directly formatted or mounted are not
-    // considered as installation devices.
-    const volumes = settings.volumes.filter((vol) => {
-      const target = vol.target as VolumeTarget;
-      return [VolumeTarget.NEW_PARTITION, VolumeTarget.NEW_VG].includes(target);
-    });
-
-    const values = [
-      settings.targetDevice,
-      settings.targetPVDevices,
-      volumes.map((v) => v.targetDevice),
-    ].flat();
-
-    if (settings.configureBoot) values.push(settings.bootDevice);
-
-    const names = uniq(compact(values)).filter((d) => d.length > 0);
-
-    // #findDevice returns undefined if no device is found with the given name.
-    return compact(names.sort().map(findDevice));
-  };
-
-  const [{ data: settings }, { data: actions }] = useSuspenseQueries({
-    queries: [proposalSettingsQuery, proposalActionsQuery],
-  });
-  const systemDevices = useDevices("system", { suspense: true });
-  const { mountPoints: productMountPoints } = useProductParams({ suspense: true });
-
-  return {
-    settings: {
-      ...settings,
-      targetPVDevices: settings.targetPVDevices || [],
-      target: buildTarget(settings.target),
-      volumes: settings.volumes.map((v) => buildVolume(v, systemDevices, productMountPoints)),
-      // NOTE: strictly speaking, installation devices does not belong to the settings. It
-      // should be a separate method instead of an attribute in the settings object.
-      // Nevertheless, it was added here for simplicity and to avoid passing more props in some
-      // react components. Please, do not use settings as a jumble.
-      installationDevices: buildInstallationDevices(settings, systemDevices),
-    },
-    actions,
-  };
+  return { actions };
 };
 
 const useProposalMutation = () => {

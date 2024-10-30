@@ -23,4 +23,3 @@
 export { default as OverviewPage } from "./OverviewPage";
 export { default as L10nSection } from "./L10nSection";
 export { default as SoftwareSection } from "./SoftwareSection";
-export { default as StorageSection } from "./StorageSection";

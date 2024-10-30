@@ -120,7 +120,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/devices/result", get(staging_devices))
         .route("/product/volume_for", get(volume_for))
         .route("/product/params", get(product_params))
-        .route("/proposal/actions", get(actions))
+        .route("/devices/actions", get(actions))
         .route("/proposal/usable_devices", get(usable_devices))
         .route(
             "/proposal/settings",
@@ -331,7 +331,7 @@ pub struct ProductParams {
 /// Gets the actions to perform in the storage devices.
 #[utoipa::path(
     get,
-    path = "/proposal/actions",
+    path = "/devices/actions",
     context_path = "/api/storage",
     responses(
         (status = 200, description = "List of actions", body = Vec<Action>),
