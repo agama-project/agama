@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 30 22:26:29 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Render Install button only where it makes sense and prevent the
+  user starting the installation by mistake
+  (gh#agama-project/agama#1717).
+
+-------------------------------------------------------------------
 Mon Oct 28 19:26:29 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Make some general actions more accessible
