@@ -58,6 +58,7 @@ pub fn connection_to_dbus<'a>(
     let mut connection_dbus = HashMap::from([
         ("id", conn.id.as_str().into()),
         ("type", ETHERNET_KEY.into()),
+        ("autoconnect", conn.autoconnect.into()),
     ]);
 
     if let Some(interface) = &conn.interface {
@@ -652,6 +653,10 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Result<Connection, NmErr
         ..Default::default()
     };
 
+    if let Some(autoconnect) = get_optional_property(connection, "autoconnect")? {
+        base_connection.autoconnect = autoconnect;
+    }
+
     if let Some(match_config) = conn.get("match") {
         base_connection.match_config = match_config_from_dbus(match_config)?;
     }
@@ -1201,6 +1206,7 @@ mod test {
         let connection_section = HashMap::from([
             ("id".to_string(), Value::new("eth0").try_to_owned()?),
             ("uuid".to_string(), Value::new(uuid).try_to_owned()?),
+            ("autoconnect".to_string(), Value::new(false).try_to_owned()?),
         ]);
 
         let address_v4_data = vec![HashMap::from([
@@ -1342,6 +1348,8 @@ mod test {
                 metric: Some(100)
             }]
         );
+        assert_eq!(connection.autoconnect, false);
+
         Ok(())
     }
 
@@ -2049,6 +2057,7 @@ mod test {
             ip_config,
             mac_address,
             mtu: 1500_u32,
+            autoconnect: false,
             ..Default::default()
         }
     }
@@ -2057,6 +2066,13 @@ mod test {
         let connection_dbus = conn_dbus.get("connection").unwrap();
         let id: &str = connection_dbus.get("id").unwrap().downcast_ref().unwrap();
         assert_eq!(id, "agama");
+
+        let autoconnect: bool = connection_dbus
+            .get("autoconnect")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(autoconnect, false);
 
         let ethernet_connection = conn_dbus.get(ETHERNET_KEY).unwrap();
         let mac_address: &str = ethernet_connection

@@ -203,10 +203,16 @@ pub struct NetworkConnection {
     pub mtu: u32,
     #[serde(rename = "ieee-8021x", skip_serializing_if = "Option::is_none")]
     pub ieee_8021x: Option<IEEE8021XSettings>,
+    #[serde(default = "default_true")]
+    pub autoconnect: bool,
 }
 
 fn is_zero<T: PartialEq + From<u16>>(u: &T) -> bool {
     *u == T::from(0)
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl NetworkConnection {
