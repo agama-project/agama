@@ -31,18 +31,127 @@ import {
   DescriptionListDescription,
 } from "@patternfly/react-core";
 
-type DriveEditorProps = { config: type.Drive };
+// Type guards.
 
-const DriveEditor: React.FunctionComponent = ({ config }: DriveEditorProps) => {
-  const search = config.search as type.AdvancedSearch;
+// @todo Find a good place for the type guards.
+function isFormattedDrive(drive: type.DriveElement): drive is type.FormattedDrive {
+  return "filesystem" in drive;
+}
 
+function isSearchAll(search: type.Search): search is type.SearchAll {
+  return search === "*";
+}
+
+function isSearchByName(search: type.Search): search is type.SearchByName {
+  return !isSearchAll(search) && typeof search === "string";
+}
+
+function isAdvancedSearch(search: type.Search): search is type.AdvancedSearch {
+  return !isSearchAll(search) && !isSearchByName(search);
+}
+
+function isPartitionToDelete(
+  partition: type.PartitionElement,
+): partition is type.PartitionToDelete {
+  return "delete" in partition;
+}
+
+function isPartitionToDeleteIfNeeded(
+  partition: type.PartitionElement,
+): partition is type.PartitionToDeleteIfNeeded {
+  return "deleteIfNeeded" in partition;
+}
+
+function isPartition(partition: type.PartitionElement): partition is type.Partition {
+  if ("generate" in partition) return false;
+
+  return !isPartitionToDelete(partition) && !isPartitionToDeleteIfNeeded(partition);
+}
+
+// Methods to get especific config data.
+
+type Partition = type.Partition | type.PartitionToDelete | type.PartitionToDeleteIfNeeded;
+
+function deviceName(device: type.DriveElement | Partition): string | undefined {
+  const search = device.search;
+  if (!isAdvancedSearch(search) || !search?.condition) return;
+
+  return search.condition.name;
+}
+
+function sizeInfo(size: type.Size): string {
+  if (typeof size === "string") {
+    return size;
+  } else if (typeof size === "number") {
+    return "";
+  } else if (Array.isArray(size)) {
+    return `${size[0]} - ${size[1]}`;
+  } else {
+    return `${size.min} - ${size.max}`;
+  }
+}
+
+function deviceSize(device: type.Partition | type.PartitionToDeleteIfNeeded): string | undefined {
+  const size = device.size;
+  if (!size) return;
+
+  return sizeInfo(size);
+}
+
+function driveInfo(drive: type.DriveElement): string {
+  if (isFormattedDrive(drive)) {
+    return drive.filesystem.type.toString();
+  } else {
+    const numPartitions = drive.partitions.length;
+    return `Partitioned (${numPartitions})`;
+  }
+}
+
+function drivePartitions(drive: type.DriveElement): Partition[] {
+  if (isFormattedDrive(drive)) return [];
+
+  const partitions = drive.partitions || [];
+  return partitions.filter(
+    (p) => isPartition(p) || isPartitionToDelete(p) || isPartitionToDeleteIfNeeded(p),
+  );
+}
+
+function partitionInfo(partition: Partition) {
+  if (isPartitionToDelete(partition)) {
+    return _("Delete");
+  } else if (isPartitionToDeleteIfNeeded(partition)) {
+    return `Size: ${deviceSize(partition)}`;
+  } else {
+    return `Size: ${deviceSize(partition)}, File system: `;
+  }
+}
+
+type PartitionEditorProps = { partition: Partition };
+
+function PartitionEditor({ partition }: PartitionEditorProps) {
   return (
     <DescriptionListGroup>
-      <DescriptionListTerm>{search.condition.name}</DescriptionListTerm>
-      <DescriptionListDescription>{_("Example")}</DescriptionListDescription>
+      <DescriptionListTerm>{deviceName(partition) || _("New partition")}</DescriptionListTerm>
+      <DescriptionListDescription>{partitionInfo(partition)}</DescriptionListDescription>
     </DescriptionListGroup>
   );
-};
+}
+
+type DriveEditorProps = { drive: type.DriveElement };
+
+function DriveEditor({ drive }: DriveEditorProps) {
+  return (
+    <>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{deviceName(drive) || _("unknown drive")}</DescriptionListTerm>
+        <DescriptionListDescription>{driveInfo(drive)}</DescriptionListDescription>
+      </DescriptionListGroup>
+      {drivePartitions(drive).map((p, i) => (
+        <PartitionEditor key={i} partition={p} />
+      ))}
+    </>
+  );
+}
 
 export default function ConfigEditor() {
   const config: type.Config = useConfig();
@@ -56,7 +165,7 @@ export default function ConfigEditor() {
   return (
     <DescriptionList isHorizontal>
       {solvedConfig.drives.map((d, i) => (
-        <DriveEditor key={i} config={d} />
+        <DriveEditor key={i} drive={d} />
       ))}
     </DescriptionList>
   );
