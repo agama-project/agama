@@ -24,6 +24,7 @@ import React, { useRef } from "react";
 import { Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page, Drawer } from "~/components/core/";
 import ProposalResultSection from "./ProposalResultSection";
+import ConfigEditor from "./ConfigEditor";
 import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _ } from "~/i18n";
@@ -93,6 +94,9 @@ export default function ProposalPage() {
               panelContent={<ProposalActionsDialog actions={actions} />}
             >
               <Stack hasGutter>
+                <Page.Section title={_("Config")}>
+                  <ConfigEditor />
+                </Page.Section>
                 <ProposalActionsSummary
                   system={systemDevices}
                   staging={stagingDevices}
