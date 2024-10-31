@@ -32,9 +32,11 @@ import { config } from "~/api/storage/types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const probe = (): Promise<any> => post("/api/storage/probe");
 
-const fetchConfig = (): Promise<config.Config> => get("/api/storage/config");
+const fetchConfig = (): Promise<config.Config | undefined> =>
+  get("/api/storage/config").then((config) => config.storage);
 
-const fetchSolvedConfig = (): Promise<config.Config> => get("/api/storage/solved_config");
+const fetchSolvedConfig = (): Promise<config.Config | undefined> =>
+  get("/api/storage/solved_config").then((config) => config.storage);
 
 const setConfig = (config: config.Config) => put("/api/storage/config", config);
 
