@@ -5,7 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Drive = FormattedDrive | PartitionedDrive;
+export type DriveElement = FormattedDrive | PartitionedDrive;
 export type Search = SearchAll | SearchByName | AdvancedSearch;
 /**
  * Shortcut to match all devices if there is any (equivalent to specify no conditions and to skip the entry if no device is found).
@@ -64,6 +64,12 @@ export type MountBy = "device" | "id" | "label" | "path" | "uuid";
  * Partition table type.
  */
 export type PtableType = "gpt" | "msdos" | "dasd";
+export type PartitionElement =
+  | SimpleVolumesGenerator
+  | AdvancedPartitionsGenerator
+  | Partition
+  | PartitionToDelete
+  | PartitionToDeleteIfNeeded;
 export type PartitionId = "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "bios_boot";
 export type Size = SizeValue | SizeTuple | SizeRange;
 export type SizeValue = SizeString | SizeBytes;
@@ -83,28 +89,17 @@ export type SizeBytes = number;
  */
 export type SizeTuple = [SizeValueWithCurrent] | [SizeValueWithCurrent, SizeValueWithCurrent];
 export type SizeValueWithCurrent = SizeValue | "current";
-export type Partitions = (
-  | SimpleVolumesGenerator
-  | AdvancedPartitionsGenerator
-  | Partition
-  | PartitionToDelete
-  | PartitionToDeleteIfNeeded
-)[];
-/**
- * Devices to use as physical volumes.
- */
-export type PhysicalVolumes = (Alias | SimplePhysicalVolumesGenerator | AdvancedPhysicalVolumesGenerator)[];
-/**
- * Number of stripes.
- */
-export type LogicalVolumeStripes = number;
-export type LogicalVolumes = (
+export type PhysicalVolumeElement = Alias | SimplePhysicalVolumesGenerator | AdvancedPhysicalVolumesGenerator;
+export type LogicalVolumeElement =
   | SimpleVolumesGenerator
   | AdvancedLogicalVolumesGenerator
   | LogicalVolume
   | ThinPoolLogicalVolume
-  | ThinLogicalVolume
-)[];
+  | ThinLogicalVolume;
+/**
+ * Number of stripes.
+ */
+export type LogicalVolumeStripes = number;
 
 /**
  * Storage config.
@@ -114,7 +109,7 @@ export interface Config {
   /**
    * Drives (disks, BIOS RAIDs and multipath devices).
    */
-  drives?: Drive[];
+  drives?: DriveElement[];
   /**
    * LVM volume groups.
    */
@@ -236,7 +231,7 @@ export interface PartitionedDrive {
   search?: Search;
   alias?: Alias;
   ptableType?: PtableType;
-  partitions?: Partitions;
+  partitions?: PartitionElement[];
 }
 /**
  * Automatically creates the default or mandatory volumes configured by the selected product.
@@ -292,8 +287,11 @@ export interface VolumeGroup {
    */
   name?: string;
   extentSize?: SizeValue;
-  physicalVolumes?: PhysicalVolumes;
-  logicalVolumes?: LogicalVolumes;
+  /**
+   * Devices to use as physical volumes.
+   */
+  physicalVolumes?: PhysicalVolumeElement[];
+  logicalVolumes?: LogicalVolumeElement[];
 }
 /**
  * Automatically creates the needed physical volumes in the indicated devices.
