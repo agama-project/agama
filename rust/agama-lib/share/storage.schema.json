@@ -10,7 +10,7 @@
     "drives": {
       "description": "Drives (disks, BIOS RAIDs and multipath devices).",
       "type": "array",
-      "items": { "$ref": "#/$defs/drive" }
+      "items": { "$ref": "#/$defs/driveElement" }
     },
     "volumeGroups": {
       "description": "LVM volume groups.",
@@ -37,7 +37,7 @@
         }
       }
     },
-    "drive": {
+    "driveElement": {
       "anyOf": [
         { "$ref": "#/$defs/formattedDrive" },
         { "$ref": "#/$defs/partitionedDrive" }
@@ -62,7 +62,102 @@
         "search": { "$ref": "#/$defs/search" },
         "alias": { "$ref": "#/$defs/alias" },
         "ptableType": { "$ref": "#/$defs/ptableType" },
-        "partitions": { "$ref": "#/$defs/partitions" }
+        "partitions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionElement" }
+        }
+      }
+    },
+    "ptableType": {
+      "description": "Partition table type.",
+      "$comment": "The partition table is created only if all the current partitions are deleted.",
+      "enum": ["gpt", "msdos", "dasd"]
+    },
+    "partitionElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/simpleVolumesGenerator" },
+        { "$ref": "#/$defs/advancedPartitionsGenerator" },
+        { "$ref": "#/$defs/partition" },
+        { "$ref": "#/$defs/partitionToDelete" },
+        { "$ref": "#/$defs/PartitionToDeleteIfNeeded" }
+      ]
+    },
+    "simpleVolumesGenerator": {
+      "description": "Automatically creates the default or mandatory volumes configured by the selected product.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate"],
+      "properties": {
+        "generate": {
+          "enum": ["default", "mandatory"]
+        }
+      }
+    },
+    "advancedPartitionsGenerator": {
+      "description": "Creates the default or mandatory partitions configured by the selected product.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate"],
+      "properties": {
+        "generate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["partitions"],
+          "properties": {
+            "partitions": {
+              "enum": ["default", "mandatory"]
+            },
+            "encryption": { "$ref": "#/$defs/encryption" }
+          }
+        }
+      }
+    },
+    "partition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "search": { "$ref": "#/$defs/search" },
+        "alias": { "$ref": "#/$defs/alias" },
+        "id": {
+          "title": "Partition id",
+          "enum": [
+            "linux",
+            "swap",
+            "lvm",
+            "raid",
+            "esp",
+            "prep",
+            "bios_boot"
+          ]
+        },
+        "size": { "$ref": "#/$defs/size" },
+        "encryption": { "$ref": "#/$defs/encryption" },
+        "filesystem": { "$ref": "#/$defs/filesystem" }
+      }
+    },
+    "partitionToDelete": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["delete", "search"],
+      "properties": {
+        "search": { "$ref": "#/$defs/search" },
+        "delete": {
+          "description": "Delete the partition.",
+          "const": true
+        }
+      }
+    },
+    "PartitionToDeleteIfNeeded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deleteIfNeeded", "search"],
+      "properties": {
+        "search": { "$ref": "#/$defs/search" },
+        "deleteIfNeeded": {
+          "description": "Delete the partition if needed to make space.",
+          "const": true
+        },
+        "size": { "$ref": "#/$defs/size" }
       }
     },
     "volumeGroup": {
@@ -77,42 +172,22 @@
         },
         "extentSize": { "$ref": "#/$defs/sizeValue" },
         "physicalVolumes": {
-          "title": "Physical volumes",
           "description": "Devices to use as physical volumes.",
           "type": "array",
-          "items": {
-            "anyOf": [
-              { "$ref": "#/$defs/alias" },
-              { "$ref": "#/$defs/simplePhysicalVolumesGenerator" },
-              { "$ref": "#/$defs/advancedPhysicalVolumesGenerator" }
-            ]
-          }
+          "items": { "$ref": "#/$defs/physicalVolumeElement" }
         },
         "logicalVolumes": {
-          "title": "Logical volumes",
           "type": "array",
-          "items": {
-            "anyOf": [
-              { "$ref": "#/$defs/simpleVolumesGenerator" },
-              { "$ref": "#/$defs/advancedLogicalVolumesGenerator" },
-              { "$ref": "#/$defs/logicalVolume" },
-              { "$ref": "#/$defs/thinPoolLogicalVolume" },
-              { "$ref": "#/$defs/thinLogicalVolume" }
-            ]
-          }
+          "items": { "$ref": "#/$defs/logicalVolumeElement" }
         }
       }
     },
-    "simpleVolumesGenerator": {
-      "description": "Automatically creates the default or mandatory volumes configured by the selected product.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["generate"],
-      "properties": {
-        "generate": {
-          "enum": ["default", "mandatory"]
-        }
-      }
+    "physicalVolumeElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/alias" },
+        { "$ref": "#/$defs/simplePhysicalVolumesGenerator" },
+        { "$ref": "#/$defs/advancedPhysicalVolumesGenerator" }
+      ]
     },
     "simplePhysicalVolumesGenerator": {
       "description": "Automatically creates the needed physical volumes in the indicated devices.",
@@ -145,6 +220,15 @@
           }
         }
       }
+    },
+    "logicalVolumeElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/simpleVolumesGenerator" },
+        { "$ref": "#/$defs/advancedLogicalVolumesGenerator" },
+        { "$ref": "#/$defs/logicalVolume" },
+        { "$ref": "#/$defs/thinPoolLogicalVolume" },
+        { "$ref": "#/$defs/thinLogicalVolume" }
+      ]
     },
     "advancedLogicalVolumesGenerator": {
       "description": "Automatically creates the default or mandatory logical volumes configured by the selected product.",
@@ -225,90 +309,6 @@
       "type": "integer",
       "minimum": 1,
       "maximum": 128
-    },
-    "ptableType": {
-      "description": "Partition table type.",
-      "$comment": "The partition table is created only if all the current partitions are deleted.",
-      "enum": ["gpt", "msdos", "dasd"]
-    },
-    "partitions": {
-      "type": "array",
-      "items": {
-        "anyOf": [
-          { "$ref": "#/$defs/simpleVolumesGenerator" },
-          { "$ref": "#/$defs/advancedPartitionsGenerator" },
-          { "$ref": "#/$defs/partition" },
-          { "$ref": "#/$defs/partitionToDelete" },
-          { "$ref": "#/$defs/PartitionToDeleteIfNeeded" }
-        ]
-      }
-    },
-    "advancedPartitionsGenerator": {
-      "description": "Creates the default or mandatory partitions configured by the selected product.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["generate"],
-      "properties": {
-        "generate": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["partitions"],
-          "properties": {
-            "partitions": {
-              "enum": ["default", "mandatory"]
-            },
-            "encryption": { "$ref": "#/$defs/encryption" }
-          }
-        }
-      }
-    },
-    "partition": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "search": { "$ref": "#/$defs/search" },
-        "alias": { "$ref": "#/$defs/alias" },
-        "id": {
-          "title": "Partition id",
-          "enum": [
-            "linux",
-            "swap",
-            "lvm",
-            "raid",
-            "esp",
-            "prep",
-            "bios_boot"
-          ]
-        },
-        "size": { "$ref": "#/$defs/size" },
-        "encryption": { "$ref": "#/$defs/encryption" },
-        "filesystem": { "$ref": "#/$defs/filesystem" }
-      }
-    },
-    "partitionToDelete": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["delete", "search"],
-      "properties": {
-        "search": { "$ref": "#/$defs/search" },
-        "delete": {
-          "description": "Delete the partition.",
-          "const": true
-        }
-      }
-    },
-    "PartitionToDeleteIfNeeded": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["deleteIfNeeded", "search"],
-      "properties": {
-        "search": { "$ref": "#/$defs/search" },
-        "deleteIfNeeded": {
-          "description": "Delete the partition if needed to make space.",
-          "const": true
-        },
-        "size": { "$ref": "#/$defs/size" }
-      }
     },
     "search": {
       "anyOf": [
