@@ -36,40 +36,22 @@ use serde::{Deserialize, Serialize};
 use tokio_util::io::ReaderStream;
 use utoipa::ToSchema;
 
-#[derive(Serialize, ToSchema)]
-pub struct LogsResponse {
-    /// Logs archive file name
-    logs: String,
-}
-
-// For development only - a mockup of logs archive creation.
-async fn store() -> Result<String, super::auth::AuthError>
-{
-    let options = LogOptions::default();
-    let path = storeLogs(options).unwrap();
-
-    Ok(path)
-}
-
 #[utoipa::path(get, path = "/logs", responses(
-    (status = 200, description = "Compressed Agama logs", body = LogsResponse)
+    (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream")
 ))]
 pub async fn logs() -> impl IntoResponse {
     // TODO: require authorization
     let mut headers = HeaderMap::new();
 
-    match store().await {
+    match storeLogs(LogOptions::default()) {
         Ok(path) => {
             let file = tokio::fs::File::open(path.clone()).await.unwrap();
             let stream = ReaderStream::new(file);
             let body = Body::from_stream(stream);
-            // TODO: should be only filename!
-            // tells the browser that body contains an attachment, not web page to be displayed
-            let disposition = format!("attachment; filename=\"{}\"", path);
 
-            headers.insert(header::CONTENT_TYPE, "text/toml; charset=utf-8".parse().unwrap());
-            headers.insert(header::CONTENT_DISPOSITION, disposition.parse().unwrap());
-            headers.insert(header::CONTENT_ENCODING, DEFAULT_COMPRESSION.1.parse().unwrap());
+            headers.insert(header::CONTENT_TYPE, HeaderValue::from_static("text/toml; charset=utf-8"));
+            headers.insert(header::CONTENT_DISPOSITION, HeaderValue::from_static("attachment; filename=\"agama-logs\""));
+            headers.insert(header::CONTENT_ENCODING, HeaderValue::from_static(DEFAULT_COMPRESSION.1));
 
             (headers, body)
         }

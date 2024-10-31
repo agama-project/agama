@@ -19,7 +19,6 @@
 // find current contact information at www.suse.com.
 
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
-use reqwest::Response;
 use reqwest::header::CONTENT_ENCODING;
 use std::io::Cursor;
 use std::path::Path;

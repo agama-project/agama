@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::error::ServiceError;
 use fs_extra::copy_items;
 use fs_extra::dir::CopyOptions;
 use std::fs;
@@ -279,20 +280,17 @@ fn set_archive_permissions(archive: &String) -> io::Result<()> {
 }
 
 /// Handler for the "agama logs store" subcommand
-pub fn store(options: LogOptions) -> Result<String, io::Error> {
+pub fn store(options: LogOptions) -> Result<PathBuf, ServiceError> {
     // preparation, e.g. in later features some log commands can be added / excluded per users request or
     let commands = options.commands;
     let paths = options.paths;
     let opt_dest = options.destination.into_os_string();
-    let destination = opt_dest.to_str().ok_or(io::Error::new(
-        io::ErrorKind::InvalidInput,
-        "Malformed destination path",
-    ))?;
+    let destination = opt_dest.to_str().ok_or(ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")))?;
     let result = format!("{}.{}", destination, DEFAULT_COMPRESSION.1);
 
     // create temporary directory where to collect all files (similar to what old save_y2logs
     // does)
-    let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
+    let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX).map_err(|_| ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")))?;
     let mut log_sources = paths_to_log_sources(&paths, &tmp_dir);
 
     log_sources.append(&mut cmds_to_log_sources(&commands, &tmp_dir));
@@ -302,21 +300,20 @@ pub fn store(options: LogOptions) -> Result<String, io::Error> {
     for log in log_sources.iter() {
         // for now keep directory structure close to the original
         // e.g. what was in /etc will be in /<tmp dir>/etc/
-
-        // TODO: deal with errors properly here (no more strings, and so on)
-        // may be switch to common agamalib's Service errors
-        let res = match fs::create_dir_all(log.to().parent().unwrap()) {
-            Ok(_p) => match log.store() {
-                Ok(_p) => "[Ok]",
-                Err(_e) => "[Failed]",
-            },
-            Err(_e) => "[Failed]",
-        };
+        if fs::create_dir_all(log.to().parent().unwrap()).is_ok() {
+            // if storing of one particular log fails, just ignore it
+            // file might be missing e.g. bcs the tool doesn't generate it anymore, ...
+            let _ = log.store().is_err();
+        } else {
+            return Err(ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")));
+        }
     }
 
-    compress_logs(&tmp_dir, &result);
+    if compress_logs(&tmp_dir, &result).is_err() {
+        return Err(ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")));
+    }
 
-    Ok(String::from(result))
+    Ok(PathBuf::from(result))
 }
 
 /// Handler for the "agama logs list" subcommand

@@ -24,7 +24,7 @@ use clap::Subcommand;
 use std::fs;
 use std::io;
 use std::os::unix::fs::PermissionsExt;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 
 /// A wrapper around println which shows (or not) the text depending on the boolean variable
@@ -34,15 +34,6 @@ fn showln(show: bool, text: &str) {
     }
 
     println!("{}", text);
-}
-
-/// A wrapper around println which shows (or not) the text depending on the boolean variable
-fn show(show: bool, text: &str) {
-    if !show {
-        return;
-    }
-
-    print!("{}", text);
 }
 
 // definition of "agama logs" subcommands, see clap crate for details
