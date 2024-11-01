@@ -285,12 +285,17 @@ pub fn store(options: LogOptions) -> Result<PathBuf, ServiceError> {
     let commands = options.commands;
     let paths = options.paths;
     let opt_dest = options.destination.into_os_string();
-    let destination = opt_dest.to_str().ok_or(ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")))?;
+    let destination = opt_dest
+        .to_str()
+        .ok_or(ServiceError::CannotGenerateLogs(String::from(
+            "Cannot collect the logs",
+        )))?;
     let result = format!("{}.{}", destination, DEFAULT_COMPRESSION.1);
 
     // create temporary directory where to collect all files (similar to what old save_y2logs
     // does)
-    let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX).map_err(|_| ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")))?;
+    let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)
+        .map_err(|_| ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")))?;
     let mut log_sources = paths_to_log_sources(&paths, &tmp_dir);
 
     log_sources.append(&mut cmds_to_log_sources(&commands, &tmp_dir));
@@ -305,12 +310,16 @@ pub fn store(options: LogOptions) -> Result<PathBuf, ServiceError> {
             // file might be missing e.g. bcs the tool doesn't generate it anymore, ...
             let _ = log.store().is_err();
         } else {
-            return Err(ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")));
+            return Err(ServiceError::CannotGenerateLogs(String::from(
+                "Cannot collect the logs",
+            )));
         }
     }
 
     if compress_logs(&tmp_dir, &result).is_err() {
-        return Err(ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")));
+        return Err(ServiceError::CannotGenerateLogs(String::from(
+            "Cannot collect the logs",
+        )));
     }
 
     Ok(PathBuf::from(result))

@@ -53,7 +53,7 @@ impl HTTPClient {
 
         // 3) store response's binary content (logs) in a file
         let mut file = std::fs::File::create(destination.as_path()).unwrap();
-        let mut content =  Cursor::new(response.bytes().await.unwrap());
+        let mut content = Cursor::new(response.bytes().await.unwrap());
 
         std::io::copy(&mut content, &mut file);
 

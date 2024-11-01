@@ -22,7 +22,7 @@
 
 use super::{auth::AuthError, state::ServiceState};
 use agama_lib::auth::{AuthToken, TokenClaims};
-use agama_lib::logs::{LogOptions, store as storeLogs, DEFAULT_COMPRESSION};
+use agama_lib::logs::{store as storeLogs, LogOptions, DEFAULT_COMPRESSION};
 use axum::{
     body::Body,
     extract::{Query, State},
@@ -49,9 +49,18 @@ pub async fn logs() -> impl IntoResponse {
             let stream = ReaderStream::new(file);
             let body = Body::from_stream(stream);
 
-            headers.insert(header::CONTENT_TYPE, HeaderValue::from_static("text/toml; charset=utf-8"));
-            headers.insert(header::CONTENT_DISPOSITION, HeaderValue::from_static("attachment; filename=\"agama-logs\""));
-            headers.insert(header::CONTENT_ENCODING, HeaderValue::from_static(DEFAULT_COMPRESSION.1));
+            headers.insert(
+                header::CONTENT_TYPE,
+                HeaderValue::from_static("text/toml; charset=utf-8"),
+            );
+            headers.insert(
+                header::CONTENT_DISPOSITION,
+                HeaderValue::from_static("attachment; filename=\"agama-logs\""),
+            );
+            headers.insert(
+                header::CONTENT_ENCODING,
+                HeaderValue::from_static(DEFAULT_COMPRESSION.1),
+            );
 
             (headers, body)
         }

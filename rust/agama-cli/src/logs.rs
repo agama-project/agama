@@ -72,9 +72,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
 
             Ok(())
         }
-        LogsCommands::List => {
-            Ok(())
-        }
+        LogsCommands::List => Ok(()),
     }
 }
 
