@@ -21,7 +21,7 @@
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 use reqwest::header::CONTENT_ENCODING;
 use std::io::Cursor;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 pub struct HTTPClient {
     client: BaseHTTPClient,
@@ -38,25 +38,35 @@ impl HTTPClient {
     /// will be added according to the compression type found in the response
     ///
     /// Returns path to logs
-    pub async fn store(&self, path: &Path) -> Result<String, ServiceError> {
-        // TODO: proper result/error handling - get rid ow unwraps
+    pub async fn store(&self, path: &Path) -> Result<PathBuf, ServiceError> {
         // 1) response with logs
         let response = self.client.get_binary("/logs").await?;
 
         // 2) find out the destination file name
-        // TODO: deal with missing header
-        // TODO: requires root - otherwise fails to get the header
-        let ext = &response.headers().get(CONTENT_ENCODING).unwrap();
+        let ext =
+            &response
+                .headers()
+                .get(CONTENT_ENCODING)
+                .ok_or(ServiceError::CannotGenerateLogs(String::from(
+                    "Invalid response",
+                )))?;
         let mut destination = path.to_path_buf();
 
-        destination.set_extension(ext.to_str().unwrap());
+        destination.set_extension(
+            ext.to_str()
+                .map_err(|_| ServiceError::CannotGenerateLogs(String::from("Invalid response")))?,
+        );
 
         // 3) store response's binary content (logs) in a file
-        let mut file = std::fs::File::create(destination.as_path()).unwrap();
-        let mut content = Cursor::new(response.bytes().await.unwrap());
+        let mut file = std::fs::File::create(destination.as_path()).map_err(|_| {
+            ServiceError::CannotGenerateLogs(String::from("Cannot store received response"))
+        })?;
+        let mut content = Cursor::new(response.bytes().await?);
 
-        std::io::copy(&mut content, &mut file);
+        std::io::copy(&mut content, &mut file).map_err(|_| {
+            ServiceError::CannotGenerateLogs(String::from("Cannot store received response"))
+        })?;
 
-        Ok(String::from(destination.as_path().to_str().unwrap()))
+        Ok(destination)
     }
 }

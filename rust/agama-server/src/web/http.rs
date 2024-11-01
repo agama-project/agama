@@ -37,7 +37,8 @@ use tokio_util::io::ReaderStream;
 use utoipa::ToSchema;
 
 #[utoipa::path(get, path = "/logs", responses(
-    (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream")
+    (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
+    (status = 404, description = "Agama logs not available")
 ))]
 pub async fn logs() -> impl IntoResponse {
     // TODO: require authorization

@@ -251,7 +251,7 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
         .status()?;
 
     if res.success() {
-        set_archive_permissions(result)
+        set_archive_permissions(PathBuf::from(result))
     } else {
         Err(io::Error::new(
             io::ErrorKind::Other,
@@ -262,21 +262,17 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
 
 /// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
 /// owner only.
-fn set_archive_permissions(archive: &String) -> io::Result<()> {
-    let attr = fs::metadata(archive)?;
+pub fn set_archive_permissions(archive: PathBuf) -> io::Result<()> {
+    let attr = fs::metadata(archive.as_path())?;
     let mut permissions = attr.permissions();
 
     // set the archive file permissions to -rw-------
     permissions.set_mode(0o600);
-    fs::set_permissions(archive, permissions)?;
+    fs::set_permissions(archive.clone(), permissions)?;
 
     // set the archive owner to root:root
     // note: std::os::unix::fs::chown is unstable for now
-    Command::new("chown")
-        .args(["root:root", archive.as_str()])
-        .status()?;
-
-    Ok(())
+    std::os::unix::fs::chown(archive.as_path(), Some(0), Some(0))
 }
 
 /// Handler for the "agama logs store" subcommand

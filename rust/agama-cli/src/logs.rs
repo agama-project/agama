@@ -20,12 +20,10 @@
 
 use agama_lib::base_http_client::BaseHTTPClient;
 use agama_lib::logs::http_client::HTTPClient;
+use agama_lib::logs::set_archive_permissions;
 use clap::Subcommand;
-use std::fs;
 use std::io;
-use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
-use std::process::Command;
 
 /// A wrapper around println which shows (or not) the text depending on the boolean variable
 fn showln(show: bool, text: &str) {
@@ -66,9 +64,15 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
             // for now we always use / add defaults if any
             let destination = parse_destination(destination)?;
 
-            // TODO: deal with return values
-            let destination = client.store(destination.as_path()).await.unwrap();
-            showln(verbose, format!("{:?}", destination).as_str());
+            let destination = client
+                .store(destination.as_path())
+                .await
+                .map_err(|_| anyhow::Error::msg("Downloading of logs failed"))?;
+
+            set_archive_permissions(destination.clone())
+                .map_err(|_| anyhow::Error::msg("Cannot store the logs"))?;
+
+            showln(verbose, format!("{:?}", destination.clone()).as_str());
 
             Ok(())
         }
@@ -109,25 +113,6 @@ fn parse_destination(destination: Option<PathBuf>) -> Result<PathBuf, io::Error>
 }
 
 const DEFAULT_RESULT: &str = "/tmp/agama-logs";
-
-/// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
-/// owner only.
-fn set_archive_permissions(archive: &String) -> io::Result<()> {
-    let attr = fs::metadata(archive)?;
-    let mut permissions = attr.permissions();
-
-    // set the archive file permissions to -rw-------
-    permissions.set_mode(0o600);
-    fs::set_permissions(archive, permissions)?;
-
-    // set the archive owner to root:root
-    // note: std::os::unix::fs::chown is unstable for now
-    Command::new("chown")
-        .args(["root:root", archive.as_str()])
-        .status()?;
-
-    Ok(())
-}
 
 /// Handler for the "agama logs list" subcommand
 fn list() {
