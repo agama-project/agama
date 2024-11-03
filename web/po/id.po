@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-10-30 02:42+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -1185,7 +1185,7 @@ msgid "Activate disks"
 msgstr "Mengaktifkan disk"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1989,7 +1989,7 @@ msgid "DASD devices selection table"
 msgstr "Belum ada perangkat yang dipilih"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 #, fuzzy
 msgid "Back to device selection"
 msgstr "Belum ada perangkat yang dipilih"
@@ -2434,7 +2434,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Silakan coba aktifkan disk zFCP."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Silakan coba aktifkan pengontrol zFCP."
 
@@ -2442,27 +2442,27 @@ msgstr "Silakan coba aktifkan pengontrol zFCP."
 msgid "No zFCP disks found."
 msgstr "Tidak ditemukan disk zFCP."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "Mengaktifkan disk zFCP"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Aktifkan disk baru"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Disk"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr ""
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "Tidak ditemukan pengontrol zFCP."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "Baca perangkat zFCP"
 

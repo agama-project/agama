@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-10-30 02:42+0000\n"
 "PO-Revision-Date: 2024-07-05 14:47+0000\n"
 "Last-Translator: Rodrigo Macedo <sottomaiormacedotec@sottomaiormacedo.tech>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
@@ -1158,7 +1158,7 @@ msgid "Activate disks"
 msgstr "Ativar discos"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1926,7 +1926,7 @@ msgid "DASD devices selection table"
 msgstr "Nenhum dispositivo selecionado ainda"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 #, fuzzy
 msgid "Back to device selection"
 msgstr "Nenhum dispositivo selecionado ainda"
@@ -2368,7 +2368,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Por favor, tente ativar um disco zFCP."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Por favor, tente ativar um controlador zFCP."
 
@@ -2376,27 +2376,27 @@ msgstr "Por favor, tente ativar um controlador zFCP."
 msgid "No zFCP disks found."
 msgstr "Nenhum disco zFCP encontrado."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "Ativar disco zFCP"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Ativar novo disco"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Discos"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr ""
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "Nenhum controlador zFCP encontrado."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "Ler dispositivos zFCP"
 
