@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::logs::LogsLists;
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 use reqwest::header::CONTENT_ENCODING;
 use std::io::Cursor;
@@ -40,7 +41,7 @@ impl HTTPClient {
     /// Returns path to logs
     pub async fn store(&self, path: &Path) -> Result<PathBuf, ServiceError> {
         // 1) response with logs
-        let response = self.client.get_binary("/logs").await?;
+        let response = self.client.get_binary("/logs/store").await?;
 
         // 2) find out the destination file name
         let ext =
@@ -68,5 +69,11 @@ impl HTTPClient {
         })?;
 
         Ok(destination)
+    }
+
+    /// Asks backend for lists of log files and commands used for creating logs archive returned by
+    /// store (/logs/store) backed HTTP API command
+    pub async fn list(&self) -> Result<LogsLists, ServiceError> {
+        Ok(self.client.get("/logs/list").await?)
     }
 }

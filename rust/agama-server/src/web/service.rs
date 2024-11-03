@@ -108,7 +108,7 @@ impl MainServiceBuilder {
             ))
             .route("/ping", get(super::http::ping))
             .route("/auth", post(login).get(session).delete(logout))
-            .route("/logs", get(super::http::logs));
+            .nest("/logs", super::http::logs_router());
 
         tracing::info!("Serving static files from {}", self.public_dir.display());
         let serve = ServeDir::new(self.public_dir).precompressed_gzip();

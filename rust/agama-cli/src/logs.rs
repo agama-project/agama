@@ -76,7 +76,24 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
 
             Ok(())
         }
-        LogsCommands::List => Ok(()),
+        LogsCommands::List => {
+            let logs_list = client
+                .list()
+                .await
+                .map_err(|_| anyhow::Error::msg("Cannot get the logs list"))?;
+
+            println!("Log files:");
+            for f in logs_list.files.iter() {
+                println!("\t{}", f);
+            }
+
+            println!("Log commands:");
+            for c in logs_list.commands.iter() {
+                println!("\t{}", c);
+            }
+
+            Ok(())
+        }
     }
 }
 
@@ -113,8 +130,3 @@ fn parse_destination(destination: Option<PathBuf>) -> Result<PathBuf, io::Error>
 }
 
 const DEFAULT_RESULT: &str = "/tmp/agama-logs";
-
-/// Handler for the "agama logs list" subcommand
-fn list() {
-    // TODO: Needs new API too
-}

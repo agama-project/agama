@@ -22,13 +22,16 @@
 
 use super::{auth::AuthError, state::ServiceState};
 use agama_lib::auth::{AuthToken, TokenClaims};
-use agama_lib::logs::{store as storeLogs, LogOptions, DEFAULT_COMPRESSION};
+use agama_lib::logs::{
+    list as listLogs, store as storeLogs, LogOptions, LogsLists, DEFAULT_COMPRESSION,
+};
 use axum::{
     body::Body,
     extract::{Query, State},
     http::{header, HeaderMap, HeaderValue, StatusCode},
     response::IntoResponse,
-    Json,
+    routing::get,
+    Json, Router,
 };
 use axum_extra::extract::cookie::CookieJar;
 use pam::Client;
@@ -36,11 +39,18 @@ use serde::{Deserialize, Serialize};
 use tokio_util::io::ReaderStream;
 use utoipa::ToSchema;
 
-#[utoipa::path(get, path = "/logs", responses(
+/// Creates router for handling /logs/* endpoints
+pub fn logs_router() -> Router<ServiceState> {
+    Router::new()
+        .route("/store", get(logs_store))
+        .route("/list", get(logs_list))
+}
+
+#[utoipa::path(get, path = "/logs/store", responses(
     (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
     (status = 404, description = "Agama logs not available")
 ))]
-pub async fn logs() -> impl IntoResponse {
+async fn logs_store() -> impl IntoResponse {
     // TODO: require authorization
     let mut headers = HeaderMap::new();
 
@@ -70,6 +80,13 @@ pub async fn logs() -> impl IntoResponse {
             (headers, Body::empty())
         }
     }
+}
+
+#[utoipa::path(get, path = "/logs/list", responses(
+    (status = 200, description = "Lists of collected logs", body = LogsLists)
+))]
+pub async fn logs_list() -> Json<LogsLists> {
+    Json(listLogs(LogOptions::default()))
 }
 
 #[derive(Serialize, ToSchema)]

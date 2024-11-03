@@ -21,6 +21,7 @@
 use crate::error::ServiceError;
 use fs_extra::copy_items;
 use fs_extra::dir::CopyOptions;
+use serde::Serialize;
 use std::fs;
 use std::fs::File;
 use std::io;
@@ -29,6 +30,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempfile::TempDir;
+use utoipa::ToSchema;
 
 pub mod http_client;
 
@@ -321,21 +323,16 @@ pub fn store(options: LogOptions) -> Result<PathBuf, ServiceError> {
     Ok(PathBuf::from(result))
 }
 
+#[derive(Serialize, serde::Deserialize, ToSchema)]
+pub struct LogsLists {
+    pub commands: Vec<String>,
+    pub files: Vec<String>,
+}
+
 /// Handler for the "agama logs list" subcommand
-fn list(options: LogOptions) {
-    for list in [
-        ("Log paths: ", options.paths),
-        (
-            "Log commands: ",
-            options.commands.iter().map(|c| c.0.clone()).collect(),
-        ),
-    ] {
-        println!("{}", list.0);
-
-        for item in list.1.iter() {
-            println!("\t{}", item);
-        }
-
-        println!();
+pub fn list(options: LogOptions) -> LogsLists {
+    LogsLists {
+        commands: options.commands.iter().map(|c| c.0.clone()).collect(),
+        files: options.paths.clone(),
     }
 }
