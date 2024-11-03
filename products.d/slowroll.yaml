@@ -12,7 +12,17 @@ description: 'An experimental and slightly slower rolling release of openSUSE
 icon: Slowroll.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
-  description: {}
+  description:
+    ca: Una versió experimental d'openSUSE però lleugerament més lenta quant a la
+      continuïtat, dissenyada per actualitzar-se amb menys freqüència que el
+      Tumbleweed però més sovint que el Leap, sense obligar els usuaris a triar
+      entre paquets estables i nous.
+    ja: 実験的なディストリビューションではありますが、 Tumbleweed よりは比較的ゆっくりした、かつ Leap よりは速いペースで公開される
+      openSUSE ローリングリリース型ディストリビューションです。 "安定性" と最新パッケージの中間を目指しています。
+    sv: En experimentell och något långsammare rullande utgåva av openSUSE utformad
+      för att få nya paketuppdateringar mer sällan än Tumbleweed men oftare än
+      Leap utan att tvinga användarna att välja mellan "stabila" eller nyare
+      paket.
 software:
   installation_repositories:
     - url: https://download.opensuse.org/slowroll/repo/oss/
