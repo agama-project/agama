@@ -60,6 +60,9 @@ async fn logs_store() -> impl IntoResponse {
             let stream = ReaderStream::new(file);
             let body = Body::from_stream(stream);
 
+            // Cleanup - remove temporary file, no one cares it it fails
+            let _ = std::fs::remove_file(path.clone());
+
             headers.insert(
                 header::CONTENT_TYPE,
                 HeaderValue::from_static("text/toml; charset=utf-8"),

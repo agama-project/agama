@@ -23,6 +23,7 @@ async-trait = "0.1.83"
 reqwest = { version = "0.11", features = ["json"] }
 url = "2.5.2"
 inquire = { version = "0.7.5", default-features = false, features = ["crossterm", "one-liners"] }
+chrono = "0.4.38"
 
 [[bin]]
 name = "agama"

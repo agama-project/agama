@@ -62,17 +62,16 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
         } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
-            let destination = parse_destination(destination)?;
-
-            let destination = client
-                .store(destination.as_path())
+            let dst_file = parse_destination(destination)?;
+            let result = client
+                .store(dst_file.as_path())
                 .await
                 .map_err(|_| anyhow::Error::msg("Downloading of logs failed"))?;
 
-            set_archive_permissions(destination.clone())
+            set_archive_permissions(result.clone())
                 .map_err(|_| anyhow::Error::msg("Cannot store the logs"))?;
 
-            showln(verbose, format!("{:?}", destination.clone()).as_str());
+            showln(verbose, format!("{:?}", result.clone()).as_str());
 
             Ok(())
         }
@@ -108,7 +107,11 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
 ///     be appended later on (depends on used compression)
 fn parse_destination(destination: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let err = io::Error::new(io::ErrorKind::InvalidInput, "Invalid destination path");
-    let mut buffer = destination.unwrap_or(PathBuf::from(DEFAULT_RESULT));
+    let mut buffer = destination.unwrap_or(PathBuf::from(format!(
+        "{}-{}",
+        DEFAULT_RESULT,
+        chrono::prelude::Utc::now().timestamp()
+    )));
     let path = buffer.as_path();
 
     // existing directory -> append an archive name
