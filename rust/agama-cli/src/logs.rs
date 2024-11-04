@@ -25,23 +25,11 @@ use clap::Subcommand;
 use std::io;
 use std::path::PathBuf;
 
-/// A wrapper around println which shows (or not) the text depending on the boolean variable
-fn showln(show: bool, text: &str) {
-    if !show {
-        return;
-    }
-
-    println!("{}", text);
-}
-
 // definition of "agama logs" subcommands, see clap crate for details
 #[derive(Subcommand, Debug)]
 pub enum LogsCommands {
     /// Collect and store the logs in a tar archive.
     Store {
-        #[clap(long, short = 'v')]
-        /// Verbose output
-        verbose: bool,
         #[clap(long, short = 'd')]
         /// Path to destination directory and, optionally, the archive file name. The extension will
         /// be added automatically.
@@ -56,10 +44,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
     let client = HTTPClient::new(client)?;
 
     match subcommand {
-        LogsCommands::Store {
-            verbose,
-            destination,
-        } => {
+        LogsCommands::Store { destination } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
             let dst_file = parse_destination(destination)?;
@@ -71,7 +56,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
             set_archive_permissions(result.clone())
                 .map_err(|_| anyhow::Error::msg("Cannot store the logs"))?;
 
-            showln(verbose, format!("{:?}", result.clone()).as_str());
+            println!("{}", result.clone().display());
 
             Ok(())
         }

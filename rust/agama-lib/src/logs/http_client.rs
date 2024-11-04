@@ -41,7 +41,7 @@ impl HTTPClient {
     /// Returns path to logs
     pub async fn store(&self, path: &Path) -> Result<PathBuf, ServiceError> {
         // 1) response with logs
-        let response = self.client.get_binary("/logs/store").await?;
+        let response = self.client.get_raw("/logs/store").await?;
 
         // 2) find out the destination file name
         let ext =

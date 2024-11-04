@@ -228,7 +228,7 @@ impl BaseHTTPClient {
 
     /// Returns raw reqwest::Response. Use e.g. in case when response content is not
     /// JSON body but e.g. binary data
-    pub async fn get_binary(&self, path: &str) -> Result<Response, ServiceError> {
+    pub async fn get_raw(&self, path: &str) -> Result<Response, ServiceError> {
         self.client
             .get(self.url(path))
             .send()
