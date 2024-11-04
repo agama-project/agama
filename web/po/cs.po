@@ -8,17 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
-"PO-Revision-Date: 2024-09-23 14:19+0000\n"
-"Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
-"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
-">\n"
+"POT-Creation-Date: 2024-10-30 02:42+0000\n"
+"PO-Revision-Date: 2024-11-01 10:48+0000\n"
+"Last-Translator: Anežka Lábusová <instantgamer@email.cz>\n"
+"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/>"
+"\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.8.1\n"
 
 #: src/components/core/ChangeProductLink.tsx:39
 msgid "Change product"
@@ -1142,7 +1142,7 @@ msgid "Activate disks"
 msgstr "Aktivace disků"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1906,7 +1906,7 @@ msgid "DASD devices selection table"
 msgstr "Tabulka výběru zařízení DASD"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 msgid "Back to device selection"
 msgstr "Zpět na výběr zařízení"
 
@@ -1961,7 +1961,7 @@ msgstr "Údaje o oddílech"
 
 #: src/components/storage/dasd/DASDTable.tsx:95
 msgid "Cannot format all selected devices"
-msgstr ""
+msgstr "Nelze formátovat všechna vybraná zařízení"
 
 #: src/components/storage/dasd/DASDTable.tsx:99
 msgid ""
@@ -2341,7 +2341,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Zkuste aktivovat disk zFCP."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Zkuste aktivovat řadič zFCP."
 
@@ -2349,27 +2349,27 @@ msgstr "Zkuste aktivovat řadič zFCP."
 msgid "No zFCP disks found."
 msgstr "Nebyly nalezeny žádné disky zFCP."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "Aktivovat disk zFCP"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Aktivace nového disku"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Disky"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr "Řadiče"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "Nebyly nalezeny žádné řadiče zFCP."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "Načtení zařízení zFCP"
 

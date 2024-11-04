@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
 # This file is distributed under the same license as the PACKAGE package.
-# Luna Jernberg <bittin@opensuse.org>, 2023.
+# Luna Jernberg <bittin@opensuse.org>, 2023, 2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
-"PO-Revision-Date: 2024-09-24 08:54+0000\n"
+"POT-Creation-Date: 2024-10-30 02:42+0000\n"
+"PO-Revision-Date: 2024-10-29 12:48+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -116,7 +116,6 @@ msgid "Reboot"
 msgstr "Starta om"
 
 #: src/components/core/InstallationProgress.tsx:42
-#, fuzzy
 msgid "Installing the system, please wait..."
 msgstr "Installerar systemet, vänligen vänta ..."
 
@@ -157,11 +156,12 @@ msgstr "Innan du startar installationen måste du åtgärda följande problem:"
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
+"Installationen är inte möjlig ännu på grund av problem. Kontrollera dem på "
+"översikt sidan."
 
 #: src/components/core/IssuesLink.tsx:52
-#, fuzzy
 msgid "Installation issues"
-msgstr "Installation slutförd"
+msgstr "Installationsproblem"
 
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
@@ -346,16 +346,14 @@ msgid " Timezone selection"
 msgstr " Tidszon val"
 
 #: src/components/layout/Header.tsx:81
-#, fuzzy
 msgid "Options toggle"
-msgstr "Alternativ"
+msgstr "Växla mellan alternativ"
 
 #: src/components/layout/Header.tsx:92
 msgid "Download logs"
 msgstr "Ladda ner loggar"
 
 #: src/components/layout/Header.tsx:98
-#, fuzzy
 msgid "Installer Options"
 msgstr "Installationsalternativ"
 
@@ -646,9 +644,8 @@ msgid "configured"
 msgstr "konfigurerad"
 
 #: src/components/network/WifiNetworksListPage.tsx:267
-#, fuzzy
 msgid "No visible Wi-Fi networks found"
-msgstr "Synliga WiFi nätverk"
+msgstr "Inga synliga WiFi nätverk hittades"
 
 #: src/components/network/WifiNetworksListPage.tsx:271
 msgid "Visible Wi-Fi networks"
@@ -683,9 +680,8 @@ msgid "Software"
 msgstr "Programvara"
 
 #: src/components/overview/OverviewPage.tsx:87
-#, fuzzy
 msgid "Installation blocking issues"
-msgstr "Installation slutförd"
+msgstr "Installationsblockerande problem"
 
 #: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
@@ -1154,7 +1150,7 @@ msgid "Activate disks"
 msgstr "Aktivera diskar"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1915,7 +1911,7 @@ msgid "DASD devices selection table"
 msgstr "DASD-enhetsvalstabell"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 msgid "Back to device selection"
 msgstr "Tillbaka till val av enhet"
 
@@ -1969,26 +1965,28 @@ msgid "Partition Info"
 msgstr "Partitionsinformation"
 
 #: src/components/storage/dasd/DASDTable.tsx:95
-#, fuzzy
 msgid "Cannot format all selected devices"
-msgstr "Väntar på information om den valda enheten"
+msgstr "Kan inte formatera alla valda enheter"
 
 #: src/components/storage/dasd/DASDTable.tsx:99
 msgid ""
 "Offline devices must be activated before formatting them. Please, unselect "
 "or activate the devices listed below and try it again"
 msgstr ""
+"Offlineenheter måste aktiveras innan de formateras. Vänligen avmarkera eller "
+"aktivera enheterna listade nedan och försök igen"
 
 #: src/components/storage/dasd/DASDTable.tsx:111
-#, fuzzy
 msgid "Format selected devices?"
-msgstr "Formatera enheten"
+msgstr "Formatera valda enheter?"
 
 #: src/components/storage/dasd/DASDTable.tsx:115
 msgid ""
 "This action could destroy any data stored on the devices listed below. "
 "Please, confirm that you really want to continue."
 msgstr ""
+"Denna åtgärd kan förstöra all data som lagras på enheterna som anges nedan. "
+"Vänligen bekräfta att du verkligen vill fortsätta."
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/dasd/DASDTable.tsx:174
@@ -2036,9 +2034,8 @@ msgid "Remove max channel filter"
 msgstr "Ta bort maximum kanal filter"
 
 #: src/components/storage/dasd/DASDTable.tsx:385
-#, fuzzy
 msgid "DASDs table section"
-msgstr "Val av programvara"
+msgstr "DASDs tabellsektion"
 
 #: src/components/storage/device-utils.tsx:75
 msgid "Unused space"
@@ -2352,7 +2349,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Snälla, försök att aktivera en zFCP-disk."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Snälla, försök att aktivera en zFCP-kontroller."
 
@@ -2360,27 +2357,27 @@ msgstr "Snälla, försök att aktivera en zFCP-kontroller."
 msgid "No zFCP disks found."
 msgstr "Inga zFCP-diskar hittades."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "Aktivera en zFCP-disk"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Aktivera ny disk"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Diskar"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr "Styrenheter"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "Inga zFCP-kontroller hittades."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "Läs zFCP-enheter"
 

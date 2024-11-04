@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
-"PO-Revision-Date: 2024-09-19 06:48+0000\n"
+"POT-Creation-Date: 2024-10-30 02:42+0000\n"
+"PO-Revision-Date: 2024-10-30 00:48+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -116,7 +116,6 @@ msgid "Reboot"
 msgstr "再起動"
 
 #: src/components/core/InstallationProgress.tsx:42
-#, fuzzy
 msgid "Installing the system, please wait..."
 msgstr "システムをインストールしています。しばらくお待ちください..."
 
@@ -157,11 +156,11 @@ msgstr "インストールを開始する前に、下記の問題に対応する
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
+"問題があるためインストールできません。概要ページで問題点をご確認ください。"
 
 #: src/components/core/IssuesLink.tsx:52
-#, fuzzy
 msgid "Installation issues"
-msgstr "インストール完了"
+msgstr "インストールの問題点"
 
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
@@ -348,16 +347,14 @@ msgid " Timezone selection"
 msgstr " タイムゾーンの選択"
 
 #: src/components/layout/Header.tsx:81
-#, fuzzy
 msgid "Options toggle"
-msgstr "オプション"
+msgstr "オプションの切り替え"
 
 #: src/components/layout/Header.tsx:92
 msgid "Download logs"
 msgstr "ログのダウンロード"
 
 #: src/components/layout/Header.tsx:98
-#, fuzzy
 msgid "Installer Options"
 msgstr "インストーラのオプション"
 
@@ -649,9 +646,8 @@ msgid "configured"
 msgstr "設定済み"
 
 #: src/components/network/WifiNetworksListPage.tsx:267
-#, fuzzy
 msgid "No visible Wi-Fi networks found"
-msgstr "検出された Wi-Fi ネットワーク"
+msgstr "検出された Wi-Fi ネットワークはありません"
 
 #: src/components/network/WifiNetworksListPage.tsx:271
 msgid "Visible Wi-Fi networks"
@@ -686,9 +682,8 @@ msgid "Software"
 msgstr "ソフトウエア"
 
 #: src/components/overview/OverviewPage.tsx:87
-#, fuzzy
 msgid "Installation blocking issues"
-msgstr "インストール完了"
+msgstr "インストールを阻害する問題点"
 
 #: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
@@ -1148,7 +1143,7 @@ msgid "Activate disks"
 msgstr "ディスクの有効化"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1906,7 +1901,7 @@ msgid "DASD devices selection table"
 msgstr "DASD デバイス選択テーブル"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 msgid "Back to device selection"
 msgstr "デバイス選択に戻る"
 
@@ -1960,26 +1955,28 @@ msgid "Partition Info"
 msgstr "パーティション情報"
 
 #: src/components/storage/dasd/DASDTable.tsx:95
-#, fuzzy
 msgid "Cannot format all selected devices"
-msgstr "選択したデバイスに関する情報を待機しています"
+msgstr "選択した全てのデバイスをフォーマットできません"
 
 #: src/components/storage/dasd/DASDTable.tsx:99
 msgid ""
 "Offline devices must be activated before formatting them. Please, unselect "
 "or activate the devices listed below and try it again"
 msgstr ""
+"フォーマットを実施する前にオフラインのデバイスを有効化する必要があります。下"
+"記に示されたデバイスの選択を外すか、有効化してからやり直してください"
 
 #: src/components/storage/dasd/DASDTable.tsx:111
-#, fuzzy
 msgid "Format selected devices?"
-msgstr "デバイスのフォーマット"
+msgstr "選択したデバイスをフォーマットしますか？"
 
 #: src/components/storage/dasd/DASDTable.tsx:115
 msgid ""
 "This action could destroy any data stored on the devices listed below. "
 "Please, confirm that you really want to continue."
 msgstr ""
+"この処理により、下記に示したデバイス内のデータが全て消去されます。続行して問"
+"題ないかどうか、ご確認ください。"
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/dasd/DASDTable.tsx:174
@@ -2027,9 +2024,8 @@ msgid "Remove max channel filter"
 msgstr "最大チャネルのフィルタを削除"
 
 #: src/components/storage/dasd/DASDTable.tsx:385
-#, fuzzy
 msgid "DASDs table section"
-msgstr "ソフトウエア選択"
+msgstr "DASD 表選択"
 
 #: src/components/storage/device-utils.tsx:75
 msgid "Unused space"
@@ -2344,7 +2340,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "zFCP ディスクの有効化をお試しください。"
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "zFCP コントローラの有効化をお試しください。"
 
@@ -2352,27 +2348,27 @@ msgstr "zFCP コントローラの有効化をお試しください。"
 msgid "No zFCP disks found."
 msgstr "zFCP ディスクが見つかりませんでした。"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "zFCP ディスクの有効化"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "新しいディスクの有効化"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "ディスク"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr "コントローラ"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "zFCP コントローラが見つかりませんでした。"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "zFCP デバイスの読み込み"
 
