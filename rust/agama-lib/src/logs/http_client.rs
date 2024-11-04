@@ -41,7 +41,7 @@ impl HTTPClient {
     /// Returns path to logs
     pub async fn store(&self, path: &Path) -> Result<PathBuf, ServiceError> {
         // 1) response with logs
-        let response = self.client.get_raw("/logs/store").await?;
+        let response = self.client.get_raw("/manager/logs/store").await?;
 
         // 2) find out the destination file name
         let ext =
@@ -74,6 +74,6 @@ impl HTTPClient {
     /// Asks backend for lists of log files and commands used for creating logs archive returned by
     /// store (/logs/store) backed HTTP API command
     pub async fn list(&self) -> Result<LogsLists, ServiceError> {
-        Ok(self.client.get("/logs/list").await?)
+        Ok(self.client.get("/manager/logs/list").await?)
     }
 }

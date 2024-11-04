@@ -22,75 +22,17 @@
 
 use super::{auth::AuthError, state::ServiceState};
 use agama_lib::auth::{AuthToken, TokenClaims};
-use agama_lib::logs::{
-    list as listLogs, store as storeLogs, LogOptions, LogsLists, DEFAULT_COMPRESSION,
-};
 use axum::{
     body::Body,
     extract::{Query, State},
     http::{header, HeaderMap, HeaderValue, StatusCode},
     response::IntoResponse,
-    routing::get,
-    Json, Router,
+    Json,
 };
 use axum_extra::extract::cookie::CookieJar;
 use pam::Client;
 use serde::{Deserialize, Serialize};
-use tokio_util::io::ReaderStream;
 use utoipa::ToSchema;
-
-/// Creates router for handling /logs/* endpoints
-pub fn logs_router() -> Router<ServiceState> {
-    Router::new()
-        .route("/store", get(logs_store))
-        .route("/list", get(logs_list))
-}
-
-#[utoipa::path(get, path = "/logs/store", responses(
-    (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
-    (status = 404, description = "Agama logs not available")
-))]
-async fn logs_store() -> impl IntoResponse {
-    // TODO: require authorization
-    let mut headers = HeaderMap::new();
-
-    match storeLogs(LogOptions::default()) {
-        Ok(path) => {
-            let file = tokio::fs::File::open(path.clone()).await.unwrap();
-            let stream = ReaderStream::new(file);
-            let body = Body::from_stream(stream);
-
-            // Cleanup - remove temporary file, no one cares it it fails
-            let _ = std::fs::remove_file(path.clone());
-
-            headers.insert(
-                header::CONTENT_TYPE,
-                HeaderValue::from_static("text/toml; charset=utf-8"),
-            );
-            headers.insert(
-                header::CONTENT_DISPOSITION,
-                HeaderValue::from_static("attachment; filename=\"agama-logs\""),
-            );
-            headers.insert(
-                header::CONTENT_ENCODING,
-                HeaderValue::from_static(DEFAULT_COMPRESSION.1),
-            );
-
-            (headers, body)
-        }
-        Err(_) => {
-            // fill in with meaningful headers
-            (headers, Body::empty())
-        }
-    }
-}
-
-#[utoipa::path(get, path = "/logs/list", responses(
-    (status = 200, description = "Lists of collected logs", body = LogsLists)
-))]
-pub async fn logs_list() -> Json<LogsLists> {
-    Json(listLogs(LogOptions::default()))
-}
 
 #[derive(Serialize, ToSchema)]
 pub struct PingResponse {
