@@ -30,6 +30,7 @@ import {
   DescriptionListGroup,
   DescriptionListDescription,
 } from "@patternfly/react-core";
+import { generateDevices } from "~/storage/model";
 
 // Type guards.
 
@@ -161,6 +162,9 @@ export default function ConfigEditor() {
   console.log("solved config: ", solvedConfig);
 
   if (!solvedConfig) return null;
+
+  const devices = generateDevices(config, solvedConfig);
+  console.log("devices: ", devices);
 
   return (
     <DescriptionList isHorizontal>
