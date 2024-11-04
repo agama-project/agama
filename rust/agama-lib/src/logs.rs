@@ -32,8 +32,6 @@ use std::process::Command;
 use tempfile::TempDir;
 use utoipa::ToSchema;
 
-pub mod http_client;
-
 const DEFAULT_COMMANDS: [(&str, &str); 3] = [
     // (<command to be executed>, <file name used for storing result of the command>)
     ("journalctl -u agama", "agama"),
