@@ -46,14 +46,13 @@ D-Bus service exposing some YaST features that are useful for Agama.
 %build
 
 %install
-BASE=%{mod_full_name}
-install -D -m 0644 ${BASE}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/agama.conf
+install -D -m 0644 %{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/agama.conf
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
-install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services ${BASE}/share/org.opensuse.Agama*.service
-install -D -m 0644 ${BASE}/share/agama.service %{buildroot}%{_unitdir}/agama.service
-install -D -m 0644 ${BASE}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
+install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{mod_full_name}/share/org.opensuse.Agama*.service
+install -D -m 0644 %{mod_full_name}/share/agama.service %{buildroot}%{_unitdir}/agama.service
+install -D -m 0644 %{mod_full_name}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
 install --directory %{buildroot}/usr/share/agama/conf.d
-install -D -m 0644 ${BASE}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
+install -D -m 0644 %{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
 
 # run a script for installing the translations
 sh "%{SOURCE2}" "%{SOURCE1}"
