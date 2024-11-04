@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov  4 07:51:55 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- Followup of original fix for gh#agama-project/agama#1495
+- Implemented HTTP API for downloading logs
+- Adapted CLI command "logs" to use the HTTP API for downloading logs
+
+-------------------------------------------------------------------
 Wed Oct 30 15:27:11 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add autoconnect property for network connections
