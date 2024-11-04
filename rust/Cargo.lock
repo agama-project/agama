@@ -28,7 +28,6 @@ dependencies = [
  "clap",
  "console",
  "curl",
- "fs_extra",
  "indicatif",
  "inquire",
  "nix 0.27.1",

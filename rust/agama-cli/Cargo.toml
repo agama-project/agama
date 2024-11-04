@@ -14,9 +14,7 @@ indicatif= "0.17.8"
 thiserror = "1.0.64"
 console = "0.15.8"
 anyhow = "1.0.89"
-# tempdir, fs_extra, nix is for logs (sub)command
 tempfile = "3.13.0"
-fs_extra = "1.3.0"
 nix = { version = "0.27.1", features = ["user"] }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
 async-trait = "0.1.83"
