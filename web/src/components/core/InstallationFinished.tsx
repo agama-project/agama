@@ -46,7 +46,7 @@ import { useProposalResult } from "~/queries/storage";
 import { finishInstallation } from "~/api/manager";
 import { InstallationPhase } from "~/types/status";
 import { Navigate } from "react-router-dom";
-import { PATHS } from "~/router";
+import { ROOT as PATHS } from "~/routes/paths";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);

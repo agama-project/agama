@@ -24,10 +24,9 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { useAllIssues } from "~/queries/issues";
 import Link, { LinkProps } from "~/components/core/Link";
-import { PATHS as PRODUCT_PATHS } from "~/routes/products";
-import { PATHS as ROOT_PATHS } from "~/router";
 import { Icon } from "../layout";
 import { Tooltip } from "@patternfly/react-core";
+import { PRODUCT, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
@@ -43,13 +42,13 @@ const IssuesLink = (props: Omit<LinkProps, "to">) => {
   if (issues.isEmpty) return;
   // Do not show the button if the user is about to change the product or the
   // installer is configuring a product.
-  if ([PRODUCT_PATHS.changeProduct, PRODUCT_PATHS.progress].includes(location.pathname)) return;
+  if ([PRODUCT.changeProduct, PRODUCT.progress].includes(location.pathname)) return;
 
   return (
     <Tooltip
       content={_("Installation not possible yet because of issues. Check them at Overview page.")}
     >
-      <Link aria-label={_("Installation issues")} {...props} to={ROOT_PATHS.overview}>
+      <Link aria-label={_("Installation issues")} {...props} to={ROOT.overview}>
         <Icon name="warning" />
       </Link>
     </Tooltip>

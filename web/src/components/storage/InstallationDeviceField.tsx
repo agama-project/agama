@@ -24,8 +24,8 @@ import React from "react";
 import { Skeleton } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import { ProposalTarget, StorageDevice } from "~/types/storage";
-import { PATHS } from "~/routes/storage";
 import { deviceLabel } from "~/components/storage/utils";
+import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 

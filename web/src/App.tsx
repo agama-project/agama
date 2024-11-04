@@ -32,8 +32,7 @@ import { useL10nConfigChanges } from "~/queries/l10n";
 import { useIssuesChanges } from "~/queries/issues";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 import { useDeprecatedChanges } from "~/queries/storage";
-import { PATHS as PRODUCT_PATHS } from "~/routes/products";
-import { PATHS as ROOT_PATHS } from "~/router";
+import { ROOT, PRODUCT } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
 
 /**
@@ -60,11 +59,11 @@ function App() {
       );
 
     if (phase === InstallationPhase.Install && isBusy) {
-      return <Navigate to={ROOT_PATHS.installationProgress} />;
+      return <Navigate to={ROOT.installationProgress} />;
     }
 
     if (phase === InstallationPhase.Install && !isBusy) {
-      return <Navigate to={ROOT_PATHS.installationFinished} />;
+      return <Navigate to={ROOT.installationFinished} />;
     }
 
     if (!products || !connected) return <Loading />;
@@ -77,16 +76,12 @@ function App() {
       );
     }
 
-    if (selectedProduct === undefined && location.pathname !== PRODUCT_PATHS.root) {
-      return <Navigate to={PRODUCT_PATHS.root} />;
+    if (selectedProduct === undefined && location.pathname !== PRODUCT.root) {
+      return <Navigate to={PRODUCT.root} />;
     }
 
-    if (
-      phase === InstallationPhase.Config &&
-      isBusy &&
-      location.pathname !== PRODUCT_PATHS.progress
-    ) {
-      return <Navigate to={PRODUCT_PATHS.progress} />;
+    if (phase === InstallationPhase.Config && isBusy && location.pathname !== PRODUCT.progress) {
+      return <Navigate to={PRODUCT.progress} />;
     }
 
     return <Outlet />;

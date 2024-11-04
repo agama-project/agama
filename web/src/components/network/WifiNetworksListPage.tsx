@@ -48,8 +48,8 @@ import { generatePath } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { Link, EmptyState } from "~/components/core";
 import WifiConnectionForm from "~/components/network/WifiConnectionForm";
-import { PATHS } from "~/routes/network";
 import { DeviceState, WifiNetwork } from "~/types/network";
+import { NETWORK as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { formatIp } from "~/utils/network";
 import {

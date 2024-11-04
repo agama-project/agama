@@ -24,12 +24,8 @@ import React from "react";
 import SoftwarePage from "~/components/software/SoftwarePage";
 import SoftwarePatternsSelection from "~/components/software/SoftwarePatternsSelection";
 import { Route } from "~/types/routes";
+import { SOFTWARE as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
-
-const PATHS = {
-  root: "/software",
-  patternsSelection: "/software/patterns/select",
-};
 
 const routes = (): Route => ({
   path: PATHS.root,

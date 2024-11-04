@@ -23,13 +23,8 @@
 import React from "react";
 import { NetworkPage, IpSettingsForm, WifiSelectorPage } from "~/components/network";
 import { Route } from "~/types/routes";
+import { NETWORK as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
-
-const PATHS = {
-  root: "/network",
-  editConnection: "/network/connections/:id/edit",
-  wifis: "/network/wifis",
-};
 
 const routes = (): Route => ({
   path: PATHS.root,

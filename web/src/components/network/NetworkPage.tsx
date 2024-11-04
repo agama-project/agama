@@ -28,7 +28,7 @@ import { _ } from "~/i18n";
 import { connectionAddresses } from "~/utils/network";
 import { sprintf } from "sprintf-js";
 import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
-import { PATHS } from "~/routes/network";
+import { NETWORK as PATHS } from "~/routes/paths";
 import { partition } from "~/utils";
 import { Connection, Device } from "~/types/network";
 

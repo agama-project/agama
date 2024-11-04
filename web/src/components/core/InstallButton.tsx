@@ -29,7 +29,22 @@ import { _ } from "~/i18n";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { useLocation } from "react-router-dom";
-import { PATHS as PRODUCT_PATHS } from "~/routes/products";
+import { PRODUCT, ROOT } from "~/routes/paths";
+
+/**
+ * List of paths where the InstallButton must not be shown.
+ *
+ * Apart from obvious login and installation paths, it does not make sense to
+ * show the button neither, when the user is about to change the product nor
+ * when the installer is setting the chosen product.
+ * */
+const EXCLUDED_FROM = [
+  ROOT.login,
+  PRODUCT.changeProduct,
+  PRODUCT.progress,
+  ROOT.installationProgress,
+  ROOT.installationFinished,
+];
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
   return (
@@ -48,7 +63,7 @@ according to the provided installation settings.",
           {/* TRANSLATORS: button label */}
           {_("Continue")}
         </Popup.Confirm>
-        <Popup.Cancel onClick={onClose}>
+        <Popup.Cancel autoFocus onClick={onClose}>
           {/* TRANSLATORS: button label */}
           {_("Cancel")}
         </Popup.Cancel>
@@ -60,8 +75,11 @@ according to the provided installation settings.",
 /**
  * Installation button
  *
- * It starts the installation after asking for confirmation.
+ * It will be shown only if there aren't installation issues and the current
+ * path is not in the EXCLUDED_FROM list.
  *
+ * When clicked, it will ask for a confirmation before triggering the request
+ * for starting the installation.
  */
 const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
   const issues = useAllIssues();
@@ -69,12 +87,14 @@ const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
   const location = useLocation();
 
   if (!issues.isEmpty) return;
-  // Do not show the button if the user is about to change the product or the
-  // installer is configuring a product.
-  if ([PRODUCT_PATHS.changeProduct, PRODUCT_PATHS.progress].includes(location.pathname)) return;
+  if (EXCLUDED_FROM.includes(location.pathname)) return;
 
   const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
+  const onAccept = () => {
+    close();
+    startInstallation();
+  };
 
   return (
     <>
@@ -83,7 +103,7 @@ const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
         {_("Install")}
       </Button>
 
-      {isOpen && <InstallConfirmationPopup onAccept={startInstallation} onClose={close} />}
+      {isOpen && <InstallConfirmationPopup onAccept={onAccept} onClose={close} />}
     </>
   );
 };
