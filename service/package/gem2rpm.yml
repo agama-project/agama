@@ -1,13 +1,8 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
-:sources:
-  - po.tar.bz2
-  - install_translations.sh
 :preamble: |-
   %global rb_build_versions %{rb_default_ruby}
   BuildRequires:  dbus-1-common
-  # "msgfmt" tool
-  BuildRequires:  gettext-runtime
   Requires:       dbus-1-common
 :main:
   :preamble: |-
@@ -65,8 +60,3 @@
     Requires:       yast2-schema
     # lsblk
     Requires:       util-linux-systemd
-:scripts:
-  :pre: "%service_add_pre agama.service"
-  :post: "%service_add_post agama.service"
-  :preun: "%service_del_preun agama.service"
-  :postun: "%service_del_postun_with_restart agama.service"
