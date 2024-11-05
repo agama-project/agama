@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-10-30 02:42+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -1115,7 +1115,7 @@ msgid "Activate disks"
 msgstr "激活磁盘"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1857,7 +1857,7 @@ msgid "DASD devices selection table"
 msgstr "尚未选择设备"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 #, fuzzy
 msgid "Back to device selection"
 msgstr "尚未选择设备"
@@ -2288,7 +2288,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "请尝试激活 zFCP 磁盘。"
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "请尝试激活 zFCP 控制器。"
 
@@ -2296,27 +2296,27 @@ msgstr "请尝试激活 zFCP 控制器。"
 msgid "No zFCP disks found."
 msgstr "未发现 zFCP 磁盘。"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "激活 zFCP 磁盘"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "激活新磁盘"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "磁盘"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr ""
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "未找到 zFCP 控制器。"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "读取 zFCP 设备"
 

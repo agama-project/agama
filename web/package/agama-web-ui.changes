@@ -3,6 +3,13 @@ Tue Nov  5 11:33:12 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix a crash when editing a network connection containing an
   additional IP address (gh#agama-project/agama#1728).
+  
+-------------------------------------------------------------------
+Mon Nov  4 20:32:29 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Add missing subscription to avoid Agama getting stuck at the installation
+  progress when the installation finishes
+  (gh#agama-project/agama#1726, gh#agama-project/agama#1727).
 
 -------------------------------------------------------------------
 Wed Oct 30 22:26:29 UTC 2024 - David Diaz <dgonzalez@suse.com>

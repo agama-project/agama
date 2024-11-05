@@ -26,10 +26,11 @@ import ProgressReport from "./ProgressReport";
 import { InstallationPhase } from "~/types/status";
 import { ROOT as PATHS } from "~/routes/paths";
 import { Navigate } from "react-router-dom";
-import { useInstallerStatus } from "~/queries/status";
+import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 
 function InstallationProgress() {
   const { isBusy, phase } = useInstallerStatus({ suspense: true });
+  useInstallerStatusChanges();
 
   if (phase !== InstallationPhase.Install) {
     return <Navigate to={PATHS.root} replace />;

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-10-30 02:42+0000\n"
 "PO-Revision-Date: 2024-09-19 17:48+0000\n"
 "Last-Translator: yok2 <y1313396@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -1143,7 +1143,7 @@ msgid "Activate disks"
 msgstr "Diskleri etkinleştir"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1903,7 +1903,7 @@ msgid "DASD devices selection table"
 msgstr "DASD aygıtları seçim tablosu"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 msgid "Back to device selection"
 msgstr "Cihaz seçimine geri dön"
 
@@ -2339,7 +2339,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Lütfen bir zFCP diski etkinleştirmeyi deneyin."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
 
@@ -2347,27 +2347,27 @@ msgstr "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
 msgid "No zFCP disks found."
 msgstr "zFCP diski bulunamadı."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "zFCP diskini etkinleştir"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Yeni diski etkinleştir"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Diskler"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr "Kontrolörler"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "Hiçbir zFCP denetleyicisi bulunamadı."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "zFCP aygıtlarını oku"
 
