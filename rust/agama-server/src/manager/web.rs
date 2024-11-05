@@ -252,9 +252,10 @@ async fn download_logs() -> impl IntoResponse {
 
                 // See RFC2046, RFC2616 and
                 // https://www.iana.org/assignments/media-types/media-types.xhtml
+                // or /etc/mime.types
                 headers.insert(
                     header::CONTENT_TYPE,
-                    HeaderValue::from_static("application/gzip"),
+                    HeaderValue::from_static("application/x-compressed-tar"),
                 );
                 headers.insert(
                     header::CONTENT_DISPOSITION,
