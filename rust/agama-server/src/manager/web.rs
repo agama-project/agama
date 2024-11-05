@@ -25,9 +25,7 @@
 //! * `manager_service` which returns the Axum service.
 //! * `manager_stream` which offers an stream that emits the manager events coming from D-Bus.
 
-use agama_lib::logs::{
-    list as listLogs, store as storeLogs, LogOptions, LogsLists, DEFAULT_COMPRESSION,
-};
+use agama_lib::logs::{list as list_logs, store as store_logs, LogsLists, DEFAULT_COMPRESSION};
 use agama_lib::{
     error::ServiceError,
     manager::{InstallationPhase, ManagerClient},
@@ -36,7 +34,7 @@ use agama_lib::{
 use axum::{
     body::Body,
     extract::State,
-    http::{header, HeaderMap, HeaderValue},
+    http::{header, status::StatusCode, HeaderMap, HeaderValue},
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -232,49 +230,52 @@ async fn installer_status(
 fn logs_router() -> Router<ManagerState<'static>> {
     Router::new()
         .route("/store", get(download_logs))
-        .route("/list", get(list_logs))
+        .route("/list", get(show_logs))
 }
 
-#[utoipa::path(get, path = "/logs/store", responses(
+#[utoipa::path(get, path = "/manager/logs/store", responses(
     (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
+    (status = 500, description = "Cannot collect the logs"),
+    (status = 507, description = "Server is probably out of space"),
 ))]
 
 async fn download_logs() -> impl IntoResponse {
     let mut headers = HeaderMap::new();
+    let err_response = (headers.clone(), Body::empty());
 
-    match storeLogs(LogOptions::default()) {
+    match store_logs() {
         Ok(path) => {
-            let file = tokio::fs::File::open(path.clone()).await.unwrap();
-            let stream = ReaderStream::new(file);
-            let body = Body::from_stream(stream);
+            if let Ok(file) = tokio::fs::File::open(path.clone()).await {
+                let stream = ReaderStream::new(file);
+                let body = Body::from_stream(stream);
+                let _ = std::fs::remove_file(path.clone());
 
-            // Cleanup - remove temporary file, no one cares it it fails
-            let _ = std::fs::remove_file(path.clone());
+                // See RFC2046, RFC2616 and
+                // https://www.iana.org/assignments/media-types/media-types.xhtml
+                headers.insert(
+                    header::CONTENT_TYPE,
+                    HeaderValue::from_static("application/gzip"),
+                );
+                headers.insert(
+                    header::CONTENT_DISPOSITION,
+                    HeaderValue::from_static("attachment; filename=\"agama-logs\""),
+                );
+                headers.insert(
+                    header::CONTENT_ENCODING,
+                    HeaderValue::from_static(DEFAULT_COMPRESSION.1),
+                );
 
-            headers.insert(
-                header::CONTENT_TYPE,
-                HeaderValue::from_static("text/toml; charset=utf-8"),
-            );
-            headers.insert(
-                header::CONTENT_DISPOSITION,
-                HeaderValue::from_static("attachment; filename=\"agama-logs\""),
-            );
-            headers.insert(
-                header::CONTENT_ENCODING,
-                HeaderValue::from_static(DEFAULT_COMPRESSION.1),
-            );
-
-            (headers, body)
+                (StatusCode::OK, (headers, body))
+            } else {
+                (StatusCode::INSUFFICIENT_STORAGE, err_response)
+            }
         }
-        Err(_) => {
-            // fill in with meaningful headers
-            (headers, Body::empty())
-        }
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, err_response),
     }
 }
-#[utoipa::path(get, path = "/logs/list", responses(
+#[utoipa::path(get, path = "/manager/logs/list", responses(
     (status = 200, description = "Lists of collected logs", body = LogsLists)
 ))]
-pub async fn list_logs() -> Json<LogsLists> {
-    Json(listLogs(LogOptions::default()))
+pub async fn show_logs() -> Json<LogsLists> {
+    Json(list_logs())
 }

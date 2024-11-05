@@ -64,25 +64,15 @@ const DEFAULT_RESULT: &str = "/run/agama/agama-logs";
 pub const DEFAULT_COMPRESSION: (&str, &str) = ("gzip", "tar.gz");
 const TMP_DIR_PREFIX: &str = "agama-logs.";
 
-/// Configurable parameters of the "agama logs" which can be
-/// set by user when calling a (sub)command
-pub struct LogOptions {
-    paths: Vec<String>,
-    commands: Vec<(String, String)>,
-    destination: PathBuf,
+fn log_paths() -> Vec<String> {
+    DEFAULT_PATHS.iter().map(|p| p.to_string()).collect()
 }
 
-impl Default for LogOptions {
-    fn default() -> Self {
-        Self {
-            paths: DEFAULT_PATHS.iter().map(|p| p.to_string()).collect(),
-            commands: DEFAULT_COMMANDS
-                .iter()
-                .map(|(cmd, name)| (cmd.to_string(), name.to_string()))
-                .collect(),
-            destination: PathBuf::from(DEFAULT_RESULT),
-        }
-    }
+fn log_commands() -> Vec<(String, String)> {
+    DEFAULT_COMMANDS
+        .iter()
+        .map(|(cmd, name)| (cmd.to_string(), name.to_string()))
+        .collect()
 }
 
 /// Struct for log represented by a file
@@ -276,16 +266,11 @@ pub fn set_archive_permissions(archive: PathBuf) -> io::Result<()> {
 }
 
 /// Handler for the "agama logs store" subcommand
-pub fn store(options: LogOptions) -> Result<PathBuf, ServiceError> {
+pub fn store() -> Result<PathBuf, ServiceError> {
     // preparation, e.g. in later features some log commands can be added / excluded per users request or
-    let commands = options.commands;
-    let paths = options.paths;
-    let opt_dest = options.destination.into_os_string();
-    let destination = opt_dest
-        .to_str()
-        .ok_or(ServiceError::CannotGenerateLogs(String::from(
-            "Cannot collect the logs",
-        )))?;
+    let commands = log_commands();
+    let paths = log_paths();
+    let destination = DEFAULT_RESULT;
     let result = format!("{}.{}", destination, DEFAULT_COMPRESSION.1);
 
     // create temporary directory where to collect all files (similar to what old save_y2logs
@@ -328,9 +313,9 @@ pub struct LogsLists {
 }
 
 /// Handler for the "agama logs list" subcommand
-pub fn list(options: LogOptions) -> LogsLists {
+pub fn list() -> LogsLists {
     LogsLists {
-        commands: options.commands.iter().map(|c| c.0.clone()).collect(),
-        files: options.paths.clone(),
+        commands: log_commands().iter().map(|c| c.0.clone()).collect(),
+        files: log_paths().clone(),
     }
 }
