@@ -26,7 +26,7 @@ import { Page, Drawer } from "~/components/core/";
 import ProposalResultSection from "./ProposalResultSection";
 import ConfigEditor from "./ConfigEditor";
 import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
-import { ProposalActionsDialog } from "~/components/storage";
+import EncryptionField from "~/components/storage/EncryptionField"
 import { _ } from "~/i18n";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
@@ -87,35 +87,28 @@ export default function ProposalPage() {
 
       <Page.Content>
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <Drawer
-              ref={drawerRef}
-              panelHeader={<h4>{_("Planned Actions")}</h4>}
-              panelContent={<ProposalActionsDialog actions={actions} />}
+          <GridItem sm={12} xl={8}>
+            <Page.Section
+              title={_("Installation Devices")}
+              description={_("Structure of the new system, including disks to use and additional devices like LVM volume groups.")}
             >
-              <Stack hasGutter>
-                <Page.Section title={_("Config")}>
-                  <ConfigEditor />
-                </Page.Section>
-                <ProposalActionsSummary
-                  system={systemDevices}
-                  staging={stagingDevices}
-                  errors={errors}
-                  actions={actions}
-                  // @ts-expect-error: we do not know how to specify the type of
-                  // drawerRef properly and TS does not find the "open" property
-                  onActionsClick={drawerRef.current?.open}
-                  isLoading={false}
-                />
-                <ProposalResultSection
-                  system={systemDevices}
-                  staging={stagingDevices}
-                  actions={actions}
-                  errors={errors}
-                  isLoading={false}
-                />
-              </Stack>
-            </Drawer>
+              <ConfigEditor />
+            </Page.Section>
+          </GridItem>
+          <GridItem sm={12} xl={4}>
+            <EncryptionField
+              password={""}
+              isLoading={false}
+            />
+          </GridItem>
+          <GridItem sm={12}>
+            <ProposalResultSection
+              system={systemDevices}
+              staging={stagingDevices}
+              actions={actions}
+              errors={errors}
+              isLoading={false}
+            />
           </GridItem>
         </Grid>
       </Page.Content>

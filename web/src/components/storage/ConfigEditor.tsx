@@ -20,15 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { _ } from "~/i18n";
 import { useConfig, useSolvedConfig } from "~/queries/storage";
 import { config as type } from "~/api/storage/types";
 import {
-  DescriptionList,
-  DescriptionListTerm,
-  DescriptionListGroup,
-  DescriptionListDescription,
+  Toolbar,
+  ToolbarItem,
+  ToolbarContent,
+  ToolbarGroup,
+  List,
+  ListItem,
+  Stack,
+  StackItem,
+  Split,
+  SplitItem,
+  Menu,
+  MenuContainer,
+  MenuToggle,
+  MenuContent,
+  MenuList,
+  MenuItem
 } from "@patternfly/react-core";
 import { generateDevices } from "~/storage/model";
 
@@ -139,18 +151,62 @@ function PartitionEditor({ partition }: PartitionEditorProps) {
 }
 
 type DriveEditorProps = { drive: type.DriveElement };
+type PartitionsProps = { drive: type.DriveElement };
+
+const DriveActions: React.FunctionComponent = () => {
+  const menu = (
+    <Menu>
+      <MenuContent>
+        <MenuList>
+          <MenuItem itemId="whatever">{_("Whatever")}</MenuItem>
+        </MenuList>
+      </MenuContent>
+    </Menu>
+  );
+
+  const toggle = (
+    <MenuToggle>{_("Options")}</MenuToggle>
+  );
+
+  return (
+    <MenuContainer
+      menu={menu}
+      toggle={toggle}
+      isOpen={false}
+    />
+  );
+};
+
+function Partitions({ drive }: PartitionsProps) {
+  return (
+    <Stack>
+      <StackItem>
+        {_("New partitions will be created for root and swap")}
+      </StackItem>
+    </Stack>
+  );
+};
 
 function DriveEditor({ drive }: DriveEditorProps) {
   return (
-    <>
-      <DescriptionListGroup>
-        <DescriptionListTerm>{deviceName(drive) || _("unknown drive")}</DescriptionListTerm>
-        <DescriptionListDescription>{driveInfo(drive)}</DescriptionListDescription>
-      </DescriptionListGroup>
-      {drivePartitions(drive).map((p, i) => (
-        <PartitionEditor key={i} partition={p} />
-      ))}
-    </>
+    <ListItem>
+      <Split hasGutter>
+        <SplitItem isFilled>
+          <Stack hasGutter>
+            <StackItem>
+              <Split hasGutter>
+                <SplitItem isFilled><b>{deviceName(drive) || _("unknown drive")}</b></SplitItem>
+                <SplitItem isFilled>{_("Existing partitions will be kept")}</SplitItem>
+              </Split>
+            </StackItem>
+            <StackItem>
+              <Partitions drive={drive} />
+            </StackItem>
+          </Stack>
+        </SplitItem>
+        <SplitItem><DriveActions /></SplitItem>
+      </Split>
+    </ListItem>
   );
 }
 
@@ -167,10 +223,21 @@ export default function ConfigEditor() {
   console.log("devices: ", devices);
 
   return (
-    <DescriptionList isHorizontal>
-      {solvedConfig.drives.map((d, i) => (
-        <DriveEditor key={i} drive={d} />
-      ))}
-    </DescriptionList>
+    <>
+      <Toolbar>
+        <ToolbarContent>
+          <ToolbarGroup align={{ default: 'alignEnd' }}>
+            <ToolbarItem align={{ default: 'alignEnd' }}>
+              <MenuToggle>{_("Other devices")}</MenuToggle>
+            </ToolbarItem>
+          </ToolbarGroup>
+        </ToolbarContent>
+      </Toolbar>
+      <List isPlain isBordered>
+        {solvedConfig.drives.map((d, i) => (
+          <DriveEditor key={i} drive={d} />
+        ))}
+      </List>
+    </>
   );
 }
