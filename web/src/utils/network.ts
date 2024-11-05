@@ -61,7 +61,7 @@ const isValidIp = (value: IPAddress["address"]) => ipaddr.IPv4.isValidFourPartDe
  * @return true if given IP is valid; false otherwise.
  */
 const isValidIpPrefix = (value: IPAddress["prefix"]) => {
-  const prefix = value as string;
+  const prefix = String(value);
 
   if (prefix.match(/^\d+$/)) {
     return parseInt(prefix) <= 32;
