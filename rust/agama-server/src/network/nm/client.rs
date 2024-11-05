@@ -203,18 +203,22 @@ impl<'a> NetworkManagerClient<'a> {
 
             let controller = controller_from_dbus(&settings)?;
 
-            if let Ok(mut connection) = connection_from_dbus(settings) {
-                if let Some(controller) = controller {
-                    controlled_by.insert(connection.uuid, controller.to_string());
+            match connection_from_dbus(settings) {
+                Ok(mut connection) => {
+                    if let Some(controller) = controller {
+                        controlled_by.insert(connection.uuid, controller.to_string());
+                    }
+                    if let Some(iname) = &connection.interface {
+                        uuids_map.insert(iname.to_string(), connection.uuid);
+                    }
+                    if self.settings_active_connection(path).await?.is_none() {
+                        connection.set_down()
+                    }
+                    connections.push(connection);
                 }
-                if let Some(iname) = &connection.interface {
-                    uuids_map.insert(iname.to_string(), connection.uuid);
+                Err(e) => {
+                    tracing::warn!("Could not process connection {}: {}", &path, e);
                 }
-
-                if self.settings_active_connection(path).await?.is_none() {
-                    connection.set_down()
-                }
-                connections.push(connection);
             }
         }
 

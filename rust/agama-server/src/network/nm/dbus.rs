@@ -863,8 +863,8 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<WirelessCo
     let ssid: zvariant::Array = get_property(wireless, "ssid")?;
     let ssid: Vec<u8> = ssid
         .iter()
-        .map(|u| u.downcast_ref::<u8>().unwrap())
-        .collect();
+        .map(|u| u.downcast_ref::<u8>())
+        .collect::<Result<Vec<u8>, _>>()?;
     let mut wireless_config = WirelessConfig {
         mode: NmWirelessMode(mode).try_into()?,
         ssid: SSID(ssid),
@@ -879,8 +879,8 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<WirelessCo
     if let Ok(bssid) = get_property::<zvariant::Array>(wireless, "bssid") {
         let bssid: Vec<u8> = bssid
             .iter()
-            .map(|u| u.downcast_ref::<u8>().unwrap())
-            .collect();
+            .map(|u| u.downcast_ref::<u8>())
+            .collect::<Result<Vec<u8>, _>>()?;
         // FIMXE: properly handle the failing case
         wireless_config.bssid = Some(MacAddr6::new(
             *bssid.first().unwrap(),
