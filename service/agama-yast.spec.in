@@ -25,6 +25,7 @@ BuildRequires:  dbus-1-common
 # "msgfmt" tool
 BuildRequires:  gettext-runtime
 Requires:       dbus-1-common
+Requires:       rubygem(agama-yast)
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  ruby-macros >= 5
