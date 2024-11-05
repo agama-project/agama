@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov  5 16:11:35 UTC 2024 - Martin Vidner <mvidner@suse.com>
+
+- packaging: split out files independent of Ruby version
+  from rubygem-agama-yast (gh#agama-project/agama#1677).
+
+-------------------------------------------------------------------
 Wed Oct 30 11:33:54 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Storage: do not generate config json with search wildcard
