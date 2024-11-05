@@ -38,7 +38,7 @@ use crate::{
     },
 };
 
-const ZFCP_CONTROLLER_PREFIX: &'static str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
+const ZFCP_CONTROLLER_PREFIX: &str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
 
 /// Client to connect to Agama's D-Bus API for zFCP management.
 #[derive(Clone)]

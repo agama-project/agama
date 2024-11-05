@@ -241,7 +241,7 @@ impl DASDFormatJobStream {
         for (dasd_id, summary) in map {
             let summary_values = summary.downcast_ref::<zvariant::Structure>().ok()?;
             let fields = summary_values.fields();
-            let total: &u32 = fields.get(0)?.downcast_ref().ok()?;
+            let total: &u32 = fields.first()?.downcast_ref().ok()?;
             let step: &u32 = fields.get(1)?.downcast_ref().ok()?;
             let done: &bool = fields.get(2)?.downcast_ref().ok()?;
             format_summary.insert(

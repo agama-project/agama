@@ -97,7 +97,7 @@ impl Script {
 
         match &self.source {
             ScriptSource::Text { body } => write!(file, "{}", &body)?,
-            ScriptSource::Remote { url } => Transfer::get(&url, file)?,
+            ScriptSource::Remote { url } => Transfer::get(url, file)?,
         };
 
         Ok(())
@@ -209,12 +209,12 @@ mod test {
         repo.scripts.first().unwrap();
 
         let path = &tmp_dir.path().join("pre").join("test.log");
-        let body: Vec<u8> = std::fs::read(&path).unwrap();
+        let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("hello\n", body);
 
         let path = &tmp_dir.path().join("pre").join("test.err");
-        let body: Vec<u8> = std::fs::read(&path).unwrap();
+        let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("error\n", body);
     }
