@@ -21,95 +21,125 @@
  */
 
 import { config } from "~/api/storage/types";
-
-// Type guards.
-
-function isFormattedDrive(drive: config.DriveElement): drive is config.FormattedDrive {
-  return "filesystem" in drive;
-}
-
-function isSearchAll(search: config.Search): search is config.SearchAll {
-  return search === "*";
-}
-
-function isSearchByName(search: config.Search): search is config.SearchByName {
-  return !isSearchAll(search) && typeof search === "string";
-}
-
-function isAdvancedSearch(search: config.Search): search is config.AdvancedSearch {
-  return !isSearchAll(search) && !isSearchByName(search);
-}
-
-function isPartitionToDelete(
-  partition: config.PartitionElement,
-): partition is config.PartitionToDelete {
-  return "delete" in partition;
-}
-
-function isPartitionToDeleteIfNeeded(
-  partition: config.PartitionElement,
-): partition is config.PartitionToDeleteIfNeeded {
-  return "deleteIfNeeded" in partition;
-}
-
-function isPartition(partition: config.PartitionElement): partition is config.Partition {
-  if ("generate" in partition) return false;
-
-  return !isPartitionToDelete(partition) && !isPartitionToDeleteIfNeeded(partition);
-}
-
-// Methods to get especific config data.
-
-// type Partition = type.Partition | type.PartitionToDelete | type.PartitionToDeleteIfNeeded;
-
-function nameFromSearch({ search }: { search: config.Search | undefined }): string | undefined {
-  if (!isAdvancedSearch(search) || !search?.condition) return;
-
-  return search.condition.name;
-}
+import * as checks from "~/api/storage/types/checks";
 
 export type Drive = {
   name: string;
   alias?: string;
-  partitions?: Partition[]
+  partitions?: Partition[];
 };
 
 export type Partition = {
   name?: string;
   alias?: string;
+  delete?: boolean;
+  deleteIfNeeded?: boolean;
+};
+
+type PartitionConfig =
+  | config.Partition
+  | config.PartitionToDelete
+  | config.PartitionToDeleteIfNeeded;
+
+function isPartitionConfig(partition: config.PartitionElement): partition is PartitionConfig {
+  return (
+    checks.isPartition(partition) ||
+    checks.isPartitionToDelete(partition) ||
+    checks.isPartitionToDeleteIfNeeded(partition)
+  );
 }
 
-function generatePartition(
-  partitionConfig: config.Partition | config.PartitionToDelete | config.PartitionToDeleteIfNeeded
-): Partition {
-  if (isPartition(partitionConfig))
-    return generateRegularPartition(partitionConfig)
+function nameFromSearch({ search }: { search: config.Search | undefined }): string | undefined {
+  if (!checks.isAdvancedSearch(search) || !search?.condition) return;
+
+  return search.condition.name;
 }
 
-function generatePartitions(driveConfig: config.DriveElement): Partition[] {
-  if (isFormattedDrive(driveConfig)) return [];
+class PartitionGenerator {
+  private partitionConfig: PartitionConfig;
 
-  const partitionConfigs = driveConfig.partitions || [];
-  partitionConfigs
-    .filter((c) => isPartition(c) || isPartitionToDelete(c) || isPartitionToDeleteIfNeeded(c))
-    .map((c) => generatePartition(c));
+  constructor(partitionConfig: PartitionConfig) {
+    this.partitionConfig = partitionConfig;
+  }
+
+  generate(): Partition {
+    if (checks.isPartition(this.partitionConfig)) {
+      return this.fromPartition(this.partitionConfig);
+    } else if (checks.isPartitionToDelete(this.partitionConfig)) {
+      return this.fromPartitionToDelete(this.partitionConfig);
+    } else if (checks.isPartitionToDeleteIfNeeded(this.partitionConfig)) {
+      return this.fromPartitionToDeleteIfNeeded(this.partitionConfig);
+    }
+  }
+
+  private fromPartition(partitionConfig: config.Partition): Partition {
+    return {
+      alias: partitionConfig.alias,
+    };
+  }
+
+  private fromPartitionToDelete(partitionConfig: config.PartitionToDelete): Partition {
+    return {
+      name: nameFromSearch({ search: partitionConfig.search }),
+      delete: true,
+    };
+  }
+
+  private fromPartitionToDeleteIfNeeded(
+    partitionConfig: config.PartitionToDeleteIfNeeded,
+  ): Partition {
+    return {
+      name: nameFromSearch({ search: partitionConfig.search }),
+      deleteIfNeeded: true,
+    };
+  }
 }
 
-function generateDrive(
-  driveConfig: config.DriveElement,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _index: number,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _config: config.Config,
-): Drive {
-  return {
-    name: nameFromSearch({ search: driveConfig.search }),
-    alias: driveConfig.alias,
-    partitions: generatePartitions(driveConfig),
-  };
+class DriveGenerator {
+  private driveConfig: config.DriveElement;
+
+  constructor(driveConfig: config.DriveElement) {
+    this.driveConfig = driveConfig;
+  }
+
+  generate(): Drive {
+    return {
+      name: nameFromSearch({ search: this.driveConfig.search }),
+      alias: this.driveConfig.alias,
+      partitions: this.generatePartitions(),
+    };
+  }
+
+  private generatePartitions(): Partition[] {
+    if (checks.isFormattedDrive(this.driveConfig)) return [];
+
+    const configs = this.driveConfig.partitions || [];
+    return configs
+      .filter((c) => isPartitionConfig(c))
+      .map((c) => new PartitionGenerator(c).generate());
+  }
+}
+
+class DevicesGenerator {
+  private config: config.Config;
+  private solvedConfig: config.Config;
+
+  constructor(config: config.Config, solvedConfig: config.Config) {
+    this.config = config;
+    this.solvedConfig = solvedConfig;
+  }
+
+  generate(): Drive[] {
+    return this.generateDrives();
+  }
+
+  private generateDrives(): Drive[] {
+    const configs = this.solvedConfig.drives || [];
+    return configs.map((c) => new DriveGenerator(c).generate());
+  }
 }
 
 export function generateDevices(config: config.Config, solvedConfig: config.Config): Drive[] {
-  const driveConfigs = solvedConfig.drives || [];
-  return driveConfigs.map((d, i) => generateDrive(d, i, config));
+  const generator = new DevicesGenerator(config, solvedConfig);
+  return generator.generate();
 }
