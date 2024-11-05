@@ -115,7 +115,6 @@ impl DBusObjectChangesStream {
         let Ok(message) = message else {
             return None;
         };
-        // let path = message.header().path()?.to_string();
         let path = OwnedObjectPath::from(message.header().path()?.to_owned());
         let properties = PropertiesChanged::from_message(message)?;
         let args = properties.args().ok()?;

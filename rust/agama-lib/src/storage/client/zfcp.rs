@@ -71,13 +71,13 @@ impl<'a> ZFCPClient<'a> {
     }
 
     pub async fn supported(&self) -> Result<bool, ServiceError> {
-        let introspect = self.introspectable_proxy.introspect().await?; // simply check if introspection contain given interface
+        let introspect = self.introspectable_proxy.introspect().await?;
+        // simply check if introspection contain given interface
         Ok(introspect.contains("org.opensuse.Agama.Storage1.ZFCP.Manager"))
     }
 
     pub async fn is_lun_scan_allowed(&self) -> Result<bool, ServiceError> {
         let allowed = self.manager_proxy.allow_lunscan().await?;
-        // simply check if introspection contain given interface
         Ok(allowed)
     }
 
