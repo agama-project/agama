@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov  5 12:41:19 UTC 2024 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- config.sh: ignore non-existent translations if already missing.
+
+-------------------------------------------------------------------
 Fri Sep 20 11:44:43 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 10
