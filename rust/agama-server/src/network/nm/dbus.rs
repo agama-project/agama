@@ -881,7 +881,7 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<WirelessCo
             .iter()
             .map(|u| u.downcast_ref::<u8>())
             .collect::<Result<Vec<u8>, _>>()?;
-        // FIMXE: properly handle the failing case
+        // FIXME: properly handle the failing case
         wireless_config.bssid = Some(MacAddr6::new(
             *bssid.first().unwrap(),
             *bssid.get(1).unwrap(),
