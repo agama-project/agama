@@ -31,7 +31,7 @@ use axum::{extract::State, routing::get, Json, Router};
 use pin_project::pin_project;
 use serde::Serialize;
 use tokio_stream::{Stream, StreamExt};
-use zbus::PropertyStream;
+use zbus::proxy::PropertyStream;
 
 use crate::error::Error;
 
@@ -246,7 +246,7 @@ impl<'a> Stream for ProgressStream<'a> {
                 Some(progress) => {
                     let event = Event::Progress {
                         progress,
-                        service: pinned.proxy.destination().to_string(),
+                        service: pinned.proxy.inner().destination().to_string(),
                     };
                     Poll::Ready(Some(event))
                 }

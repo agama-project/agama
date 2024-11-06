@@ -41,7 +41,7 @@ where
             "Failed to find property '{}'",
             name
         )))?
-        .into();
+        .try_into()?;
 
     T::try_from(value).map_err(|e| e.into())
 }
@@ -57,7 +57,7 @@ where
     <T as TryFrom<Value<'a>>>::Error: Into<zbus::zvariant::Error>,
 {
     if let Some(value) = properties.get(name) {
-        let value: Value = value.into();
+        let value: Value = value.try_into()?;
         T::try_from(value).map(|v| Some(v)).map_err(|e| e.into())
     } else {
         Ok(None)
@@ -79,12 +79,14 @@ macro_rules! property_from_dbus {
 /// using the newtype idiom) and offering a better API.
 ///
 /// * `source`: hash map containing non-onwed values ([enum@zbus::zvariant::Value]).
-pub fn to_owned_hash(source: &HashMap<&str, Value<'_>>) -> HashMap<String, OwnedValue> {
+pub fn to_owned_hash<T: ToString>(
+    source: &HashMap<T, Value<'_>>,
+) -> Result<HashMap<String, OwnedValue>, zvariant::Error> {
     let mut owned = HashMap::new();
     for (key, value) in source.iter() {
-        owned.insert(key.to_string(), value.into());
+        owned.insert(key.to_string(), value.try_into()?);
     }
-    owned
+    Ok(owned)
 }
 
 /// Extracts the object ID from the path.

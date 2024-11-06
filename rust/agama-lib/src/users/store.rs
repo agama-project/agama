@@ -126,8 +126,7 @@ mod test {
                     "fullName": "Tux",
                     "userName": "tux",
                     "password": "fish",
-                    "autologin": true,
-                    "data": {}
+                    "autologin": true
                 }"#,
                 );
         });
@@ -180,9 +179,7 @@ mod test {
             when.method(PUT)
                 .path("/api/users/first")
                 .header("content-type", "application/json")
-                .body(
-                    r#"{"fullName":"Tux","userName":"tux","password":"fish","autologin":true,"data":{}}"#
-                );
+                .body(r#"{"fullName":"Tux","userName":"tux","password":"fish","autologin":true}"#);
             then.status(200);
         });
         // note that we use 2 requests for root

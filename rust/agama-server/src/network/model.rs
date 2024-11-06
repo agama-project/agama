@@ -805,8 +805,10 @@ pub struct IpConfig {
     pub ignore_auto_dns: bool,
     pub gateway4: Option<IpAddr>,
     pub gateway6: Option<IpAddr>,
-    pub routes4: Option<Vec<IpRoute>>,
-    pub routes6: Option<Vec<IpRoute>>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub routes4: Vec<IpRoute>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub routes6: Vec<IpRoute>,
 }
 
 #[skip_serializing_none]

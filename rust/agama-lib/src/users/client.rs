@@ -37,8 +37,6 @@ pub struct FirstUser {
     pub password: String,
     /// Whether auto-login should enabled or not
     pub autologin: bool,
-    /// Additional data coming from the D-Bus service
-    pub data: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 }
 
 impl FirstUser {
@@ -49,7 +47,6 @@ impl FirstUser {
             user_name: data.1,
             password: data.2,
             autologin: data.3,
-            data: data.4,
         })
     }
 }

@@ -24,7 +24,6 @@
 use std::{
     collections::{hash_map::Entry, HashMap},
     pin::Pin,
-    sync::Arc,
     task::{Context, Poll},
 };
 
@@ -34,8 +33,10 @@ use pin_project::pin_project;
 use tokio_stream::StreamMap;
 use zbus::{
     fdo::{InterfacesAdded, InterfacesRemoved, PropertiesChanged},
+    message::Type as MessageType,
+    names::InterfaceName,
     zvariant::{ObjectPath, OwnedObjectPath},
-    MatchRule, Message, MessageStream, MessageType,
+    MatchRule, Message, MessageStream,
 };
 
 #[derive(Debug)]
@@ -108,18 +109,18 @@ impl DBusObjectChangesStream {
     /// * message: property change message.
     /// * interface: name of the interface to watch.
     fn handle_properties_changed(
-        message: Result<Arc<Message>, zbus::Error>,
+        message: Result<Message, zbus::Error>,
         interface: &str,
     ) -> Option<DBusObjectChange> {
         let Ok(message) = message else {
             return None;
         };
+        let path = OwnedObjectPath::from(message.header().path()?.to_owned());
         let properties = PropertiesChanged::from_message(message)?;
         let args = properties.args().ok()?;
 
         if args.interface_name.as_str() == interface {
-            let path = OwnedObjectPath::from(properties.path().unwrap().clone());
-            let data = to_owned_hash(&args.changed_properties);
+            let data = to_owned_hash(&args.changed_properties).ok()?;
             Some(DBusObjectChange::Changed(path, data))
         } else {
             None
@@ -131,7 +132,7 @@ impl DBusObjectChangesStream {
     /// * message: add/remove message.
     /// * interface: name of the interface to watch.
     fn handle_added_or_removed(
-        message: Result<Arc<Message>, zbus::Error>,
+        message: Result<Message, zbus::Error>,
         interface: &str,
     ) -> Option<DBusObjectChange> {
         let Ok(message) = message else {
@@ -140,15 +141,16 @@ impl DBusObjectChangesStream {
 
         if let Some(added) = InterfacesAdded::from_message(message.clone()) {
             let args = added.args().ok()?;
-            let data = args.interfaces_and_properties.get(&interface)?;
-            let data = to_owned_hash(data);
+            let data = args.interfaces_and_properties.get(interface)?;
+            let data = to_owned_hash(data).ok()?;
             let path = OwnedObjectPath::from(args.object_path().clone());
             return Some(DBusObjectChange::Added(path, data));
         }
 
         if let Some(removed) = InterfacesRemoved::from_message(message) {
             let args = removed.args().ok()?;
-            if args.interfaces.contains(&interface) {
+            let interface_name = InterfaceName::try_from(interface).ok()?;
+            if args.interfaces.contains(&interface_name) {
                 let path = OwnedObjectPath::from(args.object_path().clone());
                 return Some(DBusObjectChange::Removed(path));
             }

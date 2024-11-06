@@ -91,7 +91,6 @@ async fn first_user_changed_stream(
                     user_name: user.1,
                     password: user.2,
                     autologin: user.3,
-                    data: user.4,
                 };
                 return Some(Event::FirstUserChanged(user_struct));
             }

@@ -23,51 +23,61 @@
 use std::collections::HashMap;
 
 use futures_util::future::join_all;
-use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath, Connection};
+use zbus::{
+    fdo::{IntrospectableProxy, ObjectManagerProxy},
+    zvariant::OwnedObjectPath,
+    Connection,
+};
 
 use crate::{
     dbus::{extract_id_from_path, get_property},
     error::ServiceError,
     storage::{
         model::zfcp::{ZFCPController, ZFCPDisk},
-        proxies::{ZFCPControllerProxy, ZFCPManagerProxy},
+        proxies::zfcp::{ControllerProxy, ManagerProxy},
     },
 };
 
-const ZFCP_CONTROLLER_PREFIX: &'static str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
+const ZFCP_CONTROLLER_PREFIX: &str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
 
 /// Client to connect to Agama's D-Bus API for zFCP management.
 #[derive(Clone)]
 pub struct ZFCPClient<'a> {
-    manager_proxy: ZFCPManagerProxy<'a>,
-    object_manager_proxy: ObjectManagerProxy<'a>,
     connection: Connection,
+    manager_proxy: ManagerProxy<'a>,
+    object_manager_proxy: ObjectManagerProxy<'a>,
+    introspectable_proxy: IntrospectableProxy<'a>,
 }
 
 impl<'a> ZFCPClient<'a> {
     pub async fn new(connection: Connection) -> Result<Self, ServiceError> {
-        let manager_proxy = ZFCPManagerProxy::new(&connection).await?;
+        let manager_proxy = ManagerProxy::new(&connection).await?;
         let object_manager_proxy = ObjectManagerProxy::builder(&connection)
             .destination("org.opensuse.Agama.Storage1")?
             .path("/org/opensuse/Agama/Storage1")?
             .build()
             .await?;
+        let introspectable_proxy = IntrospectableProxy::builder(&connection)
+            .destination("org.opensuse.Agama.Storage1")?
+            .path("/org/opensuse/Agama/Storage1")?
+            .build()
+            .await?;
         Ok(Self {
+            connection,
             manager_proxy,
             object_manager_proxy,
-            connection,
+            introspectable_proxy,
         })
     }
 
     pub async fn supported(&self) -> Result<bool, ServiceError> {
-        let introspect = self.manager_proxy.introspect().await?;
+        let introspect = self.introspectable_proxy.introspect().await?;
         // simply check if introspection contain given interface
         Ok(introspect.contains("org.opensuse.Agama.Storage1.ZFCP.Manager"))
     }
 
     pub async fn is_lun_scan_allowed(&self) -> Result<bool, ServiceError> {
         let allowed = self.manager_proxy.allow_lunscan().await?;
-        // simply check if introspection contain given interface
         Ok(allowed)
     }
 
@@ -121,8 +131,8 @@ impl<'a> ZFCPClient<'a> {
     async fn get_controller_proxy(
         &self,
         controller_id: &str,
-    ) -> Result<ZFCPControllerProxy, ServiceError> {
-        let dbus = ZFCPControllerProxy::builder(&self.connection)
+    ) -> Result<ControllerProxy, ServiceError> {
+        let dbus = ControllerProxy::builder(&self.connection)
             .path(ZFCP_CONTROLLER_PREFIX.to_string() + "/" + controller_id)?
             .build()
             .await?;

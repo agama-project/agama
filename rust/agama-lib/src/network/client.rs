@@ -69,10 +69,10 @@ impl NetworkClient {
 
         if response.is_ok() {
             let path = format!("/network/connections/{id}");
-            self.client.put_void(&path.as_str(), &connection).await?
+            self.client.put_void(path.as_str(), &connection).await?
         } else {
             self.client
-                .post_void(format!("/network/connections").as_str(), &connection)
+                .post_void("/network/connections".to_string().as_str(), &connection)
                 .await?
         }
 
@@ -84,7 +84,7 @@ impl NetworkClient {
         // trying to be tricky here. If something breaks then we need a put method on
         // BaseHTTPClient which doesn't require a serialiable object for the body
         self.client
-            .post_void(&format!("/network/system/apply").as_str(), &())
+            .post_void("/network/system/apply".to_string().as_str(), &())
             .await?;
 
         Ok(())
