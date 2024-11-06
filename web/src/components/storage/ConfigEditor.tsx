@@ -29,12 +29,14 @@ import {
   ToolbarItem,
   ToolbarContent,
   ToolbarGroup,
+  Button,
   List,
   ListItem,
   Stack,
   StackItem,
   Split,
   SplitItem,
+  ExpandableSection,
   Menu,
   MenuContainer,
   MenuToggle,
@@ -208,7 +210,42 @@ function DriveEditor({ drive }: DriveEditorProps) {
       </Split>
     </ListItem>
   );
-}
+};
+
+function DevicesToolbar () {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <Stack>
+      <div align="right">
+        <ExpandableSection
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded(!isExpanded)}
+          toggleText={_("More options")}
+        >
+          <ToolbarWidget />
+        </ExpandableSection>
+      </div>
+    </Stack>
+  );
+};
+
+function ToolbarWidget () {
+  return (
+    <Toolbar>
+      <ToolbarContent>
+        <ToolbarGroup align={{ default: "alignRight" }}>
+          <ToolbarItem>
+            <Button variant="secondary">{_("Boot device")}</Button>
+          </ToolbarItem>
+          <ToolbarItem>
+            <MenuToggle>{_("Additional devices")}</MenuToggle>
+          </ToolbarItem>
+        </ToolbarGroup>
+      </ToolbarContent>
+    </Toolbar>
+  );
+};
 
 export default function ConfigEditor() {
   const config: type.Config = useConfig();
@@ -223,21 +260,13 @@ export default function ConfigEditor() {
   console.log("devices: ", devices);
 
   return (
-    <>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarGroup align={{ default: 'alignEnd' }}>
-            <ToolbarItem align={{ default: 'alignEnd' }}>
-              <MenuToggle>{_("Other devices")}</MenuToggle>
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
+    <Stack>
       <List isPlain isBordered>
         {solvedConfig.drives.map((d, i) => (
           <DriveEditor key={i} drive={d} />
         ))}
       </List>
-    </>
+      <DevicesToolbar />
+    </Stack>
   );
 }
