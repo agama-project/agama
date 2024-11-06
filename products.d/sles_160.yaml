@@ -59,6 +59,7 @@ software:
       archs: s390
 
   mandatory_patterns:
+    - traditional
     - base
   optional_patterns: null # no optional pattern shared
   user_patterns: []
