@@ -141,73 +141,35 @@ function partitionInfo(partition: Partition) {
   }
 }
 
-type PartitionEditorProps = { partition: Partition };
-
-function PartitionEditor({ partition }: PartitionEditorProps) {
-  return (
-    <DescriptionListGroup>
-      <DescriptionListTerm>{deviceName(partition) || _("New partition")}</DescriptionListTerm>
-      <DescriptionListDescription>{partitionInfo(partition)}</DescriptionListDescription>
-    </DescriptionListGroup>
-  );
-}
-
 type DriveEditorProps = { drive: type.DriveElement };
 type PartitionsProps = { drive: type.DriveElement };
 
-const DriveActions: React.FunctionComponent = () => {
-  const menu = (
-    <Menu>
-      <MenuContent>
-        <MenuList>
-          <MenuItem itemId="whatever">{_("Whatever")}</MenuItem>
-        </MenuList>
-      </MenuContent>
-    </Menu>
-  );
-
-  const toggle = (
-    <MenuToggle>{_("Options")}</MenuToggle>
-  );
-
-  return (
-    <MenuContainer
-      menu={menu}
-      toggle={toggle}
-      isOpen={false}
-    />
-  );
-};
-
 function Partitions({ drive }: PartitionsProps) {
   return (
-    <Stack>
-      <StackItem>
-        {_("New partitions will be created for root and swap")}
-      </StackItem>
-    </Stack>
+    <>
+      <span>{_("New partitions will be created for root and swap")}</span> <MenuToggle>{_("Change")}</MenuToggle>
+    </>
   );
 };
 
 function DriveEditor({ drive }: DriveEditorProps) {
   return (
     <ListItem>
-      <Split hasGutter>
-        <SplitItem isFilled>
-          <Stack hasGutter>
-            <StackItem>
-              <Split hasGutter>
-                <SplitItem isFilled><b>{deviceName(drive) || _("unknown drive")}</b></SplitItem>
-                <SplitItem isFilled>{_("Any existing content will be deleted")}</SplitItem>
-              </Split>
-            </StackItem>
-            <StackItem>
-              <Partitions drive={drive} />
-            </StackItem>
-          </Stack>
-        </SplitItem>
-        <SplitItem><DriveActions /></SplitItem>
-      </Split>
+      <Stack hasGutter>
+        <StackItem>
+          <Split hasGutter>
+            <SplitItem isFilled>
+              <b>{deviceName(drive) || _("unknown drive")}</b> <Button variant="secondary">{_("Change")}</Button>
+            </SplitItem>
+            <SplitItem isFilled>
+              <span>{_("Any existing content will be deleted")}</span> <Button variant="secondary">{_("Change")}</Button>
+            </SplitItem>
+          </Split>
+        </StackItem>
+        <StackItem>
+          <Partitions drive={drive} />
+        </StackItem>
+      </Stack>
     </ListItem>
   );
 };
