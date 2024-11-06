@@ -137,6 +137,7 @@
         <package name="libpwquality-tools"/>
         <package name="NetworkManager"/>
         <package name="agama"/>
+        <package name="agama-yast"/>
         <package name="agama-web-ui"/>
         <package name="agama-cli"/>
         <package name="agama-auto"/>
