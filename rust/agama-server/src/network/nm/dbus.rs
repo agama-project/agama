@@ -1200,18 +1200,26 @@ mod test {
     use uuid::Uuid;
     use zbus::zvariant::{self, Array, Dict, OwnedValue, Value};
 
+    // hash item
+    fn hi<'a, T>(key: &str, value: T) -> anyhow::Result<(String, OwnedValue)>
+    where
+        T: Into<Value<'a>> + zbus::zvariant::Type,
+    {
+        Ok((key.to_string(), Value::new(value).try_to_owned()?))
+    }
+
     #[test]
     fn test_connection_from_dbus() -> anyhow::Result<()> {
         let uuid = Uuid::new_v4().to_string();
         let connection_section = HashMap::from([
-            ("id".to_string(), Value::new("eth0").try_to_owned()?),
-            ("uuid".to_string(), Value::new(uuid).try_to_owned()?),
-            ("autoconnect".to_string(), Value::new(false).try_to_owned()?),
+            hi("id", "eth0")?,
+            hi("uuid", uuid)?,
+            hi("autoconnect", false)?,
         ]);
 
         let address_v4_data = vec![HashMap::from([
-            ("address".to_string(), Value::new("192.168.0.10")),
-            ("prefix".to_string(), Value::new(24_u32)),
+            hi("address", "192.168.0.10")?,
+            hi("prefix", 24_u32)?,
         ])];
 
         let route_v4_data = vec![HashMap::from([
@@ -1222,73 +1230,37 @@ mod test {
         ])];
 
         let ipv4_section = HashMap::from([
-            ("method".to_string(), Value::new("auto").try_to_owned()?),
-            (
-                "address-data".to_string(),
-                Value::new(address_v4_data).try_to_owned()?,
-            ),
-            (
-                "gateway".to_string(),
-                Value::new("192.168.0.1").try_to_owned()?,
-            ),
-            (
-                "dns-data".to_string(),
-                Value::new(vec!["192.168.0.2"]).try_to_owned()?,
-            ),
-            (
-                "dns-search".to_string(),
-                Value::new(vec!["suse.com", "example.com"]).try_to_owned()?,
-            ),
-            (
-                "ignore-auto-dns".to_string(),
-                Value::new(true).try_to_owned()?,
-            ),
-            (
-                "route-data".to_string(),
-                Value::new(route_v4_data).try_to_owned()?,
-            ),
+            hi("method", "auto")?,
+            hi("address-data", address_v4_data)?,
+            hi("gateway", "192.168.0.1")?,
+            hi("dns-data", vec!["192.168.0.2"])?,
+            hi("dns-search", vec!["suse.com", "example.com"])?,
+            hi("ignore-auto-dns", true)?,
+            hi("route-data", route_v4_data)?,
         ]);
 
         let address_v6_data = vec![HashMap::from([
-            ("address".to_string(), Value::new("::ffff:c0a8:10a")),
-            ("prefix".to_string(), Value::new(24_u32)),
+            hi("address", "::ffff:c0a8:10a")?,
+            hi("prefix", 24_u32)?,
         ])];
 
         let route_v6_data = vec![HashMap::from([
-            ("dest".to_string(), Value::new("2001:db8::")),
-            ("prefix".to_string(), Value::new(64_u32)),
-            ("next-hop".to_string(), Value::new("2001:db8::1")),
-            ("metric".to_string(), Value::new(100_u32)),
+            hi("dest", "2001:db8::")?,
+            hi("prefix", 64_u32)?,
+            hi("next-hop", "2001:db8::1")?,
+            hi("metric", 100_u32)?,
         ])];
 
         let ipv6_section = HashMap::from([
-            ("method".to_string(), Value::new("auto").try_to_owned()?),
-            (
-                "address-data".to_string(),
-                Value::new(address_v6_data).try_to_owned()?,
-            ),
-            (
-                "gateway".to_string(),
-                Value::new("::ffff:c0a8:101").try_to_owned()?,
-            ),
-            (
-                "dns-data".to_string(),
-                Value::new(vec!["::ffff:c0a8:102"]).try_to_owned()?,
-            ),
-            (
-                "dns-search".to_string(),
-                Value::new(vec!["suse.com", "suse.de"]).try_to_owned()?,
-            ),
-            (
-                "route-data".to_string(),
-                Value::new(route_v6_data).try_to_owned()?,
-            ),
+            hi("method", "auto")?,
+            hi("address-data", address_v6_data)?,
+            hi("gateway", "::ffff:c0a8:101")?,
+            hi("dns-data", vec!["::ffff:c0a8:102"])?,
+            hi("dns-search", vec!["suse.com", "suse.de"])?,
+            hi("route-data", route_v6_data)?,
         ]);
 
-        let match_section = HashMap::from([(
-            "kernel-command-line".to_string(),
-            Value::new(vec!["pci-0000:00:19.0"]).try_to_owned()?,
-        )]);
+        let match_section = HashMap::from([hi("kernel-command-line", vec!["pci-0000:00:19.0"])?]);
 
         let dbus_conn = HashMap::from([
             ("connection".to_string(), connection_section),
@@ -1363,57 +1335,27 @@ mod test {
     #[test]
     fn test_connection_from_dbus_wireless() -> anyhow::Result<()> {
         let uuid = Uuid::new_v4().to_string();
-        let connection_section = HashMap::from([
-            ("id".to_string(), Value::new("wlan0").try_to_owned()?),
-            ("uuid".to_string(), Value::new(uuid).try_to_owned()?),
-        ]);
+        let connection_section = HashMap::from([hi("id", "wlan0")?, hi("uuid", uuid)?]);
 
         let wireless_section = HashMap::from([
-            (
-                "mode".to_string(),
-                Value::new("infrastructure").try_to_owned()?,
-            ),
-            (
-                "ssid".to_string(),
-                Value::new("agama".as_bytes()).try_to_owned()?,
-            ),
-            (
-                "assigned-mac-address".to_string(),
-                Value::new("13:45:67:89:AB:CD").try_to_owned()?,
-            ),
-            ("band".to_string(), Value::new("a").try_to_owned()?),
-            ("channel".to_string(), Value::new(32_u32).try_to_owned()?),
-            (
-                "bssid".to_string(),
-                Value::new(vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8]).try_to_owned()?,
-            ),
-            ("hidden".to_string(), Value::new(false).try_to_owned()?),
+            hi("mode", "infrastructure")?,
+            hi("ssid", "agama".as_bytes())?,
+            hi("assigned-mac-address", "13:45:67:89:AB:CD")?,
+            hi("band", "a")?,
+            hi("channel", 32_u32)?,
+            hi("bssid", vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8])?,
+            hi("hidden", false)?,
         ]);
 
         let security_section = HashMap::from([
-            (
-                "key-mgmt".to_string(),
-                Value::new("wpa-psk").try_to_owned()?,
-            ),
-            (
-                "wep-key-type".to_string(),
-                Value::new(WEPKeyType::Key as u32).try_to_owned()?,
-            ),
-            ("auth-alg".to_string(), Value::new("open").try_to_owned()?),
-            (
-                "wep-tx-keyidx".to_string(),
-                Value::new(1_u32).try_to_owned()?,
-            ),
-            (
-                "group".to_string(),
-                Value::new(vec!["wep40", "tkip"]).try_to_owned()?,
-            ),
-            (
-                "pairwise".to_string(),
-                Value::new(vec!["tkip", "ccmp"]).try_to_owned()?,
-            ),
-            ("proto".to_string(), Value::new(vec!["rsn"]).try_to_owned()?),
-            ("pmf".to_string(), Value::new(2_i32).try_to_owned()?),
+            hi("key-mgmt", "wpa-psk")?,
+            hi("wep-key-type", WEPKeyType::Key as u32)?,
+            hi("auth-alg", "open")?,
+            hi("wep-tx-keyidx", 1_u32)?,
+            hi("group", vec!["wep40", "tkip"])?,
+            hi("pairwise", vec!["tkip", "ccmp"])?,
+            hi("proto", vec!["rsn"])?,
+            hi("pmf", 2_i32)?,
         ]);
 
         let dbus_conn = HashMap::from([
@@ -1458,17 +1400,11 @@ mod test {
     #[test]
     fn test_connection_from_dbus_bonding() -> anyhow::Result<()> {
         let uuid = Uuid::new_v4().to_string();
-        let connection_section = HashMap::from([
-            ("id".to_string(), Value::new("bond0").try_to_owned()?),
-            ("uuid".to_string(), Value::new(uuid).try_to_owned()?),
-        ]);
+        let connection_section = HashMap::from([hi("id", "bond0")?, hi("uuid", uuid)?]);
 
         let bond_options = Value::new(HashMap::from([(
             "options".to_string(),
-            HashMap::from([(
-                "mode".to_string(),
-                Value::new("active-backup").try_to_owned()?,
-            )]),
+            HashMap::from([hi("mode", "active-backup")?]),
         )]));
 
         let dbus_conn = HashMap::from([
@@ -1487,18 +1423,12 @@ mod test {
     #[test]
     fn test_connection_from_dbus_infiniband() -> anyhow::Result<()> {
         let uuid = Uuid::new_v4().to_string();
-        let connection_section = HashMap::from([
-            ("id".to_string(), Value::new("ib0").try_to_owned()?),
-            ("uuid".to_string(), Value::new(uuid).try_to_owned()?),
-        ]);
+        let connection_section = HashMap::from([hi("id", "ib0")?, hi("uuid", uuid)?]);
 
         let infiniband_section = HashMap::from([
-            ("p-key".to_string(), Value::new(0x8001_i32).try_to_owned()?),
-            ("parent".to_string(), Value::new("ib0").try_to_owned()?),
-            (
-                "transport-mode".to_string(),
-                Value::new("datagram").try_to_owned()?,
-            ),
+            hi("p-key", 0x8001_i32)?,
+            hi("parent", "ib0")?,
+            hi("transport-mode", "datagram")?,
         ]);
 
         let dbus_conn = HashMap::from([
@@ -1520,7 +1450,7 @@ mod test {
     #[test]
     fn test_connection_from_dbus_ieee_8021x() -> anyhow::Result<()> {
         let connection_section = HashMap::from([
-            ("id".to_string(), Value::new("eap0").try_to_owned()?),
+            hi("id", "eap0")?,
             (
                 "uuid".to_string(),
                 Value::new(Uuid::new_v4().to_string()).try_to_owned()?,
@@ -1528,55 +1458,22 @@ mod test {
         ]);
 
         let ieee_8021x_section = HashMap::from([
-            (
-                "eap".to_string(),
-                Value::new(vec!["md5", "leap"]).try_to_owned()?,
-            ),
-            ("phase2-auth".to_string(), Value::new("gtc").try_to_owned()?),
-            (
-                "identity".to_string(),
-                Value::new("test_user").try_to_owned()?,
-            ),
-            (
-                "password".to_string(),
-                Value::new("test_pw").try_to_owned()?,
-            ),
-            (
-                "ca-cert".to_string(),
-                Value::new("file:///path/to/ca_cert.pem\0".as_bytes()).try_to_owned()?,
-            ),
-            (
-                "ca-cert-password".to_string(),
-                Value::new("ca_cert_pw").try_to_owned()?,
-            ),
-            (
-                "client-cert".to_string(),
-                Value::new("not_valid_value".as_bytes()).try_to_owned()?,
-            ),
-            (
-                "client-cert-password".to_string(),
-                Value::new("client_cert_pw").try_to_owned()?,
-            ),
-            (
-                "private-key".to_string(),
-                Value::new("file://relative_path/private_key\0".as_bytes()).try_to_owned()?,
-            ),
-            (
-                "private-key-password".to_string(),
-                Value::new("private_key_pw").try_to_owned()?,
-            ),
-            (
-                "anonymous-identity".to_string(),
-                Value::new("anon_identity").try_to_owned()?,
-            ),
-            (
-                "phase1-peaplabel".to_string(),
-                Value::new("0").try_to_owned()?,
-            ),
-            (
-                "phase1-peapver".to_string(),
-                Value::new("1").try_to_owned()?,
-            ),
+            hi("eap", vec!["md5", "leap"])?,
+            hi("phase2-auth", "gtc")?,
+            hi("identity", "test_user")?,
+            hi("password", "test_pw")?,
+            hi("ca-cert", "file:///path/to/ca_cert.pem\0".as_bytes())?,
+            hi("ca-cert-password", "ca_cert_pw")?,
+            hi("client-cert", "not_valid_value".as_bytes())?,
+            hi("client-cert-password", "client_cert_pw")?,
+            hi(
+                "private-key",
+                "file://relative_path/private_key\0".as_bytes(),
+            )?,
+            hi("private-key-password", "private_key_pw")?,
+            hi("anonymous-identity", "anon_identity")?,
+            hi("phase1-peaplabel", "0")?,
+            hi("phase1-peapver", "1")?,
         ]);
 
         let dbus_conn = HashMap::from([
@@ -1887,45 +1784,18 @@ mod test {
     #[test]
     fn test_merge_dbus_connections() -> anyhow::Result<()> {
         let mut original = OwnedNestedHash::new();
-        let connection = HashMap::from([
-            (
-                "id".to_string(),
-                Value::new("conn0".to_string()).try_to_owned()?,
-            ),
-            (
-                "type".to_string(),
-                Value::new(ETHERNET_KEY.to_string()).try_to_owned()?,
-            ),
-        ]);
+        let connection = HashMap::from([hi("id", "conn0")?, hi("type", ETHERNET_KEY)?]);
 
         let ipv4 = HashMap::from([
-            (
-                "method".to_string(),
-                Value::new("manual".to_string()).try_to_owned()?,
-            ),
-            (
-                "gateway".to_string(),
-                Value::new("192.168.1.1".to_string()).try_to_owned()?,
-            ),
-            (
-                "addresses".to_string(),
-                Value::new(vec!["192.168.1.1"]).try_to_owned()?,
-            ),
+            hi("method", "manual")?,
+            hi("gateway", "192.168.1.1")?,
+            hi("addresses", vec!["192.168.1.1"])?,
         ]);
 
         let ipv6 = HashMap::from([
-            (
-                "method".to_string(),
-                Value::new("manual".to_string()).try_to_owned()?,
-            ),
-            (
-                "gateway".to_string(),
-                Value::new("::ffff:c0a8:101".to_string()).try_to_owned()?,
-            ),
-            (
-                "addresses".to_string(),
-                Value::new(vec!["::ffff:c0a8:102"]).try_to_owned()?,
-            ),
+            hi("method", "manual")?,
+            hi("gateway", "::ffff:c0a8:101")?,
+            hi("addresses", vec!["::ffff:c0a8:102"])?,
         ]);
 
         original.insert("connection".to_string(), connection);
@@ -1975,25 +1845,13 @@ mod test {
     fn test_merged_connections_are_clean() -> anyhow::Result<()> {
         let mut original = OwnedNestedHash::new();
         let connection = HashMap::from([
-            (
-                "id".to_string(),
-                Value::new("conn0".to_string()).try_to_owned()?,
-            ),
-            (
-                "type".to_string(),
-                Value::new(ETHERNET_KEY.to_string()).try_to_owned()?,
-            ),
-            (
-                "interface-name".to_string(),
-                Value::new("eth0".to_string()).try_to_owned()?,
-            ),
+            hi("id", "conn0")?,
+            hi("type", ETHERNET_KEY)?,
+            hi("interface-name", "eth0")?,
         ]);
         let ethernet = HashMap::from([
-            (
-                "assigned-mac-address".to_string(),
-                Value::new("12:34:56:78:9A:BC".to_string()).try_to_owned()?,
-            ),
-            ("mtu".to_string(), Value::new(9000).try_to_owned()?),
+            hi("assigned-mac-address", "12:34:56:78:9A:BC")?,
+            hi("mtu", 9000)?,
         ]);
         original.insert("connection".to_string(), connection);
         original.insert(ETHERNET_KEY.to_string(), ethernet);
@@ -2017,15 +1875,9 @@ mod test {
 
     fn build_ethernet_section_from_dbus() -> HashMap<String, OwnedValue> {
         HashMap::from([
-            ("auto-negotiate".to_string(), true.into()),
-            (
-                "assigned-mac-address".to_string(),
-                Value::new("12:34:56:78:9A:BC").try_to_owned().unwrap(),
-            ),
-            (
-                "mtu".to_string(),
-                Value::new(9000_u32).try_to_owned().unwrap(),
-            ),
+            hi("auto-negotiate", true).unwrap(),
+            hi("assigned-mac-address", "12:34:56:78:9A:BC").unwrap(),
+            hi("mtu", 9000_u32).unwrap(),
         ])
     }
 
