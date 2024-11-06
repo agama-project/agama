@@ -212,9 +212,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             install(&manager, 3).await?
         }
         Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,
-        // TODO: logs command was originally designed with idea that agama's cli and agama
-        // installation runs on the same machine, so it is unable to do remote connection
-        Commands::Logs(subcommand) => run_logs_cmd(subcommand).await?,
+        Commands::Logs(subcommand) => run_logs_cmd(client, subcommand).await?,
         Commands::Download { url } => Transfer::get(&url, std::io::stdout())?,
         Commands::Auth(subcommand) => {
             run_auth_cmd(client, subcommand).await?;

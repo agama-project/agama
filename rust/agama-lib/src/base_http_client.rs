@@ -215,7 +215,7 @@ impl BaseHTTPClient {
     ///
     /// Arguments:
     ///
-    /// * `path`: path relative to HTTP API like `/questions/1`    
+    /// * `path`: path relative to HTTP API like `/questions/1`
     pub async fn delete_void(&self, path: &str) -> Result<(), ServiceError> {
         let response: Result<_, ServiceError> = self
             .client
@@ -224,6 +224,16 @@ impl BaseHTTPClient {
             .await
             .map_err(|e| e.into());
         self.unit_or_error(response?).await
+    }
+
+    /// Returns raw reqwest::Response. Use e.g. in case when response content is not
+    /// JSON body but e.g. binary data
+    pub async fn get_raw(&self, path: &str) -> Result<Response, ServiceError> {
+        self.client
+            .get(self.url(path))
+            .send()
+            .await
+            .map_err(|e| e.into())
     }
 
     /// POST/PUT/PATCH an object to a given path and returns server response.

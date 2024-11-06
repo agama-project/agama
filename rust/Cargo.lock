@@ -24,10 +24,10 @@ dependencies = [
  "agama-lib",
  "anyhow",
  "async-trait",
+ "chrono",
  "clap",
  "console",
  "curl",
- "fs_extra",
  "indicatif",
  "inquire",
  "nix 0.27.1",
@@ -49,6 +49,7 @@ dependencies = [
  "cidr",
  "curl",
  "env_logger",
+ "fs_extra",
  "futures-util",
  "home",
  "httpmock",
@@ -120,6 +121,7 @@ dependencies = [
  "tokio-openssl",
  "tokio-stream",
  "tokio-test",
+ "tokio-util",
  "tower 0.4.13",
  "tower-http",
  "tracing",
@@ -796,8 +798,10 @@ checksum = "a21f936df1771bf62b77f047b726c4625ff2e8aa607c01ec06e5a05bd8463401"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-targets 0.52.6",
 ]
 

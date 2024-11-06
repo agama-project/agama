@@ -18,7 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::logs::LogsLists;
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use reqwest::header::CONTENT_ENCODING;
+use std::io::Cursor;
+use std::path::{Path, PathBuf};
 
 pub struct ManagerHTTPClient {
     client: BaseHTTPClient,
@@ -33,5 +37,49 @@ impl ManagerHTTPClient {
         // BaseHTTPClient did not anticipate POST without request body
         // so we pass () which is rendered as `null`
         self.client.post_void("/manager/probe_sync", &()).await
+    }
+
+    /// Downloads package of logs from the backend
+    ///
+    /// For now the path is path to a destination file without an extension. Extension
+    /// will be added according to the compression type found in the response
+    ///
+    /// Returns path to logs
+    pub async fn store(&self, path: &Path) -> Result<PathBuf, ServiceError> {
+        // 1) response with logs
+        let response = self.client.get_raw("/manager/logs/store").await?;
+
+        // 2) find out the destination file name
+        let ext =
+            &response
+                .headers()
+                .get(CONTENT_ENCODING)
+                .ok_or(ServiceError::CannotGenerateLogs(String::from(
+                    "Invalid response",
+                )))?;
+        let mut destination = path.to_path_buf();
+
+        destination.set_extension(
+            ext.to_str()
+                .map_err(|_| ServiceError::CannotGenerateLogs(String::from("Invalid response")))?,
+        );
+
+        // 3) store response's binary content (logs) in a file
+        let mut file = std::fs::File::create(destination.as_path()).map_err(|_| {
+            ServiceError::CannotGenerateLogs(String::from("Cannot store received response"))
+        })?;
+        let mut content = Cursor::new(response.bytes().await?);
+
+        std::io::copy(&mut content, &mut file).map_err(|_| {
+            ServiceError::CannotGenerateLogs(String::from("Cannot store received response"))
+        })?;
+
+        Ok(destination)
+    }
+
+    /// Asks backend for lists of log files and commands used for creating logs archive returned by
+    /// store (/logs/store) backed HTTP API command
+    pub async fn list(&self) -> Result<LogsLists, ServiceError> {
+        Ok(self.client.get("/manager/logs/list").await?)
     }
 }

@@ -46,7 +46,7 @@ const ROOT = {
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
-  logs: "/api/manager/logs.tar.gz",
+  logs: "/api/manager/logs/store",
 };
 
 const USER = {
