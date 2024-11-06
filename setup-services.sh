@@ -120,7 +120,7 @@ fi
   if [ -n "${CI:-}" ]; then
     # in CI reuse the pre-installed system gems from RPMs
     bundle config set --local disable_shared_gems 0
-    sudo bundle install
+    $SUDO bundle install
   else
     bundle config set --local path 'vendor/bundle'
     bundle install
@@ -150,7 +150,7 @@ $SUDO $ZYPPER install \
   cd $MYDIR/rust
   cargo build
 
-  sudo ln -sft /usr/bin $MYDIR/rust/target/debug/agama{,*server}
+  $SUDO ln -sft /usr/bin $MYDIR/rust/target/debug/agama{,*server}
 )
 
 # - D-Bus configuration
