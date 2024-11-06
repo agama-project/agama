@@ -198,7 +198,7 @@ function DriveEditor({ drive }: DriveEditorProps) {
             <StackItem>
               <Split hasGutter>
                 <SplitItem isFilled><b>{deviceName(drive) || _("unknown drive")}</b></SplitItem>
-                <SplitItem isFilled>{_("Existing partitions will be kept")}</SplitItem>
+                <SplitItem isFilled>{_("Any existing content will be deleted")}</SplitItem>
               </Split>
             </StackItem>
             <StackItem>
