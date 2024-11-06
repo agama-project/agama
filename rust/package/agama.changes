@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 30 15:27:11 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add autoconnect property for network connections
+  (gh#agama-project/agama#1715)
+
+-------------------------------------------------------------------
 Mon Oct 28 09:24:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the correct method to apply the network configuration from

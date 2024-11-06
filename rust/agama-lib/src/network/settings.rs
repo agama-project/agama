@@ -165,48 +165,74 @@ pub struct NetworkDevice {
     pub state: DeviceState,
 }
 
+/// Represents the configuration details for a network connection
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkConnection {
+    /// Unique identifier for the network connection
     pub id: String,
+    /// IPv4 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method4: Option<String>,
+    /// Gateway IP address for the IPv4 connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway4: Option<IpAddr>,
+    /// IPv6 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method6: Option<String>,
+    /// Gateway IP address for the IPv6 connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway6: Option<IpAddr>,
+    /// List of assigned IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub addresses: Vec<IpInet>,
+    /// List of DNS server IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub nameservers: Vec<IpAddr>,
+    /// List of search domains for DNS resolution
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub dns_searchlist: Vec<String>,
+    /// Specifies whether to ignore automatically assigned DNS settings
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ignore_auto_dns: Option<bool>,
+    /// Wireless settings for the connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless: Option<WirelessSettings>,
+    /// Network interface associated with the connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub interface: Option<String>,
+    /// Match settings for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub match_settings: Option<MatchSettings>,
+    /// Identifier for the parent connection, if this connection is part of a bond
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent: Option<String>,
+    /// Bonding settings if part of a bond
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bond: Option<BondSettings>,
+    /// MAC address of the connection's interface
     #[serde(rename = "mac-address", skip_serializing_if = "Option::is_none")]
     pub mac_address: Option<String>,
+    /// Current status of the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<Status>,
+    /// Maximum Transmission Unit (MTU) for the connection
     #[serde(skip_serializing_if = "is_zero", default)]
     pub mtu: u32,
+    /// IEEE 802.1X settings
     #[serde(rename = "ieee-8021x", skip_serializing_if = "Option::is_none")]
     pub ieee_8021x: Option<IEEE8021XSettings>,
+    /// Specifies if the connection should automatically connect
+    #[serde(default = "default_true")]
+    pub autoconnect: bool,
 }
 
 fn is_zero<T: PartialEq + From<u16>>(u: &T) -> bool {
     *u == T::from(0)
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl NetworkConnection {

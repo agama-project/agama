@@ -513,6 +513,7 @@ pub struct Connection {
     pub match_config: MatchConfig,
     pub config: ConnectionConfig,
     pub ieee_8021x_config: Option<IEEE8021XConfig>,
+    pub autoconnect: bool,
 }
 
 impl Connection {
@@ -584,6 +585,7 @@ impl Default for Connection {
             match_config: Default::default(),
             config: Default::default(),
             ieee_8021x_config: Default::default(),
+            autoconnect: true,
         }
     }
 }
@@ -634,6 +636,7 @@ impl TryFrom<NetworkConnection> for Connection {
         connection.ip_config.gateway6 = conn.gateway6;
         connection.interface = conn.interface;
         connection.mtu = conn.mtu;
+        connection.autoconnect = conn.autoconnect;
 
         Ok(connection)
     }
@@ -660,6 +663,7 @@ impl TryFrom<Connection> for NetworkConnection {
         let ieee_8021x: Option<IEEE8021XSettings> = conn
             .ieee_8021x_config
             .and_then(|x| IEEE8021XSettings::try_from(x).ok());
+        let autoconnect = conn.autoconnect;
 
         let mut connection = NetworkConnection {
             id,
@@ -676,6 +680,7 @@ impl TryFrom<Connection> for NetworkConnection {
             addresses,
             mtu,
             ieee_8021x,
+            autoconnect,
             ..Default::default()
         };
 
