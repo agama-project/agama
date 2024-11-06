@@ -19,10 +19,9 @@
 // find current contact information at www.suse.com.
 
 //! NetworkManager error types
-use std::net::AddrParseError;
-
 use crate::network::error::NetworkStateError;
 use cidr::errors::NetworkLengthTooLongError;
+use std::net::AddrParseError;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
