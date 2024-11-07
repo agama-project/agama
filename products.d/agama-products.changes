@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 06 11:28:16 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
+
+- add traditional pattern to mandatory_patterns for SLES16.0 product,
+  it will fix missing zypper in initial installation
+  (gh#agama-project/agama#1731)
+
+-------------------------------------------------------------------
 Wed Oct 30 18:57:26 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
 
 - sles_enhanced_base pattern was removed from SLES16, so replace
