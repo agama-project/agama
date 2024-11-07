@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
@@ -107,6 +108,9 @@ fn evaluate(path: &Path) -> anyhow::Result<()> {
 }
 
 async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
+    tokio::spawn(async move {
+        show_progress().await.unwrap();
+    });
     let url = Url::parse(&url_string)?;
     let tmpdir = TempDir::new()?; // TODO: create it only if dir is not passed
     let path = url.path();
