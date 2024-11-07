@@ -26,6 +26,7 @@ import React from "react";
 // icons location. Check the tsconfig.json file to see its value.
 import AddAPhoto from "@icons/add_a_photo.svg?component";
 import Apps from "@icons/apps.svg?component";
+import ArrowForward from "@icons/arrow_forward.svg?component";
 import Badge from "@icons/badge.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
@@ -44,6 +45,7 @@ import Feedback from "@icons/feedback.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
 import FrameInspect from "@icons/frame_inspect.svg?component";
+import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
@@ -90,6 +92,7 @@ import { SiLinux } from "@icons-pack/react-simple-icons";
 const icons = {
   add_a_photo: AddAPhoto,
   apps: Apps,
+  arrow_forward: ArrowForward,
   badge: Badge,
   backspace: Backspace,
   check_circle: CheckCircle,
@@ -115,6 +118,7 @@ const icons = {
   info: Info,
   inventory_2: Inventory,
   keyboard: Keyboard,
+  keyboard_arrow_down: KeyboardArrowDown,
   lan: Lan,
   list_alt: ListAlt,
   lock: Lock,
