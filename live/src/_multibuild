@@ -1,6 +1,4 @@
 <multibuild>
-  <flavor>Leap</flavor>
-  <flavor>Leap-PXE</flavor>
   <flavor>openSUSE</flavor>
   <flavor>openSUSE-PXE</flavor>
 </multibuild>
