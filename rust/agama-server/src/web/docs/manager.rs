@@ -21,7 +21,7 @@ impl ApiDocBuilder for ManagerApiDocBuilder {
     fn components(&self) -> utoipa::openapi::Components {
         ComponentsBuilder::new()
             .schema_from::<agama_lib::manager::InstallationPhase>()
-            .schema_from::<crate::manager::web::InstallerStatus>()
+            .schema_from::<agama_lib::manager::InstallerStatus>()
             .build()
     }
 }

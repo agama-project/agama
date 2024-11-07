@@ -133,7 +133,7 @@ async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
     tokio::time::sleep(Duration::from_secs(1)).await;
     let conn = agama_lib::connection().await?;
-    let mut monitor = ProgressMonitor::new(conn).await.unwrap();
+    let mut monitor = ProgressMonitor::new(conn).await?;
     let presenter = InstallerProgress::new();
     monitor
         .run(presenter)

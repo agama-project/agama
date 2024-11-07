@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
@@ -27,6 +28,7 @@ use agama_lib::{
 };
 use anyhow::Context;
 use clap::Subcommand;
+use console::style;
 use std::os::unix::process::CommandExt;
 use std::{
     fs::File,
@@ -80,18 +82,25 @@ pub enum ProfileCommands {
 
 fn validate(path: &PathBuf) -> anyhow::Result<()> {
     let validator = ProfileValidator::default_schema()?;
-    // let path = Path::new(&path);
     let result = validator
         .validate_file(path)
         .context(format!("Could not validate the profile {:?}", path))?;
     match result {
         ValidationResult::Valid => {
-            println!("The profile is valid")
+            println!(
+                "{} {}",
+                style("\u{2713}").bold().green(),
+                "The profile is valid."
+            );
         }
         ValidationResult::NotValid(errors) => {
-            eprintln!("The profile is not valid. Please, check the following errors:\n");
+            eprintln!(
+                "{} {}",
+                style("\u{2717}").bold().red(),
+                "The profile is not valid. Please, check the following errors:\n"
+            );
             for error in errors {
-                println!("* {error}")
+                println!("\t* {error}")
             }
         }
     }
@@ -107,6 +116,9 @@ fn evaluate(path: &Path) -> anyhow::Result<()> {
 }
 
 async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
+    tokio::spawn(async move {
+        show_progress().await.unwrap();
+    });
     let url = Url::parse(&url_string)?;
     let tmpdir = TempDir::new()?; // TODO: create it only if dir is not passed
     let path = url.path();

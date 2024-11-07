@@ -76,7 +76,11 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             let mut contents = String::new();
             stdin.read_to_string(&mut contents)?;
             let result: InstallSettings = serde_json::from_str(&contents)?;
-            Ok(store.store(&result).await?)
+            tokio::spawn(async move {
+                show_progress().await.unwrap();
+            });
+            store.store(&result).await?;
+            Ok(())
         }
         ConfigCommands::Edit { editor } => {
             let model = store.load().await?;

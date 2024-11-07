@@ -25,10 +25,10 @@
 //! * `manager_service` which returns the Axum service.
 //! * `manager_stream` which offers an stream that emits the manager events coming from D-Bus.
 
-use agama_lib::logs::{list as list_logs, store as store_logs, LogsLists, DEFAULT_COMPRESSION};
 use agama_lib::{
     error::ServiceError,
-    manager::{InstallationPhase, ManagerClient},
+    logs::{list as list_logs, store as store_logs, LogsLists, DEFAULT_COMPRESSION},
+    manager::{InstallationPhase, InstallerStatus, ManagerClient},
     proxies::Manager1Proxy,
 };
 use axum::{
@@ -39,7 +39,6 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use serde::Serialize;
 use std::pin::Pin;
 use tokio_stream::{Stream, StreamExt};
 use tokio_util::io::ReaderStream;
@@ -56,20 +55,6 @@ use crate::{
 pub struct ManagerState<'a> {
     dbus: zbus::Connection,
     manager: ManagerClient<'a>,
-}
-
-/// Holds information about the manager's status.
-#[derive(Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct InstallerStatus {
-    /// Current installation phase.
-    phase: InstallationPhase,
-    /// Whether the service is busy.
-    is_busy: bool,
-    /// Whether Agama is running on Iguana.
-    use_iguana: bool,
-    /// Whether it is possible to start the installation.
-    can_install: bool,
 }
 
 /// Returns a stream that emits manager related events coming from D-Bus.

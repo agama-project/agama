@@ -18,8 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::logs::LogsLists;
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use crate::{
+    base_http_client::BaseHTTPClient, error::ServiceError, logs::LogsLists,
+    manager::InstallerStatus,
+};
 use reqwest::header::CONTENT_ENCODING;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
@@ -33,6 +35,7 @@ impl ManagerHTTPClient {
         Self { client: base }
     }
 
+    /// Starts a "probing".
     pub async fn probe(&self) -> Result<(), ServiceError> {
         // BaseHTTPClient did not anticipate POST without request body
         // so we pass () which is rendered as `null`
@@ -81,5 +84,12 @@ impl ManagerHTTPClient {
     /// store (/logs/store) backed HTTP API command
     pub async fn list(&self) -> Result<LogsLists, ServiceError> {
         Ok(self.client.get("/manager/logs/list").await?)
+    }
+
+    /// Returns the installer status.
+    pub async fn status(&self) -> Result<InstallerStatus, ServiceError> {
+        self.client
+            .get::<InstallerStatus>("/manager/installer")
+            .await
     }
 }
