@@ -9,9 +9,11 @@
         <specification>Agama Live ISO</specification>
     </description>
     <profiles>
+        <profile name="Leap" description="openSUSE Leap image" import="true" />
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
         <profile name="SLE" description="SLE-based image" import="true" />
         <profile name="openSUSE-PXE" description="openSUSE OEM image for remote instalaltion" import="true" />
+        <profile name="Leap-PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
     <preferences>
         <version>10.0.0</version>
@@ -24,22 +26,22 @@
         <bootsplash-theme>bgrt</bootsplash-theme>
         <bootloader-theme>openSUSE</bootloader-theme>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE,SLE">
+    <preferences arch="ppc64le" profiles="openSUSE,SLE,Leap">
         <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE,SLE">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE,SLE,Leap">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE,SLE">
+    <preferences arch="s390x" profiles="openSUSE,SLE,Leap">
         <type image="iso" flags="dmsquash" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
         </type>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE-PXE">
+    <preferences arch="ppc64le" profiles="openSUSE-PXE,Leap-PXE">
         <!-- For some reason the compression results on ppc64le are not as good as on the other archs -->
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="ofw" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=3174400" volid="agama">
             <bootloader name="grub2" console="serial" timeout="1"/>
@@ -53,7 +55,7 @@
             <size unit="M">3000</size>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE-PXE">
+    <preferences arch="s390x" profiles="openSUSE-PXE,Leap-PXE">
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152" volid="agama">
             <bootloader name="custom"/>
             <oemconfig>
@@ -66,7 +68,7 @@
             <size unit="M">1900</size>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE-PXE">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE-PXE,Leap-PXE">
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="uefi" installiso="true" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152" volid="agama">
             <bootloader name="grub2" timeout="1"/>
             <oemconfig>
@@ -86,7 +88,7 @@
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
     </repository>
-    <packages type="image" profiles="openSUSE-PXE">
+    <packages type="image" profiles="openSUSE-PXE,Leap-PXE">
         <package name="dracut-kiwi-oem-repart"/>
         <package name="dracut-kiwi-oem-dump"/>
         <archive name="root-openSUSE-PXE.tar.xz"/>
@@ -158,6 +160,18 @@
         <package name="qrencode"/>
         <archive name="root.tar.xz"/>
     </packages>
+    <!-- additional packages for the Leap distributions -->
+    <packages type="image" profiles="Leap,Leap-PXE">
+        <package name="agama-products-opensuse"/>
+        <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
+        <package name="openSUSE-repos-Leap"/>
+        <package name="patterns-openSUSE-base"/>
+        <package name="ruby3.2-rubygem-agama-yast"/>
+        <package name="ruby3.2-rubygem-byebug"/>
+        <package name="staging-build-key"/>
+        <package name="openSUSE-build-key"/>
+        <package name="MozillaFirefox-branding-openSUSE"/>
+    </packages>
     <!-- additional packages for the openSUSE distributions -->
     <packages type="image" profiles="openSUSE,openSUSE-PXE">
         <package name="agama-products-opensuse"/>
@@ -187,6 +201,9 @@
         <package name="cracklib-dict-full"/>
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
+    </packages>
+    <packages type="bootstrap" profiles="Leap,Leap-PXE">
+		<package name="Leap-release"/>
     </packages>
     <packages type="bootstrap" profiles="openSUSE,openSUSE-PXE">
         <package name="openSUSE-release"/>
