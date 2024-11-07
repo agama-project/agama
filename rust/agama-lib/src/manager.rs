@@ -22,6 +22,7 @@
 
 pub mod http_client;
 pub use http_client::ManagerHTTPClient;
+use serde::{Deserialize, Serialize};
 
 use crate::error::ServiceError;
 use crate::proxies::ServiceStatusProxy;
@@ -29,7 +30,7 @@ use crate::{
     progress::Progress,
     proxies::{Manager1Proxy, ProgressProxy},
 };
-use serde_repr::Serialize_repr;
+use serde_repr::{Deserialize_repr, Serialize_repr};
 use tokio_stream::StreamExt;
 use zbus::Connection;
 
@@ -41,9 +42,23 @@ pub struct ManagerClient<'a> {
     status_proxy: ServiceStatusProxy<'a>,
 }
 
+/// Holds information about the manager's status.
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct InstallerStatus {
+    /// Current installation phase.
+    pub phase: InstallationPhase,
+    /// Whether the service is busy.
+    pub is_busy: bool,
+    /// Whether Agama is running on Iguana.
+    pub use_iguana: bool,
+    /// Whether it is possible to start the installation.
+    pub can_install: bool,
+}
+
 /// Represents the installation phase.
 /// NOTE: does this conversion have any value?
-#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr, utoipa::ToSchema)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr, Deserialize_repr, utoipa::ToSchema)]
 #[repr(u32)]
 pub enum InstallationPhase {
     /// Start up phase.
