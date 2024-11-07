@@ -20,215 +20,174 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, {useState} from "react";
 import { _ } from "~/i18n";
-import { useConfig, useSolvedConfig } from "~/queries/storage";
+import { sprintf } from "sprintf-js";
+import { useAvailableDevices, useConfig, useSolvedConfig } from "~/queries/storage";
 import { config as type } from "~/api/storage/types";
+import { StorageDevice } from "~/types/storage";
+import { deviceSize, SPACE_POLICIES } from "~/components/storage/utils";
+import * as driveUI from "~/components/storage/utils/drive";
+import { typeDescription, contentDescription } from "~/components/storage/utils/device";
 import {
-  Toolbar,
-  ToolbarItem,
-  ToolbarContent,
-  ToolbarGroup,
   Button,
+  DescriptionList,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  DescriptionListDescription,
   List,
   ListItem,
+  Label,
   Stack,
   StackItem,
   Split,
   SplitItem,
-  ExpandableSection,
-  Menu,
-  MenuContainer,
   MenuToggle,
-  MenuContent,
-  MenuList,
-  MenuItem
+  Dropdown,
+  DropdownList,
+  DropdownItem
 } from "@patternfly/react-core";
 import { generate as generateDevices } from "~/storage/model/config";
 
-// Type guards.
-
-// @todo Find a good place for the type guards.
-function isFormattedDrive(drive: type.DriveElement): drive is type.FormattedDrive {
-  return "filesystem" in drive;
-}
-
-function isSearchAll(search: type.Search): search is type.SearchAll {
-  return search === "*";
-}
-
-function isSearchByName(search: type.Search): search is type.SearchByName {
-  return !isSearchAll(search) && typeof search === "string";
-}
-
-function isAdvancedSearch(search: type.Search): search is type.AdvancedSearch {
-  return !isSearchAll(search) && !isSearchByName(search);
-}
-
-function isPartitionToDelete(
-  partition: type.PartitionElement,
-): partition is type.PartitionToDelete {
-  return "delete" in partition;
-}
-
-function isPartitionToDeleteIfNeeded(
-  partition: type.PartitionElement,
-): partition is type.PartitionToDeleteIfNeeded {
-  return "deleteIfNeeded" in partition;
-}
-
-function isPartition(partition: type.PartitionElement): partition is type.Partition {
-  if ("generate" in partition) return false;
-
-  return !isPartitionToDelete(partition) && !isPartitionToDeleteIfNeeded(partition);
-}
-
-// Methods to get especific config data.
-
-type Partition = type.Partition | type.PartitionToDelete | type.PartitionToDeleteIfNeeded;
-
-function deviceName(device: type.DriveElement | Partition): string | undefined {
-  const search = device.search;
-  if (!isAdvancedSearch(search) || !search?.condition) return;
-
-  return search.condition.name;
-}
-
-function sizeInfo(size: type.Size): string {
-  if (typeof size === "string") {
-    return size;
-  } else if (typeof size === "number") {
-    return "";
-  } else if (Array.isArray(size)) {
-    return `${size[0]} - ${size[1]}`;
-  } else {
-    return `${size.min} - ${size.max}`;
-  }
-}
-
-function deviceSize(device: type.Partition | type.PartitionToDeleteIfNeeded): string | undefined {
-  const size = device.size;
-  if (!size) return;
-
-  return sizeInfo(size);
-}
-
-function driveInfo(drive: type.DriveElement): string {
-  if (isFormattedDrive(drive)) {
-    return drive.filesystem.type.toString();
-  } else {
-    const numPartitions = drive.partitions.length;
-    return `Partitioned (${numPartitions})`;
-  }
-}
-
-function drivePartitions(drive: type.DriveElement): Partition[] {
-  if (isFormattedDrive(drive)) return [];
-
-  const partitions = drive.partitions || [];
-  return partitions.filter(
-    (p) => isPartition(p) || isPartitionToDelete(p) || isPartitionToDeleteIfNeeded(p),
-  );
-}
-
-function partitionInfo(partition: Partition) {
-  if (isPartitionToDelete(partition)) {
-    return _("Delete");
-  } else if (isPartitionToDeleteIfNeeded(partition)) {
-    return `Size: ${deviceSize(partition)}`;
-  } else {
-    return `Size: ${deviceSize(partition)}, File system: `;
-  }
-}
-
-type DriveEditorProps = { drive: type.DriveElement };
+type DriveEditorProps = { drive: type.DriveElement, driveDevice: StorageDevice };
 type PartitionsProps = { drive: type.DriveElement };
 
 function Partitions({ drive }: PartitionsProps) {
-  return (
-    <>
-      <span>{_("New partitions will be created for root and swap")}</span> <MenuToggle>{_("Change")}</MenuToggle>
-    </>
-  );
+  return driveUI.contentDescription(drive);
 };
 
-function DriveEditor({ drive }: DriveEditorProps) {
+function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
+  const DriveHeader = () => {
+    // TRANSLATORS: Header a so-called drive at the storage configuration. %s is the drive identifier
+    // like 'vdb' or any alias set by the user
+    const text = sprintf(_("Disk %s"), driveUI.label(drive));
+
+    return <h4>{text}</h4>;
+  };
+
+  // FIXME: do this i18n friendly, responsive and all that
+  const DeviceDescription = () => {
+    const data = [
+      driveDevice.name,
+      deviceSize(driveDevice.size),
+      typeDescription(driveDevice),
+      driveDevice.model
+    ];
+    const usefulData = [...new Set(data)].filter((d) => d && d !== "");
+
+    return <span>{usefulData.join(" ")}</span>;
+  };
+
+  const ContentDescription = () => {
+    const content = contentDescription(driveDevice);
+
+    return content && <span>{content}</span>;
+    // <FilesystemLabel item={driveDevice} />
+  };
+
+  const SpacePolicy = () => {
+    const currentPolicy = driveUI.spacePolicyEntry(drive);
+    const [isOpen, setIsOpen] = useState(false);
+    const onToggleClick = () => {
+      setIsOpen(!isOpen);
+    };
+
+    const PolicyItem = ({policy}) => {
+      return (
+        <DropdownItem
+          isSelected={policy.id === currentPolicy.id}
+          description={policy.description}
+        >
+          {policy.label}
+        </DropdownItem>
+      );
+    };
+
+    return (
+      <span>
+        {driveUI.oldContentActionsDescription(drive)}
+        <Dropdown
+          shouldFocusToggleOnSelect
+          isOpen={isOpen}
+          onOpenChange={(isOpen: boolean) => setIsOpen(isOpen)}
+          toggle={(toggleRef: React.Ref<MenuToggleElemet>) => (
+            <MenuToggle
+              ref={toggleRef}
+              onClick={onToggleClick}
+              isExpanded={isOpen}
+              variant="plain"
+            >
+              {_("Change")}
+            </MenuToggle>
+          )}
+        >
+          <DropdownList>
+            {SPACE_POLICIES.map((policy) => <PolicyItem policy={policy} />)}
+          </DropdownList>
+        </Dropdown>
+      </span>
+    );
+  };
+
   return (
     <ListItem>
-      <Stack hasGutter>
+      <Stack>
         <StackItem>
-          <Split hasGutter>
-            <SplitItem isFilled>
-              <b>{deviceName(drive) || _("unknown drive")}</b> <Button variant="secondary">{_("Change")}</Button>
-            </SplitItem>
-            <SplitItem isFilled>
-              <span>{_("Any existing content will be deleted")}</span> <Button variant="secondary">{_("Change")}</Button>
-            </SplitItem>
-          </Split>
+          <DriveHeader />
         </StackItem>
         <StackItem>
-          <Partitions drive={drive} />
+          <DescriptionList isHorizontal isCompact horizontalTermWidthModifier={{ default: '14ch'}}>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Device")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <DeviceDescription />
+                <Button variant="link">Change device</Button>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Current Content")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <Stack>
+                  <StackItem>
+                    <ContentDescription />
+                    {driveDevice.systems.map((s) => <Label isCompact>{s}</Label>)}
+                  </StackItem>
+                  <StackItem>
+                    <SpacePolicy />
+                  </StackItem>
+                </Stack>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("New content")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <Partitions drive={drive} />
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
         </StackItem>
       </Stack>
     </ListItem>
   );
 };
 
-function DevicesToolbar () {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  return (
-    <Stack>
-      <div align="right">
-        <ExpandableSection
-          isExpanded={isExpanded}
-          onToggle={() => setIsExpanded(!isExpanded)}
-          toggleText={_("More options")}
-        >
-          <ToolbarWidget />
-        </ExpandableSection>
-      </div>
-    </Stack>
-  );
-};
-
-function ToolbarWidget () {
-  return (
-    <Toolbar>
-      <ToolbarContent>
-        <ToolbarGroup align={{ default: "alignRight" }}>
-          <ToolbarItem>
-            <Button variant="secondary">{_("Boot device")}</Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <MenuToggle>{_("Additional devices")}</MenuToggle>
-          </ToolbarItem>
-        </ToolbarGroup>
-      </ToolbarContent>
-    </Toolbar>
-  );
-};
-
 export default function ConfigEditor() {
   const config: type.Config = useConfig();
   const solvedConfig = useSolvedConfig();
-
-  console.log("config: ", config);
-  console.log("solved config: ", solvedConfig);
+  const availableDevices = useAvailableDevices();
 
   if (!solvedConfig) return null;
 
-  const devices = generateDevices(config, solvedConfig);
-  console.log("devices: ", devices);
+  const drives = generateDevices(config, solvedConfig);
+  console.log("drives: ", drives);
 
   return (
-    <Stack>
-      <List isPlain isBordered>
-        {solvedConfig.drives.map((d, i) => (
-          <DriveEditor key={i} drive={d} />
-        ))}
-      </List>
-      <DevicesToolbar />
-    </Stack>
+    <List isPlain isBordered>
+      {drives.map((drive, i) => {
+        const device = availableDevices.find((d) => d.name === drive.name);
+
+        return <DriveEditor key={i} drive={drive} driveDevice={device} />
+      })}
+    </List>
   );
 }

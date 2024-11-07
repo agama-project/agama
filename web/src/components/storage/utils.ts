@@ -46,7 +46,7 @@ export type SpacePolicy = {
   id: string;
   label: string;
   description: string;
-  summaryLabels: string[];
+  summaryLabel: string;
 };
 
 export type SizeMethod = "auto" | "fixed" | "range";
@@ -71,42 +71,25 @@ const SPACE_POLICIES: SpacePolicy[] = [
   {
     id: "delete",
     label: N_("Delete current content"),
-    description: N_("All partitions will be removed and any data in the disks will be lost."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space deleting current content". Keep it short
-      N_("deleting current content"),
-    ],
+    summaryLabel: N_("All content will be deleted."),
+    description: N_("Any existing partition will be removed and all data in the disk will be lost."),
   },
   {
     id: "resize",
     label: N_("Shrink existing partitions"),
+    summaryLabel: N_("Some existing partitions may be shrunk."),
     description: N_("The data is kept, but the current partitions will be resized as needed."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space shrinking partitions". Keep it short.
-      N_("shrinking partitions"),
-    ],
   },
   {
     id: "keep",
     label: N_("Use available space"),
+    summaryLabel: N_("Content will be kept."),
     description: N_("The data is kept. Only the space not assigned to any partition will be used."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space without modifying any partition". Keep it short.
-      N_("without modifying any partition"),
-    ],
   },
   {
     id: "custom",
     label: N_("Custom"),
     description: N_("Select what to do with each partition."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space with custom actions". Keep it short.
-      N_("with custom actions"),
-    ],
   },
 ];
 
@@ -173,10 +156,17 @@ const parseToBytes = (size: string | number): number => {
 };
 
 /**
+ * Base name for a full path
+ */
+const baseName = (name: string): string => {
+  return name.split("/").pop();
+};
+
+/**
  * Base name of a device.
  */
 const deviceBaseName = (device: StorageDevice): string => {
-  return device.name.split("/").pop();
+  return baseName(device.name);
 };
 
 /**
@@ -273,6 +263,7 @@ export {
   SIZE_METHODS,
   SIZE_UNITS,
   SPACE_POLICIES,
+  baseName,
   deviceBaseName,
   deviceLabel,
   deviceChildren,
