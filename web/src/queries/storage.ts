@@ -51,6 +51,7 @@ import {
   Volume,
   VolumeTarget,
 } from "~/types/storage";
+import * as ConfigModel from "~/storage/model/config";
 
 import { QueryHookOptions } from "~/types/queries";
 
@@ -147,6 +148,18 @@ const useConfigMutation = () => {
   };
 
   return useMutation(query);
+};
+
+/**
+ * Hook that returns the config devices.
+ */
+const useConfigDevices = (options?: QueryHookOptions): ConfigModel.Device[] => {
+  const config = useConfig(options);
+  const solvedConfig = useSolvedConfig(options);
+
+  if (!config || !solvedConfig) return [];
+
+  return ConfigModel.generate(config, solvedConfig);
 };
 
 /**
@@ -334,6 +347,7 @@ export {
   useConfig,
   useSolvedConfig,
   useConfigMutation,
+  useConfigDevices,
   useDevices,
   useAvailableDevices,
   useProductParams,
