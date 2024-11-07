@@ -32,19 +32,18 @@ use std::process::Command;
 use tempfile::TempDir;
 use utoipa::ToSchema;
 
-const DEFAULT_COMMANDS: [(&str, &str); 3] = [
+const DEFAULT_COMMANDS: [(&str, &str); 4] = [
     // (<command to be executed>, <file name used for storing result of the command>)
     ("journalctl -u agama", "agama"),
     ("journalctl -u agama-auto", "agama-auto"),
+    ("journalctl -u agama-web-server", "agama-web-server"),
     ("journalctl --dmesg", "dmesg"),
 ];
 
-const DEFAULT_PATHS: [&str; 14] = [
+const DEFAULT_PATHS: [&str; 12] = [
     // logs
     "/var/log/YaST2",
     "/var/log/zypper.log",
-    "/var/log/zypper/history*",
-    "/var/log/zypper/pk_backend_zypp",
     "/var/log/pbl.log",
     "/var/log/linuxrc.log",
     "/var/log/wickedd.log",
