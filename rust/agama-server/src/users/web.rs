@@ -164,20 +164,30 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
 }
 
 /// Removes the first user settings
-#[utoipa::path(delete, path = "/users/first", responses(
-    (status = 200, description = "Removes the first user"),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-))]
+#[utoipa::path(
+    delete,
+    path = "/first",
+    context_path = "/api/users",
+    responses(
+        (status = 200, description = "Removes the first user"),
+        (status = 400, description = "The D-Bus service could not perform the action"),
+    )
+)]
 async fn remove_first_user(State(state): State<UsersState<'_>>) -> Result<(), Error> {
     state.users.remove_first_user().await?;
     Ok(())
 }
 
-#[utoipa::path(put, path = "/users/first", responses(
-    (status = 200, description = "Sets the first user"),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-    (status = 422, description = "Invalid first user. Details are in body", body = Vec<String>),
-))]
+#[utoipa::path(
+    put,
+    path = "/first",
+    context_path = "/api/users",
+    responses(
+        (status = 200, description = "Sets the first user"),
+        (status = 400, description = "The D-Bus service could not perform the action"),
+        (status = 422, description = "Invalid first user. Details are in body", body = Vec<String>),
+    )
+)]
 async fn set_first_user(
     State(state): State<UsersState<'_>>,
     Json(config): Json<FirstUser>,
@@ -194,18 +204,28 @@ async fn set_first_user(
     Ok((status, Json(issues).into_response()))
 }
 
-#[utoipa::path(get, path = "/users/first", responses(
-    (status = 200, description = "Configuration for the first user", body = FirstUser),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-))]
+#[utoipa::path(
+    get,
+    path = "/first",
+    context_path = "/api/users",
+    responses(
+        (status = 200, description = "Configuration for the first user", body = FirstUser),
+        (status = 400, description = "The D-Bus service could not perform the action"),
+    )
+)]
 async fn get_user_config(State(state): State<UsersState<'_>>) -> Result<Json<FirstUser>, Error> {
     Ok(Json(state.users.first_user().await?))
 }
 
-#[utoipa::path(patch, path = "/users/root", responses(
-    (status = 200, description = "Root configuration is modified", body = RootPatchSettings),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-))]
+#[utoipa::path(
+    patch,
+    path = "/root",
+    context_path = "/api/users",
+    responses(
+        (status = 200, description = "Root configuration is modified", body = RootPatchSettings),
+        (status = 400, description = "The D-Bus service could not perform the action"),
+    )
+)]
 async fn patch_root(
     State(state): State<UsersState<'_>>,
     Json(config): Json<RootPatchSettings>,
@@ -232,10 +252,15 @@ async fn patch_root(
     Ok(Json(retcode))
 }
 
-#[utoipa::path(get, path = "/users/root", responses(
-    (status = 200, description = "Configuration for the root user", body = RootConfig),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-))]
+#[utoipa::path(
+    get,
+    path = "/root",
+    context_path = "/api/users",
+    responses(
+        (status = 200, description = "Configuration for the root user", body = RootConfig),
+        (status = 400, description = "The D-Bus service could not perform the action"),
+    )
+)]
 async fn get_root_config(State(state): State<UsersState<'_>>) -> Result<Json<RootConfig>, Error> {
     let password = state.users.is_root_password().await?;
     let sshkey = state.users.root_ssh_key().await?;
