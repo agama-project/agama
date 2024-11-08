@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Nov  8 13:20:10 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Shorten Leap 16.0 installation_labels
+  Neither yast2 partitioner, nor gnome disks
+  allowed me to use openSUSE-Leap-DVD-x86_64 as
+  the label limit seems to be 16 characters
+
+-------------------------------------------------------------------
 Fri Nov  8 11:58:49 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add installation_labels for Leap 16.0
