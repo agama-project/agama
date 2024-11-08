@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov  8 11:58:49 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add installation_labels for Leap 16.0
+  Let's keep TW style format for now
+  (gh#agama-project/agama/#1740)
+
+-------------------------------------------------------------------
 Thu Nov 07 18:25:49 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
 
 - Fix mandatory patterns for SLES16.0:
