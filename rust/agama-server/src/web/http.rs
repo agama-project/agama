@@ -49,13 +49,13 @@ pub async fn ping() -> Json<PingResponse> {
     })
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, utoipa::ToSchema)]
 pub struct AuthResponse {
     /// Bearer token to use on subsequent calls
     token: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, utoipa::ToSchema)]
 pub struct LoginRequest {
     /// User password
     pub password: String,

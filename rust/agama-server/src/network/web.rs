@@ -134,7 +134,7 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
     path = "/state",
     context_path = "/api/network",
     responses(
-      (status = 200, description = "Get general network config", body = GenereralState)
+      (status = 200, description = "Get general network config", body = GeneralState)
     )
 )]
 async fn general_state(
@@ -149,7 +149,7 @@ async fn general_state(
     path = "/state",
     context_path = "/api/network",
     responses(
-      (status = 200, description = "Update general network config", body = GenereralState)
+      (status = 200, description = "Update general network config", body = GeneralState)
     )
 )]
 async fn update_general_state(

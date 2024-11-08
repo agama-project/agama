@@ -71,7 +71,7 @@ pub async fn scripts_service() -> Result<Router, ServiceError> {
     post,
     path = "/",
     context_path = "/api/scripts",
-    request_body(content = ScriptConfig, description = "Script definition"),
+    request_body(content = [Script], description = "Script definition"),
     responses(
         (status = 200, description = "The script was added.")
     )

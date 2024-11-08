@@ -1,5 +1,5 @@
-use serde_json::json;
-use utoipa::openapi::{Components, ComponentsBuilder, ObjectBuilder, Paths, PathsBuilder};
+use agama_lib::openapi::schemas;
+use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
 
 use super::ApiDocBuilder;
 
@@ -41,6 +41,7 @@ impl ApiDocBuilder for NetworkApiDocBuilder {
             .schema_from::<agama_lib::network::types::DeviceType>()
             .schema_from::<agama_lib::network::types::SSID>()
             .schema_from::<agama_lib::network::types::Status>()
+            .schema_from::<crate::network::model::AccessPoint>()
             .schema_from::<crate::network::model::BondConfig>()
             .schema_from::<crate::network::model::BondOptions>()
             .schema_from::<crate::network::model::BridgeConfig>()
@@ -50,6 +51,7 @@ impl ApiDocBuilder for NetworkApiDocBuilder {
             .schema_from::<crate::network::model::Device>()
             .schema_from::<crate::network::model::EAPMethod>()
             .schema_from::<crate::network::model::GroupAlgorithm>()
+            .schema_from::<crate::network::model::GeneralState>()
             .schema_from::<crate::network::model::IEEE8021XConfig>()
             .schema_from::<crate::network::model::InfinibandConfig>()
             .schema_from::<crate::network::model::InfinibandTransportMode>()
@@ -74,31 +76,9 @@ impl ApiDocBuilder for NetworkApiDocBuilder {
             .schema_from::<crate::network::model::WirelessBand>()
             .schema_from::<crate::network::model::WirelessConfig>()
             .schema_from::<crate::network::model::WirelessMode>()
-            .schema(
-                "IpAddr",
-                ObjectBuilder::new()
-                    .schema_type(utoipa::openapi::SchemaType::String)
-                    .description(Some("An IP address (IPv4 or IPv6)".to_string()))
-                    .example(Some(json!("192.168.1.100")))
-                    .build(),
-            )
-            .schema(
-                "IpInet",
-                ObjectBuilder::new()
-                    .schema_type(utoipa::openapi::SchemaType::String)
-                    .description(Some(
-                        "An IP address (IPv4 or IPv6) including the prefix".to_string(),
-                    ))
-                    .example(Some(json!("192.168.1.254/24")))
-                    .build(),
-            )
-            .schema(
-                "macaddr.MacAddr6",
-                ObjectBuilder::new()
-                    .schema_type(utoipa::openapi::SchemaType::String)
-                    .description(Some("MAC address in EUI-48 format".to_string()))
-                    .build(),
-            )
+            .schema("IpAddr", schemas::ip_addr())
+            .schema("IpInet", schemas::ip_inet())
+            .schema("macaddr.MacAddr6", schemas::mac_addr6())
             .build()
     }
 }

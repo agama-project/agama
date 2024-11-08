@@ -63,12 +63,14 @@ pub mod progress;
 pub mod proxies;
 mod store;
 pub use store::Store;
-use zbus::conn::Builder;
+pub mod openapi;
 pub mod questions;
 pub mod scripts;
 pub mod transfer;
+
 use crate::error::ServiceError;
 use reqwest::{header, Client};
+use zbus::conn::Builder;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
 

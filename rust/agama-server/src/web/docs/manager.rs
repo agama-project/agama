@@ -24,6 +24,7 @@ impl ApiDocBuilder for ManagerApiDocBuilder {
         ComponentsBuilder::new()
             .schema_from::<agama_lib::manager::InstallationPhase>()
             .schema_from::<agama_lib::manager::InstallerStatus>()
+            .schema_from::<agama_lib::logs::LogsLists>()
             .build()
     }
 }
