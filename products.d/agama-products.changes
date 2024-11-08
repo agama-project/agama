@@ -2,7 +2,7 @@
 Thu Nov 07 18:25:49 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
 
 - Fix mandatory patterns for SLES16.0:
-  - fix tradicional pattern name, patterns-base-traditional package
+  - fix traditional pattern name, patterns-base-traditional package
     provides base_traditional
   - remove base pattern because base_traditional pattern requires it
   (gh#agama-project/agama#1736)
