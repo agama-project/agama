@@ -15,12 +15,15 @@ impl ApiDocBuilder for NetworkApiDocBuilder {
             .path_from::<crate::network::web::__path_add_connection>()
             .path_from::<crate::network::web::__path_apply>()
             .path_from::<crate::network::web::__path_connect>()
+            .path_from::<crate::network::web::__path_connection>()
             .path_from::<crate::network::web::__path_connections>()
             .path_from::<crate::network::web::__path_delete_connection>()
             .path_from::<crate::network::web::__path_devices>()
             .path_from::<crate::network::web::__path_disconnect>()
+            .path_from::<crate::network::web::__path_general_state>()
             .path_from::<crate::network::web::__path_update_connection>()
-            .path_from::<crate::network::web::__path_apply>()
+            .path_from::<crate::network::web::__path_update_general_state>()
+            .path_from::<crate::network::web::__path_wifi_networks>()
             .build()
     }
 

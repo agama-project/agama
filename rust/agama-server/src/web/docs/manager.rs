@@ -11,9 +11,11 @@ impl ApiDocBuilder for ManagerApiDocBuilder {
 
     fn paths(&self) -> utoipa::openapi::Paths {
         PathsBuilder::new()
+            .path_from::<crate::manager::web::__path_download_logs>()
             .path_from::<crate::manager::web::__path_finish_action>()
             .path_from::<crate::manager::web::__path_install_action>()
             .path_from::<crate::manager::web::__path_installer_status>()
+            .path_from::<crate::manager::web::__path_list_logs>()
             .path_from::<crate::manager::web::__path_probe_action>()
             .build()
     }
