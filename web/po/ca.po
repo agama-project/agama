@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-30 02:42+0000\n"
+"POT-Creation-Date: 2024-11-06 02:37+0000\n"
 "PO-Revision-Date: 2024-10-30 13:48+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "Change product"
 msgstr "Canvia el producte"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "Confirmeu la instal·lació"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -35,18 +35,18 @@ msgstr ""
 "Si continueu, les particions del disc dur es modificaran segons la "
 "configuració d'instal·lació proporcionada."
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
 "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "Continua"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
 #: src/components/product/ProductSelectionPage.tsx:96
@@ -54,7 +54,7 @@ msgid "Cancel"
 msgstr "Cancel·la"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "Instal·la"
 
@@ -115,7 +115,7 @@ msgstr "Acaba"
 msgid "Reboot"
 msgstr "Reinicia"
 
-#: src/components/core/InstallationProgress.tsx:42
+#: src/components/core/InstallationProgress.tsx:43
 msgid "Installing the system, please wait..."
 msgstr "Instal·lant el sistema. Espereu, si us plau..."
 
@@ -153,14 +153,14 @@ msgid ""
 msgstr ""
 "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
 "La instal·lació encara no és possible a causa de problemes. Consulteu-los a "
 "la pàgina de resum general."
 
-#: src/components/core/IssuesLink.tsx:52
+#: src/components/core/IssuesLink.tsx:51
 msgid "Installation issues"
 msgstr "Problemes d'instal·lació"
 
@@ -298,7 +298,7 @@ msgid "Select"
 msgstr "Selecciona"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "Localització"
 
@@ -561,7 +561,7 @@ msgstr ""
 "El sistema no admet connexions de wifi, probablement a causa de maquinari "
 "que manca o que està inhabilitat."
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "Xarxa"
 
@@ -668,19 +668,19 @@ msgid "The system will use %s as its default language."
 msgstr "El sistema usarà el %s com a llengua per defecte."
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "Usuaris"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
 msgstr "Emmagatzematge"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "Programari"
 
@@ -692,7 +692,7 @@ msgstr "Problemes de bloqueig de la instal·lació"
 msgid "Before installing, please check the following problems."
 msgstr "Abans d'instal·lar, comproveu els problemes següents."
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr "Resum"
 
@@ -937,22 +937,22 @@ msgstr ""
 "Aquest espai inclou el sistema de base i els patrons de programari "
 "seleccionats, si n'hi ha."
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 msgid "Change boot options"
 msgstr "Canvia les opcions d'arrencada"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 msgid "Installation will not configure partitions for booting."
 msgstr "La instal·lació no configurarà les particions per a l'arrencada."
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "La instal·lació configurarà les particions per arrencar al disc "
 "d'instal·lació."
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "La instal·lació configurarà les particions per arrencar a %s."
@@ -1163,7 +1163,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Connecta amb objectius iSCSI"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1910,7 +1910,7 @@ msgstr "Ús"
 msgid "Formatting DASD devices"
 msgstr "Formatatge de dispositius DASD"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 msgid "DASD"
 msgstr "DASD"
 
@@ -2558,7 +2558,7 @@ msgstr "Carrega"
 msgid "Clear"
 msgstr "Neteja"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr "ZFCP"
 

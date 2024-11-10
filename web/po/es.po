@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-30 02:42+0000\n"
-"PO-Revision-Date: 2024-09-30 18:48+0000\n"
+"POT-Creation-Date: 2024-11-06 02:37+0000\n"
+"PO-Revision-Date: 2024-11-08 10:48+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "es/>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: src/components/core/ChangeProductLink.tsx:39
 msgid "Change product"
 msgstr "Cambiar de producto"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "Confirmar instalación"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -35,17 +35,17 @@ msgstr ""
 "Si continúa, las particiones de su disco duro se modificarán de acuerdo con "
 "la configuración de instalación proporcionada."
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Por favor, cancele y verifique la configuración si no está seguro."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "Continuar"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
 #: src/components/product/ProductSelectionPage.tsx:96
@@ -53,7 +53,7 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "Instalar"
 
@@ -115,10 +115,9 @@ msgstr "Finalizar"
 msgid "Reboot"
 msgstr "Reiniciar"
 
-#: src/components/core/InstallationProgress.tsx:42
-#, fuzzy
+#: src/components/core/InstallationProgress.tsx:43
 msgid "Installing the system, please wait..."
-msgstr "Instalando el sistema, por favor espere..."
+msgstr "Instalando el sistema, espere por favor..."
 
 #: src/components/core/InstallerOptions.tsx:73
 msgid "Installer options"
@@ -154,15 +153,16 @@ msgid ""
 msgstr ""
 "Antes de comenzar la instalación, debe solucionar los siguientes problemas:"
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
+"Aún no es posible la instalación debido a problemas. Verifíquelos en la "
+"página de Descripción general."
 
-#: src/components/core/IssuesLink.tsx:52
-#, fuzzy
+#: src/components/core/IssuesLink.tsx:51
 msgid "Installation issues"
-msgstr "Instalación finalizada"
+msgstr "Problemas en la instalación"
 
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
@@ -298,7 +298,7 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "Localización"
 
@@ -350,18 +350,16 @@ msgid " Timezone selection"
 msgstr " Selección de zona horaria"
 
 #: src/components/layout/Header.tsx:81
-#, fuzzy
 msgid "Options toggle"
-msgstr "Opciones"
+msgstr "Conmutador de opciones"
 
 #: src/components/layout/Header.tsx:92
 msgid "Download logs"
 msgstr "Descargar los registros"
 
 #: src/components/layout/Header.tsx:98
-#, fuzzy
 msgid "Installer Options"
-msgstr "Opciones del instalador"
+msgstr "Opciones del Instalador"
 
 #: src/components/layout/Header.tsx:140
 msgid "Main navigation"
@@ -562,7 +560,7 @@ msgstr ""
 "El sistema no admite conexiones WiFi, probablemente debido a que falta "
 "hardware o está deshabilitado."
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "Red"
 
@@ -650,9 +648,8 @@ msgid "configured"
 msgstr "Configurado"
 
 #: src/components/network/WifiNetworksListPage.tsx:267
-#, fuzzy
 msgid "No visible Wi-Fi networks found"
-msgstr "Redes WIFI visibles"
+msgstr "No se encontraron redes Wi-Fi visibles"
 
 #: src/components/network/WifiNetworksListPage.tsx:271
 msgid "Visible Wi-Fi networks"
@@ -670,32 +667,31 @@ msgid "The system will use %s as its default language."
 msgstr "El sistema utilizará %s como su idioma predeterminado."
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "Usuarios"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
 msgstr "Almacenamiento"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "Software"
 
 #: src/components/overview/OverviewPage.tsx:87
-#, fuzzy
 msgid "Installation blocking issues"
-msgstr "Instalación finalizada"
+msgstr "Problemas bloqueando la instalación"
 
 #: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
 msgstr "Antes de instalar, verifique los siguientes problemas."
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr "Descripción general"
 
@@ -943,22 +939,22 @@ msgstr ""
 "Este espacio incluye el sistema base y los patrones de software "
 "seleccionados, si los hubiera."
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 msgid "Change boot options"
 msgstr "Cambiar opciones de arranque"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 msgid "Installation will not configure partitions for booting."
 msgstr "La instalación no configurará particiones para el arranque."
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "La instalación configurará las particiones para arrancar en el disco de "
 "instalación."
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "La instalación configurará las particiones para arrancar en %s."
@@ -1171,7 +1167,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Conectar a objetivos iSCSI"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1920,7 +1916,7 @@ msgstr "Uso"
 msgid "Formatting DASD devices"
 msgstr "Formatear dispositivos DASD"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 msgid "DASD"
 msgstr "DASD"
 
@@ -1984,26 +1980,29 @@ msgid "Partition Info"
 msgstr "Información de la partición"
 
 #: src/components/storage/dasd/DASDTable.tsx:95
-#, fuzzy
 msgid "Cannot format all selected devices"
-msgstr "Esperando información sobre el dispositivo seleccionado"
+msgstr "No se pueden formatear todos los dispositivos seleccionados"
 
 #: src/components/storage/dasd/DASDTable.tsx:99
 msgid ""
 "Offline devices must be activated before formatting them. Please, unselect "
 "or activate the devices listed below and try it again"
 msgstr ""
+"Los dispositivos sin conexión deben activarse antes de ser formateados. Por "
+"favor deseleccione o active los dispositivos listados debajo y trate "
+"nuevamente"
 
 #: src/components/storage/dasd/DASDTable.tsx:111
-#, fuzzy
 msgid "Format selected devices?"
-msgstr "Formatear el dispositivo"
+msgstr "¿Formatear los dispositivos seleccionados?"
 
 #: src/components/storage/dasd/DASDTable.tsx:115
 msgid ""
 "This action could destroy any data stored on the devices listed below. "
 "Please, confirm that you really want to continue."
 msgstr ""
+"Esta acción podría destruir cualquier dato almacenado en los dispositivos "
+"listados debajo. Por favor confirme que realmente desea continuar."
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/dasd/DASDTable.tsx:174
@@ -2051,9 +2050,8 @@ msgid "Remove max channel filter"
 msgstr "Eliminar filtro de canal máximo"
 
 #: src/components/storage/dasd/DASDTable.tsx:385
-#, fuzzy
 msgid "DASDs table section"
-msgstr "Selección de software"
+msgstr "sección de tabla DASDs"
 
 #: src/components/storage/device-utils.tsx:75
 msgid "Unused space"
@@ -2567,7 +2565,7 @@ msgstr "Cargar"
 msgid "Clear"
 msgstr "Limpiar"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr "ZFCP"
 
