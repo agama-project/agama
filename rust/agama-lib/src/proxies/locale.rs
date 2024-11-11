@@ -20,7 +20,8 @@
 //! [D-Bus standard interfaces]: https://dbus.freedesktop.org/doc/dbus-specification.html#standard-interfaces,
 use zbus::proxy;
 #[proxy(
-    default_service = "org.opensuse.Agama1",
+    default_service = "org.opensuse.Agama.Manager1",
+    default_path = "/org/opensuse/Agama/Manager1",
     interface = "org.opensuse.Agama1.Locale",
     assume_defaults = true
 )]
