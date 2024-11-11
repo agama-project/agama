@@ -32,15 +32,16 @@ use std::process::Command;
 use tempfile::TempDir;
 use utoipa::ToSchema;
 
-const DEFAULT_COMMANDS: [(&str, &str); 4] = [
+const DEFAULT_COMMANDS: [(&str, &str); 5] = [
     // (<command to be executed>, <file name used for storing result of the command>)
     ("journalctl -u agama", "agama"),
     ("journalctl -u agama-auto", "agama-auto"),
     ("journalctl -u agama-web-server", "agama-web-server"),
     ("journalctl --dmesg", "dmesg"),
+    ("rpm -qa", "rpm-qa" ),
 ];
 
-const DEFAULT_PATHS: [&str; 12] = [
+const DEFAULT_PATHS: [&str; 13] = [
     // logs
     "/var/log/YaST2",
     "/var/log/zypper.log",
@@ -55,6 +56,7 @@ const DEFAULT_PATHS: [&str; 12] = [
     "/etc/install.inf",
     "/etc/os-release",
     "/linuxrc.config",
+    "/.packages.root",
 ];
 
 const DEFAULT_RESULT: &str = "/run/agama/agama-logs";
@@ -142,7 +144,22 @@ impl LogItem for LogPath {
         let options = CopyOptions::new();
         // fs_extra's own Error doesn't implement From trait so ? operator is unusable
         match copy_items(&[self.src_path.as_str()], dst_path, &options) {
-            Ok(_p) => Ok(()),
+            Ok(_p) => {
+                // turns "invisible" files to visible ones (.packages.root -> packages.root)
+                if let Some(fname) = dst_file.file_name() {
+                    if let Some(name) = fname.to_str().and_then(|n| {
+                        if n.starts_with(".") {
+                            Some(n.trim_start_matches("."))
+                        } else {
+                            None
+                        }
+                    }) {
+                        let _ = fs::rename(dst_file.clone(), dst_file.with_file_name(name));
+                    }
+                }
+
+                Ok(())
+            }
             Err(_e) => Err(io::Error::new(
                 io::ErrorKind::Other,
                 "Copying of a file failed",
