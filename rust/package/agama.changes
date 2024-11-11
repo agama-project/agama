@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 11 09:52:59 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add many missing elements to the OpenAPI spec
+  (gh#agama-project/agama#1700).
+- Update to utoipa 5.2 to generate the OpenAPI spec.
+
+-------------------------------------------------------------------
 Thu Nov  7 14:20:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Perform a system re-probing after executing pre-scripts
