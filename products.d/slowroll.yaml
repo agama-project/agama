@@ -17,6 +17,10 @@ translations:
       continuïtat, dissenyada per actualitzar-se amb menys freqüència que el
       Tumbleweed però més sovint que el Leap, sense obligar els usuaris a triar
       entre paquets estables i nous.
+    cs: Experimentální a mírně zpomalené rolující vydání openSUSE, které je navržené
+      tak, aby se aktualizovalo méně často než Tumbleweed. Zároveň se však
+      aktualizuje častěji než Leap, aby se uživatelé nemuseli rozhodovat mezi
+      "stabilními" a novějšími balíčky.
     ja: 実験的なディストリビューションではありますが、 Tumbleweed よりは比較的ゆっくりした、かつ Leap よりは速いペースで公開される
       openSUSE ローリングリリース型ディストリビューションです。 "安定性" と最新パッケージの中間を目指しています。
     sv: En experimentell och något långsammare rullande utgåva av openSUSE utformad
