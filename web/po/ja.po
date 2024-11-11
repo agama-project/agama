@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-30 02:42+0000\n"
+"POT-Creation-Date: 2024-11-06 02:37+0000\n"
 "PO-Revision-Date: 2024-10-30 00:48+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "Change product"
 msgstr "製品の変更"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "インストールの確認"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -35,18 +35,18 @@ msgstr ""
 "続行すると、お使いのコンピュータのハードディスクにあるパーティションは、ここ"
 "までのダイアログで設定したとおりに変更されます。"
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
 "何か不安な点があれば、キャンセルして設定を確認しておくことをお勧めします。"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "続行"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
 #: src/components/product/ProductSelectionPage.tsx:96
@@ -54,7 +54,7 @@ msgid "Cancel"
 msgstr "キャンセル"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "インストール"
 
@@ -115,7 +115,7 @@ msgstr "完了"
 msgid "Reboot"
 msgstr "再起動"
 
-#: src/components/core/InstallationProgress.tsx:42
+#: src/components/core/InstallationProgress.tsx:43
 msgid "Installing the system, please wait..."
 msgstr "システムをインストールしています。しばらくお待ちください..."
 
@@ -152,13 +152,13 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr "インストールを開始する前に、下記の問題に対応する必要があります:"
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
 "問題があるためインストールできません。概要ページで問題点をご確認ください。"
 
-#: src/components/core/IssuesLink.tsx:52
+#: src/components/core/IssuesLink.tsx:51
 msgid "Installation issues"
 msgstr "インストールの問題点"
 
@@ -295,7 +295,7 @@ msgid "Select"
 msgstr "選択"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "ローカライゼーション"
 
@@ -559,7 +559,7 @@ msgstr ""
 "このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していな"
 "いか、無効化されているものと思われます。"
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "ネットワーク"
 
@@ -665,19 +665,19 @@ msgid "The system will use %s as its default language."
 msgstr "システムは %s を既定の言語として使用します。"
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "ユーザ"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
 msgstr "ストレージ"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "ソフトウエア"
 
@@ -689,7 +689,7 @@ msgstr "インストールを阻害する問題点"
 msgid "Before installing, please check the following problems."
 msgstr "インストールを行う前に、下記の問題点をご確認ください。"
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr "概要"
 
@@ -927,22 +927,22 @@ msgstr ""
 "この容量にはシステムの基本部分のほか、選択したソフトウエアパターンが含まれま"
 "す。"
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 msgid "Change boot options"
 msgstr "起動オプションの変更"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 msgid "Installation will not configure partitions for booting."
 msgstr "インストール作業では起動用のパーティションを設定しません。"
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "インストール作業でインストール先のディスクに起動用のパーティションを設定しま"
 "す。"
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "インストール作業で %s に起動用のパーティションを設定します。"
@@ -1151,7 +1151,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "iSCSI ターゲットへの接続"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1891,7 +1891,7 @@ msgstr "用途"
 msgid "Formatting DASD devices"
 msgstr "DASD デバイスをフォーマットしています"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 msgid "DASD"
 msgstr "DASD"
 
@@ -2536,7 +2536,7 @@ msgstr "アップロード"
 msgid "Clear"
 msgstr "消去"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr "ZFCP"
 

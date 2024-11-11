@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-30 02:42+0000\n"
+"POT-Creation-Date: 2024-11-06 02:37+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "Change product"
 msgstr "Mengubah produk"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "Konfirmasi Instalasi"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -35,17 +35,17 @@ msgstr ""
 "Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai "
 "dengan pengaturan instalasi yang disediakan."
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Mohon batalkan dan periksa pengaturan jika Anda tidak yakin."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "Lanjutkan"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
 #: src/components/product/ProductSelectionPage.tsx:96
@@ -53,7 +53,7 @@ msgid "Cancel"
 msgstr "Batal"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "Instal"
 
@@ -116,7 +116,7 @@ msgstr "Selesai"
 msgid "Reboot"
 msgstr "Maut ulang"
 
-#: src/components/core/InstallationProgress.tsx:42
+#: src/components/core/InstallationProgress.tsx:43
 #, fuzzy
 msgid "Installing the system, please wait..."
 msgstr "Memuat produk yang tersedia, mohon tunggu..."
@@ -157,12 +157,12 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr ""
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
 
-#: src/components/core/IssuesLink.tsx:52
+#: src/components/core/IssuesLink.tsx:51
 #, fuzzy
 msgid "Installation issues"
 msgstr "Instalasi Selesai"
@@ -307,7 +307,7 @@ msgid "Select"
 msgstr "Pilih"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "Pelokalan"
 
@@ -580,7 +580,7 @@ msgstr ""
 "Sistem tidak mendukung sambungan WiFi, mungkin karena perangkat keras yang "
 "tidak ada atau dinonaktifkan."
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "Jaringan"
 
@@ -692,19 +692,19 @@ msgid "The system will use %s as its default language."
 msgstr "Sistem akan menggunakan %s sebagai bahasa default."
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "Pengguna"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
 msgstr "Penyimpanan"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "Perangkat lunak"
 
@@ -717,7 +717,7 @@ msgstr "Instalasi Selesai"
 msgid "Before installing, please check the following problems."
 msgstr ""
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr ""
 
@@ -958,23 +958,23 @@ msgid ""
 "any."
 msgstr ""
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 #, fuzzy
 msgid "Change boot options"
 msgstr "Mengubah zona waktu"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 #, fuzzy
 msgid "Installation will not configure partitions for booting."
 msgstr "Partisi untuk booting"
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 #, fuzzy
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr "mengecilkan partisi dari %d disk yang dipilih"
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, fuzzy, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "mengecilkan partisi dari %d disk yang dipilih"
@@ -1193,7 +1193,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Menyambungkan ke target iSCSI"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1977,7 +1977,7 @@ msgstr ""
 msgid "Formatting DASD devices"
 msgstr "Memformat perangkat DASD"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 #, fuzzy
 msgid "DASD"
 msgstr "DASD %s"
@@ -2636,7 +2636,7 @@ msgstr "Unggah"
 msgid "Clear"
 msgstr "Hapus"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr ""
 

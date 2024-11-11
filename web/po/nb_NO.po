@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-30 02:42+0000\n"
+"POT-Creation-Date: 2024-11-06 02:37+0000\n"
 "PO-Revision-Date: 2024-06-29 13:46+0000\n"
 "Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "Change product"
 msgstr "Endre produkt"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "Bekreft Installasjon"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -35,17 +35,17 @@ msgstr ""
 "Hvis du fortsetter, så vil partisjonene på harddisken bli modifisert i tråd "
 "med de oppgitte installasjons innstillingene."
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Vennligst, avbryt og sjekk innstillingene hvis du er usikker."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "Fortsett"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
 #: src/components/network/WifiConnectionForm.tsx:145
 #: src/components/product/ProductSelectionPage.tsx:96
@@ -53,7 +53,7 @@ msgid "Cancel"
 msgstr "Avbryt"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "Installere"
 
@@ -115,7 +115,7 @@ msgstr "Fullfør"
 msgid "Reboot"
 msgstr "Start om"
 
-#: src/components/core/InstallationProgress.tsx:42
+#: src/components/core/InstallationProgress.tsx:43
 #, fuzzy
 msgid "Installing the system, please wait..."
 msgstr "Installerer systemet, vennligst vent ..."
@@ -153,12 +153,12 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr "Før du starter installasjonen, må du løse følgende problemer:"
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
 
-#: src/components/core/IssuesLink.tsx:52
+#: src/components/core/IssuesLink.tsx:51
 #, fuzzy
 msgid "Installation issues"
 msgstr "Installasjon Fullført"
@@ -294,7 +294,7 @@ msgid "Select"
 msgstr "Velg"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "Lokalisering"
 
@@ -560,7 +560,7 @@ msgstr ""
 "Systemet støtter ikke Wi-Fi tilkoblinger, sannsynligvis på grunn av "
 "manglende eller deaktivert maskinvare."
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "Nettverk"
 
@@ -670,19 +670,19 @@ msgid "The system will use %s as its default language."
 msgstr "Systemet vil bruke %s som standardspråk."
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "Brukere"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
 msgstr "Lagring"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "Programvare"
 
@@ -695,7 +695,7 @@ msgstr "Installasjon Fullført"
 msgid "Before installing, please check the following problems."
 msgstr "Før installasjon, vennligst sjekk følgende problemer."
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr "Oversikt"
 
@@ -939,22 +939,22 @@ msgid ""
 msgstr ""
 "Denne plassen inkluderer basissystemet og de valgte programvaremønstrene."
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 msgid "Change boot options"
 msgstr "Endre oppstartalternativer"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 msgid "Installation will not configure partitions for booting."
 msgstr "Installasjonen vil ikke konfigurere partisjoner for oppstart."
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "Installasjonen vil konfigurere partisjoner for oppstart på "
 "installasjonsdisken."
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Installasjonen vil konfigurere partisjoner for oppstart på %s."
@@ -1165,7 +1165,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Koble til iSCSI mål"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1908,7 +1908,7 @@ msgstr "Bruk"
 msgid "Formatting DASD devices"
 msgstr "Formaterer DASD enheter"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 #, fuzzy
 msgid "DASD"
 msgstr "DASD %s"
@@ -2555,7 +2555,7 @@ msgstr "Last opp"
 msgid "Clear"
 msgstr "Tøm"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr ""
 
