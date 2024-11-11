@@ -243,7 +243,8 @@ async fn add_connection(
 
 #[utoipa::path(
     get,
-    path = "/network/connections/:id",
+    path = "/connections/:id",
+    context_path = "/api/network",
     responses(
       (status = 200, description = "Get connection given by its ID", body = NetworkConnection)
   )

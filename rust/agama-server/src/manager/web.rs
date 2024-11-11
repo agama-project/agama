@@ -218,11 +218,15 @@ fn logs_router() -> Router<ManagerState<'static>> {
         .route("/list", get(list_logs))
 }
 
-#[utoipa::path(get, path = "/manager/logs/store", responses(
-    (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
-    (status = 500, description = "Cannot collect the logs"),
-    (status = 507, description = "Server is probably out of space"),
-))]
+#[utoipa::path(get,
+    path = "/logs/store",
+    context_path = "/api/manager",
+    responses(
+        (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
+        (status = 500, description = "Cannot collect the logs"),
+        (status = 507, description = "Server is probably out of space"),
+    )
+)]
 async fn download_logs() -> impl IntoResponse {
     let mut headers = HeaderMap::new();
     let err_response = (headers.clone(), Body::empty());
@@ -259,9 +263,13 @@ async fn download_logs() -> impl IntoResponse {
     }
 }
 
-#[utoipa::path(get, path = "/manager/logs/list", responses(
-    (status = 200, description = "Lists of collected logs", body = logs::LogsLists)
-))]
+#[utoipa::path(get,
+    path = "/logs/list",
+    context_path = "/api/manager",
+    responses(
+        (status = 200, description = "Lists of collected logs", body = logs::LogsLists)
+    )
+)]
 pub async fn list_logs() -> Json<logs::LogsLists> {
     Json(logs::list())
 }
