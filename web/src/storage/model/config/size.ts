@@ -22,6 +22,7 @@
 
 import { config } from "~/api/storage/types";
 import * as checks from "~/api/storage/types/checks";
+import xbytes from "xbytes";
 
 export type Size = {
   min?: number;
@@ -68,10 +69,18 @@ class SizeGenerator<TypeWithSize extends WithSize> {
     return size;
   }
 
+  private parseSizeString(value: string): number | undefined {
+    // xbytes.parseSize will not work with a string like '10k', the unit must end with 'b' or 'B'
+    let adapted = value.trim();
+    if (!adapted.match(/b$/i)) adapted = adapted + "b";
+
+    const parsed = xbytes.parseSize(adapted, { bits: false }) || parseInt(adapted);
+    if (parsed) return Math.trunc(parsed);
+  }
+
   private bytes(value: config.SizeValueWithCurrent): number | undefined {
     if (checks.isSizeCurrent(value)) return;
-    // TODO: bytes from string.
-    if (checks.isSizeString(value)) return;
+    if (checks.isSizeString(value)) return this.parseSizeString(value);
     if (checks.isSizeBytes(value)) return value;
   }
 }

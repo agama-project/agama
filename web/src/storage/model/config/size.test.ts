@@ -30,12 +30,35 @@ describe("#generate", () => {
       }),
     ).toEqual({ min: 1024, max: 1024 });
 
-    // TODO: Generate bytes from string size.
-    // expect(model.generate(
-    //   {
-    //     size: "1 KiB"
-    //   }
-    // )).toEqual({ min: 1024, max: 1024 });
+    expect(
+      model.generate({
+        size: "1 KiB",
+      }),
+    ).toEqual({ min: 1024, max: 1024 });
+
+    expect(
+      model.generate({
+        size: "1KiB",
+      }),
+    ).toEqual({ min: 1024, max: 1024 });
+
+    expect(
+      model.generate({
+        size: "1kb",
+      }),
+    ).toEqual({ min: 1000, max: 1000 });
+
+    expect(
+      model.generate({
+        size: "1k",
+      }),
+    ).toEqual({ min: 1000, max: 1000 });
+
+    expect(
+      model.generate({
+        size: "665.284 TiB",
+      }),
+    ).toEqual({ min: 731487493773328, max: 731487493773328 });
 
     expect(
       model.generate({
@@ -46,6 +69,12 @@ describe("#generate", () => {
     expect(
       model.generate({
         size: [1024, 2048],
+      }),
+    ).toEqual({ min: 1024, max: 2048 });
+
+    expect(
+      model.generate({
+        size: ["1 kib", "2 KIB"],
       }),
     ).toEqual({ min: 1024, max: 2048 });
 
@@ -65,8 +94,16 @@ describe("#generate", () => {
         },
       }),
     ).toEqual({ min: 1024, max: 2048 });
-  });
 
+    expect(
+      model.generate({
+        size: {
+          min: "1 kib",
+          max: "2 KiB",
+        },
+      }),
+    ).toEqual({ min: 1024, max: 2048 });
+  });
   it("returns undefined for 'custom' value", () => {
     expect(
       model.generate({
