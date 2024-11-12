@@ -100,6 +100,20 @@ agama.ngettext = function ngettext(str1, strN, n) {
   return n === 1 ? str1 : strN;
 };
 
+/**
+ * Wrapper around Intl.ListFormat to get a language-specific representation of the given list of
+ * strings.
+ *
+ * @param {string[]} list iterable list of strings to represent
+ * @param {object} options passed to the Intl.ListFormat constructor
+ * @return {string} concatenation of the original strings with the correct language-specific
+ *  separators according to the currently selected language for the Agama UI
+ */
+agama.formatList = function formatList(list, options) {
+  const formatter = new Intl.ListFormat(agama.language, options);
+  return formatter.format(list);
+};
+
 // register a global object so it can be accessed from a separate po.js script
 window.agama = agama;
 

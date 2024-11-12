@@ -22,10 +22,9 @@
 
 // @ts-check
 
-import { _ } from "~/i18n";
+import { _, n_, formatList } from "~/i18n";
 import { DriveElement } from "~/api/storage/types";
-import { SpacePolicy, SPACE_POLICIES, baseName } from "~/components/storage/utils";
-
+import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 
 /**
  * String to identify the drive.
@@ -68,7 +67,7 @@ const resizeTextFor = (partitions) => {
 
 /**
  * FIXME: right now, this considers only the case in which the drive is going to be partitioned. If
- * its directly used (as LVM PV, as MD member, to host a filesystem...) the content wil be deleted
+ * it's directly used (as LVM PV, as MD member, to host a filesystem...) the content wil be deleted
  * anyways. That must be properly stated.
  */
 const oldContentActionsDescription = (drive: DriveElement): string => {
@@ -97,9 +96,6 @@ const oldContentActionsDescription = (drive: DriveElement): string => {
 /**
  * FIXME: right now, this considers only the case in which the drive is going to host some formatted
  * partitions.
- *
- * FIXME: We probably want to format the mount points a bit (eg. use "root" for "/" or use some
- * markup).
  */
 const contentDescription = (drive: DriveElement): string => {
   const partitions = drive.partitions.filter((p) => !p.name)
@@ -107,10 +103,18 @@ const contentDescription = (drive: DriveElement): string => {
   // FIXME: this is one of the several cases we need to handle better
   if (partitions.length === 0) return "";
 
-  // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
-  // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
-  // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
-  return sprintf(_("New partitions will be created for %s"), partitions.map((p) => p.mountPath).join(", "));
+
+  const mountPaths = partitions.map((p) => formattedPath(p.mountPath));
+  return sprintf(
+    // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+    // single mount point in the singular case).
+    n_(
+      "A new partition will be created for %s",
+      "New partitions will be created for %s",
+      mountPaths.length
+    ),
+    formatList(mountPaths)
+  );
 };
 
 export {

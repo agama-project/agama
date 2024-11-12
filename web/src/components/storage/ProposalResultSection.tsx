@@ -26,7 +26,7 @@ import { EmptyState, Page } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
-import { _, n_ } from "~/i18n";
+import { _, n_, formatList } from "~/i18n";
 import { Action, StorageDevice } from "~/types/storage";
 import { ValidationError } from "~/types/issues";
 
@@ -55,23 +55,29 @@ const DeletionsInfo = ({ manager }: { manager: DevicesManager }) => {
 
   if (!hasDeleteActions) return;
 
-  // TRANSLATORS: %d will be replaced by the amount of destructive actions
-  label = sprintf(
-    n_(
-      "There is %d destructive action planned",
-      "There are %d destructive actions planned",
-      deleteActions,
-    ),
-    deleteActions
-  );
-
   // FIXME: building the string by pieces like this is not i18n-friendly
   if (systems.length) {
-    // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
-    // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
-    // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
-    label = sprintf(_("%s affecting %s"), label, systems.join(", "));
-  }
+    label = sprintf(
+      // TRANSLATORS: %d will be replaced by the amount of destructive actions and %s will be replaced
+      // by a formatted list of affected systems like "Windows and openSUSE Tumbleweed".
+      n_(
+        "There is %d destructive action planned affecting %s",
+        "There are %d destructive actions planned affecting %s",
+        deleteActions,
+      ),
+      deleteActions, formatList(systems)
+    );
+  } else {
+    label = sprintf(
+      // TRANSLATORS: %d will be replaced by the amount of destructive actions
+      n_(
+        "There is %d destructive action planned",
+        "There are %d destructive actions planned",
+        deleteActions,
+      ),
+      deleteActions
+    );
+  };
 
   return (
     <Alert variant="warning" isPlain isInline title={label} />

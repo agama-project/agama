@@ -31,7 +31,7 @@
  */
 
 import xbytes from "xbytes";
-import { N_ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
 
 /**
@@ -258,6 +258,16 @@ const volumeLabel = (volume: Volume): string =>
  */
 const gib: (value: number) => number = (value): number => value * 1024 ** 3;
 
+/**
+ * Formats a mount path within a sentence in a i18n-friendly way.
+ */
+const formattedPath = (path: string): string => {
+  // TRANSLATORS: sub-string used to represent a path like "/" or "/var". %s is replaced by the path
+  // itself, the rest of the string (quotation marks in the English case) is used to encapsulate the
+  // path in a bigger sentence like 'Create partitions for "/" and "/var"'.
+  return sprintf(_("\"%s\""), path);
+};
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
@@ -268,6 +278,7 @@ export {
   deviceLabel,
   deviceChildren,
   deviceSize,
+  formattedPath,
   gib,
   parseToBytes,
   splitSize,
