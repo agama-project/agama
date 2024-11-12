@@ -188,6 +188,10 @@ const useProductChanges = () => {
       if (event.type === "ProductChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/config"] });
       }
+
+      if (event.type === "LocaleChanged") {
+        queryClient.invalidateQueries({ queryKey: ["software/products"] });
+      }
     });
   }, [client, queryClient]);
 };
