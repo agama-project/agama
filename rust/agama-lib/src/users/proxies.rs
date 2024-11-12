@@ -47,6 +47,7 @@ use zbus::proxy;
 /// * full name
 /// * user name
 /// * password
+/// * encrypted_password (true = encrypted, false = plain text)
 /// * auto-login (enabled or not)
 /// * some optional and additional data
 // NOTE: Manually added to this file.
@@ -54,6 +55,7 @@ pub type FirstUser = (
     String,
     String,
     String,
+    bool,
     bool,
     std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 );
@@ -77,6 +79,7 @@ pub trait Users1 {
         full_name: &str,
         user_name: &str,
         password: &str,
+        encrypted_password: bool,
         auto_login: bool,
         data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<(bool, Vec<String>)>;

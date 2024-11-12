@@ -50,7 +50,7 @@ jobs:
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
     - name: Install Ruby development files and XML tooling
-      run: zypper --non-interactive install --no-recommends
+      run: zypper --non-interactive install --no-recommends --force-resolution
            gcc gcc-c++ make libopenssl-devel ruby-devel augeas-devel diff
            libxslt-devel libxml2-devel xmlstarlet 'rubygem(ruby-augeas)'
 
