@@ -23,7 +23,7 @@
 import React, {useState} from "react";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useAvailableDevices, useConfigDevices } from "~/queries/storage";
+import { useDevices, useConfigDevices } from "~/queries/storage";
 import { config as type } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { deviceSize, SPACE_POLICIES } from "~/components/storage/utils";
@@ -173,12 +173,12 @@ function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
 
 export default function ConfigEditor() {
   const drives = useConfigDevices();
-  const availableDevices = useAvailableDevices();
+  const devices = useDevices("system", { suspense: true });
 
   return (
     <List isPlain isBordered>
       {drives.map((drive, i) => {
-        const device = availableDevices.find((d) => d.name === drive.name);
+        const device = devices.find((d) => d.name === drive.name);
 
         return <DriveEditor key={i} drive={drive} driveDevice={device} />
       })}
