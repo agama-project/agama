@@ -216,15 +216,19 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
     async (lang?: string) => {
       const wanted = lang || languageFromQuery();
 
-      // Just for development purposes (do not commit the language change to the backend)
+      // Just for development purposes
       if (wanted === "xx" || wanted === "xx-XX") {
         agama.language = wanted;
         setLanguage(wanted);
         return;
       }
 
-      const current = agamaLanguage();
-      const candidateLanguages = [wanted, current].concat(navigator.languages).filter((l) => l);
+      const candidateLanguages = [
+        wanted,
+        wanted?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
+        agamaLanguage(),
+        ...navigator.languages,
+      ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       const mustReload = storeAgamaLanguage(newLanguage);
 
