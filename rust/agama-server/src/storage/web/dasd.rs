@@ -85,6 +85,7 @@ pub async fn dasd_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
     get,
     path="/supported",
     context_path="/api/storage/dasd",
+    operation_id = "dasd_supported",
     responses(
         (status = OK, description = "Returns whether DASD technology is supported")
     )
@@ -118,6 +119,7 @@ async fn devices(State(state): State<DASDState<'_>>) -> Result<Json<Vec<DASDDevi
     post,
     path="/probe",
     context_path="/api/storage/dasd",
+    operation_id = "dasd_probe",
     responses(
         (status = OK, description = "The probing process ran successfully")
     )
@@ -197,14 +199,14 @@ async fn set_diag(
     Ok(Json(()))
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, utoipa::ToSchema)]
 struct SetDiagParams {
     #[serde(flatten)]
     pub devices: DevicesList,
     pub diag: bool,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, utoipa::ToSchema)]
 struct DevicesList {
     devices: Vec<String>,
 }

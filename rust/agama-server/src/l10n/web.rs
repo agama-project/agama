@@ -77,9 +77,14 @@ pub async fn l10n_service(
     Ok(router)
 }
 
-#[utoipa::path(get, path = "/l10n/locales", responses(
-  (status = 200, description = "List of known locales", body = Vec<LocaleEntry>)
-))]
+#[utoipa::path(
+    get,
+    path = "/locales",
+    context_path = "/api/l10n",
+    responses(
+      (status = 200, description = "List of known locales", body = Vec<LocaleEntry>)
+    )
+)]
 async fn locales(State(state): State<LocaleState<'_>>) -> Json<Vec<LocaleEntry>> {
     let data = state.locale.read().await;
     let locales = data.locales_db.entries().to_vec();

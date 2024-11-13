@@ -25,14 +25,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 
 /// Storage settings for installation
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct StorageSettings {
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(value_type = String)]
     pub storage: Option<Box<RawValue>>,
     #[serde(default, rename = "legacyAutoyastStorage")]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(value_type = String)]
     pub storage_autoyast: Option<Box<RawValue>>,
 }
 

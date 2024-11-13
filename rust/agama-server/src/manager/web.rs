@@ -27,7 +27,7 @@
 
 use agama_lib::{
     error::ServiceError,
-    logs::{list as list_logs, store as store_logs, LogsLists, DEFAULT_COMPRESSION},
+    logs,
     manager::{InstallationPhase, InstallerStatus, ManagerClient},
     proxies::Manager1Proxy,
 };
@@ -215,20 +215,23 @@ async fn installer_status(
 fn logs_router() -> Router<ManagerState<'static>> {
     Router::new()
         .route("/store", get(download_logs))
-        .route("/list", get(show_logs))
+        .route("/list", get(list_logs))
 }
 
-#[utoipa::path(get, path = "/manager/logs/store", responses(
-    (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
-    (status = 500, description = "Cannot collect the logs"),
-    (status = 507, description = "Server is probably out of space"),
-))]
-
+#[utoipa::path(get,
+    path = "/logs/store",
+    context_path = "/api/manager",
+    responses(
+        (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
+        (status = 500, description = "Cannot collect the logs"),
+        (status = 507, description = "Server is probably out of space"),
+    )
+)]
 async fn download_logs() -> impl IntoResponse {
     let mut headers = HeaderMap::new();
     let err_response = (headers.clone(), Body::empty());
 
-    match store_logs() {
+    match logs::store() {
         Ok(path) => {
             if let Ok(file) = tokio::fs::File::open(path.clone()).await {
                 let stream = ReaderStream::new(file);
@@ -248,7 +251,7 @@ async fn download_logs() -> impl IntoResponse {
                 );
                 headers.insert(
                     header::CONTENT_ENCODING,
-                    HeaderValue::from_static(DEFAULT_COMPRESSION.1),
+                    HeaderValue::from_static(logs::DEFAULT_COMPRESSION.1),
                 );
 
                 (StatusCode::OK, (headers, body))
@@ -259,9 +262,14 @@ async fn download_logs() -> impl IntoResponse {
         Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, err_response),
     }
 }
-#[utoipa::path(get, path = "/manager/logs/list", responses(
-    (status = 200, description = "Lists of collected logs", body = LogsLists)
-))]
-pub async fn show_logs() -> Json<LogsLists> {
-    Json(list_logs())
+
+#[utoipa::path(get,
+    path = "/logs/list",
+    context_path = "/api/manager",
+    responses(
+        (status = 200, description = "Lists of collected logs", body = logs::LogsLists)
+    )
+)]
+pub async fn list_logs() -> Json<logs::LogsLists> {
+    Json(logs::list())
 }

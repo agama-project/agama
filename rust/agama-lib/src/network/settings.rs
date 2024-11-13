@@ -21,6 +21,7 @@
 //! Representation of the network settings
 
 use super::types::{DeviceState, DeviceType, Status};
+use crate::openapi::schemas;
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use std::default::Default;
@@ -176,18 +177,22 @@ pub struct NetworkConnection {
     pub method4: Option<String>,
     /// Gateway IP address for the IPv4 connection
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(schema_with = schemas::ip_addr_ref)]
     pub gateway4: Option<IpAddr>,
     /// IPv6 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method6: Option<String>,
     /// Gateway IP address for the IPv6 connection
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(schema_with = schemas::ip_addr_ref)]
     pub gateway6: Option<IpAddr>,
     /// List of assigned IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[schema(schema_with = schemas::ip_inet_array)]
     pub addresses: Vec<IpInet>,
     /// List of DNS server IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[schema(schema_with = schemas::ip_addr_array)]
     pub nameservers: Vec<IpAddr>,
     /// List of search domains for DNS resolution
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
