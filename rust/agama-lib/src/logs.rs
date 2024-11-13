@@ -188,11 +188,17 @@ impl LogItem for LogCmd {
         let output = Command::new(cmd_parts[0])
             .args(cmd_parts[1..].iter())
             .output()?;
-        let mut file_stdout = File::create(format!("{}.out.log", file_path.display()))?;
-        let mut file_stderr = File::create(format!("{}.err.log", file_path.display()))?;
 
-        file_stdout.write_all(&output.stdout)?;
-        file_stderr.write_all(&output.stderr)?;
+        if output.stdout.len() > 0 {
+            let mut file_stdout = File::create(format!("{}.out.log", file_path.display()))?;
+
+            file_stdout.write_all(&output.stdout)?;
+        }
+        if output.stderr.len() > 0 {
+            let mut file_stderr = File::create(format!("{}.err.log", file_path.display()))?;
+
+            file_stderr.write_all(&output.stderr)?;
+        }
 
         Ok(())
     }
