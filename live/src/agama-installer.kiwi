@@ -152,7 +152,6 @@
         <package name="xf86-input-libinput" />
         <package name="xf86-input-wacom" arch="aarch64,x86_64,ppc64le"/>
         <package name="xf86-video-amdgpu" arch="x86_64"/>
-        <package name="xf86-video-fbdev" arch="x86_64"/>
         <package name="xf86-video-intel" arch="x86_64"/>
         <package name="xf86-video-nv" arch="x86_64"/>
         <package name="xf86-video-qxl" arch="x86_64"/>
