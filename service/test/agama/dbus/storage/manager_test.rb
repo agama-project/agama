@@ -49,7 +49,7 @@ describe Agama::DBus::Storage::Manager do
       proposal:                    proposal,
       iscsi:                       iscsi,
       software:                    software,
-      config:                      config,
+      product_config:              product_config,
       on_probe:                    nil,
       on_progress_change:          nil,
       on_progress_finish:          nil,
@@ -57,10 +57,10 @@ describe Agama::DBus::Storage::Manager do
       on_deprecated_system_change: nil)
   end
 
-  let(:config) { Agama::Config.new(config_data) }
+  let(:product_config) { Agama::Config.new(config_data) }
   let(:config_data) { {} }
 
-  let(:proposal) { Agama::Storage::Proposal.new(config) }
+  let(:proposal) { Agama::Storage::Proposal.new(product_config) }
 
   let(:iscsi) do
     instance_double(Agama::Storage::ISCSI::Manager,

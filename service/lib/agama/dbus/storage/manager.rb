@@ -458,7 +458,7 @@ module Agama
 
         # @return [Agama::Config]
         def config
-          backend.config
+          backend.product_config
         end
 
         # @return [Agama::VolumeTemplatesBuilder]

@@ -19,61 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions"
-
 module Agama
   module Storage
-    # Reader for the initial storage config
-    class ConfigReader
-      # @param agama_config [Agama::Config]
-      def initialize(agama_config)
-        @agama_config = agama_config
+    # Reader for the initial JSON config.
+    class ConfigJSONReader
+      # @param product_config [Agama::Config]
+      def initialize(product_config)
+        @product_config = product_config
       end
 
-      # Generates a storage config from the Agama control file.
+      # Generates a JSON config from the product config.
       #
-      # @return [Storage::Config]
+      # @return [Hash]
       def read
-        ConfigConversions::FromJSON.new(json, default_paths: default_paths).convert
+        json = product_config.lvm? ? json_for_lvm : json_for_disk
+
+        { storage: json }
       end
 
     private
 
       # @return [Agama::Config]
-      attr_reader :agama_config
+      attr_reader :product_config
 
-      # Default filesystem paths from the Agama control file
-      #
-      # @return [Array<String>]
-      def default_paths
-        @default_paths ||= agama_config.default_paths
-      end
-
-      # Default policy to make space from the Agama control file
-      #
-      # @return [String]
-      def space_policy
-        @space_policy ||= agama_config.data.dig("storage", "space_policy")
-      end
-
-      # Whether the Agama control file specifies that LVM must be used by default
-      #
-      # @return [Boolean]
-      def lvm?
-        return @lvm unless @lvm.nil?
-
-        @lvm = !!agama_config.data.dig("storage", "lvm")
-      end
-
-      # JSON representation of the initial storage config
-      #
-      # @return [Hash]
-      def json
-        lvm? ? json_for_lvm : json_for_disk
-      end
-
-      # @see #json
-      #
+      # @see #read
       # @return [Hash]
       def json_for_disk
         {
@@ -83,17 +52,16 @@ module Agama
         }
       end
 
-      # @see #json
-      #
+      # @see #read
       # @return [Hash]
       def json_for_lvm
+        partition = partition_for_existing
+
+        drive = { alias: "target" }
+        drive[:partitions] = [partition] if partition
+
         {
-          drives:       [
-            {
-              alias:      "target",
-              partitions: [partition_for_existing].compact
-            }
-          ],
+          drives:       [drive],
           volumeGroups: [
             {
               name:            "system",
@@ -104,17 +72,18 @@ module Agama
         }
       end
 
-      # JSON piece to generate default filesystems as partitions or logical volumes
+      # JSON piece to generate default filesystems as partitions or logical volumes.
       #
       # @return [Hash]
       def volumes_generator
         { generate: "default" }
       end
 
-      # JSON piece to specify what to do with existing partitions
+      # JSON piece to specify what to do with existing partitions.
       #
-      # @return [Hash, nil] nil if no actions are to be performed
+      # @return [Hash, nil] nil if no actions are to be performed.
       def partition_for_existing
+        space_policy = product_config.space_policy
         return unless ["delete", "resize"].include?(space_policy)
 
         partition = { search: "*" }
