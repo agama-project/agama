@@ -24,24 +24,14 @@ import * as model from "~/storage/model/config/space-policy";
 
 describe("#generate", () => {
   it("returns 'delete' if there is a file system", () => {
-    expect(
-      model.generate({
-        filesystem: { type: "xfs" },
-      }),
-    ).toEqual("delete");
+    expect(model.generate({ filesystem: { type: "xfs" } })).toEqual("delete");
   });
 
   it("returns 'delete' if there is a 'delete all' partition", () => {
-    expect(
-      model.generate({
-        partitions: [{ search: "*", delete: true }],
-      }),
-    ).toEqual("delete");
+    expect(model.generate({ partitions: [{ search: "*", delete: true }] })).toEqual("delete");
 
     expect(
-      model.generate({
-        partitions: [{ search: { ifNotFound: "skip" }, delete: true }],
-      }),
+      model.generate({ partitions: [{ search: { ifNotFound: "skip" }, delete: true }] }),
     ).toEqual("delete");
 
     expect(
@@ -53,16 +43,12 @@ describe("#generate", () => {
 
   it("returns 'resize' if there is a 'shrink all' partition", () => {
     expect(
-      model.generate({
-        partitions: [{ search: "*", size: { min: 0, max: "current" } }],
-      }),
+      model.generate({ partitions: [{ search: "*", size: { min: 0, max: "current" } }] }),
     ).toEqual("resize");
 
-    expect(
-      model.generate({
-        partitions: [{ search: "*", size: [0, "current"] }],
-      }),
-    ).toEqual("resize");
+    expect(model.generate({ partitions: [{ search: "*", size: [0, "current"] }] })).toEqual(
+      "resize",
+    );
 
     expect(
       model.generate({
@@ -78,52 +64,34 @@ describe("#generate", () => {
   });
 
   it("returns 'custom' if there is a 'delete' or 'resize' partition", () => {
-    expect(
-      model.generate({
-        partitions: [{ search: "/dev/vda", delete: true }],
-      }),
-    ).toEqual("custom");
+    expect(model.generate({ partitions: [{ search: "/dev/vda", delete: true }] })).toEqual(
+      "custom",
+    );
 
     expect(
-      model.generate({
-        partitions: [{ search: { max: 2, ifNotFound: "skip" }, delete: true }],
-      }),
+      model.generate({ partitions: [{ search: { max: 2, ifNotFound: "skip" }, delete: true }] }),
     ).toEqual("custom");
 
-    expect(
-      model.generate({
-        partitions: [{ search: "*", deleteIfNeeded: true }],
-      }),
-    ).toEqual("custom");
+    expect(model.generate({ partitions: [{ search: "*", deleteIfNeeded: true }] })).toEqual(
+      "custom",
+    );
 
     expect(
-      model.generate({
-        partitions: [{ search: "*", deleteIfNeeded: true, size: [0, "current"] }],
-      }),
+      model.generate({ partitions: [{ search: "*", deleteIfNeeded: true, size: [0, "current"] }] }),
     ).toEqual("custom");
 
-    expect(
-      model.generate({
-        partitions: [{ search: "*", size: { min: 0 } }],
-      }),
-    ).toEqual("custom");
+    expect(model.generate({ partitions: [{ search: "*", size: { min: 0 } }] })).toEqual("custom");
+
+    expect(model.generate({ partitions: [{ search: "*", size: { min: 0, max: 1024 } }] })).toEqual(
+      "custom",
+    );
+
+    expect(model.generate({ partitions: [{ search: "/dev/vda", delete: true }] })).toEqual(
+      "custom",
+    );
 
     expect(
-      model.generate({
-        partitions: [{ search: "*", size: { min: 0, max: 1024 } }],
-      }),
-    ).toEqual("custom");
-
-    expect(
-      model.generate({
-        partitions: [{ search: "/dev/vda", delete: true }],
-      }),
-    ).toEqual("custom");
-
-    expect(
-      model.generate({
-        partitions: [{ search: "/dev/vda", size: { min: 0, max: "current" } }],
-      }),
+      model.generate({ partitions: [{ search: "/dev/vda", size: { min: 0, max: "current" } }] }),
     ).toEqual("custom");
 
     expect(
@@ -134,24 +102,16 @@ describe("#generate", () => {
   });
 
   it("returns 'keep' if there is neither 'delete' nor 'resize' partition", () => {
-    expect(
-      model.generate({
-        partitions: [{ search: "*", filesystem: { type: "xfs" } }],
-      }),
-    ).toEqual("keep");
+    expect(model.generate({ partitions: [{ search: "*", filesystem: { type: "xfs" } }] })).toEqual(
+      "keep",
+    );
 
     expect(
-      model.generate({
-        partitions: [{ generate: "default" }, { filesystem: { path: "/home" } }],
-      }),
+      model.generate({ partitions: [{ generate: "default" }, { filesystem: { path: "/home" } }] }),
     ).toEqual("keep");
   });
 
   it("returns 'keep' if there are not partitions", () => {
-    expect(
-      model.generate({
-        search: "/dev/vda",
-      }),
-    ).toEqual("keep");
+    expect(model.generate({ search: "/dev/vda" })).toEqual("keep");
   });
 });
