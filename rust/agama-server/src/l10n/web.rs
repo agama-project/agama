@@ -29,7 +29,7 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError, localization::model::LocaleConfig, localization::LocaleProxy,
-    proxies::LocaleProxy as ManagerLocaleProxy,
+    proxies::LocaleMixinProxy as ManagerLocaleProxy,
 };
 use agama_locale_data::LocaleId;
 use axum::{
