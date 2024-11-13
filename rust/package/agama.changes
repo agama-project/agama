@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 13 12:03:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly update the localization settings of the D-Bus services
+  (bsc#1233159, bsc#1233160).
+
+-------------------------------------------------------------------
 Thu Nov  7 14:20:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Perform a system re-probing after executing pre-scripts

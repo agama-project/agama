@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Wed Nov 13 12:06:41 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Several translation fixes (gh#agama-project/agama#1746):
+  - Use the correct capitalization for RFC 5646 language tags
+    (e.g., "pt-BR" instead of "pt-BR" instead of "pt-br") (bsc#1233160).
+  - Translate the products descriptions when the user changes
+    the language (gh#agama-project/agama#1724).
+  - Fallback to a similar language if the given one is not supported
+    (e.g., "es" for "es-AR") (gh#agama-project/agama#860).
+
+-------------------------------------------------------------------
 Wed Nov  6 06:06:51 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - URL for downloading Agama logs adapted to use new HTTP API

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 13 12:14:06 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when trying to change the language of the storage
+  service before the "config" phase (gh#agama-project/agama#1746).
+
+-------------------------------------------------------------------
 Tue Nov  5 16:11:35 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - packaging: split out files independent of Ruby version
