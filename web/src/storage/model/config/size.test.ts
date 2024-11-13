@@ -23,99 +23,112 @@
 import * as model from "~/storage/model/config/size";
 
 describe("#generate", () => {
-  it("returns the size in bytes from the size section", () => {
+  it("returns the expected size object from a size section", () => {
     expect(
-      model.generate({
-        size: 1024,
-      }),
-    ).toEqual({ min: 1024, max: 1024 });
-
-    expect(
-      model.generate({
-        size: "1 KiB",
-      }),
-    ).toEqual({ min: 1024, max: 1024 });
-
-    expect(
-      model.generate({
-        size: "1KiB",
-      }),
-    ).toEqual({ min: 1024, max: 1024 });
-
-    expect(
-      model.generate({
-        size: "1kb",
-      }),
-    ).toEqual({ min: 1000, max: 1000 });
-
-    expect(
-      model.generate({
-        size: "1k",
-      }),
-    ).toEqual({ min: 1000, max: 1000 });
-
-    expect(
-      model.generate({
-        size: "665.284 TiB",
-      }),
-    ).toEqual({ min: 731487493773328, max: 731487493773328 });
-
-    expect(
-      model.generate({
-        size: [1024],
-      }),
-    ).toEqual({ min: 1024 });
-
-    expect(
-      model.generate({
-        size: [1024, 2048],
-      }),
-    ).toEqual({ min: 1024, max: 2048 });
-
-    expect(
-      model.generate({
-        size: ["1 kib", "2 KIB"],
-      }),
-    ).toEqual({ min: 1024, max: 2048 });
-
-    expect(
-      model.generate({
-        size: {
-          min: 1024,
+      model.generate(
+        {},
+        {
+          size: "1 KiB",
         },
-      }),
-    ).toEqual({ min: 1024 });
+      ),
+    ).toEqual({ auto: true, min: 1024, max: 1024 });
 
     expect(
-      model.generate({
-        size: {
-          min: 1024,
-          max: 2048,
+      model.generate(
+        {},
+        {
+          size: "1KiB",
         },
-      }),
-    ).toEqual({ min: 1024, max: 2048 });
+      ),
+    ).toEqual({ auto: true, min: 1024, max: 1024 });
 
     expect(
-      model.generate({
-        size: {
-          min: "1 kib",
-          max: "2 KiB",
+      model.generate(
+        {},
+        {
+          size: "1kb",
         },
-      }),
-    ).toEqual({ min: 1024, max: 2048 });
+      ),
+    ).toEqual({ auto: true, min: 1000, max: 1000 });
+
+    expect(
+      model.generate(
+        {},
+        {
+          size: "1k",
+        },
+      ),
+    ).toEqual({ auto: true, min: 1000, max: 1000 });
+
+    expect(
+      model.generate(
+        {},
+        {
+          size: "665.284 TiB",
+        },
+      ),
+    ).toEqual({ auto: true, min: 731487493773328, max: 731487493773328 });
+
+    expect(model.generate({ size: 1024 }, { size: { min: 1024, max: 1024 } })).toEqual({
+      auto: false,
+      min: 1024,
+      max: 1024,
+    });
+
+    expect(model.generate({}, { size: { min: 1024, max: 1024 } })).toEqual({
+      auto: true,
+      min: 1024,
+      max: 1024,
+    });
+
+    expect(model.generate({}, { size: [1024] })).toEqual({ auto: true, min: 1024 });
+
+    expect(model.generate({}, { size: [1024, 2048] })).toEqual({
+      auto: true,
+      min: 1024,
+      max: 2048,
+    });
+
+    expect(
+      model.generate(
+        {},
+        {
+          size: ["1 kib", "2 KIB"],
+        },
+      ),
+    ).toEqual({ auto: true, min: 1024, max: 2048 });
+
+    expect(model.generate({}, { size: { min: 1024 } })).toEqual({ auto: true, min: 1024 });
+
+    expect(model.generate({}, { size: { min: 1024, max: 2048 } })).toEqual({
+      auto: true,
+      min: 1024,
+      max: 2048,
+    });
+
+    expect(
+      model.generate(
+        {},
+        {
+          size: {
+            min: "1 kib",
+            max: "2 KiB",
+          },
+        },
+      ),
+    ).toEqual({ auto: true, min: 1024, max: 2048 });
   });
+
+  // This scenario should not happen because the solved config does not return "custom" value.
   it("returns undefined for 'custom' value", () => {
-    expect(
-      model.generate({
-        size: {
-          min: "custom",
-          max: 2048,
-        },
-      }),
-    ).toEqual({ min: undefined, max: 2048 });
+    expect(model.generate({}, { size: { min: "custom", max: 2048 } })).toEqual({
+      auto: true,
+      min: undefined,
+      max: 2048,
+    });
   });
 
   it("returns undefined if there is no size section", () => {
-    expect(model.generate({})).toBeUndefined;
+    expect(model.generate({}, {})).toBeUndefined;
   });
 });

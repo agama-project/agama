@@ -25,24 +25,28 @@ import * as checks from "~/api/storage/types/checks";
 import xbytes from "xbytes";
 
 export type Size = {
+  auto: boolean;
   min?: number;
   max?: number;
 };
 
-export interface WithSize {
+interface WithSize {
   size?: config.Size;
 }
 
-class SizeGenerator<TypeWithSize extends WithSize> {
-  private config: TypeWithSize;
+type AnyConfig = object | undefined;
 
-  constructor(config: TypeWithSize) {
+class SizeGenerator<TypeWithSize extends WithSize> {
+  private config: AnyConfig;
+  private solvedConfig: TypeWithSize;
+
+  constructor(config: AnyConfig, solvedConfig: TypeWithSize) {
     this.config = config;
+    this.solvedConfig = solvedConfig;
   }
 
-  // TODO: detect auto size by checking the unsolved config.
   generate(): Size | undefined {
-    const size = this.config.size;
+    const size = this.solvedConfig.size;
 
     if (!size) return;
     if (checks.isSizeValue(size)) return this.fromSizeValue(size);
@@ -52,21 +56,48 @@ class SizeGenerator<TypeWithSize extends WithSize> {
 
   private fromSizeValue(value: config.SizeValue): Size {
     const bytes = this.bytes(value);
-    return { min: bytes, max: bytes };
+
+    return {
+      auto: this.generateAuto(),
+      min: bytes,
+      max: bytes,
+    };
   }
 
   private fromSizeTuple(sizeTuple: config.SizeTuple): Size {
-    const size: Size = { min: this.bytes(sizeTuple[0]) };
-    if (sizeTuple.length === 2) size.max = this.bytes(sizeTuple[1]);
+    const size: Size = {
+      auto: this.generateAuto(),
+      min: this.bytes(sizeTuple[0]),
+    };
+
+    if (sizeTuple.length === 2) {
+      size.max = this.bytes(sizeTuple[1]);
+    }
 
     return size;
   }
 
   private fromSizeRange(sizeRange: config.SizeRange): Size {
-    const size: Size = { min: this.bytes(sizeRange.min) };
-    if (sizeRange.max) size.max = this.bytes(sizeRange.max);
+    const size: Size = {
+      auto: this.generateAuto(),
+      min: this.bytes(sizeRange.min),
+    };
+
+    if (sizeRange.max) {
+      size.max = this.bytes(sizeRange.max);
+    }
 
     return size;
+  }
+
+  private generateAuto(): boolean {
+    return this.config === undefined || !("size" in this.config);
+  }
+
+  private bytes(value: config.SizeValueWithCurrent): number | undefined {
+    if (checks.isSizeCurrent(value)) return;
+    if (checks.isSizeString(value)) return this.parseSizeString(value);
+    if (checks.isSizeBytes(value)) return value;
   }
 
   private parseSizeString(value: string): number | undefined {
@@ -77,14 +108,11 @@ class SizeGenerator<TypeWithSize extends WithSize> {
     const parsed = xbytes.parseSize(adapted, { bits: false }) || parseInt(adapted);
     if (parsed) return Math.trunc(parsed);
   }
-
-  private bytes(value: config.SizeValueWithCurrent): number | undefined {
-    if (checks.isSizeCurrent(value)) return;
-    if (checks.isSizeString(value)) return this.parseSizeString(value);
-    if (checks.isSizeBytes(value)) return value;
-  }
 }
 
-export function generate<TypeWithSize extends WithSize>(config: TypeWithSize): Size | undefined {
-  return new SizeGenerator<TypeWithSize>(config).generate();
+export function generate<TypeWithSize extends WithSize>(
+  config: AnyConfig,
+  solvedConfig: TypeWithSize,
+): Size | undefined {
+  return new SizeGenerator<TypeWithSize>(config, solvedConfig).generate();
 }
