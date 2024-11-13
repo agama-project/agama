@@ -202,14 +202,10 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
   const syncBackendLanguage = useCallback(async () => {
     const config = await cancellablePromise(fetchConfig());
     const backendLanguage = languageFromLocale(config.uiLocale);
+    if (backendLanguage === language) return;
 
-    if (backendLanguage !== language) {
-      // FIXME: fallback to en-US if the language is not supported.
-      await cancellablePromise(updateConfig({ uiLocale: languageToLocale(language) }));
-      return true;
-    }
-
-    return false;
+    // FIXME: fallback to en-US if the language is not supported.
+    await cancellablePromise(updateConfig({ uiLocale: languageToLocale(language) }));
   }, [language, cancellablePromise]);
 
   const changeLanguage = useCallback(
@@ -246,7 +242,7 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
       if (!connected) return;
 
       setKeymap(id);
-      updateConfig({ uiKeymap: id });
+      await updateConfig({ uiKeymap: id });
     },
     [setKeymap, connected],
   );

@@ -63,7 +63,7 @@ export default function InstallerOptions({ isOpen = false, onClose }: InstallerO
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setInProgress(true);
-    changeKeymap(keymap);
+    await changeKeymap(keymap);
     changeLanguage(language)
       .then(close)
       .catch(() => setInProgress(false));
