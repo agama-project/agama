@@ -21,6 +21,7 @@
 
 require "agama/storage/configs/search"
 require "agama/storage/configs/with_alias"
+require "agama/storage/configs/with_index"
 require "agama/storage/configs/with_search"
 
 module Agama
@@ -29,6 +30,7 @@ module Agama
       # Section of the configuration representing a device that is expected to exist in the target
       # system and that can be used as a regular disk.
       class Drive
+        include WithIndex
         include WithAlias
         include WithSearch
 

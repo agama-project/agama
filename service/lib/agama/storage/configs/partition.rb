@@ -20,14 +20,16 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/configs/size"
-require "agama/storage/configs/with_search"
 require "agama/storage/configs/with_alias"
+require "agama/storage/configs/with_index"
+require "agama/storage/configs/with_search"
 
 module Agama
   module Storage
     module Configs
       # Section of the configuration representing a partition
       class Partition
+        include WithIndex
         include WithAlias
         include WithSearch
 

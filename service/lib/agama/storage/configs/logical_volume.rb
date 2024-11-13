@@ -21,12 +21,14 @@
 
 require "agama/storage/configs/size"
 require "agama/storage/configs/with_alias"
+require "agama/storage/configs/with_index"
 
 module Agama
   module Storage
     module Configs
       # Section of the configuration representing a LVM logical volume.
       class LogicalVolume
+        include WithIndex
         include WithAlias
 
         # @return [String, nil]
