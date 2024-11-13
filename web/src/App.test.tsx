@@ -34,7 +34,7 @@ jest.mock("~/api/l10n", () => ({
   ...jest.requireActual("~/api/l10n"),
   fetchConfig: jest.fn().mockResolvedValue({
     uiKeymap: "en",
-    uiLocale: "en_us",
+    uiLocale: "en_US",
   }),
   updateConfig: jest.fn(),
 }));
@@ -98,7 +98,7 @@ jest.mock("~/components/product/ProductSelectionProgress", () => () => <div>Prod
 describe("App", () => {
   beforeEach(() => {
     // setting the language through a cookie
-    document.cookie = "agamaLang=en-us; path=/;";
+    document.cookie = "agamaLang=en-US; path=/;";
     (createClient as jest.Mock).mockImplementation(() => {
       return {};
     });
