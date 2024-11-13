@@ -45,8 +45,11 @@ jest.mock("~/api/l10n", () => ({
 }));
 
 const client = {
+  isConnected: jest.fn().mockResolvedValue(true),
+  isRecoverable: jest.fn(),
   onConnect: jest.fn(),
   onDisconnect: jest.fn(),
+  onEvent: jest.fn(),
 };
 
 jest.mock("~/languages.json", () => ({
@@ -80,8 +83,7 @@ describe("InstallerL10nProvider", () => {
     jest.spyOn(utils, "setLocationSearch");
 
     mockUpdateConfigFn.mockResolvedValue(true);
-    delete window.navigator;
-    window.navigator = { languages: ["es-es", "cs-cz"] };
+    jest.spyOn(window.navigator, "languages", "get").mockReturnValue(["es-ES", "cs-CZ"]);
   });
 
   // remove the language cookie after each test
@@ -181,7 +183,7 @@ describe("InstallerL10nProvider", () => {
 
       describe("when the browser language does not contain the full locale", () => {
         beforeEach(() => {
-          window.navigator = { languages: ["es", "cs-cz"] };
+          jest.spyOn(window.navigator, "languages", "get").mockReturnValue(["es", "cs-CZ"]);
         });
 
         it("sets the first which language matches", async () => {

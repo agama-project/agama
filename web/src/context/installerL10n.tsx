@@ -21,7 +21,6 @@
  */
 
 // cspell:ignore localectl setxkbmap xorg
-// @ts-check
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useCancellablePromise, locationReload, setLocationSearch } from "~/utils";
