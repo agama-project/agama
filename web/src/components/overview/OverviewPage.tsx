@@ -37,6 +37,7 @@ import {
 import { Link } from "react-router-dom";
 import { Page } from "~/components/core";
 import L10nSection from "./L10nSection";
+import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 import { useAllIssues } from "~/queries/issues";
@@ -100,6 +101,7 @@ const OverviewSection = () => (
   >
     <Stack hasGutter>
       <L10nSection />
+      <StorageSection />
       <SoftwareSection />
     </Stack>
   </Page.Section>

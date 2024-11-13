@@ -24,27 +24,36 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
+import * as ConfigModel from "~/storage/model/config";
 
-const mockAvailableDevices = [
+const mockDevices = [
   { name: "/dev/sda", size: 536870912000 },
   { name: "/dev/sdb", size: 697932185600 },
 ];
 
-const mockResultSettings = { target: "disk", targetDevice: "/dev/sda", spacePolicy: "delete" };
+const mockConfig = { devices: [] as ConfigModel.Device[] };
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => mockAvailableDevices,
-  useProposalResult: () => ({
-    settings: mockResultSettings,
-    actions: [],
-  }),
+  useDevices: () => mockDevices,
+  useConfigDevices: () => mockConfig.devices,
 }));
 
-describe("when there is a proposal", () => {
+describe("when the configuration does not include any device", () => {
   beforeEach(() => {
-    mockResultSettings.target = "disk";
-    mockResultSettings.spacePolicy = "delete";
+    mockConfig.devices = [];
+  });
+
+  it("indicates that a device is not selected", async () => {
+    plainRender(<StorageSection />);
+
+    await screen.findByText(/No device selected/);
+  });
+});
+
+describe("when the configuration contains one drive", () => {
+  beforeEach(() => {
+    mockConfig.devices = [{ name: "/dev/sda", spacePolicy: "delete" }];
   });
 
   it("renders the proposal summary", async () => {
@@ -57,9 +66,7 @@ describe("when there is a proposal", () => {
 
   describe("and the space policy is set to 'resize'", () => {
     beforeEach(() => {
-      // const result = { settings: { spacePolicy: "resize", targetDevice: "/dev/sda" } };
-      mockResultSettings.spacePolicy = "resize";
-      mockResultSettings.targetDevice = "/dev/sda";
+      mockConfig.devices[0].spacePolicy = "resize";
     });
 
     it("indicates that partitions may be shrunk", async () => {
@@ -71,8 +78,7 @@ describe("when there is a proposal", () => {
 
   describe("and the space policy is set to 'keep'", () => {
     beforeEach(() => {
-      mockResultSettings.spacePolicy = "keep";
-      mockResultSettings.targetDevice = "/dev/sda";
+      mockConfig.devices[0].spacePolicy = "keep";
     });
 
     it("indicates that partitions will be kept", async () => {
@@ -82,9 +88,9 @@ describe("when there is a proposal", () => {
     });
   });
 
-  describe("and there is no target device", () => {
+  describe("and the drive matches no disk", () => {
     beforeEach(() => {
-      mockResultSettings.targetDevice = "";
+      mockConfig.devices[0].name = null;
     });
 
     it("indicates that a device is not selected", async () => {
@@ -92,5 +98,21 @@ describe("when there is a proposal", () => {
 
       await screen.findByText(/No device selected/);
     });
+  });
+});
+
+describe("when the configuration contains several drives", () => {
+  beforeEach(() => {
+    mockConfig.devices = [
+      { name: "/dev/sda", spacePolicy: "delete" },
+      { name: "/dev/sdb", spacePolicy: "delete" },
+    ];
+  });
+
+  it("renders the proposal summary", async () => {
+    plainRender(<StorageSection />);
+
+    await screen.findByText(/Install using several devices/);
+    await screen.findByText(/and deleting all its content/);
   });
 });
