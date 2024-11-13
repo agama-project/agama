@@ -66,5 +66,6 @@ Definition of SLE-based products (e.g., SUSE Linux Enterprise Server) for the Ag
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
 %{_datadir}/agama/products.d/sles_160.yaml
+%{_datadir}/agama/products.d/sles_sap_160.yaml
 
 %changelog
