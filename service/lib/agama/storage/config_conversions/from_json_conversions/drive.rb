@@ -53,6 +53,7 @@ module Agama
           # @return [Hash]
           def conversions
             {
+              index:       drive_json[:index],
               search:      convert_search,
               alias:       drive_json[:alias],
               encryption:  convert_encryption,

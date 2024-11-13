@@ -545,8 +545,10 @@ shared_examples "with partitions" do |config_proc|
 
       partition1, partition2 = partitions
       expect(partition1).to be_a(Agama::Storage::Configs::Partition)
+      expect(partition1.index).to eq(0)
       expect(partition1.filesystem.path).to eq("/")
       expect(partition2).to be_a(Agama::Storage::Configs::Partition)
+      expect(partition2.index).to eq(1)
       expect(partition2.filesystem.path).to eq("/test")
     end
   end
@@ -668,14 +670,17 @@ shared_examples "with partitions" do |config_proc|
         test_part = partitions.find { |p| p.filesystem.path == "/test" }
 
         expect(root_part).to_not be_nil
+        expect(root_part.index).to eq(0)
         expect(root_part.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
         expect(root_part.encryption.password).to eq("12345")
 
         expect(swap_part).to_not be_nil
+        expect(swap_part.index).to eq(0)
         expect(swap_part.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
         expect(swap_part.encryption.password).to eq("12345")
 
         expect(test_part).to_not be_nil
+        expect(test_part.index).to eq(1)
         expect(test_part.encryption).to be_nil
       end
     end
@@ -693,10 +698,12 @@ shared_examples "with generate" do |configs_proc|
 
       default1 = configs.find { |c| c.filesystem.path == "/default1" }
       expect(default1).to_not be_nil
+      expect(default1.index).to eq(0)
       expect(default1.encryption).to be_nil
 
       default2 = configs.find { |c| c.filesystem.path == "/default2" }
       expect(default2).to_not be_nil
+      expect(default2.index).to eq(0)
       expect(default2.encryption).to be_nil
     end
   end
@@ -711,6 +718,7 @@ shared_examples "with generate" do |configs_proc|
 
       mandatory1 = configs.find { |c| c.filesystem.path == "/mandatory1" }
       expect(mandatory1).to_not be_nil
+      expect(mandatory1.index).to eq(0)
       expect(mandatory1.encryption).to be_nil
     end
   end
@@ -812,8 +820,10 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           drive1, drive2 = config.drives
           expect(drive1.alias).to eq("first-disk")
           expect(drive1.partitions).to eq([])
+          expect(drive1.index).to eq(0)
           expect(drive2.alias).to eq("second-disk")
           expect(drive2.partitions).to eq([])
+          expect(drive2.index).to eq(1)
         end
       end
 
@@ -917,8 +927,10 @@ describe Agama::Storage::ConfigConversions::FromJSON do
 
           volume_group1, volume_group2 = config.volume_groups
           expect(volume_group1.name).to eq("vg1")
+          expect(volume_group1.index).to eq(0)
           expect(volume_group1.logical_volumes).to eq([])
           expect(volume_group2.name).to eq("vg2")
+          expect(volume_group2.index).to eq(1)
           expect(volume_group2.logical_volumes).to eq([])
         end
       end
@@ -1160,8 +1172,10 @@ describe Agama::Storage::ConfigConversions::FromJSON do
             lv1, lv2 = lvs
             expect(lv1).to be_a(Agama::Storage::Configs::LogicalVolume)
             expect(lv1.name).to eq("root")
+            expect(lv1.index).to eq(0)
             expect(lv2).to be_a(Agama::Storage::Configs::LogicalVolume)
             expect(lv2.name).to eq("test")
+            expect(lv2.index).to eq(1)
           end
         end
 
@@ -1330,14 +1344,17 @@ describe Agama::Storage::ConfigConversions::FromJSON do
               test_lv = lvs.find { |v| v.name == "test" }
 
               expect(root_lv).to_not be_nil
+              expect(root_lv.index).to eq(0)
               expect(root_lv.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
               expect(root_lv.encryption.password).to eq("12345")
 
               expect(swap_lv).to_not be_nil
+              expect(swap_lv.index).to eq(0)
               expect(swap_lv.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
               expect(swap_lv.encryption.password).to eq("12345")
 
               expect(test_lv).to_not be_nil
+              expect(test_lv.index).to eq(1)
               expect(test_lv.encryption).to be_nil
             end
           end
@@ -1382,8 +1399,11 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           swap_part = partitions.find { |p| p.filesystem.path == "swap" }
           home_part = partitions.find { |p| p.filesystem.path == "/home" }
           expect(root_part).to_not be_nil
+          expect(root_part.index).to eq(0)
           expect(swap_part).to_not be_nil
+          expect(swap_part.index).to eq(0)
           expect(home_part).to_not be_nil
+          expect(home_part.index).to eq(1)
         end
       end
 
@@ -1466,7 +1486,9 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           root_part = partitions.find { |p| p.filesystem.path == "/" }
           swap_part = partitions.find { |p| p.filesystem.path == "swap" }
           expect(root_part).to_not be_nil
+          expect(root_part.index).to eq(0)
           expect(swap_part).to_not be_nil
+          expect(swap_part.index).to eq(0)
         end
       end
 
@@ -1532,8 +1554,11 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           swap_lv = lvs.find { |v| v.filesystem.path == "swap" }
           home_lv = lvs.find { |v| v.filesystem.path == "/home" }
           expect(root_lv).to_not be_nil
+          expect(root_lv.index).to eq(0)
           expect(swap_lv).to_not be_nil
+          expect(swap_lv.index).to eq(0)
           expect(home_lv).to_not be_nil
+          expect(home_lv.index).to eq(1)
         end
       end
 
@@ -1616,7 +1641,9 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           root_lv = lvs.find { |v| v.filesystem.path == "/" }
           swap_lv = lvs.find { |v| v.filesystem.path == "swap" }
           expect(root_lv).to_not be_nil
+          expect(root_lv.index).to eq(0)
           expect(swap_lv).to_not be_nil
+          expect(swap_lv.index).to eq(0)
         end
       end
 

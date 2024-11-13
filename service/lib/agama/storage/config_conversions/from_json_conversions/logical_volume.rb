@@ -50,6 +50,7 @@ module Agama
           # @return [Hash]
           def conversions
             {
+              index:       logical_volume_json[:index],
               alias:       logical_volume_json[:alias],
               encryption:  convert_encryption,
               filesystem:  convert_filesystem,

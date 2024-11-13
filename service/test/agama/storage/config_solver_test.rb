@@ -607,6 +607,7 @@ describe Agama::Storage::ConfigSolver do
     it "expands the number of drives to match all the existing disks" do
       subject.solve(config)
       expect(config.drives.size).to eq 3
+      expect(config.drives.map(&:index)).to all(eq(0))
       search1, search2, search3 = config.drives.map(&:search)
       expect(search1.solved?).to eq(true)
       expect(search1.device.name).to eq("/dev/vda")
@@ -631,6 +632,7 @@ describe Agama::Storage::ConfigSolver do
     it "expands the number of drives to match all the existing disks" do
       subject.solve(config)
       expect(config.drives.size).to eq 3
+      expect(config.drives.map(&:index)).to all(eq(0))
       expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
       expect(config.drives.map(&:search).map(&:device).map(&:name))
         .to eq ["/dev/vda", "/dev/vdb", "/dev/vdc"]
@@ -654,6 +656,7 @@ describe Agama::Storage::ConfigSolver do
       it "expands the number of drives to match the max" do
         subject.solve(config)
         expect(config.drives.size).to eq 2
+        expect(config.drives.map(&:index)).to all(eq(0))
         expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
         expect(config.drives.map(&:search).map(&:device).map(&:name))
           .to eq ["/dev/vda", "/dev/vdb"]
@@ -666,6 +669,7 @@ describe Agama::Storage::ConfigSolver do
       it "expands the number of drives to match all the existing disks" do
         subject.solve(config)
         expect(config.drives.size).to eq 3
+        expect(config.drives.map(&:index)).to all(eq(0))
         expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
         expect(config.drives.map(&:search).map(&:device).map(&:name))
           .to eq ["/dev/vda", "/dev/vdb", "/dev/vdc"]
@@ -762,6 +766,7 @@ describe Agama::Storage::ConfigSolver do
     it "expands the number of partition configs to match all the existing partitions" do
       subject.solve(config)
       drive_partitions = config.drives.first.partitions
+      expect(drive_partitions.map(&:index)).to all(eq(0))
       expect(drive_partitions.size).to eq 3
       search1, search2, search3 = drive_partitions.map(&:search)
       expect(search1.solved?).to eq(true)
@@ -785,6 +790,11 @@ describe Agama::Storage::ConfigSolver do
         subject.solve(config)
         drive_partitions = config.drives.first.partitions
         expect(drive_partitions.size).to eq 5
+        expect(drive_partitions[0].index).to eq(0)
+        expect(drive_partitions[1].index).to eq(0)
+        expect(drive_partitions[2].index).to eq(0)
+        expect(drive_partitions[3].index).to eq(1)
+        expect(drive_partitions[4].index).to eq(2)
         searches = drive_partitions[3..-1].map(&:search)
         expect(searches.map(&:solved?)).to eq [true, true]
         expect(searches.map(&:device)).to eq [nil, nil]
@@ -805,6 +815,7 @@ describe Agama::Storage::ConfigSolver do
       subject.solve(config)
       drive_partitions = config.drives.first.partitions
       expect(drive_partitions.size).to eq 3
+      expect(drive_partitions.map(&:index)).to all(eq(0))
       expect(drive_partitions.map(&:search).map(&:solved?)).to all(eq(true))
       expect(drive_partitions.map(&:search).map(&:device).map(&:name))
         .to eq ["/dev/vda1", "/dev/vda2", "/dev/vda3"]
@@ -863,9 +874,11 @@ describe Agama::Storage::ConfigSolver do
 
       it "does not set a partition to the config" do
         subject.solve(config)
-        search = config.drives.first.partitions.last.search
-        expect(search.solved?).to eq(true)
-        expect(search.device).to be_nil
+        *partitions, last_partition = config.drives.first.partitions
+        expect(partitions.map(&:index)).to all(eq(0))
+        expect(last_partition.index).to eq(1)
+        expect(last_partition.search.solved?).to eq(true)
+        expect(last_partition.search.device).to be_nil
       end
     end
 
@@ -904,6 +917,7 @@ describe Agama::Storage::ConfigSolver do
         subject.solve(config)
         drive_partitions = config.drives.first.partitions
         expect(drive_partitions.size).to eq 2
+        expect(drive_partitions.map(&:index)).to all(eq(0))
         expect(drive_partitions.map(&:search).map(&:solved?)).to all(eq(true))
         expect(drive_partitions.map(&:search).map(&:device).map(&:name))
           .to eq ["/dev/vda1", "/dev/vda2"]
@@ -917,6 +931,7 @@ describe Agama::Storage::ConfigSolver do
         subject.solve(config)
         drive_partitions = config.drives.first.partitions
         expect(drive_partitions.size).to eq 3
+        expect(drive_partitions.map(&:index)).to all(eq(0))
         expect(drive_partitions.map(&:search).map(&:solved?)).to all(eq(true))
         expect(drive_partitions.map(&:search).map(&:device).map(&:name))
           .to eq ["/dev/vda1", "/dev/vda2", "/dev/vda3"]

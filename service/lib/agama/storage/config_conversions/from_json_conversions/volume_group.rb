@@ -44,6 +44,7 @@ module Agama
           # @return [Hash]
           def conversions
             {
+              index:                       volume_group_json[:index],
               name:                        volume_group_json[:name],
               extent_size:                 convert_extent_size,
               physical_volumes_devices:    convert_physical_volumes_devices,

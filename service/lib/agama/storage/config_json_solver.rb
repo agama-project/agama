@@ -73,6 +73,7 @@ module Agama
       def solve(config_json)
         @config_json = config_json
 
+        solve_indexes
         solve_generate
       end
 
@@ -87,6 +88,20 @@ module Agama
       # @return [Hash]
       attr_reader :config_json
 
+      def solve_indexes
+        drives = config_json[:drives] || []
+        assign_indexes(drives)
+        drives.each { |d| assign_indexes(d[:partitions] || []) }
+
+        volume_groups = config_json[:volumeGroups] || []
+        assign_indexes(volume_groups)
+        volume_groups.each { |d| assign_indexes(d[:logicalVolumes] || []) }
+      end
+
+      def assign_indexes(configs)
+        configs.each_with_index { |c, i| c[:index] = i }
+      end
+
       def solve_generate
         configs = configs_with_generate
         return unless configs.any?
@@ -98,12 +113,16 @@ module Agama
       # @param config [Hash] Drive or volume group config (e.g., { partitions: [...] }).
       def expand_generate(config)
         configs = volume_configs(config)
-        index = configs.index { |v| with_generate?(v) }
+        generate_config = configs.find { |c| with_generate?(c) }
 
-        return unless index
+        return unless generate_config
 
-        generate_config = configs[index]
-        configs[index] = volumes_from_generate(generate_config)
+        current_index = configs.index(generate_config)
+        index = generate_config[:index] || current_index
+
+        configs[current_index] = volumes_from_generate(generate_config)
+          .each { |c| c[:index] = index }
+
         configs.flatten!
       end
 

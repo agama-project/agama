@@ -52,6 +52,7 @@ module Agama
           # @return [Hash]
           def conversions
             {
+              index:            partition_json[:index],
               search:           convert_search,
               alias:            partition_json[:alias],
               encryption:       convert_encryption,
