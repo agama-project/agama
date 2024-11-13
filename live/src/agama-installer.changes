@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Wed Nov 13 12:20:23 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Temporarily drop xf86-video-fbdev as it seems to be missing
+  in the repo
+  (gh#agama-project/agama#1752)
+
+-------------------------------------------------------------------
+Wed Nov 13 10:29:31 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add common xf86-video drives + x86-input for tablets
+  (gh#agama-project/agama#1752)
+
+-------------------------------------------------------------------
 Thu Nov  7 11:32:09 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add Leap,Leap-PXE profiles

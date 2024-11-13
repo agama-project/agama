@@ -27,6 +27,7 @@ use agama_lib::network::settings::{
     BondSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings,
 };
 use agama_lib::network::types::{BondMode, DeviceState, DeviceType, Status, SSID};
+use agama_lib::openapi::schemas;
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -737,6 +738,7 @@ pub struct InvalidMacAddress(String);
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
 pub enum MacAddress {
+    #[schema(value_type = String, format = "MAC address in EUI-48 format")]
     MacAddress(macaddr::MacAddr6),
     Preserve,
     Permanent,
@@ -802,13 +804,17 @@ pub struct IpConfig {
     pub method4: Ipv4Method,
     pub method6: Ipv6Method,
     #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[schema(schema_with = schemas::ip_inet_array)]
     pub addresses: Vec<IpInet>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[schema(schema_with = schemas::ip_addr_array)]
     pub nameservers: Vec<IpAddr>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub dns_searchlist: Vec<String>,
     pub ignore_auto_dns: bool,
+    #[schema(schema_with = schemas::ip_addr)]
     pub gateway4: Option<IpAddr>,
+    #[schema(schema_with = schemas::ip_addr)]
     pub gateway6: Option<IpAddr>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub routes4: Vec<IpRoute>,
@@ -920,8 +926,10 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
 #[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IpRoute {
+    #[schema(schema_with = schemas::ip_inet_ref)]
     pub destination: IpInet,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(schema_with = schemas::ip_addr)]
     pub next_hop: Option<IpAddr>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metric: Option<u32>,
@@ -1000,6 +1008,7 @@ pub struct WirelessConfig {
     pub band: Option<WirelessBand>,
     pub channel: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(schema_with = schemas::mac_addr6)]
     pub bssid: Option<macaddr::MacAddr6>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wep_security: Option<WEPSecurity>,

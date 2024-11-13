@@ -32,7 +32,9 @@ use crate::transfer::Transfer;
 
 use super::ScriptError;
 
-#[derive(Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
+)]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ScriptsGroup {
@@ -40,7 +42,7 @@ pub enum ScriptsGroup {
     Post,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum ScriptSource {
     /// Script's body.
@@ -50,7 +52,7 @@ pub enum ScriptSource {
 }
 
 /// Represents a script to run as part of the installation process.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct Script {
     /// Script's name.
     pub name: String,

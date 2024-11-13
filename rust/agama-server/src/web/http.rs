@@ -40,30 +40,39 @@ pub struct PingResponse {
     status: String,
 }
 
-#[utoipa::path(get, path = "/ping", responses(
-    (status = 200, description = "The API is working", body = PingResponse)
-))]
+#[utoipa::path(
+    get,
+    path = "/ping",
+    context_path = "/api",
+    responses(
+        (status = 200, description = "The API is working", body = PingResponse)
+    )
+)]
 pub async fn ping() -> Json<PingResponse> {
     Json(PingResponse {
         status: "success".to_string(),
     })
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, utoipa::ToSchema)]
 pub struct AuthResponse {
     /// Bearer token to use on subsequent calls
     token: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, utoipa::ToSchema)]
 pub struct LoginRequest {
     /// User password
     pub password: String,
 }
 
-#[utoipa::path(post, path = "/api/auth", responses(
-    (status = 200, description = "The user has been successfully authenticated.", body = AuthResponse)
-))]
+#[utoipa::path(post,
+    path = "/auth",
+    context_path = "/api",
+    responses(
+        (status = 200, description = "The user has been successfully authenticated.", body = AuthResponse)
+    )
+)]
 pub async fn login(
     State(state): State<ServiceState>,
     Json(login): Json<LoginRequest>,
