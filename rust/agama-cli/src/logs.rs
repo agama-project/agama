@@ -50,7 +50,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
             let result = client
                 .store(dst_file.as_path())
                 .await
-                .map_err(|_| anyhow::Error::msg("Downloading of logs failed"))?;
+                .map_err(|e| anyhow::Error::new(e))?;
 
             println!("{}", result.clone().display());
 
