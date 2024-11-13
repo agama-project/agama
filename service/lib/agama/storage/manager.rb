@@ -29,7 +29,7 @@ require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
 require "agama/storage/iscsi/manager"
 require "agama/storage/finisher"
-require "agama/storage/config_reader"
+require "agama/storage/config_json_reader"
 require "agama/issue"
 require "agama/with_locale"
 require "agama/with_issues"
@@ -49,17 +49,17 @@ module Agama
       include WithProgress
       include Yast::I18n
 
-      # @return [Config]
-      attr_reader :config
+      # @return [Agama::Config]
+      attr_reader :product_config
 
       # Constructor
       #
-      # @param config [Config]
+      # @param product_config [Agama::Config]
       # @param logger [Logger]
-      def initialize(config, logger)
+      def initialize(product_config, logger)
         textdomain "agama"
 
-        @config = config
+        @product_config = product_config
         @logger = logger
         register_proposal_callbacks
         on_progress_change { logger.info progress.to_s }
@@ -110,7 +110,7 @@ module Agama
       # Probes storage devices and performs an initial proposal
       def probe
         start_progress_with_size(4)
-        config.pick_product(software.selected_product)
+        product_config.pick_product(software.selected_product)
         check_multipath
         progress.step(_("Activating storage devices")) { activate_devices }
         progress.step(_("Probing storage devices")) { probe_devices }
@@ -139,14 +139,14 @@ module Agama
 
       # Performs the final steps on the target file system(s)
       def finish
-        Finisher.new(logger, config, security).run
+        Finisher.new(logger, product_config, security).run
       end
 
       # Storage proposal manager
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(config, logger: logger)
+        @proposal ||= Proposal.new(product_config, logger: logger)
       end
 
       # iSCSI manager
@@ -214,10 +214,10 @@ module Agama
         self.deprecated_system = false
       end
 
-      # Calculates the proposal using the settings from the config file.
+      # Calculates the proposal using the storage config from the product.
       def calculate_proposal
-        settings = ConfigReader.new(config).read
-        proposal.calculate_agama(settings)
+        config_json = ConfigJSONReader.new(product_config).read
+        proposal.calculate_from_json(config_json)
       end
 
       # Adds the required packages to the list of resolvables to install
@@ -297,7 +297,7 @@ module Agama
       #
       # @return [Security]
       def security
-        @security ||= Security.new(logger, config)
+        @security ||= Security.new(logger, product_config)
       end
 
       # Returns the client to ask questions

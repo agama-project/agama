@@ -203,6 +203,20 @@ module Agama
       default_paths.select { |p| mandatory_path?(p) }
     end
 
+    # Default policy to make space.
+    #
+    # @return [String]
+    def space_policy
+      data.dig("storage", "space_policy") || "keep"
+    end
+
+    # Whether LVM must be used by default.
+    #
+    # @return [Boolean]
+    def lvm?
+      data.dig("storage", "lvm") || false
+    end
+
   private
 
     def mandatory_path?(path)
