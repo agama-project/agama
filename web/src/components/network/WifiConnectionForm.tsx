@@ -55,6 +55,12 @@ const selectorOptions = security_options.map((security) => (
   <FormSelectOption key={security.value} value={security.value} label={security.label} />
 ));
 
+const securityFrom = (supported) => {
+  if (supported.includes("WPA2")) return "wpa-psk";
+  if (supported.includes("WPA1")) return "wpa-psk";
+  return "";
+};
+
 // FIXME: improve error handling. The errors props should have a key/value error
 //  and the component should show all of them, if any
 export default function WifiConnectionForm({
@@ -71,7 +77,9 @@ export default function WifiConnectionForm({
   const { mutate: updateConnection } = useConnectionMutation();
   const { mutate: updateSelectedNetwork } = useSelectedWifiChange();
   const [ssid, setSsid] = useState<string>(network.ssid);
-  const [security, setSecurity] = useState<string>(settings.security);
+  const [security, setSecurity] = useState<string>(
+    settings?.security || securityFrom(network?.security || []),
+  );
   const [password, setPassword] = useState<string>(settings.password);
   const [showErrors, setShowErrors] = useState<boolean>(Object.keys(errors).length > 0);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);

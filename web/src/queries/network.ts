@@ -245,6 +245,7 @@ const useNetworkConfigChanges = () => {
           ) {
             if (current_device.state !== data.state) {
               queryClient.invalidateQueries({ queryKey: ["network"] });
+              return changeSelected.mutate({ needsAuth: false });
             }
           }
           if ([DeviceState.NEEDAUTH, DeviceState.FAILED].includes(data.state)) {
