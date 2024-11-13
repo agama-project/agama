@@ -121,7 +121,7 @@ function languageFromLocale(locale: string): string {
  *
  * It forces the encoding to "UTF-8".
  *
- * @param language as a TFC 5646 language tag (e.g., "en-US")
+ * @param language as a RFC 5646 language tag (e.g., "en-US")
  * @return locale (e.g., "en_US.UTF-8")
  *
  * @private
