@@ -24,6 +24,7 @@ import { config } from "~/api/storage/types";
 import * as checks from "~/api/storage/types/checks";
 import {
   Partition,
+  PartitionConfig,
   isPartitionConfig,
   generate as generatePartition,
 } from "~/storage/model/config/partition";
@@ -31,6 +32,7 @@ import { SpacePolicy, generate as generateSpacePolicy } from "~/storage/model/co
 import { generateName, generateFilesystem, generateSnapshots } from "~/storage/model/config/common";
 
 export type Drive = {
+  index?: number;
   name?: string;
   alias?: string;
   filesystem?: string;
@@ -62,6 +64,7 @@ class DriveGenerator {
 
   private fromFormattedDrive(solvedDriveConfig: config.FormattedDrive): Drive {
     return {
+      index: solvedDriveConfig.index,
       name: generateName(solvedDriveConfig),
       alias: solvedDriveConfig.alias,
       spacePolicy: this.generateSpacePolicy(),
@@ -73,6 +76,7 @@ class DriveGenerator {
 
   private fromPartitionedDrive(solvedDriveConfig: config.PartitionedDrive): Drive {
     return {
+      index: solvedDriveConfig.index,
       name: generateName(solvedDriveConfig),
       alias: solvedDriveConfig.alias,
       spacePolicy: this.generateSpacePolicy(),
@@ -88,11 +92,25 @@ class DriveGenerator {
 
   private generatePartitions(solvedDriveConfig: config.PartitionedDrive): Partition[] {
     const solvedPartitionConfigs = solvedDriveConfig.partitions || [];
-    return solvedPartitionConfigs.filter(isPartitionConfig).map(generatePartition);
+    return solvedPartitionConfigs.filter(isPartitionConfig).map((c) => this.generatePartition(c));
+  }
+
+  private generatePartition(solvedPartitionConfig: PartitionConfig): Partition {
+    let partitionConfig: config.PartitionElement | undefined;
+
+    if (this.driveConfig !== undefined && checks.isPartitionedDrive(this.driveConfig)) {
+      const partitionConfigs = this.driveConfig.partitions || [];
+      partitionConfig = partitionConfigs[solvedPartitionConfig.index];
+    }
+
+    return generatePartition(partitionConfig, solvedPartitionConfig);
   }
 }
 
-export function generate(config: config.DriveElement, solvedConfig: config.DriveElement): Drive {
-  const generator = new DriveGenerator(config, solvedConfig);
+export function generate(
+  driveConfig: config.DriveElement | undefined,
+  solvedDriveConfig: config.DriveElement,
+): Drive {
+  const generator = new DriveGenerator(driveConfig, solvedDriveConfig);
   return generator.generate();
 }

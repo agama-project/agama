@@ -23,7 +23,7 @@
 import * as model from "~/storage/model/config/drive";
 
 describe("#generate", () => {
-  it("returns a drive object from a drive section", () => {
+  it("returns the expected drive object from a drive section", () => {
     expect(
       model.generate(undefined, {
         search: "/dev/vda",
@@ -34,6 +34,7 @@ describe("#generate", () => {
         },
       }),
     ).toEqual({
+      index: undefined,
       name: "/dev/vda",
       alias: "test",
       filesystem: "xfs",
@@ -45,9 +46,11 @@ describe("#generate", () => {
     expect(
       model.generate(
         {
-          partitions: [{ search: "*", delete: true }],
+          alias: "test",
+          filesystem: { path: "/test" },
         },
         {
+          index: 0,
           search: "/dev/vda",
           alias: "test",
           filesystem: {
@@ -59,6 +62,7 @@ describe("#generate", () => {
         },
       ),
     ).toEqual({
+      index: 0,
       name: "/dev/vda",
       alias: "test",
       filesystem: "btrfs",
@@ -73,26 +77,43 @@ describe("#generate", () => {
           partitions: [{ search: "*", delete: true }, { generate: "default" }],
         },
         {
+          index: 0,
           search: "/dev/vda",
-          partitions: [{ search: "/dev/vda1", delete: true }, { filesystem: { path: "/" } }],
+          partitions: [
+            {
+              index: 0,
+              search: "/dev/vda1",
+              delete: true,
+            },
+            {
+              index: 1,
+              filesystem: { path: "/", type: "ext4" },
+              size: { min: 1024, max: 2048 },
+            },
+          ],
         },
       ),
     ).toEqual({
+      index: 0,
       name: "/dev/vda",
       alias: undefined,
       spacePolicy: "delete",
       partitions: [
         {
+          index: 0,
           name: "/dev/vda1",
           delete: true,
         },
         {
+          index: 1,
           name: undefined,
           alias: undefined,
-          filesystem: undefined,
+          resize: undefined,
+          resizeIfNeeded: undefined,
+          filesystem: "ext4",
           mountPath: "/",
           snapshots: undefined,
-          size: undefined,
+          size: { auto: true, min: 1024, max: 2048 },
         },
       ],
     });
