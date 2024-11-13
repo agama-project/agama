@@ -23,7 +23,7 @@
 import * as model from "~/storage/model/config";
 
 describe("#generate", () => {
-  it("returns a list of devices", () => {
+  it("returns the expected list of devices from a config", () => {
     expect(
       model.generate(
         {
@@ -35,16 +35,19 @@ describe("#generate", () => {
         {
           drives: [
             {
+              index: 0,
               search: "/dev/vda",
               partitions: [
-                { search: "/dev/vda1", delete: true },
-                { search: "/dev/vda2", delete: true },
+                { index: 0, search: "/dev/vda1", delete: true },
+                { index: 0, search: "/dev/vda2", delete: true },
               ],
             },
             {
+              index: 1,
               search: "/dev/vdb",
               partitions: [
                 {
+                  index: 0,
                   filesystem: { type: "xfs", path: "/test" },
                   size: { min: 1024, max: 2048 },
                 },
@@ -55,33 +58,39 @@ describe("#generate", () => {
       ),
     ).toEqual([
       {
+        index: 0,
         name: "/dev/vda",
         alias: undefined,
         spacePolicy: "delete",
         partitions: [
           {
+            index: 0,
             name: "/dev/vda1",
             delete: true,
           },
           {
+            index: 0,
             name: "/dev/vda2",
             delete: true,
           },
         ],
       },
       {
+        index: 1,
         name: "/dev/vdb",
         alias: undefined,
         spacePolicy: "keep",
         partitions: [
           {
+            index: 0,
             name: undefined,
             alias: undefined,
-            resizeIfNeeded: true,
+            resize: undefined,
+            resizeIfNeeded: undefined,
             filesystem: "xfs",
             mountPath: "/test",
             snapshots: undefined,
-            size: { min: 1024, max: 2048 },
+            size: { auto: true, min: 1024, max: 2048 },
           },
         ],
       },

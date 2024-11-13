@@ -40,12 +40,11 @@ class ConfigDevicesGenerator {
 
   private generateDrives(): Drive[] {
     const solvedDriveConfigs = this.solvedConfig.drives || [];
-    return solvedDriveConfigs.map((c, i) => this.generateDrive(c, i));
+    return solvedDriveConfigs.map((c) => this.generateDrive(c));
   }
 
-  private generateDrive(solvedDriveConfig: config.DriveElement, id: number): Drive {
-    // TODO: Use an index to associate a drive config with an unsolved drive config.
-    const driveConfig = (this.config.drives || [])[id];
+  private generateDrive(solvedDriveConfig: config.DriveElement): Drive {
+    const driveConfig = (this.config.drives || [])[solvedDriveConfig.index];
     return generateDrive(driveConfig, solvedDriveConfig);
   }
 }
