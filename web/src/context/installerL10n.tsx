@@ -23,7 +23,7 @@
 // cspell:ignore localectl setxkbmap xorg
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useCancellablePromise, locationReload, setLocationSearch } from "~/utils";
+import { locationReload, setLocationSearch } from "~/utils";
 import { useInstallerClientStatus } from "./installer";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
@@ -196,16 +196,15 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
   const { connected } = useInstallerClientStatus();
   const [language, setLanguage] = useState(undefined);
   const [keymap, setKeymap] = useState(undefined);
-  const { cancellablePromise } = useCancellablePromise();
 
   const syncBackendLanguage = useCallback(async () => {
-    const config = await cancellablePromise(fetchConfig());
+    const config = await fetchConfig();
     const backendLanguage = languageFromLocale(config.uiLocale);
     if (backendLanguage === language) return;
 
     // FIXME: fallback to en-US if the language is not supported.
-    await cancellablePromise(updateConfig({ uiLocale: languageToLocale(language) }));
-  }, [language, cancellablePromise]);
+    await updateConfig({ uiLocale: languageToLocale(language) });
+  }, [language]);
 
   const changeLanguage = useCallback(
     async (lang?: string) => {
