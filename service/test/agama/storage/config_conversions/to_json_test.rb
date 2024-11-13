@@ -464,6 +464,7 @@ shared_examples "with partitions" do |result_scope, config_scope|
     expect(partitions_json).to eq(
       [
         {
+          index:  0,
           search: {
             condition:  { name: "/dev/vda1" },
             ifNotFound: "error"
@@ -471,6 +472,7 @@ shared_examples "with partitions" do |result_scope, config_scope|
           alias:  "vda1"
         },
         {
+          index:  1,
           search: {
             condition:  { name: "/dev/vda2" },
             ifNotFound: "error"
@@ -648,15 +650,18 @@ describe Agama::Storage::ConfigConversions::ToJSON do
       it "generates the expected JSON for 'drives'" do
         drives_json = subject.convert[:drives]
 
-        default_drive_json = {
-          search:     { ifNotFound: "error", max: 1 },
-          partitions: []
-        }
-
         expect(drives_json).to eq(
           [
-            default_drive_json,
-            default_drive_json
+            {
+              index:      0,
+              search:     { ifNotFound: "error", max: 1 },
+              partitions: []
+            },
+            {
+              index:      1,
+              search:     { ifNotFound: "error", max: 1 },
+              partitions: []
+            }
           ]
         )
       end
@@ -752,11 +757,13 @@ describe Agama::Storage::ConfigConversions::ToJSON do
         expect(volume_groups_json).to eq(
           [
             {
+              index:           0,
               name:            "vg1",
               physicalVolumes: [],
               logicalVolumes:  []
             },
             {
+              index:           1,
               name:            "vg2",
               physicalVolumes: [],
               logicalVolumes:  []
@@ -912,12 +919,14 @@ describe Agama::Storage::ConfigConversions::ToJSON do
           expect(config_json[:logicalVolumes]).to eq(
             [
               {
-                name: "lv1",
-                pool: false
+                index: 0,
+                name:  "lv1",
+                pool:  false
               },
               {
-                name: "lv2",
-                pool: false
+                index: 1,
+                name:  "lv2",
+                pool:  false
               }
             ]
           )

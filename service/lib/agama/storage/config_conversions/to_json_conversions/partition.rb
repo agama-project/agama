@@ -51,6 +51,7 @@ module Agama
             return convert_delete_if_needed if config.delete_if_needed?
 
             {
+              index:      config.index,
               search:     convert_search,
               alias:      config.alias,
               encryption: convert_encryption,
@@ -63,6 +64,7 @@ module Agama
           # @return [Hash]
           def convert_delete
             {
+              index:  config.index,
               search: convert_search,
               delete: true
             }
@@ -71,6 +73,7 @@ module Agama
           # @return [Hash]
           def convert_delete_if_needed
             {
+              index:          config.index,
               search:         convert_search,
               size:           convert_size,
               deleteIfNeeded: true

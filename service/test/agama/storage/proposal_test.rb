@@ -325,6 +325,7 @@ describe Agama::Storage::Proposal do
                 boot:         { configure: false },
                 drives:       [
                   {
+                    index:      0,
                     search:     {
                       condition:  { name: "/dev/sda" },
                       ifNotFound: "error",

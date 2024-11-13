@@ -40,6 +40,7 @@ module Agama
           # @see Base#conversions
           def conversions
             {
+              index:           config.index,
               name:            config.name,
               extentSize:      config.extent_size&.to_i,
               physicalVolumes: convert_physical_volumes,

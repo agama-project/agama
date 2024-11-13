@@ -658,6 +658,7 @@ describe Agama::DBus::Storage::Manager do
                 },
                 drives:       [
                   {
+                    index:      0,
                     search:     {
                       condition:  { name: "/dev/sda" },
                       ifNotFound: "error",
@@ -665,6 +666,7 @@ describe Agama::DBus::Storage::Manager do
                     },
                     partitions: [
                       {
+                        index:      0,
                         filesystem: {
                           reuseIfPossible: false,
                           path:            "/",

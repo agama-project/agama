@@ -49,6 +49,7 @@ module Agama
           # @see Base#conversions
           def conversions
             {
+              index:      config.index,
               search:     convert_search,
               alias:      config.alias,
               encryption: convert_encryption,
