@@ -150,6 +150,13 @@
         <package name="xorg-x11-server"/>
         <package name="xorg-x11-fonts-core"/>
         <package name="xf86-input-libinput" />
+        <package name="xf86-input-wacom" arch="aarch64,x86_64,ppc64le"/>
+        <package name="xf86-video-amdgpu" arch="x86_64"/>
+        <package name="xf86-video-fbdev" arch="x86_64"/>
+        <package name="xf86-video-intel" arch="x86_64"/>
+        <package name="xf86-video-nv" arch="x86_64"/>
+        <package name="xf86-video-qxl" arch="x86_64"/>
+        <package name="xf86-video-vesa" arch="x86_64"/>
         <package name="psmisc"/>
         <package name="joe"/>
         <package name="checkmedia"/>
@@ -203,7 +210,7 @@
         <package name="ca-certificates-mozilla"/>
     </packages>
     <packages type="bootstrap" profiles="Leap,Leap-PXE">
-		<package name="Leap-release"/>
+        <package name="Leap-release"/>
     </packages>
     <packages type="bootstrap" profiles="openSUSE,openSUSE-PXE">
         <package name="openSUSE-release"/>
