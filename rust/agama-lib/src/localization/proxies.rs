@@ -42,6 +42,7 @@
 use zbus::proxy;
 #[proxy(
     default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Locale",
     interface = "org.opensuse.Agama1.Locale",
     assume_defaults = true
 )]
