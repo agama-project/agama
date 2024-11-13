@@ -23,66 +23,151 @@
 import * as model from "~/storage/model/config/partition";
 
 describe("#generate", () => {
-  it("returns a partition object from a partition section", () => {
+  it("returns the expeced partition object from a partition section", () => {
     expect(
-      model.generate({
-        search: "/dev/vda1",
-        delete: true,
-      }),
+      model.generate(
+        {
+          search: "*",
+          delete: true,
+        },
+        {
+          index: 1,
+          search: "/dev/vda1",
+          delete: true,
+        },
+      ),
     ).toEqual({
+      index: 1,
       name: "/dev/vda1",
       delete: true,
     });
 
     expect(
-      model.generate({
-        search: "/dev/vda1",
-        deleteIfNeeded: true,
-        size: 1024,
-      }),
+      model.generate(
+        {
+          search: "*",
+          deleteIfNeeded: true,
+        },
+        {
+          index: 0,
+          search: "/dev/vda1",
+          deleteIfNeeded: true,
+        },
+      ),
     ).toEqual({
+      index: 0,
       name: "/dev/vda1",
       deleteIfNeeded: true,
       resizeIfNeeded: false,
-      size: { min: 1024, max: 1024 },
+      resize: false,
+      size: undefined,
     });
 
     expect(
-      model.generate({
-        search: "/dev/vda1",
-        alias: "test",
-        filesystem: {
-          path: "/test",
-          type: {
-            btrfs: { snapshots: true },
-          },
+      model.generate(
+        {
+          search: "*",
+          deleteIfNeeded: true,
+          size: 1024,
         },
-        size: { min: 0, max: 2048 },
-      }),
+        {
+          index: 0,
+          search: "/dev/vda1",
+          deleteIfNeeded: true,
+          size: { min: 1024, max: 1024 },
+        },
+      ),
     ).toEqual({
+      index: 0,
+      name: "/dev/vda1",
+      deleteIfNeeded: true,
+      resizeIfNeeded: false,
+      resize: true,
+      size: { auto: false, min: 1024, max: 1024 },
+    });
+
+    expect(
+      model.generate(
+        {
+          search: "*",
+          deleteIfNeeded: true,
+          size: { min: 1024 },
+        },
+        {
+          index: 0,
+          search: "/dev/vda1",
+          deleteIfNeeded: true,
+          size: { min: 1024 },
+        },
+      ),
+    ).toEqual({
+      index: 0,
+      name: "/dev/vda1",
+      deleteIfNeeded: true,
+      resizeIfNeeded: true,
+      resize: false,
+      size: { auto: false, min: 1024 },
+    });
+
+    expect(
+      model.generate(
+        {
+          search: "/dev/vda1",
+          alias: "test",
+          filesystem: { path: "/test" },
+        },
+        {
+          index: 0,
+          search: "/dev/vda1",
+          alias: "test",
+          filesystem: {
+            path: "/test",
+            type: {
+              btrfs: { snapshots: true },
+            },
+          },
+          size: { min: 0, max: 2048 },
+        },
+      ),
+    ).toEqual({
+      index: 0,
       name: "/dev/vda1",
       alias: "test",
-      resizeIfNeeded: true,
+      resizeIfNeeded: false,
+      resize: false,
       filesystem: "btrfs",
       mountPath: "/test",
       snapshots: true,
-      size: { min: 0, max: 2048 },
+      size: { auto: true, min: 0, max: 2048 },
     });
 
     expect(
-      model.generate({
-        filesystem: {
-          path: "/test",
+      model.generate(
+        {
+          filesystem: { path: "/test" },
+          size: 1024,
         },
-      }),
+        {
+          index: 0,
+          filesystem: {
+            path: "/test",
+            type: {
+              btrfs: { snapshots: true },
+            },
+          },
+          size: { min: 1024, max: 1024 },
+        },
+      ),
     ).toEqual({
+      index: 0,
       name: undefined,
       alias: undefined,
       resizeIfNeeded: undefined,
-      filesystem: undefined,
+      resize: undefined,
+      filesystem: "btrfs",
       mountPath: "/test",
-      snapshots: undefined,
-      size: undefined,
+      snapshots: true,
+      size: { auto: false, min: 1024, max: 1024 },
     });
   });
 });

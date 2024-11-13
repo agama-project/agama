@@ -22,14 +22,16 @@
 
 import { config } from "~/api/storage/types";
 import * as checks from "~/api/storage/types/checks";
-import { Size, WithSize, generate as generateSize } from "~/storage/model/config/size";
+import { Size, generate as generateSize } from "~/storage/model/config/size";
 import { generateName, generateFilesystem, generateSnapshots } from "~/storage/model/config/common";
 
 export type Partition = {
+  index?: number;
   name?: string;
   alias?: string;
   delete?: boolean;
   deleteIfNeeded?: boolean;
+  resize?: boolean;
   resizeIfNeeded?: boolean;
   filesystem?: string;
   mountPath?: string;
@@ -52,64 +54,97 @@ export function isPartitionConfig(
   );
 }
 
-class PartitionGenerator {
-  private partitionConfig: PartitionConfig;
+type PartitionWithSizeConfig = config.RegularPartition | config.PartitionToDeleteIfNeeded;
 
-  constructor(partitionConfig: PartitionConfig) {
+function isPartitionWithSizeConfig(
+  partition: config.PartitionElement,
+): partition is PartitionWithSizeConfig {
+  return checks.isRegularPartition(partition) || checks.isPartitionToDeleteIfNeeded(partition);
+}
+
+class PartitionGenerator {
+  private partitionConfig: config.PartitionElement | undefined;
+  private solvedPartitionConfig: PartitionConfig;
+
+  constructor(
+    partitionConfig: config.PartitionElement | undefined,
+    solvedPartitionConfig: PartitionConfig,
+  ) {
     this.partitionConfig = partitionConfig;
+    this.solvedPartitionConfig = solvedPartitionConfig;
   }
 
   generate(): Partition {
-    if (checks.isRegularPartition(this.partitionConfig)) {
-      return this.fromRegularPartition(this.partitionConfig);
-    } else if (checks.isPartitionToDelete(this.partitionConfig)) {
-      return this.fromPartitionToDelete(this.partitionConfig);
-    } else if (checks.isPartitionToDeleteIfNeeded(this.partitionConfig)) {
-      return this.fromPartitionToDeleteIfNeeded(this.partitionConfig);
+    if (checks.isRegularPartition(this.solvedPartitionConfig)) {
+      return this.fromRegularPartition(this.solvedPartitionConfig);
+    } else if (checks.isPartitionToDelete(this.solvedPartitionConfig)) {
+      return this.fromPartitionToDelete(this.solvedPartitionConfig);
+    } else if (checks.isPartitionToDeleteIfNeeded(this.solvedPartitionConfig)) {
+      return this.fromPartitionToDeleteIfNeeded(this.solvedPartitionConfig);
     }
   }
 
-  private fromRegularPartition(partitionConfig: config.RegularPartition): Partition {
+  private fromRegularPartition(solvedPartitionConfig: config.RegularPartition): Partition {
     return {
-      name: generateName(partitionConfig),
-      alias: partitionConfig.alias,
-      resizeIfNeeded: this.generateResizeIfNeeded(partitionConfig),
-      filesystem: generateFilesystem(partitionConfig),
-      mountPath: partitionConfig.filesystem?.path,
-      snapshots: generateSnapshots(partitionConfig),
-      size: generateSize(partitionConfig),
+      index: this.solvedPartitionConfig.index,
+      name: generateName(solvedPartitionConfig),
+      alias: solvedPartitionConfig.alias,
+      resize: this.generateResize(),
+      resizeIfNeeded: this.generateResizeIfNeeded(),
+      filesystem: generateFilesystem(solvedPartitionConfig),
+      mountPath: solvedPartitionConfig.filesystem?.path,
+      snapshots: generateSnapshots(solvedPartitionConfig),
+      size: this.generateSize(),
     };
   }
 
-  private fromPartitionToDelete(partitionConfig: config.PartitionToDelete): Partition {
+  private fromPartitionToDelete(solvedPartitionConfig: config.PartitionToDelete): Partition {
     return {
-      name: generateName(partitionConfig),
+      index: this.solvedPartitionConfig.index,
+      name: generateName(solvedPartitionConfig),
       delete: true,
     };
   }
 
   private fromPartitionToDeleteIfNeeded(
-    partitionConfig: config.PartitionToDeleteIfNeeded,
+    solvedPartitionConfig: config.PartitionToDeleteIfNeeded,
   ): Partition {
     return {
-      name: generateName(partitionConfig),
+      index: this.solvedPartitionConfig.index,
+      name: generateName(solvedPartitionConfig),
       deleteIfNeeded: true,
-      resizeIfNeeded: this.generateResizeIfNeeded(partitionConfig),
-      size: generateSize(partitionConfig),
+      resize: this.generateResize(),
+      resizeIfNeeded: this.generateResizeIfNeeded(),
+      size: this.generateSize(),
     };
   }
 
-  private generateResizeIfNeeded<TypeWithSize extends WithSize>(
-    partitionConfig: TypeWithSize,
-  ): boolean | undefined {
-    if (!partitionConfig.size) return;
+  private generateSize(): Size | undefined {
+    if (!isPartitionWithSizeConfig(this.solvedPartitionConfig)) return;
 
-    const size = generateSize(partitionConfig);
-    return size.min !== undefined && size.min !== size.max;
+    return generateSize(this.partitionConfig, this.solvedPartitionConfig);
+  }
+
+  // TODO: return false if the size is equal to the size of the system device.
+  private generateResize(): boolean | undefined {
+    if (this.solvedPartitionConfig.search === undefined) return;
+
+    const size = this.generateSize();
+    return size !== undefined && !size.auto && size.min !== undefined && size.min === size.max;
+  }
+
+  private generateResizeIfNeeded(): boolean | undefined {
+    if (this.solvedPartitionConfig.search === undefined) return;
+
+    const size = this.generateSize();
+    return size !== undefined && !size.auto && size.min !== size.max;
   }
 }
 
-export function generate(config: PartitionConfig): Partition {
-  const generator = new PartitionGenerator(config);
+export function generate(
+  partitionConfig: config.PartitionElement | undefined,
+  solvedPartitionConfig: PartitionConfig,
+): Partition {
+  const generator = new PartitionGenerator(partitionConfig, solvedPartitionConfig);
   return generator.generate();
 }
