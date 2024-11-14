@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Thu Nov 14 14:42:46 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
-- Fix wireless authentication initialization as well as the
+- Fix wireless authentication initialization and
   invalidate the cached query in case of connected
   (gh#agama-project/agama#1753).
 
