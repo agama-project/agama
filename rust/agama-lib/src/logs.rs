@@ -38,7 +38,7 @@ const DEFAULT_COMMANDS: [(&str, &str); 5] = [
     ("journalctl -u agama-auto", "agama-auto"),
     ("journalctl -u agama-web-server", "agama-web-server"),
     ("journalctl --dmesg", "dmesg"),
-    ("rpm -qa", "rpm-qa" ),
+    ("rpm -qa", "rpm-qa"),
 ];
 
 const DEFAULT_PATHS: [&str; 13] = [
