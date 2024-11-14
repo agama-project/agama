@@ -1,0 +1,96 @@
+{
+  "title": "Config",
+  "description": "Config model",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "drives": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/drive" }
+    }
+  },
+  "$defs": {
+    "drive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "alias": { "type": "string" },
+        "mountPath": { "type": "string" },
+        "filesystem": { "$ref": "#/$defs/filesystem" },
+        "spacePolicy": { "$ref": "#/$defs/spacePolicy" },
+        "ptableType": { "$ref": "#/$defs/ptableType" },
+        "partitions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/partition" }
+        }
+      }
+    },
+    "partition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "alias": { "type": "string" },
+        "id": { "$ref": "#/$defs/partitionId" },
+        "mountPath": { "type": "string" },
+        "filesystem": { "$ref": "#/$defs/filesystem" },
+        "size": { "$ref": "#/$defs/size" },
+        "delete": { "type": "boolean" },
+        "deleteIfNeeded": { "type": "boolean" },
+        "resize": { "type": "boolean" },
+        "resizeIfNeeded": { "type": "boolean" }
+      }
+    },
+    "spacePolicy": {
+      "enum": ["delete", "resize", "keep", "custom"]
+    },
+    "ptableType": {
+      "enum": ["gpt", "msdos", "dasd"]
+    },
+    "partitionId": {
+      "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
+    },
+    "filesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default"],
+      "properties": {
+        "default": { "type": "boolean" },
+        "type": { "$ref": "#/$defs/filesystemType" },
+        "snapshots": { "type": "boolean" }
+      }
+    },
+    "filesystemType": {
+      "enum": [
+        "bcachefs",
+        "btrfs",
+        "exfat",
+        "ext2",
+        "ext3",
+        "ext4",
+        "f2fs",
+        "jfs",
+        "nfs",
+        "nilfs2",
+        "ntfs",
+        "reiserfs",
+        "swap",
+        "tmpfs",
+        "vfat",
+        "xfs"
+      ]
+    },
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default", "min"],
+      "properties": {
+        "default": { "type": "boolean" },
+        "min": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
