@@ -45,30 +45,33 @@ jest.mock("~/api/l10n", () => ({
 }));
 
 const client = {
+  isConnected: jest.fn().mockResolvedValue(true),
+  isRecoverable: jest.fn(),
   onConnect: jest.fn(),
   onDisconnect: jest.fn(),
+  onEvent: jest.fn(),
 };
 
 jest.mock("~/languages.json", () => ({
-  "es-ar": "Español (Argentina)",
-  "cs-cz": "čeština",
-  "en-us": "English (US)",
-  "es-es": "Español",
+  "es-AR": "Español (Argentina)",
+  "cs-CZ": "čeština",
+  "en-US": "English (US)",
+  "es-ES": "Español",
 }));
 
 // Helper component that displays a translated message depending on the
 // agamaLang value.
 const TranslatedContent = () => {
   const text = {
-    "cs-cz": "ahoj",
-    "en-us": "hello",
-    "es-es": "hola",
-    "es-ar": "hola!",
+    "cs-CZ": "ahoj",
+    "en-US": "hello",
+    "es-ES": "hola",
+    "es-AR": "hola!",
   };
 
   const regexp = /agamaLang=([^;]+)/;
   const found = document.cookie.match(regexp);
-  if (!found) return <>{text["en-us"]}</>;
+  if (!found) return <>{text["en-US"]}</>;
 
   const [, lang] = found;
   return <>{text[lang]}</>;
@@ -80,8 +83,7 @@ describe("InstallerL10nProvider", () => {
     jest.spyOn(utils, "setLocationSearch");
 
     mockUpdateConfigFn.mockResolvedValue(true);
-    delete window.navigator;
-    window.navigator = { languages: ["es-es", "cs-cz"] };
+    jest.spyOn(window.navigator, "languages", "get").mockReturnValue(["es-ES", "cs-CZ"]);
   });
 
   // remove the language cookie after each test
@@ -97,7 +99,7 @@ describe("InstallerL10nProvider", () => {
 
     describe("when the language is already set", () => {
       beforeEach(() => {
-        document.cookie = "agamaLang=en-us; path=/;";
+        document.cookie = "agamaLang=en-US; path=/;";
         mockFetchConfigFn.mockResolvedValue({ uiLocale: "en_US.UTF-8" });
       });
 
@@ -119,9 +121,8 @@ describe("InstallerL10nProvider", () => {
 
     describe("when the language is set to an unsupported language", () => {
       beforeEach(() => {
-        document.cookie = "agamaLang=de-de; path=/;";
-        mockFetchConfigFn.mockResolvedValueOnce({ uiLocale: "de_DE.UTF-8" });
-        mockFetchConfigFn.mockResolvedValue({ uiLocale: "es_ES.UTF-8" });
+        document.cookie = "agamaLang=de-DE; path=/;";
+        mockFetchConfigFn.mockResolvedValue({ uiLocale: "de_DE.UTF-8" });
       });
 
       it("uses the first supported language from the browser", async () => {
@@ -181,7 +182,7 @@ describe("InstallerL10nProvider", () => {
 
       describe("when the browser language does not contain the full locale", () => {
         beforeEach(() => {
-          window.navigator = { languages: ["es", "cs-cz"] };
+          jest.spyOn(window.navigator, "languages", "get").mockReturnValue(["es", "cs-CZ"]);
         });
 
         it("sets the first which language matches", async () => {
@@ -214,9 +215,9 @@ describe("InstallerL10nProvider", () => {
       history.replaceState(history.state, null, `http://localhost/?lang=cs-CZ`);
     });
 
-    describe("when the language is already set to 'cs-cz'", () => {
+    describe("when the language is already set to 'cs-CZ'", () => {
       beforeEach(() => {
-        document.cookie = "agamaLang=cs-cz; path=/;";
+        document.cookie = "agamaLang=cs-CZ; path=/;";
         mockFetchConfigFn.mockResolvedValue({ uiLocale: "cs_CZ.UTF-8" });
       });
 
@@ -233,21 +234,19 @@ describe("InstallerL10nProvider", () => {
         await screen.findByText("ahoj");
         expect(mockUpdateConfigFn).not.toHaveBeenCalled();
 
-        expect(document.cookie).toMatch(/agamaLang=cs-cz/);
+        expect(document.cookie).toMatch(/agamaLang=cs-CZ/);
         expect(utils.locationReload).not.toHaveBeenCalled();
         expect(utils.setLocationSearch).not.toHaveBeenCalled();
       });
     });
 
-    describe("when the language is set to 'en-us'", () => {
+    describe("when the language is set to 'en-US'", () => {
       beforeEach(() => {
-        document.cookie = "agamaLang=en-us; path=/;";
-        mockFetchConfigFn.mockResolvedValueOnce({ uiLocale: "en_US" });
-        mockFetchConfigFn.mockResolvedValueOnce({ uiLocale: "cs_CZ" });
-        mockUpdateConfigFn.mockResolvedValue();
+        document.cookie = "agamaLang=en-US; path=/;";
+        mockFetchConfigFn.mockResolvedValue({ uiLocale: "en_US" });
       });
 
-      it("sets the 'cs-cz' language and reloads", async () => {
+      it("sets the 'cs-CZ' language and reloads", async () => {
         render(
           <InstallerClientProvider client={client}>
             <InstallerL10nProvider>
@@ -255,8 +254,6 @@ describe("InstallerL10nProvider", () => {
             </InstallerL10nProvider>
           </InstallerClientProvider>,
         );
-
-        await waitFor(() => expect(utils.setLocationSearch).toHaveBeenCalledWith("lang=cs-cz"));
 
         // renders again after reloading
         render(
@@ -274,12 +271,10 @@ describe("InstallerL10nProvider", () => {
 
     describe("when the language is not set", () => {
       beforeEach(() => {
-        mockFetchConfigFn.mockResolvedValueOnce({ uiLocale: "en_US.UTF-8" });
-        mockFetchConfigFn.mockResolvedValue({ uiLocale: "cs_CZ.UTF-8" });
-        mockUpdateConfigFn.mockResolvedValue();
+        mockFetchConfigFn.mockResolvedValue({ uiLocale: "en_US.UTF-8" });
       });
 
-      it("sets the 'cs-cz' language and reloads", async () => {
+      it("sets the 'cs-CZ' language and reloads", async () => {
         render(
           <InstallerClientProvider client={client}>
             <InstallerL10nProvider>
@@ -287,8 +282,6 @@ describe("InstallerL10nProvider", () => {
             </InstallerL10nProvider>
           </InstallerClientProvider>,
         );
-
-        await waitFor(() => expect(utils.setLocationSearch).toHaveBeenCalledWith("lang=cs-cz"));
 
         // reload the component
         render(

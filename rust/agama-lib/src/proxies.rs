@@ -33,6 +33,6 @@ mod issues;
 pub use issues::IssuesProxy;
 
 mod locale;
-pub use locale::LocaleProxy;
+pub use locale::LocaleMixinProxy;
 
 pub mod jobs;

@@ -35,7 +35,7 @@ module Agama
         include Yast::I18n
         include Yast::Logger
 
-        LOCALE_INTERFACE = "org.opensuse.Agama1.Locale"
+        LOCALE_INTERFACE = "org.opensuse.Agama1.LocaleMixin"
 
         def self.included(base)
           base.class_eval do

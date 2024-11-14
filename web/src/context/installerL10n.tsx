@@ -21,10 +21,9 @@
  */
 
 // cspell:ignore localectl setxkbmap xorg
-// @ts-check
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useCancellablePromise, locationReload, setLocationSearch } from "~/utils";
+import { locationReload, setLocationSearch } from "~/utils";
 import { useInstallerClientStatus } from "./installer";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
@@ -34,16 +33,15 @@ const L10nContext = React.createContext(null);
 
 /**
  * Installer localization context.
- *
- * @typedef {object} L10nContext
- * @property {string|undefined} language - Current language.
- * @property {string|undefined} keymap - Current keymap.
- * @property {(language: string) => Promise<void>} changeLanguage - Function to change the current language.
- * @property {(keymap: string) => Promise<void>} changeKeymap - Function to change the current keymap.
- *
- * @return {L10nContext}
  */
-function useInstallerL10n() {
+interface L10nContext {
+  language: string | undefined;
+  keymap: string | undefined;
+  changeLanguage: (language: string) => Promise<void>;
+  changeKeymap: (keymap: string) => Promise<void>;
+}
+
+function useInstallerL10n(): L10nContext {
   const context = React.useContext(L10nContext);
 
   if (!context) {
@@ -58,17 +56,14 @@ function useInstallerL10n() {
  *
  * It takes the language from the agamaLang cookie.
  *
- * @return {string|undefined} Undefined if language is not set.
+ * @return Undefined if language is not set.
  */
-function agamaLanguage() {
+function agamaLanguage(): string | undefined {
   // language from cookie, empty string if not set (regexp taken from Cockpit)
   // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
-  const languageString = decodeURIComponent(
+  return decodeURIComponent(
     document.cookie.replace(/(?:(?:^|.*;\s*)agamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"),
   );
-  if (languageString) {
-    return languageString.toLowerCase();
-  }
 }
 
 /**
@@ -76,10 +71,10 @@ function agamaLanguage() {
  *
  * Automatically converts the language from xx_XX to xx-xx, as it is the one used by Agama.
  *
- * @param {string} language - The new locale (e.g., "cs", "cs_CZ").
- * @return {boolean} True if the locale was changed.
+ * @param language - The new locale (e.g., "cs", "cs_CZ").
+ * @return True if the locale was changed.
  */
-function storeAgamaLanguage(language) {
+function storeAgamaLanguage(language: string): boolean {
   const current = agamaLanguage();
   if (current === language) return false;
 
@@ -87,15 +82,6 @@ function storeAgamaLanguage(language) {
   const cookie =
     "agamaLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
   document.cookie = cookie;
-
-  // for backward compatibility, CockpitLang cookie is needed to load correct po.js content from Cockpit
-  // TODO: remove after dropping Cockpit completely
-  const cockpit_cookie =
-    "CockpitLang=" +
-    encodeURIComponent(language) +
-    "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
-  document.cookie = cockpit_cookie;
-  window.localStorage.setItem("cockpit.lang", language);
 
   return true;
 }
@@ -105,29 +91,29 @@ function storeAgamaLanguage(language) {
  *
  * Query supports 'xx-xx', 'xx_xx', 'xx-XX' and 'xx_XX' formats.
  *
- * @return {string|undefined} Undefined if not set.
+ * @return Undefined if not set.
  */
-function languageFromQuery() {
+function languageFromQuery(): string | undefined {
   const lang = new URLSearchParams(window.location.search).get("lang");
   if (!lang) return undefined;
 
-  const [language, country] = lang.toLowerCase().split(/[-_]/);
-  return country ? `${language}-${country}` : language;
+  const [language, country] = lang.split(/[-_]/);
+  return country ? `${language.toLowerCase()}-${country.toUpperCase()}` : language;
 }
 
 /**
  * Generates a RFC 5646 (or BCP 78) language tag from a locale.
  *
- * @param {string} locale
- * @return {string}
+ * @param locale
+ * @return RFC 5646 language tag (e.g., "en-US")
  *
  * @private
  * @see https://datatracker.ietf.org/doc/html/rfc5646
  * @see https://www.rfc-editor.org/info/bcp78
  */
-function languageFromLocale(locale) {
+function languageFromLocale(locale: string): string {
   const [language] = locale.split(".");
-  return language.replace("_", "-").toLowerCase();
+  return language.replace("_", "-");
 }
 
 /**
@@ -135,35 +121,26 @@ function languageFromLocale(locale) {
  *
  * It forces the encoding to "UTF-8".
  *
- * @param {string} language
- * @return {string}
+ * @param language as a RFC 5646 language tag (e.g., "en-US")
+ * @return locale (e.g., "en_US.UTF-8")
  *
  * @private
  * @see https://datatracker.ietf.org/doc/html/rfc5646
  * @see https://www.rfc-editor.org/info/bcp78
  */
-function languageToLocale(language) {
+function languageToLocale(language: string): string {
   const [lang, country] = language.split("-");
   const locale = country ? `${lang}_${country.toUpperCase()}` : lang;
   return `${locale}.UTF-8`;
 }
 
 /**
- * List of RFC 5646 (or BCP 78) language tags from the navigator.
- *
- * @return {Array<string>}
- */
-function navigatorLanguages() {
-  return navigator.languages.map((l) => l.toLowerCase());
-}
-
-/**
  * Returns the first supported language from the given list.
  *
- * @param {Array<string>} languages
- * @return {string|undefined} Undefined if none of the given languages is supported.
+ * @param languages - list of RFC 5646 language tags (e.g., ["en-US", "en"]) to check
+ * @return Undefined if none of the given languages is supported.
  */
-function findSupportedLanguage(languages) {
+function findSupportedLanguage(languages: Array<string>): string | undefined {
   const supported = Object.keys(supportedLanguages);
 
   for (const candidate of languages) {
@@ -187,9 +164,9 @@ function findSupportedLanguage(languages) {
  * It uses the window.location.replace instead of the reload function synchronizing the "lang"
  * argument from the URL if present.
  *
- * @param {string} newLanguage
+ * @param newLanguage - new language to use.
  */
-function reload(newLanguage) {
+function reload(newLanguage: string) {
   const query = new URLSearchParams(window.location.search);
   if (query.has("lang") && query.get("lang") !== newLanguage) {
     query.set("lang", newLanguage);
@@ -210,55 +187,44 @@ function reload(newLanguage) {
  * The format of the language tag in the query parameter follows the
  * [RFC 5646](https://datatracker.ietf.org/doc/html/rfc5646) specification.
  *
- * @param {object} props
- * @param {React.ReactNode} [props.children] - Content to display within the wrapper.
+ * @param props
+ * @param [props.children] - Content to display within the wrapper.
  *
  * @see useInstallerL10n
  */
-function InstallerL10nProvider({ children }) {
+function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
   const { connected } = useInstallerClientStatus();
   const [language, setLanguage] = useState(undefined);
   const [keymap, setKeymap] = useState(undefined);
-  const [backendPending, setBackendPending] = useState(false);
-  const { cancellablePromise } = useCancellablePromise();
 
-  const storeInstallerLanguage = useCallback(
-    async (newLanguage) => {
-      if (!connected) {
-        setBackendPending(true);
-        return false;
-      }
+  const syncBackendLanguage = useCallback(async () => {
+    const config = await fetchConfig();
+    const backendLanguage = languageFromLocale(config.uiLocale);
+    if (backendLanguage === language) return;
 
-      const config = await cancellablePromise(fetchConfig());
-      const currentLanguage = languageFromLocale(config.uiLocale);
-
-      if (currentLanguage !== newLanguage) {
-        // FIXME: fallback to en-US if the language is not supported.
-        await cancellablePromise(updateConfig({ uiLocale: languageToLocale(newLanguage) }));
-        return true;
-      }
-
-      return false;
-    },
-    [connected, cancellablePromise],
-  );
+    // FIXME: fallback to en-US if the language is not supported.
+    await updateConfig({ uiLocale: languageToLocale(language) });
+  }, [language]);
 
   const changeLanguage = useCallback(
-    async (lang) => {
+    async (lang?: string) => {
       const wanted = lang || languageFromQuery();
 
-      if (wanted === "xx" || wanted === "xx-xx") {
+      // Just for development purposes
+      if (wanted === "xx" || wanted === "xx-XX") {
         agama.language = wanted;
         setLanguage(wanted);
         return;
       }
 
-      const current = agamaLanguage();
-      const candidateLanguages = [wanted, current].concat(navigatorLanguages()).filter((l) => l);
-      const newLanguage = findSupportedLanguage(candidateLanguages) || "en-us";
-
-      let mustReload = storeAgamaLanguage(newLanguage);
-      mustReload = (await storeInstallerLanguage(newLanguage)) || mustReload;
+      const candidateLanguages = [
+        wanted,
+        wanted?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
+        agamaLanguage(),
+        ...navigator.languages,
+      ].filter((l) => l);
+      const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
+      const mustReload = storeAgamaLanguage(newLanguage);
 
       if (mustReload) {
         reload(newLanguage);
@@ -266,15 +232,15 @@ function InstallerL10nProvider({ children }) {
         setLanguage(newLanguage);
       }
     },
-    [storeInstallerLanguage, setLanguage],
+    [setLanguage],
   );
 
   const changeKeymap = useCallback(
-    async (id) => {
+    async (id: string) => {
       if (!connected) return;
 
       setKeymap(id);
-      updateConfig({ uiKeymap: id });
+      await updateConfig({ uiKeymap: id });
     },
     [setKeymap, connected],
   );
@@ -284,14 +250,14 @@ function InstallerL10nProvider({ children }) {
   }, [changeLanguage, language]);
 
   useEffect(() => {
-    if (!connected || !backendPending) return;
+    if (!connected || !language) return;
 
-    storeInstallerLanguage(language);
-    setBackendPending(false);
-  }, [connected, language, backendPending, storeInstallerLanguage]);
+    syncBackendLanguage();
+  }, [connected, language, syncBackendLanguage]);
 
   useEffect(() => {
     if (!connected) return;
+
     fetchConfig().then((c) => setKeymap(c.uiKeymap));
   }, [setKeymap, connected]);
 
