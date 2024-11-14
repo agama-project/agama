@@ -100,6 +100,7 @@ describe Agama::Storage::ConfigSolver do
   end
 
   let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
+  let(:disk_analyzer) { nil }
 
   before do
     mock_storage(devicegraph: scenario)
@@ -109,7 +110,7 @@ describe Agama::Storage::ConfigSolver do
       .and_return(true)
   end
 
-  subject { described_class.new(devicegraph, product_config) }
+  subject { described_class.new(devicegraph, product_config, disk_analyzer: disk_analyzer) }
 
   describe "#solve" do
     let(:scenario) { "empty-hd-50GiB.yaml" }
@@ -572,6 +573,31 @@ describe Agama::Storage::ConfigSolver do
       expect(search2.device.name).to eq("/dev/vdb")
       expect(search3.solved?).to eq(true)
       expect(search3.device.name).to eq("/dev/vdc")
+    end
+
+    context "and any of the devices are excluded from the list of candidate devices" do
+      let(:disk_analyzer) { instance_double(Y2Storage::DiskAnalyzer) }
+      before do
+        allow(disk_analyzer).to receive(:candidate_disks).and_return [
+          devicegraph.find_by_name("/dev/vdb"), devicegraph.find_by_name("/dev/vdc")
+        ]
+      end
+
+      it "sets the first unassigned candidate devices to the drive" do
+        subject.solve(config)
+        searches = config.drives.map(&:search)
+        expect(searches[0].solved?).to eq(true)
+        expect(searches[0].device.name).to eq("/dev/vdb")
+        expect(searches[1].solved?).to eq(true)
+        expect(searches[1].device.name).to eq("/dev/vdc")
+      end
+
+      it "does not set devices that are not installation candidates" do
+        subject.solve(config)
+        searches = config.drives.map(&:search)
+        expect(searches[2].solved?).to eq(true)
+        expect(searches[2].device).to be_nil
+      end
     end
 
     context "and there is not unassigned device" do

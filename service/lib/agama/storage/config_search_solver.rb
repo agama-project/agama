@@ -23,10 +23,12 @@ module Agama
   module Storage
     # Solver for the search configs.
     class ConfigSearchSolver
-      # @param devicegraph [Devicegraph] used to find the corresponding devices that will get
-      #   associated to each search element.
-      def initialize(devicegraph)
+      # @param devicegraph [Y2Storage::Devicegraph] used to find the corresponding devices that
+      #   will get associated to each search element.
+      # @param analyzer [Y2Storage::DiskAnalyzer, nil] optionally used to filter candidate disks
+      def initialize(devicegraph, analyzer)
         @devicegraph = devicegraph
+        @disk_analyzer = analyzer
       end
 
       # Solves all the search configs within a given config.
@@ -41,8 +43,11 @@ module Agama
 
     private
 
-      # @return [Devicegraph]
+      # @return [Y2Storage::Devicegraph]
       attr_reader :devicegraph
+
+      # @return [Y2Storage::DiskAnalyzer, nil]
+      attr_reader :disk_analyzer
 
       # @return [Array<Integer>] SIDs of the devices that are already associated to another search.
       attr_reader :sids
@@ -117,7 +122,17 @@ module Agama
       def find_drives(search_config)
         candidates = candidate_devices(search_config, default: devicegraph.blk_devices)
         candidates.select! { |d| d.is?(:disk_device, :stray_blk_device) }
+        filter_by_disk_analyzer(candidates)
         next_unassigned_devices(candidates, search_config)
+      end
+
+      # @see #find_drives
+      # @param devices [Array<Y2Storage::Device>] this argument is modified
+      def filter_by_disk_analyzer(devices)
+        return unless disk_analyzer
+
+        candidate_sids = disk_analyzer.candidate_disks.map(&:sid)
+        devices.select! { |d| candidate_sids.include?(d.sid) }
       end
 
       # Finds the partitions matching the given search config, if any
