@@ -37,9 +37,13 @@ const Content = ({ children }) => (
 
 /**
  * Text explaining the storage proposal
+ *
+ * TODO: The current implementation asumes there are only drives and no other kind of devices like
+ * LVM volume groups or MD raids. Support for more cases (like LVM installation) will be added as
+ * the rest of the interface is also adapted.
  */
 export default function StorageSection() {
-  const drives = useConfigDevices().filter((d) => d.name);
+  const drives = useConfigDevices();
   const devices = useDevices("system", { suspense: true });
 
   const label = (drive) => {
