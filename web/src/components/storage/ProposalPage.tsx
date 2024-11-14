@@ -27,7 +27,6 @@ import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
-import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 import EncryptionField from "~/components/storage/EncryptionField"
 import { _ } from "~/i18n";
 import { toValidationError } from "~/utils";
@@ -58,7 +57,6 @@ export const NOT_AFFECTED = {
   // the ProposalResultSection is refreshed always
   InstallationDeviceField: [CHANGING.ENCRYPTION, CHANGING.BOOT, CHANGING.POLICY, CHANGING.VOLUMES],
   PartitionsField: [CHANGING.ENCRYPTION, CHANGING.POLICY],
-  ProposalActionsSummary: [CHANGING.ENCRYPTION, CHANGING.TARGET],
 };
 
 export default function ProposalPage() {
