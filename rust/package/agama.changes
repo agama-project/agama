@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 14 14:45:47 UTC 2024 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Get some wireless settings as optional in order to not break the
+  connections reader (gh#agama-project/agama#1753).
+
+-------------------------------------------------------------------
 Wed Nov 13 12:03:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Properly update the localization settings of the D-Bus services

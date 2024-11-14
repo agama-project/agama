@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 14 14:42:46 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix wireless authentication initialization as well as the
+  invalidate the cached query in case of connected
+  (gh#agama-project/agama#1753).
+
+-------------------------------------------------------------------
 Wed Nov 13 12:06:41 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Several translation fixes (gh#agama-project/agama#1746):
@@ -20,7 +27,7 @@ Tue Nov  5 11:33:12 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix a crash when editing a network connection containing an
   additional IP address (gh#agama-project/agama#1728).
-  
+
 -------------------------------------------------------------------
 Mon Nov  4 20:32:29 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
