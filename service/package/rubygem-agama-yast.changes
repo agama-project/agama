@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 14 15:34:17 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Storage: fixed bug when existing partitions were searched at the
+  config but not deleted or resized (gh#agama-project/agama#1767).
+
+-------------------------------------------------------------------
 Thu Nov 14 13:26:23 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Storage: honor the candidate devices from DiskAnalyzer when
