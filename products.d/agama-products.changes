@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 12 08:19:51 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
+
+- Add SLES for SAP Application product for SLE based products
+  (gh#agama-project/agama/#1764)
+
+-------------------------------------------------------------------
 Fri Nov  8 13:20:10 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Shorten Leap 16.0 installation_labels
