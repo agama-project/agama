@@ -88,13 +88,22 @@ module Y2Storage
       # @return [Array<Y2Storage::SpaceActions::Resize>]
       def resize_actions(config)
         partition_configs = partitions(config).select(&:found_device).select(&:size)
-        partition_configs.map do |part|
-          # Resize actions contain information that is potentially useful for the SpaceMaker even
-          # when they are only about growing and not shrinking
-          min = current_size?(part, :min) ? nil : part.size.min
-          max = current_size?(part, :max) ? nil : part.size.max
-          Y2Storage::SpaceActions::Resize.new(part.found_device.name, min_size: min, max_size: max)
-        end.compact
+        # Resize actions contain information that is potentially useful for the SpaceMaker even
+        # when they are only about growing and not shrinking
+        partition_configs.map { |p| resize_action(p) }.compact
+      end
+
+      # @see #resize_actions
+      #
+      # @param part [Agama::Storage::Configs::Partition]
+      # @return [Y2Storage::SpaceActions::Resize, nil]
+      def resize_action(part)
+        min = current_size?(part, :min) ? nil : part.size.min
+        max = current_size?(part, :max) ? nil : part.size.max
+        # If both min and max are equal to the current device size, there is nothing to do
+        return unless min || max
+
+        Y2Storage::SpaceActions::Resize.new(part.found_device.name, min_size: min, max_size: max)
       end
 
       # @see #resize_actions
