@@ -870,18 +870,18 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<WirelessCo
         .iter()
         .map(|u| u.downcast_ref::<u8>())
         .collect::<Result<Vec<u8>, _>>()?;
+
     let mut wireless_config = WirelessConfig {
         mode: NmWirelessMode(mode).try_into()?,
         ssid: SSID(ssid),
         ..Default::default()
     };
 
-    if let Ok(band) = get_property::<String>(wireless, "band") {
+    if let Some(band) = get_optional_property::<String>(wireless, "band")? {
         wireless_config.band = WirelessBand::try_from(band.as_str()).ok();
     }
-    wireless_config.channel = get_property(wireless, "channel")?;
 
-    if let Ok(bssid) = get_property::<zvariant::Array>(wireless, "bssid") {
+    if let Some(bssid) = get_optional_property::<zvariant::Array>(wireless, "bssid")? {
         let bssid: Vec<u8> = bssid
             .iter()
             .map(|u| u.downcast_ref::<u8>())
@@ -897,7 +897,13 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<WirelessCo
         ));
     }
 
-    wireless_config.hidden = get_property(wireless, "hidden")?;
+    if let Some(channel) = get_optional_property(wireless, "channel")? {
+        wireless_config.channel = channel;
+    }
+
+    if let Some(hidden) = get_optional_property(wireless, "hidden")? {
+        wireless_config.hidden = hidden;
+    }
 
     if let Some(security) = conn.get(WIRELESS_SECURITY_KEY) {
         let key_mgmt: String = get_property(security, "key-mgmt")?;
@@ -961,7 +967,10 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<WirelessCo
                 .collect::<Result<Vec<WPAProtocolVersion>, InvalidWPAProtocolVersion>>()?;
             wireless_config.wpa_protocol_versions = wpa_protocol_versions
         }
-        wireless_config.pmf = get_property(security, "pmf")?;
+
+        if let Some(pmf) = get_optional_property(security, "pmf")? {
+            wireless_config.pmf = pmf;
+        }
     }
 
     Ok(Some(wireless_config))
