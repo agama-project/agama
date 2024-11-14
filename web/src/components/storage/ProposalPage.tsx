@@ -57,7 +57,6 @@ export const NOT_AFFECTED = {
   // the ProposalResultSection is refreshed always
   InstallationDeviceField: [CHANGING.ENCRYPTION, CHANGING.BOOT, CHANGING.POLICY, CHANGING.VOLUMES],
   PartitionsField: [CHANGING.ENCRYPTION, CHANGING.POLICY],
-  ProposalActionsSummary: [CHANGING.ENCRYPTION, CHANGING.TARGET],
 };
 
 export default function ProposalPage() {
