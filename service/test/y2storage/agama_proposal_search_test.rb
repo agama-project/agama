@@ -214,5 +214,30 @@ describe Y2Storage::AgamaProposal do
         end
       end
     end
+
+    context "when searching existing partitions but not specifying any action on them" do
+      let(:config_json) do
+        {
+          boot:   { configure: false },
+          drives: [
+            {
+              search:     "/dev/vda",
+              partitions: [
+                { search: "*" },
+                { size: "20 GiB", filesystem: { path: "/" } }
+              ]
+            }
+          ]
+        }
+      end
+
+      # Regression test. In the past the proposal tried to resize some partitions due to the
+      # search "*" without actions.
+      it "no partitions are deleted or resized" do
+        expect_any_instance_of(Y2Storage::Partition).to_not receive(:detect_resize_info)
+        # There is no way to make 20 GiB fit without resizing or deleting
+        expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+      end
+    end
   end
 end
