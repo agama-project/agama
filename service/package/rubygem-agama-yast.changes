@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Allow using encrypted passord for root and the first user
+  (gh#agama-project/agama#1771)
+
+-------------------------------------------------------------------
 Thu Nov 14 15:34:17 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Storage: fixed bug when existing partitions were searched at the

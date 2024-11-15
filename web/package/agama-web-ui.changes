@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Set the plain text password flag when setting the root and first
+  user password (gh#agama-project/agama#1771)
+
+-------------------------------------------------------------------
 Thu Nov 14 14:42:46 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix wireless authentication initialization and
