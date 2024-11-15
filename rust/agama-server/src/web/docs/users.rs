@@ -18,9 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use utoipa::openapi::{ComponentsBuilder, Paths, PathsBuilder};
+use utoipa::openapi::{ComponentsBuilder, OpenApi, Paths, PathsBuilder};
 
-use super::ApiDocBuilder;
+use super::{
+    common::{IssuesApiDocBuilder, ServiceStatusApiDocBuilder},
+    ApiDocBuilder,
+};
 
 pub struct UsersApiDocBuilder;
 
@@ -44,6 +47,7 @@ impl ApiDocBuilder for UsersApiDocBuilder {
             .schema_from::<agama_lib::users::FirstUser>()
             .schema_from::<agama_lib::users::model::RootConfig>()
             .schema_from::<agama_lib::users::model::RootPatchSettings>()
+            .schema_from::<crate::web::common::Issue>()
             .schema(
                 "zbus.zvariant.OwnedValue",
                 utoipa::openapi::ObjectBuilder::new()
@@ -51,5 +55,18 @@ impl ApiDocBuilder for UsersApiDocBuilder {
                     .build(),
             )
             .build()
+    }
+
+    fn nested(&self) -> Option<OpenApi> {
+        let mut issues = IssuesApiDocBuilder::new()
+            .add(
+                "/api/users/issues",
+                "List of user-related issues",
+                "user_issues",
+            )
+            .build();
+        let status = ServiceStatusApiDocBuilder::new("/api/storage/status").build();
+        issues.merge(status);
+        Some(issues)
     }
 }
