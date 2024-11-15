@@ -5,6 +5,12 @@ Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
   user password (gh#agama-project/agama#1771)
 
 -------------------------------------------------------------------
+Fri Nov 15 08:26:29 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Stick product selection form actions to bottom
+  (gh#agama-project/agama#1769).
+
+-------------------------------------------------------------------
 Thu Nov 14 14:42:46 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix wireless authentication initialization and

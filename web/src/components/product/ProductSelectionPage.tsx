@@ -24,7 +24,6 @@ import React, { useState } from "react";
 import {
   Card,
   CardBody,
-  Flex,
   Form,
   Grid,
   GridItem,
@@ -116,40 +115,40 @@ function ProductSelectionPage() {
   const isSelectionDisabled = !nextProduct || nextProduct === selectedProduct;
 
   return (
-    <Page.Content>
-      <Center>
-        <Form id="productSelectionForm" onSubmit={onSubmit}>
-          <Grid hasGutter>
-            <ResponsiveGridItem>
-              <FormGroup role="radiogroup" label={_("Select a product")}>
-                <List isPlain aria-label={_("Available products")}>
-                  {products.map((product, index) => (
-                    <Option
-                      key={index}
-                      product={product}
-                      isChecked={nextProduct === product}
-                      onChange={() => setNextProduct(product)}
-                    />
-                  ))}
-                </List>
-              </FormGroup>
-            </ResponsiveGridItem>
-            <ResponsiveGridItem>
-              <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-                {selectedProduct && !isLoading && <BackLink />}
-                <Page.Submit
-                  form="productSelectionForm"
-                  isDisabled={isSelectionDisabled}
-                  isLoading={isLoading}
-                >
-                  {_("Select")}
-                </Page.Submit>
-              </Flex>
-            </ResponsiveGridItem>
-          </Grid>
-        </Form>
-      </Center>
-    </Page.Content>
+    <Page>
+      <Page.Content>
+        <Center>
+          <Form id="productSelectionForm" onSubmit={onSubmit}>
+            <Grid hasGutter>
+              <ResponsiveGridItem>
+                <FormGroup role="radiogroup" label={_("Select a product")}>
+                  <List isPlain aria-label={_("Available products")}>
+                    {products.map((product, index) => (
+                      <Option
+                        key={index}
+                        product={product}
+                        isChecked={nextProduct === product}
+                        onChange={() => setNextProduct(product)}
+                      />
+                    ))}
+                  </List>
+                </FormGroup>
+              </ResponsiveGridItem>
+            </Grid>
+          </Form>
+        </Center>
+      </Page.Content>
+      <Page.Actions>
+        <BackLink />
+        <Page.Submit
+          form="productSelectionForm"
+          isDisabled={isSelectionDisabled}
+          isLoading={isLoading}
+        >
+          {_("Select")}
+        </Page.Submit>
+      </Page.Actions>
+    </Page>
   );
 }
 
