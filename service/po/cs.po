@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-29 09:01+0000\n"
-"PO-Revision-Date: 2024-11-04 10:48+0000\n"
+"PO-Revision-Date: 2024-11-13 18:48+0000\n"
 "Last-Translator: Jan Papež <honyczek@centrum.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/cs/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.8.3\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:91
@@ -72,7 +72,7 @@ msgid ""
 "cannot be verified. Use it anyway?"
 msgstr ""
 "%{source} není digitálně podepsán. Původ a integrita souboru nemůže být "
-"ověřena. Přesto jej použít?"
+"ověřena. Chcete jej přesto použít?"
 
 #. Callback to handle signature verification failures
 #.
@@ -84,8 +84,8 @@ msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
 "want to trust this key?"
 msgstr ""
-"Klíč %{id} (%{name}) s otiskem %{fingerprint} není známý. Důvěřujete tomuto "
-"klíči?"
+"Klíč %{id} (%{name}) s otiskem %{fingerprint} není známý. Chcete tomuto "
+"klíči důvěřovat?"
 
 #. Should an error be raised?
 #: service/lib/agama/software/manager.rb:141
@@ -98,7 +98,7 @@ msgstr "Obnovování metadat repozitáře"
 
 #: service/lib/agama/software/manager.rb:147
 msgid "Calculating the software proposal"
-msgstr "Probíhá návrh softwaru"
+msgstr "Vypočítávání návrhu softwaru"
 
 #. Issues related to the software proposal.
 #.
@@ -142,7 +142,7 @@ msgstr "Nenalezeno žádné zařízení pro povinnou jednotku"
 
 #: service/lib/agama/storage/config_checker.rb:89
 msgid "No device found for a mandatory partition"
-msgstr "Pro povinný oddíl nenalezeno zařízení"
+msgstr "Pro povinný oddíl nebyl nalezeno žádné zařízení"
 
 #. TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checker.rb:118
@@ -238,15 +238,15 @@ msgstr "Toto zařízení nepodporuje zmenšování"
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:115
 msgid "Activating storage devices"
-msgstr "Aktivuji paměťová zařízení"
+msgstr "Aktivuji úložná zařízení"
 
 #: service/lib/agama/storage/manager.rb:116
 msgid "Probing storage devices"
-msgstr "Sonduji paměťová zařízení"
+msgstr "Sonduji úložná zařízení"
 
 #: service/lib/agama/storage/manager.rb:117
 msgid "Calculating the storage proposal"
-msgstr "Sestavuji návrh paměti"
+msgstr "Vypočítávání návrhu úložiště"
 
 #: service/lib/agama/storage/manager.rb:118
 msgid "Selecting Linux Security Modules"
@@ -260,11 +260,11 @@ msgstr "Připravuji návrh boot zavaděče"
 #. first make bootloader proposal to be sure that required packages are installed
 #: service/lib/agama/storage/manager.rb:131
 msgid "Adding storage-related packages"
-msgstr "Přidávám balíčky pracující s pamětí"
+msgstr "Přidávám balíčky související s úložištěm"
 
 #: service/lib/agama/storage/manager.rb:132
 msgid "Preparing the storage devices"
-msgstr "Připravuji paměťová zařízení"
+msgstr "Připravuji úložná zařízení"
 
 #: service/lib/agama/storage/manager.rb:133
 msgid "Writing bootloader sysconfig"
@@ -282,7 +282,7 @@ msgstr "Nelze umístit požadované souborové systémy pro instalaci"
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:298
 msgid "A problem ocurred while calculating the storage setup"
-msgstr "Nastal problém při výpočtu nastavení paměti"
+msgstr "Nastal problém při výpočtu nastavení úložiště"
 
 #. Returns an issue if there is no target device.
 #.
