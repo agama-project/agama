@@ -19,14 +19,23 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/config_conversions/to_model_conversions/filesystem"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module ToModelConversions
+        # Mixin for filesystem conversion to model according to the JSON schema.
+        module WithFilesystem
+          # @return [Hash, nil]
+          def convert_filesystem
+            filesystem = config.filesystem
+            return unless filesystem
+
+            ToModelConversions::Filesystem.new(filesystem).convert
+          end
+        end
+      end
     end
   end
 end

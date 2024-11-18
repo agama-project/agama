@@ -19,14 +19,39 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/config"
+require "agama/storage/config_conversions/to_model_conversions/base"
+require "agama/storage/config_conversions/to_model_conversions/drive"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module ToModelConversions
+        # Config conversion to model according to the JSON schema.
+        class Config < Base
+          # @see Base
+          def self.config_type
+            Storage::Config
+          end
+
+        private
+
+          # @see Base#conversions
+          def conversions
+            { drives: convert_drives }
+          end
+
+          # @return [Array<Hash>]
+          def convert_drives
+            valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
+          end
+
+          # @return [Array<Configs::Drive>]
+          def valid_drives
+            config.drives.select(&:found_device)
+          end
+        end
+      end
     end
   end
 end

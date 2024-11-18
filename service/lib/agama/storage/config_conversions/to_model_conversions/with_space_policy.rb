@@ -19,14 +19,22 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/config_conversions/to_model_conversions/space_policy"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module ToModelConversions
+        # Mixin for space policy conversion to model according to the JSON schema.
+        module WithSpacePolicy
+          # @return [String, nil]
+          def convert_space_policy
+            return unless config.respond_to?(:partitions)
+
+            ToModelConversions::SpacePolicy.new(config).convert
+          end
+        end
+      end
     end
   end
 end

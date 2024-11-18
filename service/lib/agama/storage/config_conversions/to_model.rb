@@ -19,14 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/config_conversions/to_model_conversions/config"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      # Config conversion to model according to the JSON schema.
+      class ToModel
+        # @param config [Storage::Config]
+        def initialize(config)
+          @config = config
+        end
+
+        # Performs the conversion to config model according to the JSON schema.
+        #
+        # @return [Hash]
+        def convert
+          ToModelConversions::Config.new(config).convert
+        end
+
+      private
+
+        # @return [Storage::Config]
+        attr_reader :config
+      end
     end
   end
 end
