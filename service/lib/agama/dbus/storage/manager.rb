@@ -120,6 +120,14 @@ module Agama
           JSON.pretty_generate(json)
         end
 
+        # Gets and serializes the storage config model.
+        #
+        # @return [String]
+        def recover_model
+          json = proposal.model_json
+          JSON.pretty_generate(json)
+        end
+
         def install
           busy_while { backend.install }
         end
@@ -142,6 +150,7 @@ module Agama
           end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
           dbus_method(:GetSolvedConfig, "out serialized_config:s") { recover_config(solved: true) }
+          dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_reader(:deprecated_system, "b")

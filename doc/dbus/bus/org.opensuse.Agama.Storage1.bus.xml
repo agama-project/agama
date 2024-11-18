@@ -55,6 +55,9 @@
     <method name="GetSolvedConfig">
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
+    <method name="GetConfigModel">
+      <arg name="serialized_model" direction="out" type="s"/>
+    </method>
     <method name="Install">
     </method>
     <method name="Finish">

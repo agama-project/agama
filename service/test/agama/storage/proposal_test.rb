@@ -375,6 +375,104 @@ describe Agama::Storage::Proposal do
     end
   end
 
+  describe "#model_json" do
+    context "if no proposal has been calculated yet" do
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
+      end
+    end
+
+    context "if a guided proposal has been calculated" do
+      before do
+        subject.calculate_from_json(settings_json)
+      end
+
+      let(:settings_json) do
+        {
+          storage: {
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
+          }
+        }
+      end
+
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
+      end
+    end
+
+    context "if an agama proposal has been calculated" do
+      before do
+        subject.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns the config model" do
+        expect(subject.model_json).to eq(
+          {
+            drives: [
+              {
+                name:        "/dev/sda",
+                spacePolicy: "keep",
+                partitions:  [
+                  {
+                    mountPath:      "/",
+                    filesystem:     {
+                      default: true,
+                      type:    "ext4"
+                    },
+                    size:           {
+                      default: true,
+                      min:     0
+                    },
+                    delete:         false,
+                    deleteIfNeeded: false,
+                    resize:         false,
+                    resizeIfNeeded: false
+                  }
+                ]
+              }
+            ]
+          }
+        )
+      end
+    end
+
+    context "if an AutoYaST proposal has been calculated" do
+      before do
+        subject.calculate_from_json(autoyast_json)
+      end
+
+      let(:autoyast_json) do
+        {
+          legacyAutoyastStorage: [
+            { device: "/dev/vda" }
+          ]
+        }
+      end
+
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
+      end
+    end
+  end
+
   shared_examples "check proposal callbacks" do |action, settings|
     it "runs all the callbacks" do
       callback1 = proc {}

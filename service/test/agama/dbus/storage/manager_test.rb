@@ -706,6 +706,108 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
+  describe "#recover_model" do
+    def serialize(value)
+      JSON.pretty_generate(value)
+    end
+
+    context "if a proposal has not been calculated" do
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+
+    context "if a guided proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(settings_json)
+      end
+
+      let(:settings_json) do
+        {
+          storage: {
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
+          }
+        }
+      end
+
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+
+    context "if an agama proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns the serialized config model" do
+        expect(subject.recover_model).to eq(
+          serialize({
+            drives: [
+              {
+                name:        "/dev/sda",
+                spacePolicy: "keep",
+                partitions:  [
+                  {
+                    mountPath:      "/",
+                    filesystem:     {
+                      default: true,
+                      type:    "ext4"
+                    },
+                    size:           {
+                      default: true,
+                      min:     0
+                    },
+                    delete:         false,
+                    deleteIfNeeded: false,
+                    resize:         false,
+                    resizeIfNeeded: false
+                  }
+                ]
+              }
+            ]
+          })
+        )
+      end
+    end
+
+    context "if an AutoYaST proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(autoyast_json)
+      end
+
+      let(:autoyast_json) do
+        {
+          legacyAutoyastStorage: [
+            { device: "/dev/vda" }
+          ]
+        }
+      end
+
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+  end
+
   describe "#iscsi_discover" do
     it "performs an iSCSI discovery" do
       expect(iscsi).to receive(:discover_send_targets) do |address, port, auth|
