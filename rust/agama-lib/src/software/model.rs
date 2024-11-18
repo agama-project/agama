@@ -51,10 +51,12 @@ pub struct RegistrationInfo {
 
 #[derive(
     Clone,
-    Default,
+    Copy,
     Debug,
-    Serialize,
+    Default,
     Deserialize,
+    PartialEq,
+    Serialize,
     strum::Display,
     strum::EnumString,
     utoipa::ToSchema,

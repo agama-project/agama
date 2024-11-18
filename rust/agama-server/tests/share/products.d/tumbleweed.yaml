@@ -1,0 +1,225 @@
+id: Tumbleweed
+name: openSUSE Tumbleweed
+registration: no
+# ------------------------------------------------------------------------------
+# WARNING: When changing the product description delete the translations located
+# at the at translations/description key below to avoid using obsolete
+# translations!!
+# ------------------------------------------------------------------------------
+description: 'A pure rolling release version of openSUSE containing the latest
+  "stable" versions of all software instead of relying on rigid periodic release
+  cycles. The project does this for users that want the newest stable software.'
+icon: Tumbleweed.svg
+# Do not manually change any translations! See README.md for more details.
+translations:
+  description:
+    ca: Una versió de llançament continuada d'openSUSE que conté les darreres
+      versions estables de tot el programari en lloc de dependre de cicles de
+      llançament periòdics rígids. El projecte fa això per als usuaris que volen
+      el programari estable més nou.
+    cs: Čistě klouzavá verze openSUSE obsahující nejnovější "stabilní" verze
+      veškerého softwaru, která se nespoléhá na pevné periodické cykly vydávání.
+      Projekt to dělá pro uživatele, kteří chtějí nejnovější stabilní software.
+    de: Die Tumbleweed-Distribution ist eine Version mit reinen rollierenden
+      Veröffentlichungen von openSUSE, die die neuesten „stabilen“ Versionen der
+      gesamten Software enthält, anstatt sich auf starre periodische
+      Veröffentlichungszyklen zu verlassen. Das Projekt tut dies für Benutzer,
+      die die neueste, stabile Software wünschen.
+    es: Una versión puramente continua de openSUSE que contiene las últimas
+      versiones "estables" de todo el software en lugar de depender de rígidos
+      ciclos de lanzamiento periódicos. El proyecto hace esto para usuarios que
+      desean el software estable más novedoso.
+    fr: La distribution Tumbleweed est une pure "rolling release" (publication
+      continue) d'openSUSE contenant les dernières versions "stables" de tous
+      les logiciels au lieu de se baser sur des cycles de publication
+      périodiques et fixes. Le projet fait cela pour les utilisateurs qui
+      veulent les logiciels stables les plus récents.
+    id: Distribusi Tumbleweed merupakan versi rilis bergulir murni dari openSUSE
+      yang berisi versi "stabil" terbaru dari semua perangkat lunak dan tidak
+      bergantung pada siklus rilis berkala yang kaku. Proyek ini dibuat untuk
+      memenuhi kebutuhan pengguna yang menginginkan perangkat lunak stabil
+      terbaru.
+    ja:
+      openSUSE の純粋なローリングリリース版で、特定のリリースサイクルによることなく全てのソフトウエアを最新の "安定"
+      バージョンに維持し続ける取り組みです。このプロジェクトは特に、最新の安定バージョンを使いたいユーザにお勧めです。
+    nb_NO: Tumbleweed distribusjonen er en ren rullerende utgivelsesversjon av
+      openSUSE som inneholder de siste "stabile" versjonene av all programvare i
+      stedet for å stole på et rigid periodisk utgivelsessykluser. Prosjektet
+      gjør dette for brukere som vil ha de nyeste stabile programvarene.
+    pt_BR: Uma versão de lançamento puro e contínuo do openSUSE contendo as últimas
+      versões "estáveis" de todos os softwares em vez de depender de ciclos de
+      lançamento periódicos rígidos. O projeto faz isso para usuários que querem
+      o software estável mais novo.
+    ru: Дистрибутив Tumbleweed - это плавающий выпуск openSUSE, содержащий последние
+      "стабильные" версии всего программного обеспечения, вместо того чтобы
+      полагаться на жесткие периодические циклы выпуска. Проект делает его для
+      пользователей, которым нужно самое новое стабильное программное
+      обеспечение.
+    sv: En ren rullande släppversion av openSUSE som innehåller de senaste "stabila"
+      versionerna av all programvara istället för att förlita sig på stela
+      periodiska släppcykler. Projektet gör detta för användare som vill ha den
+      senaste stabila mjukvaran.
+    tr: Katı periyodik sürüm döngülerine güvenmek yerine tüm yazılımların en son
+      "kararlı" sürümlerini içeren openSUSE'nin saf bir yuvarlanan sürümü. Proje
+      bunu en yeni kararlı yazılımı isteyen kullanıcılar için yapar.
+    zh_Hans: Tumbleweed 发行版是 openSUSE
+      的纯滚动发布版本，其并不依赖于严格的定时发布周期，而是持续包含所有最新“稳定”版本的软件。该项目为追求最新稳定软件的用户而生。
+software:
+  installation_repositories:
+    - url: https://download.opensuse.org/tumbleweed/repo/oss/
+      archs: x86_64
+    - url: https://download.opensuse.org/ports/aarch64/tumbleweed/repo/oss/
+      archs: aarch64
+    - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/oss/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+      archs: ppc
+    - url: https://download.opensuse.org/tumbleweed/repo/non-oss/
+      archs: x86_64
+    # aarch64 does not have non-oss ports. Keep eye if it change
+    - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/non-oss/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/non-oss/
+      archs: ppc
+    - url: https://download.opensuse.org/update/tumbleweed/
+      archs: x86_64
+    - url: https://download.opensuse.org/ports/aarch64/update/tumbleweed/
+      archs: aarch64
+    - url: https://download.opensuse.org/ports/zsystems/update/tumbleweed/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+      archs: ppc
+  # device labels for offline installation media
+  installation_labels:
+    - label: openSUSE-Tumbleweed-DVD-x86_64
+      archs: x86_64
+    - label: openSUSE-Tumbleweed-DVD-aarch64
+      archs: aarch64
+    - label: openSUSE-Tumbleweed-DVD-s390x
+      archs: s390
+    - label: openSUSE-Tumbleweed-DVD-ppc64le
+      archs: ppc
+  mandatory_patterns:
+    - enhanced_base # only pattern that is shared among all roles on TW
+  optional_patterns: null # no optional pattern shared
+  user_patterns:
+    - basic_desktop
+    - xfce
+    - kde
+    - gnome
+    - yast2_basis
+    - yast2_desktop
+    - yast2_server
+    - multimedia
+    - office
+  mandatory_packages:
+    - NetworkManager
+    - openSUSE-repos-Tumbleweed
+  optional_packages: null
+  base_product: openSUSE
+
+security:
+  lsm: apparmor
+  available_lsms:
+    apparmor:
+      patterns:
+        - apparmor
+    selinux:
+      patterns:
+        - selinux
+      policy: permissive
+    none:
+      patterns: null
+
+storage:
+  space_policy: delete
+  volumes:
+    - "/"
+    - "swap"
+  volume_templates:
+    - mount_path: "/"
+      filesystem: btrfs
+      btrfs:
+        snapshots: true
+        read_only: false
+        default_subvolume: "@"
+        subvolumes:
+          - path: home
+          - path: opt
+          - path: root
+          - path: srv
+          - path: usr/local
+          # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+          - path: var
+            copy_on_write: false
+          # Architecture specific subvolumes
+          - path: boot/grub2/arm64-efi
+            archs: aarch64
+          - path: boot/grub2/arm-efi
+            archs: arm
+          - path: boot/grub2/i386-pc
+            archs: x86_64
+          - path: boot/grub2/powerpc-ieee1275
+            archs: ppc,!board_powernv
+          - path: boot/grub2/s390x-emu
+            archs: s390
+          - path: boot/grub2/x86_64-efi
+            archs: x86_64
+          - path: boot/grub2/riscv64-efi
+            archs: riscv64
+      size:
+        auto: true
+      outline:
+        required: true
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+        auto_size:
+          base_min: 5 GiB
+          base_max: 15 GiB
+          snapshots_increment: 250%
+          max_fallback_for:
+            - "/home"
+        snapshots_configurable: true
+    - mount_path: "swap"
+      filesystem: swap
+      size:
+        auto: true
+      outline:
+        auto_size:
+          base_min: 1 GiB
+          base_max: 2 GiB
+          adjust_by_ram: true
+        required: false
+        filesystems:
+          - swap
+    - mount_path: "/home"
+      filesystem: xfs
+      size:
+        auto: false
+        min: 10 GiB
+        max: unlimited
+      outline:
+        required: false
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+    - filesystem: xfs
+      size:
+        auto: false
+        min: 1 GiB
+      outline:
+        required: false
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+          - vfat
