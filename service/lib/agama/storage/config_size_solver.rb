@@ -80,12 +80,9 @@ module Agama
 
       # @param config [Configs::Partition, Configs::LogicalVolume]
       def solve_current_size(config)
-        min = config.size.min
-        max = config.size.max
         size = size_from_device(config.found_device)
-        size.min = min if min
-        size.max = max if max
-        config.size = size
+        config.size.min ||= size.min
+        config.size.max ||= size.max
       end
 
       # @param config [Configs::Partition, Configs::LogicalVolume]
@@ -107,7 +104,6 @@ module Agama
       # @return [Configs::Size]
       def size_from_device(device)
         Configs::Size.new.tap do |config|
-          config.default = false
           config.min = device.size
           config.max = device.size
         end

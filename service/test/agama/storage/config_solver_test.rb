@@ -289,7 +289,7 @@ describe Agama::Storage::ConfigSolver do
         it "sets the device size" do
           subject.solve(config)
           partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
+          expect(partition.size.default?).to eq(true)
           expect(partition.size.min).to eq(20.GiB)
           expect(partition.size.max).to eq(20.GiB)
         end
