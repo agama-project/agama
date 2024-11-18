@@ -273,6 +273,7 @@ shared_examples "with filesystem" do |config_proc|
     filesystem = config.filesystem
     expect(filesystem).to be_a(Agama::Storage::Configs::Filesystem)
     expect(filesystem.reuse?).to eq(true)
+    expect(filesystem.type.default?).to eq(false)
     expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::XFS)
     expect(filesystem.type.btrfs).to be_nil
     expect(filesystem.label).to eq("test")
@@ -298,6 +299,7 @@ shared_examples "with filesystem" do |config_proc|
       filesystem = config.filesystem
       expect(filesystem).to be_a(Agama::Storage::Configs::Filesystem)
       expect(filesystem.reuse?).to eq(false)
+      expect(filesystem.type.default?).to eq(false)
       expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
       expect(filesystem.type.btrfs.snapshots?).to eq(true)
       expect(filesystem.label).to be_nil

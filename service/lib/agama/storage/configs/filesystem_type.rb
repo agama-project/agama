@@ -22,12 +22,21 @@
 module Agama
   module Storage
     module Configs
+      # Config for a filesystem type.
       class FilesystemType
+        # @return [Boolean]
+        attr_accessor :default
+        alias_method :default?, :default
+
         # @return [Y2Storage::Filesystems::Type, nil]
         attr_accessor :fs_type
 
         # @return [Configs::Btrfs, nil]
         attr_accessor :btrfs
+
+        def initialize
+          @default = true
+        end
       end
     end
   end

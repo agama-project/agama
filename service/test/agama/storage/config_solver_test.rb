@@ -185,6 +185,7 @@ describe Agama::Storage::ConfigSolver do
         drive = config.drives.first
         filesystem = drive.filesystem
         expect(filesystem.type).to be_a(Agama::Storage::Configs::FilesystemType)
+        expect(filesystem.type.default?).to eq(true)
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
         expect(filesystem.type.btrfs.snapshots?).to eq(true)

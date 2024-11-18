@@ -45,6 +45,7 @@ module Agama
           # @return [Hash]
           def conversions
             {
+              default: false,
               fs_type: convert_type,
               btrfs:   convert_btrfs
             }
