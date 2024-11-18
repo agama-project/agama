@@ -39,6 +39,7 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::value::RawValue;
 use tokio_stream::{Stream, StreamExt};
 use zfcp::{zfcp_service, zfcp_stream};
 
@@ -114,6 +115,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let router = Router::new()
         .route("/config", put(set_config).get(get_config))
         .route("/solved_config", get(get_solved_config))
+        .route("/config_model", get(get_config_model))
         .route("/probe", post(probe))
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
@@ -179,6 +181,30 @@ async fn get_solved_config(
         .await
         .map_err(Error::Service)?;
     Ok(Json(settings))
+}
+
+/// Returns the storage config model.
+///
+/// * `state` : service state.
+#[utoipa::path(
+    get,
+    path = "/config_model",
+    context_path = "/api/storage",
+    operation_id = "get_storage_config_model",
+    responses(
+        (status = 200, description = "storage config model", body = Box<RawValue>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_config_model(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Box<RawValue>>, Error> {
+    let config_model = state
+        .client
+        .get_config_model()
+        .await
+        .map_err(Error::Service)?;
+    Ok(Json(config_model))
 }
 
 /// Sets the storage configuration.

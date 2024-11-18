@@ -29,6 +29,7 @@ use super::proxies::{DevicesProxy, ProposalCalculatorProxy, ProposalProxy, Stora
 use super::StorageSettings;
 use crate::dbus::get_property;
 use crate::error::ServiceError;
+use serde_json::value::RawValue;
 use std::collections::HashMap;
 use zbus::fdo::ObjectManagerProxy;
 use zbus::names::{InterfaceName, OwnedInterfaceName};
@@ -158,6 +159,13 @@ impl<'a> StorageClient<'a> {
         let serialized_settings = self.storage_proxy.get_solved_config().await?;
         let settings = serde_json::from_str(serialized_settings.as_str()).unwrap();
         Ok(settings)
+    }
+
+    /// Get the storage config model according to the JSON schema
+    pub async fn get_config_model(&self) -> Result<Box<RawValue>, ServiceError> {
+        let serialized_config_model = self.storage_proxy.get_config_model().await?;
+        let config_model = serde_json::from_str(serialized_config_model.as_str()).unwrap();
+        Ok(config_model)
     }
 
     pub async fn calculate(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {
