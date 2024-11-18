@@ -23,6 +23,7 @@ export type FilesystemType =
   | "vfat"
   | "xfs";
 export type SpacePolicy = "delete" | "resize" | "keep" | "custom";
+export type Boot = "implicit" | "explicit";
 export type PtableType = "gpt" | "msdos" | "dasd";
 export type PartitionId = "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "bios_boot";
 
@@ -31,15 +32,21 @@ export type PartitionId = "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "
  */
 export interface Config {
   drives?: Drive[];
+  volumeGroups?: VolumeGroup[];
 }
 export interface Drive {
   name: string;
   alias?: string;
   mountPath?: string;
   filesystem?: Filesystem;
+  boot?: Boot;
+  volumeGroups?: string[];
   spacePolicy?: SpacePolicy;
   ptableType?: PtableType;
   partitions?: Partition[];
+}
+export interface VolumeGroup {
+  name: string;
 }
 export interface Filesystem {
   default: boolean;

@@ -7,6 +7,10 @@
     "drives": {
       "type": "array",
       "items": { "$ref": "#/$defs/drive" }
+    },
+    "volumeGroups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/volumeGroup" }
     }
   },
   "$defs": {
@@ -17,10 +21,15 @@
       "properties": {
         "name": { "type": "string" },
         "alias": { "type": "string" },
+        "boot": { "enum": ["implicit", "explicit"] },
         "mountPath": { "type": "string" },
         "filesystem": { "$ref": "#/$defs/filesystem" },
         "spacePolicy": { "$ref": "#/$defs/spacePolicy" },
         "ptableType": { "$ref": "#/$defs/ptableType" },
+        "volumeGroups": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "partitions": {
           "type": "array",
           "items": { "$ref": "#/$defs/partition" }
@@ -41,6 +50,14 @@
         "deleteIfNeeded": { "type": "boolean" },
         "resize": { "type": "boolean" },
         "resizeIfNeeded": { "type": "boolean" }
+      }
+    },
+    "volumeGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" }
       }
     },
     "spacePolicy": {

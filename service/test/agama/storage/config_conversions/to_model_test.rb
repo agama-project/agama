@@ -732,5 +732,30 @@ describe Agama::Storage::ConfigConversions::ToModel do
         include_examples "#spacePolicy property", drive_result_scope
       end
     end
+
+    context "if #drives and #volume_groups are configured" do
+      let(:config_json) do
+        { drives: drives, volumeGroups: volume_groups }
+      end
+
+      let(:drives) do
+        [{ search: "/dev/vda", alias: "disk1" }]
+      end
+
+      let(:volume_groups) do
+        [{ name: "system", physicalVolumes: [{ generate: ["disk1"] }] }]
+      end
+
+      it "generates the expected JSON'" do
+        expect(subject.convert).to eq(
+          {
+            drives: [
+              { name: "/dev/vda", alias: "disk1", volumeGroups: ["system"], partitions: [], spacePolicy: "keep" }
+            ],
+            volumeGroups: [{ name: "system" }]
+          }
+        )
+      end
+    end
   end
 end

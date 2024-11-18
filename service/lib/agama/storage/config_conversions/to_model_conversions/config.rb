@@ -38,17 +38,43 @@ module Agama
 
           # @see Base#conversions
           def conversions
-            { drives: convert_drives }
+            {
+              drives: convert_drives,
+              volumeGroups: convert_volume_groups
+            }
           end
 
           # @return [Array<Hash>]
           def convert_drives
-            valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
+            drives = valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
+
+            boot_drive = drives.find { |d| d[:name] == config.boot_device }
+            if boot_drive
+              boot_drive[:boot] = config.boot.device ? "explicit" : "implicit"
+            end
+
+            config.volume_groups.each do |vg|
+              vg.physical_volumes_devices.each do |drive_alias|
+                drive = drives.find { |d| d[:alias] == drive_alias }
+                next unless drive
+
+                drive[:volumeGroups] ||= []
+                drive[:volumeGroups] << vg.name
+              end
+            end
+
+            drives
           end
 
           # @return [Array<Configs::Drive>]
           def valid_drives
             config.drives.select(&:found_device)
+          end
+
+          def convert_volume_groups
+            return if config.volume_groups.empty?
+
+            config.volume_groups.map { |vg| { name: vg.name } }
           end
         end
       end
