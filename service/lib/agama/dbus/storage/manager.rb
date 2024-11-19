@@ -45,7 +45,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         include WithISCSIAuth
         include WithServiceStatus
         include ::DBus::ObjectManager
@@ -111,12 +111,11 @@ module Agama
           proposal.success? ? 0 : 1
         end
 
-        # Gets and serializes the storage config used to calculate the current proposal.
+        # Gets and serializes the storage config used for calculating the current proposal.
         #
-        # @param solved [Boolean] Whether to recover the solved config.
-        # @return [String] Serialized config according to the JSON schema.
-        def recover_config(solved: false)
-          json = proposal.storage_json(solved: solved)
+        # @return [String]
+        def recover_config
+          json = proposal.storage_json
           JSON.pretty_generate(json)
         end
 
@@ -149,7 +148,6 @@ module Agama
             busy_while { apply_config(serialized_config) }
           end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
-          dbus_method(:GetSolvedConfig, "out serialized_config:s") { recover_config(solved: true) }
           dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }

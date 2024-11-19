@@ -56,36 +56,6 @@
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
     <!--
-      Gets the solved storage config.
-    -->
-    <method name="GetSolvedConfig">
-      <!--
-        E.g.,
-        {
-          "storage": {
-            "drives": [
-              {
-                "search": "/dev/vda",
-                "partitions": [
-                  {
-                    "filesystem": {
-                      "path": "/home",
-                      "type": "xfs"
-                    },
-                    "size": {
-                      "min": "10 GiB",
-                      "max": "10 GiB"
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      -->
-      <arg name="serialized_config" direction="out" type="s"/>
-    </method>
-    <!--
       Gets the storage config model.
     -->
     <method name="GetConfigModel">

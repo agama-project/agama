@@ -563,8 +563,8 @@ describe Agama::DBus::Storage::Manager do
     end
 
     context "if a proposal has not been calculated" do
-      it "returns serialized empty storage config" do
-        expect(subject.recover_config).to eq(serialize({}))
+      it "returns 'null'" do
+        expect(subject.recover_config).to eq("null")
       end
     end
 
@@ -583,37 +583,25 @@ describe Agama::DBus::Storage::Manager do
         }
       end
 
-      context "and unsolved config is requested" do
-        let(:solved) { false }
-
-        it "returns serialized unsolved guided storage config" do
-          expect(subject.recover_config(solved: solved)).to eq(serialize(settings_json))
-        end
-      end
-
-      context "and solved config is requested" do
-        let(:solved) { true }
-
-        it "returns serialized solved guided storage config" do
-          expect(subject.recover_config(solved: solved)).to eq(
-            serialize({
-              storage: {
-                guided: {
-                  target:  {
-                    disk: "/dev/vda"
-                  },
-                  boot:    {
-                    configure: true
-                  },
-                  space:   {
-                    policy: "keep"
-                  },
-                  volumes: []
-                }
+      it "returns serialized solved guided storage config" do
+        expect(subject.recover_config).to eq(
+          serialize({
+            storage: {
+              guided: {
+                target:  {
+                  disk: "/dev/vda"
+                },
+                boot:    {
+                  configure: true
+                },
+                space:   {
+                  policy: "keep"
+                },
+                volumes: []
               }
-            })
-          )
-        end
+            }
+          })
+        )
       end
     end
 
@@ -638,52 +626,8 @@ describe Agama::DBus::Storage::Manager do
         }
       end
 
-      context "and unsolved config is requested" do
-        let(:solved) { false }
-
-        it "returns serialized unsolved storage config" do
-          expect(subject.recover_config(solved: solved)).to eq(serialize(config_json))
-        end
-      end
-
-      context "and solved config is requested" do
-        let(:solved) { true }
-
-        it "returns serialized solved guided storage config" do
-          expect(subject.recover_config(solved: solved)).to eq(
-            serialize({
-              storage: {
-                boot:         {
-                  configure: true
-                },
-                drives:       [
-                  {
-                    search:     {
-                      condition:  { name: "/dev/sda" },
-                      ifNotFound: "error",
-                      max:        1
-                    },
-                    partitions: [
-                      {
-                        filesystem: {
-                          reuseIfPossible: false,
-                          path:            "/",
-                          mountOptions:    [],
-                          mkfsOptions:     [],
-                          type:            "ext4"
-                        },
-                        size:       {
-                          min: 0
-                        }
-                      }
-                    ]
-                  }
-                ],
-                volumeGroups: []
-              }
-            })
-          )
-        end
+      it "returns serialized storage config" do
+        expect(subject.recover_config).to eq(serialize(config_json))
       end
     end
 
