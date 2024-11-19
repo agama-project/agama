@@ -28,7 +28,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import React from "react";
-import { fetchConfig, fetchSolvedConfig, setConfig } from "~/api/storage";
+import { fetchConfig, fetchSolvedConfig, fetchConfigModel, setConfig } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import {
   calculate,
@@ -40,6 +40,7 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import {
   config,
+  configModel,
   ProductParams,
   Volume as APIVolume,
   ProposalSettingsPatch,
@@ -64,6 +65,12 @@ const configQuery = {
 const solvedConfigQuery = {
   queryKey: ["storage", "solvedConfig"],
   queryFn: fetchSolvedConfig,
+  staleTime: Infinity,
+};
+
+const configModelQuery = {
+  queryKey: ["storage", "configModel"],
+  queryFn: fetchConfigModel,
   staleTime: Infinity,
 };
 
@@ -132,6 +139,16 @@ const useConfig = (options?: QueryHookOptions): config.Config => {
  */
 const useSolvedConfig = (options?: QueryHookOptions): config.Config => {
   const query = solvedConfigQuery;
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func(query);
+  return data;
+};
+
+/**
+ * Hook that returns the config model.
+ */
+const useConfigModel = (options?: QueryHookOptions): configModel.Config => {
+  const query = configModelQuery;
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data;
@@ -347,6 +364,7 @@ export {
   useConfig,
   useSolvedConfig,
   useConfigMutation,
+  useConfigModel,
   useConfigDevices,
   useDevices,
   useAvailableDevices,
