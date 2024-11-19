@@ -114,7 +114,6 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let state = StorageState { client };
     let router = Router::new()
         .route("/config", put(set_config).get(get_config))
-        .route("/solved_config", get(get_solved_config))
         .route("/config_model", get(get_config_model))
         .route("/probe", post(probe))
         .route("/devices/dirty", get(devices_dirty))
@@ -155,31 +154,6 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
 async fn get_config(State(state): State<StorageState<'_>>) -> Result<Json<StorageSettings>, Error> {
     // StorageSettings is just a wrapper over serde_json::value::RawValue
     let settings = state.client.get_config().await.map_err(Error::Service)?;
-    Ok(Json(settings))
-}
-
-/// Returns the solved storage configuration.
-///
-/// * `state` : service state.
-#[utoipa::path(
-    get,
-    path = "/solved_config",
-    context_path = "/api/storage",
-    operation_id = "get_storage_solved_config",
-    responses(
-        (status = 200, description = "storage solved configuration", body = StorageSettings),
-        (status = 400, description = "The D-Bus service could not perform the action")
-    )
-)]
-async fn get_solved_config(
-    State(state): State<StorageState<'_>>,
-) -> Result<Json<StorageSettings>, Error> {
-    // StorageSettings is just a wrapper over serde_json::value::RawValue
-    let settings = state
-        .client
-        .get_solved_config()
-        .await
-        .map_err(Error::Service)?;
     Ok(Json(settings))
 }
 

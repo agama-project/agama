@@ -154,13 +154,6 @@ impl<'a> StorageClient<'a> {
         Ok(settings)
     }
 
-    /// Get the storage solved config according to the JSON schema
-    pub async fn get_solved_config(&self) -> Result<StorageSettings, ServiceError> {
-        let serialized_settings = self.storage_proxy.get_solved_config().await?;
-        let settings = serde_json::from_str(serialized_settings.as_str()).unwrap();
-        Ok(settings)
-    }
-
     /// Get the storage config model according to the JSON schema
     pub async fn get_config_model(&self) -> Result<Box<RawValue>, ServiceError> {
         let serialized_config_model = self.storage_proxy.get_config_model().await?;
