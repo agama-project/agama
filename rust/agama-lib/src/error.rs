@@ -23,7 +23,7 @@ use std::io;
 use thiserror::Error;
 use zbus::{self, zvariant};
 
-use crate::transfer::TransferError;
+use crate::{base_http_client::BaseHTTPClientError, transfer::TransferError};
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
@@ -39,6 +39,8 @@ pub enum ServiceError {
     ZVariant(#[from] zvariant::Error),
     #[error("Failed to communicate with the HTTP backend '{0}'")]
     HTTPError(#[from] reqwest::Error),
+    #[error("HTTP client error: {0}")]
+    HTTPClientError(#[from] BaseHTTPClientError),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
     #[error("Error: {0}")]
@@ -60,10 +62,6 @@ pub enum ServiceError {
     UnknownInstallationPhase(u32),
     #[error("Question with id {0} does not exist")]
     QuestionNotExist(u32),
-    #[error("Backend call failed with status {0} and text '{1}'")]
-    BackendError(u16, String),
-    #[error("You are not logged in. Please use: agama auth login")]
-    NotAuthenticated,
     // Specific error when something does not work as expected, but it is not user fault
     #[error("Internal error. Please report a bug and attach logs. Details: {0}")]
     InternalError(String),

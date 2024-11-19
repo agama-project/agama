@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 use crate::software::model::SoftwareConfig;
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 use std::collections::HashMap;
 
 use super::model::{ResolvableParams, ResolvableType};
@@ -33,11 +33,11 @@ impl SoftwareHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<SoftwareConfig, ServiceError> {
+    pub async fn get_config(&self) -> Result<SoftwareConfig, BaseHTTPClientError> {
         self.client.get("/software/config").await
     }
 
-    pub async fn set_config(&self, config: &SoftwareConfig) -> Result<(), ServiceError> {
+    pub async fn set_config(&self, config: &SoftwareConfig) -> Result<(), BaseHTTPClientError> {
         // FIXME: test how errors come out:
         // unknown pattern name,
         // D-Bus client returns
@@ -48,7 +48,7 @@ impl SoftwareHTTPClient {
     }
 
     /// Returns the ids of patterns selected by user
-    pub async fn user_selected_patterns(&self) -> Result<Vec<String>, ServiceError> {
+    pub async fn user_selected_patterns(&self) -> Result<Vec<String>, BaseHTTPClientError> {
         // TODO: this way we unnecessarily ask D-Bus (via web.rs) also for the product and then ignore it
         let config = self.get_config().await?;
 
@@ -68,7 +68,7 @@ impl SoftwareHTTPClient {
     pub async fn select_patterns(
         &self,
         patterns: HashMap<String, bool>,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), BaseHTTPClientError> {
         let config = SoftwareConfig {
             product: None,
             // TODO: SoftwareStore only passes true bools, false branch is untested
@@ -84,7 +84,7 @@ impl SoftwareHTTPClient {
         r#type: ResolvableType,
         names: &[&str],
         optional: bool,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), BaseHTTPClientError> {
         let path = format!("/software/resolvables/{}", name);
         let options = ResolvableParams {
             names: names.iter().map(|n| n.to_string()).collect(),

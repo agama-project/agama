@@ -19,7 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    base_http_client::BaseHTTPClient, error::ServiceError, logs::LogsLists,
+    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    logs::LogsLists,
     manager::InstallerStatus,
 };
 use reqwest::header::CONTENT_ENCODING;
@@ -36,7 +37,7 @@ impl ManagerHTTPClient {
     }
 
     /// Starts a "probing".
-    pub async fn probe(&self) -> Result<(), ServiceError> {
+    pub async fn probe(&self) -> Result<(), BaseHTTPClientError> {
         // BaseHTTPClient did not anticipate POST without request body
         // so we pass () which is rendered as `null`
         self.client.post_void("/manager/probe_sync", &()).await
@@ -48,7 +49,7 @@ impl ManagerHTTPClient {
     /// will be added according to the compression type found in the response
     ///
     /// Returns path to logs
-    pub async fn store(&self, path: &Path) -> Result<PathBuf, ServiceError> {
+    pub async fn store(&self, path: &Path) -> Result<PathBuf, BaseHTTPClientError> {
         // 1) response with logs
         let response = self.client.get_raw("/manager/logs/store").await?;
 
@@ -57,37 +58,30 @@ impl ManagerHTTPClient {
             &response
                 .headers()
                 .get(CONTENT_ENCODING)
-                .ok_or(ServiceError::CannotGenerateLogs(String::from(
-                    "Invalid response",
-                )))?;
+                .ok_or(BaseHTTPClientError::MissingHeader(
+                    CONTENT_ENCODING.to_string(),
+                ))?;
         let mut destination = path.to_path_buf();
 
-        destination.set_extension(
-            ext.to_str()
-                .map_err(|_| ServiceError::CannotGenerateLogs(String::from("Invalid response")))?,
-        );
+        destination.set_extension(ext.to_str()?);
 
         // 3) store response's binary content (logs) in a file
-        let mut file = std::fs::File::create(destination.as_path()).map_err(|_| {
-            ServiceError::CannotGenerateLogs(String::from("Cannot store received response"))
-        })?;
+        let mut file = std::fs::File::create(destination.as_path())?;
         let mut content = Cursor::new(response.bytes().await?);
 
-        std::io::copy(&mut content, &mut file).map_err(|_| {
-            ServiceError::CannotGenerateLogs(String::from("Cannot store received response"))
-        })?;
+        std::io::copy(&mut content, &mut file)?;
 
         Ok(destination)
     }
 
     /// Asks backend for lists of log files and commands used for creating logs archive returned by
     /// store (/logs/store) backed HTTP API command
-    pub async fn list(&self) -> Result<LogsLists, ServiceError> {
+    pub async fn list(&self) -> Result<LogsLists, BaseHTTPClientError> {
         self.client.get("/manager/logs/list").await
     }
 
     /// Returns the installer status.
-    pub async fn status(&self) -> Result<InstallerStatus, ServiceError> {
+    pub async fn status(&self) -> Result<InstallerStatus, BaseHTTPClientError> {
         self.client
             .get::<InstallerStatus>("/manager/installer")
             .await

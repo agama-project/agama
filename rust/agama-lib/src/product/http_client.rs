@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 use crate::software::model::RegistrationInfo;
 use crate::software::model::RegistrationParams;
 use crate::software::model::SoftwareConfig;
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 
 pub struct ProductHTTPClient {
     client: BaseHTTPClient,
@@ -32,16 +32,16 @@ impl ProductHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_software(&self) -> Result<SoftwareConfig, ServiceError> {
+    pub async fn get_software(&self) -> Result<SoftwareConfig, BaseHTTPClientError> {
         self.client.get("/software/config").await
     }
 
-    pub async fn set_software(&self, config: &SoftwareConfig) -> Result<(), ServiceError> {
+    pub async fn set_software(&self, config: &SoftwareConfig) -> Result<(), BaseHTTPClientError> {
         self.client.put_void("/software/config", config).await
     }
 
     /// Returns the id of the selected product to install
-    pub async fn product(&self) -> Result<String, ServiceError> {
+    pub async fn product(&self) -> Result<String, BaseHTTPClientError> {
         let config = self.get_software().await?;
         if let Some(product) = config.product {
             Ok(product)
@@ -51,7 +51,7 @@ impl ProductHTTPClient {
     }
 
     /// Selects the product to install
-    pub async fn select_product(&self, product_id: &str) -> Result<(), ServiceError> {
+    pub async fn select_product(&self, product_id: &str) -> Result<(), BaseHTTPClientError> {
         let config = SoftwareConfig {
             product: Some(product_id.to_owned()),
             patterns: None,
@@ -59,12 +59,16 @@ impl ProductHTTPClient {
         self.set_software(&config).await
     }
 
-    pub async fn get_registration(&self) -> Result<RegistrationInfo, ServiceError> {
+    pub async fn get_registration(&self) -> Result<RegistrationInfo, BaseHTTPClientError> {
         self.client.get("/software/registration").await
     }
 
     /// register product
-    pub async fn register(&self, key: &str, email: &str) -> Result<(u32, String), ServiceError> {
+    pub async fn register(
+        &self,
+        key: &str,
+        email: &str,
+    ) -> Result<(u32, String), BaseHTTPClientError> {
         // note RegistrationParams != RegistrationInfo, fun!
         let params = RegistrationParams {
             key: key.to_owned(),

@@ -30,7 +30,7 @@ mod progress;
 mod questions;
 
 use crate::error::CliError;
-use agama_lib::base_http_client::BaseHTTPClient;
+use agama_lib::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 use agama_lib::{
     error::ServiceError, manager::ManagerClient, progress::ProgressMonitor, transfer::Transfer,
 };
@@ -167,12 +167,12 @@ async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<boo
     // decide whether access to remote site has to be insecure (self-signed certificate or not)
     match ping_client.get::<HashMap<String, String>>("/ping").await {
         // Problem with http remote API reachability
-        Err(ServiceError::HTTPError(_)) => Ok(use_insecure || Confirm::new("There was a problem with the remote API and it is treated as insecure. Do you want to continue?")
+        Err(BaseHTTPClientError::HTTPError(_)) => Ok(use_insecure || Confirm::new("There was a problem with the remote API and it is treated as insecure. Do you want to continue?")
             .with_default(false)
             .prompt()
             .unwrap_or(false)),
         // another error
-        Err(e) => Err(e),
+        Err(e) => Err(ServiceError::HTTPClientError(e)),
         // success doesn't bother us here
         Ok(_) => Ok(false)
     }

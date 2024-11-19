@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 
 use super::{Script, ScriptsGroup};
 
@@ -35,24 +35,24 @@ impl ScriptsClient {
     /// Adds a script to the given group.
     ///
     /// * `script`: script's definition.
-    pub async fn add_script(&self, script: Script) -> Result<(), ServiceError> {
+    pub async fn add_script(&self, script: Script) -> Result<(), BaseHTTPClientError> {
         self.client.post_void("/scripts", &script).await
     }
 
     /// Runs user-defined scripts of the given group.
     ///
     /// * `group`: group of the scripts to run
-    pub async fn run_scripts(&self, group: ScriptsGroup) -> Result<(), ServiceError> {
+    pub async fn run_scripts(&self, group: ScriptsGroup) -> Result<(), BaseHTTPClientError> {
         self.client.post_void("/scripts/run", &group).await
     }
 
     /// Returns the user-defined scripts.
-    pub async fn scripts(&self) -> Result<Vec<Script>, ServiceError> {
+    pub async fn scripts(&self) -> Result<Vec<Script>, BaseHTTPClientError> {
         self.client.get("/scripts").await
     }
 
     /// Remove all the user-defined scripts.
-    pub async fn delete_scripts(&self) -> Result<(), ServiceError> {
+    pub async fn delete_scripts(&self) -> Result<(), BaseHTTPClientError> {
         self.client.delete_void("/scripts").await
     }
 }

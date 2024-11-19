@@ -21,8 +21,7 @@
 //! Implements the store for the storage settings.
 
 use super::StorageSettings;
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 use crate::storage::http_client::StorageHTTPClient;
 
 /// Loads and stores the storage settings from/to the HTTP service.
@@ -31,17 +30,17 @@ pub struct StorageStore {
 }
 
 impl StorageStore {
-    pub fn new(client: BaseHTTPClient) -> Result<StorageStore, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<StorageStore, BaseHTTPClientError> {
         Ok(Self {
             storage_client: StorageHTTPClient::new(client),
         })
     }
 
-    pub async fn load(&self) -> Result<StorageSettings, ServiceError> {
+    pub async fn load(&self) -> Result<StorageSettings, BaseHTTPClientError> {
         self.storage_client.get_config().await
     }
 
-    pub async fn store(&self, settings: &StorageSettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &StorageSettings) -> Result<(), BaseHTTPClientError> {
         self.storage_client.set_config(settings).await?;
         Ok(())
     }

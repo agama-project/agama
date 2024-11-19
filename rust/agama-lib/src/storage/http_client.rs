@@ -19,9 +19,8 @@
 // find current contact information at www.suse.com.
 
 //! Implements a client to access Agama's storage service.
-use crate::base_http_client::BaseHTTPClient;
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 use crate::storage::StorageSettings;
-use crate::ServiceError;
 
 pub struct StorageHTTPClient {
     client: BaseHTTPClient,
@@ -32,11 +31,11 @@ impl StorageHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<StorageSettings, ServiceError> {
+    pub async fn get_config(&self) -> Result<StorageSettings, BaseHTTPClientError> {
         self.client.get("/storage/config").await
     }
 
-    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), ServiceError> {
+    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), BaseHTTPClientError> {
         self.client.put_void("/storage/config", config).await
     }
 }

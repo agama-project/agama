@@ -23,7 +23,7 @@ use std::time::Duration;
 use reqwest::StatusCode;
 use tokio::time::sleep;
 
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 
 use super::model::{self, Answer, Question};
 
@@ -32,25 +32,31 @@ pub struct HTTPClient {
 }
 
 impl HTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<Self, BaseHTTPClientError> {
         Ok(Self { client })
     }
 
-    pub async fn list_questions(&self) -> Result<Vec<model::Question>, ServiceError> {
+    pub async fn list_questions(&self) -> Result<Vec<model::Question>, BaseHTTPClientError> {
         self.client.get("/questions").await
     }
 
     /// Creates question and return newly created question including id
-    pub async fn create_question(&self, question: &Question) -> Result<Question, ServiceError> {
+    pub async fn create_question(
+        &self,
+        question: &Question,
+    ) -> Result<Question, BaseHTTPClientError> {
         self.client.post("/questions", question).await
     }
 
     /// non blocking varient of checking if question has already answer
-    pub async fn try_answer(&self, question_id: u32) -> Result<Option<Answer>, ServiceError> {
+    pub async fn try_answer(
+        &self,
+        question_id: u32,
+    ) -> Result<Option<Answer>, BaseHTTPClientError> {
         let path = format!("/questions/{}/answer", question_id);
         let result: Result<Option<Answer>, _> = self.client.get(path.as_str()).await;
         match result {
-            Err(ServiceError::BackendError(code, ref _body_s)) => {
+            Err(BaseHTTPClientError::BackendError(code, ref _body_s)) => {
                 if code == StatusCode::NOT_FOUND {
                     Ok(None) // no answer yet, fine
                 } else {
@@ -62,7 +68,7 @@ impl HTTPClient {
     }
 
     /// Blocking variant of getting answer for given question.
-    pub async fn get_answer(&self, question_id: u32) -> Result<Answer, ServiceError> {
+    pub async fn get_answer(&self, question_id: u32) -> Result<Answer, BaseHTTPClientError> {
         loop {
             let answer = self.try_answer(question_id).await?;
             if let Some(result) = answer {
@@ -76,7 +82,7 @@ impl HTTPClient {
         }
     }
 
-    pub async fn delete_question(&self, question_id: u32) -> Result<(), ServiceError> {
+    pub async fn delete_question(&self, question_id: u32) -> Result<(), BaseHTTPClientError> {
         let path = format!("/questions/{}", question_id);
         self.client.delete_void(path.as_str()).await
     }
