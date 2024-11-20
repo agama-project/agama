@@ -22,12 +22,14 @@
 
 import { _ } from "~/i18n";
 import React, { useState } from "react";
-import { Button, Stack } from "@patternfly/react-core";
+import { Button, Stack, Split } from "@patternfly/react-core";
 import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import { useConfigMutation, useConfig } from '~/queries/config';
+import { useSearchParams } from "react-router-dom";
 
 const ConfigEditor = ({ sections }): React.ReactNode => {
   const setConfig = useConfigMutation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const fetchConfigJson = () => {
     let { product, scripts, ...data } = useConfig({ "suspense": true });
@@ -48,12 +50,22 @@ const ConfigEditor = ({ sections }): React.ReactNode => {
     setConfig.mutate(JSON.parse(configJson));
   };
 
+  const closeEditor = () => {
+    searchParams.delete("ui");
+    setSearchParams(searchParams);
+  };
+
   return (
     <Stack hasGutter>
       <CodeEditor height="65vh" isUploadEnabled onCodeChange={onChange} language={Language.json} code={configJson} />
-      <Button onClick={updateConfig}>
-        {_("Do it!")}
-      </Button>
+      <Split hasGutter>
+        <Button variant="secondary" onClick={closeEditor}>
+          {_("Cancel")}
+        </Button>
+        <Button onClick={updateConfig}>
+          {_("Save")}
+        </Button>
+      </Split>
     </Stack>
   );
 };

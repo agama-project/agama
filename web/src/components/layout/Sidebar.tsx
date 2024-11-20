@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useSearchParams, createSearchParams } from "react-router-dom";
 import { Nav, NavItem, NavList, PageSidebar, PageSidebarBody, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { ChangeProductLink } from "~/components/core";
@@ -29,6 +29,10 @@ import { rootRoutes } from "~/router";
 import { _ } from "~/i18n";
 
 const MainNavigation = (): React.ReactNode => {
+  const [searchParams] = useSearchParams();
+  const ui = searchParams.get("ui");
+  const propagated = ui ? { ui: searchParams.get("ui") } : {};
+
   const links = rootRoutes().map((r) => {
     if (!r.handle) return null;
 
@@ -41,7 +45,7 @@ const MainNavigation = (): React.ReactNode => {
         key={r.path}
         component={({ className }) => (
           <NavLink
-            to={r.path}
+            to={{ pathname: r.path, search: `${createSearchParams(propagated)}` }}
             className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}
           >
             {iconName && <Icon size="s" name={iconName} />} {name}

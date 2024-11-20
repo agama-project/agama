@@ -281,9 +281,9 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  */
 const Content = ({ editorSections, children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
   const [searchParams] = useSearchParams();
-  const editorMode = searchParams.get("editorMode");
+  const ui = searchParams.get("ui");
 
-  if (editorMode) return (
+  if (ui && ui.toLowerCase() === "editor") return (
     <PageSection isFilled component="div">
       <ConfigEditor sections={editorSections} />
     </PageSection>

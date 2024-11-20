@@ -21,6 +21,7 @@
  */
 
 import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Masthead,
   MastheadProps,
@@ -65,6 +66,12 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
   const [isInstallerOptionsOpen, setIsInstallerOptionsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const toggleInstallerOptions = () => setIsInstallerOptionsOpen(!isInstallerOptionsOpen);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const openEditor = () => {
+    searchParams.append("ui", "editor");
+    setSearchParams(searchParams);
+  };
 
   return (
     <>
@@ -90,6 +97,9 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         <DropdownList>
           <DropdownItem key="download-logs" to={PATHS.logs} download="agama-logs.tar.gz">
             {_("Download logs")}
+          </DropdownItem>
+          <DropdownItem key="editor" onClick={openEditor}>
+            {_("Enter the Matrix")}
           </DropdownItem>
           {showInstallerOptions && (
             <>
