@@ -42,7 +42,7 @@ export default function L10nPage() {
         <h2>{_("Localization")}</h2>
       </Page.Header>
 
-      <Page.Content>
+      <Page.Content editorSections={["localization"]}>
         <Gallery hasGutter minWidths={{ default: "300px" }}>
           <GalleryItem>
             <Page.Section

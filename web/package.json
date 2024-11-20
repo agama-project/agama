@@ -111,6 +111,7 @@
     "@icons-pack/react-simple-icons": "^10.0.0",
     "@material-symbols/svg-400": "^0.23.0",
     "@patternfly/patternfly": "^5.1.0",
+    "@patternfly/react-code-editor": "^6.0.0",
     "@patternfly/react-core": "^5.1.1",
     "@patternfly/react-table": "^5.1.1",
     "@tanstack/react-query": "^5.49.2",

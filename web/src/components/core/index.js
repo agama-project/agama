@@ -53,3 +53,4 @@ export { default as Link } from "./Link";
 export { default as EmptyState } from "./EmptyState";
 export { default as InstallerOptions } from "./InstallerOptions";
 export { default as Drawer } from "./Drawer";
+export { default as ConfigEditor } from "./ConfigEditor";

@@ -39,11 +39,12 @@ import {
   Stack,
   TitleProps,
 } from "@patternfly/react-core";
+import { ConfigEditor } from "~/components/core";
 import { Flex } from "~/components/layout";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { To, useNavigate } from "react-router-dom";
+import { To, useNavigate, useSearchParams } from "react-router-dom";
 import { isEmpty, isObject } from "~/utils";
 
 /**
@@ -278,11 +279,22 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  *
  * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
  */
-const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => (
-  <PageSection isFilled component="div" {...pageSectionProps}>
-    {children}
-  </PageSection>
-);
+const Content = ({ editorSections, children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
+  const [searchParams] = useSearchParams();
+  const editorMode = searchParams.get("editorMode");
+
+  if (editorMode) return (
+    <PageSection isFilled component="div">
+      <ConfigEditor sections={editorSections} />
+    </PageSection>
+  );
+
+  return (
+    <PageSection isFilled component="div" {...pageSectionProps}>
+      {children}
+    </PageSection>
+  );
+};
 
 /**
  * Component for structuing an Agama page, built on top of PF/Page/PageGroup.

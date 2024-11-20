@@ -106,7 +106,7 @@ export default function NetworkPage() {
         <h2>{_("Network")}</h2>
       </Page.Header>
 
-      <Page.Content>
+      <Page.Content editorSections={["network"]}>
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
             <WiredConnections connections={wiredConnections} devices={devices} />

@@ -106,7 +106,7 @@ function SoftwarePage(): React.ReactNode {
         <h2>{_("Software")}</h2>
       </Page.Header>
 
-      <Page.Content>
+      <Page.Content editorSections={["software"]}>
         <Grid hasGutter>
           <GridItem sm={12}>
             <IssuesHint issues={issues} />

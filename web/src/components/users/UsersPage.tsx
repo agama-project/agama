@@ -36,7 +36,7 @@ export default function UsersPage() {
         <h2>{_("Users")}</h2>
       </Page.Header>
 
-      <Page.Content>
+      <Page.Content editorSections={["user", "root"]}>
         <Grid hasGutter>
           <GridItem sm={12}>
             <IssuesHint issues={issues} />

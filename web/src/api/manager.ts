@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, post } from "~/api/http";
+import { get, post, put } from "~/api/http";
 
 /**
  * Starts the probing process.
@@ -44,4 +44,22 @@ const finishInstallation = () => post("/api/manager/finish");
  */
 const fetchLogs = () => get("/api/manager/logs.tar.gz");
 
-export { startProbing, startInstallation, finishInstallation, fetchLogs };
+/**
+ * Let's see.
+ */
+const fetchConfig = (): Promise<Object | undefined> =>
+  get("/api/manager/config").then((config) => config);
+
+const updateConfig = (config: Object) => {
+  console.log("PUT esto", config);
+  put("/api/manager/config", config);
+};
+
+export {
+  startProbing,
+  startInstallation,
+  finishInstallation,
+  fetchLogs,
+  fetchConfig,
+  updateConfig,
+};
