@@ -31,6 +31,15 @@ const http = axios.create({
   responseType: "json",
 });
 
+// FIXME: share with web/src/context/installerL10n.tsx
+function agamaLanguage(): string | undefined {
+  // language from cookie, empty string if not set (regexp taken from Cockpit)
+  // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
+  return decodeURIComponent(
+    document.cookie.replace(/(?:(?:^|.*;\s*)agamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"),
+  );
+}
+
 function mock_response(method: string, url: string) {
   console.info("Demo mode, ignoring request", method, url);
 
@@ -53,10 +62,17 @@ function mock_response(method: string, url: string) {
  */
 const get = (url: string) => {
   if (process.env.AGAMA_DEMO) {
-    if (!(url in demo_data)) {
-      console.error("Missing demo data for REST API path", url);
+    const lang = agamaLanguage() || "en-US";
+
+    // try translated demo data first
+    if (demo_data[lang] && url in demo_data[lang]) {
+      return Promise.resolve(demo_data[lang][url]);
+    } else if (url in demo_data) {
+      return Promise.resolve(demo_data[url]);
+    } else {
+      console.error(`Missing demo data for REST API path ${url} (lang: ${lang})`);
+      return {};
     }
-    return Promise.resolve(demo_data[url]);
   } else {
     return http.get(url).then(({ data }) => data);
   }
