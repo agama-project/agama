@@ -24,6 +24,7 @@ import React, { useRef } from "react";
 import { Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page, Drawer } from "~/components/core/";
 import ProposalResultSection from "./ProposalResultSection";
+import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _ } from "~/i18n";
@@ -86,6 +87,9 @@ export default function ProposalPage() {
 
       <Page.Content>
         <Grid hasGutter>
+          <GridItem sm={12}>
+            <ProposalTransactionalInfo />
+          </GridItem>
           <GridItem sm={12}>
             <Drawer
               ref={drawerRef}

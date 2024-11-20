@@ -25,6 +25,7 @@ import { Alert } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useProduct } from "~/queries/software";
+import { useVolumeTemplates } from "~/queries/storage";
 import { isTransactionalSystem } from "~/components/storage/utils";
 import { ProposalSettings } from "~/types/storage";
 
@@ -35,10 +36,11 @@ import { ProposalSettings } from "~/types/storage";
  * @param props
  * @param props.settings - Settings used for calculating a proposal.
  */
-export default function ProposalTransactionalInfo({ settings }: { settings: ProposalSettings }) {
+export default function ProposalTransactionalInfo() {
   const { selectedProduct } = useProduct({ suspense: true });
+  const volumes = useVolumeTemplates({ suspense: true });
 
-  if (!isTransactionalSystem(settings?.volumes)) return;
+  if (!isTransactionalSystem(volumes)) return;
 
   const title = _("Transactional root file system");
   /* TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed) */
