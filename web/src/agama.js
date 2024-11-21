@@ -100,7 +100,4 @@ agama.ngettext = function ngettext(str1, strN, n) {
   return n === 1 ? str1 : strN;
 };
 
-// register a global object so it can be accessed from a separate po.js script
-window.agama = agama;
-
 export default agama;

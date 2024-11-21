@@ -226,6 +226,16 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       const mustReload = storeAgamaLanguage(newLanguage);
 
+      // FIXME: split("-")[0] code does not find the "po.pt_BR.js" file, use languages.json to get
+      // the correct file name (add a new attribute there)
+      const po = newLanguage.split("-")[0];
+      await import(
+        /* webpackChunkName: "[request]" */
+        `../../src/po/po.${po}`
+      ).catch((error) =>
+        console.error("Cannot load frontend translations for", newLanguage, error),
+      );
+
       if (mustReload) {
         reload(newLanguage);
       } else {
