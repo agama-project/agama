@@ -75,7 +75,7 @@ const DisabledButton = (props: ButtonProps) => (
   <Tooltip
     position="bottom-end"
     content={_(
-      "Installation not possible yet. Please, check issues from the topbar notification area",
+      "Installation is not possible with current setup. Please, see the preflight checks by clicking in the warning at the header area",
     )}
   >
     <Button {...props} />
