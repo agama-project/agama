@@ -67,9 +67,10 @@ describe("InstallButton", () => {
       );
     });
 
-    it("renders nothing", () => {
-      const { container } = installerRender(<InstallButton />);
-      expect(container).toBeEmptyDOMElement();
+    it("renders a disabled Install button", () => {
+      installerRender(<InstallButton />);
+      const button = screen.getByRole("button", { name: "Install" });
+      expect(button).toHaveAttribute("aria-disabled", "true");
     });
   });
 
@@ -78,7 +79,7 @@ describe("InstallButton", () => {
       mockIssuesList = new IssuesList([], [], [], []);
     });
 
-    it("renders an Install button", () => {
+    it("renders an enabled Install button", () => {
       installerRender(<InstallButton />);
       screen.getByRole("button", { name: "Install" });
     });

@@ -21,15 +21,13 @@
  */
 
 import React, { useState } from "react";
-
-import { Button, ButtonProps, Stack } from "@patternfly/react-core";
-
+import { Button, ButtonProps, Stack, Tooltip } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { _ } from "~/i18n";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { useLocation } from "react-router-dom";
 import { PRODUCT, ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 /**
  * List of paths where the InstallButton must not be shown.
@@ -72,6 +70,18 @@ according to the provided installation settings.",
   );
 };
 
+/** Internal component for rendering the disabled Install button */
+const DisabledButton = (props: ButtonProps) => (
+  <Tooltip
+    position="bottom-end"
+    content={_(
+      "Installation not possible yet. Please, check issues from the topbar notification area",
+    )}
+  >
+    <Button {...props} />
+  </Tooltip>
+);
+
 /**
  * Installation button
  *
@@ -81,12 +91,12 @@ according to the provided installation settings.",
  * When clicked, it will ask for a confirmation before triggering the request
  * for starting the installation.
  */
-const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
+const InstallButton = (buttonProps: Omit<ButtonProps, "onClick">) => {
   const issues = useAllIssues();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const isEnabled = issues.isEmpty;
 
-  if (!issues.isEmpty) return;
   if (EXCLUDED_FROM.includes(location.pathname)) return;
 
   const open = async () => setIsOpen(true);
@@ -96,13 +106,17 @@ const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
     startInstallation();
   };
 
+  const props: ButtonProps = {
+    ...buttonProps,
+    variant: "primary",
+    onClick: open,
+    /* TRANSLATORS: Install button label */
+    children: _("Install"),
+  };
+
   return (
     <>
-      <Button variant="primary" {...props} onClick={open}>
-        {/* TRANSLATORS: button label */}
-        {_("Install")}
-      </Button>
-
+      {isEnabled ? <Button {...props} /> : <DisabledButton {...props} isAriaDisabled />}
       {isOpen && <InstallConfirmationPopup onAccept={onAccept} onClose={close} />}
     </>
   );
