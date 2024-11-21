@@ -82,8 +82,10 @@ module Agama
       # @return [String, nil] nil if no disk is explicitly chosen
       def explicit_boot_device
         return nil unless boot.configure?
+        return nil unless boot.device
 
-        boot.device
+        boot_drive = drives.find { |d| d.alias == boot.device }
+        boot_drive&.found_device&.name
       end
 
       # Device that seems to be expected to be used for booting, according to the drive definitions
