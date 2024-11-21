@@ -45,9 +45,10 @@ import { useProduct } from "~/queries/software";
 import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
-import { InstallButton, InstallerOptions, IssuesLink } from "~/components/core";
+import { InstallButton, InstallerOptions, IssuesDrawerToggle } from "~/components/core";
+import { IssuesDrawerToggleProps } from "~/components/core/IssuesDrawerToggle";
 import { useLocation } from "react-router-dom";
-import { ROOT as PATHS } from "~/routes/paths";
+import { ROOT } from "~/routes/paths";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -58,6 +59,10 @@ export type HeaderProps = {
   showInstallerOptions?: boolean;
   /** The background color for the top bar */
   background?: MastheadProps["backgroundColor"];
+  /** Whether the issues drawer should be visible or not */
+  issuesDrawerVisible?: IssuesDrawerToggleProps["isExpanded"];
+  /** Callback to be triggered when the badge for issues drawer is clicked */
+  onIssuesDrawerToggle?: IssuesDrawerToggleProps["onClick"];
 };
 
 const OptionsDropdown = ({ showInstallerOptions }) => {
@@ -88,7 +93,7 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         )}
       >
         <DropdownList>
-          <DropdownItem key="download-logs" to={PATHS.logs} download="agama-logs.tar.gz">
+          <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
             {_("Download logs")}
           </DropdownItem>
           {showInstallerOptions && (
@@ -120,6 +125,8 @@ export default function Header({
   showSidebarToggle = true,
   showProductName = true,
   background = "dark",
+  issuesDrawerVisible,
+  onIssuesDrawerToggle,
 }: HeaderProps): React.ReactNode {
   const location = useLocation();
   const { selectedProduct } = useProduct();
@@ -150,8 +157,13 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem spacer={{ default: "spacerNone" }}>
-                <IssuesLink variant="warning" isInline />
+              <ToolbarItem spacer={{ default: "spacerMd" }}>
+                <IssuesDrawerToggle
+                  isExpanded={issuesDrawerVisible}
+                  onClick={onIssuesDrawerToggle}
+                />
+              </ToolbarItem>
+              <ToolbarItem>
                 <InstallButton />
               </ToolbarItem>
               <ToolbarItem>

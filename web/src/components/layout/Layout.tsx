@@ -20,11 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Page } from "@patternfly/react-core";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
+import { IssuesDrawer } from "~/components/core";
+import { useAllIssues } from "~/queries/issues";
 
 type LayoutProps = React.PropsWithChildren<{
   mountHeader?: boolean;
@@ -35,6 +37,8 @@ type LayoutProps = React.PropsWithChildren<{
 /**
  * Component for laying out the application content inside a PF/Page that might
  * or might not mount a header and a sidebar depending on the given props.
+ *
+ * FIXME: move the focus to the notification drawer when it is open
  */
 const Layout = ({
   mountHeader = true,
@@ -42,11 +46,29 @@ const Layout = ({
   headerOptions = {},
   children,
 }: LayoutProps) => {
+  const issues = useAllIssues();
+  const [issuesDrawerVisible, setIssuesDrawerVisible] = useState<boolean>(false);
+  const closeIssuesDrawer = () => setIssuesDrawerVisible(false);
+  const toggleIssuesDrawer = () => setIssuesDrawerVisible(!issuesDrawerVisible);
+
+  const mountIssuesDrawer = !issues.isEmpty;
+
   return (
     <Page
       isManagedSidebar
-      header={mountHeader && <Header showSidebarToggle={mountSidebar} {...headerOptions} />}
+      header={
+        mountHeader && (
+          <Header
+            showSidebarToggle={mountSidebar}
+            issuesDrawerVisible={issuesDrawerVisible}
+            onIssuesDrawerToggle={toggleIssuesDrawer}
+            {...headerOptions}
+          />
+        )
+      }
       sidebar={mountSidebar && <Sidebar />}
+      notificationDrawer={mountIssuesDrawer && <IssuesDrawer onClose={closeIssuesDrawer} />}
+      isNotificationDrawerExpanded={issuesDrawerVisible}
     >
       <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
     </Page>
