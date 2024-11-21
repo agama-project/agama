@@ -1,7 +1,10 @@
 #! /usr/bin/env node
 
-// Helper script for converting Gettext PO file to Javascript so they can loaded
-// by the web frontend.
+// Helper script for converting Gettext PO files to Javascript so they can be
+// loaded by the web frontend.
+//
+// Inspired by the Cockpit Webpack plugin
+// https://github.com/cockpit-project/cockpit/blob/main/pkg/lib/cockpit-po-plugin.js
 //
 // Usage:
 //   cd web/src/po
@@ -22,6 +25,13 @@ function poFiles() {
   return glob.sync(path.resolve(srcdir, "*.po"));
 }
 
+// read the supported languages from languages.json file
+function supportedLanguages() {
+  const langs = path.resolve(__dirname, "../src/languages.json");
+  const data = JSON.parse(fs.readFileSync(langs, "utf8"));
+  return Object.keys(data).map((l) => l.replace("-", "_"));
+}
+
 // extract the plural form function
 function pluralForm(statement) {
   try {
@@ -30,7 +40,7 @@ function pluralForm(statement) {
     // is insecure for 3rd party files
     jed.PF.parse(statement);
   } catch (error) {
-    console.error("Invalid plural form definition", statement)
+    console.error("Invalid plural form definition", statement);
     console.error(error.message);
     process.exit(1);
   }
@@ -84,4 +94,11 @@ function buildFile(po_file) {
   });
 }
 
-Promise.all(poFiles().map((f) => buildFile(f)));
+const supported = supportedLanguages();
+const files = poFiles().filter((f) => {
+  const base = path.basename(f, ".po");
+  // full match or language match
+  return supported.includes(base) || supported.some((s) => s.split("_")[0] === base);
+});
+
+Promise.all(files.map((f) => buildFile(f)));
