@@ -26,7 +26,6 @@ import { Page } from "@patternfly/react-core";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
 import { IssuesDrawer } from "~/components/core";
-import { useAllIssues } from "~/queries/issues";
 
 type LayoutProps = React.PropsWithChildren<{
   mountHeader?: boolean;
@@ -46,12 +45,9 @@ const Layout = ({
   headerOptions = {},
   children,
 }: LayoutProps) => {
-  const issues = useAllIssues();
   const [issuesDrawerVisible, setIssuesDrawerVisible] = useState<boolean>(false);
   const closeIssuesDrawer = () => setIssuesDrawerVisible(false);
   const toggleIssuesDrawer = () => setIssuesDrawerVisible(!issuesDrawerVisible);
-
-  const mountIssuesDrawer = !issues.isEmpty;
 
   return (
     <Page
@@ -67,7 +63,7 @@ const Layout = ({
         )
       }
       sidebar={mountSidebar && <Sidebar />}
-      notificationDrawer={mountIssuesDrawer && <IssuesDrawer onClose={closeIssuesDrawer} />}
+      notificationDrawer={<IssuesDrawer onClose={closeIssuesDrawer} />}
       isNotificationDrawerExpanded={issuesDrawerVisible}
     >
       <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
