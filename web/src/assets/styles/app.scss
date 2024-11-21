@@ -66,3 +66,17 @@ button.remove-link:hover {
     }
   }
 }
+
+.agama-issues-drawer-body {
+  padding: var(--pf-v5-global--spacer--lg);
+
+  h4 a {
+    text-decoration: underline;
+    font-weight: var(--fw-bold);
+  }
+
+  ul li.pf-m-info,
+  ul li.pf-m-warning {
+    --pf-v5-c-notification-drawer__list-item--before--BackgroundColor: none;
+  }
+}

@@ -52,4 +52,6 @@ export { default as TreeTable } from "./TreeTable";
 export { default as Link } from "./Link";
 export { default as EmptyState } from "./EmptyState";
 export { default as InstallerOptions } from "./InstallerOptions";
+export { default as IssuesDrawer } from "./IssuesDrawer";
+export { default as IssuesDrawerToggle } from "./IssuesDrawerToggle";
 export { default as Drawer } from "./Drawer";
