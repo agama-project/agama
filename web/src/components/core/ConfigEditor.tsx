@@ -41,12 +41,15 @@ const ConfigEditor = ({ sections }): React.ReactNode => {
   };
 
   const [configJson, setConfigJson] = useState(fetchConfigJson());
+  const [isEnabled, setIsEnabled] = useState(false);
 
   const onChange = (code) => {
     setConfigJson(code);
+    setIsEnabled(true);
   };
 
   const updateConfig = () => {
+    setIsEnabled(false);
     setConfig.mutate(JSON.parse(configJson));
   };
 
@@ -60,9 +63,9 @@ const ConfigEditor = ({ sections }): React.ReactNode => {
       <CodeEditor height="65vh" isUploadEnabled onCodeChange={onChange} language={Language.json} code={configJson} />
       <Split hasGutter>
         <Button variant="secondary" onClick={closeEditor}>
-          {_("Cancel")}
+          {_("Back to human UI")}
         </Button>
-        <Button onClick={updateConfig}>
+        <Button isDisabled={!isEnabled} onClick={updateConfig}>
           {_("Save")}
         </Button>
       </Split>
