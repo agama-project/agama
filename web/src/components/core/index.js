@@ -32,7 +32,6 @@ export { default as EmailInput } from "./EmailInput";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
-export { default as IssuesLink } from "./IssuesLink";
 export { default as IssuesHint } from "./IssuesHint";
 export { default as SectionSkeleton } from "./SectionSkeleton";
 export { default as ListSearch } from "./ListSearch";
