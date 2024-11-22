@@ -35,7 +35,7 @@ jobs:
             zypper --non-interactive ref
 
       - name: Install tools
-        run: zypper --non-interactive install --no-recommends git gettext-tools python3-langtable
+        run: zypper --non-interactive install --no-recommends nodejs npm git gettext-tools python3-langtable
 
       - name: Configure Git
         run: |
@@ -52,6 +52,10 @@ jobs:
         with:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
+
+      - name: Install NPM packages
+        working-directory: ./agama/web
+        run: npm ci
 
       - name: Validate the PO files
         working-directory: ./agama-weblate
