@@ -53,61 +53,61 @@ jobs:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
 
-      - name: Update PO files
+      - name: Validate the PO files
+        working-directory: ./agama-weblate
+        run:  ls web/*.po | xargs -n1 msgfmt --check-format -o /dev/null
+
+      - name: Update JS translations
         working-directory: ./agama
         run: |
-          mkdir -p web/po
+          mkdir -p web/src/po
           # delete the current translations
-          find web/po -name '*.po' -exec git rm '{}' ';'
+          find web/src/po -name '*.js' -exec git rm '{}' ';'
 
-          # copy the new ones
-          mkdir -p web/po
-          cp -a ../agama-weblate/web/*.po web/po
-          git add web/po/*.po
+          # update the list of supported languages, it is used by the PO->JS converter in the next step
+          web/share/update-languages.py --po-directory ../agama-weblate/web > web/src/languages.json
 
-      - name: Validate the PO files
-        working-directory: ./agama
-        run:  ls web/po/*.po | xargs -n1 msgfmt --check-format -o /dev/null
+          # rebuild the 
+          git add web/src/po/*.js web/src/languages.json
+
 
       # any changes besides the timestamps in the PO files?
       - name: Check changes
         id: check_changes
         working-directory: ./agama
         run: |
-          git diff --staged --ignore-matching-lines="POT-Creation-Date:" \
-            --ignore-matching-lines="PO-Revision-Date:" web/po > po.diff
+          git diff --staged web | tee tr.diff
 
-          if [ -s po.diff ]; then
-            echo "PO files updated"
+          if [ -s tr.diff ]; then
+            echo "Translations updated"
             # this is an Output Parameter
             # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
-            echo "po_updated=true" >> $GITHUB_OUTPUT
+            echo "updated=true" >> $GITHUB_OUTPUT
           else
-            echo "PO files unchanged"
-            echo "po_updated=false" >> $GITHUB_OUTPUT
+            echo "Translations not changed"
+            echo "updated=false" >> $GITHUB_OUTPUT
           fi
 
-          rm po.diff
+          rm tr.diff
 
       - name: Push updated PO files
         # run only when a PO file has been updated
-        if: steps.check_changes.outputs.po_updated == 'true'
+        if: steps.check_changes.outputs.updated == 'true'
         working-directory: ./agama
         run: |
-          web/share/update-languages.py > web/src/languages.json
-          # use a unique branch to avoid possible conflicts with already existing branches
+          # use an unique branch to avoid possible conflicts with already existing branches
           git checkout -b "po_merge_${GITHUB_RUN_ID}"
-          git commit -a -m "Update web PO files"$'\n\n'"Agama-weblate commit: `git -C ../agama-weblate rev-parse HEAD`"
+          git commit -a -m "Update web translation files"$'\n\n'"Agama-weblate commit: `git -C ../agama-weblate rev-parse HEAD`"
           git push origin "po_merge_${GITHUB_RUN_ID}"
 
       - name: Create pull request
         # run only when a PO file has been updated
-        if: steps.check_changes.outputs.po_updated == 'true'
+        if: steps.check_changes.outputs.updated == 'true'
         working-directory: ./agama
         run: |
           gh pr create -B master -H "po_merge_${GITHUB_RUN_ID}" \
             --label translations --label bot \
-            --title "Update web PO files" \
+            --title "Update web translation files" \
             --body "Updating the web translation files from the agama-weblate repository"
         env:
           GH_TOKEN: ${{ github.token }}

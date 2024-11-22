@@ -53,7 +53,6 @@ const plugins = [
   new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null, LOCAL_CONNECTION: null }),
   new webpack.SourceMapDevToolPlugin({
     filename: "[file].map",
-    test: /\.(js|jsx|css|scss)$/,
     // skip the source maps for the translation files, they are twice (!) big as the JS files
     // themselves and do not provide any value because there are basically just arrays of texts
     exclude: /po-.*\.js$/,
