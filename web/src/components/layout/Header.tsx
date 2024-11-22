@@ -45,8 +45,7 @@ import { useProduct } from "~/queries/software";
 import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
-import { InstallButton, InstallerOptions, IssuesDrawerToggle } from "~/components/core";
-import { IssuesDrawerToggleProps } from "~/components/core/IssuesDrawerToggle";
+import { InstallButton, InstallerOptions } from "~/components/core";
 import { useLocation } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
 
@@ -59,10 +58,8 @@ export type HeaderProps = {
   showInstallerOptions?: boolean;
   /** The background color for the top bar */
   background?: MastheadProps["backgroundColor"];
-  /** Whether the issues drawer should be visible or not */
-  issuesDrawerVisible?: IssuesDrawerToggleProps["isExpanded"];
-  /** Callback to be triggered when the badge for issues drawer is clicked */
-  onIssuesDrawerToggle?: IssuesDrawerToggleProps["onClick"];
+  /** Callback to be triggered for toggling the IssuesDrawer visibility */
+  toggleIssuesDrawer?: () => void;
 };
 
 const OptionsDropdown = ({ showInstallerOptions }) => {
@@ -125,8 +122,7 @@ export default function Header({
   showSidebarToggle = true,
   showProductName = true,
   background = "dark",
-  issuesDrawerVisible,
-  onIssuesDrawerToggle,
+  toggleIssuesDrawer,
 }: HeaderProps): React.ReactNode {
   const location = useLocation();
   const { selectedProduct } = useProduct();
@@ -157,14 +153,8 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem spacer={{ default: "spacerMd" }}>
-                <IssuesDrawerToggle
-                  isExpanded={issuesDrawerVisible}
-                  onClick={onIssuesDrawerToggle}
-                />
-              </ToolbarItem>
-              <ToolbarItem>
-                <InstallButton />
+              <ToolbarItem spacer={{ default: "spacerSm" }}>
+                <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
               <ToolbarItem>
                 <OptionsDropdown showInstallerOptions={showInstallerOptions} />

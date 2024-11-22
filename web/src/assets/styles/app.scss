@@ -66,6 +66,24 @@ button.remove-link:hover {
   }
 }
 
+.agama-install-button {
+  padding: var(--pf-v5-global--spacer--sm) var(--pf-v5-global--spacer--md);
+  font-size: var(--fs-large);
+}
+
+.agama-issues-mark {
+  background: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  top: -7px;
+  right: -7px;
+  position: absolute;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
 .agama-issues-drawer-body {
   padding: var(--pf-v5-global--spacer--lg);
 

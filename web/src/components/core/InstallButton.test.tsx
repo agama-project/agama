@@ -67,10 +67,23 @@ describe("InstallButton", () => {
       );
     });
 
-    it("renders a disabled Install button", () => {
-      installerRender(<InstallButton />);
-      const button = screen.getByRole("button", { name: "Install" });
-      expect(button).toHaveAttribute("aria-disabled", "true");
+    it("renders additional information to warn users about found problems", () => {
+      const { container } = installerRender(<InstallButton />);
+      const button = screen.getByRole("button", { name: /Install/ });
+      // An exlamation icon as visual mark
+      const icon = container.querySelector("svg");
+      expect(icon).toHaveAttribute("data-icon-name", "exclamation");
+      // An aria-label for users using an screen reader
+      within(button).getByLabelText(/Not possible with current setup/);
+    });
+
+    it("triggers the onClickWithIssues callback without rendering the confirmation dialog", async () => {
+      const onClickWithIssuesFn = jest.fn();
+      const { user } = installerRender(<InstallButton onClickWithIssues={onClickWithIssuesFn} />);
+      const button = screen.getByRole("button", { name: /Install/ });
+      await user.click(button);
+      expect(onClickWithIssuesFn).toHaveBeenCalled();
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     });
   });
 
@@ -79,16 +92,21 @@ describe("InstallButton", () => {
       mockIssuesList = new IssuesList([], [], [], []);
     });
 
-    it("renders an enabled Install button", () => {
-      installerRender(<InstallButton />);
-      screen.getByRole("button", { name: "Install" });
+    it("renders the button without any additional information", () => {
+      const { container } = installerRender(<InstallButton />);
+      const button = screen.getByRole("button", { name: "Install" });
+      // Renders nothing else
+      const icon = container.querySelector("svg");
+      expect(icon).toBeNull();
+      expect(within(button).queryByLabelText(/Not possible with current setup/)).toBeNull();
     });
 
-    it("renders a confirmation dialog when clicked", async () => {
-      const { user } = installerRender(<InstallButton />);
+    it("renders a confirmation dialog when clicked without triggering the onClickWithIssues callback", async () => {
+      const onClickWithIssuesFn = jest.fn();
+      const { user } = installerRender(<InstallButton onClickWithIssues={onClickWithIssuesFn} />);
       const button = await screen.findByRole("button", { name: "Install" });
       await user.click(button);
-
+      expect(onClickWithIssuesFn).not.toHaveBeenCalled();
       screen.getByRole("dialog", { name: "Confirm Installation" });
     });
 

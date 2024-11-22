@@ -56,8 +56,7 @@ const Layout = ({
         mountHeader && (
           <Header
             showSidebarToggle={mountSidebar}
-            issuesDrawerVisible={issuesDrawerVisible}
-            onIssuesDrawerToggle={toggleIssuesDrawer}
+            toggleIssuesDrawer={toggleIssuesDrawer}
             {...headerOptions}
           />
         )

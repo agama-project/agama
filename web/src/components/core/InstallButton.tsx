@@ -21,13 +21,14 @@
  */
 
 import React, { useState } from "react";
-import { Button, ButtonProps, Stack, Tooltip } from "@patternfly/react-core";
+import { Button, ButtonProps, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { useLocation } from "react-router-dom";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { Icon } from "../layout";
 
 /**
  * List of paths where the InstallButton must not be shown.
@@ -70,18 +71,6 @@ according to the provided installation settings.",
   );
 };
 
-/** Internal component for rendering the disabled Install button */
-const DisabledButton = (props: ButtonProps) => (
-  <Tooltip
-    position="bottom-end"
-    content={_(
-      "Installation is not possible with current setup. Please, see the preflight checks by clicking in the warning at the header area",
-    )}
-  >
-    <Button {...props} />
-  </Tooltip>
-);
-
 /**
  * Installation button
  *
@@ -91,14 +80,17 @@ const DisabledButton = (props: ButtonProps) => (
  * When clicked, it will ask for a confirmation before triggering the request
  * for starting the installation.
  */
-const InstallButton = (buttonProps: Omit<ButtonProps, "onClick">) => {
+const InstallButton = (
+  props: Omit<ButtonProps, "onClick"> & { onClickWithIssues?: () => void },
+) => {
   const issues = useAllIssues();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const isEnabled = issues.isEmpty;
+  const hasIssues = !issues.isEmpty;
 
   if (EXCLUDED_FROM.includes(location.pathname)) return;
 
+  const { onClickWithIssues, ...buttonProps } = props;
   const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
   const onAccept = () => {
@@ -106,17 +98,28 @@ const InstallButton = (buttonProps: Omit<ButtonProps, "onClick">) => {
     startInstallation();
   };
 
-  const props: ButtonProps = {
-    ...buttonProps,
-    variant: "primary",
-    onClick: open,
-    /* TRANSLATORS: Install button label */
-    children: _("Install"),
-  };
+  // TRANSLATORS: The install button label
+  const buttonText = _("Install");
+  // TRANSLATORS: Accessible text included with the install button when there are issues
+  const withIssuesAriaLabel = _("Not possible with current setup. Click to know more.");
 
   return (
     <>
-      {isEnabled ? <Button {...props} /> : <DisabledButton {...props} isAriaDisabled />}
+      <Button
+        variant="primary"
+        size="lg"
+        className="agama-install-button"
+        {...buttonProps}
+        onClick={hasIssues ? onClickWithIssues : open}
+      >
+        {buttonText}
+        {hasIssues && (
+          <div className="agama-issues-mark" aria-label={withIssuesAriaLabel}>
+            <Icon name="exclamation" size="xs" color="custom-color-300" />
+          </div>
+        )}
+      </Button>
+
       {isOpen && <InstallConfirmationPopup onAccept={onAccept} onClose={close} />}
     </>
   );

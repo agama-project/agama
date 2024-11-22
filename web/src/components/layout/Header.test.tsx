@@ -42,7 +42,6 @@ let phase: InstallationPhase;
 let isBusy: boolean;
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
-jest.mock("~/components/core/IssuesDrawerToggle", () => () => <div>Issues Drawer Mock</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
 
 jest.mock("~/queries/software", () => ({
@@ -81,11 +80,6 @@ describe("Header", () => {
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
     rerender(<Header showProductName={false} />);
     expect(screen.queryByRole("heading", { name: tumbleweed.name, level: 1 })).toBeNull();
-  });
-
-  it("mounts the IssuesDrawerToggle", () => {
-    installerRender(<Header />);
-    screen.getByText("Issues Drawer Mock");
   });
 
   it("mounts the Install button", () => {
