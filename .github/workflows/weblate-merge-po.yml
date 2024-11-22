@@ -67,11 +67,13 @@ jobs:
           # update the list of supported languages, it is used by the PO->JS converter in the next step
           web/share/update-languages.py --po-directory ../agama-weblate/web > web/src/languages.json
 
-          # rebuild the 
+          # rebuild the JS files
+          (cd web/src/po && SRCDIR=../../../../agama-weblate/web ../../share/po-converter.js)
+
+          # stage the changes
           git add web/src/po/*.js web/src/languages.json
 
-
-      # any changes besides the timestamps in the PO files?
+      # any changes detected?
       - name: Check changes
         id: check_changes
         working-directory: ./agama
