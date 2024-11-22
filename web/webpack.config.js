@@ -51,6 +51,13 @@ const plugins = [
   // "true" when running the development server ("npm run server")
   // https://webpack.js.org/plugins/environment-plugin/
   new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null, LOCAL_CONNECTION: null }),
+  new webpack.SourceMapDevToolPlugin({
+    filename: "[file].map",
+    test: /\.(js|jsx|css|scss)$/,
+    // skip the source maps for the translation files, they are twice (!) big as the JS files
+    // themselves and do not provide any value because there are basically just arrays of texts
+    exclude: /po-.*\.js$/,
+  }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -113,7 +120,8 @@ module.exports = {
       },
     ],
   },
-  devtool: "source-map",
+  // source maps are configured using the SourceMapDevToolPlugin above
+  devtool: false,
   stats: "errors-warnings",
   // always regenerate dist/, so make rules work
   output: { clean: true, compareBeforeEmit: false },
