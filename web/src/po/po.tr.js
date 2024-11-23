@@ -5,233 +5,114 @@ agama.locale({
     "plural-forms": (n) => n != 1,
     "language": "tr"
   },
-  "Change product": [
-    "Ürünü değiştir"
+  " Timezone selection": [
+    " Zaman dilimi seçimi"
   ],
-  "Confirm Installation": [
-    "Kurulumu Onaylayın"
+  " and ": [
+    " ve "
   ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Devam ederseniz sabit diskinizdeki bölümler, sağlanan kurulum ayarlarına göre değiştirilecektir."
+  "%1$s %2$s at %3$s (%4$s)": [
+    "%1$s %2$s %3$s'de (%4$s)"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Emin değilseniz lütfen iptal edin ve ayarları kontrol edin."
+  "%1$s %2$s partition (%3$s)": [
+    "%1$s %2$s bölüm (%3$s)"
   ],
-  "Continue": [
-    "İleri"
+  "%1$s %2$s volume (%3$s)": [
+    "%1$s %2$s disk (%3$s)"
   ],
-  "Cancel": [
-    "İptal"
+  "%1$s root at %2$s (%3$s)": [
+    "%1$s kökü %2$s'de (%3$s)"
   ],
-  "Install": [
-    "Yükle"
+  "%1$s root partition (%2$s)": [
+    "%1$s kök bölümü (%2$s)"
   ],
-  "TPM sealing requires the new system to be booted directly.": [
-    "TPM yalıtımıyla yeni sistemin doğrudan başlatılması gerekir."
+  "%1$s root volume (%2$s)": [
+    "%1$s kök diski (%2$s)"
   ],
-  "If a local media was used to run this installer, remove it before the next boot.": [
-    "Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki önyüklemeden önce bunu kaldırın."
+  "%d partition will be shrunk": [
+    "%d bölümü küçültülecek",
+    "%d bölümü küçültülecek"
   ],
-  "Hide details": [
-    "Detayları gizle"
+  "%s disk": [
+    "%s disk"
   ],
-  "See more details": [
-    "Daha fazla ayrıntı görün"
+  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
+    "%s atomik güncellemelere sahip değişmez bir sistemdir. Anlık imajlar aracılığıyla güncellenen salt okunur bir Btrfs dosya sistemi kullanır."
   ],
-  "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "Güvenilir Platform Modülünü (Trusted Platform Module) (TPM) şifrelenmiş cihazları otomatik olarak açacak şekilde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makinenin doğrudan yeni önyükleyiciye önyükleme yapması gerekir."
+  "%s logo": [
+    "%s logosu"
   ],
-  "Congratulations!": [
-    "Tebrikler!"
+  "%s with %d partitions": [
+    "%s ile %d bölümler"
   ],
-  "The installation on your machine is complete.": [
-    "Makinenize kurulum tamamlanmıştır."
+  ", ": [
+    ", "
   ],
-  "At this point you can power off the machine.": [
-    "Bu noktada makineyi kapatabilirsiniz."
+  "A mount point is required": [
+    "Bir bağlama noktası gerekli"
   ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "Bu noktada yeni sisteme giriş yapmak için makineyi yeniden başlatabilirsiniz."
+  "A new LVM Volume Group": [
+    "Yeni bir LVM Disk Grubu"
   ],
-  "Finish": [
-    "Bitti"
+  "A new volume group will be allocated in the selected disk and the   file system will be created as a logical volume.": [
+    "Seçilen diskte yeni bir birim grubu tahsis edilecek ve   dosya sistemi mantıksal birim olarak oluşturulacaktır."
   ],
-  "Reboot": [
-    "Yeniden Başlat"
-  ],
-  "Installing the system, please wait...": [
-    "Sistem kuruluyor, lütfen bekleyin..."
-  ],
-  "Installer options": [
-    "Kurulum seçenekleri"
-  ],
-  "Language": [
-    "Dil"
-  ],
-  "Keyboard layout": [
-    "Klavye düzeni"
-  ],
-  "Cannot be changed in remote installation": [
-    "Uzaktan kurulumda değiştirilemez"
+  "A size value is required": [
+    "Bir boyut değeri gerekli"
   ],
   "Accept": [
     "Kabul Et"
   ],
-  "Before starting the installation, you need to address the following problems:": [
-    "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
-  ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    "Sorunlar nedeniyle kurulum henüz mümkün değil. Bunları Genel Bakış sayfasından kontrol edin."
-  ],
-  "Installation issues": [
-    "Kurulum sorunları"
-  ],
-  "Search": [
-    "Arama"
-  ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "Giriş yapılamadı. Lütfen şifrenin doğru olduğundan emin olun."
-  ],
-  "Could not authenticate against the server, please check it.": [
-    "Sunucuya karşı kimlik doğrulaması yapılamadı, lütfen kontrol edin."
-  ],
-  "Log in as %s": [
-    "%s olarak oturum açın"
-  ],
-  "The installer requires [root] user privileges.": [
-    "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
-  ],
-  "Please, provide its password to log in to the system.": [
-    "Lütfen sisteme giriş yapabilmek için şifrenizi giriniz."
-  ],
-  "Login form": [
-    "Giriş Formu"
-  ],
-  "Password input": [
-    "Şifre girişi"
-  ],
-  "Log in": [
-    "Giriş Yap"
-  ],
-  "Back": [
-    "Geri"
-  ],
-  "Passwords do not match": [
-    "Parolalar uyuşmuyor"
-  ],
-  "Password": [
-    "Parola"
-  ],
-  "Password confirmation": [
-    "Parola onayı"
-  ],
-  "Password visibility button": [
-    "Parola görünürlük düğmesi"
-  ],
-  "Confirm": [
-    "Onayla"
-  ],
-  "Loading data...": [
-    "Veri yükleniyor..."
-  ],
-  "Pending": [
-    "Bekliyor"
-  ],
-  "In progress": [
-    "Devam ediyor"
-  ],
-  "Finished": [
-    "Bitti"
+  "Action": [
+    "Eylem"
   ],
   "Actions": [
     "Eylemler"
   ],
-  "Waiting": [
-    "Bekleyin"
+  "Actions for connection %s": [
+    "%s bağlantısı için eylemler"
   ],
-  "Cannot connect to Agama server": [
-    "Agama sunucusuna bağlanılamıyor"
+  "Actions to find space": [
+    "Alan bulmak için eylemler"
   ],
-  "Please, check whether it is running.": [
-    "Çalışıp çalışmadığını kontrol edin lütfen."
+  "Activate": [
+    "Etkinleştir"
   ],
-  "Reload": [
-    "Yenile"
+  "Activate disks": [
+    "Diskleri etkinleştir"
   ],
-  "Filter by description or keymap code": [
-    "Açıklamaya veya tuş haritası koduna göre filtreleyin"
+  "Activate new disk": [
+    "Yeni diski etkinleştir"
   ],
-  "None of the keymaps match the filter.": [
-    "Hiçbir tuş haritası filtreye uymuyor."
+  "Activate zFCP disk": [
+    "zFCP diskini etkinleştir"
   ],
-  "Keyboard selection": [
-    "Klavye seçimi"
+  "Activated": [
+    "Aktifleştirildi"
   ],
-  "Select": [
-    "Seç"
+  "Add %s file system": [
+    "%s dosya sistemini ekle"
   ],
-  "Localization": [
-    "Yerelleştirme"
+  "Add DNS": [
+    "DNS Ekle"
   ],
-  "Not selected yet": [
-    "Henüz seçilmedi"
-  ],
-  "Change": [
-    "Değiştir"
-  ],
-  "Keyboard": [
-    "Klavye"
-  ],
-  "Time zone": [
-    "Saat dilimi"
-  ],
-  "Filter by language, territory or locale code": [
-    "Dile, bölgeye veya yerel ayar koduna göre filtreleyin"
-  ],
-  "None of the locales match the filter.": [
-    "Hiçbir yerel ayar filtreye uymuyor."
-  ],
-  "Locale selection": [
-    "Yerelleştirme seçimi"
-  ],
-  "Filter by territory, time zone code or UTC offset": [
-    "Bölgeye, saat dilimi koduna veya UTC farkına göre filtreleyin"
-  ],
-  "None of the time zones match the filter.": [
-    "Hiçbir zaman dilimi filtreye uymuyor."
-  ],
-  " Timezone selection": [
-    " Zaman dilimi seçimi"
-  ],
-  "Options toggle": [
-    "Seçenekler geçişi"
-  ],
-  "Download logs": [
-    "Günlükleri indir"
-  ],
-  "Installer Options": [
-    "Yükleyici Seçenekleri"
-  ],
-  "Main navigation": [
-    "Ana gezinme"
-  ],
-  "Loading installation environment, please wait.": [
-    "Kurulum ortamı yükleniyor, lütfen bekleyin."
-  ],
-  "Remove": [
-    "Kaldır"
-  ],
-  "IP Address": [
-    "IP Adres"
-  ],
-  "Prefix length or netmask": [
-    "Önek uzunluğu veya ağ maskesi"
+  "Add a SSH Public Key for root": [
+    "Root için bir SSH Genel Anahtarı ekleyin"
   ],
   "Add an address": [
     "Adres ekle"
   ],
+  "Add another DNS": [
+    "Başka bir DNS ekle"
+  ],
   "Add another address": [
     "Başka Bir Adres Ekle"
+  ],
+  "Add file system": [
+    "Dosya sistemi ekle"
+  ],
+  "Address": [
+    "Adres"
   ],
   "Addresses": [
     "Adresler"
@@ -239,446 +120,351 @@ agama.locale({
   "Addresses data list": [
     "Adres veri listesi"
   ],
-  "Name": [
-    "İsim"
+  "All fields are required": [
+    "Tüm alanlar zorunludur"
   ],
-  "IP addresses": [
-    "IP adresleri"
+  "All partitions will be removed and any data in the disks will be lost.": [
+    "Tüm bölümler kaldırılacak ve disklerdeki tüm veriler kaybolacaktır."
   ],
-  "Connection actions": [
-    "Bağlantı eylemleri"
+  "Allows to boot to a previous version of the system after configuration changes or software upgrades.": [
+    "Yapılandırma değişiklikleri veya yazılım yükseltmeleri sonrasında sistemin önceki bir sürümüne önyükleme yapılmasına olanak tanır."
   ],
-  "Edit": [
-    "Düzenle"
-  ],
-  "Edit connection %s": [
-    "Bağlantıyı düzenle %s"
-  ],
-  "Forget": [
-    "Unut"
-  ],
-  "Forget connection %s": [
-    "Bağlantıyı unut %s"
-  ],
-  "Actions for connection %s": [
-    "%s bağlantısı için eylemler"
-  ],
-  "Server IP": [
-    "Sunucu IP'si"
-  ],
-  "Add DNS": [
-    "DNS Ekle"
-  ],
-  "Add another DNS": [
-    "Başka bir DNS ekle"
-  ],
-  "DNS": [
-    "DNS"
-  ],
-  "Ip prefix or netmask": [
-    "IP öneki veya ağ maskesi"
-  ],
-  "At least one address must be provided for selected mode": [
-    "Seçilen mod için en az bir adres sağlanmalıdır"
-  ],
-  "Mode": [
-    "Mod"
-  ],
-  "Automatic (DHCP)": [
-    "Otomatik (DHCP)"
-  ],
-  "Manual": [
-    "Manuel"
-  ],
-  "Gateway": [
-    "Ağ Geçidi"
-  ],
-  "Gateway can be defined only in 'Manual' mode": [
-    "Ağ geçidi yalnızca 'Manuel' modda tanımlanabilir"
-  ],
-  "Wired": [
-    "Kablolu"
-  ],
-  "No wired connections found": [
-    "Kablolu bağlantı bulunamadı"
-  ],
-  "Wi-Fi": [
-    "Wi-Fi"
-  ],
-  "Connect": [
-    "Bağlan"
-  ],
-  "Connected to %s": [
-    "%s'ye bağlandı"
-  ],
-  "No connected yet": [
-    "Henüz bağlanmadı"
-  ],
-  "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "Sistem henüz bir Wi-Fi ağına bağlanacak şekilde yapılandırılmadı."
-  ],
-  "No Wi-Fi supported": [
-    "Wi-Fi desteklenmiyor"
-  ],
-  "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "Sistem muhtemelen eksik veya devre dışı donanım nedeniyle Wi-Fi bağlantılarını desteklemiyor."
-  ],
-  "Network": [
-    "Ağ"
-  ],
-  "None": [
-    "Yok"
-  ],
-  "WPA & WPA2 Personal": [
-    "WPA ve WPA2 Kişisel"
-  ],
-  "WiFi connection form": [
-    "WiFi bağlantı formu"
-  ],
-  "Authentication failed, please try again": [
-    "Kimlik doğrulama başarısız oldu, lütfen tekrar deneyin"
-  ],
-  "Something went wrong": [
-    "Bir şeyler ters gitti"
-  ],
-  "Please, review provided settings and try again.": [
-    "Lütfen verilen ayarları gözden geçirip tekrar deneyin."
-  ],
-  "SSID": [
-    "SSID"
-  ],
-  "Security": [
-    "Güvenlik"
-  ],
-  "WPA Password": [
-    "WPA Şifresi"
-  ],
-  "Connecting": [
-    "Bağlanıyor"
-  ],
-  "Connected": [
-    "Bağlı"
-  ],
-  "Disconnected": [
-    "Bağlantısı Kesildi"
-  ],
-  "Disconnect": [
-    "Bağlantıyı kes"
-  ],
-  "Connect to hidden network": [
-    "Gizli ağa bağlan"
-  ],
-  "configured": [
-    "yapılandırılmış"
-  ],
-  "No visible Wi-Fi networks found": [
-    "Görünür Wi-Fi ağı bulunamadı"
-  ],
-  "Visible Wi-Fi networks": [
-    "Görünür Wi-Fi ağları"
-  ],
-  "Connect to a Wi-Fi network": [
-    "Bir Wi-Fi ağına bağlanın"
-  ],
-  "The system will use %s as its default language.": [
-    "Sistem varsayılan dil olarak %s dilini kullanacaktır."
-  ],
-  "Users": [
-    "Kullanıcılar"
-  ],
-  "Storage": [
-    "Depolama"
-  ],
-  "Software": [
-    "Yazılım"
-  ],
-  "Installation blocking issues": [
-    "Kurulum engelleme sorunları"
-  ],
-  "Before installing, please check the following problems.": [
-    "Kurulum yapmadan önce lütfen aşağıdaki sorunları kontrol edin."
-  ],
-  "Overview": [
-    "Genel bakış"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
-  ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Kurulum sürecine başlamadan önce yapılandırmanızı kontrol etmek için zaman ayırın."
-  ],
-  "The installation will take": [
-    "Kurulum yapılacak"
-  ],
-  "The installation will take %s including:": [
-    "Kurulum %s kadar olacaktır ve şunları içerecektir:"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group shrinking existing partitions at the underlying devices as needed": [
-    "Gerektiğinde temel cihazlardaki mevcut bölümleri daraltan yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group without modifying the partitions at the underlying devices": [
-    "Temel cihazlardaki bölümleri değiştirmeden yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group deleting all the content of the underlying devices": [
-    "Temel aygıtların tüm içeriğini silerek yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group using a custom strategy to find the needed space at the underlying devices": [
-    "Temel cihazlarda gerekli alanı bulmak için özel bir strateji kullanarak yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking existing partitions as needed": [
-    "%s'de yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna yükleyin ve gerektiğinde mevcut bölümleri küçültün"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s without modifying existing partitions": [
-    "Mevcut bölümleri değiştirmeden %s üzerindeki yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna yükleyin"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s deleting all its content": [
-    "%s'de yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna yükleyin ve tüm içeriğini silin"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s using a custom strategy to find the needed space": [
-    "%s üzerinde yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna, gereken alanı bulmak için özel bir strateji kullanarak yükleyin"
-  ],
-  "No device selected yet": [
-    "Henüz hiçbir cihaz seçilmedi"
-  ],
-  "Install using device %s shrinking existing partitions as needed": [
-    "%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri küçültün"
-  ],
-  "Install using device %s without modifying existing partitions": [
-    "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin"
-  ],
-  "Install using device %s and deleting all its content": [
-    "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin"
-  ],
-  "Install using device %s with a custom strategy to find the needed space": [
-    "Gerekli alanı bulmak için özel bir stratejiyle %s aygıtını kullanarak yükleyin"
-  ],
-  "%s logo": [
-    "%s logosu"
-  ],
-  "Select a product": [
-    "Bir ürün seçin"
-  ],
-  "Available products": [
-    "Mevcut ürünler"
-  ],
-  "Configuring the product, please wait ...": [
-    "Ürün yapılandırılıyor, lütfen bekleyin..."
-  ],
-  "Question": [
-    "Soru"
-  ],
-  "The encryption password did not work": [
-    "Şifreleme şifresi işe yaramadı"
-  ],
-  "Encrypted Device": [
-    "Şifrelenmiş Aygıt"
-  ],
-  "Encryption Password": [
-    "Şifreleme Şifresi"
-  ],
-  "Password Required": [
-    "Parola Gerekli"
-  ],
-  "No additional software was selected.": [
-    "Hiçbir ek yazılım seçilmedi."
-  ],
-  "The following software patterns are selected for installation:": [
-    "Kurulum için aşağıdaki yazılım desenleri seçilmiştir:"
-  ],
-  "Selected patterns": [
-    "Seçilmiş desenler"
-  ],
-  "Change selection": [
-    "Seçimi değiştir"
-  ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Bu ürün kurulum sırasında yazılım desenlerinin seçilmesine izin vermez. Ancak kurulum tamamlandıktan sonra ek yazılım ekleyebilirsiniz."
-  ],
-  "None of the patterns match the filter.": [
-    "Desenlerin hiçbiri filtreyle eşleşmiyor."
-  ],
-  "auto selected": [
-    "otomatik seçildi"
-  ],
-  "Unselect": [
-    "Seçimi kaldır"
-  ],
-  "Software selection": [
-    "Yazılım seçimi"
-  ],
-  "Filter by pattern title or description": [
-    "Desen başlığına veya açıklamasına göre filtrele"
-  ],
-  "Close": [
-    "Kapat"
-  ],
-  "Installation will take %s.": [
-    "Kurulum %s kadar olacak."
-  ],
-  "This space includes the base system and the selected software patterns, if any.": [
-    "Bu alan, varsa temel sistemi ve seçili yazılım desenlerini içerir."
-  ],
-  "Change boot options": [
-    "Önyükleme seçeneklerini değiştir"
-  ],
-  "Installation will not configure partitions for booting.": [
-    "Kurulum, önyükleme için bölümleri yapılandırmayacaktır."
-  ],
-  "Installation will configure partitions for booting at the installation disk.": [
-    "Kurulum, kurulum diskinde önyükleme için bölümleri yapılandıracaktır."
-  ],
-  "Installation will configure partitions for booting at %s.": [
-    "Kurulum, bölümleri %s konumunda önyükleme için yapılandıracaktır."
-  ],
-  "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "Yeni sistemin önyükleme yapabilmesini sağlamak için yükleyicinin uygun diskte bazı bölümler oluşturması veya yapılandırması gerekebilir."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Önyükleme için gerekli bölümler kurulum diskinde tahsis edilecektir."
-  ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Önyükleme için bölümler kurulum diskinde (%s) tahsis edilecektir."
-  ],
-  "Select booting partition": [
-    "Önyükleme bölümünü seçin"
-  ],
-  "Automatic": [
-    "Otomatik"
-  ],
-  "Select a disk": [
-    "Bir disk seçin"
-  ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Önyükleme için bölümler aşağıdaki aygıta tahsis edilecektir."
-  ],
-  "Choose a disk for placing the boot loader": [
-    "Önyükleme yükleyicisini yerleştirmek için bir disk seçin"
-  ],
-  "Do not configure": [
-    "Yapılandırmayın"
-  ],
-  "No partitions will be automatically configured for booting. Use with caution.": [
-    "Önyükleme için hiçbir bölüm otomatik olarak yapılandırılmayacak. Dikkatli kullanın."
-  ],
-  "The file systems will be allocated by default as [new partitions in the selected device].": [
-    "Dosya sistemleri varsayılan olarak [seçili aygıtta yeni bölümler] olarak tahsis edilecektir."
-  ],
-  "The file systems will be allocated by default as [logical volumes of a new LVM Volume Group]. The corresponding physical volumes will be created on demand as new partitions at the selected devices.": [
-    "Dosya sistemleri varsayılan olarak [yeni bir LVM Birim Grubunun mantıksal birimleri] olarak tahsis edilecektir. İlgili fiziksel birimler, seçili aygıtlarda yeni bölümler olarak talep üzerine oluşturulacaktır."
-  ],
-  "Select installation device": [
-    "Kurulum cihazını seçin"
-  ],
-  "Install new system on": [
-    "Yeni sistemi buraya kur"
+  "Already set": [
+    "Zaten ayarlandı"
   ],
   "An existing disk": [
     "Mevcut bir disk"
   ],
-  "A new LVM Volume Group": [
-    "Yeni bir LVM Disk Grubu"
+  "At least one address must be provided for selected mode": [
+    "Seçilen mod için en az bir adres sağlanmalıdır"
   ],
-  "Device selector for target disk": [
-    "Hedef disk için cihaz seçici"
+  "At this point you can power off the machine.": [
+    "Bu noktada makineyi kapatabilirsiniz."
   ],
-  "Device selector for new LVM volume group": [
-    "Yeni LVM birim grubu için cihaz seçici"
+  "At this point you can reboot the machine to log in to the new system.": [
+    "Bu noktada yeni sisteme giriş yapmak için makineyi yeniden başlatabilirsiniz."
   ],
-  "Prepare more devices by configuring advanced": [
-    "Gelişmiş yapılandırmalar yaparak daha fazla cihaz hazırlayın"
+  "Authentication by initiator": [
+    "Başlatıcıya göre kimlik doğrulama"
   ],
-  "storage techs": [
-    "depolama teknolojisi"
+  "Authentication by target": [
+    "Hedefe göre kimlik doğrulama"
   ],
-  "Multipath": [
-    "Çoklu yol"
+  "Authentication failed, please try again": [
+    "Kimlik doğrulama başarısız oldu, lütfen tekrar deneyin"
   ],
-  "DASD %s": [
-    "DASD %s"
+  "Auto": [
+    "Otomatik"
   ],
-  "Software %s": [
-    "Yazılım %s"
+  "Auto LUNs Scan": [
+    "Otomatik LUN Taraması"
   ],
-  "SD Card": [
-    "SD Kart"
+  "Auto-login": [
+    "Otomatik oturum açma"
   ],
-  "%s disk": [
-    "%s disk"
+  "Automatic": [
+    "Otomatik"
   ],
-  "Disk": [
-    "Disk"
+  "Automatic (DHCP)": [
+    "Otomatik (DHCP)"
   ],
-  "Members: %s": [
-    "Üyeler: %s"
+  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+    "Otomatik LUN taraması [devre dışı]. LUN'ların manuel olarak taranması gerekir       Bir kontrol cihazı etkinleştirildikten sonra yapılandırılır."
   ],
-  "Devices: %s": [
-    "Cihazlar: %s"
+  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+    "Otomatik LUN taraması [etkin]. Bir denetleyiciyi etkinleştirme       NPIV modunda çalıştırıldığında tüm LUN'lar otomatik olarak yapılandırılır."
   ],
-  "Wires: %s": [
-    "Bağlantılar: %s"
+  "Automatically calculated size according to the selected product.": [
+    "Seçilen ürüne göre otomatik olarak boyut hesaplanır."
   ],
-  "%s with %d partitions": [
-    "%s ile %d bölümler"
+  "Available products": [
+    "Mevcut ürünler"
   ],
-  "No content found": [
-    "İçerik bulunamadı"
+  "Back": [
+    "Geri"
   ],
-  "Device": [
-    "Cihaz"
+  "Back to device selection": [
+    "Cihaz seçimine geri dön"
   ],
-  "Details": [
-    "Detaylar"
+  "Before %s": [
+    "Önce %s"
   ],
-  "Size": [
-    "Boyut"
+  "Before installing, please check the following problems.": [
+    "Kurulum yapmadan önce lütfen aşağıdaki sorunları kontrol edin."
   ],
-  "Manage and format": [
-    "Yönet ve biçimlendir"
+  "Before starting the installation, you need to address the following problems:": [
+    "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
   ],
-  "Activate disks": [
-    "Diskleri etkinleştir"
+  "Boot partitions at %s": [
+    "%s'deki önyükleme bölümleri"
   ],
-  "zFCP": [
-    "zFCP"
+  "Boot partitions at installation disk": [
+    "Yükleme diskindeki önyükleme bölümleri"
+  ],
+  "Btrfs root partition with snapshots (%s)": [
+    "Anlık imajlarla (%s) Btrfs kök bölümü"
+  ],
+  "Btrfs root volume with snapshots (%s)": [
+    "Anlık imajlarla (%s) Btrfs kök birimi"
+  ],
+  "Btrfs with snapshots": [
+    "Anlık imajlarla Btrfs"
+  ],
+  "Cancel": [
+    "İptal"
+  ],
+  "Cannot accommodate the required file systems for installation": [
+    "Kurulum için gerekli dosya sistemlerine yer verilemiyor"
+  ],
+  "Cannot be changed in remote installation": [
+    "Uzaktan kurulumda değiştirilemez"
+  ],
+  "Cannot connect to Agama server": [
+    "Agama sunucusuna bağlanılamıyor"
+  ],
+  "Cannot format all selected devices": [
+    "Seçilen tüm aygıtlar biçimlendirilemiyor"
+  ],
+  "Change": [
+    "Değiştir"
+  ],
+  "Change boot options": [
+    "Önyükleme seçeneklerini değiştir"
+  ],
+  "Change location": [
+    "Konumu değiştir"
+  ],
+  "Change product": [
+    "Ürünü değiştir"
+  ],
+  "Change selection": [
+    "Seçimi değiştir"
+  ],
+  "Change the root password": [
+    "Root şifresini değiştirin"
+  ],
+  "Channel ID": [
+    "Kanal Kimliği"
+  ],
+  "Check the planned action": [
+    "Planlanan eylemi kontrol edin",
+    "%d planlanan eylemi kontrol edin"
+  ],
+  "Choose a disk for placing the boot loader": [
+    "Önyükleme yükleyicisini yerleştirmek için bir disk seçin"
+  ],
+  "Clear": [
+    "Temizle"
+  ],
+  "Close": [
+    "Kapat"
+  ],
+  "Configuring the product, please wait ...": [
+    "Ürün yapılandırılıyor, lütfen bekleyin..."
+  ],
+  "Confirm": [
+    "Onayla"
+  ],
+  "Confirm Installation": [
+    "Kurulumu Onaylayın"
+  ],
+  "Congratulations!": [
+    "Tebrikler!"
+  ],
+  "Connect": [
+    "Bağlan"
+  ],
+  "Connect to a Wi-Fi network": [
+    "Bir Wi-Fi ağına bağlanın"
+  ],
+  "Connect to hidden network": [
+    "Gizli ağa bağlan"
   ],
   "Connect to iSCSI targets": [
     "iSCSI hedeflerine bağlanın"
   ],
-  "iSCSI": [
-    "iSCSI"
+  "Connected": [
+    "Bağlı"
   ],
-  "disabled": [
-    "devre dışı"
+  "Connected (%s)": [
+    "Bağlandı (%s)"
   ],
-  "enabled": [
-    "etkinleştirildi"
+  "Connected to %s": [
+    "%s'ye bağlandı"
   ],
-  "using TPM unlocking": [
-    "TPM kilidini açmayı kullanma"
+  "Connecting": [
+    "Bağlanıyor"
+  ],
+  "Connection actions": [
+    "Bağlantı eylemleri"
+  ],
+  "Continue": [
+    "İleri"
+  ],
+  "Controllers": [
+    "Kontrolörler"
+  ],
+  "Could not authenticate against the server, please check it.": [
+    "Sunucuya karşı kimlik doğrulaması yapılamadı, lütfen kontrol edin."
+  ],
+  "Could not log in. Please, make sure that the password is correct.": [
+    "Giriş yapılamadı. Lütfen şifrenin doğru olduğundan emin olun."
+  ],
+  "Create a dedicated LVM volume group": [
+    "Özel bir LVM birim grubu oluşturun"
+  ],
+  "Create a new partition": [
+    "Yeni bir bölüm oluştur"
+  ],
+  "Create user": [
+    "Kullanıcı oluştur"
+  ],
+  "Custom": [
+    "Özel"
+  ],
+  "DASD": [
+    "DASD"
+  ],
+  "DASD %s": [
+    "DASD %s"
+  ],
+  "DASD devices selection table": [
+    "DASD aygıtları seçim tablosu"
+  ],
+  "DASDs table section": [
+    "DASDs tablo bölümü"
+  ],
+  "DIAG": [
+    "DIAG"
+  ],
+  "DNS": [
+    "DNS"
+  ],
+  "Deactivate": [
+    "Devre dışı bırak"
+  ],
+  "Deactivated": [
+    "Devre dışı bırakıldı"
+  ],
+  "Define a user now": [
+    "Şimdi bir kullanıcı tanımlayın"
+  ],
+  "Delete": [
+    "Sil"
+  ],
+  "Delete current content": [
+    "Mevcut içeriği sil"
+  ],
+  "Destructive actions are allowed": [
+    "Tahrip edici eylemlere izin veriliyor"
+  ],
+  "Destructive actions are not allowed": [
+    "Tahrip edici eylemlere izin verilmez"
+  ],
+  "Details": [
+    "Detaylar"
+  ],
+  "Device": [
+    "Cihaz"
+  ],
+  "Device selector for new LVM volume group": [
+    "Yeni LVM birim grubu için cihaz seçici"
+  ],
+  "Device selector for target disk": [
+    "Hedef disk için cihaz seçici"
+  ],
+  "Devices: %s": [
+    "Cihazlar: %s"
+  ],
+  "Discard": [
+    "At"
+  ],
+  "Disconnect": [
+    "Bağlantıyı kes"
+  ],
+  "Disconnected": [
+    "Bağlantısı Kesildi"
+  ],
+  "Discover": [
+    "Keşfet"
+  ],
+  "Discover iSCSI Targets": [
+    "iSCSI Hedeflerini Keşfedin"
+  ],
+  "Discover iSCSI targets": [
+    "iSCSI hedeflerini keşfedin"
+  ],
+  "Disk": [
+    "Disk"
+  ],
+  "Disks": [
+    "Diskler"
+  ],
+  "Do not configure": [
+    "Yapılandırmayın"
+  ],
+  "Do not configure partitions for booting": [
+    "Önyükleme için bölümleri yapılandırmayın"
+  ],
+  "Do you want to add it?": [
+    "Eklemek ister misiniz?"
+  ],
+  "Do you want to edit it?": [
+    "Düzenlemek ister misiniz?"
+  ],
+  "Download logs": [
+    "Günlükleri indir"
+  ],
+  "Edit": [
+    "Düzenle"
+  ],
+  "Edit %s": [
+    "%s'yi düzenle"
+  ],
+  "Edit %s file system": [
+    "%s dosya sistemini düzenle"
+  ],
+  "Edit connection %s": [
+    "Bağlantıyı düzenle %s"
+  ],
+  "Edit file system": [
+    "Dosya sistemini düzenle"
+  ],
+  "Edit iSCSI Initiator": [
+    "iSCSI Başlatıcısını Düzenle"
+  ],
+  "Edit password too": [
+    "Şifreyi de düzenle"
+  ],
+  "Edit the SSH Public Key for root": [
+    "Root için SSH Genel Anahtarını düzenleyin"
+  ],
+  "Edit user": [
+    "Kullanıcıyı düzenle"
   ],
   "Enable": [
     "Etkinleştir"
   ],
-  "Modify": [
-    "Değiştir"
+  "Encrypt the system": [
+    "Sistemi şifrele"
+  ],
+  "Encrypted Device": [
+    "Şifrelenmiş Aygıt"
   ],
   "Encryption": [
     "Şifreleme"
   ],
-  "Protection for the information stored at the device, including data, programs, and system files.": [
-    "Veriler, programlar ve sistem dosyaları dahil olmak üzere cihazda depolanan bilgilerin korunması."
+  "Encryption Password": [
+    "Şifreleme Şifresi"
   ],
-  "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Her önyüklemede otomatik olarak şifre çözmek için Güvenilir Platform Modülünü (TPM) kullanın"
+  "Exact size": [
+    "Tam boyut"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "TPM sistemin bütünlüğünü doğrulayabiliyorsa, verileri başlatmak ve erişmek için parolaya gerek kalmayacaktır. TPM yalıtımı, yeni sistemin ilk çalıştırmada doğrudan başlatılmasını gerektirir."
+  "Exact size for the file system.": [
+    "Dosya sisteminin tam boyutu."
   ],
-  "Full Disk Encryption (FDE) allows to protect the information stored at the device, including data, programs, and system files.": [
-    "Tam Disk Şifreleme (FDE), veriler, programlar ve sistem dosyaları dahil olmak üzere cihazda depolanan bilgilerin korunmasına olanak tanır."
-  ],
-  "Encrypt the system": [
-    "Sistemi şifrele"
+  "File system type": [
+    "Dosya sistemi türü"
   ],
   "File systems created as new partitions at %s": [
     "%s konumunda yeni bölümler olarak oluşturulan dosya sistemleri"
@@ -689,333 +475,273 @@ agama.locale({
   "File systems created at a new LVM volume group on %s": [
     "%s üzerinde yeni bir LVM birim grubunda oluşturulan dosya sistemleri"
   ],
-  "Main disk or LVM Volume Group for installation.": [
-    "Kurulum için ana disk veya LVM Birim Grubu."
+  "Filter by description or keymap code": [
+    "Açıklamaya veya tuş haritası koduna göre filtreleyin"
   ],
-  "Installation device": [
-    "Kurulum cihazı"
+  "Filter by language, territory or locale code": [
+    "Dile, bölgeye veya yerel ayar koduna göre filtreleyin"
   ],
-  "Maximum must be greater than minimum": [
-    "Maksimum, minimumdan büyük olmalıdır"
+  "Filter by max channel": [
+    "Maksimum kanala göre filtrele"
   ],
-  "at least %s": [
-    "en az %s"
+  "Filter by min channel": [
+    "Minimum kanala göre filtrele"
   ],
-  "Transactional Btrfs root volume (%s)": [
-    "İşlemsel Btrfs kök diski (%s)"
+  "Filter by pattern title or description": [
+    "Desen başlığına veya açıklamasına göre filtrele"
   ],
-  "Transactional Btrfs root partition (%s)": [
-    "İşlemsel Btrfs kök bölümü (%s)"
+  "Filter by territory, time zone code or UTC offset": [
+    "Bölgeye, saat dilimi koduna veya UTC farkına göre filtreleyin"
   ],
-  "Btrfs root volume with snapshots (%s)": [
-    "Anlık imajlarla (%s) Btrfs kök birimi"
+  "Final layout": [
+    "Son düzen"
   ],
-  "Btrfs root partition with snapshots (%s)": [
-    "Anlık imajlarla (%s) Btrfs kök bölümü"
+  "Finish": [
+    "Bitti"
   ],
-  "Mount %1$s at %2$s (%3$s)": [
-    "%1$s'yi %2$s'ye (%3$s) bağlayın"
+  "Finished": [
+    "Bitti"
   ],
-  "Swap at %1$s (%2$s)": [
-    "%1$s'de takas (%2$s)"
+  "First user": [
+    "İlk kullanıcı"
   ],
-  "Swap volume (%s)": [
-    "Takas diski (%s)"
+  "Fixed": [
+    "Düzeltildi"
   ],
-  "Swap partition (%s)": [
-    "Takas bölümü (%s)"
+  "Forget": [
+    "Unut"
   ],
-  "%1$s root at %2$s (%3$s)": [
-    "%1$s kökü %2$s'de (%3$s)"
+  "Forget connection %s": [
+    "Bağlantıyı unut %s"
   ],
-  "%1$s root volume (%2$s)": [
-    "%1$s kök diski (%2$s)"
+  "Format": [
+    "Biçim"
   ],
-  "%1$s root partition (%2$s)": [
-    "%1$s kök bölümü (%2$s)"
+  "Format selected devices?": [
+    "Seçili cihazlar biçimlendirilsin mi?"
   ],
-  "%1$s %2$s at %3$s (%4$s)": [
-    "%1$s %2$s %3$s'de (%4$s)"
+  "Format the device": [
+    "Cihazı biçimlendirin"
   ],
-  "%1$s %2$s volume (%3$s)": [
-    "%1$s %2$s disk (%3$s)"
+  "Formatted": [
+    "Biçimlendirilmiş"
   ],
-  "%1$s %2$s partition (%3$s)": [
-    "%1$s %2$s bölüm (%3$s)"
+  "Formatting DASD devices": [
+    "DASD aygıtlarının biçimlendirilmesi"
   ],
-  "Do not configure partitions for booting": [
-    "Önyükleme için bölümleri yapılandırmayın"
+  "Full Disk Encryption (FDE) allows to protect the information stored at the device, including data, programs, and system files.": [
+    "Tam Disk Şifreleme (FDE), veriler, programlar ve sistem dosyaları dahil olmak üzere cihazda depolanan bilgilerin korunmasına olanak tanır."
   ],
-  "Boot partitions at installation disk": [
-    "Yükleme diskindeki önyükleme bölümleri"
+  "Full name": [
+    "Tam isim"
   ],
-  "Boot partitions at %s": [
-    "%s'deki önyükleme bölümleri"
+  "Gateway": [
+    "Ağ Geçidi"
   ],
-  "These limits are affected by:": [
-    "Bu sınırlar şunlardan etkilenir:"
+  "Gateway can be defined only in 'Manual' mode": [
+    "Ağ geçidi yalnızca 'Manuel' modda tanımlanabilir"
   ],
-  "The configuration of snapshots": [
-    "Anlık imajların yapılandırılması"
-  ],
-  "Presence of other volumes (%s)": [
-    "Diğer disklerin mevcudu (%s)"
-  ],
-  "The amount of RAM in the system": [
-    "Sistemdeki RAM miktarı"
-  ],
-  "auto": [
-    "otomatik"
-  ],
-  "Reused %s": [
-    "Yeniden kullanılan %s"
-  ],
-  "Transactional Btrfs": [
-    "İşlemsel Btrfs"
-  ],
-  "Btrfs with snapshots": [
-    "Anlık imajlarla Btrfs"
-  ],
-  "Partition at %s": [
-    "%s'de bölüm"
-  ],
-  "Separate LVM at %s": [
-    "%s'de Ayrı LVM"
-  ],
-  "Logical volume at system LVM": [
-    "Sistem LVM'sindeki mantıksal birim"
-  ],
-  "Partition at installation disk": [
-    "Kurulum diskindeki bölüm"
-  ],
-  "Reset location": [
-    "Konumu sıfırla"
-  ],
-  "Change location": [
-    "Konumu değiştir"
-  ],
-  "Delete": [
-    "Sil"
-  ],
-  "Mount point": [
-    "Bağlantı noktası"
-  ],
-  "Location": [
-    "Konum"
-  ],
-  "Table with mount points": [
-    "Bağlantı noktaları olan tablo"
-  ],
-  "Add file system": [
-    "Dosya sistemi ekle"
-  ],
-  "Other": [
-    "Diğer"
-  ],
-  "Reset to defaults": [
-    "Varsayılanlara sıfırla"
-  ],
-  "Partitions and file systems": [
-    "Bölümler ve dosya sistemleri"
-  ],
-  "Structure of the new system, including any additional partition needed for booting": [
-    "Önyükleme için gereken ek bölümler de dahil olmak üzere yeni sistemin yapısı"
-  ],
-  "Show partitions and file-systems actions": [
-    "Bölümleri ve dosya sistemi eylemlerini göster"
+  "GiB": [
+    "GB"
   ],
   "Hide %d subvolume action": [
     "%d alt birim eylemini gizle",
     "%d alt birim eylemlerini gizle"
   ],
-  "Show %d subvolume action": [
-    "%d alt birim eylemini göster",
-    "%d alt birim eylemlerini göster"
+  "Hide details": [
+    "Detayları gizle"
   ],
-  "Destructive actions are not allowed": [
-    "Tahrip edici eylemlere izin verilmez"
+  "IP Address": [
+    "IP Adres"
   ],
-  "Destructive actions are allowed": [
-    "Tahrip edici eylemlere izin veriliyor"
+  "IP address": [
+    "IP adresi"
   ],
-  "affecting": [
-    "etkiliyor"
+  "IP addresses": [
+    "IP adresleri"
   ],
-  "Shrinking partitions is not allowed": [
-    "Bölümlerin küçültülmesine izin verilmez"
+  "If a local media was used to run this installer, remove it before the next boot.": [
+    "Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki önyüklemeden önce bunu kaldırın."
   ],
-  "Shrinking partitions is allowed": [
-    "Bölümlerin küçültülmesine izin verilir"
+  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
+    "Devam ederseniz sabit diskinizdeki bölümler, sağlanan kurulum ayarlarına göre değiştirilecektir."
   ],
-  "Shrinking some partitions is allowed but not needed": [
-    "Bazı bölümlerin küçültülmesine izin verilir ancak buna gerek yoktur"
+  "In progress": [
+    "Devam ediyor"
   ],
-  "%d partition will be shrunk": [
-    "%d bölümü küçültülecek",
-    "%d bölümü küçültülecek"
+  "Incorrect IP address": [
+    "Yanlış IP adresi"
   ],
-  "Cannot accommodate the required file systems for installation": [
-    "Kurulum için gerekli dosya sistemlerine yer verilemiyor"
+  "Incorrect password": [
+    "Yanlış şifre"
   ],
-  "Check the planned action": [
-    "Planlanan eylemi kontrol edin",
-    "%d planlanan eylemi kontrol edin"
+  "Incorrect port": [
+    "Yanlış port"
   ],
-  "Waiting for actions information...": [
-    "Eylem bilgileri bekleniyor..."
+  "Incorrect user name": [
+    "Yanlış kullanıcı adı"
   ],
-  "Planned Actions": [
-    "Planlanan Eylemler"
+  "Initiator": [
+    "Başlatıcı"
   ],
-  "Waiting for information about storage configuration": [
-    "Depolama yapılandırması hakkında bilgi bekleniyor"
+  "Initiator name": [
+    "Başlatıcı adı"
   ],
-  "Final layout": [
-    "Son düzen"
+  "Install": [
+    "Yükle"
   ],
-  "The systems will be configured as displayed below.": [
-    "Sistemler aşağıda gösterildiği şekilde yapılandırılacaktır."
+  "Install in a new Logical Volume Manager (LVM) volume group deleting all the content of the underlying devices": [
+    "Temel aygıtların tüm içeriğini silerek yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
   ],
-  "Storage proposal not possible": [
-    "Depolama önerisi mümkün değil"
+  "Install in a new Logical Volume Manager (LVM) volume group on %s deleting all its content": [
+    "%s'de yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna yükleyin ve tüm içeriğini silin"
   ],
-  "New": [
-    "Yeni"
+  "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking existing partitions as needed": [
+    "%s'de yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna yükleyin ve gerektiğinde mevcut bölümleri küçültün"
   ],
-  "Before %s": [
-    "Önce %s"
+  "Install in a new Logical Volume Manager (LVM) volume group on %s using a custom strategy to find the needed space": [
+    "%s üzerinde yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna, gereken alanı bulmak için özel bir strateji kullanarak yükleyin"
   ],
-  "Mount Point": [
-    "Bağlantı Noktası"
+  "Install in a new Logical Volume Manager (LVM) volume group on %s without modifying existing partitions": [
+    "Mevcut bölümleri değiştirmeden %s üzerindeki yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna yükleyin"
   ],
-  "Transactional root file system": [
-    "İşlemsel kök dosya sistemi"
+  "Install in a new Logical Volume Manager (LVM) volume group shrinking existing partitions at the underlying devices as needed": [
+    "Gerektiğinde temel cihazlardaki mevcut bölümleri daraltan yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
   ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s atomik güncellemelere sahip değişmez bir sistemdir. Anlık imajlar aracılığıyla güncellenen salt okunur bir Btrfs dosya sistemi kullanır."
+  "Install in a new Logical Volume Manager (LVM) volume group using a custom strategy to find the needed space at the underlying devices": [
+    "Temel cihazlarda gerekli alanı bulmak için özel bir strateji kullanarak yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
   ],
-  "Use Btrfs snapshots for the root file system": [
-    "Kök dosya sistemi için Btrfs anlık imajlarını kullanın"
+  "Install in a new Logical Volume Manager (LVM) volume group without modifying the partitions at the underlying devices": [
+    "Temel cihazlardaki bölümleri değiştirmeden yeni bir Mantıksal Birim Yöneticisi (LVM) birim grubuna kurulum yapın"
   ],
-  "Allows to boot to a previous version of the system after configuration changes or software upgrades.": [
-    "Yapılandırma değişiklikleri veya yazılım yükseltmeleri sonrasında sistemin önceki bir sürümüne önyükleme yapılmasına olanak tanır."
+  "Install new system on": [
+    "Yeni sistemi buraya kur"
   ],
-  "Up to %s can be recovered by shrinking the device.": [
-    "Cihazın küçültülmesiyle %s'ye kadar geri kazanılabilir."
+  "Install using device %s and deleting all its content": [
+    "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin"
   ],
-  "The device cannot be shrunk:": [
-    "Cihaz daraltılamaz:"
+  "Install using device %s shrinking existing partitions as needed": [
+    "%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri küçültün"
   ],
-  "Show information about %s": [
-    "%s hakkında bilgi göster"
+  "Install using device %s with a custom strategy to find the needed space": [
+    "Gerekli alanı bulmak için özel bir stratejiyle %s aygıtını kullanarak yükleyin"
   ],
-  "The content may be deleted": [
-    "İçerik silinmiş olabilir"
+  "Install using device %s without modifying existing partitions": [
+    "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin"
   ],
-  "Action": [
-    "Eylem"
+  "Installation blocking issues": [
+    "Kurulum engelleme sorunları"
   ],
-  "Actions to find space": [
-    "Alan bulmak için eylemler"
+  "Installation device": [
+    "Kurulum cihazı"
   ],
-  "Space policy": [
-    "Alan politikası"
+  "Installation issues": [
+    "Kurulum sorunları"
   ],
-  "Add %s file system": [
-    "%s dosya sistemini ekle"
+  "Installation not possible yet because of issues. Check them at Overview page.": [
+    "Sorunlar nedeniyle kurulum henüz mümkün değil. Bunları Genel Bakış sayfasından kontrol edin."
   ],
-  "Edit %s file system": [
-    "%s dosya sistemini düzenle"
+  "Installation will configure partitions for booting at %s.": [
+    "Kurulum, bölümleri %s konumunda önyükleme için yapılandıracaktır."
   ],
-  "Edit file system": [
-    "Dosya sistemini düzenle"
+  "Installation will configure partitions for booting at the installation disk.": [
+    "Kurulum, kurulum diskinde önyükleme için bölümleri yapılandıracaktır."
   ],
-  "The type and size of the file system cannot be edited.": [
-    "Dosya sisteminin türü ve boyutu düzenlenemez."
+  "Installation will not configure partitions for booting.": [
+    "Kurulum, önyükleme için bölümleri yapılandırmayacaktır."
   ],
-  "The current file system on %s is selected to be mounted at %s.": [
-    "%s üzerindeki geçerli dosya sistemi %s konumuna bağlanmak üzere seçildi."
+  "Installation will take %s.": [
+    "Kurulum %s kadar olacak."
   ],
-  "The size of the file system cannot be edited": [
-    "Dosya sisteminin boyutu düzenlenemez"
+  "Installer Options": [
+    "Yükleyici Seçenekleri"
   ],
-  "The file system is allocated at the device %s.": [
-    "Dosya sistemi %s cihazına tahsis edildi."
+  "Installer options": [
+    "Kurulum seçenekleri"
   ],
-  "A mount point is required": [
-    "Bir bağlama noktası gerekli"
+  "Installing the system, please wait...": [
+    "Sistem kuruluyor, lütfen bekleyin..."
   ],
-  "The mount point is invalid": [
-    "Bağlama noktası geçersiz"
+  "Interface": [
+    "Arayüz"
   ],
-  "A size value is required": [
-    "Bir boyut değeri gerekli"
+  "Ip prefix or netmask": [
+    "IP öneki veya ağ maskesi"
   ],
-  "Minimum size is required": [
-    "Minimum boyut gereklidir"
+  "Keyboard": [
+    "Klavye"
   ],
-  "There is already a file system for %s.": [
-    "%s için zaten bir dosya sistemi var."
+  "Keyboard layout": [
+    "Klavye düzeni"
   ],
-  "Do you want to edit it?": [
-    "Düzenlemek ister misiniz?"
+  "Keyboard selection": [
+    "Klavye seçimi"
   ],
-  "There is a predefined file system for %s.": [
-    "%s için önceden tanımlanmış bir dosya sistemi var."
+  "KiB": [
+    "KB"
   ],
-  "Do you want to add it?": [
-    "Eklemek ister misiniz?"
+  "LUN": [
+    "LUN"
   ],
-  "The options for the file system type depends on the product and the mount point.": [
-    "Dosya sistemi türüyle ilgili seçenekler ürüne ve bağlama noktasına bağlıdır."
-  ],
-  "More info for file system types": [
-    "Dosya sistemi türleri hakkında daha fazla bilgi"
-  ],
-  "File system type": [
-    "Dosya sistemi türü"
-  ],
-  "the configuration of snapshots": [
-    "anlık imajların yapılandırılması"
-  ],
-  "the presence of the file system for %s": [
-    "%s için dosya sisteminin mevcut olması"
-  ],
-  ", ": [
-    ", "
-  ],
-  "the amount of RAM in the system": [
-    "sistemdeki RAM miktarı"
-  ],
-  "The final size depends on %s.": [
-    "Son boyut %s'ye bağlıdır."
-  ],
-  " and ": [
-    " ve "
-  ],
-  "Automatically calculated size according to the selected product.": [
-    "Seçilen ürüne göre otomatik olarak boyut hesaplanır."
-  ],
-  "Exact size for the file system.": [
-    "Dosya sisteminin tam boyutu."
-  ],
-  "Exact size": [
-    "Tam boyut"
-  ],
-  "Size unit": [
-    "Boyut birimi"
+  "Language": [
+    "Dil"
   ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "Dosya sistemi boyutu için sınırlar. Son boyut, verilen minimum ve maksimum arasında bir değer olacaktır. Maksimum verilmezse dosya sistemi mümkün olduğunca büyük olacaktır."
   ],
-  "Minimum": [
-    "Minimum"
+  "Loading data...": [
+    "Veri yükleniyor..."
   ],
-  "Minimum desired size": [
-    "Minimum istenen boyut"
+  "Loading installation environment, please wait.": [
+    "Kurulum ortamı yükleniyor, lütfen bekleyin."
   ],
-  "Unit for the minimum size": [
-    "Minimum boyut için birim"
+  "Locale selection": [
+    "Yerelleştirme seçimi"
+  ],
+  "Localization": [
+    "Yerelleştirme"
+  ],
+  "Location": [
+    "Konum"
+  ],
+  "Location for %s file system": [
+    "%s dosya sistemi için konum"
+  ],
+  "Log in": [
+    "Giriş Yap"
+  ],
+  "Log in as %s": [
+    "%s olarak oturum açın"
+  ],
+  "Logical volume at system LVM": [
+    "Sistem LVM'sindeki mantıksal birim"
+  ],
+  "Login": [
+    "Oturum aç"
+  ],
+  "Login %s": [
+    "Giriş %s"
+  ],
+  "Login form": [
+    "Giriş Formu"
+  ],
+  "Logout": [
+    "Oturumu kapat"
+  ],
+  "Main disk or LVM Volume Group for installation.": [
+    "Kurulum için ana disk veya LVM Birim Grubu."
+  ],
+  "Main navigation": [
+    "Ana gezinme"
+  ],
+  "Make sure you provide the correct values": [
+    "Doğru değerleri sağladığınızdan emin olun"
+  ],
+  "Manage and format": [
+    "Yönet ve biçimlendir"
+  ],
+  "Manual": [
+    "Manuel"
   ],
   "Maximum": [
     "Maksimum"
@@ -1023,460 +749,734 @@ agama.locale({
   "Maximum desired size": [
     "İstenilen maksimum boyut"
   ],
-  "Unit for the maximum size": [
-    "Maksimum boyut için birim"
+  "Maximum must be greater than minimum": [
+    "Maksimum, minimumdan büyük olmalıdır"
   ],
-  "Auto": [
-    "Otomatik"
+  "Members: %s": [
+    "Üyeler: %s"
   ],
-  "Fixed": [
-    "Düzeltildi"
-  ],
-  "Range": [
-    "Aralık"
-  ],
-  "The file systems are allocated at the installation device by default. Indicate a custom location to create the file system at a specific device.": [
-    "Dosya sistemleri varsayılan olarak kurulum cihazına tahsis edilir. Dosya sistemini belirli bir cihazda oluşturmak için özel bir konum belirtin."
-  ],
-  "Location for %s file system": [
-    "%s dosya sistemi için konum"
-  ],
-  "Select in which device to allocate the file system": [
-    "Dosya sisteminin hangi cihaza tahsis edileceğini seçin"
-  ],
-  "Select a location": [
-    "Bir konum seçin"
-  ],
-  "Select how to allocate the file system": [
-    "Dosya sisteminin nasıl tahsis edileceğini seçin"
-  ],
-  "Create a new partition": [
-    "Yeni bir bölüm oluştur"
-  ],
-  "The file system will be allocated as a new partition at the selected   disk.": [
-    "Seçilen   diskte dosya sistemi yeni bir bölüm olarak tahsis edilecektir."
-  ],
-  "Create a dedicated LVM volume group": [
-    "Özel bir LVM birim grubu oluşturun"
-  ],
-  "A new volume group will be allocated in the selected disk and the   file system will be created as a logical volume.": [
-    "Seçilen diskte yeni bir birim grubu tahsis edilecek ve   dosya sistemi mantıksal birim olarak oluşturulacaktır."
-  ],
-  "Format the device": [
-    "Cihazı biçimlendirin"
-  ],
-  "The selected device will be formatted as %s file system.": [
-    "Seçilen cihaz %s dosya sistemi olarak formatlanacak."
-  ],
-  "Mount the file system": [
-    "Dosya sistemini bağlayın"
-  ],
-  "The current file system on the selected device will be mounted   without formatting the device.": [
-    "Seçilen cihazdaki mevcut dosya sistemi, cihaz   formatlanmadan bağlanacaktır."
-  ],
-  "Usage": [
-    "Kullanım"
-  ],
-  "Formatting DASD devices": [
-    "DASD aygıtlarının biçimlendirilmesi"
-  ],
-  "DASD": [
-    "DASD"
-  ],
-  "DASD devices selection table": [
-    "DASD aygıtları seçim tablosu"
-  ],
-  "Back to device selection": [
-    "Cihaz seçimine geri dön"
-  ],
-  "No": [
-    "Hayır"
-  ],
-  "Yes": [
-    "Evet"
-  ],
-  "Channel ID": [
-    "Kanal Kimliği"
-  ],
-  "Status": [
-    "Durum"
-  ],
-  "Type": [
-    "Tip"
-  ],
-  "DIAG": [
-    "DIAG"
-  ],
-  "Formatted": [
-    "Biçimlendirilmiş"
-  ],
-  "Partition Info": [
-    "Bölüm Bilgisi"
-  ],
-  "Cannot format all selected devices": [
-    "Seçilen tüm aygıtlar biçimlendirilemiyor"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Çevrimdışı cihazlar biçimlendirilmeden önce etkinleştirilmelidir. Lütfen aşağıda listelenen cihazların seçimini kaldırın veya etkinleştirin ve tekrar deneyin"
-  ],
-  "Format selected devices?": [
-    "Seçili cihazlar biçimlendirilsin mi?"
-  ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Bu eylem aşağıda listelenen cihazlarda depolanan tüm verileri yok edebilir. Lütfen devam etmek istediğinizi onaylayın."
-  ],
-  "Perform an action": [
-    "Bir eylem gerçekleştir"
-  ],
-  "Activate": [
-    "Etkinleştir"
-  ],
-  "Deactivate": [
-    "Devre dışı bırak"
-  ],
-  "Set DIAG On": [
-    "DIAG'ı Açık olarak ayarlayın"
-  ],
-  "Set DIAG Off": [
-    "DIAG'ı Kapalı Olarak Ayarla"
-  ],
-  "Format": [
-    "Biçim"
-  ],
-  "Filter by min channel": [
-    "Minimum kanala göre filtrele"
-  ],
-  "Remove min channel filter": [
-    "Min kanal filtresini kaldır"
-  ],
-  "Filter by max channel": [
-    "Maksimum kanala göre filtrele"
-  ],
-  "Remove max channel filter": [
-    "Maksimum kanal filtresini kaldır"
-  ],
-  "DASDs table section": [
-    "DASDs tablo bölümü"
-  ],
-  "Unused space": [
-    "Kullanılmayan alan"
-  ],
-  "Only available if authentication by target is provided": [
-    "Yalnızca hedef tarafından kimlik doğrulaması sağlandığında kullanılabilir"
-  ],
-  "Authentication by target": [
-    "Hedefe göre kimlik doğrulama"
-  ],
-  "User name": [
-    "Kullanıcı adı"
-  ],
-  "Incorrect user name": [
-    "Yanlış kullanıcı adı"
-  ],
-  "Incorrect password": [
-    "Yanlış şifre"
-  ],
-  "Authentication by initiator": [
-    "Başlatıcıya göre kimlik doğrulama"
-  ],
-  "Target Password": [
-    "Hedef Şifre"
-  ],
-  "Discover iSCSI Targets": [
-    "iSCSI Hedeflerini Keşfedin"
-  ],
-  "Make sure you provide the correct values": [
-    "Doğru değerleri sağladığınızdan emin olun"
-  ],
-  "IP address": [
-    "IP adresi"
-  ],
-  "Address": [
-    "Adres"
-  ],
-  "Incorrect IP address": [
-    "Yanlış IP adresi"
-  ],
-  "Port": [
-    "Port"
-  ],
-  "Incorrect port": [
-    "Yanlış port"
-  ],
-  "Edit %s": [
-    "%s'yi düzenle"
-  ],
-  "Edit iSCSI Initiator": [
-    "iSCSI Başlatıcısını Düzenle"
-  ],
-  "Initiator name": [
-    "Başlatıcı adı"
-  ],
-  "iBFT": [
-    "iBFT"
-  ],
-  "Offload card": [
-    "Kartı boşalt"
-  ],
-  "Initiator": [
-    "Başlatıcı"
-  ],
-  "Login %s": [
-    "Giriş %s"
-  ],
-  "Startup": [
-    "Başlangıç"
-  ],
-  "On boot": [
-    "Önyüklemede"
-  ],
-  "Connected (%s)": [
-    "Bağlandı (%s)"
-  ],
-  "Login": [
-    "Oturum aç"
-  ],
-  "Logout": [
-    "Oturumu kapat"
-  ],
-  "Portal": [
-    "Portal"
-  ],
-  "Interface": [
-    "Arayüz"
-  ],
-  "No iSCSI targets found.": [
-    "Hiçbir iSCSI hedefi bulunamadı."
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Lütfen kullanılabilir iSCSI hedeflerini bulmak için bir iSCSI keşfi gerçekleştirin."
-  ],
-  "Discover iSCSI targets": [
-    "iSCSI hedeflerini keşfedin"
-  ],
-  "Discover": [
-    "Keşfet"
-  ],
-  "Targets": [
-    "Hedefler"
-  ],
-  "KiB": [
-    "KB"
+  "Method": [
+    "Yöntem"
   ],
   "MiB": [
     "MB"
   ],
-  "GiB": [
-    "GB"
+  "Minimum": [
+    "Minimum"
   ],
-  "TiB": [
-    "TB"
+  "Minimum desired size": [
+    "Minimum istenen boyut"
+  ],
+  "Minimum size is required": [
+    "Minimum boyut gereklidir"
+  ],
+  "Mode": [
+    "Mod"
+  ],
+  "Modify": [
+    "Değiştir"
+  ],
+  "More info for file system types": [
+    "Dosya sistemi türleri hakkında daha fazla bilgi"
+  ],
+  "Mount %1$s at %2$s (%3$s)": [
+    "%1$s'yi %2$s'ye (%3$s) bağlayın"
+  ],
+  "Mount Point": [
+    "Bağlantı Noktası"
+  ],
+  "Mount point": [
+    "Bağlantı noktası"
+  ],
+  "Mount the file system": [
+    "Dosya sistemini bağlayın"
+  ],
+  "Multipath": [
+    "Çoklu yol"
+  ],
+  "Name": [
+    "İsim"
+  ],
+  "Network": [
+    "Ağ"
+  ],
+  "New": [
+    "Yeni"
+  ],
+  "No": [
+    "Hayır"
+  ],
+  "No Wi-Fi supported": [
+    "Wi-Fi desteklenmiyor"
+  ],
+  "No additional software was selected.": [
+    "Hiçbir ek yazılım seçilmedi."
+  ],
+  "No connected yet": [
+    "Henüz bağlanmadı"
+  ],
+  "No content found": [
+    "İçerik bulunamadı"
+  ],
+  "No device selected yet": [
+    "Henüz hiçbir cihaz seçilmedi"
+  ],
+  "No iSCSI targets found.": [
+    "Hiçbir iSCSI hedefi bulunamadı."
+  ],
+  "No partitions will be automatically configured for booting. Use with caution.": [
+    "Önyükleme için hiçbir bölüm otomatik olarak yapılandırılmayacak. Dikkatli kullanın."
+  ],
+  "No root authentication method defined yet.": [
+    "Henüz tanımlanmış bir kök kimlik doğrulama yöntemi yok."
+  ],
+  "No user defined yet.": [
+    "Henüz kullanıcı tanımlı değil."
+  ],
+  "No visible Wi-Fi networks found": [
+    "Görünür Wi-Fi ağı bulunamadı"
+  ],
+  "No wired connections found": [
+    "Kablolu bağlantı bulunamadı"
+  ],
+  "No zFCP controllers found.": [
+    "Hiçbir zFCP denetleyicisi bulunamadı."
+  ],
+  "No zFCP disks found.": [
+    "zFCP diski bulunamadı."
+  ],
+  "None": [
+    "Yok"
+  ],
+  "None of the keymaps match the filter.": [
+    "Hiçbir tuş haritası filtreye uymuyor."
+  ],
+  "None of the locales match the filter.": [
+    "Hiçbir yerel ayar filtreye uymuyor."
+  ],
+  "None of the patterns match the filter.": [
+    "Desenlerin hiçbiri filtreyle eşleşmiyor."
+  ],
+  "None of the time zones match the filter.": [
+    "Hiçbir zaman dilimi filtreye uymuyor."
+  ],
+  "Not selected yet": [
+    "Henüz seçilmedi"
+  ],
+  "Not set": [
+    "Ayarlanmamış"
+  ],
+  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
+    "Çevrimdışı cihazlar biçimlendirilmeden önce etkinleştirilmelidir. Lütfen aşağıda listelenen cihazların seçimini kaldırın veya etkinleştirin ve tekrar deneyin"
+  ],
+  "Offload card": [
+    "Kartı boşalt"
+  ],
+  "On boot": [
+    "Önyüklemede"
+  ],
+  "Only available if authentication by target is provided": [
+    "Yalnızca hedef tarafından kimlik doğrulaması sağlandığında kullanılabilir"
+  ],
+  "Options toggle": [
+    "Seçenekler geçişi"
+  ],
+  "Other": [
+    "Diğer"
+  ],
+  "Overview": [
+    "Genel bakış"
+  ],
+  "Partition Info": [
+    "Bölüm Bilgisi"
+  ],
+  "Partition at %s": [
+    "%s'de bölüm"
+  ],
+  "Partition at installation disk": [
+    "Kurulum diskindeki bölüm"
+  ],
+  "Partitions and file systems": [
+    "Bölümler ve dosya sistemleri"
+  ],
+  "Partitions to boot will be allocated at the following device.": [
+    "Önyükleme için bölümler aşağıdaki aygıta tahsis edilecektir."
+  ],
+  "Partitions to boot will be allocated at the installation disk (%s).": [
+    "Önyükleme için bölümler kurulum diskinde (%s) tahsis edilecektir."
+  ],
+  "Partitions to boot will be allocated at the installation disk.": [
+    "Önyükleme için gerekli bölümler kurulum diskinde tahsis edilecektir."
+  ],
+  "Password": [
+    "Parola"
+  ],
+  "Password Required": [
+    "Parola Gerekli"
+  ],
+  "Password confirmation": [
+    "Parola onayı"
+  ],
+  "Password input": [
+    "Şifre girişi"
+  ],
+  "Password visibility button": [
+    "Parola görünürlük düğmesi"
+  ],
+  "Passwords do not match": [
+    "Parolalar uyuşmuyor"
+  ],
+  "Pending": [
+    "Bekliyor"
+  ],
+  "Perform an action": [
+    "Bir eylem gerçekleştir"
   ],
   "PiB": [
     "PB"
   ],
-  "Delete current content": [
-    "Mevcut içeriği sil"
+  "Planned Actions": [
+    "Planlanan Eylemler"
   ],
-  "All partitions will be removed and any data in the disks will be lost.": [
-    "Tüm bölümler kaldırılacak ve disklerdeki tüm veriler kaybolacaktır."
+  "Please, be aware that a user must be defined before installing the system to be able to log into it.": [
+    "Sisteme giriş yapılabilmesi için kurulumdan önce bir kullanıcı tanımlanması gerektiğini lütfen aklınızda bulundurun."
   ],
-  "deleting current content": [
-    "mevcut içerik siliniyor"
+  "Please, cancel and check the settings if you are unsure.": [
+    "Emin değilseniz lütfen iptal edin ve ayarları kontrol edin."
   ],
-  "Shrink existing partitions": [
-    "Mevcut bölümleri küçült"
+  "Please, check whether it is running.": [
+    "Çalışıp çalışmadığını kontrol edin lütfen."
   ],
-  "The data is kept, but the current partitions will be resized as needed.": [
-    "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
+  "Please, define at least one authentication method for logging into the system as root.": [
+    "Lütfen sisteme root olarak giriş yapmak için en az bir kimlik doğrulama yöntemi tanımlayın."
   ],
-  "shrinking partitions": [
-    "bölümler küçültülüyor"
+  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
+    "Lütfen kullanılabilir iSCSI hedeflerini bulmak için bir iSCSI keşfi gerçekleştirin."
   ],
-  "Use available space": [
-    "Mevcut alanı kullan"
+  "Please, provide its password to log in to the system.": [
+    "Lütfen sisteme giriş yapabilmek için şifrenizi giriniz."
   ],
-  "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Veriler tutulur. Sadece herhangi bir bölüme atanmamış alan kullanılacaktır."
+  "Please, review provided settings and try again.": [
+    "Lütfen verilen ayarları gözden geçirip tekrar deneyin."
   ],
-  "without modifying any partition": [
-    "herhangi bir bölümü değiştirmeden"
+  "Please, try to activate a zFCP controller.": [
+    "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
   ],
-  "Custom": [
-    "Özel"
+  "Please, try to activate a zFCP disk.": [
+    "Lütfen bir zFCP diski etkinleştirmeyi deneyin."
+  ],
+  "Port": [
+    "Port"
+  ],
+  "Portal": [
+    "Portal"
+  ],
+  "Prefix length or netmask": [
+    "Önek uzunluğu veya ağ maskesi"
+  ],
+  "Prepare more devices by configuring advanced": [
+    "Gelişmiş yapılandırmalar yaparak daha fazla cihaz hazırlayın"
+  ],
+  "Presence of other volumes (%s)": [
+    "Diğer disklerin mevcudu (%s)"
+  ],
+  "Protection for the information stored at the device, including data, programs, and system files.": [
+    "Veriler, programlar ve sistem dosyaları dahil olmak üzere cihazda depolanan bilgilerin korunması."
+  ],
+  "Question": [
+    "Soru"
+  ],
+  "Range": [
+    "Aralık"
+  ],
+  "Read zFCP devices": [
+    "zFCP aygıtlarını oku"
+  ],
+  "Reboot": [
+    "Yeniden Başlat"
+  ],
+  "Reload": [
+    "Yenile"
+  ],
+  "Remove": [
+    "Kaldır"
+  ],
+  "Remove max channel filter": [
+    "Maksimum kanal filtresini kaldır"
+  ],
+  "Remove min channel filter": [
+    "Min kanal filtresini kaldır"
+  ],
+  "Reset location": [
+    "Konumu sıfırla"
+  ],
+  "Reset to defaults": [
+    "Varsayılanlara sıfırla"
+  ],
+  "Reused %s": [
+    "Yeniden kullanılan %s"
+  ],
+  "Root SSH public key": [
+    "Root SSH genel anahtarı"
+  ],
+  "Root authentication": [
+    "Root kimlik doğrulaması"
+  ],
+  "Root password": [
+    "Root şifresi"
+  ],
+  "SD Card": [
+    "SD Kart"
+  ],
+  "SSH Key": [
+    "SSH Anahtarı"
+  ],
+  "SSID": [
+    "SSID"
+  ],
+  "Search": [
+    "Arama"
+  ],
+  "Security": [
+    "Güvenlik"
+  ],
+  "See more details": [
+    "Daha fazla ayrıntı görün"
+  ],
+  "Select": [
+    "Seç"
+  ],
+  "Select a disk": [
+    "Bir disk seçin"
+  ],
+  "Select a location": [
+    "Bir konum seçin"
+  ],
+  "Select a product": [
+    "Bir ürün seçin"
+  ],
+  "Select booting partition": [
+    "Önyükleme bölümünü seçin"
+  ],
+  "Select how to allocate the file system": [
+    "Dosya sisteminin nasıl tahsis edileceğini seçin"
+  ],
+  "Select in which device to allocate the file system": [
+    "Dosya sisteminin hangi cihaza tahsis edileceğini seçin"
+  ],
+  "Select installation device": [
+    "Kurulum cihazını seçin"
   ],
   "Select what to do with each partition.": [
     "Her bölümle ne yapılacağını seçin."
   ],
+  "Selected patterns": [
+    "Seçilmiş desenler"
+  ],
+  "Separate LVM at %s": [
+    "%s'de Ayrı LVM"
+  ],
+  "Server IP": [
+    "Sunucu IP'si"
+  ],
+  "Set": [
+    "Ayarla"
+  ],
+  "Set DIAG Off": [
+    "DIAG'ı Kapalı Olarak Ayarla"
+  ],
+  "Set DIAG On": [
+    "DIAG'ı Açık olarak ayarlayın"
+  ],
+  "Set a password": [
+    "Bir şifre belirleyin"
+  ],
+  "Set a root password": [
+    "Root şifresi belirleyin"
+  ],
+  "Set root SSH public key": [
+    "Root SSH genel anahtarını ayarlayın"
+  ],
+  "Show %d subvolume action": [
+    "%d alt birim eylemini göster",
+    "%d alt birim eylemlerini göster"
+  ],
+  "Show information about %s": [
+    "%s hakkında bilgi göster"
+  ],
+  "Show partitions and file-systems actions": [
+    "Bölümleri ve dosya sistemi eylemlerini göster"
+  ],
+  "Shrink existing partitions": [
+    "Mevcut bölümleri küçült"
+  ],
+  "Shrinking partitions is allowed": [
+    "Bölümlerin küçültülmesine izin verilir"
+  ],
+  "Shrinking partitions is not allowed": [
+    "Bölümlerin küçültülmesine izin verilmez"
+  ],
+  "Shrinking some partitions is allowed but not needed": [
+    "Bazı bölümlerin küçültülmesine izin verilir ancak buna gerek yoktur"
+  ],
+  "Size": [
+    "Boyut"
+  ],
+  "Size unit": [
+    "Boyut birimi"
+  ],
+  "Software": [
+    "Yazılım"
+  ],
+  "Software %s": [
+    "Yazılım %s"
+  ],
+  "Software selection": [
+    "Yazılım seçimi"
+  ],
+  "Something went wrong": [
+    "Bir şeyler ters gitti"
+  ],
+  "Space policy": [
+    "Alan politikası"
+  ],
+  "Startup": [
+    "Başlangıç"
+  ],
+  "Status": [
+    "Durum"
+  ],
+  "Storage": [
+    "Depolama"
+  ],
+  "Storage proposal not possible": [
+    "Depolama önerisi mümkün değil"
+  ],
+  "Structure of the new system, including any additional partition needed for booting": [
+    "Önyükleme için gereken ek bölümler de dahil olmak üzere yeni sistemin yapısı"
+  ],
+  "Swap at %1$s (%2$s)": [
+    "%1$s'de takas (%2$s)"
+  ],
+  "Swap partition (%s)": [
+    "Takas bölümü (%s)"
+  ],
+  "Swap volume (%s)": [
+    "Takas diski (%s)"
+  ],
+  "TPM sealing requires the new system to be booted directly.": [
+    "TPM yalıtımıyla yeni sistemin doğrudan başlatılması gerekir."
+  ],
+  "Table with mount points": [
+    "Bağlantı noktaları olan tablo"
+  ],
+  "Take your time to check your configuration before starting the installation process.": [
+    "Kurulum sürecine başlamadan önce yapılandırmanızı kontrol etmek için zaman ayırın."
+  ],
+  "Target Password": [
+    "Hedef Şifre"
+  ],
+  "Targets": [
+    "Hedefler"
+  ],
+  "The amount of RAM in the system": [
+    "Sistemdeki RAM miktarı"
+  ],
+  "The configuration of snapshots": [
+    "Anlık imajların yapılandırılması"
+  ],
+  "The content may be deleted": [
+    "İçerik silinmiş olabilir"
+  ],
+  "The current file system on %s is selected to be mounted at %s.": [
+    "%s üzerindeki geçerli dosya sistemi %s konumuna bağlanmak üzere seçildi."
+  ],
+  "The current file system on the selected device will be mounted   without formatting the device.": [
+    "Seçilen cihazdaki mevcut dosya sistemi, cihaz   formatlanmadan bağlanacaktır."
+  ],
+  "The data is kept, but the current partitions will be resized as needed.": [
+    "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
+  ],
+  "The data is kept. Only the space not assigned to any partition will be used.": [
+    "Veriler tutulur. Sadece herhangi bir bölüme atanmamış alan kullanılacaktır."
+  ],
+  "The device cannot be shrunk:": [
+    "Cihaz daraltılamaz:"
+  ],
+  "The encryption password did not work": [
+    "Şifreleme şifresi işe yaramadı"
+  ],
+  "The file system is allocated at the device %s.": [
+    "Dosya sistemi %s cihazına tahsis edildi."
+  ],
+  "The file system will be allocated as a new partition at the selected   disk.": [
+    "Seçilen   diskte dosya sistemi yeni bir bölüm olarak tahsis edilecektir."
+  ],
+  "The file systems are allocated at the installation device by default. Indicate a custom location to create the file system at a specific device.": [
+    "Dosya sistemleri varsayılan olarak kurulum cihazına tahsis edilir. Dosya sistemini belirli bir cihazda oluşturmak için özel bir konum belirtin."
+  ],
+  "The file systems will be allocated by default as [logical volumes of a new LVM Volume Group]. The corresponding physical volumes will be created on demand as new partitions at the selected devices.": [
+    "Dosya sistemleri varsayılan olarak [yeni bir LVM Birim Grubunun mantıksal birimleri] olarak tahsis edilecektir. İlgili fiziksel birimler, seçili aygıtlarda yeni bölümler olarak talep üzerine oluşturulacaktır."
+  ],
+  "The file systems will be allocated by default as [new partitions in the selected device].": [
+    "Dosya sistemleri varsayılan olarak [seçili aygıtta yeni bölümler] olarak tahsis edilecektir."
+  ],
+  "The final size depends on %s.": [
+    "Son boyut %s'ye bağlıdır."
+  ],
+  "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
+    "Güvenilir Platform Modülünü (Trusted Platform Module) (TPM) şifrelenmiş cihazları otomatik olarak açacak şekilde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makinenin doğrudan yeni önyükleyiciye önyükleme yapması gerekir."
+  ],
+  "The following software patterns are selected for installation:": [
+    "Kurulum için aşağıdaki yazılım desenleri seçilmiştir:"
+  ],
+  "The installation on your machine is complete.": [
+    "Makinenize kurulum tamamlanmıştır."
+  ],
+  "The installation will take": [
+    "Kurulum yapılacak"
+  ],
+  "The installation will take %s including:": [
+    "Kurulum %s kadar olacaktır ve şunları içerecektir:"
+  ],
+  "The installer requires [root] user privileges.": [
+    "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
+  ],
+  "The mount point is invalid": [
+    "Bağlama noktası geçersiz"
+  ],
+  "The options for the file system type depends on the product and the mount point.": [
+    "Dosya sistemi türüyle ilgili seçenekler ürüne ve bağlama noktasına bağlıdır."
+  ],
+  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
+    "TPM sistemin bütünlüğünü doğrulayabiliyorsa, verileri başlatmak ve erişmek için parolaya gerek kalmayacaktır. TPM yalıtımı, yeni sistemin ilk çalıştırmada doğrudan başlatılmasını gerektirir."
+  ],
+  "The selected device will be formatted as %s file system.": [
+    "Seçilen cihaz %s dosya sistemi olarak formatlanacak."
+  ],
+  "The size of the file system cannot be edited": [
+    "Dosya sisteminin boyutu düzenlenemez"
+  ],
+  "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
+    "Sistem muhtemelen eksik veya devre dışı donanım nedeniyle Wi-Fi bağlantılarını desteklemiyor."
+  ],
+  "The system has not been configured for connecting to a Wi-Fi network yet.": [
+    "Sistem henüz bir Wi-Fi ağına bağlanacak şekilde yapılandırılmadı."
+  ],
+  "The system will use %s as its default language.": [
+    "Sistem varsayılan dil olarak %s dilini kullanacaktır."
+  ],
+  "The systems will be configured as displayed below.": [
+    "Sistemler aşağıda gösterildiği şekilde yapılandırılacaktır."
+  ],
+  "The type and size of the file system cannot be edited.": [
+    "Dosya sisteminin türü ve boyutu düzenlenemez."
+  ],
+  "The zFCP disk was not activated.": [
+    "zFCP diski etkinleştirilmedi."
+  ],
+  "There is a predefined file system for %s.": [
+    "%s için önceden tanımlanmış bir dosya sistemi var."
+  ],
+  "There is already a file system for %s.": [
+    "%s için zaten bir dosya sistemi var."
+  ],
+  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
+    "Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
+  ],
+  "These limits are affected by:": [
+    "Bu sınırlar şunlardan etkilenir:"
+  ],
+  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
+    "Bu eylem aşağıda listelenen cihazlarda depolanan tüm verileri yok edebilir. Lütfen devam etmek istediğinizi onaylayın."
+  ],
+  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
+    "Bu ürün kurulum sırasında yazılım desenlerinin seçilmesine izin vermez. Ancak kurulum tamamlandıktan sonra ek yazılım ekleyebilirsiniz."
+  ],
+  "This space includes the base system and the selected software patterns, if any.": [
+    "Bu alan, varsa temel sistemi ve seçili yazılım desenlerini içerir."
+  ],
+  "TiB": [
+    "TB"
+  ],
+  "Time zone": [
+    "Saat dilimi"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
+    "Yeni sistemin önyükleme yapabilmesini sağlamak için yükleyicinin uygun diskte bazı bölümler oluşturması veya yapılandırması gerekebilir."
+  ],
+  "Transactional Btrfs": [
+    "İşlemsel Btrfs"
+  ],
+  "Transactional Btrfs root partition (%s)": [
+    "İşlemsel Btrfs kök bölümü (%s)"
+  ],
+  "Transactional Btrfs root volume (%s)": [
+    "İşlemsel Btrfs kök diski (%s)"
+  ],
+  "Transactional root file system": [
+    "İşlemsel kök dosya sistemi"
+  ],
+  "Type": [
+    "Tip"
+  ],
+  "Unit for the maximum size": [
+    "Maksimum boyut için birim"
+  ],
+  "Unit for the minimum size": [
+    "Minimum boyut için birim"
+  ],
+  "Unselect": [
+    "Seçimi kaldır"
+  ],
+  "Unused space": [
+    "Kullanılmayan alan"
+  ],
+  "Up to %s can be recovered by shrinking the device.": [
+    "Cihazın küçültülmesiyle %s'ye kadar geri kazanılabilir."
+  ],
+  "Upload": [
+    "Yükle"
+  ],
+  "Upload a SSH Public Key": [
+    "Bir SSH Genel Anahtarı Yükleyin"
+  ],
+  "Upload, paste, or drop an SSH public key": [
+    "Bir SSH genel anahtarını yükleyin, yapıştırın veya bırakın"
+  ],
+  "Usage": [
+    "Kullanım"
+  ],
+  "Use Btrfs snapshots for the root file system": [
+    "Kök dosya sistemi için Btrfs anlık imajlarını kullanın"
+  ],
+  "Use available space": [
+    "Mevcut alanı kullan"
+  ],
+  "Use suggested username": [
+    "Önerilen kullanıcı adını kullan"
+  ],
+  "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
+    "Her önyüklemede otomatik olarak şifre çözmek için Güvenilir Platform Modülünü (TPM) kullanın"
+  ],
+  "User full name": [
+    "Kullanıcının tam adı"
+  ],
+  "User name": [
+    "Kullanıcı adı"
+  ],
+  "Username": [
+    "Kullanıcı adı"
+  ],
+  "Username suggestion dropdown": [
+    "Kullanıcı adı önerisi açılır listesi"
+  ],
+  "Users": [
+    "Kullanıcılar"
+  ],
+  "Visible Wi-Fi networks": [
+    "Görünür Wi-Fi ağları"
+  ],
+  "WPA & WPA2 Personal": [
+    "WPA ve WPA2 Kişisel"
+  ],
+  "WPA Password": [
+    "WPA Şifresi"
+  ],
+  "WWPN": [
+    "WWPN"
+  ],
+  "Waiting": [
+    "Bekleyin"
+  ],
+  "Waiting for actions information...": [
+    "Eylem bilgileri bekleniyor..."
+  ],
+  "Waiting for information about storage configuration": [
+    "Depolama yapılandırması hakkında bilgi bekleniyor"
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
+  ],
+  "WiFi connection form": [
+    "WiFi bağlantı formu"
+  ],
+  "Wired": [
+    "Kablolu"
+  ],
+  "Wires: %s": [
+    "Bağlantılar: %s"
+  ],
+  "Yes": [
+    "Evet"
+  ],
+  "ZFCP": [
+    "ZFCP"
+  ],
+  "affecting": [
+    "etkiliyor"
+  ],
+  "at least %s": [
+    "en az %s"
+  ],
+  "auto": [
+    "otomatik"
+  ],
+  "auto selected": [
+    "otomatik seçildi"
+  ],
+  "configured": [
+    "yapılandırılmış"
+  ],
+  "deleting current content": [
+    "mevcut içerik siliniyor"
+  ],
+  "disabled": [
+    "devre dışı"
+  ],
+  "enabled": [
+    "etkinleştirildi"
+  ],
+  "iBFT": [
+    "iBFT"
+  ],
+  "iSCSI": [
+    "iSCSI"
+  ],
+  "shrinking partitions": [
+    "bölümler küçültülüyor"
+  ],
+  "storage techs": [
+    "depolama teknolojisi"
+  ],
+  "the amount of RAM in the system": [
+    "sistemdeki RAM miktarı"
+  ],
+  "the configuration of snapshots": [
+    "anlık imajların yapılandırılması"
+  ],
+  "the presence of the file system for %s": [
+    "%s için dosya sisteminin mevcut olması"
+  ],
+  "user autologin": [
+    "kullanıcı otomatik oturum açma"
+  ],
+  "using TPM unlocking": [
+    "TPM kilidini açmayı kullanma"
+  ],
   "with custom actions": [
     "özel eylemlerle"
   ],
-  "Auto LUNs Scan": [
-    "Otomatik LUN Taraması"
+  "without modifying any partition": [
+    "herhangi bir bölümü değiştirmeden"
   ],
-  "Activated": [
-    "Aktifleştirildi"
-  ],
-  "Deactivated": [
-    "Devre dışı bırakıldı"
+  "zFCP": [
+    "zFCP"
   ],
   "zFCP Disk Activation": [
     "zFCP Disk Etkinleştirme"
   ],
   "zFCP Disk activation form": [
     "zFCP Disk aktivasyon formu"
-  ],
-  "The zFCP disk was not activated.": [
-    "zFCP diski etkinleştirilmedi."
-  ],
-  "WWPN": [
-    "WWPN"
-  ],
-  "LUN": [
-    "LUN"
-  ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Otomatik LUN taraması [etkin]. Bir denetleyiciyi etkinleştirme       NPIV modunda çalıştırıldığında tüm LUN'lar otomatik olarak yapılandırılır."
-  ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Otomatik LUN taraması [devre dışı]. LUN'ların manuel olarak taranması gerekir       Bir kontrol cihazı etkinleştirildikten sonra yapılandırılır."
-  ],
-  "Please, try to activate a zFCP disk.": [
-    "Lütfen bir zFCP diski etkinleştirmeyi deneyin."
-  ],
-  "Please, try to activate a zFCP controller.": [
-    "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
-  ],
-  "No zFCP disks found.": [
-    "zFCP diski bulunamadı."
-  ],
-  "Activate zFCP disk": [
-    "zFCP diskini etkinleştir"
-  ],
-  "Activate new disk": [
-    "Yeni diski etkinleştir"
-  ],
-  "Disks": [
-    "Diskler"
-  ],
-  "Controllers": [
-    "Kontrolörler"
-  ],
-  "No zFCP controllers found.": [
-    "Hiçbir zFCP denetleyicisi bulunamadı."
-  ],
-  "Read zFCP devices": [
-    "zFCP aygıtlarını oku"
-  ],
-  "Define a user now": [
-    "Şimdi bir kullanıcı tanımlayın"
-  ],
-  "No user defined yet.": [
-    "Henüz kullanıcı tanımlı değil."
-  ],
-  "Please, be aware that a user must be defined before installing the system to be able to log into it.": [
-    "Sisteme giriş yapılabilmesi için kurulumdan önce bir kullanıcı tanımlanması gerektiğini lütfen aklınızda bulundurun."
-  ],
-  "Full name": [
-    "Tam isim"
-  ],
-  "Username": [
-    "Kullanıcı adı"
-  ],
-  "Discard": [
-    "At"
-  ],
-  "First user": [
-    "İlk kullanıcı"
-  ],
-  "Username suggestion dropdown": [
-    "Kullanıcı adı önerisi açılır listesi"
-  ],
-  "Use suggested username": [
-    "Önerilen kullanıcı adını kullan"
-  ],
-  "All fields are required": [
-    "Tüm alanlar zorunludur"
-  ],
-  "Create user": [
-    "Kullanıcı oluştur"
-  ],
-  "Edit user": [
-    "Kullanıcıyı düzenle"
-  ],
-  "User full name": [
-    "Kullanıcının tam adı"
-  ],
-  "Edit password too": [
-    "Şifreyi de düzenle"
-  ],
-  "user autologin": [
-    "kullanıcı otomatik oturum açma"
-  ],
-  "Auto-login": [
-    "Otomatik oturum açma"
-  ],
-  "No root authentication method defined yet.": [
-    "Henüz tanımlanmış bir kök kimlik doğrulama yöntemi yok."
-  ],
-  "Please, define at least one authentication method for logging into the system as root.": [
-    "Lütfen sisteme root olarak giriş yapmak için en az bir kimlik doğrulama yöntemi tanımlayın."
-  ],
-  "Method": [
-    "Yöntem"
-  ],
-  "Already set": [
-    "Zaten ayarlandı"
-  ],
-  "Not set": [
-    "Ayarlanmamış"
-  ],
-  "SSH Key": [
-    "SSH Anahtarı"
-  ],
-  "Set": [
-    "Ayarla"
-  ],
-  "Root authentication": [
-    "Root kimlik doğrulaması"
-  ],
-  "Set a password": [
-    "Bir şifre belirleyin"
-  ],
-  "Upload a SSH Public Key": [
-    "Bir SSH Genel Anahtarı Yükleyin"
-  ],
-  "Change the root password": [
-    "Root şifresini değiştirin"
-  ],
-  "Set a root password": [
-    "Root şifresi belirleyin"
-  ],
-  "Edit the SSH Public Key for root": [
-    "Root için SSH Genel Anahtarını düzenleyin"
-  ],
-  "Add a SSH Public Key for root": [
-    "Root için bir SSH Genel Anahtarı ekleyin"
-  ],
-  "Root password": [
-    "Root şifresi"
-  ],
-  "Set root SSH public key": [
-    "Root SSH genel anahtarını ayarlayın"
-  ],
-  "Root SSH public key": [
-    "Root SSH genel anahtarı"
-  ],
-  "Upload, paste, or drop an SSH public key": [
-    "Bir SSH genel anahtarını yükleyin, yapıştırın veya bırakın"
-  ],
-  "Upload": [
-    "Yükle"
-  ],
-  "Clear": [
-    "Temizle"
-  ],
-  "ZFCP": [
-    "ZFCP"
   ]
 });
