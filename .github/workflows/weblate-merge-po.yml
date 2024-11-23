@@ -54,7 +54,7 @@ jobs:
           repository: ${{ github.repository_owner }}/agama-weblate
 
       - name: Install NPM packages
-        working-directory: ./agama/web
+        working-directory: ./agama/web/share/po
         run: npm ci
 
       - name: Validate the PO files
@@ -72,7 +72,7 @@ jobs:
           web/share/update-languages.py --po-directory ../agama-weblate/web > web/src/languages.json
 
           # rebuild the JS files
-          (cd web/src/po && SRCDIR=../../../../agama-weblate/web ../../share/po-converter.js)
+          (cd web/src/po && SRCDIR=../../../../agama-weblate/web ../../share/po/po-converter.js)
 
           # stage the changes
           git add web/src/po/*.js web/src/languages.json

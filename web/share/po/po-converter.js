@@ -8,15 +8,19 @@
 //
 // Usage:
 //   cd web/src/po
-//   SRCDIR=../../../../agama-weblate/web ../../share/po-converter.js
+//   SRCDIR=../../../../agama-weblate/web ../../share/po/po-converter.js
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-const path = require("node:path");
-const fs = require("node:fs");
-const glob = require("glob");
-const gettext_parser = require("gettext-parser");
-const jed = require("jed");
+import path from "node:path";
+import fs from "node:fs";
+import { fileURLToPath } from "url";
+import * as glob from "glob";
+import gettext_parser from "gettext-parser";
+import jed from "jed";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const srcdir = process.env.SRCDIR || process.cwd();
 const template = fs.readFileSync(path.resolve(__dirname, "po.template.js"), "utf-8");
@@ -27,7 +31,7 @@ function poFiles() {
 
 // read the supported languages from languages.json file
 function supportedLanguages() {
-  const langs = path.resolve(__dirname, "../src/languages.json");
+  const langs = path.resolve(__dirname, "../../src/languages.json");
   const data = JSON.parse(fs.readFileSync(langs, "utf8"));
   return Object.keys(data).map((l) => l.replace("-", "_"));
 }
@@ -58,14 +62,14 @@ function pluralForm(statement) {
 function buildFile(po_file) {
   return new Promise((resolve, _reject) => {
     const parsed = gettext_parser.po.parse(fs.readFileSync(po_file), "utf8");
-    const language = parsed.headers.language;
+    const language = parsed.headers.Language;
     // remove the second header copy
     delete parsed.translations[""][""];
 
     const result = {
       // translations header
       "": {
-        "plural-forms": pluralForm(parsed.headers["plural-forms"]),
+        "plural-forms": pluralForm(parsed.headers["Plural-Forms"]),
         language,
       },
     };
@@ -79,9 +83,16 @@ function buildFile(po_file) {
       }
     }
 
-    // remove the double quotes around the plural forms to convert it from a string to a Javascript
-    // function
-    const js = JSON.stringify(result, null, 2).replace(
+    // sort the keys
+    const sortedResult = {};
+    Object.keys(result)
+      .sort()
+      .forEach((k) => {
+        sortedResult[k] = result[k];
+      });
+
+    // remove the double quotes to convert the plural forms from a string to a Javascript function
+    const js = JSON.stringify(sortedResult, null, 2).replace(
       /"plural-forms": "([^"]+)"/,
       '"plural-forms": $1',
     );
