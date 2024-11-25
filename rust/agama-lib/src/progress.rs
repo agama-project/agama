@@ -73,7 +73,7 @@ use tokio_stream::{StreamExt, StreamMap};
 use zbus::{proxy::PropertyStream, Connection};
 
 /// Represents the progress for an Agama service.
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
     /// Current step
