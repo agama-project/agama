@@ -349,7 +349,7 @@
 }
 
 // A temporary workaround to fix "stacking contexts" problems with scroll and
-// sticky page sections in Agama layout. It will not needed when migrating to
+// sticky page sections in Agama layout. It will not be needed when migrating to
 // latest PF6 release, since the root of the problem has been addressed there by
 // removing the DrawerContentBody from the Page component. See
 // https://github.com/patternfly/patternfly/pull/7130 and related links

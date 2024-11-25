@@ -60,7 +60,7 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
         <Stack hasGutter>
           <p>
             {_(
-              "Current installation settings does not meet the necessary requirements for installing the selected product. Click on each section name to access the relevant page and adjust the settings as needed.",
+              "Current settings do not meet the requirements for installing the product. You can click on each section's name to access the relevant page and adjust the settings as needed.",
             )}
           </p>
           {Object.entries(issuesByScope).map(([scope, issues], idx) => {

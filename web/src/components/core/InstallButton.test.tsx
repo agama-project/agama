@@ -74,7 +74,7 @@ describe("InstallButton", () => {
       const icon = container.querySelector("svg");
       expect(icon).toHaveAttribute("data-icon-name", "exclamation");
       // An aria-label for users using an screen reader
-      within(button).getByLabelText(/Not possible with current setup/);
+      within(button).getByLabelText(/Not possible with the current setup/);
     });
 
     it("triggers the onClickWithIssues callback without rendering the confirmation dialog", async () => {
@@ -98,7 +98,7 @@ describe("InstallButton", () => {
       // Renders nothing else
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
-      expect(within(button).queryByLabelText(/Not possible with current setup/)).toBeNull();
+      expect(within(button).queryByLabelText(/Not possible with the current setup/)).toBeNull();
     });
 
     it("renders a confirmation dialog when clicked without triggering the onClickWithIssues callback", async () => {

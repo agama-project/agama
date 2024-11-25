@@ -101,7 +101,7 @@ const InstallButton = (
   // TRANSLATORS: The install button label
   const buttonText = _("Install");
   // TRANSLATORS: Accessible text included with the install button when there are issues
-  const withIssuesAriaLabel = _("Not possible with current setup. Click to know more.");
+  const withIssuesAriaLabel = _("Not possible with the current setup. Click to know more.");
 
   return (
     <>
