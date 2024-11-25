@@ -35,7 +35,7 @@ let translations = {};
 // function used for computing the plural form index
 let plural_fn;
 
-// set the current translations, called from po.js
+// set the current translations, called from po.<lang>.js
 agama.locale = function locale(po) {
   if (po) {
     Object.assign(translations, po);
@@ -47,6 +47,8 @@ agama.locale = function locale(po) {
     }
   } else if (po === null) {
     translations = {};
+    plural_fn = undefined;
+    agama.language = "en";
   }
 };
 

@@ -226,30 +226,29 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       const mustReload = storeAgamaLanguage(newLanguage);
 
-      // load the translations dynamically, first try language + territory
-      const po = newLanguage.replace("-", "_");
-      await import(
-        /* webpackChunkName: "[request]" */
-        `../../src/po/po.${po}`
-      ).catch(async () => {
-        // if it fails then try the language only
-        const po = newLanguage.split("-")[0];
-        await import(
-          /* webpackChunkName: "[request]" */
-          `../../src/po/po.${po}`
-        ).catch((error) => {
-          if (newLanguage !== "en-US") {
-            console.error("Cannot load frontend translations for", newLanguage, error);
-          }
-          // reset the current translations (use the original English texts)
-          agama.locale(null);
-        });
-      });
-
       if (mustReload) {
         reload(newLanguage);
       } else {
         setLanguage(newLanguage);
+
+        // load the translations dynamically, first try language + territory
+        const po = newLanguage.replace("-", "_");
+        await import(
+          /* webpackChunkName: "[request]" */
+          `../../src/po/po.${po}`
+        ).catch(async () => {
+          const po = newLanguage.split("-")[0];
+          await import(
+            /* webpackChunkName: "[request]" */
+            `../../src/po/po.${po}`
+          ).catch(() => {
+            if (newLanguage !== "en-US") {
+              console.error("Cannot load frontend translations for", newLanguage);
+            }
+            // reset the current translations (use the original English texts)
+            agama.locale(null);
+          });
+        });
       }
     },
     [setLanguage],
