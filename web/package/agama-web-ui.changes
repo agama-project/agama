@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 25 11:12:36 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Unify Install and "warning" header buttons.
+- Move installation issues to a drawer shown when Install button
+  is clicked (gh#agama-project#agama#1778).
+
+-------------------------------------------------------------------
 Fri Nov 15 08:26:29 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Stick product selection form actions to bottom
