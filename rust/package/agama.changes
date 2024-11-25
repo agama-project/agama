@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 25 19:51:20 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the default path of the D-Bus Questions object and the ISCSI
+  Initiator interface (gh#agama-project/agama#1785).
+
+-------------------------------------------------------------------
 Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Allow using encrypted passord for root and the first user
