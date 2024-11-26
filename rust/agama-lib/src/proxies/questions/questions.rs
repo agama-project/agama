@@ -44,6 +44,7 @@ use zbus::proxy;
 #[proxy(
     default_service = "org.opensuse.Agama1",
     interface = "org.opensuse.Agama1.Questions",
+    default_path = "/org/opensuse/Agama1/Questions",
     assume_defaults = true
 )]
 pub trait Questions {

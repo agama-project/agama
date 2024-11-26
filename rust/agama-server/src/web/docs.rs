@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use utoipa::openapi::{Components, InfoBuilder, OpenApiBuilder, Paths};
+use utoipa::openapi::{Components, Info, InfoBuilder, OpenApi, OpenApiBuilder, Paths};
 
 mod network;
 pub use network::NetworkApiDocBuilder;
@@ -36,6 +36,7 @@ mod users;
 pub use users::UsersApiDocBuilder;
 mod misc;
 pub use misc::MiscApiDocBuilder;
+pub mod common;
 
 pub trait ApiDocBuilder {
     fn title(&self) -> String {
@@ -46,16 +47,27 @@ pub trait ApiDocBuilder {
 
     fn components(&self) -> Components;
 
-    fn build(&self) -> utoipa::openapi::OpenApi {
-        let info = InfoBuilder::new()
+    fn info(&self) -> Info {
+        InfoBuilder::new()
             .title(self.title())
             .version("0.1.0")
-            .build();
+            .build()
+    }
 
-        OpenApiBuilder::new()
-            .info(info)
+    fn nested(&self) -> Option<OpenApi> {
+        None
+    }
+
+    fn build(&self) -> utoipa::openapi::OpenApi {
+        let mut api = OpenApiBuilder::new()
+            .info(self.info())
             .paths(self.paths())
             .components(Some(self.components()))
-            .build()
+            .build();
+
+        if let Some(nested) = self.nested() {
+            api.merge(nested);
+        }
+        api
     }
 }

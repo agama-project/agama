@@ -24,6 +24,7 @@ require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/users"
 require "agama/users"
+require "y2users"
 
 describe Agama::DBus::Users do
   subject { described_class.new(backend, logger) }
@@ -69,16 +70,18 @@ describe Agama::DBus::Users do
       let(:user) { nil }
 
       it "returns default data" do
-        expect(subject.first_user).to eq(["", "", "", false, {}])
+        expect(subject.first_user).to eq(["", "", "", false, false, {}])
       end
     end
 
     context "if there is an user" do
+      let(:password) { Y2Users::Password.create_encrypted("12345") }
       let(:user) do
         instance_double(Y2Users::User,
           full_name:        "Test user",
           name:             "test",
-          password_content: "12345")
+          password:         password,
+          password_content: password.value.to_s)
       end
 
       before do
@@ -86,7 +89,7 @@ describe Agama::DBus::Users do
       end
 
       it "returns the first user data" do
-        expect(subject.first_user).to eq(["Test user", "test", "12345", true, {}])
+        expect(subject.first_user).to eq(["Test user", "test", password.value.to_s, true, true, {}])
       end
     end
   end

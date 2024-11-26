@@ -134,6 +134,10 @@ export default function FirstUserForm() {
 
     if (!changePassword) {
       delete user.password;
+    } else {
+      // the web UI only supports plain text passwords, this resets the flag if an encrypted
+      // password was previously set from CLI
+      user.encryptedPassword = false;
     }
     delete user.passwordConfirmation;
     user.autologin = !!user.autologin;
