@@ -42,6 +42,7 @@
 use zbus::proxy;
 #[proxy(
     default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1",
     interface = "org.opensuse.Agama.Storage1.ISCSI.Initiator",
     assume_defaults = true
 )]
