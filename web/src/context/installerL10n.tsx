@@ -231,7 +231,7 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
       } else {
         setLanguage(newLanguage);
 
-        // load the translations dynamically, first try language + territory
+        // load the translations dynamically, first try the language + territory
         const po = newLanguage.replace("-", "_");
         await import(
           /* webpackChunkName: "[request]" */
@@ -239,6 +239,7 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
         )
           .then((m) => agama.locale(m.default))
           .catch(async () => {
+            // if it fails try the language only
             const po = newLanguage.split("-")[0];
             return import(
               /* webpackChunkName: "[request]" */

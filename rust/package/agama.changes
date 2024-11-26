@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 26 09:31:18 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Drop the handler for the "po.js" path in the HTTP server,
+  the web frontend now uses dynamic imports for loading the
+  translation files (gh#agama-project/agama#1777)
+
+-------------------------------------------------------------------
 Mon Nov 25 19:51:20 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the default path of the D-Bus Questions object and the ISCSI

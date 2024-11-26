@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 26 09:30:09 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Use dynamic imports for loading the translation files
+  (gh#agama-project/agama#1777)
+
+-------------------------------------------------------------------
 Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Set the plain text password flag when setting the root and first
