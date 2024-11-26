@@ -19,23 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/to_model_conversions/filesystem"
+
 module Agama
   module Storage
-    module Configs
-      # Config for a filesystem type.
-      class FilesystemType
-        # @return [Boolean]
-        attr_accessor :default
-        alias_method :default?, :default
+    module ConfigConversions
+      module ToModelConversions
+        # Mixin for filesystem conversion to model according to the JSON schema.
+        module WithFilesystem
+          # @return [Hash, nil]
+          def convert_filesystem
+            filesystem = config.filesystem
+            return unless filesystem
 
-        # @return [Y2Storage::Filesystems::Type, nil]
-        attr_accessor :fs_type
-
-        # @return [Configs::Btrfs, nil]
-        attr_accessor :btrfs
-
-        def initialize
-          @default = true
+            ToModelConversions::Filesystem.new(filesystem).convert
+          end
         end
       end
     end

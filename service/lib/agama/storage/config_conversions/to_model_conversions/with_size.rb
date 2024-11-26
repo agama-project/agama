@@ -19,23 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/to_model_conversions/size"
+
 module Agama
   module Storage
-    module Configs
-      # Config for a filesystem type.
-      class FilesystemType
-        # @return [Boolean]
-        attr_accessor :default
-        alias_method :default?, :default
+    module ConfigConversions
+      module ToModelConversions
+        # Mixin for size conversion to model according to the JSON schema.
+        module WithSize
+          # @return [Hash, nil]
+          def convert_size
+            size = config.size
+            return unless size
 
-        # @return [Y2Storage::Filesystems::Type, nil]
-        attr_accessor :fs_type
-
-        # @return [Configs::Btrfs, nil]
-        attr_accessor :btrfs
-
-        def initialize
-          @default = true
+            ToModelConversions::Size.new(size).convert
+          end
         end
       end
     end

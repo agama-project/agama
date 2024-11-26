@@ -19,24 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/to_model_conversions/base"
+require "agama/storage/config_conversions/to_model_conversions/config"
+require "agama/storage/config_conversions/to_model_conversions/drive"
+require "agama/storage/config_conversions/to_model_conversions/filesystem"
+require "agama/storage/config_conversions/to_model_conversions/partition"
+require "agama/storage/config_conversions/to_model_conversions/size"
+require "agama/storage/config_conversions/to_model_conversions/space_policy"
+
 module Agama
   module Storage
-    module Configs
-      # Config for a filesystem type.
-      class FilesystemType
-        # @return [Boolean]
-        attr_accessor :default
-        alias_method :default?, :default
-
-        # @return [Y2Storage::Filesystems::Type, nil]
-        attr_accessor :fs_type
-
-        # @return [Configs::Btrfs, nil]
-        attr_accessor :btrfs
-
-        def initialize
-          @default = true
-        end
+    module ConfigConversions
+      # Conversions to model according to the JSON schema.
+      module ToModelConversions
       end
     end
   end

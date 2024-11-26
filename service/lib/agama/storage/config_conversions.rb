@@ -21,6 +21,7 @@
 
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_conversions/to_json"
+require "agama/storage/config_conversions/to_model"
 
 module Agama
   module Storage

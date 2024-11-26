@@ -26,6 +26,7 @@ module Agama
       class Size
         # @return [Boolean]
         attr_accessor :default
+        alias_method :default?, :default
 
         # @return [Y2Storage::DiskSize, nil]
         attr_accessor :min
@@ -36,11 +37,6 @@ module Agama
         # Constructor
         def initialize
           @default = true
-        end
-
-        # @return [Boolean]
-        def default?
-          @default
         end
       end
     end

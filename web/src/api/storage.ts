@@ -23,7 +23,7 @@
 import { get, post, put } from "~/api/http";
 import { Job } from "~/types/job";
 import { calculate, fetchSettings } from "~/api/storage/proposal";
-import { config } from "~/api/storage/types";
+import { config, configModel } from "~/api/storage/types";
 
 /**
  * Starts the storage probing process.
@@ -35,8 +35,8 @@ const probe = (): Promise<any> => post("/api/storage/probe");
 const fetchConfig = (): Promise<config.Config | undefined> =>
   get("/api/storage/config").then((config) => config.storage);
 
-const fetchSolvedConfig = (): Promise<config.Config | undefined> =>
-  get("/api/storage/solved_config").then((config) => config.storage);
+const fetchConfigModel = (): Promise<configModel.Config | undefined> =>
+  get("/api/storage/config_model");
 
 const setConfig = (config: config.Config) => put("/api/storage/config", config);
 
@@ -67,7 +67,7 @@ const refresh = async (): Promise<void> => {
 export {
   probe,
   fetchConfig,
-  fetchSolvedConfig,
+  fetchConfigModel,
   setConfig,
   fetchStorageJobs,
   findStorageJob,

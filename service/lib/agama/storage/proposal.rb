@@ -23,6 +23,7 @@ require "agama/issue"
 require "agama/storage/actions_generator"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_conversions/to_json"
+require "agama/storage/config_conversions/to_model"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
 require "json"
@@ -71,13 +72,10 @@ module Agama
         disk_analyzer&.candidate_disks || []
       end
 
-      # Storage JSON config from the current proposal, if any.
+      # Storage config according to the JSON schema from the current proposal.
       #
-      # @param solved [Boolean] Whether to get the solved config.
-      # @return [Hash] JSON config according to the JSON schema.
-      def storage_json(solved: false)
-        return source_json if !solved && source_json
-
+      # @return [Hash, nil] nil if there is no proposal yet.
+      def storage_json
         case strategy
         when ProposalStrategies::Guided
           {
@@ -86,15 +84,22 @@ module Agama
             }
           }
         when ProposalStrategies::Agama
-          config = config(solved: solved)
-          {
-            storage: ConfigConversions::ToJSON.new(config).convert
-          }
+          source_json || { storage: ConfigConversions::ToJSON.new(config).convert }
         when ProposalStrategies::Autoyast
-          strategy.settings
-        else
-          {}
+          source_json || {
+            legacyAutoyastStorage: JSON.parse(strategy.settings.to_json, symbolize_names: true)
+          }
         end
+      end
+
+      # Config model according to the JSON schema.
+      #
+      # @return [Hash, nil] nil if there is no config.
+      def model_json
+        config = config(solved: true)
+        return unless config
+
+        ConfigConversions::ToModel.new(config).convert
       end
 
       # Calculates a new proposal using the given JSON.

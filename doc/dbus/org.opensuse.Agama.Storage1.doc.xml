@@ -56,34 +56,35 @@
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
     <!--
-      Gets the solved storage config.
+      Gets the storage config model.
     -->
-    <method name="GetSolvedConfig">
+    <method name="GetConfigModel">
       <!--
         E.g.,
         {
-          "storage": {
-            "drives": [
-              {
-                "search": "/dev/vda",
-                "partitions": [
-                  {
-                    "filesystem": {
-                      "path": "/home",
-                      "type": "xfs"
-                    },
-                    "size": {
-                      "min": "10 GiB",
-                      "max": "10 GiB"
-                    }
+          "drives": [
+            {
+              "name": "/dev/vda",
+              "spacePolicy": "keep",
+              "partitions": [
+                {
+                  "mountPath": "/",
+                  "filesystem": {
+                    "default": true,
+                    "type": "xfs"
+                  },
+                  "size": {
+                    "default": true,
+                    "min": "10 GiB",
+                    "max": "10 GiB"
                   }
-                ]
-              }
-            ]
-          }
+                }
+              ]
+            }
+          ]
         }
       -->
-      <arg name="serialized_config" direction="out" type="s"/>
+      <arg name="serialized_model" direction="out" type="s"/>
     </method>
     <method name="Install">
     </method>

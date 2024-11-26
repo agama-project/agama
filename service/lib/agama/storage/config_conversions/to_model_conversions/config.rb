@@ -19,23 +19,37 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config"
+require "agama/storage/config_conversions/to_model_conversions/base"
+require "agama/storage/config_conversions/to_model_conversions/drive"
+
 module Agama
   module Storage
-    module Configs
-      # Config for a filesystem type.
-      class FilesystemType
-        # @return [Boolean]
-        attr_accessor :default
-        alias_method :default?, :default
+    module ConfigConversions
+      module ToModelConversions
+        # Config conversion to model according to the JSON schema.
+        class Config < Base
+          # @see Base
+          def self.config_type
+            Storage::Config
+          end
 
-        # @return [Y2Storage::Filesystems::Type, nil]
-        attr_accessor :fs_type
+        private
 
-        # @return [Configs::Btrfs, nil]
-        attr_accessor :btrfs
+          # @see Base#conversions
+          def conversions
+            { drives: convert_drives }
+          end
 
-        def initialize
-          @default = true
+          # @return [Array<Hash>]
+          def convert_drives
+            valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
+          end
+
+          # @return [Array<Configs::Drive>]
+          def valid_drives
+            config.drives.select(&:found_device)
+          end
         end
       end
     end

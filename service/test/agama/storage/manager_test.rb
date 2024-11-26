@@ -22,16 +22,17 @@
 require_relative "../../test_helper"
 require_relative "../with_progress_examples"
 require_relative "../with_issues_examples"
-require_relative "storage_helpers"
+require_relative "./storage_helpers"
+require "agama/dbus/clients/questions"
+require "agama/config"
+require "agama/http"
+require "agama/issue"
+require "agama/storage/config_json_reader"
+require "agama/storage/iscsi/manager"
 require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
-require "agama/storage/iscsi/manager"
 require "agama/storage/volume"
-require "agama/config"
-require "agama/issue"
-require "agama/dbus/clients/questions"
-require "agama/http"
 require "y2storage/issue"
 
 Yast.import "Installation"
@@ -163,16 +164,13 @@ describe Agama::Storage::Manager do
 
       allow(proposal).to receive(:issues).and_return(proposal_issues)
       allow(proposal).to receive(:available_devices).and_return(devices)
-      allow(proposal).to receive(:calculate_agama)
+      allow(proposal).to receive(:calculate_from_json)
 
       allow(config).to receive(:pick_product)
       allow(iscsi).to receive(:activate)
       allow(y2storage_manager).to receive(:activate)
       allow(iscsi).to receive(:probe)
       allow(y2storage_manager).to receive(:probe)
-
-      allow_any_instance_of(Agama::Storage::ConfigReader).to receive(:read)
-        .and_return(storage_config)
     end
 
     let(:raw_devicegraph) do
@@ -184,8 +182,6 @@ describe Agama::Storage::Manager do
     let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     let(:devices) { [disk1, disk2] }
-
-    let(:storage_config) { Agama::Storage::Config.new }
 
     let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
@@ -204,7 +200,7 @@ describe Agama::Storage::Manager do
       end
       expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe)
-      expect(proposal).to receive(:calculate_agama).with(storage_config)
+      expect(proposal).to receive(:calculate_from_json)
       storage.probe
     end
 

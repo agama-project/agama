@@ -118,9 +118,9 @@ describe Agama::Storage::Proposal do
 
   describe "#storage_json" do
     context "if no proposal has been calculated yet" do
-      it "returns an empty hash" do
+      it "returns nil" do
         expect(subject.calculated?).to eq(false)
-        expect(proposal.storage_json).to eq({})
+        expect(proposal.storage_json).to be_nil
       end
     end
 
@@ -156,83 +156,65 @@ describe Agama::Storage::Proposal do
         subject.calculate_agama(achivable_config)
       end
 
-      context "and unsolved config is requested" do
-        let(:solved) { false }
-
-        it "returns the unsolved JSON config" do
-          expect(subject.storage_json(solved: solved)).to eq(
-            {
-              storage: {
-                boot:         { configure: true },
-                drives:       [
-                  {
-                    search:     {
-                      ifNotFound: "error",
-                      max:        1
-                    },
-                    partitions: [
-                      {
-                        filesystem: {
-                          reuseIfPossible: false,
-                          path:            "/",
-                          type:            "btrfs",
-                          mkfsOptions:     [],
-                          mountOptions:    []
-                        },
-                        size:       {
-                          min: 10.GiB.to_i,
-                          max: 10.GiB.to_i
-                        }
+      it "returns the unsolved JSON config" do
+        expect(subject.storage_json).to eq(
+          {
+            storage: {
+              boot:         { configure: true },
+              drives:       [
+                {
+                  search:     {
+                    ifNotFound: "error",
+                    max:        1
+                  },
+                  partitions: [
+                    {
+                      filesystem: {
+                        reuseIfPossible: false,
+                        path:            "/",
+                        type:            "btrfs",
+                        mkfsOptions:     [],
+                        mountOptions:    []
+                      },
+                      size:       {
+                        min: 10.GiB.to_i,
+                        max: 10.GiB.to_i
                       }
-                    ]
-                  }
-                ],
-                volumeGroups: []
-              }
+                    }
+                  ]
+                }
+              ],
+              volumeGroups: []
             }
-          )
-        end
+          }
+        )
+      end
+    end
+
+    context "if a proposal was calculated with the autoyast strategy" do
+      before do
+        subject.calculate_autoyast(partitioning)
       end
 
-      context "and solved config is requested" do
-        let(:solved) { true }
-
-        it "returns the solved JSON config" do
-          expect(subject.storage_json(solved: solved)).to eq(
-            {
-              storage: {
-                boot:         { configure: true },
-                drives:       [
-                  {
-                    search:     {
-                      condition:  { name: "/dev/sda" },
-                      ifNotFound: "error",
-                      max:        1
-                    },
-                    partitions: [
-                      {
-                        filesystem: {
-                          reuseIfPossible: false,
-                          path:            "/",
-                          type:            {
-                            btrfs: { snapshots: false }
-                          },
-                          mkfsOptions:     [],
-                          mountOptions:    []
-                        },
-                        size:       {
-                          min: 10.GiB.to_i,
-                          max: 10.GiB.to_i
-                        }
-                      }
-                    ]
-                  }
-                ],
-                volumeGroups: []
+      let(:partitioning) do
+        [
+          {
+            partitions: [
+              {
+                mount: "/",
+                size:  "10 GiB"
               }
-            }
-          )
-        end
+            ]
+          }
+        ]
+      end
+
+      it "returns the unsolved JSON config" do
+        expect(subject.storage_json).to eq(
+          {
+            legacyAutoyastStorage: partitioning
+          }
+        )
       end
     end
 
@@ -253,37 +235,25 @@ describe Agama::Storage::Proposal do
         }
       end
 
-      context "and unsolved config is requested" do
-        let(:solved) { false }
-
-        it "returns the given guided JSON config" do
-          expect(subject.storage_json(solved: solved)).to eq(config_json)
-        end
-      end
-
-      context "and solved config is requested" do
-        let(:solved) { true }
-
-        it "returns the solved guided JSON config" do
-          expected_json = {
-            storage: {
-              guided: {
-                boot:    {
-                  configure: true
-                },
-                space:   {
-                  policy: "keep"
-                },
-                target:  {
-                  disk: "/dev/vda"
-                },
-                volumes: []
-              }
+      it "returns the solved guided JSON config" do
+        expected_json = {
+          storage: {
+            guided: {
+              boot:    {
+                configure: true
+              },
+              space:   {
+                policy: "keep"
+              },
+              target:  {
+                disk: "/dev/vda"
+              },
+              volumes: []
             }
           }
+        }
 
-          expect(subject.storage_json(solved: solved)).to eq(expected_json)
-        end
+        expect(subject.storage_json).to eq(expected_json)
       end
     end
 
@@ -307,45 +277,8 @@ describe Agama::Storage::Proposal do
         }
       end
 
-      context "and unsolved config is requested" do
-        let(:solved) { false }
-
-        it "returns the given JSON config" do
-          expect(subject.storage_json(solved: solved)).to eq(config_json)
-        end
-      end
-
-      context "and solved config is requested" do
-        let(:solved) { true }
-
-        it "returns the solved JSON config" do
-          expect(subject.storage_json(solved: solved)).to eq(
-            {
-              storage: {
-                boot:         { configure: false },
-                drives:       [
-                  {
-                    search:     {
-                      condition:  { name: "/dev/sda" },
-                      ifNotFound: "error",
-                      max:        1
-                    },
-                    filesystem: {
-                      mkfsOptions:     [],
-                      mountOptions:    [],
-                      reuseIfPossible: false,
-                      type:            {
-                        btrfs: { snapshots: false }
-                      }
-                    },
-                    partitions: []
-                  }
-                ],
-                volumeGroups: []
-              }
-            }
-          )
-        end
+      it "returns the given JSON config" do
+        expect(subject.storage_json).to eq(config_json)
       end
     end
 
@@ -371,6 +304,104 @@ describe Agama::Storage::Proposal do
 
       it "returns the given autoyast JSON config" do
         expect(subject.storage_json).to eq(config_json)
+      end
+    end
+  end
+
+  describe "#model_json" do
+    context "if no proposal has been calculated yet" do
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
+      end
+    end
+
+    context "if a guided proposal has been calculated" do
+      before do
+        subject.calculate_from_json(settings_json)
+      end
+
+      let(:settings_json) do
+        {
+          storage: {
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
+          }
+        }
+      end
+
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
+      end
+    end
+
+    context "if an agama proposal has been calculated" do
+      before do
+        subject.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns the config model" do
+        expect(subject.model_json).to eq(
+          {
+            drives: [
+              {
+                name:        "/dev/sda",
+                spacePolicy: "keep",
+                partitions:  [
+                  {
+                    mountPath:      "/",
+                    filesystem:     {
+                      default: true,
+                      type:    "ext4"
+                    },
+                    size:           {
+                      default: true,
+                      min:     0
+                    },
+                    delete:         false,
+                    deleteIfNeeded: false,
+                    resize:         false,
+                    resizeIfNeeded: false
+                  }
+                ]
+              }
+            ]
+          }
+        )
+      end
+    end
+
+    context "if an AutoYaST proposal has been calculated" do
+      before do
+        subject.calculate_from_json(autoyast_json)
+      end
+
+      let(:autoyast_json) do
+        {
+          legacyAutoyastStorage: [
+            { device: "/dev/vda" }
+          ]
+        }
+      end
+
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
       end
     end
   end

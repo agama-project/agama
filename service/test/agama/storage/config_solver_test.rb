@@ -185,6 +185,7 @@ describe Agama::Storage::ConfigSolver do
         drive = config.drives.first
         filesystem = drive.filesystem
         expect(filesystem.type).to be_a(Agama::Storage::Configs::FilesystemType)
+        expect(filesystem.type.default?).to eq(true)
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
         expect(filesystem.type.btrfs.snapshots?).to eq(true)
@@ -288,7 +289,7 @@ describe Agama::Storage::ConfigSolver do
         it "sets the device size" do
           subject.solve(config)
           partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
+          expect(partition.size.default?).to eq(true)
           expect(partition.size.min).to eq(20.GiB)
           expect(partition.size.max).to eq(20.GiB)
         end
