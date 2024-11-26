@@ -235,20 +235,24 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
         const po = newLanguage.replace("-", "_");
         await import(
           /* webpackChunkName: "[request]" */
-          `../../src/po/po.${po}`
-        ).catch(async () => {
-          const po = newLanguage.split("-")[0];
-          await import(
-            /* webpackChunkName: "[request]" */
-            `../../src/po/po.${po}`
-          ).catch(() => {
-            if (newLanguage !== "en-US") {
-              console.error("Cannot load frontend translations for", newLanguage);
-            }
-            // reset the current translations (use the original English texts)
-            agama.locale(null);
+          `../po/po.${po}`
+        )
+          .then((m) => agama.locale(m.default))
+          .catch(async () => {
+            const po = newLanguage.split("-")[0];
+            return import(
+              /* webpackChunkName: "[request]" */
+              `../po/po.${po}`
+            )
+              .then((m) => agama.locale(m.default))
+              .catch(() => {
+                if (newLanguage !== "en-US") {
+                  console.error("Cannot load frontend translations for", newLanguage);
+                }
+                // reset the current translations (use the original English texts)
+                agama.locale(null);
+              });
           });
-        });
       }
     },
     [setLanguage],

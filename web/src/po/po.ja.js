@@ -1,6 +1,4 @@
-import agama from "../agama";
-
-agama.locale({
+export default {
   "": {
     "plural-forms": (n) => 0,
     "language": "ja"
@@ -1475,4 +1473,4 @@ agama.locale({
   "zFCP Disk activation form": [
     "zFCP ディスク有効化フォーム"
   ]
-});
+};

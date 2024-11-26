@@ -1,3 +1,1 @@
-import agama from "../agama";
-
-agama.locale("PO_CONTENT");
+export default "PO_CONTENT";
