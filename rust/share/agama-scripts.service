@@ -1,0 +1,18 @@
+[Unit]
+Description=Agama init scripts
+After=remote-fs.target network-online.target time-sync.target mail-transfer-agent.target hwscan.service ypbind.service
+Before=getty@tty1.service serial-getty@ttyS0.service serial-getty@ttyS1.service serial-getty@ttyS2.service
+Before=serial-getty@hvc0.service serial-getty@ttyAMA0.service
+Before=display-manager.service systemd-user-sessions.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=TERM=linux
+ExecStartPre=-/usr/bin/plymouth --hide-splash
+ExecStart=/usr/bin/agama-scripts.sh
+RemainAfterExit=yes
+TimeoutSec=0
+
+[Install]
+WantedBy=default.target
