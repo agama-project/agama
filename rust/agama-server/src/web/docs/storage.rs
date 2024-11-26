@@ -18,9 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
+use utoipa::openapi::{Components, ComponentsBuilder, OpenApi, Paths, PathsBuilder};
 
-use super::ApiDocBuilder;
+use super::{
+    common::{IssuesApiDocBuilder, ProgressApiDocBuilder, ServiceStatusApiDocBuilder},
+    ApiDocBuilder,
+};
 
 pub struct StorageApiDocBuilder;
 
@@ -72,12 +75,10 @@ impl ApiDocBuilder for StorageApiDocBuilder {
 
     fn components(&self) -> Components {
         ComponentsBuilder::new()
-            .schema_from::<crate::storage::web::ProductParams>()
-            .schema_from::<crate::storage::web::iscsi::DiscoverParams>()
-            .schema_from::<crate::storage::web::iscsi::InitiatorParams>()
-            .schema_from::<crate::storage::web::iscsi::LoginParams>()
-            .schema_from::<crate::storage::web::iscsi::NodeParams>()
-            .schema_from::<crate::storage::web::zfcp::ZFCPConfig>()
+            .schema_from::<agama_lib::storage::client::iscsi::ISCSIAuth>()
+            .schema_from::<agama_lib::storage::client::iscsi::ISCSIInitiator>()
+            .schema_from::<agama_lib::storage::client::iscsi::ISCSINode>()
+            .schema_from::<agama_lib::storage::client::iscsi::LoginResult>()
             .schema_from::<agama_lib::storage::model::Action>()
             .schema_from::<agama_lib::storage::model::BlockDevice>()
             .schema_from::<agama_lib::storage::model::Component>()
@@ -108,10 +109,28 @@ impl ApiDocBuilder for StorageApiDocBuilder {
             .schema_from::<agama_lib::storage::model::dasd::DASDDevice>()
             .schema_from::<agama_lib::storage::model::zfcp::ZFCPController>()
             .schema_from::<agama_lib::storage::model::zfcp::ZFCPDisk>()
-            .schema_from::<agama_lib::storage::client::iscsi::ISCSIAuth>()
-            .schema_from::<agama_lib::storage::client::iscsi::ISCSIInitiator>()
-            .schema_from::<agama_lib::storage::client::iscsi::ISCSINode>()
-            .schema_from::<agama_lib::storage::client::iscsi::LoginResult>()
+            .schema_from::<crate::storage::web::ProductParams>()
+            .schema_from::<crate::storage::web::iscsi::DiscoverParams>()
+            .schema_from::<crate::storage::web::iscsi::InitiatorParams>()
+            .schema_from::<crate::storage::web::iscsi::LoginParams>()
+            .schema_from::<crate::storage::web::iscsi::NodeParams>()
+            .schema_from::<crate::storage::web::zfcp::ZFCPConfig>()
+            .schema_from::<crate::web::common::Issue>()
             .build()
+    }
+
+    fn nested(&self) -> Option<OpenApi> {
+        let mut issues = IssuesApiDocBuilder::new()
+            .add(
+                "/api/storage/issues",
+                "List of storage-related issues",
+                "storage_issues",
+            )
+            .build();
+        let status = ServiceStatusApiDocBuilder::new("/api/storage/status").build();
+        let progress = ProgressApiDocBuilder::new("/api/storage/progress").build();
+        issues.merge(status);
+        issues.merge(progress);
+        Some(issues)
     }
 }

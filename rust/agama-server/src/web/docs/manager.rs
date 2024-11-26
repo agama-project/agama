@@ -18,9 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use utoipa::openapi::{ComponentsBuilder, PathsBuilder};
+use utoipa::openapi::{ComponentsBuilder, OpenApi, PathsBuilder};
 
-use super::ApiDocBuilder;
+use super::{
+    common::{ProgressApiDocBuilder, ServiceStatusApiDocBuilder},
+    ApiDocBuilder,
+};
 
 pub struct ManagerApiDocBuilder;
 
@@ -46,5 +49,12 @@ impl ApiDocBuilder for ManagerApiDocBuilder {
             .schema_from::<agama_lib::manager::InstallerStatus>()
             .schema_from::<agama_lib::logs::LogsLists>()
             .build()
+    }
+
+    fn nested(&self) -> Option<OpenApi> {
+        let mut status = ServiceStatusApiDocBuilder::new("/api/storage/status").build();
+        let progress = ProgressApiDocBuilder::new("/api/storage/progress").build();
+        status.merge(progress);
+        Some(status)
     }
 }
