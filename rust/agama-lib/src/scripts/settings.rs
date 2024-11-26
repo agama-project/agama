@@ -31,6 +31,9 @@ pub struct ScriptsConfig {
     /// User-defined post-installation scripts
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub post: Vec<ScriptConfig>,
+    /// User-defined init scripts
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub init: Vec<ScriptConfig>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -40,6 +40,7 @@ use super::ScriptError;
 pub enum ScriptsGroup {
     Pre,
     Post,
+    Init,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]

@@ -39,6 +39,7 @@ impl ScriptsStore {
         Ok(ScriptsConfig {
             pre: Self::to_script_configs(&scripts, ScriptsGroup::Pre),
             post: Self::to_script_configs(&scripts, ScriptsGroup::Post),
+            init: Self::to_script_configs(&scripts, ScriptsGroup::Init),
         })
     }
 

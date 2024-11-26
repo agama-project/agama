@@ -28,6 +28,14 @@
           "items": {
             "$ref": "#/$defs/script"
           }
+        },
+        "init": {
+          "title": "Init scripts",
+          "description": "User-defined scripts to run booting the installed system",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/script"
+          }
         }
       }
     },
