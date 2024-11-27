@@ -46,8 +46,9 @@ import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { InstallButton, InstallerOptions, IssuesLink } from "~/components/core";
-import { useLocation } from "react-router-dom";
+import { useLocation, useMatches } from "react-router-dom";
 import { ROOT as PATHS } from "~/routes/paths";
+import { Route } from "~/types/routes";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -124,6 +125,10 @@ export default function Header({
   const location = useLocation();
   const { selectedProduct } = useProduct();
   const { phase } = useInstallerStatus({ suspense: true });
+  const routeMatches = useMatches() as Route[];
+  const currentRoute = routeMatches.at(-1);
+  // TODO: translate title
+  const title = (showProductName && selectedProduct?.name) || currentRoute?.handle?.title;
 
   const showInstallerOptions =
     phase !== InstallationPhase.Install &&
@@ -143,9 +148,7 @@ export default function Header({
           </PageToggleButton>
         </MastheadToggle>
       )}
-      <MastheadMain>
-        {showProductName && <MastheadBrand component="h1">{selectedProduct.name}</MastheadBrand>}
-      </MastheadMain>
+      <MastheadMain>{title && <MastheadBrand component="h1">{title}</MastheadBrand>}</MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>

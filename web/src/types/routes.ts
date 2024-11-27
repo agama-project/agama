@@ -23,7 +23,11 @@
 import { RouteObject } from "react-router-dom";
 
 type RouteHandle = {
+  /** Text to be used as label when building a link from route information */
   name: string;
+  /** Text to be shown in the layour header as an h1 */
+  title?: string;
+  /** Icon for representing the route in some places, like a menu entry */
   icon?: string;
 };
 

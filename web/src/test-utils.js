@@ -76,6 +76,7 @@ jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHref: (to) => to,
   useNavigate: () => mockNavigateFn,
+  useMatches: () => [],
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
   Outlet: () => <>Outlet Content</>,
   useRevalidator: () => mockUseRevalidator,
