@@ -42,6 +42,7 @@
 use zbus::proxy;
 #[proxy(
     default_service = "org.opensuse.Agama.Software1",
+    default_path = "/org/opensuse/Agama/Software1/Proposal",
     interface = "org.opensuse.Agama.Software1.Proposal",
     assume_defaults = true
 )]
