@@ -26,14 +26,14 @@ use super::{Script, ScriptSource};
 #[serde(rename_all = "camelCase")]
 pub struct ScriptsConfig {
     /// User-defined pre-installation scripts
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub pre: Vec<ScriptConfig>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pre: Option<Vec<ScriptConfig>>,
     /// User-defined post-installation scripts
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub post: Vec<ScriptConfig>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post: Option<Vec<ScriptConfig>>,
     /// User-defined init scripts
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub init: Vec<ScriptConfig>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub init: Option<Vec<ScriptConfig>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

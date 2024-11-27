@@ -36,26 +36,42 @@ impl ScriptsStore {
     pub async fn load(&self) -> Result<ScriptsConfig, ServiceError> {
         let scripts = self.client.scripts().await?;
 
+        let pre = Self::to_script_configs(&scripts, ScriptsGroup::Pre);
+        let post = Self::to_script_configs(&scripts, ScriptsGroup::Post);
+        let init = Self::to_script_configs(&scripts, ScriptsGroup::Init);
+
         Ok(ScriptsConfig {
-            pre: Self::to_script_configs(&scripts, ScriptsGroup::Pre),
-            post: Self::to_script_configs(&scripts, ScriptsGroup::Post),
-            init: Self::to_script_configs(&scripts, ScriptsGroup::Init),
+            pre: if pre.is_empty() { None } else { Some(pre) },
+            post: if post.is_empty() { None } else { Some(post) },
+            init: if init.is_empty() { None } else { Some(init) },
         })
     }
 
     pub async fn store(&self, settings: &ScriptsConfig) -> Result<(), ServiceError> {
         self.client.delete_scripts().await?;
 
-        for pre in &settings.pre {
-            self.client
-                .add_script(&Self::to_script(pre, ScriptsGroup::Pre))
-                .await?;
+        if let Some(scripts) = &settings.pre {
+            for pre in scripts {
+                self.client
+                    .add_script(&Self::to_script(pre, ScriptsGroup::Pre))
+                    .await?;
+            }
         }
 
-        for post in &settings.post {
-            self.client
-                .add_script(&Self::to_script(post, ScriptsGroup::Post))
-                .await?;
+        if let Some(scripts) = &settings.post {
+            for post in scripts {
+                self.client
+                    .add_script(&Self::to_script(post, ScriptsGroup::Post))
+                    .await?;
+            }
+        }
+
+        if let Some(scripts) = &settings.init {
+            for init in scripts {
+                self.client
+                    .add_script(&Self::to_script(init, ScriptsGroup::Init))
+                    .await?;
+            }
         }
 
         // TODO: find a better play to run the scripts (before probing).
