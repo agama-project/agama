@@ -49,6 +49,7 @@ pub mod error;
 pub mod install_settings;
 pub mod jobs;
 pub mod localization;
+pub mod logs;
 pub mod manager;
 pub mod network;
 pub mod product;
@@ -62,11 +63,14 @@ pub mod progress;
 pub mod proxies;
 mod store;
 pub use store::Store;
+pub mod openapi;
 pub mod questions;
 pub mod scripts;
 pub mod transfer;
+
 use crate::error::ServiceError;
 use reqwest::{header, Client};
+use zbus::conn::Builder;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
 
@@ -75,7 +79,7 @@ pub async fn connection() -> Result<zbus::Connection, ServiceError> {
 }
 
 pub async fn connection_to(address: &str) -> Result<zbus::Connection, ServiceError> {
-    let connection = zbus::ConnectionBuilder::address(address)?
+    let connection = Builder::address(address)?
         .build()
         .await
         .map_err(|e| ServiceError::DBusConnectionError(address.to_string(), e))?;

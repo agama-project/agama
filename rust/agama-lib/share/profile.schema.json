@@ -390,9 +390,13 @@
           "examples": ["jane.doe"]
         },
         "password": {
-          "title": "User password",
+          "title": "User password (plain text or encrypted depending on the \"passwordEncrypted\" field)",
           "type": "string",
           "examples": ["nots3cr3t"]
+        },
+        "passwordEncrypted": {
+          "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
+          "type": "boolean"
         }
       },
       "required": ["fullName", "userName", "password"]
@@ -403,8 +407,12 @@
       "additionalProperties": false,
       "properties": {
         "password": {
-          "title": "Root password",
+          "title": "Root password (plain text or encrypted depending on the \"passwordEncrypted\" field)",
           "type": "string"
+        },
+        "passwordEncrypted": {
+          "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
+          "type": "boolean"
         },
         "sshPublicKey": {
           "title": "SSH public key",

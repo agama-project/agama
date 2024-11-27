@@ -35,10 +35,10 @@ pub struct FirstUser {
     pub user_name: String,
     /// First user's password (in clear text)
     pub password: String,
+    /// Whether the password is encrypted (true) or is plain text (false)
+    pub encrypted_password: bool,
     /// Whether auto-login should enabled or not
     pub autologin: bool,
-    /// Additional data coming from the D-Bus service
-    pub data: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 }
 
 impl FirstUser {
@@ -48,8 +48,8 @@ impl FirstUser {
             full_name: data.0,
             user_name: data.1,
             password: data.2,
-            autologin: data.3,
-            data: data.4,
+            encrypted_password: data.3,
+            autologin: data.4,
         })
     }
 }
@@ -110,6 +110,7 @@ impl<'a> UsersClient<'a> {
                 &first_user.full_name,
                 &first_user.user_name,
                 &first_user.password,
+                first_user.encrypted_password,
                 first_user.autologin,
                 std::collections::HashMap::new(),
             )

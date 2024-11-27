@@ -26,6 +26,7 @@ mod model;
 mod settings;
 mod store;
 
+pub use client::ScriptsClient;
 pub use error::ScriptError;
 pub use model::*;
 pub use settings::*;

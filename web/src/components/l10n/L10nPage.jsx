@@ -23,7 +23,7 @@
 import React from "react";
 import { Gallery, GalleryItem } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
-import { PATHS } from "~/routes/l10n";
+import { L10N as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { useL10n } from "~/queries/l10n";
 

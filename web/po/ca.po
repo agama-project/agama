@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
-"PO-Revision-Date: 2024-09-19 09:48+0000\n"
+"POT-Creation-Date: 2024-11-17 02:50+0000\n"
+"PO-Revision-Date: 2024-10-30 13:48+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ca/>\n"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "Change product"
 msgstr "Canvia el producte"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "Confirmeu la instal·lació"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -35,26 +35,26 @@ msgstr ""
 "Si continueu, les particions del disc dur es modificaran segons la "
 "configuració d'instal·lació proporcionada."
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
 "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "Continua"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
-#: src/components/network/WifiConnectionForm.tsx:145
-#: src/components/product/ProductSelectionPage.tsx:96
+#: src/components/network/WifiConnectionForm.tsx:153
+#: src/components/product/ProductSelectionPage.tsx:95
 msgid "Cancel"
 msgstr "Cancel·la"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "Instal·la"
 
@@ -115,8 +115,7 @@ msgstr "Acaba"
 msgid "Reboot"
 msgstr "Reinicia"
 
-#: src/components/core/InstallationProgress.tsx:42
-#, fuzzy
+#: src/components/core/InstallationProgress.tsx:43
 msgid "Installing the system, please wait..."
 msgstr "Instal·lant el sistema. Espereu, si us plau..."
 
@@ -154,15 +153,16 @@ msgid ""
 msgstr ""
 "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
+"La instal·lació encara no és possible a causa de problemes. Consulteu-los a "
+"la pàgina de resum general."
 
-#: src/components/core/IssuesLink.tsx:52
-#, fuzzy
+#: src/components/core/IssuesLink.tsx:51
 msgid "Installation issues"
-msgstr "S'ha acabat la instal·lació."
+msgstr "Problemes d'instal·lació"
 
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
@@ -216,7 +216,7 @@ msgstr "Les contrasenyes no coincideixen."
 
 #. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.tsx:89
-#: src/components/network/WifiConnectionForm.tsx:132
+#: src/components/network/WifiConnectionForm.tsx:140
 #: src/components/questions/QuestionWithPassword.tsx:63
 #: src/components/storage/iscsi/AuthFields.jsx:91
 #: src/components/storage/iscsi/AuthFields.jsx:95
@@ -292,13 +292,13 @@ msgstr "Selecció del teclat"
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/l10n/LocaleSelection.tsx:93
 #: src/components/l10n/TimezoneSelection.tsx:138
-#: src/components/product/ProductSelectionPage.tsx:145
+#: src/components/product/ProductSelectionPage.tsx:148
 #: src/components/software/SoftwarePatternsSelection.tsx:167
 msgid "Select"
 msgstr "Selecciona"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "Localització"
 
@@ -351,14 +351,13 @@ msgstr " Selecció de la zona horària"
 
 #: src/components/layout/Header.tsx:81
 msgid "Options toggle"
-msgstr ""
+msgstr "Canvi d'opcions"
 
 #: src/components/layout/Header.tsx:92
 msgid "Download logs"
 msgstr "Baixa els registres"
 
 #: src/components/layout/Header.tsx:98
-#, fuzzy
 msgid "Installer Options"
 msgstr "Opcions de l'instal·lador"
 
@@ -429,8 +428,8 @@ msgid "Connection actions"
 msgstr "Accions de connexió"
 
 #: src/components/network/ConnectionsTable.tsx:77
-#: src/components/network/WifiNetworksListPage.tsx:128
-#: src/components/network/WifiNetworksListPage.tsx:152
+#: src/components/network/WifiNetworksListPage.tsx:129
+#: src/components/network/WifiNetworksListPage.tsx:153
 #: src/components/storage/PartitionsField.tsx:313
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:45
 #: src/components/storage/iscsi/NodesPresenter.jsx:75
@@ -446,8 +445,8 @@ msgid "Edit connection %s"
 msgstr "Edita la connexió %s"
 
 #: src/components/network/ConnectionsTable.tsx:84
-#: src/components/network/WifiNetworksListPage.tsx:131
-#: src/components/network/WifiNetworksListPage.tsx:155
+#: src/components/network/WifiNetworksListPage.tsx:132
+#: src/components/network/WifiNetworksListPage.tsx:156
 msgid "Forget"
 msgstr "Oblida-la"
 
@@ -530,8 +529,8 @@ msgstr "Wifi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/NetworkPage.tsx:64
-#: src/components/network/WifiConnectionForm.tsx:141
-#: src/components/network/WifiNetworksListPage.tsx:126
+#: src/components/network/WifiConnectionForm.tsx:149
+#: src/components/network/WifiNetworksListPage.tsx:127
 msgid "Connect"
 msgstr "Connecta't"
 
@@ -562,7 +561,7 @@ msgstr ""
 "El sistema no admet connexions de wifi, probablement a causa de maquinari "
 "que manca o que està inhabilitat."
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "Xarxa"
 
@@ -578,15 +577,15 @@ msgid "WPA & WPA2 Personal"
 msgstr "WPA i WPA2 personal"
 
 #. TRANSLATORS: accessible name for the WiFi connection form
-#: src/components/network/WifiConnectionForm.tsx:93
+#: src/components/network/WifiConnectionForm.tsx:101
 msgid "WiFi connection form"
 msgstr "Formulari de connexió per WiFi"
 
-#: src/components/network/WifiConnectionForm.tsx:100
+#: src/components/network/WifiConnectionForm.tsx:108
 msgid "Authentication failed, please try again"
 msgstr "Hi ha hagut un error d'autenticació. Torneu-ho a provar."
 
-#: src/components/network/WifiConnectionForm.tsx:101
+#: src/components/network/WifiConnectionForm.tsx:109
 #: src/components/storage/iscsi/DiscoverForm.tsx:99
 #: src/components/storage/iscsi/LoginForm.jsx:70
 #: src/components/storage/zfcp/ZFCPDiskForm.tsx:114
@@ -594,67 +593,66 @@ msgstr "Hi ha hagut un error d'autenticació. Torneu-ho a provar."
 msgid "Something went wrong"
 msgstr "Alguna cosa ha anat malament."
 
-#: src/components/network/WifiConnectionForm.tsx:104
+#: src/components/network/WifiConnectionForm.tsx:112
 msgid "Please, review provided settings and try again."
 msgstr ""
 "Si us plau, reviseu la configuració proporcionada i torneu-ho a provar."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.tsx:110
+#: src/components/network/WifiConnectionForm.tsx:118
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.tsx:116
-#: src/components/network/WifiConnectionForm.tsx:119
+#: src/components/network/WifiConnectionForm.tsx:124
+#: src/components/network/WifiConnectionForm.tsx:127
 msgid "Security"
 msgstr "Seguretat"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.tsx:128
+#: src/components/network/WifiConnectionForm.tsx:136
 msgid "WPA Password"
 msgstr "Contrasenya de WPA"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:73
-#: src/components/network/WifiNetworksListPage.tsx:139
+#: src/components/network/WifiNetworksListPage.tsx:74
+#: src/components/network/WifiNetworksListPage.tsx:140
 msgid "Connecting"
 msgstr "Connectant"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:76
-#: src/components/network/WifiNetworksListPage.tsx:143
-#: src/components/network/WifiNetworksListPage.tsx:182
+#: src/components/network/WifiNetworksListPage.tsx:77
+#: src/components/network/WifiNetworksListPage.tsx:144
+#: src/components/network/WifiNetworksListPage.tsx:183
 msgid "Connected"
 msgstr "Connectat"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:81
-#: src/components/network/WifiNetworksListPage.tsx:141
+#: src/components/network/WifiNetworksListPage.tsx:82
+#: src/components/network/WifiNetworksListPage.tsx:142
 #: src/components/storage/iscsi/NodesPresenter.jsx:65
 msgid "Disconnected"
 msgstr "Desconnectat"
 
-#: src/components/network/WifiNetworksListPage.tsx:149
+#: src/components/network/WifiNetworksListPage.tsx:150
 msgid "Disconnect"
 msgstr "Desconnecta"
 
-#: src/components/network/WifiNetworksListPage.tsx:168
-#: src/components/network/WifiNetworksListPage.tsx:286
+#: src/components/network/WifiNetworksListPage.tsx:169
+#: src/components/network/WifiNetworksListPage.tsx:288
 msgid "Connect to hidden network"
 msgstr "Connecta't a una xarxa oculta"
 
-#: src/components/network/WifiNetworksListPage.tsx:179
+#: src/components/network/WifiNetworksListPage.tsx:180
 msgid "configured"
 msgstr "configurat"
 
-#: src/components/network/WifiNetworksListPage.tsx:267
-#, fuzzy
+#: src/components/network/WifiNetworksListPage.tsx:269
 msgid "No visible Wi-Fi networks found"
-msgstr "Xarxes Wi-Fi visibles"
+msgstr "No s'ha trobat cap xarxa Wi-Fi visible."
 
-#: src/components/network/WifiNetworksListPage.tsx:271
+#: src/components/network/WifiNetworksListPage.tsx:273
 msgid "Visible Wi-Fi networks"
 msgstr "Xarxes Wi-Fi visibles"
 
@@ -670,32 +668,31 @@ msgid "The system will use %s as its default language."
 msgstr "El sistema usarà el %s com a llengua per defecte."
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "Usuaris"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
 msgstr "Emmagatzematge"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "Programari"
 
 #: src/components/overview/OverviewPage.tsx:87
-#, fuzzy
 msgid "Installation blocking issues"
-msgstr "S'ha acabat la instal·lació."
+msgstr "Problemes de bloqueig de la instal·lació"
 
 #: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
 msgstr "Abans d'instal·lar, comproveu els problemes següents."
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr "Resum"
 
@@ -832,7 +829,7 @@ msgstr ""
 "trobar l'espai necessari."
 
 #. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-#: src/components/product/ProductSelectionPage.tsx:59
+#: src/components/product/ProductSelectionPage.tsx:58
 #, c-format
 msgid "%s logo"
 msgstr "Logotip per a %s"
@@ -940,22 +937,22 @@ msgstr ""
 "Aquest espai inclou el sistema de base i els patrons de programari "
 "seleccionats, si n'hi ha."
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 msgid "Change boot options"
 msgstr "Canvia les opcions d'arrencada"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 msgid "Installation will not configure partitions for booting."
 msgstr "La instal·lació no configurarà les particions per a l'arrencada."
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "La instal·lació configurarà les particions per arrencar al disc "
 "d'instal·lació."
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "La instal·lació configurarà les particions per arrencar a %s."
@@ -1158,7 +1155,7 @@ msgid "Activate disks"
 msgstr "Activa els discs"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1166,7 +1163,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Connecta amb objectius iSCSI"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1913,7 +1910,7 @@ msgstr "Ús"
 msgid "Formatting DASD devices"
 msgstr "Formatatge de dispositius DASD"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 msgid "DASD"
 msgstr "DASD"
 
@@ -1923,7 +1920,7 @@ msgid "DASD devices selection table"
 msgstr "Taula de selecció de dispositius DASD"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 msgid "Back to device selection"
 msgstr "Torna a la selecció del dispositiu"
 
@@ -1977,26 +1974,30 @@ msgid "Partition Info"
 msgstr "Informació de la partició"
 
 #: src/components/storage/dasd/DASDTable.tsx:95
-#, fuzzy
 msgid "Cannot format all selected devices"
-msgstr "Esperant informació sobre el dispositiu seleccionat"
+msgstr "No es poden formatar tots els dispositius seleccionats."
 
 #: src/components/storage/dasd/DASDTable.tsx:99
 msgid ""
 "Offline devices must be activated before formatting them. Please, unselect "
 "or activate the devices listed below and try it again"
 msgstr ""
+"Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us "
+"plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i "
+"torneu-ho a provar."
 
 #: src/components/storage/dasd/DASDTable.tsx:111
-#, fuzzy
 msgid "Format selected devices?"
-msgstr "Formata el dispositiu"
+msgstr "Voleu formatar els dispositius seleccionats?"
 
 #: src/components/storage/dasd/DASDTable.tsx:115
 msgid ""
 "This action could destroy any data stored on the devices listed below. "
 "Please, confirm that you really want to continue."
 msgstr ""
+"Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius "
+"que s'indiquen a continuació. Si us plau, confirmeu que realment voleu "
+"continuar."
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/dasd/DASDTable.tsx:174
@@ -2044,9 +2045,8 @@ msgid "Remove max channel filter"
 msgstr "Suprimeix el filtre de canal màxim"
 
 #: src/components/storage/dasd/DASDTable.tsx:385
-#, fuzzy
 msgid "DASDs table section"
-msgstr "Selecció de programari"
+msgstr "Secció de taula DASD"
 
 #: src/components/storage/device-utils.tsx:75
 msgid "Unused space"
@@ -2360,7 +2360,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Si us plau, proveu d'activar un disc zFCP."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Si us plau, proveu d'activar un controlador de zFCP."
 
@@ -2368,27 +2368,27 @@ msgstr "Si us plau, proveu d'activar un controlador de zFCP."
 msgid "No zFCP disks found."
 msgstr "No s'ha trobat cap disc zFCP."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "Activa el disc zFCP"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Activa el disc nou"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Discs"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr "Controladors"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "No s'ha trobat cap controlador de zFCP."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "Llegeix els dispositius zFCP"
 
@@ -2558,7 +2558,7 @@ msgstr "Carrega"
 msgid "Clear"
 msgstr "Neteja"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr "ZFCP"
 

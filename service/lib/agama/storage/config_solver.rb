@@ -32,11 +32,14 @@ module Agama
     # example, the sizes of a partition config taking into account its fallbacks, assigning a
     # specific device when a config has a search, etc.
     class ConfigSolver
-      # @param devicegraph [Y2Storage::Devicegraph]
-      # @param product_config [Agama::Config]
-      def initialize(devicegraph, product_config)
+      # @param devicegraph [Y2Storage::Devicegraph] initial layout of the system
+      # @param product_config [Agama::Config] configuration of the product to install
+      # @param disk_analyzer [Y2Storage::DiskAnalyzer, nil] optional extra information about the
+      #   initial layout of the system
+      def initialize(devicegraph, product_config, disk_analyzer: nil)
         @devicegraph = devicegraph
         @product_config = product_config
+        @disk_analyzer = disk_analyzer
       end
 
       # Solves the config according to the product and the system.
@@ -47,7 +50,7 @@ module Agama
       def solve(config)
         ConfigEncryptionSolver.new(product_config).solve(config)
         ConfigFilesystemSolver.new(product_config).solve(config)
-        ConfigSearchSolver.new(devicegraph).solve(config)
+        ConfigSearchSolver.new(devicegraph, disk_analyzer).solve(config)
         # Sizes must be solved once the searches are solved.
         ConfigSizeSolver.new(devicegraph, product_config).solve(config)
       end
@@ -59,6 +62,9 @@ module Agama
 
       # @return [Agama::Config]
       attr_reader :product_config
+
+      # @return [Y2Storage::DiskAnalyzer, nil]
+      attr_reader :disk_analyzer
     end
   end
 end

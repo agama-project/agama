@@ -23,7 +23,7 @@
 import React from "react";
 import { Link, LinkProps } from "react-router-dom";
 import { useProduct } from "~/queries/software";
-import { PATHS } from "~/routes/products";
+import { PRODUCT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**

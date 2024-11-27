@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { IssuesLink } from "~/components/core";
 import { IssuesList } from "~/types/issues";
-import { PATHS as PRODUCT_PATHS } from "~/routes/products";
+import { PRODUCT as PATHS } from "~/routes/paths";
 
 const mockStartInstallationFn = jest.fn();
 let mockIssuesList: IssuesList;
@@ -64,7 +64,7 @@ describe("when there are installation issues", () => {
 
   describe("but installer is rendering the product selection", () => {
     beforeEach(() => {
-      mockRoutes(PRODUCT_PATHS.changeProduct);
+      mockRoutes(PATHS.changeProduct);
     });
 
     it("renders nothing", () => {
@@ -75,7 +75,7 @@ describe("when there are installation issues", () => {
 
   describe("but installer is configuring the product", () => {
     beforeEach(() => {
-      mockRoutes(PRODUCT_PATHS.progress);
+      mockRoutes(PATHS.progress);
     });
 
     it("renders nothing", () => {

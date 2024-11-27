@@ -75,7 +75,10 @@ describe("when it is open", () => {
     expect(confirmButton).toBeEnabled();
     await user.click(confirmButton);
 
-    expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({ password });
+    expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({
+      password,
+      passwordEncrypted: false,
+    });
     expect(onCloseCallback).toHaveBeenCalled();
   });
 

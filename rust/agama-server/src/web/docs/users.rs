@@ -1,6 +1,29 @@
-use utoipa::openapi::{ComponentsBuilder, Paths, PathsBuilder};
+// Copyright (c) [2024] SUSE LLC
+//
+// All Rights Reserved.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, contact SUSE LLC.
+//
+// To contact SUSE LLC about this file by physical or electronic mail, you may
+// find current contact information at www.suse.com.
 
-use super::ApiDocBuilder;
+use utoipa::openapi::{ComponentsBuilder, OpenApi, Paths, PathsBuilder};
+
+use super::{
+    common::{IssuesApiDocBuilder, ServiceStatusApiDocBuilder},
+    ApiDocBuilder,
+};
 
 pub struct UsersApiDocBuilder;
 
@@ -24,6 +47,7 @@ impl ApiDocBuilder for UsersApiDocBuilder {
             .schema_from::<agama_lib::users::FirstUser>()
             .schema_from::<agama_lib::users::model::RootConfig>()
             .schema_from::<agama_lib::users::model::RootPatchSettings>()
+            .schema_from::<crate::web::common::Issue>()
             .schema(
                 "zbus.zvariant.OwnedValue",
                 utoipa::openapi::ObjectBuilder::new()
@@ -31,5 +55,18 @@ impl ApiDocBuilder for UsersApiDocBuilder {
                     .build(),
             )
             .build()
+    }
+
+    fn nested(&self) -> Option<OpenApi> {
+        let mut issues = IssuesApiDocBuilder::new()
+            .add(
+                "/api/users/issues",
+                "List of user-related issues",
+                "user_issues",
+            )
+            .build();
+        let status = ServiceStatusApiDocBuilder::new("/api/storage/status").build();
+        issues.merge(status);
+        Some(issues)
     }
 }

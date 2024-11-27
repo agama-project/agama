@@ -23,14 +23,8 @@
 import React from "react";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
 import { Route } from "~/types/routes";
+import { L10N as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
-
-const PATHS = {
-  root: "/l10n",
-  localeSelection: "/l10n/locale/select",
-  keymapSelection: "/l10n/keymap/select",
-  timezoneSelection: "/l10n/timezone/select",
-};
 
 const routes = (): Route => ({
   path: PATHS.root,

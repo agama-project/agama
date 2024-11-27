@@ -27,22 +27,21 @@
 
 use agama_lib::{
     error::ServiceError,
-    manager::{InstallationPhase, ManagerClient},
+    logs,
+    manager::{InstallationPhase, InstallerStatus, ManagerClient},
     proxies::Manager1Proxy,
 };
 use axum::{
-    extract::{Request, State},
-    http::StatusCode,
+    body::Body,
+    extract::State,
+    http::{header, status::StatusCode, HeaderMap, HeaderValue},
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
 };
-use rand::distributions::{Alphanumeric, DistString};
-use serde::Serialize;
 use std::pin::Pin;
-use tokio::process::Command;
 use tokio_stream::{Stream, StreamExt};
-use tower_http::services::ServeFile;
+use tokio_util::io::ReaderStream;
 
 use crate::{
     error::Error,
@@ -56,20 +55,6 @@ use crate::{
 pub struct ManagerState<'a> {
     dbus: zbus::Connection,
     manager: ManagerClient<'a>,
-}
-
-/// Holds information about the manager's status.
-#[derive(Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct InstallerStatus {
-    /// Current installation phase.
-    phase: InstallationPhase,
-    /// Whether the service is busy.
-    is_busy: bool,
-    /// Whether Agama is running on Iguana.
-    use_iguana: bool,
-    /// Whether it is possible to start the installation.
-    can_install: bool,
 }
 
 /// Returns a stream that emits manager related events coming from D-Bus.
@@ -116,7 +101,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/install", post(install_action))
         .route("/finish", post(finish_action))
         .route("/installer", get(installer_status))
-        .route("/logs.tar.gz", get(download_logs))
+        .nest("/logs", logs_router())
         .merge(status_router)
         .merge(progress_router)
         .with_state(state))
@@ -226,36 +211,65 @@ async fn installer_status(
     Ok(Json(status))
 }
 
-/// Returns agama logs
-#[utoipa::path(get, path = "/api/manager/logs", responses(
-  (status = 200, description = "Download logs blob.")
-))]
+/// Creates router for handling /logs/* endpoints
+fn logs_router() -> Router<ManagerState<'static>> {
+    Router::new()
+        .route("/store", get(download_logs))
+        .route("/list", get(list_logs))
+}
 
-pub async fn download_logs() -> impl IntoResponse {
-    let path = generate_logs().await;
-    let Ok(path) = path else {
-        return (StatusCode::INTERNAL_SERVER_ERROR).into_response();
-    };
+#[utoipa::path(get,
+    path = "/logs/store",
+    context_path = "/api/manager",
+    responses(
+        (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream"),
+        (status = 500, description = "Cannot collect the logs"),
+        (status = 507, description = "Server is probably out of space"),
+    )
+)]
+async fn download_logs() -> impl IntoResponse {
+    let mut headers = HeaderMap::new();
+    let err_response = (headers.clone(), Body::empty());
 
-    match ServeFile::new(path)
-        .try_call(Request::new(axum::body::Body::empty()))
-        .await
-    {
-        Ok(res) => res.into_response(),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR).into_response(),
+    match logs::store() {
+        Ok(path) => {
+            if let Ok(file) = tokio::fs::File::open(path.clone()).await {
+                let stream = ReaderStream::new(file);
+                let body = Body::from_stream(stream);
+                let _ = std::fs::remove_file(path.clone());
+
+                // See RFC2046, RFC2616 and
+                // https://www.iana.org/assignments/media-types/media-types.xhtml
+                // or /etc/mime.types
+                headers.insert(
+                    header::CONTENT_TYPE,
+                    HeaderValue::from_static("application/x-compressed-tar"),
+                );
+                headers.insert(
+                    header::CONTENT_DISPOSITION,
+                    HeaderValue::from_static("attachment; filename=\"agama-logs\""),
+                );
+                headers.insert(
+                    header::CONTENT_ENCODING,
+                    HeaderValue::from_static(logs::DEFAULT_COMPRESSION.1),
+                );
+
+                (StatusCode::OK, (headers, body))
+            } else {
+                (StatusCode::INSUFFICIENT_STORAGE, err_response)
+            }
+        }
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, err_response),
     }
 }
 
-async fn generate_logs() -> Result<String, Error> {
-    let random_name: String = Alphanumeric.sample_string(&mut rand::thread_rng(), 8);
-    let path = format!("/run/agama/logs_{random_name}");
-
-    Command::new("agama")
-        .args(["logs", "store", "-d", path.as_str()])
-        .status()
-        .await
-        .map_err(|e| ServiceError::CannotGenerateLogs(e.to_string()))?;
-
-    let full_path = format!("{path}.tar.gz");
-    Ok(full_path)
+#[utoipa::path(get,
+    path = "/logs/list",
+    context_path = "/api/manager",
+    responses(
+        (status = 200, description = "Lists of collected logs", body = logs::LogsLists)
+    )
+)]
+pub async fn list_logs() -> Json<logs::LogsLists> {
+    Json(logs::list())
 }

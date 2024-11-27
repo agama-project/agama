@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { PATHS } from "~/routes/products";
+import { PRODUCT as PATHS } from "~/routes/paths";
 import { Product } from "~/types/software";
 import ChangeProductLink from "./ChangeProductLink";
 

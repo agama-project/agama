@@ -201,18 +201,24 @@ impl<'a> NetworkManagerClient<'a> {
 
             let settings = proxy.get_settings().await?;
 
-            if let Some(mut connection) = connection_from_dbus(settings.clone()) {
-                if let Some(controller) = controller_from_dbus(&settings) {
-                    controlled_by.insert(connection.uuid, controller.to_string());
-                }
-                if let Some(iname) = &connection.interface {
-                    uuids_map.insert(iname.to_string(), connection.uuid);
-                }
+            let controller = controller_from_dbus(&settings)?;
 
-                if self.settings_active_connection(path).await?.is_none() {
-                    connection.set_down()
+            match connection_from_dbus(settings) {
+                Ok(mut connection) => {
+                    if let Some(controller) = controller {
+                        controlled_by.insert(connection.uuid, controller.to_string());
+                    }
+                    if let Some(iname) = &connection.interface {
+                        uuids_map.insert(iname.to_string(), connection.uuid);
+                    }
+                    if self.settings_active_connection(path).await?.is_none() {
+                        connection.set_down()
+                    }
+                    connections.push(connection);
                 }
-                connections.push(connection);
+                Err(e) => {
+                    tracing::warn!("Could not process connection {}: {}", &path, e);
+                }
             }
         }
 
@@ -247,9 +253,9 @@ impl<'a> NetworkManagerClient<'a> {
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
-            let merged = merge_dbus_connections(&original, &new_conn);
+            let merged = merge_dbus_connections(&original, &new_conn)?;
             proxy.update(merged).await?;
-            OwnedObjectPath::from(proxy.path().to_owned())
+            OwnedObjectPath::from(proxy.inner().path().to_owned())
         } else {
             let proxy = SettingsProxy::new(&self.connection).await?;
             cleanup_dbus_connection(&mut new_conn);

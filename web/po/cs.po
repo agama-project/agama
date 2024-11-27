@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
-"PO-Revision-Date: 2024-09-23 14:19+0000\n"
-"Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
+"POT-Creation-Date: 2024-11-17 02:50+0000\n"
+"PO-Revision-Date: 2024-11-13 18:48+0000\n"
+"Last-Translator: Jan Papež <honyczek@centrum.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
 ">\n"
 "Language: cs\n"
@@ -18,43 +18,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.8.3\n"
 
 #: src/components/core/ChangeProductLink.tsx:39
 msgid "Change product"
 msgstr "Změnit produkt"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "Potvrdit instalaci"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
 msgstr ""
-"Budete-li pokračovat, připravíme oddíly na pevném disku podle zadaných "
+"Budete-li pokračovat, oddíly na pevném disku budou upraveny podle zadaných "
 "instalačních nastavení."
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Nejste-li si jisti, zrušte akci a zkontrolujte nastavení."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "Pokračovat"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
-#: src/components/network/WifiConnectionForm.tsx:145
-#: src/components/product/ProductSelectionPage.tsx:96
+#: src/components/network/WifiConnectionForm.tsx:153
+#: src/components/product/ProductSelectionPage.tsx:95
 msgid "Cancel"
-msgstr "Zrušit/Storno"
+msgstr "Zrušit"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "Instalovat"
 
@@ -76,7 +76,7 @@ msgstr "Skrýt podrobnosti"
 
 #: src/components/core/InstallationFinished.tsx:62
 msgid "See more details"
-msgstr "Ukázat podrobněji"
+msgstr "Zobrazit podrobnosti"
 
 #: src/components/core/InstallationFinished.tsx:67
 msgid ""
@@ -96,7 +96,7 @@ msgstr "Blahopřejeme!"
 
 #: src/components/core/InstallationFinished.tsx:114
 msgid "The installation on your machine is complete."
-msgstr "Instalace na Váš počítač je dokončena."
+msgstr "Instalace na váš počítač je dokončena."
 
 #: src/components/core/InstallationFinished.tsx:117
 msgid "At this point you can power off the machine."
@@ -108,20 +108,19 @@ msgstr "Nyní můžete počítač restartovat a přihlásit se do nového systé
 
 #: src/components/core/InstallationFinished.tsx:128
 msgid "Finish"
-msgstr "Dokončeno"
+msgstr "Dokončit"
 
 #: src/components/core/InstallationFinished.tsx:128
 msgid "Reboot"
-msgstr "Restart systému"
+msgstr "Restartovat systém"
 
-#: src/components/core/InstallationProgress.tsx:42
-#, fuzzy
+#: src/components/core/InstallationProgress.tsx:43
 msgid "Installing the system, please wait..."
 msgstr "Instaluji systém, čekejte ..."
 
 #: src/components/core/InstallerOptions.tsx:73
 msgid "Installer options"
-msgstr "Možnosti instalace"
+msgstr "Možnosti instalátoru"
 
 #: src/components/core/InstallerOptions.tsx:76
 #: src/components/core/InstallerOptions.tsx:80
@@ -152,15 +151,15 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr "Před zahájením instalace vyřešte tyto problémy:"
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
+"Instalace zatím není možná kvůli problémům, které najdete na stránce Přehled."
 
-#: src/components/core/IssuesLink.tsx:52
-#, fuzzy
+#: src/components/core/IssuesLink.tsx:51
 msgid "Installation issues"
-msgstr "Instalační zařízení"
+msgstr "Problémy s instalací"
 
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
@@ -172,7 +171,7 @@ msgstr "Nelze se přhlásit. Zkontrolujte správnost hesla."
 
 #: src/components/core/LoginPage.tsx:52
 msgid "Could not authenticate against the server, please check it."
-msgstr "Nezdařilo se ověřit Vás u serveru, zkontrolujte to prosím."
+msgstr "Nezdařilo se ověření vůči serveru, zkontrolujte to prosím."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
@@ -211,7 +210,7 @@ msgstr "Hesla se neshodují"
 
 #. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.tsx:89
-#: src/components/network/WifiConnectionForm.tsx:132
+#: src/components/network/WifiConnectionForm.tsx:140
 #: src/components/questions/QuestionWithPassword.tsx:63
 #: src/components/storage/iscsi/AuthFields.jsx:91
 #: src/components/storage/iscsi/AuthFields.jsx:95
@@ -234,7 +233,7 @@ msgstr "Potvrdit"
 #. TRANSLATORS: progress message
 #: src/components/core/Popup.jsx:211
 msgid "Loading data..."
-msgstr "Soubor se načítá…"
+msgstr "Načítání dat ..."
 
 #: src/components/core/ProgressReport.tsx:61
 msgid "Pending"
@@ -287,13 +286,13 @@ msgstr "Výběr klávesnice"
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/l10n/LocaleSelection.tsx:93
 #: src/components/l10n/TimezoneSelection.tsx:138
-#: src/components/product/ProductSelectionPage.tsx:145
+#: src/components/product/ProductSelectionPage.tsx:148
 #: src/components/software/SoftwarePatternsSelection.tsx:167
 msgid "Select"
 msgstr "Zvolit"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "Lokalizace"
 
@@ -346,16 +345,15 @@ msgstr " Výběr časového pásma"
 
 #: src/components/layout/Header.tsx:81
 msgid "Options toggle"
-msgstr ""
+msgstr "Přepínač možností"
 
 #: src/components/layout/Header.tsx:92
 msgid "Download logs"
-msgstr "Stahuji zázbamy"
+msgstr "Stáhnout protokoly"
 
 #: src/components/layout/Header.tsx:98
-#, fuzzy
 msgid "Installer Options"
-msgstr "Možnosti instalace"
+msgstr "Možnosti instalátoru"
 
 #: src/components/layout/Header.tsx:140
 msgid "Main navigation"
@@ -424,8 +422,8 @@ msgid "Connection actions"
 msgstr "Akce připojení"
 
 #: src/components/network/ConnectionsTable.tsx:77
-#: src/components/network/WifiNetworksListPage.tsx:128
-#: src/components/network/WifiNetworksListPage.tsx:152
+#: src/components/network/WifiNetworksListPage.tsx:129
+#: src/components/network/WifiNetworksListPage.tsx:153
 #: src/components/storage/PartitionsField.tsx:313
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:45
 #: src/components/storage/iscsi/NodesPresenter.jsx:75
@@ -441,8 +439,8 @@ msgid "Edit connection %s"
 msgstr "Upravit připojení %s"
 
 #: src/components/network/ConnectionsTable.tsx:84
-#: src/components/network/WifiNetworksListPage.tsx:131
-#: src/components/network/WifiNetworksListPage.tsx:155
+#: src/components/network/WifiNetworksListPage.tsx:132
+#: src/components/network/WifiNetworksListPage.tsx:156
 msgid "Forget"
 msgstr "Zapomenout"
 
@@ -461,7 +459,7 @@ msgstr "Akce pro připojení %s"
 #. TRANSLATORS: input field name
 #: src/components/network/DnsDataList.tsx:91
 msgid "Server IP"
-msgstr "IP serveru"
+msgstr "IP adresa serveru"
 
 #: src/components/network/DnsDataList.tsx:116
 msgid "Add DNS"
@@ -478,7 +476,7 @@ msgstr "DNS"
 
 #: src/components/network/IpPrefixInput.tsx:35
 msgid "Ip prefix or netmask"
-msgstr "předpona IP nebo maska sítě"
+msgstr "Předpona IP nebo maska sítě"
 
 #. TRANSLATORS: error message
 #: src/components/network/IpSettingsForm.tsx:103
@@ -494,12 +492,12 @@ msgstr "Režim"
 
 #: src/components/network/IpSettingsForm.tsx:171
 msgid "Automatic (DHCP)"
-msgstr "Automatický (DHCP)"
+msgstr "Automatická (DHCP)"
 
 #: src/components/network/IpSettingsForm.tsx:177
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "Manual"
-msgstr "Manuální"
+msgstr "Ruční"
 
 #. TRANSLATORS: network gateway configuration
 #: src/components/network/IpSettingsForm.tsx:186
@@ -509,11 +507,11 @@ msgstr "Brána"
 
 #: src/components/network/IpSettingsForm.tsx:198
 msgid "Gateway can be defined only in 'Manual' mode"
-msgstr "Bránu lze definovat pouze v režimu 'Manual'"
+msgstr "Bránu lze definovat pouze v režimu 'Ruční'"
 
 #: src/components/network/NetworkPage.tsx:38
 msgid "Wired"
-msgstr "Připojení kabelem (Ethernet)"
+msgstr "Připojení kabelem"
 
 #: src/components/network/NetworkPage.tsx:45
 msgid "No wired connections found"
@@ -525,8 +523,8 @@ msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/NetworkPage.tsx:64
-#: src/components/network/WifiConnectionForm.tsx:141
-#: src/components/network/WifiNetworksListPage.tsx:126
+#: src/components/network/WifiConnectionForm.tsx:149
+#: src/components/network/WifiNetworksListPage.tsx:127
 msgid "Connect"
 msgstr "Připojit"
 
@@ -556,7 +554,7 @@ msgstr ""
 "Systém nepodporuje připojení Wi-Fi, pravděpodobně chybí hardware nebo je "
 "zakázán."
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "Síť"
 
@@ -564,7 +562,7 @@ msgstr "Síť"
 #: src/components/network/WifiConnectionForm.tsx:49
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:58
 msgid "None"
-msgstr "Žádná"
+msgstr "Žádné"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.tsx:51
@@ -572,15 +570,15 @@ msgid "WPA & WPA2 Personal"
 msgstr "WPA & WPA2 Osobní"
 
 #. TRANSLATORS: accessible name for the WiFi connection form
-#: src/components/network/WifiConnectionForm.tsx:93
+#: src/components/network/WifiConnectionForm.tsx:101
 msgid "WiFi connection form"
 msgstr "Formulář pro připojení WiFi"
 
-#: src/components/network/WifiConnectionForm.tsx:100
+#: src/components/network/WifiConnectionForm.tsx:108
 msgid "Authentication failed, please try again"
 msgstr "Ověření selhalo, zkuste to znovu"
 
-#: src/components/network/WifiConnectionForm.tsx:101
+#: src/components/network/WifiConnectionForm.tsx:109
 #: src/components/storage/iscsi/DiscoverForm.tsx:99
 #: src/components/storage/iscsi/LoginForm.jsx:70
 #: src/components/storage/zfcp/ZFCPDiskForm.tsx:114
@@ -588,66 +586,65 @@ msgstr "Ověření selhalo, zkuste to znovu"
 msgid "Something went wrong"
 msgstr "Něco se nezdařilo"
 
-#: src/components/network/WifiConnectionForm.tsx:104
+#: src/components/network/WifiConnectionForm.tsx:112
 msgid "Please, review provided settings and try again."
 msgstr "Zkontrolujte poskytnutá nastavení a zkuste to znovu."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.tsx:110
+#: src/components/network/WifiConnectionForm.tsx:118
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.tsx:116
-#: src/components/network/WifiConnectionForm.tsx:119
+#: src/components/network/WifiConnectionForm.tsx:124
+#: src/components/network/WifiConnectionForm.tsx:127
 msgid "Security"
 msgstr "Zabezpečení"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.tsx:128
+#: src/components/network/WifiConnectionForm.tsx:136
 msgid "WPA Password"
-msgstr "Heslo k WPA"
+msgstr "Heslo WPA"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:73
-#: src/components/network/WifiNetworksListPage.tsx:139
+#: src/components/network/WifiNetworksListPage.tsx:74
+#: src/components/network/WifiNetworksListPage.tsx:140
 msgid "Connecting"
-msgstr "Připojuji"
+msgstr "Připojování"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:76
-#: src/components/network/WifiNetworksListPage.tsx:143
-#: src/components/network/WifiNetworksListPage.tsx:182
+#: src/components/network/WifiNetworksListPage.tsx:77
+#: src/components/network/WifiNetworksListPage.tsx:144
+#: src/components/network/WifiNetworksListPage.tsx:183
 msgid "Connected"
 msgstr "Připojeno"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:81
-#: src/components/network/WifiNetworksListPage.tsx:141
+#: src/components/network/WifiNetworksListPage.tsx:82
+#: src/components/network/WifiNetworksListPage.tsx:142
 #: src/components/storage/iscsi/NodesPresenter.jsx:65
 msgid "Disconnected"
 msgstr "Odpojeno"
 
-#: src/components/network/WifiNetworksListPage.tsx:149
+#: src/components/network/WifiNetworksListPage.tsx:150
 msgid "Disconnect"
 msgstr "Odpojit"
 
-#: src/components/network/WifiNetworksListPage.tsx:168
-#: src/components/network/WifiNetworksListPage.tsx:286
+#: src/components/network/WifiNetworksListPage.tsx:169
+#: src/components/network/WifiNetworksListPage.tsx:288
 msgid "Connect to hidden network"
 msgstr "Připojit ke skryté síti"
 
-#: src/components/network/WifiNetworksListPage.tsx:179
+#: src/components/network/WifiNetworksListPage.tsx:180
 msgid "configured"
 msgstr "konfigurováno"
 
-#: src/components/network/WifiNetworksListPage.tsx:267
-#, fuzzy
+#: src/components/network/WifiNetworksListPage.tsx:269
 msgid "No visible Wi-Fi networks found"
-msgstr "Viditelné sítě Wi-Fi"
+msgstr "Nebyly nalezeny žádné viditelné sítě Wi-Fi"
 
-#: src/components/network/WifiNetworksListPage.tsx:271
+#: src/components/network/WifiNetworksListPage.tsx:273
 msgid "Visible Wi-Fi networks"
 msgstr "Viditelné sítě Wi-Fi"
 
@@ -663,32 +660,31 @@ msgid "The system will use %s as its default language."
 msgstr "Systém použije jako výchozí jazyk %s."
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "Uživatelé"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
-msgstr "Paměť"
+msgstr "Úložiště"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "Software"
 
 #: src/components/overview/OverviewPage.tsx:87
-#, fuzzy
 msgid "Installation blocking issues"
-msgstr "Instalační zařízení"
+msgstr "Problémy zabraňující instalaci"
 
 #: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
 msgstr "Před instalací zkontrolujte tyto problémy."
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr "Přehled"
 
@@ -722,7 +718,7 @@ msgid ""
 "existing partitions at the underlying devices as needed"
 msgstr ""
 "Instalace do nové skupiny svazků LVM (Logical Volume Manager), která podle "
-"potřeby zmenší existující oddíly na základních zařízeních"
+"potřeby zmenší existující oddíly na podkladových zařízeních"
 
 #: src/components/overview/StorageSection.tsx:47
 msgid ""
@@ -730,7 +726,7 @@ msgid ""
 "the partitions at the underlying devices"
 msgstr ""
 "Instalace do nové skupiny svazků Správce logických svazků (LVM) bez úpravy "
-"oddílů v základních zařízeních"
+"oddílů na podkladových zařízeních"
 
 #: src/components/overview/StorageSection.tsx:52
 msgid ""
@@ -738,7 +734,7 @@ msgid ""
 "content of the underlying devices"
 msgstr ""
 "Instalace do nové skupiny svazků LVM (Logical Volume Manager), která "
-"odstraní veškerý obsah základních zařízení"
+"odstraní veškerý obsah podkladových zařízení"
 
 #: src/components/overview/StorageSection.tsx:57
 msgid ""
@@ -746,7 +742,7 @@ msgid ""
 "strategy to find the needed space at the underlying devices"
 msgstr ""
 "Instalace do nové skupiny svazků LVM (Logical Volume Manager) pomocí vlastní "
-"strategie pro nalezení potřebného místa v základních zařízeních"
+"strategie pro nalezení potřebného místa v podkladových zařízeních"
 
 #: src/components/overview/StorageSection.tsx:75
 #, c-format
@@ -821,7 +817,7 @@ msgstr ""
 "místa"
 
 #. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-#: src/components/product/ProductSelectionPage.tsx:59
+#: src/components/product/ProductSelectionPage.tsx:58
 #, c-format
 msgid "%s logo"
 msgstr "%s logo"
@@ -927,20 +923,20 @@ msgstr ""
 "Tento prostor zahrnuje základní systém a vybrané softwarové vzory, pokud "
 "existují."
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 msgid "Change boot options"
 msgstr "Změna možností spouštění systému"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 msgid "Installation will not configure partitions for booting."
 msgstr "Instalace nenakonfiguruje oddíly pro zavádění systému."
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr "Instalace nakonfiguruje oddíly pro zavádění na instalačním disku."
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Instalace nakonfiguruje oddíly pro zavádění v %s."
@@ -1142,7 +1138,7 @@ msgid "Activate disks"
 msgstr "Aktivace disků"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1150,7 +1146,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Připojení k cílům iSCSI"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1896,7 +1892,7 @@ msgstr "Použití"
 msgid "Formatting DASD devices"
 msgstr "Formátuji zařízení DASD"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 msgid "DASD"
 msgstr "DASD"
 
@@ -1906,7 +1902,7 @@ msgid "DASD devices selection table"
 msgstr "Tabulka výběru zařízení DASD"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 msgid "Back to device selection"
 msgstr "Zpět na výběr zařízení"
 
@@ -1961,24 +1957,27 @@ msgstr "Údaje o oddílech"
 
 #: src/components/storage/dasd/DASDTable.tsx:95
 msgid "Cannot format all selected devices"
-msgstr ""
+msgstr "Nelze formátovat všechna vybraná zařízení"
 
 #: src/components/storage/dasd/DASDTable.tsx:99
 msgid ""
 "Offline devices must be activated before formatting them. Please, unselect "
 "or activate the devices listed below and try it again"
 msgstr ""
+"Offline zařízení musí být před formátováním aktivována. Buďto zrušte jejich "
+"výběr nebo níže uvedená zařízení aktivujte a zkuste to znovu"
 
 #: src/components/storage/dasd/DASDTable.tsx:111
-#, fuzzy
 msgid "Format selected devices?"
-msgstr "Formátovat zařízení"
+msgstr "Formátovat vybraná zařízení?"
 
 #: src/components/storage/dasd/DASDTable.tsx:115
 msgid ""
 "This action could destroy any data stored on the devices listed below. "
 "Please, confirm that you really want to continue."
 msgstr ""
+"Tato akce zničí veškerá data uložená na níže uvedených zařízeních. Potvrďte "
+"prosím, že opravdu chcete pokračovat."
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/dasd/DASDTable.tsx:174
@@ -2026,9 +2025,8 @@ msgid "Remove max channel filter"
 msgstr "Odstranění filtru max. kanálu"
 
 #: src/components/storage/dasd/DASDTable.tsx:385
-#, fuzzy
 msgid "DASDs table section"
-msgstr "Výběr softwaru"
+msgstr "Sekce DASD tabulky"
 
 #: src/components/storage/device-utils.tsx:75
 msgid "Unused space"
@@ -2341,7 +2339,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Zkuste aktivovat disk zFCP."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Zkuste aktivovat řadič zFCP."
 
@@ -2349,27 +2347,27 @@ msgstr "Zkuste aktivovat řadič zFCP."
 msgid "No zFCP disks found."
 msgstr "Nebyly nalezeny žádné disky zFCP."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "Aktivovat disk zFCP"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Aktivace nového disku"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Disky"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr "Řadiče"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "Nebyly nalezeny žádné řadiče zFCP."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "Načtení zařízení zFCP"
 
@@ -2538,7 +2536,7 @@ msgstr "Nahrát"
 msgid "Clear"
 msgstr "Smazat"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr "ZFCP"
 

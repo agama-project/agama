@@ -24,15 +24,9 @@ import React from "react";
 import UsersPage from "~/components/users/UsersPage";
 import FirstUserForm from "~/components/users/FirstUserForm";
 import { Route } from "~/types/routes";
+import { USER as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
 
-const PATHS = {
-  root: "/users",
-  firstUser: {
-    create: "/users/first",
-    edit: "/users/first/edit",
-  },
-};
 const routes = (): Route => ({
   path: PATHS.root,
   handle: {

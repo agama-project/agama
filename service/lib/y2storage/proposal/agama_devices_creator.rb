@@ -125,11 +125,17 @@ module Y2Storage
       def process_existing_partitionables
         partitions = partitions_for_existing(planned_devices)
 
-        # Check whether there is any chance of getting an unwanted order for the planned partitions
-        # within a disk
-        space_result = space_maker.provide_space(
-          original_graph, partitions: partitions, volume_groups: automatic_vgs
-        )
+        begin
+          # Check whether there is any chance of getting an unwanted order for the planned
+          # partitions within a disk
+          space_result = space_maker.provide_space(
+            original_graph, partitions: partitions, volume_groups: automatic_vgs
+          )
+        rescue Error => e
+          log.info "SpaceMaker was not able to find enough space: #{e}"
+          raise NoDiskSpaceError
+        end
+
         self.devicegraph = space_result[:devicegraph]
         distribution = space_result[:partitions_distribution]
 

@@ -24,6 +24,7 @@
 #
 
 from argparse import ArgumentParser
+from typing import Optional
 from langtable import language_name
 from pathlib import Path
 import json
@@ -32,9 +33,9 @@ import sys
 
 class Locale:
     language: str
-    territory: str
+    territory: Optional[str]
 
-    def __init__(self, language: str, territory: str = None):
+    def __init__(self, language: str, territory: Optional[str] = None):
         self.language = language
         self.territory = territory
 
@@ -44,13 +45,13 @@ class Locale:
     def name(self, include_territory: bool = False):
         if include_territory:
             return language_name(languageId=self.language,
-                                 territoryId=self.territory.upper())
+                                 territoryId=self.territory)
         else:
             return language_name(languageId=self.language)
 
 
 class PoFile:
-    path: str
+    path: Path
     locale: Locale
 
     def __init__(self, path: Path):
@@ -85,7 +86,7 @@ class Languages:
     def __init__(self):
         self.content = dict()
 
-    def update(self, po_files, lang2territory: str, threshold: int):
+    def update(self, po_files, lang2territory, threshold: int):
         """
         Generate the list of supported locales
 
@@ -97,7 +98,7 @@ class Languages:
         :param threshold      Percentage of the strings that must be covered to
                               include the locale in the manifest
         """
-        supported = [Locale("en", "us")]
+        supported = [Locale("en", "US")]
 
         for path in po_files:
             po_file = PoFile(path)

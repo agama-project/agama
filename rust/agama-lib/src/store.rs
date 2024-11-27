@@ -24,6 +24,8 @@
 use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 use crate::install_settings::InstallSettings;
+use crate::manager::{InstallationPhase, ManagerHTTPClient};
+use crate::scripts::{ScriptsClient, ScriptsGroup};
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
     scripts::ScriptsStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
@@ -43,6 +45,8 @@ pub struct Store {
     storage: StorageStore,
     localization: LocalizationStore,
     scripts: ScriptsStore,
+    manager_client: ManagerHTTPClient,
+    http_client: BaseHTTPClient,
 }
 
 impl Store {
@@ -54,7 +58,9 @@ impl Store {
             product: ProductStore::new(http_client.clone())?,
             software: SoftwareStore::new(http_client.clone())?,
             storage: StorageStore::new(http_client.clone())?,
-            scripts: ScriptsStore::new(http_client),
+            scripts: ScriptsStore::new(http_client.clone()),
+            manager_client: ManagerHTTPClient::new(http_client.clone()),
+            http_client,
         })
     }
 
@@ -79,12 +85,23 @@ impl Store {
     }
 
     /// Stores the given installation settings in the D-Bus service
+    ///
+    /// As part of the process it runs pre-scripts and forces a probe if the installation phase is
+    /// "config". It causes the storage proposal to be reset. This behavior should be revisited in
+    /// the future but it might be the storage service the responsible for dealing with this.
+    ///
+    /// * `settings`: installation settings.
     pub async fn store(&self, settings: &InstallSettings) -> Result<(), ServiceError> {
-        if let Some(network) = &settings.network {
-            self.network.store(network).await?;
-        }
         if let Some(scripts) = &settings.scripts {
             self.scripts.store(scripts).await?;
+        }
+
+        if settings.scripts.as_ref().is_some_and(|s| !s.pre.is_empty()) {
+            self.run_pre_scripts().await?;
+        }
+
+        if let Some(network) = &settings.network {
+            self.network.store(network).await?;
         }
         // order is important here as network can be critical for connection
         // to registration server and selecting product is important for rest
@@ -105,6 +122,18 @@ impl Store {
             self.storage.store(&settings.into()).await?
         }
 
+        Ok(())
+    }
+
+    /// Runs the pre-installation scripts and forces a probe if the installation phase is "config".
+    async fn run_pre_scripts(&self) -> Result<(), ServiceError> {
+        let scripts_client = ScriptsClient::new(self.http_client.clone());
+        scripts_client.run_scripts(ScriptsGroup::Pre).await?;
+
+        let status = self.manager_client.status().await;
+        if status.is_ok_and(|s| s.phase == InstallationPhase::Config) {
+            self.manager_client.probe().await?;
+        }
         Ok(())
     }
 }

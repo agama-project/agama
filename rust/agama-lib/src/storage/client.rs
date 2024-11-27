@@ -68,12 +68,12 @@ impl<'a> StorageClient<'a> {
             // Do not cache the D-Bus proposal proxy because the proposal object is reexported with
             // every new call to calculate.
             proposal_proxy: ProposalProxy::builder(&connection)
-                .cache_properties(zbus::CacheProperties::No)
+                .cache_properties(zbus::proxy::CacheProperties::No)
                 .build()
                 .await?,
             // Same than above, actions are reexported with every call to recalculate
             devices_proxy: DevicesProxy::builder(&connection)
-                .cache_properties(zbus::CacheProperties::No)
+                .cache_properties(zbus::proxy::CacheProperties::No)
                 .build()
                 .await?,
             connection,
@@ -162,7 +162,11 @@ impl<'a> StorageClient<'a> {
     }
 
     pub async fn calculate(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {
-        Ok(self.calculator_proxy.calculate(settings.into()).await?)
+        let map: HashMap<&str, zbus::zvariant::Value> = settings.into();
+        let options: HashMap<&str, &zbus::zvariant::Value> =
+            map.iter().map(|(id, value)| (*id, value)).collect();
+
+        Ok(self.calculator_proxy.calculate(options).await?)
     }
 
     /// Probed devices.

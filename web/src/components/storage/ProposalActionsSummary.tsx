@@ -24,11 +24,11 @@ import React from "react";
 import { Button, Skeleton, Stack, List, ListItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
-import { _, n_ } from "~/i18n";
-import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Action, StorageDevice } from "~/types/storage";
 import { ValidationError } from "~/types/issues";
+import { sprintf } from "sprintf-js";
+import { _, n_ } from "~/i18n";
 
 /**
  * Renders information about delete actions

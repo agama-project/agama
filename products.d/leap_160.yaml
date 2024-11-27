@@ -34,7 +34,15 @@ translations:
 software:
   installation_repositories:
     - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss
-
+  installation_labels:
+    - label: Leap-DVD-x86_64
+      archs: x86_64
+    - label: Leap-DVD-aarch64
+      archs: aarch64
+    - label: Leap-DVD-s390x
+      archs: s390
+    - label: Leap-DVD-ppc64le
+      archs: ppc
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on Leap
   optional_patterns: null # no optional pattern shared

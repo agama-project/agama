@@ -42,6 +42,6 @@ const finishInstallation = () => post("/api/manager/finish");
 /**
  * Returns the binary content of the YaST logs file.
  */
-const fetchLogs = () => get("/api/manager/logs.tar.gz");
+const fetchLogs = () => get("/api/manager/logs/store");
 
 export { startProbing, startInstallation, finishInstallation, fetchLogs };

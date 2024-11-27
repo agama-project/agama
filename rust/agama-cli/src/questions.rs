@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::proxies::Questions1Proxy;
+use agama_lib::proxies::questions::QuestionsProxy;
 use agama_lib::questions::http_client::HTTPClient;
 use agama_lib::{base_http_client::BaseHTTPClient, connection, error::ServiceError};
 use clap::{Args, Subcommand, ValueEnum};
@@ -60,14 +60,14 @@ pub enum Modes {
     NonInteractive,
 }
 
-async fn set_mode(proxy: Questions1Proxy<'_>, value: Modes) -> Result<(), ServiceError> {
+async fn set_mode(proxy: QuestionsProxy<'_>, value: Modes) -> Result<(), ServiceError> {
     proxy
         .set_interactive(value == Modes::Interactive)
         .await
         .map_err(|e| e.into())
 }
 
-async fn set_answers(proxy: Questions1Proxy<'_>, path: String) -> Result<(), ServiceError> {
+async fn set_answers(proxy: QuestionsProxy<'_>, path: String) -> Result<(), ServiceError> {
     proxy
         .add_answer_file(path.as_str())
         .await
@@ -109,7 +109,7 @@ pub async fn run(
     subcommand: QuestionsCommands,
 ) -> Result<(), ServiceError> {
     let connection = connection().await?;
-    let proxy = Questions1Proxy::new(&connection).await?;
+    let proxy = QuestionsProxy::new(&connection).await?;
 
     match subcommand {
         QuestionsCommands::Mode(value) => set_mode(proxy, value.value).await,

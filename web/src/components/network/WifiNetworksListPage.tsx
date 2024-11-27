@@ -48,14 +48,15 @@ import { generatePath } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { Link, EmptyState } from "~/components/core";
 import WifiConnectionForm from "~/components/network/WifiConnectionForm";
-import { PATHS } from "~/routes/network";
 import { DeviceState, WifiNetwork } from "~/types/network";
+import { NETWORK as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { formatIp } from "~/utils/network";
 import {
   useRemoveConnectionMutation,
   useSelectedWifi,
   useSelectedWifiChange,
+  useNetworkConfigChanges,
   useWifiNetworks,
 } from "~/queries/network";
 import { slugify } from "~/utils";
@@ -222,11 +223,12 @@ const NetworkListItem = ({ network }) => {
  * Component for displaying a list of available Wi-Fi networks
  */
 function WifiNetworksListPage() {
+  useNetworkConfigChanges();
   const networks: WifiNetwork[] = useWifiNetworks();
   const { ssid: selectedSsid, hidden } = useSelectedWifi();
+  // FIXME: improve below type casting, if possible
   const selected = hidden
-    ? // FIXME: improve below type casting, if possible
-      (HIDDEN_NETWORK as unknown as WifiNetwork)
+    ? (HIDDEN_NETWORK as unknown as WifiNetwork)
     : networks.find((n) => n.ssid === selectedSsid);
   const { mutate: changeSelection } = useSelectedWifiChange();
 

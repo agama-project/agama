@@ -22,7 +22,7 @@ use std::collections::HashMap;
 
 use agama_lib::questions::{self, GenericQuestion, WithPassword};
 use log;
-use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
+use zbus::{fdo::ObjectManager, interface, zvariant::ObjectPath, Connection};
 
 mod answers;
 pub mod web;
@@ -38,44 +38,44 @@ pub enum QuestionsError {
 #[derive(Clone, Debug)]
 struct GenericQuestionObject(questions::GenericQuestion);
 
-#[dbus_interface(name = "org.opensuse.Agama1.Questions.Generic")]
+#[interface(name = "org.opensuse.Agama1.Questions.Generic")]
 impl GenericQuestionObject {
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn id(&self) -> u32 {
         self.0.id
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn class(&self) -> &str {
         &self.0.class
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn data(&self) -> HashMap<String, String> {
         self.0.data.to_owned()
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn text(&self) -> &str {
         self.0.text.as_str()
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn options(&self) -> Vec<String> {
         self.0.options.to_owned()
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn default_option(&self) -> &str {
         self.0.default_option.as_str()
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn answer(&self) -> &str {
         &self.0.answer
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn set_answer(&mut self, value: &str) -> zbus::fdo::Result<()> {
         // TODO verify if answer exists in options or if it is valid in other way
         self.0.answer = value.to_string();
@@ -87,14 +87,14 @@ impl GenericQuestionObject {
 /// Mixin interface for questions that are base + contain question for password
 struct WithPasswordObject(questions::WithPassword);
 
-#[dbus_interface(name = "org.opensuse.Agama1.Questions.WithPassword")]
+#[interface(name = "org.opensuse.Agama1.Questions.WithPassword")]
 impl WithPasswordObject {
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn password(&self) -> &str {
         self.0.password.as_str()
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     pub fn set_password(&mut self, value: &str) {
         self.0.password = value.to_string();
     }
@@ -160,10 +160,10 @@ pub struct Questions {
     answer_strategies: Vec<Box<dyn AnswerStrategy + Sync + Send>>,
 }
 
-#[dbus_interface(name = "org.opensuse.Agama1.Questions")]
+#[interface(name = "org.opensuse.Agama1.Questions")]
 impl Questions {
     /// creates new generic question without answer
-    #[dbus_interface(name = "New")]
+    #[zbus(name = "New")]
     async fn new_question(
         &mut self,
         class: &str,
@@ -270,7 +270,7 @@ impl Questions {
 
     /// property that defines if questions is interactive or automatically answered with
     /// default answer
-    #[dbus_interface(property)]
+    #[zbus(property)]
     fn interactive(&self) -> bool {
         let last = self.answer_strategies.last();
         if let Some(real_strategy) = last {
@@ -280,7 +280,7 @@ impl Questions {
         }
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     fn set_interactive(&mut self, value: bool) {
         if value != self.interactive() {
             log::info!("interactive value unchanged - {}", value);

@@ -1,4 +1,47 @@
 -------------------------------------------------------------------
+Tue Nov 12 08:19:51 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
+
+- Add SLES for SAP Application product for SLE based products
+  (gh#agama-project/agama/#1764)
+
+-------------------------------------------------------------------
+Fri Nov  8 13:20:10 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Shorten Leap 16.0 installation_labels
+  Neither yast2 partitioner, nor gnome disks
+  allowed me to use openSUSE-Leap-DVD-x86_64 as
+  the label limit seems to be 16 characters
+
+-------------------------------------------------------------------
+Fri Nov  8 11:58:49 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add installation_labels for Leap 16.0
+  Let's keep TW style format for now
+  (gh#agama-project/agama/#1740)
+
+-------------------------------------------------------------------
+Thu Nov 07 18:25:49 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
+
+- Fix mandatory patterns for SLES16.0:
+  - fix traditional pattern name, patterns-base-traditional package
+    provides base_traditional
+  - remove base pattern because base_traditional pattern requires it
+  (gh#agama-project/agama#1736)
+
+-------------------------------------------------------------------
+Wed Nov 06 11:28:16 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
+
+- add traditional pattern to mandatory_patterns for SLES16.0 product,
+  it will fix missing zypper in initial installation
+  (gh#agama-project/agama#1731)
+
+-------------------------------------------------------------------
+Wed Oct 30 18:57:26 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
+
+- sles_enhanced_base pattern was removed from SLES16, so replace
+  it with base pattern (bsc#1232618)
+
+-------------------------------------------------------------------
 Tue Oct 22 08:41:14 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Use HTTP repositories for SLES16, HTTPS does not work because

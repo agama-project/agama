@@ -83,11 +83,12 @@ const useFirstUserChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "FirstUserChanged") {
-        const { fullName, userName, password, autologin, data } = event;
+        const { fullName, userName, password, passwordEncrypted, autologin, data } = event;
         queryClient.setQueryData(["users", "firstUser"], {
           fullName,
           userName,
           password,
+          passwordEncrypted,
           autologin,
           data,
         });
@@ -122,7 +123,7 @@ const useRootUserMutation = () => {
 };
 
 /**
- * Listens for first user changes.
+ * Listens for root user changes.
  */
 const useRootUserChanges = () => {
   const client = useInstallerClient();
@@ -138,6 +139,7 @@ const useRootUserChanges = () => {
           const newRoot = { ...oldRoot };
           if (password !== undefined) {
             newRoot.password = password;
+            newRoot.encryptedPassword = false;
           }
 
           if (sshkey) {

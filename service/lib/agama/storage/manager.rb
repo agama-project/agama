@@ -262,6 +262,7 @@ module Agama
       # @return [Array<Issue>]
       def probing_issues
         y2storage_issues = Y2Storage::StorageManager.instance.raw_probed.probing_issues
+        return [] if y2storage_issues.nil?
 
         y2storage_issues.map do |y2storage_issue|
           Issue.new(y2storage_issue.message,

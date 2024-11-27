@@ -546,7 +546,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for ShrinkingInfo {
     type Error = zbus::zvariant::Error;
 
     fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
-        let hash: HashMap<String, OwnedValue> = value.clone().try_into()?;
+        let hash: HashMap<String, OwnedValue> = value.try_clone()?.try_into()?;
         let mut info: Option<Self> = None;
 
         if let Some(size) = get_optional_property(&hash, "Supported")? {
