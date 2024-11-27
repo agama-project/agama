@@ -27,8 +27,7 @@ import App from "./App";
 import { InstallationPhase } from "./types/status";
 import { createClient } from "~/client";
 import { Product } from "./types/software";
-import { Issue, IssueSeverity, IssueSource, IssuesScope } from "./types/issues";
-import { useIssues } from "./queries/issues";
+import { Issue, IssueSeverity, IssueSource } from "./types/issues";
 
 jest.mock("~/client");
 
@@ -69,7 +68,7 @@ jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
   useIssuesChanges: () => jest.fn(),
   useAllIssues: () => ({ isEmtpy: true }),
-  useIssues: (component: IssuesScope) => mockUserIssues,
+  useIssues: () => mockUserIssues,
 }));
 
 jest.mock("~/queries/storage", () => ({
