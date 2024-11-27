@@ -110,7 +110,7 @@ async fn remove_scripts(
     state: State<ScriptsState>,
 ) -> Result<impl IntoResponse, ScriptServiceError> {
     let mut scripts = state.scripts.write().await;
-    scripts.clear();
+    scripts.clear()?;
     Ok(())
 }
 

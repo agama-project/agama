@@ -136,8 +136,12 @@ impl ScriptsRepository {
     }
 
     /// Removes all the scripts from the repository.
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self) -> Result<(), ScriptError> {
         self.scripts.clear();
+        if self.workdir.exists() {
+            std::fs::remove_dir_all(&self.workdir)?;
+        }
+        Ok(())
     }
 
     /// Runs the scripts in the given group.
@@ -220,5 +224,24 @@ mod test {
         let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("error\n", body);
+    }
+
+    #[test]
+    async fn test_clear_scripts() {
+        let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
+        let mut repo = ScriptsRepository::new(&tmp_dir);
+        let body = "#!/bin/bash\necho hello\necho error >&2".to_string();
+
+        let script = Script {
+            name: "test".to_string(),
+            source: ScriptSource::Text { body },
+            group: ScriptsGroup::Pre,
+        };
+        repo.add(script).await.unwrap();
+
+        let script_path = tmp_dir.path().join("pre").join("test");
+        assert!(script_path.exists());
+        _ = repo.clear();
+        assert!(!script_path.exists());
     }
 }
