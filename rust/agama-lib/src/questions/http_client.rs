@@ -33,7 +33,7 @@ pub struct HTTPClient {
 
 impl HTTPClient {
     pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self { client: client })
+        Ok(Self { client })
     }
 
     pub async fn list_questions(&self) -> Result<Vec<model::Question>, ServiceError> {

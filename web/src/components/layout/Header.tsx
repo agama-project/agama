@@ -47,7 +47,7 @@ import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { InstallButton, InstallerOptions, IssuesLink } from "~/components/core";
 import { useLocation } from "react-router-dom";
-import { PATHS } from "~/router";
+import { ROOT as PATHS } from "~/routes/paths";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */

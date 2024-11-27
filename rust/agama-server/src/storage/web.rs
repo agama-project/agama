@@ -166,7 +166,7 @@ async fn get_config(State(state): State<StorageState<'_>>) -> Result<Json<Storag
     context_path = "/api/storage",
     operation_id = "get_storage_config_model",
     responses(
-        (status = 200, description = "storage config model", body = Box<RawValue>),
+        (status = 200, description = "storage config model", body = String),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]

@@ -1,0 +1,6 @@
+<multibuild>
+  <!-- don't repeat the base package name, it is implied
+  <flavor>rubygem-agama-yast</flavor>
+  -->
+  <flavor>agama-yast</flavor>
+</multibuild>

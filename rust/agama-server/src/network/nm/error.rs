@@ -20,6 +20,8 @@
 
 //! NetworkManager error types
 use crate::network::error::NetworkStateError;
+use cidr::errors::NetworkLengthTooLongError;
+use std::net::AddrParseError;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -32,6 +34,32 @@ pub enum NmError {
     UnsupportedSecurityProtocol(String),
     #[error("Unsupported wireless mode: '{0}'")]
     UnsupporedWirelessMode(String),
+    #[error("Missing connection information")]
+    MissingConnectionSection,
+    #[error("D-Bus message error")]
+    DBusMessage(#[from] zbus::zvariant::Error),
+    #[error("Invalid network UUID")]
+    InvalidNetworkUUID(#[from] uuid::Error),
+    #[error("Connection type not supported for '{0}'")]
+    UnsupportedConnectionType(String),
+    #[error("Invalid EAP method: '{0}'")]
+    InvalidEAPMethod(#[from] crate::network::model::InvalidEAPMethod),
+    #[error("Invalid EAP phase2-auth method: '{0}'")]
+    InvalidPhase2AuthMethod(#[from] crate::network::model::InvalidPhase2AuthMethod),
+    #[error("Invalid group algorithm: '{0}'")]
+    InvalidGroupAlgorithm(#[from] crate::network::model::InvalidGroupAlgorithm),
+    #[error("Invalid pairwise algorithm: '{0}'")]
+    InvalidPairwiseAlgorithm(#[from] crate::network::model::InvalidPairwiseAlgorithm),
+    #[error("Invalid WPA protocol version: '{0}'")]
+    InvalidWPAProtocolVersion(#[from] crate::network::model::InvalidWPAProtocolVersion),
+    #[error("Invalid infiniband transport mode: '{0}'")]
+    InvalidInfinibandTranportMode(#[from] crate::network::model::InvalidInfinibandTransportMode),
+    #[error("Invalid MAC address: '{0}'")]
+    InvalidMACAddress(#[from] crate::network::model::InvalidMacAddress),
+    #[error("Invalid network prefix: '{0}'")]
+    InvalidNetworkPrefix(#[from] NetworkLengthTooLongError),
+    #[error("Invalid network address: '{0}'")]
+    InvalidNetworkAddress(#[from] AddrParseError),
 }
 
 impl From<NmError> for NetworkStateError {

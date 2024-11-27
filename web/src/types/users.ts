@@ -24,11 +24,13 @@ type FirstUser = {
   fullName: string;
   userName: string;
   password: string;
+  encryptedPassword: boolean;
   autologin: boolean;
 };
 
 type RootUser = {
   password: boolean;
+  encryptedPassword: boolean;
   sshkey: string;
 };
 

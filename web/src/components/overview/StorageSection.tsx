@@ -25,8 +25,8 @@ import { Text, TextContent, TextVariants } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
-import { useDevices, useConfigDevices } from "~/queries/storage";
-import * as ConfigModel from "~/storage/model/config";
+import { useDevices, useConfigModel } from "~/queries/storage";
+import * as ConfigModel from "~/api/storage/types/config-model";
 
 const Content = ({ children }) => (
   <TextContent>
@@ -43,15 +43,17 @@ const Content = ({ children }) => (
  * the rest of the interface is also adapted.
  */
 export default function StorageSection() {
-  const drives = useConfigDevices();
+  const configModel = useConfigModel();
   const devices = useDevices("system", { suspense: true });
+
+  const drives = configModel?.drives || [];
 
   const label = (drive) => {
     const device = devices.find((d) => d.name === drive.name);
     return device ? deviceLabel(device) : drive.name;
   };
 
-  const msgSingleDisk = (drive: ConfigModel.Device): string => {
+  const msgSingleDisk = (drive: ConfigModel.Drive): string => {
     switch (drive.spacePolicy) {
       case "resize":
         // TRANSLATORS: %s will be replaced by the device name and its size,
@@ -72,7 +74,7 @@ export default function StorageSection() {
     return _("Install using device %s with a custom strategy to find the needed space.");
   };
 
-  const msgMultipleDisks = (drives: ConfigModel.Device[]): string => {
+  const msgMultipleDisks = (drives: ConfigModel.Drive[]): string => {
     if (drives.every((d) => d.spacePolicy === drives[0].spacePolicy)) {
       switch (drives[0].spacePolicy) {
         case "resize":

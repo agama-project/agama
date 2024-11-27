@@ -81,7 +81,7 @@ describe Agama::Users do
   describe "#assign_first_user" do
     context "when the options given do not present any issue" do
       it "adds the user to the user's configuration" do
-        subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
+        subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
         user = users_config.users.by_name("jane")
         expect(user.full_name).to eq("Jane Doe")
         expect(user.password).to eq(Y2Users::Password.create_plain("12345"))
@@ -89,11 +89,11 @@ describe Agama::Users do
 
       context "when a first user exists" do
         before do
-          subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
+          subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
         end
 
         it "replaces the user with the new one" do
-          subject.assign_first_user("John Doe", "john", "12345", false, {})
+          subject.assign_first_user("John Doe", "john", "12345", false, false, {})
 
           user = users_config.users.by_name("jane")
           expect(user).to be_nil
@@ -104,23 +104,23 @@ describe Agama::Users do
       end
 
       it "returns an empty array of issues" do
-        issues = subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
+        issues = subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
         expect(issues).to be_empty
       end
     end
 
     context "when the given arguments presents some critical error" do
       it "does not add the user to the config" do
-        subject.assign_first_user("Jonh Doe", "john", "", false, {})
+        subject.assign_first_user("Jonh Doe", "john", "", false, false, {})
         user = users_config.users.by_name("john")
         expect(user).to be_nil
-        subject.assign_first_user("Ldap user", "ldap", "12345", false, {})
+        subject.assign_first_user("Ldap user", "ldap", "12345", false, false, {})
         user = users_config.users.by_name("ldap")
         expect(user).to be_nil
       end
 
       it "returns an array with all the issues" do
-        issues = subject.assign_first_user("Root user", "root", "12345", false, {})
+        issues = subject.assign_first_user("Root user", "root", "12345", false, false, {})
         expect(issues.size).to eql(1)
       end
     end
@@ -128,7 +128,7 @@ describe Agama::Users do
 
   describe "#remove_first_user" do
     before do
-      subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
+      subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
     end
 
     it "removes the already defined first user" do
@@ -156,7 +156,7 @@ describe Agama::Users do
     end
 
     it "writes system and installer defined users" do
-      subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
+      subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
 
       expect(Y2Users::Linux::Writer).to receive(:new) do |target_config, _old_config|
         user_names = target_config.users.map(&:name)
@@ -196,7 +196,7 @@ describe Agama::Users do
 
       context "when a first user is defined" do
         before do
-          subject.assign_first_user("Jane Doe", "jdoe", "123456", false, {})
+          subject.assign_first_user("Jane Doe", "jdoe", "123456", false, false, {})
         end
 
         it "returns an empty list" do

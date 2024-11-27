@@ -33,17 +33,8 @@ import productsRoutes from "~/routes/products";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
+import { ROOT as PATHS } from "./routes/paths";
 import { N_ } from "~/i18n";
-
-const PATHS = {
-  root: "/",
-  login: "/login",
-  overview: "/overview",
-  installation: "/installation",
-  installationProgress: "/installation/progress",
-  installationFinished: "/installation/finished",
-  logs: "/api/manager/logs.tar.gz",
-};
 
 const rootRoutes = () => [
   {

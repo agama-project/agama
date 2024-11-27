@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
-"PO-Revision-Date: 2024-09-20 22:21+0000\n"
+"POT-Creation-Date: 2024-11-17 02:50+0000\n"
+"PO-Revision-Date: 2024-11-14 18:48+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-web/de/"
 ">\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.8.3\n"
 
 #: src/components/core/ChangeProductLink.tsx:39
 msgid "Change product"
 msgstr "Produkt ändern"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "Installation bestätigen"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -35,27 +35,27 @@ msgstr ""
 "Wenn Sie fortfahren, werden die Partitionen auf Ihrer Festplatte "
 "entsprechend den vorgegebenen Installationseinstellungen geändert."
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
-"Bitte brechen Sie den Vorgang ab und überprüfen Sie die Einstellungen, wenn "
-"Sie unsicher sind."
+"Falls Sie unsicher sind, brechen Sie den Vorgang ab und überprüfen Sie die "
+"Einstellungen."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "Fortsetzen"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
-#: src/components/network/WifiConnectionForm.tsx:145
-#: src/components/product/ProductSelectionPage.tsx:96
+#: src/components/network/WifiConnectionForm.tsx:153
+#: src/components/product/ProductSelectionPage.tsx:95
 msgid "Cancel"
 msgstr "Abbrechen"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "Installieren"
 
@@ -101,12 +101,12 @@ msgstr "Die Installation auf Ihrem Rechner ist abgeschlossen."
 
 #: src/components/core/InstallationFinished.tsx:117
 msgid "At this point you can power off the machine."
-msgstr "Nun können Sie den Rechner ausschalten."
+msgstr "Sie können den Rechner jetzt ausschalten."
 
 #: src/components/core/InstallationFinished.tsx:119
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
-"Nun können Sie den Rechner neu starten, um sich bei dem neuen System "
+"Sie können den Rechner jetzt neu starten, um sich bei dem neuen System "
 "anzumelden."
 
 #: src/components/core/InstallationFinished.tsx:128
@@ -117,8 +117,7 @@ msgstr "Fertigstellen"
 msgid "Reboot"
 msgstr "Neustart"
 
-#: src/components/core/InstallationProgress.tsx:42
-#, fuzzy
+#: src/components/core/InstallationProgress.tsx:43
 msgid "Installing the system, please wait..."
 msgstr "Das System wird installiert, bitte warten ..."
 
@@ -157,15 +156,16 @@ msgstr ""
 "Bevor Sie mit der Installation beginnen, müssen Sie sich mit folgenden "
 "Problemen befassen:"
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
+"Die Installation ist nicht möglich. Überprüfen Sie die Probleme auf der "
+"Übersichtseite."
 
-#: src/components/core/IssuesLink.tsx:52
-#, fuzzy
+#: src/components/core/IssuesLink.tsx:51
 msgid "Installation issues"
-msgstr "Installation abgeschlossen"
+msgstr "Installationsprobleme"
 
 #: src/components/core/ListSearch.jsx:49
 msgid "Search"
@@ -219,7 +219,7 @@ msgstr "Passwörter stimmen nicht überein"
 
 #. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.tsx:89
-#: src/components/network/WifiConnectionForm.tsx:132
+#: src/components/network/WifiConnectionForm.tsx:140
 #: src/components/questions/QuestionWithPassword.tsx:63
 #: src/components/storage/iscsi/AuthFields.jsx:91
 #: src/components/storage/iscsi/AuthFields.jsx:95
@@ -295,13 +295,13 @@ msgstr "Tastaturauswahl"
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/l10n/LocaleSelection.tsx:93
 #: src/components/l10n/TimezoneSelection.tsx:138
-#: src/components/product/ProductSelectionPage.tsx:145
+#: src/components/product/ProductSelectionPage.tsx:148
 #: src/components/software/SoftwarePatternsSelection.tsx:167
 msgid "Select"
 msgstr "Auswählen"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "Lokalisierung"
 
@@ -354,14 +354,13 @@ msgstr " Zeitzonenauswahl"
 
 #: src/components/layout/Header.tsx:81
 msgid "Options toggle"
-msgstr ""
+msgstr "Optionen umschalten"
 
 #: src/components/layout/Header.tsx:92
 msgid "Download logs"
 msgstr "Protokolle herunterladen"
 
 #: src/components/layout/Header.tsx:98
-#, fuzzy
 msgid "Installer Options"
 msgstr "Installationsprogrammoptionen"
 
@@ -432,8 +431,8 @@ msgid "Connection actions"
 msgstr "Verbindungsaktionen"
 
 #: src/components/network/ConnectionsTable.tsx:77
-#: src/components/network/WifiNetworksListPage.tsx:128
-#: src/components/network/WifiNetworksListPage.tsx:152
+#: src/components/network/WifiNetworksListPage.tsx:129
+#: src/components/network/WifiNetworksListPage.tsx:153
 #: src/components/storage/PartitionsField.tsx:313
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:45
 #: src/components/storage/iscsi/NodesPresenter.jsx:75
@@ -449,8 +448,8 @@ msgid "Edit connection %s"
 msgstr "Verbindung %s bearbeiten"
 
 #: src/components/network/ConnectionsTable.tsx:84
-#: src/components/network/WifiNetworksListPage.tsx:131
-#: src/components/network/WifiNetworksListPage.tsx:155
+#: src/components/network/WifiNetworksListPage.tsx:132
+#: src/components/network/WifiNetworksListPage.tsx:156
 msgid "Forget"
 msgstr "Vergessen"
 
@@ -535,8 +534,8 @@ msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/NetworkPage.tsx:64
-#: src/components/network/WifiConnectionForm.tsx:141
-#: src/components/network/WifiNetworksListPage.tsx:126
+#: src/components/network/WifiConnectionForm.tsx:149
+#: src/components/network/WifiNetworksListPage.tsx:127
 msgid "Connect"
 msgstr "Verbinden"
 
@@ -570,7 +569,7 @@ msgstr ""
 "Das System unterstützt keine WiFi-Verbindungen, wahrscheinlich wegen "
 "fehlender oder deaktivierter Hardware."
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "Netzwerk"
 
@@ -586,16 +585,16 @@ msgid "WPA & WPA2 Personal"
 msgstr "WPA & WPA2 Personal"
 
 #. TRANSLATORS: accessible name for the WiFi connection form
-#: src/components/network/WifiConnectionForm.tsx:93
+#: src/components/network/WifiConnectionForm.tsx:101
 #, fuzzy
 msgid "WiFi connection form"
 msgstr "Formular für die WiFi-Verbindung"
 
-#: src/components/network/WifiConnectionForm.tsx:100
+#: src/components/network/WifiConnectionForm.tsx:108
 msgid "Authentication failed, please try again"
 msgstr "Authentifizierung fehlgeschlagen, bitte versuchen Sie es erneut"
 
-#: src/components/network/WifiConnectionForm.tsx:101
+#: src/components/network/WifiConnectionForm.tsx:109
 #: src/components/storage/iscsi/DiscoverForm.tsx:99
 #: src/components/storage/iscsi/LoginForm.jsx:70
 #: src/components/storage/zfcp/ZFCPDiskForm.tsx:114
@@ -603,68 +602,68 @@ msgstr "Authentifizierung fehlgeschlagen, bitte versuchen Sie es erneut"
 msgid "Something went wrong"
 msgstr "Etwas ist schiefgelaufen"
 
-#: src/components/network/WifiConnectionForm.tsx:104
+#: src/components/network/WifiConnectionForm.tsx:112
 msgid "Please, review provided settings and try again."
 msgstr ""
 "Bitte überprüfen Sie die bereitgestellten Einstellungen und versuchen Sie es "
 "erneut."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.tsx:110
+#: src/components/network/WifiConnectionForm.tsx:118
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.tsx:116
-#: src/components/network/WifiConnectionForm.tsx:119
+#: src/components/network/WifiConnectionForm.tsx:124
+#: src/components/network/WifiConnectionForm.tsx:127
 msgid "Security"
 msgstr "Sicherheit"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.tsx:128
+#: src/components/network/WifiConnectionForm.tsx:136
 msgid "WPA Password"
 msgstr "WPA-Passwort"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:73
-#: src/components/network/WifiNetworksListPage.tsx:139
+#: src/components/network/WifiNetworksListPage.tsx:74
+#: src/components/network/WifiNetworksListPage.tsx:140
 msgid "Connecting"
 msgstr "Wird verbunden"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:76
-#: src/components/network/WifiNetworksListPage.tsx:143
-#: src/components/network/WifiNetworksListPage.tsx:182
+#: src/components/network/WifiNetworksListPage.tsx:77
+#: src/components/network/WifiNetworksListPage.tsx:144
+#: src/components/network/WifiNetworksListPage.tsx:183
 msgid "Connected"
 msgstr "Verbunden"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:81
-#: src/components/network/WifiNetworksListPage.tsx:141
+#: src/components/network/WifiNetworksListPage.tsx:82
+#: src/components/network/WifiNetworksListPage.tsx:142
 #: src/components/storage/iscsi/NodesPresenter.jsx:65
 msgid "Disconnected"
 msgstr "Getrennt"
 
-#: src/components/network/WifiNetworksListPage.tsx:149
+#: src/components/network/WifiNetworksListPage.tsx:150
 msgid "Disconnect"
 msgstr "Trennen"
 
-#: src/components/network/WifiNetworksListPage.tsx:168
-#: src/components/network/WifiNetworksListPage.tsx:286
+#: src/components/network/WifiNetworksListPage.tsx:169
+#: src/components/network/WifiNetworksListPage.tsx:288
 msgid "Connect to hidden network"
 msgstr "Mit verborgenem Netzwerk verbinden"
 
-#: src/components/network/WifiNetworksListPage.tsx:179
+#: src/components/network/WifiNetworksListPage.tsx:180
 msgid "configured"
 msgstr "konfiguriert"
 
-#: src/components/network/WifiNetworksListPage.tsx:267
+#: src/components/network/WifiNetworksListPage.tsx:269
 #, fuzzy
 msgid "No visible Wi-Fi networks found"
-msgstr "Sichtbare WiFi-Netzwerke"
+msgstr "Keine sichtbaren Wi-Fi-Netzwerke gefunden"
 
-#: src/components/network/WifiNetworksListPage.tsx:271
+#: src/components/network/WifiNetworksListPage.tsx:273
 #, fuzzy
 msgid "Visible Wi-Fi networks"
 msgstr "Sichtbare WiFi-Netzwerke"
@@ -682,32 +681,31 @@ msgid "The system will use %s as its default language."
 msgstr "Das System wird %s als Standardsprache verwenden."
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "Benutzer"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
 msgstr "Speicherung"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "Software"
 
 #: src/components/overview/OverviewPage.tsx:87
-#, fuzzy
 msgid "Installation blocking issues"
-msgstr "Installation abgeschlossen"
+msgstr ""
 
 #: src/components/overview/OverviewPage.tsx:88
 msgid "Before installing, please check the following problems."
 msgstr "Bitte überprüfen Sie vor der Installation die folgenden Probleme."
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr "Übersicht"
 
@@ -742,6 +740,8 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group shrinking "
 "existing partitions at the underlying devices as needed"
 msgstr ""
+"Installation in einer neuen Logical Volume Manager (LVM) Volume Group, durch "
+"Verkleinern vorhandener Partitionen der verwendeten Geräte"
 
 #: src/components/overview/StorageSection.tsx:47
 msgid ""
@@ -792,6 +792,8 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s deleting "
 "all its content"
 msgstr ""
+"Installation in einer neuen Logical Volume Manager (LVM) Volume Group auf %s "
+"durch Löschen des gesamten Inhalts"
 
 #: src/components/overview/StorageSection.tsx:93
 #, fuzzy, c-format
@@ -845,7 +847,7 @@ msgstr ""
 "Strategie, um den benötigten Platz zu finden"
 
 #. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-#: src/components/product/ProductSelectionPage.tsx:59
+#: src/components/product/ProductSelectionPage.tsx:58
 #, c-format
 msgid "%s logo"
 msgstr "%s-Logo"
@@ -952,23 +954,23 @@ msgstr ""
 "Dieser Bereich umfasst das Basissystem und die ausgewählten Softwaremuster, "
 "falls vorhanden."
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 msgid "Change boot options"
 msgstr "Boot-Optionen ändern"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 msgid "Installation will not configure partitions for booting."
 msgstr ""
 "Bei der Installation werden keine Partitionen für das Booten konfiguriert."
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "Bei der Installation werden die Partitionen für das Booten von der "
 "Installationsfestplatte konfiguriert."
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Die Installation konfiguriert Partitionen für das Booten bei %s."
@@ -1182,7 +1184,7 @@ msgid "Activate disks"
 msgstr "Festplatten aktivieren"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1190,7 +1192,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Mit iSCSI-Zielen verbinden"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1955,7 +1957,7 @@ msgstr "Belegung"
 msgid "Formatting DASD devices"
 msgstr "DASD-Geräte formatieren"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 msgid "DASD"
 msgstr "DASD"
 
@@ -1965,7 +1967,7 @@ msgid "DASD devices selection table"
 msgstr "DASD-Geräte-Auswahltabelle"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 msgid "Back to device selection"
 msgstr "Zurück zur Geräteauswahl"
 
@@ -2019,9 +2021,8 @@ msgid "Partition Info"
 msgstr "Partitionierungsinformationen"
 
 #: src/components/storage/dasd/DASDTable.tsx:95
-#, fuzzy
 msgid "Cannot format all selected devices"
-msgstr "Warten auf Informationen über das ausgewählte Gerät"
+msgstr "Es können nicht alle ausgewählten Geräte formatiert werden"
 
 #: src/components/storage/dasd/DASDTable.tsx:99
 msgid ""
@@ -2030,9 +2031,8 @@ msgid ""
 msgstr ""
 
 #: src/components/storage/dasd/DASDTable.tsx:111
-#, fuzzy
 msgid "Format selected devices?"
-msgstr "Gerät formatieren"
+msgstr "Ausgewählte Geräte formatieren?"
 
 #: src/components/storage/dasd/DASDTable.tsx:115
 msgid ""
@@ -2403,7 +2403,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Bitte versuchen Sie, eine zFCP-Festplatte zu aktivieren."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Bitte versuchen Sie, einen zFCP-Controller zu aktivieren."
 
@@ -2411,27 +2411,27 @@ msgstr "Bitte versuchen Sie, einen zFCP-Controller zu aktivieren."
 msgid "No zFCP disks found."
 msgstr "Keine zFCP-Festplatten gefunden."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "zFCP-Festplatte aktivieren"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Neue Festplatte aktivieren"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Festplatten"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr "Controller"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "Keine zFCP-Controller gefunden."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "zFCP-Geräte lesen"
 
@@ -2601,7 +2601,7 @@ msgstr "Hochladen"
 msgid "Clear"
 msgstr "Leeren"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr ""
 

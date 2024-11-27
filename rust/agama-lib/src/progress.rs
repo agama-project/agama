@@ -70,10 +70,10 @@ use crate::{error::ServiceError, proxies::ProgressProxy};
 use async_trait::async_trait;
 use serde::Serialize;
 use tokio_stream::{StreamExt, StreamMap};
-use zbus::Connection;
+use zbus::{proxy::PropertyStream, Connection};
 
 /// Represents the progress for an Agama service.
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
     /// Current step
@@ -184,13 +184,13 @@ impl<'a> ProgressMonitor<'a> {
     ///
     /// It listens for changes in the `Current` property and generates a stream identifying the
     /// proxy where the change comes from.
-    async fn build_stream(&self) -> StreamMap<&str, zbus::PropertyStream<'_, (u32, String)>> {
+    async fn build_stream(&self) -> StreamMap<&str, PropertyStream<'_, (u32, String)>> {
         let mut streams = StreamMap::new();
 
         let proxies = [&self.manager_proxy, &self.software_proxy];
         for proxy in proxies.iter() {
             let stream = proxy.receive_current_step_changed().await;
-            let path = proxy.path().as_str();
+            let path = proxy.inner().path().as_str();
             streams.insert(path, stream);
         }
         streams

@@ -59,7 +59,7 @@ software:
       archs: s390
 
   mandatory_patterns:
-    - sles_enhanced_base
+    - base_traditional
   optional_patterns: null # no optional pattern shared
   user_patterns: []
   mandatory_packages:

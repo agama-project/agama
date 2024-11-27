@@ -28,3 +28,6 @@ Lint/UselessAssignment:
 # be less strict
 Metrics/AbcSize:
   Max: 32
+
+Metrics/ParameterLists:
+  Max: 6

@@ -25,20 +25,58 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { InstallationPhase } from "~/types/status";
 import InstallationProgress from "./InstallationProgress";
+import { ROOT } from "~/routes/paths";
+
+let isBusy = false;
+let phase = InstallationPhase.Install;
+const mockInstallerStatusChanges = jest.fn();
 
 jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mock</div>);
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
-  useInstallerStatus: () => ({ isBusy: true, phase: InstallationPhase.Install }),
+  useInstallerStatus: () => ({ isBusy, phase }),
+  useInstallerStatusChanges: () => mockInstallerStatusChanges(),
 }));
 
 describe("InstallationProgress", () => {
-  it("renders progress report", () => {
+  it("subscribes to installer status", () => {
     installerRender(<InstallationProgress />);
-    screen.getByText("ProgressReport Mock");
+    expect(mockInstallerStatusChanges).toHaveBeenCalled();
   });
 
-  it.todo("redirects to root path when not in an installation phase");
-  it.todo("redirects to installatino finished path if in an installation phase but not busy");
+  describe("when not in an installation phase", () => {
+    beforeEach(() => {
+      phase = InstallationPhase.Config;
+    });
+
+    it("redirects to the root path", async () => {
+      installerRender(<InstallationProgress />);
+      await screen.findByText(`Navigating to ${ROOT.root}`);
+    });
+  });
+
+  describe("when installer in the installation phase and busy", () => {
+    beforeEach(() => {
+      phase = InstallationPhase.Install;
+      isBusy = true;
+    });
+
+    it("renders progress report", () => {
+      installerRender(<InstallationProgress />);
+      screen.getByText("ProgressReport Mock");
+    });
+  });
+
+  describe("when installer in the installation phase but not busy", () => {
+    beforeEach(() => {
+      phase = InstallationPhase.Install;
+      isBusy = false;
+    });
+
+    it("redirect to installation finished path", async () => {
+      installerRender(<InstallationProgress />);
+      await screen.findByText(`Navigating to ${ROOT.installationFinished}`);
+    });
+  });
 });

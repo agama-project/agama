@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-11-17 02:50+0000\n"
 "PO-Revision-Date: 2024-06-29 13:46+0000\n"
 "Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "Change product"
 msgstr "Endre produkt"
 
-#: src/components/core/InstallButton.tsx:36
+#: src/components/core/InstallButton.tsx:51
 msgid "Confirm Installation"
 msgstr "Bekreft Installasjon"
 
-#: src/components/core/InstallButton.tsx:40
+#: src/components/core/InstallButton.tsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
@@ -35,25 +35,25 @@ msgstr ""
 "Hvis du fortsetter, så vil partisjonene på harddisken bli modifisert i tråd "
 "med de oppgitte installasjons innstillingene."
 
-#: src/components/core/InstallButton.tsx:44
+#: src/components/core/InstallButton.tsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Vennligst, avbryt og sjekk innstillingene hvis du er usikker."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:49
+#: src/components/core/InstallButton.tsx:64
 msgid "Continue"
 msgstr "Fortsett"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:53 src/components/core/Page.tsx:238
+#: src/components/core/InstallButton.tsx:68 src/components/core/Page.tsx:238
 #: src/components/core/Popup.jsx:133
-#: src/components/network/WifiConnectionForm.tsx:145
-#: src/components/product/ProductSelectionPage.tsx:96
+#: src/components/network/WifiConnectionForm.tsx:153
+#: src/components/product/ProductSelectionPage.tsx:95
 msgid "Cancel"
 msgstr "Avbryt"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.tsx:83
+#: src/components/core/InstallButton.tsx:103
 msgid "Install"
 msgstr "Installere"
 
@@ -115,7 +115,7 @@ msgstr "Fullfør"
 msgid "Reboot"
 msgstr "Start om"
 
-#: src/components/core/InstallationProgress.tsx:42
+#: src/components/core/InstallationProgress.tsx:43
 #, fuzzy
 msgid "Installing the system, please wait..."
 msgstr "Installerer systemet, vennligst vent ..."
@@ -153,12 +153,12 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr "Før du starter installasjonen, må du løse følgende problemer:"
 
-#: src/components/core/IssuesLink.tsx:50
+#: src/components/core/IssuesLink.tsx:49
 msgid ""
 "Installation not possible yet because of issues. Check them at Overview page."
 msgstr ""
 
-#: src/components/core/IssuesLink.tsx:52
+#: src/components/core/IssuesLink.tsx:51
 #, fuzzy
 msgid "Installation issues"
 msgstr "Installasjon Fullført"
@@ -212,7 +212,7 @@ msgstr "Passordene er ikke like"
 
 #. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.tsx:89
-#: src/components/network/WifiConnectionForm.tsx:132
+#: src/components/network/WifiConnectionForm.tsx:140
 #: src/components/questions/QuestionWithPassword.tsx:63
 #: src/components/storage/iscsi/AuthFields.jsx:91
 #: src/components/storage/iscsi/AuthFields.jsx:95
@@ -288,13 +288,13 @@ msgstr "Valg av tastatur"
 #: src/components/l10n/L10nPage.jsx:75
 #: src/components/l10n/LocaleSelection.tsx:93
 #: src/components/l10n/TimezoneSelection.tsx:138
-#: src/components/product/ProductSelectionPage.tsx:145
+#: src/components/product/ProductSelectionPage.tsx:148
 #: src/components/software/SoftwarePatternsSelection.tsx:167
 msgid "Select"
 msgstr "Velg"
 
 #: src/components/l10n/L10nPage.jsx:42
-#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:38
+#: src/components/overview/L10nSection.jsx:38 src/routes/l10n.tsx:32
 msgid "Localization"
 msgstr "Lokalisering"
 
@@ -426,8 +426,8 @@ msgid "Connection actions"
 msgstr "Kobler til"
 
 #: src/components/network/ConnectionsTable.tsx:77
-#: src/components/network/WifiNetworksListPage.tsx:128
-#: src/components/network/WifiNetworksListPage.tsx:152
+#: src/components/network/WifiNetworksListPage.tsx:129
+#: src/components/network/WifiNetworksListPage.tsx:153
 #: src/components/storage/PartitionsField.tsx:313
 #: src/components/storage/iscsi/InitiatorPresenter.tsx:45
 #: src/components/storage/iscsi/NodesPresenter.jsx:75
@@ -443,8 +443,8 @@ msgid "Edit connection %s"
 msgstr "Rediger tilkobling %s"
 
 #: src/components/network/ConnectionsTable.tsx:84
-#: src/components/network/WifiNetworksListPage.tsx:131
-#: src/components/network/WifiNetworksListPage.tsx:155
+#: src/components/network/WifiNetworksListPage.tsx:132
+#: src/components/network/WifiNetworksListPage.tsx:156
 msgid "Forget"
 msgstr "Glem"
 
@@ -528,8 +528,8 @@ msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/NetworkPage.tsx:64
-#: src/components/network/WifiConnectionForm.tsx:141
-#: src/components/network/WifiNetworksListPage.tsx:126
+#: src/components/network/WifiConnectionForm.tsx:149
+#: src/components/network/WifiNetworksListPage.tsx:127
 msgid "Connect"
 msgstr "Koble til"
 
@@ -560,7 +560,7 @@ msgstr ""
 "Systemet støtter ikke Wi-Fi tilkoblinger, sannsynligvis på grunn av "
 "manglende eller deaktivert maskinvare."
 
-#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:37
+#: src/components/network/NetworkPage.tsx:106 src/routes/network.tsx:32
 msgid "Network"
 msgstr "Nettverk"
 
@@ -576,17 +576,17 @@ msgid "WPA & WPA2 Personal"
 msgstr "WPA & WPA2 Personlig"
 
 #. TRANSLATORS: accessible name for the WiFi connection form
-#: src/components/network/WifiConnectionForm.tsx:93
+#: src/components/network/WifiConnectionForm.tsx:101
 #, fuzzy
 msgid "WiFi connection form"
 msgstr "WiFi tilkoblinger"
 
-#: src/components/network/WifiConnectionForm.tsx:100
+#: src/components/network/WifiConnectionForm.tsx:108
 #, fuzzy
 msgid "Authentication failed, please try again"
 msgstr "Autentisering av målet"
 
-#: src/components/network/WifiConnectionForm.tsx:101
+#: src/components/network/WifiConnectionForm.tsx:109
 #: src/components/storage/iscsi/DiscoverForm.tsx:99
 #: src/components/storage/iscsi/LoginForm.jsx:70
 #: src/components/storage/zfcp/ZFCPDiskForm.tsx:114
@@ -594,66 +594,66 @@ msgstr "Autentisering av målet"
 msgid "Something went wrong"
 msgstr "Noe gikk galt"
 
-#: src/components/network/WifiConnectionForm.tsx:104
+#: src/components/network/WifiConnectionForm.tsx:112
 msgid "Please, review provided settings and try again."
 msgstr "Vennligst, sjekk de angitte innstillingene og prøv igjen."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.tsx:110
+#: src/components/network/WifiConnectionForm.tsx:118
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.tsx:116
-#: src/components/network/WifiConnectionForm.tsx:119
+#: src/components/network/WifiConnectionForm.tsx:124
+#: src/components/network/WifiConnectionForm.tsx:127
 msgid "Security"
 msgstr "Sikkerhet"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.tsx:128
+#: src/components/network/WifiConnectionForm.tsx:136
 msgid "WPA Password"
 msgstr "WPA Passord"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:73
-#: src/components/network/WifiNetworksListPage.tsx:139
+#: src/components/network/WifiNetworksListPage.tsx:74
+#: src/components/network/WifiNetworksListPage.tsx:140
 msgid "Connecting"
 msgstr "Kobler til"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:76
-#: src/components/network/WifiNetworksListPage.tsx:143
-#: src/components/network/WifiNetworksListPage.tsx:182
+#: src/components/network/WifiNetworksListPage.tsx:77
+#: src/components/network/WifiNetworksListPage.tsx:144
+#: src/components/network/WifiNetworksListPage.tsx:183
 msgid "Connected"
 msgstr "Tilkoblet"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.tsx:81
-#: src/components/network/WifiNetworksListPage.tsx:141
+#: src/components/network/WifiNetworksListPage.tsx:82
+#: src/components/network/WifiNetworksListPage.tsx:142
 #: src/components/storage/iscsi/NodesPresenter.jsx:65
 msgid "Disconnected"
 msgstr "Koblet fra"
 
-#: src/components/network/WifiNetworksListPage.tsx:149
+#: src/components/network/WifiNetworksListPage.tsx:150
 msgid "Disconnect"
 msgstr "Koble fra"
 
-#: src/components/network/WifiNetworksListPage.tsx:168
-#: src/components/network/WifiNetworksListPage.tsx:286
+#: src/components/network/WifiNetworksListPage.tsx:169
+#: src/components/network/WifiNetworksListPage.tsx:288
 msgid "Connect to hidden network"
 msgstr "Koble til skjult nettverk"
 
-#: src/components/network/WifiNetworksListPage.tsx:179
+#: src/components/network/WifiNetworksListPage.tsx:180
 msgid "configured"
 msgstr "konfigurert"
 
-#: src/components/network/WifiNetworksListPage.tsx:267
+#: src/components/network/WifiNetworksListPage.tsx:269
 #, fuzzy
 msgid "No visible Wi-Fi networks found"
 msgstr "WiFi nettverk"
 
-#: src/components/network/WifiNetworksListPage.tsx:271
+#: src/components/network/WifiNetworksListPage.tsx:273
 #, fuzzy
 msgid "Visible Wi-Fi networks"
 msgstr "WiFi nettverk"
@@ -670,19 +670,19 @@ msgid "The system will use %s as its default language."
 msgstr "Systemet vil bruke %s som standardspråk."
 
 #: src/components/overview/OverviewPage.tsx:48
-#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:39
+#: src/components/users/UsersPage.tsx:36 src/routes/users.tsx:33
 msgid "Users"
 msgstr "Brukere"
 
 #: src/components/overview/OverviewPage.tsx:49
 #: src/components/overview/StorageSection.tsx:100
-#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:51
+#: src/components/storage/ProposalPage.tsx:108 src/routes/storage.tsx:39
 msgid "Storage"
 msgstr "Lagring"
 
 #: src/components/overview/OverviewPage.tsx:50
 #: src/components/overview/SoftwareSection.tsx:70
-#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:37
+#: src/components/software/SoftwarePage.tsx:106 src/routes/software.tsx:33
 msgid "Software"
 msgstr "Programvare"
 
@@ -695,7 +695,7 @@ msgstr "Installasjon Fullført"
 msgid "Before installing, please check the following problems."
 msgstr "Før installasjon, vennligst sjekk følgende problemer."
 
-#: src/components/overview/OverviewPage.tsx:97 src/router.js:52
+#: src/components/overview/OverviewPage.tsx:97 src/router.js:43
 msgid "Overview"
 msgstr "Oversikt"
 
@@ -831,7 +831,7 @@ msgstr ""
 "nødvendig plass"
 
 #. TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-#: src/components/product/ProductSelectionPage.tsx:59
+#: src/components/product/ProductSelectionPage.tsx:58
 #, c-format
 msgid "%s logo"
 msgstr ""
@@ -939,22 +939,22 @@ msgid ""
 msgstr ""
 "Denne plassen inkluderer basissystemet og de valgte programvaremønstrene."
 
-#: src/components/storage/BootConfigField.tsx:42
+#: src/components/storage/BootConfigField.tsx:40
 msgid "Change boot options"
 msgstr "Endre oppstartalternativer"
 
-#: src/components/storage/BootConfigField.tsx:79
+#: src/components/storage/BootConfigField.tsx:77
 msgid "Installation will not configure partitions for booting."
 msgstr "Installasjonen vil ikke konfigurere partisjoner for oppstart."
 
-#: src/components/storage/BootConfigField.tsx:83
+#: src/components/storage/BootConfigField.tsx:81
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 "Installasjonen vil konfigurere partisjoner for oppstart på "
 "installasjonsdisken."
 
-#: src/components/storage/BootConfigField.tsx:87
+#: src/components/storage/BootConfigField.tsx:85
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Installasjonen vil konfigurere partisjoner for oppstart på %s."
@@ -1157,7 +1157,7 @@ msgid "Activate disks"
 msgstr "Aktivere disker"
 
 #: src/components/storage/DevicesTechMenu.tsx:57
-#: src/components/storage/zfcp/ZFCPPage.tsx:191
+#: src/components/storage/zfcp/ZFCPPage.tsx:190
 msgid "zFCP"
 msgstr "zFCP"
 
@@ -1165,7 +1165,7 @@ msgstr "zFCP"
 msgid "Connect to iSCSI targets"
 msgstr "Koble til iSCSI mål"
 
-#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:72
+#: src/components/storage/DevicesTechMenu.tsx:71 src/routes/storage.tsx:60
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1908,7 +1908,7 @@ msgstr "Bruk"
 msgid "Formatting DASD devices"
 msgstr "Formaterer DASD enheter"
 
-#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:77
+#: src/components/storage/dasd/DASDPage.tsx:39 src/routes/storage.tsx:65
 #, fuzzy
 msgid "DASD"
 msgstr "DASD %s"
@@ -1920,7 +1920,7 @@ msgid "DASD devices selection table"
 msgstr "Ingen enhet er valgt ennå"
 
 #: src/components/storage/dasd/DASDPage.tsx:54
-#: src/components/storage/zfcp/ZFCPPage.tsx:200
+#: src/components/storage/zfcp/ZFCPPage.tsx:199
 #, fuzzy
 msgid "Back to device selection"
 msgstr "Ingen enhet er valgt ennå"
@@ -2357,7 +2357,7 @@ msgid "Please, try to activate a zFCP disk."
 msgstr "Vennligst, prøv å aktivere en zFCP disk."
 
 #: src/components/storage/zfcp/ZFCPPage.tsx:81
-#: src/components/storage/zfcp/ZFCPPage.tsx:164
+#: src/components/storage/zfcp/ZFCPPage.tsx:163
 msgid "Please, try to activate a zFCP controller."
 msgstr "Vennligst, prøv å aktivere en zFCP kontroller."
 
@@ -2365,27 +2365,27 @@ msgstr "Vennligst, prøv å aktivere en zFCP kontroller."
 msgid "No zFCP disks found."
 msgstr "Ingen zFCP disker funnet."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:92
+#: src/components/storage/zfcp/ZFCPPage.tsx:91
 msgid "Activate zFCP disk"
 msgstr "Aktiver zFCP disk"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:115
+#: src/components/storage/zfcp/ZFCPPage.tsx:114
 msgid "Activate new disk"
 msgstr "Aktiver ny disk"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:133
+#: src/components/storage/zfcp/ZFCPPage.tsx:132
 msgid "Disks"
 msgstr "Disker"
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:143
+#: src/components/storage/zfcp/ZFCPPage.tsx:142
 msgid "Controllers"
 msgstr ""
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:156
+#: src/components/storage/zfcp/ZFCPPage.tsx:155
 msgid "No zFCP controllers found."
 msgstr "Ingen zFCP kontrollere funnet."
 
-#: src/components/storage/zfcp/ZFCPPage.tsx:160
+#: src/components/storage/zfcp/ZFCPPage.tsx:159
 msgid "Read zFCP devices"
 msgstr "Les zFCP enheter"
 
@@ -2555,7 +2555,7 @@ msgstr "Last opp"
 msgid "Clear"
 msgstr "Tøm"
 
-#: src/routes/storage.tsx:86
+#: src/routes/storage.tsx:74
 msgid "ZFCP"
 msgstr ""
 

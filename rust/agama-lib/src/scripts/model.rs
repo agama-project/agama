@@ -32,7 +32,9 @@ use crate::transfer::Transfer;
 
 use super::ScriptError;
 
-#[derive(Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
+)]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ScriptsGroup {
@@ -40,7 +42,7 @@ pub enum ScriptsGroup {
     Post,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum ScriptSource {
     /// Script's body.
@@ -50,7 +52,7 @@ pub enum ScriptSource {
 }
 
 /// Represents a script to run as part of the installation process.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct Script {
     /// Script's name.
     pub name: String,
@@ -97,7 +99,7 @@ impl Script {
 
         match &self.source {
             ScriptSource::Text { body } => write!(file, "{}", &body)?,
-            ScriptSource::Remote { url } => Transfer::get(&url, file)?,
+            ScriptSource::Remote { url } => Transfer::get(url, file)?,
         };
 
         Ok(())
@@ -209,12 +211,12 @@ mod test {
         repo.scripts.first().unwrap();
 
         let path = &tmp_dir.path().join("pre").join("test.log");
-        let body: Vec<u8> = std::fs::read(&path).unwrap();
+        let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("hello\n", body);
 
         let path = &tmp_dir.path().join("pre").join("test.err");
-        let body: Vec<u8> = std::fs::read(&path).unwrap();
+        let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("error\n", body);
     }

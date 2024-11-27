@@ -6,10 +6,11 @@ maintenance tasks using Rust code.
 
 ## Defined tasks
 
-- `manpages`: generates manpages for the command-line interface.
 - `completions`: generates shell completion snippets for Bash, Fish and Zsh.
+- `manpages`: generates manpages for the command-line interface.
 - `markdown`: generates a manual page for the command-line interface in Markdown format. Useful to
   be included in our website.
+- `openapi`: generates the OpenAPI specification for the HTTP API.
 
 ## Running a task
 

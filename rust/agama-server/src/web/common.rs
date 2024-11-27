@@ -31,7 +31,7 @@ use axum::{extract::State, routing::get, Json, Router};
 use pin_project::pin_project;
 use serde::Serialize;
 use tokio_stream::{Stream, StreamExt};
-use zbus::PropertyStream;
+use zbus::proxy::PropertyStream;
 
 use crate::error::Error;
 
@@ -94,9 +94,9 @@ struct ServiceStatusState<'a> {
     proxy: ServiceStatusProxy<'a>,
 }
 
-#[derive(Clone, Serialize)]
-struct ServiceStatus {
-    /// Current service status.
+#[derive(Clone, Serialize, utoipa::ToSchema)]
+pub struct ServiceStatus {
+    /// Current service status (0 = idle, 1 = busy).
     current: u32,
 }
 
@@ -189,7 +189,7 @@ struct ProgressState<'a> {
 }
 
 /// Information about the current progress sequence.
-#[derive(Clone, Default, Serialize)]
+#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ProgressSequence {
     /// Sequence steps if known in advance
@@ -246,7 +246,7 @@ impl<'a> Stream for ProgressStream<'a> {
                 Some(progress) => {
                     let event = Event::Progress {
                         progress,
-                        service: pinned.proxy.destination().to_string(),
+                        service: pinned.proxy.inner().destination().to_string(),
                     };
                     Poll::Ready(Some(event))
                 }
@@ -319,7 +319,7 @@ struct IssuesState<'a> {
     proxy: IssuesProxy<'a>,
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct Issue {
     description: String,
     details: Option<String>,

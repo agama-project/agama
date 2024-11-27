@@ -42,6 +42,7 @@ ZYPPER="zypper --non-interactive -v"
 $SUDO $ZYPPER install \
   gcc \
   gcc-c++ \
+  git \
   make \
   openssl-devel \
   ruby-devel \
@@ -116,14 +117,15 @@ fi
       sed -e '/gemspec/a gem "ruby-dbus", path: "/checkout-ruby-dbus"' -i Gemfile
   fi
 
-  if [ -n "$CI" ]; then
+  if [ -n "${CI:-}" ]; then
     # in CI reuse the pre-installed system gems from RPMs
     bundle config set --local disable_shared_gems 0
+    $SUDO bundle install
   else
     bundle config set --local path 'vendor/bundle'
+    bundle install
   fi
 
-  bundle install
 )
 
 # Rust service, CLI and auto-installation.
@@ -137,6 +139,7 @@ $SUDO $ZYPPER install \
   gzip \
   jsonnet \
   lshw \
+  NetworkManager \
   pam-devel \
   python-langtable-data \
   tar \
@@ -147,7 +150,7 @@ $SUDO $ZYPPER install \
   cd $MYDIR/rust
   cargo build
 
-  ln -st /usr/bin $MYDIR/rust/target/debug/agama{,*server}
+  $SUDO ln -sft /usr/bin $MYDIR/rust/target/debug/agama{,*server}
 )
 
 # - D-Bus configuration
@@ -192,7 +195,19 @@ $SUDO mkdir -p /usr/share/agama/products.d
 $SUDO cp -f $MYDIR/products.d/*.yaml /usr/share/agama/products.d
 
 # - Make sure NetworkManager is running
-$SUDO systemctl start NetworkManager
+if [ -n "${DISTROBOX_ENTER_PATH:-}" ]; then
+  AGAMA_WEB_SERVER_SVC="/usr/lib/systemd/system/agama-web-server.service"
+  grep -q DBUS_SYSTEM_BUS_ADDRESS $AGAMA_WEB_SERVER_SVC || $SUDO sed -i \
+    -e '/\[Service\]/a Environment="DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/host/run/dbus/system_bus_socket"' \
+    $AGAMA_WEB_SERVER_SVC
+
+  AGAMA_SVC="/usr/lib/systemd/system/agama.service"
+  grep -q DBUS_SYSTEM_BUS_ADDRESS $AGAMA_SVC || $SUDO sed -i \
+    -e '/\[Service\]/a Environment="DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/host/run/dbus/system_bus_socket"' \
+    $AGAMA_SVC
+else
+  $SUDO systemctl start NetworkManager
+fi
 
 # systemd reload and start of service
 (

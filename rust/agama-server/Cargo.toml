@@ -11,7 +11,7 @@ anyhow = "1.0"
 agama-locale-data = { path = "../agama-locale-data" }
 agama-lib = { path = "../agama-lib" }
 log = "0.4"
-zbus = { version = "3", default-features = false, features = ["tokio"] }
+zbus = { version = "5", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }
 thiserror = "1.0.64"
 serde = { version = "1.0.210", features = ["derive"] }
@@ -30,7 +30,7 @@ tracing-journald = "0.3.0"
 tracing = "0.1.40"
 clap = { version = "4.5.19", features = ["derive", "wrap_help"] }
 tower = { version = "0.4.13", features = ["util"] }
-utoipa = { version = "4.2.0", features = ["axum_extras", "uuid"] }
+utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
 config = "0.14.0"
 rand = "0.8.5"
 axum-extra = { version = "0.9.4", features = ["cookie", "typed-header"] }
@@ -43,11 +43,12 @@ hyper = "1.4.1"
 hyper-util = "0.1.9"
 tokio-openssl = "0.6.5"
 futures-util = { version = "0.3.30", default-features = false, features = [
-  "alloc",
+    "alloc",
 ] }
 libsystemd = "0.7.0"
 subprocess = "0.2.9"
 gethostname = "0.4.3"
+tokio-util = "0.7.12"
 
 [[bin]]
 name = "agama-dbus-server"

@@ -165,14 +165,16 @@ impl<'a> DeviceFromProxyBuilder<'a> {
             }
         }
 
-        let ip4_gateway = ip4_proxy.gateway().await?;
-        let ip6_gateway = ip6_proxy.gateway().await?;
-
         let mut ip_config = IpConfig {
             addresses,
             nameservers,
+            routes4,
+            routes6,
             ..Default::default()
         };
+
+        let ip4_gateway = ip4_proxy.gateway().await?;
+        let ip6_gateway = ip6_proxy.gateway().await?;
 
         if !ip4_gateway.is_empty() {
             ip_config.gateway4 = Some(ip4_gateway.parse().unwrap());
@@ -181,14 +183,6 @@ impl<'a> DeviceFromProxyBuilder<'a> {
             ip_config.gateway6 = Some(ip6_gateway.parse().unwrap());
         };
 
-        if !routes4.is_empty() {
-            ip_config.routes4 = Some(routes4);
-        }
-
-        if !routes6.is_empty() {
-            ip_config.routes6 = Some(routes6);
-        }
-
         Ok(ip_config)
     }
 
@@ -196,8 +190,8 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         &self,
         address_data: HashMap<String, zbus::zvariant::OwnedValue>,
     ) -> Option<IpInet> {
-        let addr_str: &str = address_data.get("address")?.downcast_ref()?;
-        let prefix: &u32 = address_data.get("prefix")?.downcast_ref()?;
+        let addr_str: &str = address_data.get("address")?.downcast_ref().ok()?;
+        let prefix: &u32 = address_data.get("prefix")?.downcast_ref().ok()?;
         let prefix = *prefix as u8;
         let address = IpInet::new(addr_str.parse().unwrap(), prefix).ok()?;
         Some(address)
@@ -207,7 +201,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         &self,
         nameserver_data: HashMap<String, zbus::zvariant::OwnedValue>,
     ) -> Option<IpAddr> {
-        let addr_str: &str = nameserver_data.get("address")?.downcast_ref()?;
+        let addr_str: &str = nameserver_data.get("address")?.downcast_ref().ok()?;
         Some(addr_str.parse().unwrap())
     }
 
@@ -215,8 +209,8 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         &self,
         route_data: HashMap<String, zbus::zvariant::OwnedValue>,
     ) -> Option<IpRoute> {
-        let dest_str: &str = route_data.get("dest")?.downcast_ref()?;
-        let prefix: u8 = *route_data.get("prefix")?.downcast_ref::<u32>()? as u8;
+        let dest_str: &str = route_data.get("dest")?.downcast_ref().ok()?;
+        let prefix: u8 = route_data.get("prefix")?.downcast_ref::<u32>().ok()? as u8;
         let destination = IpInet::new(dest_str.parse().unwrap(), prefix).ok()?;
         let mut new_route = IpRoute {
             destination,
@@ -225,11 +219,11 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         };
 
         if let Some(next_hop) = route_data.get("next-hop") {
-            let next_hop_str: &str = next_hop.downcast_ref()?;
+            let next_hop_str: &str = next_hop.downcast_ref().ok()?;
             new_route.next_hop = Some(IpAddr::from_str(next_hop_str).unwrap());
         }
         if let Some(metric) = route_data.get("metric") {
-            let metric: u32 = *metric.downcast_ref()?;
+            let metric: u32 = metric.downcast_ref().ok()?;
             new_route.metric = Some(metric);
         }
 
@@ -251,7 +245,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         connection_data: HashMap<String, HashMap<String, zbus::zvariant::OwnedValue>>,
     ) -> Option<String> {
         let connection = connection_data.get("connection")?;
-        let id: &str = connection.get("id")?.downcast_ref()?;
+        let id: &str = connection.get("id")?.downcast_ref().ok()?;
 
         Some(id.to_string())
     }

@@ -29,7 +29,7 @@ use crate::{error::Error, web::Event};
 use agama_lib::{
     dbus::{extract_id_from_path, get_property},
     error::ServiceError,
-    proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy},
+    proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
     questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
 };
 use anyhow::Context;
@@ -53,7 +53,7 @@ use zbus::{
 struct QuestionsClient<'a> {
     connection: zbus::Connection,
     objects_proxy: ObjectManagerProxy<'a>,
-    questions_proxy: Questions1Proxy<'a>,
+    questions_proxy: QuestionsProxy<'a>,
     generic_interface: OwnedInterfaceName,
     with_password_interface: OwnedInterfaceName,
 }
@@ -64,7 +64,7 @@ impl<'a> QuestionsClient<'a> {
             OwnedObjectPath::from(ObjectPath::try_from("/org/opensuse/Agama1/Questions")?);
         Ok(Self {
             connection: dbus.clone(),
-            questions_proxy: Questions1Proxy::new(&dbus).await?,
+            questions_proxy: QuestionsProxy::new(&dbus).await?,
             objects_proxy: ObjectManagerProxy::builder(&dbus)
                 .path(question_path)?
                 .destination("org.opensuse.Agama1")?
@@ -220,7 +220,7 @@ impl<'a> QuestionsClient<'a> {
         if let Some(password) = answer.with_password {
             let dbus_password = QuestionWithPasswordProxy::builder(&self.connection)
                 .path(&question_path)?
-                .cache_properties(zbus::CacheProperties::No)
+                .cache_properties(zbus::proxy::CacheProperties::No)
                 .build()
                 .await?;
             dbus_password
@@ -229,7 +229,7 @@ impl<'a> QuestionsClient<'a> {
         }
         let dbus_generic = GenericQuestionProxy::builder(&self.connection)
             .path(&question_path)?
-            .cache_properties(zbus::CacheProperties::No)
+            .cache_properties(zbus::proxy::CacheProperties::No)
             .build()
             .await?;
         dbus_generic
@@ -285,10 +285,15 @@ pub async fn questions_stream(
 /// Returns the list of questions that waits for answer.
 ///
 /// * `state`: service state.
-#[utoipa::path(get, path = "/questions", responses(
-    (status = 200, description = "List of open questions", body = Vec<Question>),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    get,
+    path = "/",
+    context_path = "/api/questions",
+    responses(
+        (status = 200, description = "List of open questions", body = Vec<Question>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn list_questions(
     State(state): State<QuestionsState<'_>>,
 ) -> Result<Json<Vec<Question>>, Error> {
@@ -299,11 +304,16 @@ async fn list_questions(
 ///
 /// * `state`: service state.
 /// * `questions_id`: id of question
-#[utoipa::path(put, path = "/questions/:id/answer", responses(
-    (status = 200, description = "Answer"),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-    (status = 404, description = "Answer was not yet provided"),
-))]
+#[utoipa::path(
+    put,
+    path = "/:id/answer",
+    context_path = "/api/questions",
+    responses(
+        (status = 200, description = "Answer"),
+        (status = 400, description = "The D-Bus service could not perform the action"),
+        (status = 404, description = "Answer was not yet provided"),
+    )
+)]
 async fn get_answer(
     State(state): State<QuestionsState<'_>>,
     Path(question_id): Path<u32>,
@@ -321,10 +331,15 @@ async fn get_answer(
 /// * `state`: service state.
 /// * `questions_id`: id of question
 /// * `answer`: struct with answer and possible other data needed for answer like password
-#[utoipa::path(put, path = "/questions/:id/answer", responses(
-    (status = 200, description = "answer question"),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    put,
+    path = "/:id/answer",
+    context_path = "/api/questions",
+    responses(
+        (status = 200, description = "answer question"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn answer_question(
     State(state): State<QuestionsState<'_>>,
     Path(question_id): Path<u32>,
@@ -338,10 +353,15 @@ async fn answer_question(
 ///
 /// * `state`: service state.
 /// * `questions_id`: id of question
-#[utoipa::path(delete, path = "/questions/:id", responses(
-    (status = 200, description = "question deleted"),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    delete,
+    path = "/:id",
+    context_path = "/api/questions",
+    responses(
+        (status = 200, description = "question deleted"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn delete_question(
     State(state): State<QuestionsState<'_>>,
     Path(question_id): Path<u32>,
@@ -354,10 +374,15 @@ async fn delete_question(
 ///
 /// * `state`: service state.
 /// * `question`: struct with question where id of question is ignored and will be assigned
-#[utoipa::path(post, path = "/questions", responses(
-    (status = 200, description = "answer question"),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    post,
+    path = "/",
+    context_path = "/api/questions",
+    responses(
+        (status = 200, description = "answer question"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn create_question(
     State(state): State<QuestionsState<'_>>,
     Json(question): Json<Question>,

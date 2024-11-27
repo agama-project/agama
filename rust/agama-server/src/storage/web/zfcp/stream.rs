@@ -91,7 +91,7 @@ impl ZFCPDiskStream {
         let mut cache: ObjectsCache<ZFCPDisk> = Default::default();
         let client = ZFCPClient::new(dbus.clone()).await?;
         for (path, device) in client.get_disks().await? {
-            cache.add(path.into(), device);
+            cache.add(path, device);
         }
 
         Ok(Self {
@@ -225,7 +225,7 @@ impl ZFCPControllerStream {
         let mut cache: ObjectsCache<ZFCPController> = Default::default();
         let client = ZFCPClient::new(dbus.clone()).await?;
         for (path, device) in client.get_controllers().await? {
-            cache.add(path.into(), device);
+            cache.add(path, device);
         }
 
         Ok(Self {

@@ -1,4 +1,54 @@
 -------------------------------------------------------------------
+Mon Nov 25 19:51:20 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the default path of the D-Bus Questions object and the ISCSI
+  Initiator interface (gh#agama-project/agama#1785).
+
+-------------------------------------------------------------------
+Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Allow using encrypted passord for root and the first user
+  (gh#agama-project/agama#1771)
+
+-------------------------------------------------------------------
+Thu Nov 14 14:45:47 UTC 2024 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Get some wireless settings as optional in order to not break the
+  connections reader (gh#agama-project/agama#1753).
+
+-------------------------------------------------------------------
+Wed Nov 13 12:03:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly update the localization settings of the D-Bus services
+  (bsc#1233159, bsc#1233160).
+
+-------------------------------------------------------------------
+Mon Nov 11 09:52:59 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add many missing elements to the OpenAPI spec
+  (gh#agama-project/agama#1700).
+- Update to utoipa 5.2 to generate the OpenAPI spec.
+
+-------------------------------------------------------------------
+Thu Nov  7 14:20:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Perform a system re-probing after executing pre-scripts
+  (gh#agama-project/agama#1735).
+
+-------------------------------------------------------------------
+Mon Nov  4 07:51:55 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- Follow-up of original fix for gh#agama-project/agama#1495
+- Implemented HTTP API for downloading logs
+- Adapted CLI command "logs" to use the HTTP API for downloading logs
+
+-------------------------------------------------------------------
+Wed Oct 30 15:27:11 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add autoconnect property for network connections
+  (gh#agama-project/agama#1715)
+
+-------------------------------------------------------------------
 Mon Oct 28 09:24:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the correct method to apply the network configuration from

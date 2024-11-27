@@ -26,25 +26,13 @@ import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import { DeviceSelection, ISCSIPage, ProposalPage } from "~/components/storage";
 
 import { Route } from "~/types/routes";
-import { N_ } from "~/i18n";
 import { supportedDASD, probeDASD } from "~/api/storage/dasd";
 import { probeZFCP, supportedZFCP } from "~/api/storage/zfcp";
 import { redirect } from "react-router-dom";
 import { ZFCPPage, ZFCPDiskActivationPage } from "~/components/storage/zfcp";
 import { DASDPage } from "~/components/storage/dasd";
-
-const PATHS = {
-  root: "/storage",
-  targetDevice: "/storage/target-device",
-  bootingPartition: "/storage/booting-partition",
-  spacePolicy: "/storage/space-policy",
-  iscsi: "/storage/iscsi",
-  dasd: "/storage/dasd",
-  zfcp: {
-    root: "/storage/zfcp",
-    activateDisk: "/storage/zfcp/active-disk",
-  },
-};
+import { STORAGE as PATHS } from "~/routes/paths";
+import { N_ } from "~/i18n";
 
 const routes = (): Route => ({
   path: PATHS.root,

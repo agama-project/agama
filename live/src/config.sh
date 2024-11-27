@@ -137,7 +137,7 @@ ls -1 "${IGNORE_OPTS[@]}" -I "en_US*" -I "C.*" /usr/lib/locale/ | xargs -I% sh -
 
 # delete unused translations (MO files)
 for t in zypper gettext-runtime p11-kit; do
-    rm /usr/share/locale/*/LC_MESSAGES/$t.mo
+    rm -f /usr/share/locale/*/LC_MESSAGES/$t.mo
 done
 du -h -s /usr/{share,lib}/locale/
 

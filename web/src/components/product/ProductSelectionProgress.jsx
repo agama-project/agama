@@ -25,7 +25,7 @@ import { Navigate } from "react-router-dom";
 import { Page, ProgressReport } from "~/components/core";
 import { useProduct } from "~/queries/software";
 import { useInstallerStatus } from "~/queries/status";
-import { PATHS } from "~/router";
+import { ROOT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**

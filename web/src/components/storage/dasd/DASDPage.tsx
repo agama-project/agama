@@ -22,12 +22,12 @@
 
 import React from "react";
 import { Stack } from "@patternfly/react-core";
-import { _ } from "~/i18n";
 import { Page } from "~/components/core";
-import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/storage/dasd";
-import { PATHS } from "~/routes/storage";
 import DASDTable from "./DASDTable";
 import DASDFormatProgress from "./DASDFormatProgress";
+import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/storage/dasd";
+import { STORAGE as PATHS } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 export default function DASDPage() {
   useDASDDevicesChanges();

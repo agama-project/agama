@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-29 09:01+0000\n"
-"PO-Revision-Date: 2024-09-09 19:47+0000\n"
+"PO-Revision-Date: 2024-11-14 15:48+0000\n"
 "Last-Translator: Rodrigo Macedo <sottomaiormacedotec@sottomaiormacedo.tech>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.8.3\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:91
@@ -148,7 +148,7 @@ msgstr "Nenhum dispositivo encontrado para uma partição obrigatória"
 #: service/lib/agama/storage/config_checker.rb:118
 #, c-format
 msgid "Missing file system type for '%s'"
-msgstr ""
+msgstr "Tipo de sistema de arquivo ausente para '%s'"
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
@@ -156,6 +156,7 @@ msgstr ""
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr ""
+"O tipo de sistema de arquivo '%{filesystem}' não é adequado para '%{path}'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -188,33 +189,35 @@ msgstr ""
 msgid ""
 "The device '%s' is used several times as target device for physical volumes"
 msgstr ""
+"O dispositivo '%s' é usado várias vezes como dispositivo de destino para "
+"volumes físicos"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checker.rb:350
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
-msgstr ""
+msgstr "Não há volume de pool fino LVM com alias '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checker.rb:375
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
-msgstr ""
+msgstr "Não há volume físico LVM com alias '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checker.rb:401
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
-msgstr ""
+msgstr "Não há dispositivo de destino para volumes físicos LVM com alias '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
 #: service/lib/agama/storage/config_checker.rb:434
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
 msgstr ""
-"'%{crypt_method}' não é um método adequado para criptografar o dispositivo."
+"'%{crypt_method}' não é um método adequado para criptografar volumes físicos."
 
 #. Text of the reason preventing to shrink because there is no content.
 #.

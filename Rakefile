@@ -63,6 +63,32 @@ def live_iso?
   mount_out.match?(/^\w+ on \/ type overlay/) || mount_out.match?(/^\/dev\/mapper\/live-rw on \/ /)
 end
 
+def package_translations
+  # build the translations tarball
+  #
+  # NOTE: the following code was inspired by the
+  # packaging_rake_tasks/lib/tasks/tarball.rake file
+  #
+  # set the file time stamps according to the latest commit
+  mtime = `git show -s --format=%ci`.chomp
+  # For the reproducible output:
+  # - use the GNU format (the default POSIX format contains some time stamps)
+  # - sort the files (in a locale independent way)
+  # - set the owner and group to "root"
+  # - set the fixed modification time
+  sh("LC_ALL=C tar -c -j -f #{Shellwords.escape(package_dir)}/po.tar.bz2 --format=gnu --sort=name " \
+     "--owner=root --group=root --mtime=#{Shellwords.escape(mtime)} po/*.po")
+end
+
+def package_agama_yast_spec(gem_filename)
+  # "/foo/agama/service/agama-yast-10.devel201.gem" -> "10.devel201"
+  version = gem_filename.sub(/\.gem$/, "").sub(/.*-/, "")
+
+  spec_text = File.read("agama-yast.spec.in")
+  spec_text.gsub!("@VERSION@", version)
+  File.write(File.join(package_dir, "agama-yast.spec"), spec_text)
+end
+
 Yast::Tasks.configuration do |conf|
   conf.obs_api = "https://api.opensuse.org"
   conf.obs_project = ENV["OBS_PROJECT"] || "systemsmanagement:Agama:Devel"
@@ -99,7 +125,7 @@ if ENV["SKIP_OSC_BUILD"] == "1"
 end
 
 # TODO: redefine :tarball instead of :package
-desc "Prepare sources for rpm build"
+desc "Prepare sources for rpm build. Invoke from service/"
 task package: [] do
   Dir.chdir(Rake.original_dir) do |dir|
     old_gems = Dir.glob(File.join(package_dir, "*.gem"))
@@ -111,20 +137,9 @@ task package: [] do
     sh "gem2rpm --local --config #{gem2rpm} --template opensuse #{gem} > package/#{package_name}.spec"
     FileUtils.mv(gem, package_dir)
 
-    # build the translations tarball
-    #
-    # NOTE: the following code was inspired by the
-    # packaging_rake_tasks/lib/tasks/tarball.rake file
-    #
-    # set the file time stamps according to the latest commit
-    mtime = `git show -s --format=%ci`.chomp
-    # For the reproducible output:
-    # - use the GNU format (the default POSIX format contains some time stamps)
-    # - sort the files (in a locale independent way)
-    # - set the owner and group to "root"
-    # - set the fixed modification time
-    sh("LC_ALL=C tar -c -j -f #{Shellwords.escape(package_dir)}/po.tar.bz2 --format=gnu --sort=name " \
-      "--owner=root --group=root --mtime=#{Shellwords.escape(mtime)} po/*.po")
+    package_agama_yast_spec(gem)
+
+    package_translations
   end
 end
 

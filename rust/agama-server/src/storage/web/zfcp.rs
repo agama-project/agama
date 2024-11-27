@@ -103,6 +103,7 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
     get,
     path="/supported",
     context_path="/api/storage/zfcp",
+    operation_id = "zfcp_supported",
     responses(
         (status = OK, description = "Returns whether zFCP technology is supported")
     )
@@ -276,6 +277,7 @@ async fn deactivate_disk(
     post,
     path="/probe",
     context_path="/api/storage/zfcp",
+    operation_id = "zfcp_probe",
     responses(
         (status = OK, description = "The probing process ran successfully")
     )

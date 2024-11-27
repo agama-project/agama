@@ -23,12 +23,7 @@
 import React from "react";
 import { ProductSelectionPage, ProductSelectionProgress } from "~/components/product";
 import { Route } from "~/types/routes";
-
-const PATHS = {
-  root: "/products",
-  changeProduct: "/products",
-  progress: "/products/progress",
-};
+import { PRODUCT as PATHS } from "~/routes/paths";
 
 const routes = (): Route => ({
   path: PATHS.root,
@@ -45,4 +40,3 @@ const routes = (): Route => ({
 });
 
 export default routes;
-export { PATHS };
