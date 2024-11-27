@@ -89,10 +89,10 @@ function App() {
       phase === InstallationPhase.Config &&
       !isBusy &&
       any_users_issues.length > 0 &&
-      location.pathname !== USER.root
+      location.pathname !== USER.rootUser.edit
     ) {
       // TODO: replace with new page
-      return <Navigate to={USER.root} />;
+      return <Navigate to={USER.rootUser.edit} />;
     }
 
     return <Outlet />;

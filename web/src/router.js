@@ -33,8 +33,9 @@ import productsRoutes from "~/routes/products";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { ROOT as PATHS } from "./routes/paths";
+import { ROOT as PATHS, USER } from "./routes/paths";
 import { N_ } from "~/i18n";
+import { RootAuthMethodsPage } from "~/components/users";
 
 const rootRoutes = () => [
   {
@@ -66,7 +67,13 @@ const protectedRoutes = () => [
       },
       {
         element: <PlainLayout />,
-        children: [productsRoutes()],
+        children: [
+          {
+            path: USER.rootUser.edit,
+            element: <RootAuthMethodsPage />,
+          },
+          productsRoutes(),
+        ],
       },
     ],
   },

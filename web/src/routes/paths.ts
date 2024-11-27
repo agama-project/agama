@@ -51,6 +51,9 @@ const ROOT = {
 
 const USER = {
   root: "/users",
+  rootUser: {
+    edit: "/users/root/edit",
+  },
   firstUser: {
     create: "/users/first",
     edit: "/users/first/edit",

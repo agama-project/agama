@@ -172,9 +172,9 @@ describe("App", () => {
           ];
         });
 
-        it("redirects to user config page", async () => {
+        it("redirects to root user edition", async () => {
           installerRender(<App />, { withL10n: true });
-          await screen.findByText("Navigating to /users");
+          await screen.findByText("Navigating to /users/root/edit");
         });
       });
 

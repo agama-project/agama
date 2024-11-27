@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,9 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as FirstUser } from "./FirstUser";
-export { default as RootAuthMethods } from "./RootAuthMethods";
-export { default as RootAuthMethodsPage } from "./RootAuthMethodsPage";
-export { default as RootPasswordPopup } from "./RootPasswordPopup";
-export { default as RootSSHKeyPopup } from "./RootSSHKeyPopup";
-export { default as UsersPage } from "./UsersPage";
+import React from "react";
+import { Grid, GridItem } from "@patternfly/react-core";
+import { Page } from "~/components/core";
+import { _ } from "~/i18n";
+
+function RootAuthMethodsPage() {
+  console.log("RootAuthMethodsPage");
+
+  return (
+    <Page>
+      <Page.Content>
+        <Grid>
+          <GridItem>
+            <Page.Section>
+              {_("Provide at least one authentication method for root user")}
+            </Page.Section>
+          </GridItem>
+        </Grid>
+      </Page.Content>
+    </Page>
+  );
+}
+
+export default RootAuthMethodsPage;
