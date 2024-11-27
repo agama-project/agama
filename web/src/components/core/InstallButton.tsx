@@ -26,7 +26,7 @@ import { Popup } from "~/components/core";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { useLocation } from "react-router-dom";
-import { PRODUCT, ROOT } from "~/routes/paths";
+import { PRODUCT, ROOT, USER } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { Icon } from "../layout";
 
@@ -34,8 +34,9 @@ import { Icon } from "../layout";
  * List of paths where the InstallButton must not be shown.
  *
  * Apart from obvious login and installation paths, it does not make sense to
- * show the button neither, when the user is about to change the product nor
- * when the installer is setting the chosen product.
+ * show the button neither, when the user is about to change the product,
+ * defining the root authentication for the fisrt time, nor when the installer
+ * is setting the chosen product.
  * */
 const EXCLUDED_FROM = [
   ROOT.login,
@@ -43,6 +44,7 @@ const EXCLUDED_FROM = [
   PRODUCT.progress,
   ROOT.installationProgress,
   ROOT.installationFinished,
+  USER.rootUser.edit,
 ];
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
