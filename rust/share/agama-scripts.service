@@ -10,7 +10,7 @@ Wants=network-online.target
 Type=oneshot
 Environment=TERM=linux
 ExecStartPre=-/usr/bin/plymouth --hide-splash
-ExecStart=/usr/bin/agama-scripts.sh
+ExecStart=/usr/libexec/agama-scripts.sh
 RemainAfterExit=yes
 TimeoutSec=0
 

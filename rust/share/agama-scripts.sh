@@ -20,7 +20,7 @@
 
 # This script runs the user-defined Agama init scripts.
 
-WORKDIR="/run/agama/scripts/init"
+WORKDIR="/var/log/agama-installation/scripts/init"
 
 systemctl disable agama-scripts.service
 

@@ -146,7 +146,8 @@ install -m 0644 %{_builddir}/agama/share/agama.libsonnet %{buildroot}%{_datadir}
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
 install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/org.opensuse.Agama1.service
 install -D -m 0644 %{_builddir}/agama/share/agama-web-server.service %{buildroot}%{_unitdir}/agama-web-server.service
-install -D -m 0644 %{_builddir}/agama/share/agama-scripts.sh %{buildroot}%{_bindir}/agama-scripts.sh
+install -D -d -m 0755 %{buildroot}%{_libexecdir}
+install -D -m 0755 %{_builddir}/agama/share/agama-scripts.sh %{buildroot}%{_libexecdir}/agama-scripts.sh
 install -D -m 0644 %{_builddir}/agama/share/agama-scripts.service %{buildroot}%{_unitdir}/agama-scripts.service
 
 # install manpages
@@ -229,6 +230,6 @@ echo $PATH
 
 %files -n agama-scripts
 %{_unitdir}/agama-scripts.service
-%{_bindir}/agama-scripts.sh
+%{_libexecdir}/agama-scripts.sh
 
 %changelog
