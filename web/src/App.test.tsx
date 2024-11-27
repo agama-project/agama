@@ -27,6 +27,8 @@ import App from "./App";
 import { InstallationPhase } from "./types/status";
 import { createClient } from "~/client";
 import { Product } from "./types/software";
+import { Issue, IssueSeverity, IssueSource, IssuesScope } from "./types/issues";
+import { useIssues } from "./queries/issues";
 
 jest.mock("~/client");
 
@@ -45,6 +47,7 @@ const microos: Product = { id: "Leap Micro", name: "openSUSE Micro" };
 // list of available products
 let mockProducts: Product[];
 let mockSelectedProduct: Product;
+let mockUserIssues: Issue[];
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -66,6 +69,7 @@ jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
   useIssuesChanges: () => jest.fn(),
   useAllIssues: () => ({ isEmtpy: true }),
+  useIssues: (component: IssuesScope) => mockUserIssues,
 }));
 
 jest.mock("~/queries/storage", () => ({
@@ -104,6 +108,7 @@ describe("App", () => {
     });
 
     mockProducts = [tumbleweed, microos];
+    mockUserIssues = [];
   });
 
   afterEach(() => {
@@ -156,9 +161,22 @@ describe("App", () => {
         mockClientStatus.isBusy = false;
       });
 
-      it("renders the application content", async () => {
-        installerRender(<App />, { withL10n: true });
-        await screen.findByText(/Outlet Content/);
+      describe("if there is issues with users", () => {
+        beforeEach(() => {
+          mockUserIssues = [{ description: "test", details: undefined, source: IssueSource.Config, severity: IssueSeverity.Error }]
+        });
+
+        it("redirects to user config page", async () => {
+          installerRender(<App />, { withL10n: true });
+          await screen.findByText("Navigating to /users");
+        })
+      });
+
+      describe("if there are no issues with users", () => {
+        it("renders the application content", async () => {
+          installerRender(<App />, { withL10n: true });
+          await screen.findByText(/Outlet Content/);
+        });
       });
     });
   });

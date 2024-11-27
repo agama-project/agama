@@ -29,10 +29,10 @@ import { useInstallerL10n } from "~/context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "~/queries/software";
 import { useL10nConfigChanges } from "~/queries/l10n";
-import { useIssuesChanges } from "~/queries/issues";
+import { useIssues, useIssuesChanges } from "~/queries/issues";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 import { useDeprecatedChanges } from "~/queries/storage";
-import { ROOT, PRODUCT } from "~/routes/paths";
+import { ROOT, PRODUCT, USER } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
 
 /**
@@ -44,6 +44,7 @@ function App() {
   const { connected, error } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
+  const any_users_issues = useIssues("users");
   useL10nConfigChanges();
   useProductChanges();
   useIssuesChanges();
@@ -82,6 +83,11 @@ function App() {
 
     if (phase === InstallationPhase.Config && isBusy && location.pathname !== PRODUCT.progress) {
       return <Navigate to={PRODUCT.progress} />;
+    }
+    
+    if (phase === InstallationPhase.Config && !isBusy && any_users_issues.length > 0) {
+      // TODO: replace with new page
+      return <Navigate to={USER.root} />;
     }
 
     return <Outlet />;
