@@ -84,7 +84,7 @@ function App() {
     if (phase === InstallationPhase.Config && isBusy && location.pathname !== PRODUCT.progress) {
       return <Navigate to={PRODUCT.progress} />;
     }
-    
+
     if (phase === InstallationPhase.Config && !isBusy && any_users_issues.length > 0) {
       // TODO: replace with new page
       return <Navigate to={USER.root} />;
