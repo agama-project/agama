@@ -18,23 +18,29 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use crate::{
+    base_http_client::BaseHTTPClient,
+    error::ServiceError,
+    software::{model::ResolvableType, SoftwareHTTPClient},
+};
 
 use super::{client::ScriptsClient, settings::ScriptsConfig, Script, ScriptConfig, ScriptsGroup};
 
 pub struct ScriptsStore {
-    client: ScriptsClient,
+    scripts: ScriptsClient,
+    software: SoftwareHTTPClient,
 }
 
 impl ScriptsStore {
     pub fn new(client: BaseHTTPClient) -> Self {
         Self {
-            client: ScriptsClient::new(client),
+            scripts: ScriptsClient::new(client.clone()),
+            software: SoftwareHTTPClient::new(client),
         }
     }
 
     pub async fn load(&self) -> Result<ScriptsConfig, ServiceError> {
-        let scripts = self.client.scripts().await?;
+        let scripts = self.scripts.scripts().await?;
 
         let pre = Self::to_script_configs(&scripts, ScriptsGroup::Pre);
         let post = Self::to_script_configs(&scripts, ScriptsGroup::Post);
@@ -48,11 +54,11 @@ impl ScriptsStore {
     }
 
     pub async fn store(&self, settings: &ScriptsConfig) -> Result<(), ServiceError> {
-        self.client.delete_scripts().await?;
+        self.scripts.delete_scripts().await?;
 
         if let Some(scripts) = &settings.pre {
             for pre in scripts {
-                self.client
+                self.scripts
                     .add_script(&Self::to_script(pre, ScriptsGroup::Pre))
                     .await?;
             }
@@ -60,19 +66,24 @@ impl ScriptsStore {
 
         if let Some(scripts) = &settings.post {
             for post in scripts {
-                self.client
+                self.scripts
                     .add_script(&Self::to_script(post, ScriptsGroup::Post))
                     .await?;
             }
         }
 
+        let mut packages = vec![];
         if let Some(scripts) = &settings.init {
             for init in scripts {
-                self.client
+                self.scripts
                     .add_script(&Self::to_script(init, ScriptsGroup::Init))
                     .await?;
             }
+            packages.push("agama-scripts");
         }
+        self.software
+            .set_resolvables("agama-scripts", ResolvableType::Package, &packages, true)
+            .await?;
 
         Ok(())
     }
