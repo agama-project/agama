@@ -61,7 +61,7 @@ type SectionProps = {
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
   /** As short as possible yet as much as needed text for describing what the section is about, if needed */
-  description?: string;
+  description?: React.ReactNode;
   /** The heading level used for the section title */
   headerLevel?: TitleProps["headingLevel"];
   /** Props to influence PF/Card component wrapping the section */
@@ -137,7 +137,7 @@ const Section = ({
   const hasTitle = !isEmpty(title);
   const hasValue = !isEmpty(value);
   const hasDescription = !isEmpty(description);
-  const hasHeader = hasTitle || hasValue;
+  const hasHeader = hasTitle || hasValue || hasDescription;
   const hasAriaLabel =
     !isEmpty(ariaLabel) || (isObject(pfCardProps) && "aria-label" in pfCardProps);
   const props = { ...defaultCardProps, "aria-label": ariaLabel };
