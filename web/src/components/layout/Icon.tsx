@@ -38,6 +38,7 @@ import Downloading from "@icons/downloading.svg?component";
 import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
+import Exclamation from "@icons/exclamation.svg?component";
 import ExpandAll from "@icons/expand_all.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
 import Feedback from "@icons/feedback.svg?component";
@@ -102,6 +103,7 @@ const icons = {
   edit: Edit,
   edit_square: EditSquare,
   error: Error,
+  exclamation: Exclamation,
   expand_all: ExpandAll,
   expand_circle_down: ExpandCircleDown,
   feedback: Feedback,

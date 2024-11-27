@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 25 11:12:36 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Unify Install and "warning" header buttons.
+- Move installation issues to a drawer shown when Install button
+  is clicked (gh#agama-project#agama#1778).
+
+-------------------------------------------------------------------
 Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Set the plain text password flag when setting the root and first

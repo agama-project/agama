@@ -21,15 +21,14 @@
  */
 
 import React, { useState } from "react";
-
 import { Button, ButtonProps, Stack } from "@patternfly/react-core";
-
 import { Popup } from "~/components/core";
-import { _ } from "~/i18n";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { useLocation } from "react-router-dom";
 import { PRODUCT, ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
+import { Icon } from "../layout";
 
 /**
  * List of paths where the InstallButton must not be shown.
@@ -81,14 +80,17 @@ according to the provided installation settings.",
  * When clicked, it will ask for a confirmation before triggering the request
  * for starting the installation.
  */
-const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
+const InstallButton = (
+  props: Omit<ButtonProps, "onClick"> & { onClickWithIssues?: () => void },
+) => {
   const issues = useAllIssues();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const hasIssues = !issues.isEmpty;
 
-  if (!issues.isEmpty) return;
   if (EXCLUDED_FROM.includes(location.pathname)) return;
 
+  const { onClickWithIssues, ...buttonProps } = props;
   const open = async () => setIsOpen(true);
   const close = () => setIsOpen(false);
   const onAccept = () => {
@@ -96,11 +98,26 @@ const InstallButton = (props: Omit<ButtonProps, "onClick">) => {
     startInstallation();
   };
 
+  // TRANSLATORS: The install button label
+  const buttonText = _("Install");
+  // TRANSLATORS: Accessible text included with the install button when there are issues
+  const withIssuesAriaLabel = _("Not possible with the current setup. Click to know more.");
+
   return (
     <>
-      <Button variant="primary" {...props} onClick={open}>
-        {/* TRANSLATORS: button label */}
-        {_("Install")}
+      <Button
+        variant="primary"
+        size="lg"
+        className="agama-install-button"
+        {...buttonProps}
+        onClick={hasIssues ? onClickWithIssues : open}
+      >
+        {buttonText}
+        {hasIssues && (
+          <div className="agama-issues-mark" aria-label={withIssuesAriaLabel}>
+            <Icon name="exclamation" size="xs" color="custom-color-300" />
+          </div>
+        )}
       </Button>
 
       {isOpen && <InstallConfirmationPopup onAccept={onAccept} onClose={close} />}
