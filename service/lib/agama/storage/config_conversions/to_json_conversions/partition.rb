@@ -24,7 +24,6 @@ require "agama/storage/config_conversions/to_json_conversions/with_encryption"
 require "agama/storage/config_conversions/to_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/to_json_conversions/with_search"
 require "agama/storage/config_conversions/to_json_conversions/with_size"
-require "agama/storage/configs/partition"
 
 module Agama
   module Storage
@@ -37,9 +36,10 @@ module Agama
           include WithFilesystem
           include WithSize
 
-          # @see Base
-          def self.config_type
-            Configs::Partition
+          # @param config [Configs::Partition]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private

@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_json_conversions/base"
-require "agama/storage/configs/logical_volume"
 
 module Agama
   module Storage
@@ -28,9 +27,10 @@ module Agama
       module ToJSONConversions
         # Boot conversion to JSON hash according to schema.
         class Boot < Base
-          # @see Base
-          def self.config_type
-            Configs::Boot
+          # @param config [Configs::Boot]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private

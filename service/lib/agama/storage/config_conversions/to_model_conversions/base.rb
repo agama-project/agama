@@ -25,22 +25,6 @@ module Agama
       module ToModelConversions
         # Base class for conversions to model according to the JSON schema.
         class Base
-          # Defines the expected config type to perform the conversion.
-          #
-          # @raise If a subclass does not defines a type.
-          # @return [Class]
-          def self.config_type
-            raise "Undefined config type"
-          end
-
-          # @param config [Object] The config type is provided by the {.config_type} method.
-          def initialize(config)
-            type = self.class.config_type
-            raise "Invalid config (#{type} expected): #{config}" unless config.is_a?(type)
-
-            @config = config
-          end
-
           # Performs the conversion to model according to the JSON schema.
           #
           # @return [Hash, nil]
@@ -58,7 +42,7 @@ module Agama
 
         private
 
-          # @return [Object] The config type is provided by the {.config_type} method.
+          # @return [Object] See {#initialize}.
           attr_reader :config
 
           # Values to generate the model.

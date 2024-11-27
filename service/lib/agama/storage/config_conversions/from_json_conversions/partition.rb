@@ -33,18 +33,18 @@ module Agama
       module FromJSONConversions
         # Partition conversion from JSON hash according to schema.
         class Partition < Base
+        private
+
           include WithSearch
           include WithEncryption
           include WithFilesystem
           include WithSize
 
-          # @see Base#convert
+          # @see Base
           # @return [Configs::Partition]
-          def convert
-            super(Configs::Partition.new)
+          def default_config
+            Configs::Partition.new
           end
-
-        private
 
           alias_method :partition_json, :config_json
 

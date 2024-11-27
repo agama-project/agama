@@ -30,15 +30,15 @@ module Agama
       module FromJSONConversions
         # Filesystem conversion from JSON hash according to schema.
         class Filesystem < Base
-          # @see Base#convert
-          # @return [Configs::Filesystem]
-          def convert
-            super(Configs::Filesystem.new)
-          end
-
         private
 
           alias_method :filesystem_json, :config_json
+
+          # @see Base
+          # @return [Configs::Filesystem]
+          def default_config
+            Configs::Filesystem.new
+          end
 
           # @see Base#conversions
           # @return [Hash]

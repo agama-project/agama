@@ -30,15 +30,15 @@ module Agama
       module FromJSONConversions
         # Encryption conversion from JSON hash according to schema.
         class Encryption < Base
-          # @see Base#convert
-          # @return [Configs::Encryption]
-          def convert
-            super(Configs::Encryption.new)
-          end
-
         private
 
           alias_method :encryption_json, :config_json
+
+          # @see Base
+          # @return [Configs::Encryption]
+          def default_config
+            Configs::Encryption.new
+          end
 
           # @see Base#conversions
           # @return [Hash]
