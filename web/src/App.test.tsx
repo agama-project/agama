@@ -163,13 +163,20 @@ describe("App", () => {
 
       describe("if there is issues with users", () => {
         beforeEach(() => {
-          mockUserIssues = [{ description: "test", details: undefined, source: IssueSource.Config, severity: IssueSeverity.Error }]
+          mockUserIssues = [
+            {
+              description: "test",
+              details: undefined,
+              source: IssueSource.Config,
+              severity: IssueSeverity.Error,
+            },
+          ];
         });
 
         it("redirects to user config page", async () => {
           installerRender(<App />, { withL10n: true });
           await screen.findByText("Navigating to /users");
-        })
+        });
       });
 
       describe("if there are no issues with users", () => {
