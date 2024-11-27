@@ -55,12 +55,12 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
 
   return (
     <NotificationDrawer ref={ref}>
-      <NotificationDrawerHeader title={_("Preflight checks")} onClose={onClose} />
+      <NotificationDrawerHeader title={_("Pre-installation checks")} onClose={onClose} />
       <NotificationDrawerBody className="agama-issues-drawer-body">
         <Stack hasGutter>
           <p>
             {_(
-              "Current settings do not meet the requirements for installing the product. You can click on each section's name to access the relevant page and adjust the settings as needed.",
+              "Before installing, you have to make some decisions. Click on each section to review the settings.",
             )}
           </p>
           {Object.entries(issuesByScope).map(([scope, issues], idx) => {
