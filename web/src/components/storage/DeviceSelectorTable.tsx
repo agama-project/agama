@@ -46,36 +46,7 @@ const DeviceInfo = ({ item }: { item: PartitionSlot | StorageDevice }) => {
   if (!device) return null;
 
   const DeviceType = () => {
-    let type: string;
-
-    switch (device.type) {
-      case "multipath": {
-        // TRANSLATORS: multipath device type
-        type = _("Multipath");
-        break;
-      }
-      case "dasd": {
-        // TRANSLATORS: %s is replaced by the device bus ID
-        type = sprintf(_("DASD %s"), device.busId);
-        break;
-      }
-      case "md": {
-        // TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-        type = sprintf(_("Software %s"), device.level.toUpperCase());
-        break;
-      }
-      case "disk": {
-        if (device.sdCard) {
-          type = _("SD Card");
-        } else {
-          const technology = device.transport || device.bus;
-          type = technology
-            ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-              sprintf(_("%s disk"), technology)
-            : _("Disk");
-        }
-      }
-    }
+    const type = typeDescription(device);
 
     return type && <div>{type}</div>;
   };
@@ -133,27 +104,10 @@ const DeviceExtendedDetails = ({ item }: { item: PartitionSlot | StorageDevice }
 
   if (!device || ["partition", "lvmLv"].includes(device.type)) return <DeviceDetails item={item} />;
 
-  // TODO: there is a lot of room for improvement here, but first we would need
-  // device.description (comes from YaST) to be way more granular
   const Description = () => {
-    if (device.partitionTable) {
-      const type = device.partitionTable.type.toUpperCase();
-      const numPartitions = device.partitionTable.partitions.length;
-
-      // TRANSLATORS: disk partition info, %s is replaced by partition table
-      // type (MS-DOS or GPT), %d is the number of the partitions
-      return sprintf(_("%s with %d partitions"), type, numPartitions);
-    }
-
-    if (!!device.model && device.model === device.description) {
-      // TRANSLATORS: status message, no existing content was found on the disk,
-      // i.e. the disk is completely empty
-      return _("No content found");
-    }
-
     return (
       <div>
-        {device.description} <FilesystemLabel item={device} />
+        {contentDescription(device)} <FilesystemLabel item={device} />
       </div>
     );
   };
@@ -164,7 +118,7 @@ const DeviceExtendedDetails = ({ item }: { item: PartitionSlot | StorageDevice }
     const System = ({ system }) => {
       const isWindows = /windows/i.test(system);
 
-      if (isWindows) return;
+      if (isWindows) return <div>{system}</div>;
 
       return (
         <div>

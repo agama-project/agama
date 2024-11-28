@@ -79,7 +79,6 @@ export default function ProposalActionsDialog({
         subvolActions.length,
       );
 
-  console.log(actions);
   return (
     <>
       <ActionsList actions={generalActions} />

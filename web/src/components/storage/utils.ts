@@ -31,8 +31,9 @@
  */
 
 import xbytes from "xbytes";
-import { N_ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
+import { configModel } from "~/api/storage/types";
 
 /**
  * @note undefined for either property means unknown
@@ -46,7 +47,7 @@ export type SpacePolicy = {
   id: string;
   label: string;
   description: string;
-  summaryLabels: string[];
+  summaryLabel: string;
 };
 
 export type SizeMethod = "auto" | "fixed" | "range";
@@ -71,42 +72,27 @@ const SPACE_POLICIES: SpacePolicy[] = [
   {
     id: "delete",
     label: N_("Delete current content"),
-    description: N_("All partitions will be removed and any data in the disks will be lost."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space deleting current content". Keep it short
-      N_("deleting current content"),
-    ],
+    summaryLabel: N_("All content will be deleted"),
+    description: N_(
+      "Any existing partition will be removed and all data in the disk will be lost.",
+    ),
   },
   {
     id: "resize",
     label: N_("Shrink existing partitions"),
+    summaryLabel: N_("Some existing partitions may be shrunk"),
     description: N_("The data is kept, but the current partitions will be resized as needed."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space shrinking partitions". Keep it short.
-      N_("shrinking partitions"),
-    ],
   },
   {
     id: "keep",
     label: N_("Use available space"),
+    summaryLabel: N_("Content will be kept"),
     description: N_("The data is kept. Only the space not assigned to any partition will be used."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space without modifying any partition". Keep it short.
-      N_("without modifying any partition"),
-    ],
   },
   {
     id: "custom",
     label: N_("Custom"),
     description: N_("Select what to do with each partition."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space with custom actions". Keep it short.
-      N_("with custom actions"),
-    ],
   },
 ];
 
@@ -173,10 +159,17 @@ const parseToBytes = (size: string | number): number => {
 };
 
 /**
+ * Base name for a full path
+ */
+const baseName = (name: string): string => {
+  return name.split("/").pop();
+};
+
+/**
  * Base name of a device.
  */
 const deviceBaseName = (device: StorageDevice): string => {
-  return device.name.split("/").pop();
+  return baseName(device.name);
 };
 
 /**
@@ -268,18 +261,46 @@ const volumeLabel = (volume: Volume): string =>
  */
 const gib: (value: number) => number = (value): number => value * 1024 ** 3;
 
+/**
+ * Formats a mount path within a sentence in a i18n-friendly way.
+ */
+const formattedPath = (path: string): string => {
+  // TRANSLATORS: sub-string used to represent a path like "/" or "/var". %s is replaced by the path
+  // itself, the rest of the string (quotation marks in the English case) is used to encapsulate the
+  // path in a bigger sentence like 'Create partitions for "/" and "/var"'.
+  return sprintf(_('"%s"'), path);
+};
+
+/**
+ * Representation of the given size limits.
+ */
+const sizeDescription = (size: configModel.Size): string => {
+  const minSize = deviceSize(size.min);
+  const maxSize = size.max ? deviceSize(size.max) : undefined;
+
+  // TRANSLATORS: Size range, %1$s is the min size and %2$s is the max
+  if (maxSize && minSize !== maxSize) return sprintf(_("%1$s - %2$s"), minSize, maxSize);
+  // TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
+  if (maxSize === undefined) return sprintf(_("at least %s"), minSize);
+
+  return `${minSize}`;
+};
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
   SIZE_UNITS,
   SPACE_POLICIES,
+  baseName,
   deviceBaseName,
   deviceLabel,
   deviceChildren,
   deviceSize,
+  formattedPath,
   gib,
   parseToBytes,
   splitSize,
+  sizeDescription,
   hasFS,
   hasSnapshots,
   isTransactionalRoot,

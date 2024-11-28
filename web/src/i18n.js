@@ -138,4 +138,15 @@ const N_ = (str) => str;
  */
 const Nn_ = (str1, strN, n) => (n === 1 ? str1 : strN);
 
-export { _, n_, N_, Nn_ };
+/**
+ * Wrapper around Intl.ListFormat to get a language-specific representation of the given list of
+ * strings.
+ *
+ * @param {string[]} list iterable list of strings to represent
+ * @param {object} options passed to the Intl.ListFormat constructor
+ * @return {string} concatenation of the original strings with the correct language-specific
+ *  separators according to the currently selected language for the Agama UI
+ */
+const formatList = (list, options = {}) => agama.formatList(list, options);
+
+export { _, n_, N_, Nn_, formatList };

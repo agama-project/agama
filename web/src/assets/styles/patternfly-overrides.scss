@@ -347,3 +347,21 @@
     inline-size: 250px;
   }
 }
+
+// FIXME: Some of these pf-v5-c-menu__list overrides shouldn't be needed, specially after migrating a PF6
+.pf-v5-c-menu__list {
+  --pf-v5-c-list--nested--MarginTop: 0;
+  --pf-v5-c-list--nested--MarginLeft: 0;
+  --pf-v5-c-menu__list--PaddingTop: 0;
+  --pf-v5-c-menu__list--PaddingBottom: 0;
+  --pf-v5-c-menu__list--c-divider--MarginTop: 0;
+  --pf-v5-c-menu__list--c-divider--MarginBottom: 0;
+
+  li + li {
+    --pf-v5-c-list--li--MarginTop: 0;
+  }
+}
+
+.menu-toggle-inline {
+  padding-inline-start: 0.5ch;
+}

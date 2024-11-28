@@ -44,6 +44,7 @@ import Feedback from "@icons/feedback.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
 import FrameInspect from "@icons/frame_inspect.svg?component";
+import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
@@ -115,6 +116,7 @@ const icons = {
   info: Info,
   inventory_2: Inventory,
   keyboard: Keyboard,
+  keyboard_arrow_down: KeyboardArrowDown,
   lan: Lan,
   list_alt: ListAlt,
   lock: Lock,
