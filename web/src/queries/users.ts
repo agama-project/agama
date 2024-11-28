@@ -83,12 +83,12 @@ const useFirstUserChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "FirstUserChanged") {
-        const { fullName, userName, password, passwordEncrypted, autologin, data } = event;
+        const { fullName, userName, password, encryptedPassword, autologin, data } = event;
         queryClient.setQueryData(["users", "firstUser"], {
           fullName,
           userName,
           password,
-          passwordEncrypted,
+          encryptedPassword,
           autologin,
           data,
         });

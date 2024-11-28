@@ -36,7 +36,7 @@ type RootUser = {
 
 type RootUserChanges = {
   password: string;
-  passwordEncrypted: boolean;
+  encryptedPassword: boolean;
   sshkey: string;
 };
 

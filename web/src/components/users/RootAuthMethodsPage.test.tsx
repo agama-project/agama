@@ -66,7 +66,7 @@ describe("RootAuthMethodsPage", () => {
     await user.click(acceptButton);
     expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({
       password: "s3cr3t",
-      passwordEncrypted: false,
+      encryptedPassword: false,
       sshkey: "FAKE SSH KEY",
     });
 
@@ -81,7 +81,7 @@ describe("RootAuthMethodsPage", () => {
     await user.click(acceptButton);
     expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({
       password: "t0ps3cr3t",
-      passwordEncrypted: false,
+      encryptedPassword: false,
     });
 
     // After submitting the data, it must navigates to root

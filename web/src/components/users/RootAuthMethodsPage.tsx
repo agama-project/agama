@@ -64,7 +64,7 @@ function RootAuthMethodsPage() {
 
     if (!isEmpty(password)) {
       data.password = password;
-      data.passwordEncrypted = false;
+      data.encryptedPassword = false;
     }
 
     if (!isEmpty(sshKey)) {
