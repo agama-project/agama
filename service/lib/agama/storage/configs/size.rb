@@ -24,6 +24,16 @@ module Agama
     module Configs
       # Size configuration.
       class Size
+        # Size config meaning "shrink if needed".
+        #
+        # @return [Configs::Size]
+        def self.new_for_shrink_if_needed
+          new.tap do |config|
+            config.default = false
+            config.min = 0
+          end
+        end
+
         # @return [Boolean]
         attr_accessor :default
         alias_method :default?, :default
