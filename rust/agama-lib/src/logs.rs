@@ -32,11 +32,12 @@ use std::process::Command;
 use tempfile::TempDir;
 use utoipa::ToSchema;
 
-const DEFAULT_COMMANDS: [(&str, &str); 5] = [
+const DEFAULT_COMMANDS: [(&str, &str); 6] = [
     // (<command to be executed>, <file name used for storing result of the command>)
     ("journalctl -u agama", "agama"),
     ("journalctl -u agama-auto", "agama-auto"),
     ("journalctl -u agama-web-server", "agama-web-server"),
+    ("journalctl -u agama-dbus-monitor", "agama-dbus-monitor"),
     ("journalctl --dmesg", "dmesg"),
     ("rpm -qa", "rpm-qa"),
 ];
