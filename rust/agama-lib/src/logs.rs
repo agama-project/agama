@@ -143,29 +143,16 @@ impl LogItem for LogPath {
         fs::create_dir_all(dst_path)?;
 
         let options = CopyOptions::new();
-        // fs_extra's own Error doesn't implement From trait so ? operator is unusable
-        match copy_items(&[self.src_path.as_str()], dst_path, &options) {
-            Ok(_p) => {
-                // turns "invisible" files to visible ones (.packages.root -> packages.root)
-                if let Some(fname) = dst_file.file_name() {
-                    if let Some(name) = fname.to_str().and_then(|n| {
-                        if n.starts_with(".") {
-                            Some(n.trim_start_matches("."))
-                        } else {
-                            None
-                        }
-                    }) {
-                        let _ = fs::rename(dst_file.clone(), dst_file.with_file_name(name));
-                    }
-                }
 
-                Ok(())
-            }
-            Err(_e) => Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Copying of a file failed",
-            )),
+        copy_items(&[self.src_path.as_str()], dst_path, &options)
+            .map_err(|_| io::Error::new(io::ErrorKind::Other, "Copying of a file failed"))?;
+
+        if let Some(name) = dst_file.file_name().and_then(|fname| fname.to_str()) {
+            let dst_name = name.trim_start_matches(".");
+            let _ = fs::rename(dst_file.clone(), dst_file.with_file_name(dst_name));
         }
+
+        Ok(())
     }
 }
 
