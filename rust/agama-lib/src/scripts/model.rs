@@ -40,6 +40,7 @@ use super::ScriptError;
 pub enum ScriptsGroup {
     Pre,
     Post,
+    Init,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
@@ -68,10 +69,7 @@ impl Script {
     /// * `workdir`: where to write assets (script, logs and exit code).
     pub async fn run(&self, workdir: &Path) -> Result<(), ScriptError> {
         let dir = workdir.join(self.group.to_string());
-
         let path = dir.join(&self.name);
-        self.write(&path).await?;
-
         let output = process::Command::new(&path).output()?;
 
         let stdout_log = dir.join(format!("{}.log", &self.name));
@@ -128,13 +126,22 @@ impl ScriptsRepository {
     /// Adds a new script to the repository.
     ///
     /// * `script`: script to add.
-    pub fn add(&mut self, script: Script) {
+    pub async fn add(&mut self, script: Script) -> Result<(), ScriptError> {
+        let workdir = self.workdir.join(script.group.to_string());
+        std::fs::create_dir_all(&workdir)?;
+        let path = workdir.join(&script.name);
+        script.write(&path).await?;
         self.scripts.push(script);
+        Ok(())
     }
 
     /// Removes all the scripts from the repository.
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self) -> Result<(), ScriptError> {
         self.scripts.clear();
+        if self.workdir.exists() {
+            std::fs::remove_dir_all(&self.workdir)?;
+        }
+        Ok(())
     }
 
     /// Runs the scripts in the given group.
@@ -142,8 +149,6 @@ impl ScriptsRepository {
     /// They run in the order they were added to the repository. If does not return an error
     /// if running a script fails, although it logs the problem.
     pub async fn run(&self, group: ScriptsGroup) -> Result<(), ScriptError> {
-        let workdir = self.workdir.join(group.to_string());
-        std::fs::create_dir_all(&workdir)?;
         let scripts: Vec<_> = self.scripts.iter().filter(|s| s.group == group).collect();
         for script in scripts {
             if let Err(error) = script.run(&self.workdir).await {
@@ -188,7 +193,7 @@ mod test {
             },
             group: ScriptsGroup::Pre,
         };
-        repo.add(script);
+        repo.add(script).await.unwrap();
 
         let script = repo.scripts.first().unwrap();
         assert_eq!("test".to_string(), script.name);
@@ -205,7 +210,7 @@ mod test {
             source: ScriptSource::Text { body },
             group: ScriptsGroup::Pre,
         };
-        repo.add(script);
+        repo.add(script).await.unwrap();
         repo.run(ScriptsGroup::Pre).await.unwrap();
 
         repo.scripts.first().unwrap();
@@ -219,5 +224,24 @@ mod test {
         let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("error\n", body);
+    }
+
+    #[test]
+    async fn test_clear_scripts() {
+        let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
+        let mut repo = ScriptsRepository::new(&tmp_dir);
+        let body = "#!/bin/bash\necho hello\necho error >&2".to_string();
+
+        let script = Script {
+            name: "test".to_string(),
+            source: ScriptSource::Text { body },
+            group: ScriptsGroup::Pre,
+        };
+        repo.add(script).await.unwrap();
+
+        let script_path = tmp_dir.path().join("pre").join("test");
+        assert!(script_path.exists());
+        _ = repo.clear();
+        assert!(!script_path.exists());
     }
 }

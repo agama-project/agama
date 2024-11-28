@@ -28,6 +28,14 @@
           "items": {
             "$ref": "#/$defs/script"
           }
+        },
+        "init": {
+          "title": "Init scripts",
+          "description": "User-defined scripts to run booting the installed system",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/script"
+          }
         }
       }
     },
@@ -298,30 +306,13 @@
                     "items": {
                       "title": "List of EAP methods used",
                       "type": "string",
-                      "enum": [
-                        "leap",
-                        "md5",
-                        "tls",
-                        "peap",
-                        "ttls",
-                        "pwd",
-                        "fast"
-                      ]
+                      "enum": ["leap", "md5", "tls", "peap", "ttls", "pwd", "fast"]
                     }
                   },
                   "phase2Auth": {
                     "title": "Phase 2 inner auth method",
                     "type": "string",
-                    "enum": [
-                      "pap",
-                      "chap",
-                      "mschap",
-                      "mschapv2",
-                      "gtc",
-                      "otp",
-                      "md5",
-                      "tls"
-                    ]
+                    "enum": ["pap", "chap", "mschap", "mschapv2", "gtc", "otp", "md5", "tls"]
                   },
                   "identity": {
                     "title": "Identity string, often for example the user's login name",
@@ -977,10 +968,7 @@
       "examples": [1024, 2048]
     },
     "sizeValue": {
-      "anyOf": [
-        { "$ref": "#/$defs/sizeString" },
-        { "$ref": "#/$defs/sizeInteger" }
-      ]
+      "anyOf": [{ "$ref": "#/$defs/sizeString" }, { "$ref": "#/$defs/sizeInteger" }]
     },
     "sizeValueWithCurrent": {
       "anyOf": [
@@ -1007,12 +995,7 @@
           },
           "minItems": 1,
           "maxItems": 2,
-          "examples": [
-            [1024, "current"],
-            ["1 GiB", "5 GiB"],
-            [1024, "2 GiB"],
-            ["2 GiB"]
-          ]
+          "examples": [[1024, "current"], ["1 GiB", "5 GiB"], [1024, "2 GiB"], ["2 GiB"]]
         },
         {
           "title": "Size range",
@@ -1370,15 +1353,7 @@
               },
               "id": {
                 "title": "Partition ID",
-                "enum": [
-                  "linux",
-                  "swap",
-                  "lvm",
-                  "raid",
-                  "esp",
-                  "prep",
-                  "bios_boot"
-                ]
+                "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
               },
               "size": {
                 "title": "Partition size",

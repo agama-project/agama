@@ -40,14 +40,7 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
             .path_from::<crate::software::web::__path_products>()
             .path_from::<crate::software::web::__path_proposal>()
             .path_from::<crate::software::web::__path_set_config>()
-            // .path(
-            //     "/api/software/issues/software",
-            //     issues_path("List of software-related issues", "software_issues"),
-            // )
-            // .path(
-            //     "/api/software/issues/product",
-            //     issues_path("List of product-related issues", "product_issues"),
-            // )
+            .path_from::<crate::software::web::__path_set_resolvables>()
             .build()
     }
 
@@ -58,6 +51,8 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
             .schema_from::<agama_lib::software::Pattern>()
             .schema_from::<agama_lib::software::model::RegistrationInfo>()
             .schema_from::<agama_lib::software::model::RegistrationParams>()
+            .schema_from::<agama_lib::software::model::ResolvableParams>()
+            .schema_from::<agama_lib::software::model::ResolvableType>()
             .schema_from::<agama_lib::software::SelectedBy>()
             .schema_from::<agama_lib::software::model::SoftwareConfig>()
             .schema_from::<crate::software::web::SoftwareProposal>()

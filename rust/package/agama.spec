@@ -115,6 +115,13 @@ The OpenAPI Specification (OAS) allows describing an HTTP API in an standard and
 language-agnostic way. This package contains the specification for Agama's HTTP
 API.
 
+%package -n agama-scripts
+Summary:        Agama support for running user-defined scripts
+
+%description -n agama-scripts
+The Agama installer supports running user-defined scripts during and after the installation. This
+package contains a systemd service to run scripts when booting the installed system.
+
 %prep
 %autosetup -a1 -n agama
 # Remove exec bits to prevent an issue in fedora shebang checking. Uncomment only if required.
@@ -139,6 +146,9 @@ install -m 0644 %{_builddir}/agama/share/agama.libsonnet %{buildroot}%{_datadir}
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
 install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/org.opensuse.Agama1.service
 install -D -m 0644 %{_builddir}/agama/share/agama-web-server.service %{buildroot}%{_unitdir}/agama-web-server.service
+install -D -d -m 0755 %{buildroot}%{_libexecdir}
+install -D -m 0755 %{_builddir}/agama/share/agama-scripts.sh %{buildroot}%{_libexecdir}/agama-scripts.sh
+install -D -m 0644 %{_builddir}/agama/share/agama-scripts.service %{buildroot}%{_unitdir}/agama-scripts.service
 
 # install manpages
 mkdir -p %{buildroot}%{_mandir}/man1
@@ -165,14 +175,26 @@ echo $PATH
 %pre
 %service_add_pre agama-web-server.service
 
+%pre -n agama-scripts
+%service_add_pre agama-scripts.service
+
 %post
 %service_add_post agama-web-server.service
+
+%post -n agama-scripts
+%service_add_post agama-scripts.service
 
 %preun
 %service_del_preun agama-web-server.service
 
+%preun -n agama-scripts
+%service_del_preun agama-scripts.service
+
 %postun
 %service_del_postun_with_restart agama-web-server.service
+
+%postun -n agama-scripts
+%service_del_postun_with_restart agama-scripts.service
 
 %files
 %doc README.md
@@ -205,5 +227,9 @@ echo $PATH
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/openapi
 %{_datadir}/agama/openapi/*.json
+
+%files -n agama-scripts
+%{_unitdir}/agama-scripts.service
+%{_libexecdir}/agama-scripts.sh
 
 %changelog
