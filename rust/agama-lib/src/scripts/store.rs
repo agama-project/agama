@@ -42,14 +42,10 @@ impl ScriptsStore {
     pub async fn load(&self) -> Result<ScriptsConfig, ServiceError> {
         let scripts = self.scripts.scripts().await?;
 
-        let pre = Self::to_script_configs(&scripts, ScriptsGroup::Pre);
-        let post = Self::to_script_configs(&scripts, ScriptsGroup::Post);
-        let init = Self::to_script_configs(&scripts, ScriptsGroup::Init);
-
         Ok(ScriptsConfig {
-            pre: if pre.is_empty() { None } else { Some(pre) },
-            post: if post.is_empty() { None } else { Some(post) },
-            init: if init.is_empty() { None } else { Some(init) },
+            pre: Self::to_script_configs(&scripts, ScriptsGroup::Pre),
+            post: Self::to_script_configs(&scripts, ScriptsGroup::Post),
+            init: Self::to_script_configs(&scripts, ScriptsGroup::Init),
         })
     }
 
@@ -96,11 +92,17 @@ impl ScriptsStore {
         }
     }
 
-    fn to_script_configs(scripts: &[Script], group: ScriptsGroup) -> Vec<ScriptConfig> {
-        scripts
+    fn to_script_configs(scripts: &[Script], group: ScriptsGroup) -> Option<Vec<ScriptConfig>> {
+        let configs: Vec<_> = scripts
             .iter()
             .filter(|s| s.group == group)
             .map(|s| s.into())
-            .collect()
+            .collect();
+
+        if configs.is_empty() {
+            return None;
+        }
+
+        Some(configs)
     }
 }
