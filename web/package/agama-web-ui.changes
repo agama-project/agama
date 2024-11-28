@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 28 14:34:49 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Request a root authentication method after selecting a product
+  ( gh#agama-project#agama#1787).
+
+-------------------------------------------------------------------
 Mon Nov 25 11:12:36 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Unify Install and "warning" header buttons.
