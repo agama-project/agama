@@ -94,10 +94,10 @@ impl Store {
     pub async fn store(&self, settings: &InstallSettings) -> Result<(), ServiceError> {
         if let Some(scripts) = &settings.scripts {
             self.scripts.store(scripts).await?;
-        }
 
-        if settings.scripts.as_ref().is_some_and(|s| !s.pre.is_empty()) {
-            self.run_pre_scripts().await?;
+            if scripts.pre.as_ref().is_some_and(|s| !s.is_empty()) {
+                self.run_pre_scripts().await?;
+            }
         }
 
         if let Some(network) = &settings.network {
