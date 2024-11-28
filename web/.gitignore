@@ -7,7 +7,6 @@ coverage/
 dist/
 /*.spec
 /.vagrant
-package-lock.json
 Test*FAIL*
 /bots
 test/common/

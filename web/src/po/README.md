@@ -1,7 +1,8 @@
 # Translations
 
 This directory contains translation files for the web frontend part of the Agama
-installer. See more details in the main [i18n](../../doc/i18n.md) documentation.
+installer. See more details in the main
+[i18n](https://agama-project.github.io/docs/devel/i18n) documentation.
 
 ## Contribution
 

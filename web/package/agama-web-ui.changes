@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 26 09:30:09 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Use dynamic imports for loading the translation files
+  (gh#agama-project/agama#1777)
+
+-------------------------------------------------------------------
 Mon Nov 25 11:12:36 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Unify Install and "warning" header buttons.
