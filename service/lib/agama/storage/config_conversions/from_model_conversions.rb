@@ -19,15 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/from_model"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/config_conversions/from_model_conversions/config"
+require "agama/storage/config_conversions/from_model_conversions/drive"
+require "agama/storage/config_conversions/from_model_conversions/filesystem"
+require "agama/storage/config_conversions/from_model_conversions/filesystem_type"
+require "agama/storage/config_conversions/from_model_conversions/partition"
+require "agama/storage/config_conversions/from_model_conversions/search"
+require "agama/storage/config_conversions/from_model_conversions/size"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      # Conversions from model according to the JSON schema.
+      module FromModelConversions
+      end
     end
   end
 end

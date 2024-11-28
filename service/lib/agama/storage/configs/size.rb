@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "y2storage/disk_size"
+
 module Agama
   module Storage
     module Configs
@@ -30,7 +32,7 @@ module Agama
         def self.new_for_shrink_if_needed
           new.tap do |config|
             config.default = false
-            config.min = 0
+            config.min = Y2Storage::DiskSize.zero
           end
         end
 

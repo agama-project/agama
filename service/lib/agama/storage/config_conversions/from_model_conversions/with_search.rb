@@ -19,15 +19,23 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/from_model"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/configs/search"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module FromModelConversions
+        # Mixin for search conversion.
+        module WithSearch
+          # @return [Configs::Search, nil]
+          def convert_search
+            name = model_json[:name]
+            return unless name
+
+            Configs::Search.new.tap { |c| c.name = name }
+          end
+        end
+      end
     end
   end
 end

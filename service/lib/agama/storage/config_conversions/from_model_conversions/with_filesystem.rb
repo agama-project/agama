@@ -19,15 +19,22 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/from_model"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/config_conversions/from_model_conversions/filesystem"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module FromModelConversions
+        # Mixin for filesystem conversion.
+        module WithFilesystem
+          # @return [Configs::Filesystem, nil]
+          def convert_filesystem
+            return unless model_json[:mountPath] || model_json[:filesystem]
+
+            FromModelConversions::Filesystem.new(model_json).convert
+          end
+        end
+      end
     end
   end
 end

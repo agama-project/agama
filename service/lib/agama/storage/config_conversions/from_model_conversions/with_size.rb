@@ -19,15 +19,26 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/from_model"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/config_conversions/from_model_conversions/size"
+require "agama/storage/configs/size"
 
 module Agama
   module Storage
-    # Conversions for the storage config.
     module ConfigConversions
+      module FromModelConversions
+        # Mixin for size conversion.
+        module WithSize
+          # @return [Configs::Size, nil]
+          def convert_size
+            return Configs::Size.new_for_shrink_if_needed if model_json[:resizeIfNeeded]
+
+            size_model = model_json[:size]
+            return if size_model.nil?
+
+            FromModelConversions::Size.new(size_model).convert
+          end
+        end
+      end
     end
   end
 end
