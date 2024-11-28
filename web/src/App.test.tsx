@@ -67,7 +67,7 @@ jest.mock("~/queries/l10n", () => ({
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
   useIssuesChanges: () => jest.fn(),
-  useAllIssues: () => ({ isEmtpy: true }),
+  useAllIssues: () => ({ isEmpty: true }),
   useIssues: () => mockUserIssues,
 }));
 
@@ -187,7 +187,7 @@ describe("App", () => {
     });
   });
 
-  describe("on the busy installaiton phase", () => {
+  describe("on the busy installation phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
       mockClientStatus.isBusy = true;
@@ -200,7 +200,7 @@ describe("App", () => {
     });
   });
 
-  describe("on the idle installaiton phase", () => {
+  describe("on the idle installation phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
       mockClientStatus.isBusy = false;

@@ -98,6 +98,8 @@ button.remove-link:hover {
   }
 }
 
-.autoInlineSize {
-  inline-size: auto;
+form#rootAuthMethods {
+  .pf-v5-c-file-upload__file-select {
+    display: none;
+  }
 }
