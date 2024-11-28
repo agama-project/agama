@@ -243,7 +243,7 @@ async fn patch_root(
         } else {
             state
                 .users
-                .set_root_password(&password, config.password_encrypted == Some(true))
+                .set_root_password(&password, config.encrypted_password == Some(true))
                 .await?
         }
     }

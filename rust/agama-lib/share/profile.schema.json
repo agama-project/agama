@@ -391,11 +391,11 @@
           "examples": ["jane.doe"]
         },
         "password": {
-          "title": "User password (plain text or encrypted depending on the \"passwordEncrypted\" field)",
+          "title": "User password (plain text or encrypted depending on the \"encryptedPassword\" field)",
           "type": "string",
           "examples": ["nots3cr3t"]
         },
-        "passwordEncrypted": {
+        "encryptedPassword": {
           "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
           "type": "boolean"
         }
@@ -408,10 +408,10 @@
       "additionalProperties": false,
       "properties": {
         "password": {
-          "title": "Root password (plain text or encrypted depending on the \"passwordEncrypted\" field)",
+          "title": "Root password (plain text or encrypted depending on the \"encryptedPassword\" field)",
           "type": "string"
         },
-        "passwordEncrypted": {
+        "encryptedPassword": {
           "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
           "type": "boolean"
         },

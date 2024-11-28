@@ -66,7 +66,7 @@ impl UsersHTTPClient {
         let rps = RootPatchSettings {
             sshkey: None,
             password: Some(value.to_owned()),
-            password_encrypted: Some(encrypted),
+            encrypted_password: Some(encrypted),
         };
         let ret = self.client.patch("/users/root", &rps).await?;
         Ok(ret)
@@ -84,7 +84,7 @@ impl UsersHTTPClient {
         let rps = RootPatchSettings {
             sshkey: Some(value.to_owned()),
             password: None,
-            password_encrypted: None,
+            encrypted_password: None,
         };
         let ret = self.client.patch("/users/root", &rps).await?;
         Ok(ret)
