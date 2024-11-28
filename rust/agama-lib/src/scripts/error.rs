@@ -29,4 +29,6 @@ pub enum ScriptError {
     Unreachable(#[from] TransferError),
     #[error("I/O error: '{0}'")]
     InputOutputError(#[from] io::Error),
+    #[error("Wrong script type")]
+    WrongScriptType,
 }
