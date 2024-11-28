@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 28 08:58:21 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Less aggressive kernel driver cleanup, keep the multimedia
+  drivers which are needed as dependencies of other drivers
+  (usually graphic card drivers) (gh#agama-project/agama#1665)
+
+-------------------------------------------------------------------
 Wed Nov 13 12:20:23 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Temporarily drop xf86-video-fbdev as it seems to be missing
