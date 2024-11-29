@@ -14,6 +14,7 @@
     post: [
       {
         name: 'enable-sshd',
+        chroot: true,
         body: |||
           #!/bin/bash
           systemctl enable sshd
