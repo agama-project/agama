@@ -84,7 +84,7 @@ describe("RootAuthMethodsPage", () => {
       encryptedPassword: false,
     });
 
-    // After submitting the data, it must navigates
+    // After submitting the data, it must navigate
     expect(mockNavigateFn).toHaveBeenCalled();
   });
 });
