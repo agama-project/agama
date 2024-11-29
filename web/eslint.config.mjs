@@ -93,6 +93,13 @@ export default [
     rules: { "agama-i18n/string-literals": "off" },
   },
   {
+    // the translation JS files generated from the PO files use some code in the plural form rule,
+    // ignore the possible "problems" there (using "==" operator instead of more strict "===" or not
+    // using the "n" variable in languages which do not have plural form)
+    files: ["src/po/*.js"],
+    rules: { eqeqeq: "off", "@typescript-eslint/no-unused-vars": "off" },
+  },
+  {
     ignores: ["node_modules/*", "src/lib/*", "src/**/test-data/*"],
   },
 ];

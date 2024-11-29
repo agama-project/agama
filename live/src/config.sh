@@ -160,10 +160,11 @@ rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 # and remove the drivers for sound cards and TV cards instead. Those do not
 # make sense on a server.
 du -h -s /lib/modules /lib/firmware
-# delete sound drivers
-rm -rfv /lib/modules/*/kernel/sound
-# delete TV cards and radio cards
-rm -rfv /lib/modules/*/kernel/drivers/media/
+
+# remove the multimedia drivers
+/tmp/driver_cleanup.rb --delete
+# remove the script, not needed anymore
+rm /tmp/driver_cleanup.rb
 
 # remove the unused firmware (not referenced by kernel drivers)
 /tmp/fw_cleanup.rb --delete

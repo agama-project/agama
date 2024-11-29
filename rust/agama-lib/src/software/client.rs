@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::proxies::Software1Proxy;
+use super::{
+    model::ResolvableType,
+    proxies::{ProposalProxy, Software1Proxy},
+};
 use crate::error::ServiceError;
 use serde::Serialize;
 use serde_repr::Serialize_repr;
@@ -74,12 +77,14 @@ impl TryFrom<u8> for SelectedBy {
 #[derive(Clone)]
 pub struct SoftwareClient<'a> {
     software_proxy: Software1Proxy<'a>,
+    proposal_proxy: ProposalProxy<'a>,
 }
 
 impl<'a> SoftwareClient<'a> {
     pub async fn new(connection: Connection) -> Result<SoftwareClient<'a>, ServiceError> {
         Ok(Self {
             software_proxy: Software1Proxy::new(&connection).await?,
+            proposal_proxy: ProposalProxy::new(&connection).await?,
         })
     }
 
@@ -171,5 +176,25 @@ impl<'a> SoftwareClient<'a> {
     /// Starts the process to read the repositories data.
     pub async fn probe(&self) -> Result<(), ServiceError> {
         Ok(self.software_proxy.probe().await?)
+    }
+
+    /// Updates the resolvables list.
+    ///
+    /// * `id`: resolvable list ID.
+    /// * `r#type`: type of the resolvables.
+    /// * `resolvables`: resolvables to add.
+    /// * `optional`: whether the resolvables are optional.
+    pub async fn set_resolvables(
+        &self,
+        id: &str,
+        r#type: ResolvableType,
+        resolvables: &[&str],
+        optional: bool,
+    ) -> Result<(), ServiceError> {
+        let names: Vec<_> = resolvables.iter().map(|r| r.as_ref()).collect();
+        self.proposal_proxy
+            .set_resolvables(id, r#type as u8, &names, optional)
+            .await?;
+        Ok(())
     }
 }

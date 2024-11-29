@@ -8,13 +8,11 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require("eslint-webpack-plugin");
-const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
 const StylelintPlugin = require("stylelint-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const ReactRefreshTypeScript = require("react-refresh-typescript");
 const webpack = require("webpack");
-const po_handler = require("./src/lib/webpack-po-handler");
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === "production";
@@ -40,21 +38,25 @@ const copy_files = [
   "./src/index.html",
   // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
   "./src/assets/favicon.svg",
+  "./src/languages.json",
   { from: "./src/assets/products/*.svg", to: "assets/logos/[name][ext]" },
 ];
 
 const plugins = [
   new Copy({ patterns: copy_files }),
   new Extract({ filename: "[name].css" }),
-  // the wrapper sets the main code called in the po.js files,
-  // the PO_DATA tag is replaced by the real translation data
-  new CockpitPoPlugin({ wrapper: "agama.locale(PO_DATA);" }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
   // replace the "process.env.WEBPACK_SERVE" text in the source code by
   // the current value of the environment variable, that variable is set to
   // "true" when running the development server ("npm run server")
   // https://webpack.js.org/plugins/environment-plugin/
   new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null, LOCAL_CONNECTION: null }),
+  new webpack.SourceMapDevToolPlugin({
+    filename: "[file].map",
+    // skip the source maps for the translation files, they are twice (!) big as the JS files
+    // themselves and do not provide any value because there are basically just arrays of texts
+    exclude: /po-.*\.js$/,
+  }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -101,12 +103,8 @@ module.exports = {
   entry: {
     index: ["./src/index.js"],
   },
-  // cockpit.js gets included via <script>, everything else should be bundled
-  externals: { cockpit: "cockpit" },
   devServer: {
     hot: true,
-    // additionally watch these files for changes
-    watchFiles: ["./po/*.po"],
     proxy: [
       {
         context: ["/api/ws"],
@@ -120,13 +118,9 @@ module.exports = {
         secure: false,
       },
     ],
-    // special handling for the "po.js" requests specially
-    setupMiddlewares: (middlewares, devServer) => {
-      devServer.app.get("/po.js", po_handler);
-      return middlewares;
-    },
   },
-  devtool: "source-map",
+  // source maps are configured using the SourceMapDevToolPlugin above
+  devtool: false,
   stats: "errors-warnings",
   // always regenerate dist/, so make rules work
   output: { clean: true, compareBeforeEmit: false },
