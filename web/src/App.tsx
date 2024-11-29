@@ -29,11 +29,13 @@ import { useInstallerL10n } from "~/context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "~/queries/software";
 import { useL10nConfigChanges } from "~/queries/l10n";
-import { useIssues, useIssuesChanges } from "~/queries/issues";
+import { useIssuesChanges } from "~/queries/issues";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 import { useDeprecatedChanges } from "~/queries/storage";
+import { useRootUser } from "~/queries/users";
 import { ROOT, PRODUCT, USER } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
+import { isEmpty } from "~/utils";
 
 /**
  * Main application component.
@@ -44,7 +46,7 @@ function App() {
   const { connected, error } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
-  const userIssues = useIssues("users");
+  const { password: isRootPasswordDefined, sshkey: rootSSHKey } = useRootUser();
   useL10nConfigChanges();
   useProductChanges();
   useIssuesChanges();
@@ -88,7 +90,8 @@ function App() {
     if (
       phase === InstallationPhase.Config &&
       !isBusy &&
-      userIssues.length > 0 &&
+      !isRootPasswordDefined &&
+      isEmpty(rootSSHKey) &&
       location.pathname !== USER.rootUser.edit
     ) {
       return <Navigate to={USER.rootUser.edit} />;

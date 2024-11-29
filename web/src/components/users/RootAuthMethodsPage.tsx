@@ -42,6 +42,13 @@ import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 
+/**
+ * A page component for setting at least one root authentication method
+ *
+ * NOTE: This page will be automatically displayed only when no root authentication
+ * method is set. It is not within the scope of this component to fill data if
+ * users manually enter the route path.
+ */
 function RootAuthMethodsPage() {
   const passwordRef = useRef();
   const navigate = useNavigate();
