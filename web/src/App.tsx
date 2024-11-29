@@ -44,7 +44,7 @@ function App() {
   const { connected, error } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
-  const any_users_issues = useIssues("users");
+  const userIssues = useIssues("users");
   useL10nConfigChanges();
   useProductChanges();
   useIssuesChanges();
@@ -88,7 +88,7 @@ function App() {
     if (
       phase === InstallationPhase.Config &&
       !isBusy &&
-      any_users_issues.length > 0 &&
+      userIssues.length > 0 &&
       location.pathname !== USER.rootUser.edit
     ) {
       return <Navigate to={USER.rootUser.edit} />;
