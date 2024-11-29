@@ -436,3 +436,7 @@ export type SetProposalSettingsResponse = boolean;
 export type UsableDevicesResponse = Array<DeviceSid>;
 
 export type PingResponse2 = PingResponse;
+
+import * as config from "./types/config";
+
+export { config };
