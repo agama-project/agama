@@ -31,7 +31,7 @@ import {
   HelperText,
   HelperTextItem,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Center } from "~/components/layout";
 import { Page, PasswordInput } from "~/components/core";
 import { useRootUserMutation } from "~/queries/users";
@@ -52,6 +52,7 @@ import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 function RootAuthMethodsPage() {
   const passwordRef = useRef();
   const navigate = useNavigate();
+  const location = useLocation();
   const setRootUser = useRootUserMutation();
   const [password, setPassword] = useState("");
   const [sshKey, setSSHKey] = useState("");
@@ -82,7 +83,7 @@ function RootAuthMethodsPage() {
 
     await setRootUser.mutateAsync(data);
 
-    navigate(PATHS.root);
+    navigate(location.state?.from || PATHS.root, { replace: true });
   };
 
   // TRANSLATORS: %s will be replaced by a link with the text "upload".

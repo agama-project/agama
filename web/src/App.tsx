@@ -94,7 +94,7 @@ function App() {
       isEmpty(rootSSHKey) &&
       location.pathname !== USER.rootUser.edit
     ) {
-      return <Navigate to={USER.rootUser.edit} />;
+      return <Navigate to={USER.rootUser.edit} state={{ from: location.pathname }} />;
     }
 
     return <Outlet />;
