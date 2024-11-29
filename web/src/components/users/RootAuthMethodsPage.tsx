@@ -82,6 +82,9 @@ function RootAuthMethodsPage() {
   const [sshKeyStartHelperText, sshKeyEndHelperText] = _(
     "Write, paste, drop, or %s a SSH public key file in the above textarea.",
   ).split("%s");
+  // TRANSLATORS: this "upload" is a commanding verb, in the %s place of
+  // "Write, paste, drop, or %s a SSH public key file in the above textarea."
+  const uploadLinkText = _("upload");
 
   return (
     <Page>
@@ -135,7 +138,7 @@ function RootAuthMethodsPage() {
                       <HelperTextItem variant="indeterminate">
                         {sshKeyStartHelperText}
                         <Button variant="link" isInline onClick={uploadFile}>
-                          {_("upload")}
+                          {uploadLinkText}
                         </Button>
                         {sshKeyEndHelperText}
                       </HelperTextItem>
