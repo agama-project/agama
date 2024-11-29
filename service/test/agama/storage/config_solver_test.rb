@@ -550,6 +550,52 @@ describe Agama::Storage::ConfigSolver do
         end
       end
     end
+
+    context "if a config does not specify max size" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  search:     search,
+                  filesystem: { path: "/" },
+                  size:       {
+                    min: "10 GiB"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      context "and there is no device assigned" do
+        let(:search) { nil }
+
+        it "sets max size to unlimited" do
+          subject.solve(config)
+          partition = partition_proc.call(config)
+          expect(partition.size.default?).to eq(false)
+          expect(partition.size.min).to eq(10.GiB)
+          expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
+        end
+      end
+
+      context "and there is a device assigned" do
+        let(:scenario) { "disks.yaml" }
+
+        let(:search) { "/dev/vda2" }
+
+        it "sets max size to unlimited" do
+          subject.solve(config)
+          partition = partition_proc.call(config)
+          expect(partition.size.default?).to eq(false)
+          expect(partition.size.min).to eq(10.GiB)
+          expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
+        end
+      end
+    end
   end
 
   context "if a drive omits the search" do
