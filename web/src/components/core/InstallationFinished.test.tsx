@@ -24,25 +24,69 @@ import React from "react";
 
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { EncryptionMethods } from "~/types/storage";
 import InstallationFinished from "./InstallationFinished";
-
-let mockEncryptionPassword: string;
-let mockEncryptionMethod: string;
+import { Encryption } from "~/api/storage/types/config";
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
   useInstallerStatus: () => ({ isBusy: false, useIguana: false, phase: 2, canInstall: false }),
 }));
 
+type storageConfigType = "guided" | "raw";
+type guidedEncryption = {
+  password: string;
+  method: string;
+  pbkdFunction?: string;
+};
+
+let mockEncryption: undefined | Encryption | guidedEncryption;
+let mockType: storageConfigType;
+
+const mockStorageConfig = (
+  type: storageConfigType,
+  encryption: undefined | Encryption | guidedEncryption,
+) => {
+  const encryptionHash = {};
+  if (encryption !== undefined) encryptionHash["encryption"] = encryption;
+
+  switch (type) {
+    case "guided":
+      return {
+        guided: {
+          ...encryptionHash,
+        },
+      };
+    case "raw":
+      return {
+        drives: [
+          {
+            partitions: [
+              {
+                filesystem: {
+                  path: "/",
+                },
+                id: "linux",
+                ...encryptionHash,
+              },
+              {
+                filesystem: {
+                  mountBy: "uuid",
+                  path: "swap",
+                  type: "swap",
+                },
+                id: "swap",
+                size: "2 GiB",
+              },
+            ],
+          },
+        ],
+      };
+  }
+};
+
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useProposalResult: () => ({
-    settings: {
-      encryptionMethod: mockEncryptionMethod,
-      encryptionPassword: mockEncryptionPassword,
-    },
-  }),
+  useConfig: () => mockStorageConfig(mockType, mockEncryption),
 }));
 
 const mockFinishInstallation = jest.fn();
@@ -56,8 +100,8 @@ jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Optio
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
-    mockEncryptionPassword = "n0tS3cr3t";
-    mockEncryptionMethod = EncryptionMethods.LUKS2;
+    mockEncryption = null;
+    mockType = "guided";
   });
 
   it("shows the finished installation screen", () => {
@@ -77,34 +121,54 @@ describe("InstallationFinished", () => {
     expect(mockFinishInstallation).toHaveBeenCalled();
   });
 
-  describe("when TPM is set as encryption method", () => {
+  describe("when running storage config in raw mode", () => {
     beforeEach(() => {
-      mockEncryptionMethod = EncryptionMethods.TPM;
+      mockType = "raw";
     });
 
-    describe("and encryption was set", () => {
+    describe("when TPM is set as encryption method", () => {
+      beforeEach(() => {
+        mockEncryption = {
+          tpmFde: {
+            password: "n0tS3cr3t",
+          },
+        };
+      });
+
       it("shows the TPM reminder", async () => {
         plainRender(<InstallationFinished />);
         await screen.findAllByText(/TPM/);
       });
     });
 
-    describe("but encryption was not set", () => {
-      beforeEach(() => {
-        mockEncryptionPassword = "";
-      });
-
+    describe("when TPM is not set as encryption method", () => {
       it("does not show the TPM reminder", async () => {
         plainRender(<InstallationFinished />);
-        screen.queryAllByText(/TPM/);
+        expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
       });
     });
   });
 
-  describe("when TPM is not set as encryption method", () => {
-    it("does not show the TPM reminder", async () => {
-      plainRender(<InstallationFinished />);
-      expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
+  describe("when running storage config in guided mode", () => {
+    describe("when TPM is set as encryption method", () => {
+      beforeEach(() => {
+        mockEncryption = {
+          method: "tpm_fde",
+          password: "n0tS3cr3t",
+        };
+      });
+
+      it("shows the TPM reminder", async () => {
+        plainRender(<InstallationFinished />);
+        await screen.findAllByText(/TPM/);
+      });
+    });
+
+    describe("when TPM is not set as encryption method", () => {
+      it("does not show the TPM reminder", async () => {
+        plainRender(<InstallationFinished />);
+        expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
+      });
     });
   });
 });
