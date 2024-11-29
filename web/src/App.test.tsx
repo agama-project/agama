@@ -160,7 +160,7 @@ describe("App", () => {
         mockClientStatus.isBusy = false;
       });
 
-      describe("if there is issues with users", () => {
+      describe("if there are issues with users", () => {
         beforeEach(() => {
           mockUserIssues = [
             {

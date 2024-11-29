@@ -93,7 +93,7 @@ function RootAuthMethodsPage() {
             description={
               <p className={textStyles.fontSizeXl}>
                 {_(
-                  "To continue with the installation settings, define at least one authentication method for the root user. You can still edit them anytime before installation.",
+                  "You must define at least one authentication method for the root user. You can still edit them anytime before the installation.",
                 )}
               </p>
             }
