@@ -91,7 +91,6 @@ function App() {
       any_users_issues.length > 0 &&
       location.pathname !== USER.rootUser.edit
     ) {
-      // TODO: replace with new page
       return <Navigate to={USER.rootUser.edit} />;
     }
 

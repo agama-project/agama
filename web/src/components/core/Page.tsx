@@ -60,7 +60,7 @@ type SectionProps = {
   value?: React.ReactNode;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
-  /** As short as possible yet as much as needed text for describing what the section is about, if needed */
+  /** A React node with a brief description of what the section is for */
   description?: React.ReactNode;
   /** The heading level used for the section title */
   headerLevel?: TitleProps["headingLevel"];
@@ -106,7 +106,7 @@ const Header = ({ hasGutter = true, children, ...props }) => {
  *
  * @example <caption>Simple usage</caption>
  *   <Page.Section>
- *     <EncryptionSummmary
+ *     <EncryptionSummary />
  *   </Page.Section>
  *
  * @example <caption>Complex usage</caption>
@@ -184,7 +184,7 @@ const Section = ({
  *
  * @example
  *   <Page.Actions>
- *     <Page.Action onCick={doSomething}>Let's go</Page.Action>
+ *     <Page.Action onClick={doSomething}>Let's go</Page.Action>
  *   </Page.Actions>
  *
  */
@@ -285,7 +285,7 @@ const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<Page
 );
 
 /**
- * Component for structuing an Agama page, built on top of PF/Page/PageGroup.
+ * Component for structuring an Agama page, built on top of PF/Page/PageGroup.
  *
  * @see [Patternfly Page/PageGroup](https://www.patternfly.org/components/page#pagegroup)
  *
