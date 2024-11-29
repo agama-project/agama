@@ -24,7 +24,7 @@ use crate::{
     software::{model::ResolvableType, SoftwareHTTPClient},
 };
 
-use super::{client::ScriptsClient, settings::ScriptsConfig, Script, ScriptConfig, ScriptsGroup};
+use super::{client::ScriptsClient, settings::ScriptsConfig, Script, ScriptError};
 
 pub struct ScriptsStore {
     scripts: ScriptsClient,
@@ -43,9 +43,9 @@ impl ScriptsStore {
         let scripts = self.scripts.scripts().await?;
 
         Ok(ScriptsConfig {
-            pre: Self::to_script_configs(&scripts, ScriptsGroup::Pre),
-            post: Self::to_script_configs(&scripts, ScriptsGroup::Post),
-            init: Self::to_script_configs(&scripts, ScriptsGroup::Init),
+            pre: Self::scripts_by_type(&scripts),
+            post: Self::scripts_by_type(&scripts),
+            init: Self::scripts_by_type(&scripts),
         })
     }
 
@@ -54,26 +54,20 @@ impl ScriptsStore {
 
         if let Some(scripts) = &settings.pre {
             for pre in scripts {
-                self.scripts
-                    .add_script(&Self::to_script(pre, ScriptsGroup::Pre))
-                    .await?;
+                self.scripts.add_script(pre.clone().into()).await?;
             }
         }
 
         if let Some(scripts) = &settings.post {
             for post in scripts {
-                self.scripts
-                    .add_script(&Self::to_script(post, ScriptsGroup::Post))
-                    .await?;
+                self.scripts.add_script(post.clone().into()).await?;
             }
         }
 
         let mut packages = vec![];
         if let Some(scripts) = &settings.init {
             for init in scripts {
-                self.scripts
-                    .add_script(&Self::to_script(init, ScriptsGroup::Init))
-                    .await?;
+                self.scripts.add_script(init.clone().into()).await?;
             }
             packages.push("agama-scripts");
         }
@@ -84,25 +78,18 @@ impl ScriptsStore {
         Ok(())
     }
 
-    fn to_script(config: &ScriptConfig, group: ScriptsGroup) -> Script {
-        Script {
-            name: config.name.clone(),
-            source: config.source.clone(),
-            group,
-        }
-    }
-
-    fn to_script_configs(scripts: &[Script], group: ScriptsGroup) -> Option<Vec<ScriptConfig>> {
-        let configs: Vec<_> = scripts
+    fn scripts_by_type<T>(scripts: &[Script]) -> Option<Vec<T>>
+    where
+        T: TryFrom<Script, Error = ScriptError> + Clone,
+    {
+        let scripts: Vec<T> = scripts
             .iter()
-            .filter(|s| s.group == group)
-            .map(|s| s.into())
+            .cloned()
+            .filter_map(|s| s.try_into().ok())
             .collect();
-
-        if configs.is_empty() {
+        if scripts.is_empty() {
             return None;
         }
-
-        Some(configs)
+        Some(scripts)
     }
 }

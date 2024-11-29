@@ -20,37 +20,18 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::{Script, ScriptSource};
+use super::{InitScript, PostScript, PreScript};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScriptsConfig {
     /// User-defined pre-installation scripts
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub pre: Option<Vec<ScriptConfig>>,
+    pub pre: Option<Vec<PreScript>>,
     /// User-defined post-installation scripts
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub post: Option<Vec<ScriptConfig>>,
+    pub post: Option<Vec<PostScript>>,
     /// User-defined init scripts
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub init: Option<Vec<ScriptConfig>>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ScriptConfig {
-    /// Script's name.
-    pub name: String,
-    /// Script's source
-    #[serde(flatten)]
-    pub source: ScriptSource,
-}
-
-impl From<&Script> for ScriptConfig {
-    fn from(value: &Script) -> Self {
-        ScriptConfig {
-            name: value.name.clone(),
-            source: value.source.clone(),
-        }
-    }
+    pub init: Option<Vec<InitScript>>,
 }
