@@ -211,7 +211,7 @@ impl TryFrom<Script> for PostScript {
 
 impl WithRunner for PostScript {
     fn runner(&self) -> Option<ScriptRunner> {
-        Some(ScriptRunner::new().with_chroot(self.chroot.unwrap_or(false)))
+        Some(ScriptRunner::new().with_chroot(self.chroot.unwrap_or(true)))
     }
 }
 
