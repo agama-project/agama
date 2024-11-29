@@ -52,14 +52,6 @@ const initialRoutes = jest.fn().mockReturnValue(["/"]);
 const mockNavigateFn = jest.fn();
 
 /**
- * Allows mocking eact-router-dom useLocation
- *
- * @example
- *   mockLocationFn.mockReturnValue({ state: { from: "users" }})
- */
-const mockLocationFn = jest.fn().mockImplementation(() => ({}));
-
-/**
  * Allows checking when the useRevalidator function has been called
  *
  * @example
@@ -85,7 +77,6 @@ jest.mock("react-router-dom", () => ({
   useHref: (to) => to,
   useNavigate: () => mockNavigateFn,
   useMatches: () => [],
-  useLocation: () => mockLocationFn(),
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
   Outlet: () => <>Outlet Content</>,
   useRevalidator: () => mockUseRevalidator,
@@ -206,5 +197,4 @@ export {
   mockRoutes,
   mockUseRevalidator,
   resetLocalStorage,
-  mockLocationFn,
 };

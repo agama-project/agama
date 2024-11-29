@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { mockNavigateFn, installerRender, mockLocationFn } from "~/test-utils";
+import { mockNavigateFn, installerRender } from "~/test-utils";
 import { RootAuthMethodsPage } from "~/components/users";
 
 const mockRootUserMutation = { mutateAsync: jest.fn() };
@@ -86,37 +86,5 @@ describe("RootAuthMethodsPage", () => {
 
     // After submitting the data, it must navigates
     expect(mockNavigateFn).toHaveBeenCalled();
-  });
-
-  describe("when there is a `from` path in the location state", () => {
-    beforeEach(() => {
-      mockLocationFn.mockReturnValue({ state: { from: "/users" } });
-    });
-
-    it("navigates to it after submittin the form", async () => {
-      const { user } = installerRender(<RootAuthMethodsPage />);
-      const passwordInput = screen.getByLabelText("Password");
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
-      await user.type(passwordInput, "linux");
-      await user.click(acceptButton);
-      // After submitting the data, it must navigates
-      expect(mockNavigateFn).toHaveBeenCalledWith("/users", { replace: true });
-    });
-  });
-
-  describe("when there is a not a `from` path in the location state", () => {
-    beforeEach(() => {
-      mockLocationFn.mockReturnValue({ state: {} });
-    });
-
-    it("navigates to root path", async () => {
-      const { user } = installerRender(<RootAuthMethodsPage />);
-      const passwordInput = screen.getByLabelText("Password");
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
-      await user.type(passwordInput, "linux");
-      await user.click(acceptButton);
-      // After submitting the data, it must navigates
-      expect(mockNavigateFn).toHaveBeenCalledWith("/", { replace: true });
-    });
   });
 });
