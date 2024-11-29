@@ -32,19 +32,20 @@ use std::process::Command;
 use tempfile::TempDir;
 use utoipa::ToSchema;
 
-const DEFAULT_COMMANDS: [(&str, &str); 3] = [
+const DEFAULT_COMMANDS: [(&str, &str); 6] = [
     // (<command to be executed>, <file name used for storing result of the command>)
     ("journalctl -u agama", "agama"),
     ("journalctl -u agama-auto", "agama-auto"),
+    ("journalctl -u agama-web-server", "agama-web-server"),
+    ("journalctl -u agama-dbus-monitor", "agama-dbus-monitor"),
     ("journalctl --dmesg", "dmesg"),
+    ("rpm -qa", "rpm-qa"),
 ];
 
 const DEFAULT_PATHS: [&str; 14] = [
     // logs
     "/var/log/YaST2",
     "/var/log/zypper.log",
-    "/var/log/zypper/history*",
-    "/var/log/zypper/pk_backend_zypp",
     "/var/log/pbl.log",
     "/var/log/linuxrc.log",
     "/var/log/wickedd.log",
@@ -52,10 +53,12 @@ const DEFAULT_PATHS: [&str; 14] = [
     "/var/log/messages",
     "/var/log/boot.msg",
     "/var/log/udev.log",
+    "/run/agama/dbus.log",
     // config
     "/etc/install.inf",
     "/etc/os-release",
     "/linuxrc.config",
+    "/.packages.root",
 ];
 
 const DEFAULT_RESULT: &str = "/run/agama/agama-logs";
@@ -141,14 +144,16 @@ impl LogItem for LogPath {
         fs::create_dir_all(dst_path)?;
 
         let options = CopyOptions::new();
-        // fs_extra's own Error doesn't implement From trait so ? operator is unusable
-        match copy_items(&[self.src_path.as_str()], dst_path, &options) {
-            Ok(_p) => Ok(()),
-            Err(_e) => Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Copying of a file failed",
-            )),
+
+        copy_items(&[self.src_path.as_str()], dst_path, &options)
+            .map_err(|_| io::Error::new(io::ErrorKind::Other, "Copying of a file failed"))?;
+
+        if let Some(name) = dst_file.file_name().and_then(|fname| fname.to_str()) {
+            let dst_name = name.trim_start_matches(".");
+            let _ = fs::rename(dst_file.clone(), dst_file.with_file_name(dst_name));
         }
+
+        Ok(())
     }
 }
 
@@ -172,11 +177,17 @@ impl LogItem for LogCmd {
         let output = Command::new(cmd_parts[0])
             .args(cmd_parts[1..].iter())
             .output()?;
-        let mut file_stdout = File::create(format!("{}.out.log", file_path.display()))?;
-        let mut file_stderr = File::create(format!("{}.err.log", file_path.display()))?;
 
-        file_stdout.write_all(&output.stdout)?;
-        file_stderr.write_all(&output.stderr)?;
+        if output.stdout.len() > 0 {
+            let mut file_stdout = File::create(format!("{}.out.log", file_path.display()))?;
+
+            file_stdout.write_all(&output.stdout)?;
+        }
+        if output.stderr.len() > 0 {
+            let mut file_stderr = File::create(format!("{}.err.log", file_path.display()))?;
+
+            file_stderr.write_all(&output.stderr)?;
+        }
 
         Ok(())
     }

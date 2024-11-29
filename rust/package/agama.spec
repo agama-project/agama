@@ -149,6 +149,7 @@ install -D -m 0644 %{_builddir}/agama/share/agama-web-server.service %{buildroot
 install -D -d -m 0755 %{buildroot}%{_libexecdir}
 install -D -m 0755 %{_builddir}/agama/share/agama-scripts.sh %{buildroot}%{_libexecdir}/agama-scripts.sh
 install -D -m 0644 %{_builddir}/agama/share/agama-scripts.service %{buildroot}%{_unitdir}/agama-scripts.service
+install -D -m 0644 %{_builddir}/agama/share/agama-dbus-monitor.service %{buildroot}%{_unitdir}/agama-dbus-monitor.service
 
 # install manpages
 mkdir -p %{buildroot}%{_mandir}/man1
@@ -174,24 +175,28 @@ echo $PATH
 
 %pre
 %service_add_pre agama-web-server.service
+%service_add_pre agama-dbus-monitor.service
 
 %pre -n agama-scripts
 %service_add_pre agama-scripts.service
 
 %post
 %service_add_post agama-web-server.service
+%service_add_post agama-dbus-monitor.service
 
 %post -n agama-scripts
 %service_add_post agama-scripts.service
 
 %preun
 %service_del_preun agama-web-server.service
+%service_del_preun agama-dbus-monitor.service
 
 %preun -n agama-scripts
 %service_del_preun agama-scripts.service
 
 %postun
 %service_del_postun_with_restart agama-web-server.service
+%service_del_postun_with_restart agama-dbus-monitor.service
 
 %postun -n agama-scripts
 %service_del_postun_with_restart agama-scripts.service
@@ -204,6 +209,7 @@ echo $PATH
 %{_datadir}/dbus-1/agama-services
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
+%{_unitdir}/agama-dbus-monitor.service
 
 %files -n agama-cli
 %{_bindir}/agama

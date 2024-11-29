@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Fri Nov 29 08:57:19 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- several improvements for CLI. agama logs store:
+  - collects logs of agama-web-server service
+  - collects list of installed packages (e.g. .packages.root or
+    rpm -qa)
+  - do not add into the archive empty files when log command
+    returns nothing
+  - do not explicitly set archive permissions on client side
+  - do not hide backend errors (e.g. in case of invalid auth token)
+- added service for monitoring Agama's D-Bus bus which stores
+  errors into a log.
+
+-------------------------------------------------------------------
 Thu Nov 28 15:58:59 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Drop the handler for the "po.js" path in the HTTP server,
