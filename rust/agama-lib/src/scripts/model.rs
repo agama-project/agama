@@ -325,8 +325,9 @@ impl ScriptRunner {
         Default::default()
     }
 
-    fn with_chroot(self, chroot: bool) -> Self {
-        Self { chroot }
+    fn with_chroot(mut self, chroot: bool) -> Self {
+        self.chroot = chroot;
+        self
     }
 
     fn run<P: AsRef<Path>>(&self, path: P) -> Result<(), ScriptError> {
