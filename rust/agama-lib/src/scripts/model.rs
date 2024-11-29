@@ -132,15 +132,28 @@ impl Script {
     pub fn run<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
         let path = workdir
             .as_ref()
-            .join(&self.group().to_string())
+            .join(self.group().to_string())
             .join(self.name());
-        let output = process::Command::new(&path).output()?;
+        let runner = match self {
+            Script::Pre(inner) => &inner.runner(),
+            Script::Post(inner) => &inner.runner(),
+            Script::Init(inner) => &inner.runner(),
+        };
 
-        fs::write(path.with_extension("log"), output.stdout)?;
-        fs::write(path.with_extension("err"), output.stderr)?;
-        fs::write(path.with_extension("out"), output.status.to_string())?;
+        let Some(runner) = runner else {
+            log::info!("No runner defined for script {:?}", &self);
+            return Ok(());
+        };
 
-        Ok(())
+        return runner.run(&path);
+    }
+}
+
+/// Trait to allow getting the runner for a script.
+trait WithRunner {
+    /// Returns the runner for the script if any.
+    fn runner(&self) -> Option<ScriptRunner> {
+        Some(ScriptRunner::default())
     }
 }
 
@@ -168,11 +181,15 @@ impl TryFrom<Script> for PreScript {
     }
 }
 
+impl WithRunner for PreScript {}
+
 /// Represents a script that runs after the installation finishes.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct PostScript {
     #[serde(flatten)]
     pub base: BaseScript,
+    /// Whether the script should be run in a chroot environment.
+    pub chroot: Option<bool>,
 }
 
 impl From<PostScript> for Script {
@@ -189,6 +206,12 @@ impl TryFrom<Script> for PostScript {
             Script::Post(inner) => Ok(inner),
             _ => Err(ScriptError::WrongScriptType),
         }
+    }
+}
+
+impl WithRunner for PostScript {
+    fn runner(&self) -> Option<ScriptRunner> {
+        Some(ScriptRunner::new().with_chroot(self.chroot.unwrap_or(false)))
     }
 }
 
@@ -214,6 +237,13 @@ impl TryFrom<Script> for InitScript {
             Script::Init(inner) => Ok(inner),
             _ => Err(ScriptError::WrongScriptType),
         }
+    }
+}
+
+impl WithRunner for InitScript {
+    /// Returns the runner for the script if any.
+    fn runner(&self) -> Option<ScriptRunner> {
+        None
     }
 }
 
@@ -282,6 +312,47 @@ impl Default for ScriptsRepository {
     }
 }
 
+/// Implements the logic to run a command.
+///
+/// At this point, it only supports running a command in a chroot environment. In the future, it
+/// might implement support for other features, like progress reporting (like AutoYaST does).
+struct ScriptRunner {
+    chroot: bool,
+}
+
+impl ScriptRunner {
+    fn new() -> Self {
+        Default::default()
+    }
+
+    fn with_chroot(self, chroot: bool) -> Self {
+        Self { chroot }
+    }
+
+    fn run<P: AsRef<Path>>(&self, path: P) -> Result<(), ScriptError> {
+        let path = path.as_ref();
+        let output = if self.chroot {
+            process::Command::new("chroot")
+                .args(["/mnt", &path.to_string_lossy()])
+                .output()?
+        } else {
+            process::Command::new(&path).output()?
+        };
+
+        fs::write(path.with_extension("log"), output.stdout)?;
+        fs::write(path.with_extension("err"), output.stderr)?;
+        fs::write(path.with_extension("out"), output.status.to_string())?;
+
+        Ok(())
+    }
+}
+
+impl Default for ScriptRunner {
+    fn default() -> Self {
+        Self { chroot: false }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use tempfile::TempDir;
@@ -307,6 +378,9 @@ mod test {
 
         let script = repo.scripts.first().unwrap();
         assert_eq!("test".to_string(), script.name());
+
+        let script_path = tmp_dir.path().join("pre").join("test");
+        assert!(script_path.exists());
     }
 
     #[test]
@@ -347,7 +421,7 @@ mod test {
             source: ScriptSource::Text { body },
         };
         let script = Script::Pre(PreScript { base });
-        repo.add(script).unwrap();
+        repo.add(script).expect("add the script to the repository");
 
         let script_path = tmp_dir.path().join("pre").join("test");
         assert!(script_path.exists());
