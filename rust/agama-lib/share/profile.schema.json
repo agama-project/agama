@@ -1460,7 +1460,8 @@
         },
         "chroot": {
           "title": "Whether it should run in the installed system using a chroot environment",
-          "description": "URL to fetch the script from"
+          "description": "whether to chroot to the target system (default: yes) or not",
+          "type": "boolean"
         }
       },
       "required": ["name"],
