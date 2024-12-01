@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Dec  1 17:14:04 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not crash in the InstallationFinished page when running an
+  unattended installation with an storage section defined in the
+  profile (gh#agama-project/agama#1793).
+
+-------------------------------------------------------------------
 Thu Nov 28 14:34:49 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Request a root authentication method after selecting a product
