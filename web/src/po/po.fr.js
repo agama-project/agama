@@ -151,8 +151,8 @@ export default {
   "Back": [
     "Retour"
   ],
-  "Before installing, please check the following problems.": [
-    "Avant de procéder à l'installation, veuillez vérifier les problèmes suivants."
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    ""
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Avant de démarrer l'installation, vous devez résoudre les problèmes suivants :"
@@ -539,9 +539,6 @@ export default {
   "Installation device": [
     "Périphérique d'installation"
   ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    ""
-  ],
   "Installation will configure partitions for booting at %s.": [
     "L'installation configurera les partitions pour amorçer à partir de %s."
   ],
@@ -733,6 +730,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Aucun des fuseaux horaires ne correspond au filtre."
+  ],
+  "Not possible with the current setup. Click to know more.": [
+    ""
   ],
   "Not selected yet": [
     "Pas encore sélectionnée"

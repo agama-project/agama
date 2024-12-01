@@ -187,8 +187,8 @@ export default {
   "Before %s": [
     "Före %s"
   ],
-  "Before installing, please check the following problems.": [
-    "Innan du installerar, vänligen kontrollera följande problem."
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    "Innan du installerar måste du fatta vissa beslut. Klicka på varje avsnitt för att granska inställningarna."
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Innan du startar installationen måste du åtgärda följande problem:"
@@ -627,17 +627,8 @@ export default {
   "Install using device %s without modifying existing partitions": [
     "Installera på enhet %s utan att ändra befintliga partitioner"
   ],
-  "Installation blocking issues": [
-    "Installationsblockerande problem"
-  ],
   "Installation device": [
     "Installationsenhet"
-  ],
-  "Installation issues": [
-    "Installationsproblem"
-  ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    "Installationen är inte möjlig ännu på grund av problem. Kontrollera dem på översikt sidan."
   ],
   "Installation will configure partitions for booting at %s.": [
     "Installationen kommer att konfigurera partitioner för uppstart på %s."
@@ -858,6 +849,9 @@ export default {
   "None of the time zones match the filter.": [
     "Inget av tidszonerna matchar filtret."
   ],
+  "Not possible with the current setup. Click to know more.": [
+    "Inte möjligt med den aktuella konfigurationen. Klicka för att veta mer."
+  ],
   "Not selected yet": [
     "Inte valt ännu"
   ],
@@ -968,6 +962,9 @@ export default {
   ],
   "Portal": [
     "Portal"
+  ],
+  "Pre-installation checks": [
+    "Förinstallationskontroller"
   ],
   "Prefix length or netmask": [
     "Prefix längd eller nätmask"

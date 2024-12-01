@@ -176,8 +176,8 @@ export default {
   "Before %s": [
     "До %s"
   ],
-  "Before installing, please check the following problems.": [
-    "Проверьте следующие проблемы перед установкой."
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    ""
   ],
   "Before starting the installation, you need to address the following problems:": [
     "До начала установки нужно устранить следующие проблемы:"
@@ -606,9 +606,6 @@ export default {
   "Installation device": [
     "Устройство для установки"
   ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    ""
-  ],
   "Installation will configure partitions for booting at %s.": [
     "Установка настроит разделы для загрузки по адресу %s."
   ],
@@ -815,6 +812,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Ни один из часовых поясов не соответствует фильтру."
+  ],
+  "Not possible with the current setup. Click to know more.": [
+    ""
   ],
   "Not selected yet": [
     "Ещё не выбрано"

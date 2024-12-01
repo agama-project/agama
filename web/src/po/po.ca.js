@@ -187,8 +187,8 @@ export default {
   "Before %s": [
     "Abans: %s"
   ],
-  "Before installing, please check the following problems.": [
-    "Abans d'instal·lar, comproveu els problemes següents."
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    "Abans d'instal·lar, heu de prendre algunes decisions. Cliqueu a cada secció per revisar-ne la configuració."
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
@@ -627,17 +627,8 @@ export default {
   "Install using device %s without modifying existing partitions": [
     "Instal·la al dispositiu %s sense modificar-ne les particions existents"
   ],
-  "Installation blocking issues": [
-    "Problemes de bloqueig de la instal·lació"
-  ],
   "Installation device": [
     "Dispositiu d'instal·lació"
-  ],
-  "Installation issues": [
-    "Problemes d'instal·lació"
-  ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    "La instal·lació encara no és possible a causa de problemes. Consulteu-los a la pàgina de resum general."
   ],
   "Installation will configure partitions for booting at %s.": [
     "La instal·lació configurarà les particions per arrencar a %s."
@@ -858,6 +849,9 @@ export default {
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
   ],
+  "Not possible with the current setup. Click to know more.": [
+    "No és possible amb la configuració actual. Feu clic per saber-ne més."
+  ],
   "Not selected yet": [
     "Encara no s'ha seleccionat."
   ],
@@ -968,6 +962,9 @@ export default {
   ],
   "Portal": [
     "Portal"
+  ],
+  "Pre-installation checks": [
+    "Comprovacions prèvies a la instal·lació"
   ],
   "Prefix length or netmask": [
     "Longitud del prefix o màscara de xarxa"
