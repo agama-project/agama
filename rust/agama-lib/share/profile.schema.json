@@ -18,7 +18,7 @@
           "description": "User-defined scripts to run before the installation starts",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/script"
+            "$ref": "#/$defs/preScript"
           }
         },
         "post": {
@@ -26,7 +26,7 @@
           "description": "User-defined scripts to run after the installation finishes",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/script"
+            "$ref": "#/$defs/postScript"
           }
         },
         "init": {
@@ -34,7 +34,7 @@
           "description": "User-defined scripts to run booting the installed system",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/script"
+            "$ref": "#/$defs/initScript"
           }
         }
       }
@@ -1418,8 +1418,57 @@
       "title": "Stripe size",
       "$ref": "#/$defs/sizeValue"
     },
-    "script": {
-      "title": "User-defined installation script",
+    "preScript": {
+      "title": "User-defined installation script that runs before the installation starts",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Script name, to be used as file name",
+          "type": "string"
+        },
+        "body": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang",
+          "type": "string"
+        },
+        "url": {
+          "title": "Script URL",
+          "description": "URL to fetch the script from"
+        }
+      },
+      "required": ["name"],
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+    },
+    "postScript": {
+      "title": "User-defined installation script that runs after the installation finishes",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Script name, to be used as file name",
+          "type": "string"
+        },
+        "body": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang",
+          "type": "string"
+        },
+        "url": {
+          "title": "Script URL",
+          "description": "URL to fetch the script from"
+        },
+        "chroot": {
+          "title": "Whether it should run in the installed system using a chroot environment",
+          "description": "whether to chroot to the target system (default: yes) or not",
+          "type": "boolean"
+        }
+      },
+      "required": ["name"],
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+    },
+    "initScript": {
+      "title": "User-defined installation script that runs during the first boot of the target system, once the installation is finished",
       "type": "object",
       "additionalProperties": false,
       "properties": {

@@ -188,8 +188,8 @@ export default {
   "Before %s": [
     "Před %s"
   ],
-  "Before installing, please check the following problems.": [
-    "Před instalací zkontrolujte tyto problémy."
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    ""
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Před zahájením instalace vyřešte tyto problémy:"
@@ -630,17 +630,8 @@ export default {
   "Install using device %s without modifying existing partitions": [
     "Instalace pomocí zařízení %s bez úpravy stávajících oddílů"
   ],
-  "Installation blocking issues": [
-    "Problémy zabraňující instalaci"
-  ],
   "Installation device": [
     "Instalační zařízení"
-  ],
-  "Installation issues": [
-    "Problémy s instalací"
-  ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    "Instalace zatím není možná kvůli problémům, které najdete na stránce Přehled."
   ],
   "Installation will configure partitions for booting at %s.": [
     "Instalace nakonfiguruje oddíly pro zavádění v %s."
@@ -860,6 +851,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Žádné z časových pásem neodpovídá filtru."
+  ],
+  "Not possible with the current setup. Click to know more.": [
+    ""
   ],
   "Not selected yet": [
     "Dosud nevybráno"

@@ -186,8 +186,8 @@ export default {
   "Before %s": [
     "変更前: %s"
   ],
-  "Before installing, please check the following problems.": [
-    "インストールを行う前に、下記の問題点をご確認ください。"
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    "インストールを行う前に、あらかじめいくつかの決定をしておかなければなりません。それぞれのセクションを押して設定内容をご確認ください。"
   ],
   "Before starting the installation, you need to address the following problems:": [
     "インストールを開始する前に、下記の問題に対応する必要があります:"
@@ -624,17 +624,8 @@ export default {
   "Install using device %s without modifying existing partitions": [
     "デバイス %s の既存パーティションを変更せずにインストールします"
   ],
-  "Installation blocking issues": [
-    "インストールを阻害する問題点"
-  ],
   "Installation device": [
     "インストール先のデバイス"
-  ],
-  "Installation issues": [
-    "インストールの問題点"
-  ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    "問題があるためインストールできません。概要ページで問題点をご確認ください。"
   ],
   "Installation will configure partitions for booting at %s.": [
     "インストール作業で %s に起動用のパーティションを設定します。"
@@ -855,6 +846,9 @@ export default {
   "None of the time zones match the filter.": [
     "フィルタに該当するタイムゾーンがありません。"
   ],
+  "Not possible with the current setup. Click to know more.": [
+    "現在の設定ではインストールできません。詳しく表示したい場合は、ここを押してください。"
+  ],
   "Not selected yet": [
     "まだ何も選択していません"
   ],
@@ -965,6 +959,9 @@ export default {
   ],
   "Portal": [
     "ポータル"
+  ],
+  "Pre-installation checks": [
+    "インストール前チェック"
   ],
   "Prefix length or netmask": [
     "プレフィクス長またはサブネットマスク"

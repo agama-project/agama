@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-11-26 02:49+0000\n"
 "PO-Revision-Date: 2024-10-29 12:48+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
-"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/sv/>\n"
+"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -305,7 +305,7 @@ msgstr[0] "Följande valda enhet hittades inte i systemet: %{devices}"
 msgstr[1] "Följande valda enheter hittades inte i systemet: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:148
+#: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""

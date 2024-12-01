@@ -187,8 +187,8 @@ export default {
   "Before %s": [
     "Önce %s"
   ],
-  "Before installing, please check the following problems.": [
-    "Kurulum yapmadan önce lütfen aşağıdaki sorunları kontrol edin."
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    ""
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
@@ -627,17 +627,8 @@ export default {
   "Install using device %s without modifying existing partitions": [
     "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin"
   ],
-  "Installation blocking issues": [
-    "Kurulum engelleme sorunları"
-  ],
   "Installation device": [
     "Kurulum cihazı"
-  ],
-  "Installation issues": [
-    "Kurulum sorunları"
-  ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    "Sorunlar nedeniyle kurulum henüz mümkün değil. Bunları Genel Bakış sayfasından kontrol edin."
   ],
   "Installation will configure partitions for booting at %s.": [
     "Kurulum, bölümleri %s konumunda önyükleme için yapılandıracaktır."
@@ -857,6 +848,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Hiçbir zaman dilimi filtreye uymuyor."
+  ],
+  "Not possible with the current setup. Click to know more.": [
+    ""
   ],
   "Not selected yet": [
     "Henüz seçilmedi"

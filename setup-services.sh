@@ -32,6 +32,7 @@ sudosed() {
 
 # if agama is already running -> stop it
 $SUDO systemctl list-unit-files agama.service &>/dev/null && $SUDO systemctl stop agama.service
+$SUDO systemctl list-unit-files agama-dbus-monitor.service &>/dev/null && $SUDO systemctl stop agama-dbus-monitor.service
 $SUDO systemctl list-unit-files agama-web-server.service &>/dev/null && $SUDO systemctl stop agama-web-server.service
 
 # Ruby services
@@ -189,6 +190,10 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
 
   $SUDO cp -f agama.pam /usr/lib/pam.d/agama
 )
+
+# copy D-Bus monitor service
+$SUDO cp -vf $MYDIR/service/share/agama-dbus-monitor.service /usr/lib/systemd/system/agama-dbus-monitor.service
+$SUDO chmod 0600 /usr/lib/systemd/system/agama-dbus-monitor.service
 
 # copy the product files
 $SUDO mkdir -p /usr/share/agama/products.d

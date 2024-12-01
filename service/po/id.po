@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-11-26 02:49+0000\n"
 "PO-Revision-Date: 2023-12-28 21:02+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -298,7 +298,7 @@ msgid_plural ""
 msgstr[0] ""
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:148
+#: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""

@@ -19,7 +19,6 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::base_http_client::BaseHTTPClient;
-use agama_lib::logs::set_archive_permissions;
 use agama_lib::manager::http_client::ManagerHTTPClient as HTTPClient;
 use clap::Subcommand;
 use std::io;
@@ -51,10 +50,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
             let result = client
                 .store(dst_file.as_path())
                 .await
-                .map_err(|_| anyhow::Error::msg("Downloading of logs failed"))?;
-
-            set_archive_permissions(result.clone())
-                .map_err(|_| anyhow::Error::msg("Cannot store the logs"))?;
+                .map_err(|e| anyhow::Error::new(e))?;
 
             println!("{}", result.clone().display());
 
