@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-11-26 02:49+0000\n"
 "PO-Revision-Date: 2024-08-29 19:47+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
@@ -311,7 +311,7 @@ msgstr[1] ""
 "Die folgenden ausgewählten Geräte werden im System nicht gefunden: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:148
+#: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""

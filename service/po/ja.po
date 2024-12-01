@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-11-26 02:49+0000\n"
 "PO-Revision-Date: 2024-10-30 00:48+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
-"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ja/>\n"
+"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -155,7 +155,8 @@ msgstr "'%s' に対するファイルシステムの種類が設定されてい�
 #: service/lib/agama/storage/config_checker.rb:145
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
-msgstr "ファイルシステムの種類 '%{filesystem}' は、 '%{path}' に対して不適切です"
+msgstr ""
+"ファイルシステムの種類 '%{filesystem}' は、 '%{path}' に対して不適切です"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -301,7 +302,7 @@ msgid_plural ""
 msgstr[0] "システム内には下記のデバイスが見つかりません: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:148
+#: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
