@@ -131,7 +131,6 @@ const configQuery = {
 
 const useConfig = () => {
   const { data } = useSuspenseQuery(configQuery);
-  console.log(data);
   return data;
 };
 
