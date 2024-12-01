@@ -187,8 +187,8 @@ export default {
   "Before %s": [
     "Antes %s"
   ],
-  "Before installing, please check the following problems.": [
-    "Antes de instalar, verifique los siguientes problemas."
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    ""
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Antes de comenzar la instalación, debe solucionar los siguientes problemas:"
@@ -627,17 +627,8 @@ export default {
   "Install using device %s without modifying existing partitions": [
     "Instalar utilizando el dispositivo %s sin modificar las particiones existentes"
   ],
-  "Installation blocking issues": [
-    "Problemas bloqueando la instalación"
-  ],
   "Installation device": [
     "Dispositivo de instalación"
-  ],
-  "Installation issues": [
-    "Problemas en la instalación"
-  ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    "Aún no es posible la instalación debido a problemas. Verifíquelos en la página de Descripción general."
   ],
   "Installation will configure partitions for booting at %s.": [
     "La instalación configurará las particiones para arrancar en %s."
@@ -857,6 +848,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Ninguna de las zonas horarias coincide con el filtro."
+  ],
+  "Not possible with the current setup. Click to know more.": [
+    ""
   ],
   "Not selected yet": [
     "Aún no seleccionado"

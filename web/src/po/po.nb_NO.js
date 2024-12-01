@@ -175,8 +175,8 @@ export default {
   "Before %s": [
     "Før %s"
   ],
-  "Before installing, please check the following problems.": [
-    "Før installasjon, vennligst sjekk følgende problemer."
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    ""
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Før du starter installasjonen, må du løse følgende problemer:"
@@ -600,9 +600,6 @@ export default {
   "Installation device": [
     "Installasjons enhet"
   ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    ""
-  ],
   "Installation will configure partitions for booting at %s.": [
     "Installasjonen vil konfigurere partisjoner for oppstart på %s."
   ],
@@ -809,6 +806,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Ingen av tidssonene passer sammen med filteret."
+  ],
+  "Not possible with the current setup. Click to know more.": [
+    ""
   ],
   "Not selected yet": [
     "Ikke valgt ennå"

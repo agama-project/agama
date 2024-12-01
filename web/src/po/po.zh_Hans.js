@@ -174,8 +174,8 @@ export default {
   "Before %s": [
     "变更前为 %s"
   ],
-  "Before installing, please check the following problems.": [
-    "进行安装之前，请检查下列问题。"
+  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
+    ""
   ],
   "Before starting the installation, you need to address the following problems:": [
     "在开始安装前，您需要解决下列问题："
@@ -594,9 +594,6 @@ export default {
   "Installation device": [
     "安装设备"
   ],
-  "Installation not possible yet because of issues. Check them at Overview page.": [
-    ""
-  ],
   "Installation will configure partitions for booting at %s.": [
     "安装程序将在 %s 上配置启动所需的分区。"
   ],
@@ -803,6 +800,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "没有符合过滤器的时区。"
+  ],
+  "Not possible with the current setup. Click to know more.": [
+    ""
   ],
   "Not selected yet": [
     "尚未选择"
