@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Dec  1 21:53:21 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Rename flag to set password as encrypted
+  (gh#agama-project/agama#1787).
+
+-------------------------------------------------------------------
 Thu Nov 28 15:58:59 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Drop the handler for the "po.js" path in the HTTP server,
