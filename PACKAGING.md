@@ -7,8 +7,8 @@ The Agama packages are available in the
 OBS project. These packages are automatically updated whenever the master branch is changed or when
 a new version is released.
 
-You can find more details the automatic OBS synchronization in the
-[obs_integration.md](doc/obs_integration.md) file.
+You can find more details the automatic OBS synchronization at
+[obs_integration.md](https://agama-project.github.io/docs/devel/obs_integration).
 
 The process to build each package is slightly different depending on the technology we are using.
 While the Ruby-based one (`rubygem-agama-yast`) is built as any other YaST package, the Agama server

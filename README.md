@@ -82,9 +82,9 @@ If you have troubles or you want to know more about this feature, check our
 ## Other Resources
 
 - If you want to know how Agama works, you should read about
-  [Agama's architecture](/doc/architecture.md)
+  [Agama's architecture](https://agama-project.github.io/docs/devel/architecture)
 - If you would like to [contribute](#how-to-contribute), you might be interested in:
-  - [Running Agama from sources](./doc/running.md).
+  - [Running Agama from sources](https://agama-project.github.io/docs/devel/running).
   - [Working with Agama's web server](./rust/WEB-SERVER.md).
   - [Working with Agama's web UI](./web/README.md).
 - You can check the overall status of the project through the [status page](/STATUS.md).
