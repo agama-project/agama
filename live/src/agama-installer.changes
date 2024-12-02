@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Dec  2 14:53:12 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Use the installation-images config file for removing the kernel
+  drivers, it deletes even more not needed drivers and it is
+  a reliable source (related to gh#agama-project/agama#1665)
+- The ISO size decreased by ~40MB
+
+-------------------------------------------------------------------
 Thu Nov 28 08:58:21 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Less aggressive kernel driver cleanup, keep the multimedia
