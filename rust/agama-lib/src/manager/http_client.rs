@@ -83,7 +83,7 @@ impl ManagerHTTPClient {
     /// Asks backend for lists of log files and commands used for creating logs archive returned by
     /// store (/logs/store) backed HTTP API command
     pub async fn list(&self) -> Result<LogsLists, ServiceError> {
-        Ok(self.client.get("/manager/logs/list").await?)
+        self.client.get("/manager/logs/list").await
     }
 
     /// Returns the installer status.

@@ -78,15 +78,13 @@ impl UsersStore {
             full_name: settings.full_name.clone().unwrap_or_default(),
             autologin: settings.autologin.unwrap_or_default(),
             password: settings.password.clone().unwrap_or_default(),
-            encrypted_password: settings.encrypted_password.clone().unwrap_or_default(),
-            ..Default::default()
+            encrypted_password: settings.encrypted_password.unwrap_or_default(),
         };
-        self.users_client.set_first_user(&first_user).await?;
-        Ok(())
+        self.users_client.set_first_user(&first_user).await
     }
 
     async fn store_root_user(&self, settings: &RootUserSettings) -> Result<(), ServiceError> {
-        let encrypted_password = settings.encrypted_password.clone().unwrap_or_default();
+        let encrypted_password = settings.encrypted_password.unwrap_or_default();
 
         if let Some(root_password) = &settings.password {
             self.users_client
