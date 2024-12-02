@@ -21,7 +21,8 @@
 //! This module implements the web API for the localization module.
 
 use super::{
-    error::LocaleError, keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, L10n,
+    error::LocaleError,
+    model::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, L10n},
 };
 use crate::{
     error::Error,
