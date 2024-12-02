@@ -119,6 +119,18 @@ module Agama
           JSON.pretty_generate(json)
         end
 
+        # Applies the given serialized config model according to the JSON schema.
+        #
+        # @param serialized_model [String] Serialized storage config model.
+        # @return [Integer] 0 success; 1 error
+        def apply_config_model(serialized_model)
+          logger.info("Setting storage config model from D-Bus: #{serialized_model}")
+
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          proposal.calculate_from_model(model_json)
+          proposal.success? ? 0 : 1
+        end
+
         # Gets and serializes the storage config model.
         #
         # @return [String]
@@ -148,6 +160,9 @@ module Agama
             busy_while { apply_config(serialized_config) }
           end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
+          dbus_method(:SetConfigModel, "in serialized_model:s, out result:u") do |serialized_model|
+            busy_while { apply_config_model(serialized_model) }
+          end
           dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }

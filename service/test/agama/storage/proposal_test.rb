@@ -692,6 +692,34 @@ describe Agama::Storage::Proposal do
     end
   end
 
+  describe "#calculate_from_model" do
+    let(:model_json) do
+      {
+        drives: [
+          {
+            name:       "/dev/vda",
+            filesystem: {
+              type: "xfs"
+            }
+          }
+        ]
+      }
+    end
+
+    it "calculates a proposal with the agama strategy and with the expected config" do
+      expect(subject).to receive(:calculate_agama) do |config|
+        expect(config).to be_a(Agama::Storage::Config)
+        expect(config.drives.size).to eq(1)
+
+        drive = config.drives.first
+        expect(drive.search.name).to eq("/dev/vda")
+        expect(drive.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::XFS)
+      end
+
+      subject.calculate_from_model(model_json)
+    end
+  end
+
   describe "#actions" do
     it "returns an empty list if calculate has not been called yet" do
       expect(subject.actions).to eq([])
