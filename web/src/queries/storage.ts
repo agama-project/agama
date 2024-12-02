@@ -29,6 +29,7 @@ import {
 } from "@tanstack/react-query";
 import React from "react";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
+import { fetchConfig } from "~/api/storage";
 import {
   calculate,
   fetchActions,
@@ -120,6 +121,16 @@ const useDevices = (
   const query = devicesQuery(scope);
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
+  return data;
+};
+
+const configQuery = {
+  queryKey: ["storage", "config"],
+  queryFn: fetchConfig,
+};
+
+const useConfig = () => {
+  const { data } = useSuspenseQuery(configQuery);
   return data;
 };
 
@@ -349,6 +360,7 @@ const useDeprecatedChanges = () => {
 };
 
 export {
+  useConfig,
   useDevices,
   useAvailableDevices,
   useProductParams,

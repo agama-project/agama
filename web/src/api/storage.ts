@@ -23,6 +23,7 @@
 import { get, post } from "~/api/http";
 import { Job } from "~/types/job";
 import { calculate, fetchSettings } from "~/api/storage/proposal";
+import { config } from "~/api/storage/types";
 
 /**
  * Starts the storage probing process.
@@ -32,6 +33,9 @@ import { calculate, fetchSettings } from "~/api/storage/proposal";
 const probe = (): Promise<any> => post("/api/storage/probe");
 
 export { probe };
+
+const fetchConfig = (): Promise<config.Config | undefined> =>
+  get("/api/storage/config").then((config) => config.storage);
 
 /**
  * Returns the list of jobs
@@ -57,4 +61,4 @@ const refresh = async (): Promise<void> => {
   await calculate(settings);
 };
 
-export { fetchStorageJobs, findStorageJob, refresh };
+export { fetchConfig, fetchStorageJobs, findStorageJob, refresh };
