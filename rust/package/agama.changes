@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Dec  2 11:29:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Upgrade rustc dependency to version 1.81 because it is needed by
+  zbus 5 (gh#agama-project/agama#1797).
+
+-------------------------------------------------------------------
 Sun Dec  1 21:53:21 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Rename flag to set password as encrypted
