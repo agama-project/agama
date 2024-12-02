@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Dec  1 21:53:21 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Rename flag to set password as encrypted
+  (gh#agama-project/agama#1787).
+
+-------------------------------------------------------------------
 Fri Nov 29 12:14:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for running user-defined post-scripts in a chroot

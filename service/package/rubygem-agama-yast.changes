@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Dec  1 21:59:11 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Rename flag to set password as encrypted
+  (gh#agama-project/agama#1787).
+
+-------------------------------------------------------------------
 Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Allow using encrypted password for root and the first user

@@ -45,8 +45,9 @@ import { useProduct } from "~/queries/software";
 import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
+import { Route } from "~/types/routes";
 import { InstallButton, InstallerOptions } from "~/components/core";
-import { useLocation } from "react-router-dom";
+import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
 
 export type HeaderProps = {
@@ -127,6 +128,10 @@ export default function Header({
   const location = useLocation();
   const { selectedProduct } = useProduct();
   const { phase } = useInstallerStatus({ suspense: true });
+  const routeMatches = useMatches() as Route[];
+  const currentRoute = routeMatches.at(-1);
+  // TODO: translate title
+  const title = (showProductName && selectedProduct?.name) || currentRoute?.handle?.title;
 
   const showInstallerOptions =
     phase !== InstallationPhase.Install &&
@@ -146,9 +151,7 @@ export default function Header({
           </PageToggleButton>
         </MastheadToggle>
       )}
-      <MastheadMain>
-        {showProductName && <MastheadBrand component="h1">{selectedProduct.name}</MastheadBrand>}
-      </MastheadMain>
+      <MastheadMain>{title && <MastheadBrand component="h1">{title}</MastheadBrand>}</MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>

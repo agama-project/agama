@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 28 14:34:49 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Request a root authentication method after selecting a product
+  (gh#agama-project#agama#1787).
+
+-------------------------------------------------------------------
 Tue Nov 26 09:30:09 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Use dynamic imports for loading the translation files

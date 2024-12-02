@@ -27,6 +27,7 @@ import App from "./App";
 import { InstallationPhase } from "./types/status";
 import { createClient } from "~/client";
 import { Product } from "./types/software";
+import { RootUser } from "./types/users";
 
 jest.mock("~/client");
 
@@ -45,6 +46,7 @@ const microos: Product = { id: "Leap Micro", name: "openSUSE Micro" };
 // list of available products
 let mockProducts: Product[];
 let mockSelectedProduct: Product;
+let mockRootUser: RootUser;
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -65,12 +67,17 @@ jest.mock("~/queries/l10n", () => ({
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
   useIssuesChanges: () => jest.fn(),
-  useAllIssues: () => ({ isEmtpy: true }),
+  useAllIssues: () => ({ isEmpty: true }),
 }));
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useDeprecatedChanges: () => jest.fn(),
+}));
+
+jest.mock("~/queries/users", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useRootUser: () => mockRootUser,
 }));
 
 const mockClientStatus = {
@@ -104,6 +111,7 @@ describe("App", () => {
     });
 
     mockProducts = [tumbleweed, microos];
+    mockRootUser = { password: true, encryptedPassword: false, sshkey: "FAKE-SSH-KEY" };
   });
 
   afterEach(() => {
@@ -156,14 +164,47 @@ describe("App", () => {
         mockClientStatus.isBusy = false;
       });
 
-      it("renders the application content", async () => {
-        installerRender(<App />, { withL10n: true });
-        await screen.findByText(/Outlet Content/);
+      describe("when there are no authentication method for root user", () => {
+        beforeEach(() => {
+          mockRootUser = { password: false, encryptedPassword: false, sshkey: "" };
+        });
+
+        it("redirects to root user edition", async () => {
+          installerRender(<App />, { withL10n: true });
+          await screen.findByText("Navigating to /users/root/edit");
+        });
+      });
+
+      describe("when only root password is set", () => {
+        beforeEach(() => {
+          mockRootUser = { password: true, encryptedPassword: false, sshkey: "" };
+        });
+        it("renders the application content", async () => {
+          installerRender(<App />, { withL10n: true });
+          await screen.findByText(/Outlet Content/);
+        });
+      });
+
+      describe("when only root SSH public key is set", () => {
+        beforeEach(() => {
+          mockRootUser = { password: false, encryptedPassword: false, sshkey: "FAKE-SSH-KEY" };
+        });
+        it("renders the application content", async () => {
+          installerRender(<App />, { withL10n: true });
+          await screen.findByText(/Outlet Content/);
+        });
+      });
+
+      describe("when root password and SSH public key are set", () => {
+        it("renders the application content", async () => {
+          installerRender(<App />, { withL10n: true });
+          await screen.findByText(/Outlet Content/);
+        });
       });
     });
   });
 
-  describe("on the busy installaiton phase", () => {
+  describe("on the busy installation phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
       mockClientStatus.isBusy = true;
@@ -176,7 +217,7 @@ describe("App", () => {
     });
   });
 
-  describe("on the idle installaiton phase", () => {
+  describe("on the idle installation phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
       mockClientStatus.isBusy = false;

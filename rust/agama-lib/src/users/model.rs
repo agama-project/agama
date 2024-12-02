@@ -36,5 +36,5 @@ pub struct RootPatchSettings {
     /// empty string here means remove password for root
     pub password: Option<String>,
     /// specify if patched password is provided in encrypted form
-    pub password_encrypted: Option<bool>,
+    pub encrypted_password: Option<bool>,
 }

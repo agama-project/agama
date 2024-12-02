@@ -46,7 +46,7 @@ module Agama
           "password" => user.password.value.to_s
         }
 
-        hsh["passwordEncrypted"] = true if user.password.value.encrypted?
+        hsh["encryptedPassword"] = true if user.password.value.encrypted?
 
         { "user" => hsh }
       end

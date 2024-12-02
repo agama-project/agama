@@ -97,3 +97,9 @@ button.remove-link:hover {
     --pf-v5-c-notification-drawer__list-item--before--BackgroundColor: none;
   }
 }
+
+form#rootAuthMethods {
+  .pf-v5-c-file-upload__file-select {
+    display: none;
+  }
+}
