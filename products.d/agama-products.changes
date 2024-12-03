@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec  3 11:22:09 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Temporarily disable adjusting swap to RAM size for all products
+  (mitigation for gh#agama-project/agama/#1159).
+
+-------------------------------------------------------------------
 Tue Nov 12 08:19:51 UTC 2024 - Gustavo Yokoyama Ribeiro <gyribeiro@suse.com>
 
 - Add SLES for SAP Application product for SLE based products
