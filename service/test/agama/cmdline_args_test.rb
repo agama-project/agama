@@ -42,8 +42,9 @@ describe Agama::CmdlineArgs do
       expect(args.data["web"]).to eql({ "ssl" => true })
     end
 
-    it "converts keys that contain another dots after 'agama.' to hash value and using first value as key" do
+    it "converts keys with dots after 'agama.' to hash" do
       args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      # here fixture has agama.web.ssl=true and result is this hash
       expect(args.data["web"]).to eq({ "ssl" => true })
     end
 
