@@ -339,7 +339,7 @@ module Agama
       # rubocop:disable Metrics/AbcSize
       def add_service(service)
         # init repos, so we are sure we operate on "/" and have GPG imported
-        initialize_target_repos
+        initialize_target
         # save repositories before refreshing added services (otherwise
         # pkg-bindings will treat them as removed by the service refresh and
         # unload them)
