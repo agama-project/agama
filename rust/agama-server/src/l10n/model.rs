@@ -28,10 +28,18 @@ use agama_locale_data::{KeymapId, LocaleId};
 use regex::Regex;
 use subprocess::{Popen, PopenConfig, PopenError, Redirection};
 
-use super::keyboard::KeymapsDatabase;
-use super::locale::LocalesDatabase;
-use super::timezone::TimezonesDatabase;
+pub mod keyboard;
+pub mod locale;
+pub mod timezone;
+
+pub use keyboard::Keymap;
+pub use locale::LocaleEntry;
+pub use timezone::TimezoneEntry;
+
 use super::{helpers, LocaleError};
+use keyboard::KeymapsDatabase;
+use locale::LocalesDatabase;
+use timezone::TimezonesDatabase;
 
 pub struct L10n {
     pub timezone: String,

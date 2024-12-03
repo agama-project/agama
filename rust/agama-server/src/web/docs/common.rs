@@ -30,13 +30,14 @@ use utoipa::openapi::{
 };
 
 /// Implements a builder for the issues API documentation.
+#[derive(Default)]
 pub struct IssuesApiDocBuilder {
     paths: Vec<(String, PathItem)>,
 }
 
 impl IssuesApiDocBuilder {
     pub fn new() -> Self {
-        Self { paths: vec![] }
+        Default::default()
     }
 
     /// Adds a new issues API path.
@@ -47,7 +48,7 @@ impl IssuesApiDocBuilder {
     pub fn add(self, path: &str, summary: &str, operation_id: &str) -> Self {
         let mut paths = self.paths;
         paths.push((path.to_string(), Self::issues_path(summary, operation_id)));
-        Self { paths, ..self }
+        Self { paths }
     }
 
     fn issues_path(summary: &'_ str, operation_id: &'_ str) -> PathItem {

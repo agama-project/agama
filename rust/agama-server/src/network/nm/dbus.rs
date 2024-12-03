@@ -518,7 +518,6 @@ fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BridgeConfig
         hello_time: get_optional_property(bridge, "hello-time")?,
         max_age: get_optional_property(bridge, "max-age")?,
         ageing_time: get_optional_property(bridge, "ageing-time")?,
-        ..Default::default()
     }))
 }
 
@@ -545,7 +544,6 @@ fn bridge_port_config_from_dbus(
     Ok(Some(BridgePortConfig {
         priority: get_optional_property(bridge_port, "priority")?,
         path_cost: get_optional_property(bridge_port, "path_cost")?,
-        ..Default::default()
     }))
 }
 
@@ -614,7 +612,6 @@ fn tun_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<TunConfig>, NmE
         mode,
         group: get_optional_property(tun, "group")?,
         owner: get_optional_property(tun, "owner")?,
-        ..Default::default()
     }))
 }
 
@@ -1329,7 +1326,7 @@ mod test {
                 metric: Some(100)
             }]
         );
-        assert_eq!(connection.autoconnect, false);
+        assert!(!connection.autoconnect);
 
         Ok(())
     }
@@ -1574,7 +1571,6 @@ mod test {
             pairwise_algorithms: vec![PairwiseAlgorithm::Tkip, PairwiseAlgorithm::Ccmp],
             wpa_protocol_versions: vec![WPAProtocolVersion::Wpa],
             pmf: 1,
-            ..Default::default()
         };
         let mut wireless = build_base_connection();
         wireless.config = ConnectionConfig::Wireless(config);
@@ -1933,7 +1929,7 @@ mod test {
             .unwrap()
             .downcast_ref()
             .unwrap();
-        assert_eq!(autoconnect, false);
+        assert!(!autoconnect);
 
         let ethernet_connection = conn_dbus.get(ETHERNET_KEY).unwrap();
         let mac_address: &str = ethernet_connection
