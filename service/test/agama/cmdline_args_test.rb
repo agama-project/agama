@@ -29,8 +29,27 @@ describe Agama::CmdlineArgs do
   describe ".read_from" do
     it "reads the kernel command line options and return a CmdlineArgs object" do
       args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
-      expect(args.data).to eql("web" => { "ssl" => true })
+      expect(args.data["auto"]).to eq("http://mydomain.org/tumbleweed.jsonnet")
+    end
+
+    it "sets #config_url if specified on cmdline" do
+      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
       expect(args.config_url).to eql("http://example.org/agama.yaml")
+    end
+
+    it "converts 'true' and  'false' values into booleans" do
+      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      expect(args.data["web"]).to eql({ "ssl" => true })
+    end
+
+    it "converts keys that contain another dots after 'agama.' to hash value and using first value as key" do
+      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      expect(args.data["web"]).to eq({ "ssl" => true })
+    end
+
+    it "properly parse values that contain '='" do
+      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      expect(args.data["install_url"]).to eq("cd:/?devices=/dev/sr1")
     end
   end
 end
