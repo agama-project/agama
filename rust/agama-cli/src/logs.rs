@@ -47,10 +47,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
             let dst_file = parse_destination(destination)?;
-            let result = client
-                .store(dst_file.as_path())
-                .await
-                .map_err(|e| anyhow::Error::new(e))?;
+            let result = client.store(dst_file.as_path()).await?;
 
             println!("{}", result.clone().display());
 
@@ -83,9 +80,9 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
 /// * destination
 ///     - if None then a default is returned
 ///     - if a path to a directory then a default file name for the archive will be appended to the
-///     path
+///       path
 ///     - if path with a file name then it is used as is for resulting archive, just extension will
-///     be appended later on (depends on used compression)
+///       be appended later on (depends on used compression)
 fn parse_destination(destination: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let err = io::Error::new(io::ErrorKind::InvalidInput, "Invalid destination path");
     let mut buffer = destination.unwrap_or(PathBuf::from(format!(

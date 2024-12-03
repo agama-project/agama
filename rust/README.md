@@ -1,6 +1,7 @@
 # Agama Server
 
-According to [Agama's architecture](../doc/architecture.md) this project implements the following components:
+According to [Agama's architecture](https://agama-project.github.io/docs/devel/architecture)
+this project implements the following components:
 
 * The *Agama server*, excluding *Agama YaST* which lives in the [service](../service) directory.
 * The *Agama D-Bus service*.

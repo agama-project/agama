@@ -178,12 +178,12 @@ impl LogItem for LogCmd {
             .args(cmd_parts[1..].iter())
             .output()?;
 
-        if output.stdout.len() > 0 {
+        if !output.stdout.is_empty() {
             let mut file_stdout = File::create(format!("{}.out.log", file_path.display()))?;
 
             file_stdout.write_all(&output.stdout)?;
         }
-        if output.stderr.len() > 0 {
+        if !output.stderr.is_empty() {
             let mut file_stderr = File::create(format!("{}.err.log", file_path.display()))?;
 
             file_stderr.write_all(&output.stderr)?;
