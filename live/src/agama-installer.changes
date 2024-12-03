@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
 Tue Dec  3 12:41:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Remove unneeded xf86 video packages because they are obsoleted
-  by the nomodesetting driver (gh#agama-project/agama#1805).
+- Drop unneeded packages (gh#agama-project/agama#1805):
+  - xf86-video-* are obsoleted by the modesetting driver.
+  - xf86-input-wacom is obsoleted by libinput.
 
 -------------------------------------------------------------------
 Mon Dec  2 14:53:12 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
