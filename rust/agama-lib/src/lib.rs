@@ -35,11 +35,11 @@
 //! Each of those modules contains, at least:
 //!
 //! * A settings model: it is a representation of the installation settings for the given topic. It
-//! is expected to implement the [serde::Serialize], [serde::Deserialize] and
-//! [agama_settings::settings::Settings] traits.
+//!   is expected to implement the [serde::Serialize], [serde::Deserialize] and
+//!   [agama_settings::settings::Settings] traits.
 //! * A store: it is the responsible for reading/writing the settings to the service. Usually, it
-//! relies on a D-Bus client for communicating with the service, although it could implement that
-//! logic itself. Note: we are considering defining a trait for stores too.
+//!   relies on a D-Bus client for communicating with the service, although it could implement that
+//!   logic itself. Note: we are considering defining a trait for stores too.
 //!
 //! As said, those modules might implement additional stuff, like specific types, clients, etc.
 

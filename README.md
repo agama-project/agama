@@ -67,8 +67,9 @@ might want to access remotely to the installer. If you know the IP address of th
 need to point your browser to `https://$IP`.
 
 For the case you do not know the address, or just for convenience, the Live ISO is configured to use
-mDNS (sometimes called Avahi, Zeroconf, Bonjour) for hostname resolution. Therefore, connecting to
-`https://agama.local` should do the trick.
+[Multicast DNS](https://en.wikipedia.org/wiki/Multicast_DNS) (sometimes called mDNS, Avahi,
+Zeroconf, Bonjour) for hostname resolution. Therefore, connecting to `https://agama.local` should do
+the trick.
 
 > [!WARNING]
 > Do not use the `.local` hostnames in untrusted networks (like public WiFi networks, shared
@@ -76,8 +77,8 @@ mDNS (sometimes called Avahi, Zeroconf, Bonjour) for hostname resolution. Theref
 > hostname resolutions and point you to a wrong Agama instance which could for example steal your
 > root password!
 
-If you have troubles or you want to know more about this feature, check our
-[Avahi/mDNS](./doc/avahi.md) documentation.
+If you have troubles or you want to know more about this feature, check our [Remote
+access](https://agama-project.github.io/docs/user/remote) documentation.
 
 ## Other Resources
 

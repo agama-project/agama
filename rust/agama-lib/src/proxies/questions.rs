@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod questions;
-pub use questions::QuestionsProxy;
+mod base;
+pub use base::QuestionsProxy;
 
 mod generic;
 pub use generic::GenericProxy as GenericQuestionProxy;

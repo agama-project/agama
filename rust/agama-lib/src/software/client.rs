@@ -191,9 +191,8 @@ impl<'a> SoftwareClient<'a> {
         resolvables: &[&str],
         optional: bool,
     ) -> Result<(), ServiceError> {
-        let names: Vec<_> = resolvables.iter().map(|r| r.as_ref()).collect();
         self.proposal_proxy
-            .set_resolvables(id, r#type as u8, &names, optional)
+            .set_resolvables(id, r#type as u8, resolvables, optional)
             .await?;
         Ok(())
     }

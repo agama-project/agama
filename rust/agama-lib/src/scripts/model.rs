@@ -53,7 +53,7 @@ pub struct BaseScript {
 impl BaseScript {
     fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
         let script_path = workdir.as_ref().join(&self.name);
-        std::fs::create_dir_all(&script_path.parent().unwrap())?;
+        std::fs::create_dir_all(script_path.parent().unwrap())?;
 
         let mut file = fs::OpenOptions::new()
             .create(true)
@@ -109,7 +109,7 @@ impl Script {
     ///
     /// The name of the script depends on the work directory and the script's group.
     pub fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
-        let path = workdir.as_ref().join(&self.group().to_string());
+        let path = workdir.as_ref().join(self.group().to_string());
         self.base().write(&path)
     }
 
@@ -145,7 +145,7 @@ impl Script {
             return Ok(());
         };
 
-        return runner.run(&path);
+        runner.run(&path)
     }
 }
 
@@ -316,6 +316,7 @@ impl Default for ScriptsRepository {
 ///
 /// At this point, it only supports running a command in a chroot environment. In the future, it
 /// might implement support for other features, like progress reporting (like AutoYaST does).
+#[derive(Default)]
 struct ScriptRunner {
     chroot: bool,
 }
@@ -337,7 +338,7 @@ impl ScriptRunner {
                 .args(["/mnt", &path.to_string_lossy()])
                 .output()?
         } else {
-            process::Command::new(&path).output()?
+            process::Command::new(path).output()?
         };
 
         fs::write(path.with_extension("log"), output.stdout)?;
@@ -345,12 +346,6 @@ impl ScriptRunner {
         fs::write(path.with_extension("out"), output.status.to_string())?;
 
         Ok(())
-    }
-}
-
-impl Default for ScriptRunner {
-    fn default() -> Self {
-        Self { chroot: false }
     }
 }
 

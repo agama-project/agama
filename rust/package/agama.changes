@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec  3 12:58:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not refer to the agama-dbus-monitor because it is part of the
+  Ruby package (gh#agama-project/agama#1805).
+
+-------------------------------------------------------------------
 Mon Dec  2 11:29:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Upgrade rustc dependency to version 1.81 because it is needed by

@@ -87,17 +87,12 @@ fn validate(path: &PathBuf) -> anyhow::Result<()> {
         .context(format!("Could not validate the profile {:?}", path))?;
     match result {
         ValidationResult::Valid => {
-            println!(
-                "{} {}",
-                style("\u{2713}").bold().green(),
-                "The profile is valid."
-            );
+            println!("{} The profile is valid.", style("\u{2713}").bold().green(),);
         }
         ValidationResult::NotValid(errors) => {
             eprintln!(
-                "{} {}",
+                "{} The profile is not valid. Please, check the following errors:\n",
                 style("\u{2717}").bold().red(),
-                "The profile is not valid. Please, check the following errors:\n"
             );
             for error in errors {
                 println!("\t* {error}")
