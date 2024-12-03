@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec  3 13:00:58 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Include the agama-dbus-monitor package in the spec file
+  (gh#agama-project/agama#1805).
+
+-------------------------------------------------------------------
 Sun Dec  1 21:59:11 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Rename flag to set password as encrypted

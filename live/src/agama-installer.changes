@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Dec  3 12:41:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop unneeded packages (gh#agama-project/agama#1805):
+  - xf86-video-* are obsoleted by the modesetting driver.
+  - xf86-input-wacom is obsoleted by libinput.
+
+-------------------------------------------------------------------
 Mon Dec  2 14:53:12 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Use the installation-images config file for removing the kernel
@@ -65,13 +72,13 @@ Mon Sep 16 15:46:23 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 - Use $kiwi_iname instead of static agama-live reference in all of
   config-cdroom/* with exception of s390x, where for some reason
   we use SUSE Linux... string instead
-  
+
 
 -------------------------------------------------------------------
 Mon Sep  9 15:55:16 UTC 2024 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - Firefox: set browser.startup.homepage_override.mstone to ignore
-  (gh#openSUSE/agama#1593) 
+  (gh#openSUSE/agama#1593)
 
 -------------------------------------------------------------------
 Sun Sep  8 06:28:35 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
