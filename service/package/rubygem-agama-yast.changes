@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec  3 20:32:08 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix parsing agama.install_url that contain '='
+  (gh#agama-project/agama#1803)
+
+-------------------------------------------------------------------
 Sun Dec  1 21:59:11 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Rename flag to set password as encrypted
