@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Dec  3 16:43:08 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Convert AutoYaST scripts when importing an AutoYaST profile (gh#agama-project/agama#1800).
+
+-------------------------------------------------------------------
 Tue Dec  3 13:00:58 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Include the agama-dbus-monitor package in the spec file
