@@ -26,9 +26,8 @@ module Agama
   module AutoYaST
     # Builds the Agama "scripts" section from an AutoYaST profile.
     #
-    # Agama scripting support does not have a 1:1 mapping with AutoYaST scripts. When
-    #
-    # It performs the following transformations:
+    # Agama scripting support does not have a 1:1 mapping with AutoYaST scripts, so this reader
+    # performs the following transformations:
     #
     # - If a "chroot-scripts" section is defined, it creates a "post" section
     #   with the same scripts.
@@ -40,7 +39,7 @@ module Agama
     #
     # When it comes to scripts definition, not all the AutoYaST elements are supported. At this
     # point, only the "file_name", "location" and "source" options are processed. The rest
-    # ("notification", "debug", etc.) are not considered critical and are ignored by now..
+    # ("notification", "debug", etc.) are not considered critical and are ignored by now.
     class ScriptsReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)

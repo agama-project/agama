@@ -50,11 +50,9 @@ RSpec.shared_examples "a script reader" do |ay_section, section|
       }
     end
 
-    context "when the script definition includes the location" do
-      it "sets the \"body\" to the \"sources\"" do
-        scripts = subject.read["scripts"][section]
-        expect(scripts.first).to include("body" => "#!/bin/bash\necho 'Hello World!'")
-      end
+    it "sets the \"body\" to the \"sources\"" do
+      scripts = subject.read["scripts"][section]
+      expect(scripts.first).to include("body" => "#!/bin/bash\necho 'Hello World!'")
     end
   end
 end
