@@ -65,6 +65,7 @@ module Agama
           product.name = data[:name]
           product.version = data[:version]
           product.icon = attrs["icon"] if attrs["icon"]
+          product.registration = attrs["registration"] if attrs["registration"]
         end
       end
 

@@ -58,8 +58,9 @@ module Agama
               product.id,
               product.display_name,
               {
-                "description" => product.localized_description,
-                "icon"        => product.icon
+                "description"  => product.localized_description,
+                "icon"         => product.icon,
+                "registration" => product.registration
               }
             ]
           end
