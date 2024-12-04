@@ -30,8 +30,7 @@ Yast.import "Arch"
 module Agama
   # Handles everything related to registration of system to SCC, RMT or similar.
   class Registration
-
-    # Note: identical and keep in sync with Software::Manager::TARGET_DIR
+    # NOTE: identical and keep in sync with Software::Manager::TARGET_DIR
     TARGET_DIR = "/run/agama/zypp"
     private_constant :TARGET_DIR
 
@@ -95,7 +94,8 @@ module Agama
       # if service require specific credentials file, store it
       @credentials_file = credentials_from_url(@service.url)
       if @credentials_file
-        SUSE::Connect::YaST.create_credentials_file(login, password, File.join(TARGET_DIR, @credentials_file))
+        SUSE::Connect::YaST.create_credentials_file(login, password,
+          File.join(TARGET_DIR, @credentials_file))
       end
       Y2Packager::NewRepositorySetup.instance.add_service(@service.name)
       @software.add_service(@service)
