@@ -78,5 +78,17 @@ type Pattern = {
   selectedBy?: SelectedBy;
 };
 
+type RegistrationInfo = {
+  key: string;
+  email?: string;
+};
+
 export { SelectedBy };
-export type { Pattern, PatternsSelection, Product, SoftwareConfig, SoftwareProposal };
+export type {
+  Pattern,
+  PatternsSelection,
+  Product,
+  SoftwareConfig,
+  RegistrationInfo,
+  SoftwareProposal,
+};

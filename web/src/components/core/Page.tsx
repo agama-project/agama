@@ -40,6 +40,7 @@ import {
   TitleProps,
 } from "@patternfly/react-core";
 import { Flex } from "~/components/layout";
+import { ProductRegistrationAlert } from "~/components/product";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
@@ -279,9 +280,12 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
  */
 const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => (
-  <PageSection isFilled component="div" {...pageSectionProps}>
-    {children}
-  </PageSection>
+  <>
+    <ProductRegistrationAlert />
+    <PageSection isFilled component="div" {...pageSectionProps}>
+      {children}
+    </PageSection>
+  </>
 );
 
 /**

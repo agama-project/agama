@@ -39,6 +39,10 @@ const PRODUCT = {
   progress: "/products/progress",
 };
 
+const REGISTRATION = {
+  root: "/registration",
+};
+
 const ROOT = {
   root: "/",
   login: "/login",
@@ -78,4 +82,13 @@ const STORAGE = {
   },
 };
 
-export { L10N, NETWORK, PRODUCT, ROOT, SOFTWARE, STORAGE, USER };
+const SUPPORTIVE_PATHS = [
+  ROOT.login,
+  PRODUCT.changeProduct,
+  PRODUCT.progress,
+  ROOT.installationProgress,
+  ROOT.installationFinished,
+  USER.rootUser.edit,
+];
+
+export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER, SUPPORTIVE_PATHS };

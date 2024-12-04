@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProductSelectionPage } from "./ProductSelectionPage";
-export { default as ProductSelectionProgress } from "./ProductSelectionProgress";
-export { default as ProductRegistrationPage } from "./ProductRegistrationPage";
-export { default as ProductRegistrationAlert } from "./ProductRegistrationAlert";
+import React from "react";
+import { ProductRegistrationPage } from "~/components/product";
+import { Route } from "~/types/routes";
+import { REGISTRATION as PATHS } from "~/routes/paths";
+import { N_ } from "~/i18n";
+
+const routes = (): Route => ({
+  path: PATHS.root,
+  handle: { name: N_("Registration"), icon: "app_registration", needsRegistrableProduct: true },
+  children: [
+    {
+      index: true,
+      element: <ProductRegistrationPage />,
+    },
+  ],
+});
+
+export default routes;
