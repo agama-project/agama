@@ -24,25 +24,77 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import Sidebar from "./Sidebar";
+import { Product } from "~/types/software";
+import { useProduct } from "~/queries/software";
 
 jest.mock("~/components/core/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
+
+const tw: Product = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  registration: "No",
+};
+
+const sle: Product = {
+  id: "sle",
+  name: "SLE",
+  registration: "Mandatory",
+};
+
+let selectedProduct: Product;
+
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
+  useProduct: (): ReturnType<typeof useProduct> => {
+    return {
+      products: [tw, sle],
+      selectedProduct,
+    };
+  },
+}));
 
 jest.mock("~/router", () => ({
   rootRoutes: () => [
     { path: "/", handle: { name: "Main" } },
     { path: "/l10n", handle: { name: "L10n" } },
     { path: "/hidden" },
+    {
+      path: "/registration",
+      handle: { name: "Registration", needsRegistrableProduct: true },
+    },
   ],
 }));
 
 describe("Sidebar", () => {
-  it("renders a navigation on top of root routes with handle object", () => {
-    installerRender(<Sidebar />);
-    const mainNavigation = screen.getByRole("navigation");
-    const mainNavigationLinks = within(mainNavigation).getAllByRole("link");
-    expect(mainNavigationLinks.length).toBe(2);
-    screen.getByRole("link", { name: "Main" });
-    screen.getByRole("link", { name: "L10n" });
+  describe("when product is registrable", () => {
+    beforeEach(() => {
+      selectedProduct = sle;
+    });
+
+    it("renders a navigation including all root routes with handle object", () => {
+      installerRender(<Sidebar />);
+      const mainNavigation = screen.getByRole("navigation");
+      const mainNavigationLinks = within(mainNavigation).getAllByRole("link");
+      expect(mainNavigationLinks.length).toBe(3);
+      screen.getByRole("link", { name: "Main" });
+      screen.getByRole("link", { name: "L10n" });
+      screen.getByRole("link", { name: "Registration" });
+    });
+  });
+
+  describe("when product is not registrable", () => {
+    beforeEach(() => {
+      selectedProduct = tw;
+    });
+
+    it("renders a navigation including all root routes with handle object, except ones set as needsRegistrableProduct", () => {
+      installerRender(<Sidebar />);
+      const mainNavigation = screen.getByRole("navigation");
+      const mainNavigationLinks = within(mainNavigation).getAllByRole("link");
+      expect(mainNavigationLinks.length).toBe(2);
+      screen.getByRole("link", { name: "Main" });
+      screen.getByRole("link", { name: "L10n" });
+    });
   });
 
   it("mounts core/ChangeProductLink component", () => {

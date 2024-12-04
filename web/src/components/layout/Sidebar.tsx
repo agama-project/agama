@@ -27,10 +27,14 @@ import { Icon } from "~/components/layout";
 import { ChangeProductLink } from "~/components/core";
 import { rootRoutes } from "~/router";
 import { _ } from "~/i18n";
+import { useProduct } from "~/queries/software";
 
 const MainNavigation = (): React.ReactNode => {
+  const { selectedProduct: product } = useProduct();
+
   const links = rootRoutes().map((r) => {
     if (!r.handle) return null;
+    if (r.handle.needsRegistrableProduct && product.registration === "No") return null;
 
     // eslint-disable-next-line agama-i18n/string-literals
     const name = _(r.handle.name);
