@@ -120,6 +120,7 @@ const RegistrationFormSection = () => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    // @ts-ignore
     register({ key, email }, { onError: onRegisterError, onSettled: () => setLoading(false) });
   };
 
