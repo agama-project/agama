@@ -23,20 +23,20 @@
 // @ts-check
 
 import { _, n_, formatList } from "~/i18n";
-import { DriveElement } from "~/api/storage/types";
+import { configModel } from "~/api/storage/types";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import * as partitionUtils from "~/components/storage/utils/partition";
 
 /**
  * String to identify the drive.
  */
-const label = (drive: DriveElement): string => {
+const label = (drive: configModel.Drive): string => {
   if (drive.alias) return drive.alias;
 
   return baseName(drive.name);
 };
 
-const spacePolicyEntry = (drive: DriveElement): SpacePolicy => {
+const spacePolicyEntry = (drive: configModel.Drive): SpacePolicy => {
   return SPACE_POLICIES.find((p) => p.id === drive.spacePolicy);
 };
 
