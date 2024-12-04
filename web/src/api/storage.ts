@@ -42,6 +42,8 @@ const setConfig = (config: config.Config) => put("/api/storage/config", { storag
 
 const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
 
+const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
+
 /**
  * Returns the list of jobs
  */
