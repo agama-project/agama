@@ -40,6 +40,8 @@ const fetchConfigModel = (): Promise<configModel.Config | undefined> =>
 
 const setConfig = (config: config.Config) => put("/api/storage/config", config);
 
+const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
+
 /**
  * Returns the list of jobs
  */
@@ -69,6 +71,7 @@ export {
   fetchConfig,
   fetchConfigModel,
   setConfig,
+  setConfigModel,
   fetchStorageJobs,
   findStorageJob,
   refresh,

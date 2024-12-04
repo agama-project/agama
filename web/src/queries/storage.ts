@@ -28,7 +28,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import React from "react";
-import { fetchConfig, fetchConfigModel, setConfig } from "~/api/storage";
+import { fetchConfig, setConfig } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import {
   calculate,
@@ -40,7 +40,6 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import {
   config,
-  configModel,
   ProductParams,
   Volume as APIVolume,
   ProposalSettingsPatch,
@@ -58,12 +57,6 @@ import { QueryHookOptions } from "~/types/queries";
 const configQuery = {
   queryKey: ["storage", "config"],
   queryFn: fetchConfig,
-  staleTime: Infinity,
-};
-
-const configModelQuery = {
-  queryKey: ["storage", "configModel"],
-  queryFn: fetchConfigModel,
   staleTime: Infinity,
 };
 
@@ -122,16 +115,6 @@ const buildVolume = (
  */
 const useConfig = (options?: QueryHookOptions): config.Config => {
   const query = configQuery;
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func(query);
-  return data;
-};
-
-/**
- * Hook that returns the config model.
- */
-const useConfigModel = (options?: QueryHookOptions): configModel.Config => {
-  const query = configModelQuery;
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data;
@@ -334,7 +317,6 @@ const useDeprecatedChanges = () => {
 export {
   useConfig,
   useConfigMutation,
-  useConfigModel,
   useDevices,
   useAvailableDevices,
   useProductParams,
@@ -345,3 +327,5 @@ export {
   useDeprecated,
   useDeprecatedChanges,
 };
+
+export * from "~/queries/storage/config-model";
