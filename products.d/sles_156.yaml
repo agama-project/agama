@@ -1,6 +1,7 @@
 id: SLES
 name: SUSE Linux Enterprise Server 15.6
 registration: "mandatory"
+version: "15-6"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -60,7 +61,6 @@ software:
     - NetworkManager
   optional_packages: null
   base_product: SLES
-  version: "15-6"
 
 security:
   lsm: selinux

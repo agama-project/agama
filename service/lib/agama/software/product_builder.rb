@@ -66,6 +66,7 @@ module Agama
           product.version = data[:version]
           product.icon = attrs["icon"] if attrs["icon"]
           product.registration = attrs["registration"] if attrs["registration"]
+          product.version = attrs["version"] if attrs["version"]
         end
       end
 
@@ -99,7 +100,6 @@ module Agama
       def product_data_from_config(id)
         {
           name:               config.products.dig(id, "software", "base_product"),
-          version:            config.products.dig(id, "software", "version"),
           icon:               config.products.dig(id, "software", "icon"),
           labels:             config.arch_elements_from(
             id, "software", "installation_labels", property: :label
