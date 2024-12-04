@@ -63,7 +63,7 @@ pub struct RegistrationInfo {
 pub enum RegistrationRequirement {
     /// Product does not require registration
     #[default]
-    NotRequired = 0,
+    No = 0,
     /// Product has optional registration
     Optional = 1,
     /// It is mandatory to register the product

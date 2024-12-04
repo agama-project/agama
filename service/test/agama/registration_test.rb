@@ -346,7 +346,7 @@ describe Agama::Registration do
       let(:product) { nil }
 
       it "returns not required" do
-        expect(subject.requirement).to eq(Agama::Registration::Requirement::NOT_REQUIRED)
+        expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
       end
     end
 
@@ -359,7 +359,7 @@ describe Agama::Registration do
         let(:repositories) { ["https://repo"] }
 
         it "returns not required" do
-          expect(subject.requirement).to eq(Agama::Registration::Requirement::NOT_REQUIRED)
+          expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
         end
       end
 

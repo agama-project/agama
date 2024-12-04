@@ -178,7 +178,7 @@ module Agama
             [1, "Product not selected yet"]
           elsif backend.registration.reg_code
             [2, "Product already registered"]
-          elsif backend.registration.requirement == Agama::Registration::Requirement::NOT_REQUIRED
+          elsif backend.registration.requirement == Agama::Registration::Requirement::NO
             [3, "Product does not require registration"]
           else
             connect_result(first_error_code: 4) do

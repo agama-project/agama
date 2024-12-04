@@ -123,7 +123,7 @@ module Agama
         @optional_patterns = []
         # nil = display all visible patterns, [] = display no patterns
         @user_patterns = nil
-        @registration = Agama::Registration::Requirement::NOT_REQUIRED
+        @registration = Agama::Registration::Requirement::NO
         @translations = {}
       end
 
