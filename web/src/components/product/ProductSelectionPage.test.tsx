@@ -33,6 +33,7 @@ const tumbleweed: Product = {
   name: "openSUSE Tumbleweed",
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
+  registration: "No",
 };
 
 const microOs: Product = {
@@ -40,6 +41,7 @@ const microOs: Product = {
   name: "openSUSE MicroOS",
   icon: "microos.svg",
   description: "MicroOS description",
+  registration: "No",
 };
 
 jest.mock("~/queries/software", () => ({

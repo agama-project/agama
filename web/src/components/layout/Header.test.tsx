@@ -25,17 +25,20 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import Header from "./Header";
 import { InstallationPhase } from "~/types/status";
+import { Product } from "~/types/software";
 
-const tumbleweed = {
+const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   description: "Tumbleweed description...",
+  registration: "No",
 };
 
-const microos = {
+const microos: Product = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
   description: "MicroOS description",
+  registration: "No",
 };
 
 let phase: InstallationPhase;

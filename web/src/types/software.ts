@@ -41,6 +41,8 @@ type Product = {
   description?: string;
   /** Product icon (e.g., "default.svg") */
   icon?: string;
+  /** If product is registrable or not */
+  registration: string;
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };
