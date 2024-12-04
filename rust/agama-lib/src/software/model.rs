@@ -47,38 +47,27 @@ pub struct RegistrationInfo {
     pub key: String,
     /// Registration email. Empty value mean email not used or not registered.
     pub email: String,
-    /// if registration is required, optional or not needed for current product.
-    /// Change only if selected product is changed.
-    pub requirement: RegistrationRequirement,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(
+    Clone,
+    Default,
+    Debug,
+    Serialize,
+    Deserialize,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
 pub enum RegistrationRequirement {
     /// Product does not require registration
+    #[default]
     NotRequired = 0,
     /// Product has optional registration
     Optional = 1,
     /// It is mandatory to register the product
     Mandatory = 2,
-}
-
-impl TryFrom<u32> for RegistrationRequirement {
-    type Error = ();
-
-    fn try_from(v: u32) -> Result<Self, Self::Error> {
-        match v {
-            x if x == RegistrationRequirement::NotRequired as u32 => {
-                Ok(RegistrationRequirement::NotRequired)
-            }
-            x if x == RegistrationRequirement::Optional as u32 => {
-                Ok(RegistrationRequirement::Optional)
-            }
-            x if x == RegistrationRequirement::Mandatory as u32 => {
-                Ok(RegistrationRequirement::Mandatory)
-            }
-            _ => Err(()),
-        }
-    }
 }
 
 /// Software resolvable type (package or pattern).

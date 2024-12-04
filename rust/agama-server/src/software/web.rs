@@ -75,10 +75,6 @@ pub async fn software_streams(dbus: zbus::Connection) -> Result<EventStreams, Er
             Box::pin(product_changed_stream(dbus.clone()).await?),
         ),
         (
-            "registration_requirement_changed",
-            Box::pin(registration_requirement_changed_stream(dbus.clone()).await?),
-        ),
-        (
             "registration_code_changed",
             Box::pin(registration_code_changed_stream(dbus.clone()).await?),
         ),
@@ -128,27 +124,6 @@ async fn patterns_changed_stream(
             None
         })
         .filter_map(|e| e.map(|patterns| Event::SoftwareProposalChanged { patterns }));
-    Ok(stream)
-}
-
-async fn registration_requirement_changed_stream(
-    dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
-    // TODO: move registration requirement to product in dbus and so just one event will be needed.
-    let proxy = RegistrationProxy::new(&dbus).await?;
-    let stream = proxy
-        .receive_requirement_changed()
-        .await
-        .then(|change| async move {
-            if let Ok(id) = change.get().await {
-                // unwrap is safe as possible numbers is send by our controlled dbus
-                return Some(Event::RegistrationRequirementChanged {
-                    requirement: id.try_into().unwrap(),
-                });
-            }
-            None
-        })
-        .filter_map(|e| e);
     Ok(stream)
 }
 
@@ -269,7 +244,6 @@ async fn get_registration(
     let result = RegistrationInfo {
         key: state.product.registration_code().await?,
         email: state.product.email().await?,
-        requirement: state.product.registration_requirement().await?,
     };
     Ok(Json(result))
 }
