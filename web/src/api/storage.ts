@@ -38,7 +38,7 @@ const fetchConfig = (): Promise<config.Config | undefined> =>
 const fetchConfigModel = (): Promise<configModel.Config | undefined> =>
   get("/api/storage/config_model");
 
-const setConfig = (config: config.Config) => put("/api/storage/config", config);
+const setConfig = (config: config.Config) => put("/api/storage/config", { storage: config });
 
 const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
 
