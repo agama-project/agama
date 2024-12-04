@@ -118,13 +118,13 @@ describe Agama::Registration do
           before do
             allow(subject).to receive(:credentials_from_url)
               .with("https://credentials/file")
-              .and_return("/etc/zypp/credentials.d/product")
+              .and_return("productA")
           end
 
           it "creates the credentials file" do
             expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
             expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
-              .with("test-user", "12345", "/run/agama/zypp/etc/zypp/credentials.d/product")
+              .with("test-user", "12345", "/run/agama/zypp/etc/zypp/credentials.d/productA")
 
             subject.register("11112222", email: "test@test.com")
           end

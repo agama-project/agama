@@ -95,7 +95,7 @@ module Agama
       @credentials_file = credentials_from_url(@service.url)
       if @credentials_file
         SUSE::Connect::YaST.create_credentials_file(login, password,
-          File.join(TARGET_DIR, @credentials_file))
+          File.join(TARGET_DIR, credentials_path(@credentials_file)))
       end
       Y2Packager::NewRepositorySetup.instance.add_service(@service.name)
       @software.add_service(@service)
@@ -127,7 +127,7 @@ module Agama
       SUSE::Connect::YaST.deactivate_system(connect_params)
       FileUtils.rm(GLOBAL_CREDENTIALS_PATH) # connect does not remove it itself
       if @credentials_file
-        FileUtils.rm(credentials_path(File.join(TARGET_DIR, @credentials_file)))
+        FileUtils.rm(File.join(TARGET_DIR, credentials_path(@credentials_file)))
         @credentials_file = nil
       end
 
