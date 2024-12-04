@@ -52,7 +52,7 @@ Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the
 %{_datadir}/agama/products.d/tumbleweed.yaml
 %{_datadir}/agama/products.d/leap_160.yaml
 %{_datadir}/agama/products.d/slowroll.yaml
-%{_datadir}/agama/products.d/sles_160.yaml
+%{_datadir}/agama/products.d/sles_156.yaml
 
 %package sle
 Summary:        Definition of SLE products for the Agama installer.
@@ -66,7 +66,7 @@ Definition of SLE-based products (e.g., SUSE Linux Enterprise Server) for the Ag
 %license LICENSE
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
-%{_datadir}/agama/products.d/sles_156.yaml
+%{_datadir}/agama/products.d/sles_160.yaml
 %{_datadir}/agama/products.d/sles_sap_160.yaml
 
 %changelog
