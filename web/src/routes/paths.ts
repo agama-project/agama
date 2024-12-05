@@ -66,7 +66,7 @@ const STORAGE = {
   root: "/storage",
   targetDevice: "/storage/target-device",
   bootingPartition: "/storage/booting-partition",
-  spacePolicy: "/storage/space-policy",
+  spacePolicy: "/storage/space-policy/:id",
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
   zfcp: {

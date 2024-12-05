@@ -88,11 +88,16 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
   const onToggle = () => setIsOpen(!isOpen);
-  const onSpacePolicyChange = (spacePolicy: "keep" | "delete" | "resize") => {
-    setSpacePolicy(drive.name, spacePolicy);
-    setIsOpen(false);
+  const onSpacePolicyChange = (spacePolicy: "keep" | "delete" | "resize" | "custom") => {
+    if (spacePolicy === "custom") {
+      return navigate("/storage/space-policy/" + baseName(drive.name));
+    } else {
+      setSpacePolicy(drive.name, spacePolicy);
+      setIsOpen(false);
+    }
   };
 
   const currentPolicy = driveUtils.spacePolicyEntry(drive);

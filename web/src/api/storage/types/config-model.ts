@@ -53,7 +53,9 @@ export interface Partition {
   filesystem?: Filesystem;
   size?: Size;
   delete?: boolean;
+  // TODO: ignore
   deleteIfNeeded?: boolean;
+  // TODO: ignore
   resize?: boolean;
   resizeIfNeeded?: boolean;
 }
