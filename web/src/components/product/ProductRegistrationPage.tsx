@@ -165,7 +165,7 @@ export default function ProductRegistrationPage() {
   const registration = useRegistration();
 
   // TODO: render something meaningful instead? "Product not registrable"?
-  if (product.registration === "No") return;
+  if (product.registration === "no") return;
 
   return (
     <Page>
