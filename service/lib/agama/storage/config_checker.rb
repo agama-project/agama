@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/config"
+require "agama/storage/config_checkers/boot"
 require "agama/storage/config_checkers/drive"
 require "agama/storage/config_checkers/volume_group"
 require "agama/storage/config_checkers/volume_groups"
@@ -40,6 +41,7 @@ module Agama
       # @return [Array<Issue>]
       def issues
         [
+          boot_issues,
           drives_issues,
           volume_groups_issues
         ].flatten
@@ -52,6 +54,13 @@ module Agama
 
       # @return [Agama::Config]
       attr_reader :product_config
+
+      # Issues from boot config.
+      #
+      # @return [Array<Issue>]
+      def boot_issues
+        ConfigCheckers::Boot.new(storage_config, product_config).issues
+      end
 
       # Issues from drives.
       #

@@ -19,21 +19,39 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_checkers/boot"
-require "agama/storage/config_checkers/drive"
-require "agama/storage/config_checkers/encryption"
-require "agama/storage/config_checkers/filesystem"
-require "agama/storage/config_checkers/logical_volume"
-require "agama/storage/config_checkers/partition"
-require "agama/storage/config_checkers/physical_volumes_encryption"
-require "agama/storage/config_checkers/search"
-require "agama/storage/config_checkers/volume_group"
-require "agama/storage/config_checkers/volume_groups"
+require "agama/storage/config_checkers/base"
+require "yast/i18n"
 
 module Agama
   module Storage
-    # Name space for config checkers.
     module ConfigCheckers
+      # Class for checking the boot config.
+      class Boot < Base
+        include Yast::I18n
+
+        # Boot config issues.
+        #
+        # @return [Array<Issue>]
+        def issues
+          [missing_boot_device_issue].compact
+        end
+
+      private
+
+        # @return [Configs::Boot]
+        def boot
+          storage_config.boot
+        end
+
+        # @return [Issue, nil]
+        def missing_boot_device_issue
+          return unless boot.configure? && boot.device
+          return if storage_config.drives.any? { |d| d.alias == boot.device }
+
+          # TRANSLATORS: %s is the replaced by a device alias (e.g., "boot").
+          error(format(_("There is no boot device with alias '%s'"), boot.device))
+        end
+      end
     end
   end
 end
