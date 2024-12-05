@@ -24,7 +24,7 @@ import React from "react";
 import LocaleSelection from "./LocaleSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
-import { mockNavigateFn, plainRender } from "~/test-utils";
+import { mockNavigateFn, installerRender } from "~/test-utils";
 
 const locales = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
@@ -34,6 +34,10 @@ const locales = [
 const mockConfigMutation = {
   mutate: jest.fn(),
 };
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
 
 jest.mock("~/queries/l10n", () => ({
   ...jest.requireActual("~/queries/l10n"),
@@ -47,7 +51,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 it("allows changing the keyboard", async () => {
-  plainRender(<LocaleSelection />);
+  installerRender(<LocaleSelection />);
 
   const option = await screen.findByText("Spanish");
   await userEvent.click(option);

@@ -20,20 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-type Registration = {
-  /** Registration requirement (i.e., "not-required", "optional", "mandatory") */
-  requirement: "no" | "optional" | "mandatory";
-  /** Registration code, if any */
-  code?: string;
-  /** Registration email, if any */
-  email?: string;
-};
+import React from "react";
+import { ProductRegistrationPage } from "~/components/product";
+import { Route } from "~/types/routes";
+import { REGISTRATION as PATHS } from "~/routes/paths";
+import { N_ } from "~/i18n";
 
-type RegistrationFailure = {
-  /** @property {Number} id - ID of error */
-  id: number;
-  /** Failure message */
-  message: string;
-};
+const routes = (): Route => ({
+  path: PATHS.root,
+  handle: { name: N_("Registration"), icon: "app_registration", needsRegistrableProduct: true },
+  children: [
+    {
+      index: true,
+      element: <ProductRegistrationPage />,
+    },
+  ],
+});
 
-export type { Registration, RegistrationFailure };
+export default routes;

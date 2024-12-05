@@ -22,20 +22,23 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-
-import * as utils from "~/utils";
+import { installerRender } from "~/test-utils";
 import { ServerError } from "~/components/core";
+import * as utils from "~/utils";
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
 
 describe("ServerError", () => {
   it("includes a generic server problem message", () => {
-    plainRender(<ServerError />);
+    installerRender(<ServerError />);
     screen.getByText(/Cannot connect to Agama server/i);
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
     jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
-    const { user } = plainRender(<ServerError />);
+    const { user } = installerRender(<ServerError />);
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
     await user.click(reloadButton);
     expect(utils.locationReload).toHaveBeenCalled();

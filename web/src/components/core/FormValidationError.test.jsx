@@ -22,26 +22,30 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { FormValidationError } from "~/components/core";
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
+
 it("renders nothing when message is null", () => {
-  const { container } = plainRender(<FormValidationError message={null} />);
+  const { container } = installerRender(<FormValidationError message={null} />);
   expect(container).toBeEmptyDOMElement();
 });
 
 it("renders nothing when message is empty", () => {
-  const { container } = plainRender(<FormValidationError message="" />);
+  const { container } = installerRender(<FormValidationError message="" />);
   expect(container).toBeEmptyDOMElement();
 });
 
 it("renders nothing when message is not defined", () => {
-  const { container } = plainRender(<FormValidationError />);
+  const { container } = installerRender(<FormValidationError />);
   expect(container).toBeEmptyDOMElement();
 });
 
 it("renders a PatternFly error with given message", () => {
-  plainRender(<FormValidationError message="Invalid input" />);
+  installerRender(<FormValidationError message="Invalid input" />);
   const node = screen.getByText("Invalid input");
   expect(node.parentNode.classList.contains("pf-m-error")).toBe(true);
 });

@@ -90,7 +90,9 @@ describe Agama::Registration do
 
         it "creates credentials file" do
           expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
-            .with("test-user", "12345")
+            .with("test-user", "12345", "/etc/zypp/credentials.d/SCCcredentials")
+          # TODO: when fixing suse-connect read of fsroot
+          # .with("test-user", "12345", "/run/agama/zypp/etc/zypp/credentials.d/SCCcredentials")
 
           subject.register("11112222", email: "test@test.com")
         end
@@ -117,13 +119,14 @@ describe Agama::Registration do
 
           before do
             allow(subject).to receive(:credentials_from_url)
-              .with("https://credentials/file").and_return("credentials")
+              .with("https://credentials/file")
+              .and_return("productA")
           end
 
           it "creates the credentials file" do
             expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
             expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
-              .with("test-user", "12345", "credentials")
+              .with("test-user", "12345", "/run/agama/zypp/etc/zypp/credentials.d/productA")
 
             subject.register("11112222", email: "test@test.com")
           end
@@ -346,7 +349,7 @@ describe Agama::Registration do
       let(:product) { nil }
 
       it "returns not required" do
-        expect(subject.requirement).to eq(Agama::Registration::Requirement::NOT_REQUIRED)
+        expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
       end
     end
 
@@ -359,7 +362,7 @@ describe Agama::Registration do
         let(:repositories) { ["https://repo"] }
 
         it "returns not required" do
-          expect(subject.requirement).to eq(Agama::Registration::Requirement::NOT_REQUIRED)
+          expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
         end
       end
 
