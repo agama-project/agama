@@ -20,7 +20,7 @@ puts "Scanning kernel modules in #{dir}..."
 
 # find all symlinks until the final file is found, if a file is passed then the
 # file only is returned
-# @return Array<String> list of files/symlinks
+# @return [Array<String>] list of files/symlinks
 def symlinks(path, fw_dir)
   ret = [path]
 
