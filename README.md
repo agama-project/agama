@@ -96,3 +96,15 @@ If you want to contribute to Agama, then please open a pull request or report an
 get involved in [our discussions](https://github.com/openSUSE/agama/discussions).
 
 For more details, please read the [contributing](CONTRIBUTING.md) guidelines.
+
+### Translators
+
+Thank you for translating Agama to your language!
+
+If something is broken about the translations, see the detailed
+[Agama i18n workflow and internals][i18n] documentation.
+
+See also the [openSUSE Translation][trans-ml] mailing list and its archives.
+
+[i18n]: https://agama-project.github.io/docs/devel/i18n
+[trans-ml]: https://lists.opensuse.org/manage/lists/translation.lists.opensuse.org/
