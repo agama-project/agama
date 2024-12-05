@@ -1326,6 +1326,12 @@ export default {
   "Wires: %s": [
     "连线：%s"
   ],
+  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
+    ""
+  ],
+  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
+    ""
+  ],
   "Yes": [
     "是"
   ],

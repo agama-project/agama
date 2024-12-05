@@ -1026,6 +1026,9 @@ export default {
   "SSH Key": [
     "SSH nyckel"
   ],
+  "SSH public key": [
+    "SSH publik nyckel"
+  ],
   "SSID": [
     "SSID"
   ],
@@ -1091,6 +1094,9 @@ export default {
   ],
   "Set root SSH public key": [
     "Ställ in publik SSH nyckel för root"
+  ],
+  "Setup root user authentication": [
+    "Ställ in rootautentisering"
   ],
   "Show %d subvolume action": [
     "Visa %d undervolym åtgärd",
@@ -1402,8 +1408,17 @@ export default {
   "Wires: %s": [
     "Kablar: %s"
   ],
+  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
+    "Skriv, klistra in, släpp, eller %s en SSH publik nyckelfil i textområdet ovan."
+  ],
+  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
+    "Skriv, klistra in eller släpp en publik SSH-nyckel här. Du kan också ladda upp den genom att använda länken nedan."
+  ],
   "Yes": [
     "Ja"
+  ],
+  "You must define at least one authentication method for the root user. You can still edit them anytime before the installation.": [
+    "Du måste definiera minst en autentiseringsmetod för rootanvändaren. Du kan fortfarande redigera dem när som helst innan installationen."
   ],
   "ZFCP": [
     "ZFCP"
@@ -1452,6 +1467,9 @@ export default {
   ],
   "the presence of the file system for %s": [
     "närvaron av filsystemet för %s"
+  ],
+  "upload": [
+    "ladda upp"
   ],
   "user autologin": [
     "användare automatisk inloggning"
