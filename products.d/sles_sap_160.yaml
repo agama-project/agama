@@ -60,12 +60,23 @@ software:
 
   mandatory_patterns:
     - base_traditional
+    - sles_sap_enhanced_base
+    - sles_sap_base_sap_server
   optional_patterns: null # no optional pattern shared
-  user_patterns: []
+  user_patterns:
+    - sles_sap_DB
+    - sles_sap_HADB
+    - sles_sap_APP
+    - sles_sap_HAAPP
+    - sles_sap_trento_server
+    - sles_sap_trento_agent
+    - sles_sap_automation
+    - sles_sap_monitoring
+    - sles_sap_gui
   mandatory_packages:
     - NetworkManager
   optional_packages: null
-  base_product: SLES
+  base_product: SLES-SAP
 
 security:
   lsm: selinux
