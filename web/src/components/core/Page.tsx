@@ -44,8 +44,9 @@ import { ProductRegistrationAlert } from "~/components/product";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { To, useNavigate } from "react-router-dom";
+import { To, useLocation, useNavigate } from "react-router-dom";
 import { isEmpty, isObject } from "~/utils";
+import { REGISTRATION, SUPPORTIVE_PATHS } from "~/routes/paths";
 
 /**
  * Props accepted by Page.Section
@@ -279,14 +280,21 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  *
  * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
  */
-const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => (
-  <>
-    <ProductRegistrationAlert />
-    <PageSection isFilled component="div" {...pageSectionProps}>
-      {children}
-    </PageSection>
-  </>
-);
+const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
+  const location = useLocation();
+  const mountRegistrationAlert = ![...SUPPORTIVE_PATHS, REGISTRATION.root].includes(
+    location.pathname,
+  );
+
+  return (
+    <>
+      {mountRegistrationAlert && <ProductRegistrationAlert />}
+      <PageSection isFilled component="div" {...pageSectionProps}>
+        {children}
+      </PageSection>
+    </>
+  );
+};
 
 /**
  * Component for structuring an Agama page, built on top of PF/Page/PageGroup.
