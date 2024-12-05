@@ -30,7 +30,7 @@ module Agama
         attr_accessor :configure
         alias_method :configure?, :configure
 
-        # Device to use for booting.
+        # Alias of the device to use for booting.
         #
         # @return [String, nil] if nil, then the proposal decides the booting device, normally the
         #   device for allocating root.
