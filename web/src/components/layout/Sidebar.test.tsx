@@ -38,7 +38,7 @@ const tw: Product = {
 const sle: Product = {
   id: "sle",
   name: "SLE",
-  registration: "Mandatory",
+  registration: "mandatory",
 };
 
 let selectedProduct: Product;

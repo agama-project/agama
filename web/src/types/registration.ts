@@ -22,7 +22,7 @@
 
 type Registration = {
   /** Registration requirement (i.e., "not-required", "optional", "mandatory") */
-  requirement: string;
+  requirement: "no" | "optional" | "mandatory";
   /** Registration code, if any */
   code?: string;
   /** Registration email, if any */

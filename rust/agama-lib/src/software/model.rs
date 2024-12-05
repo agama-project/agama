@@ -60,6 +60,7 @@ pub struct RegistrationInfo {
     utoipa::ToSchema,
 )]
 #[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub enum RegistrationRequirement {
     /// Product does not require registration
     #[default]

@@ -42,7 +42,7 @@ type Product = {
   /** Product icon (e.g., "default.svg") */
   icon?: string;
   /** If product is registrable or not */
-  registration: string;
+  registration: "no" | "optional" | "mandatory";
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };
