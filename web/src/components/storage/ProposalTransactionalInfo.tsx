@@ -37,7 +37,7 @@ import { isTransactionalSystem } from "~/components/storage/utils";
  */
 export default function ProposalTransactionalInfo() {
   const { selectedProduct } = useProduct({ suspense: true });
-  const volumes = useVolumeTemplates({ suspense: true });
+  const volumes = useVolumeTemplates();
 
   if (!isTransactionalSystem(volumes)) return;
 

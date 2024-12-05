@@ -29,6 +29,7 @@ import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
 import { Action, StorageDevice } from "~/types/storage";
 import { ValidationError } from "~/types/issues";
+import { sprintf } from "sprintf-js";
 
 /**
  * @todo Create a component for rendering a customized skeleton

@@ -119,7 +119,6 @@ describe("SpaceActionsTable", () => {
   beforeEach(() => {
     props = {
       devices: [sda, sdb, sdc],
-      expandedDevices: [sda],
       deviceAction,
       onActionChange: jest.fn(),
     };
@@ -174,7 +173,7 @@ describe("SpaceActionsTable", () => {
 
     expect(props.onActionChange).toHaveBeenCalledWith({
       device: "/dev/sda1",
-      action: "force_delete",
+      action: "delete",
     });
   });
 
