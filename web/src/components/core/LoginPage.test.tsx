@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { LoginPage } from "~/components/core";
 import { AuthErrors } from "~/context/auth";
 
@@ -30,6 +30,10 @@ let consoleErrorSpy: jest.SpyInstance;
 let mockIsAuthenticated: boolean;
 let mockLoginError;
 const mockLoginFn = jest.fn();
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
 
 jest.mock("~/context/auth", () => ({
   ...jest.requireActual("~/context/auth"),
@@ -56,12 +60,12 @@ describe("LoginPage", () => {
 
   describe("when user is not authenticated", () => {
     it("renders reference to root", () => {
-      plainRender(<LoginPage />);
+      installerRender(<LoginPage />);
       screen.getAllByText(/root/);
     });
 
     it("allows entering a password", async () => {
-      const { user } = plainRender(<LoginPage />);
+      const { user } = installerRender(<LoginPage />);
       const form = screen.getByRole("form", { name: "Login form" });
       const passwordInput = within(form).getByLabelText("Password input");
       const loginButton = within(form).getByRole("button", { name: "Log in" });
@@ -79,7 +83,7 @@ describe("LoginPage", () => {
       });
 
       it("renders an authentication error", async () => {
-        const { user } = plainRender(<LoginPage />);
+        const { user } = installerRender(<LoginPage />);
         const form = screen.getByRole("form", { name: "Login form" });
         const passwordInput = within(form).getByLabelText("Password input");
         const loginButton = within(form).getByRole("button", { name: "Log in" });
@@ -100,7 +104,7 @@ describe("LoginPage", () => {
       });
 
       it("renders a server error text", async () => {
-        const { user } = plainRender(<LoginPage />);
+        const { user } = installerRender(<LoginPage />);
         const form = screen.getByRole("form", { name: "Login form" });
         const passwordInput = within(form).getByLabelText("Password input");
         const loginButton = within(form).getByRole("button", { name: "Log in" });

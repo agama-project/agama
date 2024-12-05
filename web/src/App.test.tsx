@@ -40,8 +40,8 @@ jest.mock("~/api/l10n", () => ({
   updateConfig: jest.fn(),
 }));
 
-const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: "No" };
-const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registration: "No" };
+const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: "no" };
+const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registration: "no" };
 
 // list of available products
 let mockProducts: Product[];

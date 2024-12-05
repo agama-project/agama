@@ -27,13 +27,17 @@ import { ProductSelectionPage } from "~/components/product";
 import { Product } from "~/types/software";
 import { useProduct } from "~/queries/software";
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
+
 const mockConfigMutation = jest.fn();
 const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
-  registration: "No",
+  registration: "no",
 };
 
 const microOs: Product = {
@@ -41,7 +45,7 @@ const microOs: Product = {
   name: "openSUSE MicroOS",
   icon: "microos.svg",
   description: "MicroOS description",
-  registration: "No",
+  registration: "no",
 };
 
 jest.mock("~/queries/software", () => ({
