@@ -31,13 +31,13 @@ module Agama
       module FromJSONConversions
         # Config conversion from JSON hash according to schema.
         class Config < Base
-          # @see Base#convert
-          # @return [Config]
-          def convert
-            super(Storage::Config.new)
-          end
-
         private
+
+          # @see Base
+          # @return [Config]
+          def default_config
+            Storage::Config.new
+          end
 
           # @see Base#conversions
           # @return [Hash]

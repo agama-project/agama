@@ -30,15 +30,15 @@ module Agama
       module FromJSONConversions
         # Volume group conversion from JSON hash according to schema.
         class VolumeGroup < Base
-          # @see Base#convert
-          # @return [Configs::VolumeGroup]
-          def convert
-            super(Configs::VolumeGroup.new)
-          end
-
         private
 
           alias_method :volume_group_json, :config_json
+
+          # @see Base
+          # @return [Configs::VolumeGroup]
+          def default_config
+            Configs::VolumeGroup.new
+          end
 
           # @see Base#conversions
           # @return [Hash]

@@ -28,6 +28,26 @@ module Agama
     module Configs
       # Section of the configuration representing a partition
       class Partition
+        # Partition config meaning "delete all partitions".
+        #
+        # @return [Configs::Partition]
+        def self.new_for_delete_all
+          new.tap do |config|
+            config.search = Configs::Search.new_for_search_all
+            config.delete = true
+          end
+        end
+
+        # Partition config meaning "shrink any partitions if needed".
+        #
+        # @return [Configs::Partition]
+        def self.new_for_shrink_any_if_needed
+          new.tap do |config|
+            config.search = Configs::Search.new_for_search_all
+            config.size = Configs::Size.new_for_shrink_if_needed
+          end
+        end
+
         include WithAlias
         include WithSearch
 
