@@ -501,7 +501,7 @@ describe Y2Storage::AgamaProposal do
         it "registers a critical issue" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /mandatory drive/,
+            description: "Mandatory drive not found",
             severity:    Agama::Issue::Severity::ERROR
           )
         end
@@ -590,7 +590,7 @@ describe Y2Storage::AgamaProposal do
         it "registers a critical issue" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /mandatory partition/,
+            description: "Mandatory partition not found",
             severity:    Agama::Issue::Severity::ERROR
           )
         end

@@ -182,7 +182,7 @@ describe Y2Storage::AgamaProposal do
           it "register an error and returns nil" do
             expect(proposal.propose).to be_nil
             expect(proposal.issues_list).to include an_object_having_attributes(
-              description: /mandatory partition/,
+              description: "Mandatory partition not found",
               severity:    Agama::Issue::Severity::ERROR
             )
           end
