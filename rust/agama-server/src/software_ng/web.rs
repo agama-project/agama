@@ -18,20 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod products;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+use agama_lib::{error::ServiceError, product::Product};
+use axum::{extract::State, routing::get, Json, Router};
 
-pub mod software_ng;
+use crate::error::Error;
+
+use super::backend::SoftwareServiceClient;
+
+#[derive(Clone)]
+struct SoftwareState {
+    client: SoftwareServiceClient,
+}
+
+pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, ServiceError> {
+    let state = SoftwareState { client };
+    let router = Router::new()
+        .route("/products", get(get_products))
+        .with_state(state);
+    Ok(router)
+}
+
+#[axum::debug_handler]
+async fn get_products(State(state): State<SoftwareState>) -> Result<Json<Vec<Product>>, Error> {
+    let products = state.client.get_products().await?;
+    Ok(Json(products))
+}
