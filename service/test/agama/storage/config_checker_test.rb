@@ -264,6 +264,75 @@ describe Agama::Storage::ConfigChecker do
 
     let(:scenario) { "disks.yaml" }
 
+    context "if the boot configuration is enabled" do
+      let(:config_json) do
+        {
+          boot:   {
+            configure: true,
+            device:    boot_device
+          },
+          drives: [
+            {
+              alias: "disk"
+            }
+          ]
+        }
+      end
+
+      context "and the given alias does not exist" do
+        let(:boot_device) { "foo" }
+
+        it "includes the expected issue" do
+          issues = subject.issues
+          expect(issues.size).to eq(1)
+
+          issue = issues.first
+          expect(issue.error?).to eq(true)
+          expect(issue.description).to eq("There is no boot device with alias 'foo'")
+        end
+      end
+
+      context "and the given alias exists" do
+        let(:boot_device) { "disk" }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
+      end
+    end
+
+    context "if the boot configuration is not enabled" do
+      let(:config_json) do
+        {
+          boot:   {
+            configure: false,
+            device:    boot_device
+          },
+          drives: [
+            {
+              alias: "disk"
+            }
+          ]
+        }
+      end
+
+      context "and the given alias does not exist" do
+        let(:boot_device) { "foo" }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
+      end
+
+      context "and the given alias exists" do
+        let(:boot_device) { "disk" }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
+      end
+    end
+
     context "if a drive has not found device" do
       let(:config_json) do
         {
