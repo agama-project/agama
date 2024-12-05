@@ -19,37 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/to_model_conversions/base"
+require "y2storage/partition_tables/type"
 
 module Agama
   module Storage
     module ConfigConversions
-      module ToModelConversions
-        # Size conversion to model according to the JSON schema.
-        class Size < Base
-          # @param config [Configs::Size]
-          def initialize(config)
-            super()
-            @config = config
-          end
+      module FromModelConversions
+        # Mixin for partition table type conversion.
+        module WithPtableType
+          # @return [Y2Storage::PartitionTables::Type, nil]
+          def convert_ptable_type
+            value = model_json[:ptableType]
+            return unless value
 
-        private
-
-          # @see Base#conversions
-          def conversions
-            {
-              default: config.default?,
-              min:     config.min&.to_i,
-              max:     convert_max_size
-            }
-          end
-
-          # @return [Integer, nil]
-          def convert_max_size
-            max = config.max
-            return if max.nil? || max.unlimited?
-
-            max.to_i
+            Y2Storage::PartitionTables::Type.find(value)
           end
         end
       end

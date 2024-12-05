@@ -114,7 +114,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let state = StorageState { client };
     let router = Router::new()
         .route("/config", put(set_config).get(get_config))
-        .route("/config_model", get(get_config_model))
+        .route("/config_model", put(set_config_model).get(get_config_model))
         .route("/probe", post(probe))
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
@@ -157,6 +157,32 @@ async fn get_config(State(state): State<StorageState<'_>>) -> Result<Json<Storag
     Ok(Json(settings))
 }
 
+/// Sets the storage configuration.
+///
+/// * `state`: service state.
+/// * `config`: storage configuration.
+#[utoipa::path(
+    put,
+    path = "/config",
+    context_path = "/api/storage",
+    operation_id = "set_storage_config",
+    responses(
+        (status = 200, description = "Set the storage configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn set_config(
+    State(state): State<StorageState<'_>>,
+    Json(settings): Json<StorageSettings>,
+) -> Result<Json<()>, Error> {
+    let _status: u32 = state
+        .client
+        .set_config(settings)
+        .await
+        .map_err(Error::Service)?;
+    Ok(Json(()))
+}
+
 /// Returns the storage config model.
 ///
 /// * `state` : service state.
@@ -181,27 +207,28 @@ async fn get_config_model(
     Ok(Json(config_model))
 }
 
-/// Sets the storage configuration.
+/// Sets the storage config model.
 ///
 /// * `state`: service state.
-/// * `config`: storage configuration.
+/// * `config_model`: storage config model.
 #[utoipa::path(
     put,
-    path = "/config",
+    request_body = String,
+    path = "/config_model",
     context_path = "/api/storage",
-    operation_id = "set_storage_config",
+    operation_id = "set_storage_config_model",
     responses(
-        (status = 200, description = "Set the storage configuration"),
+        (status = 200, description = "Set the storage config model"),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
-async fn set_config(
+async fn set_config_model(
     State(state): State<StorageState<'_>>,
-    Json(settings): Json<StorageSettings>,
+    Json(model): Json<Box<RawValue>>,
 ) -> Result<Json<()>, Error> {
     let _status: u32 = state
         .client
-        .set_config(settings)
+        .set_config_model(model)
         .await
         .map_err(Error::Service)?;
     Ok(Json(()))

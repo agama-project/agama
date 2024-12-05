@@ -33,21 +33,21 @@ module Agama
       module FromJSONConversions
         # Drive conversion from JSON hash according to schema.
         class Drive < Base
+        private
+
           include WithSearch
           include WithEncryption
           include WithFilesystem
           include WithPtableType
           include WithPartitions
 
-          # @see Base#convert
-          # @return [Configs::Drive]
-          def convert
-            super(Configs::Drive.new)
-          end
-
-        private
-
           alias_method :drive_json, :config_json
+
+          # @see Base
+          # @return [Configs::Drive]
+          def default_config
+            Configs::Drive.new
+          end
 
           # @see Base#conversions
           # @return [Hash]

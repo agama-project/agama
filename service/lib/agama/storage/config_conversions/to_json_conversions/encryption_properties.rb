@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_json_conversions/base"
-require "agama/storage/configs/encryption"
 
 module Agama
   module Storage
@@ -28,9 +27,10 @@ module Agama
       module ToJSONConversions
         # Encryption properties conversion to JSON hash according to schema.
         class EncryptionProperties < Base
-          # @see Base
-          def self.config_type
-            Configs::Encryption
+          # @param config [Configs::Encryption]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private

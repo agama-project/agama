@@ -19,37 +19,39 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/to_model_conversions/base"
+require "agama/storage/config_conversions/from_model_conversions/base"
+require "agama/storage/config_conversions/from_model_conversions/filesystem_type"
+require "agama/storage/configs/filesystem"
 
 module Agama
   module Storage
     module ConfigConversions
-      module ToModelConversions
-        # Size conversion to model according to the JSON schema.
-        class Size < Base
-          # @param config [Configs::Size]
-          def initialize(config)
-            super()
-            @config = config
-          end
-
+      module FromModelConversions
+        # Filesystem conversion from model according to the JSON schema.
+        class Filesystem < Base
         private
 
+          # @see Base
+          # @return [Configs::Filesystem]
+          def default_config
+            Configs::Filesystem.new
+          end
+
           # @see Base#conversions
+          # @return [Hash]
           def conversions
             {
-              default: config.default?,
-              min:     config.min&.to_i,
-              max:     convert_max_size
+              path: model_json[:mountPath],
+              type: convert_type
             }
           end
 
-          # @return [Integer, nil]
-          def convert_max_size
-            max = config.max
-            return if max.nil? || max.unlimited?
+          # @return [Configs::FilesystemType, nil]
+          def convert_type
+            filesystem_model = model_json[:filesystem]
+            return if filesystem_model.nil?
 
-            max.to_i
+            FromModelConversions::FilesystemType.new(filesystem_model).convert
           end
         end
       end

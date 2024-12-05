@@ -19,37 +19,56 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/to_model_conversions/base"
+require "agama/storage/config_conversions/from_model_conversions/base"
+require "agama/storage/configs/size"
+require "y2storage/disk_size"
 
 module Agama
   module Storage
     module ConfigConversions
-      module ToModelConversions
-        # Size conversion to model according to the JSON schema.
+      module FromModelConversions
+        # Size conversion from model according to the JSON schema.
         class Size < Base
-          # @param config [Configs::Size]
-          def initialize(config)
-            super()
-            @config = config
-          end
-
         private
 
+          alias_method :size_model, :model_json
+
+          # @see Base
+          # @return [Configs::Size]
+          def default_config
+            Configs::Size.new
+          end
+
           # @see Base#conversions
+          # @return [Hash]
           def conversions
             {
-              default: config.default?,
-              min:     config.min&.to_i,
+              default: size_model[:default],
+              min:     convert_min_size,
               max:     convert_max_size
             }
           end
 
-          # @return [Integer, nil]
-          def convert_max_size
-            max = config.max
-            return if max.nil? || max.unlimited?
+          # @return [Y2Storage::DiskSize, nil]
+          def convert_min_size
+            value = size_model[:min]
+            return unless value
 
-            max.to_i
+            disk_size(value)
+          end
+
+          # @return [Y2Storage::DiskSize]
+          def convert_max_size
+            value = size_model[:max]
+            return Y2Storage::DiskSize.unlimited unless value
+
+            disk_size(value)
+          end
+
+          # @param value [Integer]
+          # @return [Y2Storage::DiskSize]
+          def disk_size(value)
+            Y2Storage::DiskSize.new(value)
           end
         end
       end

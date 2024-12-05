@@ -19,38 +19,42 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/to_model_conversions/base"
-require "agama/storage/config_conversions/to_model_conversions/with_filesystem"
-require "agama/storage/config_conversions/to_model_conversions/with_partitions"
-require "agama/storage/config_conversions/to_model_conversions/with_space_policy"
+require "agama/storage/config_conversions/from_model_conversions/base"
+require "agama/storage/config_conversions/from_model_conversions/with_filesystem"
+require "agama/storage/config_conversions/from_model_conversions/with_partitions"
+require "agama/storage/config_conversions/from_model_conversions/with_ptable_type"
+require "agama/storage/config_conversions/from_model_conversions/with_search"
+require "agama/storage/configs/drive"
 
 module Agama
   module Storage
     module ConfigConversions
-      module ToModelConversions
-        # Drive conversion to model according to the JSON schema.
+      module FromModelConversions
+        # Drive conversion from model according to the JSON schema.
         class Drive < Base
-          include WithFilesystem
-          include WithPartitions
-          include WithSpacePolicy
-
-          # @param config [Configs::Drive]
-          def initialize(config)
-            super()
-            @config = config
-          end
-
         private
 
+          include WithFilesystem
+          include WithPtableType
+          include WithPartitions
+          include WithSearch
+
+          alias_method :drive_model, :model_json
+
+          # @see Base
+          # @return [Configs::Drive]
+          def default_config
+            Configs::Drive.new
+          end
+
           # @see Base#conversions
+          # @return [Hash]
           def conversions
             {
-              name:        config.found_device&.name,
-              alias:       config.alias,
-              mountPath:   config.filesystem&.path,
+              search:      convert_search,
+              alias:       drive_model[:alias],
               filesystem:  convert_filesystem,
-              spacePolicy: convert_space_policy,
-              ptableType:  config.ptable_type&.to_s,
+              ptable_type: convert_ptable_type,
               partitions:  convert_partitions
             }
           end

@@ -19,8 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/base"
-require "agama/storage/config_conversions/from_json_conversions/btrfs"
+require "agama/storage/config_conversions/from_model_conversions/base"
 require "agama/storage/configs/btrfs"
 require "agama/storage/configs/filesystem_type"
 require "y2storage/filesystems/type"
@@ -28,12 +27,12 @@ require "y2storage/filesystems/type"
 module Agama
   module Storage
     module ConfigConversions
-      module FromJSONConversions
-        # Filesystem type conversion from JSON hash according to schema.
+      module FromModelConversions
+        # Filesystem type conversion from model according to the JSON schema.
         class FilesystemType < Base
         private
 
-          alias_method :filesystem_type_json, :config_json
+          alias_method :filesystem_model, :model_json
 
           # @see Base
           # @return [Configs::FilesystemType]
@@ -45,7 +44,7 @@ module Agama
           # @return [Hash]
           def conversions
             {
-              default: false,
+              default: filesystem_model[:default],
               fs_type: convert_type,
               btrfs:   convert_btrfs
             }
@@ -53,18 +52,17 @@ module Agama
 
           # @return [Y2Storage::Filesystems::Type, nil]
           def convert_type
-            value = filesystem_type_json.is_a?(String) ? filesystem_type_json : "btrfs"
+            value = filesystem_model[:type]
+            return unless value
+
             Y2Storage::Filesystems::Type.find(value.to_sym)
           end
 
           # @return [Configs::Btrfs, nil]
           def convert_btrfs
-            return if filesystem_type_json.is_a?(String)
+            return unless filesystem_model[:type] == "btrfs"
 
-            btrfs_json = filesystem_type_json[:btrfs]
-            return unless btrfs_json
-
-            FromJSONConversions::Btrfs.new(btrfs_json).convert
+            Configs::Btrfs.new.tap { |c| c.snapshots = filesystem_model[:snapshots] }
           end
         end
       end

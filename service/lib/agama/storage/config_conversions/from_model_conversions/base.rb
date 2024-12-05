@@ -22,30 +22,42 @@
 module Agama
   module Storage
     module ConfigConversions
-      module ToJSONConversions
-        # Base class for conversions to JSON hash according to schema.
+      module FromModelConversions
+        # Base class for conversions from model according to the JSON schema.
         class Base
-          # Performs the conversion to Hash according to the JSON schema.
+          # @param model_json [Hash]
+          def initialize(model_json)
+            @model_json = model_json
+          end
+
+          # Performs the conversion from model according to the JSON schema.
           #
-          # @return [Hash, nil]
+          # @return [Object] A {Config} or any its configs from {Storage::Configs}.
           def convert
-            config_json = {}
+            config = default_config
 
             conversions.each do |property, value|
               next if value.nil?
 
-              config_json[property] = value
+              config.public_send("#{property}=", value)
             end
 
-            config_json.empty? ? nil : config_json
+            config
           end
 
         private
 
-          # @return [Object] See {#initialize}.
-          attr_reader :config
+          # @return [Hash]
+          attr_reader :model_json
 
-          # Values to generate the JSON.
+          # Default config object (defined by derived classes).
+          #
+          # @return [Object]
+          def default_config
+            raise "Undefined default config"
+          end
+
+          # Values to apply to the config.
           #
           # @return [Hash] e.g., { name: "/dev/vda" }.
           def conversions

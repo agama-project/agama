@@ -19,37 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/to_model_conversions/base"
+require "agama/storage/configs/search"
 
 module Agama
   module Storage
     module ConfigConversions
-      module ToModelConversions
-        # Size conversion to model according to the JSON schema.
-        class Size < Base
-          # @param config [Configs::Size]
-          def initialize(config)
-            super()
-            @config = config
-          end
+      module FromModelConversions
+        # Mixin for search conversion.
+        module WithSearch
+          # @return [Configs::Search, nil]
+          def convert_search
+            name = model_json[:name]
+            return unless name
 
-        private
-
-          # @see Base#conversions
-          def conversions
-            {
-              default: config.default?,
-              min:     config.min&.to_i,
-              max:     convert_max_size
-            }
-          end
-
-          # @return [Integer, nil]
-          def convert_max_size
-            max = config.max
-            return if max.nil? || max.unlimited?
-
-            max.to_i
+            Configs::Search.new.tap { |c| c.name = name }
           end
         end
       end

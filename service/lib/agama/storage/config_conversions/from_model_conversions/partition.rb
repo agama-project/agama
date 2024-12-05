@@ -19,24 +19,22 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/base"
-require "agama/storage/config_conversions/from_json_conversions/with_encryption"
-require "agama/storage/config_conversions/from_json_conversions/with_filesystem"
-require "agama/storage/config_conversions/from_json_conversions/with_search"
-require "agama/storage/config_conversions/from_json_conversions/with_size"
+require "agama/storage/config_conversions/from_model_conversions/base"
+require "agama/storage/config_conversions/from_model_conversions/with_filesystem"
+require "agama/storage/config_conversions/from_model_conversions/with_search"
+require "agama/storage/config_conversions/from_model_conversions/with_size"
 require "agama/storage/configs/partition"
 require "y2storage/partition_id"
 
 module Agama
   module Storage
     module ConfigConversions
-      module FromJSONConversions
-        # Partition conversion from JSON hash according to schema.
+      module FromModelConversions
+        # Partition conversion from model according to the JSON schema.
         class Partition < Base
         private
 
           include WithSearch
-          include WithEncryption
           include WithFilesystem
           include WithSize
 
@@ -46,26 +44,25 @@ module Agama
             Configs::Partition.new
           end
 
-          alias_method :partition_json, :config_json
+          alias_method :partition_model, :model_json
 
           # @see Base#conversions
           # @return [Hash]
           def conversions
             {
               search:           convert_search,
-              alias:            partition_json[:alias],
-              encryption:       convert_encryption,
+              alias:            partition_model[:alias],
               filesystem:       convert_filesystem,
               size:             convert_size,
               id:               convert_id,
-              delete:           partition_json[:delete],
-              delete_if_needed: partition_json[:deleteIfNeeded]
+              delete:           partition_model[:delete],
+              delete_if_needed: partition_model[:deleteIfNeeded]
             }
           end
 
           # @return [Y2Storage::PartitionId, nil]
           def convert_id
-            value = partition_json[:id]
+            value = partition_model[:id]
             return unless value
 
             Y2Storage::PartitionId.find(value)
