@@ -121,7 +121,7 @@ describe("Page", () => {
       });
 
       it("does not mount ProductRegistrationAlert", () => {
-        const { container } = installerRender(<Page.Content />);
+        installerRender(<Page.Content />);
         expect(screen.queryByText("ProductRegistrationAlertMock")).toBeNull();
       });
     });

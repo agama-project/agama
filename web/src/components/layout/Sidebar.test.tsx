@@ -32,7 +32,7 @@ jest.mock("~/components/core/ChangeProductLink", () => () => <div>ChangeProductL
 const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
-  registration: "No",
+  registration: "no",
 };
 
 const sle: Product = {
