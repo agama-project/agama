@@ -31,14 +31,14 @@ const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   description: "Tumbleweed description...",
-  registration: "No",
+  registration: "no",
 };
 
 const microos: Product = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
   description: "MicroOS description",
-  registration: "No",
+  registration: "no",
 };
 
 let phase: InstallationPhase;
