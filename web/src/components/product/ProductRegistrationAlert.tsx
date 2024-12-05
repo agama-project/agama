@@ -35,6 +35,8 @@ export default function ProductRegistrationAlert() {
   const { selectedProduct: product } = useProduct();
   const registration = useRegistration();
 
+  // NOTE: it shouldn't be mounted in these paths, but let's prevent rendering
+  // if so just in case.
   if ([...SUPPORTIVE_PATHS, REGISTRATION.root].includes(location.pathname)) return;
   if (product.registration === "No" || !isEmpty(registration.key)) return;
 
