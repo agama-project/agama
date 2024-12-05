@@ -1026,6 +1026,9 @@ export default {
   "SSH Key": [
     "Clau SSH"
   ],
+  "SSH public key": [
+    "Clau pública SSH"
+  ],
   "SSID": [
     "SSID"
   ],
@@ -1091,6 +1094,9 @@ export default {
   ],
   "Set root SSH public key": [
     "Estableix la clau pública SSH per a l'arrel"
+  ],
+  "Setup root user authentication": [
+    "Configura l'autenticació d'usuari d'arrel"
   ],
   "Show %d subvolume action": [
     "Mostra %d acció de subvolum",
@@ -1402,8 +1408,17 @@ export default {
   "Wires: %s": [
     "Cables: %s"
   ],
+  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
+    "Escriviu, enganxeu, deixeu anar o %s un fitxer de clau pública SSH a l'àrea de text anterior."
+  ],
+  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
+    "Escriviu, enganxeu o deixeu anar una clau pública SSH aquí. També podeu carregar-la mitjançant l'enllaç següent."
+  ],
   "Yes": [
     "Sí"
+  ],
+  "You must define at least one authentication method for the root user. You can still edit them anytime before the installation.": [
+    "Heu de definir almenys un mètode d'autenticació per a l'usuari d'arrel. Encara podreu editar-los en qualsevol moment abans de la instal·lació."
   ],
   "ZFCP": [
     "ZFCP"
@@ -1452,6 +1467,9 @@ export default {
   ],
   "the presence of the file system for %s": [
     "la presència del sistema de fitxers per a %s"
+  ],
+  "upload": [
+    "carregueu"
   ],
   "user autologin": [
     "entrada de sessió automàtica de l'usuari"
