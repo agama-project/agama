@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Dec  5 11:19:10 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing firmware for some drivers (gh#agama-project/agama#1756)
+  - Support wildcards ("*") in the references firmware files
+  - Handle symbolic links
+
+-------------------------------------------------------------------
 Tue Dec  3 12:41:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop unneeded packages (gh#agama-project/agama#1805):
