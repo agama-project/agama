@@ -18,20 +18,26 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod products;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+pub(crate) mod backend;
+pub(crate) mod web;
 
-pub mod software_ng;
+use std::sync::Arc;
+
+use axum::Router;
+use backend::SoftwareService;
+pub use backend::SoftwareServiceError;
+use tokio::sync::Mutex;
+
+use crate::{products::ProductsRegistry, web::EventsSender};
+
+pub async fn software_ng_service(
+    events: EventsSender,
+    products: Arc<Mutex<ProductsRegistry>>,
+) -> Router {
+    let client = SoftwareService::start(events, products)
+        .await
+        .expect("Could not start the software service.");
+    web::software_router(client)
+        .await
+        .expect("Could not build the software router.")
+}

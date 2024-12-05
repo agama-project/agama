@@ -120,6 +120,7 @@ impl ProductSpec {
 #[derive(Clone, Debug, Deserialize)]
 pub struct SoftwareSpec {
     pub installation_repositories: Vec<RepositorySpec>,
+    #[serde(default)]
     pub installation_labels: Vec<LabelSpec>,
     pub mandatory_patterns: Vec<String>,
     pub mandatory_packages: Vec<String>,
