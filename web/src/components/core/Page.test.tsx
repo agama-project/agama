@@ -22,11 +22,16 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn } from "~/test-utils";
+import { plainRender, mockNavigateFn, mockRoutes, installerRender } from "~/test-utils";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
+import { PRODUCT, ROOT, USER } from "~/routes/paths";
 
 let consoleErrorSpy: jest.SpyInstance;
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlertMock</div>
+));
 
 describe("Page", () => {
   beforeAll(() => {
@@ -93,9 +98,32 @@ describe("Page", () => {
 
   describe("Page.Content", () => {
     it("renders a node that fills all the available space", () => {
-      plainRender(<Page.Content>{_("The Content")}</Page.Content>);
+      installerRender(<Page.Content>{_("The Content")}</Page.Content>);
       const content = screen.getByText("The Content");
       expect(content.classList.contains("pf-m-fill")).toBe(true);
+    });
+
+    it("mounts a ProductRegistrationAlert", () => {
+      installerRender(<Page.Content />);
+      screen.getByText("ProductRegistrationAlertMock");
+    });
+
+    describe.each([
+      ["login", ROOT.login],
+      ["product selection", PRODUCT.changeProduct],
+      ["product selection progress", PRODUCT.progress],
+      ["installation progress", ROOT.installationProgress],
+      ["installation finished", ROOT.installationFinished],
+      ["root authentication", USER.rootUser.edit],
+    ])(`but at %s path`, (_, path) => {
+      beforeEach(() => {
+        mockRoutes(path);
+      });
+
+      it("does not mount ProductRegistrationAlert", () => {
+        const { container } = installerRender(<Page.Content />);
+        expect(screen.queryByText("ProductRegistrationAlertMock")).toBeNull();
+      });
     });
   });
 
