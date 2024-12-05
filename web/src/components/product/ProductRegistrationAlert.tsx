@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Alert, Flex } from "@patternfly/react-core";
+import { Alert } from "@patternfly/react-core";
 import { useLocation } from "react-router-dom";
 import { Link } from "~/components/core";
 import { useProduct, useRegistration } from "~/queries/software";
@@ -30,6 +30,18 @@ import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
+const LinkToRegistration = () => {
+  const location = useLocation();
+
+  if (location.pathname === REGISTRATION.root) return;
+
+  return (
+    <Link to={REGISTRATION.root} variant="primary">
+      {_("Register it now")}
+    </Link>
+  );
+};
+
 export default function ProductRegistrationAlert() {
   const location = useLocation();
   const { selectedProduct: product } = useProduct();
@@ -37,24 +49,12 @@ export default function ProductRegistrationAlert() {
 
   // NOTE: it shouldn't be mounted in these paths, but let's prevent rendering
   // if so just in case.
-  if ([...SUPPORTIVE_PATHS, REGISTRATION.root].includes(location.pathname)) return;
+  if (SUPPORTIVE_PATHS.includes(location.pathname)) return;
   if (product.registration === "no" || !isEmpty(registration.key)) return;
 
   return (
-    <Alert isInline variant="warning" title={_("Product must be registered")}>
-      <Flex direction={{ default: "column" }} alignItems={{ default: "alignItemsFlexStart" }}>
-        <p>
-          {sprintf(
-            _(
-              "%s has to be registered because <TODO: summarize reason and main implications of not doing so>",
-            ),
-            product.name,
-          )}
-        </p>
-        <Link to={REGISTRATION.root} variant="primary">
-          {_("Register it now")}
-        </Link>
-      </Flex>
+    <Alert isInline variant="warning" title={sprintf(_("%s must be registered."), product.name)}>
+      <LinkToRegistration />
     </Alert>
   );
 }
