@@ -18,20 +18,30 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod products;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+use agama_lib::product::Product;
+use tokio::sync::oneshot;
 
-pub mod software_ng;
+use super::{server::SoftwareAction, SoftwareActionSender, SoftwareServiceError};
+
+/// Client to interact with the software service.
+///
+/// It uses a channel to send the actions to the server. It can be cloned and used in different
+/// tasks if needed.
+#[derive(Clone)]
+pub struct SoftwareServiceClient {
+    actions: SoftwareActionSender,
+}
+
+impl SoftwareServiceClient {
+    /// Creates a new client.
+    pub fn new(actions: SoftwareActionSender) -> Self {
+        Self { actions }
+    }
+
+    /// Returns the list of known products.
+    pub async fn get_products(&self) -> Result<Vec<Product>, SoftwareServiceError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(SoftwareAction::GetProducts(tx))?;
+        Ok(rx.await?)
+    }
+}
