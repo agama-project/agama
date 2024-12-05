@@ -38,7 +38,7 @@ export default function ProductRegistrationAlert() {
   // NOTE: it shouldn't be mounted in these paths, but let's prevent rendering
   // if so just in case.
   if ([...SUPPORTIVE_PATHS, REGISTRATION.root].includes(location.pathname)) return;
-  if (product.registration === "No" || !isEmpty(registration.key)) return;
+  if (product.registration === "no" || !isEmpty(registration.key)) return;
 
   return (
     <Alert isInline variant="warning" title={_("Product must be registered")}>
