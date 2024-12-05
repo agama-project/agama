@@ -90,7 +90,9 @@ describe Agama::Registration do
 
         it "creates credentials file" do
           expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
-            .with("test-user", "12345", "/run/agama/zypp/etc/zypp/credentials.d/SCCcredentials")
+            .with("test-user", "12345", "/etc/zypp/credentials.d/SCCcredentials")
+          # TODO: when fixing suse-connect read of fsroot
+          # .with("test-user", "12345", "/run/agama/zypp/etc/zypp/credentials.d/SCCcredentials")
 
           subject.register("11112222", email: "test@test.com")
         end

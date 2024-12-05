@@ -34,7 +34,9 @@ module Agama
     TARGET_DIR = "/run/agama/zypp"
     private_constant :TARGET_DIR
 
-    GLOBAL_CREDENTIALS_PATH = File.join(TARGET_DIR,
+    # FIXME: it should use TARGET_DIR instead of "/", but connect failed to read it even
+    # if fs_root passed as client params. Check with SCC guys why.
+    GLOBAL_CREDENTIALS_PATH = File.join("/",
       SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE)
     private_constant :GLOBAL_CREDENTIALS_PATH
 
