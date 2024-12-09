@@ -33,17 +33,12 @@ jest.mock("~/queries/users", () => ({
 }));
 
 describe("RootAuthMethodsPage", () => {
-  it("allows setting a root authentication method", async () => {
+  it("allows setting a root password", async () => {
     const { user } = installerRender(<RootAuthMethodsPage />);
-    const passwordInput = screen.getByLabelText("Password");
-    const sshKeyTextarea = screen.getByLabelText("SSH public key");
+    const passwordInput = screen.getByLabelText("Password for root user");
     const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-    // There must be an upload button too (behavior not covered here);
-    screen.getByRole("button", { name: "upload" });
-
-    // The Accept button must be enable only when at least one authentication
-    // method is defined
+    // The Accept button must be enable only when password has some value
     expect(acceptButton).toHaveAttribute("disabled");
 
     await user.type(passwordInput, "s3cr3t");
@@ -52,32 +47,9 @@ describe("RootAuthMethodsPage", () => {
     await user.clear(passwordInput);
     expect(acceptButton).toHaveAttribute("disabled");
 
-    await user.type(sshKeyTextarea, "FAKE SSH KEY");
-    expect(acceptButton).not.toHaveAttribute("disabled");
-
-    await user.clear(sshKeyTextarea);
-    expect(acceptButton).toHaveAttribute("disabled");
-
-    await user.type(passwordInput, "s3cr3t");
-    await user.type(sshKeyTextarea, "FAKE SSH KEY");
-    expect(acceptButton).not.toHaveAttribute("disabled");
-
-    // Request setting defined root method when Accept button is clicked
-    await user.click(acceptButton);
-    expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({
-      password: "s3cr3t",
-      encryptedPassword: false,
-      sshkey: "FAKE SSH KEY",
-    });
-
-    await user.clear(passwordInput);
-    await user.click(acceptButton);
-    expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({
-      sshkey: "FAKE SSH KEY",
-    });
-
-    await user.clear(sshKeyTextarea);
     await user.type(passwordInput, "t0ps3cr3t");
+
+    // Request setting root password  when Accept button is clicked
     await user.click(acceptButton);
     expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({
       password: "t0ps3cr3t",

@@ -21,21 +21,11 @@
  */
 
 import React, { useRef, useState } from "react";
-import {
-  Button,
-  FileUpload,
-  Flex,
-  Form,
-  FormGroup,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
-} from "@patternfly/react-core";
+import { Flex, Form, FormGroup } from "@patternfly/react-core";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Center } from "~/components/layout";
 import { Page, PasswordInput } from "~/components/core";
 import { useRootUserMutation } from "~/queries/users";
-import { RootUserChanges } from "~/types/users";
 import { ROOT as PATHS } from "~/routes/paths";
 import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
@@ -55,44 +45,17 @@ function RootAuthMethodsPage() {
   const location = useLocation();
   const setRootUser = useRootUserMutation();
   const [password, setPassword] = useState("");
-  const [sshKey, setSSHKey] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
 
-  const startUploading = () => setIsUploading(true);
-  const stopUploading = () => setIsUploading(false);
-  const clearKey = () => setSSHKey("");
-
-  const isFormValid = !isEmpty(password) || !isEmpty(sshKey);
-  const uploadFile = () => document.getElementById("sshKey-browse-button").click();
+  const isFormValid = !isEmpty(password);
 
   const accept = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    if (isEmpty(password)) return;
 
-    const data: Partial<RootUserChanges> = {};
-
-    if (!isEmpty(password)) {
-      data.password = password;
-      data.encryptedPassword = false;
-    }
-
-    if (!isEmpty(sshKey)) {
-      data.sshkey = sshKey;
-    }
-
-    if (isEmpty(data)) return;
-
-    await setRootUser.mutateAsync(data);
+    await setRootUser.mutateAsync({ password, encryptedPassword: false });
 
     navigate(location.state?.from || PATHS.root, { replace: true });
   };
-
-  // TRANSLATORS: %s will be replaced by a link with the text "upload".
-  const [sshKeyStartHelperText, sshKeyEndHelperText] = _(
-    "Write, paste, drop, or %s a SSH public key file in the above textarea.",
-  ).split("%s");
-  // TRANSLATORS: this "upload" is a commanding verb, in the %s place of
-  // "Write, paste, drop, or %s a SSH public key file in the above textarea."
-  const uploadLinkText = _("upload");
 
   return (
     <Page>
@@ -102,58 +65,30 @@ function RootAuthMethodsPage() {
             headerLevel="h2"
             title={_("Setup root user authentication")}
             description={
-              <p className={textStyles.fontSizeXl}>
-                {_(
-                  "You must define at least one authentication method for the root user. You can still edit them anytime before the installation.",
-                )}
-              </p>
+              <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+                <p className={textStyles.fontSizeLg}>
+                  {_("Provide a password to ensure administrative access to the system.")}
+                </p>
+                <p className={textStyles.fontSizeMd}>
+                  {_(
+                    "You can change it or select another authentication method in the 'Users' section before installing.",
+                  )}
+                </p>
+              </Flex>
             }
             pfCardProps={{ isCompact: false }}
             pfCardBodyProps={{ isFilled: true }}
           >
             <Form id="rootAuthMethods" onSubmit={accept}>
-              <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapXl" }}>
-                <FormGroup fieldId="rootPassword" label={_("Password")}>
-                  <PasswordInput
-                    inputRef={passwordRef}
-                    id="rootPassword"
-                    value={password}
-                    className={sizingStyles.wAuto}
-                    onChange={(_, value) => setPassword(value)}
-                  />
-                </FormGroup>
-                <FormGroup fieldId="sshKey" label={_("SSH public key")}>
-                  <FileUpload
-                    id="sshKey"
-                    value={sshKey}
-                    type="text"
-                    aria-label={_(
-                      "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.",
-                    )}
-                    // TRANSLATORS: push button label
-                    browseButtonText={_("Upload")}
-                    // TRANSLATORS: push button label, clears the related input field
-                    clearButtonText={_("Clear")}
-                    isLoading={isUploading}
-                    onDataChange={(_, value) => setSSHKey(value)}
-                    onTextChange={(_, value) => setSSHKey(value)}
-                    onReadStarted={startUploading}
-                    onReadFinished={stopUploading}
-                    onClearClick={clearKey}
-                  />
-                  <FormHelperText>
-                    <HelperText>
-                      <HelperTextItem variant="indeterminate">
-                        {sshKeyStartHelperText}
-                        <Button variant="link" isInline onClick={uploadFile}>
-                          {uploadLinkText}
-                        </Button>
-                        {sshKeyEndHelperText}
-                      </HelperTextItem>
-                    </HelperText>
-                  </FormHelperText>
-                </FormGroup>
-              </Flex>
+              <FormGroup fieldId="rootPassword" label={_("Password for root user")}>
+                <PasswordInput
+                  inputRef={passwordRef}
+                  id="rootPassword"
+                  value={password}
+                  className={sizingStyles.w_50OnMd}
+                  onChange={(_, value) => setPassword(value)}
+                />
+              </FormGroup>
             </Form>
           </Page.Section>
         </Center>
