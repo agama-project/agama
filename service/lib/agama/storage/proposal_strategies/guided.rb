@@ -62,6 +62,9 @@ module Agama
 
         # @see Base#issues
         def issues
+          # Returning [] in case of a missing proposal is a workaround (the scenario should
+          # not happen). But this class is not expected to live long.
+          return [] unless storage_manager.proposal
           return [] unless storage_manager.proposal.failed?
 
           [target_device_issue, missing_devices_issue].compact
