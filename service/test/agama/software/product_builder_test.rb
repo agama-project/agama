@@ -41,6 +41,8 @@ describe Agama::Software::ProductBuilder do
         "id"           => "Test1",
         "name"         => "Product Test 1",
         "description"  => "This is a test product named Test 1",
+        "version"      => "1.0",
+        "registration" => "mandatory",
         "translations" => {
           "description" => {
             "cs" => "Czech",
@@ -84,19 +86,19 @@ describe Agama::Software::ProductBuilder do
               "archs"   => "aarch64"
             }
           ],
-          "base_product"              => "Test1",
-          "version"                   => "1.0"
+          "base_product"              => "Test1"
         }
       },
       {
-        "id"          => "Test2",
-        "name"        => "Product Test 2",
-        "description" => "This is a test product named Test 2",
-        "archs"       => "x86_64,aarch64",
-        "software"    => {
+        "id"           => "Test2",
+        "name"         => "Product Test 2",
+        "description"  => "This is a test product named Test 2",
+        "archs"        => "x86_64,aarch64",
+        "version"      => "2.0",
+        "registration" => "optional",
+        "software"     => {
           "mandatory_patterns" => ["pattern2-1"],
-          "base_product"       => "Test2",
-          "version"            => "2.0"
+          "base_product"       => "Test2"
         }
       },
       {
@@ -143,6 +145,7 @@ describe Agama::Software::ProductBuilder do
             description:        "This is a test product named Test 1",
             name:               "Test1",
             version:            "1.0",
+            registration:       "mandatory",
             repositories:       ["https://repos/test1/x86_64/product/"],
             mandatory_patterns: ["pattern1-1", "pattern1-2"],
             optional_patterns:  ["pattern1-3"],
@@ -200,6 +203,7 @@ describe Agama::Software::ProductBuilder do
             description:        "This is a test product named Test 2",
             name:               "Test2",
             version:            "2.0",
+            registration:       "optional",
             repositories:       [],
             mandatory_patterns: ["pattern2-1"],
             optional_patterns:  [],

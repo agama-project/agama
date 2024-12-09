@@ -420,6 +420,11 @@ const timezoneTime = (timezone, { date = new Date() }) => {
   }
 };
 
+const mask = (value, visible = 4, character = "*") => {
+  const regex = new RegExp(`.(?=(.{${visible}}))`, "g");
+  return value.replace(regex, character);
+};
+
 export {
   noop,
   identity,
@@ -441,4 +446,5 @@ export {
   remoteConnection,
   slugify,
   timezoneTime,
+  mask,
 };

@@ -22,8 +22,12 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
 
 let mockLoadedData;
 
@@ -58,7 +62,7 @@ beforeEach(() => {
 });
 
 it("renders a section for configuring the language", () => {
-  plainRender(<L10nPage />);
+  installerRender(<L10nPage />);
   const region = screen.getByRole("region", { name: "Language" });
   within(region).getByText("English - United States");
   within(region).getByText("Change");
@@ -70,7 +74,7 @@ describe("if there is no selected language", () => {
   });
 
   it("renders a button for selecting a language", () => {
-    plainRender(<L10nPage />);
+    installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Language" });
     within(region).getByText("Not selected yet");
     within(region).getByText("Select");
@@ -78,7 +82,7 @@ describe("if there is no selected language", () => {
 });
 
 it("renders a section for configuring the keyboard", () => {
-  plainRender(<L10nPage />);
+  installerRender(<L10nPage />);
   const region = screen.getByRole("region", { name: "Keyboard" });
   within(region).getByText("English");
   within(region).getByText("Change");
@@ -90,7 +94,7 @@ describe("if there is no selected keyboard", () => {
   });
 
   it("renders a button for selecting a keyboard", () => {
-    plainRender(<L10nPage />);
+    installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Keyboard" });
     within(region).getByText("Not selected yet");
     within(region).getByText("Select");
@@ -98,7 +102,7 @@ describe("if there is no selected keyboard", () => {
 });
 
 it("renders a section for configuring the time zone", () => {
-  plainRender(<L10nPage />);
+  installerRender(<L10nPage />);
   const region = screen.getByRole("region", { name: "Time zone" });
   within(region).getByText("Europe - Berlin");
   within(region).getByText("Change");
@@ -110,7 +114,7 @@ describe("if there is no selected time zone", () => {
   });
 
   it("renders a button for selecting a time zone", () => {
-    plainRender(<L10nPage />);
+    installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Time zone" });
     within(region).getByText("Not selected yet");
     within(region).getByText("Select");
