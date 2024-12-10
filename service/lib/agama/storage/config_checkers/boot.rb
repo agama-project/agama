@@ -33,23 +33,44 @@ module Agama
         #
         # @return [Array<Issue>]
         def issues
-          [missing_boot_device_issue].compact
+          [
+            missing_alias_issue,
+            invalid_alias_issue
+          ].compact
         end
 
       private
 
-        # @return [Configs::Boot]
-        def boot
-          storage_config.boot
+        # @return [Boolean]
+        def configure?
+          storage_config.boot.configure?
+        end
+
+        # @return [String, nil]
+        def device_alias
+          storage_config.boot.device.device_alias
         end
 
         # @return [Issue, nil]
-        def missing_boot_device_issue
-          return unless boot.configure? && boot.device
-          return if storage_config.drives.any? { |d| d.alias == boot.device }
+        def missing_alias_issue
+          return unless configure? && device_alias.nil?
+
+          error(_("There is no boot device alias"))
+        end
+
+        # @return [Issue, nil]
+        def invalid_alias_issue
+          return unless configure? && device_alias && !valid_alias?
 
           # TRANSLATORS: %s is the replaced by a device alias (e.g., "boot").
-          error(format(_("There is no boot device with alias '%s'"), boot.device))
+          error(format(_("There is no boot device with alias '%s'"), device_alias))
+        end
+
+        # @return [Boolean]
+        def valid_alias?
+          return false unless device_alias
+
+          storage_config.drives.any? { |d| d.alias?(device_alias) }
         end
       end
     end

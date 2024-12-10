@@ -28,6 +28,7 @@ module Agama
 end
 
 require "agama/storage/configs/boot"
+require "agama/storage/configs/boot_device"
 require "agama/storage/configs/btrfs"
 require "agama/storage/configs/drive"
 require "agama/storage/configs/encryption"

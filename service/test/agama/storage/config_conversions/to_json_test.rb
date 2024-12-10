@@ -615,7 +615,7 @@ describe Agama::Storage::ConfigConversions::ToJSON do
         {
           boot: {
             configure: true,
-            device:    "/dev/vdb"
+            device:    "vdb"
           }
         }
       end
@@ -625,7 +625,7 @@ describe Agama::Storage::ConfigConversions::ToJSON do
         expect(boot_json).to eq(
           {
             configure: true,
-            device:    "/dev/vdb"
+            device:    "vdb"
           }
         )
       end

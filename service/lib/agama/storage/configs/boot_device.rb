@@ -19,29 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/to_json_conversions/base"
-
 module Agama
   module Storage
-    module ConfigConversions
-      module ToJSONConversions
-        # Boot conversion to JSON hash according to schema.
-        class Boot < Base
-          # @param config [Configs::Boot]
-          def initialize(config)
-            super()
-            @config = config
-          end
+    module Configs
+      # Config for the boot device.
+      class BootDevice
+        # @return [Boolean] true means that the boot device is automatically inferred. See
+        #   {ConfigSolver}.
+        attr_accessor :default
+        alias_method :default?, :default
 
-        private
+        # @return [String, nil]
+        attr_accessor :device_alias
 
-          # @see Base#conversions
-          def conversions
-            {
-              configure: config.configure?,
-              device:    config.device.device_alias
-            }
-          end
+        def initialize
+          @default = true
         end
       end
     end
