@@ -38,7 +38,10 @@ use agama_lib::base_http_client::BaseHTTPClientError;
 pub use client::SoftwareServiceClient;
 use tokio::sync::{mpsc, oneshot, Mutex};
 
-use crate::{products::ProductsRegistry, web::EventsSender};
+use crate::{
+    common::backend::service_status::ServiceStatusError, products::ProductsRegistry,
+    web::EventsSender,
+};
 
 mod client;
 mod server;
@@ -58,6 +61,9 @@ pub enum SoftwareServiceError {
 
     #[error("Sender error: {0}")]
     SendError(#[from] mpsc::error::SendError<server::SoftwareAction>),
+
+    #[error("Service status error: {0}")]
+    ServiceStatus(#[from] ServiceStatusError),
 }
 
 /// Builds and starts the software service.

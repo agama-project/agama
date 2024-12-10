@@ -18,10 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{error::ServiceError, product::Product};
+use agama_lib::{
+    error::ServiceError, product::Product, progress::ProgressSummary
+};
 use axum::{extract::State, routing::get, Json, Router};
 
-use crate::error::Error;
+use crate::{error::Error, software::web::SoftwareProposal};
 
 use super::backend::SoftwareServiceClient;
 
@@ -53,4 +55,20 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
 async fn get_products(State(state): State<SoftwareState>) -> Result<Json<Vec<Product>>, Error> {
     let products = state.client.get_products().await?;
     Ok(Json(products))
+}
+
+#[utoipa::path(
+    get,
+    path = "/progress",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "Progress summary", body = ProgressSummary),
+    )
+)]
+async fn get_progress(State(state): State<SoftwareState>) -> Result<Json<ProgressSummary>, Error> {
+    let summary = match state.client.get_progress().await? {
+        Some(summary) => summary,
+        None => ProgressSummary::finished(),
+    };
+    Ok(Json(summary))
 }

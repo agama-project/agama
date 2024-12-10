@@ -20,10 +20,14 @@
 
 use std::sync::Arc;
 
-use agama_lib::product::Product;
+use agama_lib::{product::Product, progress::ProgressSummary};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
-use crate::{products::ProductsRegistry, web::EventsSender};
+use crate::{
+    common::backend::service_status::{ServiceStatusClient, ServiceStatusManager},
+    products::ProductsRegistry,
+    web::EventsSender,
+};
 
 use super::{client::SoftwareServiceClient, SoftwareServiceError};
 
@@ -37,7 +41,10 @@ pub struct SoftwareServiceServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
     events: EventsSender,
     products: Arc<Mutex<ProductsRegistry>>,
+    status: ServiceStatusClient,
 }
+
+const SERVICE_NAME: &str = "org.opensuse.Agama.Software1";
 
 impl SoftwareServiceServer {
     /// Starts the software service loop and returns a client.
@@ -49,15 +56,19 @@ impl SoftwareServiceServer {
     ) -> SoftwareServiceClient {
         let (sender, receiver) = mpsc::unbounded_channel();
 
+        let status = ServiceStatusManager::start(SERVICE_NAME, events.clone());
+
         let server = Self {
             receiver,
             events,
             products,
+            status: status.clone(),
         };
+
         tokio::spawn(async move {
             server.run().await;
         });
-        SoftwareServiceClient::new(sender)
+        SoftwareServiceClient::new(sender, status)
     }
 
     /// Runs the server dispatching the actions received through the input channel.
