@@ -28,7 +28,7 @@ import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
 import { IssuesDrawer } from "~/components/core";
 
-type LayoutProps = React.PropsWithChildren<{
+export type LayoutProps = React.PropsWithChildren<{
   mountHeader?: boolean;
   mountSidebar?: boolean;
   headerOptions?: HeaderProps;

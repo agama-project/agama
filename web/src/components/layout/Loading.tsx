@@ -23,10 +23,13 @@
 import React from "react";
 import { EmptyState, EmptyStateIcon, EmptyStateHeader, Spinner } from "@patternfly/react-core";
 import { Center, PlainLayout } from "~/components/layout";
+import { LayoutProps } from "~/components/layout/Layout";
 import { _ } from "~/i18n";
 
 const LoadingIcon = () => <Spinner size="xl" />;
-const Layout = (props) => <PlainLayout mountHeader={false} mountSidebar={false} {...props} />;
+const Layout = (props: LayoutProps) => (
+  <PlainLayout mountHeader={false} mountSidebar={false} {...props} />
+);
 
 function Loading({
   text = _("Loading installation environment, please wait."),

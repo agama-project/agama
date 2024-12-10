@@ -35,7 +35,7 @@ jest.mock("~/components/layout/Layout", () => {
 
   return {
     ...layout,
-    Plain: (props) => (
+    Plain: ({ ...props }) => (
       <>
         <div>PlainLayout Mock</div>
         <OriginalPlainLayout {...props} />
