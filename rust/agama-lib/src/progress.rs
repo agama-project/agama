@@ -218,3 +218,73 @@ pub trait ProgressPresenter {
     /// Finishes the progress reporting.
     async fn finish(&mut self);
 }
+
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ProgressSummary {
+    pub steps: Vec<String>,
+    pub current_step: u32,
+    pub max_steps: u32,
+    pub current_title: String,
+    pub finished: bool,
+}
+
+impl ProgressSummary {
+    pub fn finished() -> Self {
+        Self {
+            steps: vec![],
+            current_step: 0,
+            max_steps: 0,
+            current_title: "".to_string(),
+            finished: true,
+        }
+    }
+}
+
+/// A sequence of progress steps.
+/// FIXME: find a better name to distinguish from agama-server::web::common::ProgressSequence.
+#[derive(Debug)]
+pub struct ProgressSequence {
+    pub steps: Vec<String>,
+    current: usize,
+}
+
+impl ProgressSequence {
+    /// Create a new progress sequence with the given steps.
+    ///
+    /// * `steps`: The steps to create the sequence from.
+    pub fn new(steps: Vec<String>) -> Self {
+        Self { steps, current: 0 }
+    }
+
+    /// Move to the next step in the sequence and return the progress for it.
+    ///
+    /// It returns `None` if the sequence is finished.
+    pub fn next_step(&mut self) -> Option<Progress> {
+        if self.is_finished() {
+            return None;
+        }
+        self.current += 1;
+        self.step()
+    }
+
+    /// The progres has finished.
+    pub fn is_finished(&self) -> bool {
+        self.current == self.steps.len()
+    }
+
+    /// Return the progress for the current step.
+    pub fn step(&self) -> Option<Progress> {
+        if self.is_finished() {
+            return None;
+        }
+
+        let current_title = self.steps.get(self.current).unwrap().clone();
+        Some(Progress {
+            current_step: (self.current + 1) as u32,
+            max_steps: self.steps.len() as u32,
+            current_title,
+            finished: (self.current + 1) == self.steps.len(),
+        })
+    }
+}

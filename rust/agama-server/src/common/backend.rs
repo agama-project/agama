@@ -18,21 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod products;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+//! Common functionality that can be shared by the different backends.
 
-pub mod common;
-pub mod software_ng;
+pub mod service_status;
