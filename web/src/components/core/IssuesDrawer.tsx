@@ -71,7 +71,7 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
               <section key={idx} aria-labelledby={ariaLabelId}>
                 <Stack hasGutter>
                   <h4 id={ariaLabelId}>
-                    <Link variant="link" isInline to={`/${scope}`}>
+                    <Link variant="link" isInline onClick={onClose} to={`/${scope}`}>
                       {scopeHeaders[scope]}
                     </Link>
                   </h4>

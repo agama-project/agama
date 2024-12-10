@@ -114,6 +114,11 @@ describe("IssuesDrawer", () => {
       expect(usersLink).toHaveAttribute("href", "/users");
       within(usersIssues).getByText("Users Fake Issue");
 
+      // onClose should be called when user clicks on a section too for ensuring
+      // drawer gets closed even when navigation is not needed.
+      await user.click(usersLink);
+      expect(onCloseFn).toHaveBeenCalled();
+
       const closeButton = screen.getByRole("button", { name: "Close" });
       await user.click(closeButton);
       expect(onCloseFn).toHaveBeenCalled();
