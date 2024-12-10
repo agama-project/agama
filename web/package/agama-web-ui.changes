@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec 10 14:43:08 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Restore the rendering of questions throughout the app
+  (gh#agama-project/agama#1820)
+
+-------------------------------------------------------------------
 Mon Dec  9 14:10:44 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Simplify screen for enforcing root password
