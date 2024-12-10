@@ -98,7 +98,6 @@ jest.mock("~/context/installer", () => ({
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
-jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
 jest.mock("~/components/product/ProductSelectionProgress", () => () => <div>Product progress</div>);
 

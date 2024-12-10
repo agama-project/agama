@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,11 +21,11 @@
  */
 
 import React from "react";
+
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 
-import * as utils from "~/utils";
-import { ServerError } from "~/components/core";
+import Loading from "./Loading";
 
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
 jest.mock("~/components/layout/Sidebar", () => () => <div>Sidebar Mock</div>);
@@ -44,20 +44,35 @@ jest.mock("~/components/layout/Layout", () => {
   };
 });
 
-describe("ServerError", () => {
-  it("wraps a generic server problem message into a plain layout with neither, header nor sidebar", () => {
-    plainRender(<ServerError />);
-    expect(screen.queryByText("Header Mock")).toBeNull();
-    expect(screen.queryByText("Sidebar Mock")).toBeNull();
-    screen.getByText("PlainLayout Mock");
-    screen.getByText(/Cannot connect to Agama server/i);
+describe("Loading", () => {
+  it("renders given message", async () => {
+    plainRender(<Loading text="Doing something" />);
+    await screen.findByText("Doing something");
   });
 
-  it("calls location.reload when user clicks on 'Reload'", async () => {
-    jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
-    const { user } = plainRender(<ServerError />);
-    const reloadButton = await screen.findByRole("button", { name: /Reload/i });
-    await user.click(reloadButton);
-    expect(utils.locationReload).toHaveBeenCalled();
+  describe("when not using a custom message", () => {
+    it("renders the default loading environment message", async () => {
+      plainRender(<Loading />);
+      await screen.findByText(/Loading installation environment/i);
+    });
+  });
+
+  describe("when not using the useLayout prop or its value is false", () => {
+    it("does not wrap the content within a PlainLayout", () => {
+      const { rerender } = plainRender(<Loading text="Making a test" />);
+      expect(screen.queryByText("PlainLayout Mock")).toBeNull();
+      rerender(<Loading text="Making a test" useLayout={false} />);
+      expect(screen.queryByText("PlainLayout Mock")).toBeNull();
+    });
+  });
+
+  describe("when using the useLayout prop", () => {
+    it("wraps the content within a PlainLayout with neither, header nor sidebar", () => {
+      plainRender(<Loading text="Making a test" useLayout />);
+      expect(screen.queryByText("Header Mock")).toBeNull();
+      expect(screen.queryByText("Sidebar Mock")).toBeNull();
+      screen.getByText("PlainLayout Mock");
+      screen.getByText("Making a test");
+    });
   });
 });
