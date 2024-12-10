@@ -68,14 +68,10 @@ function App() {
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected) return <Loading />;
+    if (!products || !connected) return <Loading useLayout />;
 
     if (phase === InstallationPhase.Startup && isBusy) {
-      return (
-        <PlainLayout>
-          <Loading />
-        </PlainLayout>
-      );
+      return <Loading useLayout />;
     }
 
     if (selectedProduct === undefined && location.pathname !== PRODUCT.root) {
