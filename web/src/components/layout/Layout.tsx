@@ -23,6 +23,7 @@
 import React, { Suspense, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Page } from "@patternfly/react-core";
+import { Questions } from "~/components/questions";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
 import { IssuesDrawer } from "~/components/core";
@@ -50,23 +51,26 @@ const Layout = ({
   const toggleIssuesDrawer = () => setIssuesDrawerVisible(!issuesDrawerVisible);
 
   return (
-    <Page
-      isManagedSidebar
-      header={
-        mountHeader && (
-          <Header
-            showSidebarToggle={mountSidebar}
-            toggleIssuesDrawer={toggleIssuesDrawer}
-            {...headerOptions}
-          />
-        )
-      }
-      sidebar={mountSidebar && <Sidebar />}
-      notificationDrawer={<IssuesDrawer onClose={closeIssuesDrawer} />}
-      isNotificationDrawerExpanded={issuesDrawerVisible}
-    >
-      <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
-    </Page>
+    <>
+      <Page
+        isManagedSidebar
+        header={
+          mountHeader && (
+            <Header
+              showSidebarToggle={mountSidebar}
+              toggleIssuesDrawer={toggleIssuesDrawer}
+              {...headerOptions}
+            />
+          )
+        }
+        sidebar={mountSidebar && <Sidebar />}
+        notificationDrawer={<IssuesDrawer onClose={closeIssuesDrawer} />}
+        isNotificationDrawerExpanded={issuesDrawerVisible}
+      >
+        <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
+      </Page>
+      <Questions />
+    </>
   );
 };
 

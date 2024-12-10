@@ -24,7 +24,6 @@ import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { ServerError } from "~/components/core";
 import { Loading, PlainLayout } from "~/components/layout";
-import { Questions } from "~/components/questions";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "~/queries/software";
@@ -102,12 +101,7 @@ function App() {
 
   if (!language) return null;
 
-  return (
-    <>
-      <Content />
-      <Questions />
-    </>
-  );
+  return <Content />;
 }
 
 export default App;
