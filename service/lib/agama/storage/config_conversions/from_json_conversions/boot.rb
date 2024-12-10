@@ -21,6 +21,7 @@
 
 require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/configs/boot"
+require "agama/storage/configs/boot_device"
 
 module Agama
   module Storage
@@ -43,8 +44,19 @@ module Agama
           def conversions
             {
               configure: boot_json[:configure],
-              device:    boot_json[:device]
+              device:    convert_device
             }
+          end
+
+          # @return [Configs::BootDevice, nil]
+          def convert_device
+            boot_device_json = boot_json[:device]
+            return unless boot_device_json
+
+            Configs::BootDevice.new.tap do |config|
+              config.default = false
+              config.device_alias = boot_json[:device]
+            end
           end
         end
       end

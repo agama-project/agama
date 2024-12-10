@@ -269,7 +269,7 @@ describe Agama::Storage::ConfigChecker do
         {
           boot:   {
             configure: true,
-            device:    boot_device
+            device:    device_alias
           },
           drives: [
             {
@@ -279,8 +279,21 @@ describe Agama::Storage::ConfigChecker do
         }
       end
 
+      context "and there is no device alias" do
+        let(:device_alias) { nil }
+
+        it "includes the expected issue" do
+          issues = subject.issues
+          expect(issues.size).to eq(1)
+
+          issue = issues.first
+          expect(issue.error?).to eq(true)
+          expect(issue.description).to eq("There is no boot device alias")
+        end
+      end
+
       context "and the given alias does not exist" do
-        let(:boot_device) { "foo" }
+        let(:device_alias) { "foo" }
 
         it "includes the expected issue" do
           issues = subject.issues
@@ -293,7 +306,7 @@ describe Agama::Storage::ConfigChecker do
       end
 
       context "and the given alias exists" do
-        let(:boot_device) { "disk" }
+        let(:device_alias) { "disk" }
 
         it "does not include any issue" do
           expect(subject.issues).to be_empty
@@ -306,7 +319,7 @@ describe Agama::Storage::ConfigChecker do
         {
           boot:   {
             configure: false,
-            device:    boot_device
+            device:    device_alias
           },
           drives: [
             {
@@ -316,8 +329,16 @@ describe Agama::Storage::ConfigChecker do
         }
       end
 
+      context "and there is no device alias" do
+        let(:device_alias) { nil }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
+      end
+
       context "and the given alias does not exist" do
-        let(:boot_device) { "foo" }
+        let(:device_alias) { "foo" }
 
         it "does not include any issue" do
           expect(subject.issues).to be_empty
@@ -325,7 +346,7 @@ describe Agama::Storage::ConfigChecker do
       end
 
       context "and the given alias exists" do
-        let(:boot_device) { "disk" }
+        let(:device_alias) { "disk" }
 
         it "does not include any issue" do
           expect(subject.issues).to be_empty
@@ -336,6 +357,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has not found device" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             {
               search: {
@@ -372,6 +394,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has a found device" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             { search: "/dev/vda" }
           ]
@@ -386,6 +409,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has encryption" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             {
               encryption: encryption,
@@ -401,6 +425,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has filesystem" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             {
               filesystem: filesystem
@@ -417,6 +442,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has partitions" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             {
               partitions: [partition]
@@ -492,6 +518,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a volume group has logical volumes" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           volumeGroups: [
             {
               logicalVolumes: [
@@ -556,6 +583,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a volume group has an unknown physical volume" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             {
               alias: "first-disk"
@@ -582,6 +610,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a volume group has an unknown target device for physical volumes" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             {
               alias: "first-disk"
@@ -615,6 +644,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a volume group has encryption for physical volumes" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             {
               alias: "first-disk"
@@ -707,6 +737,7 @@ describe Agama::Storage::ConfigChecker do
     context "if there are overused physical volumes devices" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             { alias: "disk1" },
             { alias: "disk2" },
@@ -757,6 +788,7 @@ describe Agama::Storage::ConfigChecker do
     context "if the config has several issues" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             {
               search:     "/dev/vdd",
