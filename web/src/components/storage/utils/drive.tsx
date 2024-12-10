@@ -26,6 +26,8 @@ import { _, n_, formatList } from "~/i18n";
 import { configModel } from "~/api/storage/types";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import * as partitionUtils from "~/components/storage/utils/partition";
+import { Drive } from "~/api/storage/types/config-model";
+import { sprintf } from "sprintf-js";
 
 /**
  * String to identify the drive.
@@ -74,7 +76,7 @@ const resizeTextFor = (partitions) => {
  * FIXME: the case with two sentences looks a bit weird. But trying to summarize everything in one
  * sentence was too hard.
  */
-const contentActionsDescription = (drive: DriveElement): string => {
+const contentActionsDescription = (drive: configModel.Drive): string => {
   const policyLabel = spacePolicyEntry(drive).summaryLabel;
 
   // eslint-disable-next-line agama-i18n/string-literals
@@ -102,7 +104,7 @@ const contentActionsDescription = (drive: DriveElement): string => {
  * FIXME: right now, this considers only the case in which the drive is going to host some formatted
  * partitions.
  */
-const contentDescription = (drive: DriveElement): string => {
+const contentDescription = (drive: configModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
 
@@ -146,23 +148,23 @@ const contentDescription = (drive: DriveElement): string => {
   return sprintf(_("Partitions will be used and created for %s"), formatList(mountPaths));
 };
 
-const hasFilesystem = (drive: DriveElement): boolean => {
+const hasFilesystem = (drive: configModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath);
 };
 
-const hasRoot = (drive: DriveElement): boolean => {
+const hasRoot = (drive: configModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath && p.mountPath === "/");
 };
 
-const hasReuse = (drive: DriveElement): boolean => {
+const hasReuse = (drive: configModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath && p.name);
 };
 
-const hasPv = (drive: DriveElement): boolean => {
+const hasPv = (drive: Drive): boolean => {
   return drive.volumeGroups && drive.volumeGroups.length > 0;
 };
 
-const explicitBoot = (drive: DriveElement): boolean => {
+const explicitBoot = (drive: Drive): boolean => {
   return drive.boot && drive.boot === "explicit";
 };
 

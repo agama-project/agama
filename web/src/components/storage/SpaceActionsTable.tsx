@@ -187,7 +187,7 @@ const DeviceAction = ({
 };
 
 export type SpaceActionsTableProps = {
-  devices: StorageDevice[];
+  devices: (PartitionSlot | StorageDevice)[];
   deviceAction: (item: PartitionSlot | StorageDevice) => string;
   onActionChange: (action: SpacePolicyAction) => void;
 };
@@ -226,7 +226,7 @@ export default function SpaceActionsTable({
       </Thead>
       <Tbody>
         {devices.map((d) => (
-          <Tr key={d.sid}>
+          <Tr key={toStorageDevice(d).sid}>
             {columns.map((c, i) => (
               <Td key={i} className={c.classNames}>
                 {c.value(d)}

@@ -31,6 +31,7 @@ import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage
 import { Partition } from "~/api/storage/types/config-model";
 import { useConfigModel, useDevices, useSetCustomSpacePolicy } from "~/queries/storage";
 import { toStorageDevice } from "./device-utils";
+import { sprintf } from "sprintf-js";
 
 const partitionAction = (partition: Partition) => {
   if (partition.delete) return "delete";

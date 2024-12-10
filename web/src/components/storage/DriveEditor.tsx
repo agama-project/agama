@@ -51,6 +51,7 @@ import {
 } from "@patternfly/react-core";
 
 import { useChangeDrive, useSetSpacePolicy } from "~/queries/storage";
+import { Drive } from "~/api/storage/types/config-model";
 
 type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
 
@@ -156,7 +157,7 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
 };
 
 const SearchSelectorIntro = ({ drive }) => {
-  const mainText = (drive: type.DriveElement): string => {
+  const mainText = (drive: Drive): string => {
     if (driveUtils.hasReuse(drive)) {
       // The current device will be the only option to choose from
       return _("This uses existing partitions at the device");
@@ -207,12 +208,12 @@ const SearchSelectorIntro = ({ drive }) => {
     return sprintf(
       // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
       // single mount point in the singular case).
-      _("Select a device to create %s", "Select a device to create %s", mountPaths.length),
+      _("Select a device to create %s"),
       formatList(mountPaths),
     );
   };
 
-  const extraText = (drive: type.DriveElement): string => {
+  const extraText = (drive: Drive): string => {
     // Nothing to add in these cases
     if (driveUtils.hasReuse(drive)) return;
     if (!driveUtils.hasFilesystem(drive)) return;
@@ -285,7 +286,8 @@ const SearchSelectorIntro = ({ drive }) => {
   );
 };
 
-const SearchSelectorMultipleOptions = ({ selected, withNewVg, onChange }) => {
+const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }) => {
+  const navigate = useNavigate();
   const devices = useAvailableDevices();
 
   // FIXME: Presentation is quite poor
@@ -438,6 +440,7 @@ const DriveSelector = ({ drive, selected }) => {
           </MenuContent>
         </Menu>
       }
+      // @ts-expect-error
       popperProps={{ appendTo: document.body }}
     />
   );
@@ -509,7 +512,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const PartitionsNoContentSelector = () => {
+const PartitionsNoContentSelector = ({ drive }) => {
   const navigate = useNavigate();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
