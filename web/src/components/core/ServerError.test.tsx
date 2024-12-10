@@ -27,9 +27,29 @@ import { plainRender } from "~/test-utils";
 import * as utils from "~/utils";
 import { ServerError } from "~/components/core";
 
+jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
+jest.mock("~/components/layout/Sidebar", () => () => <div>Sidebar Mock</div>);
+jest.mock("~/components/layout/Layout", () => {
+  const layout = jest.requireActual("~/components/layout/Layout");
+  const OriginalPlainLayout = layout.Plain;
+
+  return {
+    ...layout,
+    Plain: ({ ...props }) => (
+      <>
+        <div>PlainLayout Mock</div>
+        <OriginalPlainLayout {...props} />
+      </>
+    ),
+  };
+});
+
 describe("ServerError", () => {
-  it("includes a generic server problem message", () => {
+  it("wraps a generic server problem message into a plain layout with neither, header nor sidebar", () => {
     plainRender(<ServerError />);
+    expect(screen.queryByText("Header Mock")).toBeNull();
+    expect(screen.queryByText("Sidebar Mock")).toBeNull();
+    screen.getByText("PlainLayout Mock");
     screen.getByText(/Cannot connect to Agama server/i);
   });
 

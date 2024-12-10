@@ -23,7 +23,7 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { ServerError } from "~/components/core";
-import { Loading, PlainLayout } from "~/components/layout";
+import { Loading } from "~/components/layout";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "~/queries/software";
@@ -53,12 +53,7 @@ function App() {
   useDeprecatedChanges();
 
   const Content = () => {
-    if (error)
-      return (
-        <PlainLayout>
-          <ServerError />
-        </PlainLayout>
-      );
+    if (error) return <ServerError />;
 
     if (phase === InstallationPhase.Install && isBusy) {
       return <Navigate to={ROOT.installationProgress} />;
