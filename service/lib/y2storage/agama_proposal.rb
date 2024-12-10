@@ -93,7 +93,7 @@ module Y2Storage
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
       Agama::Storage::ConfigSolver
-        .new(initial_devicegraph, product_config, disk_analyzer: disk_analyzer)
+        .new(product_config, initial_devicegraph, disk_analyzer: disk_analyzer)
         .solve(config)
 
       issues = Agama::Storage::ConfigChecker

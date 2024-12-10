@@ -258,7 +258,7 @@ describe Agama::Storage::ConfigChecker do
       allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
 
       Agama::Storage::ConfigSolver
-        .new(devicegraph, product_config)
+        .new(product_config, devicegraph)
         .solve(config)
     end
 
