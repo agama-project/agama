@@ -110,7 +110,7 @@ describe Agama::Storage::ConfigSolver do
       .and_return(true)
   end
 
-  subject { described_class.new(devicegraph, product_config, disk_analyzer: disk_analyzer) }
+  subject { described_class.new(product_config, devicegraph, disk_analyzer: disk_analyzer) }
 
   describe "#solve" do
     let(:scenario) { "empty-hd-50GiB.yaml" }

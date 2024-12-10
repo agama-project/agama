@@ -602,7 +602,7 @@ describe Agama::Storage::ConfigConversions::ToModel do
     Agama::Storage::ConfigConversions::FromJSON
       .new(config_json)
       .convert
-      .tap { |c| Agama::Storage::ConfigSolver.new(devicegraph, product_config).solve(c) }
+      .tap { |c| Agama::Storage::ConfigSolver.new(product_config, devicegraph).solve(c) }
   end
 
   before do
