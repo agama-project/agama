@@ -38,6 +38,7 @@ systemctl enable NetworkManager.service
 systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
+systemctl enable agama-dbus-monitor.service
 systemctl enable agama-auto.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
