@@ -557,6 +557,37 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
+  describe "#apply_config_model" do
+    let(:serialized_model) { model_json.to_json }
+
+    let(:model_json) do
+      {
+        drives: [
+          name:       "/dev/vda",
+          partitions: [
+            { mountPath: "/" }
+          ]
+        ]
+      }
+    end
+
+    it "calculates an agama proposal with the given config" do
+      expect(proposal).to receive(:calculate_agama) do |config|
+        expect(config).to be_a(Agama::Storage::Config)
+        expect(config.drives.size).to eq(1)
+
+        drive = config.drives.first
+        expect(drive.search.name).to eq("/dev/vda")
+        expect(drive.partitions.size).to eq(1)
+
+        partition = drive.partitions.first
+        expect(partition.filesystem.path).to eq("/")
+      end
+
+      subject.apply_config_model(serialized_model)
+    end
+  end
+
   describe "#recover_config" do
     def serialize(value)
       JSON.pretty_generate(value)

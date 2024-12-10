@@ -25,15 +25,17 @@ module Agama
       module FromJSONConversions
         # Base class for conversions from JSON hash according to schema.
         class Base
+          # @param config_json [Hash]
           def initialize(config_json)
             @config_json = config_json
           end
 
           # Performs the conversion from Hash according to the JSON schema.
           #
-          # @param config [Object] A {Config} or any of its configs from {Storage::Configs}.
           # @return [Object] A {Config} or any its configs from {Storage::Configs}.
-          def convert(config)
+          def convert
+            config = default_config
+
             conversions.each do |property, value|
               next if value.nil?
 
@@ -45,7 +47,15 @@ module Agama
 
         private
 
+          # @return [Hash]
           attr_reader :config_json
+
+          # Default config object (defined by derived classes).
+          #
+          # @return [Object]
+          def default_config
+            raise "Undefined default config"
+          end
 
           # Values to apply to the config.
           #

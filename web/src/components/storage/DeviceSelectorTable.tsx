@@ -37,6 +37,7 @@ import { sprintf } from "sprintf-js";
 import { deviceBaseName } from "~/components/storage/utils";
 import { PartitionSlot, StorageDevice } from "~/types/storage";
 import { ExpandableSelectorColumn, ExpandableSelectorProps } from "../core/ExpandableSelector";
+import { typeDescription, contentDescription } from "./utils/device";
 
 /**
  * @component

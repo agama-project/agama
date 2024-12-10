@@ -24,13 +24,13 @@
 
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { PartitionElement } from "~/api/storage/types";
 import { formattedPath, sizeDescription } from "~/components/storage/utils";
+import { configModel } from "~/api/storage/types";
 
 /**
  * String to identify the drive.
  */
-const pathWithSize = (partition: PartitionElement): string => {
+const pathWithSize = (partition: configModel.Partition): string => {
   return sprintf(
     // TRANSLATORS: %1$s is an already formatted mount path (eg. "/"),
     // %2$s is a size description (eg. at least 10 GiB)

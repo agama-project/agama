@@ -4,6 +4,8 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+import { VolumeGroup } from "./config";
+
 export type FilesystemType =
   | "bcachefs"
   | "btrfs"
@@ -39,6 +41,8 @@ export interface Drive {
   spacePolicy?: SpacePolicy;
   ptableType?: PtableType;
   partitions?: Partition[];
+  boot?: string;
+  volumeGroups: string[];
 }
 export interface Filesystem {
   default: boolean;
@@ -53,7 +57,9 @@ export interface Partition {
   filesystem?: Filesystem;
   size?: Size;
   delete?: boolean;
+  // TODO: ignore
   deleteIfNeeded?: boolean;
+  // TODO: ignore
   resize?: boolean;
   resizeIfNeeded?: boolean;
 }

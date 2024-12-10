@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_model_conversions/base"
-require "agama/storage/configs/filesystem"
 
 module Agama
   module Storage
@@ -28,9 +27,10 @@ module Agama
       module ToModelConversions
         # Drive conversion to model according to the JSON schema.
         class Filesystem < Base
-          # @see Base
-          def self.config_type
-            Configs::Filesystem
+          # @param config [Configs::Filesystem]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private
