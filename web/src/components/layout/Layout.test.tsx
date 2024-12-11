@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { mockRoutes, installerRender } from "~/test-utils";
 import Layout from "./Layout";
 
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
@@ -32,37 +32,37 @@ jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</d
 
 describe("Layout", () => {
   it("renders a page with header and sidebar by default", () => {
-    plainRender(<Layout />);
+    installerRender(<Layout />);
     screen.getByText("Header Mock");
     screen.getByText("Sidebar Mock");
   });
 
   it("does not render the header when mountHeader=false", () => {
-    plainRender(<Layout mountHeader={false} />);
+    installerRender(<Layout mountHeader={false} />);
     expect(screen.queryByText("Header Mock")).toBeNull();
   });
 
   it("does not render the sidebar when mountSidebar=false", () => {
-    plainRender(<Layout mountSidebar={false} />);
+    installerRender(<Layout mountSidebar={false} />);
     expect(screen.queryByText("Sidebar Mock")).toBeNull();
   });
 
   describe("when children are not given", () => {
     it("renders router <Outlet />", () => {
-      plainRender(<Layout />);
+      installerRender(<Layout />);
       // NOTE: react-router-dom/Outlet is mock at src/test-utils
       screen.getByText("Outlet Content");
     });
 
     it("renders the questions component", () => {
-      plainRender(<Layout />);
+      installerRender(<Layout />);
       screen.getByText("Questions Mock");
     });
   });
 
   describe("when children are given", () => {
     it("renders children instead of router <Outlet />", () => {
-      plainRender(
+      installerRender(
         <Layout>
           <button>Dummy testing button</button>
         </Layout>,
@@ -73,8 +73,19 @@ describe("Layout", () => {
     });
 
     it("renders the questions component", () => {
-      plainRender(<Layout />);
+      installerRender(<Layout />);
       screen.getByText("Questions Mock");
+    });
+  });
+
+  describe("at /login path", () => {
+    beforeEach(() => {
+      mockRoutes("/login");
+    });
+
+    it("does not render the questions component", () => {
+      installerRender(<Layout />);
+      expect(screen.queryByText("Questions Mock")).toBeNull();
     });
   });
 });

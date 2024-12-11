@@ -23,7 +23,7 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 
 import Loading from "./Loading";
 
@@ -68,7 +68,7 @@ describe("Loading", () => {
 
   describe("when using the useLayout prop", () => {
     it("wraps the content within a PlainLayout with neither, header nor sidebar", () => {
-      plainRender(<Loading text="Making a test" useLayout />);
+      installerRender(<Loading text="Making a test" useLayout />);
       expect(screen.queryByText("Header Mock")).toBeNull();
       expect(screen.queryByText("Sidebar Mock")).toBeNull();
       screen.getByText("PlainLayout Mock");

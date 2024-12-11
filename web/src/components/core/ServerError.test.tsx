@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 
 import * as utils from "~/utils";
 import { ServerError } from "~/components/core";
@@ -46,7 +46,7 @@ jest.mock("~/components/layout/Layout", () => {
 
 describe("ServerError", () => {
   it("wraps a generic server problem message into a plain layout with neither, header nor sidebar", () => {
-    plainRender(<ServerError />);
+    installerRender(<ServerError />);
     expect(screen.queryByText("Header Mock")).toBeNull();
     expect(screen.queryByText("Sidebar Mock")).toBeNull();
     screen.getByText("PlainLayout Mock");
@@ -55,7 +55,7 @@ describe("ServerError", () => {
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
     jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
-    const { user } = plainRender(<ServerError />);
+    const { user } = installerRender(<ServerError />);
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
     await user.click(reloadButton);
     expect(utils.locationReload).toHaveBeenCalled();
