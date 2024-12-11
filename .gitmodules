@@ -1,0 +1,3 @@
+[submodule "rust/zypp-c-api"]
+	path = rust/zypp-c-api
+	url = git@github.com:agama-project/zypp-c-api.git
