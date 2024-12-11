@@ -115,6 +115,140 @@ describe Agama::Storage::ConfigSolver do
   describe "#solve" do
     let(:scenario) { "empty-hd-50GiB.yaml" }
 
+    context "if a config does not specify the boot device alias" do
+      let(:config_json) do
+        {
+          boot:   { configure: true },
+          drives: [
+            {
+              alias:      device_alias,
+              partitions: [
+                { filesystem: { path: "/" } }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:device_alias) { "root" }
+
+      context "and the boot device is set to be the default" do
+        before do
+          config.boot.device.default = true
+        end
+
+        it "sets the alias of the root drive as boot device alias" do
+          subject.solve(config)
+          boot = config.boot
+          expect(boot.device.device_alias).to eq("root")
+        end
+
+        context "and the root drive has no alias" do
+          let(:device_alias) { nil }
+
+          it "sets an alias to the root drive" do
+            subject.solve(config)
+            drive = config.drives.first
+            expect(drive.alias).to match(/device\d*/)
+          end
+
+          it "sets the alias of root drive as boot device alias" do
+            subject.solve(config)
+            boot = config.boot
+            drive = config.drives.first
+            expect(boot.device.device_alias).to eq(drive.alias)
+          end
+
+          context "and root is over a logical volume" do
+            let(:scenario) { "disks.yaml" }
+
+            let(:config_json) do
+              {
+                boot:         { configure: true },
+                drives:       [
+                  {
+                    search:     "/dev/vda",
+                    alias:      device_alias,
+                    partitions: [
+                      { search: "/dev/vda2", alias: "pv" }
+                    ]
+                  },
+                  { search: "/dev/vdb", alias: "disk2" }
+                ],
+                volumeGroups: [
+                  {
+                    physicalVolumes: ["disk2", "pv"],
+                    logicalVolumes:  [
+                      { filesystem: { path: "/" } }
+                    ]
+                  }
+                ]
+              }
+            end
+
+            let(:device_alias) { "disk1" }
+
+            it "sets the alias of first partitioned pv drive as boot device alias" do
+              subject.solve(config)
+              boot = config.boot
+              expect(boot.device.device_alias).to eq("disk1")
+            end
+
+            context "and the drive has no alias" do
+              let(:device_alias) { nil }
+
+              it "sets an alias to the drive" do
+                subject.solve(config)
+                drive = config.drives.find { |d| d.search.name == "/dev/vda" }
+                expect(drive.alias).to match(/device\d*/)
+              end
+
+              it "sets the alias of the drive as boot device alias" do
+                subject.solve(config)
+                boot = config.boot
+                drive = config.drives.find { |d| d.search.name == "/dev/vda" }
+                expect(boot.device.device_alias).to eq(drive.alias)
+              end
+            end
+          end
+        end
+      end
+
+      context "and the boot device is not set to be the default" do
+        before do
+          config.boot.device.default = false
+        end
+
+        it "does not set a boot device alias" do
+          subject.solve(config)
+          boot = config.boot
+          expect(boot.device.device_alias).to be_nil
+        end
+      end
+
+      context "and boot is not set to be configured" do
+        let(:config_json) do
+          {
+            boot:   { configure: false },
+            drives: [
+              {
+                alias:      "disk1",
+                partitions: [
+                  { filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "does not set a boot device alias" do
+          subject.solve(config)
+          boot = config.boot
+          expect(boot.device.device_alias).to be_nil
+        end
+      end
+    end
+
     context "if a config does not specify all the encryption properties" do
       let(:config_json) do
         {

@@ -345,6 +345,7 @@ describe Agama::Storage::Proposal do
           storage: {
             drives: [
               {
+                alias:      "root",
                 partitions: [
                   {
                     filesystem: { path: "/" }
@@ -362,6 +363,7 @@ describe Agama::Storage::Proposal do
             drives: [
               {
                 name:        "/dev/sda",
+                alias:       "root",
                 spacePolicy: "keep",
                 partitions:  [
                   {

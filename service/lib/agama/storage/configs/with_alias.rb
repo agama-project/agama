@@ -33,6 +33,11 @@ module Agama
         def alias?(value)
           self.alias == value
         end
+
+        # Ensures the config has a value for alias.
+        def ensure_alias
+          self.alias ||= "device#{rand(10**9)}"
+        end
       end
     end
   end

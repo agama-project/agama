@@ -48,6 +48,7 @@ module Agama
       #
       # @param config [Config]
       def solve(config)
+        ConfigSolvers::Boot.new(product_config).solve(config)
         ConfigSolvers::Encryption.new(product_config).solve(config)
         ConfigSolvers::Filesystem.new(product_config).solve(config)
         ConfigSolvers::Search.new(product_config, devicegraph, disk_analyzer).solve(config)

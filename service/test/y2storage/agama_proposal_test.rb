@@ -310,6 +310,10 @@ describe Y2Storage::AgamaProposal do
         drive_config(name: name, filesystem: "ext3").tap { |c| c.filesystem.reuse = true }
       end
 
+      before do
+        config.boot.configure = false
+      end
+
       context "if the drive is already formatted" do
         let(:name) { "/dev/vdc" }
 
@@ -1100,6 +1104,7 @@ describe Y2Storage::AgamaProposal do
 
         before do
           allow_any_instance_of(Y2Storage::Arch).to receive(:ram_size).and_return(8.GiB)
+          config.boot.configure = false
         end
 
         context "and the partition size is not indicated" do
