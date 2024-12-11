@@ -25,6 +25,13 @@ module Agama
       # Configuration used to match drives, partitions and other device definition with devices
       # from the initial devicegraph
       class Search
+        # Search config meaning "search all".
+        #
+        # @return [Configs::Search]
+        def self.new_for_search_all
+          new.tap { |c| c.if_not_found = :skip }
+        end
+
         # Found device, if any
         # @return [Y2Storage::Device, nil]
         attr_reader :device

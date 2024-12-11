@@ -28,13 +28,13 @@ module Agama
       module FromJSONConversions
         # Search conversion from JSON hash according to schema.
         class Search < Base
-          # @see Base#convert
-          # @return [Configs::Search]
-          def convert
-            super(Configs::Search.new)
-          end
-
         private
+
+          # @see Base
+          # @return [Configs::Search]
+          def default_config
+            Configs::Search.new
+          end
 
           # Reserved search value meaning 'match all devices or ignore the section'.
           #

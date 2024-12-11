@@ -26,7 +26,7 @@ import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
 import { useAvailableDevices } from "~/queries/storage";
-import { config as type } from "~/api/storage/types";
+import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { typeDescription, contentDescription } from "~/components/storage/utils/device";
@@ -50,7 +50,9 @@ import {
   MenuToggle,
 } from "@patternfly/react-core";
 
-type DriveEditorProps = { drive: type.DriveElement; driveDevice: StorageDevice };
+import { useChangeDrive, useSetSpacePolicy } from "~/queries/storage";
+
+type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
 
 // FIXME: Presentation is quite poor
 const SpacePolicySelectorIntro = ({ device }) => {
@@ -82,11 +84,21 @@ const SpacePolicySelectorIntro = ({ device }) => {
   );
 };
 
-const SpacePolicySelector = ({ drive, driveDevice }) => {
+const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const setSpacePolicy = useSetSpacePolicy();
   const onToggle = () => setIsOpen(!isOpen);
+  const onSpacePolicyChange = (spacePolicy: "keep" | "delete" | "resize" | "custom") => {
+    if (spacePolicy === "custom") {
+      return navigate("/storage/space-policy/" + baseName(drive.name));
+    } else {
+      setSpacePolicy(drive.name, spacePolicy);
+      setIsOpen(false);
+    }
+  };
 
   const currentPolicy = driveUtils.spacePolicyEntry(drive);
 
@@ -96,7 +108,12 @@ const SpacePolicySelector = ({ drive, driveDevice }) => {
     const Name = () => (isSelected ? <b>{policy.label}</b> : policy.label);
 
     return (
-      <MenuItem itemId={policy.id} isSelected={isSelected} description={policy.description}>
+      <MenuItem
+        itemId={policy.id}
+        isSelected={isSelected}
+        description={policy.description}
+        onClick={() => onSpacePolicyChange(policy.id)}
+      >
         <Name />
       </MenuItem>
     );
@@ -268,7 +285,7 @@ const SearchSelectorIntro = ({ drive }) => {
   );
 };
 
-const SearchSelectorMultipleOptions = ({ selected, withNewVg }) => {
+const SearchSelectorMultipleOptions = ({ selected, withNewVg, onChange }) => {
   const devices = useAvailableDevices();
 
   // FIXME: Presentation is quite poor
@@ -319,6 +336,7 @@ const SearchSelectorMultipleOptions = ({ selected, withNewVg }) => {
             itemId={device.sid}
             isSelected={isSelected}
             description={<DeviceDescription device={device} />}
+            onClick={() => onChange(device.name)}
           >
             <Name />
           </MenuItem>
@@ -342,7 +360,7 @@ const SearchSelectorSingleOption = ({ selected }) => {
   );
 };
 
-const SearchSelectorOptions = ({ drive, selected }) => {
+const SearchSelectorOptions = ({ drive, selected, onChange }) => {
   if (driveUtils.hasReuse(drive)) return <SearchSelectorSingleOption selected={selected} />;
 
   if (!driveUtils.hasFilesystem(drive)) {
@@ -350,17 +368,17 @@ const SearchSelectorOptions = ({ drive, selected }) => {
       return <SearchSelectorSingleOption selected={selected} />;
     }
 
-    return <SearchSelectorMultipleOptions selected={selected} />;
+    return <SearchSelectorMultipleOptions selected={selected} onChange={onChange} />;
   }
 
-  return <SearchSelectorMultipleOptions selected={selected} withNewVg />;
+  return <SearchSelectorMultipleOptions selected={selected} withNewVg onChange={onChange} />;
 };
 
-const SearchSelector = ({ drive, selected }) => {
+const SearchSelector = ({ drive, selected, onChange }) => {
   return (
     <>
       <SearchSelectorIntro drive={drive} />
-      <SearchSelectorOptions drive={drive} selected={selected} />
+      <SearchSelectorOptions drive={drive} selected={selected} onChange={onChange} />
     </>
   );
 };
@@ -384,6 +402,11 @@ const DriveSelector = ({ drive, selected }) => {
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
+  const changeDrive = useChangeDrive();
+  const onDriveChange = (newDriveName: string) => {
+    changeDrive(drive.name, newDriveName);
+    setIsOpen(false);
+  };
   const onToggle = () => setIsOpen(!isOpen);
 
   return (
@@ -409,7 +432,7 @@ const DriveSelector = ({ drive, selected }) => {
         <Menu ref={menuRef} activeItemId={selected.sid}>
           <MenuContent>
             <MenuList>
-              <SearchSelector drive={drive} selected={selected} />
+              <SearchSelector drive={drive} selected={selected} onChange={onDriveChange} />
               <RemoveDriveOption drive={drive} />
             </MenuList>
           </MenuContent>
@@ -421,7 +444,7 @@ const DriveSelector = ({ drive, selected }) => {
 };
 
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  const text = (drive: type.DriveElement): string => {
+  const text = (drive: configModel.Drive): string => {
     if (driveUtils.hasRoot(drive)) {
       if (driveUtils.hasPv(drive)) {
         if (drive.boot) {

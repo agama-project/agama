@@ -345,6 +345,7 @@ describe Agama::Storage::Proposal do
           storage: {
             drives: [
               {
+                alias:      "root",
                 partitions: [
                   {
                     filesystem: { path: "/" }
@@ -362,6 +363,7 @@ describe Agama::Storage::Proposal do
             drives: [
               {
                 name:        "/dev/sda",
+                alias:       "root",
                 spacePolicy: "keep",
                 partitions:  [
                   {
@@ -689,6 +691,34 @@ describe Agama::Storage::Proposal do
       it "raises an error" do
         expect { subject.calculate_from_json(config_json) }.to raise_error(/Invalid JSON/)
       end
+    end
+  end
+
+  describe "#calculate_from_model" do
+    let(:model_json) do
+      {
+        drives: [
+          {
+            name:       "/dev/vda",
+            filesystem: {
+              type: "xfs"
+            }
+          }
+        ]
+      }
+    end
+
+    it "calculates a proposal with the agama strategy and with the expected config" do
+      expect(subject).to receive(:calculate_agama) do |config|
+        expect(config).to be_a(Agama::Storage::Config)
+        expect(config.drives.size).to eq(1)
+
+        drive = config.drives.first
+        expect(drive.search.name).to eq("/dev/vda")
+        expect(drive.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::XFS)
+      end
+
+      subject.calculate_from_model(model_json)
     end
   end
 

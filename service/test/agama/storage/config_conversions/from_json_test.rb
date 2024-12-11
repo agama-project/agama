@@ -747,7 +747,9 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         config = subject.convert
         expect(config.boot).to be_a(Agama::Storage::Configs::Boot)
         expect(config.boot.configure).to eq(true)
-        expect(config.boot.device).to be_nil
+        expect(config.boot.device).to be_a(Agama::Storage::Configs::BootDevice)
+        expect(config.boot.device.default).to eq(true)
+        expect(config.boot.device.device_alias).to be_nil
       end
 
       it "sets #drives to the expected value" do
@@ -767,16 +769,33 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         {
           boot: {
             configure: true,
-            device:    "/dev/sdb"
+            device:    device
           }
         }
       end
 
+      let(:device) { "sdb" }
+
       it "sets #boot to the expected value" do
         config = subject.convert
         expect(config.boot).to be_a(Agama::Storage::Configs::Boot)
-        expect(config.boot.configure).to eq true
-        expect(config.boot.device).to eq "/dev/sdb"
+        expect(config.boot.configure).to eq(true)
+        expect(config.boot.device).to be_a(Agama::Storage::Configs::BootDevice)
+        expect(config.boot.device.default).to eq(false)
+        expect(config.boot.device.device_alias).to eq("sdb")
+      end
+
+      context "if boot does not specify 'device'" do
+        let(:device) { nil }
+
+        it "sets #boot to the expected value" do
+          config = subject.convert
+          expect(config.boot).to be_a(Agama::Storage::Configs::Boot)
+          expect(config.boot.configure).to eq(true)
+          expect(config.boot.device).to be_a(Agama::Storage::Configs::BootDevice)
+          expect(config.boot.device.default).to eq(true)
+          expect(config.boot.device.device_alias).to be_nil
+        end
       end
     end
 

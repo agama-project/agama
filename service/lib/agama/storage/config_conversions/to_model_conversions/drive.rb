@@ -23,7 +23,6 @@ require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/with_filesystem"
 require "agama/storage/config_conversions/to_model_conversions/with_partitions"
 require "agama/storage/config_conversions/to_model_conversions/with_space_policy"
-require "agama/storage/configs/drive"
 
 module Agama
   module Storage
@@ -35,9 +34,10 @@ module Agama
           include WithPartitions
           include WithSpacePolicy
 
-          # @see Base
-          def self.config_type
-            Configs::Drive
+          # @param config [Configs::Drive]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private
