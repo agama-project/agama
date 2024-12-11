@@ -21,12 +21,13 @@
  */
 
 import React, { Suspense, useState } from "react";
-import { Outlet } from "react-router-dom";
 import { Page } from "@patternfly/react-core";
+import { Outlet, useLocation } from "react-router-dom";
 import { Questions } from "~/components/questions";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
 import { IssuesDrawer } from "~/components/core";
+import { ROOT } from "~/routes/paths";
 
 export type LayoutProps = React.PropsWithChildren<{
   mountHeader?: boolean;
@@ -46,6 +47,7 @@ const Layout = ({
   headerOptions = {},
   children,
 }: LayoutProps) => {
+  const location = useLocation();
   const [issuesDrawerVisible, setIssuesDrawerVisible] = useState<boolean>(false);
   const closeIssuesDrawer = () => setIssuesDrawerVisible(false);
   const toggleIssuesDrawer = () => setIssuesDrawerVisible(!issuesDrawerVisible);
@@ -69,7 +71,7 @@ const Layout = ({
       >
         <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
       </Page>
-      <Questions />
+      {location.pathname !== ROOT.login && <Questions />}
     </>
   );
 };
