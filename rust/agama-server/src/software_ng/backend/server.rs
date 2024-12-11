@@ -33,7 +33,9 @@ use super::{client::SoftwareServiceClient, SoftwareServiceError};
 
 #[derive(Debug)]
 pub enum SoftwareAction {
+    Probe,
     GetProducts(oneshot::Sender<Vec<Product>>),
+    SelectProduct(String),
 }
 
 /// Software service server.
@@ -93,7 +95,38 @@ impl SoftwareServiceServer {
             SoftwareAction::GetProducts(tx) => {
                 self.get_products(tx).await?;
             }
+
+            SoftwareAction::SelectProduct(product_id) => {
+                self.select_product(product_id).await?;
+            }
+
+            SoftwareAction::Probe => {
+                self.probe().await?;
+            }
         }
+        Ok(())
+    }
+
+    /// Select the given product.
+    async fn select_product(&self, product_id: String) -> Result<(), SoftwareServiceError> {
+        tracing::info!("Selecting product {}", product_id);
+        Ok(())
+    }
+
+    async fn probe(&self) -> Result<(), SoftwareServiceError> {
+        _ = self
+            .status
+            .start_task(vec![
+                "Refreshing repositories metadata".to_string(),
+                "Calculate software proposal".to_string(),
+            ])
+            .await;
+
+        _ = self.status.next_step();
+        _ = self.status.next_step();
+
+        _ = self.status.finish_task();
+
         Ok(())
     }
 

@@ -19,9 +19,14 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    error::ServiceError, product::Product, progress::ProgressSummary
+    error::ServiceError, product::Product, progress::ProgressSummary,
+    software::model::SoftwareConfig,
 };
-use axum::{extract::State, routing::get, Json, Router};
+use axum::{
+    extract::State,
+    routing::{get, post, put},
+    Json, Router,
+};
 
 use crate::{error::Error, software::web::SoftwareProposal};
 
@@ -36,6 +41,11 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
     let state = SoftwareState { client };
     let router = Router::new()
         .route("/products", get(get_products))
+        // FIXME: it should be PATCH (using PUT just for backward compatibility).
+        .route("/config", put(set_config))
+        .route("/probe", post(probe))
+        .route("/proposal", get(get_proposal))
+        .route("/progress", get(get_progress))
         .with_state(state);
     Ok(router)
 }
@@ -46,7 +56,7 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
 #[utoipa::path(
     get,
     path = "/products",
-    context_path = "/api/software",
+    context_path = "/api/software_ng",
     responses(
         (status = 200, description = "List of known products", body = Vec<Product>),
         (status = 400, description = "Cannot read the list of products")
@@ -55,6 +65,65 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
 async fn get_products(State(state): State<SoftwareState>) -> Result<Json<Vec<Product>>, Error> {
     let products = state.client.get_products().await?;
     Ok(Json(products))
+}
+
+/// Sets the software configuration.
+///
+/// * `state`: service state.
+/// * `config`: software configuration.
+#[utoipa::path(
+    put,
+    path = "/config",
+    context_path = "/api/software_ng",
+    operation_id = "set_software_config",
+    responses(
+        (status = 200, description = "Set the software configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn set_config(
+    State(state): State<SoftwareState>,
+    Json(config): Json<SoftwareConfig>,
+) -> Result<(), Error> {
+    if let Some(product) = config.product {
+        state.client.select_product(&product).await?;
+    }
+
+    Ok(())
+}
+
+/// Refreshes the repositories.
+///
+/// At this point, only the required space is reported.
+#[utoipa::path(
+    post,
+    path = "/probe",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "Read repositories data"),
+        (status = 400, description = "The D-Bus service could not perform the action
+")
+    ),
+    operation_id = "software_probe"
+)]
+async fn probe(State(state): State<SoftwareState>) -> Result<Json<()>, Error> {
+    state.client.probe().await?;
+    Ok(Json(()))
+}
+
+/// Returns the proposal information.
+///
+/// At this point, only the required space is reported.
+#[utoipa::path(
+    get,
+    path = "/proposal",
+    context_path = "/api/software_ng",
+    responses(
+        (status = 200, description = "Software proposal", body = SoftwareProposal)
+    )
+)]
+async fn get_proposal(State(state): State<SoftwareState>) -> Result<Json<SoftwareProposal>, Error> {
+    unimplemented!("get the software proposal");
 }
 
 #[utoipa::path(

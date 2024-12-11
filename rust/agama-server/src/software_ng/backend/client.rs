@@ -47,4 +47,19 @@ impl SoftwareServiceClient {
         self.actions.send(SoftwareAction::GetProducts(tx))?;
         Ok(rx.await?)
     }
+
+    pub async fn select_product(&self, product_id: &str) -> Result<(), SoftwareServiceError> {
+        self.actions
+            .send(SoftwareAction::SelectProduct(product_id.to_string()))?;
+        Ok(())
+    }
+
+    pub async fn probe(&self) -> Result<(), SoftwareServiceError> {
+        self.actions.send(SoftwareAction::Probe)?;
+        Ok(())
+    }
+
+    pub async fn get_progress(&self) -> Result<Option<ProgressSummary>, SoftwareServiceError> {
+        Ok(self.status.get_progress().await?)
+    }
 }
