@@ -59,6 +59,8 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
