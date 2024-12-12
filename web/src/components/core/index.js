@@ -22,7 +22,6 @@
 
 export { default as ChangeProductLink } from "./ChangeProductLink";
 export { default as Description } from "./Description";
-export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
 export { default as FormReadOnlyField } from "./FormReadOnlyField";
 export { default as FormValidationError } from "./FormValidationError";
