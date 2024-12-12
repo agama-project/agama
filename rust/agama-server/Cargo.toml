@@ -50,6 +50,7 @@ subprocess = "0.2.9"
 gethostname = "0.4.3"
 tokio-util = "0.7.12"
 serde_yaml = "0.9.34"
+zypp-agama = { path = "../zypp-c-api/rust/zypp-agama" }
 
 [[bin]]
 name = "agama-dbus-server"
