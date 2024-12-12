@@ -18,9 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::sync::Arc;
+use std::{path::Path, sync::Arc};
 
-use agama_lib::{product::Product, progress::ProgressSummary};
+use agama_lib::product::Product;
 use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{
@@ -30,6 +30,10 @@ use crate::{
 };
 
 use super::{client::SoftwareServiceClient, SoftwareServiceError};
+
+const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
+// Just a temporary value
+const ARCH: &str = "x86_64";
 
 #[derive(Debug)]
 pub enum SoftwareAction {
@@ -44,6 +48,8 @@ pub struct SoftwareServiceServer {
     events: EventsSender,
     products: Arc<Mutex<ProductsRegistry>>,
     status: ServiceStatusClient,
+    // FIXME: what about having a SoftwareServiceState to keep business logic state?
+    selected_product: Option<String>,
 }
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Software1";
@@ -55,7 +61,7 @@ impl SoftwareServiceServer {
     pub async fn start(
         events: EventsSender,
         products: Arc<Mutex<ProductsRegistry>>,
-    ) -> SoftwareServiceClient {
+    ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
         let status = ServiceStatusManager::start(SERVICE_NAME, events.clone());
@@ -65,16 +71,21 @@ impl SoftwareServiceServer {
             events,
             products,
             status: status.clone(),
+            selected_product: None,
         };
 
         tokio::spawn(async move {
-            server.run().await;
+            if let Err(error) = server.run().await {
+                tracing::error!("Software service could not start: {:?}", error);
+            }
         });
-        SoftwareServiceClient::new(sender, status)
+        Ok(SoftwareServiceClient::new(sender, status))
     }
 
     /// Runs the server dispatching the actions received through the input channel.
-    async fn run(mut self) {
+    async fn run(mut self) -> Result<(), SoftwareServiceError> {
+        self.initialize_target_dir()?;
+
         loop {
             let action = self.receiver.recv().await;
             tracing::debug!("software dispatching action: {:?}", action);
@@ -87,6 +98,8 @@ impl SoftwareServiceServer {
                 tracing::error!("Software dispatch error: {:?}", error);
             }
         }
+
+        Ok(())
     }
 
     /// Forwards the action to the appropriate handler.
@@ -102,14 +115,21 @@ impl SoftwareServiceServer {
 
             SoftwareAction::Probe => {
                 self.probe().await?;
+                _ = self.status.finish_task();
             }
         }
         Ok(())
     }
 
     /// Select the given product.
-    async fn select_product(&self, product_id: String) -> Result<(), SoftwareServiceError> {
+    async fn select_product(&mut self, product_id: String) -> Result<(), SoftwareServiceError> {
         tracing::info!("Selecting product {}", product_id);
+        let products = self.products.lock().await;
+        if products.find(&product_id).is_none() {
+            return Err(SoftwareServiceError::UnknownProduct(product_id));
+        };
+
+        self.selected_product = Some(product_id.clone());
         Ok(())
     }
 
@@ -117,15 +137,50 @@ impl SoftwareServiceServer {
         _ = self
             .status
             .start_task(vec![
+                "Add base repositories".to_string(),
                 "Refreshing repositories metadata".to_string(),
-                "Calculate software proposal".to_string(),
+                // "Calculate software proposal".to_string(),
             ])
             .await;
 
-        _ = self.status.next_step();
+        // FIXME: it holds the mutex too much. We could use a RwLock mutex.
+        let products = self.products.lock().await;
+
+        let Some(product_id) = &self.selected_product else {
+            return Err(SoftwareServiceError::NoSelectedProduct);
+        };
+
+        let Some(product) = products.find(product_id) else {
+            return Err(SoftwareServiceError::UnknownProduct(product_id.clone()));
+        };
+
+        // FIXME: this is a temporary workaround. The arch should be processed in the
+        // ProductsRegistry.
+        let arch = ARCH.to_string();
+        for (idx, repo) in product
+            .software
+            .installation_repositories
+            .iter()
+            .enumerate()
+        {
+            if repo.archs.contains(&arch) {
+                // TODO: we should add a repository ID in the configuration file.
+                let name = format!("agama-{}", idx);
+                zypp_agama::add_repository(&name, &repo.url, |percent, alias| {
+                    tracing::info!("Adding repository {} ({}%)", alias, percent);
+                    true
+                })
+                .map_err(SoftwareServiceError::AddRepositoryFailed)?;
+            }
+        }
+
         _ = self.status.next_step();
 
-        _ = self.status.finish_task();
+        zypp_agama::load_source(|percent, alias| {
+            tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+            true
+        })
+        .map_err(SoftwareServiceError::LoadSourcesFailed)?;
 
         Ok(())
     }
@@ -150,6 +205,20 @@ impl SoftwareServiceServer {
             .collect();
         tx.send(products)
             .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
+        Ok(())
+    }
+
+    fn initialize_target_dir(&self) -> Result<(), SoftwareServiceError> {
+        let target_dir = Path::new(TARGET_DIR);
+        if target_dir.exists() {
+            _ = std::fs::remove_dir_all(target_dir);
+        }
+        std::fs::create_dir_all(target_dir).map_err(SoftwareServiceError::TargetCreationFailed)?;
+
+        zypp_agama::init_target(TARGET_DIR, |text, step, total| {
+            tracing::info!("Initializing target: {} ({}/{})", text, step, total);
+        })
+        .map_err(SoftwareServiceError::TargetInitFailed)?;
         Ok(())
     }
 }

@@ -37,6 +37,7 @@ use std::sync::Arc;
 use agama_lib::base_http_client::BaseHTTPClientError;
 pub use client::SoftwareServiceClient;
 use tokio::sync::{mpsc, oneshot, Mutex};
+use zypp_agama::ZyppError;
 
 use crate::{
     common::backend::service_status::ServiceStatusError, products::ProductsRegistry,
@@ -64,6 +65,24 @@ pub enum SoftwareServiceError {
 
     #[error("Service status error: {0}")]
     ServiceStatus(#[from] ServiceStatusError),
+
+    #[error("Unknown product: {0}")]
+    UnknownProduct(String),
+
+    #[error("Target creation failed: {0}")]
+    TargetCreationFailed(#[source] std::io::Error),
+
+    #[error("No selected product")]
+    NoSelectedProduct,
+
+    #[error("Failed to initialize target directory: {0}")]
+    TargetInitFailed(#[source] ZyppError),
+
+    #[error("Failed to add a repository: {0}")]
+    AddRepositoryFailed(#[source] ZyppError),
+
+    #[error("Failed to load the repositories: {0}")]
+    LoadSourcesFailed(#[source] ZyppError),
 }
 
 /// Builds and starts the software service.
@@ -88,6 +107,6 @@ impl SoftwareService {
         events: EventsSender,
         products: Arc<Mutex<ProductsRegistry>>,
     ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
-        Ok(server::SoftwareServiceServer::start(events, products).await)
+        server::SoftwareServiceServer::start(events, products).await
     }
 }

@@ -93,6 +93,13 @@ impl ProductsRegistry {
     pub fn is_multiproduct(&self) -> bool {
         self.products.len() > 1
     }
+
+    /// Finds a product by its ID.
+    ///
+    /// * `id`: product ID.
+    pub fn find(&self, id: &str) -> Option<&ProductSpec> {
+        self.products.iter().find(|p| p.id == id)
+    }
 }
 
 // TODO: ideally, part of this code could be auto-generated from a JSON schema definition.
@@ -169,5 +176,16 @@ mod test {
         assert_eq!(software.installation_repositories.len(), 11);
         assert_eq!(software.installation_labels.len(), 4);
         assert_eq!(software.base_product, "openSUSE");
+    }
+
+    #[test]
+    fn test_find_product() {
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/share/products.d");
+        let products = ProductsRegistry::load_from(path.as_path()).unwrap();
+        let tw = products.find("Tumbleweed").unwrap();
+        assert_eq!(tw.id, "Tumbleweed");
+
+        let missing = products.find("Missing");
+        assert!(missing.is_none());
     }
 }
