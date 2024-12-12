@@ -90,7 +90,7 @@ async fn first_user_changed_stream(
                     full_name: user.0,
                     user_name: user.1,
                     password: user.2,
-                    encrypted_password: user.3,
+                    hashed_password: user.3,
                     autologin: user.4,
                 };
                 return Some(Event::FirstUserChanged(user_struct));
@@ -243,7 +243,7 @@ async fn patch_root(
         } else {
             state
                 .users
-                .set_root_password(&password, config.encrypted_password == Some(true))
+                .set_root_password(&password, config.hashed_password == Some(true))
                 .await?
         }
     }

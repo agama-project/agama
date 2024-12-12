@@ -53,7 +53,7 @@ describe("RootAuthMethodsPage", () => {
     await user.click(acceptButton);
     expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({
       password: "t0ps3cr3t",
-      encryptedPassword: false,
+      hashedPassword: false,
     });
 
     // After submitting the data, it must navigate

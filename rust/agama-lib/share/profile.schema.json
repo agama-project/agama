@@ -382,12 +382,12 @@
           "examples": ["jane.doe"]
         },
         "password": {
-          "title": "User password (plain text or encrypted depending on the \"encryptedPassword\" field)",
+          "title": "User password (plain text or hashed depending on the \"hashedPassword\" field)",
           "type": "string",
           "examples": ["nots3cr3t"]
         },
-        "encryptedPassword": {
-          "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
+        "hashedPassword": {
+          "title": "Flag for hashed password (true) or plain text password (false or not defined)",
           "type": "boolean"
         }
       },
@@ -399,11 +399,11 @@
       "additionalProperties": false,
       "properties": {
         "password": {
-          "title": "Root password (plain text or encrypted depending on the \"encryptedPassword\" field)",
+          "title": "Root password (plain text or hashed depending on the \"hashedPassword\" field)",
           "type": "string"
         },
-        "encryptedPassword": {
-          "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
+        "hashedPassword": {
+          "title": "Flag for hashed password (true) or plain text password (false or not defined)",
           "type": "boolean"
         },
         "sshPublicKey": {
