@@ -24,10 +24,11 @@
 
 use std::{
     io::Write,
+    path::Path,
     process::{Command, Stdio},
 };
 
-/// File formats
+/// Relevant file formats for Agama.
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum FileFormat {
     Json,
@@ -36,16 +37,18 @@ pub enum FileFormat {
     Unknown,
 }
 
-const JSONNETFMT_PATH: &str = "/usr/bin/jsonnetfmt";
+const JSONNETFMT_BIN: &str = "jsonnetfmt";
 
 impl FileFormat {
-    pub fn from_file(file_path: &str) -> Self {
+    /// Tries to guess the file format from the content of a file.
+    pub fn from_file<P: AsRef<Path>>(file_path: P) -> Self {
         let Ok(content) = std::fs::read_to_string(file_path) else {
             return Self::Unknown;
         };
         Self::from_string(&content)
     }
 
+    /// Tries to guess the file format from a string.
     pub fn from_string(content: &str) -> Self {
         if Self::is_json(content) {
             return Self::Json;
@@ -58,15 +61,23 @@ impl FileFormat {
         Self::Unknown
     }
 
+    /// Whether the format is JSON.
+    ///
+    /// It tries to parse the content as JSON and returns `true` if it succeeds.
     fn is_json(content: &str) -> bool {
         let json = serde_json::from_str::<serde_json::Value>(content);
         json.is_ok()
     }
 
+    /// Whether the format is Jsonnet.
+    ///
+    /// It tries to process the content with the jsonnetfmt tool and returns `true` if it succeeds.
     fn is_jsonnet(content: &str) -> bool {
-        let child = Command::new(JSONNETFMT_PATH)
+        let child = Command::new(JSONNETFMT_BIN)
             .args(["-"])
             .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
             .spawn();
 
         let Ok(mut child) = child else {
@@ -85,6 +96,9 @@ impl FileFormat {
         child.wait().is_ok_and(|s| s.success())
     }
 
+    /// Whether is is a script.
+    ///
+    /// It returns `true` if the content starts with a shebang.
     fn is_script(content: &str) -> bool {
         content.starts_with("#!")
     }

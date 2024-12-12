@@ -22,7 +22,8 @@ use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
-    profile::{AutoyastProfile, ProfileEvaluator, ProfileValidator, ValidationResult},
+    profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationResult},
+    utils::FileFormat,
     utils::Transfer,
     Store as SettingsStore,
 };
@@ -114,48 +115,59 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
     tokio::spawn(async move {
         show_progress().await.unwrap();
     });
+
     let url = Url::parse(&url_string)?;
     let tmpdir = TempDir::new()?; // TODO: create it only if dir is not passed
+    let work_dir = dir.unwrap_or_else(|| tmpdir.into_path());
+    let profile_path = work_dir.join("profile.json");
+
+    // Specific AutoYaST handling
     let path = url.path();
-    let output_file = if path.ends_with(".sh") {
-        "profile.sh"
-    } else if path.ends_with(".jsonnet") {
-        "profile.jsonnet"
-    } else {
-        "profile.json"
-    };
-    let output_dir = dir.unwrap_or_else(|| tmpdir.into_path());
-    let mut output_path = output_dir.join(output_file);
-    let output_fd = File::create(output_path.clone())?;
     if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
-        // autoyast specific download and convert to json
-        AutoyastProfile::new(&url)?.read_into(output_fd)?;
+        // AutoYaST specific download and convert to JSON
+        AutoyastProfileImporter::read(&url)?.write_file(&profile_path)?;
     } else {
-        // just download profile
-        Transfer::get(&url_string, output_fd)?;
+        pre_process_profile(&url_string, &profile_path)?;
     }
 
-    // exec shell scripts
-    if output_file.ends_with(".sh") {
-        let err = Command::new("bash")
-            .args([output_path.to_str().context("Wrong path to shell script")?])
-            .exec();
-        eprintln!("Exec failed: {}", err);
+    validate(&profile_path)?;
+    store_settings(&profile_path).await?;
+
+    Ok(())
+}
+
+// Preprocess the profile.
+//
+// The profile can be a JSON or a Jsonnet file or a script.
+//
+// * If it is a JSON file, no preprocessing is needed.
+// * If it is a Jsonnet file, it is converted to JSON.
+// * If it is a script, it is executed.
+fn pre_process_profile<P: AsRef<Path>>(url_string: &str, path: P) -> anyhow::Result<()> {
+    let work_dir = path.as_ref().parent().unwrap();
+    let tmp_profile_path = work_dir.join("profile.temp");
+    let tmp_file = File::create(&tmp_profile_path)?;
+    Transfer::get(url_string, tmp_file)?;
+
+    match FileFormat::from_file(&tmp_profile_path) {
+        FileFormat::Jsonnet => {
+            let file = File::create(path)?;
+            let evaluator = ProfileEvaluator {};
+            evaluator
+                .evaluate(&tmp_profile_path, file)
+                .context("Could not evaluate the profile".to_string())?;
+        }
+        FileFormat::Script => {
+            let err = Command::new("bash").args([path.as_ref()]).exec();
+            eprintln!("Exec failed: {}", err);
+        }
+        FileFormat::Json => {
+            std::fs::rename(&tmp_profile_path, path.as_ref())?;
+        }
+        _ => {
+            return Err(anyhow::Error::msg("Unsupported file format"));
+        }
     }
-
-    // evaluate jsonnet profiles
-    if output_file.ends_with(".jsonnet") {
-        let fd = File::create(output_dir.join("profile.json"))?;
-        let evaluator = ProfileEvaluator {};
-        evaluator
-            .evaluate(&output_path, fd)
-            .context("Could not evaluate the profile".to_string())?;
-        output_path = output_dir.join("profile.json");
-    }
-
-    validate(&output_path)?;
-    store_settings(&output_path).await?;
-
     Ok(())
 }
 
@@ -168,8 +180,8 @@ async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
 
 fn autoyast(url_string: String) -> anyhow::Result<()> {
     let url = Url::parse(&url_string)?;
-    let reader = AutoyastProfile::new(&url)?;
-    reader.read_into(std::io::stdout())?;
+    let importer = AutoyastProfileImporter::read(&url)?;
+    importer.write(std::io::stdout())?;
     Ok(())
 }
 
