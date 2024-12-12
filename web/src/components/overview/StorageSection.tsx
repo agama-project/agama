@@ -90,7 +90,8 @@ export default function StorageSection() {
   };
 
   if (drives.length === 0) return <Text>{_("No device selected yet")}</Text>;
-
+  if (!drives.find((dr) => devices.map((d) => d.name).includes(dr.name)))
+    return <Text>{_("No device selected yet")}</Text>;
   if (drives.length > 1) {
     return (
       <Content>

@@ -24,24 +24,25 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
-import * as ConfigModel from "~/storage/model/config";
+import * as ConfigModel from "~/api/storage/types/config-model";
 
 const mockDevices = [
-  { name: "/dev/sda", size: 536870912000 },
-  { name: "/dev/sdb", size: 697932185600 },
+  { name: "/dev/sda", size: 536870912000, volumeGroups: [] },
+  { name: "/dev/sdb", size: 697932185600, volumeGroups: [] },
 ];
 
-const mockConfig = { devices: [] as ConfigModel.Device[] };
+const mockConfig = { drives: [] as ConfigModel.Drive[] };
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
+  useConfigModel: () => mockConfig,
   useDevices: () => mockDevices,
-  useConfigDevices: () => mockConfig.devices,
+  useConfigDevices: () => mockConfig.drives,
 }));
 
 describe("when the configuration does not include any device", () => {
   beforeEach(() => {
-    mockConfig.devices = [];
+    mockConfig.drives = [];
   });
 
   it("indicates that a device is not selected", async () => {
@@ -53,7 +54,7 @@ describe("when the configuration does not include any device", () => {
 
 describe("when the configuration contains one drive", () => {
   beforeEach(() => {
-    mockConfig.devices = [{ name: "/dev/sda", spacePolicy: "delete" }];
+    mockConfig.drives = [{ name: "/dev/sda", spacePolicy: "delete", volumeGroups: [] }];
   });
 
   it("renders the proposal summary", async () => {
@@ -66,7 +67,7 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'resize'", () => {
     beforeEach(() => {
-      mockConfig.devices[0].spacePolicy = "resize";
+      mockConfig.drives[0].spacePolicy = "resize";
     });
 
     it("indicates that partitions may be shrunk", async () => {
@@ -78,7 +79,7 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'keep'", () => {
     beforeEach(() => {
-      mockConfig.devices[0].spacePolicy = "keep";
+      mockConfig.drives[0].spacePolicy = "keep";
     });
 
     it("indicates that partitions will be kept", async () => {
@@ -90,7 +91,7 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the drive matches no disk", () => {
     beforeEach(() => {
-      mockConfig.devices[0].name = null;
+      mockConfig.drives[0].name = null;
     });
 
     it("indicates that a device is not selected", async () => {
@@ -103,9 +104,9 @@ describe("when the configuration contains one drive", () => {
 
 describe("when the configuration contains several drives", () => {
   beforeEach(() => {
-    mockConfig.devices = [
-      { name: "/dev/sda", spacePolicy: "delete" },
-      { name: "/dev/sdb", spacePolicy: "delete" },
+    mockConfig.drives = [
+      { name: "/dev/sda", spacePolicy: "delete", volumeGroups: [] },
+      { name: "/dev/sdb", spacePolicy: "delete", volumeGroups: [] },
     ];
   });
 

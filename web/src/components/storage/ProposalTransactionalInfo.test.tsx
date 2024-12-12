@@ -24,8 +24,9 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalTransactionalInfo } from "~/components/storage";
-import { ProposalSettings, ProposalTarget, Volume, VolumeTarget } from "~/types/storage";
+import { Volume, VolumeTarget } from "~/types/storage";
 
+let mockVolumes: Volume[] = [];
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useProduct: () => ({
@@ -34,20 +35,10 @@ jest.mock("~/queries/software", () => ({
   useProductChanges: () => jest.fn(),
 }));
 
-const settings: ProposalSettings = {
-  target: ProposalTarget.DISK,
-  targetDevice: "/dev/sda",
-  targetPVDevices: [],
-  configureBoot: false,
-  bootDevice: "",
-  defaultBootDevice: "",
-  encryptionPassword: "",
-  encryptionMethod: "",
-  spacePolicy: "delete",
-  spaceActions: [],
-  volumes: [],
-  installationDevices: [],
-};
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useVolumeTemplates: () => mockVolumes,
+}));
 
 const rootVolume: Volume = {
   mountPath: "/",
@@ -70,30 +61,24 @@ const rootVolume: Volume = {
   },
 };
 
-const props = { settings };
-
-beforeEach(() => {
-  settings.volumes = [];
-});
-
 describe("if the system is not transactional", () => {
   beforeEach(() => {
-    settings.volumes = [rootVolume];
+    mockVolumes = [rootVolume];
   });
 
   it("renders nothing", () => {
-    const { container } = plainRender(<ProposalTransactionalInfo {...props} />);
+    const { container } = plainRender(<ProposalTransactionalInfo />);
     expect(container).toBeEmptyDOMElement();
   });
 });
 
 describe("if the system is transactional", () => {
   beforeEach(() => {
-    settings.volumes = [{ ...rootVolume, transactional: true }];
+    mockVolumes = [{ ...rootVolume, transactional: true }];
   });
 
   it("renders an explanation about the transactional system", () => {
-    plainRender(<ProposalTransactionalInfo {...props} />);
+    plainRender(<ProposalTransactionalInfo />);
 
     screen.getByText("Transactional root file system");
   });
