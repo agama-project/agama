@@ -18,17 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::io;
-use thiserror::Error;
+//! Utility module for Agama.
 
-use crate::utils::TransferError;
+mod file_format;
+mod transfer;
 
-#[derive(Error, Debug)]
-pub enum ScriptError {
-    #[error("Could not fetch the profile: '{0}'")]
-    Unreachable(#[from] TransferError),
-    #[error("I/O error: '{0}'")]
-    InputOutputError(#[from] io::Error),
-    #[error("Wrong script type")]
-    WrongScriptType,
-}
+pub use file_format::*;
+pub use transfer::*;

@@ -66,7 +66,7 @@ pub use store::Store;
 pub mod openapi;
 pub mod questions;
 pub mod scripts;
-pub mod transfer;
+pub mod utils;
 
 use crate::error::ServiceError;
 use reqwest::{header, Client};

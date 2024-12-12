@@ -23,7 +23,7 @@ use agama_lib::{
     base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
     profile::{AutoyastProfile, ProfileEvaluator, ProfileValidator, ValidationResult},
-    transfer::Transfer,
+    utils::Transfer,
     Store as SettingsStore,
 };
 use anyhow::Context;

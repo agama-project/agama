@@ -32,7 +32,7 @@ mod questions;
 use crate::error::CliError;
 use agama_lib::base_http_client::BaseHTTPClient;
 use agama_lib::{
-    error::ServiceError, manager::ManagerClient, progress::ProgressMonitor, transfer::Transfer,
+    error::ServiceError, manager::ManagerClient, progress::ProgressMonitor, utils::Transfer,
 };
 use auth::run as run_auth_cmd;
 use commands::Commands;
