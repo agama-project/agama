@@ -624,7 +624,97 @@ describe Agama::Storage::ConfigConversions::ToModel do
       it "generates the expected JSON" do
         expect(subject.convert).to eq(
           {
+            boot:   {
+              configure: true,
+              device:    { default: true }
+            },
             drives: []
+          }
+        )
+      end
+    end
+
+    context "if #boot is set to be configured" do
+      let(:config_json) do
+        {
+          boot:   {
+            configure: true,
+            device:    device_alias
+          },
+          drives: [
+            {
+              search:     "/dev/vda",
+              partitions: [
+                { filesystem: { path: "/" } }
+              ]
+            },
+            {
+              search: "/dev/vdb",
+              alias:  "vdb"
+            }
+          ]
+        }
+      end
+
+      context "and uses the default boot device" do
+        let(:device_alias) { nil }
+
+        it "generates the expected JSON for 'boot'" do
+          boot_model = subject.convert[:boot]
+
+          expect(boot_model).to eq(
+            {
+              configure: true,
+              device:    {
+                default: true,
+                name:    "/dev/vda"
+              }
+            }
+          )
+        end
+      end
+
+      context "and uses a specific boot device" do
+        let(:device_alias) { "vdb" }
+
+        it "generates the expected JSON for 'boot'" do
+          boot_model = subject.convert[:boot]
+
+          expect(boot_model).to eq(
+            {
+              configure: true,
+              device:    {
+                default: false,
+                name:    "/dev/vdb"
+              }
+            }
+          )
+        end
+      end
+    end
+
+    context "if #boot is set to not be configured" do
+      let(:config_json) do
+        {
+          boot:   {
+            configure: false,
+            device:    "vda"
+          },
+          drives: [
+            {
+              search: "/dev/vda",
+              alias:  "vda"
+            }
+          ]
+        }
+      end
+
+      it "generates the expected JSON for 'boot'" do
+        boot_model = subject.convert[:boot]
+
+        expect(boot_model).to eq(
+          {
+            configure: false
           }
         )
       end
@@ -645,9 +735,9 @@ describe Agama::Storage::ConfigConversions::ToModel do
       let(:drive) { {} }
 
       it "generates the expected JSON for 'drives'" do
-        drives_json = subject.convert[:drives]
+        drives_model = subject.convert[:drives]
 
-        expect(drives_json).to eq(
+        expect(drives_model).to eq(
           [
             { name: "/dev/vda", spacePolicy: "keep", partitions: [] },
             { name: "/dev/vdb", spacePolicy: "keep", partitions: [] }
@@ -659,9 +749,9 @@ describe Agama::Storage::ConfigConversions::ToModel do
         let(:drive) { { search: "/dev/vdd" } }
 
         it "generates the expected JSON for 'drives'" do
-          drives_json = subject.convert[:drives]
+          drives_model = subject.convert[:drives]
 
-          expect(drives_json).to eq(
+          expect(drives_model).to eq(
             [
               { name: "/dev/vda", spacePolicy: "keep", partitions: [] }
             ]
@@ -673,9 +763,9 @@ describe Agama::Storage::ConfigConversions::ToModel do
         let(:drive) { { search: "/dev/vda" } }
 
         it "generates the expected JSON for 'drives'" do
-          drives_json = subject.convert[:drives]
+          drives_model = subject.convert[:drives]
 
-          expect(drives_json).to eq(
+          expect(drives_model).to eq(
             [
               { name: "/dev/vda", spacePolicy: "keep", partitions: [] },
               { name: "/dev/vdb", spacePolicy: "keep", partitions: [] }

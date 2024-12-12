@@ -360,6 +360,13 @@ describe Agama::Storage::Proposal do
       it "returns the config model" do
         expect(subject.model_json).to eq(
           {
+            boot:   {
+              configure: true,
+              device:    {
+                default: true,
+                name:    "/dev/sda"
+              }
+            },
             drives: [
               {
                 name:        "/dev/sda",

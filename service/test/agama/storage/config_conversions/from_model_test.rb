@@ -21,7 +21,9 @@
 
 require_relative "../../../test_helper"
 require "agama/config"
+require "agama/storage/config"
 require "agama/storage/config_conversions"
+require "agama/storage/configs"
 require "y2storage/encryption_method"
 require "y2storage/filesystems/mount_by_type"
 require "y2storage/filesystems/type"
@@ -797,9 +799,166 @@ describe Agama::Storage::ConfigConversions::FromModel do
     context "with an empty JSON" do
       let(:model_json) { {} }
 
+      it "sets #boot to the expected value" do
+        config = subject.convert
+        boot = config.boot
+        expect(boot).to be_a(Agama::Storage::Configs::Boot)
+        expect(boot.configure?).to eq(true)
+        expect(boot.device).to be_a(Agama::Storage::Configs::BootDevice)
+        expect(boot.device.default?).to eq(true)
+        expect(boot.device.device_alias).to be_nil
+      end
+
       it "sets #drives to the expected value" do
         config = subject.convert
         expect(config.drives).to be_empty
+      end
+    end
+
+    context "with a JSON specifying 'boot'" do
+      let(:model_json) do
+        {
+          boot:   {
+            configure: configure,
+            device:    {
+              default: default,
+              name:    name
+            }
+          },
+          drives: drives
+        }
+      end
+
+      let(:default) { false }
+      let(:name) { nil }
+      let(:drives) { [] }
+
+      context "if boot is set to be configured" do
+        let(:configure) { true }
+
+        context "and the boot device is set to default" do
+          let(:default) { true }
+          let(:name) { "/dev/vda" }
+
+          it "sets #boot to the expected value" do
+            config = subject.convert
+            boot = config.boot
+            expect(boot.configure?).to eq(true)
+            expect(boot.device.default?).to eq(true)
+            expect(boot.device.device_alias).to be_nil
+          end
+        end
+
+        context "and the boot device is not set to default" do
+          let(:default) { false }
+
+          context "and the boot device does not specify 'name'" do
+            let(:name) { nil }
+
+            it "sets #boot to the expected value" do
+              config = subject.convert
+              boot = config.boot
+              expect(boot.configure?).to eq(true)
+              expect(boot.device.default?).to eq(false)
+              expect(boot.device.device_alias).to be_nil
+            end
+          end
+
+          context "and the boot device specifies a 'name'" do
+            let(:name) { "/dev/vda" }
+
+            context "and there is a drive model for the given boot device name" do
+              let(:drives) do
+                [
+                  { name: "/dev/vda", alias: device_alias }
+                ]
+              end
+
+              context "and the drive model specifies an alias" do
+                let(:device_alias) { "boot" }
+
+                it "does not add more drives" do
+                  config = subject.convert
+                  expect(config.drives.size).to eq(1)
+
+                  drive = config.drives.first
+                  expect(drive.alias).to eq("boot")
+                end
+
+                it "sets #boot to the expected value" do
+                  config = subject.convert
+                  boot = config.boot
+                  expect(boot.configure?).to eq(true)
+                  expect(boot.device.default?).to eq(false)
+                  expect(boot.device.device_alias).to eq("boot")
+                end
+              end
+
+              context "and the drive model does not specify an alias" do
+                let(:device_alias) { nil }
+
+                it "does not add more drives" do
+                  config = subject.convert
+                  expect(config.drives.size).to eq(1)
+                end
+
+                it "sets an alias to the boot drive config" do
+                  config = subject.convert
+                  drive = config.drives.first
+                  expect(drive.alias).to_not be_nil
+                end
+
+                it "sets #boot to the expected value" do
+                  config = subject.convert
+                  boot = config.boot
+                  drive = config.drives.first
+                  expect(boot.configure?).to eq(true)
+                  expect(boot.device.default?).to eq(false)
+                  expect(boot.device.device_alias).to eq(drive.alias)
+                end
+              end
+            end
+
+            context "and there is no drive model for the given boot device name" do
+              let(:drives) do
+                [
+                  { name: "/dev/vdb" }
+                ]
+              end
+
+              it "adds a drive for the boot device" do
+                config = subject.convert
+                expect(config.drives.size).to eq(2)
+
+                drive = config.drives.find { |d| d.search.name == name }
+                expect(drive.alias).to_not be_nil
+              end
+
+              it "sets #boot to the expected value" do
+                config = subject.convert
+                boot = config.boot
+                drive = config.drives.find { |d| d.search.name == name }
+                expect(boot.configure?).to eq(true)
+                expect(boot.device.default?).to eq(false)
+                expect(boot.device.device_alias).to eq(drive.alias)
+              end
+            end
+          end
+        end
+      end
+
+      context "if boot is not set to be configured" do
+        let(:configure) { false }
+        let(:default) { true }
+        let(:name) { "/dev/vda" }
+
+        it "sets #boot to the expected value" do
+          config = subject.convert
+          boot = config.boot
+          expect(boot.configure?).to eq(false)
+          expect(boot.device.default?).to eq(true)
+          expect(boot.device.device_alias).to be_nil
+        end
       end
     end
 

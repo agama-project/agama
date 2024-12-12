@@ -19,21 +19,41 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_model_conversions/boot"
+require "agama/storage/config_conversions/from_model_conversions/base"
 require "agama/storage/config_conversions/from_model_conversions/boot_device"
-require "agama/storage/config_conversions/from_model_conversions/config"
-require "agama/storage/config_conversions/from_model_conversions/drive"
-require "agama/storage/config_conversions/from_model_conversions/filesystem"
-require "agama/storage/config_conversions/from_model_conversions/filesystem_type"
-require "agama/storage/config_conversions/from_model_conversions/partition"
-require "agama/storage/config_conversions/from_model_conversions/search"
-require "agama/storage/config_conversions/from_model_conversions/size"
+require "agama/storage/configs/boot"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions from model according to the JSON schema.
       module FromModelConversions
+        # Boot conversion from model according to the JSON schema.
+        class Boot < Base
+        private
+
+          # @see Base
+          # @return [Configs::Boot]
+          def default_config
+            Configs::Boot.new
+          end
+
+          # @see Base#conversions
+          # @return [Hash]
+          def conversions
+            {
+              configure: model_json[:configure],
+              device:    convert_device
+            }
+          end
+
+          # @return [Configs::BootDevice, nil]
+          def convert_device
+            boot_device_model = model_json[:device]
+            return if boot_device_model.nil?
+
+            FromModelConversions::BootDevice.new(boot_device_model).convert
+          end
+        end
       end
     end
   end

@@ -19,21 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/to_model_conversions/base"
-require "agama/storage/config_conversions/to_model_conversions/boot"
-require "agama/storage/config_conversions/to_model_conversions/boot_device"
-require "agama/storage/config_conversions/to_model_conversions/config"
-require "agama/storage/config_conversions/to_model_conversions/drive"
-require "agama/storage/config_conversions/to_model_conversions/filesystem"
-require "agama/storage/config_conversions/to_model_conversions/partition"
-require "agama/storage/config_conversions/to_model_conversions/size"
-require "agama/storage/config_conversions/to_model_conversions/space_policy"
+require "agama/storage/config_conversions/from_model_conversions/base"
+require "agama/storage/configs/boot_device"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions to model according to the JSON schema.
-      module ToModelConversions
+      module FromModelConversions
+        # Boot device conversion from model according to the JSON schema.
+        class BootDevice < Base
+        private
+
+          # @see Base
+          # @return [Configs::Boot]
+          def default_config
+            Configs::BootDevice.new
+          end
+
+          # @see Base#conversions
+          # @return [Hash]
+          def conversions
+            {
+              default: model_json[:default]
+            }
+          end
+        end
       end
     end
   end
