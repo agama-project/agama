@@ -126,7 +126,7 @@ impl ProductSpec {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct SoftwareSpec {
-    pub installation_repositories: Vec<RepositorySpec>,
+    installation_repositories: Vec<RepositorySpec>,
     #[serde(default)]
     pub installation_labels: Vec<LabelSpec>,
     pub mandatory_patterns: Vec<String>,
@@ -135,6 +135,17 @@ pub struct SoftwareSpec {
     pub optional_patterns: Option<Vec<String>>,
     pub optional_packages: Option<Vec<String>>,
     pub base_product: String,
+}
+
+impl SoftwareSpec {
+    // NOTE: perhaps implementing our own iterator would be more efficient.
+    pub fn repositories(&self) -> Vec<&RepositorySpec> {
+        let arch = std::env::consts::ARCH.to_string();
+        self.installation_repositories
+            .iter()
+            .filter(|r| r.archs.contains(&arch))
+            .collect()
+    }
 }
 
 #[serde_as]

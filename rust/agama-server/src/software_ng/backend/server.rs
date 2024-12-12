@@ -32,8 +32,6 @@ use crate::{
 use super::{client::SoftwareServiceClient, SoftwareServiceError};
 
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
-// Just a temporary value
-const ARCH: &str = "x86_64";
 
 #[derive(Debug)]
 pub enum SoftwareAction {
@@ -154,24 +152,15 @@ impl SoftwareServiceServer {
             return Err(SoftwareServiceError::UnknownProduct(product_id.clone()));
         };
 
-        // FIXME: this is a temporary workaround. The arch should be processed in the
-        // ProductsRegistry.
-        let arch = ARCH.to_string();
-        for (idx, repo) in product
-            .software
-            .installation_repositories
-            .iter()
-            .enumerate()
-        {
-            if repo.archs.contains(&arch) {
-                // TODO: we should add a repository ID in the configuration file.
-                let name = format!("agama-{}", idx);
-                zypp_agama::add_repository(&name, &repo.url, |percent, alias| {
-                    tracing::info!("Adding repository {} ({}%)", alias, percent);
-                    true
-                })
-                .map_err(SoftwareServiceError::AddRepositoryFailed)?;
-            }
+        let repositories = product.software.repositories();
+        for (idx, repo) in repositories.iter().enumerate() {
+            // TODO: we should add a repository ID in the configuration file.
+            let name = format!("agama-{}", idx);
+            zypp_agama::add_repository(&name, &repo.url, |percent, alias| {
+                tracing::info!("Adding repository {} ({}%)", alias, percent);
+                true
+            })
+            .map_err(SoftwareServiceError::AddRepositoryFailed)?;
         }
 
         _ = self.status.next_step();
