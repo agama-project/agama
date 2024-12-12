@@ -24,7 +24,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { gib } from "~/components/storage/utils";
+import { deviceChildren, gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
 import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
 import { StorageDevice } from "~/types/storage";
@@ -110,7 +110,7 @@ const sdc: StorageDevice = {
 const deviceAction = (device) => {
   if (device === sda1) return "keep";
 
-  return "force_delete";
+  return "delete";
 };
 
 let props: SpaceActionsTableProps;
@@ -118,7 +118,7 @@ let props: SpaceActionsTableProps;
 describe("SpaceActionsTable", () => {
   beforeEach(() => {
     props = {
-      devices: [sda, sdb, sdc],
+      devices: deviceChildren(sda),
       deviceAction,
       onActionChange: jest.fn(),
     };
@@ -134,8 +134,6 @@ describe("SpaceActionsTable", () => {
       name: "sda2 EXT4 partition 6 GiB Do not modify Allow shrink Delete",
     });
     screen.getByRole("row", { name: "Unused space 2 GiB" });
-    screen.getByRole("row", { name: "/dev/sdb Ext3 disk 5 GiB The content may be deleted" });
-    screen.getByRole("row", { name: "/dev/sdc 20 GiB No content found" });
   });
 
   it("selects the action for each device", () => {
@@ -172,8 +170,8 @@ describe("SpaceActionsTable", () => {
     await user.click(sda1DeleteButton);
 
     expect(props.onActionChange).toHaveBeenCalledWith({
-      device: "/dev/sda1",
-      action: "delete",
+      deviceName: "/dev/sda1",
+      value: "delete",
     });
   });
 
