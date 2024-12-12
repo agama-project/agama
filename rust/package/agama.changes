@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Dec 12 16:42:18 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix profile URL handling (bsc#1234362):
+  - Follow redirections.
+  - Determine the file format from the content instead of the
+    extension. It does not apply to AutoYaST profiles, where it still
+    uses the extension in the URL for backward compatibility.
+
+-------------------------------------------------------------------
 Tue Dec  3 12:58:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not refer to the agama-dbus-monitor because it is part of the
