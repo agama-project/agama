@@ -225,8 +225,8 @@ export default function SpaceActionsTable({
         </Tr>
       </Thead>
       <Tbody>
-        {devices.map((d) => (
-          <Tr key={toStorageDevice(d).sid}>
+        {devices.map((d, idx) => (
+          <Tr key={idx}>
             {columns.map((c, i) => (
               <Td key={i} className={c.classNames}>
                 {c.value(d)}

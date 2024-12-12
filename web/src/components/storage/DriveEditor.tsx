@@ -512,7 +512,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const PartitionsNoContentSelector = ({ drive }) => {
+const PartitionsNoContentSelector = () => {
   const navigate = useNavigate();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
@@ -645,7 +645,7 @@ const PartitionsSelector = ({ drive }) => {
     return <PartitionsWithContentSelector drive={drive} />;
   }
 
-  return <PartitionsNoContentSelector drive={drive} />;
+  return <PartitionsNoContentSelector />;
 };
 
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
