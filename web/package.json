@@ -27,6 +27,7 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@agama-project/eslint-plugin-agama-i18n": "^1.0.0",
     "@babel/core": "^7.23.3",
     "@babel/eslint-parser": "^7.23.3",
     "@babel/preset-env": "^7.23.3",
@@ -59,7 +60,6 @@
     "css-minimizer-webpack-plugin": "^7.0.0",
     "eslint": "^9.10.0",
     "eslint-config-prettier": "^9.1.0",
-    "@agama-project/eslint-plugin-agama-i18n": "^1.0.0",
     "eslint-plugin-i18next": "^6.0.3",
     "eslint-plugin-import-x": "^4.2.1",
     "eslint-plugin-n": "^17.10.2",
@@ -107,7 +107,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.1.2",
     "@icons-pack/react-simple-icons": "^10.0.0",
-    "@material-symbols/svg-400": "^0.23.0",
+    "@material-symbols/svg-400": "^0.27.2",
     "@patternfly/patternfly": "^5.1.0",
     "@patternfly/react-core": "^5.1.1",
     "@patternfly/react-table": "^5.1.1",
