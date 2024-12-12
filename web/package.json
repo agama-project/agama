@@ -95,7 +95,7 @@
     "ts-jest": "^29.2.2",
     "ts-loader": "^9.5.1",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
-    "typedoc": "^0.26.7",
+    "typedoc": "^0.27.4",
     "typedoc-plugin-external-module-map": "^2.1.0",
     "typedoc-plugin-merge-modules": "^6.0.0",
     "typedoc-plugin-missing-exports": "^3.0.0",
