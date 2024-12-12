@@ -80,27 +80,6 @@ sda.partitionTable = {
   unusedSlots: [{ start: 3, size: gib(2) }],
 };
 
-/** @type {StorageDevice} */
-const sdb: StorageDevice = {
-  sid: 62,
-  name: "/dev/sdb",
-  isDrive: true,
-  type: "disk",
-  description: "Ext3 disk",
-  size: gib(5),
-  filesystem: { sid: 100, type: "ext3" },
-};
-
-/** @type {StorageDevice} */
-const sdc: StorageDevice = {
-  sid: 63,
-  name: "/dev/sdc",
-  isDrive: true,
-  type: "disk",
-  description: "",
-  size: gib(20),
-};
-
 /**
  * Function to ask for the action of a device.
  *

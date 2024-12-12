@@ -4,8 +4,6 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-import { VolumeGroup } from "./config";
-
 export type FilesystemType =
   | "bcachefs"
   | "btrfs"
