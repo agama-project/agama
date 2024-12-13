@@ -32,6 +32,7 @@ use crate::{
 use super::{client::SoftwareServiceClient, SoftwareServiceError};
 
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
+const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
 #[derive(Debug)]
 pub enum SoftwareAction {
@@ -202,12 +203,30 @@ impl SoftwareServiceServer {
         if target_dir.exists() {
             _ = std::fs::remove_dir_all(target_dir);
         }
+
         std::fs::create_dir_all(target_dir).map_err(SoftwareServiceError::TargetCreationFailed)?;
 
         zypp_agama::init_target(TARGET_DIR, |text, step, total| {
             tracing::info!("Initializing target: {} ({}/{})", text, step, total);
         })
         .map_err(SoftwareServiceError::TargetInitFailed)?;
+
+        self.import_gpg_keys();
         Ok(())
+    }
+
+    fn import_gpg_keys(&self) {
+        for file in glob::glob(GPG_KEYS).unwrap() {
+            match file {
+                Ok(file) => {
+                    if let Err(e) = zypp_agama::import_gpg_key(&file.to_string_lossy()) {
+                        tracing::error!("Failed to import GPG key: {}", e);
+                    }
+                }
+                Err(e) => {
+                    tracing::error!("Could not read GPG key file: {}", e);
+                }
+            }
+        }
     }
 }
