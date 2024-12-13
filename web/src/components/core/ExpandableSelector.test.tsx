@@ -28,6 +28,8 @@ import { ExpandableSelectorColumn } from "./ExpandableSelector";
 
 let consoleErrorSpy: jest.SpyInstance;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const sda: any = {
   sid: "59",
   isDrive: true,

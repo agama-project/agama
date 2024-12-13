@@ -35,7 +35,7 @@ import {
   ExpandableSelectorProps,
 } from "~/components/core/ExpandableSelector";
 import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
-import { DeviceInfo, Partition } from "~/api/storage/types";
+import { DeviceInfo } from "~/api/storage/types";
 
 /**
  * Returns what (volumes, installation device) is using a device.

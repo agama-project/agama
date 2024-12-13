@@ -33,9 +33,7 @@ import {
   RowSelectVariant,
 } from "@patternfly/react-table";
 
-/**
- * {import("react").RefAttributes<HTMLTableElement>} HTMLTableProps
- */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * An object for sharing data across nested maps

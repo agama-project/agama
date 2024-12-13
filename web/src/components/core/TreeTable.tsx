@@ -43,6 +43,7 @@ type TreeTableProps = {
   columns: TreeTableColumn[];
   items: object[];
   expandedItems?: object[];
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   itemChildren?: (item: any) => any[];
   rowClassNames?: (item: object) => string;
 } & Omit<TableProps, "isTreeTable">;
