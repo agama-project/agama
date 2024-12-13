@@ -41,7 +41,7 @@ module Agama
         return {} unless root_user
 
         hsh = { "password" => root_user.password.value.to_s }
-        hsh["encryptedPassword"] = true if root_user.password.value.encrypted?
+        hsh["hashedPassword"] = true if root_user.password.value.encrypted?
 
         public_key = root_user.authorized_keys.first
         hsh["sshPublicKey"] = public_key if public_key

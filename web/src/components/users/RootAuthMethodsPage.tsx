@@ -52,7 +52,7 @@ function RootAuthMethodsPage() {
     e.preventDefault();
     if (isEmpty(password)) return;
 
-    await setRootUser.mutateAsync({ password, encryptedPassword: false });
+    await setRootUser.mutateAsync({ password, hashedPassword: false });
 
     navigate(location.state?.from || PATHS.root, { replace: true });
   };
