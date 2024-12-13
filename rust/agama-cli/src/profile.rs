@@ -149,7 +149,7 @@ fn pre_process_profile<P: AsRef<Path>>(url_string: &str, path: P) -> anyhow::Res
     let tmp_file = File::create(&tmp_profile_path)?;
     Transfer::get(url_string, tmp_file)?;
 
-    match FileFormat::from_file(&tmp_profile_path) {
+    match FileFormat::from_file(&tmp_profile_path)? {
         FileFormat::Jsonnet => {
             let file = File::create(path)?;
             let evaluator = ProfileEvaluator {};

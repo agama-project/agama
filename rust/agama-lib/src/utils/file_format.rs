@@ -41,11 +41,9 @@ const JSONNETFMT_BIN: &str = "jsonnetfmt";
 
 impl FileFormat {
     /// Tries to guess the file format from the content of a file.
-    pub fn from_file<P: AsRef<Path>>(file_path: P) -> Self {
-        let Ok(content) = std::fs::read_to_string(file_path) else {
-            return Self::Unknown;
-        };
-        Self::from_string(&content)
+    pub fn from_file<P: AsRef<Path>>(file_path: P) -> Result<Self, std::io::Error> {
+        let content = std::fs::read_to_string(file_path)?;
+        Ok(Self::from_string(&content))
     }
 
     /// Tries to guess the file format from a string.
