@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockRoutes, plainRender } from "~/test-utils";
+import { installerRender, mockRoutes } from "~/test-utils";
 import { LoginPage } from "~/components/core";
 import { AuthErrors } from "~/context/auth";
 import { PlainLayout } from "../layout";
