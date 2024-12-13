@@ -20,41 +20,36 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useEffect, useState } from "react";
-import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from "@patternfly/react-table";
+import {
+  Table,
+  TableProps,
+  Thead,
+  Tr,
+  Th,
+  Tbody,
+  Td,
+  TdProps,
+  TreeRowWrapper,
+} from "@patternfly/react-table";
 
-/**
- * @typedef {import("@patternfly/react-table").TableProps} TableProps
- */
+export type TreeTableColumn = {
+  name: string;
+  value: (item: object) => React.ReactNode;
+  classNames?: string;
+};
 
-/**
- * @typedef {object} TreeTableColumn
- * @property {string} name
- * @property {(object) => React.ReactNode} value
- * @property {string} [classNames]
- */
-
-/**
- * @typedef {object} TreeTableBaseProps
- * @property {TreeTableColumn[]} columns=[]
- * @property {object[]} items=[]
- * @property {object[]} [expandedItems=[]]
- * @property {(any) => array} [itemChildren]
- * @property {(any) => string} [rowClassNames]
- */
+type TreeTableProps = {
+  columns: TreeTableColumn[];
+  items: object[];
+  expandedItems?: object[];
+  itemChildren?: (item: any) => any[];
+  rowClassNames?: (item: object) => string;
+} & Omit<TableProps, "isTreeTable">;
 
 /**
  * Table built on top of PF/Table
  * @component
- *
- * FIXME: omitting `ref` here to avoid a TypeScript error but keep component as
- * typed as possible. Further investigation is needed.
- *
- * @typedef {TreeTableBaseProps & Omit<TableProps, "isTreeTable" | "ref">} TreeTableProps
- *
- * @param {TreeTableProps} props
  */
 export default function TreeTable({
   columns = [],
@@ -63,16 +58,16 @@ export default function TreeTable({
   expandedItems = [],
   rowClassNames = () => "",
   ...tableProps
-}) {
+}: TreeTableProps) {
   const [expanded, setExpanded] = useState(expandedItems);
 
   useEffect(() => {
     setExpanded(expandedItems);
   }, [expandedItems, setExpanded]);
 
-  const isExpanded = (item) => expanded.includes(item);
+  const isExpanded = (item: object) => expanded.includes(item);
 
-  const toggle = (item) => {
+  const toggle = (item: object) => {
     if (isExpanded(item)) {
       setExpanded(expanded.filter((d) => d !== item));
     } else {
@@ -80,9 +75,9 @@ export default function TreeTable({
     }
   };
 
-  const renderColumns = (item, treeRow) => {
+  const renderColumns = (item: object, treeRow: TdProps["treeRow"]) => {
     return columns.map((c, cIdx) => {
-      const props = {
+      const props: TdProps = {
         dataLabel: c.name,
         className: c.classNames,
       };
@@ -97,7 +92,7 @@ export default function TreeTable({
     });
   };
 
-  const renderRows = (items, level, hidden = false) => {
+  const renderRows = (items: object[], level: number, hidden = false) => {
     if (items?.length <= 0) return;
 
     return items.map((item, itemIdx) => {

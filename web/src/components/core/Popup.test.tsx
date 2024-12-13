@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,14 +26,15 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 
 import { Popup } from "~/components/core";
+import { PopupProps } from "./Popup";
 
-let isOpen;
-let isLoading;
+let isOpen: boolean;
+let isLoading: boolean;
 const confirmFn = jest.fn();
 const cancelFn = jest.fn();
 const loadingText = "Loading text";
 
-const TestingPopup = (props) => {
+const TestingPopup = (props: PopupProps) => {
   const [isMounted, setIsMounted] = useState(true);
 
   if (!isMounted) return null;
@@ -64,7 +65,7 @@ describe("Popup", () => {
     });
 
     it("renders nothing", async () => {
-      installerRender(<TestingPopup />);
+      installerRender(<TestingPopup>Testing</TestingPopup>);
 
       const dialog = screen.queryByRole("dialog");
       expect(dialog).toBeNull();
@@ -78,7 +79,7 @@ describe("Popup", () => {
     });
 
     it("renders the popup content inside a PF/Modal", async () => {
-      installerRender(<TestingPopup />);
+      installerRender(<TestingPopup>Testing</TestingPopup>);
 
       const dialog = await screen.findByRole("dialog");
       expect(dialog.classList.contains("pf-v5-c-modal-box")).toBe(true);
@@ -87,7 +88,7 @@ describe("Popup", () => {
     });
 
     it("does not display a progress message", async () => {
-      installerRender(<TestingPopup />);
+      installerRender(<TestingPopup>Testing</TestingPopup>);
 
       const dialog = await screen.findByRole("dialog");
 
@@ -95,7 +96,7 @@ describe("Popup", () => {
     });
 
     it("renders the popup actions inside a PF/Modal footer", async () => {
-      installerRender(<TestingPopup />);
+      installerRender(<TestingPopup>Testing</TestingPopup>);
 
       const dialog = await screen.findByRole("dialog");
       // NOTE: Sadly, PF Modal/ModalFooter does not have a footer or navigation role.
@@ -115,7 +116,7 @@ describe("Popup", () => {
     });
 
     it("displays progress message instead of the content", async () => {
-      installerRender(<TestingPopup />);
+      installerRender(<TestingPopup>Testing</TestingPopup>);
 
       const dialog = await screen.findByRole("dialog");
 

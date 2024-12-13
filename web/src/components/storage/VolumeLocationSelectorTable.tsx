@@ -35,6 +35,7 @@ import {
   ExpandableSelectorProps,
 } from "~/components/core/ExpandableSelector";
 import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
+import { DeviceInfo, Partition } from "~/api/storage/types";
 
 /**
  * Returns what (volumes, installation device) is using a device.
@@ -93,13 +94,25 @@ export default function VolumeLocationSelectorTable({
   ...props
 }: VolumeLocationSelectorTableProps) {
   const columns: ExpandableSelectorColumn[] = [
-    { name: _("Device"), value: (item) => <DeviceName item={item} /> },
-    { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
+    {
+      name: _("Device"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceName item={item} />,
+    },
+    {
+      name: _("Details"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceDetails item={item} />,
+    },
     {
       name: _("Usage"),
-      value: (item) => <DeviceUsage users={deviceUsers(item, targetDevices, volumes)} />,
+      value: (item: PartitionSlot | StorageDevice) => (
+        <DeviceUsage users={deviceUsers(item, targetDevices, volumes)} />
+      ),
     },
-    { name: _("Size"), value: (item) => <DeviceSize item={item} />, classNames: "sizes-column" },
+    {
+      name: _("Size"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceSize item={item} />,
+      classNames: "sizes-column",
+    },
   ];
 
   return (
@@ -107,7 +120,7 @@ export default function VolumeLocationSelectorTable({
       columns={columns}
       items={devices}
       itemIdKey="sid"
-      itemClassNames={(device) => {
+      itemClassNames={(device: DeviceInfo) => {
         if (!device.sid) {
           return "dimmed-row";
         }

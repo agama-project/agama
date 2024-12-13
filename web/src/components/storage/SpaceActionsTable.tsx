@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import {
   Button,
@@ -47,6 +45,7 @@ import { TreeTable } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { PartitionSlot, SpaceAction, StorageDevice } from "~/types/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
+import { DeviceInfo as DeviceInfoType } from "~/api/storage/types";
 
 /**
  * Info about the device.
@@ -204,12 +203,18 @@ export default function SpaceActionsTable({
   onActionChange,
 }: SpaceActionsTableProps) {
   const columns: TreeTableColumn[] = [
-    { name: _("Device"), value: (item) => <DeviceName item={item} /> },
-    { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
-    { name: _("Size"), value: (item) => <DeviceSize item={item} /> },
+    {
+      name: _("Device"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceName item={item} />,
+    },
+    {
+      name: _("Details"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceDetails item={item} />,
+    },
+    { name: _("Size"), value: (item: PartitionSlot | StorageDevice) => <DeviceSize item={item} /> },
     {
       name: _("Action"),
-      value: (item) => (
+      value: (item: PartitionSlot | StorageDevice) => (
         <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
       ),
     },
@@ -222,7 +227,7 @@ export default function SpaceActionsTable({
       aria-label={_("Actions to find space")}
       expandedItems={expandedDevices}
       itemChildren={deviceChildren}
-      rowClassNames={(item) => {
+      rowClassNames={(item: DeviceInfoType) => {
         if (!item.sid) return "dimmed-row";
       }}
       className="devices-table"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,19 +20,24 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { Button, Modal } from "@patternfly/react-core";
+import { Button, ButtonProps, Modal, ModalProps } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
 
-/**
- * @typedef {import("@patternfly/react-core").ModalProps} ModalProps
- * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
- * @typedef {Omit<ButtonProps, 'variant'>} ButtonWithoutVariantProps
- */
+type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
+type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps>;
+export type PopupProps = {
+  /** The block/height size for the dialog. Default is "auto". */
+  blockSize?: "auto" | "small" | "medium" | "large";
+  /** The inline/width size for the dialog. Default is "medium". */
+  inlineSize?: "auto" | "small" | "medium" | "large";
+  /** Whether it should display a loading indicator instead of the requested content. */
+  isLoading?: boolean;
+  /** Text displayed when `isLoading` is set to `true` */
+  loadingText?: string;
+} & Omit<ModalProps, "variant" | "size">;
 
 /**
  * Wrapper component for holding Popup actions
@@ -41,20 +46,18 @@ import { partition } from "~/utils";
  * Popup.Action or PF/Button
  *
  * @see Popup examples.
- *
- * @param {object} props
- * @param {React.ReactNode} [props.children] - a collection of Action components
  */
-const Actions = ({ children }) => <>{children}</>;
+const Actions = ({ children }: React.PropsWithChildren) => <>{children}</>;
 
 /**
  * A convenient component representing a Popup action
  *
  * Built on top of {@link https://www.patternfly.org/components/button PF/Button}
  *
- * @param {ButtonProps} props
  */
-const Action = ({ children, ...buttonProps }) => <Button {...buttonProps}>{children}</Button>;
+const Action = ({ children, ...buttonProps }: React.PropsWithChildren<ButtonProps>) => (
+  <Button {...buttonProps}>{children}</Button>
+);
 
 /**
  * A Popup primary action
@@ -71,9 +74,8 @@ const Action = ({ children, ...buttonProps }) => <Button {...buttonProps}>{child
  *     <Text>Upload</Text>
  *   </PrimaryAction>
  *
- * @param {ButtonWithoutVariantProps} props
  */
-const PrimaryAction = ({ children, ...actionProps }) => (
+const PrimaryAction = ({ children, ...actionProps }: PredefinedAction) => (
   <Action {...actionProps} variant="primary">
     {children}
   </Action>
@@ -88,9 +90,8 @@ const PrimaryAction = ({ children, ...actionProps }) => (
  * @example <caption>Using it with a custom text</caption>
  *   <Confirm onClick={accept}>Accept</Confirm>
  *
- * @param {ButtonWithoutVariantProps} props
  */
-const Confirm = ({ children = _("Confirm"), ...actionProps }) => (
+const Confirm = ({ children = _("Confirm"), ...actionProps }: PredefinedAction) => (
   <PrimaryAction key="confirm" {...actionProps}>
     {children}
   </PrimaryAction>
@@ -110,10 +111,8 @@ const Confirm = ({ children = _("Confirm"), ...actionProps }) => (
  *     <DismissIcon />
  *     <Text>Dismiss</Text>
  *   </SecondaryAction>
- *
- * @param {ButtonWithoutVariantProps} props
  */
-const SecondaryAction = ({ children, ...actionProps }) => (
+const SecondaryAction = ({ children, ...actionProps }: PredefinedAction) => (
   <Action {...actionProps} variant="secondary">
     {children}
   </Action>
@@ -127,10 +126,8 @@ const SecondaryAction = ({ children, ...actionProps }) => (
  *
  * @example <caption>Using it with a custom text</caption>
  *   <Cancel onClick={dismiss}>Dismiss</Confirm>
- *
- * @param {ButtonWithoutVariantProps} props
  */
-const Cancel = ({ children = _("Cancel"), ...actionProps }) => (
+const Cancel = ({ children = _("Cancel"), ...actionProps }: PredefinedAction) => (
   <SecondaryAction key="cancel" {...actionProps}>
     {children}
   </SecondaryAction>
@@ -150,10 +147,8 @@ const Cancel = ({ children = _("Cancel"), ...actionProps }) => (
  *     <RemoveIcon />
  *     <Text>Do not set</Text>
  *   </AncillaryAction>
- *
- * @param {ButtonWithoutVariantProps} props
  */
-const AncillaryAction = ({ children, ...actionsProps }) => (
+const AncillaryAction = ({ children, ...actionsProps }: PredefinedAction) => (
   <Action {...actionsProps} variant="link">
     {children}
   </Action>
@@ -194,15 +189,6 @@ const AncillaryAction = ({ children, ...actionsProps }) => (
  *       </Popup.AncillaryAction>
  *     </Popup.Actions>
  *   </Popup>
- *
- * @typedef {object} PopupBaseProps
- * @property {"auto" | "small" | "medium" | "large"} [blockSize="auto"] - The block/height size for the dialog. Default is "auto".
- * @property {"auto" | "small" | "medium" | "large"} [inlineSize="medium"] - The inline/width size for the dialog. Default is "medium".
- * @property {boolean} [isLoading=false] - Whether the data is loading, if yes it displays a loading indicator instead of the requested content
- * @property {string} [loadingText="Loading data..."] - Text displayed when `isLoading` is set to `true`
- * @typedef {Omit<ModalProps, "variant" | "size"> & PopupBaseProps} PopupProps
- *
- * @param {PopupProps} props
  */
 const Popup = ({
   isOpen = false,
@@ -215,7 +201,7 @@ const Popup = ({
   className = "",
   children,
   ...props
-}) => {
+}: PopupProps) => {
   const [actions, content] = partition(
     React.Children.toArray(children),
     (child) => child.type === Actions,
