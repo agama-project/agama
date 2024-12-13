@@ -48,6 +48,7 @@ impl Transfer {
     pub fn get(url: &str, mut out_fd: impl Write) -> TransferResult<()> {
         let mut handle = Easy::new();
         handle.follow_location(true)?;
+        handle.fail_on_error(true)?;
         handle.url(url)?;
 
         let mut transfer = handle.transfer();
