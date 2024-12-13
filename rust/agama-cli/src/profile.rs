@@ -158,7 +158,7 @@ fn pre_process_profile<P: AsRef<Path>>(url_string: &str, path: P) -> anyhow::Res
                 .context("Could not evaluate the profile".to_string())?;
         }
         FileFormat::Script => {
-            let err = Command::new("bash").args([path.as_ref()]).exec();
+            let err = Command::new("bash").args([&tmp_profile_path]).exec();
             eprintln!("Exec failed: {}", err);
         }
         FileFormat::Json => {
