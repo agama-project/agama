@@ -21,13 +21,15 @@
  */
 
 import React, { Suspense, useState } from "react";
-import { Outlet } from "react-router-dom";
-import { Page } from "@patternfly/react-core";
+import { Outlet, useLocation } from "react-router-dom";
+import { Page, PageProps } from "@patternfly/react-core";
+import { Questions } from "~/components/questions";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
 import { IssuesDrawer } from "~/components/core";
+import { ROOT } from "~/routes/paths";
 
-type LayoutProps = React.PropsWithChildren<{
+export type LayoutProps = React.PropsWithChildren<{
   mountHeader?: boolean;
   mountSidebar?: boolean;
   headerOptions?: HeaderProps;
@@ -45,28 +47,37 @@ const Layout = ({
   headerOptions = {},
   children,
 }: LayoutProps) => {
+  const location = useLocation();
   const [issuesDrawerVisible, setIssuesDrawerVisible] = useState<boolean>(false);
   const closeIssuesDrawer = () => setIssuesDrawerVisible(false);
   const toggleIssuesDrawer = () => setIssuesDrawerVisible(!issuesDrawerVisible);
 
+  const pageProps: Omit<PageProps, keyof React.HTMLProps<HTMLDivElement>> = {
+    isManagedSidebar: true,
+  };
+
+  if (mountSidebar) pageProps.sidebar = <Sidebar />;
+  if (mountHeader) {
+    pageProps.header = (
+      <Header
+        showSidebarToggle={mountSidebar}
+        toggleIssuesDrawer={toggleIssuesDrawer}
+        {...headerOptions}
+      />
+    );
+    // notificationDrawer is open/close from the header, it does not make sense
+    // to mount it if there is no header.
+    pageProps.notificationDrawer = <IssuesDrawer onClose={closeIssuesDrawer} />;
+    pageProps.isNotificationDrawerExpanded = issuesDrawerVisible;
+  }
+
   return (
-    <Page
-      isManagedSidebar
-      header={
-        mountHeader && (
-          <Header
-            showSidebarToggle={mountSidebar}
-            toggleIssuesDrawer={toggleIssuesDrawer}
-            {...headerOptions}
-          />
-        )
-      }
-      sidebar={mountSidebar && <Sidebar />}
-      notificationDrawer={<IssuesDrawer onClose={closeIssuesDrawer} />}
-      isNotificationDrawerExpanded={issuesDrawerVisible}
-    >
-      <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
-    </Page>
+    <>
+      <Page {...pageProps}>
+        <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
+      </Page>
+      {location.pathname !== ROOT.login && <Questions />}
+    </>
   );
 };
 

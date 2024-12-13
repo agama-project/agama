@@ -119,6 +119,13 @@ describe("Agama test", function () {
     await page.click("button[type='submit']");
   });
 
+  it("should require setting the root password", async function () {
+    await page.waitForSelector("input#rootPassword");
+    // for simplicity just set the current password
+    await page.type("input#rootPassword", agamaPassword);
+    await page.click("button[type='submit']");
+  });
+
   it("should optionally display the product selection dialog", async function () {
     this.timeout(60000);
     // Either the main page is displayed (with the storage link) or there is
@@ -143,7 +150,7 @@ describe("Agama test", function () {
       this.skip();
     }
   });
-  
+
   it("should display overview card", async function () {
     await page.waitForSelector("h3::-p-text('Overview')");
   });

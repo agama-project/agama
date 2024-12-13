@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Dec  9 14:43:11 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Work around to a problem triggered after formatting DASD devices
+  (mitigates gh#agama-project/agama#1818).
+
+-------------------------------------------------------------------
 Tue Dec  3 20:32:08 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix parsing agama.install_url that contain '='

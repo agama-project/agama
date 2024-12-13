@@ -27,7 +27,7 @@ import {
   EmptyStateBody,
   EmptyStateHeader,
 } from "@patternfly/react-core";
-import { Center, Icon } from "~/components/layout";
+import { Center, Icon, PlainLayout } from "~/components/layout";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
@@ -36,24 +36,26 @@ const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
 
 function ServerError() {
   return (
-    <Page>
-      <Page.Content>
-        <Center>
-          <EmptyState variant="xl">
-            <EmptyStateHeader
-              titleText={_("Cannot connect to Agama server")}
-              headingLevel="h2"
-              icon={<EmptyStateIcon icon={ErrorIcon} />}
-            />
-            <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
-          </EmptyState>
-        </Center>
-      </Page.Content>
+    <PlainLayout mountHeader={false} mountSidebar={false}>
+      <Page>
+        <Page.Content>
+          <Center>
+            <EmptyState variant="xl">
+              <EmptyStateHeader
+                titleText={_("Cannot connect to Agama server")}
+                headingLevel="h2"
+                icon={<EmptyStateIcon icon={ErrorIcon} />}
+              />
+              <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+            </EmptyState>
+          </Center>
+        </Page.Content>
 
-      <Page.Actions>
-        <Page.Action onClick={locationReload}>{_("Reload")}</Page.Action>
-      </Page.Actions>
-    </Page>
+        <Page.Actions>
+          <Page.Action onClick={locationReload}>{_("Reload")}</Page.Action>
+        </Page.Actions>
+      </Page>
+    </PlainLayout>
   );
 }
 

@@ -4,7 +4,7 @@ import neostandard from "neostandard";
 import tsEslint from "typescript-eslint";
 import tsEslintParser from "@typescript-eslint/parser";
 import globals from "globals";
-import agamaI18nEslintPlugin from "eslint-plugin-agama-i18n";
+import agamaI18nEslintPlugin from "@agama-project/eslint-plugin-agama-i18n";
 import i18nextEslintPlugin from "eslint-plugin-i18next";
 import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
 import reactHooksPlugin from "eslint-plugin-react-hooks";

@@ -25,6 +25,8 @@
 /**
  * Represents a single change action done to storage
  */
+import * as config from "./types/config";
+
 export type Action = {
   delete: boolean;
   device: DeviceSid;
@@ -436,7 +438,5 @@ export type SetProposalSettingsResponse = boolean;
 export type UsableDevicesResponse = Array<DeviceSid>;
 
 export type PingResponse2 = PingResponse;
-
-import * as config from "./types/config";
 
 export { config };

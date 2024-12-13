@@ -105,10 +105,12 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         </DropdownList>
       </Dropdown>
 
-      <InstallerOptions
-        isOpen={isInstallerOptionsOpen}
-        onClose={() => setIsInstallerOptionsOpen(false)}
-      />
+      {showInstallerOptions && (
+        <InstallerOptions
+          isOpen={isInstallerOptionsOpen}
+          onClose={() => setIsInstallerOptionsOpen(false)}
+        />
+      )}
     </>
   );
 };

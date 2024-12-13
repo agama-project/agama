@@ -22,18 +22,35 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockRoutes, plainRender } from "~/test-utils";
 import { LoginPage } from "~/components/core";
 import { AuthErrors } from "~/context/auth";
+import { PlainLayout } from "../layout";
+import { InstallationPhase } from "~/types/status";
 
 let consoleErrorSpy: jest.SpyInstance;
 let mockIsAuthenticated: boolean;
 let mockLoginError;
 const mockLoginFn = jest.fn();
 
+const phase: InstallationPhase = InstallationPhase.Startup;
+const isBusy: boolean = false;
+
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
+
+jest.mock("~/queries/status", () => ({
+  useInstallerStatus: () => ({
+    phase,
+    isBusy,
+  }),
+}));
+
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useAllIssues: () => [],
+}));
 
 jest.mock("~/context/auth", () => ({
   ...jest.requireActual("~/context/auth"),
@@ -48,14 +65,27 @@ jest.mock("~/context/auth", () => ({
 
 describe("LoginPage", () => {
   beforeAll(() => {
+    mockRoutes("/login");
+    mockLoginFn.mockResolvedValue({ status: 200 });
     mockIsAuthenticated = false;
     mockLoginError = null;
-    mockLoginFn.mockResolvedValue({ status: 200 });
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
   });
 
   afterAll(() => {
     consoleErrorSpy.mockRestore();
+  });
+
+  // Regresion test: when wrapped by Layout, it shouldn't fail with
+  // "No QueryClient set, use QueryClientProvider to set one"
+  // See commit ecc8d0865abbbebc7795e39bd85ec9462010d065
+  it("renders its content even when wrapped by Layout", async () => {
+    installerRender(
+      <PlainLayout>
+        <LoginPage />
+      </PlainLayout>,
+    );
+    await screen.findByRole("form", { name: "Login form" });
   });
 
   describe("when user is not authenticated", () => {

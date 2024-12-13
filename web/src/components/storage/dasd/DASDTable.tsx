@@ -40,9 +40,8 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
+import { Page, Popup } from "~/components/core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { Page } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 import { hex } from "~/utils";

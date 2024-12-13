@@ -194,6 +194,7 @@ module.exports = {
               sassOptions: {
                 includePaths: ["node_modules"],
                 outputStyle: production ? "compressed" : undefined,
+                silenceDeprecations: ["import", "global-builtin"],
               },
             },
           },

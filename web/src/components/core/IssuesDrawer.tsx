@@ -49,7 +49,6 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
     users: _("Users"),
     storage: _("Storage"),
     software: _("Software"),
-    // FIXME: Registration or Product?
     product: _("Registration"),
   };
 
@@ -76,7 +75,7 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
               <section key={idx} aria-labelledby={ariaLabelId}>
                 <Stack hasGutter>
                   <h4 id={ariaLabelId}>
-                    <Link variant="link" isInline to={`/${section}`}>
+                    <Link variant="link" isInline onClick={onClose} to={`/${scope}`}>
                       {scopeHeaders[scope]}
                     </Link>
                   </h4>

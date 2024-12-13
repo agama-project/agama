@@ -1023,6 +1023,9 @@ export default {
   "SSH Key": [
     "SSH 鍵"
   ],
+  "SSH public key": [
+    "SSH 公開鍵"
+  ],
   "SSID": [
     "SSID"
   ],
@@ -1088,6 +1091,9 @@ export default {
   ],
   "Set root SSH public key": [
     "root の SSH 公開鍵の設定"
+  ],
+  "Setup root user authentication": [
+    "root の認証方式の設定"
   ],
   "Show %d subvolume action": [
     "%d 個のサブボリューム処理を表示"
@@ -1398,8 +1404,17 @@ export default {
   "Wires: %s": [
     "接続: %s"
   ],
+  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
+    "上記のテキストエリアに SSH 公開鍵を書き込み／貼り付け／ドロップ／%sしてください。"
+  ],
+  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
+    "SSH 公開鍵を書き込み／貼り付け／ドロップしてください。アップロードしたい場合は、下記のリンクをお使いください。"
+  ],
   "Yes": [
     "はい"
+  ],
+  "You must define at least one authentication method for the root user. You can still edit them anytime before the installation.": [
+    "少なくとも 1 つ以上、 root ログイン時の認証方式を設定しなければなりません。インストール前であればいつでも変更できます。"
   ],
   "ZFCP": [
     "ZFCP"
@@ -1448,6 +1463,9 @@ export default {
   ],
   "the presence of the file system for %s": [
     "%s に対するファイルシステムの存在"
+  ],
+  "upload": [
+    "アップロード"
   ],
   "user autologin": [
     "ユーザの自動ログイン"
