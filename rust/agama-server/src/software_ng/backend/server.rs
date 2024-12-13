@@ -20,12 +20,12 @@
 
 use std::{path::Path, sync::Arc};
 
-use agama_lib::product::Product;
+use agama_lib::{product::Product, software::Pattern};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{
     common::backend::service_status::{ServiceStatusClient, ServiceStatusManager},
-    products::ProductsRegistry,
+    products::{ProductSpec, ProductsRegistry},
     web::EventsSender,
 };
 
@@ -38,6 +38,7 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 pub enum SoftwareAction {
     Probe,
     GetProducts(oneshot::Sender<Vec<Product>>),
+    GetPatterns(oneshot::Sender<Vec<Pattern>>),
     SelectProduct(String),
 }
 
@@ -108,6 +109,10 @@ impl SoftwareServiceServer {
                 self.get_products(tx).await?;
             }
 
+            SoftwareAction::GetPatterns(tx) => {
+                self.get_patterns(tx).await?;
+            }
+
             SoftwareAction::SelectProduct(product_id) => {
                 self.select_product(product_id).await?;
             }
@@ -142,17 +147,7 @@ impl SoftwareServiceServer {
             ])
             .await;
 
-        // FIXME: it holds the mutex too much. We could use a RwLock mutex.
-        let products = self.products.lock().await;
-
-        let Some(product_id) = &self.selected_product else {
-            return Err(SoftwareServiceError::NoSelectedProduct);
-        };
-
-        let Some(product) = products.find(product_id) else {
-            return Err(SoftwareServiceError::UnknownProduct(product_id.clone()));
-        };
-
+        let product = self.find_selected_product().await?;
         let repositories = product.software.repositories();
         for (idx, repo) in repositories.iter().enumerate() {
             // TODO: we should add a repository ID in the configuration file.
@@ -198,6 +193,41 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
+    async fn get_patterns(
+        &self,
+        tx: oneshot::Sender<Vec<Pattern>>,
+    ) -> Result<(), SoftwareServiceError> {
+        let product = self.find_selected_product().await?;
+
+        let mandatory_patterns = product.software.mandatory_patterns.iter();
+        let optional_patterns = product.software.optional_patterns.unwrap_or(vec![]);
+        let optional_patterns = optional_patterns.iter();
+        let pattern_names: Vec<&str> = vec![mandatory_patterns, optional_patterns]
+            .into_iter()
+            .flatten()
+            .map(String::as_str)
+            .collect();
+
+        let patterns = zypp_agama::patterns_info(pattern_names)
+            .map_err(SoftwareServiceError::ListPatternsFailed)?;
+
+        let patterns = patterns
+            .into_iter()
+            .map(|info| Pattern {
+                name: info.name,
+                category: info.category,
+                description: info.description,
+                icon: info.icon,
+                summary: info.summary,
+                order: info.order,
+            })
+            .collect();
+
+        tx.send(patterns)
+            .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
+        Ok(())
+    }
+
     fn initialize_target_dir(&self) -> Result<(), SoftwareServiceError> {
         let target_dir = Path::new(TARGET_DIR);
         if target_dir.exists() {
@@ -228,5 +258,21 @@ impl SoftwareServiceServer {
                 }
             }
         }
+    }
+
+    // Returns the spec of the selected product.
+    //
+    // It causes the spec to be cloned, so we should find a better way to do this.
+    async fn find_selected_product(&self) -> Result<ProductSpec, SoftwareServiceError> {
+        let products = self.products.lock().await;
+        let Some(product_id) = &self.selected_product else {
+            return Err(SoftwareServiceError::NoSelectedProduct);
+        };
+
+        let Some(product) = products.find(product_id) else {
+            return Err(SoftwareServiceError::UnknownProduct(product_id.clone()));
+        };
+
+        Ok(product.clone())
     }
 }

@@ -83,6 +83,9 @@ pub enum SoftwareServiceError {
 
     #[error("Failed to load the repositories: {0}")]
     LoadSourcesFailed(#[source] ZyppError),
+
+    #[error("Listing patterns failed: {0}")]
+    ListPatternsFailed(#[source] ZyppError),
 }
 
 /// Builds and starts the software service.

@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{product::Product, progress::ProgressSummary};
+use agama_lib::{product::Product, progress::ProgressSummary, software::Pattern};
 use tokio::sync::oneshot;
 
 use crate::common::backend::service_status::ServiceStatusClient;
@@ -45,6 +45,13 @@ impl SoftwareServiceClient {
     pub async fn get_products(&self) -> Result<Vec<Product>, SoftwareServiceError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(SoftwareAction::GetProducts(tx))?;
+        Ok(rx.await?)
+    }
+
+    /// Returns the list of known patterns.
+    pub async fn get_patterns(&self) -> Result<Vec<Pattern>, SoftwareServiceError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(SoftwareAction::GetPatterns(tx))?;
         Ok(rx.await?)
     }
 

@@ -19,8 +19,10 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    error::ServiceError, product::Product, progress::ProgressSummary,
-    software::model::SoftwareConfig,
+    error::ServiceError,
+    product::Product,
+    progress::ProgressSummary,
+    software::{model::SoftwareConfig, Pattern},
 };
 use axum::{
     extract::State,
@@ -40,6 +42,7 @@ struct SoftwareState {
 pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, ServiceError> {
     let state = SoftwareState { client };
     let router = Router::new()
+        .route("/patterns", get(get_patterns))
         .route("/products", get(get_products))
         // FIXME: it should be PATCH (using PUT just for backward compatibility).
         .route("/config", put(set_config))
@@ -64,6 +67,23 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
 )]
 async fn get_products(State(state): State<SoftwareState>) -> Result<Json<Vec<Product>>, Error> {
     let products = state.client.get_products().await?;
+    Ok(Json(products))
+}
+
+/// Returns the list of available patterns.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/patterns",
+    context_path = "/api/software_ng",
+    responses(
+        (status = 200, description = "List of product patterns", body = Vec<Pattern>),
+        (status = 400, description = "Cannot read the list of patterns")
+    )
+)]
+async fn get_patterns(State(state): State<SoftwareState>) -> Result<Json<Vec<Pattern>>, Error> {
+    let products = state.client.get_patterns().await?;
     Ok(Json(products))
 }
 
