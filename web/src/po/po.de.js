@@ -173,7 +173,7 @@ export default {
     "Vor %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    ""
+    "Vor der Installation müssen Sie einige Entscheidungen treffen. Klicken Sie auf jeden Abschnitt, um die Einstellungen zu überprüfen."
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Bevor Sie mit der Installation beginnen, müssen Sie sich mit folgenden Problemen befassen:"
@@ -799,7 +799,7 @@ export default {
     "Keine der Zeitzonen entspricht dem Filter."
   ],
   "Not possible with the current setup. Click to know more.": [
-    ""
+    "Mit dem derzeitigen System ist das nicht möglich. Klicken Sie, um mehr zu erfahren."
   ],
   "Not selected yet": [
     "Noch nicht ausgewählt"
@@ -848,6 +848,9 @@ export default {
   ],
   "Password confirmation": [
     "Passwort bestätigen"
+  ],
+  "Password for root user": [
+    "Passwort für root-Benutzer"
   ],
   "Password input": [
     "Passworteingabe"
@@ -903,6 +906,9 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Pre-installation checks": [
+    "Prüfungen vor der Installation"
+  ],
   "Prefix length or netmask": [
     "Präfixlänge oder Netzmaske"
   ],
@@ -911,6 +917,9 @@ export default {
   ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Schutz für die auf dem Gerät gespeicherten Informationen, einschließlich Daten, Programme und Systemdateien."
+  ],
+  "Provide a password to ensure administrative access to the system.": [
+    "Geben Sie ein Passwort an, um den administrativen Zugang zum System zu gewährleisten."
   ],
   "Question": [
     "Frage"
@@ -1025,6 +1034,9 @@ export default {
   ],
   "Set root SSH public key": [
     "Öffentlichen SSH-Schlüssel für root festlegen"
+  ],
+  "Setup root user authentication": [
+    "root-Benutzer-Authentifizierung einrichten"
   ],
   "Show %d subvolume action": [
     "",
@@ -1297,17 +1309,14 @@ export default {
   "Wired": [
     "Kabelgebunden"
   ],
-  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
-    ""
-  ],
-  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
-    ""
-  ],
   "Yes": [
     "Ja"
   ],
+  "You can change it or select another authentication method in the 'Users' section before installing.": [
+    "Sie können sie ändern oder eine andere Authentifizierungsmethode im Abschnitt „Benutzer“ auswählen, bevor Sie die Installation durchführen."
+  ],
   "ZFCP": [
-    ""
+    "ZFCP"
   ],
   "at least %s": [
     "mindestens %s"
