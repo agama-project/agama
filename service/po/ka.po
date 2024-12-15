@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-26 02:49+0000\n"
+"POT-Creation-Date: 2024-12-10 02:55+0000\n"
 "PO-Revision-Date: 2024-10-31 13:48+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -277,14 +277,14 @@ msgstr ""
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:124
+#: service/lib/agama/storage/proposal_strategies/guided.rb:127
 msgid "No device selected for installation"
 msgstr ""
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:140
+#: service/lib/agama/storage/proposal_strategies/guided.rb:143
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
