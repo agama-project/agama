@@ -80,19 +80,22 @@ describe("Agama test", function () {
       slowMo,
       defaultViewport: {
         width: 1280,
-        height: 768
+        height: 768,
       },
-      ...browserSettings(agamaBrowser)
+      ...browserSettings(agamaBrowser),
     });
     page = await browser.newPage();
     page.setDefaultTimeout(20000);
-    await page.goto(agamaServer, { timeout: 60000, waitUntil: "domcontentloaded" });
+    await page.goto(agamaServer, {
+      timeout: 60000,
+      waitUntil: "domcontentloaded",
+    });
   });
 
   after(async function () {
     await page.close();
     await browser.close();
-  })
+  });
 
   // automatically take a screenshot and dump the page content for failed tests
   afterEach(async function () {
@@ -119,36 +122,47 @@ describe("Agama test", function () {
     await page.click("button[type='submit']");
   });
 
-  it("should require setting the root password", async function () {
-    await page.waitForSelector("input#rootPassword");
-    // for simplicity just set the current password
-    await page.type("input#rootPassword", agamaPassword);
-    await page.click("button[type='submit']");
-  });
-
   it("should optionally display the product selection dialog", async function () {
     this.timeout(60000);
-    // Either the main page is displayed (with the storage link) or there is
+    // Either the root password setting is displayed or there is
     // the product selection page.
-    let productSelectionDisplayed = await Promise.any([
-      page.waitForSelector("a[href='#/storage']")
-        .then(s => {s.dispose(); return false}),
-      page.waitForSelector("button[form='productSelectionForm']")
-        .then(s => {s.dispose(); return true})
+    const productSelectionDisplayed = await Promise.any([
+      page.waitForSelector("input#rootPassword").then((s) => {
+        s.dispose();
+        return false;
+      }),
+      page.waitForSelector("button[form='productSelectionForm']").then((s) => {
+        s.dispose();
+        return true;
+      }),
     ]);
 
     if (productSelectionDisplayed) {
-      await page.locator("::-p-text('openSUSE Tumbleweed')").click();
-      await page.locator("button[form='productSelectionForm']")
+      const product = await page.locator("label[for='opensuse-tumbleweed']").waitHandle();
+      // scroll the page so the product is visible
+      await product.scrollIntoView();
+      await product.click();
+
+      await page
+        .locator("button[form='productSelectionForm']")
         // wait until the button is enabled
         .setWaitForEnabled(true)
         .click();
-      // refreshing the repositories might take long time
-      await page.locator("h3::-p-text('Overview')").setTimeout(60000).wait();
     } else {
       // no product selection displayed, mark the test as skipped
       this.skip();
     }
+  });
+
+  it("should require setting the root password", async function () {
+    await page
+      .locator("input#rootPassword")
+      // refreshing the repositories before showing the password configuration might take long time
+      .setTimeout(60000)
+      .waitHandle()
+      // type the new password
+      .then((h) => h.type("test"));
+    await page.locator("button[type='submit']").setWaitForEnabled(true).click();
   });
 
   it("should display overview card", async function () {
@@ -158,13 +172,13 @@ describe("Agama test", function () {
   it("should allow setting the root password", async function () {
     await page.locator("a[href='#/users']").click();
 
-    let button = await Promise.any([
+    const button = await Promise.any([
       page.waitForSelector("button::-p-text(Set a password)"),
-      page.waitForSelector("button#actions-for-root-password")
+      page.waitForSelector("button#actions-for-root-password"),
     ]);
 
     await button.click();
-    const id = await button.evaluate(x => x.id);
+    const id = await button.evaluate((x) => x.id);
     // drop the handler to avoid memory leaks
     button.dispose();
 
