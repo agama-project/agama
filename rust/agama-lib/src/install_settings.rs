@@ -21,6 +21,7 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
+use crate::bootloader::model::BootloaderSettings;
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
     scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings,
@@ -39,6 +40,8 @@ use std::path::Path;
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
+    #[serde(default)]
+    pub bootloader: Option<BootloaderSettings>,
     #[serde(default, flatten)]
     pub user: Option<UserSettings>,
     #[serde(default)]

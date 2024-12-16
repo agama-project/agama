@@ -25,6 +25,7 @@
 //! * Serve the code for the web user interface (not implemented yet).
 
 use crate::{
+    bootloader::web::bootloader_service,
     error::Error,
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
@@ -79,6 +80,7 @@ where
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus.clone()).await?)
         .add_service("/storage", storage_service(dbus.clone()).await?)
+        .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/network", network_service(network_adapter, events).await?)
         .add_service("/questions", questions_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)

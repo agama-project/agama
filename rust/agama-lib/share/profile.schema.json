@@ -39,6 +39,16 @@
         }
       }
     },
+    "bootloader": {
+      "title": "Bootloader settings",
+      "type": "object",
+      "properties": {
+        "stopOnBootMenu": {
+          "title": "Specify if bootloader should stop on menu during boot.",
+          "type": "boolean"
+        }
+      }
+    },
     "software": {
       "title": "Software settings",
       "type": "object",
