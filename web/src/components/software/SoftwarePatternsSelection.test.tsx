@@ -28,6 +28,10 @@ import SoftwarePatternsSelection from "./SoftwarePatternsSelection";
 
 const onConfigMutationMock = { mutate: jest.fn() };
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
+
 jest.mock("~/queries/software", () => ({
   usePatterns: () => testingPatterns,
   useConfigMutation: () => onConfigMutationMock,

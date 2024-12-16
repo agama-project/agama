@@ -30,6 +30,7 @@ import { OverviewPage } from "~/components/overview";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
+import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
@@ -43,6 +44,7 @@ const rootRoutes = () => [
     element: <OverviewPage />,
     handle: { name: N_("Overview"), icon: "list_alt" },
   },
+  registrationRoutes(),
   l10nRoutes(),
   networkRoutes(),
   storageRoutes(),

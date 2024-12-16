@@ -29,6 +29,8 @@ type RouteHandle = {
   title?: string;
   /** Icon for representing the route in some places, like a menu entry */
   icon?: string;
+  /** Whether the route link will be rendered for registrable products only */
+  needsRegistrableProduct?: boolean;
 };
 
 type Route = RouteObject & { handle?: RouteHandle };
