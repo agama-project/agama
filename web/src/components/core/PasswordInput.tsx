@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,29 +20,26 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState } from "react";
-import { Button, InputGroup, TextInput } from "@patternfly/react-core";
+import { Button, InputGroup, TextInput, TextInputProps } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
 
 /**
- * @typedef {import("@patternfly/react-core").TextInputProps} TextInputProps
- *
  * Props matching the {@link https://www.patternfly.org/components/forms/text-input PF/TextInput},
  * except `type` that will be forced to 'password'.
- * @typedef {Omit<TextInputProps, 'type'> & { inputRef?: React.Ref<HTMLInputElement> }} PasswordInputProps
  */
+export type PasswordInputProps = Omit<TextInputProps, "type"> & {
+  inputRef?: React.Ref<HTMLInputElement>;
+};
 
 /**
  * Renders a password input field and a toggle button that can be used to reveal
  * and hide the password
  * @component
  *
- * @param {PasswordInputProps} props
  */
-export default function PasswordInput({ id, inputRef, ...props }) {
+export default function PasswordInput({ id, inputRef, ...props }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 

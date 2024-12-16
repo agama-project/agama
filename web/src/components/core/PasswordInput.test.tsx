@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import userEvent from "@testing-library/user-event";
-import PasswordInput from "./PasswordInput";
+import PasswordInput, { PasswordInputProps } from "./PasswordInput";
 import { _ } from "~/i18n";
 
 describe("PasswordInput Component", () => {
@@ -58,7 +58,7 @@ describe("PasswordInput Component", () => {
   // Using a controlled component for testing the rendered result instead of testing if
   // the given onChange callback is called. The former is more aligned with the
   // React Testing Library principles, https://testing-library.com/docs/guiding-principles/
-  const PasswordInputTest = (props) => {
+  const PasswordInputTest = (props: PasswordInputProps) => {
     const [password, setPassword] = useState(null);
 
     return (

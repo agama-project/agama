@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import {
   DeviceName,
@@ -37,6 +35,7 @@ import { sprintf } from "sprintf-js";
 import { deviceBaseName } from "~/components/storage/utils";
 import { PartitionSlot, StorageDevice } from "~/types/storage";
 import { ExpandableSelectorColumn, ExpandableSelectorProps } from "../core/ExpandableSelector";
+import { DeviceInfo as DeviceInfoType } from "~/api/storage/types";
 
 /**
  * @component
@@ -185,16 +184,22 @@ const DeviceExtendedDetails = ({ item }: { item: PartitionSlot | StorageDevice }
 };
 
 const columns: ExpandableSelectorColumn[] = [
-  { name: _("Device"), value: (item) => <DeviceInfo item={item} /> },
-  { name: _("Details"), value: (item) => <DeviceExtendedDetails item={item} /> },
-  { name: _("Size"), value: (item) => <DeviceSize item={item} />, classNames: "sizes-column" },
+  { name: _("Device"), value: (item: PartitionSlot | StorageDevice) => <DeviceInfo item={item} /> },
+  {
+    name: _("Details"),
+    value: (item: PartitionSlot | StorageDevice) => <DeviceExtendedDetails item={item} />,
+  },
+  {
+    name: _("Size"),
+    value: (item: PartitionSlot | StorageDevice) => <DeviceSize item={item} />,
+    classNames: "sizes-column",
+  },
 ];
 
-type DeviceSelectorTableBaseProps = {
+type DeviceSelectorTableProps = {
   devices: StorageDevice[];
   selectedDevices: StorageDevice[];
-};
-type DeviceSelectorTableProps = DeviceSelectorTableBaseProps & ExpandableSelectorProps;
+} & ExpandableSelectorProps;
 
 /**
  * Table for selecting the installation device.
@@ -210,7 +215,7 @@ export default function DeviceSelectorTable({
       columns={columns}
       items={devices}
       itemIdKey="sid"
-      itemClassNames={(device) => {
+      itemClassNames={(device: DeviceInfoType) => {
         if (!device.sid) {
           return "dimmed-row";
         }

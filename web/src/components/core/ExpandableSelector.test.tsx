@@ -24,8 +24,13 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ExpandableSelector } from "~/components/core";
+import { ExpandableSelectorColumn } from "./ExpandableSelector";
 
-const sda = {
+let consoleErrorSpy: jest.SpyInstance;
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+const sda: any = {
   sid: "59",
   isDrive: true,
   type: "disk",
@@ -112,18 +117,20 @@ const vg = {
   lvs: [lv1],
 };
 
-const columns = [
-  { name: "Device", value: (item) => item.name },
+const columns: ExpandableSelectorColumn[] = [
+  // FIXME: do not use any but the right types once storage part is rewritten.
+  // Or even better, write a test not coupled to storage
+  { name: "Device", value: (item: any) => item.name },
   {
     name: "Content",
-    value: (item) => {
+    value: (item: any) => {
       if (item.isDrive) return item.systems.map((s, i) => <p key={i}>{s}</p>);
       if (item.type === "vg") return `${item.lvs.length} logical volume(s)`;
 
       return item.content;
     },
   },
-  { name: "Size", value: (item) => item.size },
+  { name: "Size", value: (item: any) => item.size },
 ];
 
 const onChangeFn = jest.fn();
@@ -141,11 +148,12 @@ const commonProps = {
 
 describe("ExpandableSelector", () => {
   beforeAll(() => {
-    jest.spyOn(console, "error").mockImplementation();
+    consoleErrorSpy = jest.spyOn(console, "error");
+    consoleErrorSpy.mockImplementation();
   });
 
   afterAll(() => {
-    console.error.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   beforeEach(() => {

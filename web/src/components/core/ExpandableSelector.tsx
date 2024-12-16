@@ -20,11 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState } from "react";
 import {
   Table,
+  TableProps,
   Thead,
   Tr,
   Th,
@@ -34,10 +33,7 @@ import {
   RowSelectVariant,
 } from "@patternfly/react-table";
 
-/**
- * @typedef {import("@patternfly/react-table").TableProps} TableProps
- * @typedef {import("react").RefAttributes<HTMLTableElement>} HTMLTableProps
- */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * An object for sharing data across nested maps
@@ -47,26 +43,48 @@ import {
  * places, as it is the case of the rowIndex prop here.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#passing_arguments
- *
- * @typedef {object} SharedData
- * @property {number} rowIndex - The current row index, to be incremented each time a table row is generated.
  */
 
-/**
- * @typedef {object} ExpandableSelectorColumn
- * @property {string} name - The column header text.
- * @property {(object) => React.ReactNode} value - A function receiving
- *   the item to work with and returning the column value.
- * @property {string} [classNames] - space-separated list of additional CSS class names.
- */
+type SharedData = {
+  rowIndex: number;
+};
+
+export type ExpandableSelectorColumn = {
+  /** The column header text */
+  name: string;
+  /** A function receiving the item to work with  and returns the column value */
+  value: (item: object) => React.ReactNode;
+  /** Space-separated list of additional CSS class names */
+  classNames?: string;
+};
+
+export type ExpandableSelectorProps = {
+  /** Collection of objects defining columns. */
+  columns?: ExpandableSelectorColumn[];
+  /** Whether multiple selection is allowed. */
+  isMultiple?: boolean;
+  /** Collection of items to be rendered. */
+  items?: object[];
+  /** The key for retrieving the item id. */
+  itemIdKey?: string;
+  /** Lookup method to retrieve children from given item. */
+  itemChildren?: (item: object) => object[];
+  /** Whether an item will be selectable or not. */
+  itemSelectable?: (item: object) => boolean;
+  /** Callback to add additional CSS class names to item row. */
+  itemClassNames?: (item: object) => string | undefined;
+  /** Collection of selected items. */
+  itemsSelected?: object[];
+  /** Ids of initially expanded items. */
+  initialExpandedKeys?: any[];
+  /** Callback to be triggered when selection changes. */
+  onSelectionChange?: (selection: object[]) => void;
+} & TableProps;
 
 /**
  * Internal component for building the table header
- *
- * @param {object} props
- * @param {ExpandableSelectorColumn[]} props.columns
  */
-const TableHeader = ({ columns }) => (
+const TableHeader = ({ columns }: { columns: ExpandableSelectorColumn[] }) => (
   <Thead noWrap>
     <Tr>
       <Th />
@@ -86,14 +104,14 @@ const TableHeader = ({ columns }) => (
  * It logs information to console.error if given value does not match
  * expectations.
  *
- * @param {*} selection - The value to check.
- * @param {boolean} allowMultiple - Whether the returned collection can have
+ * @param selection - The value to check.
+ * @param allowMultiple - Whether the returned collection can have
  *   more than one item
- * @return {Array} Empty array if given value is not valid. The first element if
+ * @return Empty array if given value is not valid. The first element if
  *   it is a collection with more than one but selector does not allow multiple.
  *   The original value otherwise.
  */
-const sanitizeSelection = (selection, allowMultiple) => {
+const sanitizeSelection = (selection: any[], allowMultiple: boolean): any[] => {
   if (!Array.isArray(selection)) {
     console.error("`itemSelected` prop must be an array. Ignoring given value", selection);
     return [];
@@ -117,20 +135,6 @@ const sanitizeSelection = (selection, allowMultiple) => {
  *
  * @note It only accepts one nesting level.
  *
- * @typedef {object} ExpandableSelectorBaseProps
- * @property {ExpandableSelectorColumn[]} [columns=[]] - Collection of objects defining columns.
- * @property {boolean} [isMultiple=false] - Whether multiple selection is allowed.
- * @property {object[]} [items=[]] - Collection of items to be rendered.
- * @property {string} [itemIdKey="id"] - The key for retrieving the item id.
- * @property {(item: object) => Array<object>} [itemChildren=() => []] - Lookup method to retrieve children from given item.
- * @property {(item: object) => boolean} [itemSelectable=() => true] - Whether an item will be selectable or not.
- * @property {(item: object) => (string|undefined)} [itemClassNames=() => ""] - Callback that allows adding additional CSS class names to item row.
- * @property {object[]} [itemsSelected=[]] - Collection of selected items.
- * @property {any[]} [initialExpandedKeys=[]] - Ids of initially expanded items.
- * @property {(selection: Array<object>) => void} [onSelectionChange=noop] - Callback to be triggered when selection changes.
- *
- * @typedef {ExpandableSelectorBaseProps & TableProps & HTMLTableProps} ExpandableSelectorProps
- *
  * @param {ExpandableSelectorProps} props
  */
 export default function ExpandableSelector({
@@ -145,10 +149,10 @@ export default function ExpandableSelector({
   initialExpandedKeys = [],
   onSelectionChange,
   ...tableProps
-}) {
+}: ExpandableSelectorProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
   const selection = sanitizeSelection(itemsSelected, isMultiple);
-  const isItemSelected = (item) => {
+  const isItemSelected = (item: object) => {
     const selected = selection.find((selectionItem) => {
       return (
         Object.hasOwn(selectionItem, itemIdKey) && selectionItem[itemIdKey] === item[itemIdKey]
@@ -157,8 +161,8 @@ export default function ExpandableSelector({
 
     return selected !== undefined || selection.includes(item);
   };
-  const isItemExpanded = (key) => expandedItemsKeys.includes(key);
-  const toggleExpanded = (key) => {
+  const isItemExpanded = (key: string | number) => expandedItemsKeys.includes(key);
+  const toggleExpanded = (key: string | number) => {
     if (isItemExpanded(key)) {
       setExpandedItemsKeys(expandedItemsKeys.filter((k) => k !== key));
     } else {
@@ -166,7 +170,7 @@ export default function ExpandableSelector({
     }
   };
 
-  const updateSelection = (item) => {
+  const updateSelection = (item: object) => {
     if (!isMultiple) {
       onSelectionChange([item]);
       return;
@@ -182,11 +186,11 @@ export default function ExpandableSelector({
   /**
    * Render method for building the markup for an item child
    *
-   * @param {object} item - The child to be rendered
-   * @param {boolean} isExpanded - Whether the child should be shown or not
-   * @param {SharedData} sharedData - An object holding shared data
+   * @param item - The child to be rendered
+   * @param isExpanded - Whether the child should be shown or not
+   * @param sharedData - An object holding shared data
    */
-  const renderItemChild = (item, isExpanded, sharedData) => {
+  const renderItemChild = (item: object, isExpanded: boolean, sharedData: SharedData) => {
     const rowIndex = sharedData.rowIndex++;
 
     const selectProps = {
@@ -212,10 +216,10 @@ export default function ExpandableSelector({
   /**
    * Render method for building the markup for item
    *
-   * @param {object} item - The item to be rendered
-   * @param {SharedData} sharedData - An object holding shared data
+   * @param item - The item to be rendered
+   * @param sharedData - An object holding shared data
    */
-  const renderItem = (item, sharedData) => {
+  const renderItem = (item: object, sharedData: SharedData) => {
     const itemKey = item[itemIdKey];
     const rowIndex = sharedData.rowIndex++;
     const children = itemChildren(item);

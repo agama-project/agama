@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,15 +20,28 @@
  * find current contact information at www.suse.com.
  */
 
+import { Grid, GridItem } from "@patternfly/react-core";
 import React from "react";
 import { Page } from "~/components/core";
 import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
+import { _ } from "~/i18n";
 
 export default function ISCSIPage() {
   return (
     <Page>
-      <InitiatorSection />
-      <TargetsSection />
+      <Page.Header>
+        <h2>{_("iSCSI")}</h2>
+      </Page.Header>
+      <Page.Content>
+        <Grid hasGutter>
+          <GridItem sm={12} xl={6}>
+            <InitiatorSection />
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <TargetsSection />
+          </GridItem>
+        </Grid>
+      </Page.Content>
     </Page>
   );
 }
