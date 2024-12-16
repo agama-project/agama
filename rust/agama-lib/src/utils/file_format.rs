@@ -50,10 +50,10 @@ impl FileFormat {
     pub fn from_string(content: &str) -> Self {
         if Self::is_json(content) {
             return Self::Json;
-        } else if Self::is_jsonnet(content) {
-            return Self::Jsonnet;
         } else if Self::is_script(content) {
             return Self::Script;
+        } else if Self::is_jsonnet(content) {
+            return Self::Jsonnet;
         }
 
         Self::Unknown
@@ -98,7 +98,10 @@ impl FileFormat {
     ///
     /// It returns `true` if the content starts with a shebang.
     fn is_script(content: &str) -> bool {
-        content.starts_with("#!")
+        let Some(first_line) = content.lines().next() else {
+            return false;
+        };
+        first_line.starts_with("#!") && !first_line.contains("jsonnet")
     }
 }
 
@@ -111,7 +114,6 @@ mod tests {
         let content = r#"
             { "name:": "value"}
             "#;
-
         assert_eq!(FileFormat::from_string(content), FileFormat::Json);
     }
 
@@ -120,7 +122,11 @@ mod tests {
         let content = r#"
             { name: "value" }
             "#;
+        assert_eq!(FileFormat::from_string(content), FileFormat::Jsonnet);
 
+        let content = r#"#!/usr/bin/jsonnet
+            print
+        "#;
         assert_eq!(FileFormat::from_string(content), FileFormat::Jsonnet);
     }
 
@@ -129,7 +135,22 @@ mod tests {
         let content = r#"#!/bin/bash
             echo "Hello World"
             "#;
-
         assert_eq!(FileFormat::from_string(content), FileFormat::Script);
+
+        let content = r#"#!/usr/bin/python3
+            print
+            "#;
+        assert_eq!(FileFormat::from_string(content), FileFormat::Script);
+    }
+
+    #[test]
+    fn test_unknown() {
+        let empty = "";
+        assert_eq!(FileFormat::from_string(empty), FileFormat::Unknown);
+
+        let text = r#"
+            Some text content.
+        "#;
+        assert_eq!(FileFormat::from_string(text), FileFormat::Unknown);
     }
 }
