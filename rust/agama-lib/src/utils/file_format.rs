@@ -96,7 +96,9 @@ impl FileFormat {
 
     /// Whether is is a script.
     ///
-    /// It returns `true` if the content starts with a shebang.
+    /// It returns `true` if the content starts with a shebang. However, it excludes the
+    /// case of a "jsonnet" script because it needs special handling: injecting the hardware
+    /// information and processing its output.
     fn is_script(content: &str) -> bool {
         let Some(first_line) = content.lines().next() else {
             return false;
