@@ -24,6 +24,8 @@ mod network;
 pub use network::NetworkApiDocBuilder;
 mod storage;
 pub use storage::StorageApiDocBuilder;
+mod bootloader;
+pub use bootloader::BootloaderApiDocBuilder;
 mod software;
 pub use software::SoftwareApiDocBuilder;
 mod l10n;
