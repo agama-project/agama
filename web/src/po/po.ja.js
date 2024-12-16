@@ -906,6 +906,9 @@ export default {
   "Password confirmation": [
     "パスワードの確認"
   ],
+  "Password for root user": [
+    "root ユーザのパスワード"
+  ],
   "Password input": [
     "パスワード入力"
   ],
@@ -975,6 +978,9 @@ export default {
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "データやプログラム、システムファイルを含むデバイス内の情報を保護する仕組みです。"
   ],
+  "Provide a password to ensure administrative access to the system.": [
+    "システムの管理者権限にアクセスするためのパスワードを入力してください。"
+  ],
   "Question": [
     "質問"
   ],
@@ -1022,9 +1028,6 @@ export default {
   ],
   "SSH Key": [
     "SSH 鍵"
-  ],
-  "SSH public key": [
-    "SSH 公開鍵"
   ],
   "SSID": [
     "SSID"
@@ -1404,17 +1407,11 @@ export default {
   "Wires: %s": [
     "接続: %s"
   ],
-  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
-    "上記のテキストエリアに SSH 公開鍵を書き込み／貼り付け／ドロップ／%sしてください。"
-  ],
-  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
-    "SSH 公開鍵を書き込み／貼り付け／ドロップしてください。アップロードしたい場合は、下記のリンクをお使いください。"
-  ],
   "Yes": [
     "はい"
   ],
-  "You must define at least one authentication method for the root user. You can still edit them anytime before the installation.": [
-    "少なくとも 1 つ以上、 root ログイン時の認証方式を設定しなければなりません。インストール前であればいつでも変更できます。"
+  "You can change it or select another authentication method in the 'Users' section before installing.": [
+    "インストールの前にも、 'ユーザ' セクション内で認証方式を追加／変更することができます。"
   ],
   "ZFCP": [
     "ZFCP"
@@ -1463,9 +1460,6 @@ export default {
   ],
   "the presence of the file system for %s": [
     "%s に対するファイルシステムの存在"
-  ],
-  "upload": [
-    "アップロード"
   ],
   "user autologin": [
     "ユーザの自動ログイン"
