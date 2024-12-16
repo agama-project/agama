@@ -30,7 +30,7 @@ use agama_lib::{
 use anyhow::Context;
 use clap::Subcommand;
 use console::style;
-use std::os::unix::process::CommandExt;
+use std::os::unix::{fs::PermissionsExt, process::CommandExt};
 use std::{
     fs::File,
     io::stdout,
@@ -158,7 +158,10 @@ fn pre_process_profile<P: AsRef<Path>>(url_string: &str, path: P) -> anyhow::Res
                 .context("Could not evaluate the profile".to_string())?;
         }
         FileFormat::Script => {
-            let err = Command::new("bash").args([&tmp_profile_path]).exec();
+            let mut perms = std::fs::metadata(&tmp_profile_path)?.permissions();
+            perms.set_mode(0o750);
+            std::fs::set_permissions(&tmp_profile_path, perms)?;
+            let err = Command::new(&tmp_profile_path).exec();
             eprintln!("Exec failed: {}", err);
         }
         FileFormat::Json => {
