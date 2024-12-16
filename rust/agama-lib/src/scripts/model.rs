@@ -28,7 +28,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::transfer::Transfer;
+use crate::utils::Transfer;
 
 use super::ScriptError;
 
