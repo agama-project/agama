@@ -28,12 +28,13 @@ import { SpaceActionsTable } from "~/components/storage";
 import { baseName, deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
-import { Partition } from "~/api/storage/types/config-model";
+import { configModel } from "~/api/storage/types";
 import { useConfigModel, useDevices, useSetCustomSpacePolicy } from "~/queries/storage";
 import { toStorageDevice } from "./device-utils";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 
-const partitionAction = (partition: Partition) => {
+const partitionAction = (partition: configModel.Partition) => {
   if (partition.delete) return "delete";
   if (partition.resizeIfNeeded) return "resizeIfNeeded";
 
@@ -93,11 +94,15 @@ export default function SpacePolicySelection() {
   };
 
   const xl2Columns = 6;
+  const description = _(
+    "Select what to do with each partition in order to find space for allocating the new system.",
+  );
 
   return (
     <Page>
       <Page.Header>
-        <h2>{sprintf(_("Custom space policy for %s"), device.name)}</h2>
+        <h2>{sprintf(_("Find space in %s"), device.name)}</h2>
+        <p className={textStyles.color_400}>{description}</p>
       </Page.Header>
 
       <Page.Content>

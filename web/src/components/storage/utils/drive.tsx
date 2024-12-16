@@ -26,7 +26,6 @@ import { _, n_, formatList } from "~/i18n";
 import { configModel } from "~/api/storage/types";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import * as partitionUtils from "~/components/storage/utils/partition";
-import { Drive } from "~/api/storage/types/config-model";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -160,11 +159,11 @@ const hasReuse = (drive: configModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath && p.name);
 };
 
-const hasPv = (drive: Drive): boolean => {
+const hasPv = (drive: configModel.Drive): boolean => {
   return drive.volumeGroups && drive.volumeGroups.length > 0;
 };
 
-const explicitBoot = (drive: Drive): boolean => {
+const explicitBoot = (drive: configModel.Drive): boolean => {
   return drive.boot && drive.boot === "explicit";
 };
 

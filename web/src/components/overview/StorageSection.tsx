@@ -89,26 +89,33 @@ export default function StorageSection() {
     return _("Install using several devices with a custom strategy to find the needed space.");
   };
 
-  if (drives.length === 0) return <Text>{_("No device selected yet")}</Text>;
-  if (!drives.find((dr) => devices.map((d) => d.name).includes(dr.name)))
-    return <Text>{_("No device selected yet")}</Text>;
+  const existDevice = (name) => devices.some((d) => d.name === name);
+  const noDrive = drives.length === 0 || drives.some((d) => !existDevice(d.name));
+
+  if (noDrive)
+    return (
+      <Content>
+        <Text>{_("No device selected yet")}</Text>
+      </Content>
+    );
+
   if (drives.length > 1) {
     return (
       <Content>
         <span>{msgMultipleDisks(drives)}</span>
       </Content>
     );
-  } else {
-    const [msg1, msg2] = msgSingleDisk(drives[0]).split("%s");
-
-    return (
-      <Content>
-        <Text>
-          <span>{msg1}</span>
-          <Em>{label(drives[0])}</Em>
-          <span>{msg2}</span>
-        </Text>
-      </Content>
-    );
   }
+
+  const [msg1, msg2] = msgSingleDisk(drives[0]).split("%s");
+
+  return (
+    <Content>
+      <Text>
+        <span>{msg1}</span>
+        <Em>{label(drives[0])}</Em>
+        <span>{msg2}</span>
+      </Text>
+    </Content>
+  );
 }
