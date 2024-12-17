@@ -148,6 +148,20 @@ above, it would be possible to use the key as name of the property, resulting in
 }
 ```
 
+More formats for the conditions are being considered, like the one displayed at the next examples.
+
+```json
+"condition": { "size": { "greater": "1 GiB" } }
+```
+
+```json
+"condition": { "size": { "greater": "1 GiB", "smaller": "10 GiB" } }
+```
+
+```json
+"condition": { "name": { "match": "^/dev/system" } }
+```
+
 ### Referencing Other Devices
 
 In addition to aliases, a `search` section could be accepted in all the places in which an alias can
