@@ -22,10 +22,13 @@ use agama_lib::{
     error::ServiceError,
     product::Product,
     progress::ProgressSummary,
-    software::{model::SoftwareConfig, Pattern},
+    software::{
+        model::{ResolvableParams, SoftwareConfig},
+        Pattern,
+    },
 };
 use axum::{
-    extract::State,
+    extract::{Path, State},
     routing::{get, post, put},
     Json, Router,
 };
@@ -48,6 +51,7 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
         .route("/config", put(set_config))
         .route("/probe", post(probe))
         .route("/proposal", get(get_proposal))
+        .route("/resolvables/:id", put(set_resolvables))
         .route("/progress", get(get_progress))
         .with_state(state);
     Ok(router)
@@ -160,4 +164,27 @@ async fn get_progress(State(state): State<SoftwareState>) -> Result<Json<Progres
         None => ProgressSummary::finished(),
     };
     Ok(Json(summary))
+}
+
+/// Updates the resolvables list with the given `id`.
+#[utoipa::path(
+    put,
+    path = "/resolvables/:id",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "Read repositories data"),
+        (status = 400, description = "The D-Bus service could not perform the action
+")
+    )
+)]
+async fn set_resolvables(
+    State(state): State<SoftwareState>,
+    Path(id): Path<String>,
+    Json(params): Json<ResolvableParams>,
+) -> Result<Json<()>, Error> {
+    let names: Vec<_> = params.names.iter().map(|n| n.as_str()).collect();
+    state
+        .client
+        .set_resolvables(&id, params.r#type, &names, params.optional)?;
+    Ok(Json(()))
 }

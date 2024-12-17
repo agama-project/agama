@@ -18,7 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{product::Product, progress::ProgressSummary, software::Pattern};
+use agama_lib::{
+    product::Product,
+    progress::ProgressSummary,
+    software::{model::ResolvableType, Pattern},
+};
 use tokio::sync::oneshot;
 
 use crate::common::backend::service_status::ServiceStatusClient;
@@ -63,6 +67,23 @@ impl SoftwareServiceClient {
 
     pub async fn probe(&self) -> Result<(), SoftwareServiceError> {
         self.actions.send(SoftwareAction::Probe)?;
+        Ok(())
+    }
+
+    pub fn set_resolvables(
+        &self,
+        id: &str,
+        r#type: ResolvableType,
+        resolvables: &[&str],
+        optional: bool,
+    ) -> Result<(), SoftwareServiceError> {
+        let resolvables: Vec<String> = resolvables.iter().map(|r| r.to_string()).collect();
+        self.actions.send(SoftwareAction::SetResolvables {
+            id: id.to_string(),
+            r#type,
+            resolvables,
+            optional,
+        })?;
         Ok(())
     }
 

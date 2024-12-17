@@ -74,7 +74,9 @@ pub enum RegistrationRequirement {
 }
 
 /// Software resolvable type (package or pattern).
-#[derive(Deserialize, Serialize, strum::Display, utoipa::ToSchema)]
+#[derive(
+    Copy, Clone, Debug, Deserialize, PartialEq, Serialize, strum::Display, utoipa::ToSchema,
+)]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ResolvableType {
@@ -91,4 +93,135 @@ pub struct ResolvableParams {
     pub r#type: ResolvableType,
     /// Whether the resolvables are optional or not.
     pub optional: bool,
+}
+
+pub struct ResolvablesSelection {
+    id: String,
+    optional: bool,
+    resolvables: Vec<String>,
+    r#type: ResolvableType,
+}
+
+/// A selection of resolvables to be installed.
+///
+/// It holds a selection of patterns and packages to be installed and whether they are optional or
+/// not. This class is similar to the `PackagesProposal` YaST module.
+#[derive(Default)]
+pub struct SoftwareSelection {
+    selections: Vec<ResolvablesSelection>,
+}
+
+impl SoftwareSelection {
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    /// Adds a set of resolvables.
+    ///
+    /// * `id` - The id of the set.
+    /// * `r#type` - The type of the resolvables (patterns or packages).
+    /// * `optional` - Whether the selection is optional or not.
+    /// * `resolvables` - The resolvables to add.
+    pub fn add(&mut self, id: &str, r#type: ResolvableType, optional: bool, resolvables: &[&str]) {
+        let list = self.find_or_create_selection(id, r#type, optional);
+        let new_resolvables: Vec<_> = resolvables.iter().map(|r| r.to_string()).collect();
+        list.resolvables.extend(new_resolvables);
+    }
+
+    /// Updates a set of resolvables.
+    ///
+    /// * `id` - The id of the set.
+    /// * `r#type` - The type of the resolvables (patterns or packages).
+    /// * `optional` - Whether the selection is optional or not.
+    /// * `resolvables` - The resolvables included in the set.
+    pub fn set(&mut self, id: &str, r#type: ResolvableType, optional: bool, resolvables: &[&str]) {
+        let list = self.find_or_create_selection(id, r#type, optional);
+        let new_resolvables: Vec<_> = resolvables.iter().map(|r| r.to_string()).collect();
+        list.resolvables = new_resolvables;
+    }
+
+    /// Returns a set of resolvables.
+    ///
+    /// * `id` - The id of the set.
+    /// * `r#type` - The type of the resolvables (patterns or packages).
+    /// * `optional` - Whether the selection is optional or not.
+    pub fn get(&self, id: &str, r#type: ResolvableType, optional: bool) -> Option<Vec<String>> {
+        self.selections
+            .iter()
+            .find(|l| l.id == id && l.r#type == r#type && l.optional == optional)
+            .map(|l| l.resolvables.clone())
+    }
+
+    /// Removes the given resolvables from a set.
+    ///
+    /// * `id` - The id of the set.
+    /// * `r#type` - The type of the resolvables (patterns or packages).
+    /// * `optional` - Whether the selection is optional or not.
+    pub fn remove(&mut self, id: &str, r#type: ResolvableType, optional: bool) {
+        self.selections
+            .retain(|l| l.id != id || l.r#type != r#type || l.optional != optional);
+    }
+
+    fn find_or_create_selection(
+        &mut self,
+        id: &str,
+        r#type: ResolvableType,
+        optional: bool,
+    ) -> &mut ResolvablesSelection {
+        let found = self
+            .selections
+            .iter()
+            .position(|l| l.id == id && l.r#type == r#type && l.optional == optional);
+
+        if let Some(index) = found {
+            &mut self.selections[index]
+        } else {
+            let selection = ResolvablesSelection {
+                id: id.to_string(),
+                r#type,
+                optional,
+                resolvables: vec![],
+            };
+            self.selections.push(selection);
+            self.selections.last_mut().unwrap()
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_add_selection() {
+        let mut selection = SoftwareSelection::new();
+        selection.set("agama", ResolvableType::Package, false, &["agama-scripts"]);
+        selection.add("agama", ResolvableType::Package, false, &["suse"]);
+
+        let packages = selection
+            .get("agama", ResolvableType::Package, false)
+            .unwrap();
+        assert_eq!(packages.len(), 2);
+    }
+
+    #[test]
+    fn test_set_selection() {
+        let mut selection = SoftwareSelection::new();
+        selection.add("agama", ResolvableType::Package, false, &["agama-scripts"]);
+        selection.set("agama", ResolvableType::Package, false, &["suse"]);
+
+        let packages = selection
+            .get("agama", ResolvableType::Package, false)
+            .unwrap();
+        assert_eq!(packages.len(), 1);
+    }
+
+    #[test]
+    fn test_remove_selection() {
+        let mut selection = SoftwareSelection::new();
+        selection.add("agama", ResolvableType::Package, true, &["agama-scripts"]);
+        selection.remove("agama", ResolvableType::Package, true);
+        let packages = selection.get("agama", ResolvableType::Package, true);
+        assert_eq!(packages, None);
+    }
 }

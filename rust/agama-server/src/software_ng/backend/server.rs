@@ -20,7 +20,13 @@
 
 use std::{path::Path, sync::Arc};
 
-use agama_lib::{product::Product, software::Pattern};
+use agama_lib::{
+    product::Product,
+    software::{
+        model::{ResolvableType, SoftwareSelection},
+        Pattern,
+    },
+};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{
@@ -40,6 +46,12 @@ pub enum SoftwareAction {
     GetProducts(oneshot::Sender<Vec<Product>>),
     GetPatterns(oneshot::Sender<Vec<Pattern>>),
     SelectProduct(String),
+    SetResolvables {
+        id: String,
+        r#type: ResolvableType,
+        resolvables: Vec<String>,
+        optional: bool,
+    },
 }
 
 /// Software service server.
@@ -50,6 +62,7 @@ pub struct SoftwareServiceServer {
     status: ServiceStatusClient,
     // FIXME: what about having a SoftwareServiceState to keep business logic state?
     selected_product: Option<String>,
+    software_selection: SoftwareSelection,
 }
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Software1";
@@ -72,6 +85,7 @@ impl SoftwareServiceServer {
             products,
             status: status.clone(),
             selected_product: None,
+            software_selection: SoftwareSelection::default(),
         };
 
         tokio::spawn(async move {
@@ -120,6 +134,17 @@ impl SoftwareServiceServer {
             SoftwareAction::Probe => {
                 self.probe().await?;
                 _ = self.status.finish_task();
+            }
+
+            SoftwareAction::SetResolvables {
+                id,
+                r#type,
+                resolvables,
+                optional,
+            } => {
+                let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
+                self.software_selection
+                    .add(&id, r#type, optional, &resolvables);
             }
         }
         Ok(())
