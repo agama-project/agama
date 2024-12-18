@@ -27,8 +27,8 @@ import { StorageSection } from "~/components/overview";
 import * as ConfigModel from "~/api/storage/types/config-model";
 
 const mockDevices = [
-  { name: "/dev/sda", size: 536870912000, volumeGroups: [] },
-  { name: "/dev/sdb", size: 697932185600, volumeGroups: [] },
+  { name: "/dev/sda", size: 536870912000 },
+  { name: "/dev/sdb", size: 697932185600 },
 ];
 
 const mockConfig = { drives: [] as ConfigModel.Drive[] };
@@ -54,7 +54,7 @@ describe("when the configuration does not include any device", () => {
 
 describe("when the configuration contains one drive", () => {
   beforeEach(() => {
-    mockConfig.drives = [{ name: "/dev/sda", spacePolicy: "delete", volumeGroups: [] }];
+    mockConfig.drives = [{ name: "/dev/sda", spacePolicy: "delete" }];
   });
 
   it("renders the proposal summary", async () => {
@@ -105,8 +105,8 @@ describe("when the configuration contains one drive", () => {
 describe("when the configuration contains several drives", () => {
   beforeEach(() => {
     mockConfig.drives = [
-      { name: "/dev/sda", spacePolicy: "delete", volumeGroups: [] },
-      { name: "/dev/sdb", spacePolicy: "delete", volumeGroups: [] },
+      { name: "/dev/sda", spacePolicy: "delete" },
+      { name: "/dev/sdb", spacePolicy: "delete" },
     ];
   });
 

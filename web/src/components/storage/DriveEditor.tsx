@@ -29,7 +29,7 @@ import { useAvailableDevices } from "~/queries/storage";
 import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useChangeDrive, useSetSpacePolicy } from "~/queries/storage";
+import { useDrive } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { typeDescription, contentDescription } from "~/components/storage/utils/device";
 import { Icon } from "../layout";
@@ -89,13 +89,13 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const setSpacePolicy = useSetSpacePolicy();
+  const { setSpacePolicy } = useDrive(drive.name);
   const onToggle = () => setIsOpen(!isOpen);
   const onSpacePolicyChange = (spacePolicy: configModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
       return navigate(generatePath(PATHS.spacePolicy, { id: baseName(drive.name) }));
     } else {
-      setSpacePolicy(drive.name, spacePolicy);
+      setSpacePolicy(spacePolicy);
       setIsOpen(false);
     }
   };
@@ -155,40 +155,42 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const SearchSelectorIntro = ({ drive }) => {
-  const mainText = (drive: configModel.Drive): string => {
+const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
+  const { isBoot, isExplicitBoot } = useDrive(drive.name);
+  // TODO: Get volume groups associated to the drive.
+  const volumeGroups = [];
+
+  const mainText = (): string => {
     if (driveUtils.hasReuse(drive)) {
       // The current device will be the only option to choose from
       return _("This uses existing partitions at the device");
     }
 
-    const boot = driveUtils.explicitBoot(drive);
-
     if (!driveUtils.hasFilesystem(drive)) {
       // The current device will be the only option to choose from
       if (driveUtils.hasPv(drive)) {
-        if (drive.volumeGroups.length > 1) {
-          if (boot) {
+        if (volumeGroups.length > 1) {
+          if (isExplicitBoot) {
             return _(
               "This device will contain the configured LVM groups and any partition needed to boot",
             );
           }
           return _("This device will contain the configured LVM groups");
         }
-        if (boot) {
+        if (isExplicitBoot) {
           return sprintf(
             // TRANSLATORS: %s is the name of the LVM
             _("This device will contain the LVM group '%s' and any partition needed to boot"),
-            drive.volumeGroups[0],
+            volumeGroups[0],
           );
         }
 
         // TRANSLATORS: %s is the name of the LVM
-        return sprintf(_("This device will contain the LVM group '%s'"), drive.volumeGroups[0]);
+        return sprintf(_("This device will contain the LVM group '%s'"), volumeGroups[0]);
       }
 
       // The current device will be the only option to choose from
-      if (boot) {
+      if (isExplicitBoot) {
         return _("This device will contain any partition needed for booting");
       }
 
@@ -212,17 +214,16 @@ const SearchSelectorIntro = ({ drive }) => {
     );
   };
 
-  const extraText = (drive: configModel.Drive): string => {
+  const extraText = (): string => {
     // Nothing to add in these cases
     if (driveUtils.hasReuse(drive)) return;
     if (!driveUtils.hasFilesystem(drive)) return;
 
     const name = baseName(drive.name);
-    const boot = driveUtils.explicitBoot(drive);
 
     if (driveUtils.hasPv(drive)) {
-      if (drive.volumeGroups.length > 1) {
-        if (boot) {
+      if (volumeGroups.length > 1) {
+        if (isExplicitBoot) {
           return sprintf(
             // TRANSLATORS: %s is the name of the disk (eg. sda)
             _("%s will still contain the configured LVM groups and any partition needed to boot"),
@@ -234,12 +235,12 @@ const SearchSelectorIntro = ({ drive }) => {
         return sprintf(_("The configured LVM groups will remain at %s"), name);
       }
 
-      if (boot) {
+      if (isExplicitBoot) {
         return sprintf(
           // TRANSLATORS: %1$s is the name of the disk (eg. sda) and %2$s the name of the LVM
           _("%1$s will still contain the LVM group '%2$s' and any partition needed to boot"),
           name,
-          drive.volumeGroups[0],
+          volumeGroups[0],
         );
       }
 
@@ -247,23 +248,23 @@ const SearchSelectorIntro = ({ drive }) => {
         // TRANSLATORS: %1$s is the name of the LVM and %2$s the name of the disk (eg. sda)
         _("The LVM group '%1$s' will remain at %2$s"),
         name,
-        drive.volumeGroups[0],
+        volumeGroups[0],
       );
     }
 
-    if (boot) {
+    if (isExplicitBoot) {
       // TRANSLATORS: %s is the name of the disk (eg. sda)
       return sprintf(_("Partitions needed for booting will remain at %s"), name);
     }
 
-    if (drive.boot) {
+    if (isBoot) {
       return _("Partitions needed for booting will also be adapted");
     }
   };
 
-  const Content = ({ drive }) => {
-    const main = mainText(drive);
-    const extra = extraText(drive);
+  const Content = () => {
+    const main = mainText();
+    const extra = extraText();
 
     if (extra) {
       return (
@@ -280,7 +281,7 @@ const SearchSelectorIntro = ({ drive }) => {
 
   return (
     <li style={{ padding: "0.7em" }}>
-      <Content drive={drive} />
+      <Content />
     </li>
   );
 };
@@ -362,17 +363,21 @@ const SearchSelectorSingleOption = ({ selected }) => {
 };
 
 const SearchSelectorOptions = ({ drive, selected, onChange }) => {
+  const { isExplicitBoot } = useDrive(drive.name);
+  // const boot = isExplicitBoot(drive.name);
+
   if (driveUtils.hasReuse(drive)) return <SearchSelectorSingleOption selected={selected} />;
 
   if (!driveUtils.hasFilesystem(drive)) {
-    if (driveUtils.hasPv(drive) || driveUtils.explicitBoot(drive)) {
+    if (driveUtils.hasPv(drive) || isExplicitBoot) {
       return <SearchSelectorSingleOption selected={selected} />;
     }
 
     return <SearchSelectorMultipleOptions selected={selected} onChange={onChange} />;
   }
 
-  return <SearchSelectorMultipleOptions selected={selected} withNewVg onChange={onChange} />;
+  // TODO: use withNewVg prop once LVM is added.
+  return <SearchSelectorMultipleOptions selected={selected} onChange={onChange} />;
 };
 
 const SearchSelector = ({ drive, selected, onChange }) => {
@@ -385,8 +390,10 @@ const SearchSelector = ({ drive, selected, onChange }) => {
 };
 
 const RemoveDriveOption = ({ drive }) => {
+  const { isExplicitBoot } = useDrive(drive.name);
+
   if (driveUtils.hasPv(drive)) return;
-  if (driveUtils.explicitBoot(drive)) return;
+  if (isExplicitBoot) return;
   if (driveUtils.hasRoot(drive)) return;
 
   return (
@@ -403,9 +410,9 @@ const DriveSelector = ({ drive, selected }) => {
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
-  const changeDrive = useChangeDrive();
+  const driveHandler = useDrive(drive.name);
   const onDriveChange = (newDriveName: string) => {
-    changeDrive(drive.name, newDriveName);
+    driveHandler.switch(newDriveName);
     setIsOpen(false);
   };
   const onToggle = () => setIsOpen(!isOpen);
@@ -446,10 +453,12 @@ const DriveSelector = ({ drive, selected }) => {
 };
 
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
+  const { isBoot } = useDrive(drive.name);
+
   const text = (drive: configModel.Drive): string => {
     if (driveUtils.hasRoot(drive)) {
       if (driveUtils.hasPv(drive)) {
-        if (drive.boot) {
+        if (isBoot) {
           // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
           return _("Use %s to install, host LVM and boot");
         }
@@ -457,7 +466,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
         return _("Use %s to install and host LVM");
       }
 
-      if (drive.boot) {
+      if (isBoot) {
         // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
         return _("Use %s to install and boot");
       }
@@ -467,7 +476,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
 
     if (driveUtils.hasFilesystem(drive)) {
       if (driveUtils.hasPv(drive)) {
-        if (drive.boot) {
+        if (isBoot) {
           // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
           return _("Use %s for LVM, additional partitions and booting");
         }
@@ -475,7 +484,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
         return _("Use %s for LVM and additional partitions");
       }
 
-      if (drive.boot) {
+      if (isBoot) {
         // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
         return _("Use %s for additional partitions and booting");
       }
@@ -484,7 +493,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
     }
 
     if (driveUtils.hasPv(drive)) {
-      if (drive.boot) {
+      if (isBoot) {
         // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
         return _("Use %s to host LVM and boot");
       }
@@ -492,7 +501,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
       return _("Use %s to host LVM");
     }
 
-    if (drive.boot) {
+    if (isBoot) {
       // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
       return _("Use %s to boot");
     }
