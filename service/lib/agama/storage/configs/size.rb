@@ -36,6 +36,8 @@ module Agama
           end
         end
 
+        # Whether the size is the default size for the volume.
+        #
         # @return [Boolean]
         attr_accessor :default
         alias_method :default?, :default

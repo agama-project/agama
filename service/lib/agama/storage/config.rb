@@ -25,7 +25,10 @@ require "agama/storage/config_conversions/from_json"
 
 module Agama
   module Storage
-    # Settings used to calculate an storage proposal.
+    # Config used to calculate an storage proposal.
+    #
+    # See doc/storage_proposal_from_profile.md for a complete description of how the config is
+    # generated from a profile.
     class Config
       include Copyable
 
