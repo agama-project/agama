@@ -26,39 +26,129 @@ import { configModel } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
 import { SpacePolicyAction } from "~/types/storage";
 
+function copyModel(model: configModel.Config): configModel.Config {
+  return JSON.parse(JSON.stringify(model));
+}
+
+function isNewPartition(partition: configModel.Partition): boolean {
+  return partition.name === undefined;
+}
+
+function isSpacePartition(partition: configModel.Partition): boolean {
+  return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
+}
+
+function isUsedPartition(partition: configModel.Partition): boolean {
+  return partition.filesystem !== undefined || partition.alias !== undefined;
+}
+
+function isReusedPartition(partition: configModel.Partition): boolean {
+  return !isNewPartition(partition) && isUsedPartition(partition) && !isSpacePartition(partition);
+}
+
 function findDrive(model: configModel.Config, driveName: string): configModel.Drive | undefined {
   const drives = model.drives || [];
   return drives.find((d) => d.name === driveName);
 }
 
-// TODO: add a second drive if needed (e.g., reusing a partition).
-function changeDrive(model: configModel.Config, driveName: string, newDriveName: string) {
-  const drive = findDrive(model, driveName);
-  if (drive === undefined) return;
-
-  drive.name = newDriveName;
-  // TODO: assign space policy according to the use-case.
-  if (drive.spacePolicy === "custom") drive.spacePolicy = "keep";
+function removeDrive(model: configModel.Config, driveName: string) {
+  model.drives = model.drives.filter((d) => d.name !== driveName);
 }
 
-function setSpacePolicy(
-  model: configModel.Config,
+function isUsedDrive(model: configModel.Config, driveName: string) {
+  const drive = findDrive(model, driveName);
+  if (drive === undefined) return false;
+
+  return drive.partitions?.some((p) => isNewPartition(p) || isReusedPartition(p));
+}
+
+function isBoot(model: configModel.Config, driveName: string): boolean {
+  return model.boot?.configure && driveName === model.boot?.device?.name;
+}
+
+function isExplicitBoot(model: configModel.Config, driveName: string): boolean {
+  return !model.boot?.device?.default && driveName === model.boot?.device?.name;
+}
+
+function setBoot(originalModel: configModel.Config, boot: configModel.Boot) {
+  const model = copyModel(originalModel);
+  const name = model.boot?.device?.name;
+  const remove = name !== undefined && isExplicitBoot(model, name) && !isUsedDrive(model, name);
+
+  if (remove) removeDrive(model, name);
+
+  model.boot = boot;
+  return model;
+}
+
+function setBootDevice(originalModel: configModel.Config, deviceName: string): configModel.Config {
+  return setBoot(originalModel, {
+    configure: true,
+    device: {
+      default: false,
+      name: deviceName,
+    },
+  });
+}
+
+function setDefaultBootDevice(originalModel: configModel.Config): configModel.Config {
+  return setBoot(originalModel, {
+    configure: true,
+    device: {
+      default: true,
+    },
+  });
+}
+
+function disableBoot(originalModel: configModel.Config): configModel.Config {
+  return setBoot(originalModel, { configure: false });
+}
+
+function switchDrive(
+  originalModel: configModel.Config,
   driveName: string,
-  spacePolicy: "keep" | "delete" | "resize",
-) {
+  newDriveName: string,
+): configModel.Config {
+  if (driveName === newDriveName) return;
+
+  const model = copyModel(originalModel);
   const drive = findDrive(model, driveName);
   if (drive === undefined) return;
 
-  drive.spacePolicy = spacePolicy;
+  const newPartitions = (drive.partitions || []).filter(isNewPartition);
+  const existingPartitions = (drive.partitions || []).filter((p) => !isNewPartition(p));
+  const reusedPartitions = existingPartitions.filter(isReusedPartition);
+  const keepDrive = isExplicitBoot(model, driveName) || reusedPartitions.length;
+  const newDrive = findDrive(model, newDriveName);
+
+  if (keepDrive) {
+    drive.partitions = existingPartitions;
+  } else {
+    removeDrive(model, driveName);
+  }
+
+  if (newDrive) {
+    newDrive.partitions ||= [];
+    newDrive.partitions = [...newDrive.partitions, ...newPartitions];
+  } else {
+    model.drives.push({
+      name: newDriveName,
+      partitions: newPartitions,
+      spacePolicy: drive.spacePolicy === "custom" ? undefined : drive.spacePolicy,
+    });
+  }
+
+  return model;
 }
 
 function setCustomSpacePolicy(
-  model: configModel.Config,
+  originalModel: configModel.Config,
   driveName: string,
   actions: SpacePolicyAction[],
-) {
+): configModel.Config {
+  const model = copyModel(originalModel);
   const drive = findDrive(model, driveName);
-  if (drive === undefined) return;
+  if (drive === undefined) return model;
 
   drive.spacePolicy = "custom";
   drive.partitions ||= [];
@@ -90,6 +180,24 @@ function setCustomSpacePolicy(
       });
     }
   });
+
+  return model;
+}
+
+function setSpacePolicy(
+  originalModel: configModel.Config,
+  driveName: string,
+  spacePolicy: configModel.SpacePolicy,
+  actions?: SpacePolicyAction[],
+): configModel.Config {
+  if (spacePolicy === "custom")
+    return setCustomSpacePolicy(originalModel, driveName, actions || []);
+
+  const model = copyModel(originalModel);
+  const drive = findDrive(model, driveName);
+  if (drive !== undefined) drive.spacePolicy = spacePolicy;
+
+  return model;
 }
 
 const configModelQuery = {
@@ -121,43 +229,48 @@ export function useConfigModelMutation() {
   return useMutation(query);
 }
 
-type ModelActionF = (model: configModel.Config) => void;
+export type BootHook = {
+  configure: boolean;
+  isDefault: boolean;
+  deviceName?: string;
+  setDevice: (deviceName: string) => void;
+  setDefault: () => void;
+  disable: () => void;
+};
 
-function useApplyModelAction() {
-  const originalModel = useConfigModel({ suspense: true });
+export function useBoot(): BootHook {
+  const model = useConfigModel();
   const { mutate } = useConfigModelMutation();
 
-  const model = JSON.parse(JSON.stringify(originalModel));
-
-  return (action: ModelActionF) => {
-    action(model);
-    mutate(model);
+  return {
+    configure: model?.boot?.configure || false,
+    isDefault: model?.boot?.device?.default || false,
+    deviceName: model?.boot?.device?.name,
+    setDevice: (deviceName: string) => mutate(setBootDevice(model, deviceName)),
+    setDefault: () => mutate(setDefaultBootDevice(model)),
+    disable: () => mutate(disableBoot(model)),
   };
 }
 
-export function useChangeDrive() {
-  const applyModelAction = useApplyModelAction();
+export type DriveHook = {
+  isBoot: boolean;
+  isExplicitBoot: boolean;
+  switch: (newName: string) => void;
+  setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
+};
 
-  return (driveName: string, newDriveName: string) => {
-    const action: ModelActionF = (model) => changeDrive(model, driveName, newDriveName);
-    applyModelAction(action);
-  };
-}
+export function useDrive(name: string): DriveHook | undefined {
+  const model = useConfigModel();
+  const { mutate } = useConfigModelMutation();
 
-export function useSetSpacePolicy() {
-  const applyModelAction = useApplyModelAction();
+  if (findDrive(model, name) === undefined) return;
 
-  return (deviceName: string, spacePolicy: "keep" | "delete" | "resize") => {
-    const action: ModelActionF = (model) => setSpacePolicy(model, deviceName, spacePolicy);
-    applyModelAction(action);
-  };
-}
-
-export function useSetCustomSpacePolicy() {
-  const applyModelAction = useApplyModelAction();
-
-  return (deviceName: string, actions: SpacePolicyAction[]) => {
-    const action: ModelActionF = (model) => setCustomSpacePolicy(model, deviceName, actions);
-    applyModelAction(action);
+  return {
+    isBoot: isBoot(model, name),
+    isExplicitBoot: isExplicitBoot(model, name),
+    switch: (newName) => mutate(switchDrive(model, name, newName)),
+    setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => {
+      mutate(setSpacePolicy(model, name, policy, actions));
+    },
   };
 }
