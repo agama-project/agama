@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 18 12:32:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new AGAMA_LOG environment variable to control what to
+  log (gh#agama-project/agama#1843).
+
+-------------------------------------------------------------------
 Thu Dec 12 16:42:18 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix profile URL handling (bsc#1234362):
