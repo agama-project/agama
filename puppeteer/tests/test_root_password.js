@@ -123,7 +123,6 @@ describe("Agama test", function () {
   });
 
   it("should optionally display the product selection dialog", async function () {
-    this.timeout(60000);
     // Either the root password setting is displayed or there is
     // the product selection page.
     const productSelectionDisplayed = await Promise.any([
@@ -155,6 +154,8 @@ describe("Agama test", function () {
   });
 
   it("should require setting the root password", async function () {
+    // increase the timeout for the whole test
+    this.timeout(60000);
     await page
       .locator("input#rootPassword")
       // refreshing the repositories before showing the password configuration might take long time
