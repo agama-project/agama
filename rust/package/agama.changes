@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 18 10:11:44 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add jsonnet as a BuildRequires dependency because it is needed
+  when running tests (gh#agama-project/agama#1842).
+
+-------------------------------------------------------------------
 Thu Dec 12 16:42:18 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix profile URL handling (bsc#1234362):
