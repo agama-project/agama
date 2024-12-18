@@ -24,9 +24,10 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { mockNavigateFn, plainRender } from "~/test-utils";
 import BootSelection from "./BootSelection";
 import { StorageDevice } from "~/types/storage";
+import { BootHook } from "~/queries/storage/config-model";
 
 const sda: StorageDevice = {
   sid: 59,
@@ -94,50 +95,62 @@ const sdc: StorageDevice = {
   udevPaths: ["pci-0000:00-19"],
 };
 
-let props;
+const mockAvailableDevices = [sda, sdb, sdc];
 
-describe.skip("BootSelection", () => {
-  beforeEach(() => {
-    props = {
-      isOpen: true,
-      configureBoot: false,
-      availableDevices: [sda, sdb, sdc],
-      bootDevice: undefined,
-      defaultBootDevice: undefined,
-      onCancel: jest.fn(),
-      onAccept: jest.fn(),
-    };
-  });
+const mockBoot: BootHook = {
+  configure: false,
+  isDefault: false,
+  deviceName: undefined,
+  setDevice: jest.fn(),
+  setDefault: jest.fn(),
+  disable: jest.fn(),
+};
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigateFn,
+}));
+
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useAvailableDevices: () => mockAvailableDevices,
+}));
+
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useBoot: () => mockBoot,
+}));
+
+describe("BootSelection", () => {
   const automaticOption = () => screen.queryByRole("radio", { name: "Automatic" });
   const selectDiskOption = () => screen.queryByRole("radio", { name: "Select a disk" });
   const notConfigureOption = () => screen.queryByRole("radio", { name: "Do not configure" });
   const diskSelector = () => screen.queryByRole("combobox", { name: /choose a disk/i });
 
   it("offers an option to configure boot in the installation disk", () => {
-    plainRender(<BootSelection {...props} />);
+    plainRender(<BootSelection />);
     expect(automaticOption()).toBeInTheDocument();
   });
 
   it("offers an option to configure boot in a selected disk", () => {
-    plainRender(<BootSelection {...props} />);
+    plainRender(<BootSelection />);
     expect(selectDiskOption()).toBeInTheDocument();
     expect(diskSelector()).toBeInTheDocument();
   });
 
   it("offers an option to not configure boot", () => {
-    plainRender(<BootSelection {...props} />);
+    plainRender(<BootSelection />);
     expect(notConfigureOption()).toBeInTheDocument();
   });
 
   describe("if the current value is set to boot from the installation disk", () => {
     beforeEach(() => {
-      props.configureBoot = true;
-      props.bootDevice = undefined;
+      mockBoot.configure = true;
+      mockBoot.isDefault = true;
     });
 
     it("selects 'Automatic' option by default", () => {
-      plainRender(<BootSelection {...props} />);
+      plainRender(<BootSelection />);
       expect(automaticOption()).toBeChecked();
       expect(selectDiskOption()).not.toBeChecked();
       expect(diskSelector()).toBeDisabled();
@@ -147,12 +160,13 @@ describe.skip("BootSelection", () => {
 
   describe("if the current value is set to boot from a selected disk", () => {
     beforeEach(() => {
-      props.configureBoot = true;
-      props.bootDevice = sdb;
+      mockBoot.configure = true;
+      mockBoot.isDefault = false;
+      mockBoot.deviceName = sda.name;
     });
 
     it("selects 'Select a disk' option by default", () => {
-      plainRender(<BootSelection {...props} />);
+      plainRender(<BootSelection />);
       expect(automaticOption()).not.toBeChecked();
       expect(selectDiskOption()).toBeChecked();
       expect(diskSelector()).toBeEnabled();
@@ -162,12 +176,11 @@ describe.skip("BootSelection", () => {
 
   describe("if the current value is set to not configure boot", () => {
     beforeEach(() => {
-      props.configureBoot = false;
-      props.bootDevice = sdb;
+      mockBoot.configure = false;
     });
 
     it("selects 'Do not configure' option by default", () => {
-      plainRender(<BootSelection {...props} />);
+      plainRender(<BootSelection />);
       expect(automaticOption()).not.toBeChecked();
       expect(selectDiskOption()).not.toBeChecked();
       expect(diskSelector()).toBeDisabled();
@@ -175,78 +188,48 @@ describe.skip("BootSelection", () => {
     });
   });
 
-  it("does not call onAccept on cancel", async () => {
-    const { user } = plainRender(<BootSelection {...props} />);
+  it("does not change the boot options on cancel", async () => {
+    const { user } = plainRender(<BootSelection />);
     const cancel = screen.getByRole("button", { name: "Cancel" });
 
     await user.click(cancel);
 
-    expect(props.onAccept).not.toHaveBeenCalled();
+    expect(mockBoot.setDevice).not.toHaveBeenCalled();
+    expect(mockBoot.setDefault).not.toHaveBeenCalled();
+    expect(mockBoot.disable).not.toHaveBeenCalled();
   });
 
-  describe("if the 'Automatic' option is selected", () => {
-    beforeEach(() => {
-      props.configureBoot = false;
-      props.bootDevice = undefined;
-    });
+  it("applies the expected boot options when 'Automatic' is selected", async () => {
+    const { user } = plainRender(<BootSelection />);
+    await user.click(automaticOption());
 
-    it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelection {...props} />);
+    const accept = screen.getByRole("button", { name: "Accept" });
+    await user.click(accept);
 
-      await user.click(automaticOption());
-
-      const accept = screen.getByRole("button", { name: "Confirm" });
-      await user.click(accept);
-
-      expect(props.onAccept).toHaveBeenCalledWith({
-        configureBoot: true,
-        bootDevice: undefined,
-      });
-    });
+    expect(mockBoot.setDefault).toHaveBeenCalled();
   });
 
-  describe("if the 'Select a disk' option is selected", () => {
-    beforeEach(() => {
-      props.configureBoot = false;
-      props.bootDevice = undefined;
-    });
+  it("applies the expected boot options when a disk is selected", async () => {
+    const { user } = plainRender(<BootSelection />);
 
-    it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelection {...props} />);
+    await user.click(selectDiskOption());
+    const selector = diskSelector();
+    const sdbOption = within(selector).getByRole("option", { name: /sdb/ });
+    await user.selectOptions(selector, sdbOption);
 
-      await user.click(selectDiskOption());
-      const selector = diskSelector();
-      const sdbOption = within(selector).getByRole("option", { name: /sdb/ });
-      await user.selectOptions(selector, sdbOption);
+    const accept = screen.getByRole("button", { name: "Accept" });
+    await user.click(accept);
 
-      const accept = screen.getByRole("button", { name: "Confirm" });
-      await user.click(accept);
-
-      expect(props.onAccept).toHaveBeenCalledWith({
-        configureBoot: true,
-        bootDevice: sdb,
-      });
-    });
+    expect(mockBoot.setDevice).toHaveBeenCalledWith(sdb.name);
   });
 
-  describe("if the 'Do not configure' option is selected", () => {
-    beforeEach(() => {
-      props.configureBoot = true;
-      props.bootDevice = sda;
-    });
+  it("applies the expected boot options when 'No configure' is selected", async () => {
+    const { user } = plainRender(<BootSelection />);
+    await user.click(notConfigureOption());
 
-    it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelection {...props} />);
+    const accept = screen.getByRole("button", { name: "Accept" });
+    await user.click(accept);
 
-      await user.click(notConfigureOption());
-
-      const accept = screen.getByRole("button", { name: "Confirm" });
-      await user.click(accept);
-
-      expect(props.onAccept).toHaveBeenCalledWith({
-        configureBoot: false,
-        bootDevice: undefined,
-      });
-    });
+    expect(mockBoot.disable).toHaveBeenCalled();
   });
 });
