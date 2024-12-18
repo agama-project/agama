@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 18 12:32:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new AGAMA_LOG environment variable to control what to
+  log (gh#agama-project/agama#1843).
+
+-------------------------------------------------------------------
 Wed Dec 18 10:11:44 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add jsonnet as a BuildRequires dependency because it is needed
