@@ -30,11 +30,7 @@
           "description": "Whether to configure partitions for booting.",
           "type": "boolean"
         },
-        "device": {
-          "description": "The target installation device is used by default.",
-          "type": "string",
-          "examples": ["/dev/vda"]
-        }
+        "device": { "$ref": "#/$defs/alias" }
       }
     },
     "driveElement": {

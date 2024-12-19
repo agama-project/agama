@@ -159,12 +159,10 @@ const hasReuse = (drive: configModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath && p.name);
 };
 
+// TODO: maybe it should be moved to Drive hook from config-model.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const hasPv = (drive: configModel.Drive): boolean => {
-  return drive.volumeGroups && drive.volumeGroups.length > 0;
-};
-
-const explicitBoot = (drive: configModel.Drive): boolean => {
-  return drive.boot && drive.boot === "explicit";
+  return false;
 };
 
 export {
@@ -172,7 +170,6 @@ export {
   hasReuse,
   hasFilesystem,
   hasRoot,
-  explicitBoot,
   label,
   spacePolicyEntry,
   contentActionsDescription,

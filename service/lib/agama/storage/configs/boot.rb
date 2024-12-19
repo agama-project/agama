@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/boot_device"
+
 module Agama
   module Storage
     module Configs
@@ -30,15 +32,15 @@ module Agama
         attr_accessor :configure
         alias_method :configure?, :configure
 
-        # Device to use for booting.
+        # Boot device config.
         #
-        # @return [String, nil] if nil, then the proposal decides the booting device, normally the
-        #   device for allocating root.
+        # @return [BootDevice]
         attr_accessor :device
 
         # Constructor
         def initialize
           @configure = true
+          @device = BootDevice.new
         end
       end
     end

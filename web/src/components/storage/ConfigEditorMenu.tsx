@@ -21,6 +21,7 @@
  */
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { useHref } from "react-router-dom";
 import {
@@ -31,8 +32,10 @@ import {
   DropdownItem,
   Divider,
 } from "@patternfly/react-core";
+import { STORAGE as PATHS } from "~/routes/paths";
 
 export default function ConfigEditorMenu() {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -58,7 +61,9 @@ export default function ConfigEditorMenu() {
         <DropdownItem key="vg">{_("Add LVM volume group")}</DropdownItem>
         <DropdownItem key="raid">{_("Add MD RAID")}</DropdownItem>
         <Divider />
-        <DropdownItem key="boot">{_("Change boot options")}</DropdownItem>
+        <DropdownItem key="boot" onClick={() => navigate(PATHS.bootDevice)}>
+          {_("Change boot options")}
+        </DropdownItem>
         <DropdownItem key="reinstall">{_("Reinstall an existing system")}</DropdownItem>
         <Divider />
         <DropdownItem key="iscsi-link" to={useHref("/storage/iscsi")}>

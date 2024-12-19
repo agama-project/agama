@@ -29,7 +29,8 @@ import { baseName, deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
 import { configModel } from "~/api/storage/types";
-import { useConfigModel, useDevices, useSetCustomSpacePolicy } from "~/queries/storage";
+import { useDevices } from "~/queries/storage";
+import { useConfigModel, useDrive } from "~/queries/storage/config-model";
 import { toStorageDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
@@ -49,9 +50,9 @@ export default function SpacePolicySelection() {
   const model = useConfigModel({ suspense: true });
   const devices = useDevices("system", { suspense: true });
   const device = devices.find((d) => baseName(d.name) === id);
-  const setCustomSpacePolicy = useSetCustomSpacePolicy();
   const children = deviceChildren(device);
   const drive = model.drives.find((d) => baseName(d.name) === id);
+  const { setSpacePolicy } = useDrive(drive.name);
 
   const partitionDeviceAction = (device: StorageDevice) => {
     const partition = drive.partitions?.find((p) => p.name === device.name);
@@ -87,9 +88,7 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-
-    setCustomSpacePolicy(drive.name, actions);
-
+    setSpacePolicy("custom", actions);
     navigate("..");
   };
 

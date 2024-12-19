@@ -39,7 +39,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 const Link = ({ isBold = false }: { isBold?: boolean }) => {
   const text = _("Change boot options");
 
-  return <RouterLink to={PATHS.bootingPartition}>{isBold ? <b>{text}</b> : text}</RouterLink>;
+  return <RouterLink to={PATHS.bootDevice}>{isBold ? <b>{text}</b> : text}</RouterLink>;
 };
 
 export type BootConfig = {

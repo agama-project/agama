@@ -152,7 +152,7 @@ const useDevices = (
 /**
  * Hook that returns the list of available devices for installation.
  */
-const useAvailableDevices = () => {
+const useAvailableDevices = (): StorageDevice[] => {
   const findDevice = (devices: StorageDevice[], sid: number) => {
     const device = devices.find((d) => d.sid === sid);
 

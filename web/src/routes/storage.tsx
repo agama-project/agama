@@ -47,7 +47,7 @@ const routes = (): Route => ({
       element: <DeviceSelection />,
     },
     {
-      path: PATHS.bootingPartition,
+      path: PATHS.bootDevice,
       element: <BootSelection />,
     },
     {

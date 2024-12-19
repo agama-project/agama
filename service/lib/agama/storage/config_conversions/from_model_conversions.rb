@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/from_model_conversions/boot"
+require "agama/storage/config_conversions/from_model_conversions/boot_device"
 require "agama/storage/config_conversions/from_model_conversions/config"
 require "agama/storage/config_conversions/from_model_conversions/drive"
 require "agama/storage/config_conversions/from_model_conversions/filesystem"

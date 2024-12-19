@@ -1,4 +1,11 @@
 {
+  "boot": {
+    "configure": true,
+    "device": {
+      "default": false,
+      "name": "/dev/vda"
+    }
+  },
   "drives": [
     {
       "name": "/dev/vda",

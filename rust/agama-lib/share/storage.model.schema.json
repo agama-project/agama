@@ -4,19 +4,38 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "boot": { "$ref": "#/$defs/boot" },
     "drives": {
       "type": "array",
       "items": { "$ref": "#/$defs/drive" }
     }
   },
   "$defs": {
+    "boot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configure"],
+      "properties": {
+        "configure": { "type": "boolean" },
+        "device": { "$ref": "#/$defs/bootDevice" }
+      }
+    },
+    "bootDevice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default"],
+      "properties": {
+        "default": { "type": "boolean" },
+        "name": { "type": "string" }
+      }
+    },
     "drive": {
       "type": "object",
       "additionalProperties": false,
       "required": ["name"],
       "properties": {
         "name": { "type": "string" },
-        "alias": { "type": "string" },
+        "alias": { "$ref": "#/$defs/alias" },
         "mountPath": { "type": "string" },
         "filesystem": { "$ref": "#/$defs/filesystem" },
         "spacePolicy": { "$ref": "#/$defs/spacePolicy" },
@@ -32,7 +51,7 @@
       "additionalProperties": false,
       "properties": {
         "name": { "type": "string" },
-        "alias": { "type": "string" },
+        "alias": { "$ref": "#/$defs/alias" },
         "id": { "$ref": "#/$defs/partitionId" },
         "mountPath": { "type": "string" },
         "filesystem": { "$ref": "#/$defs/filesystem" },
@@ -42,6 +61,10 @@
         "resize": { "type": "boolean" },
         "resizeIfNeeded": { "type": "boolean" }
       }
+    },
+    "alias": {
+      "description": "Alias used to reference a device.",
+      "type": "string"
     },
     "spacePolicy": {
       "enum": ["delete", "resize", "keep", "custom"]
