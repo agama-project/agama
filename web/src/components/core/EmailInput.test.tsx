@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,8 +23,34 @@
 import React, { useState } from "react";
 import { screen } from "@testing-library/react";
 
-import EmailInput from "./EmailInput";
+import EmailInput, { EmailInputProps } from "./EmailInput";
 import { plainRender } from "~/test-utils";
+
+/**
+ * Controlled component for testing the EmailInputProps
+ *
+ * Instead of testing if given callbacks are called, below tests are going to
+ * check the rendered result to be more aligned with the React Testing Library
+ * principles, https://testing-library.com/docs/guiding-principles/
+ *
+ */
+const EmailInputTest = (props: EmailInputProps) => {
+  const [email, setEmail] = useState("");
+  const [isValid, setIsValid] = useState(true);
+
+  return (
+    <>
+      <EmailInput
+        {...props}
+        value={email}
+        onChange={(_, v) => setEmail(v)}
+        onValidate={setIsValid}
+      />
+      {email && <p>Email value updated!</p>}
+      {isValid === false && <p>Email is not valid!</p>}
+    </>
+  );
+};
 
 describe("EmailInput component", () => {
   it("renders an email input", () => {
@@ -35,27 +61,6 @@ describe("EmailInput component", () => {
     const inputField = screen.getByRole("textbox", { name: "User email" });
     expect(inputField).toHaveAttribute("type", "email");
   });
-
-  // Using a controlled component for testing the rendered result instead of testing if
-  // the given onChange callback is called. The former is more aligned with the
-  // React Testing Library principles, https://testing-library.com/docs/guiding-principles/
-  const EmailInputTest = (props) => {
-    const [email, setEmail] = useState("");
-    const [isValid, setIsValid] = useState(true);
-
-    return (
-      <>
-        <EmailInput
-          {...props}
-          value={email}
-          onChange={(_, v) => setEmail(v)}
-          onValidate={setIsValid}
-        />
-        {email && <p>Email value updated!</p>}
-        {isValid === false && <p>Email is not valid!</p>}
-      </>
-    );
-  };
 
   it("triggers onChange callback", async () => {
     const { user } = plainRender(<EmailInputTest id="test-email" aria-label="Test email" />);

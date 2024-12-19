@@ -21,28 +21,25 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { InputGroup, TextInput } from "@patternfly/react-core";
-import { noop } from "~/utils";
+import { InputGroup, TextInput, TextInputProps } from "@patternfly/react-core";
+import { isEmpty, noop } from "~/utils";
 
 /**
  * Email validation.
  *
  * Code inspired by https://github.com/manishsaraan/email-validator/blob/master/index.js
- *
- * @param {string} email
- * @returns {boolean}
  */
-const validateEmail = (email) => {
+const validateEmail = (email: string) => {
   const regexp =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
-  const validateFormat = (email) => {
+  const validateFormat = (email: string) => {
     const parts = email.split("@");
 
     return parts.length === 2 && regexp.test(email);
   };
 
-  const validateSizes = (email) => {
+  const validateSizes = (email: string) => {
     const [account, address] = email.split("@");
 
     if (account.length > 64) return false;
@@ -58,27 +55,29 @@ const validateEmail = (email) => {
   return validateFormat(email) && validateSizes(email);
 };
 
+export type EmailInputProps = TextInputProps & { onValidate?: (isValid: boolean) => void };
+
 /**
  * Renders an email input field which validates its value.
  * @component
  *
- * @param {(boolean) => void} onValidate - Callback to be called every time the input value is
+ * @param onValidate - Callback to be called every time the input value is
  *  validated.
- * @param {Object} props - Props matching the {@link https://www.patternfly.org/components/forms/text-input PF/TextInput},
+ * @param props - Props matching the {@link https://www.patternfly.org/components/forms/text-input PF/TextInput},
  *  except `type` and `validated` which are managed by the component.
  */
-export default function EmailInput({ onValidate = noop, ...props }) {
+export default function EmailInput({ onValidate = noop, value, ...props }: EmailInputProps) {
   const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {
-    const isValid = props.value.length === 0 || validateEmail(props.value);
+    const isValid = typeof value === "string" && (isEmpty(value) || validateEmail(value));
     setIsValid(isValid);
-    onValidate(isValid);
-  }, [onValidate, props.value, setIsValid]);
+    typeof onValidate === "function" && onValidate(isValid);
+  }, [onValidate, value, setIsValid]);
 
   return (
     <InputGroup>
-      <TextInput {...props} type="email" validated={isValid ? "default" : "error"} />
+      <TextInput {...props} type="email" value={value} validated={isValid ? "default" : "error"} />
     </InputGroup>
   );
 }
