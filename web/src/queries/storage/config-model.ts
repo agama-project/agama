@@ -37,6 +37,7 @@ function changeDrive(model: configModel.Config, driveName: string, newDriveName:
   if (drive === undefined) return;
 
   drive.name = newDriveName;
+  // TODO: assign space policy according to the use-case.
   if (drive.spacePolicy === "custom") drive.spacePolicy = "keep";
 }
 
