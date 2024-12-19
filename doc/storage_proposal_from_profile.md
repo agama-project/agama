@@ -85,9 +85,9 @@ product definition.
 
 ## Config solver
 
-The config solver (`Agama::Storage::ConfigSolver` class) assigns a value to all the unknown properties
-of a config object. As result, the config object is totally complete and ready to be used by the agama
-proposal.
+The config solver (`Agama::Storage::ConfigSolver` class) assigns a value to all the unknown
+properties of a config object. As result, the config object is totally complete and ready to be used
+by the agama proposal.
 
 ### How sizes are solved
 
@@ -115,10 +115,13 @@ partition.size.min      #=> nil
 partition.size.max      #=> nil
 ```
 
-If the size is default, then the config solver always assigns a value for `#min` and `#max` according
-to the product definition and ignoring the current values assigned to `#min` and `#max`. The solver
-takes into account the mount path, the fallback devices and swap config in order to set the proper
-sizes.
+If the size is default, then the config solver always assigns a value for `#min` and `#max`
+according to the product definition and ignoring the current values assigned to `#min` and `#max`.
+The solver takes into account the mount path, the fallback devices and swap config in order to set
+the proper sizes.
+
+If the size is default and the volume already exists, then the solver sets the current size of the
+volume to both `#min` and `#max` sizes.
 
 #### Omitting the max size
 
@@ -144,33 +147,14 @@ has to be solved because both `#min` and `#max` have a value.
 
 #### Using "current"
 
-The profile admits "current" as a valid value for *min* and *max* sizes. If "current" is used, then
-the config conversion simply sets that values to `nil`.
+Both *min* and *max* sizes admit "current" as a valid size value in the JSON profile. The "current"
+value stands for the current size of the volume. Using "current" is useful for growing or shrinking
+a device.
 
-```json
-"partitions": [
-  {
-    "size": { "min": "current" },
-    "filesystem": { "path": "/" }
-  }
-]
-```
+The config conversion knows nothing about the current size of a volume, so it simply replaces
+"current" values by `nil`.
 
-The config conversion generates:
-
-```ruby
-partition.size.default? #=> false
-partition.size.min      #=> nil
-partition.size.max      #=> Y2Storage::DiskSize.Unlimited
-```
-
-And the final value assigned by the config solver depends on the volume:
-
-* If the volume already exists, then the `nil` values are replaced by the volume size.
-* If the volume is going to be created, then the `nil` values are replaced by the size calculated
-from the product definition.
-
-For example:
+For example, in this case:
 
 ```json
 "partitions": [
@@ -182,7 +166,16 @@ For example:
 ]
 ```
 
-and let's say that */dev/vda1* has 10 GiB, the resulting config is:
+the config conversion generates a size with `nil` for `#min`:
+
+```ruby
+partition.size.default? #=> false
+partition.size.min      #=> nil
+partition.size.max      #=> Y2Storage::DiskSize.Unlimited
+```
+
+The config solver replaces the `nil` sizes by the device size. In the example before, let's say that
+/dev/vda1 has 10 GiB, so the resulting config would be:
 
 ```ruby
 partition.size.default? #=> false
@@ -190,18 +183,82 @@ partition.size.min      #=> Y2Storage::DiskSize.GiB(10)
 partition.size.max      #=> Y2Storage::DiskSize.Unlimited
 ```
 
-If the volume is new and the default size for root is 15 GiB:
+##### Use case: growing a device
 
 ```json
 "partitions": [
   {
+    "search": "/dev/vda1",
     "size": { "min": "current" },
     "filesystem": { "path": "/" }
   }
 ]
 ```
 
-then the resulting config is:
+```ruby
+partition.size.default? #=> false
+partition.size.min      #=> Y2Storage::DiskSize.GiB(10)
+partition.size.max      #=> Y2Storage::DiskSize.Unlimited
+```
+
+##### Use case: shrinking a device
+
+```json
+"partitions": [
+  {
+    "search": "/dev/vda1",
+    "size": { "min": 0, "max": "current" },
+    "filesystem": { "path": "/" }
+  }
+]
+```
+
+```ruby
+partition.size.default? #=> false
+partition.size.min      #=> 0
+partition.size.max      #=> Y2Storage::DiskSize.GiB(10)
+```
+
+##### Use case: keeping a device size
+
+Note that this is equivalent to omitting the size.
+
+```json
+"partitions": [
+  {
+    "search": "/dev/vda1",
+    "size": { "min": "current", "max": "current" },
+    "filesystem": { "path": "/" }
+  }
+]
+```
+
+```ruby
+partition.size.default? #=> false
+partition.size.min      #=> Y2Storage::DiskSize.GiB(10)
+partition.size.max      #=> Y2Storage::DiskSize.GiB(10)
+```
+
+##### Use case: fallback for not found devices
+
+A profile can specify an "advanced search" to indicate that a volume has to be created if it is not
+found in the system.
+
+```json
+"partitions": [
+  {
+    "search": {
+      "condition": { "name": "/dev/vda1" },
+      "ifNotFound": "create"
+    },
+    "size": { "min": "current" },
+    "filesystem": { "path": "/" }
+  }
+]
+```
+
+If the device does not exist, then "current" cannot be replaced by any device size. In this case,
+the config solver uses the default size defined by the product as fallback for "current".
 
 ```ruby
 partition.size.default? #=> false
