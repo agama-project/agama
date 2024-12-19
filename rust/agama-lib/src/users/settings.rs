@@ -62,5 +62,6 @@ pub struct RootUserSettings {
     #[serde(skip_serializing)]
     pub hashed_password: Option<bool>,
     /// Root SSH public key
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ssh_public_key: Option<String>,
 }

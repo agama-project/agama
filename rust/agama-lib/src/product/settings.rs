@@ -28,6 +28,8 @@ use serde::{Deserialize, Serialize};
 pub struct ProductSettings {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
     pub id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_code: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_email: Option<String>,
 }
