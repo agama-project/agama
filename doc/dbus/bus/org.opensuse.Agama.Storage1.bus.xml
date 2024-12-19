@@ -52,6 +52,10 @@
     <method name="GetConfig">
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
+    <method name="SetConfigModel">
+      <arg name="serialized_model" direction="in" type="s"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
     <method name="GetConfigModel">
       <arg name="serialized_model" direction="out" type="s"/>
     </method>

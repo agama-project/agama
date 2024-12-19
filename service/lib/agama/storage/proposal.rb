@@ -21,9 +21,7 @@
 
 require "agama/issue"
 require "agama/storage/actions_generator"
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_conversions/to_json"
-require "agama/storage/config_conversions/to_model"
+require "agama/storage/config_conversions"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
 require "json"
@@ -127,6 +125,15 @@ module Agama
 
         @source_json = source_json
         success?
+      end
+
+      # Calculates a new proposal from a config model.
+      #
+      # @param model_json [Hash] Source config model according to the JSON schema.
+      # @return [Boolean] Whether the proposal successes.
+      def calculate_from_model(model_json)
+        config = ConfigConversions::FromModel.new(model_json).convert
+        calculate_agama(config)
       end
 
       # Calculates a new proposal using the guided strategy.

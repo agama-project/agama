@@ -39,6 +39,8 @@ export interface Drive {
   spacePolicy?: SpacePolicy;
   ptableType?: PtableType;
   partitions?: Partition[];
+  boot?: string;
+  volumeGroups: string[];
 }
 export interface Filesystem {
   default: boolean;
@@ -53,7 +55,9 @@ export interface Partition {
   filesystem?: Filesystem;
   size?: Size;
   delete?: boolean;
+  // TODO: ignore
   deleteIfNeeded?: boolean;
+  // TODO: ignore
   resize?: boolean;
   resizeIfNeeded?: boolean;
 }

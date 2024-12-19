@@ -21,13 +21,15 @@
  */
 
 import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, generatePath } from "react-router-dom";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
 import { useAvailableDevices } from "~/queries/storage";
-import { config as type } from "~/api/storage/types";
+import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
+import { STORAGE as PATHS } from "~/routes/paths";
+import { useChangeDrive, useSetSpacePolicy } from "~/queries/storage";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { typeDescription, contentDescription } from "~/components/storage/utils/device";
 import { Icon } from "../layout";
@@ -50,7 +52,7 @@ import {
   MenuToggle,
 } from "@patternfly/react-core";
 
-type DriveEditorProps = { drive: type.DriveElement; driveDevice: StorageDevice };
+type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
 
 // FIXME: Presentation is quite poor
 const SpacePolicySelectorIntro = ({ device }) => {
@@ -82,11 +84,21 @@ const SpacePolicySelectorIntro = ({ device }) => {
   );
 };
 
-const SpacePolicySelector = ({ drive, driveDevice }) => {
+const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const setSpacePolicy = useSetSpacePolicy();
   const onToggle = () => setIsOpen(!isOpen);
+  const onSpacePolicyChange = (spacePolicy: configModel.SpacePolicy) => {
+    if (spacePolicy === "custom") {
+      return navigate(generatePath(PATHS.spacePolicy, { id: baseName(drive.name) }));
+    } else {
+      setSpacePolicy(drive.name, spacePolicy);
+      setIsOpen(false);
+    }
+  };
 
   const currentPolicy = driveUtils.spacePolicyEntry(drive);
 
@@ -96,7 +108,12 @@ const SpacePolicySelector = ({ drive, driveDevice }) => {
     const Name = () => (isSelected ? <b>{policy.label}</b> : policy.label);
 
     return (
-      <MenuItem itemId={policy.id} isSelected={isSelected} description={policy.description}>
+      <MenuItem
+        itemId={policy.id}
+        isSelected={isSelected}
+        description={policy.description}
+        onClick={() => onSpacePolicyChange(policy.id)}
+      >
         <Name />
       </MenuItem>
     );
@@ -139,7 +156,7 @@ const SpacePolicySelector = ({ drive, driveDevice }) => {
 };
 
 const SearchSelectorIntro = ({ drive }) => {
-  const mainText = (drive: type.DriveElement): string => {
+  const mainText = (drive: configModel.Drive): string => {
     if (driveUtils.hasReuse(drive)) {
       // The current device will be the only option to choose from
       return _("This uses existing partitions at the device");
@@ -190,12 +207,12 @@ const SearchSelectorIntro = ({ drive }) => {
     return sprintf(
       // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
       // single mount point in the singular case).
-      _("Select a device to create %s", "Select a device to create %s", mountPaths.length),
+      _("Select a device to create %s"),
       formatList(mountPaths),
     );
   };
 
-  const extraText = (drive: type.DriveElement): string => {
+  const extraText = (drive: configModel.Drive): string => {
     // Nothing to add in these cases
     if (driveUtils.hasReuse(drive)) return;
     if (!driveUtils.hasFilesystem(drive)) return;
@@ -268,7 +285,8 @@ const SearchSelectorIntro = ({ drive }) => {
   );
 };
 
-const SearchSelectorMultipleOptions = ({ selected, withNewVg }) => {
+const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }) => {
+  const navigate = useNavigate();
   const devices = useAvailableDevices();
 
   // FIXME: Presentation is quite poor
@@ -295,7 +313,7 @@ const SearchSelectorMultipleOptions = ({ selected, withNewVg }) => {
       return (
         <MenuItem
           component="a"
-          onClick={() => navigate("/storage/target-device")}
+          onClick={() => navigate(PATHS.targetDevice)}
           itemId="lvm"
           description={_("The configured partitions will be created as logical volumes")}
         >
@@ -319,6 +337,7 @@ const SearchSelectorMultipleOptions = ({ selected, withNewVg }) => {
             itemId={device.sid}
             isSelected={isSelected}
             description={<DeviceDescription device={device} />}
+            onClick={() => onChange(device.name)}
           >
             <Name />
           </MenuItem>
@@ -342,7 +361,7 @@ const SearchSelectorSingleOption = ({ selected }) => {
   );
 };
 
-const SearchSelectorOptions = ({ drive, selected }) => {
+const SearchSelectorOptions = ({ drive, selected, onChange }) => {
   if (driveUtils.hasReuse(drive)) return <SearchSelectorSingleOption selected={selected} />;
 
   if (!driveUtils.hasFilesystem(drive)) {
@@ -350,17 +369,17 @@ const SearchSelectorOptions = ({ drive, selected }) => {
       return <SearchSelectorSingleOption selected={selected} />;
     }
 
-    return <SearchSelectorMultipleOptions selected={selected} />;
+    return <SearchSelectorMultipleOptions selected={selected} onChange={onChange} />;
   }
 
-  return <SearchSelectorMultipleOptions selected={selected} withNewVg />;
+  return <SearchSelectorMultipleOptions selected={selected} withNewVg onChange={onChange} />;
 };
 
-const SearchSelector = ({ drive, selected }) => {
+const SearchSelector = ({ drive, selected, onChange }) => {
   return (
     <>
       <SearchSelectorIntro drive={drive} />
-      <SearchSelectorOptions drive={drive} selected={selected} />
+      <SearchSelectorOptions drive={drive} selected={selected} onChange={onChange} />
     </>
   );
 };
@@ -384,6 +403,11 @@ const DriveSelector = ({ drive, selected }) => {
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
+  const changeDrive = useChangeDrive();
+  const onDriveChange = (newDriveName: string) => {
+    changeDrive(drive.name, newDriveName);
+    setIsOpen(false);
+  };
   const onToggle = () => setIsOpen(!isOpen);
 
   return (
@@ -409,19 +433,20 @@ const DriveSelector = ({ drive, selected }) => {
         <Menu ref={menuRef} activeItemId={selected.sid}>
           <MenuContent>
             <MenuList>
-              <SearchSelector drive={drive} selected={selected} />
+              <SearchSelector drive={drive} selected={selected} onChange={onDriveChange} />
               <RemoveDriveOption drive={drive} />
             </MenuList>
           </MenuContent>
         </Menu>
       }
+      // @ts-expect-error
       popperProps={{ appendTo: document.body }}
     />
   );
 };
 
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  const text = (drive: type.DriveElement): string => {
+  const text = (drive: configModel.Drive): string => {
     if (driveUtils.hasRoot(drive)) {
       if (driveUtils.hasPv(drive)) {
         if (drive.boot) {
@@ -487,7 +512,6 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
 };
 
 const PartitionsNoContentSelector = () => {
-  const navigate = useNavigate();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -521,7 +545,6 @@ const PartitionsNoContentSelector = () => {
                 key="add-partition"
                 itemId="add-partition"
                 description={_("Add another partition or mount an existing one")}
-                onClick={() => navigate("/storage/space-policy")}
               >
                 <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
                   <span>{_("Add or use partition")}</span>
@@ -536,7 +559,6 @@ const PartitionsNoContentSelector = () => {
 };
 
 const PartitionsWithContentSelector = ({ drive }) => {
-  const navigate = useNavigate();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -600,7 +622,6 @@ const PartitionsWithContentSelector = ({ drive }) => {
                 key="add-partition"
                 itemId="add-partition"
                 description={_("Add another partition or mount an existing one")}
-                onClick={() => navigate("/storage/space-policy")}
               >
                 <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
                   <span>{_("Add or use partition")}</span>
@@ -619,7 +640,7 @@ const PartitionsSelector = ({ drive }) => {
     return <PartitionsWithContentSelector drive={drive} />;
   }
 
-  return <PartitionsNoContentSelector drive={drive} />;
+  return <PartitionsNoContentSelector />;
 };
 
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {

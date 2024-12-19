@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json"
+require "agama/storage/config_conversions/from_model"
 require "agama/storage/config_conversions/to_json"
 require "agama/storage/config_conversions/to_model"
 

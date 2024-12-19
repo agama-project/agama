@@ -97,6 +97,11 @@ type Action = {
   resize: boolean;
 };
 
+type SpacePolicyAction = {
+  deviceName: string;
+  value: "delete" | "resizeIfNeeded";
+};
+
 type ProposalSettings = {
   target: ProposalTarget;
   targetDevice?: string;
@@ -206,6 +211,7 @@ export type {
   ProposalSettings,
   ShrinkingInfo,
   SpaceAction,
+  SpacePolicyAction,
   StorageDevice,
   Volume,
   VolumeOutline,

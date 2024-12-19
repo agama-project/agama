@@ -34,6 +34,7 @@ import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
 import { configModel } from "~/api/storage/types";
+import { sprintf } from "sprintf-js";
 
 /**
  * @note undefined for either property means unknown
@@ -47,7 +48,7 @@ export type SpacePolicy = {
   id: string;
   label: string;
   description: string;
-  summaryLabel: string;
+  summaryLabel?: string;
 };
 
 export type SizeMethod = "auto" | "fixed" | "range";

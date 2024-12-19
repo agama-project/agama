@@ -56,6 +56,31 @@
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
     <!--
+      Sets the storage config model.
+    -->
+    <method name="SetConfigModel">
+      <!--
+        E.g.,
+        {
+          "drives": [
+            {
+              "name": "/dev/vda",
+              "partitions": [
+                { "mountPath": "/" }
+              ]
+            }
+          ]
+        }
+      -->
+      <arg name="serialized_model" direction="in" type="s"/>
+      <!--
+        Whether the proposal was correctly calculated with the given config model:
+          0: success
+          1: failure
+      -->
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <!--
       Gets the storage config model.
     -->
     <method name="GetConfigModel">

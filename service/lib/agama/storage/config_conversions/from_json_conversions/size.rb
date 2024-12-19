@@ -29,15 +29,15 @@ module Agama
       module FromJSONConversions
         # Size conversion from JSON hash according to schema.
         class Size < Base
-          # @see Base#convert
-          # @return [Configs::Size]
-          def convert
-            super(Configs::Size.new)
-          end
-
         private
 
           alias_method :size_json, :config_json
+
+          # @see Base
+          # @return [Configs::Size]
+          def default_config
+            Configs::Size.new
+          end
 
           # @see Base#conversions
           # @return [Hash]

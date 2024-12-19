@@ -31,6 +31,9 @@ module Agama
     # Solving a config means to assign proper values according to the product and the system. For
     # example, the sizes of a partition config taking into account its fallbacks, assigning a
     # specific device when a config has a search, etc.
+    #
+    # See doc/storage_proposal_from_profile.md for a complete description of how the config is
+    # generated from a profile.
     class ConfigSolver
       # @param devicegraph [Y2Storage::Devicegraph] initial layout of the system
       # @param product_config [Agama::Config] configuration of the product to install
