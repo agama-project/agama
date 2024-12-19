@@ -32,12 +32,22 @@ module Agama
       module FromModelConversions
         # Drive conversion from model according to the JSON schema.
         class Drive < Base
-        private
-
           include WithFilesystem
           include WithPtableType
           include WithPartitions
           include WithSearch
+
+          # @param model_json [Hash]
+          # @param product_config [Agama::Config]
+          def initialize(model_json, product_config)
+            super(model_json)
+            @product_config = product_config
+          end
+
+        private
+
+          # @return [Agama::Config]
+          attr_reader :product_config
 
           alias_method :drive_model, :model_json
 

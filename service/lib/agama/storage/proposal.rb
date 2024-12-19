@@ -132,7 +132,10 @@ module Agama
       # @param model_json [Hash] Source config model according to the JSON schema.
       # @return [Boolean] Whether the proposal successes.
       def calculate_from_model(model_json)
-        config = ConfigConversions::FromModel.new(model_json).convert
+        config = ConfigConversions::FromModel
+          .new(model_json, product_config: product_config)
+          .convert
+
         calculate_agama(config)
       end
 

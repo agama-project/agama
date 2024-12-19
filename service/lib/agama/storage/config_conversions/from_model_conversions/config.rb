@@ -30,7 +30,17 @@ module Agama
       module FromModelConversions
         # Config conversion from model according to the JSON schema.
         class Config < Base
+          # @param model_json [Hash]
+          # @param product_config [Agama::Config]
+          def initialize(model_json, product_config)
+            super(model_json)
+            @product_config = product_config
+          end
+
         private
+
+          # @return [Agama::Config]
+          attr_reader :product_config
 
           # @see Base
           # @return [Storage::Config]
@@ -79,7 +89,7 @@ module Agama
           # @param drive_model [Hash]
           # @return [Configs::Drive]
           def convert_drive(drive_model)
-            FromModelConversions::Drive.new(drive_model).convert
+            FromModelConversions::Drive.new(drive_model, product_config).convert
           end
 
           # Conversion for the boot device alias.
@@ -118,6 +128,7 @@ module Agama
             @drive_models = calculate_drive_models
           end
 
+          # @see #drive_models
           # @return [Array<Hash>, nil]
           def calculate_drive_models
             @calculated_drive_models = true
@@ -126,7 +137,10 @@ module Agama
             return if models.nil? && !missing_boot_drive?
 
             models ||= []
-            models << { name: boot_device_name } if missing_boot_drive?
+            # The main use case for using a specific device for booting is to share the boot
+            # partition with other installed systems. So let's ensure the partitions are not deleted
+            # by setting the "keep" space policy.
+            models << { name: boot_device_name, spacePolicy: "keep" } if missing_boot_drive?
             models
           end
 
@@ -140,6 +154,7 @@ module Agama
             @missing_boot_drive ||= calculate_missing_boot_drive
           end
 
+          # @see #missing_boot_drive?
           # @return [Boolean]
           def calculate_missing_boot_drive
             @calculated_missing_boot_drive = true

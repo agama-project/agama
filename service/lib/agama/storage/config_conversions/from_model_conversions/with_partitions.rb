@@ -30,7 +30,9 @@ module Agama
         module WithPartitions
           # @return [Array<Configs::Partition>]
           def convert_partitions
-            space_policy = model_json[:spacePolicy]
+            # If the model does not indicate a space policy, then the space policy defined by the
+            # product is applied.
+            space_policy = model_json[:spacePolicy] || product_config.space_policy
 
             case space_policy
             when "keep"
@@ -55,6 +57,8 @@ module Agama
             partitions.map { |p| convert_partition(p) }
           end
 
+          # Partitions with any usage (format, mount, etc).
+          #
           # @return [Array<Configs::Partition>]
           def used_partition_configs
             used_partitions.map { |p| convert_partition(p) }
@@ -67,35 +71,37 @@ module Agama
 
           # @return [Array<Hash>]
           def used_partitions
-            partitions.select { |p| used_partition?(p) }
+            partitions.reject { |p| space_policy_partition?(p) }
+          end
+
+          # Whether the partition only represents a space policy action.
+          #
+          # @param partition_model [Hash]
+          # @return [Boolean]
+          def space_policy_partition?(partition_model)
+            partition_model[:delete] ||
+              partition_model[:deleteIfNeeded] ||
+              resize_action_partition?(partition_model)
           end
 
           # @param partition_model [Hash]
           # @return [Boolean]
-          def used_partition?(partition_model)
-            new_partition?(partition_model) || reused_partition?(partition_model)
+          def resize_action_partition?(partition_model)
+            return false if partition_model[:name].nil? || any_usage?(partition_model)
+
+            return true if partition_model[:resizeIfNeeded]
+
+            partition_model[:size] && !partition_model.dig(:size, :default)
           end
 
+          # TODO: improve check by ensuring the alias is referenced by other device.
+          #
           # @param partition_model [Hash]
           # @return [Boolean]
-          def new_partition?(partition_model)
-            partition_model[:name].nil? &&
-              !partition_model[:delete] &&
-              !partition_model[:deleteIfNeeded]
-          end
-
-          # @param partition_model [Hash]
-          # @return [Boolean]
-          def reused_partition?(partition_model)
-            # TODO: improve check by ensuring the alias is referenced by other device.
-            any_usage = partition_model[:mountPath] ||
+          def any_usage?(partition_model)
+            partition_model[:mountPath] ||
               partition_model[:filesystem] ||
               partition_model[:alias]
-
-            any_usage &&
-              partition_model[:name] &&
-              !partition_model[:delete] &&
-              !partition_model[:deleteIfNeeded]
           end
 
           # @return [Configs::Partition]
