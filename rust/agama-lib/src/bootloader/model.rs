@@ -18,18 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+//! Implements a data model for Bootloader configuration.
+
+use serde::{Deserialize, Serialize};
+
+/// Represents a Bootloader
+#[derive(Clone, Debug, Serialize, Deserialize, Default, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct BootloaderSettings {
+    pub stop_on_boot_menu: bool,
+}

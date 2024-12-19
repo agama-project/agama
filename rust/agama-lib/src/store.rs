@@ -22,6 +22,7 @@
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
 use crate::base_http_client::BaseHTTPClient;
+use crate::bootloader::store::BootloaderStore;
 use crate::error::ServiceError;
 use crate::install_settings::InstallSettings;
 use crate::manager::{InstallationPhase, ManagerHTTPClient};
@@ -38,6 +39,7 @@ use crate::{
 ///
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store {
+    bootloader: BootloaderStore,
     users: UsersStore,
     network: NetworkStore,
     product: ProductStore,
@@ -52,6 +54,7 @@ pub struct Store {
 impl Store {
     pub async fn new(http_client: BaseHTTPClient) -> Result<Store, ServiceError> {
         Ok(Self {
+            bootloader: BootloaderStore::new(http_client.clone())?,
             localization: LocalizationStore::new(http_client.clone())?,
             users: UsersStore::new(http_client.clone())?,
             network: NetworkStore::new(http_client.clone()).await?,
@@ -67,6 +70,7 @@ impl Store {
     /// Loads the installation settings from the HTTP interface.
     pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
         let mut settings = InstallSettings {
+            bootloader: Some(self.bootloader.load().await?),
             network: Some(self.network.load().await?),
             software: Some(self.software.load().await?),
             user: Some(self.users.load().await?),
@@ -120,6 +124,9 @@ impl Store {
         }
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?
+        }
+        if let Some(bootloader) = &settings.bootloader {
+            self.bootloader.store(bootloader).await?;
         }
 
         Ok(())
