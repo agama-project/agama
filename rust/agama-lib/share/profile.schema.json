@@ -96,8 +96,8 @@
                 "title": "The name of the network interface bound to this connection",
                 "type": "string"
               },
-              "mac-address": {
-                "title": "Custom mac-address",
+              "macAddress": {
+                "title": "Custom MAC address",
                 "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
                 "type": "string"
               },
@@ -149,8 +149,19 @@
                   "additionalProperties": false
                 }
               },
-              "ignore_auto_dns": {
+              "ignoreAutoDns": {
                 "description": "Whether DNS options provided via DHCP are used or not",
+                "type": "boolean"
+              },
+              "status": {
+                "title": "Connection status",
+                "description": "The status of the connection",
+                "type": "string",
+                "enum": ["up", "down", "removed"]
+              },
+              "autoconnect": {
+                "title": "Auto-connected",
+                "description": "Whether the connection should be automatically connected",
                 "type": "boolean"
               },
               "wireless": {
@@ -388,6 +399,11 @@
         },
         "hashedPassword": {
           "title": "Flag for hashed password (true) or plain text password (false or not defined)",
+          "type": "boolean"
+        },
+        "autologin": {
+          "title": "Automatic user login",
+          "description": "Whether the user should be automatically logged in (only relevant in desktop systems)",
           "type": "boolean"
         }
       },
