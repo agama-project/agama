@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Dec 19 11:39:14 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix several validation issues (gh#agama-project/agama#1845).
+
+-------------------------------------------------------------------
 Wed Dec 18 12:32:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce a new AGAMA_LOG environment variable to control what to
