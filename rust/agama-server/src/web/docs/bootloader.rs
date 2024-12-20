@@ -18,18 +18,26 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
+
+use super::ApiDocBuilder;
+pub struct BootloaderApiDocBuilder;
+
+impl ApiDocBuilder for BootloaderApiDocBuilder {
+    fn title(&self) -> String {
+        "Bootloader HTTP API".to_string()
+    }
+
+    fn paths(&self) -> Paths {
+        PathsBuilder::new()
+            .path_from::<crate::bootloader::web::__path_get_config>()
+            .path_from::<crate::bootloader::web::__path_set_config>()
+            .build()
+    }
+
+    fn components(&self) -> Components {
+        ComponentsBuilder::new()
+            .schema_from::<agama_lib::bootloader::model::BootloaderSettings>()
+            .build()
+    }
+}
