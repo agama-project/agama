@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec 20 15:05:11 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Hotfix to avoid losing the storage config with auto installation
+  (bsc#1234711).
+
+-------------------------------------------------------------------
 Fri Dec 20 12:18:56 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Add bootloader dbus interface to allow to set if bootloader
