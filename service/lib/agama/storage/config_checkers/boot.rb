@@ -62,7 +62,7 @@ module Agama
         def invalid_alias_issue
           return unless configure? && device_alias && !valid_alias?
 
-          # TRANSLATORS: %s is the replaced by a device alias (e.g., "boot").
+          # TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
           error(format(_("There is no boot device with alias '%s'"), device_alias))
         end
 
