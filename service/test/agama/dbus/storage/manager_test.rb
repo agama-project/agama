@@ -722,6 +722,7 @@ describe Agama::DBus::Storage::Manager do
           storage: {
             drives: [
               {
+                alias:      "root",
                 partitions: [
                   {
                     filesystem: { path: "/" }
@@ -736,9 +737,17 @@ describe Agama::DBus::Storage::Manager do
       it "returns the serialized config model" do
         expect(subject.recover_model).to eq(
           serialize({
+            boot:   {
+              configure: true,
+              device:    {
+                default: true,
+                name:    "/dev/sda"
+              }
+            },
             drives: [
               {
                 name:        "/dev/sda",
+                alias:       "root",
                 spacePolicy: "keep",
                 partitions:  [
                   {

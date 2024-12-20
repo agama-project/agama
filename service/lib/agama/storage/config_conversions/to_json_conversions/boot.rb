@@ -39,7 +39,7 @@ module Agama
           def conversions
             {
               configure: config.configure?,
-              device:    config.device
+              device:    config.device.device_alias
             }
           end
         end

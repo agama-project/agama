@@ -27,10 +27,11 @@ import { DevicesFormSelect } from "~/components/storage";
 import { Page } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { StorageDevice } from "~/types/storage";
-import { useAvailableDevices, useProposalMutation, useProposalResult } from "~/queries/storage";
+import { useAvailableDevices } from "~/queries/storage";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { useBoot } from "~/queries/storage/config-model";
 
 // FIXME: improve classNames
 // FIXME: improve and rename to BootSelectionDialog
@@ -39,50 +40,49 @@ const BOOT_AUTO_ID = "boot-auto";
 const BOOT_MANUAL_ID = "boot-manual";
 const BOOT_DISABLED_ID = "boot-disabled";
 
+type BootSelectionState = {
+  load: boolean;
+  selectedOption?: string;
+  configureBoot?: boolean;
+  bootDevice?: StorageDevice;
+  defaultBootDevice?: StorageDevice;
+  availableDevices?: StorageDevice[];
+};
+
 /**
  * Allows the user to select the boot configuration.
  */
 export default function BootSelectionDialog() {
-  type BootSelectionState = {
-    load: boolean;
-    selectedOption?: string;
-    configureBoot?: boolean;
-    bootDevice?: StorageDevice;
-    defaultBootDevice?: StorageDevice;
-    availableDevices?: StorageDevice[];
-  };
-
   const [state, setState] = useState<BootSelectionState>({ load: false });
-  const { settings } = useProposalResult();
   const availableDevices = useAvailableDevices();
-  const updateProposal = useProposalMutation();
   const navigate = useNavigate();
+  const boot = useBoot();
 
   useEffect(() => {
     if (state.load) return;
 
     let selectedOption: string;
-    const { bootDevice, configureBoot, defaultBootDevice } = settings;
 
-    if (!configureBoot) {
+    if (!boot.configure) {
       selectedOption = BOOT_DISABLED_ID;
-    } else if (configureBoot && bootDevice === "") {
+    } else if (boot.isDefault) {
       selectedOption = BOOT_AUTO_ID;
     } else {
       selectedOption = BOOT_MANUAL_ID;
     }
 
-    const findDevice = (name: string) => availableDevices.find((d) => d.name === name);
+    const bootDevice = availableDevices.find((d) => d.name === boot.deviceName);
+    const defaultBootDevice = boot.isDefault ? bootDevice : undefined;
 
     setState({
       load: true,
-      bootDevice: findDevice(bootDevice) || findDevice(defaultBootDevice) || availableDevices[0],
-      configureBoot,
-      defaultBootDevice: findDevice(defaultBootDevice),
+      bootDevice: bootDevice || availableDevices[0],
+      configureBoot: boot.configure,
+      defaultBootDevice,
       availableDevices,
       selectedOption,
     });
-  }, [availableDevices, settings, state.load]);
+  }, [availableDevices, boot, state.load]);
 
   if (!state.load) return;
 
@@ -92,12 +92,18 @@ export default function BootSelectionDialog() {
     // const formData = new FormData(e.target);
     // const mode = formData.get("bootMode");
     // const device = formData.get("bootDevice");
-    const newSettings = {
-      configureBoot: state.selectedOption !== BOOT_DISABLED_ID,
-      bootDevice: state.selectedOption === BOOT_MANUAL_ID ? state.bootDevice.name : undefined,
-    };
 
-    await updateProposal.mutateAsync({ ...settings, ...newSettings });
+    switch (state.selectedOption) {
+      case BOOT_DISABLED_ID:
+        boot.disable();
+        break;
+      case BOOT_AUTO_ID:
+        boot.setDefault();
+        break;
+      default:
+        boot.setDevice(state.bootDevice?.name);
+    }
+
     navigate("..");
   };
 
@@ -126,20 +132,20 @@ partitions in the appropriate disk.",
     setState({ ...state, selectedOption: e.target.value });
   };
 
-  const setBootDevice = (v) => {
+  const changeBootDevice = (v) => {
     setState({ ...state, bootDevice: v });
   };
 
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Select booting partition")}</h2>
+        <h2>{_("Boot options")}</h2>
         <p className={textStyles.color_400}>{description}</p>
       </Page.Header>
 
       <Page.Content>
         <Form id="bootSelectionForm" onSubmit={onSubmit}>
-          <Page.Section>
+          <Page.Section aria-label={_("Select a boot option")}>
             <FormGroup isStack>
               <Radio
                 name="bootMode"
@@ -183,7 +189,7 @@ partitions in the appropriate disk.",
                       name="bootDevice"
                       devices={state?.availableDevices || []}
                       selectedDevice={state.bootDevice}
-                      onChange={setBootDevice}
+                      onChange={changeBootDevice}
                       isDisabled={state.selectedOption !== BOOT_MANUAL_ID}
                     />
                   </Stack>

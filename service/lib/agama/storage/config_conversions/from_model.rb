@@ -28,8 +28,10 @@ module Agama
       # Config conversion from model according to the JSON schema.
       class FromModel
         # @param model_json [Hash]
-        def initialize(model_json)
+        # @param product_config [Agama::Config, nil]
+        def initialize(model_json, product_config: nil)
           @model_json = model_json
+          @product_config = product_config || Agama::Config.new
         end
 
         # Performs the conversion from model according to the JSON schema.
@@ -37,13 +39,16 @@ module Agama
         # @return [Storage::Config]
         def convert
           # TODO: Raise error if model_json does not match the JSON schema.
-          FromModelConversions::Config.new(model_json).convert
+          FromModelConversions::Config.new(model_json, product_config).convert
         end
 
       private
 
         # @return [Hash]
         attr_reader :model_json
+
+        # @return [Agama::Config]
+        attr_reader :product_config
       end
     end
   end

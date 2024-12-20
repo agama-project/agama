@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_model_conversions/base"
+require "agama/storage/config_conversions/to_model_conversions/boot"
 require "agama/storage/config_conversions/to_model_conversions/drive"
 
 module Agama
@@ -38,7 +39,15 @@ module Agama
 
           # @see Base#conversions
           def conversions
-            { drives: convert_drives }
+            {
+              boot:   convert_boot,
+              drives: convert_drives
+            }
+          end
+
+          # @return [Hash]
+          def convert_boot
+            ToModelConversions::Boot.new(config).convert
           end
 
           # @return [Array<Hash>]
