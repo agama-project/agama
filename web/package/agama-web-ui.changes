@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec 20 12:53:41 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Fix netmask handling to avoid a silent connection form error
+  (gh#agama-project/agama#1846).
+
+-------------------------------------------------------------------
 Tue Dec 10 14:43:08 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Restore the rendering of questions throughout the app
