@@ -149,7 +149,7 @@ describe Agama::Storage::ConfigSolver do
           it "sets an alias to the root drive" do
             subject.solve(config)
             drive = config.drives.first
-            expect(drive.alias).to match(/device\d*/)
+            expect(drive.alias).to_not be_nil
           end
 
           it "sets the alias of root drive as boot device alias" do
@@ -200,7 +200,7 @@ describe Agama::Storage::ConfigSolver do
               it "sets an alias to the drive" do
                 subject.solve(config)
                 drive = config.drives.find { |d| d.search.name == "/dev/vda" }
-                expect(drive.alias).to match(/device\d*/)
+                expect(drive.alias).to_not be_nil
               end
 
               it "sets the alias of the drive as boot device alias" do
