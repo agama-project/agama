@@ -24,6 +24,7 @@ require "agama/dbus/clients/with_service_status"
 require "agama/dbus/clients/with_locale"
 require "agama/dbus/clients/with_progress"
 require "agama/dbus/clients/with_issues"
+require "json"
 
 module Agama
   module DBus
@@ -60,6 +61,22 @@ module Agama
         # Cleans-up the storage stuff after installation
         def finish
           dbus_object.Finish
+        end
+
+        # Gets the current storage config.
+        #
+        # @return [Hash]
+        def config
+          serialized_config = dbus_object.GetConfig
+          JSON.parse(serialized_config, symbolize_names: true)
+        end
+
+        # Sets the storage config.
+        #
+        # @param config [Hash]
+        def config=(config)
+          serialized_config = JSON.pretty_generate(config)
+          dbus_object.SetConfig(serialized_config)
         end
 
       private
