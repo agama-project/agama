@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements the store for the storage settings.
+//! Implements the store for the bootloader settings.
 
 use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
@@ -26,7 +26,7 @@ use crate::error::ServiceError;
 use super::http_client::BootloaderHTTPClient;
 use super::model::BootloaderSettings;
 
-/// Loads and stores the storage settings from/to the HTTP service.
+/// Loads and stores the bootloader settings from/to the HTTP service.
 pub struct BootloaderStore {
     bootloader_client: BootloaderHTTPClient,
 }

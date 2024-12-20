@@ -18,10 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements support for handling the storage settings
+//! Implements support for handling the bootloader settings
 
 pub mod client;
-// pub mod http_client;
 pub mod http_client;
 pub mod model;
 pub mod proxies;
