@@ -78,7 +78,9 @@ const isValidIpPrefix = (value: IPAddress["prefix"]) => {
  * @param value - An netmask or a network prefix
  * @return prefix for the given netmask or prefix
  */
-const ipPrefixFor = (value: string): number => {
+const ipPrefixFor = (value: string | number): number => {
+  if (typeof value === "number") return value;
+
   if (value.match(/^\d+$/)) {
     return parseInt(value);
   } else {
@@ -132,7 +134,7 @@ const formatIp = (addr: IPAddress): string => {
   if (addr.prefix === undefined) {
     return `${addr.address}`;
   } else {
-    return `${addr.address}/${addr.prefix}`;
+    return `${addr.address}/${ipPrefixFor(addr.prefix)}`;
   }
 };
 
