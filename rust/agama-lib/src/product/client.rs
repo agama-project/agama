@@ -19,7 +19,9 @@
 // find current contact information at www.suse.com.
 
 use std::collections::HashMap;
+use std::str::FromStr;
 
+use crate::dbus::get_property;
 use crate::error::ServiceError;
 use crate::software::model::RegistrationRequirement;
 use crate::software::proxies::SoftwareProductProxy;
@@ -39,6 +41,8 @@ pub struct Product {
     pub description: String,
     /// Product icon (e.g., "default.svg")
     pub icon: String,
+    /// Registration requirement
+    pub registration: RegistrationRequirement,
 }
 
 /// D-Bus client for the software service
@@ -72,11 +76,17 @@ impl<'a> ProductClient<'a> {
                     Some(value) => value.try_into().unwrap(),
                     None => "default.svg",
                 };
+
+                let registration = get_property::<String>(&data, "registration")
+                    .map(|r| RegistrationRequirement::from_str(&r).unwrap_or_default())
+                    .unwrap_or_default();
+
                 Product {
                     id,
                     name,
                     description: description.to_string(),
                     icon: icon.to_string(),
+                    registration,
                 }
             })
             .collect();
@@ -112,13 +122,6 @@ impl<'a> ProductClient<'a> {
     /// email used to register product
     pub async fn email(&self) -> Result<String, ServiceError> {
         Ok(self.registration_proxy.email().await?)
-    }
-
-    pub async fn registration_requirement(&self) -> Result<RegistrationRequirement, ServiceError> {
-        let requirement = self.registration_proxy.requirement().await?;
-        // unknown number can happen only if we do programmer mistake
-        let result: RegistrationRequirement = requirement.try_into().unwrap();
-        Ok(result)
     }
 
     /// register product
