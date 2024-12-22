@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-10 02:55+0000\n"
+"POT-Creation-Date: 2024-12-22 02:45+0000\n"
 "PO-Revision-Date: 2024-12-11 16:48+0000\n"
 "Last-Translator: \"Marina J. Donis\" <marinajdonis@gmail.com>\n"
-"Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/es/>\n"
+"Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,37 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.8.4\n"
 
-#. Runs the startup phase
-#: service/lib/agama/manager.rb:91
-msgid "Load software translations"
-msgstr "Cargar traducciones de software"
-
-#: service/lib/agama/manager.rb:92
-msgid "Load storage translations"
-msgstr "Cargar traducciones de almacenamiento"
-
 #. Runs the config phase
-#: service/lib/agama/manager.rb:107
+#: service/lib/agama/manager.rb:93
 msgid "Analyze disks"
 msgstr "Analizar discos"
 
-#: service/lib/agama/manager.rb:107
+#: service/lib/agama/manager.rb:93
 msgid "Configure software"
 msgstr "Configurar software"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:127
+#: service/lib/agama/manager.rb:116
 msgid "Prepare disks"
 msgstr "Preparar discos"
 
-#: service/lib/agama/manager.rb:128
+#: service/lib/agama/manager.rb:117
 msgid "Install software"
 msgstr "Instalar software"
 
-#: service/lib/agama/manager.rb:129
+#: service/lib/agama/manager.rb:118
 msgid "Configure the system"
 msgstr "Configurar el sistema"
+
+#. rubocop:enable Metrics/AbcSize
+#: service/lib/agama/manager.rb:156
+msgid "Load software translations"
+msgstr "Cargar traducciones de software"
+
+#: service/lib/agama/manager.rb:157
+msgid "Load storage translations"
+msgstr "Cargar traducciones de almacenamiento"
 
 #. Callback to handle unsigned files
 #.
@@ -156,8 +156,8 @@ msgstr "Falta el tipo de sistema de archivos para \"%s\""
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr ""
-"El tipo de sistema de archivos para \"%{filesystem}\" no es adecuado para \""
-"%{path}\""
+"El tipo de sistema de archivos para \"%{filesystem}\" no es adecuado para "
+"\"%{path}\""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -244,37 +244,37 @@ msgid "Shrinking is not supported by this device"
 msgstr "Este dispositivo no admite la reducción"
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:120
 msgid "Activating storage devices"
 msgstr "Activar dispositivos de almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:116
+#: service/lib/agama/storage/manager.rb:121
 msgid "Probing storage devices"
 msgstr "Probando los dispositivos de almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:117
+#: service/lib/agama/storage/manager.rb:122
 msgid "Calculating the storage proposal"
 msgstr "Calcular la propuesta de almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:118
+#: service/lib/agama/storage/manager.rb:123
 msgid "Selecting Linux Security Modules"
 msgstr "Seleccionar módulos de seguridad de Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:126
+#: service/lib/agama/storage/manager.rb:131
 msgid "Preparing bootloader proposal"
 msgstr "Preparando la propuesta del gestor de arranque"
 
-#. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:131
+#. then also apply changes to that proposal
+#: service/lib/agama/storage/manager.rb:138
 msgid "Adding storage-related packages"
 msgstr "Agregar paquetes relacionados con el almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:132
+#: service/lib/agama/storage/manager.rb:139
 msgid "Preparing the storage devices"
 msgstr "Preparando los dispositivos de almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:133
+#: service/lib/agama/storage/manager.rb:140
 msgid "Writing bootloader sysconfig"
 msgstr "Escribiendo el gestor de arranque sysconfig"
 
