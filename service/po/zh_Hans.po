@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-10 02:55+0000\n"
+"POT-Creation-Date: 2024-12-22 02:45+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -19,37 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.6.2\n"
 
-#. Runs the startup phase
-#: service/lib/agama/manager.rb:91
-msgid "Load software translations"
-msgstr "载入软件翻译"
-
-#: service/lib/agama/manager.rb:92
-msgid "Load storage translations"
-msgstr "载入存储翻译"
-
 #. Runs the config phase
-#: service/lib/agama/manager.rb:107
+#: service/lib/agama/manager.rb:93
 msgid "Analyze disks"
 msgstr "分析磁盘"
 
-#: service/lib/agama/manager.rb:107
+#: service/lib/agama/manager.rb:93
 msgid "Configure software"
 msgstr "配置软件"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:127
+#: service/lib/agama/manager.rb:116
 msgid "Prepare disks"
 msgstr "准备磁盘"
 
-#: service/lib/agama/manager.rb:128
+#: service/lib/agama/manager.rb:117
 msgid "Install software"
 msgstr "安装软件"
 
-#: service/lib/agama/manager.rb:129
+#: service/lib/agama/manager.rb:118
 msgid "Configure the system"
 msgstr "配置系统"
+
+#. rubocop:enable Metrics/AbcSize
+#: service/lib/agama/manager.rb:156
+msgid "Load software translations"
+msgstr "载入软件翻译"
+
+#: service/lib/agama/manager.rb:157
+msgid "Load storage translations"
+msgstr "载入存储翻译"
 
 #. Callback to handle unsigned files
 #.
@@ -229,37 +229,37 @@ msgid "Shrinking is not supported by this device"
 msgstr ""
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:120
 msgid "Activating storage devices"
 msgstr "正在激活存储设备"
 
-#: service/lib/agama/storage/manager.rb:116
+#: service/lib/agama/storage/manager.rb:121
 msgid "Probing storage devices"
 msgstr "正在探测存储设备"
 
-#: service/lib/agama/storage/manager.rb:117
+#: service/lib/agama/storage/manager.rb:122
 msgid "Calculating the storage proposal"
 msgstr "正在计算存储提案"
 
-#: service/lib/agama/storage/manager.rb:118
+#: service/lib/agama/storage/manager.rb:123
 msgid "Selecting Linux Security Modules"
 msgstr "正在选择 Linux 安全模块"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:126
+#: service/lib/agama/storage/manager.rb:131
 msgid "Preparing bootloader proposal"
 msgstr "正在准备引导加载程序提案"
 
-#. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:131
+#. then also apply changes to that proposal
+#: service/lib/agama/storage/manager.rb:138
 msgid "Adding storage-related packages"
 msgstr "正在添加存储相关软件包"
 
-#: service/lib/agama/storage/manager.rb:132
+#: service/lib/agama/storage/manager.rb:139
 msgid "Preparing the storage devices"
 msgstr "正在准备存储设备"
 
-#: service/lib/agama/storage/manager.rb:133
+#: service/lib/agama/storage/manager.rb:140
 msgid "Writing bootloader sysconfig"
 msgstr "正在写入引导加载程序 sysconfig"
 
