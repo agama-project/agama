@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2021-2023] SUSE LLC
+ * Copyright (c) [2021-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,28 +20,40 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import { WSClient } from "./ws";
 
-/**
- * @typedef {object} InstallerClient
- * @property {() => boolean} isConnected - determines whether the client is connected
- * @property {() => boolean} isRecoverable - determines whether the client is recoverable after disconnected
- * @property {(handler: () => void) => (() => void)} onConnect - registers a handler to run
- * @property {(handler: () => void) => (() => void)} onDisconnect - registers a handler to run
- *   when the connection is lost. It returns a function to deregister the
- *   handler.
- * @property {(handler: (any) => void) => (() => void)} onEvent - registers a handler to run on events
- */
+type VoidFn = () => void;
+type BooleanFn = () => boolean;
+type EventHandlerFn = (event) => void;
+
+export type InstallerClient = {
+  /** Whether the client is connected. */
+  isConnected: BooleanFn;
+  /** Whether the client is recoverable after disconnecting. */
+  isRecoverable: BooleanFn;
+  /**
+   * Registers a handler to run when connection is set. It returns a function
+   * for deregistering the handler.
+   */
+  onConnect: (handler: VoidFn) => VoidFn;
+  /**
+   * Registers a handler to run when connection is lost. It returns a function
+   * for deregistering the handler.
+   */
+  onDisconnect: (handler: VoidFn) => VoidFn;
+  /**
+   * Registers a handler to run on events. It returns a function for
+   * deregistering the handler.
+   */
+  onEvent: (handler: EventHandlerFn) => VoidFn;
+};
 
 /**
  * Creates the Agama client
  *
- * @param {URL} url - URL of the HTTP API.
- * @return {InstallerClient}
+ * @param url - URL of the HTTP API.
  */
-const createClient = (url) => {
+const createClient = (url: URL): InstallerClient => {
   url.hash = "";
   url.pathname = url.pathname.concat("api/ws");
   url.protocol = url.protocol === "http:" ? "ws" : "wss";
@@ -53,9 +65,9 @@ const createClient = (url) => {
   return {
     isConnected,
     isRecoverable,
-    onConnect: (handler) => ws.onOpen(handler),
-    onDisconnect: (handler) => ws.onClose(handler),
-    onEvent: (handler) => ws.onEvent(handler),
+    onConnect: (handler: VoidFn) => ws.onOpen(handler),
+    onDisconnect: (handler: VoidFn) => ws.onClose(handler),
+    onEvent: (handler: EventHandlerFn) => ws.onEvent(handler),
   };
 };
 

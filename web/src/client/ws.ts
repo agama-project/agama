@@ -20,19 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
-/**
- * @callback RemoveFn
- * @return {void}
- */
+type RemoveFn = () => void;
+type BaseHandlerFn = () => void;
+type EventHandlerFn = (event) => void;
 
 /**
  * Enum for the WebSocket states.
- *
- *
  */
-
 const SocketStates = Object.freeze({
   CONNECTED: 0,
   CONNECTING: 1,
@@ -52,10 +46,25 @@ const ATTEMPT_INTERVAL = 1000;
  * HTTPClient API.
  */
 class WSClient {
+  url: string;
+
+  client: WebSocket;
+
+  handlers: {
+    open: Array<BaseHandlerFn>;
+    close: Array<BaseHandlerFn>;
+    error: Array<BaseHandlerFn>;
+    events: Array<EventHandlerFn>;
+  };
+
+  reconnectAttempts: number;
+
+  timeout: ReturnType<typeof setTimeout>;
+
   /**
-   * @param {URL} url - Websocket URL.
+   * @param  url - Websocket URL.
    */
-  constructor(url) {
+  constructor(url: URL) {
     this.url = url.toString();
 
     this.handlers = {
@@ -126,13 +135,10 @@ class WSClient {
   /**
    * Registers a handler for events.
    *
-   * The handler is executed for all the events. It is up to the callback to
-   * filter the relevant events.
-   *
-   * @param {(object) => void} func - Handler function to register.
-   * @return {RemoveFn}
+   * The handler is executed for all events. It is up to the callback to
+   * filter the relevant ones for it.
    */
-  onEvent(func) {
+  onEvent(func: EventHandlerFn): RemoveFn {
     this.handlers.events.push(func);
     return () => {
       const position = this.handlers.events.indexOf(func);
@@ -144,11 +150,8 @@ class WSClient {
    * Registers a handler for close socket.
    *
    * The handler is executed when the socket is close.
-   *
-   * @param {(object) => void} func - Handler function to register.
-   * @return {RemoveFn}
    */
-  onClose(func) {
+  onClose(func: BaseHandlerFn): RemoveFn {
     this.handlers.close.push(func);
 
     return () => {
@@ -161,10 +164,8 @@ class WSClient {
    * Registers a handler for open socket.
    *
    * The handler is executed when the socket is open.
-   * @param {(object) => void} func - Handler function to register.
-   * @return {RemoveFn}
    */
-  onOpen(func) {
+  onOpen(func: BaseHandlerFn): RemoveFn {
     this.handlers.open.push(func);
 
     return () => {
@@ -177,11 +178,8 @@ class WSClient {
    * Registers a handler for socket errors.
    *
    * The handler is executed when an error is reported by the socket.
-   *
-   * @param {(object) => void} func - Handler function to register.
-   * @return {RemoveFn}
    */
-  onError(func) {
+  onError(func: BaseHandlerFn): RemoveFn {
     this.handlers.error.push(func);
 
     return () => {
@@ -195,9 +193,9 @@ class WSClient {
    *
    * Dispatchs an event by running all the handlers.
    *
-   * @param {object} event - Event object, which is basically a websocket message.
+   * @param event - Event object, which is basically a websocket message.
    */
-  dispatchEvent(event) {
+  dispatchEvent(event: MessageEvent) {
     const eventObject = JSON.parse(event.data);
     this.handlers.events.forEach((f) => f(eventObject));
   }
