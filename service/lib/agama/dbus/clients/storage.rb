@@ -67,7 +67,8 @@ module Agama
         #
         # @return [Hash]
         def config
-          serialized_config = dbus_object.GetConfig
+          # Use storage iface to avoid collision with bootloader iface
+          serialized_config = dbus_object[STORAGE_IFACE].GetConfig
           JSON.parse(serialized_config, symbolize_names: true)
         end
 
@@ -76,7 +77,8 @@ module Agama
         # @param config [Hash]
         def config=(config)
           serialized_config = JSON.pretty_generate(config)
-          dbus_object.SetConfig(serialized_config)
+          # Use storage iface to avoid collision with bootloader iface
+          dbus_object[STORAGE_IFACE].SetConfig(serialized_config)
         end
 
       private
