@@ -20,15 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
+/* eslint-disable agama-i18n/string-literals */
+
 import { _, n_, N_, Nn_ } from "~/i18n";
 import agama from "~/agama";
 
 // mock the cockpit gettext functions
-jest.mock("~/agama");
-const gettextFn = jest.fn();
-agama.gettext.mockImplementation(gettextFn);
-const ngettextFn = jest.fn();
-agama.ngettext.mockImplementation(ngettextFn);
+jest.mock("~/agama", () => ({
+  ...jest.requireActual("~/agama"),
+  gettext: jest.fn(),
+  ngettext: jest.fn(),
+}));
 
 // some testing texts
 const text = "text to translate";
@@ -40,7 +42,7 @@ describe("i18n", () => {
     it("calls the agama.gettext() implementation", () => {
       _(text);
 
-      expect(gettextFn).toHaveBeenCalledWith(text);
+      expect(agama.gettext).toHaveBeenCalledWith(text);
     });
   });
 
@@ -48,7 +50,7 @@ describe("i18n", () => {
     it("calls the agama.ngettext() implementation", () => {
       n_(singularText, pluralText, 1);
 
-      expect(ngettextFn).toHaveBeenCalledWith(singularText, pluralText, 1);
+      expect(agama.ngettext).toHaveBeenCalledWith(singularText, pluralText, 1);
     });
   });
 
