@@ -45,7 +45,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
+      class Manager < BaseObject
         include WithISCSIAuth
         include WithServiceStatus
         include ::DBus::ObjectManager
