@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-12-10 02:55+0000\n"
 "PO-Revision-Date: 2024-06-26 10:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -283,14 +283,14 @@ msgstr "Возникла проблема при расчёте конфигур
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:124
+#: service/lib/agama/storage/proposal_strategies/guided.rb:127
 msgid "No device selected for installation"
 msgstr "Не выбрано устройство для установки"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:140
+#: service/lib/agama/storage/proposal_strategies/guided.rb:143
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
@@ -300,7 +300,7 @@ msgstr[1] "Следующие выбранные устройства не на�
 msgstr[2] "Следующие выбранные устройства не найдены в системе: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:148
+#: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""

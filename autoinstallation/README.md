@@ -8,8 +8,8 @@ approach might sound familiar to AutoYaST users. On the other hand, Agama can ac
 shell script, enabling custom pre-installation workflows.
 
 Although Agama defines its own [profile format](../rust/agama-lib/share/profile.schema.json), it is
-able to partially handle AutoYaST profiles. Please, check the [AutoYaST support document](../doc/
-autoyast.md) for further information.
+able to partially handle AutoYaST profiles. Please, check the [AutoYaST support document](
+https://agama-project.github.io/docs/user/autoyast) for further information.
 
 ## Profile-based installation
 
@@ -235,7 +235,8 @@ Using the correct extension in the file name is important:
 - `.jsonnet` enables dynamic content through Jsonnet.
 - `.json` assumes the profile is just a JSON file, so no dynamic content is expected.
 - `.xml`, `.erb` or a trailing slash (`/`) indicates that you want to import an AutoYaST profile.
-  Check [autoyast.md](../doc/autoyast.doc) for further information.
+  Check the [AutoYaST support document](https://agama-project.github.io/docs/user/autoyast)
+  for further information.
 - `.sh` would be interpreted as a shell script.
 
 ## Caveats

@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-29 09:01+0000\n"
+"POT-Creation-Date: 2024-12-10 02:55+0000\n"
 "PO-Revision-Date: 2024-10-30 13:48+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
-"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ca/>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -300,14 +300,14 @@ msgstr ""
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:124
+#: service/lib/agama/storage/proposal_strategies/guided.rb:127
 msgid "No device selected for installation"
 msgstr "No s'ha seleccionat cap dispositiu per a la instal·lació."
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:140
+#: service/lib/agama/storage/proposal_strategies/guided.rb:143
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
@@ -318,7 +318,7 @@ msgstr[1] ""
 "Els dispositius seleccionats següents no es troben al sistema: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:148
+#: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""

@@ -81,7 +81,7 @@ async fn add_script(
     Json(script): Json<Script>,
 ) -> Result<impl IntoResponse, ScriptServiceError> {
     let mut scripts = state.scripts.write().await;
-    scripts.add(script);
+    scripts.add(script)?;
     Ok(())
 }
 
@@ -110,7 +110,7 @@ async fn remove_scripts(
     state: State<ScriptsState>,
 ) -> Result<impl IntoResponse, ScriptServiceError> {
     let mut scripts = state.scripts.write().await;
-    scripts.clear();
+    scripts.clear()?;
     Ok(())
 }
 
@@ -132,7 +132,7 @@ async fn run_scripts(
     Json(group): Json<ScriptsGroup>,
 ) -> Result<(), ScriptServiceError> {
     let scripts = state.scripts.write().await;
-    if let Err(error) = scripts.run(group).await {
+    if let Err(error) = scripts.run(group) {
         tracing::error!("Could not run user-defined scripts: {error}");
     }
     Ok(())

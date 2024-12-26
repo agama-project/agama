@@ -24,19 +24,19 @@ type FirstUser = {
   fullName: string;
   userName: string;
   password: string;
-  encryptedPassword: boolean;
+  hashedPassword: boolean;
   autologin: boolean;
 };
 
 type RootUser = {
   password: boolean;
-  encryptedPassword: boolean;
+  hashedPassword: boolean;
   sshkey: string;
 };
 
 type RootUserChanges = {
   password: string;
-  passwordEncrypted: boolean;
+  hashedPassword: boolean;
   sshkey: string;
 };
 

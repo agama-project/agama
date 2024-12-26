@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import {
   Button,
@@ -202,12 +200,18 @@ export default function SpaceActionsTable({
   onActionChange,
 }: SpaceActionsTableProps) {
   const columns: TreeTableColumn[] = [
-    { name: _("Device"), value: (item) => <DeviceName item={item} /> },
-    { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
-    { name: _("Size"), value: (item) => <DeviceSize item={item} /> },
+    {
+      name: _("Device"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceName item={item} />,
+    },
+    {
+      name: _("Details"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceDetails item={item} />,
+    },
+    { name: _("Size"), value: (item: PartitionSlot | StorageDevice) => <DeviceSize item={item} /> },
     {
       name: _("Action"),
-      value: (item) => (
+      value: (item: PartitionSlot | StorageDevice) => (
         <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
       ),
     },

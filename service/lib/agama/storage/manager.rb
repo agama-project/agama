@@ -24,6 +24,7 @@ require "bootloader/proposal_client"
 require "y2storage/storage_manager"
 require "y2storage/clients/inst_prepdisk"
 require "agama/storage/actions_generator"
+require "agama/storage/bootloader"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
@@ -52,6 +53,9 @@ module Agama
       # @return [Agama::Config]
       attr_reader :product_config
 
+      # @return [Bootloader]
+      attr_reader :bootloader
+
       # Constructor
       #
       # @param product_config [Agama::Config]
@@ -61,6 +65,7 @@ module Agama
 
         @product_config = product_config
         @logger = logger
+        @bootloader = Bootloader.new(logger)
         register_proposal_callbacks
         on_progress_change { logger.info progress.to_s }
       end
@@ -126,6 +131,8 @@ module Agama
         progress.step(_("Preparing bootloader proposal")) do
           # first make bootloader proposal to be sure that required packages are installed
           proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+          # then also apply changes to that proposal
+          bootloader.write_config
           logger.debug "Bootloader proposal #{proposal.inspect}"
         end
         progress.step(_("Adding storage-related packages")) { add_packages }

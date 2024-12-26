@@ -62,8 +62,39 @@ button.remove-link:hover {
       right: 0;
       bottom: 0;
       left: 0;
-      z-index: 999;
     }
+  }
+}
+
+.agama-install-button {
+  padding: var(--pf-v5-global--spacer--sm) var(--pf-v5-global--spacer--md);
+  font-size: var(--fs-large);
+}
+
+.agama-issues-mark {
+  background: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  top: -7px;
+  right: -7px;
+  position: absolute;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+.agama-issues-drawer-body {
+  padding: var(--pf-v5-global--spacer--lg);
+
+  h4 a {
+    text-decoration: underline;
+    font-weight: var(--fw-bold);
+  }
+
+  ul li.pf-m-info,
+  ul li.pf-m-warning {
+    --pf-v5-c-notification-drawer__list-item--before--BackgroundColor: none;
   }
 }
 

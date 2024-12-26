@@ -4,7 +4,7 @@ import neostandard from "neostandard";
 import tsEslint from "typescript-eslint";
 import tsEslintParser from "@typescript-eslint/parser";
 import globals from "globals";
-import agamaI18nEslintPlugin from "eslint-plugin-agama-i18n";
+import agamaI18nEslintPlugin from "@agama-project/eslint-plugin-agama-i18n";
 import i18nextEslintPlugin from "eslint-plugin-i18next";
 import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
@@ -91,6 +91,13 @@ export default [
   {
     files: ["src/i18n.test.js"],
     rules: { "agama-i18n/string-literals": "off" },
+  },
+  {
+    // the translation JS files generated from the PO files use some code in the plural form rule,
+    // ignore the possible "problems" there (using "==" operator instead of more strict "===" or not
+    // using the "n" variable in languages which do not have plural form)
+    files: ["src/po/*.js"],
+    rules: { eqeqeq: "off", "@typescript-eslint/no-unused-vars": "off" },
   },
   {
     ignores: ["node_modules/*", "src/lib/*", "src/**/test-data/*"],

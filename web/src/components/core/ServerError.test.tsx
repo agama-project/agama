@@ -22,20 +22,40 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 
 import * as utils from "~/utils";
 import { ServerError } from "~/components/core";
 
+jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
+jest.mock("~/components/layout/Sidebar", () => () => <div>Sidebar Mock</div>);
+jest.mock("~/components/layout/Layout", () => {
+  const layout = jest.requireActual("~/components/layout/Layout");
+  const OriginalPlainLayout = layout.Plain;
+
+  return {
+    ...layout,
+    Plain: ({ ...props }) => (
+      <>
+        <div>PlainLayout Mock</div>
+        <OriginalPlainLayout {...props} />
+      </>
+    ),
+  };
+});
+
 describe("ServerError", () => {
-  it("includes a generic server problem message", () => {
-    plainRender(<ServerError />);
+  it("wraps a generic server problem message into a plain layout with neither, header nor sidebar", () => {
+    installerRender(<ServerError />);
+    expect(screen.queryByText("Header Mock")).toBeNull();
+    expect(screen.queryByText("Sidebar Mock")).toBeNull();
+    screen.getByText("PlainLayout Mock");
     screen.getByText(/Cannot connect to Agama server/i);
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
     jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
-    const { user } = plainRender(<ServerError />);
+    const { user } = installerRender(<ServerError />);
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
     await user.click(reloadButton);
     expect(utils.locationReload).toHaveBeenCalled();

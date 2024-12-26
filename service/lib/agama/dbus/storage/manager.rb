@@ -169,6 +169,40 @@ module Agama
           dbus_reader(:deprecated_system, "b")
         end
 
+        BOOTLOADER_INTERFACE = "org.opensuse.Agama.Storage1.Bootloader"
+        private_constant :BOOTLOADER_INTERFACE
+
+        # Applies the given serialized config according to the JSON schema.
+        #
+        #
+        # @raise If the config is not valid.
+        #
+        # @param serialized_config [String] Serialized storage config.
+        # @return [Integer] 0 success; 1 error
+        def load_bootloader_config_from_json(serialized_config)
+          logger.info("Setting bootloader config from D-Bus: #{serialized_config}")
+
+          backend.bootloader.config.load_json(serialized_config)
+
+          0
+        end
+
+        # Gets and serializes the storage config used to calculate the current proposal.
+        #
+        # @return [String] Serialized config according to the JSON schema.
+        def bootloader_config_as_json
+          backend.bootloader.config.to_json
+        end
+
+        dbus_interface BOOTLOADER_INTERFACE do
+          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
+            load_bootloader_config_from_json(serialized_config)
+          end
+          dbus_method(:GetConfig, "out serialized_config:s") do
+            bootloader_config_as_json
+          end
+        end
+
         # @todo Move device related properties here, for example, the list of system and staging
         #   devices, dirty, etc.
         STORAGE_DEVICES_INTERFACE = "org.opensuse.Agama.Storage1.Devices"

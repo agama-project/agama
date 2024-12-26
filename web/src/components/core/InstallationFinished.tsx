@@ -38,11 +38,10 @@ import {
   Text,
 } from "@patternfly/react-core";
 import { Center, Icon } from "~/components/layout";
-import { EncryptionMethods } from "~/types/storage";
 import { _ } from "~/i18n";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
-import { useProposalResult } from "~/queries/storage";
+import { useConfig } from "~/queries/storage";
 import { finishInstallation } from "~/api/manager";
 import { InstallationPhase } from "~/types/status";
 import { Navigate } from "react-router-dom";
@@ -77,11 +76,28 @@ the machine needs to boot directly to the new boot loader.",
 
 const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-success" />;
 
+// TODO: define some utility method to get the device used as root (drive, partition, logical volume).
+// TODO: use type checking for config.
+function usingTpm(config): boolean {
+  const { guided, drives = [], volumeGroups = [] } = config;
+
+  if (guided !== undefined) {
+    return guided.encryption?.method === "tpm_fde";
+  }
+  const devices = [
+    ...drives,
+    ...drives.flatMap((d) => d.partitions || []),
+    ...volumeGroups.flatMap((v) => v.logicalVolumes || []),
+  ];
+
+  const root = devices.find((d) => d.filesystem?.path === "/");
+
+  return root?.encryption?.tpmFde !== undefined;
+}
+
 function InstallationFinished() {
   const { phase, isBusy, useIguana } = useInstallerStatus({ suspense: true });
-  const {
-    settings: { encryptionPassword, encryptionMethod },
-  } = useProposalResult();
+  const config = useConfig();
 
   if (phase !== InstallationPhase.Install) {
     return <Navigate to={PATHS.root} />;
@@ -90,8 +106,6 @@ function InstallationFinished() {
   if (isBusy) {
     return <Navigate to={PATHS.installationProgress} />;
   }
-
-  const usingTpm = encryptionPassword?.length > 0 && encryptionMethod === EncryptionMethods.TPM;
 
   return (
     <Center>
@@ -119,7 +133,7 @@ function InstallationFinished() {
                               "At this point you can reboot the machine to log in to the new system.",
                             )}
                       </Text>
-                      {usingTpm && <TpmHint />}
+                      {usingTpm(config) && <TpmHint />}
                     </Flex>
                   </EmptyStateBody>
                 </EmptyState>

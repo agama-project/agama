@@ -58,7 +58,7 @@ module Agama
       USERS_INTERFACE = "org.opensuse.Agama.Users1"
       private_constant :USERS_INTERFACE
 
-      FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in EncryptedPassword:b, " \
+      FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in HashedPassword:b, " \
                   "in AutoLogin:b, in data:a{sv}"
       private_constant :FUSER_SIG
 
@@ -70,9 +70,9 @@ module Agama
         dbus_reader :first_user, "(sssbba{sv})"
 
         dbus_method :SetRootPassword,
-          "in Value:s, in Encrypted:b, out result:u" do |value, encrypted|
+          "in Value:s, in Hashed:b, out result:u" do |value, hashed|
           logger.info "Setting Root Password"
-          backend.assign_root_password(value, encrypted)
+          backend.assign_root_password(value, hashed)
 
           dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
           0
@@ -99,10 +99,10 @@ module Agama
           # It returns an Struct with the first field with the result of the operation as a boolean
           # and the second parameter as an array of issues found in case of failure
           FUSER_SIG + ", out result:(bas)" do
-            |full_name, user_name, password, encrypted_password, auto_login, data|
+            |full_name, user_name, password, hashed_password, auto_login, data|
           logger.info "Setting first user #{full_name}"
           user_issues = backend.assign_first_user(full_name, user_name, password,
-            encrypted_password, auto_login, data)
+            hashed_password, auto_login, data)
 
           if user_issues.empty?
             dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])

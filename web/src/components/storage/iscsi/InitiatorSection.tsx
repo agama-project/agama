@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,7 +23,7 @@
 import React from "react";
 
 import { _ } from "~/i18n";
-import { Section } from "~/components/core";
+import { Page } from "~/components/core";
 import { InitiatorPresenter } from "~/components/storage/iscsi";
 import { useInitiator, useInitiatorChanges } from "~/queries/storage/iscsi";
 
@@ -33,8 +33,8 @@ export default function InitiatorSection() {
 
   return (
     // TRANSLATORS: iSCSI initiator section name
-    <Section title={_("Initiator")}>
+    <Page.Section title={_("Initiator")}>
       <InitiatorPresenter initiator={initiator} />
-    </Section>
+    </Page.Section>
   );
 }

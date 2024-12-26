@@ -22,6 +22,8 @@ use crate::software::model::SoftwareConfig;
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 use std::collections::HashMap;
 
+use super::model::{ResolvableParams, ResolvableType};
+
 pub struct SoftwareHTTPClient {
     client: BaseHTTPClient,
 }
@@ -73,5 +75,23 @@ impl SoftwareHTTPClient {
             patterns: Some(patterns),
         };
         self.set_config(&config).await
+    }
+
+    /// Sets a resolvable list
+    pub async fn set_resolvables(
+        &self,
+        name: &str,
+        r#type: ResolvableType,
+        names: &[&str],
+        optional: bool,
+    ) -> Result<(), ServiceError> {
+        let path = format!("/software/resolvables/{}", name);
+        let options = ResolvableParams {
+            names: names.iter().map(|n| n.to_string()).collect(),
+            r#type,
+            optional,
+        };
+        self.client.put_void(&path, &options).await?;
+        Ok(())
     }
 }

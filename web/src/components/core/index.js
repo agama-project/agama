@@ -22,7 +22,6 @@
 
 export { default as ChangeProductLink } from "./ChangeProductLink";
 export { default as Description } from "./Description";
-export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
 export { default as FormReadOnlyField } from "./FormReadOnlyField";
 export { default as FormValidationError } from "./FormValidationError";
@@ -32,7 +31,6 @@ export { default as EmailInput } from "./EmailInput";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
-export { default as IssuesLink } from "./IssuesLink";
 export { default as IssuesHint } from "./IssuesHint";
 export { default as SectionSkeleton } from "./SectionSkeleton";
 export { default as ListSearch } from "./ListSearch";
@@ -52,4 +50,5 @@ export { default as TreeTable } from "./TreeTable";
 export { default as Link } from "./Link";
 export { default as EmptyState } from "./EmptyState";
 export { default as InstallerOptions } from "./InstallerOptions";
+export { default as IssuesDrawer } from "./IssuesDrawer";
 export { default as Drawer } from "./Drawer";

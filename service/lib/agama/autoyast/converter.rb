@@ -26,6 +26,7 @@ require "autoinstall/script"
 require "agama/autoyast/l10n_reader"
 require "agama/autoyast/product_reader"
 require "agama/autoyast/root_reader"
+require "agama/autoyast/scripts_reader"
 require "agama/autoyast/software_reader"
 require "agama/autoyast/storage_reader"
 require "agama/autoyast/user_reader"
@@ -118,7 +119,7 @@ module Agama
 
       # Sections which have a corresponding reader. The reader is expected to be
       # named in Pascal case and adding "Reader" as suffix (e.g., "L10nReader").
-      SECTIONS = ["l10n", "product", "root", "software", "storage", "user"].freeze
+      SECTIONS = ["l10n", "product", "root", "scripts", "software", "storage", "user"].freeze
 
       # Builds the Agama profile
       #

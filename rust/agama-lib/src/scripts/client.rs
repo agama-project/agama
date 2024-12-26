@@ -35,7 +35,7 @@ impl ScriptsClient {
     /// Adds a script to the given group.
     ///
     /// * `script`: script's definition.
-    pub async fn add_script(&self, script: &Script) -> Result<(), ServiceError> {
+    pub async fn add_script(&self, script: Script) -> Result<(), ServiceError> {
         self.client.post_void("/scripts", &script).await
     }
 

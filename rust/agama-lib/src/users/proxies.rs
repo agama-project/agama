@@ -47,7 +47,7 @@ use zbus::proxy;
 /// * full name
 /// * user name
 /// * password
-/// * encrypted_password (true = encrypted, false = plain text)
+/// * hashed_password (true = hashed, false = plain text)
 /// * auto-login (enabled or not)
 /// * some optional and additional data
 // NOTE: Manually added to this file.
@@ -79,13 +79,13 @@ pub trait Users1 {
         full_name: &str,
         user_name: &str,
         password: &str,
-        encrypted_password: bool,
+        hashed_password: bool,
         auto_login: bool,
         data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<(bool, Vec<String>)>;
 
     /// SetRootPassword method
-    fn set_root_password(&self, value: &str, encrypted: bool) -> zbus::Result<u32>;
+    fn set_root_password(&self, value: &str, hashed: bool) -> zbus::Result<u32>;
 
     /// SetRootSSHKey method
     #[zbus(name = "SetRootSSHKey")]

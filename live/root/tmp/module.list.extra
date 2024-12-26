@@ -1,0 +1,4 @@
+# This is an extension of the module.list file specially for Agama. It is loaded
+# in addition to the module.list file to allow extra overrides or hot fixes
+# without touching the original file. The original file should not be touched to
+# allow easy updates from the installation-images repository.

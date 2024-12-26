@@ -43,7 +43,7 @@ module Agama
       options.split.each do |option|
         next unless option.start_with?(CMDLINE_PREFIX)
 
-        key, value = option.split("=")
+        key, value = option.split("=", 2)
         key.gsub!(CMDLINE_PREFIX, "")
         # Omit config_url from Config options
         next args.config_url = value if key == "config_url"

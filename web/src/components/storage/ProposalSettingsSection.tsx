@@ -23,9 +23,10 @@
 import React from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
 import EncryptionField, { EncryptionConfig } from "~/components/storage/EncryptionField";
-import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
+import InstallationDeviceField, {
+  TargetConfig,
+} from "~/components/storage/InstallationDeviceField";
 import PartitionsField from "~/components/storage/PartitionsField";
-import { TargetConfig } from "~/components/storage/InstallationDeviceField";
 import { CHANGING, NOT_AFFECTED } from "~/components/storage/ProposalPage";
 import { ProposalSettings, StorageDevice, Volume } from "~/types/storage";
 import { compact } from "~/utils";

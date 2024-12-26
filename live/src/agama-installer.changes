@@ -1,4 +1,39 @@
 -------------------------------------------------------------------
+Tue Dec 10 12:46:06 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- Updated config.sh to enable agama-dbus-monitor service
+  (gh#agama-project/agama#1824).
+
+-------------------------------------------------------------------
+Thu Dec  5 11:19:10 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing firmware for some drivers (gh#agama-project/agama#1756)
+  - Support wildcards ("*") in the references firmware files
+  - Handle symbolic links
+
+-------------------------------------------------------------------
+Tue Dec  3 12:41:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop unneeded packages (gh#agama-project/agama#1805):
+  - xf86-video-* are obsoleted by the modesetting driver.
+  - xf86-input-wacom is obsoleted by libinput.
+
+-------------------------------------------------------------------
+Mon Dec  2 14:53:12 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Use the installation-images config file for removing the kernel
+  drivers, it deletes even more not needed drivers and it is
+  a reliable source (related to gh#agama-project/agama#1665)
+- The ISO size decreased by ~40MB
+
+-------------------------------------------------------------------
+Thu Nov 28 08:58:21 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Less aggressive kernel driver cleanup, keep the multimedia
+  drivers which are needed as dependencies of other drivers
+  (usually graphic card drivers) (gh#agama-project/agama#1665)
+
+-------------------------------------------------------------------
 Wed Nov 13 12:20:23 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Temporarily drop xf86-video-fbdev as it seems to be missing
@@ -50,13 +85,13 @@ Mon Sep 16 15:46:23 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 - Use $kiwi_iname instead of static agama-live reference in all of
   config-cdroom/* with exception of s390x, where for some reason
   we use SUSE Linux... string instead
-  
+
 
 -------------------------------------------------------------------
 Mon Sep  9 15:55:16 UTC 2024 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - Firefox: set browser.startup.homepage_override.mstone to ignore
-  (gh#openSUSE/agama#1593) 
+  (gh#openSUSE/agama#1593)
 
 -------------------------------------------------------------------
 Sun Sep  8 06:28:35 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>

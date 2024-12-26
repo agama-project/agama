@@ -178,6 +178,38 @@ function reload(newLanguage: string) {
 }
 
 /**
+ * Load the web frontend translations from the server.
+ *
+ * @param locale requested locale
+ * @returns Promise with a dynamic import
+ */
+async function loadTranslations(locale: string) {
+  // load the translations dynamically, first try the language + territory
+  const po = locale.replace("-", "_");
+  return import(
+    /* webpackChunkName: "[request]" */
+    `../po/po.${po}`
+  )
+    .then((m) => agama.locale(m.default))
+    .catch(async () => {
+      // if it fails try the language only
+      const po = locale.split("-")[0];
+      return import(
+        /* webpackChunkName: "[request]" */
+        `../po/po.${po}`
+      )
+        .then((m) => agama.locale(m.default))
+        .catch(() => {
+          if (locale !== "en-US") {
+            console.error("Cannot load frontend translations for", locale);
+          }
+          // reset the current translations (use the original English texts)
+          agama.locale(null);
+        });
+    });
+}
+
+/**
  * This provider sets the installer locale. By default, it uses the URL "lang" query parameter or
  * the preferred locale from the browser and synchronizes the UI and the backend locales. To
  * activate a new locale it reloads the whole page.
@@ -230,6 +262,8 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
         reload(newLanguage);
       } else {
         setLanguage(newLanguage);
+
+        await loadTranslations(newLanguage);
       }
     },
     [setLanguage],

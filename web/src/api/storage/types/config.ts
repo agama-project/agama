@@ -20,7 +20,12 @@ export type SearchAction = "skip" | "error";
  * Alias used to reference a device.
  */
 export type Alias = string;
-export type Encryption = EncryptionLuks1 | EncryptionLuks2 | EncryptionPervasiveLuks2 | EncryptionTPM | EncryptionSwap;
+export type Encryption =
+  | EncryptionLuks1
+  | EncryptionLuks2
+  | EncryptionPervasiveLuks2
+  | EncryptionTPM
+  | EncryptionSwap;
 /**
  * Password to use when creating a new encryption device.
  */
@@ -93,7 +98,10 @@ export type SizeValueWithCurrent = SizeValue | SizeCurrent;
  * The current size of the device.
  */
 export type SizeCurrent = "current";
-export type PhysicalVolumeElement = Alias | SimplePhysicalVolumesGenerator | AdvancedPhysicalVolumesGenerator;
+export type PhysicalVolumeElement =
+  | Alias
+  | SimplePhysicalVolumesGenerator
+  | AdvancedPhysicalVolumesGenerator;
 export type LogicalVolumeElement =
   | SimpleVolumesGenerator
   | AdvancedLogicalVolumesGenerator
