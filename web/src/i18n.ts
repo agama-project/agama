@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,20 +30,18 @@ import agama from "~/agama";
 
 /**
  * Tests whether a special testing language is used.
- *
- * @returns {boolean} true if the testing language is set
  */
-const isTestingLanguage = () => agama.language === "xx";
+const isTestingLanguage = (): boolean => agama.language === "xx";
 
 /**
  * "Translate" the string to special "xx" testing language.
  * It just replaces all alpha characters with "x".
  * It keeps the percent placeholders like "%s" or "%d" unmodified.
  *
- * @param {string} str input string
- * @returns {string} "translated" string
+ * @param str input string
+ * @returns "translated" string
  */
-const xTranslate = (str) => {
+const xTranslate = (str: string): string => {
   let result = "";
 
   let wasPercent = false;
@@ -70,23 +68,23 @@ const xTranslate = (str) => {
  * Returns a translated text in the current locale or the original text if the
  * translation is not found.
  *
- * @param {string} str the input string to translate
- * @return {string} translated or original text
+ * @param str the input string to translate
+ * @return translated or original text
  */
-const _ = (str) => (isTestingLanguage() ? xTranslate(str) : agama.gettext(str));
+const _ = (str: string): string => (isTestingLanguage() ? xTranslate(str) : agama.gettext(str));
 
 /**
  * Similar to the _() function. This variant returns singular or plural form
  * depending on an additional "num" argument.
  *
  * @see {@link _} for further information
- * @param {string} str1 the input string in the singular form
- * @param {string} strN the input string in the plural form
- * @param {number} n the actual number which decides whether to use the
+ * @param str1 the input string in the singular form
+ * @param strN the input string in the plural form
+ * @param n the actual number which decides whether to use the
  *   singular or plural form
- * @return {string} translated or original text
+ * @return translated or original text
  */
-const n_ = (str1, strN, n) => {
+const n_ = (str1: string, strN: string, n: number): string => {
   return isTestingLanguage() ? xTranslate(n === 1 ? str1 : strN) : agama.ngettext(str1, strN, n);
 };
 
@@ -120,22 +118,22 @@ const n_ = (str1, strN, n) => {
  *   // here the string will be translated using the current locale
  *   return <div>Result: {_(result)}</div>;
  *
- * @param {string} str the input string
- * @return {string} the input string
+ * @param str the input string
+ * @return the input string
  */
-const N_ = (str) => str;
+const N_ = (str: string): string => str;
 
 /**
  * Similar to the N_() function, but for the singular and plural form.
  *
  * @see {@link N_} for further information
- * @param {string} str1 the input string in the singular form
- * @param {string} strN the input string in the plural form
- * @param {number} n the actual number which decides whether to use the
+ * @param str1 the input string in the singular form
+ * @param strN the input string in the plural form
+ * @param n the actual number which decides whether to use the
  *   singular or plural form
- * @return {string} the original text, either "string1" or "stringN" depending
+ * @return the original text, either "string1" or "stringN" depending
  *   on the value "num"
  */
-const Nn_ = (str1, strN, n) => (n === 1 ? str1 : strN);
+const Nn_ = (str1: string, strN: string, n: number): string => (n === 1 ? str1 : strN);
 
 export { _, n_, N_, Nn_ };
