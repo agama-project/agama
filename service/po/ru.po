@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-10 02:55+0000\n"
+"POT-Creation-Date: 2024-12-22 02:45+0000\n"
 "PO-Revision-Date: 2024-06-26 10:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -20,37 +20,37 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.6\n"
 
-#. Runs the startup phase
-#: service/lib/agama/manager.rb:91
-msgid "Load software translations"
-msgstr ""
-
-#: service/lib/agama/manager.rb:92
-msgid "Load storage translations"
-msgstr ""
-
 #. Runs the config phase
-#: service/lib/agama/manager.rb:107
+#: service/lib/agama/manager.rb:93
 msgid "Analyze disks"
 msgstr "Анализ дисков"
 
-#: service/lib/agama/manager.rb:107
+#: service/lib/agama/manager.rb:93
 msgid "Configure software"
 msgstr "Настройка программного обеспечения"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:127
+#: service/lib/agama/manager.rb:116
 msgid "Prepare disks"
 msgstr "Подготовка дисков"
 
-#: service/lib/agama/manager.rb:128
+#: service/lib/agama/manager.rb:117
 msgid "Install software"
 msgstr "Установка программного обеспечения"
 
-#: service/lib/agama/manager.rb:129
+#: service/lib/agama/manager.rb:118
 msgid "Configure the system"
 msgstr "Настройка системы"
+
+#. rubocop:enable Metrics/AbcSize
+#: service/lib/agama/manager.rb:156
+msgid "Load software translations"
+msgstr ""
+
+#: service/lib/agama/manager.rb:157
+msgid "Load storage translations"
+msgstr ""
 
 #. Callback to handle unsigned files
 #.
@@ -232,37 +232,37 @@ msgid "Shrinking is not supported by this device"
 msgstr ""
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:120
 msgid "Activating storage devices"
 msgstr "Активация устройств хранения"
 
-#: service/lib/agama/storage/manager.rb:116
+#: service/lib/agama/storage/manager.rb:121
 msgid "Probing storage devices"
 msgstr "Поиск устройств хранения"
 
-#: service/lib/agama/storage/manager.rb:117
+#: service/lib/agama/storage/manager.rb:122
 msgid "Calculating the storage proposal"
 msgstr "Расчет предложения по хранению"
 
-#: service/lib/agama/storage/manager.rb:118
+#: service/lib/agama/storage/manager.rb:123
 msgid "Selecting Linux Security Modules"
 msgstr "Выбор модулей безопасности Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:126
+#: service/lib/agama/storage/manager.rb:131
 msgid "Preparing bootloader proposal"
 msgstr "Подготовка предложения по загрузчику"
 
-#. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:131
+#. then also apply changes to that proposal
+#: service/lib/agama/storage/manager.rb:138
 msgid "Adding storage-related packages"
 msgstr "Добавление пакетов, связанных с хранилищем"
 
-#: service/lib/agama/storage/manager.rb:132
+#: service/lib/agama/storage/manager.rb:139
 msgid "Preparing the storage devices"
 msgstr "Подготовка устройств хранения"
 
-#: service/lib/agama/storage/manager.rb:133
+#: service/lib/agama/storage/manager.rb:140
 msgid "Writing bootloader sysconfig"
 msgstr "Запись системной конфигурации загрузчика"
 
