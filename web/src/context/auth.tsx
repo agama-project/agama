@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useCallback, useEffect, useState } from "react";
 
 const AuthContext = React.createContext(null);
@@ -48,11 +46,11 @@ const AuthErrors = Object.freeze({
  * @param {object} props
  * @param {React.ReactNode} [props.children] - content to display within the provider
  */
-function AuthProvider({ children }) {
+function AuthProvider({ children }: React.PropsWithChildren) {
   const [isLoggedIn, setIsLoggedIn] = useState(undefined);
   const [error, setError] = useState(null);
 
-  const login = useCallback(async (password) => {
+  const login = useCallback(async (password: string) => {
     const response = await fetch("/api/auth", {
       method: "POST",
       body: JSON.stringify({ password }),

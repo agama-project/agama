@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { InstallerClientProvider } from "./installer";
 import { InstallerL10nProvider } from "./installerL10n";
@@ -31,11 +29,8 @@ const queryClient = new QueryClient();
 
 /**
  * Combines all application providers.
- *
- * @param {object} props
- * @param {React.ReactNode} [props.children] - content to display within the provider.
  */
-function AppProviders({ children }) {
+function AppProviders({ children }: React.PropsWithChildren) {
   return (
     <InstallerClientProvider>
       <QueryClientProvider client={queryClient}>

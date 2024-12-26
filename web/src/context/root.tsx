@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,19 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { Suspense } from "react";
 import { AuthProvider } from "./auth";
 import { Loading } from "~/components/layout";
 
 /**
  * Combines all application providers.
- *
- * @param {object} props
- * @param {React.ReactNode} [props.children] - content to display within the provider.
  */
-function RootProviders({ children }) {
+function RootProviders({ children }: React.PropsWithChildren) {
   return (
     <Suspense fallback={<Loading />}>
       <AuthProvider>{children}</AuthProvider>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -41,7 +41,7 @@ const ClientStatus = () => {
 
 describe("installer context", () => {
   beforeEach(() => {
-    createDefaultClient.mockImplementation(() => {
+    (createDefaultClient as jest.Mock).mockImplementation(() => {
       return {
         onConnect: jest.fn(),
         onDisconnect: jest.fn(),

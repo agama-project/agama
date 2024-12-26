@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2021-2023] SUSE LLC
+ * Copyright (c) [2021-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,10 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState, useEffect } from "react";
-import { createDefaultClient } from "~/client";
+import { createDefaultClient, InstallerClient } from "~/client";
+
+type ClientStatus = {
+  /** Whether the client is connected or not. */
+  connected: boolean;
+  /** Whether the client present an error and cannot reconnect. */
+  error: boolean;
+};
+
+type InstallerClientProviderProps = React.PropsWithChildren<{
+  /** Client to connect to Agama service; if it is undefined, it instantiates a
+   * new one using the address registered in /run/agama/bus.address. */
+  client?: InstallerClient;
+}>;
 
 const InstallerClientContext = React.createContext(null);
 // TODO: we use a separate context to avoid changing all the codes to
@@ -35,10 +46,8 @@ const InstallerClientStatusContext = React.createContext({
 
 /**
  * Returns the D-Bus installer client
- *
- * @return {import("~/client").InstallerClient}
  */
-function useInstallerClient() {
+function useInstallerClient(): InstallerClient {
   const context = React.useContext(InstallerClientContext);
   if (context === undefined) {
     throw new Error("useInstallerClient must be used within a InstallerClientProvider");
@@ -49,15 +58,8 @@ function useInstallerClient() {
 
 /**
  * Returns the client status.
- *
- * @typedef {object} ClientStatus
- * @property {boolean} connected - whether the client is connected
- * @property {boolean} error - whether the client present an error and cannot
- *  reconnect
- *
- * @return {ClientStatus} installer client status
  */
-function useInstallerClientStatus() {
+function useInstallerClientStatus(): ClientStatus {
   const context = React.useContext(InstallerClientStatusContext);
   if (!context) {
     throw new Error("useInstallerClientStatus must be used within a InstallerClientProvider");
@@ -66,16 +68,7 @@ function useInstallerClientStatus() {
   return context;
 }
 
-/**
- * @param {object} props
- * @param {import("~/client").InstallerClient|undefined} [props.client] client to connect to
- *   Agama service; if it is undefined, it instantiates a new one using the address
- *   registered in /run/agama/bus.address.
- * @param {number} [props.interval=2000] - Interval in milliseconds between connection attempt
- *   (2000 by default).
- * @param {React.ReactNode} [props.children] - content to display within the provider
- */
-function InstallerClientProvider({ children, client = null }) {
+function InstallerClientProvider({ children, client = null }: InstallerClientProviderProps) {
   const [value, setValue] = useState(client);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState(false);
