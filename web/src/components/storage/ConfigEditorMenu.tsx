@@ -21,9 +21,8 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useHref } from "react-router-dom";
 import { _ } from "~/i18n";
-import { useHref } from "react-router-dom";
 import {
   Dropdown,
   MenuToggleElement,
