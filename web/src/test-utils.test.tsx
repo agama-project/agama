@@ -40,11 +40,6 @@ describe("resetLocalStorage", () => {
     expect(window.localStorage.setItem).not.toHaveBeenCalled();
   });
 
-  it("does not set an initial state if given value is not an object", () => {
-    resetLocalStorage(["wrong", "initial state"]);
-    expect(window.localStorage.setItem).not.toHaveBeenCalled();
-  });
-
   it("sets an initial state if given value is an object", () => {
     resetLocalStorage({
       storage: "something",

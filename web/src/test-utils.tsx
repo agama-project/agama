@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -112,7 +112,7 @@ const Providers = ({ children, withL10n }) => {
  *
  * @see #plainRender for rendering without installer providers
  */
-const installerRender = (ui, options = {}) => {
+const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = {}) => {
   const queryClient = new QueryClient({});
 
   const Wrapper = ({ children }) => (
@@ -159,11 +159,11 @@ const plainRender = (ui, options = {}) => {
  * It can be useful to mock functions that might receive a callback that you can
  * execute on-demand during the test.
  *
- * @return {[() => () => void, Array<(any) => void>]} a tuple with the mocked function and the list of callbacks.
+ * @return a tuple with the mocked function and the list of callbacks.
  */
-const createCallbackMock = () => {
+const createCallbackMock = (): [(callback: Function) => () => void, Array<(arg0: any) => void>] => {
   const callbacks = [];
-  const on = (callback) => {
+  const on = (callback: Function) => {
     callbacks.push(callback);
     return () => {
       const position = callbacks.indexOf(callback);
@@ -176,10 +176,10 @@ const createCallbackMock = () => {
 /**
  * Helper for clearing window.localStorage and setting an initial state if needed.
  *
- * @param {Object.<string, string>} [initialState] - a collection of keys/values as
+ * @param [initialState] - a collection of keys/values as
  *   expected by {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem Web Storage API setItem method}
  */
-const resetLocalStorage = (initialState) => {
+const resetLocalStorage = (initialState?: { [key: string]: string }) => {
   window.localStorage.clear();
 
   if (!isObject(initialState)) return;
