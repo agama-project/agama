@@ -77,7 +77,7 @@ describe("when it is open", () => {
 
     expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({
       password,
-      passwordEncrypted: false,
+      hashedPassword: false,
     });
     expect(onCloseCallback).toHaveBeenCalled();
   });

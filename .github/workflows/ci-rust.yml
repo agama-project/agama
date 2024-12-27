@@ -71,6 +71,7 @@ jobs:
       run: zypper --non-interactive install
         clang-devel
         dbus-1-daemon
+        golang-github-google-jsonnet
         jq
         libopenssl-3-devel
         openssl-3

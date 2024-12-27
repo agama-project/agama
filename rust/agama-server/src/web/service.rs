@@ -115,7 +115,6 @@ impl MainServiceBuilder {
         Router::new()
             .nest_service("/", serve)
             .route("/login", get(login_from_query))
-            .route("/po.js", get(super::http::po))
             .nest("/api", api_router)
             .layer(
                 TraceLayer::new_for_http()

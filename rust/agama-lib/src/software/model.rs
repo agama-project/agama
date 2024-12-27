@@ -80,3 +80,23 @@ impl TryFrom<u32> for RegistrationRequirement {
         }
     }
 }
+
+/// Software resolvable type (package or pattern).
+#[derive(Deserialize, Serialize, strum::Display, utoipa::ToSchema)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum ResolvableType {
+    Package = 0,
+    Pattern = 1,
+}
+
+/// Resolvable list specification.
+#[derive(Deserialize, Serialize, utoipa::ToSchema)]
+pub struct ResolvableParams {
+    /// List of resolvables.
+    pub names: Vec<String>,
+    /// Resolvable type.
+    pub r#type: ResolvableType,
+    /// Whether the resolvables are optional or not.
+    pub optional: bool,
+}

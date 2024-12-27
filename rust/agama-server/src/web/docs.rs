@@ -24,6 +24,8 @@ mod network;
 pub use network::NetworkApiDocBuilder;
 mod storage;
 pub use storage::StorageApiDocBuilder;
+mod bootloader;
+pub use bootloader::BootloaderApiDocBuilder;
 mod software;
 pub use software::SoftwareApiDocBuilder;
 mod l10n;
@@ -36,6 +38,8 @@ mod users;
 pub use users::UsersApiDocBuilder;
 mod misc;
 pub use misc::MiscApiDocBuilder;
+mod scripts;
+pub use scripts::ScriptsApiDocBuilder;
 pub mod common;
 
 pub trait ApiDocBuilder {

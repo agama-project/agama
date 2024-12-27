@@ -23,6 +23,11 @@ translations:
       přizpůsobivý operační systém pro dlouhodobě podporovanou infrastrukturu
       připravenou na inovace, na které běží kritické podnikové úlohy v lokálním
       prostředí, v cloudu i na okraji sítě.
+    de: Ein offener, zuverlässiger, kompatibler und zukunftssicherer Linux-Server,
+      der die Geschäftskontinuität des Unternehmens gewährleistet. Es ist das
+      sichere und anpassungsfähige Betriebssystem für eine langfristig
+      unterstützte, innovationsbereite Infrastruktur, auf der geschäftskritische
+      Arbeitslasten vor Ort, in der Cloud und am Netzwerkrand ausgeführt werden.
     es: Una opción de servidor Linux abierta, confiable, compatible y preparada para
       el futuro que garantiza la continuidad del negocio de la empresa. Es el
       sistema operativo seguro y adaptable para una infraestructura lista para
@@ -133,12 +138,9 @@ storage:
     - mount_path: "swap"
       filesystem: swap
       size:
-        auto: true
+        min: 1 GiB
+        max: 2 GiB
       outline:
-        auto_size:
-          base_min: 1 GiB
-          base_max: 2 GiB
-          adjust_by_ram: true
         required: false
         filesystems:
           - swap

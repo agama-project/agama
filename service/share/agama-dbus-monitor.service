@@ -1,0 +1,13 @@
+[Unit]
+Description=Agama's D-Bus bus monitor
+After=agama.service
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/busctl --address unix:path=/run/agama/bus --quiet --match type=error monitor
+StandardOutput=file:/run/agama/dbus.log
+Restart=always
+User=root
+
+[Install]
+WantedBy=default.target

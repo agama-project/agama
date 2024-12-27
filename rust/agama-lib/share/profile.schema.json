@@ -17,7 +17,7 @@
           "description": "User-defined scripts to run before the installation starts",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/script"
+            "$ref": "#/$defs/preScript"
           }
         },
         "post": {
@@ -25,8 +25,26 @@
           "description": "User-defined scripts to run after the installation finishes",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/script"
+            "$ref": "#/$defs/postScript"
           }
+        },
+        "init": {
+          "title": "Init scripts",
+          "description": "User-defined scripts to run booting the installed system",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/initScript"
+          }
+        }
+      }
+    },
+    "bootloader": {
+      "title": "Bootloader settings",
+      "type": "object",
+      "properties": {
+        "stopOnBootMenu": {
+          "title": "Specify if bootloader should stop on menu during boot.",
+          "type": "boolean"
         }
       }
     },
@@ -87,8 +105,8 @@
                 "title": "The name of the network interface bound to this connection",
                 "type": "string"
               },
-              "mac-address": {
-                "title": "Custom mac-address",
+              "macAddress": {
+                "title": "Custom MAC address",
                 "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
                 "type": "string"
               },
@@ -140,8 +158,19 @@
                   "additionalProperties": false
                 }
               },
-              "ignore_auto_dns": {
+              "ignoreAutoDns": {
                 "description": "Whether DNS options provided via DHCP are used or not",
+                "type": "boolean"
+              },
+              "status": {
+                "title": "Connection status",
+                "description": "The status of the connection",
+                "type": "string",
+                "enum": ["up", "down", "removed"]
+              },
+              "autoconnect": {
+                "title": "Auto-connected",
+                "description": "Whether the connection should be automatically connected",
                 "type": "boolean"
               },
               "wireless": {
@@ -297,30 +326,13 @@
                     "items": {
                       "title": "List of EAP methods used",
                       "type": "string",
-                      "enum": [
-                        "leap",
-                        "md5",
-                        "tls",
-                        "peap",
-                        "ttls",
-                        "pwd",
-                        "fast"
-                      ]
+                      "enum": ["leap", "md5", "tls", "peap", "ttls", "pwd", "fast"]
                     }
                   },
                   "phase2Auth": {
                     "title": "Phase 2 inner auth method",
                     "type": "string",
-                    "enum": [
-                      "pap",
-                      "chap",
-                      "mschap",
-                      "mschapv2",
-                      "gtc",
-                      "otp",
-                      "md5",
-                      "tls"
-                    ]
+                    "enum": ["pap", "chap", "mschap", "mschapv2", "gtc", "otp", "md5", "tls"]
                   },
                   "identity": {
                     "title": "Identity string, often for example the user's login name",
@@ -390,12 +402,17 @@
           "examples": ["jane.doe"]
         },
         "password": {
-          "title": "User password (plain text or encrypted depending on the \"passwordEncrypted\" field)",
+          "title": "User password (plain text or hashed depending on the \"hashedPassword\" field)",
           "type": "string",
           "examples": ["nots3cr3t"]
         },
-        "passwordEncrypted": {
-          "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
+        "hashedPassword": {
+          "title": "Flag for hashed password (true) or plain text password (false or not defined)",
+          "type": "boolean"
+        },
+        "autologin": {
+          "title": "Automatic user login",
+          "description": "Whether the user should be automatically logged in (only relevant in desktop systems)",
           "type": "boolean"
         }
       },
@@ -407,11 +424,11 @@
       "additionalProperties": false,
       "properties": {
         "password": {
-          "title": "Root password (plain text or encrypted depending on the \"passwordEncrypted\" field)",
+          "title": "Root password (plain text or hashed depending on the \"hashedPassword\" field)",
           "type": "string"
         },
-        "passwordEncrypted": {
-          "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
+        "hashedPassword": {
+          "title": "Flag for hashed password (true) or plain text password (false or not defined)",
           "type": "boolean"
         },
         "sshPublicKey": {
@@ -453,8 +470,57 @@
     }
   },
   "$defs": {
-    "script": {
-      "title": "User-defined installation script",
+    "preScript": {
+      "title": "User-defined installation script that runs before the installation starts",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Script name, to be used as file name",
+          "type": "string"
+        },
+        "body": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang",
+          "type": "string"
+        },
+        "url": {
+          "title": "Script URL",
+          "description": "URL to fetch the script from"
+        }
+      },
+      "required": ["name"],
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+    },
+    "postScript": {
+      "title": "User-defined installation script that runs after the installation finishes",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Script name, to be used as file name",
+          "type": "string"
+        },
+        "body": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang",
+          "type": "string"
+        },
+        "url": {
+          "title": "Script URL",
+          "description": "URL to fetch the script from"
+        },
+        "chroot": {
+          "title": "Whether it should run in the installed system using a chroot environment",
+          "description": "whether to chroot to the target system (default: yes) or not",
+          "type": "boolean"
+        }
+      },
+      "required": ["name"],
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+    },
+    "initScript": {
+      "title": "User-defined installation script that runs during the first boot of the target system, once the installation is finished",
       "type": "object",
       "additionalProperties": false,
       "properties": {

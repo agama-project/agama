@@ -23,13 +23,11 @@
 use super::{auth::AuthError, state::ServiceState};
 use agama_lib::auth::{AuthToken, TokenClaims};
 use axum::{
-    body::Body,
     extract::{Query, State},
     http::{header, HeaderMap, HeaderValue, StatusCode},
     response::IntoResponse,
     Json,
 };
-use axum_extra::extract::cookie::CookieJar;
 use pam::Client;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -159,62 +157,4 @@ pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
 /// * `token`: authentication token.
 fn auth_cookie_from_token(token: &AuthToken) -> String {
     format!("agamaToken={}; HttpOnly", &token.to_string())
-}
-
-// builds a response tuple for translation redirection
-fn redirect_to_file(file: &str) -> (StatusCode, HeaderMap, Body) {
-    tracing::info!("Redirecting to translation file {}", file);
-
-    let mut response_headers = HeaderMap::new();
-    // translation found, redirect to the real file
-    response_headers.insert(
-        header::LOCATION,
-        // if the file exists then the name is a valid value and unwrapping is safe
-        HeaderValue::from_str(file).unwrap(),
-    );
-
-    (
-        StatusCode::TEMPORARY_REDIRECT,
-        response_headers,
-        Body::empty(),
-    )
-}
-
-// handle the /po.js request
-// the requested language (locale) is sent in the "agamaLang" HTTP cookie
-// this reimplements the Cockpit translation support
-pub async fn po(State(state): State<ServiceState>, jar: CookieJar) -> impl IntoResponse {
-    if let Some(cookie) = jar.get("agamaLang") {
-        tracing::info!("Language cookie: {}", cookie.value());
-        // try parsing the cookie
-        if let Some((lang, region)) = cookie.value().split_once('-') {
-            // first try language + country
-            let target_file = format!("po.{}_{}.js", lang, region.to_uppercase());
-            if state.public_dir.join(&target_file).exists() {
-                return redirect_to_file(&target_file);
-            } else {
-                // then try the language only
-                let target_file = format!("po.{}.js", lang);
-                if state.public_dir.join(&target_file).exists() {
-                    return redirect_to_file(&target_file);
-                };
-            }
-        } else {
-            // use the cookie as is
-            let target_file = format!("po.{}.js", cookie.value());
-            if state.public_dir.join(&target_file).exists() {
-                return redirect_to_file(&target_file);
-            }
-        }
-    }
-
-    tracing::info!("Translation not found");
-    // fallback, return empty javascript translations if the language is not supported
-    let mut response_headers = HeaderMap::new();
-    response_headers.insert(
-        header::CONTENT_TYPE,
-        HeaderValue::from_static("text/javascript"),
-    );
-
-    (StatusCode::OK, response_headers, Body::empty())
 }

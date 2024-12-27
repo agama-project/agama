@@ -28,6 +28,7 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { compact, useDebounce } from "~/utils";
 import {
+  SizeMethod,
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
   mountFilesystem,
@@ -37,7 +38,6 @@ import {
   volumeLabel,
 } from "~/components/storage/utils";
 import { Volume } from "~/types/storage";
-import { SizeMethod } from "~/components/storage/utils";
 
 type VolumeFormState = {
   volume: Volume;

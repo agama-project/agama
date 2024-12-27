@@ -38,11 +38,11 @@
 //! D-Bus interfaces depending on its type:
 //!
 //! * `org.opensuse.Agama1.Network.Connection` exposes common information across all connection
-//! types.
-//! * `org.opensuse.Agama1.Network.Connection.IPv4` includes IPv4 settings, like the configuration method
-//! (DHCP, manual, etc.), IP addresses, name servers and so on.
+//!   types.
+//! * `org.opensuse.Agama1.Network.Connection.IPv4` includes IPv4 settings, like the configuration
+//!   method (DHCP, manual, etc.), IP addresses, name servers and so on.
 //! * `org.opensuse.Agama1.Network.Connection.Wireless` exposes the configuration for wireless
-//! connections.
+//!   connections.
 //!
 //! Analogous to the devices API, there is a special `/org/opensuse/Agama1/Network/connections`
 //! object that implements a few methods that are related to the collection of connections like
@@ -55,7 +55,7 @@
 //! them in mind:
 //!
 //! * The devices list does not reflect the changes in the system. For instance, it is not updated
-//! when a device is connected to the system.
+//!   when a device is connected to the system.
 //! * Many configuration types are still missing (bridges, bonding, etc.).
 
 mod action;

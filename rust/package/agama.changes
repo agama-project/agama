@@ -1,4 +1,87 @@
 -------------------------------------------------------------------
+Fri Dec 20 12:17:26 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add bootloader.stopOnBootMenu section to profile to allow stop
+  during boot for openQA (gh#agama-project/agama#1840)
+
+-------------------------------------------------------------------
+Thu Dec 19 11:39:14 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix several validation issues (gh#agama-project/agama#1845).
+
+-------------------------------------------------------------------
+Wed Dec 18 12:32:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new AGAMA_LOG environment variable to control what to
+  log (gh#agama-project/agama#1843).
+
+-------------------------------------------------------------------
+Wed Dec 18 10:11:44 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add jsonnet as a BuildRequires dependency because it is needed
+  when running tests (gh#agama-project/agama#1842).
+
+-------------------------------------------------------------------
+Thu Dec 12 16:42:18 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix profile URL handling (bsc#1234362):
+  - Follow redirections.
+  - Determine the file format from the content instead of the
+    extension. It does not apply to AutoYaST profiles, where it still
+    uses the extension in the URL for backward compatibility.
+
+-------------------------------------------------------------------
+Tue Dec  3 12:58:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not refer to the agama-dbus-monitor because it is part of the
+  Ruby package (gh#agama-project/agama#1805).
+
+-------------------------------------------------------------------
+Mon Dec  2 11:29:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Upgrade rustc dependency to version 1.81 because it is needed by
+  zbus 5 (gh#agama-project/agama#1797).
+
+-------------------------------------------------------------------
+Sun Dec  1 21:53:21 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Rename flag to set password as encrypted
+  (gh#agama-project/agama#1787).
+
+-------------------------------------------------------------------
+Fri Nov 29 12:14:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for running user-defined post-scripts in a chroot
+ (gh#agama-project/agama#1792).
+
+-------------------------------------------------------------------
+Fri Nov 29 08:57:19 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- several improvements for CLI. agama logs store:
+  - collects logs of agama-web-server service
+  - collects list of installed packages (e.g. .packages.root or
+    rpm -qa)
+  - do not add into the archive empty files when log command
+    returns nothing
+  - do not explicitly set archive permissions on client side
+  - do not hide backend errors (e.g. in case of invalid auth token)
+- added service for monitoring Agama's D-Bus bus which stores
+  errors into a log.
+
+-------------------------------------------------------------------
+Thu Nov 28 15:58:59 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Drop the handler for the "po.js" path in the HTTP server,
+  the web frontend now uses dynamic imports for loading the
+  translation files (gh#agama-project/agama#1777)
+
+-------------------------------------------------------------------
+Thu Nov 28 11:07:58 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for auto-installation "init" scripts
+  (gh#agama-project/agama#1788).
+
+-------------------------------------------------------------------
 Mon Nov 25 19:51:20 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the default path of the D-Bus Questions object and the ISCSI

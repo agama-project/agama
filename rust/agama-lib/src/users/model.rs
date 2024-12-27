@@ -35,6 +35,6 @@ pub struct RootPatchSettings {
     pub sshkey: Option<String>,
     /// empty string here means remove password for root
     pub password: Option<String>,
-    /// specify if patched password is provided in encrypted form
-    pub password_encrypted: Option<bool>,
+    /// specify if patched password is provided in plain text (default) or hashed
+    pub hashed_password: Option<bool>,
 }

@@ -18,64 +18,78 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use crate::{
+    base_http_client::BaseHTTPClient,
+    error::ServiceError,
+    software::{model::ResolvableType, SoftwareHTTPClient},
+};
 
-use super::{client::ScriptsClient, settings::ScriptsConfig, Script, ScriptConfig, ScriptsGroup};
+use super::{client::ScriptsClient, settings::ScriptsConfig, Script, ScriptError};
 
 pub struct ScriptsStore {
-    client: ScriptsClient,
+    scripts: ScriptsClient,
+    software: SoftwareHTTPClient,
 }
 
 impl ScriptsStore {
     pub fn new(client: BaseHTTPClient) -> Self {
         Self {
-            client: ScriptsClient::new(client),
+            scripts: ScriptsClient::new(client.clone()),
+            software: SoftwareHTTPClient::new(client),
         }
     }
 
     pub async fn load(&self) -> Result<ScriptsConfig, ServiceError> {
-        let scripts = self.client.scripts().await?;
+        let scripts = self.scripts.scripts().await?;
 
         Ok(ScriptsConfig {
-            pre: Self::to_script_configs(&scripts, ScriptsGroup::Pre),
-            post: Self::to_script_configs(&scripts, ScriptsGroup::Post),
+            pre: Self::scripts_by_type(&scripts),
+            post: Self::scripts_by_type(&scripts),
+            init: Self::scripts_by_type(&scripts),
         })
     }
 
     pub async fn store(&self, settings: &ScriptsConfig) -> Result<(), ServiceError> {
-        self.client.delete_scripts().await?;
+        self.scripts.delete_scripts().await?;
 
-        for pre in &settings.pre {
-            self.client
-                .add_script(&Self::to_script(pre, ScriptsGroup::Pre))
-                .await?;
+        if let Some(scripts) = &settings.pre {
+            for pre in scripts {
+                self.scripts.add_script(pre.clone().into()).await?;
+            }
         }
 
-        for post in &settings.post {
-            self.client
-                .add_script(&Self::to_script(post, ScriptsGroup::Post))
-                .await?;
+        if let Some(scripts) = &settings.post {
+            for post in scripts {
+                self.scripts.add_script(post.clone().into()).await?;
+            }
         }
 
-        // TODO: find a better play to run the scripts (before probing).
-        self.client.run_scripts(ScriptsGroup::Pre).await?;
+        let mut packages = vec![];
+        if let Some(scripts) = &settings.init {
+            for init in scripts {
+                self.scripts.add_script(init.clone().into()).await?;
+            }
+            packages.push("agama-scripts");
+        }
+        self.software
+            .set_resolvables("agama-scripts", ResolvableType::Package, &packages, true)
+            .await?;
 
         Ok(())
     }
 
-    fn to_script(config: &ScriptConfig, group: ScriptsGroup) -> Script {
-        Script {
-            name: config.name.clone(),
-            source: config.source.clone(),
-            group,
-        }
-    }
-
-    fn to_script_configs(scripts: &[Script], group: ScriptsGroup) -> Vec<ScriptConfig> {
-        scripts
+    fn scripts_by_type<T>(scripts: &[Script]) -> Option<Vec<T>>
+    where
+        T: TryFrom<Script, Error = ScriptError> + Clone,
+    {
+        let scripts: Vec<T> = scripts
             .iter()
-            .filter(|s| s.group == group)
-            .map(|s| s.into())
-            .collect()
+            .cloned()
+            .filter_map(|s| s.try_into().ok())
+            .collect();
+        if scripts.is_empty() {
+            return None;
+        }
+        Some(scripts)
     }
 }

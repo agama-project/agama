@@ -1,4 +1,48 @@
 -------------------------------------------------------------------
+Fri Dec 20 12:53:41 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Fix netmask handling to avoid a silent connection form error
+  (gh#agama-project/agama#1846).
+
+-------------------------------------------------------------------
+Tue Dec 10 14:43:08 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Restore the rendering of questions throughout the app
+  (gh#agama-project/agama#1820)
+
+-------------------------------------------------------------------
+Mon Dec  9 14:10:44 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Simplify screen for enforcing root password
+  (gh#agama-project/agama#1821, gh#agama-project#agama#1787).
+
+-------------------------------------------------------------------
+Sun Dec  1 17:14:04 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not crash in the InstallationFinished page when running an
+  unattended installation with an storage section defined in the
+  profile (gh#agama-project/agama#1793).
+
+-------------------------------------------------------------------
+Thu Nov 28 14:34:49 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Request a root authentication method after selecting a product
+  (gh#agama-project#agama#1787).
+
+-------------------------------------------------------------------
+Tue Nov 26 09:30:09 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Use dynamic imports for loading the translation files
+  (gh#agama-project/agama#1777)
+
+-------------------------------------------------------------------
+Mon Nov 25 11:12:36 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Unify Install and "warning" header buttons.
+- Move installation issues to a drawer shown when Install button
+  is clicked (gh#agama-project#agama#1778).
+
+-------------------------------------------------------------------
 Fri Nov 15 16:48:44 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Set the plain text password flag when setting the root and first

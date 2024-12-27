@@ -21,76 +21,12 @@
  */
 
 import React from "react";
-import {
-  Grid,
-  GridItem,
-  Hint,
-  HintBody,
-  NotificationDrawer,
-  NotificationDrawerBody,
-  NotificationDrawerList,
-  NotificationDrawerListItem,
-  NotificationDrawerListItemBody,
-  NotificationDrawerListItemHeader,
-  Stack,
-} from "@patternfly/react-core";
-import { Link } from "react-router-dom";
+import { Grid, GridItem, Hint, HintBody, Stack } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
-import { useAllIssues } from "~/queries/issues";
-import { IssuesList as IssuesListType, IssueSeverity } from "~/types/issues";
-
-const IssuesList = ({ issues }: { issues: IssuesListType }) => {
-  const scopeHeaders = {
-    users: _("Users"),
-    storage: _("Storage"),
-    software: _("Software"),
-  };
-
-  const { issues: issuesByScope } = issues;
-  const list = [];
-  Object.entries(issuesByScope).forEach(([scope, issues], idx) => {
-    issues.forEach((issue, subIdx) => {
-      const variant = issue.severity === IssueSeverity.Error ? "warning" : "info";
-
-      const link = (
-        <NotificationDrawerListItem key={`${idx}-${subIdx}`} variant={variant} isHoverable={false}>
-          <NotificationDrawerListItemHeader
-            title={scopeHeaders[scope]}
-            variant={variant}
-            headingLevel="h4"
-          />
-          <NotificationDrawerListItemBody>
-            <Link to={`/${scope}`}>{issue.description}</Link>
-          </NotificationDrawerListItemBody>
-        </NotificationDrawerListItem>
-      );
-      list.push(link);
-    });
-  });
-
-  return (
-    <NotificationDrawer>
-      <NotificationDrawerBody>
-        <NotificationDrawerList>{list}</NotificationDrawerList>
-      </NotificationDrawerBody>
-    </NotificationDrawer>
-  );
-};
-
-const IssuesSection = ({ issues }: { issues: IssuesListType }) => {
-  return (
-    <Page.Section
-      title={_("Installation blocking issues")}
-      description={_("Before installing, please check the following problems.")}
-    >
-      <IssuesList issues={issues} />
-    </Page.Section>
-  );
-};
 
 const OverviewSection = () => (
   <Page.Section
@@ -108,8 +44,6 @@ const OverviewSection = () => (
 );
 
 export default function OverviewPage() {
-  const issues = useAllIssues();
-
   return (
     <Page>
       <Page.Content>
@@ -123,14 +57,9 @@ export default function OverviewPage() {
               </HintBody>
             </Hint>
           </GridItem>
-          <GridItem sm={12} xl={issues.isEmpty ? 12 : 6}>
+          <GridItem sm={12}>
             <OverviewSection />
           </GridItem>
-          {!issues.isEmpty && (
-            <GridItem sm={12} xl={6}>
-              <IssuesSection issues={issues} />
-            </GridItem>
-          )}
         </Grid>
       </Page.Content>
     </Page>

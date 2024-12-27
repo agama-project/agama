@@ -37,13 +37,13 @@ use agama_lib::{
     error::ServiceError,
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
-        model::{RegistrationInfo, RegistrationParams, SoftwareConfig},
+        model::{RegistrationInfo, RegistrationParams, ResolvableParams, SoftwareConfig},
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
     },
 };
 use axum::{
-    extract::State,
+    extract::{Path, State},
     http::StatusCode,
     response::IntoResponse,
     routing::{get, post, put},
@@ -225,6 +225,7 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
+        .route("/resolvables/:id", put(set_resolvables))
         .merge(status_router)
         .merge(progress_router)
         .nest("/issues/product", product_issues)
@@ -461,5 +462,29 @@ async fn proposal(State(state): State<SoftwareState<'_>>) -> Result<Json<Softwar
 )]
 async fn probe(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, Error> {
     state.software.probe().await?;
+    Ok(Json(()))
+}
+
+/// Updates the resolvables list with the given `id`.
+#[utoipa::path(
+    put,
+    path = "/resolvables/:id",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "Read repositories data"),
+        (status = 400, description = "The D-Bus service could not perform the action
+")
+    )
+)]
+async fn set_resolvables(
+    State(state): State<SoftwareState<'_>>,
+    Path(id): Path<String>,
+    Json(params): Json<ResolvableParams>,
+) -> Result<Json<()>, Error> {
+    let names: Vec<_> = params.names.iter().map(|n| n.as_str()).collect();
+    state
+        .software
+        .set_resolvables(&id, params.r#type, &names, params.optional)
+        .await?;
     Ok(Json(()))
 }

@@ -37,15 +37,15 @@ describe Agama::Users do
   describe "#assign_root_password" do
     let(:root_user) { instance_double(Y2Users::User) }
 
-    context "when the password is encrypted" do
-      it "sets the password as encrypted" do
-        subject.assign_root_password("encrypted", true)
+    context "when the password is hashed" do
+      it "sets the password as hashed" do
+        subject.assign_root_password("hashed", true)
         root_user = users_config.users.root
-        expect(root_user.password).to eq(Y2Users::Password.create_encrypted("encrypted"))
+        expect(root_user.password).to eq(Y2Users::Password.create_encrypted("hashed"))
       end
     end
 
-    context "when the password is not encrypted" do
+    context "when the password is not hashed" do
       it "sets the password in clear text" do
         subject.assign_root_password("12345", false)
         root_user = users_config.users.root

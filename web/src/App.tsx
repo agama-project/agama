@@ -23,8 +23,7 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { ServerError } from "~/components/core";
-import { Loading, PlainLayout } from "~/components/layout";
-import { Questions } from "~/components/questions";
+import { Loading } from "~/components/layout";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "~/queries/software";
@@ -32,8 +31,10 @@ import { useL10nConfigChanges } from "~/queries/l10n";
 import { useIssuesChanges } from "~/queries/issues";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 import { useDeprecatedChanges } from "~/queries/storage";
-import { ROOT, PRODUCT } from "~/routes/paths";
+import { useRootUser } from "~/queries/users";
+import { ROOT, PRODUCT, USER } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
+import { isEmpty } from "~/utils";
 
 /**
  * Main application component.
@@ -44,6 +45,7 @@ function App() {
   const { connected, error } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
+  const { password: isRootPasswordDefined, sshkey: rootSSHKey } = useRootUser();
   useL10nConfigChanges();
   useProductChanges();
   useIssuesChanges();
@@ -51,12 +53,7 @@ function App() {
   useDeprecatedChanges();
 
   const Content = () => {
-    if (error)
-      return (
-        <PlainLayout>
-          <ServerError />
-        </PlainLayout>
-      );
+    if (error) return <ServerError />;
 
     if (phase === InstallationPhase.Install && isBusy) {
       return <Navigate to={ROOT.installationProgress} />;
@@ -66,14 +63,10 @@ function App() {
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected) return <Loading />;
+    if (!products || !connected) return <Loading useLayout />;
 
     if (phase === InstallationPhase.Startup && isBusy) {
-      return (
-        <PlainLayout>
-          <Loading />
-        </PlainLayout>
-      );
+      return <Loading useLayout />;
     }
 
     if (selectedProduct === undefined && location.pathname !== PRODUCT.root) {
@@ -84,17 +77,22 @@ function App() {
       return <Navigate to={PRODUCT.progress} />;
     }
 
+    if (
+      phase === InstallationPhase.Config &&
+      !isBusy &&
+      !isRootPasswordDefined &&
+      isEmpty(rootSSHKey) &&
+      location.pathname !== USER.rootUser.edit
+    ) {
+      return <Navigate to={USER.rootUser.edit} state={{ from: location.pathname }} />;
+    }
+
     return <Outlet />;
   };
 
   if (!language) return null;
 
-  return (
-    <>
-      <Content />
-      <Questions />
-    </>
-  );
+  return <Content />;
 }
 
 export default App;

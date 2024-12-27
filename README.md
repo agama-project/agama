@@ -67,8 +67,9 @@ might want to access remotely to the installer. If you know the IP address of th
 need to point your browser to `https://$IP`.
 
 For the case you do not know the address, or just for convenience, the Live ISO is configured to use
-mDNS (sometimes called Avahi, Zeroconf, Bonjour) for hostname resolution. Therefore, connecting to
-`https://agama.local` should do the trick.
+[Multicast DNS](https://en.wikipedia.org/wiki/Multicast_DNS) (sometimes called mDNS, Avahi,
+Zeroconf, Bonjour) for hostname resolution. Therefore, connecting to `https://agama.local` should do
+the trick.
 
 > [!WARNING]
 > Do not use the `.local` hostnames in untrusted networks (like public WiFi networks, shared
@@ -76,15 +77,15 @@ mDNS (sometimes called Avahi, Zeroconf, Bonjour) for hostname resolution. Theref
 > hostname resolutions and point you to a wrong Agama instance which could for example steal your
 > root password!
 
-If you have troubles or you want to know more about this feature, check our
-[Avahi/mDNS](./doc/avahi.md) documentation.
+If you have troubles or you want to know more about this feature, check our [Remote
+access](https://agama-project.github.io/docs/user/remote) documentation.
 
 ## Other Resources
 
 - If you want to know how Agama works, you should read about
-  [Agama's architecture](/doc/architecture.md)
+  [Agama's architecture](https://agama-project.github.io/docs/devel/architecture)
 - If you would like to [contribute](#how-to-contribute), you might be interested in:
-  - [Running Agama from sources](./doc/running.md).
+  - [Running Agama from sources](https://agama-project.github.io/docs/devel/running).
   - [Working with Agama's web server](./rust/WEB-SERVER.md).
   - [Working with Agama's web UI](./web/README.md).
 - You can check the overall status of the project through the [status page](/STATUS.md).
@@ -95,3 +96,15 @@ If you want to contribute to Agama, then please open a pull request or report an
 get involved in [our discussions](https://github.com/openSUSE/agama/discussions).
 
 For more details, please read the [contributing](CONTRIBUTING.md) guidelines.
+
+### Translators
+
+Thank you for translating Agama to your language!
+
+If something is broken about the translations, see the detailed
+[Agama i18n workflow and internals][i18n] documentation.
+
+See also the [openSUSE Translation][trans-ml] mailing list and its archives.
+
+[i18n]: https://agama-project.github.io/docs/devel/i18n
+[trans-ml]: https://lists.opensuse.org/manage/lists/translation.lists.opensuse.org/

@@ -45,9 +45,10 @@ import { useProduct } from "~/queries/software";
 import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
-import { InstallButton, InstallerOptions, IssuesLink } from "~/components/core";
-import { useLocation } from "react-router-dom";
-import { ROOT as PATHS } from "~/routes/paths";
+import { Route } from "~/types/routes";
+import { InstallButton, InstallerOptions } from "~/components/core";
+import { useLocation, useMatches } from "react-router-dom";
+import { ROOT } from "~/routes/paths";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -58,6 +59,8 @@ export type HeaderProps = {
   showInstallerOptions?: boolean;
   /** The background color for the top bar */
   background?: MastheadProps["backgroundColor"];
+  /** Callback to be triggered for toggling the IssuesDrawer visibility */
+  toggleIssuesDrawer?: () => void;
 };
 
 const OptionsDropdown = ({ showInstallerOptions }) => {
@@ -88,7 +91,7 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         )}
       >
         <DropdownList>
-          <DropdownItem key="download-logs" to={PATHS.logs} download="agama-logs.tar.gz">
+          <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
             {_("Download logs")}
           </DropdownItem>
           {showInstallerOptions && (
@@ -102,10 +105,12 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         </DropdownList>
       </Dropdown>
 
-      <InstallerOptions
-        isOpen={isInstallerOptionsOpen}
-        onClose={() => setIsInstallerOptionsOpen(false)}
-      />
+      {showInstallerOptions && (
+        <InstallerOptions
+          isOpen={isInstallerOptionsOpen}
+          onClose={() => setIsInstallerOptionsOpen(false)}
+        />
+      )}
     </>
   );
 };
@@ -120,10 +125,15 @@ export default function Header({
   showSidebarToggle = true,
   showProductName = true,
   background = "dark",
+  toggleIssuesDrawer,
 }: HeaderProps): React.ReactNode {
   const location = useLocation();
   const { selectedProduct } = useProduct();
   const { phase } = useInstallerStatus({ suspense: true });
+  const routeMatches = useMatches() as Route[];
+  const currentRoute = routeMatches.at(-1);
+  // TODO: translate title
+  const title = (showProductName && selectedProduct?.name) || currentRoute?.handle?.title;
 
   const showInstallerOptions =
     phase !== InstallationPhase.Install &&
@@ -143,16 +153,13 @@ export default function Header({
           </PageToggleButton>
         </MastheadToggle>
       )}
-      <MastheadMain>
-        {showProductName && <MastheadBrand component="h1">{selectedProduct.name}</MastheadBrand>}
-      </MastheadMain>
+      <MastheadMain>{title && <MastheadBrand component="h1">{title}</MastheadBrand>}</MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem spacer={{ default: "spacerNone" }}>
-                <IssuesLink variant="warning" isInline />
-                <InstallButton />
+              <ToolbarItem spacer={{ default: "spacerSm" }}>
+                <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
               <ToolbarItem>
                 <OptionsDropdown showInstallerOptions={showInstallerOptions} />

@@ -9,6 +9,6 @@ members = [
 resolver = "2"
 
 [workspace.package]
-# IpAddr::to_canonical is stable since 1.75
-rust-version = "1.75"
+# required by zbus 5
+rust-version = "1.81"
 edition = "2021"

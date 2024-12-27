@@ -21,7 +21,7 @@
 //! Representation of the network configuration
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
-//! agnostic from the real network service (e.g., NetworkManager).
+//!   agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
 use agama_lib::network::settings::{
     BondSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings,

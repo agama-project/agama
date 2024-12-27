@@ -4,10 +4,9 @@
   "entryPointStrategy": "expand",
   "exclude": ["./src/lib"],
   "excludeNotDocumented": true,
-  "plugin": ["typedoc-plugin-external-module-map", "typedoc-plugin-merge-modules"],
+  "plugin": ["typedoc-plugin-merge-modules"],
   "excludeReferences": true,
   "mergeModulesMergeMode": "module-category",
-  "external-modulemap": [".*/src/(client)/", ".*/src/components/([\\w\\-_]+)/"],
   "sort": ["alphabetical", "visibility"],
   "navigation": {
     "includeCategories": true,

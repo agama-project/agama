@@ -65,6 +65,15 @@
     </method>
     <property type="b" name="DeprecatedSystem" access="read"/>
   </interface>
+  <interface name="org.opensuse.Agama.Storage1.Bootloader">
+    <method name="SetConfig">
+      <arg name="serialized_config" direction="in" type="s"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="GetConfig">
+      <arg name="serialized_config" direction="out" type="s"/>
+    </method>
+  </interface>
   <interface name="org.opensuse.Agama.Storage1.Devices">
     <property type="aa{sv}" name="Actions" access="read"/>
   </interface>

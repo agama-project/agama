@@ -21,7 +21,7 @@
 use std::io;
 use thiserror::Error;
 
-use crate::transfer::TransferError;
+use crate::utils::TransferError;
 
 #[derive(Error, Debug)]
 pub enum ScriptError {
@@ -29,4 +29,6 @@ pub enum ScriptError {
     Unreachable(#[from] TransferError),
     #[error("I/O error: '{0}'")]
     InputOutputError(#[from] io::Error),
+    #[error("Wrong script type")]
+    WrongScriptType,
 }
