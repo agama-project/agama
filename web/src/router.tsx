@@ -99,7 +99,6 @@ const protectedRoutes = () => [
 const router = () =>
   createHashRouter([
     {
-      exact: true,
       path: PATHS.login,
       element: (
         <PlainLayout mountHeader={false}>
