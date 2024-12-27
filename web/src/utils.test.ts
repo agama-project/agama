@@ -28,7 +28,6 @@ import {
   noop,
   toValidationError,
   localConnection,
-  remoteConnection,
   isObject,
   slugify,
 } from "./utils";
@@ -43,7 +42,7 @@ describe("noop", () => {
 describe("partition", () => {
   it("returns two groups of elements that do and do not satisfy provided filter", () => {
     const numbers = [1, 2, 3, 4, 5, 6];
-    const [odd, even] = partition(numbers, (number) => number % 2);
+    const [odd, even] = partition(numbers, (number) => number % 2 !== 0);
 
     expect(odd).toEqual([1, 3, 5]);
     expect(even).toEqual([2, 4, 6]);
@@ -126,26 +125,6 @@ describe("localConnection", () => {
   });
 });
 
-describe("remoteConnection", () => {
-  describe("when the page URL is " + localURL, () => {
-    it("returns true", () => {
-      expect(remoteConnection(localURL)).toEqual(false);
-    });
-  });
-
-  describe("when the page URL is " + localURL2, () => {
-    it("returns true", () => {
-      expect(remoteConnection(localURL2)).toEqual(false);
-    });
-  });
-
-  describe("when the page URL is " + remoteURL, () => {
-    it("returns false", () => {
-      expect(remoteConnection(remoteURL)).toEqual(true);
-    });
-  });
-});
-
 describe("isObject", () => {
   it("returns true when called with an object", () => {
     expect(isObject({ dummy: "object" })).toBe(true);
@@ -156,7 +135,7 @@ describe("isObject", () => {
   });
 
   it("returns false when called with undefined", () => {
-    expect(isObject()).toBe(false);
+    expect(isObject(undefined)).toBe(false);
   });
 
   it("returns false when called with a string", () => {

@@ -28,8 +28,8 @@ import { useEffect, useRef, useCallback, useState } from "react";
  *
  * Borrowed from https://dev.to/alesm0101/how-to-check-if-a-value-is-an-object-in-javascript-3pin
  *
- * @param {any} value - the value to be checked
- * @return {boolean} true when given value is an object; false otherwise
+ * @param value - the value to be checked
+ * @return true when given value is an object; false otherwise
  */
 const isObject = (value) =>
   typeof value === "object" &&
@@ -43,18 +43,18 @@ const isObject = (value) =>
 /**
  * Whether given object is empty or not
  *
- * @param {object} value - the value to be checked
- * @return {boolean} true when given value is an empty object; false otherwise
+ * @param value - the value to be checked
+ * @return true when given value is an empty object; false otherwise
  */
-const isObjectEmpty = (value) => {
+const isObjectEmpty = (value: object) => {
   return Object.keys(value).length === 0;
 };
 
 /**
  * Whether given value is empty or not
  *
- * @param {object} value - the value to be checked
- * @return {boolean} false if value is a function, a not empty object, or a not
+ * @param value - the value to be checked
+ * @return false if value is a function, a not empty object, or a not
  *                   empty string; true otherwise
  */
 const isEmpty = (value) => {
@@ -84,12 +84,12 @@ const isEmpty = (value) => {
 /**
  * Returns an empty function useful to be used as a default callback.
  *
- * @return {function} empty function
+ * @return empty function
  */
 const noop = () => undefined;
 
 /**
- * @return {function} identity function
+ * @return identity function
  */
 const identity = (i) => i;
 
@@ -97,11 +97,14 @@ const identity = (i) => i;
  * Returns a new array with a given collection split into two groups, the first holding elements
  * satisfying the filter and the second with those which do not.
  *
- * @param {Array} collection - the collection to be filtered
- * @param {function} filter - the function to be used as filter
- * @return {Array[]} a pair of arrays, [passing, failing]
+ * @param collection - the collection to be filtered
+ * @param filter - the function to be used as filter
+ * @return a pair of arrays, [passing, failing]
  */
-const partition = (collection, filter) => {
+const partition = <T>(
+  collection: Array<T>,
+  filter: (element: T) => boolean,
+): [Array<T>, Array<T>] => {
   const pass = [];
   const fail = [];
 
@@ -114,23 +117,17 @@ const partition = (collection, filter) => {
 
 /**
  * Generates a new array without null and undefined values.
- *
- * @param {Array} collection
- * @returns {Array}
  */
-function compact(collection) {
+const compact = <T>(collection: Array<T>) => {
   return collection.filter((e) => e !== null && e !== undefined);
-}
+};
 
 /**
  * Generates a new array without duplicates.
- *
- * @param {Array} collection
- * @returns {Array}
  */
-function uniq(collection) {
+const uniq = <T>(collection: Array<T>) => {
   return [...new Set(collection)];
-}
+};
 
 /**
  * Simple utility function to help building className conditionally
@@ -141,12 +138,12 @@ function uniq(collection) {
  *
  * @todo Use https://github.com/JedWatson/classnames instead?
  *
- * @param {...*} classes - CSS classes to join
- * @returns {String} - CSS classes joined together after ignoring falsy values
+ * @param classes - CSS classes to join
+ * @returns CSS classes joined together after ignoring falsy values
  */
-function classNames(...classes) {
+const classNames = (...classes) => {
   return classes.filter((item) => !!item).join(" ");
-}
+};
 
 /**
  * Convert any string into a slug
@@ -157,10 +154,10 @@ function classNames(...classes) {
  * slugify("Agama! / Network 1");
  * // returns "agama-network-1"
  *
- * @param {string} input - the string to slugify
- * @returns {string} - the slug
+ * @param input - the string to slugify
+ * @returns the slug
  */
-function slugify(input) {
+const slugify = (input: string) => {
   if (!input) return "";
 
   return (
@@ -177,26 +174,24 @@ function slugify(input) {
       // replace multiple spaces or hyphens with a single hyphen
       .replace(/[\s-]+/g, "-")
   );
-}
+};
 
-/**
- * @typedef {Object} cancellableWrapper
- * @property {Promise} promise - Cancellable promise
- * @property {function} cancel - Function for canceling the promise
- */
+type CancellableWrapper<T> = {
+  /** Cancellable promise */
+  promise: Promise<T>;
+  /** Function for cancelling the promise */
+  cancel: Function;
+};
 
 /**
  * Creates a wrapper object with a cancellable promise and a function for canceling the promise
  *
  * @see useCancellablePromise
- *
- * @param {Promise} promise
- * @returns {cancellableWrapper}
  */
-function makeCancellable(promise) {
+const makeCancellable = <T>(promise: Promise<T>): CancellableWrapper<T> => {
   let isCanceled = false;
 
-  const cancellablePromise = new Promise((resolve, reject) => {
+  const cancellablePromise: Promise<T> = new Promise((resolve, reject) => {
     promise
       .then((value) => !isCanceled && resolve(value))
       .catch((error) => !isCanceled && reject(error));
@@ -208,7 +203,7 @@ function makeCancellable(promise) {
       isCanceled = true;
     },
   };
-}
+};
 
 /**
  * Allows using promises in a safer way.
@@ -217,7 +212,7 @@ function makeCancellable(promise) {
  * a promise (e.g., setting the component state once a D-Bus call is answered). Note that nothing
  * guarantees that a React component is still mounted when a promise is resolved.
  *
- *  @see {@link https://overreacted.io/a-complete-guide-to-useeffect/#speaking-of-race-conditions|Race conditions}
+ * @see {@link https://overreacted.io/a-complete-guide-to-useeffect/#speaking-of-race-conditions|Race conditions}
  *
  * The hook provides a function for making promises cancellable. All cancellable promises are
  * automatically canceled once the component is unmounted. Note that the promises are not really
@@ -238,8 +233,8 @@ function makeCancellable(promise) {
  *  cancellablePromise(promise).then(setState);
  * }, [setState, cancellablePromise]);
  */
-function useCancellablePromise() {
-  const promises = useRef();
+const useCancellablePromise = <T>() => {
+  const promises = useRef<Array<CancellableWrapper<T>>>();
 
   useEffect(() => {
     promises.current = [];
@@ -251,22 +246,22 @@ function useCancellablePromise() {
   }, []);
 
   const cancellablePromise = useCallback((promise) => {
-    const cancellableWrapper = makeCancellable(promise);
+    const cancellableWrapper: CancellableWrapper<T> = makeCancellable(promise);
     promises.current.push(cancellableWrapper);
     return cancellableWrapper.promise;
   }, []);
 
   return { cancellablePromise };
-}
+};
 
 /** Hook for using local storage
  *
  * @see {@link https://www.robinwieruch.de/react-uselocalstorage-hook/}
  *
- * @param {String} storageKey
- * @param {*} fallbackState
+ * @param storageKey
+ * @param fallbackState
  */
-const useLocalStorage = (storageKey, fallbackState) => {
+const useLocalStorage = (storageKey: string, fallbackState) => {
   const [value, setValue] = useState(JSON.parse(localStorage.getItem(storageKey)) ?? fallbackState);
 
   useEffect(() => {
@@ -281,9 +276,8 @@ const useLocalStorage = (storageKey, fallbackState) => {
  *
  * Source {@link https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260}
  *
- * @param {Function} callback - Function to be called after some delay.
- * @param {number} delay - Delay in milliseconds.
- * @returns {Function}
+ * @param callback - Function to be called after some delay.
+ * @param delay - Delay in milliseconds.
  *
  * @example
  *
@@ -291,7 +285,7 @@ const useLocalStorage = (storageKey, fallbackState) => {
  * log("test ", 1) // The message will be logged after at least 1 second.
  * log("test ", 2) // Subsequent calls cancels pending calls.
  */
-const useDebounce = (callback, delay) => {
+const useDebounce = (callback: Function, delay: number) => {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -317,10 +311,9 @@ const useDebounce = (callback, delay) => {
 };
 
 /**
- * @param {string}
- * @returns {number}
+ * Convert given string to a hexadecimal number
  */
-const hex = (value) => {
+const hex = (value: string) => {
   const sanitizedValue = value.replaceAll(".", "");
   return parseInt(sanitizedValue, 16);
 };
@@ -357,14 +350,14 @@ const locationReload = () => {
  *   - https://github.com/jsdom/jsdom/blob/master/Changelog.md#2100
  *   - https://github.com/jsdom/jsdom/issues/3492
  *
- * @param {string} query
+ * @param query
  */
-const setLocationSearch = (query) => {
+const setLocationSearch = (query: string) => {
   window.location.search = query;
 };
 
 /**
- * Is the Agama server running locally?
+ * WetherAgama server is running locally or not.
  *
  * This function should be used only in special cases, the Agama behavior should
  * be the same regardless of the user connection.
@@ -373,9 +366,9 @@ const setLocationSearch = (query) => {
  * environment variable to `1`. This can be useful for debugging or for
  * development.
  *
- * @returns {boolean} `true` if the connection is local, `false` otherwise
+ * @returns `true` if the connection is local, `false` otherwise
  */
-const localConnection = (location = window.location) => {
+const localConnection = (location: Location | URL = window.location) => {
   // forced local behavior
   if (process.env.LOCAL_CONNECTION === "1") return true;
 
@@ -386,25 +379,14 @@ const localConnection = (location = window.location) => {
 };
 
 /**
- * Is the Agama server running remotely?
- *
- * @see localConnection
- *
- * @returns {boolean} `true` if the connection is remote, `false` otherwise
- */
-const remoteConnection = (...args) => !localConnection(...args);
-
-/**
  * Time for the given timezone.
  *
- * @param {string} timezone - E.g., "Atlantic/Canary".
- * @param {object} [options]
- * @param {Date} options.date - Date to take the time from.
+ * @param timezone - E.g., "Atlantic/Canary".
+ * @param date - Date to take the time from.
  *
- * @returns {string|undefined} - Time in 24 hours format (e.g., "23:56"). Undefined for an unknown
- *  timezone.
+ * @returns Time in 24 hours format (e.g., "23:56"). Undefined for an unknown timezone.
  */
-const timezoneTime = (timezone, { date = new Date() }) => {
+const timezoneTime = (timezone: string, date: Date = new Date()): string | undefined => {
   try {
     const formatter = new Intl.DateTimeFormat("en-US", {
       timeZone: timezone,
@@ -438,7 +420,6 @@ export {
   locationReload,
   setLocationSearch,
   localConnection,
-  remoteConnection,
   slugify,
   timezoneTime,
 };
