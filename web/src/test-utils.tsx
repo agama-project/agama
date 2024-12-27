@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+/* eslint-disable i18next/no-literal-string */
+
 /**
  * A module for providing utility functions for testing
  *
@@ -161,7 +163,7 @@ const plainRender = (ui, options = {}) => {
  *
  * @return a tuple with the mocked function and the list of callbacks.
  */
-const createCallbackMock = (): [(callback: Function) => () => void, Array<(arg0: any) => void>] => {
+const createCallbackMock = (): [(callback: Function) => () => void, Array<(arg0) => void>] => {
   const callbacks = [];
   const on = (callback: Function) => {
     callbacks.push(callback);
