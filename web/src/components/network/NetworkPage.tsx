@@ -98,7 +98,7 @@ const NoWifiAvailable = () => (
 export default function NetworkPage() {
   useNetworkConfigChanges();
   const { connections, devices, settings } = useNetwork();
-  const [wifiConnections, wiredConnections] = partition(connections, (c) => c.wireless);
+  const [wifiConnections, wiredConnections] = partition(connections, (c) => !!c.wireless);
 
   return (
     <Page>

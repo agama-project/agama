@@ -245,7 +245,7 @@ const useCancellablePromise = <T>() => {
     };
   }, []);
 
-  const cancellablePromise = useCallback((promise) => {
+  const cancellablePromise = useCallback((promise: Promise<T>): Promise<T> => {
     const cancellableWrapper: CancellableWrapper<T> = makeCancellable(promise);
     promises.current.push(cancellableWrapper);
     return cancellableWrapper.promise;
