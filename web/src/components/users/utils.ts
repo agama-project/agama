@@ -22,13 +22,14 @@
 
 /**
  * Method which generates username suggestions based on given full name.
- * The method cleans the input name by removing non-alphanumeric characters (except spaces),
+ *
+ * The method cleans given name by removing non-alphanumeric characters (except spaces),
  * splits the name into parts, and then generates suggestions based on these parts.
  *
- * @param {string} fullName The full name used to generate username suggestions.
- * @returns {string[]} An array of username suggestions.
+ * @param fullName The full name used to generate username suggestions.
+ * @returns An array of username suggestions.
  */
-const suggestUsernames = (fullName) => {
+const suggestUsernames = (fullName: string) => {
   if (!fullName) return [];
 
   // Cleaning the name.
@@ -41,7 +42,8 @@ const suggestUsernames = (fullName) => {
 
   // Split the cleaned name into parts.
   const parts = cleanedName.split(/\s+/);
-  const suggestions = new Set();
+  // Uses Set for avoiding duplicates
+  const suggestions = new Set<string>();
 
   const firstLetters = parts.map((p) => p[0]).join("");
   const lastPosition = parts.length - 1;
@@ -66,7 +68,6 @@ const suggestUsernames = (fullName) => {
     if (s.length < 3) suggestions.delete(s);
   });
 
-  // using Set object to remove duplicates, then converting back to array
   return [...suggestions];
 };
 
