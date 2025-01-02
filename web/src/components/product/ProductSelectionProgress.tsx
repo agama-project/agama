@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -29,8 +29,6 @@ import { ROOT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
- * @component
- *
  * Shows progress steps when a product is selected.
  */
 function ProductSelectionProgress() {
