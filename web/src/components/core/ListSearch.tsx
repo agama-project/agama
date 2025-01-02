@@ -25,44 +25,47 @@ import { SearchInput } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop, useDebounce } from "~/utils";
 
-const search = (elements, term) => {
+type ListSearchProps<T> = {
+  /** Text to display as placeholder for the search input. */
+  placeholder?: string;
+  /** List of elements in which to search. */
+  elements: T[];
+  /** Callback to be called with the filtered list of elements. */
+  onChange: (elements: T[]) => void;
+};
+
+function search<T>(elements: T[], term: string): T[] {
   const value = term.toLowerCase();
 
-  const match = (element) => {
+  const match = (element: T) => {
     return Object.values(element).join("").toLowerCase().includes(value);
   };
 
   return elements.filter(match);
-};
+}
 
 /**
- * TODO: Rename and/or refactor?
  * Input field for searching in a given list of elements.
  * @component
- *
- * @param {object} props
- * @param {string} [props.placeholder]
- * @param {object[]} [props.elements] - List of elements in which to search.
- * @param {(elements: object[]) => void} [props.onChange] - Callback to be called with the filtered list of elements.
  */
-export default function ListSearch({
+export default function ListSearch<T>({
   placeholder = _("Search"),
   elements = [],
   onChange: onChangeProp = noop,
-}) {
+}: ListSearchProps<T>) {
   const [value, setValue] = useState("");
   const [resultSize, setResultSize] = useState(elements.length);
 
-  const updateResult = (result) => {
+  const updateResult = (result: T[]) => {
     setResultSize(result.length);
     onChangeProp(result);
   };
 
-  const searchHandler = useDebounce((term) => {
+  const searchHandler = useDebounce((term: string) => {
     updateResult(search(elements, term));
   }, 500);
 
-  const onChange = (value) => {
+  const onChange = (value: string) => {
     setValue(value);
     searchHandler(value);
   };
