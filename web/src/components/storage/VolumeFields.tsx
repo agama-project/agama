@@ -344,7 +344,6 @@ const SizeManual = ({
         <InputGroup className="size-input-group">
           <InputGroupItem>
             <NumericTextInput
-              /** @ts-expect-error: for some reason using id makes TS complain */
               id="size"
               name="size"
               // TRANSLATORS: requested partition size
@@ -356,7 +355,7 @@ const SizeManual = ({
               //   (https://github.com/globalizejs/globalize#number-module)
               value={formData.minSize}
               onChange={(minSize) => onChange({ minSize })}
-              validated={errors.minSize && "error"}
+              validated={errors.minSize ? "error" : "default"}
               isDisabled={isDisabled}
             />
           </InputGroupItem>
@@ -419,14 +418,13 @@ and maximum. If no maximum is given then the file system will be as big as possi
           <InputGroup>
             <InputGroupItem>
               <NumericTextInput
-                /** @ts-expect-error: for some reason using id makes TS complain */
                 id="minSize"
                 name="minSize"
                 // TRANSLATORS: the minium partition size
                 aria-label={_("Minimum desired size")}
                 value={formData.minSize}
                 onChange={(minSize) => onChange({ minSize })}
-                validated={errors.minSize && "error"}
+                validated={errors.minSize ? "error" : "default"}
                 isDisabled={isDisabled}
               />
             </InputGroupItem>
@@ -453,10 +451,9 @@ and maximum. If no maximum is given then the file system will be as big as possi
           <InputGroup>
             <InputGroupItem>
               <NumericTextInput
-                /** @ts-expect-error: for some reason using id makes TS complain */
                 id="maxSize"
                 name="maxSize"
-                validated={errors.maxSize && "error"}
+                validated={errors.maxSize ? "error" : "default"}
                 // TRANSLATORS: the maximum partition size
                 aria-label={_("Maximum desired size")}
                 value={formData.maxSize}
