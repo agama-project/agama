@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,26 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { Split, Text } from "@patternfly/react-core";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import { ProgressText } from "~/components/core";
 
-/**
- * Progress description
- *
- * @component
- *
- * @param {object} props
- * @param {string} [props.message] Progress message
- * @param {number} [props.current] Current step
- * @param {number} [props.total] Number of steps
- */
-export default function ProgressText({ message, current, total }) {
-  const text = current === 0 ? message : `${message} (${current}/${total})`;
-  return (
-    <Split hasGutter>
-      <Text>{text}</Text>
-    </Split>
-  );
-}
+describe("ProgressText", () => {
+  it("displays the message and the steps counting", () => {
+    plainRender(<ProgressText message="Reading repositories" current={1} total={2} />);
+    expect(screen.getByText("Reading repositories (1/2)")).toBeInTheDocument();
+  });
+
+  it("does not display the steps counting if the current step is zero", () => {
+    plainRender(<ProgressText message="Reading repositories" current={0} total={2} />);
+    expect(screen.getByText("Reading repositories")).toBeInTheDocument();
+  });
+});
