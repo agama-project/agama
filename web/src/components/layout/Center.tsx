@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,8 +19,6 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
-
-// @ts-check
 
 import React from "react";
 
@@ -44,11 +42,8 @@ import React from "react";
  *   To know more, read
  *     - https://www.w3.org/TR/selectors-4/#relational
  *     - https://ishadeed.com/article/css-has-parent-selector/
- *
- * @param {object} props
- * @param {React.ReactNode} props.children
  */
-const Center = ({ children }) => (
+const Center = ({ children }: React.PropsWithChildren) => (
   <div className="vertically-centered">
     <div className="full-width stack">{children}</div>
   </div>
