@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,13 +22,21 @@
 
 import React from "react";
 import { MenuToggle } from "@patternfly/react-core";
-import { ActionsColumn } from "@patternfly/react-table";
-
+import {
+  ActionsColumn,
+  ActionsColumnProps,
+  CustomActionsToggleProps,
+} from "@patternfly/react-table";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
+type RowActionsProps = {
+  id: string;
+  actions: ActionsColumnProps["items"];
+} & Omit<ActionsColumnProps, "items">;
+
 /**
- * Renders icon for selecting the options of a row in a table
+ * Renders available options for a row in a table
  * @component
  *
  * @example
@@ -46,16 +54,14 @@ import { _ } from "~/i18n";
  *      }
  *    ]}
  *  />
- *
- * @param {object} props
- * @param {string} props.id
- * @param {Action[]} props.actions
- * @param {object} [props.rest]
- *
- * @typedef {import("@patternfly/react-table").IAction} Action
  */
-export default function RowActions({ id, actions, "aria-label": toggleAriaLabel, ...rest }) {
-  const actionsToggle = (props) => (
+export default function RowActions({
+  id,
+  actions,
+  "aria-label": toggleAriaLabel,
+  ...rest
+}: RowActionsProps) {
+  const actionsToggle = (props: CustomActionsToggleProps) => (
     <MenuToggle
       id={id}
       variant="plain"
