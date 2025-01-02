@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,26 +21,16 @@
  */
 
 import React from "react";
-import { Hint, HintBody, List, ListItem, Stack } from "@patternfly/react-core";
-import { _ } from "~/i18n";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import { IssuesHint } from "~/components/core";
 
-export default function IssuesHint({ issues }) {
-  if (issues === undefined || issues.length === 0) return;
-
-  return (
-    <Hint>
-      <HintBody>
-        <Stack hasGutter>
-          <p>
-            {_("Before starting the installation, you need to address the following problems:")}
-          </p>
-          <List>
-            {issues.map((i, idx) => (
-              <ListItem key={idx}>{i.description}</ListItem>
-            ))}
-          </List>
-        </Stack>
-      </HintBody>
-    </Hint>
-  );
-}
+it("renders a list of issues", () => {
+  const issue = {
+    description: "You need to create a user",
+    source: "config",
+    severity: "error",
+  };
+  plainRender(<IssuesHint issues={[issue]} />);
+  expect(screen.getByText(issue.description)).toBeInTheDocument();
+});
