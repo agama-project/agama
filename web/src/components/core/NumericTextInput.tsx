@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,19 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { TextInput } from "@patternfly/react-core";
+import { TextInput, TextInputProps } from "@patternfly/react-core";
 import { noop } from "~/utils";
 
-/**
- * Callback function for notifying a valid input change
- *
- * @callback onChangeFn
- * @param {string|number} the input value
- * @return {void}
- */
+type NumericTextInputProps = {
+  value: string | number;
+  onChange: (value: string | number) => void;
+} & Omit<TextInputProps, "value" | "onChange">;
 
 /**
  * Helper component for having an input text limited to not signed numbers
@@ -41,17 +36,16 @@ import { noop } from "~/utils";
  * Based on {@link https://www.patternfly.org/components/forms/text-input PF/TextInput}
  *
  * @note It allows empty value too.
- *
- * @param {object} props
- * @param {string|number} props.value - the input value
- * @param {onChangeFn} props.onChange - the callback to be called when the entered value match the input pattern
- * @param {import("@patternfly/react-core").TextInputProps} props.textInputProps
  */
-export default function NumericTextInput({ value = "", onChange = noop, ...textInputProps }) {
+export default function NumericTextInput({
+  value = "",
+  onChange = noop,
+  ...textInputProps
+}: NumericTextInputProps) {
   // NOTE: Using \d* instead of \d+ at the beginning to allow empty
   const pattern = /^\d*\.?\d*$/;
 
-  const handleOnChange = (_, value) => {
+  const handleOnChange: TextInputProps["onChange"] = (_, value) => {
     if (pattern.test(value)) {
       onChange(value);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import { NumericTextInput } from "~/components/core";
 // the given onChange callback is called. The former is more aligned with the
 // React Testing Library principles, https://testing-library.com/docs/guiding-principles
 const Input = ({ value: initialValue = "" }) => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState<string | number>(initialValue);
   return <NumericTextInput aria-label="Test input" value={value} onChange={setValue} />;
 };
 
