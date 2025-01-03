@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,21 +26,20 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { RowActions } from "~/components/core";
 import { Icon } from "../layout";
-import { _ } from "~/i18n";
 
 const mockEditFn = jest.fn();
 const mockDeleteFn = jest.fn();
 
 const actions: IAction[] = [
   {
-    title: _("Edit"),
+    title: "Edit",
     role: "link",
-    "aria-label": _("Dummy edit action"),
+    "aria-label": "Dummy edit action",
     onClick: mockEditFn,
   },
   {
-    title: _("Delete"),
-    "aria-label": _("Dummy delete action"),
+    title: "Delete",
+    "aria-label": "Dummy delete action",
     icon: <Icon name="delete" size="s" />,
     onClick: mockDeleteFn,
     isDanger: true,
