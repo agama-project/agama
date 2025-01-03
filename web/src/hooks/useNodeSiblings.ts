@@ -1,5 +1,8 @@
 import { noop } from "~/utils";
 
+type AddAttributeFn = HTMLElement["setAttribute"];
+type RemoveAttributeFn = HTMLElement["removeAttribute"];
+
 /**
  * A hook for working with siblings of the node passed as parameter
  *
@@ -7,20 +10,18 @@ import { noop } from "~/utils";
  *   - First for adding given attribute to siblings
  *   - Second for removing given attributes from siblings
  */
-const useNodeSiblings = (
-  node: HTMLElement,
-): [(attribute: string, value) => void, (attribute: string) => void] => {
+const useNodeSiblings = (node: HTMLElement): [AddAttributeFn, RemoveAttributeFn] => {
   if (!node) return [noop, noop];
 
   const siblings = [...node.parentNode.children].filter((n) => n !== node);
 
-  const addAttribute = (attribute: string, value) => {
+  const addAttribute: AddAttributeFn = (attribute, value) => {
     siblings.forEach((sibling) => {
       sibling.setAttribute(attribute, value);
     });
   };
 
-  const removeAttribute = (attribute: string) => {
+  const removeAttribute: RemoveAttributeFn = (attribute: string) => {
     siblings.forEach((sibling) => {
       sibling.removeAttribute(attribute);
     });
