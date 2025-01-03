@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,18 +25,17 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import userEvent from "@testing-library/user-event";
 import PasswordInput, { PasswordInputProps } from "./PasswordInput";
-import { _ } from "~/i18n";
 
 describe("PasswordInput Component", () => {
   it("renders a password input", () => {
-    plainRender(<PasswordInput id="password" name="password" aria-label={_("User password")} />);
+    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
 
     const inputField = screen.getByLabelText("User password");
     expect(inputField).toHaveAttribute("type", "password");
   });
 
   it("allows revealing the password", async () => {
-    plainRender(<PasswordInput id="password" name="password" aria-label={_("User password")} />);
+    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
 
     const passwordInput = screen.getByLabelText("User password");
     const button = screen.getByRole("button");
@@ -48,7 +47,7 @@ describe("PasswordInput Component", () => {
 
   it("applies autoFocus behavior correctly", () => {
     plainRender(
-      <PasswordInput autoFocus id="password" name="password" aria-label={_("User password")} />,
+      <PasswordInput autoFocus id="password" name="password" aria-label="User password" />,
     );
 
     const inputField = screen.getByLabelText("User password");
