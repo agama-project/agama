@@ -59,7 +59,6 @@ systemctl enable live-root-shell.service
 systemctl enable checkmedia.service
 systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
-systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
