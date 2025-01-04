@@ -147,6 +147,15 @@
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
         <package name="microos-tools"/>
+        <!-- xorg-x11-server is needed even in wayland system. It doesn't
+         need to run, but has to be present due to some dependencies in
+         some scripts -->
+        <package name="xorg-x11-server"/>
+        <package name="patterns-base-basesystem"/>
+        <package name="patterns-gnome-gnome"/>
+        <package name="gnome-shell"/>
+        <package name="gnome-kiosk"/>
+        <package name="gnome-session-wayland"/>
         <package name="psmisc"/>
         <package name="joe"/>
         <package name="checkmedia"/>

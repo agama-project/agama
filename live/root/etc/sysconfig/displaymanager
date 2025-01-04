@@ -1,0 +1,69 @@
+## Path:	Desktop/Display manager
+## Description:	settings to generate a proper displaymanager config
+## Type:	yesno
+## Default:	no
+#
+# Allow remote access (XDMCP) to your display manager (xdm/kdm/gdm). Please note
+# that a modified kdm or xdm configuration, e.g. by KDE control center
+# will not be changed. For gdm, values will be updated after change.
+# XDMCP service should run only on trusted networks and you have to disable
+# firewall for interfaces, where you want to provide this service.
+#
+DISPLAYMANAGER_REMOTE_ACCESS="no"
+
+## Type:	yesno
+## Default:	no
+#
+# Allow remote access of the user root to your display manager. Note
+# that root can never login if DISPLAYMANAGER_SHUTDOWN is "auto" and
+# System/Security/Permissions/PERMISSION_SECURITY is "paranoid"
+#
+DISPLAYMANAGER_ROOT_LOGIN_REMOTE="no"
+
+## Type:	yesno
+## Default:	yes
+#
+# Let the displaymanager start a local Xserver.
+# Set to "no" for remote-access only.
+# Set to "no" on architectures without any Xserver (e.g. s390/s390x).
+#
+DISPLAYMANAGER_STARTS_XSERVER="yes"
+
+## Type:        yesno
+## Default:     no
+#
+# TCP port 6000 of Xserver. When set to "no" (default) Xserver is
+# started with "-nolisten tcp". Only set this to "yes" if you really
+# need to. Remote X service should run only on trusted networks and
+# you have to disable firewall for interfaces, where you want to
+# provide this service. Use ssh X11 port forwarding whenever possible.
+#
+DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN="no"
+
+## Type:    string
+## Default:
+#
+# Define the user whom should get logged in without request. If string
+# is empty, display standard login dialog.
+#
+DISPLAYMANAGER_AUTOLOGIN="root"
+
+## Type:        yesno
+## Default:     no
+#
+# Allow all users to login without password, but ask for the user, if
+# DISPLAYMANAGER_AUTOLOGIN is empty.
+#
+DISPLAYMANAGER_PASSWORD_LESS_LOGIN="no"
+
+## Type:        yesno
+## Default:     no
+#
+# Display a combobox for Active Directory domains.
+#
+DISPLAYMANAGER_AD_INTEGRATION="no"
+## Path:        Desktop/Display manager
+## Type:        string(Xorg)
+## Default:     "Xorg"
+#
+DISPLAYMANAGER_XSERVER="Xorg"
