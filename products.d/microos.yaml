@@ -52,6 +52,11 @@ translations:
       gir transaksjonelle (atomisk) oppdateringer oppå en skrivebeskyttet btrfs
       rotfilsystem. Som rullerende distribusjon er programvaren alltid
       oppdatert.
+    nl: Een sneller, kleine distributie ontworpen om container werklasten te
+      faciliteren met geautomatiseerde administratie en patchen. openSUSE
+      MicroOS biedt transactionele (atomische) updates op een alleen-lezen btrfs
+      root bestandssysteem. Als een rollende release distributie is de software
+      altijd up-to-date.
     pt_BR: Uma distribuição pequena e rápida projetada para hospedar cargas de
       trabalho de contêiner com administração e aplicação de patches
       automatizadas. O openSUSE MicroOS fornece atualizações transacionais
