@@ -1378,9 +1378,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "Bekleyin"
-  ],
   "Waiting for actions information...": [
     "Eylem bilgileri bekleniyor..."
   ],

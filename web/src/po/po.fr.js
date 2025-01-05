@@ -1188,9 +1188,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "En attente"
-  ],
   "Wi-Fi": [
     "Wi-Fi"
   ],
