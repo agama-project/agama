@@ -345,3 +345,6 @@ rm -f /lib/modules/*/vmlinux*.[gx]z
 
 # Remove generated files (boo#1098535)
 rm -rf /var/cache/zypp/* /var/lib/zypp/AnonymousUniqueId /var/lib/systemd/random-seed
+
+# gnome-kiosk startup script, executable rights not preserved during copying
+chmod +x /root/.local/bin/gnome-kiosk-script

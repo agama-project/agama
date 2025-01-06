@@ -1,0 +1,6 @@
+#!/bin/sh
+
+firefox --kiosk http://agama.local
+
+sleep 1.0
+exec "$0" "$@"
