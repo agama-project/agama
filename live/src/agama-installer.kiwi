@@ -153,7 +153,6 @@
         <package name="xorg-x11-server"/>
         <package name="patterns-base-basesystem"/>
         <package name="patterns-gnome-gnome"/>
-        <package name="gnome-shell"/>
         <package name="gnome-kiosk"/>
         <package name="gnome-session-wayland"/>
         <package name="psmisc"/>
