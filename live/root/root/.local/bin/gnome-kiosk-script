@@ -1,6 +1,19 @@
 #!/bin/sh
+# Start a browser to connect to Agama's web user interface skipping the authentication.
+# This script is invoked as a part of gnome-kiosk startup procedure. See /usr/bin/gnome-kiosk-script
+# which is at the end of the chain and invokes this script.
 
-firefox --kiosk http://agama.local
+TOKEN_FILE=/run/agama/token
+TOKEN=$(cat $TOKEN_FILE)
+PREFS=$HOME/.mozilla/firefox/profile/user.js
+
+sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN/" $PREFS.template > $PREFS
+firefox --profile $HOME/.mozilla/firefox/profile
+# Here, we would like to see
+#
+# firefox --kiosk --profile $HOME/.mozilla/firefox/profile
+#
+# But sadly firefox currently ends with black screen on wayland when run with --kiosk
 
 sleep 1.0
 exec "$0" "$@"
