@@ -1,0 +1,24 @@
+#!/bin/sh
+
+#----[ import_agama_env ]----#
+function import_agama_env () {
+#--------------------------------------------------
+# import agama cmdline information as environment
+# variables to the current environment
+# ---
+	TERM_SAVE=$TERM
+	if [ -f /etc/agama.d/cmdline.conf ]; then
+	IFS_SAVE=$IFS
+IFS="
+"
+	for i in `cat /etc/agama.d/cmdline.conf | sed -e s'@=@%@'`;do
+		varname=`echo $i | cut -f 1 -d% | tr -d " " | sed -e s'@\.@_@'`
+		varvals=`echo $i | cut -f 2 -d%`
+		varvals=`echo $varvals | sed -e s'@^ *@@' -e s'@ *$@@'`
+		export $varname=$varvals
+	done
+	IFS=$IFS_SAVE
+	fi
+}
+
+import_agama_env
