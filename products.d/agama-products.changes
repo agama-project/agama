@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan  7 12:57:13 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Drop yast from Leap 16.0 software selection
+  code-o-o#leap/features#173
+
+
+-------------------------------------------------------------------
 Mon Jan  6 14:41:28 UTC 2025 - Angela Briel <abriel@suse.com>
 
 - SLES for SAP Application product:
