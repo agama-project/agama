@@ -98,7 +98,7 @@ export default function TimezoneSelection() {
           }
           description={
             <Flex columnGap={{ default: "columnGapXs" }}>
-              <Text component="small">{timezoneTime(id, { date }) || ""}</Text>
+              <Text component="small">{timezoneTime(id, date) || ""}</Text>
               <Divider orientation={{ default: "vertical" }} />
               <div>{details}</div>
             </Flex>

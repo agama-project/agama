@@ -60,8 +60,8 @@ module Agama
       !root_ssh_key.empty?
     end
 
-    def assign_root_password(value, encrypted)
-      pwd = if encrypted
+    def assign_root_password(value, hashed)
+      pwd = if hashed
         Y2Users::Password.create_encrypted(value)
       else
         Y2Users::Password.create_plain(value)
@@ -99,16 +99,16 @@ module Agama
     # @param full_name [String]
     # @param user_name [String]
     # @param password [String]
-    # @param encrypted_password [Boolean] true = encrypted password, false = plain text password
+    # @param hashed_password [Boolean] true = hashed password, false = plain text password
     # @param auto_login [Boolean]
     # @param _data [Hash]
     # @return [Array] the list of fatal issues found
-    def assign_first_user(full_name, user_name, password, encrypted_password, auto_login, _data)
+    def assign_first_user(full_name, user_name, password, hashed_password, auto_login, _data)
       remove_first_user
 
       user = Y2Users::User.new(user_name)
       user.gecos = [full_name]
-      user.password = if encrypted_password
+      user.password = if hashed_password
         Y2Users::Password.create_encrypted(password)
       else
         Y2Users::Password.create_plain(password)

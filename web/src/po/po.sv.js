@@ -909,6 +909,9 @@ export default {
   "Password confirmation": [
     "Lösenordsbekräftelse"
   ],
+  "Password for root user": [
+    "Lösenord för root användare"
+  ],
   "Password input": [
     "Lösenordsinmatning"
   ],
@@ -978,6 +981,9 @@ export default {
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Skydd för informationen som lagras på enheten, inklusive data, program och systemfiler."
   ],
+  "Provide a password to ensure administrative access to the system.": [
+    "Ange ett lösenord för att säkerställa administrativ tillgång till systemet."
+  ],
   "Question": [
     "Fråga"
   ],
@@ -1025,9 +1031,6 @@ export default {
   ],
   "SSH Key": [
     "SSH nyckel"
-  ],
-  "SSH public key": [
-    "SSH publik nyckel"
   ],
   "SSID": [
     "SSID"
@@ -1408,17 +1411,11 @@ export default {
   "Wires: %s": [
     "Kablar: %s"
   ],
-  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
-    "Skriv, klistra in, släpp, eller %s en SSH publik nyckelfil i textområdet ovan."
-  ],
-  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
-    "Skriv, klistra in eller släpp en publik SSH-nyckel här. Du kan också ladda upp den genom att använda länken nedan."
-  ],
   "Yes": [
     "Ja"
   ],
-  "You must define at least one authentication method for the root user. You can still edit them anytime before the installation.": [
-    "Du måste definiera minst en autentiseringsmetod för rootanvändaren. Du kan fortfarande redigera dem när som helst innan installationen."
+  "You can change it or select another authentication method in the 'Users' section before installing.": [
+    "Du kan ändra det eller välja en annan autentiseringsmetod i avsnittet \"Användare\" innan du installerar."
   ],
   "ZFCP": [
     "ZFCP"
@@ -1467,9 +1464,6 @@ export default {
   ],
   "the presence of the file system for %s": [
     "närvaron av filsystemet för %s"
-  ],
-  "upload": [
-    "ladda upp"
   ],
   "user autologin": [
     "användare automatisk inloggning"

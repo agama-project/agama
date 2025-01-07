@@ -23,7 +23,7 @@ use std::io;
 use thiserror::Error;
 use zbus::{self, zvariant};
 
-use crate::transfer::TransferError;
+use crate::utils::TransferError;
 
 #[derive(Error, Debug)]
 pub enum ServiceError {

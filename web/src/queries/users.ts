@@ -83,12 +83,12 @@ const useFirstUserChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "FirstUserChanged") {
-        const { fullName, userName, password, encryptedPassword, autologin, data } = event;
+        const { fullName, userName, password, hashedPassword, autologin, data } = event;
         queryClient.setQueryData(["users", "firstUser"], {
           fullName,
           userName,
           password,
-          encryptedPassword,
+          hashedPassword,
           autologin,
           data,
         });
@@ -155,7 +155,7 @@ const useRootUserChanges = () => {
           const newRoot = { ...oldRoot };
           if (password !== undefined) {
             newRoot.password = password;
-            newRoot.encryptedPassword = false;
+            newRoot.hashedPassword = false;
           }
 
           if (sshkey) {

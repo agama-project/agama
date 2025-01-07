@@ -21,7 +21,7 @@
 use std::io;
 use thiserror::Error;
 
-use crate::transfer::TransferError;
+use crate::utils::TransferError;
 
 #[derive(Error, Debug)]
 pub enum ScriptError {

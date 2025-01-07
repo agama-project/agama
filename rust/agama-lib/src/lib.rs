@@ -45,6 +45,7 @@
 
 pub mod auth;
 pub mod base_http_client;
+pub mod bootloader;
 pub mod error;
 pub mod install_settings;
 pub mod jobs;
@@ -66,7 +67,7 @@ pub use store::Store;
 pub mod openapi;
 pub mod questions;
 pub mod scripts;
-pub mod transfer;
+pub mod utils;
 
 use crate::error::ServiceError;
 use reqwest::{header, Client};

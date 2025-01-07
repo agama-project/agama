@@ -101,7 +101,7 @@ module.exports = {
     ignored: /node_modules/,
   },
   entry: {
-    index: ["./src/index.js"],
+    index: ["./src/index.tsx"],
   },
   devServer: {
     hot: true,

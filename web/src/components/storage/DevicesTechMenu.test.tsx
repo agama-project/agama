@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,6 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DevicesTechMenu from "./DevicesTechMenu";
-import { _ } from "~/i18n";
 import { supportedDASD } from "~/api/storage/dasd";
 import { supportedZFCP } from "~/api/storage/zfcp";
 
@@ -37,7 +36,7 @@ beforeEach(() => {
 });
 
 it("contains an entry for configuring iSCSI", async () => {
-  const { user } = installerRender(<DevicesTechMenu label={_("storage techs")} />);
+  const { user } = installerRender(<DevicesTechMenu label="storage techs" />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   const link = screen.getByRole("option", { name: /iSCSI/ });
@@ -45,7 +44,7 @@ it("contains an entry for configuring iSCSI", async () => {
 });
 
 it("does not contain an entry for configuring DASD when is NOT supported", async () => {
-  const { user } = installerRender(<DevicesTechMenu label={_("storage techs")} />);
+  const { user } = installerRender(<DevicesTechMenu label="storage techs" />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   expect(screen.queryByRole("option", { name: /DASD/ })).toBeNull();
@@ -53,7 +52,7 @@ it("does not contain an entry for configuring DASD when is NOT supported", async
 
 it("contains an entry for configuring DASD when is supported", async () => {
   (supportedDASD as jest.Mock).mockResolvedValue(true);
-  const { user } = installerRender(<DevicesTechMenu label={_("storage techs")} />);
+  const { user } = installerRender(<DevicesTechMenu label="storage techs" />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   const link = screen.getByRole("option", { name: /DASD/ });
@@ -61,7 +60,7 @@ it("contains an entry for configuring DASD when is supported", async () => {
 });
 
 it("does not contain an entry for configuring zFCP when is NOT supported", async () => {
-  const { user } = installerRender(<DevicesTechMenu label={_("storage techs")} />);
+  const { user } = installerRender(<DevicesTechMenu label="storage techs" />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   expect(screen.queryByRole("option", { name: /DASD/ })).toBeNull();
@@ -69,7 +68,7 @@ it("does not contain an entry for configuring zFCP when is NOT supported", async
 
 it("contains an entry for configuring zFCP when is supported", async () => {
   (supportedZFCP as jest.Mock).mockResolvedValue(true);
-  const { user } = installerRender(<DevicesTechMenu label={_("storage techs")} />);
+  const { user } = installerRender(<DevicesTechMenu label="storage techs" />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   const link = screen.getByRole("option", { name: /zFCP/ });

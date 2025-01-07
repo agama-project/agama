@@ -35,8 +35,8 @@ pub struct FirstUser {
     pub user_name: String,
     /// First user's password (in clear text)
     pub password: String,
-    /// Whether the password is encrypted (true) or is plain text (false)
-    pub encrypted_password: bool,
+    /// Whether the password is hashed (true) or is plain text (false)
+    pub hashed_password: bool,
     /// Whether auto-login should enabled or not
     pub autologin: bool,
 }
@@ -48,7 +48,7 @@ impl FirstUser {
             full_name: data.0,
             user_name: data.1,
             password: data.2,
-            encrypted_password: data.3,
+            hashed_password: data.3,
             autologin: data.4,
         })
     }
@@ -73,12 +73,8 @@ impl<'a> UsersClient<'a> {
     }
 
     /// SetRootPassword method
-    pub async fn set_root_password(
-        &self,
-        value: &str,
-        encrypted: bool,
-    ) -> Result<u32, ServiceError> {
-        Ok(self.users_proxy.set_root_password(value, encrypted).await?)
+    pub async fn set_root_password(&self, value: &str, hashed: bool) -> Result<u32, ServiceError> {
+        Ok(self.users_proxy.set_root_password(value, hashed).await?)
     }
 
     pub async fn remove_root_password(&self) -> Result<u32, ServiceError> {
@@ -110,7 +106,7 @@ impl<'a> UsersClient<'a> {
                 &first_user.full_name,
                 &first_user.user_name,
                 &first_user.password,
-                first_user.encrypted_password,
+                first_user.hashed_password,
                 first_user.autologin,
                 std::collections::HashMap::new(),
             )
