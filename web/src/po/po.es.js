@@ -188,7 +188,7 @@ export default {
     "Antes %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    ""
+    "Antes de instalar, debe tomar algunas decisiones. Haga click en cada sección para revisar la configuración."
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Antes de comenzar la instalación, debe solucionar los siguientes problemas:"
@@ -850,7 +850,7 @@ export default {
     "Ninguna de las zonas horarias coincide con el filtro."
   ],
   "Not possible with the current setup. Click to know more.": [
-    ""
+    "No es posible con la configuración actual. Haga click para obtener más información."
   ],
   "Not selected yet": [
     "Aún no seleccionado"
@@ -909,6 +909,9 @@ export default {
   "Password confirmation": [
     "Confirmación de contraseña"
   ],
+  "Password for root user": [
+    "Contraseña para usuario root"
+  ],
   "Password input": [
     "Entrada de contraseña"
   ],
@@ -963,6 +966,9 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Pre-installation checks": [
+    "Comprobaciones pre-instalación"
+  ],
   "Prefix length or netmask": [
     "Longitud del prefijo o máscara de red"
   ],
@@ -974,6 +980,9 @@ export default {
   ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Protección de la información almacenada en el dispositivo, incluidos datos, programas y archivos del sistema."
+  ],
+  "Provide a password to ensure administrative access to the system.": [
+    "Proporcione su contraseña para garantizar el acceso adminitrativo al sistema."
   ],
   "Question": [
     "Pregunta"
@@ -1088,6 +1097,9 @@ export default {
   ],
   "Set root SSH public key": [
     "Establecer clave pública SSH de root"
+  ],
+  "Setup root user authentication": [
+    "Configurar autenticación de usuario root"
   ],
   "Show %d subvolume action": [
     "Mostrar %d acción de subvolumen",
@@ -1399,14 +1411,11 @@ export default {
   "Wires: %s": [
     "Wires: %s"
   ],
-  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
-    ""
-  ],
-  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
-    ""
-  ],
   "Yes": [
     "Sí"
+  ],
+  "You can change it or select another authentication method in the 'Users' section before installing.": [
+    "Puede cambiarlo o seleccionar otro método de autenticación en la sección \"Usuarios\" antes de instalar."
   ],
   "ZFCP": [
     "ZFCP"

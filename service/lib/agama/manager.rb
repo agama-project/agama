@@ -83,30 +83,19 @@ module Agama
       service_status.idle
     end
 
-    def locale=(locale)
-      service_status.busy
-      change_process_locale(locale)
-      users.update_issues
-      start_progress_with_descriptions(
-        _("Load software translations"),
-        _("Load storage translations")
-      )
-      progress.step { software.locale = locale }
-      progress.step { storage.locale = locale }
-    ensure
-      service_status.idle
-      finish_progress
-    end
-
     # Runs the config phase
     def config_phase
       service_status.busy
+      first_time = installation_phase.startup?
       installation_phase.config
 
       start_progress_with_descriptions(
         _("Analyze disks"), _("Configure software")
       )
-      progress.step { storage.probe }
+      # FIXME: hot-fix for bsc#1234711, see {#probe_and_recover_storage}. In autoinstallation, the
+      #   storage config could be applied before probing. In that case, the config has to be
+      #   recovered.
+      progress.step { first_time ? probe_and_recover_storage : storage.probe }
       progress.step { software.probe }
 
       logger.info("Config phase done")
@@ -158,6 +147,21 @@ module Agama
       finish_progress
     end
     # rubocop:enable Metrics/AbcSize
+
+    def locale=(locale)
+      service_status.busy
+      change_process_locale(locale)
+      users.update_issues
+      start_progress_with_descriptions(
+        _("Load software translations"),
+        _("Load storage translations")
+      )
+      progress.step { software.locale = locale }
+      progress.step { storage.locale = locale }
+    ensure
+      service_status.idle
+      finish_progress
+    end
 
     # Software client
     #
@@ -273,5 +277,12 @@ module Agama
 
     # @return [ServiceStatusRecorder]
     attr_reader :service_status_recorder
+
+    # Probes storage and recover the current config, if any.
+    def probe_and_recover_storage
+      storage_config = storage.config
+      storage.probe
+      storage.config = storage_config unless storage_config.empty?
+    end
   end
 end

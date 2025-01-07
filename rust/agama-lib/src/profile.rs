@@ -23,43 +23,49 @@ use anyhow::Context;
 use jsonschema::JSONSchema;
 use log::info;
 use serde_json;
-use std::{fs, io::Write, path::Path, process::Command};
+use std::{
+    fs::{self, File},
+    io::Write,
+    path::Path,
+    process::Command,
+};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
 /// Downloads and converts autoyast profile.
-pub struct AutoyastProfile {
-    url: Url,
+pub struct AutoyastProfileImporter {
+    content: String,
 }
 
-impl AutoyastProfile {
-    pub fn new(url: &Url) -> anyhow::Result<Self> {
-        Ok(Self { url: url.clone() })
-    }
-
-    pub fn read_into(&self, mut out_fd: impl Write) -> anyhow::Result<()> {
-        let path = self.url.path();
-        if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
-            let content = self.read_from_autoyast()?;
-            out_fd.write_all(content.as_bytes())?;
-            Ok(())
-        } else {
-            let msg = format!("Unsupported AutoYaST format at {}", self.url);
-            Err(anyhow::Error::msg(msg))
+impl AutoyastProfileImporter {
+    pub fn read(url: &Url) -> anyhow::Result<Self> {
+        let path = url.path();
+        if !path.ends_with(".xml") && !path.ends_with(".erb") && !path.ends_with('/') {
+            let msg = format!("Unsupported AutoYaST format at {}", url);
+            return Err(anyhow::Error::msg(msg));
         }
-    }
 
-    fn read_from_autoyast(&self) -> anyhow::Result<String> {
         const TMP_DIR_PREFIX: &str = "autoyast";
         const AUTOINST_JSON: &str = "autoinst.json";
 
         let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
         Command::new("agama-autoyast")
-            .args([self.url.as_str(), &tmp_dir.path().to_string_lossy()])
+            .args([url.as_str(), &tmp_dir.path().to_string_lossy()])
             .status()?;
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
-        Ok(fs::read_to_string(autoinst_json)?)
+        let content = fs::read_to_string(autoinst_json)?;
+        Ok(Self { content })
+    }
+
+    pub fn write(&self, mut file: impl Write) -> anyhow::Result<()> {
+        file.write_all(self.content.as_bytes())?;
+        Ok(())
+    }
+
+    pub fn write_file<P: AsRef<Path>>(&self, path: P) -> anyhow::Result<()> {
+        let mut file = File::create(path)?;
+        self.write(&mut file)
     }
 }
 
@@ -170,7 +176,7 @@ impl ProfileEvaluator {
             .args(["-json"])
             .output()
             .context("Failed to run lshw")?;
-        let helpers = fs::read_to_string("agama.libsonnet")
+        let helpers = fs::read_to_string("share/agama.libsonnet")
             .or_else(|_| fs::read_to_string("/usr/share/agama-cli/agama.libsonnet"))
             .context("Failed to read agama.libsonnet")?;
         let mut file = fs::File::create(path)?;

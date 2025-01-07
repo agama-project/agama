@@ -55,9 +55,9 @@ export default function RootPasswordPopup({ title = _("Root password"), isOpen, 
   const accept = async (e) => {
     e.preventDefault();
     // TODO: handle errors
-    // the web UI only supports plain text passwords, this resets the flag if an encrypted password
+    // the web UI only supports plain text passwords, this resets the flag if a hashed password
     // was previously set from CLI
-    if (password !== "") await setRootUser.mutateAsync({ password, encryptedPassword: false });
+    if (password !== "") await setRootUser.mutateAsync({ password, hashedPassword: false });
     close();
   };
 

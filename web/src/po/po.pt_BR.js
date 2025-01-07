@@ -188,7 +188,7 @@ export default {
     "Antes %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    ""
+    "Antes de instalar, você precisa tomar algumas decisões. Clique em cada seção para revisar as configurações."
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Antes de iniciar a instalação, você precisa resolver os seguintes problemas:"
@@ -850,7 +850,7 @@ export default {
     "Nenhum dos fusos horários corresponde ao filtro."
   ],
   "Not possible with the current setup. Click to know more.": [
-    ""
+    "Não é possível com a configuração atual. Clique para saber mais."
   ],
   "Not selected yet": [
     "Ainda não selecionado"
@@ -909,6 +909,9 @@ export default {
   "Password confirmation": [
     "Confirmação de senha"
   ],
+  "Password for root user": [
+    "Senha para usuário root"
+  ],
   "Password input": [
     "Entrada de senha"
   ],
@@ -963,6 +966,9 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Pre-installation checks": [
+    "Verificações de pré-instalação"
+  ],
   "Prefix length or netmask": [
     "Comprimento do prefixo ou máscara de rede"
   ],
@@ -974,6 +980,9 @@ export default {
   ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Proteção para as informações armazenadas no dispositivo, incluindo dados, programas e arquivos de sistema."
+  ],
+  "Provide a password to ensure administrative access to the system.": [
+    "Forneça uma senha para garantir acesso administrativo ao sistema."
   ],
   "Question": [
     "Pergunta"
@@ -1088,6 +1097,9 @@ export default {
   ],
   "Set root SSH public key": [
     "Definir chave pública SSH raiz"
+  ],
+  "Setup root user authentication": [
+    "Configurar autenticação do usuário root"
   ],
   "Show %d subvolume action": [
     "Mostrar ação do subvolume %d",
@@ -1399,14 +1411,11 @@ export default {
   "Wires: %s": [
     "Fios: %s"
   ],
-  "Write, paste, drop, or %s a SSH public key file in the above textarea.": [
-    ""
-  ],
-  "Write, paste, or drop an SSH public key here. You can also upload it by using the link below.": [
-    ""
-  ],
   "Yes": [
     "Sim"
+  ],
+  "You can change it or select another authentication method in the 'Users' section before installing.": [
+    "Você pode alterá-lo ou selecionar outro método de autenticação na seção \"Usuários\" antes de instalar."
   ],
   "ZFCP": [
     "ZFCP"

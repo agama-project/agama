@@ -110,7 +110,7 @@ describe("App", () => {
     });
 
     mockProducts = [tumbleweed, microos];
-    mockRootUser = { password: true, encryptedPassword: false, sshkey: "FAKE-SSH-KEY" };
+    mockRootUser = { password: true, hashedPassword: false, sshkey: "FAKE-SSH-KEY" };
   });
 
   afterEach(() => {
@@ -165,7 +165,7 @@ describe("App", () => {
 
       describe("when there are no authentication method for root user", () => {
         beforeEach(() => {
-          mockRootUser = { password: false, encryptedPassword: false, sshkey: "" };
+          mockRootUser = { password: false, hashedPassword: false, sshkey: "" };
         });
 
         it("redirects to root user edition", async () => {
@@ -176,7 +176,7 @@ describe("App", () => {
 
       describe("when only root password is set", () => {
         beforeEach(() => {
-          mockRootUser = { password: true, encryptedPassword: false, sshkey: "" };
+          mockRootUser = { password: true, hashedPassword: false, sshkey: "" };
         });
         it("renders the application content", async () => {
           installerRender(<App />, { withL10n: true });
@@ -186,7 +186,7 @@ describe("App", () => {
 
       describe("when only root SSH public key is set", () => {
         beforeEach(() => {
-          mockRootUser = { password: false, encryptedPassword: false, sshkey: "FAKE-SSH-KEY" };
+          mockRootUser = { password: false, hashedPassword: false, sshkey: "FAKE-SSH-KEY" };
         });
         it("renders the application content", async () => {
           installerRender(<App />, { withL10n: true });

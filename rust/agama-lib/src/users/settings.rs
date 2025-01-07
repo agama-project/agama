@@ -43,8 +43,8 @@ pub struct FirstUserSettings {
     pub user_name: Option<String>,
     /// First user's password (in clear text)
     pub password: Option<String>,
-    /// Whether the password is encrypted or is plain text
-    pub encrypted_password: Option<bool>,
+    /// Whether the password is hashed or is plain text
+    pub hashed_password: Option<bool>,
     /// Whether auto-login should enabled or not
     pub autologin: Option<bool>,
 }
@@ -58,9 +58,10 @@ pub struct RootUserSettings {
     /// Root's password (in clear text)
     #[serde(skip_serializing)]
     pub password: Option<String>,
-    /// Whether the password is encrypted or is plain text
+    /// Whether the password is hashed or is plain text
     #[serde(skip_serializing)]
-    pub encrypted_password: Option<bool>,
+    pub hashed_password: Option<bool>,
     /// Root SSH public key
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ssh_public_key: Option<String>,
 }

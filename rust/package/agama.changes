@@ -1,4 +1,36 @@
 -------------------------------------------------------------------
+Fri Dec 20 12:17:26 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add bootloader.stopOnBootMenu section to profile to allow stop
+  during boot for openQA (gh#agama-project/agama#1840)
+
+-------------------------------------------------------------------
+Thu Dec 19 11:39:14 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix several validation issues (gh#agama-project/agama#1845).
+
+-------------------------------------------------------------------
+Wed Dec 18 12:32:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new AGAMA_LOG environment variable to control what to
+  log (gh#agama-project/agama#1843).
+
+-------------------------------------------------------------------
+Wed Dec 18 10:11:44 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add jsonnet as a BuildRequires dependency because it is needed
+  when running tests (gh#agama-project/agama#1842).
+
+-------------------------------------------------------------------
+Thu Dec 12 16:42:18 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix profile URL handling (bsc#1234362):
+  - Follow redirections.
+  - Determine the file format from the content instead of the
+    extension. It does not apply to AutoYaST profiles, where it still
+    uses the extension in the URL for backward compatibility.
+
+-------------------------------------------------------------------
 Tue Dec  3 12:58:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not refer to the agama-dbus-monitor because it is part of the
