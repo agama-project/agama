@@ -1,0 +1,13 @@
+This file is just placeholder for creating content in /usr/bin/X/ directory.
+
+The directory is used to trick display-manager.service (script) to think that
+xorg-x11-server is installed. If the directory is not existing the above
+script/service ends with error reporting status=6/NOTCONFIGURED. We want to
+use Wayland (only), there is no sense in installing X11 server too. As it is
+not mentioned as direct dependency in any gnome and wayland related packages
+and kind of dependency happens only due to that check, we trick it by creating
+the directory.
+
+This is status at time of initial Wayland / GNOME Shell deployment in Agama's
+live iso. If the check is removed in the future feel free to drop whole
+/usr/bin/X from the image.
