@@ -32,6 +32,7 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 ));
 
 const mockConfigMutation = jest.fn();
+
 const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
@@ -48,7 +49,6 @@ const microOs: Product = {
   registration: "no",
 };
 
-const mockConfigMutation = jest.fn();
 let mockSelectedProduct: Product;
 
 jest.mock("~/queries/software", () => ({
