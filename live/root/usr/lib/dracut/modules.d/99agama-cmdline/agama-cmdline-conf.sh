@@ -16,7 +16,6 @@ get_agama_args() {
 
 		if [ -n "$_found" ]; then
 			printf "Agama variable found ($_i)"
-			printf $_i
 			if ! strstr "$_i" "="; then
 				# Set the variable as a boolean if there is no assignation
 				_i="${_i}=1"
