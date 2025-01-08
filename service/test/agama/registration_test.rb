@@ -33,6 +33,7 @@ describe Agama::Registration do
   subject { described_class.new(manager, logger) }
 
   let(:manager) { instance_double(Agama::Software::Manager) }
+  let(:product) { Agama::Software::Product.new("test").tap { |p| p.version = "5.0" } }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
@@ -372,6 +373,41 @@ describe Agama::Registration do
         it "returns mandatory" do
           expect(subject.requirement).to eq(Agama::Registration::Requirement::MANDATORY)
         end
+      end
+    end
+  end
+
+  describe "#finish" do
+    context "system is not registered" do
+      before do
+        subject.instance_variable_set(:@reg_code, nil)
+      end
+
+      it "do nothing" do
+        expect(::FileUtils).to_not receive(:cp)
+
+        subject.finish
+      end
+    end
+
+    context "system is registered" do
+      before do
+        subject.instance_variable_set(:@reg_code, "test")
+        subject.instance_variable_set(:@credentials_file, "test")
+        Yast::Installation.destdir = "/mnt"
+        allow(::FileUtils).to receive(:cp)
+      end
+
+      it "copies global credentials file" do
+        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/SCCcredentials", "/mnt/etc/zypp/credentials.d/SCCcredentials")
+
+        subject.finish
+      end
+
+      it "copies product credentials file" do
+        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/test", "/mnt/etc/zypp/credentials.d/test")
+
+        subject.finish
       end
     end
   end
