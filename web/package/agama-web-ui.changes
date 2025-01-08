@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
+Wed Jan  8 15:16:51 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Use product ID instead of slug to link labels and descriptions to
+  their corresponding radio inputs (gh#agama-project/agama#1873).
+
+-------------------------------------------------------------------
 Wed Jan  8 13:12:44 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Show the cancel action at product selection page only when
-  a product is already selected (gh#agama-project/agama#1881).
+  a product is already selected (gh#agama-project/agama#1871).
 
 -------------------------------------------------------------------
 Fri Dec 20 12:53:41 UTC 2024 - David Diaz <dgonzalez@suse.com>
