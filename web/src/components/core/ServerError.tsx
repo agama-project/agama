@@ -21,12 +21,7 @@
  */
 
 import React from "react";
-import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateBody,
-  EmptyStateHeader,
-} from "@patternfly/react-core";
+import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
 import { Center, Icon, PlainLayout } from "~/components/layout";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
@@ -40,12 +35,12 @@ function ServerError() {
       <Page>
         <Page.Content>
           <Center>
-            <EmptyState variant="xl">
-              <EmptyStateHeader
-                titleText={_("Cannot connect to Agama server")}
-                headingLevel="h2"
-                icon={<EmptyStateIcon icon={ErrorIcon} />}
-              />
+            <EmptyState
+              variant="xl"
+              titleText={_("Cannot connect to Agama server")}
+              headingLevel="h2"
+              icon={ErrorIcon}
+            >
               <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
             </EmptyState>
           </Center>

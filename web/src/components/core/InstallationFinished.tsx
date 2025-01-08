@@ -28,8 +28,6 @@ import {
   CardBody,
   EmptyState,
   EmptyStateBody,
-  EmptyStateHeader,
-  EmptyStateIcon,
   ExpandableSection,
   Flex,
   Grid,
@@ -114,12 +112,12 @@ function InstallationFinished() {
           <Card isRounded>
             <CardBody>
               <Stack hasGutter>
-                <EmptyState variant="xl">
-                  <EmptyStateHeader
-                    titleText={_("Congratulations!")}
-                    headingLevel="h2"
-                    icon={<EmptyStateIcon icon={SuccessIcon} />}
-                  />
+                <EmptyState
+                  variant="xl"
+                  titleText={_("Congratulations!")}
+                  headingLevel="h2"
+                  icon={SuccessIcon}
+                >
                   <EmptyStateBody>
                     <Flex
                       rowGap={{ default: "rowGapMd" }}

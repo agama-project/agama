@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { EmptyState, EmptyStateIcon, EmptyStateHeader, Spinner } from "@patternfly/react-core";
+import { EmptyState, Spinner } from "@patternfly/react-core";
 import { Center, PlainLayout } from "~/components/layout";
 import { LayoutProps } from "~/components/layout/Layout";
 import { _ } from "~/i18n";
@@ -39,13 +39,7 @@ function Loading({
   return (
     <Wrapper>
       <Center>
-        <EmptyState variant="xl">
-          <EmptyStateHeader
-            titleText={text}
-            headingLevel="h1"
-            icon={<EmptyStateIcon icon={LoadingIcon} />}
-          />
-        </EmptyState>
+        <EmptyState variant="xl" titleText={text} headingLevel="h1" icon={LoadingIcon} />
       </Center>
     </Wrapper>
   );
