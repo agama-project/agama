@@ -16,7 +16,7 @@ suseSetupProduct
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
 REPO="/etc/zypp/repos.d/agama-${DISTRO}.repo"
 if [ -f "${REPO}.disabled" ]; then
-  mv "${REPO}.disabled" $REPO
+	mv "${REPO}.disabled" $REPO
 fi
 rm /etc/zypp/repos.d/*.disabled
 
@@ -29,12 +29,13 @@ rpm --import /tmp/Devel_YaST_Agama_Head_key.gpg
 rm /tmp/Devel_YaST_Agama_Head_key.gpg
 # import the openSUSE keys, but check if there is any
 if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
-  rpm --import /usr/lib/rpm/gnupg/keys/*.asc
+	rpm --import /usr/lib/rpm/gnupg/keys/*.asc
 fi
 
 # activate services
 systemctl enable sshd.service
 systemctl enable NetworkManager.service
+systemctl enable agama-cmdline-env.service
 systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
@@ -82,11 +83,11 @@ echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 # if there's a default network location, add it here
 # echo "root_net=" >> /etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
-if [ "${arch}" = "s390x" ];then
-    # workaround for custom bootloader setting
-    touch /config.bootoptions
+if [ "${arch}" = "s390x" ]; then
+	# workaround for custom bootloader setting
+	touch /config.bootoptions
 fi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
@@ -111,7 +112,7 @@ rm /var/log/zypper.log /var/log/zypp/history
 # reduce the "vim-data" content, this package is huge (37MB unpacked!), keep only
 # support for JSON (for "agama config edit") and Ruby (fixing/debugging the Ruby
 # service)
-rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e colors | xargs rm 2> /dev/null || true
+rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e colors | xargs rm 2>/dev/null || true
 
 du -h -s /usr/{share,lib}/locale/
 
@@ -125,7 +126,7 @@ du -h -s /usr/{share,lib}/locale/
 mkdir -p /etc/agama.d
 # emulate "localectl list-locales" call, it cannot be used here because it
 # insists on running systemd as PID 1 :-/
-ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" > /etc/agama.d/locales
+ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
 
 # delete translations and unusupported languages (makes ISO about 22MiB smaller)
 # build list of ignore options for "ls" with supported languages like "-I cs* -I de* -I es* ..."
@@ -138,7 +139,7 @@ ls -1 "${IGNORE_OPTS[@]}" -I "en_US*" -I "C.*" /usr/lib/locale/ | xargs -I% sh -
 
 # delete unused translations (MO files)
 for t in zypper gettext-runtime p11-kit; do
-    rm -f /usr/share/locale/*/LC_MESSAGES/$t.mo
+	rm -f /usr/share/locale/*/LC_MESSAGES/$t.mo
 done
 du -h -s /usr/{share,lib}/locale/
 
