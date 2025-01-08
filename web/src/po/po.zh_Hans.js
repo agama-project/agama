@@ -1308,9 +1308,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "正在等候"
-  ],
   "Waiting for actions information...": [
     "正在等待操作信息……"
   ],

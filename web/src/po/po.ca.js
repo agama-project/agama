@@ -1390,9 +1390,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "Escrivint"
-  ],
   "Waiting for actions information...": [
     "Esperant la informació de les accions..."
   ],

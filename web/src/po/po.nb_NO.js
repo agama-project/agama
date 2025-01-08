@@ -1318,9 +1318,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "Venter"
-  ],
   "Waiting for actions information...": [
     "Venter på handlingsinformasjon..."
   ],

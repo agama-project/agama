@@ -1386,9 +1386,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "お待ちください"
-  ],
   "Waiting for actions information...": [
     "処理に関する情報を待機しています..."
   ],

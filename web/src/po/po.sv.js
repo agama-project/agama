@@ -1390,9 +1390,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "Väntande"
-  ],
   "Waiting for actions information...": [
     "Väntar på åtgärdsinformation..."
   ],
