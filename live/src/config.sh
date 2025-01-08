@@ -35,7 +35,6 @@ fi
 # activate services
 systemctl enable sshd.service
 systemctl enable NetworkManager.service
-systemctl enable agama-cmdline-env.service
 systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
