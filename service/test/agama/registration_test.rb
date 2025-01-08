@@ -399,13 +399,15 @@ describe Agama::Registration do
       end
 
       it "copies global credentials file" do
-        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/SCCcredentials", "/mnt/etc/zypp/credentials.d/SCCcredentials")
+        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/SCCcredentials",
+          "/mnt/etc/zypp/credentials.d/SCCcredentials")
 
         subject.finish
       end
 
       it "copies product credentials file" do
-        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/test", "/mnt/etc/zypp/credentials.d/test")
+        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/test",
+          "/mnt/etc/zypp/credentials.d/test")
 
         subject.finish
       end
