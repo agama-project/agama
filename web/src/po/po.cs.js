@@ -1385,9 +1385,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "Čekám"
-  ],
   "Waiting for actions information...": [
     "Čekáme na informace o akcích..."
   ],

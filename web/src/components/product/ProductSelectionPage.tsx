@@ -39,7 +39,6 @@ import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
-import { slugify } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { useNavigate } from "react-router-dom";
@@ -51,8 +50,7 @@ const ResponsiveGridItem = ({ children }) => (
 );
 
 const Option = ({ product, isChecked, onChange }) => {
-  const id = slugify(product.name);
-  const detailsId = `${id}-details`;
+  const detailsId = `${product.id}-details`;
   const logoSrc = `assets/logos/${product.icon}`;
   // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
   const logoAltText = sprintf(_("%s logo"), product.name);
@@ -63,7 +61,7 @@ const Option = ({ product, isChecked, onChange }) => {
         <CardBody>
           <Split hasGutter>
             <input
-              id={id}
+              id={product.id}
               type="radio"
               name="product"
               className={pfRadioStyles.radioInput}
@@ -74,7 +72,7 @@ const Option = ({ product, isChecked, onChange }) => {
             <img aria-hidden src={logoSrc} alt={logoAltText} />
             <Stack hasGutter>
               <label
-                htmlFor={id}
+                htmlFor={product.id}
                 className={`${pfTextStyles.fontSizeLg} ${pfTextStyles.fontWeightBold}`}
               >
                 {product.name}
@@ -139,7 +137,7 @@ function ProductSelectionPage() {
         </Center>
       </Page.Content>
       <Page.Actions>
-        <BackLink />
+        {selectedProduct && !isLoading && <BackLink />}
         <Page.Submit
           form="productSelectionForm"
           isDisabled={isSelectionDisabled}

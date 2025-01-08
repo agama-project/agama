@@ -1,0 +1,316 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-02 02:38+0000\n"
+"PO-Revision-Date: 2025-01-02 16:50+0000\n"
+"Last-Translator: Natasha Ament <stacheldrahtje@ament-teusink.eu>\n"
+"Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/nl/>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.9.2\n"
+
+#. Runs the config phase
+#: service/lib/agama/manager.rb:93
+msgid "Analyze disks"
+msgstr "Analyseer schijven"
+
+#: service/lib/agama/manager.rb:93
+msgid "Configure software"
+msgstr "Configureer software"
+
+#. Runs the install phase
+#. rubocop:disable Metrics/AbcSize
+#: service/lib/agama/manager.rb:116
+msgid "Prepare disks"
+msgstr "Prepareer schijven"
+
+#: service/lib/agama/manager.rb:117
+msgid "Install software"
+msgstr "Installeer software"
+
+#: service/lib/agama/manager.rb:118
+msgid "Configure the system"
+msgstr "Configureer het systeem"
+
+#. rubocop:enable Metrics/AbcSize
+#: service/lib/agama/manager.rb:156
+msgid "Load software translations"
+msgstr "Laad software vertalingen"
+
+#: service/lib/agama/manager.rb:157
+msgid "Load storage translations"
+msgstr "Laad opslag vertalingen"
+
+#. Callback to handle unsigned files
+#.
+#. @param filename [String] File name
+#. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
+#: service/lib/agama/software/callbacks/signature.rb:63
+#, perl-brace-format
+msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
+msgstr "Het bestand %{filename} van opslagruimte %{repo_name} (%{repo_url})"
+
+#: service/lib/agama/software/callbacks/signature.rb:67
+#, perl-brace-format
+msgid "The file %{filename}"
+msgstr "Het bestand %{filename}"
+
+#: service/lib/agama/software/callbacks/signature.rb:71
+#, perl-brace-format
+msgid ""
+"%{source} is not digitally signed. The origin and integrity of the file cannot"
+" be verified. Use it anyway?"
+msgstr ""
+"%{source} is niet digitaal ondertekend. De herkomst en integriteit van het "
+"bestand kan niet worden gecontroleerd. Toch gebruiken?"
+
+#. Callback to handle signature verification failures
+#.
+#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+#. @param _repo_id [Integer] Repository ID
+#: service/lib/agama/software/callbacks/signature.rb:94
+#, perl-brace-format
+msgid ""
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
+"t to trust this key?"
+msgstr ""
+"De sleutel {id} (%{name}) met vingerafdruk %{fingerprint} is onbekend. "
+"Vertrouwt u deze sleutel?"
+
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:141
+msgid "Initializing sources"
+msgstr "Bronnen initialiseren"
+
+#: service/lib/agama/software/manager.rb:146
+msgid "Refreshing repositories metadata"
+msgstr "Metadata van opslagruimtes verversen"
+
+#: service/lib/agama/software/manager.rb:147
+msgid "Calculating the software proposal"
+msgstr "Berekenen van het softwarevoorstel"
+
+#. Issues related to the software proposal.
+#.
+#. Repositories that could not be probed are reported as errors.
+#.
+#. @return [Array<Agama::Issue>]
+#: service/lib/agama/software/manager.rb:563
+#, c-format
+msgid "Could not read repository \"%s\""
+msgstr "Kan opslagruimte \"%s\" niet lezen"
+
+#. Issue when a product is missing
+#.
+#. @return [Agama::Issue]
+#: service/lib/agama/software/manager.rb:573
+msgid "Product not selected yet"
+msgstr "Nog geen product geselecteerd"
+
+#. Issue when a product requires registration but it is not registered yet.
+#.
+#. @return [Agama::Issue]
+#: service/lib/agama/software/manager.rb:582
+msgid "Product must be registered"
+msgstr "Product moet geregistreerd zijn"
+
+#. Returns solver error messages from the last attempt
+#.
+#. @return [Array<String>] Error messages
+#: service/lib/agama/software/proposal.rb:223
+#, c-format
+msgid "Found %s dependency issues."
+msgstr "%s afhankelijkheidsissues gevonden."
+
+#. Issue for not found device.
+#.
+#. @param config [Configs::Drive, Configs::Partition]
+#. @return [Agama::Issue]
+#: service/lib/agama/storage/config_checker.rb:87
+msgid "No device found for a mandatory drive"
+msgstr "Geen apparaat gevonden voor een vereiste schijf"
+
+#: service/lib/agama/storage/config_checker.rb:89
+msgid "No device found for a mandatory partition"
+msgstr "Geen apparaat gevonden voor een vereiste partitie"
+
+#. TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checker.rb:118
+#, c-format
+msgid "Missing file system type for '%s'"
+msgstr "Ontbrekend bestandssysteem voor '%s'"
+
+#. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
+#. %{path} is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checker.rb:145
+#, perl-brace-format
+msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
+msgstr "Het bestandssysteemtype '%{filesystem}' is niet geschikt voor '%{path}'"
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:178
+#, perl-brace-format
+msgid "No passphrase provided (required for using the method '%{crypt_method}')."
+msgstr ""
+"Geen wachtwoordzin opgegeven (vereist bij gebruik van methode "
+"'%{crypt_method}')."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:196
+#, perl-brace-format
+msgid "Encryption method '%{crypt_method}' is not available in this system."
+msgstr "Encryptie methode '%{crypt_method}' is niet beschikbaar op dit systeem."
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1', 'random_swap').
+#: service/lib/agama/storage/config_checker.rb:226
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+msgstr ""
+"'%{crypt_method}' is een niet geschikte methode om het apparaat te "
+"versleutelen."
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checker.rb:276
+#, c-format
+msgid "The device '%s' is used several times as target device for physical volumes"
+msgstr ""
+"Het apparaat '%s' is meerdere keren gebruikt al doel apparaat voor fysieke "
+"volumes"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:350
+#, c-format
+msgid "There is no LVM thin pool volume with alias '%s'"
+msgstr "Er is geen LVM thin pool volume met alias '%s'"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checker.rb:375
+#, c-format
+msgid "There is no LVM physical volume with alias '%s'"
+msgstr "Er is geen fysiek LVM volume met alias '%s'"
+
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checker.rb:401
+#, c-format
+msgid "There is no target device for LVM physical volumes with alias '%s'"
+msgstr "Er is geen doelapparaat voor fysieke LVM volumes met alias '%s'"
+
+#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1').
+#: service/lib/agama/storage/config_checker.rb:434
+#, perl-brace-format
+msgid "'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
+msgstr ""
+"'%{crypt_method}' is geen geschikte methode voor het versleutelen van "
+"fysieke volumes."
+
+#. Text of the reason preventing to shrink because there is no content.
+#.
+#. @return [String, nil] nil if there is content or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:151
+msgid ""
+"Neither a file system nor a storage system was detected on the device. In case"
+" the device does contain a file system or a storage system that is not support"
+"ed, resizing will most likely cause data loss."
+msgstr ""
+"Er is geen bestandssysteem of opslag systeem gedetecteerd op het apparaat. "
+"In het geval dat het apparaat wel een bestandssysteem of opslagsysteem dat "
+"niet wordt ondersteund, zal het aanpassen van de grootte zeer waarschijnlijk "
+"leiden tot gegevensverlies."
+
+#. Text of the reason preventing to shrink because there is no valid minimum size.
+#.
+#. @return [String, nil] nil if there is a minimum size or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:162
+msgid "Shrinking is not supported by this device"
+msgstr "Verkleinen wordt niet ondersteund door dit apparaat"
+
+#. Probes storage devices and performs an initial proposal
+#: service/lib/agama/storage/manager.rb:120
+msgid "Activating storage devices"
+msgstr "Activeren van opslag apparaten"
+
+#: service/lib/agama/storage/manager.rb:121
+msgid "Probing storage devices"
+msgstr "Onderzoeken van opslag apparaten"
+
+#: service/lib/agama/storage/manager.rb:122
+msgid "Calculating the storage proposal"
+msgstr "Berekenen van het opslagvoorstel"
+
+#: service/lib/agama/storage/manager.rb:123
+msgid "Selecting Linux Security Modules"
+msgstr "Selecteren van Linux beveiligingsmodules"
+
+#. Prepares the partitioning to install the system
+#: service/lib/agama/storage/manager.rb:131
+msgid "Preparing bootloader proposal"
+msgstr "Voorbereiden bootloader voorstel"
+
+#. then also apply changes to that proposal
+#: service/lib/agama/storage/manager.rb:138
+msgid "Adding storage-related packages"
+msgstr "Toevoegen opslag gerelateerde pakketten"
+
+#: service/lib/agama/storage/manager.rb:139
+msgid "Preparing the storage devices"
+msgstr "Voorbereiden van de opslag apparaten"
+
+#: service/lib/agama/storage/manager.rb:140
+msgid "Writing bootloader sysconfig"
+msgstr "Schrijven van de bootloader sysconfig"
+
+#. Issue representing the proposal is not valid.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:287
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "Kan de vereiste bestandssystemen voor installatie niet toepassen"
+
+#. Issue to communicate a generic Y2Storage error.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:298
+msgid "A problem ocurred while calculating the storage setup"
+msgstr "Een probleem is ontstaan bij het berekenen van de opslag opstelling"
+
+#. Returns an issue if there is no target device.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal_strategies/guided.rb:127
+msgid "No device selected for installation"
+msgstr "Geen apparaat geselecteerd voor installatie"
+
+#. Returns an issue if any of the devices required for the proposal is not found
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal_strategies/guided.rb:143
+#, perl-brace-format
+msgid "The following selected device is not found in the system: %{devices}"
+msgid_plural "The following selected devices are not found in the system: %{devices}"
+msgstr[0] ""
+"Het volgende, geselecteerde apparaat is niet gevonden in het systeem: "
+"%{devices}"
+msgstr[1] ""
+"De volgende, geselecteerde apparaten zij niet gevonden in het systeem: "
+"%{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:154
+msgid "Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+"Het aanmaken van een gebruiker, het instellen van een root password of een "
+"publieke SSH sleutel is vereist"

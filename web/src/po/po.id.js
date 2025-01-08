@@ -9,11 +9,32 @@ export default {
   " and ": [
     " dan "
   ],
+  "%1$s %2$s at %3$s (%4$s)": [
+    "%1$s %2$s pada %3$s (%4$s)"
+  ],
+  "%1$s %2$s partition (%3$s)": [
+    "Partisi %2$s %1$s (%3$s)"
+  ],
+  "%1$s %2$s volume (%3$s)": [
+    "Volume %2$s %1$s (%3$s)"
+  ],
+  "%1$s root at %2$s (%3$s)": [
+    "Root %1$s pada %2$s (%3$s)"
+  ],
+  "%1$s root partition (%2$s)": [
+    "Partisi root %1$s (%2$s)"
+  ],
+  "%1$s root volume (%2$s)": [
+    "Volume root %1$s (%2$s)"
+  ],
+  "%d partition will be shrunk": [
+    "Partisi %d akan menyusut"
+  ],
   "%s disk": [
     "%s diska"
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s adalah sistem yang tidak dapat diubah dengan pembaruan atom. Ia menggunakan sistem file Btrfs yang hanya dapat dibaca yang diperbarui melalui snapshot."
+    "%s adalah sistem yang tidak dapat diubah (immutable) dan mendukung pembaruan atomik. Sistem ini menggunakan file system Btrfs yang hanya-baca dan diperbarui melalui snapshot."
   ],
   "%s logo": [
     "logo %s"
@@ -23,6 +44,9 @@ export default {
   ],
   ", ": [
     ", "
+  ],
+  "A mount point is required": [
+    "Diperlukan mount point"
   ],
   "A new LVM Volume Group": [
     "Grup Volume LVM baru"
@@ -36,11 +60,17 @@ export default {
   "Accept": [
     "Terima"
   ],
+  "Action": [
+    "Tindakan"
+  ],
   "Actions": [
     "Tindakan"
   ],
   "Actions for connection %s": [
     "Tindakan untuk koneksi %s"
+  ],
+  "Actions to find space": [
+    "Tindakan untuk mencari ruang"
   ],
   "Activate": [
     "Mengaktifkan"
@@ -56,6 +86,9 @@ export default {
   ],
   "Activated": [
     "Diaktifkan"
+  ],
+  "Add %s file system": [
+    "Tambahkan sistem file %s"
   ],
   "Add DNS": [
     "Tambahkan DNS"
@@ -84,8 +117,14 @@ export default {
   "Addresses data list": [
     "Daftar data alamat"
   ],
+  "All fields are required": [
+    "Semua bidang wajib diisi"
+  ],
   "All partitions will be removed and any data in the disks will be lost.": [
     "Semua partisi akan dihapus dan semua data dalam disk akan hilang."
+  ],
+  "Allows to boot to a previous version of the system after configuration changes or software upgrades.": [
+    "Memungkinkan untuk melakukan booting ke versi sistem sebelumnya setelah perubahan konfigurasi atau peningkatan perangkat lunak."
   ],
   "Already set": [
     "Sudah ditetapkan"
@@ -126,6 +165,12 @@ export default {
   "Automatic (DHCP)": [
     "Otomatis (DHCP)"
   ],
+  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+    "Pemindaian LUN otomatis [dinonaktifkan]. LUN harus dikonfigurasi secara manual setelah mengaktifkan pengontrol."
+  ],
+  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+    "Pemindaian LUN otomatis [diaktifkan]. Mengaktifkan pengontrol yang berjalan dalam mode NPIV akan secara otomatis mengonfigurasi semua LUN."
+  ],
   "Automatically calculated size according to the selected product.": [
     "Ukuran yang dihitung secara otomatis menurut produk yang dipilih."
   ],
@@ -134,6 +179,9 @@ export default {
   ],
   "Back": [
     "Kembali"
+  ],
+  "Back to device selection": [
+    "Kembali ke pemilihan perangkat"
   ],
   "Before %s": [
     "Sebelum %s"
@@ -144,8 +192,26 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Sebelum memulai penginstalan, Anda perlu mengatasi masalah berikut ini:"
   ],
+  "Boot partitions at %s": [
+    "Partisi boot pada %s"
+  ],
+  "Boot partitions at installation disk": [
+    "Partisi boot pada disk instalasi"
+  ],
+  "Btrfs root partition with snapshots (%s)": [
+    "Partisi root btrfs dengan snapshot (%s)"
+  ],
+  "Btrfs root volume with snapshots (%s)": [
+    "Volume root Btrfs dengan snapshot (%s)"
+  ],
+  "Btrfs with snapshots": [
+    "Btrfs dengan snapshot"
+  ],
   "Cancel": [
     "Batal"
+  ],
+  "Cannot accommodate the required file systems for installation": [
+    "Tidak dapat mengakomodasi sistem file yang diperlukan untuk instalasi"
   ],
   "Cannot be changed in remote installation": [
     "Tidak dapat diubah dalam instalasi jarak jauh"
@@ -153,11 +219,17 @@ export default {
   "Cannot connect to Agama server": [
     "Tidak dapat terhubung ke server Agama"
   ],
+  "Cannot format all selected devices": [
+    "Tidak dapat memformat semua perangkat yang dipilih"
+  ],
   "Change": [
     "Ubah"
   ],
   "Change boot options": [
     "Mengubah opsi boot"
+  ],
+  "Change location": [
+    "Ubah lokasi"
   ],
   "Change product": [
     "Mengubah produk"
@@ -170,6 +242,9 @@ export default {
   ],
   "Channel ID": [
     "ID saluran"
+  ],
+  "Check the planned action": [
+    "Periksa %d tindakan yang direncanakan"
   ],
   "Choose a disk for placing the boot loader": [
     "Pilih disk untuk menempatkan boot loader"
@@ -231,8 +306,29 @@ export default {
   "Could not log in. Please, make sure that the password is correct.": [
     "Tidak dapat masuk. Harap pastikan kata sandi sudah benar."
   ],
+  "Create a dedicated LVM volume group": [
+    "Membuat grup volume LVM khusus"
+  ],
+  "Create a new partition": [
+    "Membuat partisi baru"
+  ],
+  "Create user": [
+    "Membuat pengguna"
+  ],
+  "Custom": [
+    "Khusus"
+  ],
+  "DASD": [
+    "DASD"
+  ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DASD devices selection table": [
+    "Tabel pemilihan perangkat DASD"
+  ],
+  "DASDs table section": [
+    "Bagian tabel DASD"
   ],
   "DIAG": [
     "DIAG"
@@ -254,6 +350,12 @@ export default {
   ],
   "Delete current content": [
     "Hapus konten saat ini"
+  ],
+  "Destructive actions are allowed": [
+    "Tindakan destruktif diizinkan"
+  ],
+  "Destructive actions are not allowed": [
+    "Tindakan destruktif tidak diizinkan"
   ],
   "Details": [
     "Detail"
@@ -297,6 +399,15 @@ export default {
   "Do not configure": [
     "Jangan konfigurasikan"
   ],
+  "Do not configure partitions for booting": [
+    "Jangan konfigurasikan partisi untuk booting"
+  ],
+  "Do you want to add it?": [
+    "Apakah Anda ingin menambahkannya?"
+  ],
+  "Do you want to edit it?": [
+    "Apakah Anda ingin mengeditnya?"
+  ],
   "Download logs": [
     "Unduh log"
   ],
@@ -306,11 +417,14 @@ export default {
   "Edit %s": [
     "Edit %s"
   ],
+  "Edit %s file system": [
+    "Mengedit sistem file %s"
+  ],
   "Edit connection %s": [
     "Edit koneksi %s"
   ],
   "Edit file system": [
-    "Edit sistem berkas"
+    "Edit sistem file"
   ],
   "Edit iSCSI Initiator": [
     "Mengedit Inisiator iSCSI"
@@ -321,8 +435,14 @@ export default {
   "Edit the SSH Public Key for root": [
     "Edit Kunci Publik SSH untuk root"
   ],
+  "Edit user": [
+    "Edit pengguna"
+  ],
   "Enable": [
     "Diaktifkan"
+  ],
+  "Encrypt the system": [
+    "Mengenkripsi sistem"
   ],
   "Encrypted Device": [
     "Perangkat Terenkripsi"
@@ -340,7 +460,16 @@ export default {
     "Ukuran yang tepat untuk sistem berkas."
   ],
   "File system type": [
-    "Jenis sistem berkas"
+    "Jenis sistem file"
+  ],
+  "File systems created as new partitions at %s": [
+    "Sistem file yang dibuat sebagai partisi baru di %s"
+  ],
+  "File systems created at a new LVM volume group": [
+    "Sistem file yang dibuat di grup volume LVM baru"
+  ],
+  "File systems created at a new LVM volume group on %s": [
+    "Sistem file yang dibuat di grup volume LVM baru pada %s"
   ],
   "Filter by description or keymap code": [
     "Filter berdasarkan deskripsi atau kode peta kunci"
@@ -369,6 +498,9 @@ export default {
   "Finished": [
     "Selesai"
   ],
+  "First user": [
+    "Pengguna pertama"
+  ],
   "Fixed": [
     "Tetap"
   ],
@@ -380,6 +512,12 @@ export default {
   ],
   "Format": [
     "Format"
+  ],
+  "Format selected devices?": [
+    "Memformat perangkat yang dipilih?"
+  ],
+  "Format the device": [
+    "Memformat perangkat"
   ],
   "Formatted": [
     "Diformat"
@@ -549,11 +687,20 @@ export default {
   "Localization": [
     "Pelokalan"
   ],
+  "Location": [
+    "Lokasi"
+  ],
+  "Location for %s file system": [
+    "Lokasi untuk sistem file %s"
+  ],
   "Log in": [
     "Masuk"
   ],
   "Log in as %s": [
     "Masuk sebagai %s"
+  ],
+  "Logical volume at system LVM": [
+    "Volume logis pada LVM sistem"
   ],
   "Login": [
     "Masuk"
@@ -566,6 +713,9 @@ export default {
   ],
   "Logout": [
     "Keluar"
+  ],
+  "Main disk or LVM Volume Group for installation.": [
+    "Disk utama atau Grup Volume LVM untuk instalasi."
   ],
   "Main navigation": [
     "Navigasi utama"
@@ -613,13 +763,19 @@ export default {
     "Ubah"
   ],
   "More info for file system types": [
-    "Info lebih lanjut untuk jenis sistem berkas"
+    "Info lebih lanjut untuk jenis sistem file"
+  ],
+  "Mount %1$s at %2$s (%3$s)": [
+    "Mount %1$s di %2$s (%3$s)"
   ],
   "Mount Point": [
     "Mount Point"
   ],
   "Mount point": [
     "Titik pemasangan"
+  ],
+  "Mount the file system": [
+    "Mount sistem file"
   ],
   "Multipath": [
     "Multipath"
@@ -723,6 +879,15 @@ export default {
   "Partition Info": [
     "Info Partisi"
   ],
+  "Partition at %s": [
+    "Partisi pada %s"
+  ],
+  "Partition at installation disk": [
+    "Partisi pada disk instalasi"
+  ],
+  "Partitions and file systems": [
+    "Partisi dan sistem file"
+  ],
   "Partitions to boot will be allocated at the following device.": [
     "Partisi untuk boot akan dialokasikan pada perangkat berikut."
   ],
@@ -740,6 +905,9 @@ export default {
   ],
   "Password confirmation": [
     "Konfirmasi kata sandi"
+  ],
+  "Password for root user": [
+    "Kata sandi untuk pengguna root"
   ],
   "Password input": [
     "Masukan kata sandi"
@@ -837,6 +1005,9 @@ export default {
   "Remove min channel filter": [
     "Menghapus filter saluran min"
   ],
+  "Reset location": [
+    "Atur ulang lokasi"
+  ],
   "Reset to defaults": [
     "Mengatur ulang ke default"
   ],
@@ -876,14 +1047,26 @@ export default {
   "Select a disk": [
     "Pilih disk"
   ],
+  "Select a location": [
+    "Pilih lokasi"
+  ],
   "Select a product": [
     "Pilih produk"
   ],
   "Select booting partition": [
     "Pilih partisi booting"
   ],
+  "Select how to allocate the file system": [
+    "Pilih cara mengalokasikan sistem file"
+  ],
+  "Select in which device to allocate the file system": [
+    "Pilih perangkat mana yang akan dialokasikan sebagai sistem file"
+  ],
   "Select installation device": [
     "Pilih perangkat instalasi"
+  ],
+  "Select what to do with each partition.": [
+    "Pilih apa yang akan dilakukan dengan setiap partisi."
   ],
   "Selected patterns": [
     "Pola yang dipilih"
@@ -912,11 +1095,29 @@ export default {
   "Set root SSH public key": [
     "Atur kunci publik SSH root"
   ],
+  "Setup root user authentication": [
+    "Menyiapkan autentikasi pengguna root"
+  ],
   "Show %d subvolume action": [
     "Tampilkan tindakan subvolume %d"
   ],
+  "Show information about %s": [
+    "Menampilkan informasi tentang %s"
+  ],
+  "Show partitions and file-systems actions": [
+    "Menampilkan tindakan partisi dan sistem file"
+  ],
   "Shrink existing partitions": [
     "Perkecil partisi yang ada"
+  ],
+  "Shrinking partitions is allowed": [
+    "Menyusutkan partisi diizinkan"
+  ],
+  "Shrinking partitions is not allowed": [
+    "Menyusutkan partisi tidak diizinkan"
+  ],
+  "Shrinking some partitions is allowed but not needed": [
+    "Menyusutkan beberapa partisi diizinkan tetapi tidak diperlukan"
   ],
   "Size": [
     "Ukuran"
@@ -936,6 +1137,9 @@ export default {
   "Something went wrong": [
     "Ada yang tidak beres"
   ],
+  "Space policy": [
+    "Kebijakan ruang"
+  ],
   "Startup": [
     "Startup"
   ],
@@ -950,6 +1154,15 @@ export default {
   ],
   "Structure of the new system, including any additional partition needed for booting": [
     "Struktur sistem baru, termasuk partisi tambahan yang diperlukan untuk booting"
+  ],
+  "Swap at %1$s (%2$s)": [
+    "Swap di %1$s (%2$s)"
+  ],
+  "Swap partition (%s)": [
+    "Partisi swap (%s)"
+  ],
+  "Swap volume (%s)": [
+    "Volume swap (%s)"
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung."
@@ -975,14 +1188,29 @@ export default {
   "The content may be deleted": [
     "Konten mungkin akan dihapus"
   ],
+  "The current file system on %s is selected to be mounted at %s.": [
+    "Sistem file saat ini pada %s dipilih untuk dimount pada %s."
+  ],
   "The current file system on the selected device will be mounted   without formatting the device.": [
     "Sistem file saat ini pada perangkat yang dipilih akan dipasang   tanpa memformat perangkat."
+  ],
+  "The data is kept, but the current partitions will be resized as needed.": [
+    "Data tetap dipertahankan, tetapi partisi saat ini akan diubah ukurannya sesuai kebutuhan."
+  ],
+  "The data is kept. Only the space not assigned to any partition will be used.": [
+    "Data tetap dipertahankan. Hanya ruang yang tidak ditetapkan ke partisi mana pun yang akan digunakan."
   ],
   "The device cannot be shrunk:": [
     "Perangkat tidak dapat dikecilkan:"
   ],
   "The encryption password did not work": [
     "Kata sandi enkripsi tidak berfungsi"
+  ],
+  "The file system is allocated at the device %s.": [
+    "Sistem file dialokasikan pada perangkat %s."
+  ],
+  "The file system will be allocated as a new partition at the selected   disk.": [
+    "Sistem file akan dialokasikan sebagai partisi baru pada disk yang dipilih."
   ],
   "The file systems are allocated at the installation device by default. Indicate a custom location to create the file system at a specific device.": [
     "Sistem file dialokasikan pada perangkat instalasi secara default. Tunjukkan lokasi khusus untuk membuat sistem file di perangkat tertentu."
@@ -1014,11 +1242,20 @@ export default {
   "The installer requires [root] user privileges.": [
     "Penginstal memerlukan hak akses pengguna [root]."
   ],
+  "The mount point is invalid": [
+    "Mount point tidak valid"
+  ],
   "The options for the file system type depends on the product and the mount point.": [
-    "Opsi untuk jenis sistem berkas tergantung pada produk dan titik mount."
+    "Opsi untuk jenis sistem file tergantung pada produk dan mount point."
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
+  ],
+  "The selected device will be formatted as %s file system.": [
+    "Perangkat yang dipilih akan diformat sebagai sistem file %s."
+  ],
+  "The size of the file system cannot be edited": [
+    "Ukuran sistem file tidak dapat diedit"
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Sistem tidak mendukung koneksi Wi-Fi, mungkin karena perangkat keras yang tidak ada atau dinonaktifkan."
@@ -1032,8 +1269,17 @@ export default {
   "The systems will be configured as displayed below.": [
     "Sistem akan dikonfigurasikan seperti yang ditampilkan di bawah ini."
   ],
+  "The type and size of the file system cannot be edited.": [
+    "Jenis dan ukuran sistem file tidak dapat diedit."
+  ],
   "The zFCP disk was not activated.": [
     "Disk zFCP tidak diaktifkan."
+  ],
+  "There is a predefined file system for %s.": [
+    "Ada sistem file yang telah ditentukan untuk %s."
+  ],
+  "There is already a file system for %s.": [
+    "Sudah ada sistem file untuk %s."
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Berikut ini adalah pengaturan instalasi yang paling relevan. Silakan telusuri bagian dalam menu untuk rincian lebih lanjut."
@@ -1058,6 +1304,15 @@ export default {
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
+  ],
+  "Transactional Btrfs": [
+    "Btrfs Transaksional"
+  ],
+  "Transactional Btrfs root partition (%s)": [
+    "Partisi root Btrfs transaksional (%s)"
+  ],
+  "Transactional Btrfs root volume (%s)": [
+    "Volume root Btrfs transaksional (%s)"
   ],
   "Transactional root file system": [
     "Sistem file root transaksional"
@@ -1091,6 +1346,9 @@ export default {
   ],
   "Usage": [
     "Penggunaan"
+  ],
+  "Use Btrfs snapshots for the root file system": [
+    "Gunakan snapshot Btrfs untuk sistem file root"
   ],
   "Use available space": [
     "Gunakan ruang yang tersedia"
@@ -1128,8 +1386,11 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "Menunggu"
+  "Waiting for actions information...": [
+    "Menunggu informasi tindakan..."
+  ],
+  "Waiting for information about storage configuration": [
+    "Menunggu informasi tentang konfigurasi penyimpanan"
   ],
   "Wi-Fi": [
     "Wi-Fi"
@@ -1146,8 +1407,17 @@ export default {
   "Yes": [
     "Ya"
   ],
+  "You can change it or select another authentication method in the 'Users' section before installing.": [
+    "Anda dapat mengubahnya atau memilih metode autentikasi lain di bagian 'Pengguna' sebelum menginstal."
+  ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "affecting": [
+    "mempengaruhi"
+  ],
+  "at least %s": [
+    "setidaknya %s"
   ],
   "auto": [
     "otomatis"
@@ -1157,6 +1427,9 @@ export default {
   ],
   "configured": [
     "dikonfigurasi"
+  ],
+  "deleting current content": [
+    "menghapus konten saat ini"
   ],
   "disabled": [
     "dinonaktifkan"
@@ -1169,6 +1442,9 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
+  ],
+  "shrinking partitions": [
+    "menyusutkan partisi"
   ],
   "storage techs": [
     "teknisi penyimpanan"
@@ -1187,6 +1463,9 @@ export default {
   ],
   "using TPM unlocking": [
     "menggunakan pembukaan kunci TPM"
+  ],
+  "with custom actions": [
+    "dengan tindakan khusus"
   ],
   "without modifying any partition": [
     "tanpa memodifikasi partisi apa pun"
