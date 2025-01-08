@@ -139,7 +139,7 @@ function ProductSelectionPage() {
         </Center>
       </Page.Content>
       <Page.Actions>
-        <BackLink />
+        {selectedProduct && !isLoading && <BackLink />}
         <Page.Submit
           form="productSelectionForm"
           isDisabled={isSelectionDisabled}
