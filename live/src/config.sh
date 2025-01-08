@@ -16,7 +16,7 @@ suseSetupProduct
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
 REPO="/etc/zypp/repos.d/agama-${DISTRO}.repo"
 if [ -f "${REPO}.disabled" ]; then
-	mv "${REPO}.disabled" $REPO
+  mv "${REPO}.disabled" $REPO
 fi
 rm /etc/zypp/repos.d/*.disabled
 
@@ -29,7 +29,7 @@ rpm --import /tmp/Devel_YaST_Agama_Head_key.gpg
 rm /tmp/Devel_YaST_Agama_Head_key.gpg
 # import the openSUSE keys, but check if there is any
 if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
-	rpm --import /usr/lib/rpm/gnupg/keys/*.asc
+  rpm --import /usr/lib/rpm/gnupg/keys/*.asc
 fi
 
 # activate services
@@ -85,8 +85,8 @@ echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10
 echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 if [ "${arch}" = "s390x" ]; then
-	# workaround for custom bootloader setting
-	touch /config.bootoptions
+  # workaround for custom bootloader setting
+  touch /config.bootoptions
 fi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
@@ -138,7 +138,7 @@ ls -1 "${IGNORE_OPTS[@]}" -I "en_US*" -I "C.*" /usr/lib/locale/ | xargs -I% sh -
 
 # delete unused translations (MO files)
 for t in zypper gettext-runtime p11-kit; do
-	rm -f /usr/share/locale/*/LC_MESSAGES/$t.mo
+  rm -f /usr/share/locale/*/LC_MESSAGES/$t.mo
 done
 du -h -s /usr/{share,lib}/locale/
 
@@ -180,7 +180,7 @@ du -h -s /lib/modules /lib/firmware
 
 # disable the services included by dependencies
 for s in purge-kernels; do
-	systemctl -f disable $s || true
+  systemctl -f disable $s || true
 done
 
 # Only used for OpenCL and X11 acceleration on vmwgfx (?), saves ~50MiB
