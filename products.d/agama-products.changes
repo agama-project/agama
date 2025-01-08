@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan  8 14:07:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
 Mon Jan  6 14:41:28 UTC 2025 - Angela Briel <abriel@suse.com>
 
 - SLES for SAP Application product:

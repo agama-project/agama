@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan  8 14:07:13 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
 Fri Dec 20 12:53:41 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Fix netmask handling to avoid a silent connection form error
