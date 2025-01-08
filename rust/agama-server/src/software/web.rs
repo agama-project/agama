@@ -37,7 +37,10 @@ use agama_lib::{
     error::ServiceError,
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
-        model::{RegistrationInfo, RegistrationParams, ResolvableParams, SoftwareConfig},
+        model::{
+            RegistrationError, RegistrationInfo, RegistrationParams, ResolvableParams,
+            SoftwareConfig,
+        },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
     },
@@ -49,7 +52,7 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::collections::HashMap;
 use tokio_stream::{Stream, StreamExt};
 
@@ -248,14 +251,6 @@ async fn get_registration(
     Ok(Json(result))
 }
 
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct FailureDetails {
-    /// ID of error. See dbus API for possible values
-    id: u32,
-    /// human readable error string intended to be displayed to user
-    message: String,
-}
-
 /// Register product
 ///
 /// * `state`: service state.
@@ -265,7 +260,7 @@ pub struct FailureDetails {
     context_path = "/api/software",
     responses(
         (status = 204, description = "registration successfull"),
-        (status = 422, description = "Registration failed. Details are in body", body = FailureDetails),
+        (status = 422, description = "Registration failed. Details are in body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
@@ -274,10 +269,10 @@ async fn register(
     Json(config): Json<RegistrationParams>,
 ) -> Result<impl IntoResponse, Error> {
     let (id, message) = state.product.register(&config.key, &config.email).await?;
-    let details = FailureDetails { id, message };
     if id == 0 {
         Ok((StatusCode::NO_CONTENT, ().into_response()))
     } else {
+        let details = RegistrationError { id, message };
         Ok((
             StatusCode::UNPROCESSABLE_ENTITY,
             Json(details).into_response(),
@@ -294,13 +289,13 @@ async fn register(
     context_path = "/api/software",
     responses(
         (status = 200, description = "deregistration successfull"),
-        (status = 422, description = "De-registration failed. Details are in body", body = FailureDetails),
+        (status = 422, description = "De-registration failed. Details are in body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
 async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<impl IntoResponse, Error> {
     let (id, message) = state.product.deregister().await?;
-    let details = FailureDetails { id, message };
+    let details = RegistrationError { id, message };
     if id == 0 {
         Ok((StatusCode::NO_CONTENT, ().into_response()))
     } else {

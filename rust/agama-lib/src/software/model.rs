@@ -71,6 +71,14 @@ pub enum RegistrationRequirement {
     Mandatory = 2,
 }
 
+#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct RegistrationError {
+    /// ID of error. See dbus API for possible values
+    pub id: u32,
+    /// human readable error string intended to be displayed to user
+    pub message: String,
+}
+
 /// Software resolvable type (package or pattern).
 #[derive(Deserialize, Serialize, strum::Display, utoipa::ToSchema)]
 #[strum(serialize_all = "camelCase")]
