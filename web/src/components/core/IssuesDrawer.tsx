@@ -87,9 +87,7 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
                         <li key={subIdx}>
                           <HelperText>
                             {/** @ts-expect-error TS complain about variant, let's fix it after PF6 migration */}
-                            <HelperTextItem variant={variant} hasIcon>
-                              {issue.description}
-                            </HelperTextItem>
+                            <HelperTextItem variant={variant}>{issue.description}</HelperTextItem>
                           </HelperText>
                         </li>
                       );
