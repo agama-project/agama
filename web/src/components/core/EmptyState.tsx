@@ -60,7 +60,7 @@ export default function EmptyStateWrapper({
   actions,
   children,
   ...rest
-}: Partial<EmptyStateProps> & EmptyStateWrapperProps) {
+}: Partial<Omit<EmptyStateProps, "icon">> & EmptyStateWrapperProps) {
   // @ts-ignore
   if (noPadding) rest.className = [rest.className, "no-padding"].join(" ").trim();
 
