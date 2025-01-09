@@ -88,7 +88,6 @@ const fullProps: LayoutProps = {
   headerOptions: {
     showProductName: true,
     showInstallerOptions: true,
-    background: "dark",
   },
 };
 
@@ -105,7 +104,6 @@ const plainProps: LayoutProps = {
   headerOptions: {
     showProductName: false,
     showInstallerOptions: true,
-    background: "light200",
   },
 };
 
