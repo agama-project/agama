@@ -58,7 +58,7 @@ const Layout = ({
 
   if (mountSidebar) pageProps.sidebar = <Sidebar />;
   if (mountHeader) {
-    pageProps.header = (
+    pageProps.masthead = (
       <Header
         showSidebarToggle={mountSidebar}
         toggleIssuesDrawer={toggleIssuesDrawer}
@@ -73,7 +73,7 @@ const Layout = ({
 
   return (
     <>
-      <Page {...pageProps}>
+      <Page isContentFilled {...pageProps}>
         <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
       </Page>
       {location.pathname !== ROOT.login && <Questions />}
