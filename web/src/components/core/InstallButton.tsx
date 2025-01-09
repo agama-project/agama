@@ -100,9 +100,8 @@ const InstallButton = (
   return (
     <>
       <Button
-        variant="primary"
+        variant="control"
         size="lg"
-        className="agama-install-button"
         {...buttonProps}
         onClick={hasIssues ? onClickWithIssues : open}
       >

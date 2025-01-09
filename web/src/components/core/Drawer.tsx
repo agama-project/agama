@@ -73,7 +73,7 @@ const Drawer = forwardRef(
               <DrawerPanelBody>{panelContent}</DrawerPanelBody>
             </DrawerPanelContent>
           }
-          colorVariant="no-background"
+          colorVariant="primary"
         >
           <DrawerContentBody>{children}</DrawerContentBody>
         </DrawerContent>

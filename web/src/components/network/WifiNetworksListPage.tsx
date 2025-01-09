@@ -176,7 +176,7 @@ const NetworkListName = ({ network, ...props }) => {
     <Flex columnGap={{ default: "columnGapXs" }}>
       <b {...props}>{network.ssid}</b>
       {network.settings && (
-        <Label isCompact color="cyan" variant="outline">
+        <Label isCompact color="teal" variant="outline">
           {_("configured")}
         </Label>
       )}

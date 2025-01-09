@@ -96,7 +96,7 @@ const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 // TODO: check if it should have the banner role
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
-    <PageSection variant="light" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
+    <PageSection variant="default" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
       <Stack hasGutter={hasGutter}>{children}</Stack>
     </PageSection>
   );
@@ -197,7 +197,7 @@ const Actions = ({ children }: React.PropsWithChildren) => {
       stickyOnBreakpoint={STICK_TO_BOTTOM}
       className={flexStyles.flexGrow_0}
     >
-      <PageSection variant="light" component="div">
+      <PageSection variant="default" component="div">
         <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
       </PageSection>
     </PageGroup>
