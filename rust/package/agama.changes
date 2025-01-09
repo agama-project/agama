@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Thu Jan  9 12:52:05 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
-- Increase disk size in _constrain to fix build on ppc
+- Increase disk size in _constraints to fix build on ppc
   (gh#agama-project/agama#1876).
 
 -------------------------------------------------------------------
