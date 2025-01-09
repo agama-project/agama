@@ -50,7 +50,7 @@ const TpmHint = () => {
   const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Alert isInline className={alignmentStyles.textAlignLeft} title={<strong>{title}</strong>}>
+    <Alert isInline className={alignmentStyles.textAlignStart} title={<strong>{title}</strong>}>
       <Stack hasGutter>
         {_("If a local media was used to run this installer, remove it before the next boot.")}
         <ExpandableSection

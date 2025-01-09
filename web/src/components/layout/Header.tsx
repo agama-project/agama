@@ -157,7 +157,7 @@ export default function Header({
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>
-            <ToolbarGroup align={{ default: "alignRight" }}>
+            <ToolbarGroup align={{ default: "alignEnd" }}>
               <ToolbarItem spacer={{ default: "spacerSm" }}>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>

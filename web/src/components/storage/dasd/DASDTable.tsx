@@ -326,7 +326,7 @@ export default function DASDTable() {
     <>
       <Toolbar>
         <ToolbarContent>
-          <ToolbarGroup align={{ default: "alignRight" }}>
+          <ToolbarGroup align={{ default: "alignEnd" }}>
             <ToolbarItem>
               <TextInputGroup>
                 <TextInputGroupMain
