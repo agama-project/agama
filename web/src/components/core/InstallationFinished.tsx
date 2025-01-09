@@ -26,6 +26,7 @@ import {
   Button,
   Card,
   CardBody,
+  Content,
   EmptyState,
   EmptyStateBody,
   ExpandableSection,
@@ -33,7 +34,6 @@ import {
   Grid,
   GridItem,
   Stack,
-  Text,
 } from "@patternfly/react-core";
 import { Center, Icon } from "~/components/layout";
 import { _ } from "~/i18n";
@@ -123,14 +123,14 @@ function InstallationFinished() {
                       rowGap={{ default: "rowGapMd" }}
                       justifyContent={{ default: "justifyContentCenter" }}
                     >
-                      <Text>{_("The installation on your machine is complete.")}</Text>
-                      <Text>
+                      <Content>{_("The installation on your machine is complete.")}</Content>
+                      <Content>
                         {useIguana
                           ? _("At this point you can power off the machine.")
                           : _(
                               "At this point you can reboot the machine to log in to the new system.",
                             )}
-                      </Text>
+                      </Content>
                       {usingTpm(config) && <TpmHint />}
                     </Flex>
                   </EmptyStateBody>

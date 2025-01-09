@@ -23,6 +23,7 @@
 import React, { useState } from "react";
 import {
   Button,
+  Content,
   Divider,
   Dropdown,
   DropdownItem,
@@ -31,7 +32,6 @@ import {
   ListItem,
   MenuToggle,
   Stack,
-  Text,
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
@@ -93,11 +93,11 @@ const DevicesList = ({ devices }) => (
 const FormatNotPossible = ({ devices, onAccept }) => (
   <Popup isOpen title={_("Cannot format all selected devices")}>
     <Stack hasGutter>
-      <Text>
+      <Content>
         {_(
           "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again",
         )}
-      </Text>
+      </Content>
       <DevicesList devices={devices} />
     </Stack>
     <Popup.Actions>
@@ -109,11 +109,11 @@ const FormatNotPossible = ({ devices, onAccept }) => (
 const FormatConfirmation = ({ devices, onCancel, onConfirm }) => (
   <Popup isOpen title={_("Format selected devices?")}>
     <Stack hasGutter>
-      <Text>
+      <Content>
         {_(
           "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.",
         )}
-      </Text>
+      </Content>
       <DevicesList devices={devices} />
     </Stack>
     <Popup.Actions>
@@ -279,7 +279,7 @@ export default function DASDTable() {
     setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
   };
 
-  const Content = () => {
+  const PageContent = () => {
     return (
       <Table variant="compact">
         <Thead>
@@ -382,7 +382,7 @@ export default function DASDTable() {
       </Toolbar>
 
       <Page.Section aria-label={_("DASDs table section")}>
-        <Content />
+        <PageContent />
       </Page.Section>
     </>
   );

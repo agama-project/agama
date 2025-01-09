@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Form, FormGroup, Stack, Text } from "@patternfly/react-core";
+import { Content, Form, FormGroup, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
 import { AnswerCallback, Question } from "~/types/questions";
@@ -57,7 +57,7 @@ export default function QuestionWithPassword({
       titleIconVariant={() => <Icon name="lock" size="s" />}
     >
       <Stack hasGutter>
-        <Text>{question.text}</Text>
+        <Content>{question.text}</Content>
         <Form>
           {/* TRANSLATORS: field label */}
           <FormGroup label={_("Password")} fieldId="password">

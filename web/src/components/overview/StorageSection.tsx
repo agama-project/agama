@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Text, TextContent, TextVariants } from "@patternfly/react-core";
+import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
@@ -95,11 +95,11 @@ const msgLvmSingleDisk = (policy: string): string => {
   }
 };
 
-const Content = ({ children }) => (
-  <TextContent>
-    <Text component={TextVariants.h3}>{_("Storage")}</Text>
+const SectionContent = ({ children }) => (
+  <>
+    <Content component="h3">{_("Storage")}</Content>
     {children}
-  </TextContent>
+  </>
 );
 
 /**
@@ -117,9 +117,9 @@ export default function StorageSection() {
 
   if (result === undefined) {
     return (
-      <Content>
-        <Text>{_("Install using an advanced configuration.")}</Text>
-      </Content>
+      <SectionContent>
+        <Content>{_("Install using an advanced configuration.")}</Content>
+      </SectionContent>
     );
   }
 
@@ -133,27 +133,27 @@ export default function StorageSection() {
 
     if (pvDevices.length > 1) {
       return (
-        <Content>
+        <SectionContent>
           <span>{msgLvmMultipleDisks(result.settings.spacePolicy)}</span>
-        </Content>
+        </SectionContent>
       );
     } else {
       const [msg1, msg2] = msgLvmSingleDisk(result.settings.spacePolicy).split("%s");
 
       return (
-        <Content>
-          <Text>
+        <SectionContent>
+          <Content>
             <span>{msg1}</span>
             <Em>{label(pvDevices[0])}</Em>
             <span>{msg2}</span>
-          </Text>
-        </Content>
+          </Content>
+        </SectionContent>
       );
     }
   }
 
   const targetDevice = result.settings.targetDevice;
-  if (!targetDevice) return <Text>{_("No device selected yet")}</Text>;
+  if (!targetDevice) return <Content>{_("No device selected yet")}</Content>;
 
   const fullMsg = (policy: string): string => {
     switch (policy) {
@@ -179,12 +179,12 @@ export default function StorageSection() {
   const [msg1, msg2] = fullMsg(result.settings.spacePolicy).split("%s");
 
   return (
-    <Content>
-      <Text>
+    <SectionContent>
+      <Content>
         {msg1}
         <Em>{label(targetDevice)}</Em>
         {msg2}
-      </Text>
-    </Content>
+      </Content>
+    </SectionContent>
   );
 }
