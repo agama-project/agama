@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan  8 16:07:13 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
 Wed Jan  8 15:16:51 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Use product ID instead of slug to link labels and descriptions to

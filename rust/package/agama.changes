@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan  8 14:05:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
 Fri Dec 20 12:17:26 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Add bootloader.stopOnBootMenu section to profile to allow stop

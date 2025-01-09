@@ -26,7 +26,7 @@ import { Popup } from "~/components/core";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { useLocation } from "react-router-dom";
-import { PRODUCT, ROOT, USER } from "~/routes/paths";
+import { SUPPORTIVE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { Icon } from "../layout";
 
@@ -38,14 +38,6 @@ import { Icon } from "../layout";
  * defining the root authentication for the fisrt time, nor when the installer
  * is setting the chosen product.
  * */
-const EXCLUDED_FROM = [
-  ROOT.login,
-  PRODUCT.changeProduct,
-  PRODUCT.progress,
-  ROOT.installationProgress,
-  ROOT.installationFinished,
-  USER.rootUser.edit,
-];
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
   return (
@@ -90,7 +82,7 @@ const InstallButton = (
   const location = useLocation();
   const hasIssues = !issues.isEmpty;
 
-  if (EXCLUDED_FROM.includes(location.pathname)) return;
+  if (SUPPORTIVE_PATHS.includes(location.pathname)) return;
 
   const { onClickWithIssues, ...buttonProps } = props;
   const open = async () => setIsOpen(true);
