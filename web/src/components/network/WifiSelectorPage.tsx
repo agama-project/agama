@@ -31,7 +31,7 @@ function WifiSelectorPage() {
   useNetworkConfigChanges();
 
   return (
-    <Page>
+    <Page isFilled>
       <Page.Header>
         <h2>{_("Connect to a Wi-Fi network")}</h2>
       </Page.Header>
