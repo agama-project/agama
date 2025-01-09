@@ -62,7 +62,7 @@ export default function SnapshotsField({ rootVolume, onChange }: SnapshotsFieldP
       />
       <div>
         <div>{label}</div>
-        <div className={textStyles.color_200}>
+        <div className={textStyles.textColorPlaceholder}>
           {_(
             "Allows to boot to a previous version of the \
 system after configuration changes or software upgrades.",

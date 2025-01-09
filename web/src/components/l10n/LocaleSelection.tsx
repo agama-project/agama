@@ -57,10 +57,12 @@ export default function LocaleSelection() {
             <span className={textStyles.fontSizeLg}>
               <b>{name}</b>
             </span>
-            <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>
+            <span className={[textStyles.fontSizeMd, textStyles.textColorPlaceholder].join(" ")}>
               {territory}
             </span>
-            <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{id}</span>
+            <span className={[textStyles.fontSizeXs, textStyles.textColorSubtle].join(" ")}>
+              {id}
+            </span>
           </Flex>
         }
         value={id}

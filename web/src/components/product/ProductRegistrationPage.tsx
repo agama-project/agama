@@ -124,7 +124,7 @@ const RegistrationFormSection = () => {
           fieldId="email"
           label={
             <>
-              {EMAIL_LABEL} <span className={textStyles.color_400}>{_("(optional)")}</span>
+              {EMAIL_LABEL} <span className={textStyles.textColorSubtle}>{_("(optional)")}</span>
             </>
           }
         >

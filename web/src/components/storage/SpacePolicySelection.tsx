@@ -63,7 +63,9 @@ const SpacePolicyPicker = ({
               id={policy.id}
               value={policy.id}
               label={<span className={labelStyle}>{_(policy.label)}</span>}
-              body={<span className={textStyles.color_200}>{_(policy.description)}</span>}
+              body={
+                <span className={textStyles.textColorPlaceholder}>{_(policy.description)}</span>
+              }
               onChange={() => onChange(policy)}
               defaultChecked={isChecked}
             />

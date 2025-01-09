@@ -162,7 +162,7 @@ const Section = ({
                 </Flex.Item>
               )}
             </Flex>
-            {hasDescription && <div className={textStyles.color_200}>{description}</div>}
+            {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
           </Flex>
         </CardHeader>
       )}

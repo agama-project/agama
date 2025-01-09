@@ -58,7 +58,7 @@ const DeletionsInfo = ({
   } else if (hasDeleteActions) {
     // TRANSLATORS: %d will be replaced by the amount of destructive actions
     label = (
-      <strong className={textStyles.warningColor_200}>
+      <strong className={textStyles.textColorStatusDanger}>
         {sprintf(
           n_(
             "There is %d destructive action planned",
@@ -160,7 +160,7 @@ const ActionsInfo = ({
 
   if (!validProposal) {
     label = (
-      <span className={textStyles.dangerColor_200}>
+      <span className={textStyles.textColorStatusDanger}>
         {_("Cannot accommodate the required file systems for installation")}
       </span>
     );
