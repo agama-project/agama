@@ -342,9 +342,8 @@ export default function DASDTable() {
                       variant="plain"
                       aria-label={_("Remove min channel filter")}
                       onClick={() => updateFilter({ minChannel: "" })}
-                    >
-                      <Icon name="backspace" size="s" />
-                    </Button>
+                      icon={<Icon name="backspace" size="s" />}
+                    />
                   </TextInputGroupUtilities>
                 )}
               </TextInputGroup>
@@ -364,9 +363,8 @@ export default function DASDTable() {
                       variant="plain"
                       aria-label={_("Remove max channel filter")}
                       onClick={() => updateFilter({ maxChannel: "" })}
-                    >
-                      <Icon name="backspace" size="s" />
-                    </Button>
+                      icon={<Icon name="backspace" size="s" />}
+                    />
                   </TextInputGroupUtilities>
                 )}
               </TextInputGroup>
