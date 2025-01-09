@@ -148,12 +148,12 @@ module Agama
       if @credentials_file
         files << [
           File.join(TARGET_DIR, credentials_path(@credentials_file)),
-          File.join(Yast::Installation.destdir, credentials_path(@credentials_file)),
+          File.join(Yast::Installation.destdir, credentials_path(@credentials_file))
         ]
       end
 
-      files.each do |files|
-        FileUtils.cp(*files)
+      files.each do |src_dest|
+        FileUtils.cp(*src_dest)
       end
     end
 
