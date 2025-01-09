@@ -406,7 +406,7 @@ describe Agama::Registration do
       end
 
       it "copies product credentials file" do
-        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/test",
+        expect(::FileUtils).to receive(:cp).with("/run/agama/zypp/etc/zypp/credentials.d/test",
           "/mnt/etc/zypp/credentials.d/test")
 
         subject.finish

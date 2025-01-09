@@ -142,12 +142,18 @@ module Agama
     def finish
       return unless reg_code
 
-      files = [GLOBAL_CREDENTIALS_PATH]
-      files << credentials_path(@credentials_file) if @credentials_file
+      files = [[
+        GLOBAL_CREDENTIALS_PATH, File.join(Yast::Installation.destdir, GLOBAL_CREDENTIALS_PATH)
+      ]]
+      if @credentials_file
+        files << [
+          File.join(TARGET_DIR, credentials_path(@credentials_file)),
+          File.join(Yast::Installation.destdir, credentials_path(@credentials_file)),
+        ]
+      end
 
-      files.each do |file|
-        dest = File.join(Yast::Installation.destdir, file)
-        FileUtils.cp(file, dest)
+      files.each do |files|
+        FileUtils.cp(*files)
       end
     end
 
