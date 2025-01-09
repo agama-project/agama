@@ -21,7 +21,15 @@
  */
 
 import React, { isValidElement } from "react";
-import { Button, ButtonProps, Modal, ModalProps } from "@patternfly/react-core";
+import {
+  Button,
+  ButtonProps,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalProps,
+} from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
@@ -191,11 +199,11 @@ const AncillaryAction = ({ children, ...actionsProps }: PredefinedAction) => (
  *   </Popup>
  */
 const Popup = ({
+  title,
   isOpen = false,
   isLoading = false,
   // TRANSLATORS: progress message
   loadingText = _("Loading data..."),
-  showClose = false,
   inlineSize = "medium",
   blockSize = "auto",
   className = "",
@@ -211,11 +219,11 @@ const Popup = ({
     <Modal
       {...props}
       isOpen={isOpen}
-      showClose={showClose}
-      actions={actions}
       className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
     >
-      {isLoading ? <Loading text={loadingText} /> : content}
+      {title && <ModalHeader title={title} />}
+      <ModalBody>{isLoading ? <Loading text={loadingText} /> : content}</ModalBody>
+      <ModalFooter>{actions}</ModalFooter>
     </Modal>
   );
 };
