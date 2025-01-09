@@ -109,7 +109,7 @@ function InstallationFinished() {
     <Center>
       <Grid hasGutter>
         <GridItem sm={8} smOffset={2}>
-          <Card isRounded>
+          <Card>
             <CardBody>
               <Stack hasGutter>
                 <EmptyState

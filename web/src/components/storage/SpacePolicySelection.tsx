@@ -165,7 +165,7 @@ export default function SpacePolicySelection() {
             </GridItem>
             {policy.id === "custom" && devices.length > 0 && (
               <GridItem sm={12} xl2={xl2Columns}>
-                <Card isFullHeight isRounded>
+                <Card isFullHeight>
                   <CardBody>
                     <SpaceActionsTable
                       devices={devices}

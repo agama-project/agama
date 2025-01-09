@@ -85,7 +85,6 @@ type SubmitActionProps = {
 } & ButtonProps;
 
 const defaultCardProps: CardProps = {
-  isRounded: true,
   isCompact: true,
   isFullHeight: true,
   component: "section",

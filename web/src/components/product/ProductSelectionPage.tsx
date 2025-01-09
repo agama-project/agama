@@ -59,7 +59,7 @@ const Option = ({ product, isChecked, onChange }) => {
 
   return (
     <ListItem aria-label={product.name}>
-      <Card isRounded>
+      <Card>
         <CardBody>
           <Split hasGutter>
             <input

@@ -245,7 +245,7 @@ function WifiNetworksListPage() {
   };
 
   return (
-    <Card isRounded isCompact>
+    <Card isCompact>
       <CardBody>
         <Drawer isExpanded={!!selected}>
           <DrawerContent
