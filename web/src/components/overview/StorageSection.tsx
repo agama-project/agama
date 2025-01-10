@@ -118,7 +118,7 @@ export default function StorageSection() {
   if (result === undefined) {
     return (
       <Content>
-        <Text>{_("Install using an advanced method.")}</Text>
+        <Text>{_("Install using an advanced configuration.")}</Text>
       </Content>
     );
   }

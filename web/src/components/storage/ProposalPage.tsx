@@ -54,7 +54,7 @@ const StorageWarning = () => (
     <Page.Content>
       <EmptyState
         title={_(
-          "The system layout was set up using a explicit configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.",
+          "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.",
         )}
         icon="warning"
       />
