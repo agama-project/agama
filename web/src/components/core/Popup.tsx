@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { isValidElement } from "react";
+import React, { isValidElement, useId } from "react";
 import {
   Button,
   ButtonProps,
@@ -218,15 +218,20 @@ const Popup = ({
     isValidElement(child) ? child.type === Actions : false,
   );
 
+  const titleId = useId();
+  const contentId = useId();
+
   return (
     /** @ts-ignore */
     <Modal
       {...props}
       isOpen={isOpen}
       className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
+      aria-labelledby={titleId}
+      aria-describedby={contentId}
     >
-      {title && <ModalHeader title={title} description={description} />}
-      <ModalBody>{isLoading ? <Loading text={loadingText} /> : content}</ModalBody>
+      {title && <ModalHeader labelId={titleId} title={title} description={description} />}
+      <ModalBody id={contentId}>{isLoading ? <Loading text={loadingText} /> : content}</ModalBody>
       <ModalFooter>{actions}</ModalFooter>
     </Modal>
   );
