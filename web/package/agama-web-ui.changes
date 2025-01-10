@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 10 21:22:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
 Fri Jan 10 15:56:35 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add storage reprobing and recalculate proposal when going back to

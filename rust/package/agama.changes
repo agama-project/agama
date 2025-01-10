@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 10 21:22:01 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
 Fri Jan 10 08:58:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Disable the browser cache setting the "Cache-Control" header to

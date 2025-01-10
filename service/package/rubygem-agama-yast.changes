@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 10 21:22:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
 Fri Jan 10 15:44:30 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Objects from the D-Bus trees representing the storage devices are
