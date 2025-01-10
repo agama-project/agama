@@ -269,6 +269,8 @@ const useProposalResult = (): ProposalResult | undefined => {
   const systemDevices = useDevices("system", { suspense: true });
   const { mountPoints: productMountPoints } = useProductParams({ suspense: true });
 
+  if (settings === null) return undefined;
+
   return {
     settings: {
       ...settings,

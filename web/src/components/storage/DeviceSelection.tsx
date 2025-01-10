@@ -49,7 +49,7 @@ type DeviceSelectionState = {
  * @component
  */
 export default function DeviceSelection() {
-  const { settings } = useProposalResult();
+  const proposal = useProposalResult();
   const availableDevices = useAvailableDevices();
   const updateProposal = useProposalMutation();
   const navigate = useNavigate();
@@ -63,11 +63,13 @@ export default function DeviceSelection() {
 
     // FIXME: move to a state/reducer
     setState({
-      target: settings.target,
-      targetDevice: availableDevices.find((d) => d.name === settings.targetDevice),
-      targetPVDevices: availableDevices.filter((d) => settings.targetPVDevices?.includes(d.name)),
+      target: proposal.settings.target,
+      targetDevice: availableDevices.find((d) => d.name === proposal.settings.targetDevice),
+      targetPVDevices: availableDevices.filter((d) =>
+        proposal.settings.targetPVDevices?.includes(d.name),
+      ),
     });
-  }, [settings, availableDevices, state.target]);
+  }, [proposal, availableDevices, state.target]);
 
   const selectTargetDisk = () => setState({ ...state, target: ProposalTarget.DISK });
   const selectTargetNewLvmVG = () => setState({ ...state, target: ProposalTarget.NEW_LVM_VG });
@@ -86,7 +88,7 @@ export default function DeviceSelection() {
       targetPVDevices: isTargetNewLvmVg ? state.targetPVDevices.map((d) => d.name) : [],
     };
 
-    updateProposal.mutateAsync({ ...settings, ...newSettings });
+    updateProposal.mutateAsync({ ...proposal.settings, ...newSettings });
     navigate("..");
   };
 

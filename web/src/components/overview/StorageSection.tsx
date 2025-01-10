@@ -115,7 +115,13 @@ export default function StorageSection() {
   const availableDevices = useAvailableDevices();
   const result = useProposalResult();
 
-  if (result === undefined) return;
+  if (result === undefined) {
+    return (
+      <Content>
+        <Text>{_("Install using an advanced configuration.")}</Text>
+      </Content>
+    );
+  }
 
   const label = (deviceName) => {
     const device = availableDevices.find((d) => d.name === deviceName);

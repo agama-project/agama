@@ -38,9 +38,12 @@ const fetchDefaultVolume = (mountPath: string): Promise<Volume | undefined> => {
   return get(`/api/storage/product/volume_for?mount_path=${path}`);
 };
 
-const fetchSettings = (): Promise<ProposalSettings> => get("/api/storage/proposal/settings");
+// NOTE: the settings might not exist.
+const fetchSettings = (): Promise<ProposalSettings> =>
+  get("/api/storage/proposal/settings").catch(() => null);
 
-const fetchActions = (): Promise<Action[]> => get("/api/storage/proposal/actions");
+// NOTE: the actions might not exist.
+const fetchActions = (): Promise<Action[]> => get("/api/storage/proposal/actions").catch(() => []);
 
 const calculate = (settings: ProposalSettingsPatch) =>
   put("/api/storage/proposal/settings", settings);

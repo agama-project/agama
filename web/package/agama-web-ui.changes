@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 10 13:22:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not allow changing the storage setup when Agama is using the
+  new storage settings (gh#agama-project/agama#1881).
+
+-------------------------------------------------------------------
 Wed Jan  8 16:07:13 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for products registration (jsc#PED-11192,
