@@ -144,6 +144,8 @@
         <package name="agama-cli"/>
         <package name="agama-auto"/>
         <package name="agama-integration-tests"/>
+        <package name="rubygem(agama-yast)"/>
+        <package name="rubygem(byebug)"/>
         <package name="microos-tools"/>
         <package name="icewm-lite"/>
         <package name="xinit"/>
@@ -166,8 +168,6 @@
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="openSUSE-repos-Leap"/>
         <package name="patterns-openSUSE-base"/>
-        <package name="ruby3.2-rubygem-agama-yast"/>
-        <package name="ruby3.2-rubygem-byebug"/>
         <package name="staging-build-key"/>
         <package name="openSUSE-build-key"/>
         <package name="MozillaFirefox-branding-openSUSE"/>
@@ -178,8 +178,6 @@
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="openSUSE-repos-Tumbleweed"/>
         <package name="patterns-openSUSE-base"/>
-        <package name="ruby3.3-rubygem-agama-yast"/>
-        <package name="ruby3.3-rubygem-byebug"/>
         <package name="staging-build-key"/>
         <package name="openSUSE-build-key"/>
         <package name="MozillaFirefox-branding-openSUSE"/>
@@ -189,8 +187,6 @@
         <package name="agama-products-sle"/>
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-sles-base"/>
-        <package name="ruby3.2-rubygem-agama-yast"/>
-        <package name="ruby3.2-rubygem-byebug"/>
         <package name="suse-build-key"/>
         <package name="MozillaFirefox-branding-SLE"/>
     </packages>

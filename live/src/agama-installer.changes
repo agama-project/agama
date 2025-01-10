@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 10 09:03:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Depend on Ruby's default version (gh#agama-project/agama#1872).
+
+-------------------------------------------------------------------
 Wed Jan  8 12:10:39 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Make agama kernel cmdline options available in the sysroot at
