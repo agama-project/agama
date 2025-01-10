@@ -27,7 +27,7 @@ import {
   RegistrationInfo,
   SoftwareProposal,
 } from "~/types/software";
-import { del, get, post, put } from "~/api/http";
+import { get, post, put } from "~/api/http";
 
 /**
  * Returns the software configuration
