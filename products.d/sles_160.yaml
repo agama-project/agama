@@ -57,7 +57,10 @@ software:
   mandatory_patterns:
     - base_traditional
   optional_patterns: null # no optional pattern shared
-  user_patterns: []
+  user_patterns:
+    - kvm_host
+    - cockpit
+    - sles_enhanced_base
   mandatory_packages:
     - NetworkManager
   optional_packages: null

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 10 16:13:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the user selectable patterns list to the SLES product
+  (gh#agama-project/agama#1885).
+
+-------------------------------------------------------------------
 Fri Jan 10 14:51:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update SLES name (gh#agama-project/agama#1883).
