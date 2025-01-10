@@ -31,15 +31,30 @@ const mockAvailableDevices = [
 ];
 
 const mockResultSettings = { target: "disk", targetDevice: "/dev/sda", spacePolicy: "delete" };
+let mockProposalResult;
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => mockAvailableDevices,
-  useProposalResult: () => ({
+  useProposalResult: () => mockProposalResult,
+}));
+
+beforeEach(() => {
+  mockProposalResult = {
     settings: mockResultSettings,
     actions: [],
-  }),
-}));
+  };
+});
+
+describe("when using the new storage settings", () => {
+  beforeEach(() => (mockProposalResult = undefined));
+
+  it("renders a warning message", () => {
+    plainRender(<StorageSection />);
+
+    expect(screen.getByText("Install using an advanced configuration.")).toBeInTheDocument();
+  });
+});
 
 describe("when there is a proposal", () => {
   beforeEach(() => {
