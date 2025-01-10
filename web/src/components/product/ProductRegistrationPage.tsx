@@ -39,12 +39,7 @@ import {
 import { Page, PasswordInput } from "~/components/core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-import {
-  useProduct,
-  useRegistration,
-  useRegisterMutation,
-  useDeregisterMutation,
-} from "~/queries/software";
+import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
 import { isEmpty, mask } from "~/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -55,29 +50,15 @@ const EMAIL_LABEL = "Email";
 
 const RegisteredProductSection = () => {
   const { selectedProduct: product } = useProduct();
-  const { mutate: deregister } = useDeregisterMutation();
   const registration = useRegistration();
   const [showCode, setShowCode] = useState(false);
   const toggleCodeVisibility = () => setShowCode(!showCode);
-
-  const footer = _("For using a different registration code, please %s the product first.");
-  const deregisterButtonLabel = _("deregister");
-  const [footerStart, footerEnd] = footer.split("%s");
 
   return (
     <Page.Section
       title={_("Product registered")}
       description={sprintf(_("%s has been registered with below information."), product.name)}
       pfCardProps={{ isCompact: false }}
-      actions={
-        <p>
-          {footerStart}{" "}
-          <Button onClick={() => deregister()} variant="link" isInline>
-            {deregisterButtonLabel}
-          </Button>{" "}
-          {footerEnd}
-        </p>
-      }
     >
       <DescriptionList className={spacingStyles.myMd}>
         <DescriptionListGroup>
