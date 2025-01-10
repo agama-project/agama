@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 10 08:58:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Disable the browser cache setting the "Cache-Control" header to
+  "no-store" (gh#agama-project/agama#1880).
+
+-------------------------------------------------------------------
 Thu Jan  9 12:52:05 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Increase disk size in _constraints to fix build on ppc
