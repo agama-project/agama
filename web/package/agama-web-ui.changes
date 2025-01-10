@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 10 13:46:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Drop the feature for deregistering a product
+  (gh#agama-project/agama#1882).
+
+-------------------------------------------------------------------
 Wed Jan  8 16:07:13 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for products registration (jsc#PED-11192,
