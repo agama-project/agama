@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 10 15:44:30 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Objects from the D-Bus trees representing the storage devices are
+  removed before performing the probing. It prevents a segmentation
+  fault by accessing to old objects (gh#agama-project/agama#1884).
+
+-------------------------------------------------------------------
 Thu Jan  9 12:21:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Activate multipath in case it is forced by the user 

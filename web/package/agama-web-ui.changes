@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 10 15:56:35 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add storage reprobing and recalculate proposal when going back to
+  either the proposal page or the devices selector if the system
+  is deprecated (gh#agama-project/agama#1884).
+
+-------------------------------------------------------------------
 Fri Jan 10 13:46:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Drop the feature for deregistering a product
