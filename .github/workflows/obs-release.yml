@@ -1,5 +1,8 @@
 # Publish a new version
-# - Submit the packages to systemsmanagement:Agama:Devel
+# - Submit the packages to the OBS project defined in OBS_PROJECT_RELEASE variable
+#   at GitHub (in the original repository it is set to systemsmanagement:Agama:Release,
+#   see https://github.com/agama-project/agama/settings/variables/actions,
+#   you might change that in forks)
 # - Send submit requests
 
 name: Release
@@ -11,7 +14,7 @@ on:
       - v[0-9]*
 
 jobs:
-  # Note: agama-integration-tests and the Live ISO are currently not submitted
+  # Note: the Live ISO is currently not submitted
 
   update_rust:
     uses: ./.github/workflows/obs-staging-shared.yml
@@ -19,8 +22,8 @@ jobs:
     secrets: inherit
     with:
       install_packages: obs-service-cargo_audit obs-service-cargo_vendor
-      project_name: systemsmanagement:Agama:Devel
       package_name: agama
+      service_file: rust/package/_service
 
   update_web:
     uses: ./.github/workflows/obs-staging-shared.yml
@@ -28,12 +31,10 @@ jobs:
     secrets: inherit
     with:
       install_packages: obs-service-node_modules
-      project_name: systemsmanagement:Agama:Devel
-      package_name: cockpit-agama
+      package_name: agama-web-ui
+      service_file: web/package/_service
 
   update_service:
     uses: ./.github/workflows/obs-service-shared.yml
     # pass all secrets
     secrets: inherit
-    with:
-      project_name: systemsmanagement:Agama:Devel
