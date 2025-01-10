@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 10 09:03:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Depend on Ruby's default version (gh#agama-project/agama#1872).
+
+-------------------------------------------------------------------
 Tue Dec 10 12:46:06 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - Updated config.sh to enable agama-dbus-monitor service
