@@ -28,6 +28,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  ModalHeaderProps,
   ModalProps,
 } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
@@ -45,7 +46,8 @@ export type PopupProps = {
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
   loadingText?: string;
-} & Omit<ModalProps, "variant" | "size">;
+} & Omit<ModalProps, "variant" | "size"> &
+  Pick<ModalHeaderProps, "description" | "titleIconVariant">;
 
 /**
  * Wrapper component for holding Popup actions
@@ -200,6 +202,8 @@ const AncillaryAction = ({ children, ...actionsProps }: PredefinedAction) => (
  */
 const Popup = ({
   title,
+  titleIconVariant,
+  description,
   isOpen = false,
   isLoading = false,
   // TRANSLATORS: progress message
@@ -221,7 +225,7 @@ const Popup = ({
       isOpen={isOpen}
       className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
     >
-      {title && <ModalHeader title={title} />}
+      {title && <ModalHeader title={title} description={description} />}
       <ModalBody>{isLoading ? <Loading text={loadingText} /> : content}</ModalBody>
       <ModalFooter>{actions}</ModalFooter>
     </Modal>
