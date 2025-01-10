@@ -338,8 +338,6 @@ module Agama
       # code is based on https://github.com/yast/yast-registration/blob/master/src/lib/registration/sw_mgmt.rb#L365
       # rubocop:disable Metrics/AbcSize
       def add_service(service)
-        # init repos, so we are sure we operate on "/" and have GPG imported
-        initialize_target_repos
         # save repositories before refreshing added services (otherwise
         # pkg-bindings will treat them as removed by the service refresh and
         # unload them)

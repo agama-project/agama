@@ -402,6 +402,11 @@ const timezoneTime = (timezone: string, date: Date = new Date()): string | undef
   }
 };
 
+const mask = (value, visible = 4, character = "*") => {
+  const regex = new RegExp(`.(?=(.{${visible}}))`, "g");
+  return value.replace(regex, character);
+};
+
 export {
   noop,
   identity,
@@ -422,4 +427,5 @@ export {
   localConnection,
   slugify,
   timezoneTime,
+  mask,
 };

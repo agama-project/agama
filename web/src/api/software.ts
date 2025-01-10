@@ -20,8 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-import { Pattern, Product, SoftwareConfig, SoftwareProposal } from "~/types/software";
-import { get, put } from "~/api/http";
+import {
+  Pattern,
+  Product,
+  SoftwareConfig,
+  RegistrationInfo,
+  SoftwareProposal,
+} from "~/types/software";
+import { del, get, post, put } from "~/api/http";
 
 /**
  * Returns the software configuration
@@ -39,6 +45,11 @@ const fetchProposal = (): Promise<SoftwareProposal> => get("/api/software/propos
 const fetchProducts = (): Promise<Product[]> => get("/api/software/products");
 
 /**
+ * Returns an object with the registration info
+ */
+const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/registration");
+
+/**
  * Returns the list of patterns for the selected product
  */
 const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
@@ -50,4 +61,24 @@ const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
  */
 const updateConfig = (config: SoftwareConfig) => put("/api/software/config", config);
 
-export { fetchConfig, fetchPatterns, fetchProposal, fetchProducts, updateConfig };
+/**
+ * Request registration of selected product with given key
+ */
+const register = ({ key, email }: { key: string; email?: string }) =>
+  post("/api/software/registration", { key, email });
+
+/**
+ * Request deregistering selected product
+ */
+const deregister = () => del("/api/software/registration");
+
+export {
+  fetchConfig,
+  fetchPatterns,
+  fetchProposal,
+  fetchProducts,
+  fetchRegistration,
+  updateConfig,
+  register,
+  deregister,
+};

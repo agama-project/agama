@@ -32,12 +32,14 @@ const tumbleweed: Product = {
   name: "openSUSE Tumbleweed",
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
+  registration: "no",
 };
 const microos: Product = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
   icon: "MicroOS.svg",
   description: "MicroOS description",
+  registration: "no",
 };
 
 let mockUseProduct: { products: Product[]; selectedProduct?: Product };

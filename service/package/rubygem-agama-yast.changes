@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Jan  9 12:21:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Activate multipath in case it is forced by the user 
+  (gh#agama-project/agama#1875).
+
+-------------------------------------------------------------------
+Wed Jan  8 14:05:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
 Mon Dec 23 18:40:01 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix collision between hotfix and new bootlaoder dbus interface

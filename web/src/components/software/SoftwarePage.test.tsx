@@ -28,6 +28,10 @@ import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
+
 jest.mock("~/queries/issues", () => ({
   useIssues: () => [],
 }));

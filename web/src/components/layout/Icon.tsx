@@ -26,6 +26,7 @@ import React from "react";
 // icons location. Check the tsconfig.json file to see its value.
 import AddAPhoto from "@icons/add_a_photo.svg?component";
 import Apps from "@icons/apps.svg?component";
+import AppRegistration from "@icons/app_registration.svg?component";
 import Badge from "@icons/badge.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
@@ -91,6 +92,7 @@ import { SiLinux } from "@icons-pack/react-simple-icons";
 const icons = {
   add_a_photo: AddAPhoto,
   apps: Apps,
+  app_registration: AppRegistration,
   badge: Badge,
   backspace: Backspace,
   check_circle: CheckCircle,

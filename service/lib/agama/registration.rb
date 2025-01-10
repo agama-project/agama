@@ -30,6 +30,16 @@ Yast.import "Arch"
 module Agama
   # Handles everything related to registration of system to SCC, RMT or similar.
   class Registration
+    # NOTE: identical and keep in sync with Software::Manager::TARGET_DIR
+    TARGET_DIR = "/run/agama/zypp"
+    private_constant :TARGET_DIR
+
+    # FIXME: it should use TARGET_DIR instead of "/", but connect failed to read it even
+    # if fs_root passed as client params. Check with SCC guys why.
+    GLOBAL_CREDENTIALS_PATH = File.join("/",
+      SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE)
+    private_constant :GLOBAL_CREDENTIALS_PATH
+
     # Code used for registering the product.
     #
     # @return [String, nil] nil if the product is not registered yet.
@@ -41,7 +51,7 @@ module Agama
     attr_reader :email
 
     module Requirement
-      NOT_REQUIRED = :not_required
+      NO = :no
       OPTIONAL = :optional
       MANDATORY = :mandatory
     end
@@ -74,7 +84,7 @@ module Agama
       login, password = SUSE::Connect::YaST.announce_system(connect_params, target_distro)
       # write the global credentials
       # TODO: check if we can do it in memory for libzypp
-      SUSE::Connect::YaST.create_credentials_file(login, password)
+      SUSE::Connect::YaST.create_credentials_file(login, password, GLOBAL_CREDENTIALS_PATH)
 
       target_product = OpenStruct.new(
         arch:       Yast::Arch.rpm_arch,
@@ -86,7 +96,8 @@ module Agama
       # if service require specific credentials file, store it
       @credentials_file = credentials_from_url(@service.url)
       if @credentials_file
-        SUSE::Connect::YaST.create_credentials_file(login, password, @credentials_file)
+        SUSE::Connect::YaST.create_credentials_file(login, password,
+          File.join(TARGET_DIR, credentials_path(@credentials_file)))
       end
       Y2Packager::NewRepositorySetup.instance.add_service(@service.name)
       @software.add_service(@service)
@@ -116,9 +127,9 @@ module Agama
         email: email
       }
       SUSE::Connect::YaST.deactivate_system(connect_params)
-      FileUtils.rm(SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE) # connect does not remove it itself
+      FileUtils.rm(GLOBAL_CREDENTIALS_PATH) # connect does not remove it itself
       if @credentials_file
-        FileUtils.rm(credentials_path(@credentials_file))
+        FileUtils.rm(File.join(TARGET_DIR, credentials_path(@credentials_file)))
         @credentials_file = nil
       end
 
@@ -131,10 +142,18 @@ module Agama
     def finish
       return unless reg_code
 
-      files = [credentials_path(@credentials_file), SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE]
-      files.each do |file|
-        dest = File.join(Yast::Installation.destdir, file)
-        FileUtils.cp(file, dest)
+      files = [[
+        GLOBAL_CREDENTIALS_PATH, File.join(Yast::Installation.destdir, GLOBAL_CREDENTIALS_PATH)
+      ]]
+      if @credentials_file
+        files << [
+          File.join(TARGET_DIR, credentials_path(@credentials_file)),
+          File.join(Yast::Installation.destdir, credentials_path(@credentials_file))
+        ]
+      end
+
+      files.each do |src_dest|
+        FileUtils.cp(*src_dest)
       end
     end
 
@@ -142,10 +161,10 @@ module Agama
     #
     # @return [Symbol] See {Requirement}.
     def requirement
-      return Requirement::NOT_REQUIRED unless product
+      return Requirement::NO unless product
       return Requirement::MANDATORY if product.repositories.none?
 
-      Requirement::NOT_REQUIRED
+      Requirement::NO
     end
 
     # Callbacks to be called when registration changes (e.g., a different product is selected).

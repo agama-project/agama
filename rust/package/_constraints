@@ -2,7 +2,7 @@
   <hardware>
     <jobs>4</jobs>
     <disk>
-      <size unit="G">20</size>
+      <size unit="G">25</size>
     </disk>
     <physicalmemory>
       <size unit="G">8</size>
