@@ -32,8 +32,6 @@ import { config } from "~/api/storage/types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const probe = (): Promise<any> => post("/api/storage/probe");
 
-export { probe };
-
 const fetchConfig = (): Promise<config.Config | undefined> =>
   get("/api/storage/config").then((config) => config.storage);
 
@@ -57,8 +55,8 @@ const findStorageJob = (id: string): Promise<Job | undefined> =>
  */
 const refresh = async (): Promise<void> => {
   const settings = await fetchSettings();
-  await probe();
-  await calculate(settings);
+  await probe().catch(console.log);
+  await calculate(settings).catch(console.log);
 };
 
-export { fetchConfig, fetchStorageJobs, findStorageJob, refresh };
+export { probe, fetchConfig, fetchStorageJobs, findStorageJob, refresh };

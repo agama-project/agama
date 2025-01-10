@@ -27,11 +27,17 @@ import { Page } from "~/components/core";
 import { DeviceSelectorTable } from "~/components/storage";
 import DevicesTechMenu from "./DevicesTechMenu";
 import { ProposalTarget, StorageDevice } from "~/types/storage";
-import { useAvailableDevices, useProposalMutation, useProposalResult } from "~/queries/storage";
+import {
+  useAvailableDevices,
+  useProposalMutation,
+  useProposalResult,
+  useRefresh,
+} from "~/queries/storage";
 import { deviceChildren } from "~/components/storage/utils";
 import { compact } from "~/utils";
 import a11y from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { _ } from "~/i18n";
+import { Loading } from "~/components/layout";
 
 const SELECT_DISK_ID = "select-disk";
 const CREATE_LVM_ID = "create-lvm";
@@ -53,10 +59,16 @@ export default function DeviceSelection() {
   const availableDevices = useAvailableDevices();
   const updateProposal = useProposalMutation();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [state, setState] = useState<DeviceSelectionState>({});
 
   const isTargetDisk = state.target === ProposalTarget.DISK;
   const isTargetNewLvmVg = state.target === ProposalTarget.NEW_LVM_VG;
+
+  useRefresh({
+    onStart: () => setIsLoading(true),
+    onFinish: () => setIsLoading(false),
+  });
 
   useEffect(() => {
     if (state.target !== undefined) return;
@@ -117,6 +129,8 @@ by default as [logical volumes of a new LVM Volume Group]. The corresponding \
 physical volumes will be created on demand as new partitions at the selected \
 devices.",
   ).split(/[[\]]/);
+
+  if (isLoading) return <Loading />;
 
   return (
     <Page>
