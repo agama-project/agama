@@ -39,7 +39,6 @@ import {
   SoftwareProposal,
 } from "~/types/software";
 import {
-  deregister,
   fetchConfig,
   fetchPatterns,
   fetchProducts,
@@ -134,25 +133,6 @@ const useRegisterMutation = () => {
 
   const query = {
     mutationFn: register,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["software/registration"] });
-      startProbing();
-    },
-  };
-  return useMutation(query);
-};
-
-/**
- * Hook that builds a mutation for deregistering a product
- *
- * @note it would trigger a general probing as a side-effect when mutation
- * includes a product.
- */
-const useDeregisterMutation = () => {
-  const queryClient = useQueryClient();
-
-  const query = {
-    mutationFn: deregister,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["software/registration"] });
       startProbing();
@@ -286,5 +266,4 @@ export {
   useProposalChanges,
   useRegistration,
   useRegisterMutation,
-  useDeregisterMutation,
 };

@@ -27,7 +27,7 @@ import {
   RegistrationInfo,
   SoftwareProposal,
 } from "~/types/software";
-import { del, get, post, put } from "~/api/http";
+import { get, post, put } from "~/api/http";
 
 /**
  * Returns the software configuration
@@ -67,11 +67,6 @@ const updateConfig = (config: SoftwareConfig) => put("/api/software/config", con
 const register = ({ key, email }: { key: string; email?: string }) =>
   post("/api/software/registration", { key, email });
 
-/**
- * Request deregistering selected product
- */
-const deregister = () => del("/api/software/registration");
-
 export {
   fetchConfig,
   fetchPatterns,
@@ -80,5 +75,4 @@ export {
   fetchRegistration,
   updateConfig,
   register,
-  deregister,
 };
