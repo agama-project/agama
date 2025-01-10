@@ -6,7 +6,7 @@ After=network-online.target agama.service agama-hostname.service
 BindsTo=agama.service
 
 [Service]
-EnvironmentFile=-"/etc/agama.d/cmdline.conf"
+EnvironmentFile=-/etc/agama.d/cmdline.conf
 Environment="AGAMA_LOG=debug,zbus=info"
 Type=notify
 ExecStart=/usr/bin/agama-web-server serve --address :::80 --address2 :::443

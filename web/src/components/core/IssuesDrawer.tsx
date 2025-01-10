@@ -68,13 +68,14 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
             if (issues.length === 0) return null;
             // FIXME: address this better or use the /product(s)? namespace instead of
             // /registration.
+            const section = scope === "product" ? "registration" : scope;
             const ariaLabelId = `${scope}-issues-section`;
 
             return (
               <section key={idx} aria-labelledby={ariaLabelId}>
                 <Stack hasGutter>
                   <h4 id={ariaLabelId}>
-                    <Link variant="link" isInline onClick={onClose} to={`/${scope}`}>
+                    <Link variant="link" isInline onClick={onClose} to={`/${section}`}>
                       {scopeHeaders[scope]}
                     </Link>
                   </h4>

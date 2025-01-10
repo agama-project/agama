@@ -60,7 +60,14 @@ describe("IssuesDrawer", () => {
   describe("when there are installation issues", () => {
     beforeEach(() => {
       mockIssuesList = new IssuesList(
-        [],
+        [
+          {
+            description: "Registration Fake Issue",
+            source: 0,
+            severity: 0,
+            details: "Registration Fake Issue details",
+          },
+        ],
         [
           {
             description: "Software Fake Issue",
@@ -97,6 +104,7 @@ describe("IssuesDrawer", () => {
     it("renders the drawer with categorized issues linking to their scope", async () => {
       const { user } = installerRender(<IssuesDrawer onClose={onCloseFn} />);
 
+      const registrationIssues = screen.getByRole("region", { name: "Registration" });
       const softwareIssues = screen.getByRole("region", { name: "Software" });
       const storageIssues = screen.getByRole("region", { name: "Storage" });
       const usersIssues = screen.getByRole("region", { name: "Users" });
@@ -113,6 +121,14 @@ describe("IssuesDrawer", () => {
       const usersLink = within(usersIssues).getByRole("link", { name: "Users" });
       expect(usersLink).toHaveAttribute("href", "/users");
       within(usersIssues).getByText("Users Fake Issue");
+
+      // Regression test: right now, registration issues comes under product
+      // scope. Check that it links to registration section anyway.
+      const registrationLink = within(registrationIssues).getByRole("link", {
+        name: "Registration",
+      });
+      expect(registrationLink).toHaveAttribute("href", "/registration");
+      within(registrationIssues).getByText("Registration Fake Issue");
 
       // onClose should be called when user clicks on a section too for ensuring
       // drawer gets closed even when navigation is not needed.
