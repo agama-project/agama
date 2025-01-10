@@ -88,7 +88,13 @@ module Agama
         private_constant :STORAGE_INTERFACE
 
         def probe
-          busy_while { backend.probe }
+          busy_while do
+            # Clean trees in advance to avoid having old objects exported in D-Bus.
+            system_devices_tree.clean
+            staging_devices_tree.clean
+
+            backend.probe
+          end
         end
 
         # Applies the given serialized config according to the JSON schema.
