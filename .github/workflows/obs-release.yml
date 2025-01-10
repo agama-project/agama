@@ -38,3 +38,11 @@ jobs:
     uses: ./.github/workflows/obs-service-shared.yml
     # pass all secrets
     secrets: inherit
+
+  update_products:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      package_name: agama-products
+      service_file: products.d/_service
