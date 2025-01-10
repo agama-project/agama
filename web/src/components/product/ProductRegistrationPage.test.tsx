@@ -42,12 +42,10 @@ const sle: Product = {
 let selectedProduct: Product;
 let registrationInfoMock: RegistrationInfo;
 const registerMutationMock = jest.fn();
-const deregisterMutationMock = jest.fn();
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useRegisterMutation: () => ({ mutate: registerMutationMock }),
-  useDeregisterMutation: () => ({ mutate: deregisterMutationMock }),
   useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
   useProduct: (): ReturnType<typeof useProduct> => {
     return {
@@ -126,13 +124,6 @@ describe("ProductRegistrationPage", () => {
       await user.click(visibilityCodeToggler);
       expect(screen.queryByText("INTERNAL-USE-ONLY-1234-5678")).toBeNull();
       screen.getByText(/\*?5678/);
-    });
-
-    it("allows deregistering the product", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />);
-      const deregisterButton = screen.getByRole("button", { name: "deregister" });
-      await user.click(deregisterButton);
-      expect(deregisterMutationMock).toHaveBeenCalled();
     });
 
     //   describe("but at registration path already", () => {
