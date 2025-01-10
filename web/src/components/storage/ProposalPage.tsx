@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page, Drawer, EmptyState } from "~/components/core/";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
@@ -35,16 +35,14 @@ import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
 import {
   useAvailableDevices,
-  useDeprecated,
   useDevices,
   useProductParams,
   useProposalMutation,
   useProposalResult,
   useVolumeDevices,
   useVolumeTemplates,
+  useRefresh,
 } from "~/queries/storage";
-import { useQueryClient } from "@tanstack/react-query";
-import { refresh } from "~/api/storage";
 
 const StorageWarning = () => (
   <Page>
@@ -96,16 +94,12 @@ export default function ProposalPage() {
   const { encryptionMethods } = useProductParams({ suspense: true });
   const proposal = useProposalResult();
   const updateProposal = useProposalMutation();
-  const deprecated = useDeprecated();
-  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  React.useEffect(() => {
-    if (deprecated) {
-      refresh().then(() => {
-        queryClient.invalidateQueries({ queryKey: ["storage"] });
-      });
-    }
-  }, [deprecated, queryClient]);
+  useRefresh({
+    onStart: () => setIsLoading(true),
+    onFinish: () => setIsLoading(false),
+  });
 
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
@@ -141,7 +135,7 @@ export default function ProposalPage() {
               volumeTemplates={volumeTemplates}
               settings={settings}
               onChange={changeSettings}
-              isLoading={false}
+              isLoading={isLoading}
             />
           </GridItem>
           <GridItem sm={12} xl={6}>
@@ -162,14 +156,14 @@ export default function ProposalPage() {
                   // @ts-expect-error: we do not know how to specify the type of
                   // drawerRef properly and TS does not find the "open" property
                   onActionsClick={drawerRef.current?.open}
-                  isLoading={false}
+                  isLoading={isLoading}
                 />
                 <ProposalResultSection
                   system={systemDevices}
                   staging={stagingDevices}
                   actions={actions}
                   errors={errors}
-                  isLoading={false}
+                  isLoading={isLoading}
                 />
               </Stack>
             </Drawer>
