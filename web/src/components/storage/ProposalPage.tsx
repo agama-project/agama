@@ -22,7 +22,7 @@
 
 import React, { useRef } from "react";
 import { Grid, GridItem, Stack } from "@patternfly/react-core";
-import { Page, Drawer } from "~/components/core/";
+import { Page, Drawer, EmptyState } from "~/components/core/";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ProposalSettingsSection from "./ProposalSettingsSection";
 import ProposalResultSection from "./ProposalResultSection";
@@ -45,6 +45,22 @@ import {
 } from "~/queries/storage";
 import { useQueryClient } from "@tanstack/react-query";
 import { refresh } from "~/api/storage";
+
+const StorageWarning = () => (
+  <Page>
+    <Page.Header>
+      <h2>{_("Storage")}</h2>
+    </Page.Header>
+    <Page.Content>
+      <EmptyState
+        title={_(
+          "The system layout was set up using a explicit configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.",
+        )}
+        icon="warning"
+      />
+    </Page.Content>
+  </Page>
+);
 
 /**
  * Which UI item is being changed by user
@@ -78,7 +94,7 @@ export default function ProposalPage() {
   const volumeDevices = useVolumeDevices();
   const volumeTemplates = useVolumeTemplates();
   const { encryptionMethods } = useProductParams({ suspense: true });
-  const { actions, settings } = useProposalResult();
+  const proposal = useProposalResult();
   const updateProposal = useProposalMutation();
   const deprecated = useDeprecated();
   const queryClient = useQueryClient();
@@ -94,6 +110,10 @@ export default function ProposalPage() {
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
+
+  if (proposal === undefined) return <StorageWarning />;
+
+  const { settings, actions } = proposal;
 
   const changeSettings = async (changing, updated: object) => {
     const newSettings = { ...settings, ...updated };

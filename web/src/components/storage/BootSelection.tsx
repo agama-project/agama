@@ -53,16 +53,16 @@ export default function BootSelectionDialog() {
   };
 
   const [state, setState] = useState<BootSelectionState>({ load: false });
-  const { settings } = useProposalResult();
+  const proposal = useProposalResult();
   const availableDevices = useAvailableDevices();
   const updateProposal = useProposalMutation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (state.load) return;
+    if (state.load || !proposal.settings) return;
 
     let selectedOption: string;
-    const { bootDevice, configureBoot, defaultBootDevice } = settings;
+    const { bootDevice, configureBoot, defaultBootDevice } = proposal.settings;
 
     if (!configureBoot) {
       selectedOption = BOOT_DISABLED_ID;
@@ -82,7 +82,7 @@ export default function BootSelectionDialog() {
       availableDevices,
       selectedOption,
     });
-  }, [availableDevices, settings, state.load]);
+  }, [availableDevices, proposal, state.load]);
 
   if (!state.load) return;
 
@@ -97,7 +97,7 @@ export default function BootSelectionDialog() {
       bootDevice: state.selectedOption === BOOT_MANUAL_ID ? state.bootDevice.name : undefined,
     };
 
-    await updateProposal.mutateAsync({ ...settings, ...newSettings });
+    await updateProposal.mutateAsync({ ...proposal.settings, ...newSettings });
     navigate("..");
   };
 
