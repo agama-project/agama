@@ -34,6 +34,9 @@ export default {
   "%s disk": [
     "%s disk"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s er et uforanderlig system med atomiske oppdateringer. Den bruker et skrivebeskyttet Btrfs filsystem oppdatert via øyeblikksbilder."
   ],
@@ -42,6 +45,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s med %d partisjoner"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -428,6 +434,9 @@ export default {
   "Encryption Password": [
     "Krypteringspassord"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Nøyaktig størrelse"
   ],
@@ -512,6 +521,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Hide": [
+    ""
+  ],
   "Hide %d subvolume action": [
     "Skjul %d undervolum handling",
     "Skjul %d undervolumers handlinger"
@@ -584,6 +596,9 @@ export default {
   ],
   "Install new system on": [
     "Installer nytt system på"
+  ],
+  "Install using an advanced configuration.": [
+    ""
   ],
   "Install using device %s and deleting all its content": [
     "Installer med enheten %s og slett alt av dens innhold"
@@ -942,6 +957,15 @@ export default {
   "Reboot": [
     "Start om"
   ],
+  "Register": [
+    "Registrer"
+  ],
+  "Registration": [
+    "Registrering"
+  ],
+  "Registration code": [
+    "Registrerings kode"
+  ],
   "Reload": [
     "Last på nytt"
   ],
@@ -1114,9 +1138,6 @@ export default {
   "Table with mount points": [
     "Tabell med monteringspunkter"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Ta god tid til å sjekke din konfigurasjon før du begynner installasjons prosessen."
-  ],
   "Target Password": [
     "Målets Passord"
   ],
@@ -1203,6 +1224,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "Systemet har ikke blitt konfigurert for å koble til et Wi-Fi nettverk ennå."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "Systemet vil bruke %s som standardspråk."

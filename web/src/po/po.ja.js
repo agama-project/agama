@@ -33,6 +33,9 @@ export default {
   "%s disk": [
     "%s ディスク"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s は一括更新のできる不可変なシステムです。読み込み専用の btrfs ルートファイルシステムを利用して更新を適用します。"
   ],
@@ -41,6 +44,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -453,6 +459,9 @@ export default {
   "Encryption Password": [
     "暗号化パスワード"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "正確なサイズ"
   ],
@@ -539,6 +548,9 @@ export default {
   ],
   "GiB": [
     "GiB"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "%d 個のサブボリューム処理を隠す"
@@ -637,7 +649,7 @@ export default {
     "インストール作業では起動用のパーティションを設定しません。"
   ],
   "Installation will take %s.": [
-    "インストールを行うには %s が必要です。"
+    "インストールするには %s が必要です。"
   ],
   "Installer Options": [
     "インストーラのオプション"
@@ -993,6 +1005,15 @@ export default {
   "Reboot": [
     "再起動"
   ],
+  "Register": [
+    "登録"
+  ],
+  "Registration": [
+    "登録"
+  ],
+  "Registration code": [
+    "登録コード"
+  ],
   "Reload": [
     "再読み込み"
   ],
@@ -1170,9 +1191,6 @@ export default {
   "Table with mount points": [
     "マウントポイントの一覧"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "インストール処理を開始する前に、設定内容をよくご確認ください。"
-  ],
   "Target Password": [
     "ターゲットのパスワード"
   ],
@@ -1237,7 +1255,7 @@ export default {
     "インストールで占有する容量は"
   ],
   "The installation will take %s including:": [
-    "インストールを行うには、下記を含めた %s が必要です:"
+    "下記の構成をインストールするには %s が必要です:"
   ],
   "The installer requires [root] user privileges.": [
     "インストーラを使用するには [root] 権限が必要です。"
@@ -1262,6 +1280,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "システムは %s を既定の言語として使用します。"

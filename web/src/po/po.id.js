@@ -33,6 +33,9 @@ export default {
   "%s disk": [
     "%s diska"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s adalah sistem yang tidak dapat diubah (immutable) dan mendukung pembaruan atomik. Sistem ini menggunakan file system Btrfs yang hanya-baca dan diperbarui melalui snapshot."
   ],
@@ -41,6 +44,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s dengan partisi %d"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -453,6 +459,9 @@ export default {
   "Encryption Password": [
     "Kata Sandi Enkripsi"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Ukuran yang tepat"
   ],
@@ -539,6 +548,9 @@ export default {
   ],
   "GiB": [
     "GiB"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "Menyembunyikan tindakan subvolume %d"
@@ -993,6 +1005,15 @@ export default {
   "Reboot": [
     "Maut ulang"
   ],
+  "Register": [
+    "Mendaftar"
+  ],
+  "Registration": [
+    "Pendaftaran"
+  ],
+  "Registration code": [
+    "Kode pendaftaran"
+  ],
   "Reload": [
     "Muat ulang"
   ],
@@ -1170,9 +1191,6 @@ export default {
   "Table with mount points": [
     "Tabel dengan titik pemasangan"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Gunakan waktu Anda untuk memeriksa konfigurasi Anda sebelum memulai proses instalasi."
-  ],
   "Target Password": [
     "Kata sandi target"
   ],
@@ -1262,6 +1280,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "Sistem belum dikonfigurasi untuk menghubungkan ke jaringan Wi-Fi."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "Sistem akan menggunakan %s sebagai bahasa default."

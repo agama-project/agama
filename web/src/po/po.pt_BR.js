@@ -34,6 +34,9 @@ export default {
   "%s disk": [
     "disco %s"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s é um sistema imutável com atualizações atômicas. Ele usa um sistema de arquivos Btrfs somente leitura atualizado via instantâneos."
   ],
@@ -42,6 +45,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s com %d partições"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -455,6 +461,9 @@ export default {
   "Encryption Password": [
     "Senha de criptografia"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Tamanho exato"
   ],
@@ -542,6 +551,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Hide": [
+    ""
+  ],
   "Hide %d subvolume action": [
     "Ocultar %d ação do subvolume",
     "Ocultar %d ações de subvolume"
@@ -614,6 +626,9 @@ export default {
   ],
   "Install new system on": [
     "Instalar novo sistema em"
+  ],
+  "Install using an advanced configuration.": [
+    ""
   ],
   "Install using device %s and deleting all its content": [
     "Instalar usando o dispositivo %s e excluindo todo o seu conteúdo"
@@ -996,6 +1011,15 @@ export default {
   "Reboot": [
     "Reiniciar"
   ],
+  "Register": [
+    "Registro"
+  ],
+  "Registration": [
+    "Cadastro"
+  ],
+  "Registration code": [
+    "Código de registro"
+  ],
   "Reload": [
     "Recarregar"
   ],
@@ -1174,9 +1198,6 @@ export default {
   "Table with mount points": [
     "Tabela com pontos de montagem"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Reserve um tempo para verificar sua configuração antes de iniciar o processo de instalação."
-  ],
   "Target Password": [
     "Senha de destino"
   ],
@@ -1266,6 +1287,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "O sistema ainda não foi configurado para se conectar a uma rede Wi-Fi."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "O sistema usará %s como idioma padrão."

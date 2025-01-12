@@ -34,6 +34,9 @@ export default {
   "%s disk": [
     "Disc %s"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de fitxers Btrfs només de lectura actualitzat a través d'instantànies."
   ],
@@ -42,6 +45,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s amb %d particions"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -455,6 +461,9 @@ export default {
   "Encryption Password": [
     "Contrasenya d'encriptació"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Mida exacta"
   ],
@@ -541,6 +550,9 @@ export default {
   ],
   "GiB": [
     "GiB"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "Amaga %d acció de subvolum",
@@ -996,6 +1008,15 @@ export default {
   "Reboot": [
     "Reinicia"
   ],
+  "Register": [
+    "Registra"
+  ],
+  "Registration": [
+    "Registre"
+  ],
+  "Registration code": [
+    "Codi de registre"
+  ],
   "Reload": [
     "Torna a carregar"
   ],
@@ -1174,9 +1195,6 @@ export default {
   "Table with mount points": [
     "Taula amb punts de muntatge"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Dediqueu el temps que calgui a comprovar la configuració abans de començar el procés d'instal·lació."
-  ],
   "Target Password": [
     "Contrasenya de destinació"
   ],
@@ -1266,6 +1284,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "El sistema usarà el %s com a llengua per defecte."
