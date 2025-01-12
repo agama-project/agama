@@ -35,14 +35,20 @@ export default {
   "%s disk": [
     "Диск %s"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s - это неизменяемая система с атомарными обновлениями. Она использует файловую систему Btrfs, доступную только для чтения и обновляемую с помощью моментальных снимков."
   ],
   "%s logo": [
-    ""
+    "Логотип %s"
   ],
   "%s with %d partitions": [
     "%s с %d разделами"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -149,6 +155,9 @@ export default {
   "Authentication by target": [
     "Аутентификация по цели"
   ],
+  "Authentication failed, please try again": [
+    "Сбой аутентификации, попробуйте еще раз"
+  ],
   "Auto": [
     "Автоматически"
   ],
@@ -164,6 +173,12 @@ export default {
   "Automatic (DHCP)": [
     "Автоматически (DHCP)"
   ],
+  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+    "Автоматическое сканирование LUN [отключено]. LUN должны быть настроены вручную после активации контроллера."
+  ],
+  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+    "Автоматическое сканирование LUN [включено]. Активация контроллера, работающего в режиме NPIV, автоматически сконфигурирует все его LUNы."
+  ],
   "Automatically calculated size according to the selected product.": [
     "Автоматический расчет размера в соответствии с выбранным продуктом."
   ],
@@ -173,11 +188,14 @@ export default {
   "Back": [
     "Назад"
   ],
+  "Back to device selection": [
+    "Назад к выбору устройств"
+  ],
   "Before %s": [
     "До %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    ""
+    "Перед установкой необходимо принять некоторые решения. Щелкните на каждом разделе, чтобы просмотреть настройки."
   ],
   "Before starting the installation, you need to address the following problems:": [
     "До начала установки нужно устранить следующие проблемы:"
@@ -210,7 +228,7 @@ export default {
     "Не удалось подключиться к серверу Agama"
   ],
   "Cannot format all selected devices": [
-    ""
+    "Невозможно отформатировать все выбранные устройства"
   ],
   "Change": [
     "Изменить"
@@ -277,6 +295,9 @@ export default {
   "Connected (%s)": [
     "Подключено (%s)"
   ],
+  "Connected to %s": [
+    "Подключено к %s"
+  ],
   "Connecting": [
     "Подключение"
   ],
@@ -287,7 +308,7 @@ export default {
     "Продолжить"
   ],
   "Controllers": [
-    ""
+    "Контроллеры"
   ],
   "Could not authenticate against the server, please check it.": [
     "Не удалось пройти аутентификацию на сервере, пожалуйста, проверьте его."
@@ -307,8 +328,17 @@ export default {
   "Custom": [
     "По-своему"
   ],
+  "DASD": [
+    "DASD"
+  ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DASD devices selection table": [
+    "Таблица выбора устройств DASD"
+  ],
+  "DASDs table section": [
+    "Раздел таблицы DASD"
   ],
   "DIAG": [
     "Режим DIAG"
@@ -433,6 +463,9 @@ export default {
   "Encryption Password": [
     "Пароль шифрования"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Точный размер"
   ],
@@ -493,6 +526,9 @@ export default {
   "Format": [
     "Формат"
   ],
+  "Format selected devices?": [
+    "Отформатировать выбранные устройства?"
+  ],
   "Format the device": [
     "Отформатировать устройство"
   ],
@@ -516,6 +552,9 @@ export default {
   ],
   "GiB": [
     "ГиБ"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "Скрыть %d действие подтома",
@@ -591,6 +630,9 @@ export default {
   "Install new system on": [
     "Установить новую систему на"
   ],
+  "Install using an advanced configuration.": [
+    ""
+  ],
   "Install using device %s and deleting all its content": [
     "Установить с использованием устройства %s и удалить все его содержимое"
   ],
@@ -618,11 +660,20 @@ export default {
   "Installation will take %s.": [
     "Установка займёт %s."
   ],
+  "Installer Options": [
+    "Параметры установщика"
+  ],
   "Installer options": [
     "Параметры установщика"
   ],
+  "Installing the system, please wait...": [
+    "Установка системы, подождите..."
+  ],
   "Interface": [
     "Интерфейс"
+  ],
+  "Ip prefix or netmask": [
+    "Ip префикс или маска сети"
   ],
   "Keyboard": [
     "Клавиатура"
@@ -688,7 +739,7 @@ export default {
     "Основной диск или группа томов LVM для установки."
   ],
   "Main navigation": [
-    ""
+    "Навигация"
   ],
   "Make sure you provide the correct values": [
     "Убедитесь, что вы указали правильные значения"
@@ -789,6 +840,9 @@ export default {
   "No user defined yet.": [
     "Пользователь еще не определен."
   ],
+  "No visible Wi-Fi networks found": [
+    "Сети WiFi не найдены"
+  ],
   "No wired connections found": [
     "Проводные соединения не обнаружены"
   ],
@@ -814,7 +868,7 @@ export default {
     "Ни один из часовых поясов не соответствует фильтру."
   ],
   "Not possible with the current setup. Click to know more.": [
-    ""
+    "Невозможно с текущей конфигурацией. Нажмите, чтобы узнать подробнее."
   ],
   "Not selected yet": [
     "Ещё не выбрано"
@@ -823,7 +877,7 @@ export default {
     "Не установлен"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    ""
+    "Перед форматированием автономных устройств их необходимо активировать. Пожалуйста, отмените выбор или активацию устройств, перечисленных ниже, и повторите попытку"
   ],
   "Offload card": [
     "Разгрузочная карта"
@@ -833,6 +887,9 @@ export default {
   ],
   "Only available if authentication by target is provided": [
     "Доступно только при условии аутентификации по цели"
+  ],
+  "Options toggle": [
+    "Показ настроек"
   ],
   "Other": [
     "Другая"
@@ -869,6 +926,9 @@ export default {
   ],
   "Password confirmation": [
     "Подтверждение пароля"
+  ],
+  "Password for root user": [
+    "Пароль для пользователя root"
   ],
   "Password input": [
     "Ввод пароля"
@@ -924,6 +984,9 @@ export default {
   "Portal": [
     "Портал"
   ],
+  "Pre-installation checks": [
+    "Проверка перед установкой"
+  ],
   "Prefix length or netmask": [
     "Длина префикса или маска сети"
   ],
@@ -936,6 +999,9 @@ export default {
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Защита информации, хранящейся на устройстве, включая данные, программы и системные файлы."
   ],
+  "Provide a password to ensure administrative access to the system.": [
+    "Укажите пароль для обеспечения административного доступа к системе."
+  ],
   "Question": [
     "Вопрос"
   ],
@@ -947,6 +1013,15 @@ export default {
   ],
   "Reboot": [
     "Перезагрузка"
+  ],
+  "Register": [
+    "Зарегистрировать"
+  ],
+  "Registration": [
+    "Регистрация"
+  ],
+  "Registration code": [
+    "Код регистрации"
   ],
   "Reload": [
     "Обновить"
@@ -1005,6 +1080,9 @@ export default {
   "Select a location": [
     "Выберите расположение"
   ],
+  "Select a product": [
+    "Выберите продукт"
+  ],
   "Select booting partition": [
     "Выберите загрузочный раздел"
   ],
@@ -1046,6 +1124,9 @@ export default {
   ],
   "Set root SSH public key": [
     "Установить публичный ключ SSH для root"
+  ],
+  "Setup root user authentication": [
+    "Настройка аутентификации пользователя root"
   ],
   "Show %d subvolume action": [
     "Показать %d действие подтома",
@@ -1121,9 +1202,6 @@ export default {
   "Table with mount points": [
     "Таблица с точками монтирования"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Проверьте свои настройки до начала процесса установки."
-  ],
   "Target Password": [
     "Пароль цели"
   ],
@@ -1153,6 +1231,9 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "Устройство не может быть сокращено:"
+  ],
+  "The encryption password did not work": [
+    "Пароль шифрования не сработал"
   ],
   "The file system is allocated at the device %s.": [
     "Файловая система выделена на устройстве %s."
@@ -1211,6 +1292,9 @@ export default {
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "Система ещё не настроена на подключение к сети Wi-Fi."
   ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
+  ],
   "The system will use %s as its default language.": [
     "Система будет использовать %s в качестве языка по умолчанию."
   ],
@@ -1236,7 +1320,7 @@ export default {
     "На эти ограничения влияют:"
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    ""
+    "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах. Пожалуйста, подтвердите, что Вы действительно хотите продолжить."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Данный продукт не позволяет выбирать шаблоны программного обеспечения во время установки. Однако Вы можете добавить дополнительное программное обеспечение после завершения установки."
@@ -1273,6 +1357,9 @@ export default {
   ],
   "Unit for the minimum size": [
     "Единица для минимального размера"
+  ],
+  "Unselect": [
+    "Отменить выбор"
   ],
   "Unused space": [
     "Неиспользуемое пространство"
@@ -1319,6 +1406,9 @@ export default {
   "Users": [
     "Пользователи"
   ],
+  "Visible Wi-Fi networks": [
+    "Видимые сети WiFi"
+  ],
   "WPA & WPA2 Personal": [
     "WPA и WPA2 Personal"
   ],
@@ -1337,6 +1427,9 @@ export default {
   "Wi-Fi": [
     "Wi-Fi"
   ],
+  "WiFi connection form": [
+    "Форма WiFi соединения"
+  ],
   "Wired": [
     "Проводное"
   ],
@@ -1346,8 +1439,11 @@ export default {
   "Yes": [
     "Да"
   ],
+  "You can change it or select another authentication method in the 'Users' section before installing.": [
+    "Вы можете изменить его или выбрать другой метод аутентификации в разделе \"Пользователи\" перед установкой."
+  ],
   "ZFCP": [
-    ""
+    "ZFCP"
   ],
   "affecting": [
     "влияя на"
@@ -1410,9 +1506,9 @@ export default {
     "zFCP"
   ],
   "zFCP Disk Activation": [
-    ""
+    "Активация дисков zFCP"
   ],
   "zFCP Disk activation form": [
-    ""
+    "Форма активации диска zFCP"
   ]
 };

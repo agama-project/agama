@@ -34,6 +34,9 @@ export default {
   "%s disk": [
     "%s disk"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s är ett oföränderligt system med atomära uppdateringar. Det använder ett skrivskyddat Btrfs filsystem som uppdateras via ögonblicksavbilder."
   ],
@@ -42,6 +45,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s med %d partitioner"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -455,6 +461,9 @@ export default {
   "Encryption Password": [
     "Krypteringslösenord"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Exakt storlek"
   ],
@@ -541,6 +550,9 @@ export default {
   ],
   "GiB": [
     "GiB"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "Dölj %d undervolym åtgärd",
@@ -996,6 +1008,15 @@ export default {
   "Reboot": [
     "Starta om"
   ],
+  "Register": [
+    "Registrera"
+  ],
+  "Registration": [
+    "Registrering"
+  ],
+  "Registration code": [
+    "Registreringskod"
+  ],
   "Reload": [
     "Ladda om"
   ],
@@ -1174,9 +1195,6 @@ export default {
   "Table with mount points": [
     "Tabell med monteringspunkter"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Ta dig tid att kontrollera din konfiguration innan du startar installationsprocessen."
-  ],
   "Target Password": [
     "Mål lösenord"
   ],
@@ -1266,6 +1284,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "Systemet har inte konfigurerats för att ansluta till ett WiFi-nätverk än."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "Systemet kommer att använda %s som dess standardspråk."
