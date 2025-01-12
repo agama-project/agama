@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-22 02:45+0000\n"
+"POT-Creation-Date: 2025-01-12 02:47+0000\n"
 "PO-Revision-Date: 2024-12-11 16:48+0000\n"
 "Last-Translator: \"Marina J. Donis\" <marinajdonis@gmail.com>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -105,7 +105,7 @@ msgstr "Calcular la propuesta de software"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:563
+#: service/lib/agama/software/manager.rb:561
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "No se pudo leer el repositorio \"%s\""
@@ -113,14 +113,14 @@ msgstr "No se pudo leer el repositorio \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:573
+#: service/lib/agama/software/manager.rb:571
 msgid "Product not selected yet"
 msgstr "Producto aún no seleccionado"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:582
+#: service/lib/agama/software/manager.rb:580
 msgid "Product must be registered"
 msgstr "El producto debe estar registrado"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-22 02:45+0000\n"
+"POT-Creation-Date: 2025-01-12 02:47+0000\n"
 "PO-Revision-Date: 2024-11-13 18:48+0000\n"
 "Last-Translator: Jan Papež <honyczek@centrum.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -105,7 +105,7 @@ msgstr "Vypočítávání návrhu softwaru"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:563
+#: service/lib/agama/software/manager.rb:561
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Nelze načíst repozitář \"%s\""
@@ -113,14 +113,14 @@ msgstr "Nelze načíst repozitář \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:573
+#: service/lib/agama/software/manager.rb:571
 msgid "Product not selected yet"
 msgstr "Není vybrán žádný produkt"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:582
+#: service/lib/agama/software/manager.rb:580
 msgid "Product must be registered"
 msgstr "Produkt musí být zaregistrován"
 
