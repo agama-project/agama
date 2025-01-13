@@ -22,7 +22,7 @@
 
 import React, { Suspense, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Page, PageProps } from "@patternfly/react-core";
+import { Masthead, Page, PageProps } from "@patternfly/react-core";
 import { Questions } from "~/components/questions";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
@@ -69,6 +69,11 @@ const Layout = ({
     // to mount it if there is no header.
     pageProps.notificationDrawer = <IssuesDrawer onClose={closeIssuesDrawer} />;
     pageProps.isNotificationDrawerExpanded = issuesDrawerVisible;
+  } else {
+    // FIXME: render an empty Masthead instead of nothing, in order to have
+    // everything working as designed by PatternfFly (there are some CSS rules
+    // that expect the masthead to be there :shrug:)
+    pageProps.masthead = <Masthead />;
   }
 
   return (
