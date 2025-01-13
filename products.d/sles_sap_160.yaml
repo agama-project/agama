@@ -1,4 +1,4 @@
-id: SLES-SAP
+id: SLES_SAP
 name: SUSE Linux Enterprise Server for SAP Applications 16.0 Beta
 archs: x86_64,aarch64,ppc
 registration: "mandatory"
