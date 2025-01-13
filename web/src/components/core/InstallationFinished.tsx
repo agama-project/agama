@@ -23,6 +23,7 @@
 import React, { useState } from "react";
 import {
   Alert,
+  Bullseye,
   Button,
   Card,
   CardBody,
@@ -35,7 +36,7 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { Center, Icon } from "~/components/layout";
+import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
@@ -106,7 +107,7 @@ function InstallationFinished() {
   }
 
   return (
-    <Center>
+    <Bullseye>
       <Grid hasGutter>
         <GridItem sm={8} smOffset={2}>
           <Card>
@@ -120,6 +121,7 @@ function InstallationFinished() {
                 >
                   <EmptyStateBody>
                     <Flex
+                      direction={{ default: "column" }}
                       rowGap={{ default: "rowGapMd" }}
                       justifyContent={{ default: "justifyContentCenter" }}
                     >
@@ -145,7 +147,7 @@ function InstallationFinished() {
           </Card>
         </GridItem>
       </Grid>
-    </Center>
+    </Bullseye>
   );
 }
 

@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
-import { Center, Icon, PlainLayout } from "~/components/layout";
+import { Bullseye, EmptyState, EmptyStateBody } from "@patternfly/react-core";
+import { Icon, PlainLayout } from "~/components/layout";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
@@ -34,7 +34,7 @@ function ServerError() {
     <PlainLayout mountHeader={false} mountSidebar={false}>
       <Page>
         <Page.Content>
-          <Center>
+          <Bullseye>
             <EmptyState
               variant="xl"
               titleText={_("Cannot connect to Agama server")}
@@ -43,7 +43,7 @@ function ServerError() {
             >
               <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
             </EmptyState>
-          </Center>
+          </Bullseye>
         </Page.Content>
 
         <Page.Actions>
