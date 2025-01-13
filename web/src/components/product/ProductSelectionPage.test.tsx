@@ -24,8 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import { ProductSelectionPage } from "~/components/product";
-import { Product } from "~/types/software";
-import { useProduct } from "~/queries/software";
+import { Product, RegistrationInfo } from "~/types/software";
+import { useProduct, useRegistration } from "~/queries/software";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
@@ -50,6 +50,7 @@ const microOs: Product = {
 };
 
 let mockSelectedProduct: Product;
+let registrationInfoMock: RegistrationInfo;
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -61,11 +62,24 @@ jest.mock("~/queries/software", () => ({
   },
   useProductChanges: () => jest.fn(),
   useConfigMutation: () => ({ mutate: mockConfigMutation }),
+  useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
 }));
 
 describe("ProductSelectionPage", () => {
   beforeEach(() => {
     mockSelectedProduct = tumbleweed;
+    registrationInfoMock = { key: "", email: "" };
+  });
+
+  describe("when there is a registration code set", () => {
+    beforeEach(() => {
+      registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "" };
+    });
+
+    it("navigates to root path", async () => {
+      installerRender(<ProductSelectionPage />);
+      await screen.findByText("Navigating to /");
+    });
   });
 
   describe("when there is a product already selected", () => {
