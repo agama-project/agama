@@ -16,7 +16,7 @@
         <profile name="Leap-PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
     <preferences>
-        <version>10.0.0</version>
+        <version>11.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>

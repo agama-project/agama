@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan 13 09:04:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update SLES4SAP ID to SLES_SAP (gh#agama-project/agama#1890).
+
+-------------------------------------------------------------------
 Fri Jan 10 16:13:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the user selectable patterns list to the SLES product

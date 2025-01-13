@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 10 21:22:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
 Fri Jan 10 09:03:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Depend on Ruby's default version (gh#agama-project/agama#1872).
