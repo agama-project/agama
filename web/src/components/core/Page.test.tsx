@@ -100,7 +100,7 @@ describe("Page", () => {
     it("renders a node that fills all the available space", () => {
       installerRender(<Page.Content>{_("The Content")}</Page.Content>);
       const content = screen.getByText("The Content");
-      expect((content.parentNode as HTMLElement).classList.contains("pf-m-fill")).toBe(true);
+      expect(content.classList.contains("pf-m-fill")).toBe(true);
     });
 
     it("mounts a ProductRegistrationAlert", () => {

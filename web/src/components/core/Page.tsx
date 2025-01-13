@@ -286,7 +286,7 @@ const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<Page
   return (
     <>
       {mountRegistrationAlert && <ProductRegistrationAlert />}
-      <PageSection isFilled component="div" {...pageSectionProps}>
+      <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
         {children}
       </PageSection>
     </>
