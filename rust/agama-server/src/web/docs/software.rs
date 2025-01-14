@@ -34,11 +34,15 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
 
     fn paths(&self) -> Paths {
         PathsBuilder::new()
+            .path_from::<crate::software::web::__path_deregister>()
             .path_from::<crate::software::web::__path_get_config>()
+            .path_from::<crate::software::web::__path_get_registration>()
             .path_from::<crate::software::web::__path_patterns>()
             .path_from::<crate::software::web::__path_probe>()
             .path_from::<crate::software::web::__path_products>()
             .path_from::<crate::software::web::__path_proposal>()
+            .path_from::<crate::software::web::__path_repositories>()
+            .path_from::<crate::software::web::__path_register>()
             .path_from::<crate::software::web::__path_set_config>()
             .path_from::<crate::software::web::__path_set_resolvables>()
             .build()
@@ -55,6 +59,7 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
             .schema_from::<agama_lib::software::model::ResolvableType>()
             .schema_from::<agama_lib::software::SelectedBy>()
             .schema_from::<agama_lib::software::model::SoftwareConfig>()
+            .schema_from::<agama_lib::software::model::Repository>()
             .schema_from::<crate::software::web::SoftwareProposal>()
             .schema_from::<crate::web::common::Issue>()
             .build()
