@@ -33,7 +33,7 @@ import {
 import { Link, IssuesHint, Page } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
-import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
+import { usePatterns, useProposal, useProposalChanges, useRepositories } from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 import { SOFTWARE as PATHS } from "~/routes/paths";
@@ -86,6 +86,9 @@ const NoPatterns = (): React.ReactNode => (
   </Page.Section>
 );
 
+// TODO: implement a real button, reprobe after clicking
+const ReloadSection = (): React.ReactNode => <p>{_("Reload")}</p>;
+
 /**
  * Software page component
  */
@@ -93,12 +96,15 @@ function SoftwarePage(): React.ReactNode {
   const issues = useIssues("software");
   const proposal = useProposal();
   const patterns = usePatterns();
+  const repos = useRepositories();
 
   useProposalChanges();
 
   // Selected patterns section should fill the full width in big screen too when
-  // tehere is no information for rendering the Proposal Size section.
+  // there is no information for rendering the Proposal Size section.
   const selectedPatternsXlSize = proposal.size ? 6 : 12;
+
+  const reload = repos.some((r) => !r.loaded) ? <ReloadSection /> : null;
 
   return (
     <Page>
@@ -111,6 +117,7 @@ function SoftwarePage(): React.ReactNode {
           <GridItem sm={12}>
             <IssuesHint issues={issues} />
           </GridItem>
+          <GridItem sm={12}>{reload}</GridItem>
           <GridItem sm={12} xl={selectedPatternsXlSize}>
             {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
           </GridItem>

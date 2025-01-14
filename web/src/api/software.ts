@@ -25,6 +25,7 @@ import {
   Product,
   SoftwareConfig,
   RegistrationInfo,
+  Repository,
   SoftwareProposal,
 } from "~/types/software";
 import { get, post, put } from "~/api/http";
@@ -55,6 +56,11 @@ const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/re
 const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
 
 /**
+ * Returns the list of configured repositories
+ */
+const fetchRepositories = (): Promise<Repository[]> => get("/api/software/repositories");
+
+/**
  * Updates the software configuration
  *
  * @param config - New software configuration
@@ -73,6 +79,7 @@ export {
   fetchProposal,
   fetchProducts,
   fetchRegistration,
+  fetchRepositories,
   updateConfig,
   register,
 };

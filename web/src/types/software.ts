@@ -78,6 +78,16 @@ type Pattern = {
   selectedBy?: SelectedBy;
 };
 
+type Repository = {
+  repo_id: number;
+  alias: string;
+  name: string;
+  raw_url: string;
+  product_dir: string;
+  enabled: boolean;
+  loaded: boolean;
+};
+
 type RegistrationInfo = {
   key: string;
   email?: string;
@@ -90,5 +100,6 @@ export type {
   Product,
   SoftwareConfig,
   RegistrationInfo,
+  Repository,
   SoftwareProposal,
 };

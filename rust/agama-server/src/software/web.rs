@@ -191,10 +191,12 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     let product_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PRODUCT_PATH).await?;
 
     let product = ProductClient::new(dbus.clone()).await?;
+    let repositories = RepositoriesClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
     let state = SoftwareState { product, software };
     let router = Router::new()
         .route("/patterns", get(patterns))
+        .route("/repositories", get(repositories))
         .route("/products", get(products))
         .route(
             "/registration",

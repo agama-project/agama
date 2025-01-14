@@ -34,6 +34,7 @@ import {
   PatternsSelection,
   Product,
   RegistrationInfo,
+  Repository,
   SelectedBy,
   SoftwareConfig,
   SoftwareProposal,
@@ -44,6 +45,7 @@ import {
   fetchProducts,
   fetchProposal,
   fetchRegistration,
+  fetchRepositories,
   register,
   updateConfig,
 } from "~/api/software";
@@ -97,6 +99,14 @@ const registrationQuery = () => ({
 const patternsQuery = () => ({
   queryKey: ["software/patterns"],
   queryFn: fetchPatterns,
+});
+
+/**
+ * Query to retrieve configured repositories
+ */
+const repositoriesQuery = () => ({
+  queryKey: ["software/repositories"],
+  queryFn: fetchRepositories,
 });
 
 /**
@@ -211,6 +221,14 @@ const useRegistration = (): RegistrationInfo => {
 };
 
 /**
+ * Returns repository info
+ */
+const useRepositories = (): Repository[] => {
+  const { data: repositories } = useSuspenseQuery(repositoriesQuery());
+  return repositories;
+};
+
+/**
  * Hook that returns a useEffect to listen for  software proposal events
  *
  * When the configuration changes, it invalidates the config query.
@@ -266,4 +284,5 @@ export {
   useProposalChanges,
   useRegistration,
   useRegisterMutation,
+  useRepositories,
 };
