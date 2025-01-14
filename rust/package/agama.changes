@@ -1,4 +1,27 @@
 -------------------------------------------------------------------
+Fri Jan 10 21:22:01 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
+Fri Jan 10 08:58:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Disable the browser cache setting the "Cache-Control" header to
+  "no-store" (gh#agama-project/agama#1880).
+
+-------------------------------------------------------------------
+Thu Jan  9 12:52:05 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Increase disk size in _constraints to fix build on ppc
+  (gh#agama-project/agama#1876).
+
+-------------------------------------------------------------------
+Wed Jan  8 14:05:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
 Fri Dec 20 12:17:26 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Add bootloader.stopOnBootMenu section to profile to allow stop

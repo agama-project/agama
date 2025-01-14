@@ -22,17 +22,20 @@
 
 import React from "react";
 import { Link, LinkProps } from "react-router-dom";
-import { useProduct } from "~/queries/software";
+import { useProduct, useRegistration } from "~/queries/software";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { isEmpty } from "~/utils";
 
 /**
  * Link for navigating to the selection product.
  */
 export default function ChangeProductLink({ children, ...props }: Omit<LinkProps, "to">) {
   const { products } = useProduct();
+  const registration = useRegistration();
 
   if (products.length <= 1) return null;
+  if (!isEmpty(registration?.key)) return null;
 
   return (
     <Link to={PATHS.changeProduct} {...props}>

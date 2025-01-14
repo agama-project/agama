@@ -34,14 +34,23 @@ export default {
   "%s disk": [
     "%s disk"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s atomik güncellemelere sahip değişmez bir sistemdir. Anlık imajlar aracılığıyla güncellenen salt okunur bir Btrfs dosya sistemi kullanır."
   ],
   "%s logo": [
     "%s logosu"
   ],
+  "%s must be registered.": [
+    ""
+  ],
   "%s with %d partitions": [
     "%s ile %d bölümler"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -455,6 +464,9 @@ export default {
   "Encryption Password": [
     "Şifreleme Şifresi"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Tam boyut"
   ],
@@ -542,6 +554,9 @@ export default {
   "GiB": [
     "GB"
   ],
+  "Hide": [
+    ""
+  ],
   "Hide %d subvolume action": [
     "%d alt birim eylemini gizle",
     "%d alt birim eylemlerini gizle"
@@ -614,6 +629,9 @@ export default {
   ],
   "Install new system on": [
     "Yeni sistemi buraya kur"
+  ],
+  "Install using an advanced configuration.": [
+    ""
   ],
   "Install using device %s and deleting all its content": [
     "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin"
@@ -987,6 +1005,12 @@ export default {
   "Reboot": [
     "Yeniden Başlat"
   ],
+  "Register": [
+    ""
+  ],
+  "Register it now": [
+    ""
+  ],
   "Reload": [
     "Yenile"
   ],
@@ -1162,9 +1186,6 @@ export default {
   "Table with mount points": [
     "Bağlantı noktaları olan tablo"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Kurulum sürecine başlamadan önce yapılandırmanızı kontrol etmek için zaman ayırın."
-  ],
   "Target Password": [
     "Hedef Şifre"
   ],
@@ -1254,6 +1275,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "Sistem henüz bir Wi-Fi ağına bağlanacak şekilde yapılandırılmadı."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "Sistem varsayılan dil olarak %s dilini kullanacaktır."
@@ -1377,9 +1401,6 @@ export default {
   ],
   "WWPN": [
     "WWPN"
-  ],
-  "Waiting": [
-    "Bekleyin"
   ],
   "Waiting for actions information...": [
     "Eylem bilgileri bekleniyor..."

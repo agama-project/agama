@@ -158,7 +158,7 @@ describe Agama::DBus::Software::Product do
     end
 
     context "if the registration is not required" do
-      let(:requirement) { Agama::Registration::Requirement::NOT_REQUIRED }
+      let(:requirement) { Agama::Registration::Requirement::NO }
 
       it "returns 0" do
         expect(subject.requirement).to eq(0)

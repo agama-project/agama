@@ -26,6 +26,10 @@ import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
 import { Connection, ConnectionMethod, ConnectionStatus, ConnectionType } from "~/types/network";
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
+
 const wiredConnection = new Connection("eth0", {
   iface: "eth0",
   method4: ConnectionMethod.MANUAL,

@@ -34,15 +34,16 @@ import {
   FormGroup,
   Button,
 } from "@patternfly/react-core";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Page } from "~/components/core";
 import { Center } from "~/components/layout";
-import { useConfigMutation, useProduct } from "~/queries/software";
+import { useConfigMutation, useProduct, useRegistration } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
-import { slugify } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useNavigate } from "react-router-dom";
+import { PATHS } from "~/router";
+import { isEmpty } from "~/utils";
 
 const ResponsiveGridItem = ({ children }) => (
   <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -51,8 +52,7 @@ const ResponsiveGridItem = ({ children }) => (
 );
 
 const Option = ({ product, isChecked, onChange }) => {
-  const id = slugify(product.name);
-  const detailsId = `${id}-details`;
+  const detailsId = `${product.id}-details`;
   const logoSrc = `assets/logos/${product.icon}`;
   // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
   const logoAltText = sprintf(_("%s logo"), product.name);
@@ -63,7 +63,7 @@ const Option = ({ product, isChecked, onChange }) => {
         <CardBody>
           <Split hasGutter>
             <input
-              id={id}
+              id={product.id}
               type="radio"
               name="product"
               className={pfRadioStyles.radioInput}
@@ -74,7 +74,7 @@ const Option = ({ product, isChecked, onChange }) => {
             <img aria-hidden src={logoSrc} alt={logoAltText} />
             <Stack hasGutter>
               <label
-                htmlFor={id}
+                htmlFor={product.id}
                 className={`${pfTextStyles.fontSizeLg} ${pfTextStyles.fontWeightBold}`}
               >
                 {product.name}
@@ -99,9 +99,12 @@ const BackLink = () => {
 
 function ProductSelectionPage() {
   const setConfig = useConfigMutation();
+  const registration = useRegistration();
   const { products, selectedProduct } = useProduct({ suspense: true });
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   const [isLoading, setIsLoading] = useState(false);
+
+  if (!isEmpty(registration?.key)) return <Navigate to={PATHS.root} />;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +142,7 @@ function ProductSelectionPage() {
         </Center>
       </Page.Content>
       <Page.Actions>
-        <BackLink />
+        {selectedProduct && !isLoading && <BackLink />}
         <Page.Submit
           form="productSelectionForm"
           isDisabled={isSelectionDisabled}

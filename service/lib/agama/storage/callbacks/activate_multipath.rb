@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/question"
+require "y2storage"
 
 module Agama
   module Storage
@@ -42,6 +43,7 @@ module Agama
         # @param looks_like_real_multipath [Boolean] see {Callbacks::Activate#multipath}.
         # @return [Boolean]
         def call(looks_like_real_multipath)
+          return true if Y2Storage::StorageEnv.instance.forced_multipath?
           return false unless looks_like_real_multipath
 
           questions_client.ask(question) do |question_client|

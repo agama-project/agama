@@ -24,7 +24,11 @@ import React from "react";
 import TimezoneSelection from "./TimezoneSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
-import { mockNavigateFn, plainRender } from "~/test-utils";
+import { mockNavigateFn, installerRender } from "~/test-utils";
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
 
 const timezones = [
   { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 120 },
@@ -70,7 +74,7 @@ afterEach(() => {
 });
 
 it("allows changing the timezone", async () => {
-  plainRender(<TimezoneSelection />);
+  installerRender(<TimezoneSelection />);
 
   const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
   const option = await screen.findByText("Europe-Madrid");
@@ -82,7 +86,7 @@ it("allows changing the timezone", async () => {
 });
 
 it("displays the UTC offset", () => {
-  plainRender(<TimezoneSelection />);
+  installerRender(<TimezoneSelection />);
 
   expect(screen.getByText("Australia/Adelaide UTC+9:30")).toBeInTheDocument();
   expect(screen.getByText("Europe/Madrid UTC+2")).toBeInTheDocument();

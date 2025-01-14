@@ -41,6 +41,8 @@ type Product = {
   description?: string;
   /** Product icon (e.g., "default.svg") */
   icon?: string;
+  /** If product is registrable or not */
+  registration: "no" | "optional" | "mandatory";
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };
@@ -76,5 +78,17 @@ type Pattern = {
   selectedBy?: SelectedBy;
 };
 
+type RegistrationInfo = {
+  key: string;
+  email?: string;
+};
+
 export { SelectedBy };
-export type { Pattern, PatternsSelection, Product, SoftwareConfig, SoftwareProposal };
+export type {
+  Pattern,
+  PatternsSelection,
+  Product,
+  SoftwareConfig,
+  RegistrationInfo,
+  SoftwareProposal,
+};

@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::software::model::RegistrationError;
 use crate::software::model::RegistrationInfo;
 use crate::software::model::RegistrationParams;
 use crate::software::model::SoftwareConfig;
@@ -64,13 +65,29 @@ impl ProductHTTPClient {
     }
 
     /// register product
-    pub async fn register(&self, key: &str, email: &str) -> Result<(u32, String), ServiceError> {
+    pub async fn register(&self, key: &str, email: &str) -> Result<(), ServiceError> {
         // note RegistrationParams != RegistrationInfo, fun!
         let params = RegistrationParams {
             key: key.to_owned(),
             email: email.to_owned(),
         };
+        let result = self
+            .client
+            .post_void("/software/registration", &params)
+            .await;
 
-        self.client.post("/software/registration", &params).await
+        let Err(error) = result else {
+            return Ok(());
+        };
+
+        let message = match error {
+            ServiceError::BackendError(_, details) => {
+                let details: RegistrationError = serde_json::from_str(&details).unwrap();
+                format!("{} (error code: {})", details.message, details.id)
+            }
+            _ => format!("Could not register the product: #{error:?}"),
+        };
+
+        Err(ServiceError::FailedRegistration(message))
     }
 }

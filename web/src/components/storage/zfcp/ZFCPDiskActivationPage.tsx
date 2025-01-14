@@ -41,9 +41,9 @@ export default function ZFCPDiskActivationPage() {
 
   const onSubmit = async (formData: LUNInfo & { id: string }) => {
     setIsAcceptDisabled(true);
-    const result = await cancellablePromise(
+    const result = (await cancellablePromise(
       activateZFCPDisk(formData.id, formData.wwpn, formData.lun),
-    );
+    )) as Awaited<ReturnType<typeof activateZFCPDisk>>;
     if (result.status === 200) navigate(PATHS.zfcp.root);
 
     setIsAcceptDisabled(false);

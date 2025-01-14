@@ -68,17 +68,8 @@ impl ProductStore {
             }
         }
         if let Some(reg_code) = &settings.registration_code {
-            let (result, message);
-            if let Some(email) = &settings.registration_email {
-                (result, message) = self.product_client.register(reg_code, email).await?;
-            } else {
-                (result, message) = self.product_client.register(reg_code, "").await?;
-            }
-            // FIXME: name the magic numbers. 3 is Registration not required
-            // FIXME: well don't register when not required (no regcode in profile)
-            if result != 0 && result != 3 {
-                return Err(ServiceError::FailedRegistration(message));
-            }
+            let email = settings.registration_email.as_deref().unwrap_or("");
+            self.product_client.register(reg_code, email).await?;
             probe = true;
         }
 

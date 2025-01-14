@@ -27,7 +27,7 @@
  */
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { ProposalPage } from "~/components/storage";
 import {
   ProposalResult,
@@ -140,6 +140,6 @@ jest.mock("~/queries/storage", () => ({
 }));
 
 it("renders the device, settings and result sections", () => {
-  plainRender(<ProposalPage />);
+  installerRender(<ProposalPage />);
   screen.findByText("Device");
 });

@@ -28,7 +28,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import React from "react";
-import { fetchConfig, setConfig } from "~/api/storage";
+import { fetchConfig, refresh, setConfig } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import {
   calculate,
@@ -314,6 +314,32 @@ const useDeprecatedChanges = () => {
   });
 };
 
+type RefreshHandler = {
+  onStart?: () => void;
+  onFinish?: () => void;
+};
+
+/**
+ * Hook that reprobes the devices and recalculates the proposal using the current settings.
+ */
+const useRefresh = (handler?: RefreshHandler) => {
+  const queryClient = useQueryClient();
+  const deprecated = useDeprecated();
+
+  handler ||= {};
+  handler.onStart ||= () => undefined;
+  handler.onFinish ||= () => undefined;
+
+  React.useEffect(() => {
+    if (!deprecated) return;
+
+    handler.onStart();
+    refresh()
+      .then(() => queryClient.invalidateQueries({ queryKey: ["storage"] }))
+      .then(() => handler.onFinish());
+  }, [handler, deprecated, queryClient]);
+};
+
 export {
   useConfig,
   useConfigMutation,
@@ -326,6 +352,7 @@ export {
   useProposalMutation,
   useDeprecated,
   useDeprecatedChanges,
+  useRefresh,
 };
 
 export * from "~/queries/storage/config-model";

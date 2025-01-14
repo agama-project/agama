@@ -24,7 +24,7 @@
 
 import React, { FormEvent, useEffect, useState } from "react";
 import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
-import { AxiosResponseHeaders } from "axios";
+import { AxiosResponse } from "axios";
 import { Page } from "~/components/core";
 import { useZFCPControllers, useZFCPDisks } from "~/queries/storage/zfcp";
 import { inactiveLuns } from "~/utils/zfcp";
@@ -46,7 +46,7 @@ export default function ZFCPDiskForm({
   onLoading,
 }: {
   id: string;
-  onSubmit: (formData: FormData) => Promise<AxiosResponseHeaders>;
+  onSubmit: (formData: FormData) => Promise<AxiosResponse>;
   onLoading: (isLoading: boolean) => void;
 }) {
   const controllers = useZFCPControllers();

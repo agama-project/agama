@@ -33,6 +33,9 @@ export default {
   "%s disk": [
     "%s 磁盘"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s 是具备原子更新特性的不可变系统。它使用只读的 Btrfs 文件系统并通过快照保持更新。"
   ],
@@ -41,6 +44,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s （包含 %d 个分区）"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -423,6 +429,9 @@ export default {
   "Encryption Password": [
     "加密密码"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "准确大小"
   ],
@@ -506,6 +515,9 @@ export default {
   ],
   "GiB": [
     "GiB"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "隐藏 %d 个子卷操作"
@@ -936,6 +948,15 @@ export default {
   "Reboot": [
     "重启"
   ],
+  "Register": [
+    "注册"
+  ],
+  "Registration": [
+    "注册"
+  ],
+  "Registration code": [
+    "注册码"
+  ],
   "Reload": [
     "重载"
   ],
@@ -1104,9 +1125,6 @@ export default {
   "Table with mount points": [
     "挂载点列表"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "开始安装进程前，请花些时间检查您的配置。"
-  ],
   "Target Password": [
     "目标密码"
   ],
@@ -1193,6 +1211,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "系统尚未配置为连接到 WiFi 网络。"
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "系统会使用 %s 作为默认语言。"
@@ -1307,9 +1328,6 @@ export default {
   ],
   "WWPN": [
     "WWPN"
-  ],
-  "Waiting": [
-    "正在等候"
   ],
   "Waiting for actions information...": [
     "正在等待操作信息……"
