@@ -37,6 +37,7 @@ This directory contains a set of files that are used to build the Agama Live ISO
   PXE boot, see a separate [PXE documentation](PXE.md) for more details about the PXE boot
 - [config-cdroot](config-cdroot) subdirectory contains file which are copied to the uncompressed
   root of the ISO image, the files can be accessed just by mounting the ISO file or the DVD medium
+- [test](test) subdirectory contains tests to verify correctness of content. Can be run with `make check`
 
 ## Building the Sources
 

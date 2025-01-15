@@ -57,4 +57,7 @@ build: $(DESTDIR)
 	$(MAKE) all
 	(cd $(DESTDIR) && osc build -M $(FLAVOR) images)
 
+check:
+	for i in ./test/*_test.*; do $${i}; done
+
 .PHONY: build all clean
