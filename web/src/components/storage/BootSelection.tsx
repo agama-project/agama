@@ -136,7 +136,7 @@ partitions in the appropriate disk.",
     <Page>
       <Page.Header>
         <h2>{_("Boot options")}</h2>
-        <p className={textStyles.color_400}>{description}</p>
+        <p className={textStyles.textColorSubtle}>{description}</p>
       </Page.Header>
 
       <Page.Content>

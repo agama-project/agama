@@ -101,7 +101,7 @@ export default function SpacePolicySelection() {
     <Page>
       <Page.Header>
         <h2>{sprintf(_("Find space in %s"), device.name)}</h2>
-        <p className={textStyles.color_400}>{description}</p>
+        <p className={textStyles.textColorSubtle}>{description}</p>
       </Page.Header>
 
       <Page.Content>
