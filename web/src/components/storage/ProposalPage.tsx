@@ -20,9 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Grid, GridItem, SplitItem } from "@patternfly/react-core";
-import { useQueryClient } from "@tanstack/react-query";
 import { Page } from "~/components/core/";
 import { Loading } from "~/components/layout";
 import EncryptionField from "~/components/storage/EncryptionField";
@@ -33,8 +32,7 @@ import ConfigEditorMenu from "./ConfigEditorMenu";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useDevices, useProposalResult, useDeprecated, useRefresh } from "~/queries/storage";
-import { refresh } from "~/api/storage";
+import { useDevices, useProposalResult, useRefresh } from "~/queries/storage";
 import { _ } from "~/i18n";
 
 /**
@@ -65,16 +63,6 @@ export default function ProposalPage() {
   const systemDevices = useDevices("system");
   const stagingDevices = useDevices("result");
   const { actions } = useProposalResult();
-  const deprecated = useDeprecated();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (deprecated) {
-      refresh().then(() => {
-        queryClient.invalidateQueries({ queryKey: ["storage"] });
-      });
-    }
-  }, [deprecated, queryClient]);
 
   useRefresh({
     onStart: () => setIsLoading(true),
