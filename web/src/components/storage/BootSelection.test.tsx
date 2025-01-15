@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,14 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { mockNavigateFn, plainRender } from "~/test-utils";
+import { installerRender, mockNavigateFn } from "~/test-utils";
 import BootSelection from "./BootSelection";
 import { StorageDevice } from "~/types/storage";
 import { BootHook } from "~/queries/storage/config-model";
+
+// FIXME: drop this mock once a better solution for dealing with
+// ProductRegistrationAlert, which uses a query with suspense,
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
 
 const sda: StorageDevice = {
   sid: 59,
@@ -122,24 +126,24 @@ jest.mock("~/queries/storage/config-model", () => ({
 }));
 
 describe("BootSelection", () => {
-  const automaticOption = () => screen.queryByRole("radio", { name: "Automatic" });
-  const selectDiskOption = () => screen.queryByRole("radio", { name: "Select a disk" });
-  const notConfigureOption = () => screen.queryByRole("radio", { name: "Do not configure" });
-  const diskSelector = () => screen.queryByRole("combobox", { name: /choose a disk/i });
+  const automaticOption = () => screen.getByRole("radio", { name: "Automatic" });
+  const selectDiskOption = () => screen.getByRole("radio", { name: "Select a disk" });
+  const notConfigureOption = () => screen.getByRole("radio", { name: "Do not configure" });
+  const diskSelector = () => screen.getByRole("combobox", { name: /choose a disk/i });
 
   it("offers an option to configure boot in the installation disk", () => {
-    plainRender(<BootSelection />);
+    installerRender(<BootSelection />);
     expect(automaticOption()).toBeInTheDocument();
   });
 
   it("offers an option to configure boot in a selected disk", () => {
-    plainRender(<BootSelection />);
+    installerRender(<BootSelection />);
     expect(selectDiskOption()).toBeInTheDocument();
     expect(diskSelector()).toBeInTheDocument();
   });
 
   it("offers an option to not configure boot", () => {
-    plainRender(<BootSelection />);
+    installerRender(<BootSelection />);
     expect(notConfigureOption()).toBeInTheDocument();
   });
 
@@ -150,7 +154,7 @@ describe("BootSelection", () => {
     });
 
     it("selects 'Automatic' option by default", () => {
-      plainRender(<BootSelection />);
+      installerRender(<BootSelection />);
       expect(automaticOption()).toBeChecked();
       expect(selectDiskOption()).not.toBeChecked();
       expect(diskSelector()).toBeDisabled();
@@ -166,7 +170,7 @@ describe("BootSelection", () => {
     });
 
     it("selects 'Select a disk' option by default", () => {
-      plainRender(<BootSelection />);
+      installerRender(<BootSelection />);
       expect(automaticOption()).not.toBeChecked();
       expect(selectDiskOption()).toBeChecked();
       expect(diskSelector()).toBeEnabled();
@@ -180,7 +184,7 @@ describe("BootSelection", () => {
     });
 
     it("selects 'Do not configure' option by default", () => {
-      plainRender(<BootSelection />);
+      installerRender(<BootSelection />);
       expect(automaticOption()).not.toBeChecked();
       expect(selectDiskOption()).not.toBeChecked();
       expect(diskSelector()).toBeDisabled();
@@ -189,7 +193,7 @@ describe("BootSelection", () => {
   });
 
   it("does not change the boot options on cancel", async () => {
-    const { user } = plainRender(<BootSelection />);
+    const { user } = installerRender(<BootSelection />);
     const cancel = screen.getByRole("button", { name: "Cancel" });
 
     await user.click(cancel);
@@ -200,7 +204,7 @@ describe("BootSelection", () => {
   });
 
   it("applies the expected boot options when 'Automatic' is selected", async () => {
-    const { user } = plainRender(<BootSelection />);
+    const { user } = installerRender(<BootSelection />);
     await user.click(automaticOption());
 
     const accept = screen.getByRole("button", { name: "Accept" });
@@ -210,7 +214,7 @@ describe("BootSelection", () => {
   });
 
   it("applies the expected boot options when a disk is selected", async () => {
-    const { user } = plainRender(<BootSelection />);
+    const { user } = installerRender(<BootSelection />);
 
     await user.click(selectDiskOption());
     const selector = diskSelector();
@@ -224,7 +228,7 @@ describe("BootSelection", () => {
   });
 
   it("applies the expected boot options when 'No configure' is selected", async () => {
-    const { user } = plainRender(<BootSelection />);
+    const { user } = installerRender(<BootSelection />);
     await user.click(notConfigureOption());
 
     const accept = screen.getByRole("button", { name: "Accept" });

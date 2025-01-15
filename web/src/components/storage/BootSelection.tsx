@@ -88,10 +88,6 @@ export default function BootSelectionDialog() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    // FIXME: try to use formData here too?
-    // const formData = new FormData(e.target);
-    // const mode = formData.get("bootMode");
-    // const device = formData.get("bootDevice");
 
     switch (state.selectedOption) {
       case BOOT_DISABLED_ID:
