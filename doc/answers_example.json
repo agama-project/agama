@@ -1,0 +1,9 @@
+{
+    "answers": [
+        {
+            "answer": "decrypt",
+            "class": "storage.luks_activation",
+            "password": "my_password"
+        }
+    ]
+}
