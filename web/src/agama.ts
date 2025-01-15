@@ -94,6 +94,19 @@ const agama = {
     // fallback, return the original text
     return n === 1 ? str1 : strN;
   },
+
+  /**
+   * Wrapper around Intl.ListFormat to get a language-specific representation of the given list of
+   * strings. Returns the concatenation of the original strings with the correct language-specific
+   * separators according to the currently selected language for the Agama UI
+   *
+   * @param list iterable list of strings to represent
+   * @param options passed to the Intl.ListFormat constructor
+   */
+  formatList: (list: string[], options: object): string => {
+    const formatter = new Intl.ListFormat(agama.language, options);
+    return formatter.format(list);
+  },
 };
 
 export default agama;
