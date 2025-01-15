@@ -1,0 +1,6 @@
+dracut agama-cmdline module
+-------------------------------
+
+This module writes any agama configuration given through the kernel cmdline
+to its own cmdline conf file copying it to the sysroot.
+

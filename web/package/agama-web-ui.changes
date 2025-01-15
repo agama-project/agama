@@ -1,4 +1,52 @@
 -------------------------------------------------------------------
+Mon Jan 13 11:11:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Do not allow changing selected product after registering one
+  (related to gh#agama-project/agama#1891).
+
+-------------------------------------------------------------------
+Fri Jan 10 21:22:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
+Fri Jan 10 15:56:35 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add storage reprobing and recalculate proposal when going back to
+  either the proposal page or the devices selector if the system
+  is deprecated (gh#agama-project/agama#1884).
+
+-------------------------------------------------------------------
+Fri Jan 10 13:46:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Drop the feature for deregistering a product
+  (gh#agama-project/agama#1882).
+-------------------------------------------------------------------
+
+Fri Jan 10 13:22:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not allow changing the storage setup when Agama is using the
+  new storage settings (gh#agama-project/agama#1881).
+
+-------------------------------------------------------------------
+Wed Jan  8 16:07:13 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
+Wed Jan  8 15:16:51 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Use product ID instead of slug to link labels and descriptions to
+  their corresponding radio inputs (gh#agama-project/agama#1873).
+
+-------------------------------------------------------------------
+Wed Jan  8 13:12:44 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Show the cancel action at product selection page only when
+  a product is already selected (gh#agama-project/agama#1871).
+
+-------------------------------------------------------------------
 Fri Dec 20 12:53:41 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Fix netmask handling to avoid a silent connection form error

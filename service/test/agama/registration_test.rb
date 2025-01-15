@@ -33,6 +33,7 @@ describe Agama::Registration do
   subject { described_class.new(manager, logger) }
 
   let(:manager) { instance_double(Agama::Software::Manager) }
+  let(:product) { Agama::Software::Product.new("test").tap { |p| p.version = "5.0" } }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
@@ -90,7 +91,9 @@ describe Agama::Registration do
 
         it "creates credentials file" do
           expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
-            .with("test-user", "12345")
+            .with("test-user", "12345", "/etc/zypp/credentials.d/SCCcredentials")
+          # TODO: when fixing suse-connect read of fsroot
+          # .with("test-user", "12345", "/run/agama/zypp/etc/zypp/credentials.d/SCCcredentials")
 
           subject.register("11112222", email: "test@test.com")
         end
@@ -117,13 +120,14 @@ describe Agama::Registration do
 
           before do
             allow(subject).to receive(:credentials_from_url)
-              .with("https://credentials/file").and_return("credentials")
+              .with("https://credentials/file")
+              .and_return("productA")
           end
 
           it "creates the credentials file" do
             expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
             expect(SUSE::Connect::YaST).to receive(:create_credentials_file)
-              .with("test-user", "12345", "credentials")
+              .with("test-user", "12345", "/run/agama/zypp/etc/zypp/credentials.d/productA")
 
             subject.register("11112222", email: "test@test.com")
           end
@@ -346,7 +350,7 @@ describe Agama::Registration do
       let(:product) { nil }
 
       it "returns not required" do
-        expect(subject.requirement).to eq(Agama::Registration::Requirement::NOT_REQUIRED)
+        expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
       end
     end
 
@@ -359,7 +363,7 @@ describe Agama::Registration do
         let(:repositories) { ["https://repo"] }
 
         it "returns not required" do
-          expect(subject.requirement).to eq(Agama::Registration::Requirement::NOT_REQUIRED)
+          expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
         end
       end
 
@@ -369,6 +373,43 @@ describe Agama::Registration do
         it "returns mandatory" do
           expect(subject.requirement).to eq(Agama::Registration::Requirement::MANDATORY)
         end
+      end
+    end
+  end
+
+  describe "#finish" do
+    context "system is not registered" do
+      before do
+        subject.instance_variable_set(:@reg_code, nil)
+      end
+
+      it "do nothing" do
+        expect(::FileUtils).to_not receive(:cp)
+
+        subject.finish
+      end
+    end
+
+    context "system is registered" do
+      before do
+        subject.instance_variable_set(:@reg_code, "test")
+        subject.instance_variable_set(:@credentials_file, "test")
+        Yast::Installation.destdir = "/mnt"
+        allow(::FileUtils).to receive(:cp)
+      end
+
+      it "copies global credentials file" do
+        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/SCCcredentials",
+          "/mnt/etc/zypp/credentials.d/SCCcredentials")
+
+        subject.finish
+      end
+
+      it "copies product credentials file" do
+        expect(::FileUtils).to receive(:cp).with("/run/agama/zypp/etc/zypp/credentials.d/test",
+          "/mnt/etc/zypp/credentials.d/test")
+
+        subject.finish
       end
     end
   end

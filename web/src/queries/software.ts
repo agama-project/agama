@@ -33,6 +33,7 @@ import {
   Pattern,
   PatternsSelection,
   Product,
+  RegistrationInfo,
   SelectedBy,
   SoftwareConfig,
   SoftwareProposal,
@@ -42,6 +43,8 @@ import {
   fetchPatterns,
   fetchProducts,
   fetchProposal,
+  fetchRegistration,
+  register,
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
@@ -81,6 +84,14 @@ const selectedProductQuery = () => ({
 });
 
 /**
+ * Query to retrieve registration info
+ */
+const registrationQuery = () => ({
+  queryKey: ["software/registration"],
+  queryFn: fetchRegistration,
+});
+
+/**
  * Query to retrieve available patterns
  */
 const patternsQuery = () => ({
@@ -106,6 +117,25 @@ const useConfigMutation = () => {
         queryClient.invalidateQueries({ queryKey: ["software/product"] });
         startProbing();
       }
+    },
+  };
+  return useMutation(query);
+};
+
+/**
+ * Hook that builds a mutation for registering a product
+ *
+ * @note it would trigger a general probing as a side-effect when mutation
+ * includes a product.
+ */
+const useRegisterMutation = () => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: register,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["software/registration"] });
+      startProbing();
     },
   };
   return useMutation(query);
@@ -173,6 +203,14 @@ const useProposal = (): SoftwareProposal => {
 };
 
 /**
+ * Returns registration info
+ */
+const useRegistration = (): RegistrationInfo => {
+  const { data: registration } = useSuspenseQuery(registrationQuery());
+  return registration;
+};
+
+/**
  * Hook that returns a useEffect to listen for  software proposal events
  *
  * When the configuration changes, it invalidates the config query.
@@ -226,4 +264,6 @@ export {
   useProductChanges,
   useProposal,
   useProposalChanges,
+  useRegistration,
+  useRegisterMutation,
 };

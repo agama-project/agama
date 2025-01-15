@@ -282,7 +282,7 @@ module Agama
     def probe_and_recover_storage
       storage_config = storage.config
       storage.probe
-      storage.config = storage_config unless storage_config.empty?
+      storage.config = storage_config if storage_config
     end
   end
 end

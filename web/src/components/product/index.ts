@@ -22,3 +22,5 @@
 
 export { default as ProductSelectionPage } from "./ProductSelectionPage";
 export { default as ProductSelectionProgress } from "./ProductSelectionProgress";
+export { default as ProductRegistrationPage } from "./ProductRegistrationPage";
+export { default as ProductRegistrationAlert } from "./ProductRegistrationAlert";

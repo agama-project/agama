@@ -20,21 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Grid, GridItem, SplitItem } from "@patternfly/react-core";
 import { Page } from "~/components/core/";
+import { Loading } from "~/components/layout";
+import EncryptionField from "~/components/storage/EncryptionField";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
-import EncryptionField from "~/components/storage/EncryptionField";
-import { _ } from "~/i18n";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useDeprecated, useDevices, useProposalResult } from "~/queries/storage";
-import { useQueryClient } from "@tanstack/react-query";
-import { refresh } from "~/api/storage";
+import { useDevices, useProposalResult, useRefresh } from "~/queries/storage";
+import { _ } from "~/i18n";
 
 /**
  * Which UI item is being changed by user
@@ -60,23 +59,33 @@ export const NOT_AFFECTED = {
 };
 
 export default function ProposalPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const systemDevices = useDevices("system");
   const stagingDevices = useDevices("result");
   const { actions } = useProposalResult();
-  const deprecated = useDeprecated();
-  const queryClient = useQueryClient();
 
-  React.useEffect(() => {
-    if (deprecated) {
-      refresh().then(() => {
-        queryClient.invalidateQueries({ queryKey: ["storage"] });
-      });
-    }
-  }, [deprecated, queryClient]);
+  useRefresh({
+    onStart: () => setIsLoading(true),
+    onFinish: () => setIsLoading(false),
+  });
 
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
+
+  if (isLoading) {
+    return (
+      <Page>
+        <Page.Header>
+          <h2>{_("Storage")}</h2>
+        </Page.Header>
+
+        <Page.Content>
+          <Loading text={_("Reloading data, please wait...")} />
+        </Page.Content>
+      </Page>
+    );
+  }
 
   return (
     <Page>

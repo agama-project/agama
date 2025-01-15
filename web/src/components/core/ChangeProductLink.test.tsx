@@ -24,26 +24,31 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { PRODUCT as PATHS } from "~/routes/paths";
-import { Product } from "~/types/software";
+import { Product, RegistrationInfo } from "~/types/software";
 import ChangeProductLink from "./ChangeProductLink";
+import { useRegistration } from "~/queries/software";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
+  registration: "no",
 };
 const microos: Product = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
   icon: "MicroOS.svg",
   description: "MicroOS description",
+  registration: "no",
 };
 
 let mockUseProduct: { products: Product[]; selectedProduct?: Product };
+let registrationInfoMock: RegistrationInfo;
 
 jest.mock("~/queries/software", () => ({
   useProduct: () => mockUseProduct,
+  useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
 }));
 
 describe("ChangeProductLink", () => {
@@ -56,6 +61,17 @@ describe("ChangeProductLink", () => {
       installerRender(<ChangeProductLink />);
       const link = screen.getByRole("link", { name: "Change product" });
       expect(link).toHaveAttribute("href", PATHS.changeProduct);
+    });
+
+    describe("but a product is registered", () => {
+      beforeEach(() => {
+        registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "" };
+      });
+
+      it("renders nothing", () => {
+        const { container } = installerRender(<ChangeProductLink />);
+        expect(container).toBeEmptyDOMElement();
+      });
     });
   });
 

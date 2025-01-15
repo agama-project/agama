@@ -37,7 +37,10 @@ use agama_lib::{
     error::ServiceError,
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
-        model::{RegistrationInfo, RegistrationParams, ResolvableParams, SoftwareConfig},
+        model::{
+            RegistrationError, RegistrationInfo, RegistrationParams, ResolvableParams,
+            SoftwareConfig,
+        },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
     },
@@ -49,7 +52,7 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::collections::HashMap;
 use tokio_stream::{Stream, StreamExt};
 
@@ -73,10 +76,6 @@ pub async fn software_streams(dbus: zbus::Connection) -> Result<EventStreams, Er
         (
             "product_changed",
             Box::pin(product_changed_stream(dbus.clone()).await?),
-        ),
-        (
-            "registration_requirement_changed",
-            Box::pin(registration_requirement_changed_stream(dbus.clone()).await?),
         ),
         (
             "registration_code_changed",
@@ -128,27 +127,6 @@ async fn patterns_changed_stream(
             None
         })
         .filter_map(|e| e.map(|patterns| Event::SoftwareProposalChanged { patterns }));
-    Ok(stream)
-}
-
-async fn registration_requirement_changed_stream(
-    dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
-    // TODO: move registration requirement to product in dbus and so just one event will be needed.
-    let proxy = RegistrationProxy::new(&dbus).await?;
-    let stream = proxy
-        .receive_requirement_changed()
-        .await
-        .then(|change| async move {
-            if let Ok(id) = change.get().await {
-                // unwrap is safe as possible numbers is send by our controlled dbus
-                return Some(Event::RegistrationRequirementChanged {
-                    requirement: id.try_into().unwrap(),
-                });
-            }
-            None
-        })
-        .filter_map(|e| e);
     Ok(stream)
 }
 
@@ -269,17 +247,8 @@ async fn get_registration(
     let result = RegistrationInfo {
         key: state.product.registration_code().await?,
         email: state.product.email().await?,
-        requirement: state.product.registration_requirement().await?,
     };
     Ok(Json(result))
-}
-
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct FailureDetails {
-    /// ID of error. See dbus API for possible values
-    id: u32,
-    /// human readable error string intended to be displayed to user
-    message: String,
 }
 
 /// Register product
@@ -291,7 +260,7 @@ pub struct FailureDetails {
     context_path = "/api/software",
     responses(
         (status = 204, description = "registration successfull"),
-        (status = 422, description = "Registration failed. Details are in body", body = FailureDetails),
+        (status = 422, description = "Registration failed. Details are in body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
@@ -300,10 +269,10 @@ async fn register(
     Json(config): Json<RegistrationParams>,
 ) -> Result<impl IntoResponse, Error> {
     let (id, message) = state.product.register(&config.key, &config.email).await?;
-    let details = FailureDetails { id, message };
     if id == 0 {
         Ok((StatusCode::NO_CONTENT, ().into_response()))
     } else {
+        let details = RegistrationError { id, message };
         Ok((
             StatusCode::UNPROCESSABLE_ENTITY,
             Json(details).into_response(),
@@ -320,13 +289,13 @@ async fn register(
     context_path = "/api/software",
     responses(
         (status = 200, description = "deregistration successfull"),
-        (status = 422, description = "De-registration failed. Details are in body", body = FailureDetails),
+        (status = 422, description = "De-registration failed. Details are in body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
 async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<impl IntoResponse, Error> {
     let (id, message) = state.product.deregister().await?;
-    let details = FailureDetails { id, message };
+    let details = RegistrationError { id, message };
     if id == 0 {
         Ok((StatusCode::NO_CONTENT, ().into_response()))
     } else {

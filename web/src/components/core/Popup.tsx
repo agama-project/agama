@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { isValidElement } from "react";
 import { Button, ButtonProps, Modal, ModalProps } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
 import { _ } from "~/i18n";
@@ -202,9 +202,8 @@ const Popup = ({
   children,
   ...props
 }: PopupProps) => {
-  const [actions, content] = partition(
-    React.Children.toArray(children),
-    (child) => child.type === Actions,
+  const [actions, content] = partition(React.Children.toArray(children), (child) =>
+    isValidElement(child) ? child.type === Actions : false,
   );
 
   return (

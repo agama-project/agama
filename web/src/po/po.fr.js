@@ -25,6 +25,9 @@ export default {
   "%s disk": [
     "Disque %s"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s est un système immuable avec des mises à jour atomiques. Il utilise un système de fichiers Btrfs en lecture seule mis à jour via des clichés."
   ],
@@ -33,6 +36,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s avec %d partitions"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -376,6 +382,9 @@ export default {
   "Encryption Password": [
     "Mot de passe de chiffrement"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Taille exacte"
   ],
@@ -453,6 +462,9 @@ export default {
   ],
   "GiB": [
     "GiB"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "Masquer l'action du sous-volume %d",
@@ -863,6 +875,15 @@ export default {
   "Reboot": [
     "Redémarrer"
   ],
+  "Register": [
+    "Enregistrer"
+  ],
+  "Registration": [
+    "Enregistrement"
+  ],
+  "Registration code": [
+    "Code d'inscription"
+  ],
   "Reload": [
     "Recharger"
   ],
@@ -1014,9 +1035,6 @@ export default {
   "Table with mount points": [
     "Table avec points de montage"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Prenez le temps de vérifier votre configuration avant de lancer le processus d'installation."
-  ],
   "Target Password": [
     "Mot de passe cible"
   ],
@@ -1085,6 +1103,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "Le système n'a pas encore été configuré pour se connecter à un réseau Wi-Fi."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "Le système utilisera %s comme langue par défaut."
@@ -1187,9 +1208,6 @@ export default {
   ],
   "WWPN": [
     "WWPN"
-  ],
-  "Waiting": [
-    "En attente"
   ],
   "Wi-Fi": [
     "Wi-Fi"

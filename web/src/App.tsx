@@ -43,7 +43,7 @@ function App() {
   const location = useLocation();
   const { isBusy, phase } = useInstallerStatus({ suspense: true });
   const { connected, error } = useInstallerClientStatus();
-  const { selectedProduct, products } = useProduct();
+  const { selectedProduct, products } = useProduct({ suspense: true });
   const { language } = useInstallerL10n();
   const { password: isRootPasswordDefined, sshkey: rootSSHKey } = useRootUser();
   useL10nConfigChanges();

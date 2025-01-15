@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-10 02:55+0000\n"
-"PO-Revision-Date: 2023-12-28 21:02+0000\n"
+"POT-Creation-Date: 2025-01-12 02:47+0000\n"
+"PO-Revision-Date: 2024-12-25 18:50+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/id/>\n"
@@ -17,41 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9.1\n"
-
-#. Runs the startup phase
-#: service/lib/agama/manager.rb:91
-msgid "Load software translations"
-msgstr ""
-
-#: service/lib/agama/manager.rb:92
-msgid "Load storage translations"
-msgstr ""
+"X-Generator: Weblate 5.9.2\n"
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:107
+#: service/lib/agama/manager.rb:93
 msgid "Analyze disks"
-msgstr ""
+msgstr "Menganalisis disk"
 
-#: service/lib/agama/manager.rb:107
-#, fuzzy
+#: service/lib/agama/manager.rb:93
 msgid "Configure software"
-msgstr "Memeriksa Perangkat Lunak"
+msgstr "Mengkonfigurasi perangkat lunak"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:127
+#: service/lib/agama/manager.rb:116
 msgid "Prepare disks"
-msgstr ""
+msgstr "Siapkan disk"
 
-#: service/lib/agama/manager.rb:128
-#, fuzzy
+#: service/lib/agama/manager.rb:117
 msgid "Install software"
-msgstr "Menginstal Perangkat Lunak"
+msgstr "Menginstal perangkat lunak"
 
-#: service/lib/agama/manager.rb:129
+#: service/lib/agama/manager.rb:118
 msgid "Configure the system"
-msgstr ""
+msgstr "Mengkonfigurasi sistem"
+
+#. rubocop:enable Metrics/AbcSize
+#: service/lib/agama/manager.rb:156
+msgid "Load software translations"
+msgstr "Memuat terjemahan perangkat lunak"
+
+#: service/lib/agama/manager.rb:157
+msgid "Load storage translations"
+msgstr "Memuat terjemahan penyimpanan"
 
 #. Callback to handle unsigned files
 #.
@@ -60,12 +58,12 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:63
 #, perl-brace-format
 msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-msgstr "File %{filename} dari repositori %{repo_name} (%{repo_url})"
+msgstr "Berkas %{filename} dari repositori %{repo_name} (%{repo_url})"
 
 #: service/lib/agama/software/callbacks/signature.rb:67
 #, perl-brace-format
 msgid "The file %{filename}"
-msgstr "File %{filename}"
+msgstr "Berkas %{filename}"
 
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
@@ -73,7 +71,7 @@ msgid ""
 "%{source} is not digitally signed. The origin and integrity of the file "
 "cannot be verified. Use it anyway?"
 msgstr ""
-"%{source} tidak ditandatangani secara digital. Asal dan integritas file "
+"%{source} tidak ditandatangani secara digital. Asal dan integritas berkas "
 "tidak dapat diverifikasi. Tetap menggunakannya?"
 
 #. Callback to handle signature verification failures
@@ -107,7 +105,7 @@ msgstr "Menghitung proposal perangkat lunak"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:563
+#: service/lib/agama/software/manager.rb:561
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Tidak dapat membaca repositori \"%s\""
@@ -115,14 +113,14 @@ msgstr "Tidak dapat membaca repositori \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:573
+#: service/lib/agama/software/manager.rb:571
 msgid "Product not selected yet"
 msgstr "Produk belum dipilih"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:582
+#: service/lib/agama/software/manager.rb:580
 msgid "Product must be registered"
 msgstr "Produk harus didaftarkan"
 
@@ -140,24 +138,24 @@ msgstr "Ditemukan %s masalah ketergantungan."
 #. @return [Agama::Issue]
 #: service/lib/agama/storage/config_checker.rb:87
 msgid "No device found for a mandatory drive"
-msgstr ""
+msgstr "Perangkat tidak ditemukan untuk drive wajib"
 
 #: service/lib/agama/storage/config_checker.rb:89
 msgid "No device found for a mandatory partition"
-msgstr ""
+msgstr "Perangkat tidak ditemukan untuk partisi wajib"
 
 #. TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checker.rb:118
 #, c-format
 msgid "Missing file system type for '%s'"
-msgstr ""
+msgstr "Tidak ada tipe sistem berkas untuk '%s'"
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checker.rb:145
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
-msgstr ""
+msgstr "Tipe sistem berkas '%{filesystem}' tidak cocok untuk '%{path}'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -166,13 +164,15 @@ msgstr ""
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
+"Kata sandi tidak disediakan (diperlukan untuk menggunakan metode "
+"'%{crypt_method}')."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checker.rb:196
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr ""
+msgstr "Metode enkripsi '%{crypt_method}' tidak tersedia di sistem ini."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -180,6 +180,7 @@ msgstr ""
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
 msgstr ""
+"'%{crypt_method}' bukan metode yang cocok untuk mengenkripsi perangkat."
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checker.rb:276
@@ -187,24 +188,26 @@ msgstr ""
 msgid ""
 "The device '%s' is used several times as target device for physical volumes"
 msgstr ""
+"Perangkat '%s' digunakan beberapa kali sebagai perangkat target untuk volume "
+"fisik"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checker.rb:350
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
-msgstr ""
+msgstr "Tidak ada volume pool tipis LVM dengan alias '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checker.rb:375
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
-msgstr ""
+msgstr "Tidak ada volume fisik LVM dengan alias '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checker.rb:401
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
-msgstr ""
+msgstr "Tidak ada perangkat target untuk volume fisik LVM dengan alias '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
@@ -213,6 +216,7 @@ msgstr ""
 msgid ""
 "'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
 msgstr ""
+"'%{crypt_method}' bukan metode yang cocok untuk mengenkripsi volume fisik."
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
@@ -223,46 +227,50 @@ msgid ""
 "case the device does contain a file system or a storage system that is not "
 "supported, resizing will most likely cause data loss."
 msgstr ""
+"Baik sistem berkas maupun sistem penyimpanan tidak terdeteksi pada "
+"perangkat. Jika perangkat memiliki sistem berkas atau sistem penyimpanan "
+"yang tidak didukung, mengubah ukuran kemungkinan besar akan menyebabkan "
+"hilangnya data."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr ""
+msgstr "Penyusutan tidak didukung oleh perangkat ini"
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:120
 msgid "Activating storage devices"
 msgstr "Mengaktifkan perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:116
+#: service/lib/agama/storage/manager.rb:121
 msgid "Probing storage devices"
 msgstr "Memeriksa perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:117
+#: service/lib/agama/storage/manager.rb:122
 msgid "Calculating the storage proposal"
 msgstr "Menghitung proposal penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:118
+#: service/lib/agama/storage/manager.rb:123
 msgid "Selecting Linux Security Modules"
 msgstr "Memilih Modul Keamanan Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:126
+#: service/lib/agama/storage/manager.rb:131
 msgid "Preparing bootloader proposal"
 msgstr "Mempersiapkan proposal bootloader"
 
-#. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:131
+#. then also apply changes to that proposal
+#: service/lib/agama/storage/manager.rb:138
 msgid "Adding storage-related packages"
 msgstr "Menambahkan paket terkait penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:132
+#: service/lib/agama/storage/manager.rb:139
 msgid "Preparing the storage devices"
 msgstr "Mempersiapkan perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:133
+#: service/lib/agama/storage/manager.rb:140
 msgid "Writing bootloader sysconfig"
 msgstr "Menulis sysconfig bootloader"
 
@@ -272,20 +280,21 @@ msgstr "Menulis sysconfig bootloader"
 #: service/lib/agama/storage/proposal.rb:287
 msgid "Cannot accommodate the required file systems for installation"
 msgstr ""
+"Tidak dapat mengakomodasi sistem berkas yang diperlukan untuk instalasi"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:298
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "Terjadi masalah saat menghitung pengaturan penyimpanan"
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal_strategies/guided.rb:127
 msgid "No device selected for installation"
-msgstr ""
+msgstr "Tidak ada perangkat yang dipilih untuk pemasangan"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -296,12 +305,14 @@ msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
+"Perangkat yang dipilih berikut ini tidak ditemukan dalam sistem: %{devices}"
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
+"Wajib menentukan pengguna, mengatur kata sandi root atau kunci publik SSH"
 
 #~ msgid "Probing Storage"
 #~ msgstr "Memeriksa Penyimpanan"

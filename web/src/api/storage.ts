@@ -62,8 +62,8 @@ const findStorageJob = (id: string): Promise<Job | undefined> =>
  */
 const refresh = async (): Promise<void> => {
   const settings = await fetchSettings();
-  await probe();
-  await calculate(settings);
+  await probe().catch(console.log);
+  await calculate(settings).catch(console.log);
 };
 
 export {

@@ -21,6 +21,7 @@
 use super::http::{login, login_from_query, logout, session};
 use super::{config::ServiceConfig, state::ServiceState, EventsSender};
 use agama_lib::auth::TokenClaims;
+use axum::http::HeaderValue;
 use axum::{
     body::Body,
     extract::Request,
@@ -29,12 +30,14 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use hyper::header::CACHE_CONTROL;
 use std::time::Duration;
 use std::{
     convert::Infallible,
     path::{Path, PathBuf},
 };
 use tower::Service;
+use tower_http::set_header::SetResponseHeaderLayer;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
 use tracing::Span;
 
@@ -128,6 +131,10 @@ impl MainServiceBuilder {
                     ),
             )
             .layer(CompressionLayer::new().br(true))
+            .layer(SetResponseHeaderLayer::if_not_present(
+                CACHE_CONTROL,
+                HeaderValue::from_static("no-store"),
+            ))
             .with_state(state)
     }
 }

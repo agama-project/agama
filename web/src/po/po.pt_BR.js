@@ -34,6 +34,9 @@ export default {
   "%s disk": [
     "disco %s"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s é um sistema imutável com atualizações atômicas. Ele usa um sistema de arquivos Btrfs somente leitura atualizado via instantâneos."
   ],
@@ -42,6 +45,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s com %d partições"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -188,7 +194,7 @@ export default {
     "Antes %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    ""
+    "Antes de instalar, você precisa tomar algumas decisões. Clique em cada seção para revisar as configurações."
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Antes de iniciar a instalação, você precisa resolver os seguintes problemas:"
@@ -455,6 +461,9 @@ export default {
   "Encryption Password": [
     "Senha de criptografia"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Tamanho exato"
   ],
@@ -542,6 +551,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Hide": [
+    ""
+  ],
   "Hide %d subvolume action": [
     "Ocultar %d ação do subvolume",
     "Ocultar %d ações de subvolume"
@@ -614,6 +626,9 @@ export default {
   ],
   "Install new system on": [
     "Instalar novo sistema em"
+  ],
+  "Install using an advanced configuration.": [
+    ""
   ],
   "Install using device %s and deleting all its content": [
     "Instalar usando o dispositivo %s e excluindo todo o seu conteúdo"
@@ -850,7 +865,7 @@ export default {
     "Nenhum dos fusos horários corresponde ao filtro."
   ],
   "Not possible with the current setup. Click to know more.": [
-    ""
+    "Não é possível com a configuração atual. Clique para saber mais."
   ],
   "Not selected yet": [
     "Ainda não selecionado"
@@ -909,6 +924,9 @@ export default {
   "Password confirmation": [
     "Confirmação de senha"
   ],
+  "Password for root user": [
+    "Senha para usuário root"
+  ],
   "Password input": [
     "Entrada de senha"
   ],
@@ -963,6 +981,9 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Pre-installation checks": [
+    "Verificações de pré-instalação"
+  ],
   "Prefix length or netmask": [
     "Comprimento do prefixo ou máscara de rede"
   ],
@@ -975,6 +996,9 @@ export default {
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Proteção para as informações armazenadas no dispositivo, incluindo dados, programas e arquivos de sistema."
   ],
+  "Provide a password to ensure administrative access to the system.": [
+    "Forneça uma senha para garantir acesso administrativo ao sistema."
+  ],
   "Question": [
     "Pergunta"
   ],
@@ -986,6 +1010,15 @@ export default {
   ],
   "Reboot": [
     "Reiniciar"
+  ],
+  "Register": [
+    "Registro"
+  ],
+  "Registration": [
+    "Cadastro"
+  ],
+  "Registration code": [
+    "Código de registro"
   ],
   "Reload": [
     "Recarregar"
@@ -1089,6 +1122,9 @@ export default {
   "Set root SSH public key": [
     "Definir chave pública SSH raiz"
   ],
+  "Setup root user authentication": [
+    "Configurar autenticação do usuário root"
+  ],
   "Show %d subvolume action": [
     "Mostrar ação do subvolume %d",
     "Mostrar %d ações de subvolume"
@@ -1161,9 +1197,6 @@ export default {
   ],
   "Table with mount points": [
     "Tabela com pontos de montagem"
-  ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Reserve um tempo para verificar sua configuração antes de iniciar o processo de instalação."
   ],
   "Target Password": [
     "Senha de destino"
@@ -1254,6 +1287,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "O sistema ainda não foi configurado para se conectar a uma rede Wi-Fi."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "O sistema usará %s como idioma padrão."
@@ -1378,9 +1414,6 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting": [
-    "Aguardando"
-  ],
   "Waiting for actions information...": [
     "Aguardando informações sobre ações..."
   ],
@@ -1401,6 +1434,9 @@ export default {
   ],
   "Yes": [
     "Sim"
+  ],
+  "You can change it or select another authentication method in the 'Users' section before installing.": [
+    "Você pode alterá-lo ou selecionar outro método de autenticação na seção \"Usuários\" antes de instalar."
   ],
   "ZFCP": [
     "ZFCP"

@@ -65,7 +65,7 @@ module Agama
 
         # Gets the current storage config.
         #
-        # @return [Hash]
+        # @return [Hash, nil] nil if there is no config yet.
         def config
           # Use storage iface to avoid collision with bootloader iface
           serialized_config = dbus_object[STORAGE_IFACE].GetConfig

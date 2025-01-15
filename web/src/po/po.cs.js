@@ -35,14 +35,23 @@ export default {
   "%s disk": [
     "%s disk"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s je neměnný systém s atomickými aktualizacemi. Používá souborový systém Btrfs pouze pro čtení aktualizovaný pomocí snímků."
   ],
   "%s logo": [
     "%s logo"
   ],
+  "%s must be registered.": [
+    ""
+  ],
   "%s with %d partitions": [
     "%s s %d oddíly"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -457,6 +466,9 @@ export default {
   "Encryption Password": [
     "Heslo pro šifrování"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Přesná velikost"
   ],
@@ -544,6 +556,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Hide": [
+    ""
+  ],
   "Hide %d subvolume action": [
     "Skrýt %d akci podsvazku",
     "Skrýt %d akce podsvazku",
@@ -617,6 +632,9 @@ export default {
   ],
   "Install new system on": [
     "Instalace nového systému na"
+  ],
+  "Install using an advanced configuration.": [
+    ""
   ],
   "Install using device %s and deleting all its content": [
     "Instalace pomocí zařízení %s a odstranění veškerého jeho obsahu"
@@ -978,6 +996,9 @@ export default {
   "Presence of other volumes (%s)": [
     "Přítomnost dalších svazků (%s)"
   ],
+  "Product registered": [
+    ""
+  ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Ochrana informací uložených v zařízení, včetně dat, programů a systémových souborů."
   ],
@@ -992,6 +1013,9 @@ export default {
   ],
   "Reboot": [
     "Restartovat systém"
+  ],
+  "Registration code": [
+    "Registrační kód"
   ],
   "Reload": [
     "Znovu načíst"
@@ -1095,6 +1119,9 @@ export default {
   "Set root SSH public key": [
     "Nastavte veřejný klíč SSH pro roota"
   ],
+  "Show": [
+    ""
+  ],
   "Show %d subvolume action": [
     "Zobrazit %d akci podsvazku",
     "Zobrazit %d akce podsvazku",
@@ -1168,9 +1195,6 @@ export default {
   ],
   "Table with mount points": [
     "Tabulka s přípojnými body"
-  ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Před zahájením instalace zkontrolujte konfiguraci."
   ],
   "Target Password": [
     "Cílové heslo"
@@ -1261,6 +1285,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "Systém zatím nebyl konfigurován pro připojení k síti Wi-Fi."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "Systém použije jako výchozí jazyk %s."
@@ -1384,9 +1411,6 @@ export default {
   ],
   "WWPN": [
     "WWPN"
-  ],
-  "Waiting": [
-    "Čekám"
   ],
   "Waiting for actions information...": [
     "Čekáme na informace o akcích..."

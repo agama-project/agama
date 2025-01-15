@@ -34,6 +34,9 @@ export default {
   "%s disk": [
     "disco %s"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s es un sistema inmutable con actualizaciones atómicas. Utiliza un sistema de archivos Btrfs de solo lectura actualizado mediante instantáneas."
   ],
@@ -42,6 +45,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s con %d particiones"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -455,6 +461,9 @@ export default {
   "Encryption Password": [
     "Contraseña de cifrado"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Tamaño exacto"
   ],
@@ -541,6 +550,9 @@ export default {
   ],
   "GiB": [
     "GB"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "Ocultar %d acción de subvolumen",
@@ -996,6 +1008,15 @@ export default {
   "Reboot": [
     "Reiniciar"
   ],
+  "Register": [
+    "Registrar"
+  ],
+  "Registration": [
+    "Registro"
+  ],
+  "Registration code": [
+    "Código de registro"
+  ],
   "Reload": [
     "Recargar"
   ],
@@ -1174,9 +1195,6 @@ export default {
   "Table with mount points": [
     "Tabla con puntos de montaje"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Dedica un tiempo para verificar la configuración antes de iniciar el proceso de instalación."
-  ],
   "Target Password": [
     "Contraseña de destino"
   ],
@@ -1266,6 +1284,9 @@ export default {
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "El sistema aún no se ha configurado para conectarse a una red WiFi."
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "El sistema utilizará %s como su idioma predeterminado."
@@ -1389,9 +1410,6 @@ export default {
   ],
   "WWPN": [
     "WWPN"
-  ],
-  "Waiting": [
-    "Esperar"
   ],
   "Waiting for actions information...": [
     "Esperando información de acciones..."

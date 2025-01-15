@@ -22,6 +22,9 @@ export default {
   "%s disk": [
     "Festplatte %s"
   ],
+  "%s has been registered with below information.": [
+    ""
+  ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s ist ein unveränderliches System mit atomaren Aktualisierungen. Es verwendet ein schreibgeschütztes Btrfs-Dateisystem, das über Schnappschüsse aktualisiert wird."
   ],
@@ -30,6 +33,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s mit %d Partitionen"
+  ],
+  "(optional)": [
+    ""
   ],
   ", ": [
     ", "
@@ -422,6 +428,9 @@ export default {
   "Encryption Password": [
     "Verschlüsselungspasswort"
   ],
+  "Enter a registration code and optionally a valid email address for registering the product.": [
+    ""
+  ],
   "Exact size": [
     "Exakte Größe"
   ],
@@ -502,6 +511,9 @@ export default {
   ],
   "GiB": [
     "GiB"
+  ],
+  "Hide": [
+    ""
   ],
   "Hide %d subvolume action": [
     "",
@@ -933,6 +945,15 @@ export default {
   "Reboot": [
     "Neustart"
   ],
+  "Register": [
+    "Registrieren"
+  ],
+  "Registration": [
+    "Registrierung"
+  ],
+  "Registration code": [
+    "Registrierungscode"
+  ],
   "Reload": [
     "Neu laden"
   ],
@@ -1105,9 +1126,6 @@ export default {
   "Table with mount points": [
     "Tabelle mit Einhängepunkten"
   ],
-  "Take your time to check your configuration before starting the installation process.": [
-    "Nehmen Sie sich die Zeit, Ihre Konfiguration zu überprüfen, bevor Sie mit der Installation beginnen."
-  ],
   "Target Password": [
     "Ziel-Passwort"
   ],
@@ -1185,6 +1203,9 @@ export default {
   ],
   "The size of the file system cannot be edited": [
     "Die Größe des Dateisystems kann nicht bearbeitet werden"
+  ],
+  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
+    ""
   ],
   "The system will use %s as its default language.": [
     "Das System wird %s als Standardsprache verwenden."
@@ -1296,9 +1317,6 @@ export default {
   ],
   "WWPN": [
     "WWPN"
-  ],
-  "Waiting": [
-    "Warten"
   ],
   "Waiting for actions information...": [
     "Warten auf Informationen zu Aktionen ..."

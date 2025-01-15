@@ -45,7 +45,6 @@ const Content = ({ children }) => (
 export default function StorageSection() {
   const configModel = useConfigModel();
   const devices = useDevices("system", { suspense: true });
-
   const drives = configModel?.drives || [];
 
   const label = (drive) => {

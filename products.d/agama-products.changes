@@ -1,4 +1,39 @@
 -------------------------------------------------------------------
+Mon Jan 13 09:04:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update SLES4SAP ID to SLES_SAP (gh#agama-project/agama#1890).
+
+-------------------------------------------------------------------
+Fri Jan 10 16:13:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the user selectable patterns list to the SLES product
+  (gh#agama-project/agama#1885).
+
+-------------------------------------------------------------------
+Fri Jan 10 14:51:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update SLES name (gh#agama-project/agama#1883).
+
+-------------------------------------------------------------------
+Wed Jan  8 14:07:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
+Tue Jan  7 12:57:13 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Drop yast from Leap 16.0 software selection
+  code-o-o#leap/features#173
+
+-------------------------------------------------------------------
+Mon Jan  6 14:41:28 UTC 2025 - Angela Briel <abriel@suse.com>
+
+- SLES for SAP Application product:
+  Change product description.
+  (bsc#1235023)
+
+-------------------------------------------------------------------
 Thu Dec  5 11:04:06 UTC 2024 - Angela Briel <abriel@suse.com>
 
 - SLES for SAP Application product:

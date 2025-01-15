@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/registration"
+
 module Agama
   module Software
     # Represents a product that Agama can install.
@@ -90,6 +92,12 @@ module Agama
       # @return [Array<String>]
       attr_accessor :user_patterns
 
+      # Determines if the product should be registered.
+      #
+      # @see Agama::Registration::Requirement
+      # @return [String]
+      attr_accessor :registration
+
       # Product translations.
       #
       # @example
@@ -115,6 +123,7 @@ module Agama
         @optional_patterns = []
         # nil = display all visible patterns, [] = display no patterns
         @user_patterns = nil
+        @registration = Agama::Registration::Requirement::NO
         @translations = {}
       end
 
