@@ -20,45 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef, useState } from "react";
-import { Grid, GridItem, Stack } from "@patternfly/react-core";
-import { Page, Drawer, EmptyState } from "~/components/core/";
-import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
-import ProposalSettingsSection from "./ProposalSettingsSection";
+import React, { useState } from "react";
+import { Grid, GridItem, SplitItem } from "@patternfly/react-core";
+import { Page } from "~/components/core/";
+import { Loading } from "~/components/layout";
+import EncryptionField from "~/components/storage/EncryptionField";
 import ProposalResultSection from "./ProposalResultSection";
-import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
-import { ProposalActionsDialog } from "~/components/storage";
-import { _ } from "~/i18n";
-import { SPACE_POLICIES } from "~/components/storage/utils";
+import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
+import ConfigEditor from "./ConfigEditor";
+import ConfigEditorMenu from "./ConfigEditorMenu";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import {
-  useAvailableDevices,
-  useDevices,
-  useProductParams,
-  useProposalMutation,
-  useProposalResult,
-  useVolumeDevices,
-  useVolumeTemplates,
-  useRefresh,
-} from "~/queries/storage";
-
-const StorageWarning = () => (
-  <Page>
-    <Page.Header>
-      <h2>{_("Storage")}</h2>
-    </Page.Header>
-    <Page.Content>
-      <EmptyState
-        title={_(
-          "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.",
-        )}
-        icon="warning"
-      />
-    </Page.Content>
-  </Page>
-);
+import { useDevices, useProposalResult, useRefresh } from "~/queries/storage";
+import { _ } from "~/i18n";
 
 /**
  * Which UI item is being changed by user
@@ -81,20 +56,13 @@ export const NOT_AFFECTED = {
   // the ProposalResultSection is refreshed always
   InstallationDeviceField: [CHANGING.ENCRYPTION, CHANGING.BOOT, CHANGING.POLICY, CHANGING.VOLUMES],
   PartitionsField: [CHANGING.ENCRYPTION, CHANGING.POLICY],
-  ProposalActionsSummary: [CHANGING.ENCRYPTION, CHANGING.TARGET],
 };
 
 export default function ProposalPage() {
-  const drawerRef = useRef();
+  const [isLoading, setIsLoading] = useState(false);
   const systemDevices = useDevices("system");
   const stagingDevices = useDevices("result");
-  const availableDevices = useAvailableDevices();
-  const volumeDevices = useVolumeDevices();
-  const volumeTemplates = useVolumeTemplates();
-  const { encryptionMethods } = useProductParams({ suspense: true });
-  const proposal = useProposalResult();
-  const updateProposal = useProposalMutation();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { actions } = useProposalResult();
 
   useRefresh({
     onStart: () => setIsLoading(true),
@@ -105,16 +73,19 @@ export default function ProposalPage() {
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
 
-  if (proposal === undefined) return <StorageWarning />;
+  if (isLoading) {
+    return (
+      <Page>
+        <Page.Header>
+          <h2>{_("Storage")}</h2>
+        </Page.Header>
 
-  const { settings, actions } = proposal;
-
-  const changeSettings = async (changing, updated: object) => {
-    const newSettings = { ...settings, ...updated };
-    updateProposal.mutateAsync(newSettings).catch(console.error);
-  };
-
-  const spacePolicy = SPACE_POLICIES.find((p) => p.id === settings.spacePolicy);
+        <Page.Content>
+          <Loading text={_("Reloading data, please wait...")} />
+        </Page.Content>
+      </Page>
+    );
+  }
 
   return (
     <Page>
@@ -125,48 +96,37 @@ export default function ProposalPage() {
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <ProposalTransactionalInfo settings={settings} />
+            <ProposalTransactionalInfo />
           </GridItem>
-          <GridItem sm={12} xl={6}>
-            <ProposalSettingsSection
-              availableDevices={availableDevices}
-              volumeDevices={volumeDevices}
-              encryptionMethods={encryptionMethods}
-              volumeTemplates={volumeTemplates}
-              settings={settings}
-              onChange={changeSettings}
-              isLoading={isLoading}
-            />
-          </GridItem>
-          <GridItem sm={12} xl={6}>
-            <Drawer
-              ref={drawerRef}
-              panelHeader={<h4>{_("Planned Actions")}</h4>}
-              panelContent={<ProposalActionsDialog actions={actions} />}
+          <GridItem sm={12} xl={8}>
+            <Page.Section
+              title={_("Installation Devices")}
+              description={_(
+                "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+              )}
+              actions={
+                <>
+                  <SplitItem isFilled> </SplitItem>
+                  <SplitItem>
+                    <ConfigEditorMenu />
+                  </SplitItem>
+                </>
+              }
             >
-              <Stack hasGutter>
-                <ProposalActionsSummary
-                  policy={spacePolicy}
-                  system={systemDevices}
-                  staging={stagingDevices}
-                  errors={errors}
-                  actions={actions}
-                  spaceActions={settings.spaceActions}
-                  devices={settings.installationDevices}
-                  // @ts-expect-error: we do not know how to specify the type of
-                  // drawerRef properly and TS does not find the "open" property
-                  onActionsClick={drawerRef.current?.open}
-                  isLoading={isLoading}
-                />
-                <ProposalResultSection
-                  system={systemDevices}
-                  staging={stagingDevices}
-                  actions={actions}
-                  errors={errors}
-                  isLoading={isLoading}
-                />
-              </Stack>
-            </Drawer>
+              <ConfigEditor />
+            </Page.Section>
+          </GridItem>
+          <GridItem sm={12} xl={4}>
+            <EncryptionField password={""} isLoading={false} />
+          </GridItem>
+          <GridItem sm={12}>
+            <ProposalResultSection
+              system={systemDevices}
+              staging={stagingDevices}
+              actions={actions}
+              errors={errors}
+              isLoading={false}
+            />
           </GridItem>
         </Grid>
       </Page.Content>

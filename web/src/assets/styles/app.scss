@@ -97,3 +97,15 @@ button.remove-link:hover {
     --pf-v5-c-notification-drawer__list-item--before--BackgroundColor: none;
   }
 }
+
+.menu-toggle-inline {
+  padding: 1px 0.5ch;
+  margin-block-end: 0.5em;
+  background: var(--color-gray);
+  border-radius: 4px;
+
+  &.pf-v5-c-menu-toggle.pf-m-plain:not(.pf-m-text) {
+    text-decoration: none;
+    color: black;
+  }
+}

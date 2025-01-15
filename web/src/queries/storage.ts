@@ -28,35 +28,37 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import React from "react";
+import { fetchConfig, refresh, setConfig } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
-import { fetchConfig, refresh } from "~/api/storage";
 import {
   calculate,
   fetchActions,
   fetchDefaultVolume,
   fetchProductParams,
-  fetchSettings,
   fetchUsableDevices,
 } from "~/api/storage/proposal";
 import { useInstallerClient } from "~/context/installer";
-import { compact, uniq } from "~/utils";
 import {
+  config,
   ProductParams,
   Volume as APIVolume,
-  ProposalSettings as APIProposalSettings,
-  ProposalTarget as APIProposalTarget,
   ProposalSettingsPatch,
 } from "~/api/storage/types";
 import {
   ProposalSettings,
   ProposalResult,
-  ProposalTarget,
   StorageDevice,
   Volume,
   VolumeTarget,
 } from "~/types/storage";
 
 import { QueryHookOptions } from "~/types/queries";
+
+const configQuery = {
+  queryKey: ["storage", "config"],
+  queryFn: fetchConfig,
+  staleTime: Infinity,
+};
 
 const devicesQuery = (scope: "result" | "system") => ({
   queryKey: ["storage", "devices", scope],
@@ -109,6 +111,29 @@ const buildVolume = (
 };
 
 /**
+ * Hook that returns the unsolved config.
+ */
+const useConfig = (options?: QueryHookOptions): config.Config => {
+  const query = configQuery;
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func(query);
+  return data;
+};
+
+/**
+ * Hook for setting a new config.
+ */
+const useConfigMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (config: config.Config) => setConfig(config),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
+
+  return useMutation(query);
+};
+
+/**
  * Hook that returns the list of storage devices for the given scope.
  *
  * @param scope - "system": devices in the current state of the system; "result":
@@ -124,20 +149,10 @@ const useDevices = (
   return data;
 };
 
-const configQuery = {
-  queryKey: ["storage", "config"],
-  queryFn: fetchConfig,
-};
-
-const useConfig = () => {
-  const { data } = useSuspenseQuery(configQuery);
-  return data;
-};
-
 /**
  * Hook that returns the list of available devices for installation.
  */
-const useAvailableDevices = () => {
+const useAvailableDevices = (): StorageDevice[] => {
   const findDevice = (devices: StorageDevice[], sid: number) => {
     const device = devices.find((d) => d.sid === sid);
 
@@ -211,13 +226,8 @@ const useVolumeDevices = (): StorageDevice[] => {
   return [...availableDevices, ...mds, ...vgs];
 };
 
-const proposalSettingsQuery = {
-  queryKey: ["storage", "proposal", "settings"],
-  queryFn: fetchSettings,
-};
-
 const proposalActionsQuery = {
-  queryKey: ["storage", "proposal", "actions"],
+  queryKey: ["storage", "devices", "actions"],
   queryFn: fetchActions,
 };
 
@@ -225,66 +235,9 @@ const proposalActionsQuery = {
  * Hook that returns the current proposal (settings and actions).
  */
 const useProposalResult = (): ProposalResult | undefined => {
-  const buildTarget = (value: APIProposalTarget): ProposalTarget => {
-    // FIXME: handle the case where they do not match
-    const target = value as ProposalTarget;
-    return target;
-  };
+  const { data: actions } = useSuspenseQuery(proposalActionsQuery);
 
-  /** @todo Read installation devices from D-Bus. */
-  const buildInstallationDevices = (settings: APIProposalSettings, devices: StorageDevice[]) => {
-    const findDevice = (name: string) => {
-      const device = devices.find((d) => d.name === name);
-
-      if (device === undefined) console.error("Device object not found: ", name);
-
-      return device;
-    };
-
-    // Only consider the device assigned to a volume as installation device if it is needed
-    // to find space in that device. For example, devices directly formatted or mounted are not
-    // considered as installation devices.
-    const volumes = settings.volumes.filter((vol) => {
-      const target = vol.target as VolumeTarget;
-      return [VolumeTarget.NEW_PARTITION, VolumeTarget.NEW_VG].includes(target);
-    });
-
-    const values = [
-      settings.targetDevice,
-      settings.targetPVDevices,
-      volumes.map((v) => v.targetDevice),
-    ].flat();
-
-    if (settings.configureBoot) values.push(settings.bootDevice);
-
-    const names = uniq(compact(values)).filter((d) => d.length > 0);
-
-    // #findDevice returns undefined if no device is found with the given name.
-    return compact(names.sort().map(findDevice));
-  };
-
-  const [{ data: settings }, { data: actions }] = useSuspenseQueries({
-    queries: [proposalSettingsQuery, proposalActionsQuery],
-  });
-  const systemDevices = useDevices("system", { suspense: true });
-  const { mountPoints: productMountPoints } = useProductParams({ suspense: true });
-
-  if (settings === null) return undefined;
-
-  return {
-    settings: {
-      ...settings,
-      targetPVDevices: settings.targetPVDevices || [],
-      target: buildTarget(settings.target),
-      volumes: settings.volumes.map((v) => buildVolume(v, systemDevices, productMountPoints)),
-      // NOTE: strictly speaking, installation devices does not belong to the settings. It
-      // should be a separate method instead of an attribute in the settings object.
-      // Nevertheless, it was added here for simplicity and to avoid passing more props in some
-      // react components. Please, do not use settings as a jumble.
-      installationDevices: buildInstallationDevices(settings, systemDevices),
-    },
-    actions,
-  };
+  return { actions };
 };
 
 const useProposalMutation = () => {
@@ -389,6 +342,7 @@ const useRefresh = (handler?: RefreshHandler) => {
 
 export {
   useConfig,
+  useConfigMutation,
   useDevices,
   useAvailableDevices,
   useProductParams,
@@ -400,3 +354,5 @@ export {
   useDeprecatedChanges,
   useRefresh,
 };
+
+export * from "~/queries/storage/config-model";

@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_json_conversions/base"
-require "agama/storage/configs/size"
 
 module Agama
   module Storage
@@ -28,9 +27,10 @@ module Agama
       module ToJSONConversions
         # Size conversion to JSON hash according to schema.
         class Size < Base
-          # @see Base
-          def self.config_type
-            Configs::Size
+          # @param config [Configs::Size]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private

@@ -110,10 +110,144 @@ describe Agama::Storage::ConfigSolver do
       .and_return(true)
   end
 
-  subject { described_class.new(devicegraph, product_config, disk_analyzer: disk_analyzer) }
+  subject { described_class.new(product_config, devicegraph, disk_analyzer: disk_analyzer) }
 
   describe "#solve" do
     let(:scenario) { "empty-hd-50GiB.yaml" }
+
+    context "if a config does not specify the boot device alias" do
+      let(:config_json) do
+        {
+          boot:   { configure: true },
+          drives: [
+            {
+              alias:      device_alias,
+              partitions: [
+                { filesystem: { path: "/" } }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:device_alias) { "root" }
+
+      context "and the boot device is set to be the default" do
+        before do
+          config.boot.device.default = true
+        end
+
+        it "sets the alias of the root drive as boot device alias" do
+          subject.solve(config)
+          boot = config.boot
+          expect(boot.device.device_alias).to eq("root")
+        end
+
+        context "and the root drive has no alias" do
+          let(:device_alias) { nil }
+
+          it "sets an alias to the root drive" do
+            subject.solve(config)
+            drive = config.drives.first
+            expect(drive.alias).to_not be_nil
+          end
+
+          it "sets the alias of root drive as boot device alias" do
+            subject.solve(config)
+            boot = config.boot
+            drive = config.drives.first
+            expect(boot.device.device_alias).to eq(drive.alias)
+          end
+
+          context "and root is over a logical volume" do
+            let(:scenario) { "disks.yaml" }
+
+            let(:config_json) do
+              {
+                boot:         { configure: true },
+                drives:       [
+                  {
+                    search:     "/dev/vda",
+                    alias:      device_alias,
+                    partitions: [
+                      { search: "/dev/vda2", alias: "pv" }
+                    ]
+                  },
+                  { search: "/dev/vdb", alias: "disk2" }
+                ],
+                volumeGroups: [
+                  {
+                    physicalVolumes: ["disk2", "pv"],
+                    logicalVolumes:  [
+                      { filesystem: { path: "/" } }
+                    ]
+                  }
+                ]
+              }
+            end
+
+            let(:device_alias) { "disk1" }
+
+            it "sets the alias of first partitioned pv drive as boot device alias" do
+              subject.solve(config)
+              boot = config.boot
+              expect(boot.device.device_alias).to eq("disk1")
+            end
+
+            context "and the drive has no alias" do
+              let(:device_alias) { nil }
+
+              it "sets an alias to the drive" do
+                subject.solve(config)
+                drive = config.drives.find { |d| d.search.name == "/dev/vda" }
+                expect(drive.alias).to_not be_nil
+              end
+
+              it "sets the alias of the drive as boot device alias" do
+                subject.solve(config)
+                boot = config.boot
+                drive = config.drives.find { |d| d.search.name == "/dev/vda" }
+                expect(boot.device.device_alias).to eq(drive.alias)
+              end
+            end
+          end
+        end
+      end
+
+      context "and the boot device is not set to be the default" do
+        before do
+          config.boot.device.default = false
+        end
+
+        it "does not set a boot device alias" do
+          subject.solve(config)
+          boot = config.boot
+          expect(boot.device.device_alias).to be_nil
+        end
+      end
+
+      context "and boot is not set to be configured" do
+        let(:config_json) do
+          {
+            boot:   { configure: false },
+            drives: [
+              {
+                alias:      "disk1",
+                partitions: [
+                  { filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "does not set a boot device alias" do
+          subject.solve(config)
+          boot = config.boot
+          expect(boot.device.device_alias).to be_nil
+        end
+      end
+    end
 
     context "if a config does not specify all the encryption properties" do
       let(:config_json) do
@@ -186,6 +320,7 @@ describe Agama::Storage::ConfigSolver do
         drive = config.drives.first
         filesystem = drive.filesystem
         expect(filesystem.type).to be_a(Agama::Storage::Configs::FilesystemType)
+        expect(filesystem.type.default?).to eq(true)
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
         expect(filesystem.type.btrfs.snapshots?).to eq(true)
@@ -289,7 +424,7 @@ describe Agama::Storage::ConfigSolver do
         it "sets the device size" do
           subject.solve(config)
           partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
+          expect(partition.size.default?).to eq(true)
           expect(partition.size.min).to eq(20.GiB)
           expect(partition.size.max).to eq(20.GiB)
         end
@@ -546,6 +681,52 @@ describe Agama::Storage::ConfigSolver do
           expect(partition.size.default?).to eq(false)
           expect(partition.size.min).to eq(10.GiB)
           expect(partition.size.max).to eq(20.GiB)
+        end
+      end
+    end
+
+    context "if a config does not specify max size" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  search:     search,
+                  filesystem: { path: "/" },
+                  size:       {
+                    min: "10 GiB"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      context "and there is no device assigned" do
+        let(:search) { nil }
+
+        it "sets max size to unlimited" do
+          subject.solve(config)
+          partition = partition_proc.call(config)
+          expect(partition.size.default?).to eq(false)
+          expect(partition.size.min).to eq(10.GiB)
+          expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
+        end
+      end
+
+      context "and there is a device assigned" do
+        let(:scenario) { "disks.yaml" }
+
+        let(:search) { "/dev/vda2" }
+
+        it "sets max size to unlimited" do
+          subject.solve(config)
+          partition = partition_proc.call(config)
+          expect(partition.size.default?).to eq(false)
+          expect(partition.size.min).to eq(10.GiB)
+          expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
         end
       end
     end

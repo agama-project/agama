@@ -2,11 +2,12 @@
   "storage": {
     "boot": {
       "configure": true,
-      "device": "/dev/vda"
+      "device": "vda"
     },
     "drives": [
       {
         "search": "/dev/vda",
+        "alias": "vda",
         "ptableType": "gpt",
         "partitions": [
           {

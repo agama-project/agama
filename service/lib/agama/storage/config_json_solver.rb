@@ -57,6 +57,9 @@ module Agama
     #                         }
     #                       ]
     #                     }
+    #
+    # See doc/storage_proposal_from_profile.md for a complete description of how the config is
+    # generated from a profile.
     class ConfigJSONSolver
       # @param default_paths [Array<String>] Default paths of the product.
       # @param mandatory_paths [Array<String>] Mandatory paths of the product.

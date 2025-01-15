@@ -21,6 +21,9 @@
 mod storage1;
 pub use storage1::Storage1Proxy;
 
+mod devices;
+pub use devices::DevicesProxy;
+
 mod calculator;
 pub use calculator::CalculatorProxy as ProposalCalculatorProxy;
 

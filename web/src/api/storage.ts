@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, post } from "~/api/http";
+import { get, post, put } from "~/api/http";
 import { Job } from "~/types/job";
 import { calculate, fetchSettings } from "~/api/storage/proposal";
-import { config } from "~/api/storage/types";
+import { config, configModel } from "~/api/storage/types";
 
 /**
  * Starts the storage probing process.
@@ -34,6 +34,13 @@ const probe = (): Promise<any> => post("/api/storage/probe");
 
 const fetchConfig = (): Promise<config.Config | undefined> =>
   get("/api/storage/config").then((config) => config.storage);
+
+const fetchConfigModel = (): Promise<configModel.Config | undefined> =>
+  get("/api/storage/config_model");
+
+const setConfig = (config: config.Config) => put("/api/storage/config", { storage: config });
+
+const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
 
 /**
  * Returns the list of jobs
@@ -59,4 +66,13 @@ const refresh = async (): Promise<void> => {
   await calculate(settings).catch(console.log);
 };
 
-export { probe, fetchConfig, fetchStorageJobs, findStorageJob, refresh };
+export {
+  probe,
+  fetchConfig,
+  fetchConfigModel,
+  setConfig,
+  setConfigModel,
+  fetchStorageJobs,
+  findStorageJob,
+  refresh,
+};

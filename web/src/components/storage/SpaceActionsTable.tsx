@@ -34,18 +34,17 @@ import {
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { deviceChildren, deviceSize } from "~/components/storage/utils";
+import { deviceSize } from "~/components/storage/utils";
 import {
   DeviceName,
   DeviceDetails,
   DeviceSize,
   toStorageDevice,
 } from "~/components/storage/device-utils";
-import { TreeTable } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { PartitionSlot, SpaceAction, StorageDevice } from "~/types/storage";
+import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
-import { DeviceInfo as DeviceInfoType } from "~/api/storage/types";
+import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 
 /**
  * Info about the device.
@@ -111,9 +110,9 @@ const DeviceActionSelector = ({
 }: {
   device: StorageDevice;
   action: string;
-  onChange?: (action: SpaceAction) => void;
+  onChange?: (action: SpacePolicyAction) => void;
 }) => {
-  const changeAction = (action) => onChange({ device: device.name, action });
+  const changeAction = (value) => onChange({ deviceName: device.name, value });
 
   const isResizeDisabled = device.shrinking?.supported === undefined;
   const hasInfo = device.shrinking !== undefined;
@@ -132,14 +131,14 @@ const DeviceActionSelector = ({
             text="Allow shrink"
             buttonId="resize"
             isDisabled={isResizeDisabled}
-            isSelected={action === "resize"}
-            onChange={() => changeAction("resize")}
+            isSelected={action === "resizeIfNeeded"}
+            onChange={() => changeAction("resizeIfNeeded")}
           />
           <ToggleGroupItem
             text="Delete"
             buttonId="delete"
-            isSelected={action === "force_delete"}
-            onChange={() => changeAction("force_delete")}
+            isSelected={action === "delete"}
+            onChange={() => changeAction("delete")}
           />
         </ToggleGroup>
       </FlexItem>
@@ -168,7 +167,7 @@ const DeviceAction = ({
 }: {
   item: PartitionSlot | StorageDevice;
   action: string;
-  onChange?: (action: SpaceAction) => void;
+  onChange?: (action: SpacePolicyAction) => void;
 }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
@@ -186,10 +185,9 @@ const DeviceAction = ({
 };
 
 export type SpaceActionsTableProps = {
-  devices: StorageDevice[];
-  expandedDevices?: StorageDevice[];
+  devices: (PartitionSlot | StorageDevice)[];
   deviceAction: (item: PartitionSlot | StorageDevice) => string;
-  onActionChange: (action: SpaceAction) => void;
+  onActionChange: (action: SpacePolicyAction) => void;
 };
 
 /**
@@ -197,8 +195,7 @@ export type SpaceActionsTableProps = {
  * @component
  */
 export default function SpaceActionsTable({
-  devices,
-  expandedDevices = [],
+  devices = [],
   deviceAction,
   onActionChange,
 }: SpaceActionsTableProps) {
@@ -221,16 +218,27 @@ export default function SpaceActionsTable({
   ];
 
   return (
-    <TreeTable
-      columns={columns}
-      items={devices}
-      aria-label={_("Actions to find space")}
-      expandedItems={expandedDevices}
-      itemChildren={deviceChildren}
-      rowClassNames={(item: DeviceInfoType) => {
-        if (!item.sid) return "dimmed-row";
-      }}
-      className="devices-table"
-    />
+    <Table variant="compact" className="devices-table">
+      <Thead noWrap>
+        <Tr>
+          {columns.map((c, i) => (
+            <Th key={i} className={c.classNames}>
+              {c.name}
+            </Th>
+          ))}
+        </Tr>
+      </Thead>
+      <Tbody>
+        {devices.map((d, idx) => (
+          <Tr key={idx}>
+            {columns.map((c, i) => (
+              <Td key={i} className={c.classNames}>
+                {c.value(d)}
+              </Td>
+            ))}
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
   );
 }

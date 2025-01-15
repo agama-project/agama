@@ -25,7 +25,6 @@ require "agama/storage/config_conversions/to_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/to_json_conversions/with_partitions"
 require "agama/storage/config_conversions/to_json_conversions/with_ptable_type"
 require "agama/storage/config_conversions/to_json_conversions/with_search"
-require "agama/storage/configs/drive"
 
 module Agama
   module Storage
@@ -39,9 +38,10 @@ module Agama
           include WithPtableType
           include WithPartitions
 
-          # @see Base
-          def self.config_type
-            Configs::Drive
+          # @param config [Configs::Drive]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private

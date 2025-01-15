@@ -31,20 +31,21 @@ module Agama
       module FromJSONConversions
         # Filesystem type conversion from JSON hash according to schema.
         class FilesystemType < Base
-          # @see Base#convert
-          # @return [Configs::FilesystemType]
-          def convert
-            super(Configs::FilesystemType.new)
-          end
-
         private
 
           alias_method :filesystem_type_json, :config_json
+
+          # @see Base
+          # @return [Configs::FilesystemType]
+          def default_config
+            Configs::FilesystemType.new
+          end
 
           # @see Base#conversions
           # @return [Hash]
           def conversions
             {
+              default: false,
               fs_type: convert_type,
               btrfs:   convert_btrfs
             }

@@ -28,15 +28,15 @@ module Agama
       module FromJSONConversions
         # Btrfs conversion from JSON hash according to schema.
         class Btrfs < Base
-          # @see Base#convert
-          # @return [Configs::Btrfs]
-          def convert
-            super(Configs::Btrfs.new)
-          end
-
         private
 
           alias_method :btrfs_json, :config_json
+
+          # @see Base
+          # @return [Configs::Btrfs]
+          def default_config
+            Configs::Btrfs.new
+          end
 
           # @see Base#conversions
           # @return [Hash]

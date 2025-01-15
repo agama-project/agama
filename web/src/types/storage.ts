@@ -85,7 +85,7 @@ type ShrinkingInfo = {
 };
 
 type ProposalResult = {
-  settings: ProposalSettings;
+  settings?: ProposalSettings;
   actions: Action[];
 };
 
@@ -95,6 +95,11 @@ type Action = {
   subvol: boolean;
   delete: boolean;
   resize: boolean;
+};
+
+type SpacePolicyAction = {
+  deviceName: string;
+  value: "delete" | "resizeIfNeeded";
 };
 
 type ProposalSettings = {
@@ -206,6 +211,7 @@ export type {
   ProposalSettings,
   ShrinkingInfo,
   SpaceAction,
+  SpacePolicyAction,
   StorageDevice,
   Volume,
   VolumeOutline,
