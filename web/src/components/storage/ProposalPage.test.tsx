@@ -43,7 +43,6 @@ jest.mock("~/queries/issues", () => ({
   useIssues: () => [],
 }));
 
-jest.mock("./ProposalSettingsSection", () => () => <div>proposal settings</div>);
 jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
 jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
 
