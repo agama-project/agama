@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 15 14:26:11 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+ - Add missing gems to the gemspec file
+  (gh#agama-project/agama#1899).
+
+-------------------------------------------------------------------
 Fri Jan 10 21:22:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 11
