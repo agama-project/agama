@@ -22,7 +22,8 @@
 
 type RemoveFn = () => void;
 type BaseHandlerFn = () => void;
-type EventHandlerFn = (event) => void;
+export type EventHandlerFn = (event) => void;
+export type ErrorHandlerFn = (error: object) => void;
 
 /**
  * Enum for the WebSocket states.
@@ -53,7 +54,7 @@ class WSClient {
   handlers: {
     open: Array<BaseHandlerFn>;
     close: Array<BaseHandlerFn>;
-    error: Array<BaseHandlerFn>;
+    error: Array<ErrorHandlerFn>;
     events: Array<EventHandlerFn>;
   };
 
@@ -109,14 +110,14 @@ class WSClient {
     };
 
     client.onclose = () => {
-      console.log(`WebSocket closed`);
+      console.log("WebSocket closed");
       this.dispatchCloseEvent();
       this.timeout = setTimeout(() => this.connect(this.reconnectAttempts + 1), ATTEMPT_INTERVAL);
     };
 
-    client.onerror = (e) => {
-      console.error("WebSocket error:", e);
-      this.dispatchErrorEvent();
+    client.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      this.dispatchErrorEvent(error);
     };
 
     return client;
@@ -179,7 +180,7 @@ class WSClient {
    *
    * The handler is executed when an error is reported by the socket.
    */
-  onError(func: BaseHandlerFn): RemoveFn {
+  onError(func: ErrorHandlerFn): RemoveFn {
     this.handlers.error.push(func);
 
     return () => {
@@ -214,8 +215,8 @@ class WSClient {
    *
    * Dispatchs an error event by running all its handlers.
    */
-  dispatchErrorEvent() {
-    this.handlers.error.forEach((f) => f());
+  dispatchErrorEvent(error) {
+    this.handlers.error.forEach((f) => f(error));
   }
 
   /**

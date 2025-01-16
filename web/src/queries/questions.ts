@@ -62,6 +62,14 @@ const useQuestionsChanges = () => {
       }
     });
   }, [client, queryClient]);
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onConnect(() => {
+      queryClient.invalidateQueries({ queryKey: ["questions"] });
+    });
+  }, [client, queryClient]);
 };
 
 /**
