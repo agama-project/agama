@@ -86,8 +86,10 @@ module Agama
       # @return [Boolean]
       def calculate
         initialize_target
-        select_base_product
         @proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
+        # select the base product after running the Packages.Proposal, the force_reset = true
+        # option would reset the selection and a random product would be selected by the solver
+        select_base_product
         solve_dependencies
 
         valid?
