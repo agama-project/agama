@@ -8,7 +8,7 @@ TOKEN=$(cat $TOKEN_FILE)
 PREFS=$HOME/.mozilla/firefox/profile/user.js
 
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN/" $PREFS.template > $PREFS
-firefox --profile $HOME/.mozilla/firefox/profile
+firefox --kiosk --profile $HOME/.mozilla/firefox/profile
 # Here, we would like to see
 #
 # firefox --kiosk --profile $HOME/.mozilla/firefox/profile
