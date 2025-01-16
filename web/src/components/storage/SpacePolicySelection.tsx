@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardBody, Form, Grid, GridItem } from "@patternfly/react-core";
+import { Card, CardBody, Content, Form, Grid, GridItem } from "@patternfly/react-core";
 import { useNavigate, useParams } from "react-router-dom";
 import { Page } from "~/components/core";
 import { SpaceActionsTable } from "~/components/storage";
@@ -100,7 +100,7 @@ export default function SpacePolicySelection() {
   return (
     <Page>
       <Page.Header>
-        <h2>{sprintf(_("Find space in %s"), device.name)}</h2>
+        <Content component="h2">{sprintf(_("Find space in %s"), device.name)}</Content>
         <p className={textStyles.textColorSubtle}>{description}</p>
       </Page.Header>
 

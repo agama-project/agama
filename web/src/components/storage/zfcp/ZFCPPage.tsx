@@ -25,6 +25,7 @@
 import React from "react";
 import {
   Button,
+  Content,
   Grid,
   GridItem,
   Toolbar,
@@ -145,7 +146,7 @@ const ControllersSection = () => (
   </Page.Section>
 );
 
-const Content = () => {
+const PageContent = () => {
   const controllers = useZFCPControllers();
 
   if (controllers.length === 0) {
@@ -187,11 +188,11 @@ export default function ZFCPPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("zFCP")}</h2>
+        <Content component="h2">{_("zFCP")}</Content>
       </Page.Header>
 
       <Page.Content>
-        <Content />
+        <PageContent />
       </Page.Content>
 
       <Page.Actions>

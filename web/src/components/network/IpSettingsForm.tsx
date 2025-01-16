@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,6 +23,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  Content,
   Form,
   FormGroup,
   FormHelperText,
@@ -144,7 +145,7 @@ export default function IpSettingsForm() {
   return (
     <Page>
       <Page.Header>
-        <h2>{sprintf(_("Edit connection %s"), connection.id)}</h2>
+        <Content component="h2">{sprintf(_("Edit connection %s"), connection.id)}</Content>
       </Page.Header>
 
       <Page.Content>

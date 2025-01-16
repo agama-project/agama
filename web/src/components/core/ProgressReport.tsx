@@ -25,6 +25,7 @@ import {
   Bullseye,
   Card,
   CardBody,
+  Content,
   Flex,
   Grid,
   GridItem,
@@ -130,10 +131,6 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
   }, [progress, steps]);
   const detail = findDetail([softwareProgress, storageProgress]);
 
-  const Content = () => (
-    <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
-  );
-
   return (
     <Bullseye>
       <Grid hasGutter>
@@ -146,10 +143,10 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
                 alignItems={{ default: "alignItemsCenter" }}
               >
                 <Spinner size="xl" />
-                <h1 id="progress-title" style={{ textAlign: "center" }}>
+                <Content component="h1" id="progress-title" style={{ textAlign: "center" }}>
                   {title}
-                </h1>
-                <Content />
+                </Content>
+                <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
               </Flex>
             </CardBody>
           </Card>

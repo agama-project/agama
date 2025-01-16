@@ -25,6 +25,7 @@ import {
   Button,
   Card,
   CardBody,
+  Content,
   DataList,
   DataListCell,
   DataListItem,
@@ -166,7 +167,11 @@ const WifiDrawerPanelBody = ({
 const NetworkFormName = ({ network }) => {
   if (!network) return;
 
-  return <h3>{network === HIDDEN_NETWORK ? _("Connect to hidden network") : network.ssid}</h3>;
+  return (
+    <Content component="h3">
+      {network === HIDDEN_NETWORK ? _("Connect to hidden network") : network.ssid}
+    </Content>
+  );
 };
 
 const NetworkListName = ({ network, ...props }) => {

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
 import React from "react";
 import { Page } from "~/components/core";
 import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
@@ -31,7 +31,7 @@ export default function ISCSIPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("iSCSI")}</h2>
+        <Content component="h2">{_("iSCSI")}</Content>
       </Page.Header>
       <Page.Content>
         <Grid hasGutter>

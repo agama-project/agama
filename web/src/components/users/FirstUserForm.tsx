@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -35,6 +35,7 @@ import {
   GridItem,
   Stack,
   Switch,
+  Content,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
@@ -206,7 +207,7 @@ export default function FirstUserForm() {
   return (
     <Page>
       <Page.Header>
-        <h2>{state.isEditing ? _("Edit user") : _("Create user")}</h2>
+        <Content component="h2">{state.isEditing ? _("Edit user") : _("Create user")}</Content>
       </Page.Header>
 
       <Page.Content>

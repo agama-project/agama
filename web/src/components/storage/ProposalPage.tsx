@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Grid, GridItem, SplitItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
 import { Page } from "~/components/core/";
 import { Loading } from "~/components/layout";
 import EncryptionField from "~/components/storage/EncryptionField";
@@ -85,7 +85,7 @@ export default function ProposalPage() {
     return (
       <Page>
         <Page.Header>
-          <h2>{_("Storage")}</h2>
+          <Content component="h2">{_("Storage")}</Content>
         </Page.Header>
 
         <Page.Content>
@@ -98,7 +98,7 @@ export default function ProposalPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Storage")}</h2>
+        <Content component="h2">{_("Storage")}</Content>
       </Page.Header>
 
       <Page.Content>
