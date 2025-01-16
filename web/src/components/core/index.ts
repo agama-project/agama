@@ -21,9 +21,7 @@
  */
 
 export { default as ChangeProductLink } from "./ChangeProductLink";
-export { default as Description } from "./Description";
 export { default as FormLabel } from "./FormLabel";
-export { default as FormReadOnlyField } from "./FormReadOnlyField";
 export { default as FormValidationError } from "./FormValidationError";
 export { default as Fieldset } from "./Fieldset";
 export { default as Em } from "./Em";
@@ -40,8 +38,6 @@ export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmati
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
 export { default as ProgressText } from "./ProgressText";
-export { default as Tip } from "./Tip";
-export { default as NumericTextInput } from "./NumericTextInput";
 export { default as PasswordInput } from "./PasswordInput";
 export { default as ServerError } from "./ServerError";
 export { default as ExpandableSelector } from "./ExpandableSelector";
