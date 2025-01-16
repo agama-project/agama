@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 16 15:12:08 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Update also base product from SLES-SAP to SLES_SAP(bsc#1235956)
+
+-------------------------------------------------------------------
 Mon Jan 13 09:04:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update SLES4SAP ID to SLES_SAP (gh#agama-project/agama#1890).
