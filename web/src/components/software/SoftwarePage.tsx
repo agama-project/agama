@@ -22,7 +22,6 @@
 
 import React from "react";
 import {
-  Alert,
   Button,
   DescriptionList,
   DescriptionListDescription,
@@ -111,7 +110,7 @@ function SoftwarePage(): React.ReactNode {
   const selectedPatternsXlSize = proposal.size ? 6 : 12;
 
   const ReloadSection = (): React.ReactNode => (
-    <Alert variant="warning" isInline title={_("Repository load failed")}>
+    <p>
       {_(
         "Some installation repositories failed to load. The system cannot be installed without them.",
       )}{" "}
@@ -119,7 +118,7 @@ function SoftwarePage(): React.ReactNode {
       <Button variant="link" isInline onClick={probe}>
         {_("Try again")}
       </Button>
-    </Alert>
+    </p>
   );
 
   const reload = repos.some((r) => !r.loaded) ? <ReloadSection /> : null;
@@ -133,9 +132,8 @@ function SoftwarePage(): React.ReactNode {
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <IssuesHint issues={issues} />
+            <IssuesHint issues={issues}>{reload}</IssuesHint>
           </GridItem>
-          <GridItem sm={12}>{reload}</GridItem>
           <GridItem sm={12} xl={selectedPatternsXlSize}>
             {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
           </GridItem>

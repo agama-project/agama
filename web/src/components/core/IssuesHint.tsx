@@ -25,7 +25,7 @@ import { Hint, HintBody, List, ListItem, Stack } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Issue } from "~/types/issues";
 
-export default function IssuesHint({ issues }) {
+export default function IssuesHint({ issues, children }) {
   if (issues === undefined || issues.length === 0) return;
 
   return (
@@ -40,6 +40,7 @@ export default function IssuesHint({ issues }) {
               <ListItem key={idx}>{i.description}</ListItem>
             ))}
           </List>
+          {children}
         </Stack>
       </HintBody>
     </Hint>
