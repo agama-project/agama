@@ -22,6 +22,8 @@
 
 import React from "react";
 import {
+  Alert,
+  Button,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -33,7 +35,13 @@ import {
 import { Link, IssuesHint, Page } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
-import { usePatterns, useProposal, useProposalChanges, useRepositories } from "~/queries/software";
+import {
+  usePatterns,
+  useProposal,
+  useProposalChanges,
+  useRepositories,
+  useRepositoryMutation,
+} from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 import { SOFTWARE as PATHS } from "~/routes/paths";
@@ -86,9 +94,6 @@ const NoPatterns = (): React.ReactNode => (
   </Page.Section>
 );
 
-// TODO: implement a real button, reprobe after clicking
-const ReloadSection = (): React.ReactNode => <p>{_("Reload")}</p>;
-
 /**
  * Software page component
  */
@@ -97,12 +102,25 @@ function SoftwarePage(): React.ReactNode {
   const proposal = useProposal();
   const patterns = usePatterns();
   const repos = useRepositories();
+  const { mutate: probe } = useRepositoryMutation();
 
   useProposalChanges();
 
   // Selected patterns section should fill the full width in big screen too when
   // there is no information for rendering the Proposal Size section.
   const selectedPatternsXlSize = proposal.size ? 6 : 12;
+
+  const ReloadSection = (): React.ReactNode => (
+    <Alert variant="warning" isInline title={_("Repository load failed")}>
+      {_(
+        "Some installation repositories failed to load. The system cannot be installed without them.",
+      )}{" "}
+      {/* TODO: add some loading indicator */}
+      <Button variant="link" isInline onClick={probe}>
+        {_("Try again")}
+      </Button>
+    </Alert>
+  );
 
   const reload = repos.some((r) => !r.loaded) ? <ReloadSection /> : null;
 

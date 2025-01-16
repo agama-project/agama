@@ -68,6 +68,11 @@ const fetchRepositories = (): Promise<Repository[]> => get("/api/software/reposi
 const updateConfig = (config: SoftwareConfig) => put("/api/software/config", config);
 
 /**
+ * Updates the software configuration
+ */
+const probe = () => post("/api/software/probe");
+
+/**
  * Request registration of selected product with given key
  */
 const register = ({ key, email }: { key: string; email?: string }) =>
@@ -81,5 +86,6 @@ export {
   fetchRegistration,
   fetchRepositories,
   updateConfig,
+  probe,
   register,
 };

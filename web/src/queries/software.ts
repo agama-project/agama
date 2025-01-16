@@ -46,6 +46,7 @@ import {
   fetchProposal,
   fetchRegistration,
   fetchRepositories,
+  probe,
   register,
   updateConfig,
 } from "~/api/software";
@@ -146,6 +147,21 @@ const useRegisterMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["software/registration"] });
       startProbing();
+    },
+  };
+  return useMutation(query);
+};
+
+/**
+ * Hook that builds a mutation for reloading repositories
+ */
+const useRepositoryMutation = () => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: probe,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["software/repositories"] });
     },
   };
   return useMutation(query);
@@ -285,4 +301,5 @@ export {
   useRegistration,
   useRegisterMutation,
   useRepositories,
+  useRepositoryMutation,
 };
