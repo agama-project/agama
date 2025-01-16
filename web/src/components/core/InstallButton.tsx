@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -100,9 +100,8 @@ const InstallButton = (
   return (
     <>
       <Button
-        variant="primary"
+        variant="control"
         size="lg"
-        className="agama-install-button"
         {...buttonProps}
         onClick={hasIssues ? onClickWithIssues : open}
       >

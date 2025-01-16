@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { TextContent, Text, TextVariants } from "@patternfly/react-core";
+import { Content } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
 import { useL10n } from "~/queries/l10n";
@@ -34,13 +34,13 @@ export default function L10nSection() {
   const [msg1, msg2] = _("The system will use %s as its default language.").split("%s");
 
   return (
-    <TextContent>
-      <Text component={TextVariants.h3}>{_("Localization")}</Text>
-      <Text>
+    <Content>
+      <Content component="h3">{_("Localization")}</Content>
+      <Content>
         {msg1}
         <Em>{`${locale.name} (${locale.territory})`}</Em>
         {msg2}
-      </Text>
-    </TextContent>
+      </Content>
+    </Content>
   );
 }

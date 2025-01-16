@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Divider, Flex, Form, FormGroup, Radio, Text } from "@patternfly/react-core";
+import { Content, Divider, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { timezoneTime } from "~/utils";
@@ -93,12 +93,12 @@ export default function TimezoneSelection() {
               <span className={`${textStyles.fontSizeLg}`}>
                 <b>{parts.join("-")}</b>
               </span>{" "}
-              <Text component="small">{country}</Text>
+              <Content component="small">{country}</Content>
             </>
           }
           description={
             <Flex columnGap={{ default: "columnGapXs" }}>
-              <Text component="small">{timezoneTime(id, date) || ""}</Text>
+              <Content component="small">{timezoneTime(id, date) || ""}</Content>
               <Divider orientation={{ default: "vertical" }} />
               <div>{details}</div>
             </Flex>

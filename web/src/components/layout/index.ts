@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,6 @@
  */
 
 export { default as Icon } from "./Icon";
-export { default as Center } from "./Center";
 export { default as Loading } from "./Loading";
 export { default as Sidebar } from "./Sidebar";
 export { default as Header } from "./Header";

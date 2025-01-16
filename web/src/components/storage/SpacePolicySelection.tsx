@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -101,7 +101,7 @@ export default function SpacePolicySelection() {
     <Page>
       <Page.Header>
         <h2>{sprintf(_("Find space in %s"), device.name)}</h2>
-        <p className={textStyles.color_400}>{description}</p>
+        <p className={textStyles.textColorSubtle}>{description}</p>
       </Page.Header>
 
       <Page.Content>
@@ -109,7 +109,7 @@ export default function SpacePolicySelection() {
           <Grid hasGutter>
             {children.length > 0 && (
               <GridItem sm={12} xl2={xl2Columns}>
-                <Card isFullHeight isRounded>
+                <Card isFullHeight>
                   <CardBody>
                     <SpaceActionsTable
                       devices={children}

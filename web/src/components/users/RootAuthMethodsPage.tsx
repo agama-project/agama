@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,9 +21,8 @@
  */
 
 import React, { useRef, useState } from "react";
-import { Flex, Form, FormGroup } from "@patternfly/react-core";
+import { Bullseye, Flex, Form, FormGroup } from "@patternfly/react-core";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Center } from "~/components/layout";
 import { Page, PasswordInput } from "~/components/core";
 import { useRootUserMutation } from "~/queries/users";
 import { ROOT as PATHS } from "~/routes/paths";
@@ -60,7 +59,7 @@ function RootAuthMethodsPage() {
   return (
     <Page>
       <Page.Content>
-        <Center>
+        <Bullseye>
           <Page.Section
             headerLevel="h2"
             title={_("Setup root user authentication")}
@@ -76,7 +75,7 @@ function RootAuthMethodsPage() {
                 </p>
               </Flex>
             }
-            pfCardProps={{ isCompact: false }}
+            pfCardProps={{ isCompact: false, isFullHeight: false }}
             pfCardBodyProps={{ isFilled: true }}
           >
             <Form id="rootAuthMethods" onSubmit={accept}>
@@ -91,7 +90,7 @@ function RootAuthMethodsPage() {
               </FormGroup>
             </Form>
           </Page.Section>
-        </Center>
+        </Bullseye>
       </Page.Content>
       <Page.Actions>
         <Page.Submit form="rootAuthMethods" isDisabled={!isFormValid} onClick={accept} />

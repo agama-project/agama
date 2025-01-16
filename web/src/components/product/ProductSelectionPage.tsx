@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -33,10 +33,10 @@ import {
   Stack,
   FormGroup,
   Button,
+  Bullseye,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Page } from "~/components/core";
-import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct, useRegistration } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
@@ -59,7 +59,7 @@ const Option = ({ product, isChecked, onChange }) => {
 
   return (
     <ListItem aria-label={product.name}>
-      <Card isRounded>
+      <Card>
         <CardBody>
           <Split hasGutter>
             <input
@@ -120,7 +120,7 @@ function ProductSelectionPage() {
   return (
     <Page>
       <Page.Content>
-        <Center>
+        <Bullseye>
           <Form id="productSelectionForm" onSubmit={onSubmit}>
             <Grid hasGutter>
               <ResponsiveGridItem>
@@ -139,7 +139,7 @@ function ProductSelectionPage() {
               </ResponsiveGridItem>
             </Grid>
           </Form>
-        </Center>
+        </Bullseye>
       </Page.Content>
       <Page.Actions>
         {selectedProduct && !isLoading && <BackLink />}

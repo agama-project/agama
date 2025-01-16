@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -136,7 +136,7 @@ partitions in the appropriate disk.",
     <Page>
       <Page.Header>
         <h2>{_("Boot options")}</h2>
-        <p className={textStyles.color_400}>{description}</p>
+        <p className={textStyles.textColorSubtle}>{description}</p>
       </Page.Header>
 
       <Page.Content>

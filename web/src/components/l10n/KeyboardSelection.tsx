@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Form, FormGroup, Radio, Text } from "@patternfly/react-core";
+import { Content, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
@@ -59,7 +59,7 @@ export default function KeyboardSelection() {
             <span className={`${textStyles.fontSizeLg}`}>
               <b>{name}</b>
             </span>{" "}
-            <Text component="small">{id}</Text>
+            <Content component="small">{id}</Content>
           </>
         }
         value={id}

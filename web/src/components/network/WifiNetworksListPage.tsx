@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -176,7 +176,7 @@ const NetworkListName = ({ network, ...props }) => {
     <Flex columnGap={{ default: "columnGapXs" }}>
       <b {...props}>{network.ssid}</b>
       {network.settings && (
-        <Label isCompact color="cyan" variant="outline">
+        <Label isCompact color="teal" variant="outline">
           {_("configured")}
         </Label>
       )}
@@ -245,7 +245,7 @@ function WifiNetworksListPage() {
   };
 
   return (
-    <Card isRounded isCompact>
+    <Card isCompact>
       <CardBody>
         <Drawer isExpanded={!!selected}>
           <DrawerContent

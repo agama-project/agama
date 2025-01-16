@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 
 import React, { Suspense, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Page, PageProps } from "@patternfly/react-core";
+import { Masthead, Page, PageProps } from "@patternfly/react-core";
 import { Questions } from "~/components/questions";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
@@ -58,7 +58,7 @@ const Layout = ({
 
   if (mountSidebar) pageProps.sidebar = <Sidebar />;
   if (mountHeader) {
-    pageProps.header = (
+    pageProps.masthead = (
       <Header
         showSidebarToggle={mountSidebar}
         toggleIssuesDrawer={toggleIssuesDrawer}
@@ -69,11 +69,16 @@ const Layout = ({
     // to mount it if there is no header.
     pageProps.notificationDrawer = <IssuesDrawer onClose={closeIssuesDrawer} />;
     pageProps.isNotificationDrawerExpanded = issuesDrawerVisible;
+  } else {
+    // FIXME: render an empty Masthead instead of nothing, in order to have
+    // everything working as designed by PatternfFly (there are some CSS rules
+    // that expect the masthead to be there :shrug:)
+    pageProps.masthead = <Masthead />;
   }
 
   return (
     <>
-      <Page {...pageProps}>
+      <Page isContentFilled {...pageProps}>
         <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
       </Page>
       {location.pathname !== ROOT.login && <Questions />}
@@ -88,7 +93,6 @@ const fullProps: LayoutProps = {
   headerOptions: {
     showProductName: true,
     showInstallerOptions: true,
-    background: "dark",
   },
 };
 
@@ -105,7 +109,6 @@ const plainProps: LayoutProps = {
   headerOptions: {
     showProductName: false,
     showInstallerOptions: true,
-    background: "light200",
   },
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,21 +23,20 @@
 import React, { useState } from "react";
 import {
   Alert,
+  Bullseye,
   Button,
   Card,
   CardBody,
+  Content,
   EmptyState,
   EmptyStateBody,
-  EmptyStateHeader,
-  EmptyStateIcon,
   ExpandableSection,
   Flex,
   Grid,
   GridItem,
   Stack,
-  Text,
 } from "@patternfly/react-core";
-import { Center, Icon } from "~/components/layout";
+import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
@@ -52,7 +51,7 @@ const TpmHint = () => {
   const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Alert isInline className={alignmentStyles.textAlignLeft} title={<strong>{title}</strong>}>
+    <Alert isInline className={alignmentStyles.textAlignStart} title={<strong>{title}</strong>}>
       <Stack hasGutter>
         {_("If a local media was used to run this installer, remove it before the next boot.")}
         <ExpandableSection
@@ -108,31 +107,32 @@ function InstallationFinished() {
   }
 
   return (
-    <Center>
+    <Bullseye>
       <Grid hasGutter>
         <GridItem sm={8} smOffset={2}>
-          <Card isRounded>
+          <Card>
             <CardBody>
               <Stack hasGutter>
-                <EmptyState variant="xl">
-                  <EmptyStateHeader
-                    titleText={_("Congratulations!")}
-                    headingLevel="h2"
-                    icon={<EmptyStateIcon icon={SuccessIcon} />}
-                  />
+                <EmptyState
+                  variant="xl"
+                  titleText={_("Congratulations!")}
+                  headingLevel="h2"
+                  icon={SuccessIcon}
+                >
                   <EmptyStateBody>
                     <Flex
+                      direction={{ default: "column" }}
                       rowGap={{ default: "rowGapMd" }}
                       justifyContent={{ default: "justifyContentCenter" }}
                     >
-                      <Text>{_("The installation on your machine is complete.")}</Text>
-                      <Text>
+                      <Content>{_("The installation on your machine is complete.")}</Content>
+                      <Content>
                         {useIguana
                           ? _("At this point you can power off the machine.")
                           : _(
                               "At this point you can reboot the machine to log in to the new system.",
                             )}
-                      </Text>
+                      </Content>
                       {usingTpm(config) && <TpmHint />}
                     </Flex>
                   </EmptyStateBody>
@@ -147,7 +147,7 @@ function InstallationFinished() {
           </Card>
         </GridItem>
       </Grid>
-    </Center>
+    </Bullseye>
   );
 }
 

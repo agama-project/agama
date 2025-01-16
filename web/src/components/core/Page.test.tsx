@@ -177,10 +177,8 @@ describe("Page", () => {
   });
   describe("Page.Header", () => {
     it("renders a node that sticks to top", () => {
-      plainRender(<Page.Header>The Header</Page.Header>);
-      const content = screen.getByText("The Header");
-      const container = content.parentNode as HTMLElement;
-      expect(container.classList.contains("pf-m-sticky-top")).toBe(true);
+      const { container } = plainRender(<Page.Header>The Header</Page.Header>);
+      expect(container.children[0].classList.contains("pf-m-sticky-top")).toBe(true);
     });
   });
 

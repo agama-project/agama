@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -108,7 +108,7 @@ const Disks = () => {
     <>
       <Toolbar>
         <ToolbarContent>
-          <ToolbarItem align={{ default: "alignRight" }}>
+          <ToolbarItem align={{ default: "alignEnd" }}>
             {/* TRANSLATORS: button label */}
             <Button onClick={() => navigate(PATHS.zfcp.activateDisk)} isDisabled={isDisabled}>
               {_("Activate new disk")}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,9 +22,8 @@
 
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { ActionGroup, Button, Card, Form, FormGroup, Grid, GridItem } from "@patternfly/react-core";
+import { ActionGroup, Bullseye, Button, Card, Form, FormGroup } from "@patternfly/react-core";
 import { EmptyState, FormValidationError, Page, PasswordInput } from "~/components/core";
-import { Center } from "~/components/layout";
 import { AuthErrors, useAuth } from "~/context/auth";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -69,40 +68,36 @@ user privileges.",
 
   return (
     <Page.Content>
-      <Center>
-        <Grid>
-          <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
-            <Card component="section" isRounded>
-              {/** @ts-ignore */}
-              <EmptyState title={sectionTitle} icon="lock" color="color-info-200" variant="xl">
-                <p>
-                  {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
-                </p>
-                <p>{_("Please, provide its password to log in to the system.")}</p>
-                <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-                  <FormGroup fieldId="password">
-                    <PasswordInput
-                      id="password"
-                      name="password"
-                      value={password}
-                      aria-label={_("Password input")}
-                      onChange={(_, v) => setPassword(v)}
-                    />
-                  </FormGroup>
+      <Bullseye>
+        <Card component="section">
+          {/** @ts-ignore */}
+          <EmptyState title={sectionTitle} icon="lock" color="color-info-200" variant="xl">
+            <p>
+              {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
+            </p>
+            <p>{_("Please, provide its password to log in to the system.")}</p>
+            <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+              <FormGroup fieldId="password">
+                <PasswordInput
+                  id="password"
+                  name="password"
+                  value={password}
+                  aria-label={_("Password input")}
+                  onChange={(_, v) => setPassword(v)}
+                />
+              </FormGroup>
 
-                  {error && <FormValidationError message={errorMessage(loginError)} />}
+              {error && <FormValidationError message={errorMessage(loginError)} />}
 
-                  <ActionGroup>
-                    <Button type="submit" variant="primary">
-                      {_("Log in")}
-                    </Button>
-                  </ActionGroup>
-                </Form>
-              </EmptyState>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Center>
+              <ActionGroup>
+                <Button type="submit" variant="primary">
+                  {_("Log in")}
+                </Button>
+              </ActionGroup>
+            </Form>
+          </EmptyState>
+        </Card>
+      </Bullseye>
     </Page.Content>
   );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -72,7 +72,8 @@ describe("and the password has been set", () => {
     const passwordRow = within(table).getByText("Password").closest("tr");
     const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-    const setAction = within(passwordRow).queryByRole("menuitem", { name: "Set" });
+    const menu = screen.getByRole("menu");
+    const setAction = within(menu).queryByRole("menuitem", { name: "Set" });
     expect(setAction).toBeNull();
   });
 
@@ -83,9 +84,9 @@ describe("and the password has been set", () => {
     const passwordRow = within(table).getByText("Password").closest("tr");
     const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-    const changeAction = within(passwordRow).queryByRole("menuitem", { name: "Change" });
+    const menu = screen.getByRole("menu");
+    const changeAction = within(menu).queryByRole("menuitem", { name: "Change" });
     await user.click(changeAction);
-
     screen.getByRole("dialog", { name: "Change the root password" });
   });
 
@@ -96,7 +97,8 @@ describe("and the password has been set", () => {
     const passwordRow = within(table).getByText("Password").closest("tr");
     const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-    const discardAction = within(passwordRow).queryByRole("menuitem", { name: "Discard" });
+    const menu = screen.getByRole("menu");
+    const discardAction = within(menu).queryByRole("menuitem", { name: "Discard" });
     await user.click(discardAction);
 
     expect(mockRootUserMutation.mutate).toHaveBeenCalledWith({ password: "" });
@@ -124,7 +126,8 @@ describe("the password is not set yet", () => {
     const passwordRow = within(table).getByText("Password").closest("tr");
     const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-    const setAction = within(passwordRow).getByRole("menuitem", { name: "Set" });
+    const menu = screen.getByRole("menu");
+    const setAction = within(menu).getByRole("menuitem", { name: "Set" });
     await user.click(setAction);
     screen.getByRole("dialog", { name: "Set a root password" });
   });
@@ -136,9 +139,9 @@ describe("the password is not set yet", () => {
     const passwordRow = within(table).getByText("Password").closest("tr");
     const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-
-    const changeAction = within(passwordRow).queryByRole("menuitem", { name: "Change" });
-    const discardAction = within(passwordRow).queryByRole("menuitem", { name: "Discard" });
+    const menu = screen.getByRole("menu");
+    const changeAction = within(menu).queryByRole("menuitem", { name: "Change" });
+    const discardAction = within(menu).queryByRole("menuitem", { name: "Discard" });
 
     expect(changeAction).toBeNull();
     expect(discardAction).toBeNull();
@@ -166,7 +169,8 @@ describe("and the SSH Key has been set", () => {
     const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
     const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-    const setAction = within(sshKeyRow).queryByRole("menuitem", { name: "Set" });
+    const menu = screen.getByRole("menu");
+    const setAction = within(menu).queryByRole("menuitem", { name: "Set" });
     expect(setAction).toBeNull();
   });
 
@@ -177,9 +181,9 @@ describe("and the SSH Key has been set", () => {
     const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
     const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-    const changeAction = within(sshKeyRow).queryByRole("menuitem", { name: "Change" });
+    const menu = screen.getByRole("menu");
+    const changeAction = within(menu).queryByRole("menuitem", { name: "Change" });
     await user.click(changeAction);
-
     screen.getByRole("dialog", { name: "Edit the SSH Public Key for root" });
   });
 
@@ -190,7 +194,8 @@ describe("and the SSH Key has been set", () => {
     const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
     const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-    const discardAction = within(sshKeyRow).queryByRole("menuitem", { name: "Discard" });
+    const menu = screen.getByRole("menu");
+    const discardAction = within(menu).queryByRole("menuitem", { name: "Discard" });
     await user.click(discardAction);
 
     expect(mockRootUserMutation.mutate).toHaveBeenCalledWith({ sshkey: "" });
@@ -218,7 +223,8 @@ describe("but the SSH Key is not set yet", () => {
     const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
     const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-    const setAction = within(sshKeyRow).getByRole("menuitem", { name: "Set" });
+    const menu = screen.getByRole("menu");
+    const setAction = within(menu).getByRole("menuitem", { name: "Set" });
     await user.click(setAction);
     screen.getByRole("dialog", { name: "Add a SSH Public Key for root" });
   });
@@ -230,9 +236,9 @@ describe("but the SSH Key is not set yet", () => {
     const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
     const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
     await user.click(actionsToggler);
-
-    const changeAction = within(sshKeyRow).queryByRole("menuitem", { name: "Change" });
-    const discardAction = within(sshKeyRow).queryByRole("menuitem", { name: "Discard" });
+    const menu = screen.getByRole("menu");
+    const changeAction = within(menu).queryByRole("menuitem", { name: "Change" });
+    const discardAction = within(menu).queryByRole("menuitem", { name: "Discard" });
 
     expect(changeAction).toBeNull();
     expect(discardAction).toBeNull();

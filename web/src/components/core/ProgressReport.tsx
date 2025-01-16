@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,6 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import {
+  Bullseye,
   Card,
   CardBody,
   Flex,
@@ -36,7 +37,6 @@ import {
 } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { Center } from "~/components/layout";
 import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
 import { Progress as ProgressType } from "~/types/progress";
 
@@ -135,7 +135,7 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
   );
 
   return (
-    <Center>
+    <Bullseye>
       <Grid hasGutter>
         <GridItem sm={10} smOffset={1}>
           <Card isPlain>
@@ -155,7 +155,7 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
           </Card>
         </GridItem>
       </Grid>
-    </Center>
+    </Bullseye>
   );
 }
 

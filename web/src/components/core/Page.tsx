@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -85,7 +85,6 @@ type SubmitActionProps = {
 } & ButtonProps;
 
 const defaultCardProps: CardProps = {
-  isRounded: true,
   isCompact: true,
   isFullHeight: true,
   component: "section",
@@ -97,7 +96,7 @@ const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 // TODO: check if it should have the banner role
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
-    <PageSection variant="light" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
+    <PageSection variant="default" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
       <Stack hasGutter={hasGutter}>{children}</Stack>
     </PageSection>
   );
@@ -163,7 +162,7 @@ const Section = ({
                 </Flex.Item>
               )}
             </Flex>
-            {hasDescription && <div className={textStyles.color_200}>{description}</div>}
+            {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
           </Flex>
         </CardHeader>
       )}
@@ -198,7 +197,7 @@ const Actions = ({ children }: React.PropsWithChildren) => {
       stickyOnBreakpoint={STICK_TO_BOTTOM}
       className={flexStyles.flexGrow_0}
     >
-      <PageSection variant="light" component="div">
+      <PageSection variant="default" component="div">
         <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
       </PageSection>
     </PageGroup>
@@ -287,7 +286,7 @@ const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<Page
   return (
     <>
       {mountRegistrationAlert && <ProductRegistrationAlert />}
-      <PageSection isFilled component="div" {...pageSectionProps}>
+      <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
         {children}
       </PageSection>
     </>

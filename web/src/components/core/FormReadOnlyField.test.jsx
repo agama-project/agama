@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,28 +21,14 @@
  */
 
 import React from "react";
-import { Bullseye, EmptyState, Spinner } from "@patternfly/react-core";
-import { PlainLayout } from "~/components/layout";
-import { LayoutProps } from "~/components/layout/Layout";
-import { _ } from "~/i18n";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import { FormReadOnlyField } from "~/components/core";
 
-const LoadingIcon = () => <Spinner size="xl" />;
-const Layout = (props: LayoutProps) => (
-  <PlainLayout mountHeader={false} mountSidebar={false} {...props} />
-);
-
-function Loading({
-  text = _("Loading installation environment, please wait."),
-  useLayout = false,
-}) {
-  const Wrapper = useLayout ? Layout : React.Fragment;
-  return (
-    <Wrapper>
-      <Bullseye>
-        <EmptyState variant="xl" titleText={text} headingLevel="h1" icon={LoadingIcon} />
-      </Bullseye>
-    </Wrapper>
-  );
-}
-
-export default Loading;
+it("renders label and content wrapped in div nodes using expected PatternFly styles", () => {
+  plainRender(<FormReadOnlyField label="Product">Agama</FormReadOnlyField>);
+  const field = screen.getByText("Agama");
+  const label = screen.getByText("Product");
+  expect(field.classList.contains("pf-v6-c-form__group")).toBe(true);
+  expect(label.classList.contains("pf-v6-c-form__label-text")).toBe(true);
+});

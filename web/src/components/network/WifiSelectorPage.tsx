@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,7 +31,7 @@ function WifiSelectorPage() {
   useNetworkConfigChanges();
 
   return (
-    <Page>
+    <Page isFilled>
       <Page.Header>
         <h2>{_("Connect to a Wi-Fi network")}</h2>
       </Page.Header>

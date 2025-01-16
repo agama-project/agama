@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -102,9 +102,8 @@ describe("ConnectionsTable", () => {
       const connectionActions = screen.getByRole("button", {
         name: "Actions for connection enp1s0",
       });
-      const actionsColumn = connectionActions.parentNode as HTMLElement;
       await user.click(connectionActions);
-      const menu = await within(actionsColumn).findByRole("menu");
+      const menu = screen.getByRole("menu");
       const editAction = within(menu).getByRole("menuitem", { name: "Edit connection enp1s0" });
       await user.click(editAction);
       expect(mockNavigateFn).toHaveBeenCalled();
@@ -122,9 +121,8 @@ describe("ConnectionsTable", () => {
         const connectionActions = screen.getByRole("button", {
           name: "Actions for connection enp1s0",
         });
-        const actionsColumn = connectionActions.parentNode as HTMLElement;
         await user.click(connectionActions);
-        const menu = await within(actionsColumn).findByRole("menu");
+        const menu = screen.getByRole("menu");
         const forgetAction = within(menu).getByRole("menuitem", {
           name: "Forget connection enp1s0",
         });

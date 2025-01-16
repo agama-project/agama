@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Split, Text } from "@patternfly/react-core";
+import { Split, Content } from "@patternfly/react-core";
 
 type ProgressTextProps = {
   /** Progress message. */
@@ -39,7 +39,7 @@ export default function ProgressText({ message, current, total }: ProgressTextPr
   const text = current === 0 ? message : `${message} (${current}/${total})`;
   return (
     <Split hasGutter>
-      <Text>{text}</Text>
+      <Content>{text}</Content>
     </Split>
   );
 }
