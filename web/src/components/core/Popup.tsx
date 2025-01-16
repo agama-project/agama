@@ -46,7 +46,7 @@ export type PopupProps = {
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
   loadingText?: string;
-} & Omit<ModalProps, "variant" | "size"> &
+} & Omit<ModalProps, "size"> &
   Pick<ModalHeaderProps, "description" | "titleIconVariant">;
 
 /**
@@ -210,6 +210,7 @@ const Popup = ({
   loadingText = _("Loading data..."),
   inlineSize = "medium",
   blockSize = "auto",
+  variant = "medium",
   className = "",
   children,
   ...props
@@ -224,6 +225,7 @@ const Popup = ({
   return (
     /** @ts-ignore */
     <Modal
+      variant={variant}
       {...props}
       isOpen={isOpen}
       className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
