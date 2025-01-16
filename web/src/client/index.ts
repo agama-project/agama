@@ -20,11 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { WSClient } from "./ws";
+import { WSClient, EventHandlerFn, ErrorHandlerFn } from "./ws";
 
 type VoidFn = () => void;
 type BooleanFn = () => boolean;
-type EventHandlerFn = (event) => void;
 
 export type InstallerClient = {
   /** Whether the client is connected. */
@@ -37,10 +36,15 @@ export type InstallerClient = {
    */
   onConnect: (handler: VoidFn) => VoidFn;
   /**
-   * Registers a handler to run when connection is lost. It returns a function
+   * Registers a handler to run when connection is closed. It returns a function
    * for deregistering the handler.
    */
-  onDisconnect: (handler: VoidFn) => VoidFn;
+  onClose: (handler: VoidFn) => VoidFn;
+  /**
+   * Registers a handler to run when there is an error. It returns a function
+   * for deregistering the handler.
+   */
+  onError: (handler: ErrorHandlerFn) => VoidFn;
   /**
    * Registers a handler to run on events. It returns a function for
    * deregistering the handler.
@@ -66,7 +70,8 @@ const createClient = (url: URL): InstallerClient => {
     isConnected,
     isRecoverable,
     onConnect: (handler: VoidFn) => ws.onOpen(handler),
-    onDisconnect: (handler: VoidFn) => ws.onClose(handler),
+    onClose: (handler: VoidFn) => ws.onClose(handler),
+    onError: (handler: ErrorHandlerFn) => ws.onError(handler),
     onEvent: (handler: EventHandlerFn) => ws.onEvent(handler),
   };
 };
