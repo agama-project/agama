@@ -155,13 +155,14 @@ const useRegisterMutation = () => {
 /**
  * Hook that builds a mutation for reloading repositories
  */
-const useRepositoryMutation = () => {
+const useRepositoryMutation = (callback: () => void) => {
   const queryClient = useQueryClient();
 
   const query = {
     mutationFn: probe,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["software/repositories"] });
+      callback();
     },
   };
   return useMutation(query);

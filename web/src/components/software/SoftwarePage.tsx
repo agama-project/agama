@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Button,
@@ -30,6 +30,7 @@ import {
   DescriptionListTerm,
   Grid,
   GridItem,
+  Spinner,
   Stack,
 } from "@patternfly/react-core";
 import { Link, IssuesHint, Page } from "~/components/core";
@@ -102,7 +103,9 @@ function SoftwarePage(): React.ReactNode {
   const proposal = useProposal();
   const patterns = usePatterns();
   const repos = useRepositories();
-  const { mutate: probe } = useRepositoryMutation();
+
+  const [loading, setLoading] = useState(false);
+  const { mutate: probe } = useRepositoryMutation(() => setLoading(false));
 
   useProposalChanges();
 
@@ -110,15 +113,26 @@ function SoftwarePage(): React.ReactNode {
   // there is no information for rendering the Proposal Size section.
   const selectedPatternsXlSize = proposal.size ? 6 : 12;
 
+  const startProbing = () => {
+    setLoading(true);
+    probe();
+  };
+
   const ReloadSection = (): React.ReactNode => (
-    <Alert variant="warning" isInline title={_("Repository load failed")}>
+    <Alert variant="danger" isInline title={_("Repository load failed")}>
       {_(
-        "Some installation repositories failed to load. The system cannot be installed without them.",
+        "Some installation repositories could not be loaded. The system cannot be installed without them.",
       )}{" "}
-      {/* TODO: add some loading indicator */}
-      <Button variant="link" isInline onClick={probe}>
-        {_("Try again")}
-      </Button>
+      {loading ? (
+        <>
+          {" "}
+          <Spinner size="md" />
+        </>
+      ) : (
+        <Button variant="link" isInline onClick={startProbing}>
+          {_("Try again")}
+        </Button>
+      )}
     </Alert>
   );
 
