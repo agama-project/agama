@@ -29,12 +29,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { ProposalPage } from "~/components/storage";
-import {
-  Action,
-  StorageDevice,
-  Volume,
-  VolumeTarget,
-} from "~/types/storage";
+import { Action, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
