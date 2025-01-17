@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 17 15:47:39 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- The software service provides DBus API for reading the currently
+  configured repositories, related to (gh#agama-project/agama#1894)
+
+-------------------------------------------------------------------
 Fri Jan 10 21:22:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 11

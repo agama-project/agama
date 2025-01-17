@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 17 15:51:15 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- The software page displays a link for reloading the repositories
+  again if some repository failed to load
+  (gh#agama-project/agama#1894)
+
+-------------------------------------------------------------------
 Fri Jan 10 21:22:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 11
