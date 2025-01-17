@@ -568,10 +568,14 @@ const PartitionsNoContentSelector = () => {
 };
 
 const PartitionsWithContentSelector = ({ drive }) => {
+  console.log("DRIVEVV:", drive);
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
+  const onDelete = () => {
+    console.log("DELETE CLICKED YAY");
+  };
 
   return (
     <MenuContainer
@@ -618,6 +622,7 @@ const PartitionsWithContentSelector = ({ drive }) => {
                             icon={<Icon name="delete" size="xs" aria-label={"Edit"} />}
                             actionId={`delete-${partition.mountPath}`}
                             aria-label={`Delete ${partition.mountPath}`}
+                            onClick={onDelete}
                           />
                         </>
                       }
