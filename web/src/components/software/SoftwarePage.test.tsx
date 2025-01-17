@@ -41,11 +41,7 @@ jest.mock("~/queries/software", () => ({
   useProposal: () => testingProposal,
   useProposalChanges: jest.fn(),
   useRepositories: () => [],
-  useRepositoryMutation: () => {
-    return {
-      mutate: jest.fn(),
-    };
-  },
+  useRepositoryMutation: () => ({ mutate: jest.fn() }),
 }));
 
 describe("SoftwarePage", () => {
