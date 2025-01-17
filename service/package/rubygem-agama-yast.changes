@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 17 20:42:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Relax gems version in the gemspec file
+  (gh#agama-project/agama#1917)
+
+-------------------------------------------------------------------
 Thu Jan 16 17:30:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Correctly select the base product to install (bsc#1235931)
