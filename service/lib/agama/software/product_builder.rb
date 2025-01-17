@@ -66,6 +66,7 @@ module Agama
           product.version = data[:version]
           product.icon = attrs["icon"] if attrs["icon"]
           product.registration = attrs["registration"] if attrs["registration"]
+          product.license_id = attrs["license_id"] if attrs["license_id"]
           product.version = attrs["version"] if attrs["version"]
         end
       end

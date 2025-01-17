@@ -60,7 +60,8 @@ module Agama
               {
                 "description"  => product.localized_description,
                 "icon"         => product.icon,
-                "registration" => product.registration
+                "registration" => product.registration,
+                "license_id"   => product.license_id
               }
             ]
           end

@@ -111,6 +111,9 @@ module Agama
       # @return [Hash<String, Hash<String, String>>]
       attr_accessor :translations
 
+      # License ID
+      attr_accessor :license_id
+
       # @param id [string] Product id.
       def initialize(id)
         @id = id
@@ -124,6 +127,7 @@ module Agama
         # nil = display all visible patterns, [] = display no patterns
         @user_patterns = nil
         @registration = Agama::Registration::Requirement::NO
+        @license_id = nil
         @translations = {}
       end
 
