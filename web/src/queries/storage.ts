@@ -37,22 +37,10 @@ import {
   fetchUsableDevices,
   reprobe,
 } from "~/api/storage";
-import { calculate } from "~/api/storage/proposal";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
-import {
-  config,
-  ProductParams,
-  Volume as APIVolume,
-  ProposalSettingsPatch,
-} from "~/api/storage/types";
-import {
-  ProposalSettings,
-  ProposalResult,
-  StorageDevice,
-  Volume,
-  VolumeTarget,
-} from "~/types/storage";
+import { config, ProductParams, Volume as APIVolume } from "~/api/storage/types";
+import { ProposalResult, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
 import { QueryHookOptions } from "~/types/queries";
 
@@ -242,49 +230,6 @@ const useProposalResult = (): ProposalResult | undefined => {
   return { actions };
 };
 
-const useProposalMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: (settings: ProposalSettings) => {
-      const buildHttpVolume = (volume: Volume): APIVolume => {
-        return {
-          autoSize: volume.autoSize,
-          fsType: volume.fsType,
-          maxSize: volume.maxSize,
-          minSize: volume.minSize,
-          mountOptions: [],
-          mountPath: volume.mountPath,
-          snapshots: volume.snapshots,
-          target: volume.target,
-          targetDevice: volume.targetDevice?.name,
-        };
-      };
-
-      const buildHttpSettings = (settings: ProposalSettings): ProposalSettingsPatch => {
-        return {
-          bootDevice: settings.bootDevice,
-          configureBoot: settings.configureBoot,
-          encryptionMethod: settings.encryptionMethod,
-          encryptionPBKDFunction: settings.encryptionPBKDFunction,
-          encryptionPassword: settings.encryptionPassword,
-          spaceActions: settings.spacePolicy === "custom" ? settings.spaceActions : undefined,
-          spacePolicy: settings.spacePolicy,
-          target: settings.target,
-          targetDevice: settings.targetDevice,
-          targetPVDevices: settings.targetPVDevices,
-          volumes: settings.volumes?.map(buildHttpVolume),
-        };
-      };
-
-      const httpSettings = buildHttpSettings(settings);
-      return calculate(httpSettings);
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
-  };
-
-  return useMutation(query);
-};
-
 const deprecatedQuery = {
   queryKey: ["storage", "dirty"],
   queryFn: fetchDevicesDirty,
@@ -340,7 +285,6 @@ export {
   useVolumeTemplates,
   useVolumeDevices,
   useProposalResult,
-  useProposalMutation,
   useDeprecated,
   useDeprecatedChanges,
   useReprobeMutation,
