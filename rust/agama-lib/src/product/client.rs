@@ -21,7 +21,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 
-use crate::dbus::get_property;
+use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
 use crate::software::model::RegistrationRequirement;
 use crate::software::proxies::SoftwareProductProxy;
@@ -43,6 +43,8 @@ pub struct Product {
     pub icon: String,
     /// Registration requirement
     pub registration: RegistrationRequirement,
+    /// License ID
+    pub license_id: Option<String>,
 }
 
 /// D-Bus client for the software service
@@ -81,12 +83,16 @@ impl<'a> ProductClient<'a> {
                     .map(|r| RegistrationRequirement::from_str(&r).unwrap_or_default())
                     .unwrap_or_default();
 
+                let license_id =
+                    get_optional_property::<String>(&data, "license_id").unwrap_or_default();
+
                 Product {
                     id,
                     name,
                     description: description.to_string(),
                     icon: icon.to_string(),
                     registration,
+                    license_id,
                 }
             })
             .collect();
