@@ -55,6 +55,7 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
             .schema_from::<agama_lib::software::Pattern>()
             .schema_from::<agama_lib::software::model::RegistrationInfo>()
             .schema_from::<agama_lib::software::model::RegistrationParams>()
+            .schema_from::<agama_lib::software::model::RegistrationError>()
             .schema_from::<agama_lib::software::model::ResolvableParams>()
             .schema_from::<agama_lib::software::model::ResolvableType>()
             .schema_from::<agama_lib::software::SelectedBy>()
