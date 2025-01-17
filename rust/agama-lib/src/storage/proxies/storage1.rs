@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -55,6 +55,9 @@ pub trait Storage1 {
 
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
+
+    /// Reprobe method
+    fn reprobe(&self) -> zbus::Result<()>;
 
     /// Set the storage config according to the JSON schema
     fn set_config(&self, settings: &str) -> zbus::Result<u32>;
