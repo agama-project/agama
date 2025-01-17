@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -84,11 +84,6 @@ type ShrinkingInfo = {
   unsupported?: string[];
 };
 
-type ProposalResult = {
-  settings?: ProposalSettings;
-  actions: Action[];
-};
-
 type Action = {
   device: number;
   text: string;
@@ -100,27 +95,6 @@ type Action = {
 type SpacePolicyAction = {
   deviceName: string;
   value: "delete" | "resizeIfNeeded";
-};
-
-type ProposalSettings = {
-  target: ProposalTarget;
-  targetDevice?: string;
-  targetPVDevices: string[];
-  configureBoot: boolean;
-  bootDevice: string;
-  defaultBootDevice: string;
-  encryptionPassword: string;
-  encryptionMethod: string;
-  encryptionPBKDFunction?: string;
-  spacePolicy: string;
-  spaceActions: SpaceAction[];
-  volumes: Volume[];
-  installationDevices: StorageDevice[];
-};
-
-type SpaceAction = {
-  device: string;
-  action: "force_delete" | "resize" | "keep";
 };
 
 type Volume = {
@@ -146,17 +120,6 @@ type VolumeOutline = {
   snapshotsAffectSizes: boolean;
   sizeRelevantVolumes: string[];
 };
-
-/**
- * Enum for the possible proposal targets.
- *
- * @readonly
- */
-enum ProposalTarget {
-  DISK = "disk",
-  NEW_LVM_VG = "newLvmVg",
-  REUSED_LVM_VG = "reusedLvmVg",
-}
 
 /**
  * Enum for the possible volume targets.
@@ -207,14 +170,11 @@ export type {
   ISCSINode,
   PartitionSlot,
   PartitionTable,
-  ProposalResult,
-  ProposalSettings,
   ShrinkingInfo,
-  SpaceAction,
   SpacePolicyAction,
   StorageDevice,
   Volume,
   VolumeOutline,
 };
 
-export { EncryptionMethods, ProposalTarget, VolumeTarget };
+export { EncryptionMethods, VolumeTarget };
