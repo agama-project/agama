@@ -119,7 +119,9 @@ function SoftwarePage(): React.ReactNode {
   };
 
   const ReloadSection = (): React.ReactNode => (
+    // TRANSLATORS: title for an error message box, at least one repository could not be loaded
     <Alert variant="danger" isInline title={_("Repository load failed")}>
+      {/* TRANSLATORS: error details followed by a "Try again" link*/}
       {_(
         "Some installation repositories could not be loaded. The system cannot be installed without them.",
       )}{" "}
@@ -130,6 +132,7 @@ function SoftwarePage(): React.ReactNode {
         </>
       ) : (
         <Button variant="link" isInline onClick={startProbing}>
+          {/* TRANSLATORS: link for retrying failed repository load */}
           {_("Try again")}
         </Button>
       )}

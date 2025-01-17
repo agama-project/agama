@@ -99,7 +99,7 @@ pub struct ResolvableParams {
     pub optional: bool,
 }
 
-/// Resolvable list specification.
+/// Repository list specification.
 #[derive(Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Repository {
@@ -109,9 +109,9 @@ pub struct Repository {
     pub alias: String,
     /// repository name
     pub name: String,
-    /// Repository url
+    /// Repository url (raw format without expanded variables)
     pub url: String,
-    /// product directory. Do we need it?
+    /// product directory (currently not used, valid only for multiproduct DVDs)
     pub product_dir: String,
     /// Whether the repository is enabled
     pub enabled: bool,
