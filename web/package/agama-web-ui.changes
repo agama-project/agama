@@ -6,6 +6,18 @@ Fri Jan 17 15:51:15 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
   (gh#agama-project/agama#1894)
 
 -------------------------------------------------------------------
+Thu Jan 16 13:11:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display error messages during package installation
+  (gh#agama-project/agama#1909).
+
+-------------------------------------------------------------------
+Mon Jan 13 11:11:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Do not allow changing selected product after registering one
+  (related to gh#agama-project/agama#1891).
+
+-------------------------------------------------------------------
 Fri Jan 10 21:22:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 11

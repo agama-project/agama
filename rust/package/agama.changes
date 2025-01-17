@@ -6,6 +6,18 @@ Fri Jan 17 15:50:15 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
   related to (gh#agama-project/agama#1894)
 
 -------------------------------------------------------------------
+Thu Jan 16 13:10:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Stop the WebSocket handler when the client is disconnected
+  (gh#agama-project/agama#1909).
+- Log the events.
+
+-------------------------------------------------------------------
+Thu Jan 16 09:32:00 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Fix typo in `agama profile import --help` (bsc#1235827)
+
+-------------------------------------------------------------------
 Fri Jan 10 21:22:01 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 11

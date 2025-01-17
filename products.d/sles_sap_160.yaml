@@ -37,7 +37,7 @@ software:
   mandatory_packages:
     - NetworkManager
   optional_packages: null
-  base_product: SLES-SAP
+  base_product: SLES_SAP
 
 security:
   lsm: selinux

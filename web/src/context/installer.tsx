@@ -102,7 +102,7 @@ function InstallerClientProvider({ children, client = null }: InstallerClientPro
       setError(false);
     });
 
-    value.onDisconnect(() => {
+    value.onClose(() => {
       setConnected(false);
       setError(!value.isRecoverable());
     });
