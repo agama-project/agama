@@ -20,11 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import {
-  Divider,
   MenuToggle,
   ModalProps,
   Select,
@@ -35,51 +34,62 @@ import {
 } from "@patternfly/react-core";
 import { Product } from "~/types/software";
 import { sprintf } from "sprintf-js";
+import { fetchLicense } from "~/api/software";
+import { useInstallerL10n } from "~/context/installerL10n";
+import supportedLanguages from "~/languages.json";
 
 function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; product: Product }) {
-  const [locale, setLocale] = useState("en");
-  const [localeSelectorOpen, setLocaleSelectorOpen] = useState(false);
-  const locales = ["en", "es", "de", "cz", "pt"];
+  const { language: uiLanguage } = useInstallerL10n();
+  const [language, setLanguage] = useState<string>(uiLanguage);
+  const [license, setLicense] = useState<string>();
+  const [languageSelectorOpen, setLanguageSelectorOpen] = useState(false);
   const localesToggler = (toggleRef) => (
     <MenuToggle
       ref={toggleRef}
-      onClick={() => setLocaleSelectorOpen(!localeSelectorOpen)}
-      isExpanded={localeSelectorOpen}
+      onClick={() => setLanguageSelectorOpen(!languageSelectorOpen)}
+      isExpanded={languageSelectorOpen}
     >
-      {locale}
+      {supportedLanguages[language]}
     </MenuToggle>
   );
 
-  const onLocaleSelection = (_, locale: string) => {
-    setLocale(locale);
-    setLocaleSelectorOpen(false);
+  useEffect(() => {
+    language && fetchLicense(product.licenseId, language).then(({ body }) => setLicense(body));
+  }, [language, product.licenseId]);
+
+  const onLocaleSelection = (_, lang: string) => {
+    setLanguage(lang);
+    setLanguageSelectorOpen(false);
   };
 
-  const eula = "Lorem ipsum";
-
   return (
-    <Popup isOpen>
+    <Popup
+      isOpen
+      title={
+        <>
+          <Split>
+            <SplitItem isFilled>
+              <h1>{sprintf(_("License for %s"), product.name)}</h1>
+            </SplitItem>
+            <Select
+              isOpen={languageSelectorOpen}
+              selected={language}
+              onSelect={onLocaleSelection}
+              onOpenChange={(isOpen) => setLanguageSelectorOpen(!isOpen)}
+              toggle={localesToggler}
+            >
+              {Object.entries(supportedLanguages).map(([id, name]) => (
+                <SelectOption key={id} value={id}>
+                  {name}
+                </SelectOption>
+              ))}
+            </Select>
+          </Split>
+        </>
+      }
+    >
       <Stack hasGutter>
-        <Split>
-          <SplitItem isFilled>
-            <h1>{sprintf(_("License for %s"), product.name)}</h1>
-          </SplitItem>
-          <Select
-            isOpen={localeSelectorOpen}
-            selected={locale}
-            onSelect={onLocaleSelection}
-            onOpenChange={(isOpen) => setLocaleSelectorOpen(!isOpen)}
-            toggle={localesToggler}
-          >
-            {locales.map((locale) => (
-              <SelectOption key={locale} value={locale}>
-                {locale}
-              </SelectOption>
-            ))}
-          </Select>
-        </Split>
-        <Divider />
-        {eula}
+        <pre>{license}</pre>
       </Stack>
       <Popup.Actions>
         <Popup.Confirm onClick={onClose}>{_("Close")}</Popup.Confirm>

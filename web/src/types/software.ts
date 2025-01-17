@@ -47,6 +47,20 @@ type Product = {
   licenseId?: string;
 };
 
+type License = {
+  /** License ID (e.g., "license.sle") */
+  id: string;
+  /** Available locales */
+  languages: string[];
+};
+
+type LicenseContent = {
+  /** License ID (e.g., "license.sle") */
+  id: string;
+  /** License body */
+  body: string;
+};
+
 type PatternsSelection = { [key: string]: SelectedBy };
 
 type SoftwareProposal = {
@@ -90,6 +104,8 @@ export type {
   Pattern,
   PatternsSelection,
   Product,
+  License,
+  LicenseContent,
   SoftwareConfig,
   RegistrationInfo,
   SoftwareProposal,
