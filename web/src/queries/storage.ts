@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,15 +28,17 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import React from "react";
-import { fetchConfig, refresh, setConfig } from "~/api/storage";
-import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import {
-  calculate,
+  fetchConfig,
+  setConfig,
   fetchActions,
   fetchDefaultVolume,
   fetchProductParams,
   fetchUsableDevices,
-} from "~/api/storage/proposal";
+  reprobe,
+} from "~/api/storage";
+import { calculate } from "~/api/storage/proposal";
+import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
 import {
   config,
@@ -314,30 +316,19 @@ const useDeprecatedChanges = () => {
   });
 };
 
-type RefreshHandler = {
-  onStart?: () => void;
-  onFinish?: () => void;
-};
-
 /**
  * Hook that reprobes the devices and recalculates the proposal using the current settings.
  */
-const useRefresh = (handler?: RefreshHandler) => {
+const useReprobeMutation = () => {
   const queryClient = useQueryClient();
-  const deprecated = useDeprecated();
+  const query = {
+    mutationFn: async () => {
+      await reprobe();
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
 
-  handler ||= {};
-  handler.onStart ||= () => undefined;
-  handler.onFinish ||= () => undefined;
-
-  React.useEffect(() => {
-    if (!deprecated) return;
-
-    handler.onStart();
-    refresh()
-      .then(() => queryClient.invalidateQueries({ queryKey: ["storage"] }))
-      .then(() => handler.onFinish());
-  }, [handler, deprecated, queryClient]);
+  return useMutation(query);
 };
 
 export {
@@ -352,7 +343,7 @@ export {
   useProposalMutation,
   useDeprecated,
   useDeprecatedChanges,
-  useRefresh,
+  useReprobeMutation,
 };
 
 export * from "~/queries/storage/config-model";
