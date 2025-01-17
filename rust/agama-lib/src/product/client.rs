@@ -32,6 +32,7 @@ use super::proxies::RegistrationProxy;
 
 /// Represents a software product
 #[derive(Default, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Product {
     /// Product ID (eg., "ALP", "Tumbleweed", etc.)
     pub id: String,
