@@ -1,0 +1,3 @@
+BOOT_IMAGE=/boot/vmlinuz splash=silent nosimplefb=1
+agama.install_url=ftp://test.com/repo
+live.password=secret
