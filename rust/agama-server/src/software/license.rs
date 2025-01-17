@@ -22,6 +22,7 @@
 
 use regex::Regex;
 use serde::Serialize;
+use serde_with::{serde_as, DisplayFromStr};
 use std::{
     fmt::Display,
     fs::read_dir,
@@ -32,9 +33,11 @@ use thiserror::Error;
 /// Represents a product license.
 ///
 /// It contains the license ID and the list of languages that with a translation.
+#[serde_as]
 #[derive(Clone, Debug, Serialize)]
 pub struct License {
     pub id: String,
+    #[serde_as(as = "Vec<DisplayFromStr>")]
     pub languages: Vec<LanguageTag>,
 }
 
@@ -201,7 +204,7 @@ impl TryFrom<&str> for LanguageTag {
     type Error = InvalidLanguageCode;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let language_regexp: Regex = Regex::new(r"^([[:alpha:]]+)(?:-([A-Z]+))?").unwrap();
+        let language_regexp: Regex = Regex::new(r"^([[:alpha:]]+)(?:[_-]([A-Z]+))?").unwrap();
 
         let captures = language_regexp
             .captures(value)
@@ -247,5 +250,12 @@ mod test {
         let language: LanguageTag = "xx".try_into().unwrap();
         let license = repo.find("license.final", &language).unwrap();
         assert!(license.body.starts_with("End User License"));
+    }
+
+    #[test]
+    fn test_language_tag() {
+        let tag: LanguageTag = "zh-CH".try_into().unwrap();
+        assert_eq!(tag.language, "zh");
+        assert_eq!(tag.territory, Some("CH".to_string()));
     }
 }
