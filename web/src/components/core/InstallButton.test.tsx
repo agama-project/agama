@@ -69,12 +69,10 @@ describe("InstallButton", () => {
 
     it("renders additional information to warn users about found problems", () => {
       const { container } = installerRender(<InstallButton />);
-      const button = screen.getByRole("button", { name: /Install/ });
+      screen.getByRole("button", { name: /Install/ });
       // An exlamation icon as visual mark
       const icon = container.querySelector("svg");
-      expect(icon).toHaveAttribute("data-icon-name", "exclamation");
-      // An aria-label for users using an screen reader
-      within(button).getByLabelText(/Not possible with the current setup/);
+      expect(icon).toHaveAttribute("data-icon-name", "error_fill");
     });
 
     it("triggers the onClickWithIssues callback without rendering the confirmation dialog", async () => {

@@ -1,1 +1,22 @@
-// File empty temporary as part of migration to PF6
+// Temporary CSS rules as part of the migration to PF6. They are expected to
+// change significantly, especially the token names, as the interface
+// customization is refined.
+
+:root {
+  --agm-t--color--pine: #0c322c;
+
+  --agm-t--install--button--background: var(--agm-t--color--pine);
+  --agm-t--install--button--color: var(--pf-t--color--white);
+}
+
+.agm-install-button {
+  background: var(--agm-t--install--button--background);
+  color: var(--agm-t--install--button--color);
+  font-weight: 600;
+  font-size: var(--pf-t--global--font--size--md);
+  align-items: center;
+
+  svg {
+    fill: var(--agm-t--install--button--color);
+  }
+}
