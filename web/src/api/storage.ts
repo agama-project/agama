@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,15 +22,16 @@
 
 import { get, post, put } from "~/api/http";
 import { Job } from "~/types/job";
-import { calculate, fetchSettings } from "~/api/storage/proposal";
-import { config, configModel } from "~/api/storage/types";
+import { Action, config, configModel, ProductParams, Volume } from "~/api/storage/types";
 
 /**
  * Starts the storage probing process.
  */
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const probe = (): Promise<any> => post("/api/storage/probe");
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reprobe = (): Promise<any> => post("/api/storage/reprobe");
 
 const fetchConfig = (): Promise<config.Config | undefined> =>
   get("/api/storage/config").then((config) => config.storage);
@@ -41,6 +42,17 @@ const fetchConfigModel = (): Promise<configModel.Config | undefined> =>
 const setConfig = (config: config.Config) => put("/api/storage/config", { storage: config });
 
 const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
+
+const fetchUsableDevices = (): Promise<number[]> => get(`/api/storage/proposal/usable_devices`);
+
+const fetchProductParams = (): Promise<ProductParams> => get("/api/storage/product/params");
+
+const fetchDefaultVolume = (mountPath: string): Promise<Volume | undefined> => {
+  const path = encodeURIComponent(mountPath);
+  return get(`/api/storage/product/volume_for?mount_path=${path}`);
+};
+
+const fetchActions = (): Promise<Action[]> => get("/api/storage/devices/actions");
 
 /**
  * Returns the list of jobs
@@ -53,26 +65,17 @@ const fetchStorageJobs = (): Promise<Job[]> => get("/api/storage/jobs");
 const findStorageJob = (id: string): Promise<Job | undefined> =>
   fetchStorageJobs().then((jobs: Job[]) => jobs.find((value) => value.id === id));
 
-/**
- * Refreshes the storage layer.
- *
- * It does the probing again and recalculates the proposal with the same
- * settings. Internally, it is composed of three different API calls
- * (retrieve the settings, probe the system, and calculate the proposal).
- */
-const refresh = async (): Promise<void> => {
-  const settings = await fetchSettings();
-  await probe().catch(console.log);
-  await calculate(settings).catch(console.log);
-};
-
 export {
   probe,
+  reprobe,
   fetchConfig,
   fetchConfigModel,
   setConfig,
   setConfigModel,
+  fetchUsableDevices,
+  fetchProductParams,
+  fetchDefaultVolume,
+  fetchActions,
   fetchStorageJobs,
   findStorageJob,
-  refresh,
 };
