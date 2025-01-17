@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -87,13 +87,15 @@ module Agama
         STORAGE_INTERFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_INTERFACE
 
-        def probe
+        # @param keep_config [Boolean] Whether to use the current storage config for calculating
+        #   the proposal.
+        def probe(keep_config: false)
           busy_while do
             # Clean trees in advance to avoid having old objects exported in D-Bus.
             system_devices_tree.clean
             staging_devices_tree.clean
 
-            backend.probe
+            backend.probe(keep_config: keep_config)
           end
         end
 
@@ -162,6 +164,7 @@ module Agama
 
         dbus_interface STORAGE_INTERFACE do
           dbus_method(:Probe) { probe }
+          dbus_method(:Reprobe) { probe(keep_config: true) }
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
             busy_while { apply_config(serialized_config) }
           end

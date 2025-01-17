@@ -8,6 +8,11 @@
     <method name="Probe">
     </method>
     <!--
+      Probes the system and recalculates the proposal using the current config.
+    -->
+    <method name="Reprobe">
+    </method>
+    <!--
       Sets the storage config.
     -->
     <method name="SetConfig">
