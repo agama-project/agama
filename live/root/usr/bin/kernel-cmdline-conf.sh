@@ -13,6 +13,7 @@ write_kernel_args() {
   for _i in $(cat "${SOURCE}"); do
     case ${_i} in
     # remove all agama kernel params
+    # Add here also all linuxrc supported parameters
     LIBSTORAGE_* | YAST_* | agama* | Y2* | ZYPP_* | autoyast* )
       _found=1
       ;;
