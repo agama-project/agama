@@ -29,7 +29,7 @@ import { useAvailableDevices } from "~/queries/storage";
 import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useDrive } from "~/queries/storage/config-model";
+import { useDrive, usePartition } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { typeDescription, contentDescription } from "~/components/storage/utils/device";
 import { Icon } from "../layout";
@@ -567,15 +567,41 @@ const PartitionsNoContentSelector = () => {
   );
 };
 
+const PartitionMenuItem = ({ driveName, mountPath }) => {
+  const { onDelete } = usePartition(driveName, mountPath);
+
+  return (
+    <MenuItem
+      itemId={mountPath}
+      description="Btrfs with snapshots"
+      actions={
+        <>
+          <MenuItemAction
+            style={{ paddingInline: "4px", alignSelf: "center" }}
+            icon={<Icon name="edit_square" size="xs" aria-label={"Edit"} />}
+            actionId={`edit-${mountPath}`}
+            aria-label={`Edit ${mountPath}`}
+          />
+          <MenuItemAction
+            style={{ paddingInline: "4px", alignSelf: "center" }}
+            icon={<Icon name="delete" size="xs" aria-label={"Edit"} />}
+            actionId={`delete-${mountPath}`}
+            aria-label={`Delete ${mountPath}`}
+            onClick={onDelete}
+          />
+        </>
+      }
+    >
+      {mountPath}
+    </MenuItem>
+  );
+};
+
 const PartitionsWithContentSelector = ({ drive }) => {
-  console.log("DRIVEVV:", drive);
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
-  const onDelete = () => {
-    console.log("DELETE CLICKED YAY");
-  };
 
   return (
     <MenuContainer
@@ -605,30 +631,11 @@ const PartitionsWithContentSelector = ({ drive }) => {
                 .filter((p) => p.mountPath)
                 .map((partition) => {
                   return (
-                    <MenuItem
+                    <PartitionMenuItem
                       key={partition.mountPath}
-                      itemId={partition.mountPath}
-                      description="Btrfs with snapshots"
-                      actions={
-                        <>
-                          <MenuItemAction
-                            style={{ paddingInline: "4px", alignSelf: "center" }}
-                            icon={<Icon name="edit_square" size="xs" aria-label={"Edit"} />}
-                            actionId={`edit-${partition.mountPath}`}
-                            aria-label={`Edit ${partition.mountPath}`}
-                          />
-                          <MenuItemAction
-                            style={{ paddingInline: "4px", alignSelf: "center" }}
-                            icon={<Icon name="delete" size="xs" aria-label={"Edit"} />}
-                            actionId={`delete-${partition.mountPath}`}
-                            aria-label={`Delete ${partition.mountPath}`}
-                            onClick={onDelete}
-                          />
-                        </>
-                      }
-                    >
-                      {partition.mountPath}
-                    </MenuItem>
+                      driveName={drive.name}
+                      mountPath={partition.mountPath}
+                    />
                   );
                 })}
               <Divider component="li" />
