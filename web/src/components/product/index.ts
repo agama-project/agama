@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,3 +24,4 @@ export { default as ProductSelectionPage } from "./ProductSelectionPage";
 export { default as ProductSelectionProgress } from "./ProductSelectionProgress";
 export { default as ProductRegistrationPage } from "./ProductRegistrationPage";
 export { default as ProductRegistrationAlert } from "./ProductRegistrationAlert";
+export { default as EulaDialog } from "./LicenseDialog";

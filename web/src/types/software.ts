@@ -43,6 +43,8 @@ type Product = {
   icon?: string;
   /** If product is registrable or not */
   registration: "no" | "optional" | "mandatory";
+  /** The product license id, if any */
+  licenseId?: string;
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };
