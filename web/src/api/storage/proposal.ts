@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,38 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, put } from "../http";
-import {
-  Action,
-  ProductParams,
-  ProposalSettings,
-  ProposalSettingsPatch,
-  Volume,
-} from "~/api/storage/types";
-
-const fetchUsableDevices = (): Promise<number[]> => get(`/api/storage/proposal/usable_devices`);
-
-const fetchProductParams = (): Promise<ProductParams> => get("/api/storage/product/params");
-
-const fetchDefaultVolume = (mountPath: string): Promise<Volume | undefined> => {
-  const path = encodeURIComponent(mountPath);
-  return get(`/api/storage/product/volume_for?mount_path=${path}`);
-};
-
-// NOTE: the settings might not exist.
-const fetchSettings = (): Promise<ProposalSettings> =>
-  get("/api/storage/proposal/settings").catch(() => null);
-
-const fetchActions = (): Promise<Action[]> => get("/api/storage/devices/actions");
+import { put } from "../http";
+import { ProposalSettingsPatch } from "~/api/storage/types";
 
 const calculate = (settings: ProposalSettingsPatch) =>
   put("/api/storage/proposal/settings", settings);
 
-export {
-  fetchUsableDevices,
-  fetchProductParams,
-  fetchDefaultVolume,
-  fetchSettings,
-  fetchActions,
-  calculate,
-};
+export { calculate };

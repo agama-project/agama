@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -167,6 +167,10 @@ describe Agama::Storage::Manager do
       allow(proposal).to receive(:issues).and_return(proposal_issues)
       allow(proposal).to receive(:available_devices).and_return(devices)
       allow(proposal).to receive(:calculate_from_json)
+      allow(proposal).to receive(:storage_json).and_return(current_config)
+
+      allow_any_instance_of(Agama::Storage::ConfigJSONReader)
+        .to receive(:read).and_return(default_config)
 
       allow(config).to receive(:pick_product)
       allow(iscsi).to receive(:activate)
@@ -181,6 +185,26 @@ describe Agama::Storage::Manager do
 
     let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
 
+    let(:default_config) do
+      {
+        storage: {
+          drives: [
+            search: "/dev/vda1"
+          ]
+        }
+      }
+    end
+
+    let(:current_config) do
+      {
+        storage: {
+          drives: [
+            search: "/dev/vda2"
+          ]
+        }
+      }
+    end
+
     let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     let(:devices) { [disk1, disk2] }
@@ -194,7 +218,7 @@ describe Agama::Storage::Manager do
 
     let(:callback) { proc {} }
 
-    it "probes the storage devices and calculates a proposal with the default settings" do
+    it "probes the storage devices and calculates a proposal" do
       expect(config).to receive(:pick_product).with("ALP")
       expect(iscsi).to receive(:activate)
       expect(y2storage_manager).to receive(:activate) do |callbacks|
@@ -235,6 +259,24 @@ describe Agama::Storage::Manager do
       expect(callback).to receive(:call)
 
       storage.probe
+    end
+
+    context "if :keep_config is false" do
+      let(:keep_config) { false }
+
+      it "calculates a proposal using the default product config" do
+        expect(proposal).to receive(:calculate_from_json).with(default_config)
+        storage.probe(keep_config: keep_config)
+      end
+    end
+
+    context "if :keep_config is true" do
+      let(:keep_config) { true }
+
+      it "calculates a proposal using the current config" do
+        expect(proposal).to receive(:calculate_from_json).with(current_config)
+        storage.probe(keep_config: keep_config)
+      end
     end
 
     context "if there are available devices" do

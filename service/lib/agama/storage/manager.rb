@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -113,14 +113,21 @@ module Agama
       end
 
       # Probes storage devices and performs an initial proposal
-      def probe
+      #
+      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
+      #   proposal.
+      def probe(keep_config: false)
         start_progress_with_size(4)
         product_config.pick_product(software.selected_product)
         check_multipath
         progress.step(_("Activating storage devices")) { activate_devices }
         progress.step(_("Probing storage devices")) { probe_devices }
-        progress.step(_("Calculating the storage proposal")) { calculate_proposal }
+        progress.step(_("Calculating the storage proposal")) do
+          calculate_proposal(keep_config: keep_config)
+        end
         progress.step(_("Selecting Linux Security Modules")) { security.probe }
+        # The system is not deprecated anymore
+        self.deprecated_system = false
         update_issues
         @on_probe_callbacks&.each(&:call)
       end
@@ -216,14 +223,15 @@ module Agama
 
         iscsi.probe
         Y2Storage::StorageManager.instance.probe(callbacks)
-
-        # The system is not deprecated anymore
-        self.deprecated_system = false
       end
 
-      # Calculates the proposal using the storage config from the product.
-      def calculate_proposal
-        config_json = ConfigJSONReader.new(product_config).read
+      # Calculates the proposal.
+      #
+      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
+      #   proposal. If false, then the default config from the product is used.
+      def calculate_proposal(keep_config: false)
+        config_json = proposal.storage_json if keep_config
+        config_json ||= ConfigJSONReader.new(product_config).read
         proposal.calculate_from_json(config_json)
       end
 

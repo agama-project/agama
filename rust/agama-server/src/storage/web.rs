@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -116,6 +116,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/config", put(set_config).get(get_config))
         .route("/config_model", put(set_config_model).get(get_config_model))
         .route("/probe", post(probe))
+        .route("/reprobe", post(reprobe))
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
@@ -240,13 +241,28 @@ async fn set_config_model(
     path = "/probe",
     context_path = "/api/storage",
     responses(
-        (status = 200, description = "Devices were probed and an initial proposal were performed"),
+        (status = 200, description = "Devices were probed and an initial proposal was performed"),
         (status = 400, description = "The D-Bus service could not perform the action")
     ),
     operation_id = "storage_probe"
 )]
 async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
     Ok(Json(state.client.probe().await?))
+}
+
+/// Reprobes the storage devices.
+#[utoipa::path(
+    post,
+    path = "/reprobe",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Devices were probed and the proposal was recalculated"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    ),
+    operation_id = "storage_reprobe"
+)]
+async fn reprobe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.reprobe().await?))
 }
 
 /// Gets whether the system is in a deprecated status.

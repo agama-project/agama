@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -44,8 +44,8 @@ export default function ISCSIPage() {
         </Grid>
       </Page.Content>
       <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.targetDevice}>
-          {_("Back to device selection")}
+        <Page.Action variant="secondary" navigateTo={PATHS.root}>
+          {_("Back")}
         </Page.Action>
       </Page.Actions>
     </Page>

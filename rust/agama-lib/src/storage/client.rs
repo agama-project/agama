@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -137,6 +137,11 @@ impl<'a> StorageClient<'a> {
     /// Runs the probing process
     pub async fn probe(&self) -> Result<(), ServiceError> {
         Ok(self.storage_proxy.probe().await?)
+    }
+
+    /// Runs the reprobing process
+    pub async fn reprobe(&self) -> Result<(), ServiceError> {
+        Ok(self.storage_proxy.reprobe().await?)
     }
 
     /// Set the storage config according to the JSON schema
