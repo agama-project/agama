@@ -40,7 +40,7 @@ import {
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
 import { config, ProductParams, Volume as APIVolume } from "~/api/storage/types";
-import { ProposalResult, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
+import { Action, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
 import { QueryHookOptions } from "~/types/queries";
 
@@ -222,12 +222,11 @@ const proposalActionsQuery = {
 };
 
 /**
- * Hook that returns the current proposal (settings and actions).
+ * Hook that returns the actions to perform in the storage devices.
  */
-const useProposalResult = (): ProposalResult | undefined => {
-  const { data: actions } = useSuspenseQuery(proposalActionsQuery);
-
-  return { actions };
+const useActions = (): Action[] | undefined => {
+  const { data } = useSuspenseQuery(proposalActionsQuery);
+  return data;
 };
 
 const deprecatedQuery = {
@@ -284,7 +283,7 @@ export {
   useProductParams,
   useVolumeTemplates,
   useVolumeDevices,
-  useProposalResult,
+  useActions,
   useDeprecated,
   useDeprecatedChanges,
   useReprobeMutation,

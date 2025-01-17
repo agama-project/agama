@@ -36,7 +36,7 @@ import {
   useDevices,
   useDeprecated,
   useDeprecatedChanges,
-  useProposalResult,
+  useActions,
   useReprobeMutation,
 } from "~/queries/storage";
 import { _ } from "~/i18n";
@@ -69,7 +69,7 @@ export default function ProposalPage() {
   const stagingDevices = useDevices("result");
   const isDeprecated = useDeprecated();
   const { mutateAsync: reprobe } = useReprobeMutation();
-  const { actions } = useProposalResult();
+  const actions = useActions();
 
   useDeprecatedChanges();
 

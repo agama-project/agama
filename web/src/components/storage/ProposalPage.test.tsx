@@ -30,8 +30,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { ProposalPage } from "~/components/storage";
 import {
-  ProposalResult,
-  ProposalTarget,
+  Action,
   StorageDevice,
   Volume,
   VolumeTarget,
@@ -105,22 +104,7 @@ const volume = (mountPath: string): Volume => {
   };
 };
 
-const mockProposalResult: ProposalResult = {
-  settings: {
-    target: ProposalTarget.DISK,
-    targetPVDevices: [],
-    configureBoot: false,
-    bootDevice: "",
-    defaultBootDevice: "",
-    encryptionPassword: "",
-    encryptionMethod: "",
-    spacePolicy: "",
-    spaceActions: [],
-    volumes: [],
-    installationDevices: [],
-  },
-  actions: [],
-};
+const mockActions: Action[] = [];
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
@@ -132,7 +116,7 @@ jest.mock("~/queries/storage", () => ({
     encryptionMethods: [],
     mountPoints: ["/", "swap"],
   }),
-  useProposalResult: () => mockProposalResult,
+  useActions: () => mockActions,
   useDeprecated: () => false,
   useDeprecatedChanges: jest.fn(),
   useProposalMutation: jest.fn(),
