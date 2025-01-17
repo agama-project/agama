@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { Grid, GridItem, SplitItem } from "@patternfly/react-core";
 import { Page } from "~/components/core/";
 import { Loading } from "~/components/layout";
@@ -32,7 +32,13 @@ import ConfigEditorMenu from "./ConfigEditorMenu";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useDevices, useProposalResult, useRefresh } from "~/queries/storage";
+import {
+  useDevices,
+  useDeprecated,
+  useDeprecatedChanges,
+  useProposalResult,
+  useReprobeMutation,
+} from "~/queries/storage";
 import { _ } from "~/i18n";
 
 /**
@@ -59,21 +65,23 @@ export const NOT_AFFECTED = {
 };
 
 export default function ProposalPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const systemDevices = useDevices("system");
   const stagingDevices = useDevices("result");
+  const isDeprecated = useDeprecated();
+  const { mutateAsync: reprobe } = useReprobeMutation();
   const { actions } = useProposalResult();
 
-  useRefresh({
-    onStart: () => setIsLoading(true),
-    onFinish: () => setIsLoading(false),
-  });
+  useDeprecatedChanges();
+
+  React.useEffect(() => {
+    if (isDeprecated) reprobe().catch(console.log);
+  }, [isDeprecated, reprobe]);
 
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
 
-  if (isLoading) {
+  if (isDeprecated) {
     return (
       <Page>
         <Page.Header>
