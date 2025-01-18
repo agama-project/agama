@@ -45,6 +45,7 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
   const [languageSelectorOpen, setLanguageSelectorOpen] = useState(false);
   const localesToggler = (toggleRef) => (
     <MenuToggle
+      aria-label={_("License language")}
       ref={toggleRef}
       onClick={() => setLanguageSelectorOpen(!languageSelectorOpen)}
       isExpanded={languageSelectorOpen}
