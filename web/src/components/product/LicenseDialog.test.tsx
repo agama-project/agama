@@ -36,7 +36,7 @@ const sle: Product = {
   licenseId: "license.sle",
 };
 
-let mockUILanguage = "es-ES";
+const mockUILanguage = "es-ES";
 const product: Product = sle;
 const onCloseFn = jest.fn();
 let mockFetchLicense: jest.SpyInstance;

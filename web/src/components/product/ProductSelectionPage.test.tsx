@@ -97,8 +97,8 @@ describe("ProductSelectionPage", () => {
       mockSelectedProduct = microOs;
     });
 
-    it("does not allow revoking license acceptance", async () => {
-      const { user } = installerRender(<ProductSelectionPage />);
+    it("does not allow revoking license acceptance", () => {
+      installerRender(<ProductSelectionPage />);
       const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
       expect(licenseCheckbox).toBeChecked();
       expect(licenseCheckbox).toBeDisabled();
