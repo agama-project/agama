@@ -20,11 +20,15 @@
 :root {
   --agm-t--color--pine: #0c322c;
   --agm-t--color--jungle: #30ba78;
+  --agm-t--color--jungle--hover: #c0efde;
   --agm-t--color--fog: #efefef;
 
-  --agm-t--action--background--color--hover: #fff; // #eafaf4;
+  --agm-t--action--background--color--hover: #c0efde; // #eafaf4;
 
   --pf-t--global--background--color--secondary--default: var(--agm-t--color--fog);
+  --pf-t--global--background--color--action--plain--hover: var(
+    --agm-t--action--background--color--hover
+  );
   --pf-t--global--background--color--action--plain--alt--hover: var(
     --agm-t--action--background--color--hover
   );
@@ -52,6 +56,12 @@
   --pf-t--global--font--weight--400: 700;
 }
 
+// Temporary CSS rules written during migratoin to PFv6
+
+#productSelectionForm img {
+  max-inline-size: 100px;
+}
+
 .agm-install-button {
   background: var(--agm-t--install--button--background);
   color: var(--agm-t--install--button--color);
@@ -61,6 +71,27 @@
 
   svg {
     fill: var(--agm-t--install--button--color);
+  }
+}
+
+.agm-inline-menu-toggle {
+  inline-size: fit-content;
+  flex-direction: row-reverse;
+  align-items: center;
+  padding: 0 var(--pf-t--global--spacer--control--vertical--compact);
+  background: var(--agm-t--color--fog);
+
+  &:hover {
+    background: #c0efde; // var(--agm-t--action--background--color--hover);
+  }
+
+  &.pf-m-expanded {
+    background: var(--agm-t--color--jungle);
+  }
+
+  .pf-v6-c-menu-toggle__icon svg {
+    block-size: var(--pf-t--global--icon--size--lg);
+    inline-size: var(--pf-t--global--icon--size--lg);
   }
 }
 
@@ -74,6 +105,15 @@
   --pf-v6-c-masthead__logo--Width: fit-content;
 }
 
+.pf-v6-c-menu {
+  --pf-v6-c-menu--BoxShadow: var(--pf-t--global--box-shadow--lg);
+  // background: #eafaf8;
+}
+
+.pf-v6-c-menu__item.pf-m-selected {
+  background: #eafaf4;
+}
+
 .pf-v6-c-nav__link {
   --pf-v6-c-nav__link--AlignItems: center;
 }
@@ -84,10 +124,4 @@
 
 .pf-v6-c-button {
   --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
-}
-
-// Temporary CSS rules written during migratoin to PFv6
-//
-#productSelectionForm img {
-  max-inline-size: 100px;
 }
