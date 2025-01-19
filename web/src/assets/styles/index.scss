@@ -19,6 +19,17 @@
 
 :root {
   --agm-t--color--pine: #0c322c;
+  --agm-t--color--jungle: #30ba78;
+  --agm-t--color--fog: #efefef;
+
+  --agm-t--action--background--color--hover: #fff; // #eafaf4;
+
+  --pf-t--global--background--color--secondary--default: var(--agm-t--color--fog);
+  --pf-t--global--background--color--action--plain--alt--hover: var(
+    --agm-t--action--background--color--hover
+  );
+  --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle);
+
   --agm-t--install--button--background: var(--agm-t--color--pine);
   --agm-t--install--button--color: var(--pf-t--color--white);
 
@@ -54,7 +65,15 @@
 }
 
 // PatternFly overrides
-//
+
+.pf-v6-c-nav__link {
+  --pf-v6-c-nav__link--AlignItems: center;
+}
+
+.pf-v6-c-nav__link.pf-m-current {
+  font-weight: 600;
+}
+
 .pf-v6-c-button {
   --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
 }
