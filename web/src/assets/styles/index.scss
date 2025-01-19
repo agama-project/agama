@@ -20,3 +20,9 @@
     fill: var(--agm-t--install--button--color);
   }
 }
+
+// Temporary CSS rules written during migratoin to PFv6
+
+#productSelectionForm img {
+  max-inline-size: 100px;
+}
