@@ -21,8 +21,14 @@
   }
 }
 
-// Temporary CSS rules written during migratoin to PFv6
+// PatternFly overrides
+//
+.pf-v6-c-button {
+  --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
+}
 
+// Temporary CSS rules written during migratoin to PFv6
+//
 #productSelectionForm img {
   max-inline-size: 100px;
 }
