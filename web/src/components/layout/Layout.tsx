@@ -78,7 +78,7 @@ const Layout = ({
 
   return (
     <>
-      <Page isContentFilled {...pageProps}>
+      <Page isContentFilled {...pageProps} className="agm-layout">
         <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
       </Page>
       {location.pathname !== ROOT.login && <Questions />}
