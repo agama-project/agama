@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-12 02:47+0000\n"
+"POT-Creation-Date: 2025-01-19 02:40+0000\n"
 "PO-Revision-Date: 2024-04-19 23:43+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
@@ -129,7 +129,7 @@ msgstr "Le produit doit être enregistré"
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:223
+#: service/lib/agama/software/proposal.rb:225
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "%s problème(s) de dépendance trouvé(s)."
