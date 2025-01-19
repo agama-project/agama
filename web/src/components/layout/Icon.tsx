@@ -204,12 +204,5 @@ export default function Icon({ name, size, color, ...otherProps }: IconProps) {
 
   const IconComponent = icons[name];
 
-  return (
-    <IconComponent
-      aria-hidden="true"
-      data-icon-name={name}
-      style={{ fill: "currentColor" }}
-      {...otherProps}
-    />
-  );
+  return <IconComponent aria-hidden="true" data-icon-name={name} {...otherProps} />;
 }
