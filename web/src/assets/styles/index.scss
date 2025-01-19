@@ -66,6 +66,14 @@
 
 // PatternFly overrides
 
+.pf-v6-c-masthead__main {
+  inline-size: 50dvw;
+}
+
+.pf-v6-c-masthead {
+  --pf-v6-c-masthead__logo--Width: fit-content;
+}
+
 .pf-v6-c-nav__link {
   --pf-v6-c-nav__link--AlignItems: center;
 }
