@@ -72,12 +72,6 @@ describe("Page", () => {
       screen.getByRole("button", { name: "Save" });
     });
 
-    it("renders an 'lg' button when size prop is not given", () => {
-      plainRender(<Page.Action>Cancel</Page.Action>);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      expect(button.classList.contains("pf-m-display-lg")).toBe(true);
-    });
-
     describe("when user clicks on it", () => {
       it("triggers given onClick handler, if valid", async () => {
         const onClick = jest.fn();
@@ -144,11 +138,10 @@ describe("Page", () => {
       expect(mockNavigateFn).toHaveBeenCalledWith(-1);
     });
 
-    it("uses `lg` size and `link` variant by default", () => {
+    it("uses `link` variant by default", () => {
       plainRender(<Page.Back />);
       const button = screen.getByRole("button", { name: "Back" });
       expect(button.classList.contains("pf-m-link")).toBe(true);
-      expect(button.classList.contains("pf-m-display-lg")).toBe(true);
     });
   });
 

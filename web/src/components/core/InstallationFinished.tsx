@@ -138,7 +138,7 @@ function InstallationFinished() {
                   </EmptyStateBody>
                 </EmptyState>
                 <Flex direction={{ default: "rowReverse" }}>
-                  <Button size="lg" variant="primary" onClick={finishInstallation}>
+                  <Button variant="primary" onClick={finishInstallation}>
                     {useIguana ? _("Finish") : _("Reboot")}
                   </Button>
                 </Flex>

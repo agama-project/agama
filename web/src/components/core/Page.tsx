@@ -224,11 +224,7 @@ const Action = ({ navigateTo, children, ...props }: ActionProps) => {
     if (navigateTo) navigate(navigateTo);
   };
 
-  return (
-    <Button size="lg" {...props}>
-      {children}
-    </Button>
-  );
+  return <Button {...props}>{children}</Button>;
 };
 
 /**
@@ -262,7 +258,7 @@ const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
   const navigate = useNavigate();
 
   return (
-    <Button size="lg" variant="link" {...props} onClick={() => navigate(-1)}>
+    <Button variant="link" {...props} onClick={() => navigate(-1)}>
       {children || _("Back")}
     </Button>
   );

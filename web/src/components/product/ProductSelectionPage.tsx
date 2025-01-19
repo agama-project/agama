@@ -91,7 +91,7 @@ const Option = ({ product, isChecked, onChange }) => {
 const BackLink = () => {
   const navigate = useNavigate();
   return (
-    <Button size="lg" variant="link" onClick={() => navigate("/")}>
+    <Button variant="link" onClick={() => navigate("/")}>
       {_("Cancel")}
     </Button>
   );
