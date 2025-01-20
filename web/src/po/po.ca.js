@@ -35,7 +35,7 @@ export default {
     "Disc %s"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s s'ha registrat amb la informació següent."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de fitxers Btrfs només de lectura actualitzat a través d'instantànies."
@@ -43,11 +43,14 @@ export default {
   "%s logo": [
     "Logotip per a %s"
   ],
+  "%s must be registered.": [
+    "%s ha d'estar registrat."
+  ],
   "%s with %d partitions": [
     "%s amb %d particions"
   ],
   "(optional)": [
-    ""
+    "(opcional)"
   ],
   ", ": [
     ", "
@@ -462,7 +465,7 @@ export default {
     "Contrasenya d'encriptació"
   ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
-    ""
+    "Introduïu un codi de registre i, opcionalment, una adreça de correu electrònic vàlida per a registrar el producte."
   ],
   "Exact size": [
     "Mida exacta"
@@ -552,7 +555,7 @@ export default {
     "GiB"
   ],
   "Hide": [
-    ""
+    "Amaga"
   ],
   "Hide %d subvolume action": [
     "Amaga %d acció de subvolum",
@@ -626,6 +629,9 @@ export default {
   ],
   "Install new system on": [
     "Instal·la el sistema nou"
+  ],
+  "Install using an advanced configuration.": [
+    "Instal·la mitjançant una configuració avançada."
   ],
   "Install using device %s and deleting all its content": [
     "Instal·la al dispositiu %s suprimint-ne tot el contingut"
@@ -990,6 +996,12 @@ export default {
   "Presence of other volumes (%s)": [
     "La presència d'altres volums (%s)"
   ],
+  "Product registered": [
+    "Producte registrat"
+  ],
+  "Product registration form": [
+    "Formulari de registre del producte"
+  ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Protecció per a la informació emmagatzemada al dispositiu, incloses les dades, els programes i els fitxers del sistema."
   ],
@@ -1010,6 +1022,9 @@ export default {
   ],
   "Register": [
     "Registra"
+  ],
+  "Register it now": [
+    "Registra'l ara"
   ],
   "Registration": [
     "Registre"
@@ -1121,6 +1136,9 @@ export default {
   ],
   "Setup root user authentication": [
     "Configura l'autenticació d'usuari d'arrel"
+  ],
+  "Show": [
+    "Mostra"
   ],
   "Show %d subvolume action": [
     "Mostra %d acció de subvolum",
@@ -1286,7 +1304,7 @@ export default {
     "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
   ],
   "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    ""
+    "El disseny del sistema s'ha establert mitjançant una configuració avançada que no es pot modificar amb la versió actual d'aquesta interfície visual. Aquesta limitació se suprimirà en una versió futura d'Agama."
   ],
   "The system will use %s as its default language.": [
     "El sistema usarà el %s com a llengua per defecte."
