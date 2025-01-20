@@ -101,6 +101,33 @@ const errorMsg = _(
 The system cannot be installed without them.",
 );
 
+// error message, allow reloading the repositories again
+const ReloadSection = ({
+  loading,
+  action,
+}: {
+  loading: boolean;
+  action: () => void;
+}): React.ReactNode => (
+  // TRANSLATORS: title for an error message box, at least one repository could not be loaded
+  <Alert variant="danger" isInline title={_("Repository load failed")}>
+    {loading ? (
+      <>
+        {/* TRANSLATORS: progress message */}
+        <Spinner size="md" /> {_("Loading the installation repositories...")}
+      </>
+    ) : (
+      <>
+        {errorMsg}{" "}
+        <Button variant="link" isInline onClick={action}>
+          {/* TRANSLATORS: link for retrying failed repository load */}
+          {_("Try again")}
+        </Button>
+      </>
+    )}
+  </Alert>
+);
+
 /**
  * Software page component
  */
@@ -124,25 +151,6 @@ function SoftwarePage(): React.ReactNode {
     probe();
   };
 
-  const ReloadSection = (): React.ReactNode => (
-    // TRANSLATORS: title for an error message box, at least one repository could not be loaded
-    <Alert variant="danger" isInline title={_("Repository load failed")}>
-      {loading ? (
-        <>
-          <Spinner size="md" /> {_("Loading the installation repositories...")}
-        </>
-      ) : (
-        <>
-          {errorMsg}{" "}
-          <Button variant="link" isInline onClick={startProbing}>
-            {/* TRANSLATORS: link for retrying failed repository load */}
-            {_("Try again")}
-          </Button>
-        </>
-      )}
-    </Alert>
-  );
-
   const showReposAlert = repos.some((r) => !r.loaded);
 
   return (
@@ -158,7 +166,7 @@ function SoftwarePage(): React.ReactNode {
           </GridItem>
           {showReposAlert && (
             <GridItem sm={12}>
-              <ReloadSection />
+              <ReloadSection loading={loading} action={startProbing} />
             </GridItem>
           )}
           <GridItem sm={12} xl={selectedPatternsXlSize}>
