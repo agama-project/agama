@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan 20 10:36:19 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set the license for SLES and SLES4SAP (jsc#PED-11987).
+
+-------------------------------------------------------------------
 Mon Jan 20 10:30:55 UTC 2025 - Angela Briel <abriel@suse.com>
 
 - Add pattern sles_minimal_sap to the user selectable patterns list

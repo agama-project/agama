@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,6 +27,8 @@ import {
   RegistrationInfo,
   Repository,
   SoftwareProposal,
+  License,
+  LicenseContent,
 } from "~/types/software";
 import { get, post, put } from "~/api/http";
 
@@ -44,6 +46,17 @@ const fetchProposal = (): Promise<SoftwareProposal> => get("/api/software/propos
  * Returns the list of known products
  */
 const fetchProducts = (): Promise<Product[]> => get("/api/software/products");
+
+/**
+ * Returns the list of available licenses
+ */
+const fetchLicenses = (): Promise<License[]> => get("/api/software/licenses");
+
+/**
+ * Returns the content for given license id
+ */
+const fetchLicense = (id: string, lang: string = "en"): Promise<LicenseContent> =>
+  get(`/api/software/licenses/${id}?lang=${lang}`);
 
 /**
  * Returns an object with the registration info
@@ -83,6 +96,8 @@ export {
   fetchPatterns,
   fetchProposal,
   fetchProducts,
+  fetchLicenses,
+  fetchLicense,
   fetchRegistration,
   fetchRepositories,
   updateConfig,

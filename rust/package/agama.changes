@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
-Fri Jan 17 15:50:15 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+Mon Jan 20 16:44:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - The web server provides /api/software/repositories endpoint
   for reading the currently configured repositories,
   related to (gh#agama-project/agama#1894)
+
+-------------------------------------------------------------------
+Mon Jan 20 10:35:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for specifying a license for each product
+  (jsc#PED-11987).
 
 -------------------------------------------------------------------
 Thu Jan 16 13:10:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

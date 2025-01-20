@@ -190,7 +190,10 @@ const Section = ({
  *   </Page.Actions>
  *
  */
-const Actions = ({ children }: React.PropsWithChildren) => {
+const Actions = ({
+  children,
+  justifyContent = "default",
+}: React.PropsWithChildren<{ justifyContent?: "default" | "none" }>) => {
   return (
     <PageGroup
       role="contentinfo"
@@ -199,7 +202,10 @@ const Actions = ({ children }: React.PropsWithChildren) => {
       className={flexStyles.flexGrow_0}
     >
       <PageSection variant="light" component="div">
-        <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
+        {justifyContent === "none" && children}
+        {justifyContent === "default" && (
+          <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
+        )}
       </PageSection>
     </PageGroup>
   );

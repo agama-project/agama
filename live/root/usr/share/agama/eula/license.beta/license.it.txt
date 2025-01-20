@@ -1,0 +1,316 @@
+Contratto di licenza per l'utente finale SUSE(r) per il Software Beta
+
+LEGGERE ATTENTAMENTE I TERMINI DEL PRESENTE CONTRATTO BETA. INSTALLANDO, 
+SCARICANDO O UTILIZZANDO IN ALTRO MODO QUESTO SOFTWARE, L'UTENTE ACCETTA I 
+TERMINI DEL PRESENTE CONTRATTO BETA E DI QUALSIASI CONTRATTO DI LICENZA SUSE 
+SUPPLEMENTARE INCLUSO NEL SOFTWARE. QUALORA L'UTENTE NON ACCETTI TUTTE LE 
+CONDIZIONI IN ESSO CONTENUTE, NON DOVRÀ SCARICARE, INSTALLARE NÉ UTILIZZARE IL 
+SOFTWARE. IL SOFTWARE NON PUÒ ESSERE VENDUTO, CEDUTO O ALTRIMENTI DISTRIBUITO 
+SENZA LA PREVENTIVA AUTORIZZAZIONE SCRITTA DI SUSE.
+
+Il presente Contratto di licenza per l'utente finale SUSE per il Software Beta 
+("Contratto Beta") insieme a qualsiasi altro contratto di licenza SUSE 
+supplementare incluso in questo Software rappresenta un accordo con valore 
+legale tra l'Utente (una persona fisica o giuridica) e SUSE LLC ("SUSE"). I 
+prodotti Software relativi al presente Contratto Beta, gli aggiornamenti 
+software, i supporti (se esistenti) e la documentazione di accompagnamento 
+online o stampata (collettivamente, "Software") sono protetti dalle leggi 
+degli Stati Uniti ("U.S.A.") e dalle disposizioni dei trattati internazionali 
+sul copyright e sono soggetti ai termini del presente Contratto Beta. Qualora 
+l'Utente non accetti i termini del presente Contratto Beta, non dovrà 
+scaricare, installare o altrimenti utilizzare il Software e, a seconda dei 
+casi, dovrà restituire la confezione inutilizzata nella sua integrità a SUSE. 
+Il Software viene concesso in licenza all'Utente e non viene venduto.
+
+Il Software può includere o essere venduto insieme ad altri programmi software 
+concessi in licenza ai sensi di termini diversi e/o da un licenziante diverso 
+da SUSE. I termini di un Contratto di licenza per l'utente finale fornito con 
+particolare software con l'installazione o il download del software 
+prevarranno sui termini indicati di seguito. L'uso dei programmi software 
+forniti da terze parti è a discrezione dell'Utente. SUSE non è responsabile 
+del software di terze parti e non risponde dei danni derivanti dal suo 
+utilizzo.
+
+Il software può includere componenti che sono pacchetti Open Source, 
+sviluppati in modo indipendente e accompagnati da un contratto di licenza 
+separato. I diritti di licenza dell'Utente relativamente ai singoli componenti 
+accompagnati da contratti di licenza separati sono definiti dalle condizioni 
+di tali contratti; nulla nel presente Contratto limiterà o altrimenti 
+pregiudicherà i diritti o gli obblighi dell'Utente o le condizioni alle quali 
+l'Utente sarà soggetto in conformità al presente Contratto. Qualora i termini 
+e le condizioni della licenza di un componente specifico autorizzino l'Utente 
+a distribuire il componente, l'Utente non potrà utilizzare marchi SUSE (come 
+SUSE e SUSE LINUX) nella copia distribuita, indipendentemente dal fatto che il 
+componente contenga o meno i marchi SUSE. 
+
+Licenza. In conformità ai termini e alle condizioni di questo Contratto Beta, 
+SUSE concede all'Utente un diritto non esclusivo e non trasferibile alla 
+riproduzione e all'uso del Software all'interno dell'organizzazione durante il 
+periodo indicato di seguito in una quantità adeguata allo scopo di effettuare 
+una valutazione o una prova funzionale del Software. 
+
+Se un prodotto SUSE separato da quello fornito per il Beta Test è incluso 
+all'interno o insieme al Software, nonostante i dirittiprevisti nel contratto 
+di licenza fornito con la copia di tale prodotto SUSE separato, l'Utente 
+acconsente a utilizzare il prodotto SUSE separato solo ed esclusivamente in 
+relazione a e ai fini di una valutazione del Software. Il diritto di 
+utilizzare il software del prodotto SUSE separato cessa alla risoluzione del 
+Contratto Beta come specificato di seguito.
+
+Scioglimento. Questo Contratto Beta diventa effettivo dalla data in cui viene 
+acquistato legalmente il Software e rimarrà in vigore fino alla risoluzione. 
+Il presente Contratto Beta terminerà: (i) allo scadere di 90 giorni dalla data 
+di installazione del Software, (ii) al rilascio della versione successiva a 
+una versione di prova del Software, se presente, (iii) alla prima spedizione 
+commerciale del Software da parte SUSE, (iv) con notifica scritta della 
+risoluzione prodotta da una delle parti oppure (v) nel caso venga violato uno 
+dei termini in esso contenuti. In seguito alla risoluzione di questo Contratto 
+Beta l'Utente deve sospendere l'uso del Software, ripristinare lo stato 
+originale di qualsiasi azione eseguita per mezzo del Software, distruggere 
+l'originale e tutte le copie del Software oppure restituirli a SUSE e 
+disinstallare completamente il Software dal proprio computer.
+
+Versione preliminare. Poiché si tratta di una versione preliminare, il 
+Software non dovrà essere utilizzato in un ambiente produttivo o commerciale. 
+Il Software non è stato sottoposto a verifiche approfondite e può contenere 
+errori e omissioni, pertanto deve essere utilizzato solo in un ambiente di 
+prova. SUSE non garantisce il rilascio al pubblico di una versione commerciale 
+del Software o dei prodotti a esso associati né che le date prescritte saranno 
+rispettate. I rischi derivanti dall'utilizzo del Software sono completamente a 
+carico dell'Utente. Il Software può contenere un meccanismo automatico di 
+disabilitazione che ne impedisce l'utilizzo una volta trascorso un determinato 
+periodo di tempo. Sarà compito dell'Utente pertanto provvedere a un backup del 
+sistema e adottare ogni altra misura necessaria a evitare l'eventuale perdita 
+di file o dati. L'utilizzo del Software avviene unicamente a rischio 
+dell'Utente.
+
+Riservatezza. La presente sezione è applicabile all'Utente a meno che SUSE non 
+abbia distribuito il Software come versione Beta aperta rendendolo di dominio 
+pubblico senza alcun obbligo di riservatezza. Il Software, i relativi concetti 
+e caratteristiche, i materiali e la documentazione con esso forniti, i 
+risultati di test, verifiche, benchmark, le date previste, i codici PIN, le 
+password e qualsiasi altra informazione a esso correlata sono informazioni 
+riservate e di proprietà di SUSE e dei suoi fornitori di seguito definite 
+"Informazioni riservate". L'Utente si impegna a non divulgare o fornire le 
+Informazioni riservate ad alcuna terza parte né a utilizzare tali informazioni 
+per scopi diversi da quelli di valutazione del Software e invio di commenti e 
+suggerimenti a SUSE. Nel caso in cui all'Utente vengano forniti un codice PIN 
+e/o una password per l'accesso a determinati siti Web, l'Utente si impegna a 
+non condividere il codice PIN o la password con alcuna terza parte. L'obbligo 
+di riservatezza rimane in vigore anche dopo la risoluzione del presente 
+Contratto Beta, fino al momento in cui SUSE renderà tali informazioni di 
+dominio pubblico.
+
+Feedback. L'Utente acconsente all'utilizzo da parte di SUSE di qualsiasi 
+commento o informazione forniti a SUSE e concede a SUSE una licenza perenne e 
+irrevocabile per l'uso di tali commenti e informazioni per qualsiasi scopo 
+senza avere diritto ad alcun indennizzo, a condizione che SUSE non citi 
+pubblicamente il nome dell'Utente in connessione a tale uso. L'Utente dichiara 
+e garantisce che tali commenti e informazioni non contengono informazioni 
+esclusive o di natura riservata riguardanti l'Utente o terze parti e di avere 
+piena autorità a concedere la suddetta licenza. 
+
+Limitazioni della Licenza. SUSE si riserva tutti i diritti non espressamente 
+concessi all'Utente. L'utente non potrà: (1) aumentare, in alcun modo, il 
+numero di connessioni supportate dal Software e concesse in licenza o 
+supportare più di una connessione o Utente tramite un'unica connessione; (2) 
+decodificare, decompilare o disassemblare il Software fatta eccezione per i 
+casi espressamente consentiti dalle leggi in vigore; (3) modificare, alterare, 
+prestare o concedere in leasing ilSoftware o concedere in sublicenza alcuno 
+dei diritti previsti dal presente Contratto Beta; o (4) trasferire, totalmente 
+o in parte, il Software o alcuno dei diritti previsti dal presente Contratto 
+Beta.
+
+SITI DI BETA TEST AUTORIZZATI 
+
+Per gli utenti designati come siti di Beta Test autorizzati per questo 
+Software, sono validi i termini e le condizioni riportati di seguito. Per 
+qualificarsi come sito di Beta Test autorizzato, contattare tramite e-mail il 
+responsabile del programma beta di SUSE all'indirizzo 
+beta-programs@suse.com. SUSE può modificare i benefici offerti 
+all'Utente in qualsiasi momento pubblicando i benefici corretti nel sito Web 
+SUSE pertinente.
+
+Supporto. SUSE fornisce il supporto diretto per il Software in conformità con 
+il servizio di supporto correntemente offerto da SUSE per i siti di Beta Test 
+autorizzati per il relativo Software secondo quanto pubblicato nel sito Web 
+SUSE pertinente e secondo quanto comunicato dal responsabile del programma 
+beta per tale Software. Tale supporto può essere agevolato dall'uso di 
+strumenti basati sul Web, della posta elettronica e/o del telefono. SUSE 
+fornirà all'Utente tutti gli indirizzi Web, di posta elettronica e i numeri di 
+telefono necessari per contattare il supporto.
+
+Verifica. L'Utente acconsente a proprie spese ad eseguire e completare tutti i 
+programmi di prova forniti da SUSE durante il periodo di Beta Test e di 
+valutare il Software in modo approfondito eseguendo altri test ritenuti utili 
+o necessari. L'Utente acconsente ad assegnare l'hardware, il software e il 
+personale necessari ad eseguire prove adeguate sul Software e a soddisfare i 
+requisiti specificati in questo documento. L'Utente acconsente a dedicare un 
+minimo di quattro ore-uomo a settimana all'esecuzione di test durante il 
+periodo di Beta Test. Durante tutti i test, particolare attenzione dovrà 
+essere rivolta alla funzionalità, accuratezza, coerenza e facilità d'uso del 
+Software utilizzato in ogni test come pure alla documentazione ad esso 
+associata. I risultati di tutti i programmi di prova e di altri test, inclusi 
+qualsiasi suggerimento, incoerenza e/o problema, devono essere registrati 
+dettagliatamente (compresa la configurazione del sistema, e così via) e devono 
+essere inviati a SUSE con cadenza settimanale mediante l'uso della 
+reportistica e/o strumenti forniti e/o indicati da SUSE. Questi metodi e 
+strumenti possono comprendere, ma non essere limitati a, strumenti basati sul 
+Web, posta elettronica, fax, posta convenzionale e/o telefono. Per permettere 
+la rapida risoluzione dei problemi, l'Utente acconsente a comunicare tutti i 
+problemi rilevati nel Software entro due (2) giorni dal rilevamento del 
+problema, nonostante eventuali dubbi se tale problema sia dovuto ad un errore 
+o ad un difetto. Se richiesto, al termine del periodo di prova beta l'Utente 
+acconsente a redigere un rapporto scritto che riassuma i test eseguiti, le 
+proprie impressioni generali sul Software e gli usi potenziali del Software 
+all'interno del proprio ambiente. L'Utente acconsente a completare e 
+restituire entro la data e con il mezzo specificati i questionari che potrebbe 
+ricevere sull'esecuzione dei programmi di prova e ad altri aspetti del 
+Software.
+
+DIRITTI DI PROPRIETÀ 
+
+All'Utente non viene trasferito alcun titolo o diritto di proprietà sul 
+Software. SUSE e/o i suoi concessori di licenza possiedono e detengono tutti i 
+titoli e i diritti di proprietà intellettuale del Software, inclusi quelli di 
+adattamento o copia. L'Utente acquisisce solo una licenza per l'uso del 
+Software.
+
+ESCLUSIONI DI GARANZIA
+
+IL SOFTWARE E LE ALTRE INFORMAZIONI RISERVATE SONO FORNITE ALL'UTENTE "COSÌ 
+COME SONO" SENZA ALCUN TIPO DI GARANZIA. I RISCHI DERIVANTI DAI RISULTATI E 
+DALLE PRESTAZIONI DELLE INFORMAZIONI RISERVATE SONO INTERAMENTE A CARICO 
+DELL'UTENTE. SUSE NON RILASCIA ALCUN TIPO DI GARANZIA ESPLICITA O IMPLICITA, 
+INCLUSE, IN VIA ESEMPLIFICATIVA, LE GARANZIE IMPLICITE DI COMMERCIABILITÀ, 
+IDONEITÀ PER UNO SCOPO PARTICOLARE, PROPRIETÀ E DI NON VIOLAZIONE. SUSE NON 
+GARANTISCE CHE IL SOFTWARE CORRISPONDA AI REQUISITI DELL'UTENTE O CHE IL 
+FUNZIONAMENTO DEL SOFTWARE NON SUBIRÀ INTERRUZIONI. Alcune giurisdizioni non 
+consentono determinate esclusioni e limitazioni di garanzia, pertanto alcune 
+parti delle suddette limitazioni potrebbero non essere applicabili all'Utente. 
+Benché la presente garanzia limitata riconosca all'Utente diritti specifici, è 
+possibile anche che l'Utente abbia anche altri diritti che variano a seconda 
+dei paesi.
+
+Prodotti non SUSE. Il Software può includere o può essere fornito con hardware 
+o altri programmi software concessi in licenza o venduti da licenzianti 
+diversi da SUSE. SUSE NON GARANTISCE PER PRODOTTI NON SUSE. TALI PRODOTTI 
+VENGONO FORNITI "COSÌ COME SONO". QUALSIASI SERVIZIO DI GARANZIA PER PRODOTTI 
+DI TERZE PARTI VERRÀ FORNITO DAL RELATIVO CONCESSORE DI LICENZA IN CONFORMITÀ 
+ALLE CONDIZIONI DI GARANZIA DEFINITE DALLO STESSO.
+
+LIMITAZIONE DI RESPONSABILITÀ
+
+Perdite consequenziali. IN NESSUN CASO SUSE O ALCUNO DEI SUOI CONCESSORI DI 
+LICENZA, FILIALI O DIPENDENTI POTRÀ ESSERE RITENUTO RESPONSABILE DI DANNI 
+SPECIFICI, INCIDENTALI, CONSEQUENZIALI, INDIRETTI, COLPOSI, ECONOMICI O MORALI 
+DERIVANTI DALL'USO O DAL MANCATO USO DEL SOFTWARE, INCLUSI, SENZA ALCUNA 
+ESCLUSIONE, I DANNI DERIVANTI DAL MANCATO GUADAGNO, DANNI COMMERCIALI O 
+PERDITE DI DATI, PER QUANTO A CONOSCENZA DELLA POSSIBILITÀ DI TALI DANNI.
+Danni diretti. LA RESPONSABILITÀ COMPLESSIVA DI SUSE PER EVENTUALI DANNI 
+DIRETTI A PROPRIETÀ O PERSONE (CAUSATI DA UNO O PIÙ INCIDENTI) NON POTRÀ 
+SUPERARE 1,25 VOLTE IL PREZZO DI ACQUISTO DEL SOFTWARE CHE HA CAUSATO IL DANNO 
+[O 50 DOLLARI USA SE IL SOFTWARE È STATO FORNITO GRATUITAMENTE]. Le esclusioni 
+e le limitazioni di cui sopra non si applicano alle richieste di danni 
+relative ad incidenti mortali o infortuni personali. Nelle giurisdizioni che 
+non ammettono esclusioni o limitazioni della responsabilità per danni, la 
+responsabilità di SUSE sarà limitata o esclusa nella misura massima consentita 
+dalla legge.
+
+TERMINI GENERALI
+
+Supporto. La fornitura di assistenza per il Software non costituisce un 
+obbligo per SUSE tranne se espressamente specificato in questo documento. 
+Test di benchmark. Le presenti limitazioni relative all'esecuzione dei test di 
+benchmark sono applicabili all'Utente nel caso in cui questi sia uno 
+sviluppatore o un concessore di licenza software o esegua test sul Software 
+alle dipendenze o per conto di uno sviluppatore o di un concessore di licenza 
+software. L'Utente non potrà, senza previo consenso scritto di SUSE che non 
+sia ragionevolmente negato, pubblicare o divulgare a terze parti i risultati 
+dei test di benchmark del Software. Se i licenzianti di prodotti con 
+funzionalità simili al Software, o in concorrenza con esso ("Prodotti 
+simili"), oppure gli Utenti che agiscono per conto di tali licenzianti 
+pubblicano o divulgano informazioni relative ai test di benchmark eseguiti sul 
+Software in violazione di questa limitazione, nonostante eventuali clausole 
+discordanti nel contratto di licenza per l'Utente finale del Prodotto simile e 
+in aggiunta a qualsiasi altro rimedio a disposizione di SUSE, SUSE avrà il 
+diritto di valutare le prestazioni dei Prodotti simili e di divulgare e 
+pubblicare tali informazioni e con il presente documento l'Utente dichiara di 
+disporre dell'autorità di concedere tale diritto a SUSE.
+Open source. Nessun elemento del presente Contratto limiterà o in alcun modo 
+pregiudicherà i diritti o gli obblighi dell'Utente o le condizioni a cui 
+l'Utente potrà essere soggetto, in conformità a eventuali licenze open source 
+per qualsiasi codice open source contenuto nel Software.
+Nessun impegno all'acquisto. Questo Contratto Beta non costituisce un impegno 
+da parte dell'Utente ad acquistare licenze per la versione commerciale di 
+questo Software. Qualsiasi acquisto di questo tipo sarà comprovato 
+dall'emissione di un ordine di acquisto formale.
+Trasferimento. Questo Contratto Beta non può essere trasferito o concesso 
+senza previo consenso scritto di SUSE.
+Legge applicabile e foro competente. Questo Contratto Beta è regolato dalle 
+leggi dello Stato dello Utah negli Stati Uniti. Qualsiasi azione legale 
+relativa a tale Contratto Beta potrà essere fatta valere esclusivamente 
+davanti al foro competente dello Stato dello Utah. Se, tuttavia, l'Utente è 
+residente in un paese membro dell'Unione Europea e dell'EFTA (European Free 
+Trade Association), il presente Contratto Beta è regolato dalle leggi di tale 
+paese e qualsiasi azione legale dovrà essere fatta valere esclusivamente 
+davanti al foro competente di tale paese.
+Indivisibilità dell'accordo. Il presente Contratto definisce tutti i termini 
+dell'accordo tra l'Utente e SUSE e può essere rettificato o modificato solo 
+per iscritto mediante un accordo accettato dall'Utente e da un rappresentante 
+autorizzato di SUSE. NESSUN CONCESSIONARIO DI LICENZE, DISTRIBUTORE, 
+RIVENDITORE, CONCESSIONARIO, RAPPRESENTANTE O DIPENDENTE POTRÀ MODIFICARE IL 
+PRESENTE CONTRATTO O FORNIRE DICHIARAZIONI O PROMESSE DIVERSE O AGGIUNTIVE 
+RISPETTO AI TERMINI E ALLE CONDIZIONI INDICATI NEL PRESENTE CONTRATTO. 
+Rinuncia. Nessuna rinuncia a un qualsiasi diritto concesso da questo Contratto 
+Beta sarà effettiva a meno che non venga riportata per iscritto e firmata da 
+un rappresentante autorizzato della parte vincolata. Nessuna rinuncia a un 
+qualsiasi diritto passato o presente derivante da violazione o inadempienza 
+potrà essere considerata come rinuncia a un qualsiasi diritto futuro 
+risultante da questo Contratto Beta.
+Indipendenza delle previsioni contrattuali. Se una qualsiasi clausola del 
+presente Contratto Beta non è valida o è inapplicabile, verrà interpretata, 
+limitata, modificata o, se necessario, eliminata, nella misura necessaria, in 
+modo da garantirne la validità o l'applicabilità, senza che ciò abbia alcun 
+effetto sulle altre clausole del Contratto Beta.
+Conformità con le leggi sull'esportazione. Qualsiasi informazione tecnica o 
+prodotto fornito in base a questo Contratto può essere soggetto ai controlli 
+statunitensi relativi alle esportazioni e alle leggi sul commercio in vigore 
+in altri paesi. Le parti si impegnano a rispettare le norme di esportazione e 
+a ottenere le licenze necessarie o le autorizzazioni per l'esportazione, la 
+ri-esportazione o l'importazione delle merci. Le parti si accordano a non 
+esportare o riesportare entità presenti nella lista dei prodotti e dei servizi 
+esclusi dall'esportazione in vigore negli Stati Uniti, nonché a non esportare 
+o riesportare verso paesi su cui grava l'embargo o facenti parte dell'elenco 
+dei paesi terroristi, come specificato nelle leggi sull'esportazione degli 
+Stati Uniti. Le parti accettano inoltre di non utilizzare i beni per impieghi 
+finali vietati di tipo nucleare o missilistico o di armamento chimico e 
+biologico. Si prega di consultare la pagina Web del Bureau of Industry and 
+Security (Dipartimento Industria e Sicurezza) www.bis.doc.gov prima di 
+esportare i prodotti SUSE dagli Stati Uniti. Fare riferimento al sito 
+https://www.suse.com/company/legal/ per maggiori informazioni 
+sull'esportazione del software SUSE. Su richiesta, SUSE fornirà all'Utente 
+informazioni specifiche relative alle limitazioni applicabili. Tuttavia, SUSE 
+non si assume alcuna responsabilità per il mancato ottenimento delle 
+necessarie autorizzazioni all'esportazione da parte dell'Utente. Installando, 
+scaricando o utilizzando in altro modo questo Software, l'Utente è tenuto a 
+dichiarare quanto segue: Si certifica che questa copia di valutazione/Beta 
+Test del Software verrà esclusivamente utilizzata per scopi di Beta Test e non 
+sarà noleggiata, fornita in leasing, venduta, concessa in sublicenza, 
+assegnata o trasferita in alcun modo. Inoltre, si certifica che non verrà 
+trasferito o esportato alcun prodotto, processo o servizio che costituisce il 
+prodotto diretto del software di Beta Test.
+Limitazioni dei diritti del Governo degli Stati Uniti. L'uso, la duplicazione 
+e/o la distribuzione del presente Software a uffici del Governo degli Stati 
+Uniti sono soggetti alle limitazioni specificate in FAR 52.227-14 (giugno 
+1987) Alternate III (giugno 1987), FAR 52.227-19 (giugno 1987) o DFARS 
+252.227-7013 (b)(3) (Nov 1995) o altre clausole successive. Il 
+contraente/produttore è SUSE LLC, 404 Wyman Street, Waltham, MA 02415.
+Altre disposizioni. L'applicazione della Convenzione delle Nazioni Unite sui 
+contratti per la vendita internazionale di beni è espressamente esclusa.
+
+(c) 2013 SUSE LLC o relative società affiliate. Tutti i diritti riservati.
+(020314)
+
+
+

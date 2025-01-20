@@ -24,12 +24,14 @@ import React from "react";
 import {
   useMutation,
   useQueries,
+  useQuery,
   useQueryClient,
   useSuspenseQueries,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
+  License,
   Pattern,
   PatternsSelection,
   Product,
@@ -41,6 +43,7 @@ import {
 } from "~/types/software";
 import {
   fetchConfig,
+  fetchLicenses,
   fetchPatterns,
   fetchProducts,
   fetchProposal,
@@ -75,6 +78,15 @@ const proposalQuery = () => ({
 const productsQuery = () => ({
   queryKey: ["software/products"],
   queryFn: fetchProducts,
+  staleTime: Infinity,
+});
+
+/**
+ * Query to retrieve available licenses
+ */
+const licensesQuery = () => ({
+  queryKey: ["software/licenses"],
+  queryFn: fetchLicenses,
   staleTime: Infinity,
 });
 
@@ -194,6 +206,14 @@ const useProduct = (
 };
 
 /**
+ * Returns available products and selected one, if any
+ */
+const useLicenses = (): { licenses: License[]; isPending: boolean } => {
+  const { data: licenses, isPending } = useQuery(licensesQuery());
+  return { licenses, isPending };
+};
+
+/**
  * Returns a list of patterns with their selectedBy property properly set based on current proposal.
  */
 const usePatterns = (): Pattern[] => {
@@ -296,6 +316,7 @@ export {
   useConfigMutation,
   usePatterns,
   useProduct,
+  useLicenses,
   useProductChanges,
   useProposal,
   useProposalChanges,

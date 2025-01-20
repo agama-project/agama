@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
-Fri Jan 17 15:51:15 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+Mon Jan 20 16:45:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - The software page displays a link for reloading the repositories
   again if some repository failed to load
   (gh#agama-project/agama#1894)
+
+-------------------------------------------------------------------
+Mon Jan 20 10:36:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for displaying and accepting a product license
+  (jsc#PED-11987).
 
 -------------------------------------------------------------------
 Thu Jan 16 13:11:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

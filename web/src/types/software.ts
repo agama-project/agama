@@ -43,6 +43,22 @@ type Product = {
   icon?: string;
   /** If product is registrable or not */
   registration: "no" | "optional" | "mandatory";
+  /** The product license id, if any */
+  license?: string;
+};
+
+type License = {
+  /** License ID (e.g., "license.sle") */
+  id: string;
+  /** Available locales */
+  languages: string[];
+};
+
+type LicenseContent = {
+  /** License ID (e.g., "license.sle") */
+  id: string;
+  /** License body */
+  body: string;
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };
@@ -98,6 +114,8 @@ export type {
   Pattern,
   PatternsSelection,
   Product,
+  License,
+  LicenseContent,
   SoftwareConfig,
   RegistrationInfo,
   Repository,
