@@ -36,6 +36,7 @@ import {
   PatternsSelection,
   Product,
   RegistrationInfo,
+  Repository,
   SelectedBy,
   SoftwareConfig,
   SoftwareProposal,
@@ -47,6 +48,8 @@ import {
   fetchProducts,
   fetchProposal,
   fetchRegistration,
+  fetchRepositories,
+  probe,
   register,
   updateConfig,
 } from "~/api/software";
@@ -112,6 +115,14 @@ const patternsQuery = () => ({
 });
 
 /**
+ * Query to retrieve configured repositories
+ */
+const repositoriesQuery = () => ({
+  queryKey: ["software/repositories"],
+  queryFn: fetchRepositories,
+});
+
+/**
  * Hook that builds a mutation to update the software configuration
  *
  * @note it would trigger a general probing as a side-effect when mutation
@@ -148,6 +159,22 @@ const useRegisterMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["software/registration"] });
       startProbing();
+    },
+  };
+  return useMutation(query);
+};
+
+/**
+ * Hook that builds a mutation for reloading repositories
+ */
+const useRepositoryMutation = (callback: () => void) => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: probe,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["software/repositories"] });
+      callback();
     },
   };
   return useMutation(query);
@@ -231,6 +258,14 @@ const useRegistration = (): RegistrationInfo => {
 };
 
 /**
+ * Returns repository info
+ */
+const useRepositories = (): Repository[] => {
+  const { data: repositories } = useSuspenseQuery(repositoriesQuery());
+  return repositories;
+};
+
+/**
  * Hook that returns a useEffect to listen for  software proposal events
  *
  * When the configuration changes, it invalidates the config query.
@@ -287,4 +322,6 @@ export {
   useProposalChanges,
   useRegistration,
   useRegisterMutation,
+  useRepositories,
+  useRepositoryMutation,
 };

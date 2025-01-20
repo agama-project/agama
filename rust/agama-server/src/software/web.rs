@@ -39,7 +39,7 @@ use agama_lib::{
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
-            RegistrationError, RegistrationInfo, RegistrationParams, ResolvableParams,
+            RegistrationError, RegistrationInfo, RegistrationParams, Repository, ResolvableParams,
             SoftwareConfig,
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
@@ -208,6 +208,7 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     };
     let router = Router::new()
         .route("/patterns", get(patterns))
+        .route("/repositories", get(repositories))
         .route("/products", get(products))
         .route("/licenses", get(licenses))
         .route("/licenses/:id", get(license))
@@ -242,6 +243,25 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
     let products = state.product.products().await?;
     Ok(Json(products))
+}
+
+/// Returns the list of defined repositories.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/repositories",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of known repositories", body = Vec<Repository>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn repositories(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<Vec<Repository>>, Error> {
+    let repositories = state.software.repositories().await?;
+    Ok(Json(repositories))
 }
 
 /// returns registration info

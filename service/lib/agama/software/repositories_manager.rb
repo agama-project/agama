@@ -65,12 +65,13 @@ module Agama
       # Loads the repository metadata
       #
       # As a side effect, it disables those repositories that cannot be read.
-      # The intentation is to prevent the proposal from trying to read them
+      # The intent is to prevent the proposal from trying to read them
       # again.
       def load
         repositories.each do |repo|
           if repo.probe
             repo.enable!
+            repo.refresh
           else
             repo.disable!
           end

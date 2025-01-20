@@ -25,6 +25,7 @@ import {
   Product,
   SoftwareConfig,
   RegistrationInfo,
+  Repository,
   SoftwareProposal,
   License,
   LicenseContent,
@@ -68,11 +69,21 @@ const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/re
 const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
 
 /**
+ * Returns the list of configured repositories
+ */
+const fetchRepositories = (): Promise<Repository[]> => get("/api/software/repositories");
+
+/**
  * Updates the software configuration
  *
  * @param config - New software configuration
  */
 const updateConfig = (config: SoftwareConfig) => put("/api/software/config", config);
+
+/**
+ * Updates the software configuration
+ */
+const probe = () => post("/api/software/probe");
 
 /**
  * Request registration of selected product with given key
@@ -88,6 +99,8 @@ export {
   fetchLicenses,
   fetchLicense,
   fetchRegistration,
+  fetchRepositories,
   updateConfig,
+  probe,
   register,
 };
