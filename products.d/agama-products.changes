@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jan 20 10:30:55 UTC 2025 - Angela Briel <abriel@suse.com>
+
+- Add pattern sles_minimal_sap to the user selectable patterns list
+  of the SLES product to give the admin the chance to get a minimal
+  preparation of the operating system to run SAP workloads on plain
+  SLES.
+
+-------------------------------------------------------------------
 Thu Jan 16 15:12:08 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Update also base product from SLES-SAP to SLES_SAP(bsc#1235956)
