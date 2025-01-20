@@ -62,6 +62,7 @@ software:
     - kvm_host
     - cockpit
     - sles_enhanced_base
+    - sles_minimal_sap
   mandatory_packages:
     - NetworkManager
   optional_packages: null
