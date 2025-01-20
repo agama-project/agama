@@ -83,9 +83,12 @@ impl LicensesRepo {
         for entry in entries {
             let entry = entry?;
             if entry.file_type()?.is_dir() {
+                let Ok(id) = entry.file_name().into_string() else {
+                    continue;
+                };
                 let license = License {
-                    id: entry.file_name().into_string().unwrap(),
-                    languages: Self::find_translations(&entry.path()),
+                    id,
+                    languages: Self::find_translations(&entry.path())?,
                 };
                 self.licenses.push(license);
             }
@@ -109,7 +112,7 @@ impl LicensesRepo {
             .map(|p| self.path.join(id).join(p))
             .find(|p| p.exists())?;
 
-        let body: String = std::fs::read_to_string(license_path).unwrap();
+        let body: String = std::fs::read_to_string(license_path).ok()?;
 
         Some(LicenseContent {
             id: id.to_string(),
@@ -120,7 +123,7 @@ impl LicensesRepo {
     /// Finds translations in the given directory.
     ///
     /// * `path`: directory to search translations.
-    fn find_translations(path: &PathBuf) -> Vec<LanguageTag> {
+    fn find_translations(path: &PathBuf) -> Result<Vec<LanguageTag>, std::io::Error> {
         let entries = read_dir(path).unwrap().filter_map(|entry| entry.ok());
 
         let files = entries
@@ -131,9 +134,9 @@ impl LicensesRepo {
                 file.to_owned().into_string().ok()
             });
 
-        files
+        Ok(files
             .filter_map(|f| Self::language_tag_from_file(&f))
-            .collect()
+            .collect())
     }
 
     /// Returns the language tag for the given file.
