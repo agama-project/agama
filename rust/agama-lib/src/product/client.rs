@@ -45,7 +45,7 @@ pub struct Product {
     /// Registration requirement
     pub registration: RegistrationRequirement,
     /// License ID
-    pub license_id: Option<String>,
+    pub license: Option<String>,
 }
 
 /// D-Bus client for the software service
@@ -84,8 +84,7 @@ impl<'a> ProductClient<'a> {
                     .map(|r| RegistrationRequirement::from_str(&r).unwrap_or_default())
                     .unwrap_or_default();
 
-                let license_id =
-                    get_optional_property::<String>(&data, "license_id").unwrap_or_default();
+                let license = get_optional_property::<String>(&data, "license").unwrap_or_default();
 
                 Product {
                     id,
@@ -93,7 +92,7 @@ impl<'a> ProductClient<'a> {
                     description: description.to_string(),
                     icon: icon.to_string(),
                     registration,
-                    license_id,
+                    license,
                 }
             })
             .collect();

@@ -54,8 +54,8 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
   );
 
   useEffect(() => {
-    language && fetchLicense(product.licenseId, language).then(({ body }) => setLicense(body));
-  }, [language, product.licenseId]);
+    language && fetchLicense(product.license, language).then(({ body }) => setLicense(body));
+  }, [language, product.license]);
 
   const onLocaleSelection = (_, lang: string) => {
     setLanguage(lang);

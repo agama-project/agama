@@ -112,7 +112,7 @@ module Agama
       attr_accessor :translations
 
       # License ID
-      attr_accessor :license_id
+      attr_accessor :license
 
       # @param id [string] Product id.
       def initialize(id)
@@ -127,7 +127,7 @@ module Agama
         # nil = display all visible patterns, [] = display no patterns
         @user_patterns = nil
         @registration = Agama::Registration::Requirement::NO
-        @license_id = nil
+        @license = nil
         @translations = {}
       end
 

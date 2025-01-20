@@ -130,7 +130,7 @@ function ProductSelectionPage() {
   };
 
   const selectionHasChanged = nextProduct && nextProduct !== selectedProduct;
-  const mountLicenseCheckbox = !isEmpty(nextProduct?.licenseId);
+  const mountLicenseCheckbox = !isEmpty(nextProduct?.license);
   const isSelectionDisabled = !selectionHasChanged || (mountLicenseCheckbox && !licenseAccepted);
 
   const [eulaTextStart, eulaTextLink, eulaTextEnd] = sprintf(

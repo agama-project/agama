@@ -59,7 +59,7 @@ module Agama
               "icon"         => product.icon,
               "registration" => product.registration
             }
-            data["license_id"] = product.license_id if product.license_id
+            data["license"] = product.license if product.license
             [
               product.id,
               product.display_name,

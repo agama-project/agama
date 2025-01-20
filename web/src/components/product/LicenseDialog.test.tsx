@@ -33,7 +33,7 @@ const sle: Product = {
   icon: "sle.svg",
   description: "SLE description",
   registration: "mandatory",
-  licenseId: "license.sle",
+  license: "license.sle",
 };
 
 const mockUILanguage = "es-ES";
@@ -61,7 +61,7 @@ describe("LicenseDialog", () => {
   it("loads given product license in the interface language", async () => {
     installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, { withL10n: true });
     await waitFor(() => {
-      expect(mockFetchLicense).toHaveBeenCalledWith(sle.licenseId, mockUILanguage);
+      expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
       screen.getByText("El contenido de la licencia");
     });
   });
@@ -76,7 +76,7 @@ describe("LicenseDialog", () => {
     expect(languageButton).toHaveAttribute("aria-expanded", "true");
     const languageFrenchOption = screen.getByRole("option", { name: "Français" });
     await user.click(languageFrenchOption);
-    expect(mockFetchLicense).toHaveBeenCalledWith(sle.licenseId, "fr-FR");
+    expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, "fr-FR");
     within(languageButton).getByText("Français");
     expect(languageButton).toHaveAttribute("aria-expanded", "false");
   });

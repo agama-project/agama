@@ -47,7 +47,7 @@ const microOs: Product = {
   icon: "microos.svg",
   description: "MicroOS description",
   registration: "no",
-  licenseId: "fake.license",
+  license: "fake.license",
 };
 
 let mockSelectedProduct: Product;

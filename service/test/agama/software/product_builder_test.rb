@@ -43,7 +43,7 @@ describe Agama::Software::ProductBuilder do
         "description"  => "This is a test product named Test 1",
         "version"      => "1.0",
         "registration" => "mandatory",
-        "license_id"   => "suse",
+        "license"      => "suse",
         "translations" => {
           "description" => {
             "cs" => "Czech",
@@ -147,7 +147,7 @@ describe Agama::Software::ProductBuilder do
             name:               "Test1",
             version:            "1.0",
             registration:       "mandatory",
-            license_id:         "suse",
+            license:            "suse",
             repositories:       ["https://repos/test1/x86_64/product/"],
             mandatory_patterns: ["pattern1-1", "pattern1-2"],
             optional_patterns:  ["pattern1-3"],

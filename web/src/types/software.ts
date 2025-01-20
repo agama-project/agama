@@ -44,7 +44,7 @@ type Product = {
   /** If product is registrable or not */
   registration: "no" | "optional" | "mandatory";
   /** The product license id, if any */
-  licenseId?: string;
+  license?: string;
 };
 
 type License = {

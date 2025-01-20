@@ -450,7 +450,7 @@ module Agama
       # and it does not require acccepting a license.
       def find_initial_product
         product = @products.first
-        return product if @products.size == 1 && product.license_id.to_s.empty?
+        return product if @products.size == 1 && product.license.to_s.empty?
 
         nil
       end
