@@ -65,6 +65,7 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
 
   return (
     <Popup
+      inlineSize="auto"
       isOpen
       title={
         <>
