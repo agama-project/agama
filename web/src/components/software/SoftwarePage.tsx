@@ -95,6 +95,12 @@ const NoPatterns = (): React.ReactNode => (
   </Page.Section>
 );
 
+const errorMsg = _(
+  /* TRANSLATORS: error details followed by a "Try again" link*/
+  "Some installation repositories could not be loaded. \
+The system cannot be installed without them.",
+);
+
 /**
  * Software page component
  */
@@ -121,25 +127,23 @@ function SoftwarePage(): React.ReactNode {
   const ReloadSection = (): React.ReactNode => (
     // TRANSLATORS: title for an error message box, at least one repository could not be loaded
     <Alert variant="danger" isInline title={_("Repository load failed")}>
-      {/* TRANSLATORS: error details followed by a "Try again" link*/}
-      {_(
-        "Some installation repositories could not be loaded. The system cannot be installed without them.",
-      )}{" "}
       {loading ? (
         <>
-          {" "}
-          <Spinner size="md" />
+          <Spinner size="md" /> {_("Loading the installation repositories...")}
         </>
       ) : (
-        <Button variant="link" isInline onClick={startProbing}>
-          {/* TRANSLATORS: link for retrying failed repository load */}
-          {_("Try again")}
-        </Button>
+        <>
+          {errorMsg}{" "}
+          <Button variant="link" isInline onClick={startProbing}>
+            {/* TRANSLATORS: link for retrying failed repository load */}
+            {_("Try again")}
+          </Button>
+        </>
       )}
     </Alert>
   );
 
-  const reload = repos.some((r) => !r.loaded) ? <ReloadSection /> : null;
+  const showReposAlert = repos.some((r) => !r.loaded);
 
   return (
     <Page>
@@ -152,7 +156,11 @@ function SoftwarePage(): React.ReactNode {
           <GridItem sm={12}>
             <IssuesHint issues={issues} />
           </GridItem>
-          <GridItem sm={12}>{reload}</GridItem>
+          {showReposAlert && (
+            <GridItem sm={12}>
+              <ReloadSection />
+            </GridItem>
+          )}
           <GridItem sm={12} xl={selectedPatternsXlSize}>
             {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
           </GridItem>
