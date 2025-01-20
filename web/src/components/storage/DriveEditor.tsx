@@ -115,7 +115,7 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   const onToggle = () => setIsOpen(!isOpen);
   const onSpacePolicyChange = (spacePolicy: configModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generatePath(PATHS.spacePolicy, { id: baseName(drive.name) }));
+      return navigate(generatePath(PATHS.findSpace, { id: baseName(drive.name) }));
     } else {
       setSpacePolicy(spacePolicy);
       setIsOpen(false);
@@ -311,7 +311,7 @@ const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }
       return (
         <MenuItem
           component="a"
-          onClick={() => navigate(PATHS.targetDevice)}
+          onClick={() => navigate(PATHS.root)}
           itemId="lvm"
           description={_("The configured partitions will be created as logical volumes")}
         >
@@ -611,6 +611,7 @@ const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const onToggle = () => setIsOpen(!isOpen);
 
   return (
@@ -650,6 +651,9 @@ const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
                 key="add-partition"
                 itemId="add-partition"
                 description={_("Add another partition or mount an existing one")}
+                onClick={() =>
+                  navigate(generatePath(PATHS.addPartition, { id: baseName(drive.name) }))
+                }
               >
                 <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
                   <span>{_("Add or use partition")}</span>

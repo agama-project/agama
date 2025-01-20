@@ -196,8 +196,8 @@ export default function ZFCPPage() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.targetDevice}>
-          {_("Back to device selection")}
+        <Page.Action variant="secondary" navigateTo={PATHS.root}>
+          {_("Back")}
         </Page.Action>
       </Page.Actions>
     </Page>

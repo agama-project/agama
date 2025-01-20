@@ -71,9 +71,9 @@ const SOFTWARE = {
 
 const STORAGE = {
   root: "/storage",
-  targetDevice: "/storage/target-device",
-  bootDevice: "/storage/boot-device",
-  spacePolicy: "/storage/space-policy/:id",
+  bootDevice: "/storage/select-boot-device",
+  addPartition: "/storage/:id/add-partition",
+  findSpace: "/storage/:id/find-space",
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
   zfcp: {
