@@ -106,11 +106,13 @@ impl LicensesRepo {
         }
         candidates.push(format!("license.{}.txt", language.language));
         candidates.push("license.txt".to_string());
+        tracing::info!("Searching for license: {:?}", &candidates);
 
         let license_path = candidates
             .into_iter()
             .map(|p| self.path.join(id).join(p))
             .find(|p| p.exists())?;
+        tracing::info!("Reading license from {}", &license_path.display());
 
         let body: String = std::fs::read_to_string(license_path).ok()?;
 
@@ -144,6 +146,7 @@ impl LicensesRepo {
     /// The language is inferred from the file name (e.g., "es-ES" for license.es_ES.txt").
     fn language_tag_from_file(name: &str) -> Option<LanguageTag> {
         if !name.starts_with("license") {
+            tracing::warn!("Unexpected file in the licenses directory: {}", &name);
             return None;
         }
         let mut parts = name.split(".");
