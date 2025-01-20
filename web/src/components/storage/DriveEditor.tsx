@@ -50,21 +50,49 @@ import {
   MenuItemAction,
   MenuList,
   MenuToggle,
+  MenuToggleProps,
+  MenuToggleElement,
+  MenuGroup,
+  Content,
 } from "@patternfly/react-core";
+
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
 
+export const InlineMenuToggle = React.forwardRef(
+  (props: MenuToggleProps, ref: React.Ref<MenuToggleElement>) => (
+    <MenuToggle
+      icon={<Icon name="keyboard_arrow_down" />}
+      innerRef={ref}
+      variant="plain"
+      className="agm-inline-menu-toggle"
+      {...props}
+    />
+  ),
+);
+
+const MenuHeader = ({ title, description }) => (
+  <Flex
+    direction={{ default: "column" }}
+    gap={{ default: "gapXs" }}
+    className={[spacingStyles.pxMd, spacingStyles.pyXs].join(" ")}
+  >
+    <Content component="h4">{title}</Content>
+    {description && <small>{description}</small>}
+  </Flex>
+);
+
 // FIXME: Presentation is quite poor
 const SpacePolicySelectorIntro = ({ device }) => {
-  const Content = ({ device }) => {
-    const main = _("Choose what to with current content");
-    const description = contentDescription(device);
-    const systems = device.systems;
+  const main = _("Choose what to with current content");
+  const description = contentDescription(device);
+  const systems = device.systems;
 
-    return (
-      <>
-        <b>{main}</b>
-        <br />
+  return (
+    <MenuHeader
+      title={main}
+      description={
         <Split hasGutter>
           <span className="pf-v5-c-menu__item-description">{description}</span>
           {systems.map((s, i) => (
@@ -73,14 +101,8 @@ const SpacePolicySelectorIntro = ({ device }) => {
             </Label>
           ))}
         </Split>
-      </>
-    );
-  };
-
-  return (
-    <li style={{ padding: "0.7em" }}>
-      <Content device={device} />
-    </li>
+      }
+    />
   );
 };
 
@@ -125,29 +147,22 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
       onOpenChange={setIsOpen}
       toggleRef={toggleMenuRef}
       toggle={
-        <MenuToggle
-          variant="plain"
-          ref={toggleMenuRef}
-          onClick={onToggle}
-          isExpanded={isOpen}
-          className="menu-toggle-inline"
-        >
-          <span>
-            {driveUtils.contentActionsDescription(drive)}
-            <Icon name="keyboard_arrow_down" size="xs" />
-          </span>
-        </MenuToggle>
+        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
+          <span>{driveUtils.contentActionsDescription(drive)}</span>
+        </InlineMenuToggle>
       }
       menuRef={menuRef}
       menu={
         <Menu ref={menuRef} activeItemId={currentPolicy.id}>
           <MenuContent>
-            <MenuList>
-              <SpacePolicySelectorIntro device={driveDevice} />
-              {SPACE_POLICIES.map((policy) => (
-                <PolicyItem key={policy.id} policy={policy} />
-              ))}
-            </MenuList>
+            <MenuGroup label={<SpacePolicySelectorIntro device={driveDevice} />}>
+              <MenuList>
+                <Divider />
+                {SPACE_POLICIES.map((policy) => (
+                  <PolicyItem key={policy.id} policy={policy} />
+                ))}
+              </MenuList>
+            </MenuGroup>
           </MenuContent>
         </Menu>
       }
@@ -262,28 +277,7 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
     }
   };
 
-  const Content = () => {
-    const main = mainText();
-    const extra = extraText();
-
-    if (extra) {
-      return (
-        <>
-          <b>{main}</b>
-          <br />
-          <span className="pf-v5-c-menu__item-description">{extra}</span>
-        </>
-      );
-    }
-
-    return <b>{main}</b>;
-  };
-
-  return (
-    <li style={{ padding: "0.7em" }}>
-      <Content />
-    </li>
-  );
+  return <MenuHeader title={mainText()} description={extraText()} />;
 };
 
 const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }) => {
@@ -382,10 +376,10 @@ const SearchSelectorOptions = ({ drive, selected, onChange }) => {
 
 const SearchSelector = ({ drive, selected, onChange }) => {
   return (
-    <>
-      <SearchSelectorIntro drive={drive} />
+    <MenuGroup label={<SearchSelectorIntro drive={drive} />}>
+      <Divider />
       <SearchSelectorOptions drive={drive} selected={selected} onChange={onChange} />
-    </>
+    </MenuGroup>
   );
 };
 
@@ -423,17 +417,9 @@ const DriveSelector = ({ drive, selected }) => {
       onOpenChange={setIsOpen}
       toggleRef={toggleMenuRef}
       toggle={
-        <MenuToggle
-          variant="plain"
-          ref={toggleMenuRef}
-          onClick={onToggle}
-          isExpanded={isOpen}
-          className="menu-toggle-inline"
-        >
-          <b>
-            {deviceLabel(selected)} <Icon name="keyboard_arrow_down" size="xs" />
-          </b>
-        </MenuToggle>
+        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
+          <b>{deviceLabel(selected)}</b>
+        </InlineMenuToggle>
       }
       menuRef={menuRef}
       menu={
@@ -532,18 +518,9 @@ const PartitionsNoContentSelector = () => {
       onOpenChange={setIsOpen}
       toggleRef={toggleMenuRef}
       toggle={
-        <MenuToggle
-          variant="plain"
-          ref={toggleMenuRef}
-          onClick={onToggle}
-          isExpanded={isOpen}
-          className="menu-toggle-inline"
-        >
-          <span>
-            {_("No additional partitions will be created")}
-            <Icon name="keyboard_arrow_down" size="xs" />
-          </span>
-        </MenuToggle>
+        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
+          <span>{_("No additional partitions will be created")}</span>
+        </InlineMenuToggle>
       }
       menuRef={menuRef}
       menu={
@@ -579,18 +556,9 @@ const PartitionsWithContentSelector = ({ drive }) => {
       onOpenChange={setIsOpen}
       toggleRef={toggleMenuRef}
       toggle={
-        <MenuToggle
-          variant="plain"
-          ref={toggleMenuRef}
-          onClick={onToggle}
-          isExpanded={isOpen}
-          className="menu-toggle-inline"
-        >
-          <span>
-            {driveUtils.contentDescription(drive)}
-            <Icon name="keyboard_arrow_down" size="xs" />
-          </span>
-        </MenuToggle>
+        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
+          <span>{driveUtils.contentDescription(drive)}</span>
+        </InlineMenuToggle>
       }
       menuRef={menuRef}
       menu={
@@ -660,10 +628,11 @@ export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
           <DriveHeader drive={drive} driveDevice={driveDevice} />
         </CardTitle>
       </CardHeader>
-      <CardBody>
-        <SpacePolicySelector drive={drive} driveDevice={driveDevice} />
-        <br />
-        <PartitionsSelector drive={drive} />
+      <CardBody className={spacingStyles.plLg}>
+        <Flex direction={{ default: "column" }}>
+          <SpacePolicySelector drive={drive} driveDevice={driveDevice} />
+          <PartitionsSelector drive={drive} />
+        </Flex>
       </CardBody>
     </Card>
   );

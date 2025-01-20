@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { IssuesHint, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
 import { useIssues } from "~/queries/issues";
@@ -33,7 +33,7 @@ export default function UsersPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Users")}</h2>
+        <Content component="h2">{_("Users")}</Content>
       </Page.Header>
 
       <Page.Content>

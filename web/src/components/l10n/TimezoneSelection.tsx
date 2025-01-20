@@ -117,7 +117,7 @@ export default function TimezoneSelection() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_(" Timezone selection")}</h2>
+        <Content component="h2">{_(" Timezone selection")}</Content>
         <ListSearch
           placeholder={searchHelp}
           elements={displayTimezones}

@@ -25,6 +25,7 @@ import {
   ActionGroup,
   Alert,
   Button,
+  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -151,7 +152,7 @@ export default function ProductRegistrationPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Registration")}</h2>
+        <Content component="h2">{_("Registration")}</Content>
       </Page.Header>
 
       <Page.Content>

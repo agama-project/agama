@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
@@ -59,7 +59,7 @@ export default function ZFCPDiskActivationPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("zFCP Disk Activation")}</h2>
+        <Content component="h2">{_("zFCP Disk Activation")}</Content>
       </Page.Header>
 
       <Page.Content>

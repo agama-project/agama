@@ -75,7 +75,7 @@ export default function KeyboardSelection() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Keyboard selection")}</h2>
+        <Content component="h2">{_("Keyboard selection")}</Content>
         <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
       </Page.Header>
 

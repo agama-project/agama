@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Grid, GridItem, Stack } from "@patternfly/react-core";
+import { Content, Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
@@ -32,7 +32,7 @@ export default function OverviewPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Overview")}</h2>
+        <Content component="h2">{_("Overview")}</Content>
       </Page.Header>
 
       <Page.Content>

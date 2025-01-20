@@ -22,6 +22,7 @@
 
 import React from "react";
 import {
+  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -103,7 +104,7 @@ function SoftwarePage(): React.ReactNode {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Software")}</h2>
+        <Content component="h2">{_("Software")}</Content>
       </Page.Header>
 
       <Page.Content>

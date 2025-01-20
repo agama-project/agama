@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Stack } from "@patternfly/react-core";
+import { Content, Stack } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import DASDTable from "./DASDTable";
 import DASDFormatProgress from "./DASDFormatProgress";
@@ -36,7 +36,7 @@ export default function DASDPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("DASD")}</h2>
+        <Content component="h2">{_("DASD")}</Content>
       </Page.Header>
 
       <Page.Content>

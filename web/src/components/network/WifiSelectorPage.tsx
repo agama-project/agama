@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import WifiNetworksListPage from "~/components/network/WifiNetworksListPage";
 import { useNetworkConfigChanges } from "~/queries/network";
@@ -33,7 +33,7 @@ function WifiSelectorPage() {
   return (
     <Page isFilled>
       <Page.Header>
-        <h2>{_("Connect to a Wi-Fi network")}</h2>
+        <Content component="h2">{_("Connect to a Wi-Fi network")}</Content>
       </Page.Header>
 
       <Page.Content>
