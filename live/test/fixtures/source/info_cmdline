@@ -1,1 +1,1 @@
-BOOT_IMAGE=/boot/vmlinuz splash=silent info=https://pastebin.com/raw/krzAVL8S nosimplefb=1
+BOOT_IMAGE=/boot/vmlinuz splash=silent agama.info=https://pastebin.com/raw/krzAVL8S nosimplefb=1
