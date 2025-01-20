@@ -49,7 +49,7 @@ use agama_lib::{
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{IntoResponse, Response},
     routing::{get, post, put},
     Json, Router,
 };
@@ -473,6 +473,9 @@ async fn set_resolvables(
     Ok(Json(()))
 }
 
+/// Returns the list of known licenses.
+///
+/// It includes the license ID and the languages in which it is available.
 #[utoipa::path(
     get,
     path = "/licenses",
@@ -490,12 +493,17 @@ struct LicenseQuery {
     lang: Option<String>,
 }
 
+/// Returns the license content.
+///
+/// Optionally it can receive a language tag (RFC 5646). Otherwise, it returns
+/// the license in English.
 #[utoipa::path(
     get,
     path = "/licenses/:id",
     context_path = "/api/software",
     responses(
         (status = 200, description = "License with the given ID"),
+        (status = 400, description = "The specified language tag is not valid"),
         (status = 404, description = "There is not license with the given ID")
     )
 )]
@@ -503,9 +511,16 @@ async fn license(
     State(state): State<SoftwareState<'_>>,
     Path(id): Path<String>,
     Query(query): Query<LicenseQuery>,
-) -> Result<Json<Option<LicenseContent>>, Error> {
+) -> Result<Response, Error> {
     let lang = query.lang.unwrap_or("en".to_string());
-    let lang = lang.as_str().try_into().unwrap();
-    let license = state.licenses.find(&id, &lang);
-    Ok(Json(license))
+
+    let Ok(lang) = lang.as_str().try_into() else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    if let Some(license) = state.licenses.find(&id, &lang) {
+        Ok(Json(license).into_response())
+    } else {
+        Ok(StatusCode::NOT_FOUND.into_response())
+    }
 }
