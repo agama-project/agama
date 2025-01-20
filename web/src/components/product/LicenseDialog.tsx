@@ -33,7 +33,6 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Product } from "~/types/software";
-import { sprintf } from "sprintf-js";
 import { fetchLicense } from "~/api/software";
 import { useInstallerL10n } from "~/context/installerL10n";
 import supportedLanguages from "~/languages.json";
@@ -69,9 +68,9 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
       isOpen
       title={
         <>
-          <Split>
+          <Split hasGutter>
             <SplitItem isFilled>
-              <h1>{sprintf(_("License for %s"), product.name)}</h1>
+              <h1>{product.name}</h1>
             </SplitItem>
             <Select
               isOpen={languageSelectorOpen}
