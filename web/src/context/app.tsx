@@ -24,8 +24,28 @@ import React from "react";
 import { InstallerClientProvider } from "./installer";
 import { InstallerL10nProvider } from "./installerL10n";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { localConnection } from "~/utils";
 
-const queryClient = new QueryClient();
+// Determines which "network mode" should Tanstack Query use
+//
+// When running on a local connection, we assume that the server is always
+// available so Tanstack Query is expected to perform all the request, no
+// matter whether the network is available on not.
+//
+// For remote connections, let's use the default "online" mode.
+//
+// See https://tanstack.com/query/latest/docs/framework/react/guides/network-mode
+const networkMode = (): "always" | "online" => {
+  return localConnection() ? "always" : "online";
+};
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      networkMode: networkMode(),
+    },
+  },
+});
 
 /**
  * Combines all application providers.
