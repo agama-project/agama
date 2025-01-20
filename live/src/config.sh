@@ -56,7 +56,6 @@ systemctl enable live-password-iso.service
 systemctl enable live-password-random.service
 systemctl enable live-password-systemd.service
 systemctl enable setup-systemd-proxy-env.path
-systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
@@ -202,3 +201,6 @@ rm -f /lib/modules/*/vmlinux*.[gx]z
 
 # Remove generated files (boo#1098535)
 rm -rf /var/cache/zypp/* /var/lib/zypp/AnonymousUniqueId /var/lib/systemd/random-seed
+
+# gnome-kiosk startup script, executable rights not preserved during copying
+chmod +x /root/.local/bin/gnome-kiosk-script

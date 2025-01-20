@@ -146,11 +146,9 @@
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
         <package name="microos-tools"/>
-        <package name="icewm-lite"/>
-        <package name="xinit"/>
-        <package name="xorg-x11-server"/>
-        <package name="xorg-x11-fonts-core"/>
-        <package name="xf86-input-libinput" />
+        <package name="patterns-base-basesystem"/>
+        <package name="patterns-gnome-gnome"/>
+        <package name="gnome-kiosk"/>
         <package name="psmisc"/>
         <package name="joe"/>
         <package name="checkmedia"/>
