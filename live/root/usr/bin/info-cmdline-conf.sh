@@ -13,7 +13,7 @@ expand_info_arg() {
 
   curl --silent "${INFO_URL}" > "${INFO_CONTENT}"
   # remove info param
-  sed -in 's/\([[:space:]]\|^\)[ ^]agama\.info=[^[:space:]]\+//' "${TARGET}"
+  sed -in 's/\([[:space:]]\|^\)agama\.info=[^[:space:]]\+//' "${TARGET}"
   # and add content of info file
   cat "${INFO_CONTENT}" >> "${TARGET}"
 
