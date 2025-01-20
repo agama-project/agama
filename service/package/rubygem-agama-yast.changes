@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 20 10:35:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for specifying a license for each product
+  (jsc#PED-11987).
+
+-------------------------------------------------------------------  
 Fri Jan 17 20:42:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Relax gems version in the gemspec file

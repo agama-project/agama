@@ -27,6 +27,7 @@
 
 use crate::{
     error::Error,
+    software::license::LicensesRepo,
     web::{
         common::{issues_router, progress_router, service_status_router, EventStreams},
         Event,
@@ -46,20 +47,23 @@ use agama_lib::{
     },
 };
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{IntoResponse, Response},
     routing::{get, post, put},
     Json, Router,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tokio_stream::{Stream, StreamExt};
+
+use super::license::{License, LicenseContent};
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
     product: ProductClient<'a>,
     software: SoftwareClient<'a>,
+    licenses: LicensesRepo,
 }
 
 /// Returns an stream that emits software related events coming from D-Bus.
@@ -190,12 +194,23 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     let software_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let product_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PRODUCT_PATH).await?;
 
+    let mut licenses_repo = LicensesRepo::default();
+    if let Err(error) = licenses_repo.read() {
+        tracing::error!("Could not read the licenses repository: {:?}", error);
+    }
+
     let product = ProductClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
-    let state = SoftwareState { product, software };
+    let state = SoftwareState {
+        product,
+        software,
+        licenses: licenses_repo,
+    };
     let router = Router::new()
         .route("/patterns", get(patterns))
         .route("/products", get(products))
+        .route("/licenses", get(licenses))
+        .route("/licenses/:id", get(license))
         .route(
             "/registration",
             get(get_registration).post(register).delete(deregister),
@@ -456,4 +471,56 @@ async fn set_resolvables(
         .set_resolvables(&id, params.r#type, &names, params.optional)
         .await?;
     Ok(Json(()))
+}
+
+/// Returns the list of known licenses.
+///
+/// It includes the license ID and the languages in which it is available.
+#[utoipa::path(
+    get,
+    path = "/licenses",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of known licenses")
+    )
+)]
+async fn licenses(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<License>>, Error> {
+    Ok(Json(state.licenses.licenses.clone()))
+}
+
+#[derive(Deserialize, utoipa::IntoParams)]
+struct LicenseQuery {
+    lang: Option<String>,
+}
+
+/// Returns the license content.
+///
+/// Optionally it can receive a language tag (RFC 5646). Otherwise, it returns
+/// the license in English.
+#[utoipa::path(
+    get,
+    path = "/licenses/:id",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "License with the given ID"),
+        (status = 400, description = "The specified language tag is not valid"),
+        (status = 404, description = "There is not license with the given ID")
+    )
+)]
+async fn license(
+    State(state): State<SoftwareState<'_>>,
+    Path(id): Path<String>,
+    Query(query): Query<LicenseQuery>,
+) -> Result<Response, Error> {
+    let lang = query.lang.unwrap_or("en".to_string());
+
+    let Ok(lang) = lang.as_str().try_into() else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    if let Some(license) = state.licenses.find(&id, &lang) {
+        Ok(Json(license).into_response())
+    } else {
+        Ok(StatusCode::NOT_FOUND.into_response())
+    }
 }

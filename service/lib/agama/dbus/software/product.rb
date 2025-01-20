@@ -54,14 +54,16 @@ module Agama
 
         def available_products
           backend.products.map do |product|
+            data = {
+              "description"  => product.localized_description,
+              "icon"         => product.icon,
+              "registration" => product.registration
+            }
+            data["license"] = product.license if product.license
             [
               product.id,
               product.display_name,
-              {
-                "description"  => product.localized_description,
-                "icon"         => product.icon,
-                "registration" => product.registration
-              }
+              data
             ]
           end
         end
