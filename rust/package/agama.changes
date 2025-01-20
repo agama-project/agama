@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 20 10:35:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for specifying a license for each product
+  (jsc#PED-11987).
+
+-------------------------------------------------------------------
 Thu Jan 16 13:10:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Stop the WebSocket handler when the client is disconnected

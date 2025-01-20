@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 20 10:35:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for specifying a license for each product
+  (jsc#PED-11987).
+
+-------------------------------------------------------------------
 Wed Jan 15 14:26:11 UTC 2025 - José Iván López González <jlopez@suse.com>
 
  - Add missing gems to the gemspec file
