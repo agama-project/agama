@@ -2,6 +2,7 @@
 Description=Agama kernel cmdline processing
 
 # have to be after network to be able to download info files
+# TODO: what to do in air gap scenario where we still need process cmdline?
 After=network-online.target
 
 # before starting the Agama servers so they read configuration parsed
@@ -12,7 +13,7 @@ Before=x11-autologin.service
 [Service]
 Type=oneshot
 Environment=TERM=linux
-ExecStart=kernel-cmdline-conf.sh
+ExecStart=agama-kernel-cmdline.sh
 StandardInput=tty
 TimeoutSec=0
 

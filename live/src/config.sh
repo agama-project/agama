@@ -44,6 +44,7 @@ systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
 systemctl enable agama-certificate-issue.path
 systemctl enable agama-certificate-wait.service
+systemctl enable agama-cmdline-process.service
 systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
 systemctl enable agama-url-issue.service
