@@ -1,4 +1,4 @@
-name: CI - Service
+name: CI - ISO definition
 
 on:
   push:
