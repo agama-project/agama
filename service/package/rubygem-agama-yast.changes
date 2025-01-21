@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 21 19:11:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the ListRepositories D-Bus method to return the proper value
+  instead of crashing the service (gh#agama-project/agama#1930).
+
+-------------------------------------------------------------------
 Mon Jan 20 16:44:45 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - The software service provides DBus API for reading the currently
