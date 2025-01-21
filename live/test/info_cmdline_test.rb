@@ -9,7 +9,7 @@ describe "info-cmdline-conf.sh" do
     let(:expected_path) { File.expand_path("fixtures/source/cmdline", __dir__, ) }
 
 
-    it "do nothing" do
+    it "does nothing" do
       Dir.mktmpdir do |tmpdir|
         target_path = File.join(tmpdir, "cmdline")
         FileUtils.cp(source_path, target_path)
