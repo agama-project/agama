@@ -17,6 +17,9 @@ OBS_PROJECT = "systemsmanagement:Agama:Devel"
 OBS_PACKAGE = "agama-installer"
 # to use internal OBS add "OBS_API=https://api.suse.de"
 OBS_API = "https://api.opensuse.org"
+# default OBS build target
+OBS_TARGET = "images"
+ARCH = $(shell uname -m)
 
 # files to copy from src/
 COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%,$(wildcard $(SRCDIR)/*))
@@ -58,6 +61,6 @@ build: $(DESTDIR)
 	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc -A $(OBS_API) co -o $(DESTDIR) $(OBS_PROJECT) $(OBS_PACKAGE); fi
 	$(MAKE) all
 	# allow passing optional parameters to osc like "-p <dir>" or "-k <dir>"
-	(cd $(DESTDIR) && osc -A $(OBS_API) build -M $(FLAVOR) $(OSC_OPTS) images)
+	(cd $(DESTDIR) && osc -A $(OBS_API) build -M $(FLAVOR) $(OSC_OPTS) $(OBS_TARGET) $(ARCH) $(KIWI_FILE))
 
 .PHONY: build all clean
