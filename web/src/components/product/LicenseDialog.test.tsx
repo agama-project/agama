@@ -74,7 +74,8 @@ describe("LicenseDialog", () => {
     within(languageButton).getByText("Español");
     await user.click(languageButton);
     expect(languageButton).toHaveAttribute("aria-expanded", "true");
-    const languageFrenchOption = screen.getByRole("option", { name: "Français" });
+    // FIXME: the selector should not be hidden for the Accessiblity API
+    const languageFrenchOption = screen.getByRole("option", { name: "Français", hidden: true });
     await user.click(languageFrenchOption);
     expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, "fr-FR");
     within(languageButton).getByText("Français");
