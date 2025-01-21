@@ -820,6 +820,206 @@ pub struct IpConfig {
     pub routes4: Vec<IpRoute>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub routes6: Vec<IpRoute>,
+    pub dhcp4_settings: Option<Dhcp4Settings>,
+    pub dhcp6_settings: Option<Dhcp6Settings>,
+    pub ip6_privacy: Option<i32>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct Dhcp4Settings {
+    pub send_hostname: bool,
+    pub hostname: Option<String>,
+    pub send_release: Option<bool>,
+    pub client_id: DhcpClientId,
+    pub iaid: DhcpIaid,
+}
+
+impl Default for Dhcp4Settings {
+    fn default() -> Self {
+        Self {
+            send_hostname: true,
+            hostname: None,
+            send_release: None,
+            client_id: DhcpClientId::default(),
+            iaid: DhcpIaid::default(),
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+pub enum DhcpClientId {
+    Id(String),
+    Mac,
+    PermMac,
+    Ipv6Duid,
+    Duid,
+    Stable,
+    None,
+    #[default]
+    Unset,
+}
+
+impl From<&str> for DhcpClientId {
+    fn from(s: &str) -> Self {
+        match s {
+            "mac" => Self::Mac,
+            "perm-mac" => Self::PermMac,
+            "ipv6-duid" => Self::Ipv6Duid,
+            "duid" => Self::Duid,
+            "stable" => Self::Stable,
+            "none" => Self::None,
+            "" => Self::Unset,
+            _ => Self::Id(s.to_string()),
+        }
+    }
+}
+
+impl From<Option<String>> for DhcpClientId {
+    fn from(value: Option<String>) -> Self {
+        match &value {
+            Some(str) => Self::from(str.as_str()),
+            None => Self::Unset,
+        }
+    }
+}
+
+impl fmt::Display for DhcpClientId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::Id(id) => id.to_string(),
+            Self::Mac => "mac".to_string(),
+            Self::PermMac => "perm-mac".to_string(),
+            Self::Ipv6Duid => "ipv6-duid".to_string(),
+            Self::Duid => "duid".to_string(),
+            Self::Stable => "stable".to_string(),
+            Self::None => "none".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+pub enum DhcpIaid {
+    Id(String),
+    Mac,
+    PermMac,
+    Ifname,
+    Stable,
+    #[default]
+    Unset,
+}
+
+impl From<&str> for DhcpIaid {
+    fn from(s: &str) -> Self {
+        match s {
+            "mac" => Self::Mac,
+            "perm-mac" => Self::PermMac,
+            "ifname" => Self::Ifname,
+            "stable" => Self::Stable,
+            "" => Self::Unset,
+            _ => Self::Id(s.to_string()),
+        }
+    }
+}
+
+impl From<Option<String>> for DhcpIaid {
+    fn from(value: Option<String>) -> Self {
+        match value {
+            Some(str) => Self::from(str.as_str()),
+            None => Self::Unset,
+        }
+    }
+}
+
+impl fmt::Display for DhcpIaid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::Id(id) => id.to_string(),
+            Self::Mac => "mac".to_string(),
+            Self::PermMac => "perm-mac".to_string(),
+            Self::Ifname => "ifname".to_string(),
+            Self::Stable => "stable".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+#[skip_serializing_none]
+#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct Dhcp6Settings {
+    pub send_hostname: bool,
+    pub hostname: Option<String>,
+    pub send_release: Option<bool>,
+    pub duid: DhcpDuid,
+    pub iaid: DhcpIaid,
+}
+
+impl Default for Dhcp6Settings {
+    fn default() -> Self {
+        Self {
+            send_hostname: true,
+            hostname: None,
+            send_release: None,
+            duid: DhcpDuid::default(),
+            iaid: DhcpIaid::default(),
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+pub enum DhcpDuid {
+    Id(String),
+    Lease,
+    Llt,
+    Ll,
+    StableLlt,
+    StableLl,
+    StableUuid,
+    #[default]
+    Unset,
+}
+
+impl From<&str> for DhcpDuid {
+    fn from(s: &str) -> Self {
+        match s {
+            "lease" => Self::Lease,
+            "llt" => Self::Llt,
+            "ll" => Self::Ll,
+            "stable-llt" => Self::StableLlt,
+            "stable-ll" => Self::StableLl,
+            "stable-uuid" => Self::StableUuid,
+            "" => Self::Unset,
+            _ => Self::Id(s.to_string()),
+        }
+    }
+}
+
+impl From<Option<String>> for DhcpDuid {
+    fn from(value: Option<String>) -> Self {
+        match &value {
+            Some(str) => Self::from(str.as_str()),
+            None => Self::Unset,
+        }
+    }
+}
+
+impl fmt::Display for DhcpDuid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::Id(id) => id.to_string(),
+            Self::Lease => "lease".to_string(),
+            Self::Llt => "llt".to_string(),
+            Self::Ll => "ll".to_string(),
+            Self::StableLlt => "stable-llt".to_string(),
+            Self::StableLl => "stable-ll".to_string(),
+            Self::StableUuid => "stable-uuid".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
 }
 
 #[skip_serializing_none]
