@@ -32,8 +32,8 @@ import { config } from "~/api/storage/types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const probe = (): Promise<any> => post("/api/storage/probe");
 
-const fetchConfig = (): Promise<config.Config | undefined> =>
-  get("/api/storage/config").then((config) => config.storage);
+const fetchConfig = (): Promise<config.Config | null> =>
+  get("/api/storage/config").then((config) => config.storage ?? null);
 
 /**
  * Returns the list of jobs

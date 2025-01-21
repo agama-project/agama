@@ -79,6 +79,10 @@ const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-s
 // TODO: define some utility method to get the device used as root (drive, partition, logical volume).
 // TODO: use type checking for config.
 function usingTpm(config): boolean {
+  if (!config) {
+    return null;
+  }
+
   const { guided, drives = [], volumeGroups = [] } = config;
 
   if (guided !== undefined) {
