@@ -127,13 +127,11 @@ export default function SelectTypeaheadCreatable(
     }
   };
 
-  const selectOption = (value: string | number, content: string | number) => {
-    console.log("selected", content);
-
+  const selectOption = (value: string | number, content?: string | number) => {
     setInputValue(String(content));
     setFilterValue("");
     setSelected(String(value));
-    onChange && onChange(String(value));
+    onChange(String(value));
 
     closeMenu();
   };
@@ -146,9 +144,7 @@ export default function SelectTypeaheadCreatable(
           const initialOptions = isStackable ? options : props.options;
           setOptions([...initialOptions, { value: filterValue, children: filterValue }]);
         }
-        setSelected(filterValue);
-        setFilterValue("");
-        closeMenu();
+        selectOption(filterValue, filterValue);
       } else {
         const optionText = selectOptions.find((option) => option.value === value)?.children;
         selectOption(value, optionText as string);
@@ -162,9 +158,9 @@ export default function SelectTypeaheadCreatable(
 
     resetActiveAndFocusedItem();
 
-    if (value !== selected) {
-      setSelected("");
-    }
+    // if (value !== selected) {
+    //   setSelected("");
+    // }
   };
 
   const handleMenuArrowKeys = (key: string) => {
@@ -245,9 +241,10 @@ export default function SelectTypeaheadCreatable(
   };
 
   const onClearButtonClick = () => {
-    setSelected("");
-    setInputValue("");
-    setFilterValue("");
+    // setSelected("");
+    // setInputValue("");
+    // setFilterValue("");
+    selectOption("", "");
     resetActiveAndFocusedItem();
     textInputRef?.current?.focus();
     if (isCleanable) setOptions(props.options);

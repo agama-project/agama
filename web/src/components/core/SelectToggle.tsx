@@ -36,7 +36,7 @@ export type SelectToggleOption = {
 };
 
 export type SelectToggleProps = {
-  value?: string;
+  value: string;
   options: SelectToggleOption[];
   onChange?: (value: string) => void;
   isDisabled?: boolean;
@@ -49,7 +49,6 @@ export default function SelectToggle({
   isDisabled,
 }: SelectToggleProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<string>(value || options[0].value);
 
   const onToggleClick = () => {
     setIsOpen(!isOpen);
@@ -59,13 +58,12 @@ export default function SelectToggle({
     _event: React.MouseEvent<Element, MouseEvent> | undefined,
     value: string | number | undefined,
   ) => {
-    setSelected(value as string);
     setIsOpen(false);
     onChange && onChange(value as string);
   };
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => {
-    const option = options.find((o) => o.value === selected);
+    const option = options.find((o) => o.value === value);
 
     return (
       <MenuToggle
@@ -83,7 +81,7 @@ export default function SelectToggle({
     <Select
       id="option-variations-select"
       isOpen={isOpen}
-      selected={selected}
+      selected={value}
       onSelect={onSelect}
       onOpenChange={(isOpen) => setIsOpen(isOpen)}
       toggle={toggle}
