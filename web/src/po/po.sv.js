@@ -35,7 +35,7 @@ export default {
     "%s disk"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s har registrerats med uppgifterna nedan."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s är ett oföränderligt system med atomära uppdateringar. Det använder ett skrivskyddat Btrfs filsystem som uppdateras via ögonblicksavbilder."
@@ -43,11 +43,14 @@ export default {
   "%s logo": [
     "%s logotyp"
   ],
+  "%s must be registered.": [
+    "%s måste registreras."
+  ],
   "%s with %d partitions": [
     "%s med %d partitioner"
   ],
   "(optional)": [
-    ""
+    "(valfritt)"
   ],
   ", ": [
     ", "
@@ -462,7 +465,7 @@ export default {
     "Krypteringslösenord"
   ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
-    ""
+    "Ange en registreringskod och valfritt en giltig e-postadress för att registrera produkten."
   ],
   "Exact size": [
     "Exakt storlek"
@@ -552,7 +555,7 @@ export default {
     "GiB"
   ],
   "Hide": [
-    ""
+    "Dölj"
   ],
   "Hide %d subvolume action": [
     "Dölj %d undervolym åtgärd",
@@ -626,6 +629,9 @@ export default {
   ],
   "Install new system on": [
     "Installera nytt system på"
+  ],
+  "Install using an advanced configuration.": [
+    "Installera med en avancerad konfiguration."
   ],
   "Install using device %s and deleting all its content": [
     "Installerar på enhet %s och raderar allt innehåll"
@@ -990,6 +996,12 @@ export default {
   "Presence of other volumes (%s)": [
     "Närvaro av andra volymer (%s)"
   ],
+  "Product registered": [
+    "Produkt registrerad"
+  ],
+  "Product registration form": [
+    "Produktregistreringsformulär"
+  ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Skydd för informationen som lagras på enheten, inklusive data, program och systemfiler."
   ],
@@ -1010,6 +1022,9 @@ export default {
   ],
   "Register": [
     "Registrera"
+  ],
+  "Register it now": [
+    "Registrera det nu"
   ],
   "Registration": [
     "Registrering"
@@ -1121,6 +1136,9 @@ export default {
   ],
   "Setup root user authentication": [
     "Ställ in rootautentisering"
+  ],
+  "Show": [
+    "Visa"
   ],
   "Show %d subvolume action": [
     "Visa %d undervolym åtgärd",
@@ -1286,7 +1304,7 @@ export default {
     "Systemet har inte konfigurerats för att ansluta till ett WiFi-nätverk än."
   ],
   "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    ""
+    "Systemlayouten sattes upp med en avancerad konfiguration som inte kan ändras med den aktuella versionen av detta visuella gränssnitt. Denna begränsning kommer att tas bort i en framtida version av Agama."
   ],
   "The system will use %s as its default language.": [
     "Systemet kommer att använda %s som dess standardspråk."

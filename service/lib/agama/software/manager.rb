@@ -99,7 +99,7 @@ module Agama
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = build_products
-        @product = @products.first if @products.size == 1
+        @product = find_initial_product
         @repositories = RepositoriesManager.new
         # patterns selected by user
         @user_patterns = []
@@ -442,6 +442,17 @@ module Agama
       # @return [Array<Agama::Software::Product>]
       def build_products
         ProductBuilder.new(config).build
+      end
+
+      # Determines the initially selected product.
+      #
+      # A product is automatically selected if it is the only product
+      # and it does not require acccepting a license.
+      def find_initial_product
+        product = @products.first
+        return product if @products.size == 1 && product.license.to_s.empty?
+
+        nil
       end
 
       def proposal

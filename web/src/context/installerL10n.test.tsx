@@ -48,7 +48,8 @@ const client = {
   isConnected: jest.fn().mockResolvedValue(true),
   isRecoverable: jest.fn(),
   onConnect: jest.fn(),
-  onDisconnect: jest.fn(),
+  onClose: jest.fn(),
+  onError: jest.fn(),
   onEvent: jest.fn(),
 };
 

@@ -20,8 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
+  Alert,
+  Button,
   Content,
   DescriptionList,
   DescriptionListDescription,
@@ -29,12 +31,19 @@ import {
   DescriptionListTerm,
   Grid,
   GridItem,
+  Spinner,
   Stack,
 } from "@patternfly/react-core";
 import { Link, IssuesHint, Page } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
-import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
+import {
+  usePatterns,
+  useProposal,
+  useProposalChanges,
+  useRepositories,
+  useRepositoryMutation,
+} from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 import { SOFTWARE as PATHS } from "~/routes/paths";
@@ -87,6 +96,39 @@ const NoPatterns = (): React.ReactNode => (
   </Page.Section>
 );
 
+const errorMsg = _(
+  /* TRANSLATORS: error details followed by a "Try again" link*/
+  "Some installation repositories could not be loaded. \
+The system cannot be installed without them.",
+);
+
+// error message, allow reloading the repositories again
+const ReloadSection = ({
+  loading,
+  action,
+}: {
+  loading: boolean;
+  action: () => void;
+}): React.ReactNode => (
+  // TRANSLATORS: title for an error message box, at least one repository could not be loaded
+  <Alert variant="danger" isInline title={_("Repository load failed")}>
+    {loading ? (
+      <>
+        {/* TRANSLATORS: progress message */}
+        <Spinner size="md" /> {_("Loading the installation repositories...")}
+      </>
+    ) : (
+      <>
+        {errorMsg}{" "}
+        <Button variant="link" isInline onClick={action}>
+          {/* TRANSLATORS: link for retrying failed repository load */}
+          {_("Try again")}
+        </Button>
+      </>
+    )}
+  </Alert>
+);
+
 /**
  * Software page component
  */
@@ -94,12 +136,23 @@ function SoftwarePage(): React.ReactNode {
   const issues = useIssues("software");
   const proposal = useProposal();
   const patterns = usePatterns();
+  const repos = useRepositories();
+
+  const [loading, setLoading] = useState(false);
+  const { mutate: probe } = useRepositoryMutation(() => setLoading(false));
 
   useProposalChanges();
 
   // Selected patterns section should fill the full width in big screen too when
-  // tehere is no information for rendering the Proposal Size section.
+  // there is no information for rendering the Proposal Size section.
   const selectedPatternsXlSize = proposal.size ? 6 : 12;
+
+  const startProbing = () => {
+    setLoading(true);
+    probe();
+  };
+
+  const showReposAlert = repos.some((r) => !r.loaded);
 
   return (
     <Page>
@@ -112,6 +165,11 @@ function SoftwarePage(): React.ReactNode {
           <GridItem sm={12}>
             <IssuesHint issues={issues} />
           </GridItem>
+          {showReposAlert && (
+            <GridItem sm={12}>
+              <ReloadSection loading={loading} action={startProbing} />
+            </GridItem>
+          )}
           <GridItem sm={12} xl={selectedPatternsXlSize}>
             {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
           </GridItem>

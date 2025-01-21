@@ -97,7 +97,7 @@ const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 // TODO: check if it should have the banner role
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
-    <PageSection variant="default" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
+    <PageSection component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
       <Stack hasGutter={hasGutter}>{children}</Stack>
     </PageSection>
   );
@@ -194,7 +194,10 @@ const Section = ({
  *   </Page.Actions>
  *
  */
-const Actions = ({ children }: React.PropsWithChildren) => {
+const Actions = ({
+  children,
+  justifyContent = "default",
+}: React.PropsWithChildren<{ justifyContent?: "default" | "none" }>) => {
   return (
     <PageGroup
       role="contentinfo"
@@ -202,8 +205,11 @@ const Actions = ({ children }: React.PropsWithChildren) => {
       stickyOnBreakpoint={STICK_TO_BOTTOM}
       className={flexStyles.flexGrow_0}
     >
-      <PageSection variant="default" component="div">
-        <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
+      <PageSection component="div">
+        {justifyContent === "none" && children}
+        {justifyContent === "default" && (
+          <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
+        )}
       </PageSection>
     </PageGroup>
   );

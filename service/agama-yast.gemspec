@@ -59,8 +59,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency "nokogiri", "~> 1.15"
   spec.add_dependency "rexml", "~> 3.2"
   spec.add_dependency "ruby-dbus", ">= 0.23.1", "< 1.0"
-  spec.add_dependency "csv", "~> 3.3"
-  spec.add_dependency "prime", "~> 0.1.3"
-  spec.add_dependency "logger", "~> 1.6"
-  spec.add_dependency "ostruct", "~> 0.6.1"
+  spec.add_dependency "csv", "~> 3.2"
+  spec.add_dependency "prime", "~> 0.1"
+  spec.add_dependency "logger", "~> 1.5"
+  # here we have problem as ruby3.2 on SLFO does not provide rubygem-ostruct, but newer ruby will separate it after 3.4
+  # but dynamic dependencies are not possible in gemspec
+  # spec.add_dependency "ostruct", "~> 0.6.1"
 end

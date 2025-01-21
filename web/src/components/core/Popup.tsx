@@ -38,6 +38,8 @@ import { partition } from "~/utils";
 type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
 type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps>;
 export type PopupProps = {
+  /** The dialog header */
+  title?: ModalHeaderProps["title"];
   /** The block/height size for the dialog. Default is "auto". */
   blockSize?: "auto" | "small" | "medium" | "large";
   /** The inline/width size for the dialog. Default is "medium". */
@@ -46,7 +48,7 @@ export type PopupProps = {
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
   loadingText?: string;
-} & Omit<ModalProps, "size"> &
+} & Omit<ModalProps, "title" | "size"> &
   Pick<ModalHeaderProps, "description" | "titleIconVariant">;
 
 /**
