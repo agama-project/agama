@@ -134,7 +134,6 @@
         <package name="blog" arch="s390x" />
         <package name="libblogger2" arch="s390x" />
         <package name="xauth"/>
-        <package name="patterns-yast-yast2_basis"/>
         <package name="MozillaFirefox"/>
         <package name="libpwquality-tools"/>
         <package name="NetworkManager"/>

@@ -98,3 +98,23 @@ pub struct ResolvableParams {
     /// Whether the resolvables are optional or not.
     pub optional: bool,
 }
+
+/// Repository list specification.
+#[derive(Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Repository {
+    /// repository identifier
+    pub id: i32,
+    /// repository alias. Has to be unique
+    pub alias: String,
+    /// repository name
+    pub name: String,
+    /// Repository url (raw format without expanded variables)
+    pub url: String,
+    /// product directory (currently not used, valid only for multiproduct DVDs)
+    pub product_dir: String,
+    /// Whether the repository is enabled
+    pub enabled: bool,
+    /// Whether the repository is loaded
+    pub loaded: bool,
+}

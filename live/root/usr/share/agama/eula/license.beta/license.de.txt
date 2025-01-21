@@ -1,0 +1,330 @@
+SUSE(r)-Endbenutzer-Lizenzvereinbarung für Beta-Software
+
+LESEN SIE SICH DIESE BETA-VEREINBARUNG SORGFÄLTIG DURCH. MIT DER INSTALLATION, 
+DEM HERUNTERLADEN ODER EINER ANDERWEITIGEN NUTZUNG DER SOFTWARE STIMMEN SIE 
+DEN BESTIMMUNGEN DIESER BETA-VEREINBARUNG UND EINER ETWAIGEN IM LIEFERUMFANG 
+DER SOFTWARE ENTHALTENEN ZUSÄTZLICHEN SUSE-LIZENZVEREINBARUNG ZU. WENN SIE MIT 
+DIESEN BESTIMMUNGEN NICHT EINVERSTANDEN SIND, DÜRFEN SIE DIE SOFTWARE NICHT 
+HERUNTERLADEN, INSTALLIEREN ODER VERWENDEN. DIE SOFTWARE DARF NICHT OHNE 
+VORHERIGE ZUSTIMMUNG VON SUSEWEITERVERKAUFT, ÜBERTRAGEN ODER VERTRIEBEN 
+WERDEN.
+
+Die vorliegende SUSE-Endbenutzer-Lizenzvereinbarung für Beta-Software 
+("Beta-Vereinbarung") einschließlich einer etwaigen im Lieferumfang der 
+Software enthaltenen zusätzlichen SUSE-Lizenzvereinbarung ist eine 
+rechtsgültige Vereinbarung zwischen Ihnen (als juristische Person oder 
+Einzelperson) und SUSE LLC ("SUSE"). Das dieser Beta-Vereinbarung 
+unterliegende Software-Produkt, die Software-Updates, die dazugehörigen Medien 
+(sofern vorhanden) sowie die Online- oder gedruckte Begleitdokumentation (im 
+Gesamten als "Software" bezeichnet) unterliegen den urheberrechtlichen 
+Bestimmungen der Vereinigten Staaten von Amerika und anderer Länder sowie den 
+Bestimmungen dieser Beta-Vereinbarung. Falls Sie den Bestimmungen dieser 
+Beta-Vereinbarung nicht zustimmen, unterlassen Sie das Herunterladen, die 
+Installation oder anderweitige Nutzung der Software und geben Sie 
+gegebenenfalls das gesamte, unbenutzte Paket an SUSE zurück. Diese Software 
+wird für Sie lizenziert; Sie erwerben nicht die Software selbst.
+
+Andere Softwareprogramme, die unter anderen Bestimmungen und/oder von anderen 
+Lizenzgebern als von SUSE lizenziert werden, können in der Software selbst 
+oder im Lieferumfang der Software enthalten sein. Die Bestimmungen einer 
+Endbenutzer-Lizenzvereinbarung, die im Lieferumfang einer bestimmten 
+Softwaredatei enthalten ist, ersetzen mit der Installation oder dem Download 
+der Software die nachfolgenden Bestimmungen. Die Nutzung von 
+Softwareprogrammen von Drittanbietern, die zur Verfügung gestellt werden, 
+steht Ihnen frei. SUSE ist nicht verantwortlich für die Software von 
+Drittanbietern und haftet nicht dafür, wenn Sie Drittanbietersoftware 
+verwenden.
+
+Die Software enthält möglicherweise Komponenten, die Open Source-Pakete sind 
+und unabhängig entwickelt wurden und für die andere Lizenzbedingungen gelten. 
+Ihre Lizenzrechte in Bezug auf diese einzelnen Komponenten, für die andere 
+Lizenzbedingungen gelten, werden durch die Lizenzvereinbarung der jeweiligen 
+Komponente bestimmt. Durch keine der hier aufgeführten Bedingungen werden Ihre 
+Rechte oder Verpflichtungen sowie die für Sie zutreffenden Bedingungen 
+eingeschränkt oder anderweitig beeinflusst, die für Sie im Rahmen dieser 
+Lizenzvereinbarungen gelten. Selbst wenn Sie gemäß den Lizenzbedingungen einer 
+Komponente berechtigt sind, diese zu vertreiben, ist es untersagt, SUSE 
+-Marken (z. B. SUSE oder SUSE LINUX) für den Vertrieb der Komponente zu 
+verwenden, unabhängig davon, ob die Komponente SUSE-Marken beinhaltet. 
+
+Lizenz. Vorbehaltlich der Bestimmungen dieser Beta-Vereinbarung gewährt SUSE 
+Ihnen das nicht ausschließliche, nicht übertragbare Recht, die Software zu 
+reproduzieren und während des unten aufgeführten Zeitraums innerhalb Ihres 
+Unternehmens in der zur Evaluierung und/oder zum Testen der Software 
+erforderlichen Anzahl zu nutzen. 
+
+Wenn ein separates SUSE-Produkt, das von dem für den Beta-Test vorgesehenen 
+Produkt unabhängig ist, in oder mit der Software enthalten ist, erklären Sie 
+sich ungeachtet der Lizenzrechte in der Lizenzvereinbarung, die der Kopie 
+dieses separaten SUSE-Produkts beiliegt, damit einverstanden, das separate 
+SUSE-Produkt ausschließlich in Verbindung mit und ausschließlich zum Zwecke 
+Ihrer Evaluierung der Software zu verwenden. Die Nutzungsberechtigung für die 
+separate SUSE-Produktsoftware erlischt mit Ablauf der Beta-Vereinbarung wie 
+nachstehend festgelegt.
+
+Begriff. Diese Beta-Vereinbarung tritt an dem Tag in Kraft, an dem Sie die 
+Software rechtmäßig erwerben, und bleibt bis zu ihrer im Folgenden 
+beschriebenen Beendigung gültig. Je nachdem, was als Erstes eintritt, gilt 
+diese Vereinbarung unter folgenden Bedingungen als beendet:(i) 90 Tage nach 
+Installation der Software, (ii) bei Veröffentlichung der nächsten Vorabversion 
+dieser Software (sofern weitere Vorabversionen veröffentlicht werden), (iii) 
+bei erster kommerzieller Auslieferung der Software SUSE, (iv) bei Eingang 
+einer schriftlichen Beendigungsbestätigung von einer der involvierten Parteien 
+oder (v) bei Bruch einer der Bestimmungen dieser Vereinbarung durch den 
+Nutzer. Nach Beendigung dieser Beta-Vereinbarung müssen Sie die Nutzung der 
+Software einstellen, alle von der Software ausgeführten Vorgänge rückgängig 
+machen bzw. den ursprünglichen Systemzustand wiederherstellen, das Original 
+und alle Kopien der Software vernichten oder an SUSE zurückgeben und die 
+Software vollständig von Ihren Systemen entfernen.
+
+Qualität der Vorabversion. Da es sich bei der Software um eine Vorabversion 
+handelt, sollten Sie die Software nicht im Rahmen einer kommerziellen 
+Anwendung oder eines Produktionssystems verwenden. Die Software wurde nicht 
+vollständig getestet und kann Fehler sowie unvollständige Elemente enthalten. 
+Die Software sollte daher nur in Testumgebungen eingesetzt werden. SUSE 
+übernimmt keine Gewährleistung dafür, dass eine kommerzielle Version dieser 
+Software oder zugehörige Produkte in der Zukunft veröffentlicht oder Termine 
+eingehalten werden. Sie übernehmen die Verantwortung für alle Risiken, die aus 
+der Nutzung dieser Software für Sie entstehen können. Die Software enthält 
+unter Umständen einen Mechanismus zur automatischen Deaktivierung, der die 
+Verwendung der Software nach Ablauf eines bestimmten Zeitraums verhindert. 
+Daher sollten Sie eine Sicherungskopie Ihres Systems erstellen und weitere 
+Maßnahmen zur Vermeidung von Datei- oder Datenverlust ergreifen. Die 
+Verwendung der Software erfolgt ausschließlich auf eigenes Risiko.
+
+Vertraulichkeit. (Dieser Abschnitt findet nur dann Anwendung, wenn die 
+Software von SUSE nicht als Beta-Version ohne Geheimhaltungspflicht 
+veröffentlicht wurde.) Die Software und alle zugrunde liegenden Konzepte, 
+beiliegenden Dokumentationen und Medien, Produktfunktionen, Test- und 
+Evaluierungsergebnisse, Vergleichstestergebnisse, Zieldaten, PIN-Nummern und 
+Passwörter, sowie sämtliche zugehörigen Informationen sind vertrauliche 
+Informationen von SUSE und deren Lieferanten (im Folgenden als "vertrauliche 
+Informationen" bezeichnet). Sie versichern, dass Sie keine vertraulichen 
+Informationen an Dritte weiterleiten bzw. dass Sie vertrauliche Informationen 
+ausschließlich zu Test- oder Evaluierungszwecken und für Feedback an SUSE 
+nutzen. Für den Fall, dass Sie eine PIN-Nummer oder ein Passwort für 
+zugriffsgeschützte Sites erhalten haben, verpflichten Sie sich, weder die 
+PIN-Nummer noch das Passwort an Dritte weiterzugeben. Ihre 
+Geheimhaltungspflicht gilt auch nach Ablauf der Beta-Vereinbarung bis zu dem 
+Zeitpunkt, zu dem SUSE die betreffenden Informationen der Öffentlichkeit 
+zugänglich macht.
+
+Rückmeldungen. Sie erklären sich damit einverstanden, dass SUSE Ihr Feedback 
+bzw. die von Ihnen mitgeteilten Informationen verwenden kann, und Sie erteilen 
+SUSE hiermit eine dauerhafte und unwiderrufliche Lizenz zur unentgeltlichen 
+Verwendung Ihres Feedbacks und der Informationen zu jedem beliebigen Zweck, 
+sofern SUSE Ihren Namen in diesem Zusammenhang nicht öffentlich nennt. Sie 
+versichern und garantieren, dass Ihr Feedback und die von Ihnen mitgeteilten 
+Informationen keine vertraulichen Informationen von Ihnen oder Dritten 
+enthalten und Sie dazu berechtigt sind, die vorgenannte Lizenz zu gewähren. 
+
+Lizenzbeschränkungen. SUSE behält sich alle Rechte vor, die Ihnen nicht 
+ausdrücklich gewährt werden. (1) Sie sind nicht berechtigt, die Anzahl der 
+Verbindungen,die von der Software unterstützt werden und für Sie lizenziert 
+sind, auf irgendeine Weise zu erhöhen oder eine Einzelverbindung für mehr als 
+eine Verbindung oder einen Benutzer einzusetzen; (2) Reverse Engineering, 
+Dekompilieren oder Disassemblieren der Software ist nicht oder höchstens in 
+dem Ausmaß gestattet, wie es das anwendbare Gesetz zulässt; (3) Die Software 
+darf nicht modifiziert, verändert, vermietet, zeitweise überlassen oder 
+geleast werden und die Unterlizenzierung von aus dieser Beta-Vereinbarung 
+entstehenden Rechten ist nicht erlaubt; (4) Die vollständige oder teilweise 
+Übertragung der Software oder Ihrer Lizenzrechteaus dieser Beta-Vereinbarung 
+ist nicht gestattet.
+
+AUTORISIERTE BETA TESTSITES
+
+Wenn Sie zum Betreiben einer Beta-Test-Site für die Software autorisiert 
+wurden, gelten für Sie die folgenden Bedingungen. Um sich als autorisierte 
+Beta-Test-Site zu qualifizieren, wenden Sie sich per E-Mail an den SUSE 
+Beta-Programm-Manager unter beta-programs@suse.com. SUSE kann die Ihnen 
+gebotenen Leistungen durch Bekanntgabe der geänderten Leistungen auf der 
+entsprechenden SUSE-Website jederzeit ändern.
+
+Unterstützung. SUSE leistet für die Software direkte Unterstützung gemäß dem 
+aktuellen Unterstützungsangebot von SUSE für autorisierte Beta-Test-Sites, das 
+auf der entsprechenden SUSE-Website bekannt gegeben und vom 
+Beta-Programm-Manager von SUSE für die Software mitgeteilt wird. Diese 
+Unterstützung kann durch Web-basierte Tools und E-Mail und/oder telefonisch 
+erfolgen. SUSE teilt Ihnen alle erforderlichen Internet- und E-Mail-Adressen 
+sowie die Telefonnummern mit.
+
+Testbetrieb. Sie erklären sich einverstanden, alle von SUSE während des 
+Beta-Testzeitraums bereitgestellten Testprogramme auf eigene Kosten 
+vollständig auszuführen und die Software durch andere als nützlich bzw. 
+erforderlich erachtete Tests eingehend zu testen. Sie erklären sich 
+einverstanden, die zum sachgemäßen Testen und zur Erfüllung der hierin 
+festgelegten Anforderungen erforderliche Hard- und Software sowie das nötige 
+Personal bereitzustellen. Sie erklären sich einverstanden, während des 
+Beta-Testzeitraums mindestens vier Arbeitsstunden pro Woche für Tests 
+aufzuwenden. Bei den Tests ist vor allem auf Funktionalität, Genauigkeit, 
+Konsistenz und Benutzerfreundlichkeit der getesteten Software einschließlich 
+der zugehörigen Dokumentation zu achten. Die Ergebnisse aller Testprogramme 
+und anderer Tests, einschließlich aller Vorschläge, Inkonsistenzen und/oder 
+Probleme, müssen genau protokolliert werden (einschließlich der 
+Systemkonfiguration usw.) und wöchentlich mit den von SUSE bereitgestellten 
+und/oder angegebenen Berichtsmethoden und/oder Tools an SUSE übermittelt 
+werden. Diese Methoden und Tools können Web-basierte Tools, E-Mail, Fax, Post 
+und/oder Telefon umfassen, sind jedoch nicht darauf beschränkt. Um eine rasche 
+Problembehebung zu ermöglichen, erklären Sie sich einverstanden, alle im 
+Zusammenhang mit der Software festgestellten Probleme innerhalb von zwei (2) 
+Tagen nach Feststellung des Problems mitzuteilen und zwar ungeachtet einer 
+etwaigen Ungewissheit, ob ein Problem auf einen Fehler oder einen 
+Programmfehler zurückzuführen ist. Sie erklären sich einverstanden, am Ende 
+des Beta-Testzeitraums auf Verlangen einen schriftlichen Bericht vorzulegen, 
+in dem Sie die durchgeführten Tests zusammenfassen, Ihren Gesamteindruck von 
+der Software mitteilen und eine potenzielle geplante Verwendung der Software 
+in Ihrer Umgebung beschreiben. Unter Umständen werden Ihnen Fragebogen 
+hinsichtlich der Leistung der Testprogramme und anderer Aspekte der Software 
+zugestellt; Sie erklären sich einverstanden, diese Fragebogen auszufüllen und 
+bis zum angegebenen Datum unter Verwendung der vorgesehenen Methode 
+zurückzusenden.
+
+EIGENTÜMERSCHAFT 
+
+Durch die Lizenz werden Ihnen keine Eigentumsrechte an der Software 
+übertragen. SUSE und/oder seine Lizenzgeber besitzen alle Rechte in 
+Zusammenhang mit dem geistigen Eigentum an der Software und behalten sich 
+diese vor; dies gilt auch für Anpassungen oder Kopien. Sie erwerben nur eine 
+Lizenz zur Verwendung der Software.
+
+HAFTUNGSAUSCHLUSS
+
+DIE SOFTWARE UND ANDERE VERTRAULICHE INFORMATIONEN WERDEN IN DER 
+VERFÜGBARENFORM OHNE GEWÄHRLEISTUNG BEREITGESTELLT. SIE ÜBERNEHMEN ALLE 
+RISIKEN BEZÜGLICH DER ERGEBNISSE UND DER ERFOLGREICHEN UMSETZUNG DER 
+VERTRAULICHEN INFORMATIONEN. SUSE SCHLIEẞT ALLE AUSDRÜCKLICHEN ODER IMPLIZITEN 
+GEWÄHRLEISTUNGEN AUS, EINSCHLIEẞLICH ALLER IMPLIZITEN GEWÄHRLEISTUNGEN 
+HINSICHTLICH MÄNGELGEWÄHR JEDWEDER ART (JEDOCH NICHT BESCHRÄNKT DARAUF). SUSE 
+GEWÄHRLEISTET NICHT DIE EIGNUNG DER SOFTWARE FÜR JEDWEDEN BEDARF ODER EINEN 
+UNUNTERBROCHENEN BETRIEB DER SOFTWARE. Manche Rechtsprechungen lassen 
+bestimmte Haftungsausschlüsse und Haftungseinschränkungen nicht zu, sodass 
+Teile der oben genannten Einschränkungen für Sie möglicherweise nicht relevant 
+sind. Durch diese beschränkte Gewährleistung werden Ihnen bestimmte Rechte 
+erteilt und außerdem können noch andere Rechte gelten, die von Rechtsordnung 
+zu Rechtsordnung variieren.
+
+Produkte von Drittanbietern. Die Software kann andere Softwareprogramme 
+enthalten oder zusammen mit Hardware oder anderen Softwareprogrammen 
+ausgeliefert werden, die von einem anderen Lizenzgeber als SUSE lizenziert 
+oder verkauft werden. SUSE ÜBERNIMMT KEINE GARANTIE FÜR NICHT-SUSE-PRODUKTE. 
+DERARTIGE PRODUKTE WERDEN IN DER VERFÜGBAREN FORM BEREITGESTELLT. EIN 
+GARANTIE-SERVICE FÜR NICHT-SUSE-PRODUKTE WIRD GEGEBENENFALLS VOM 
+PRODUKTLIZENZGEBER GEMÄẞ DER ZUTREFFENDEN LIZENZGEBERGARANTIE ZUR VERFÜGUNG 
+GESTELLT.
+
+EINSCHRÄNKUNG DER HAFTBARKEIT
+
+Folgeschäden. WEDER SUSE NOCH DIE ZUGEHÖRIGEN LIZENZGEBER, 
+TOCHTERGESELLSCHAFTEN ODER MITARBEITER SIND ZU ENTSCHÄDIGUNGEN FÜR BESONDERE, 
+ZUFÄLLIGE, MITTELBARE ODER INDIREKTE SCHÄDEN, SCHÄDEN RESULTIEREND AUS 
+UNERLAUBTER HANDLUNG ODER VERSCHÄRFTEM SCHADENSERSATZ VERPFLICHTET, DIE SICH 
+AUS DER NUTZUNG BZW. NICHT MÖGLICHEN NUTZUNG DER SOFTWARE ERGEBEN, 
+EINSCHLIEẞLICH GEWINN- UND BETRIEBSAUSFÄLLEN SOWIE DATENVERLUST, SELBST WENN 
+AUF DIE MÖGLICHKEIT SOLCHER SCHÄDEN HINGEWIESEN WURDE.
+Unmittelbare Schäden. IN KEINEM FALL ÜBERSTEIGT DIE GESAMTHAFTUNG VON SUSE FÜR 
+DIREKTE SCHÄDEN AN EIGENTUM ODER PERSONEN (OB IN EINEM EINZELFALL ODER EINER 
+SERIE VON FÄLLEN) DEN 1,25-FACHEN WERT DES ENTRICHTETEN KAUFBETRAGS FÜR DIE 
+SOFTWARE, AUS DER EIN SOLCHER ANSPRUCH ENTSTANDEN IST [ODER 50 US-DOLLAR, WENN 
+SIE DIE SOFTWARE KOSTENLOS ERHALTEN HABEN]. Die oben genannten Ausschlüsse und 
+Einschränkungen gelten nicht bei Forderungen in Verbindung mit Tod und 
+Körperverletzung. Bei Rechtsprechungen, die den Ausschluss oder die 
+Einschränkung von Entschädigungen nicht zulassen, ist die Haftung von SUSE im 
+im Rahmen des geltenden Rechts maximal zulässigen Umfang beschränkt oder 
+ausgeschlossen.
+
+ALLGEMEINE BEDINGUNGEN
+
+Support. SUSE unterliegt keiner Verpflichtung, Unterstützung für die Software 
+zu leisten, die über die ausdrücklichen Bestimmungen der vorliegenden 
+Vereinbarung hinausgeht. 
+Bewertungstests. Diese Bewertungstest-Einschränkung ist für Sie relevant, wenn 
+Sie Software-Entwickler oder Lizenzgeber sind oder die Software im Auftrag 
+eines Software-Entwicklers oder Lizenzgebers testen. Ohne vorherige 
+schriftliche Zustimmung von SUSE, die nicht ungerechtfertigterweise verweigert 
+werden kann, sind Sie nicht berechtigt, die Ergebnisse eines Bewertungstests 
+dieser Software Dritten gegenüber bekanntzugeben oder zu veröffentlichen. Wenn 
+Sie Lizenzen für Produkte vergeben, die in der Funktion der Software ähnlich 
+sind oder ein Konkurrenzprodukt darstellen ("Ähnliche Produkte"), oder wenn 
+Sie im Namen eines solchen Lizenzgebers handeln und durch Veröffentlichung 
+oder Weitergabe von Vergleichsdaten gegen diese Einschränkung verstoßen, gilt 
+- ungeachtet eventuell anders lautender Bestimmungen im 
+Endbenutzer-Lizenzvertrag des ähnlichen Produkts und zusätzlich zu anderen, 
+SUSE eventuell zur Verfügung stehenden Gegenmaßnahmen - Folgendes: SUSE darf 
+Vergleichstests an den ähnlichen Produkten durchführen sowie die 
+Testergebnisse veröffentlichen und weitergeben. Durch Ihr Handeln bestätigen 
+Sie, dass Sie befugt sind, SUSE solche Rechte zu erteilen.
+Open Source. Durch keine der hier aufgeführten Bedingungen werden Ihre Rechte 
+oder Verpflichtungen sowie die für Sie zutreffenden Bedingungen, die für Sie 
+im Rahmen aller zutreffenden Open Source-Lizenzen für den Open Source-Code in 
+dieser Software gelten, eingeschränkt oder anderweitig beeinflusst.
+Kein Kaufzwang. Sie sind durch diese Beta-Vereinbarung nicht verpflichtet, 
+Lizenzen für die kommerziell erhältliche Version der Software zu erwerben. Ein 
+etwaiger Erwerb erfolgt durch eine formelle Bestellung.
+Übertragung. Diese Beta-Vereinbarung darf ohne vorherige schriftliche 
+Genehmigung von SUSE nicht übertragen werden.
+Recht und Rechtsprechung. Diese Beta-Vereinbarung unterliegt den Gesetzen des 
+US-Bundesstaates Utah. Bei jedweder Klage, die sich auf diese 
+Beta-Vereinbarung bezieht, sind die Gerichte des US-Bundesstaates Utah 
+zuständig. Sollte Ihr Hauptwohnsitz in einem Mitgliedsstaat der Europäischen 
+Union oder der Europäischen Freihandelszone liegen, gelten die Gesetze dieses 
+Landes. In diesem Fall sind bei jedweden Klagen die Gerichte des 
+entsprechenden Landes zuständig.
+Gesamtvereinbarung. Diese Vereinbarung legt alle Absprachen und Festlegungen 
+zwischen Ihnen und SUSE dar und kann nur durch eine schriftliche 
+Einverständniserklärung zwischen Ihnen und einem autorisierten Vertreter von 
+SUSE geändert oder ergänzt werden. KEIN LIZENZGEBER, VERTEILER, FACHHÄNDLER, 
+HÄNDLER, WIEDERVERKÄUFER ODER VERKAUFSPERSONAL IST ZUM ÄNDERN DIESER 
+VEREINBARUNG ODER ZU ANGABEN ODER ZUSAGEN BERECHTIGT, DIE VON DEN BESTIMMUNGEN 
+DIESER VEREINBARUNG ABWEICHEN ODER DEN BESTIMMUNGEN DIESER VEREINBARUNG 
+HINZUGEFÜGT WERDEN. 
+Aufhebung. Ein Verzicht auf eines der in dieser Beta-Vereinbarung 
+festgehaltenen Rechte wird erst wirksam, wenn dieser schriftlich erfolgt und 
+von einem ordnungsgemäß bevollmächtigten Vertreter der zu bindenden Partei 
+unterschrieben ist. Ein Verzicht auf ein zuvor oder derzeit gültiges Recht, 
+der auf einen Vertragsbruch oder eine Unterlassung zurückzuführen ist, kann 
+nicht als Verzicht auf künftige Rechte erachtet werden, die sich aus dieser 
+Beta-Vereinbarung ergeben.
+Abtrennbarkeit. Ist eine Bestimmung dieser Beta-Vereinbarung ungültig oder 
+nicht anwendbar, wird diese Bestimmung im notwendigen Umfang ausgelegt, 
+beschränkt, geändert oder notfalls abgetrennt, um die Ungültigkeit oder 
+Nichtdurchführbarkeit der Bestimmung zu beseitigen; die übrigen Bestimmungen 
+dieser Beta-Vereinbarung bleiben unberührt.
+Exportbestimmungen. Alle im Zusammenhang mit dieser Vereinbarung zur Verfügung 
+gestellten Produkte oder technischen Informationen unterliegen möglicherweise 
+den US-Gesetzen zur Exportkontrolle sowie den Handelsgesetzen anderer Länder. 
+Die Parteien erkennen alle Ausfuhrkontrollbestimmungen an und erklären sich 
+damit einverstanden, alle für anstehende Exporte, Re-Exporte oder Importe 
+erforderlichen Lizenzen bzw. Klassifizierungen einzuholen. Die Parteien 
+erklären sich damit einverstanden, keine Ausfuhr oder Wiederausfuhr an Länder 
+vorzunehmen, für die derzeit ein Exportverbot der US-Behörden besteht oder 
+denen gemäß der US-Exportbestimmungen ein Embargo auferlegt wurde oder die als 
+terroristische Länder eingestuft wurden. Die Parteien verpflichten sich, die 
+im Lieferumfang enthaltenen Elemente nicht für die Herstellung verbotener 
+nuklearer oder chemisch-biologischer Waffen oder Lenkwaffen einzusetzen. Bitte 
+informieren Sie sich auf der Webseite des Bureau of Industry and Security 
+(www.bis.doc.gov), bevor Sie SUSE-Produkte aus den USA exportieren. Weitere 
+Informationen zur Ausfuhr von SUSE-Software finden Sie unter 
+https://www.suse.com/company/legal/. Auf Anfrage erhalten Sie von SUSE 
+spezielle Informationen zu den entsprechenden Beschränkungen. SUSE bernimmt 
+jedoch keine Haftung für Ihr Versäumnis, die notwendigen Ausfuhrgenehmigungen 
+einzuholen. Durch Installation, Herunterladen oder eine andere Nutzung der 
+Software, stimmen Sie der folgenden Aussage zu: Wir bestätigen, dass diese 
+Beat Test-/Evaluierungssoftware nur zu Beta-Testzwecken genutzt wird und nicht 
+verliehen, verkauft, unterlizenziert, zugewiesen oder auf andere Art und Weise 
+weitergereicht wird. Des Weiteren bescheinigen wir, dass wir keine Produkte, 
+Prozesse oder Services übertragen oder exportieren, bei denen es sich um das 
+unmittelbare Produkt dieser Beta-Testsoftware handelt.
+Von der US-Regierung eingeschränkte Rechte. Die Verwendung, Vervielfältigung 
+oder Offenbarung unterliegt durch die Regierung der Vereinigten Staaten den 
+Einschränkungen in FAR 52.227-14 (Juni 1987) Alternate III (Juni 1987), FAR 
+52.227-19 (Juni 1987) oder DFARS 252.227-7013 (b)(3) (Nov 1995) bzw. den 
+zutreffenden nachfolgenden Bestimmungen. Vertragspartei/Hersteller ist SUSE 
+LLC, 404 Wyman Street, Waltham, MA 02415.
+Sonstiges. Die Anwendung der Vertragskonventionen der Vereinten Nationen für 
+den internationalen Verkauf von Gütern wird ausdrücklich ausgeschlossen.
+
+(c) 2013 SUSE LLC bzw. deren Tochterunternehmen. Alle Rechte vorbehalten.
+(020314)
+
+
+

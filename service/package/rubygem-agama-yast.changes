@@ -1,4 +1,27 @@
 -------------------------------------------------------------------
+Mon Jan 20 16:44:45 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- The software service provides DBus API for reading the currently
+  configured repositories, related to (gh#agama-project/agama#1894)
+
+-------------------------------------------------------------------
+Mon Jan 20 10:35:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for specifying a license for each product
+  (jsc#PED-11987).
+
+-------------------------------------------------------------------  
+Fri Jan 17 20:42:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Relax gems version in the gemspec file
+  (gh#agama-project/agama#1917)
+
+-------------------------------------------------------------------
+Thu Jan 16 17:30:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Correctly select the base product to install (bsc#1235931)
+
+-------------------------------------------------------------------
 Wed Jan 15 14:26:11 UTC 2025 - José Iván López González <jlopez@suse.com>
 
  - Add missing gems to the gemspec file

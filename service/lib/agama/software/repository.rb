@@ -38,6 +38,14 @@ module Agama
         type = Yast::Pkg.RepositoryProbe(url.to_s, product_dir)
         !!type && type != "NONE"
       end
+
+      def loaded?
+        @loaded
+      end
+
+      def refresh
+        @loaded = !!super
+      end
     end
   end
 end

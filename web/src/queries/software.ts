@@ -24,26 +24,32 @@ import React from "react";
 import {
   useMutation,
   useQueries,
+  useQuery,
   useQueryClient,
   useSuspenseQueries,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
+  License,
   Pattern,
   PatternsSelection,
   Product,
   RegistrationInfo,
+  Repository,
   SelectedBy,
   SoftwareConfig,
   SoftwareProposal,
 } from "~/types/software";
 import {
   fetchConfig,
+  fetchLicenses,
   fetchPatterns,
   fetchProducts,
   fetchProposal,
   fetchRegistration,
+  fetchRepositories,
+  probe,
   register,
   updateConfig,
 } from "~/api/software";
@@ -76,6 +82,15 @@ const productsQuery = () => ({
 });
 
 /**
+ * Query to retrieve available licenses
+ */
+const licensesQuery = () => ({
+  queryKey: ["software/licenses"],
+  queryFn: fetchLicenses,
+  staleTime: Infinity,
+});
+
+/**
  * Query to retrieve selected product
  */
 const selectedProductQuery = () => ({
@@ -97,6 +112,14 @@ const registrationQuery = () => ({
 const patternsQuery = () => ({
   queryKey: ["software/patterns"],
   queryFn: fetchPatterns,
+});
+
+/**
+ * Query to retrieve configured repositories
+ */
+const repositoriesQuery = () => ({
+  queryKey: ["software/repositories"],
+  queryFn: fetchRepositories,
 });
 
 /**
@@ -142,6 +165,22 @@ const useRegisterMutation = () => {
 };
 
 /**
+ * Hook that builds a mutation for reloading repositories
+ */
+const useRepositoryMutation = (callback: () => void) => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: probe,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["software/repositories"] });
+      callback();
+    },
+  };
+  return useMutation(query);
+};
+
+/**
  * Returns available products and selected one, if any
  */
 const useProduct = (
@@ -164,6 +203,14 @@ const useProduct = (
     products,
     selectedProduct,
   };
+};
+
+/**
+ * Returns available products and selected one, if any
+ */
+const useLicenses = (): { licenses: License[]; isPending: boolean } => {
+  const { data: licenses, isPending } = useQuery(licensesQuery());
+  return { licenses, isPending };
 };
 
 /**
@@ -208,6 +255,14 @@ const useProposal = (): SoftwareProposal => {
 const useRegistration = (): RegistrationInfo => {
   const { data: registration } = useSuspenseQuery(registrationQuery());
   return registration;
+};
+
+/**
+ * Returns repository info
+ */
+const useRepositories = (): Repository[] => {
+  const { data: repositories } = useSuspenseQuery(repositoriesQuery());
+  return repositories;
 };
 
 /**
@@ -261,9 +316,12 @@ export {
   useConfigMutation,
   usePatterns,
   useProduct,
+  useLicenses,
   useProductChanges,
   useProposal,
   useProposalChanges,
   useRegistration,
   useRegisterMutation,
+  useRepositories,
+  useRepositoryMutation,
 };

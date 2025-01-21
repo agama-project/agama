@@ -93,8 +93,8 @@ const Providers = ({ children, withL10n }) => {
 
   // FIXME: workaround to fix the tests. We should inject
   // the client instead of mocking `createClient`.
-  if (!client.onDisconnect) {
-    client.onDisconnect = noop;
+  if (!client.onClose) {
+    client.onClose = noop;
   }
 
   if (withL10n) {

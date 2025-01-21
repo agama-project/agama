@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -47,6 +47,7 @@ const microOs: Product = {
   icon: "microos.svg",
   description: "MicroOS description",
   registration: "no",
+  license: "fake.license",
 };
 
 let mockSelectedProduct: Product;
@@ -67,8 +68,41 @@ jest.mock("~/queries/software", () => ({
 
 describe("ProductSelectionPage", () => {
   beforeEach(() => {
-    mockSelectedProduct = tumbleweed;
+    mockSelectedProduct = microOs;
     registrationInfoMock = { key: "", email: "" };
+  });
+
+  describe("when user select a product with license", () => {
+    beforeEach(() => {
+      mockSelectedProduct = undefined;
+    });
+
+    it("force license acceptance for allowing product selection", async () => {
+      const { user } = installerRender(<ProductSelectionPage />);
+      expect(screen.queryByRole("checkbox", { name: /I have read and accept/ })).toBeNull();
+      const selectButton = screen.getByRole("button", { name: "Select" });
+      const microOsOption = screen.getByRole("radio", { name: microOs.name });
+      await user.click(microOsOption);
+      const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
+      expect(licenseCheckbox).not.toBeChecked();
+      expect(selectButton).toBeDisabled();
+      await user.click(licenseCheckbox);
+      expect(licenseCheckbox).toBeChecked();
+      expect(selectButton).not.toBeDisabled();
+    });
+  });
+
+  describe("when there is a product with license previouly selected", () => {
+    beforeEach(() => {
+      mockSelectedProduct = microOs;
+    });
+
+    it("does not allow revoking license acceptance", () => {
+      installerRender(<ProductSelectionPage />);
+      const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
+      expect(licenseCheckbox).toBeChecked();
+      expect(licenseCheckbox).toBeDisabled();
+    });
   });
 
   describe("when there is a registration code set", () => {
@@ -103,18 +137,18 @@ describe("ProductSelectionPage", () => {
   describe("when the user chooses a product and hits the confirmation button", () => {
     it("triggers the product selection", async () => {
       const { user } = installerRender(<ProductSelectionPage />);
-      const productOption = screen.getByRole("radio", { name: microOs.name });
+      const productOption = screen.getByRole("radio", { name: tumbleweed.name });
       const selectButton = screen.getByRole("button", { name: "Select" });
       await user.click(productOption);
       await user.click(selectButton);
-      expect(mockConfigMutation).toHaveBeenCalledWith({ product: microOs.id });
+      expect(mockConfigMutation).toHaveBeenCalledWith({ product: tumbleweed.id });
     });
   });
 
   describe("when the user chooses a product but hits the cancel button", () => {
     it("does not trigger the product selection and goes back", async () => {
       const { user } = installerRender(<ProductSelectionPage />);
-      const productOption = screen.getByRole("radio", { name: microOs.name });
+      const productOption = screen.getByRole("radio", { name: tumbleweed.name });
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
       await user.click(productOption);
       await user.click(cancelButton);

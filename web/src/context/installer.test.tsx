@@ -44,7 +44,8 @@ describe("installer context", () => {
     (createDefaultClient as jest.Mock).mockImplementation(() => {
       return {
         onConnect: jest.fn(),
-        onDisconnect: jest.fn(),
+        onClose: jest.fn(),
+        onError: jest.fn(),
       };
     });
   });

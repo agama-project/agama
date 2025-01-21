@@ -52,6 +52,8 @@ use zbus::proxy;
 /// * Order.
 pub type PatternsMap = std::collections::HashMap<String, (String, String, String, String, String)>;
 
+pub type Repository = (i32, String, String, String, String, bool, bool);
+
 #[proxy(
     default_service = "org.opensuse.Agama.Software1",
     default_path = "/org/opensuse/Agama/Software1",
@@ -76,6 +78,9 @@ pub trait Software1 {
 
     /// ListPatterns method
     fn list_patterns(&self, filtered: bool) -> zbus::Result<PatternsMap>;
+
+    /// ListRepositories method
+    fn list_repositories(&self) -> zbus::Result<Vec<Repository>>;
 
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
