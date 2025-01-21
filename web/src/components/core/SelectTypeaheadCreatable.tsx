@@ -37,13 +37,17 @@ import TimesIcon from "@patternfly/react-icons/dist/esm/icons/times-icon";
 import { _ } from "~/i18n";
 
 export type SelectTypeaheadCreatableProps = {
+  value?: string;
+  onChange?: (value: string) => void;
   options: SelectOptionProps[];
   // Placeholder for the select.
   placeholder?: string;
-  // Text to show for adding a new option. By default is 'Add "value"'.
-  addText?: string;
+  // Text to show for creating a new option. By default is 'Add "value"'.
+  createText?: string;
   // Whether the new options are accumulated.
   isStackable?: boolean;
+  // Whether the created options are removed as side effect of cleaning the field.
+  isCleanable?: boolean;
 };
 
 /**
@@ -56,7 +60,7 @@ export default function SelectTypeaheadCreatable(
   props: SelectTypeaheadCreatableProps,
 ): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<string>("");
+  const [selected, setSelected] = React.useState<string>(props.value || "");
   const [inputValue, setInputValue] = React.useState<string>("");
   const [filterValue, setFilterValue] = React.useState<string>("");
   const [options, setOptions] = React.useState<SelectOptionProps[]>(props.options);
@@ -66,8 +70,10 @@ export default function SelectTypeaheadCreatable(
   const textInputRef = React.useRef<HTMLInputElement>();
 
   const CREATE_NEW = "create";
-  const addText = props.addText ?? _("Add");
+  const createText = props.createText ?? _("Add");
   const isStackable = props.isStackable ?? false;
+  const isCleanable = props.isCleanable ?? false;
+  const onChange = props.onChange;
 
   React.useEffect(() => {
     let newSelectOptions: SelectOptionProps[] = options;
@@ -82,7 +88,7 @@ export default function SelectTypeaheadCreatable(
       if (!options.some((option) => option.value === filterValue)) {
         newSelectOptions = [
           ...newSelectOptions,
-          { children: `${addText} "${filterValue}"`, value: CREATE_NEW },
+          { children: `${createText} "${filterValue}"`, value: CREATE_NEW },
         ];
       }
 
@@ -93,7 +99,7 @@ export default function SelectTypeaheadCreatable(
     }
 
     setSelectOptions(newSelectOptions);
-  }, [filterValue, isOpen, options, addText]);
+  }, [filterValue, isOpen, options, createText]);
 
   const createItemId = (value) => `select-typeahead-${value.replace(" ", "-")}`;
 
@@ -127,15 +133,14 @@ export default function SelectTypeaheadCreatable(
     setInputValue(String(content));
     setFilterValue("");
     setSelected(String(value));
+    onChange && onChange(String(value));
 
     closeMenu();
   };
 
-  const onSelect = (
-    _event: React.MouseEvent<Element, MouseEvent> | undefined,
-    value: string | number | undefined,
-  ) => {
+  const onSelect = (event: React.UIEvent | undefined, value: string | number | undefined) => {
     if (value) {
+      event.preventDefault();
       if (value === CREATE_NEW) {
         if (!options.some((item) => item.children === filterValue)) {
           const initialOptions = isStackable ? options : props.options;
@@ -218,7 +223,7 @@ export default function SelectTypeaheadCreatable(
     switch (event.key) {
       case "Enter":
         if (isOpen && focusedItem && !focusedItem.isAriaDisabled) {
-          onSelect(undefined, focusedItem.value as string);
+          onSelect(event, focusedItem.value as string);
         }
 
         if (!isOpen) {
@@ -245,6 +250,7 @@ export default function SelectTypeaheadCreatable(
     setFilterValue("");
     resetActiveAndFocusedItem();
     textInputRef?.current?.focus();
+    if (isCleanable) setOptions(props.options);
   };
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
