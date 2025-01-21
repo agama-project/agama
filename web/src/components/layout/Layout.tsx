@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Masthead, Page, PageProps } from "@patternfly/react-core";
 import { Questions } from "~/components/questions";
@@ -35,6 +35,16 @@ export type LayoutProps = React.PropsWithChildren<{
   headerOptions?: HeaderProps;
 }>;
 
+const focusDrawer = (drawer: HTMLElement | null) => {
+  if (drawer === null) return;
+
+  const firstTabbableItem = drawer.querySelector("a, button") as
+    | HTMLAnchorElement
+    | HTMLButtonElement
+    | null;
+  firstTabbableItem?.focus();
+};
+
 /**
  * Component for laying out the application content inside a PF/Page that might
  * or might not mount a header and a sidebar depending on the given props.
@@ -47,6 +57,7 @@ const Layout = ({
   headerOptions = {},
   children,
 }: LayoutProps) => {
+  const drawerRef = useRef();
   const location = useLocation();
   const [issuesDrawerVisible, setIssuesDrawerVisible] = useState<boolean>(false);
   const closeIssuesDrawer = () => setIssuesDrawerVisible(false);
@@ -67,7 +78,7 @@ const Layout = ({
     );
     // notificationDrawer is open/close from the header, it does not make sense
     // to mount it if there is no header.
-    pageProps.notificationDrawer = <IssuesDrawer onClose={closeIssuesDrawer} />;
+    pageProps.notificationDrawer = <IssuesDrawer onClose={closeIssuesDrawer} ref={drawerRef} />;
     pageProps.isNotificationDrawerExpanded = issuesDrawerVisible;
   } else {
     // FIXME: render an empty Masthead instead of nothing, in order to have
@@ -78,7 +89,12 @@ const Layout = ({
 
   return (
     <>
-      <Page isContentFilled {...pageProps} className="agm-layout">
+      <Page
+        isContentFilled
+        {...pageProps}
+        onNotificationDrawerExpand={() => focusDrawer(drawerRef.current)}
+        className="agm-layout"
+      >
         <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
       </Page>
       {location.pathname !== ROOT.login && <Questions />}

@@ -57,7 +57,7 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
   return (
     <NotificationDrawer ref={ref}>
       <NotificationDrawerHeader title={_("Pre-installation checks")} onClose={onClose} />
-      <NotificationDrawerBody className="agama-issues-drawer-body">
+      <NotificationDrawerBody className="agm-issues-drawer-body">
         <Stack hasGutter>
           <p>
             {_(

@@ -95,6 +95,20 @@
   }
 }
 
+.agm-issues-drawer-body {
+  padding: var(--pf-t--global--spacer--lg);
+
+  h4 a {
+    text-decoration: underline;
+    font-weight: var(--pf-t--global--font--weight--400);
+  }
+
+  ul li.pf-m-info,
+  ul li.pf-m-warning {
+    --pf-v6-c-notification-drawer__list-item--before--BackgroundColor: none;
+  }
+}
+
 // PatternFly overrides
 
 .pf-v6-c-masthead__main {
