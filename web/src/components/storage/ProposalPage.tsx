@@ -32,13 +32,7 @@ import ConfigEditorMenu from "./ConfigEditorMenu";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import {
-  useDevices,
-  useDeprecated,
-  useDeprecatedChanges,
-  useActions,
-  useReprobeMutation,
-} from "~/queries/storage";
+import { useDeprecated, useDeprecatedChanges, useReprobeMutation } from "~/queries/storage";
 import { _ } from "~/i18n";
 
 /**
@@ -65,11 +59,8 @@ export const NOT_AFFECTED = {
 };
 
 export default function ProposalPage() {
-  const systemDevices = useDevices("system");
-  const stagingDevices = useDevices("result");
   const isDeprecated = useDeprecated();
   const { mutateAsync: reprobe } = useReprobeMutation();
-  const actions = useActions();
 
   useDeprecatedChanges();
 
@@ -128,13 +119,7 @@ export default function ProposalPage() {
             <EncryptionField password={""} isLoading={false} />
           </GridItem>
           <GridItem sm={12}>
-            <ProposalResultSection
-              system={systemDevices}
-              staging={stagingDevices}
-              actions={actions}
-              errors={errors}
-              isLoading={false}
-            />
+            <ProposalResultSection errors={errors} isLoading={false} />
           </GridItem>
         </Grid>
       </Page.Content>

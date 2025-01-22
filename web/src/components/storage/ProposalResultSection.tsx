@@ -27,8 +27,8 @@ import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
-import { Action, StorageDevice } from "~/types/storage";
 import { ValidationError } from "~/types/issues";
+import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -111,20 +111,17 @@ function ActionsList({ manager }: ActionsListProps) {
 }
 
 export type ProposalResultSectionProps = {
-  system?: StorageDevice[];
-  staging?: StorageDevice[];
-  actions?: Action[];
   errors?: ValidationError[];
   isLoading?: boolean;
 };
 
 export default function ProposalResultSection({
-  system = [],
-  staging = [],
-  actions = [],
   errors = [],
   isLoading = false,
 }: ProposalResultSectionProps) {
+  const system = useDevices("system", { suspense: true });
+  const staging = useDevices("result", { suspense: true });
+  const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
 
   return (
