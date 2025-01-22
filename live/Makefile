@@ -15,6 +15,8 @@ FLAVOR = openSUSE
 # to use a different project run "make build OBS_PROJECT=<project>"
 OBS_PROJECT = "systemsmanagement:Agama:Devel"
 OBS_PACKAGE = "agama-installer"
+# to use internal OBS add "OBS_API=https://api.suse.de"
+OBS_API = "https://api.opensuse.org"
 
 # files to copy from src/
 COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%,$(wildcard $(SRCDIR)/*))
@@ -53,8 +55,9 @@ $(DESTDIR)/%.tar.xz: % $$(shell find % -type f,l)
 
 # build the ISO locally
 build: $(DESTDIR)
-	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc co -o $(DESTDIR) $(OBS_PROJECT) $(OBS_PACKAGE); fi
+	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc -A $(OBS_API) co -o $(DESTDIR) $(OBS_PROJECT) $(OBS_PACKAGE); fi
 	$(MAKE) all
-	(cd $(DESTDIR) && osc build -M $(FLAVOR) images)
+	# allow passing optional parameters to osc like "-p <dir>" or "-k <dir>"
+	(cd $(DESTDIR) && osc -A $(OBS_API) build -M $(FLAVOR) $(OSC_OPTS) images)
 
 .PHONY: build all clean
