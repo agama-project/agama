@@ -50,11 +50,12 @@
   --pf-t--global--font--size--600: 1.75rem;
   --pf-t--global--font--size--700: 2rem;
   --pf-t--global--font--size--800: 2.25rem;
-  --pf-t--global--font--weight--100: 400;
-  --pf-t--global--font--weight--200: 500;
-  --pf-t--global--font--weight--300: 500;
-  --pf-t--global--font--weight--400: 700;
+  --pf-t--global--font--weight--100: 100;
+  --pf-t--global--font--weight--200: 600;
+  --pf-t--global--font--weight--300: 700;
+  --pf-t--global--font--weight--400: 800;
   --pf-t--global--breakpoint--lg: 64rem;
+  --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
 }
 
 // Temporary CSS rules written during migration to PFv6
