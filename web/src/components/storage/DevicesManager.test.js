@@ -301,24 +301,27 @@ describe("usedDevices", () => {
   beforeEach(() => {
     system = [
       { sid: 60, isDrive: false },
-      { sid: 61, isDrive: true },
-      { sid: 62, isDrive: true, partitionTable: { partitions: [{ sid: 67 }] } },
-      { sid: 63, isDrive: true, partitionTable: { partitions: [] } },
+      { sid: 61, isDrive: true, name: "/dev/sda" },
+      { sid: 62, isDrive: true, name: "/dev/sdb", partitionTable: { partitions: [{ sid: 67 }] } },
+      { sid: 63, isDrive: true, name: "/dev/sdc", partitionTable: { partitions: [] } },
       { sid: 64, isDrive: false, type: "lvmVg", logicalVolumes: [] },
       { sid: 65, isDrive: false, type: "lvmVg", logicalVolumes: [] },
       { sid: 66, isDrive: false, type: "lvmVg", logicalVolumes: [{ sid: 68 }] },
+      { sid: 72, isDrive: true, name: "/dev/sdd" },
     ];
     staging = [
       { sid: 60, isDrive: false },
       // Partition removed
-      { sid: 62, isDrive: true, partitionTable: { partitions: [] } },
+      { sid: 62, isDrive: true, name: "/dev/sdb", partitionTable: { partitions: [] } },
       // Partition added
-      { sid: 63, isDrive: true, partitionTable: { partitions: [{ sid: 69 }] } },
+      { sid: 63, isDrive: true, name: "/dev/sdc", partitionTable: { partitions: [{ sid: 69 }] } },
       { sid: 64, isDrive: false, type: "lvmVg", logicalVolumes: [] },
       // Logical volume added
       { sid: 65, isDrive: false, type: "lvmVg", logicalVolumes: [{ sid: 70 }, { sid: 71 }] },
       // Logical volume removed
       { sid: 66, isDrive: false, type: "lvmVg", logicalVolumes: [] },
+      // Not modified
+      { sid: 72, isDrive: true, name: "/dev/sdd" },
     ];
   });
 
@@ -327,9 +330,21 @@ describe("usedDevices", () => {
       actions = [];
     });
 
-    it("returns an empty list", () => {
+    it("returns an empty list if no argument is passed", () => {
       const manager = new DevicesManager(system, staging, actions);
       expect(manager.usedDevices()).toEqual([]);
+    });
+
+    it("returns an empty list if non-existent names are passed", () => {
+      const manager = new DevicesManager(system, staging, actions);
+      expect(manager.usedDevices(["/dev/nodisk"])).toEqual([]);
+    });
+
+    it("returns a list including only the disks passed by argument", () => {
+      const manager = new DevicesManager(system, staging, actions);
+      const devs = manager.usedDevices(["/dev/sdb", "/dev/sdb"]);
+      expect(devs.length).toEqual(1);
+      expect(devs[0].sid).toEqual(62);
     });
   });
 
@@ -369,6 +384,15 @@ describe("usedDevices", () => {
         .map((d) => d.sid)
         .sort();
       expect(sids).toEqual([62, 63, 65, 66]);
+    });
+
+    it("also includes extra disks passed as argument without repeating redundant ones", () => {
+      const manager = new DevicesManager(system, staging, actions);
+      const sids = manager
+        .usedDevices(["/dev/sdb", "/dev/sdd"])
+        .map((d) => d.sid)
+        .sort();
+      expect(sids).toEqual([62, 63, 65, 66, 72]);
     });
   });
 });

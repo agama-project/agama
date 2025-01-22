@@ -33,9 +33,11 @@ const errorMessage = "Something went wrong, proposal not possible";
 const errors = [{ severity: 0, message: errorMessage }];
 const defaultProps: ProposalResultSectionProps = {};
 const mockUseActionsFn = jest.fn();
+const mockConfig = { drives: [] };
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
+  useConfigModel: () => mockConfig,
   useDevices: () => devices.staging,
   useActions: () => mockUseActionsFn(),
 }));
