@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -34,9 +34,11 @@ use thiserror::Error;
 ///
 /// It contains the license ID and the list of languages that with a translation.
 #[serde_as]
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct License {
+    /// License ID.
     pub id: String,
+    /// Languages in which the license is translated.
     #[serde_as(as = "Vec<DisplayFromStr>")]
     pub languages: Vec<LanguageTag>,
 }
@@ -46,9 +48,11 @@ pub struct License {
 /// It contains the license ID and the body.
 ///
 /// TODO: in the future it might contain a title, extracted from the text.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct LicenseContent {
+    /// License ID.
     pub id: String,
+    /// License text.
     pub body: String,
 }
 
@@ -106,13 +110,13 @@ impl LicensesRepo {
         }
         candidates.push(format!("license.{}.txt", language.language));
         candidates.push("license.txt".to_string());
-        tracing::info!("Searching for license: {:?}", &candidates);
+        log::info!("Searching for license: {:?}", &candidates);
 
         let license_path = candidates
             .into_iter()
             .map(|p| self.path.join(id).join(p))
             .find(|p| p.exists())?;
-        tracing::info!("Reading license from {}", &license_path.display());
+        log::info!("Reading license from {}", &license_path.display());
 
         let body: String = std::fs::read_to_string(license_path).ok()?;
 
@@ -146,7 +150,7 @@ impl LicensesRepo {
     /// The language is inferred from the file name (e.g., "es-ES" for license.es_ES.txt").
     fn language_tag_from_file(name: &str) -> Option<LanguageTag> {
         if !name.starts_with("license") {
-            tracing::warn!("Unexpected file in the licenses directory: {}", &name);
+            log::warn!("Unexpected file in the licenses directory: {}", &name);
             return None;
         }
         let mut parts = name.split(".");
@@ -175,7 +179,7 @@ impl Default for LicensesRepo {
 /// Simplified representation of the RFC 5646 language code.
 ///
 /// It only considers xx and xx-XX formats.
-#[derive(Clone, Debug, Serialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, PartialEq, utoipa::ToSchema)]
 pub struct LanguageTag {
     // ISO-639
     pub language: String,
@@ -225,8 +229,7 @@ impl TryFrom<&str> for LanguageTag {
 
 #[cfg(test)]
 mod test {
-    use super::LicensesRepo;
-    use crate::software::license::LanguageTag;
+    use super::{LanguageTag, LicensesRepo};
     use std::path::Path;
 
     fn build_repo() -> LicensesRepo {

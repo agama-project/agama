@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,103 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+mod license;
+mod packages;
+mod registration;
 
-/// Software service configuration (product, patterns, etc.).
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct SoftwareConfig {
-    /// A map where the keys are the pattern names and the values whether to install them or not.
-    pub patterns: Option<HashMap<String, bool>>,
-    /// Name of the product to install.
-    pub product: Option<String>,
-}
-
-/// Software service configuration (product, patterns, etc.).
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct RegistrationParams {
-    /// Registration key.
-    pub key: String,
-    /// Registration email.
-    pub email: String,
-}
-
-/// Information about registration configuration (product, patterns, etc.).
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct RegistrationInfo {
-    /// Registration key. Empty value mean key not used or not registered.
-    pub key: String,
-    /// Registration email. Empty value mean email not used or not registered.
-    pub email: String,
-}
-
-#[derive(
-    Clone,
-    Default,
-    Debug,
-    Serialize,
-    Deserialize,
-    strum::Display,
-    strum::EnumString,
-    utoipa::ToSchema,
-)]
-#[strum(serialize_all = "camelCase")]
-#[serde(rename_all = "camelCase")]
-pub enum RegistrationRequirement {
-    /// Product does not require registration
-    #[default]
-    No = 0,
-    /// Product has optional registration
-    Optional = 1,
-    /// It is mandatory to register the product
-    Mandatory = 2,
-}
-
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct RegistrationError {
-    /// ID of error. See dbus API for possible values
-    pub id: u32,
-    /// human readable error string intended to be displayed to user
-    pub message: String,
-}
-
-/// Software resolvable type (package or pattern).
-#[derive(Deserialize, Serialize, strum::Display, utoipa::ToSchema)]
-#[strum(serialize_all = "camelCase")]
-#[serde(rename_all = "camelCase")]
-pub enum ResolvableType {
-    Package = 0,
-    Pattern = 1,
-}
-
-/// Resolvable list specification.
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
-pub struct ResolvableParams {
-    /// List of resolvables.
-    pub names: Vec<String>,
-    /// Resolvable type.
-    pub r#type: ResolvableType,
-    /// Whether the resolvables are optional or not.
-    pub optional: bool,
-}
-
-/// Repository list specification.
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Repository {
-    /// repository identifier
-    pub id: i32,
-    /// repository alias. Has to be unique
-    pub alias: String,
-    /// repository name
-    pub name: String,
-    /// Repository url (raw format without expanded variables)
-    pub url: String,
-    /// product directory (currently not used, valid only for multiproduct DVDs)
-    pub product_dir: String,
-    /// Whether the repository is enabled
-    pub enabled: bool,
-    /// Whether the repository is loaded
-    pub loaded: bool,
-}
+pub use license::*;
+pub use packages::*;
+pub use registration::*;
