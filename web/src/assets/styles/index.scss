@@ -54,9 +54,27 @@
   --pf-t--global--font--weight--200: 500;
   --pf-t--global--font--weight--300: 500;
   --pf-t--global--font--weight--400: 700;
+  --pf-t--global--breakpoint--lg: 64rem;
 }
 
 // Temporary CSS rules written during migration to PFv6
+
+// Reserve the sidebar space also for "lg" breakpoint
+@media (width >= 64rem) {
+  .pf-v6-c-page.agm-full-layout {
+    --pf-v6-c-page__sidebar--Width: 12rem; // var(--pf-v6-c-page__sidebar--xl--Width);
+    grid-template-areas:
+      "header  header"
+      "sidebar main  ";
+    grid-template-columns: var(--pf-v6-c-page__sidebar--Width) 1fr;
+  }
+
+  .pf-v6-c-page__sidebar.pf-m-collapsed + .pf-v6-c-page__drawer {
+    --pf-v6-c-page__main-container--GridArea: var(
+      --pf-v6-c-page--masthead--main-container--GridArea
+    );
+  }
+}
 
 #productSelectionForm img {
   max-inline-size: 100px;
