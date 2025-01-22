@@ -28,8 +28,10 @@ import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
 import { IssuesDrawer } from "~/components/core";
 import { ROOT } from "~/routes/paths";
+import { agamaWidthBreakpoints, getBreakpoint } from "~/utils";
 
 export type LayoutProps = React.PropsWithChildren<{
+  className?: string;
   mountHeader?: boolean;
   mountSidebar?: boolean;
   headerOptions?: HeaderProps;
@@ -56,21 +58,35 @@ const Layout = ({
   mountSidebar = true,
   headerOptions = {},
   children,
+  ...props
 }: LayoutProps) => {
   const drawerRef = useRef();
   const location = useLocation();
   const [issuesDrawerVisible, setIssuesDrawerVisible] = useState<boolean>(false);
   const closeIssuesDrawer = () => setIssuesDrawerVisible(false);
   const toggleIssuesDrawer = () => setIssuesDrawerVisible(!issuesDrawerVisible);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const [windowSize, setWindowSize] = useState<number>();
+
+  const onPageResize = (_, { windowSize: newWindowSize }: { windowSize: number }) => {
+    if (newWindowSize === windowSize) return;
+    setWindowSize(newWindowSize);
+    mountSidebar && setIsSidebarOpen(newWindowSize >= agamaWidthBreakpoints.lg);
+  };
 
   const pageProps: Omit<PageProps, keyof React.HTMLProps<HTMLDivElement>> = {
     isManagedSidebar: true,
   };
 
-  if (mountSidebar) pageProps.sidebar = <Sidebar />;
+  if (mountSidebar) {
+    pageProps.sidebar = <Sidebar isManagedSidebar={false} isSidebarOpen={isSidebarOpen} />;
+    pageProps.isManagedSidebar = false;
+  }
   if (mountHeader) {
     pageProps.masthead = (
       <Header
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         showSidebarToggle={mountSidebar}
         toggleIssuesDrawer={toggleIssuesDrawer}
         {...headerOptions}
@@ -90,10 +106,12 @@ const Layout = ({
   return (
     <>
       <Page
+        onPageResize={onPageResize}
+        getBreakpoint={getBreakpoint}
         isContentFilled
         {...pageProps}
+        {...props}
         onNotificationDrawerExpand={() => focusDrawer(drawerRef.current)}
-        className="agm-layout"
       >
         <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
       </Page>
@@ -104,6 +122,7 @@ const Layout = ({
 
 /** Default props for FullLayout */
 const fullProps: LayoutProps = {
+  className: "agm-full-layout",
   mountHeader: true,
   mountSidebar: true,
   headerOptions: {
@@ -120,6 +139,7 @@ const Full = (props: LayoutProps) => <Layout {...fullProps} {...props} />;
 
 /** Default props for PlainLayout */
 const plainProps: LayoutProps = {
+  className: "agm-plain-layout",
   mountHeader: true,
   mountSidebar: false,
   headerOptions: {

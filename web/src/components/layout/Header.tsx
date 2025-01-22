@@ -59,6 +59,8 @@ export type HeaderProps = {
   showInstallerOptions?: boolean;
   /** Callback to be triggered for toggling the IssuesDrawer visibility */
   toggleIssuesDrawer?: () => void;
+  isSidebarOpen?: boolean;
+  toggleSidebar?: () => void;
 };
 
 const OptionsDropdown = ({ showInstallerOptions }) => {
@@ -123,6 +125,8 @@ export default function Header({
   showSidebarToggle = true,
   showProductName = true,
   toggleIssuesDrawer,
+  isSidebarOpen,
+  toggleSidebar,
 }: HeaderProps): React.ReactNode {
   const location = useLocation();
   const { selectedProduct } = useProduct();
@@ -143,6 +147,8 @@ export default function Header({
         {showSidebarToggle && (
           <MastheadToggle>
             <PageToggleButton
+              isSidebarOpen={isSidebarOpen}
+              onSidebarToggle={toggleSidebar}
               id="uncontrolled-nav-toggle"
               variant="plain"
               aria-label={_("Main navigation")}

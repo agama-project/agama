@@ -22,7 +22,15 @@
 
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Nav, NavItem, NavList, PageSidebar, PageSidebarBody, Stack } from "@patternfly/react-core";
+import {
+  Nav,
+  NavItem,
+  NavList,
+  PageSidebar,
+  PageSidebarBody,
+  PageSidebarProps,
+  Stack,
+} from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { ChangeProductLink } from "~/components/core";
 import { rootRoutes } from "~/router";
@@ -62,9 +70,9 @@ const MainNavigation = (): React.ReactNode => {
   );
 };
 
-export default function Sidebar(): React.ReactNode {
+export default function Sidebar(props: PageSidebarProps): React.ReactNode {
   return (
-    <PageSidebar id="agama-sidebar">
+    <PageSidebar id="agama-sidebar" {...props}>
       <PageSidebarBody isFilled>
         <MainNavigation />
       </PageSidebarBody>
