@@ -29,4 +29,5 @@ end
 
 require "agama/software/callbacks/media"
 require "agama/software/callbacks/progress"
+require "agama/software/callbacks/provide"
 require "agama/software/callbacks/signature"
