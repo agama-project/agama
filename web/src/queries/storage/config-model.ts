@@ -279,7 +279,7 @@ export function useBoot(): BootHook {
 }
 
 export type PartitionHook = {
-  onDelete: () => void;
+  delete: () => void;
 };
 
 // driveName, like "/dev/sda"
@@ -291,7 +291,7 @@ export function usePartition(driveName: string, mountPath: string): PartitionHoo
   if (findPartition(model, driveName, mountPath) === undefined) return;
 
   return {
-    onDelete: () => mutate(deletePartition(model, driveName, mountPath)),
+    delete: () => mutate(deletePartition(model, driveName, mountPath)),
   };
 }
 

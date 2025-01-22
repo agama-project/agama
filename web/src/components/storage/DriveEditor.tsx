@@ -568,7 +568,7 @@ const PartitionsNoContentSelector = () => {
 };
 
 const PartitionMenuItem = ({ driveName, mountPath }) => {
-  const { onDelete } = usePartition(driveName, mountPath);
+  const { delete: deletePartition } = usePartition(driveName, mountPath);
 
   return (
     <MenuItem
@@ -587,7 +587,7 @@ const PartitionMenuItem = ({ driveName, mountPath }) => {
             icon={<Icon name="delete" size="xs" aria-label={"Delete"} />}
             actionId={`delete-${mountPath}`}
             aria-label={`Delete ${mountPath}`}
-            onClick={onDelete}
+            onClick={deletePartition}
           />
         </>
       }
