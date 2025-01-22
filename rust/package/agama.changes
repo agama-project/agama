@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 22 14:49:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added a workaround for stuck web UI when importing auto
+  installation profile with unreachable software repository
+  (gh#agama-project/agama#1933)
+
+-------------------------------------------------------------------
 Mon Jan 20 16:44:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - The web server provides /api/software/repositories endpoint
