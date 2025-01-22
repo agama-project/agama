@@ -44,8 +44,11 @@ module Agama
 
         # Register the callbacks
         def setup
-          Pkg.CallbackSourceCreateError(
-            fun_ref(method(:source_create_error), "symbol (string, symbol, string)")
+          Yast::Pkg.CallbackSourceCreateError(
+            Yast::FunRef.new(method(:source_create_error), "symbol (string, symbol, string)")
+          )
+          Yast::Pkg.CallbackSourceProbeError(
+            Yast::FunRef.new(method(:source_probe_error), "symbol (string, symbol, string)")
           )
         end
 
@@ -80,6 +83,45 @@ module Agama
 
           question = Agama::Question.new(
             qclass:         "software.source_create_error",
+            text:           message,
+            options:        [:Retry],
+            default_option: :Retry,
+            data:           { "url" => url, "description" => description }
+          )
+          questions_client.ask(question) do |_question_client|
+            :RETRY
+          end
+        end
+
+        # Probe source error callback
+        #
+        # @param url [String] Source URL
+        # @param error [Symbol] Error (:NOT_FOUND, :IO, :INVALID, :NO_ERROR, :REJECTED)
+        # @param description [String] Problem description.
+        # @return [Symbol] :RETRY or :ABORT (not implemented)
+        def source_probe_error(url, error, description)
+          logger.debug(
+            format(
+              "Source probe: error: url: %s, error: %s, description: %s",
+              Yast::URL.HidePassword(url), error, description
+            )
+          )
+          message =
+            case error
+            when :NOT_FOUND
+              _("Unable to retrieve the remote repository description.")
+            when :IO
+              _("An error occurred while retrieving the new metadata.")
+            when :INVALID
+              _("The repository is not valid.")
+            when :NO_ERROR
+              _("Repository probing details.")
+            when :REJECTED
+              _("Repository metadata is invalid.")
+            end
+
+          question = Agama::Question.new(
+            qclass:         "software.source_probe_error",
             text:           message,
             options:        [:Retry],
             default_option: :Retry,
