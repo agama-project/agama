@@ -37,16 +37,20 @@ export type SelectToggleOption = {
 
 export type SelectToggleProps = {
   value: string;
-  options: SelectToggleOption[];
+  label?: string;
+  options?: SelectToggleOption[];
   onChange?: (value: string) => void;
   isDisabled?: boolean;
+  children?: React.ReactElement;
 };
 
 export default function SelectToggle({
   value,
-  options,
+  label,
+  options = [],
   onChange,
-  isDisabled,
+  isDisabled = false,
+  children,
 }: SelectToggleProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -72,7 +76,7 @@ export default function SelectToggle({
         isExpanded={isOpen}
         isDisabled={isDisabled}
       >
-        {option.label}
+        {option?.label || label}
       </MenuToggle>
     );
   };
@@ -96,6 +100,7 @@ export default function SelectToggle({
           );
         })}
       </SelectList>
+      {children}
     </Select>
   );
 }
