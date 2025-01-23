@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import {
   Button,
   Card,
   CardBody,
+  Content,
   DataList,
   DataListCell,
   DataListItem,
@@ -166,7 +167,11 @@ const WifiDrawerPanelBody = ({
 const NetworkFormName = ({ network }) => {
   if (!network) return;
 
-  return <h3>{network === HIDDEN_NETWORK ? _("Connect to hidden network") : network.ssid}</h3>;
+  return (
+    <Content component="h3">
+      {network === HIDDEN_NETWORK ? _("Connect to hidden network") : network.ssid}
+    </Content>
+  );
 };
 
 const NetworkListName = ({ network, ...props }) => {
@@ -176,7 +181,7 @@ const NetworkListName = ({ network, ...props }) => {
     <Flex columnGap={{ default: "columnGapXs" }}>
       <b {...props}>{network.ssid}</b>
       {network.settings && (
-        <Label isCompact color="cyan" variant="outline">
+        <Label isCompact color="teal" variant="outline">
           {_("configured")}
         </Label>
       )}
@@ -245,7 +250,7 @@ function WifiNetworksListPage() {
   };
 
   return (
-    <Card isRounded isCompact>
+    <Card isCompact>
       <CardBody>
         <Drawer isExpanded={!!selected}>
           <DrawerContent

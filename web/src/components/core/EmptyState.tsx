@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,13 +23,11 @@
 import React from "react";
 import {
   EmptyState,
-  EmptyStateHeader,
   EmptyStateBody,
   Stack,
   EmptyStateFooter,
   EmptyStateActions,
   EmptyStateProps,
-  EmptyStateHeaderProps,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { IconProps } from "../layout/Icon";
@@ -38,7 +36,7 @@ type EmptyStateWrapperProps = {
   title: string;
   icon: IconProps["name"];
   color?: string;
-  headingLevel?: EmptyStateHeaderProps["headingLevel"];
+  headingLevel?: EmptyStateProps["headingLevel"];
   noPadding?: boolean;
   actions?: React.ReactNode;
   children?: React.ReactNode;
@@ -62,19 +60,22 @@ export default function EmptyStateWrapper({
   actions,
   children,
   ...rest
-}: Partial<EmptyStateProps> & EmptyStateWrapperProps) {
+}: Partial<Omit<EmptyStateProps, "icon">> & EmptyStateWrapperProps) {
   // @ts-ignore
   if (noPadding) rest.className = [rest.className, "no-padding"].join(" ").trim();
 
+  const EmptyStateIcon = () => <Icon name={icon} size="xxl" color={color} />;
+
   return (
-    <EmptyState variant="lg" {...rest}>
-      <EmptyStateHeader
-        headingLevel={headingLevel}
-        titleText={title}
-        // FIXME: Allow more colors, not only PF text utils. See core/Icon.jsx too.
-        titleClassName={`pf-v5-u-${color}`}
-        icon={<Icon name={icon} size="xxl" color={color} />}
-      />
+    <EmptyState
+      variant="lg"
+      headingLevel={headingLevel}
+      titleText={title}
+      // FIXME: Allow more colors, not only PF text utils. See core/Icon.jsx too.
+      titleClassName={`pf-v5-u-${color}`}
+      icon={EmptyStateIcon}
+      {...rest}
+    >
       {children && (
         <EmptyStateBody>
           <Stack hasGutter>{children}</Stack>

@@ -34,7 +34,7 @@ export default {
     "%s ディスク"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s を下記の情報で登録しました。"
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s は一括更新のできる不可変なシステムです。読み込み専用の btrfs ルートファイルシステムを利用して更新を適用します。"
@@ -42,11 +42,14 @@ export default {
   "%s logo": [
     "%s ロゴ"
   ],
+  "%s must be registered.": [
+    "%s を登録しなければなりません。"
+  ],
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
   ],
   "(optional)": [
-    ""
+    "(任意)"
   ],
   ", ": [
     ", "
@@ -460,7 +463,7 @@ export default {
     "暗号化パスワード"
   ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
-    ""
+    "製品を登録するのに必要な登録コードと、任意でメールアドレスを入力してください。"
   ],
   "Exact size": [
     "正確なサイズ"
@@ -550,7 +553,7 @@ export default {
     "GiB"
   ],
   "Hide": [
-    ""
+    "隠す"
   ],
   "Hide %d subvolume action": [
     "%d 個のサブボリューム処理を隠す"
@@ -623,6 +626,9 @@ export default {
   ],
   "Install new system on": [
     "新しいシステムのインストール先"
+  ],
+  "Install using an advanced configuration.": [
+    "高度な設定項目を利用してインストールします。"
   ],
   "Install using device %s and deleting all its content": [
     "デバイス %s の内容を全て削除してインストールします"
@@ -987,6 +993,12 @@ export default {
   "Presence of other volumes (%s)": [
     "その他のボリューム (%s) の存在"
   ],
+  "Product registered": [
+    "製品を登録しました"
+  ],
+  "Product registration form": [
+    "製品登録フォーム"
+  ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "データやプログラム、システムファイルを含むデバイス内の情報を保護する仕組みです。"
   ],
@@ -1007,6 +1019,9 @@ export default {
   ],
   "Register": [
     "登録"
+  ],
+  "Register it now": [
+    "今すぐ登録"
   ],
   "Registration": [
     "登録"
@@ -1118,6 +1133,9 @@ export default {
   ],
   "Setup root user authentication": [
     "root の認証方式の設定"
+  ],
+  "Show": [
+    "表示"
   ],
   "Show %d subvolume action": [
     "%d 個のサブボリューム処理を表示"
@@ -1282,7 +1300,7 @@ export default {
     "このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
   ],
   "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    ""
+    "現在のバージョンのビジュアルインターフェイスでは編集できない高度な設定を利用して、システム配置を行っています。この制限は将来バージョンの Agama でなくなる予定です。"
   ],
   "The system will use %s as its default language.": [
     "システムは %s を既定の言語として使用します。"

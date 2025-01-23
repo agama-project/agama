@@ -23,7 +23,7 @@
 import React from "react";
 import BootSelection from "~/components/storage/BootSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
-import { DeviceSelection, ISCSIPage, ProposalPage } from "~/components/storage";
+import { ISCSIPage, ProposalPage } from "~/components/storage";
 
 import { Route } from "~/types/routes";
 import { supportedDASD, probeDASD } from "~/api/storage/dasd";
@@ -41,10 +41,6 @@ const routes = (): Route => ({
     {
       index: true,
       element: <ProposalPage />,
-    },
-    {
-      path: PATHS.targetDevice,
-      element: <DeviceSelection />,
     },
     {
       path: PATHS.bootDevice,

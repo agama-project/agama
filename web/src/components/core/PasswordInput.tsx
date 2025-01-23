@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,13 @@
  */
 
 import React, { useState } from "react";
-import { Button, InputGroup, TextInput, TextInputProps } from "@patternfly/react-core";
+import {
+  Button,
+  InputGroup,
+  InputGroupItem,
+  TextInput,
+  TextInputProps,
+} from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
 
@@ -52,16 +58,22 @@ export default function PasswordInput({ id, inputRef, ...props }: PasswordInputP
 
   return (
     <InputGroup>
-      <TextInput {...props} ref={inputRef} id={id} type={showPassword ? "text" : "password"} />
-      <Button
-        id={`toggle-${id}-visibility`}
-        className="password-toggler"
-        aria-label={_("Password visibility button")}
-        variant="control"
-        onClick={() => setShowPassword((prev) => !prev)}
-        icon={<Icon name={visibilityIconName} size="xxs" />}
-        isDisabled={props.isDisabled}
-      />
+      <InputGroupItem isFill>
+        <TextInput {...props} ref={inputRef} id={id} type={showPassword ? "text" : "password"} />
+      </InputGroupItem>
+      <InputGroupItem>
+        <Button
+          id={`toggle-${id}-visibility`}
+          className="password-toggler"
+          aria-label={_("Password visibility button")}
+          variant="control"
+          onClick={() => setShowPassword((prev) => !prev)}
+          isDisabled={props.isDisabled}
+          isInline
+        >
+          <Icon name={visibilityIconName} style={{ width: "1em", height: "1em" }} />
+        </Button>
+      </InputGroupItem>
     </InputGroup>
   );
 }

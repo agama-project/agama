@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,11 +23,10 @@
 import React, { useState } from "react";
 import {
   Masthead,
-  MastheadProps,
   MastheadContent,
   MastheadToggle,
   MastheadMain,
-  MastheadBrand,
+  MastheadLogo,
   PageToggleButton,
   Toolbar,
   ToolbarContent,
@@ -39,6 +38,7 @@ import {
   DropdownList,
   DropdownItem,
   Divider,
+  Content,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
@@ -57,8 +57,6 @@ export type HeaderProps = {
   showProductName?: boolean;
   /** Whether the installer options link should be mounted */
   showInstallerOptions?: boolean;
-  /** The background color for the top bar */
-  background?: MastheadProps["backgroundColor"];
   /** Callback to be triggered for toggling the IssuesDrawer visibility */
   toggleIssuesDrawer?: () => void;
 };
@@ -124,7 +122,6 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
 export default function Header({
   showSidebarToggle = true,
   showProductName = true,
-  background = "dark",
   toggleIssuesDrawer,
 }: HeaderProps): React.ReactNode {
   const location = useLocation();
@@ -141,24 +138,30 @@ export default function Header({
     !["/login", "/products/progress"].includes(location.pathname);
 
   return (
-    <Masthead backgroundColor={background}>
-      {showSidebarToggle && (
-        <MastheadToggle>
-          <PageToggleButton
-            id="uncontrolled-nav-toggle"
-            variant="plain"
-            aria-label={_("Main navigation")}
-          >
-            <Icon name="menu" color="color-light-100" />
-          </PageToggleButton>
-        </MastheadToggle>
-      )}
-      <MastheadMain>{title && <MastheadBrand component="h1">{title}</MastheadBrand>}</MastheadMain>
+    <Masthead>
+      <MastheadMain>
+        {showSidebarToggle && (
+          <MastheadToggle>
+            <PageToggleButton
+              id="uncontrolled-nav-toggle"
+              variant="plain"
+              aria-label={_("Main navigation")}
+            >
+              <Icon name="menu" color="color-light-100" />
+            </PageToggleButton>
+          </MastheadToggle>
+        )}
+        {title && (
+          <MastheadLogo>
+            <Content component="h1">{title}</Content>
+          </MastheadLogo>
+        )}
+      </MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>
-            <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem spacer={{ default: "spacerSm" }}>
+            <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
+              <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
               <ToolbarItem>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,13 +21,8 @@
  */
 
 import React from "react";
-import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateBody,
-  EmptyStateHeader,
-} from "@patternfly/react-core";
-import { Center, Icon, PlainLayout } from "~/components/layout";
+import { Bullseye, EmptyState, EmptyStateBody } from "@patternfly/react-core";
+import { Icon, PlainLayout } from "~/components/layout";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
@@ -39,16 +34,16 @@ function ServerError() {
     <PlainLayout mountHeader={false} mountSidebar={false}>
       <Page>
         <Page.Content>
-          <Center>
-            <EmptyState variant="xl">
-              <EmptyStateHeader
-                titleText={_("Cannot connect to Agama server")}
-                headingLevel="h2"
-                icon={<EmptyStateIcon icon={ErrorIcon} />}
-              />
+          <Bullseye>
+            <EmptyState
+              variant="xl"
+              titleText={_("Cannot connect to Agama server")}
+              headingLevel="h2"
+              icon={ErrorIcon}
+            >
               <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
             </EmptyState>
-          </Center>
+          </Bullseye>
         </Page.Content>
 
         <Page.Actions>

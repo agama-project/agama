@@ -67,6 +67,24 @@ module Agama
         private_constant :SOFTWARE_INTERFACE
 
         dbus_interface SOFTWARE_INTERFACE do
+          # array of repository properties: pkg-bindings ID, alias, name, URL, product dir, enabled
+          # and loaded flag
+          dbus_method :ListRepositories, "out Result:a(issssbb)" do
+            backend.repositories.repositories.map do |repo|
+              [
+                [
+                  repo.repo_id,
+                  repo.repo_alias,
+                  repo.name,
+                  repo.raw_url.uri.to_s,
+                  repo.product_dir,
+                  repo.enabled?,
+                  !!repo.loaded?
+                ]
+              ]
+            end
+          end
+
           # value of result hash is category, description, icon, summary and order
           dbus_method :ListPatterns, "in Filtered:b, out Result:a{s(sssss)}" do |filtered|
             [

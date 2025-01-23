@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,29 +28,19 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import React from "react";
-import { fetchConfig, refresh, setConfig } from "~/api/storage";
-import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import {
-  calculate,
+  fetchConfig,
+  setConfig,
   fetchActions,
   fetchDefaultVolume,
   fetchProductParams,
   fetchUsableDevices,
-} from "~/api/storage/proposal";
+  reprobe,
+} from "~/api/storage";
+import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
-import {
-  config,
-  ProductParams,
-  Volume as APIVolume,
-  ProposalSettingsPatch,
-} from "~/api/storage/types";
-import {
-  ProposalSettings,
-  ProposalResult,
-  StorageDevice,
-  Volume,
-  VolumeTarget,
-} from "~/types/storage";
+import { config, ProductParams, Volume as APIVolume } from "~/api/storage/types";
+import { Action, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
 
 import { QueryHookOptions } from "~/types/queries";
 
@@ -232,55 +222,11 @@ const proposalActionsQuery = {
 };
 
 /**
- * Hook that returns the current proposal (settings and actions).
+ * Hook that returns the actions to perform in the storage devices.
  */
-const useProposalResult = (): ProposalResult | undefined => {
-  const { data: actions } = useSuspenseQuery(proposalActionsQuery);
-
-  return { actions };
-};
-
-const useProposalMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: (settings: ProposalSettings) => {
-      const buildHttpVolume = (volume: Volume): APIVolume => {
-        return {
-          autoSize: volume.autoSize,
-          fsType: volume.fsType,
-          maxSize: volume.maxSize,
-          minSize: volume.minSize,
-          mountOptions: [],
-          mountPath: volume.mountPath,
-          snapshots: volume.snapshots,
-          target: volume.target,
-          targetDevice: volume.targetDevice?.name,
-        };
-      };
-
-      const buildHttpSettings = (settings: ProposalSettings): ProposalSettingsPatch => {
-        return {
-          bootDevice: settings.bootDevice,
-          configureBoot: settings.configureBoot,
-          encryptionMethod: settings.encryptionMethod,
-          encryptionPBKDFunction: settings.encryptionPBKDFunction,
-          encryptionPassword: settings.encryptionPassword,
-          spaceActions: settings.spacePolicy === "custom" ? settings.spaceActions : undefined,
-          spacePolicy: settings.spacePolicy,
-          target: settings.target,
-          targetDevice: settings.targetDevice,
-          targetPVDevices: settings.targetPVDevices,
-          volumes: settings.volumes?.map(buildHttpVolume),
-        };
-      };
-
-      const httpSettings = buildHttpSettings(settings);
-      return calculate(httpSettings);
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
-  };
-
-  return useMutation(query);
+const useActions = (): Action[] | undefined => {
+  const { data } = useSuspenseQuery(proposalActionsQuery);
+  return data;
 };
 
 const deprecatedQuery = {
@@ -314,30 +260,19 @@ const useDeprecatedChanges = () => {
   });
 };
 
-type RefreshHandler = {
-  onStart?: () => void;
-  onFinish?: () => void;
-};
-
 /**
  * Hook that reprobes the devices and recalculates the proposal using the current settings.
  */
-const useRefresh = (handler?: RefreshHandler) => {
+const useReprobeMutation = () => {
   const queryClient = useQueryClient();
-  const deprecated = useDeprecated();
+  const query = {
+    mutationFn: async () => {
+      await reprobe();
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
 
-  handler ||= {};
-  handler.onStart ||= () => undefined;
-  handler.onFinish ||= () => undefined;
-
-  React.useEffect(() => {
-    if (!deprecated) return;
-
-    handler.onStart();
-    refresh()
-      .then(() => queryClient.invalidateQueries({ queryKey: ["storage"] }))
-      .then(() => handler.onFinish());
-  }, [handler, deprecated, queryClient]);
+  return useMutation(query);
 };
 
 export {
@@ -348,11 +283,10 @@ export {
   useProductParams,
   useVolumeTemplates,
   useVolumeDevices,
-  useProposalResult,
-  useProposalMutation,
+  useActions,
   useDeprecated,
   useDeprecatedChanges,
-  useRefresh,
+  useReprobeMutation,
 };
 
 export * from "~/queries/storage/config-model";

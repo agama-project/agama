@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -62,7 +62,7 @@ export default function SnapshotsField({ rootVolume, onChange }: SnapshotsFieldP
       />
       <div>
         <div>{label}</div>
-        <div className={textStyles.color_200}>
+        <div className={textStyles.textColorPlaceholder}>
           {_(
             "Allows to boot to a previous version of the \
 system after configuration changes or software upgrades.",

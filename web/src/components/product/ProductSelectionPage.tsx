@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,21 +22,24 @@
 
 import React, { useState } from "react";
 import {
+  Bullseye,
+  Button,
   Card,
   CardBody,
+  Checkbox,
+  Flex,
   Form,
+  FormGroup,
   Grid,
   GridItem,
   List,
   ListItem,
   Split,
   Stack,
-  FormGroup,
-  Button,
+  StackItem,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Page } from "~/components/core";
-import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct, useRegistration } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
@@ -44,6 +47,8 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { PATHS } from "~/router";
 import { isEmpty } from "~/utils";
+import { Product } from "~/types/software";
+import LicenseDialog from "./LicenseDialog";
 
 const ResponsiveGridItem = ({ children }) => (
   <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -59,7 +64,7 @@ const Option = ({ product, isChecked, onChange }) => {
 
   return (
     <ListItem aria-label={product.name}>
-      <Card isRounded>
+      <Card>
         <CardBody>
           <Split hasGutter>
             <input
@@ -91,7 +96,7 @@ const Option = ({ product, isChecked, onChange }) => {
 const BackLink = () => {
   const navigate = useNavigate();
   return (
-    <Button size="lg" variant="link" onClick={() => navigate("/")}>
+    <Button variant="link" onClick={() => navigate("/")}>
       {_("Cancel")}
     </Button>
   );
@@ -102,6 +107,10 @@ function ProductSelectionPage() {
   const registration = useRegistration();
   const { products, selectedProduct } = useProduct({ suspense: true });
   const [nextProduct, setNextProduct] = useState(selectedProduct);
+  // FIXME: should not be accepted by default first selectedProduct is accepted
+  // because it's a singleProduct iso.
+  const [licenseAccepted, setLicenseAccepted] = useState(!!selectedProduct);
+  const [showLicense, setShowLicense] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   if (!isEmpty(registration?.key)) return <Navigate to={PATHS.root} />;
@@ -115,12 +124,27 @@ function ProductSelectionPage() {
     }
   };
 
-  const isSelectionDisabled = !nextProduct || nextProduct === selectedProduct;
+  const selectProduct = (product: Product) => {
+    setNextProduct(product);
+    setLicenseAccepted(selectedProduct === product);
+  };
+
+  const selectionHasChanged = nextProduct && nextProduct !== selectedProduct;
+  const mountLicenseCheckbox = !isEmpty(nextProduct?.license);
+  const isSelectionDisabled = !selectionHasChanged || (mountLicenseCheckbox && !licenseAccepted);
+
+  const [eulaTextStart, eulaTextLink, eulaTextEnd] = sprintf(
+    // TRANSLATORS: Text used for the license acceptance checkbox. %s will be
+    // replaced with the product name and the text in the square brackets [] is
+    // used for the link to show the license, please keep the brackets.
+    _("I have read and accept the [license] for %s"),
+    nextProduct?.name || selectedProduct?.name,
+  ).split(/[[\]]/);
 
   return (
     <Page>
       <Page.Content>
-        <Center>
+        <Bullseye>
           <Form id="productSelectionForm" onSubmit={onSubmit}>
             <Grid hasGutter>
               <ResponsiveGridItem>
@@ -131,7 +155,7 @@ function ProductSelectionPage() {
                         key={index}
                         product={product}
                         isChecked={nextProduct === product}
-                        onChange={() => setNextProduct(product)}
+                        onChange={() => selectProduct(product)}
                       />
                     ))}
                   </List>
@@ -139,17 +163,61 @@ function ProductSelectionPage() {
               </ResponsiveGridItem>
             </Grid>
           </Form>
-        </Center>
+        </Bullseye>
+        {showLicense && (
+          <LicenseDialog
+            onClose={() => setShowLicense(false)}
+            product={nextProduct || selectedProduct}
+          />
+        )}
       </Page.Content>
-      <Page.Actions>
-        {selectedProduct && !isLoading && <BackLink />}
-        <Page.Submit
-          form="productSelectionForm"
-          isDisabled={isSelectionDisabled}
-          isLoading={isLoading}
-        >
-          {_("Select")}
-        </Page.Submit>
+      <Page.Actions justifyContent="none">
+        <Grid>
+          <ResponsiveGridItem>
+            <Stack hasGutter>
+              <StackItem>
+                <Flex
+                  justifyContent={{ default: "justifyContentFlexEnd" }}
+                  columnGap={{ default: "columnGapSm" }}
+                >
+                  {mountLicenseCheckbox && (
+                    <Checkbox
+                      isChecked={licenseAccepted}
+                      onChange={(_, accepted) => setLicenseAccepted(accepted)}
+                      isDisabled={selectedProduct === nextProduct}
+                      id="license-acceptance"
+                      form="productSelectionForm"
+                      label={
+                        <>
+                          {eulaTextStart}{" "}
+                          <Button variant="link" isInline onClick={() => setShowLicense(true)}>
+                            {eulaTextLink}
+                          </Button>{" "}
+                          {eulaTextEnd}
+                        </>
+                      }
+                    />
+                  )}
+                </Flex>
+              </StackItem>
+              <StackItem>
+                <Flex
+                  justifyContent={{ default: "justifyContentFlexEnd" }}
+                  columnGap={{ default: "columnGapSm" }}
+                >
+                  {selectedProduct && !isLoading && <BackLink />}
+                  <Page.Submit
+                    form="productSelectionForm"
+                    isDisabled={isSelectionDisabled}
+                    isLoading={isLoading}
+                  >
+                    {_("Select")}
+                  </Page.Submit>
+                </Flex>
+              </StackItem>
+            </Stack>
+          </ResponsiveGridItem>
+        </Grid>
       </Page.Actions>
     </Page>
   );

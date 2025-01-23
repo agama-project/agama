@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -53,7 +53,7 @@ describe("EncryptionSettingsDialog", () => {
 
     it("allows settings the encryption", async () => {
       const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-      const checkbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
+      const checkbox = screen.getByRole("switch", { name: "Encrypt the system" });
       const passwordInput = screen.getByLabelText("Password");
       const confirmationInput = screen.getByLabelText("Password confirmation");
       const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
@@ -102,7 +102,7 @@ describe("EncryptionSettingsDialog", () => {
 
     it("allows unsetting the encryption", async () => {
       const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-      const checkbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
+      const checkbox = screen.getByRole("switch", { name: "Encrypt the system" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(checkbox).toBeChecked();
       await user.click(checkbox);
@@ -144,7 +144,7 @@ describe("EncryptionSettingsDialog", () => {
 
   it("does not allow sending not valid settings", async () => {
     const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-    const checkbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
+    const checkbox = screen.getByRole("switch", { name: "Encrypt the system" });
     const passwordInput = screen.getByLabelText("Password");
     const confirmationInput = screen.getByLabelText("Password confirmation");
     const acceptButton = screen.getByRole("button", { name: "Accept" });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { isValidElement } from "react";
-import { Button, ButtonProps, Modal, ModalProps } from "@patternfly/react-core";
+import React, { isValidElement, useId } from "react";
+import {
+  Button,
+  ButtonProps,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalHeaderProps,
+  ModalProps,
+} from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
@@ -29,6 +38,8 @@ import { partition } from "~/utils";
 type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
 type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps>;
 export type PopupProps = {
+  /** The dialog header */
+  title?: ModalHeaderProps["title"];
   /** The block/height size for the dialog. Default is "auto". */
   blockSize?: "auto" | "small" | "medium" | "large";
   /** The inline/width size for the dialog. Default is "medium". */
@@ -37,7 +48,8 @@ export type PopupProps = {
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
   loadingText?: string;
-} & Omit<ModalProps, "variant" | "size">;
+} & Omit<ModalProps, "title" | "size"> &
+  Pick<ModalHeaderProps, "description" | "titleIconVariant">;
 
 /**
  * Wrapper component for holding Popup actions
@@ -191,13 +203,16 @@ const AncillaryAction = ({ children, ...actionsProps }: PredefinedAction) => (
  *   </Popup>
  */
 const Popup = ({
+  title,
+  titleIconVariant,
+  description,
   isOpen = false,
   isLoading = false,
   // TRANSLATORS: progress message
   loadingText = _("Loading data..."),
-  showClose = false,
   inlineSize = "medium",
   blockSize = "auto",
+  variant = "medium",
   className = "",
   children,
   ...props
@@ -206,16 +221,22 @@ const Popup = ({
     isValidElement(child) ? child.type === Actions : false,
   );
 
+  const titleId = useId();
+  const contentId = useId();
+
   return (
     /** @ts-ignore */
     <Modal
+      variant={variant}
       {...props}
       isOpen={isOpen}
-      showClose={showClose}
-      actions={actions}
       className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
+      aria-labelledby={titleId}
+      aria-describedby={contentId}
     >
-      {isLoading ? <Loading text={loadingText} /> : content}
+      {title && <ModalHeader labelId={titleId} title={title} description={description} />}
+      <ModalBody id={contentId}>{isLoading ? <Loading text={loadingText} /> : content}</ModalBody>
+      <ModalFooter>{actions}</ModalFooter>
     </Modal>
   );
 };

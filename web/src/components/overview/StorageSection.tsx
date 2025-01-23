@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,18 +21,18 @@
  */
 
 import React from "react";
-import { Text, TextContent, TextVariants } from "@patternfly/react-core";
+import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
 import { useDevices, useConfigModel } from "~/queries/storage";
 import * as ConfigModel from "~/api/storage/types/config-model";
 
-const Content = ({ children }) => (
-  <TextContent>
-    <Text component={TextVariants.h3}>{_("Storage")}</Text>
+const SectionContent = ({ children }) => (
+  <>
+    <Content component="h3">{_("Storage")}</Content>
     {children}
-  </TextContent>
+  </>
 );
 
 /**
@@ -93,28 +93,28 @@ export default function StorageSection() {
 
   if (noDrive)
     return (
-      <Content>
-        <Text>{_("No device selected yet")}</Text>
-      </Content>
+      <SectionContent>
+        <Content>{_("No device selected yet")}</Content>
+      </SectionContent>
     );
 
   if (drives.length > 1) {
     return (
-      <Content>
+      <SectionContent>
         <span>{msgMultipleDisks(drives)}</span>
-      </Content>
+      </SectionContent>
     );
   }
 
   const [msg1, msg2] = msgSingleDisk(drives[0]).split("%s");
 
   return (
-    <Content>
-      <Text>
+    <SectionContent>
+      <Content>
         <span>{msg1}</span>
         <Em>{label(drives[0])}</Em>
         <span>{msg2}</span>
-      </Text>
-    </Content>
+      </Content>
+    </SectionContent>
   );
 }

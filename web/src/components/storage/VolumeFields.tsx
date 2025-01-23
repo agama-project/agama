@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -258,7 +258,7 @@ const FsField = ({ value, volume, isDisabled = false, onChange }: FsFieldProps) 
   }
 
   return (
-    <FormGroup isRequired label={label} labelIcon={<Info />} fieldId="fsType">
+    <FormGroup isRequired label={label} labelHelp={<Info />} fieldId="fsType">
       <FsSelect
         id="fsType"
         value={value}

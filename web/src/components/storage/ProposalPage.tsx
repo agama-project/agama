@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { Grid, GridItem, SplitItem } from "@patternfly/react-core";
+import React from "react";
+import { Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
 import { Page } from "~/components/core/";
 import { Loading } from "~/components/layout";
 import EncryptionField from "~/components/storage/EncryptionField";
@@ -32,7 +32,13 @@ import ConfigEditorMenu from "./ConfigEditorMenu";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useDevices, useProposalResult, useRefresh } from "~/queries/storage";
+import {
+  useDevices,
+  useDeprecated,
+  useDeprecatedChanges,
+  useActions,
+  useReprobeMutation,
+} from "~/queries/storage";
 import { _ } from "~/i18n";
 
 /**
@@ -59,25 +65,27 @@ export const NOT_AFFECTED = {
 };
 
 export default function ProposalPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const systemDevices = useDevices("system");
   const stagingDevices = useDevices("result");
-  const { actions } = useProposalResult();
+  const isDeprecated = useDeprecated();
+  const { mutateAsync: reprobe } = useReprobeMutation();
+  const actions = useActions();
 
-  useRefresh({
-    onStart: () => setIsLoading(true),
-    onFinish: () => setIsLoading(false),
-  });
+  useDeprecatedChanges();
+
+  React.useEffect(() => {
+    if (isDeprecated) reprobe().catch(console.log);
+  }, [isDeprecated, reprobe]);
 
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
 
-  if (isLoading) {
+  if (isDeprecated) {
     return (
       <Page>
         <Page.Header>
-          <h2>{_("Storage")}</h2>
+          <Content component="h2">{_("Storage")}</Content>
         </Page.Header>
 
         <Page.Content>
@@ -90,7 +98,7 @@ export default function ProposalPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Storage")}</h2>
+        <Content component="h2">{_("Storage")}</Content>
       </Page.Header>
 
       <Page.Content>

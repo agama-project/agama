@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -33,6 +33,12 @@ export default function ConfigEditor() {
     <List isPlain>
       {model.drives.map((drive, i) => {
         const device = devices.find((d) => d.name === drive.name);
+
+        /**
+         * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
+         * a iSCSI device).
+         */
+        if (device === undefined) return null;
 
         return (
           <ListItem key={i}>

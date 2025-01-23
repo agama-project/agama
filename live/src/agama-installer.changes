@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Mon Jan 20 10:37:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add SUSE licenses (jsc#PED-11987).
+
+-------------------------------------------------------------------
+Wed Jan 15 16:53:28 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Drop patterns-yast-yast2_basis requirement
+  yast packages should be installed per package and not as
+  a whole pattern.
+  (gh#agama-project/agama#1893).
+
+-------------------------------------------------------------------
 Fri Jan 10 21:22:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 11

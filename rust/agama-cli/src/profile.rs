@@ -72,7 +72,7 @@ pub enum ProfileCommands {
     /// installation. Unless there is a need to inject additional commands between processing
     /// use this command instead of set of underlying commands.
     Import {
-        /// Profile's URL. Supports the same schemas than te "download" command plus
+        /// Profile's URL. Supports the same schemas as the "download" command plus
         /// AutoYaST specific ones. Supported files are json, jsonnet, sh for Agama profiles and ERB, XML, and rules/classes directories
         /// for AutoYaST support.
         url: String,

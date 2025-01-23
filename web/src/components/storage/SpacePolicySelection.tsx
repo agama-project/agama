@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardBody, Form, Grid, GridItem } from "@patternfly/react-core";
+import { Card, CardBody, Content, Form, Grid, GridItem } from "@patternfly/react-core";
 import { useNavigate, useParams } from "react-router-dom";
 import { Page } from "~/components/core";
 import { SpaceActionsTable } from "~/components/storage";
@@ -100,8 +100,8 @@ export default function SpacePolicySelection() {
   return (
     <Page>
       <Page.Header>
-        <h2>{sprintf(_("Find space in %s"), device.name)}</h2>
-        <p className={textStyles.color_400}>{description}</p>
+        <Content component="h2">{sprintf(_("Find space in %s"), device.name)}</Content>
+        <p className={textStyles.textColorSubtle}>{description}</p>
       </Page.Header>
 
       <Page.Content>
@@ -109,7 +109,7 @@ export default function SpacePolicySelection() {
           <Grid hasGutter>
             {children.length > 0 && (
               <GridItem sm={12} xl2={xl2Columns}>
-                <Card isFullHeight isRounded>
+                <Card isFullHeight>
                   <CardBody>
                     <SpaceActionsTable
                       devices={children}

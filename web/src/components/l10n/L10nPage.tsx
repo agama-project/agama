@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Gallery, GalleryItem } from "@patternfly/react-core";
+import { Content, Gallery, GalleryItem } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -39,7 +39,7 @@ export default function L10nPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Localization")}</h2>
+        <Content component="h2">{_("Localization")}</Content>
       </Page.Header>
 
       <Page.Content>

@@ -1,0 +1,320 @@
+Contrat de licence utilisateur final SUSE(r) pour logiciel Bêta
+
+LISEZ ATTENTIVEMENT LE PRÉSENT CONTRAT BÊTA. EN INSTALLANT, EN TÉLÉCHARGEANT 
+OU EN UTILISANT LE LOGICIEL, VOUS ACCEPTEZ LES TERMES DU PRÉSENT CONTRAT BÊTA 
+ET TOUT CONTRAT DE LICENCE SUSE SUPPLÉMENTAIRE FOURNI AVEC LE LOGICIEL. SI 
+VOUS N'ACCEPTEZ PAS CES TERMES, NE TÉLÉCHARGEZ PAS, N'INSTALLEZ PAS ET 
+N'UTILISEZ PAS LE LOGICIEL. CE LOGICIEL NE PEUT ÊTRE REVENDU, TRANSFÉRÉ OU 
+REDISTRIBUÉ SANS LE CONSENTEMENT PRÉALABLE ÉCRIT DE SUSE.
+
+Le présent Contrat de licence utilisateur final SUSE pour logiciel Bêta 
+(ci-après dénommé " Contrat Bêta "), ainsi que tout Contrat de licence SUSE 
+supplémentaire fourni avec le Logiciel constituent un contrat légal conclu 
+entre vous-même, personne physique ou morale (" Vous ") et SUSE LLC (ci-après 
+dénommé " SUSE "). Les produits logiciels, les mises à jour logicielles, tout 
+support (le cas échéant) et toute documentation en ligne ou imprimée 
+accompagnant le présent Contrat Bêta (dénommés collectivement le " Logiciel ") 
+sont protégés par les lois et traités sur les droits sur le copyright en 
+vigueur aux États-Unis et dans d'autres pays et sont soumis aux termes du 
+présent Contrat Bêta. Si Vous n'acceptez pas les termes du présent Contrat 
+Bêta, ne téléchargez pas, n'installez pas et n'utilisez pas le Logiciel, et le 
+cas échéant, renvoyez l'intégralité du produit inutilisé à SUSE. Le Logiciel 
+vous est concédé sous licence. Il ne vous est pas vendu.
+
+Le Logiciel peut inclure ou faire partie d'une offre groupée qui comprend 
+d'autres logiciels concédés sous licence régis par d'autres clauses et/ou 
+concédés sous licence par un autre Fournisseur de licence que SUSE. Les termes 
+d'un Contrat de licence utilisateur final accompagnant un fichier logiciel 
+donné lors de l'installation ou du téléchargement du logiciel annulent et 
+remplacent les termes présentés ci-dessous. Vous avez toute liberté d'utiliser 
+les programmes logiciels tiers fournis. SUSE ne pourra être tenu responsable 
+d'aucun logiciel de fabricants tiers, ni de l'utilisation que vous en faites.
+
+Le Logiciel peut inclure des composants à source ouverte, mis au point de 
+manière indépendante et accompagnés de conditions de licence distinctes. Vos 
+droits de licence concernant les différents composants accompagnés de 
+conditions de licence distinctes sont définis par lesdites conditions ; rien 
+dans le présent Contrat ne restreint, limite ou affecte de toute autre façon 
+des droits ou obligations que vous pouvez avoir en vertu desdites conditions 
+de licence. Si les conditions de licence d'un composant Vous autorisent à le 
+distribuer, Vous ne devez utiliser aucune des marques SUSE (par ex. SUSE et 
+SUSE LINUX) lors de la distribution du composant, que le composant contienne 
+ou non des marques SUSE. 
+
+Licence. Conformément aux termes et conditions du présent Contrat Bêta, SUSE 
+Vous accorde un droit non exclusif et non transférable de reproduction et 
+d'utilisation en interne du Logiciel pour la durée spécifiée ci-dessous et ce, 
+dans la quantité nécessaire raisonnable pour Vous permettre d'exécuter votre 
+évaluation et/ou de tester le Logiciel. 
+
+Si un produit SUSE distinct du produit fourni à des fins de test Bêta est 
+inclus dans ou avec le Logiciel, alors nonobstant les droits de licence du 
+Contrat de licence accompagnant la copie du produit SUSE distinct, vous 
+acceptez d'utiliser le produit SUSE distinct uniquement dans le cadre de votre 
+évaluation du Logiciel. Votre droit d'utiliser le Logiciel du produit SUSE 
+prend fin à l'expiration du Contrat Bêta comme spécifié ci-dessous.
+
+Termes et conditions d'utilisation. Le présent Contrat Bêta prend effet à 
+compter de la date à laquelle Vous acquérez légalement le Logiciel et reste en 
+vigueur jusqu'à sa résiliation de la manière énoncée ci-après. Le présent 
+Contrat Bêta se termine au plus tôt : (i) après 90 jours à compter de la date 
+d'installation du Logiciel, (ii) lors de la publication de la version suivant 
+la version préliminaire du Logiciel, le cas échéant, (iii) à la première 
+expédition commerciale du Logiciel par SUSE, (iv) après notification écrite de 
+résiliation par l'une des parties, ou (v) à la date à laquelle Vous enfreignez 
+l'un des termes du présent Contrat Bêta. À l'expiration du présent Contrat 
+Bêta, Vous devez cesser d'utiliser le Logiciel, restituer à son état d'origine 
+toute action exécutée par le Logiciel, détruire l'original et toutes les 
+copies du Logiciel ou retourner ceux-ci à SUSE et supprimer intégralement le 
+Logiciel de vos systèmes.
+
+Qualité de la Version préliminaire. La qualité du logiciel étant celle d'une 
+version préliminaire, Vous n'êtes pas autorisé à l'utiliser au sein d'un 
+système commercial ou productif. Comme le Logiciel n'a pas été entièrement 
+testé, il est susceptible de contenir des erreurs et des omissions. Le 
+Logiciel ne doit être utilisé que dans un environnement de test. SUSE ne 
+garantit pas qu'une version commerciale du Logiciel sera mise à la disposition 
+du grand public, que les dates de lancement prévues seront respectées ou que 
+des produits associés seront publiés. Vous assumez intégralement le risque 
+entraîné par l'utilisation du Logiciel. Le Logiciel peut contenir un mécanisme 
+de désactivation automatique qui empêche toute utilisation après une certaine 
+période. Vous devez donc sauvegarder votre système et prendre d'autres mesures 
+pour éviter toute perte de fichiers ou de données. L'utilisation du logiciel 
+se fait à vos propres risques.
+
+Confidentialité. (Cette section ne s'applique qu'à Vous, sauf si SUSE a mis le 
+Logiciel à la disposition du grand public en tant que version Bêta gratuite, 
+sans obligation de confidentialité.) Le Logiciel et tous les concepts inclus, 
+la documentation et les matériels qui l'accompagnent, les caractéristiques de 
+produits, les résultats de tests et d'évaluation, les résultats des bancs 
+d'essai, les dates cibles, les numéros d'identification et mots de passe, 
+ainsi que toutes les informations associées sont des données confidentielles 
+appartenant à SUSE et à ses fournisseurs et sont dénommées ci-après " 
+Informations confidentielles ". Vous acceptez de ne pas divulguer ni fournir 
+des Informations confidentielles à un tiers, ni utiliser les Informations 
+confidentielles dans un autre but qu'un test ou une évaluation du Logiciel et 
+la fourniture de commentaires à SUSE. Si Vous avez reçu un numéro 
+d'identification ou un mot de passe pour accéder à des sites restreints, Vous 
+acceptez de ne pas divulguer ce numéro d'identification et ce mot de passe à 
+un tiers. Vos obligations de confidentialité subsisteront après l'expiration 
+de ce Contrat Bêta, jusqu'a la date de divulgation de ces informations au 
+public par SUSE.
+
+Commentaires. Vous reconnaissez et acceptez que SUSE ait le droit d'utiliser 
+tout commentaire et toute information que Vous lui fournissez et Vous accordez 
+de ce fait à SUSE un droit perpétuel et irrévocable d'utiliser tous ces 
+commentaires et informations dans quelque but que ce soit, sans compensation 
+pour Vous, à condition que SUSE ne cite pas votre nom publiquement en relation 
+avec ces informations. Vous déclarez et garantissez que ces commentaires et 
+informations ne contiendront pas d'informations personnelles ni 
+confidentielles appartenant à Vous-même ou à un tiers et que Vous êtes dûment 
+habilité à concéder le droit mentionné ci-dessus. 
+
+Limitations du Contrat de licence. SUSE se réserve tous les droits qui ne Vous 
+sont pas expressément accordés. Vous n'êtes pas autorisé à : (1) augmenter, 
+par quelque moyen que ce soit, le nombre de connexions prises en charge par le 
+Logiciel et pour lesquelles Vous détenez une licence ou à prendre en charge 
+plusieurs connexions ou utilisateurs via une connexion unique ; (2) décompiler 
+ou désassembler le Logiciel ou pratiquer sur ce dernier l'ingénierie à rebours 
+sauf dans la mesure où ces opérations seraient expressément autorisées par la 
+législation en vigueur ; (3) modifier, altérer, louer, louer à bail ou 
+exploiter en temps partagé le logiciel, ou céder les droits que le présent 
+Contrat vous confère ; ou (4) transférer le Logiciel ou les droits de licence 
+que vous confère le présent Contrat, en partie ou dans leur intégralité.
+
+SITES DE TEST BÊTA AGRÉÉS 
+
+Si Vous avez été désigné comme Site de Test Bêta Agréé pour le Logiciel, les 
+modalités et conditions suivantes Vous sont applicables. Si vous souhaitez que 
+votre site fasse office de Site de Test Bêta Agréé, contactez le Directeur du 
+Programme d'évaluation SUSE en envoyant un message électronique à l'adresse 
+beta-programs@suse.com. SUSE a le droit de modifier a tout moment les 
+avantages qui Vous sont offerts en publiant les nouvelles conditions de ces 
+avantages sur le site Web SUSE concerné.
+
+Support. SUSE fournira un support direct pour le Logiciel conformément à son 
+offre de support actuelle aux Sites de Test Bêta Agréés pour le Logiciel en 
+question, tel qu'il est spécifié sur le site Web SUSE applicable et communiqué 
+par le Directeur du Programme Bêta de SUSE pour le Logiciel. Ce support peut 
+être facilité par des outils basés sur le Web, la messagerie électronique 
+et/ou le téléphone. SUSE vous fournira toutes les adresses Internet, les 
+adresses électroniques et les numéros de téléphone nécessaires pour contacter 
+le support.
+
+Test. Vous acceptez d'exécuter à vos frais tous les programmes de test fournis 
+par SUSE pendant toute la période de test Bêta et de tester intégralement le 
+Logiciel en effectuant d'autres tests jugés utiles ou nécessaires. Vous 
+acceptez de mettre à disposition le matériel, les logiciels et le personnel 
+nécessaires pour exécuter les tests adéquats et répondre aux exigences de 
+ceux-ci. Vous acceptez d'effectuer au moins quatre heures-personnes de test 
+par semaine pendant la période de test Bêta. Pendant la durée du test, une 
+attention particulière devra être accordée à la fonctionnalité, à la 
+précision, à la cohérence et à la facilité d'utilisation du Logiciel soumis à 
+chaque test, ainsi qu'à toute documentation associée. Les résultats de tous 
+les programmes de test et d'autres tests, y compris l'ensemble des 
+suggestions, incohérences et/ou problèmes doivent être consignés dans les 
+moindres détails (y compris la configuration système, etc.) et soumis à SUSE 
+sur une base hebdomadaire à l'aide de la méthode de création de rapports et/ou 
+d'outils fournis et/ou spécifiés par SUSE. Ces méthodes et outils peuvent 
+inclure des outils basés sur le Web, la messagerie électronique, le fax, US 
+Mail et/ou le téléphone, mais sans se limiter à ceux-ci. Afin de permettre des 
+réparations rapides, Vous acceptez de rapporter tous les problèmes décelés 
+dans le Logiciel dans les deux (2) jours qui suivent la découverte du 
+problème, que Vous soyez ou non certain que l'incident soit à l'origine d'une 
+erreur ou d'un bogue. Si Novell Vous le demande, Vous acceptez de produire un 
+rapport écrit à la fin de la période de test bêta, en récapitulant les tests 
+effectués, les impressions générales sur le Logiciel et les utilisations 
+potentielles envisagées du Logiciel dans votre environnement. Vous êtes 
+susceptible de recevoir des questionnaires relatifs aux performances de 
+programmes de test et d'autres aspects du Logiciel, que Vous acceptez de 
+compléter et de retourner à la date et sur le support spécifiés.
+
+DROITS DE PROPRIÉTÉ
+
+Un titre de propriété ou un droit de propriété sur le Logiciel ne vous est en 
+aucun cas transféré. SUSE et/ou ses fournisseurs de licence conservent tous 
+les droits de propriété intellectuelle attachés au Logiciel, y compris ceux 
+portant sur toute adaptation ou copie du Logiciel. Vous n'acquérez qu'une 
+licence d'utilisation du Logiciel.
+
+EXCLUSION DE GARANTIE
+
+LE LOGICIEL ET LES AUTRES INFORMATIONS CONFIDENTIELLES VOUS SONT FOURNIS " EN 
+L'ÉTAT ", SANS AUCUNE GARANTIE D'AUCUNE SORTE. VOUS ASSUMEZ INTÉGRALEMENT LE 
+RISQUE LIÉ AUX RÉSULTATS ET À L'UTILISATION DES INFORMATIONS CONFIDENTIELLES. 
+SUSE DÉCLINE TOUTE GARANTIE EXPRESSE OU IMPLICITE RELATIVE AU LOGICIEL, Y 
+COMPRIS, MAIS SANS CARACTÈRE LIMITATIF, TOUTE GARANTIE IMPLICITE DE QUALITÉ 
+MARCHANDE, D'ADÉQUATION À UN USAGE PARTICULIER, DE PROPRIÉTÉ ET DE 
+NON-CONTREFAÇON. SUSE NE GARANTIT PAS QUE LE LOGICIEL SATISFERA À VOS 
+EXIGENCES OU QU'IL FONCTIONNERA SANS INTERRUPTION. Certaines juridictions 
+n'autorisent pas certaines exclusions ou limitations de garantie. Par 
+conséquent, il se peut qu'une partie des limitations susmentionnées ne vous 
+soient pas applicables. La présente garantie limitée vous octroie des droits 
+spécifiques. En outre, il se peut que vous disposiez également d'autres droits 
+qui peuvent varier d'un état à l'autre.
+
+Produits non-SUSE. Le Logiciel peut inclure ou être regroupé avec du matériel 
+ou d'autres programmes logiciels concédés sous licence ou vendus par un autre 
+fournisseur de licence que SUSE. SUSE NE FOURNIT AUCUNE GARANTIE POUR LES 
+PRODUITS AUTRES QUE SES PROPRES PRODUITS. CES PRODUITS SONT FOURNIS " EN 
+L'ÉTAT ". TOUTE GARANTIE ÉVENTUELLE SUR LES PRODUITS NON-SUSE PEUT UNIQUEMENT 
+ÊTRE DONNÉE, LE CAS ÉCHÉANT, PAR LE FOURNISSEUR DE LICENCE DE CES PRODUITS.
+
+LIMITATION DE RESPONSABILITÉ
+
+Préjudices indirects. SUSE, SES FOURNISSEURS DE LICENCE, FILIALES OU EMPLOYÉS, 
+NE POURRONT EN AUCUN CAS ÊTRE TENUS RESPONSABLES DES PRÉJUDICES SPÉCIAUX, 
+ACCESSOIRES, INDIRECTS, DÉLICTUELS, ÉCONOMIQUES OU DOMMAGES-INTÉRÊTS 
+EXEMPLAIRES, RÉSULTANT DE L'UTILISATION DU LOGICIEL OU DE L'IMPOSSIBILITÉ DE 
+L'UTILISER, Y COMPRIS, NOTAMMENT, EN CAS DE PERTE FINANCIÈRE, DE MANQUE À 
+GAGNER OU DE PERTES DE DONNÉES ET CE, INDÉPENDAMMENT DU CARACTÈRE PRÉVISIBLE 
+OU NON DE TELS PRÉJUDICES.
+Préjudices directs. EN AUCUN CAS LA RESPONSABILITÉ GLOBALE DE SUSE POUR DES 
+DOMMAGES DIRECTS AUX BIENS OU AUX PERSONNES (QU'IL S'AGISSE D'UN CAS OU DE 
+PLUSIEURS CAS) NE DÉPASSERA 1,25 FOIS LE MONTANT QUE VOUS AVEZ VERSÉ POUR LE 
+LOGICIEL CONCERNÉ PAR LA RÉCLAMATION [OU 50 DOLLARS AMÉRICAINS, SI VOUS AVEZ 
+REÇU LE LOGICIEL GRATUITEMENT]. Les exclusions et limitations susmentionnées 
+ne peuvent pas être appliquées à des réclamations en rapport avec un décès ou 
+des blessures corporelles. Dans les pays où la législation en vigueur rendrait 
+inapplicables les exclusions ou les limitations de responsabilité énoncées 
+ci-dessus, la responsabilité de SUSE sera exclue ou limitée dans la mesure 
+maximale autorisée par ces lois.
+
+CONDITIONS GÉNÉRALES
+
+Prise en charge. SUSE n'a en aucun cas l'obligation de fournir une assistance 
+pour le Logiciel, sauf disposition contraire dans le présent Contrat. 
+Tests d'évaluation des performances. Cette limitation sur les tests 
+d'évaluation des performances Vous concerne si Vous êtes un développeur 
+logiciel ou un fournisseur de licence ou si vous effectuez des tests sur le 
+logiciel sous la direction ou pour le compte d'un développeur de logiciels ou 
+d'un fournisseur de licence. Sans l'accord préalable écrit de SUSE (SUSE ne 
+devant pas s'opposer à cet accord de manière excessive), vous ne pouvez pas 
+publier ou dévoiler à un tiers les résultats d'un test d'évaluation des 
+performances du Logiciel. Si Vous êtes fournisseur de licence de produits en 
+concurrence avec le Logiciel ou aux fonctionnalités similaires à celles du 
+Logiciel (" Produits similaires ") ou agissez au nom de tels fournisseurs, et 
+que Vous publiez ou divulguez des informations sur les tests d'évaluation du 
+Logiciel en violation de cette restriction, sauf mention contraire dans le 
+contrat de licence de l'utilisateur final du Produit similaire et outre les 
+recours que SUSE pourrait utiliser, SUSE est autorisé à effectuer les tests 
+d'évaluation des performances sur des Produits similaires et à divulguer et 
+publier les résultats. Vous faites ainsi valoir que Vous avez l'autorité de 
+concéder ces droits à SUSE.
+Open Source. Rien dans le présent Contrat ne peut restreindre, limiter ou 
+affecter tout droit dont vous disposez, ou toute obligation ou condition à 
+laquelle vous pouvez être soumis, aux termes de toute licence relative aux 
+sources ouvertes applicable pour tout code source ouvert contenu dans le 
+Logiciel.
+Aucune Obligation d'Achat. Ce Contrat Bêta ne sera pas considéré comme un 
+engagement de votre part à acquérir des licences pour la version du Logiciel 
+disponible dans le commerce. Cet achat sera certifié par l'émission d'un bon 
+de commande officiel.
+Cession. Le présent Contrat Bêta ne peut pas faire l'objet d'une cession ou 
+d'un transfert, sans l'accord préalable écrit de SUSE.
+Loi et juridiction. Le présent Contrat Bêta est régi par le droit de l'État 
+américain de l'Utah. Toute action en justice liée à ce Contrat Bêta peut 
+uniquement être portée devant les tribunaux compétents de l'État de l'Utah. 
+Toutefois, si votre principal établissement se trouve dans un État membre de 
+l'Union Européenne ou de l'Association Européenne de Libre Échange, ce Contrat 
+Bêta est régi par les lois en vigueur dans cet État. Toute action en justice 
+liée à ce Contrat pourra alors être uniquement portée devant les tribunaux 
+compétents dudit État.
+Contrat complet. Le présent Contrat définit la totalité des conventions entre 
+Vous et SUSE et ne peut être amendé ou modifié que par un accord écrit conclu 
+entre Vous et un représentant autorisé de SUSE. AUCUN FOURNISSEUR DE LICENCE, 
+DISTRIBUTEUR, VENDEUR, DÉTAILLANT, REVENDEUR, REPRÉSENTANT OU EMPLOYÉ N'EST 
+AUTORISÉ À MODIFIER CE CONTRAT OU À ENGAGER DES RESPONSABILITÉS DISTINCTES DE 
+CELLES INCLUSES DANS LES PRÉSENTES CLAUSES DU CONTRAT. 
+Renonciation. Toute renonciation à un droit prévu par le présent Contrat Bêta 
+devra, pour prendre effet, être formulée par écrit et signée par un 
+représentant dûment autorisé de la partie concernée. Une renonciation à un 
+droit passé ou présent, en relation avec la violation d'une clause ou un 
+manquement, ne saurait être interprétée comme une renonciation à un droit 
+futur découlant des termes du présent Contrat Bêta.
+Rupture du Contrat. Si une clause du présent Contrat Bêta est nulle ou 
+inapplicable, elle sera interprétée, limitée, modifiée ou, si nécessaire, 
+dissociée des autres clauses autant que de besoin, afin d'éliminer sa nullité 
+ou son caractère inapplicable et sans que cela affecte les autres 
+dispositions.
+Conformité aux exigences d'exportation. Tous les produits ou informations 
+techniques fournis dans le cadre de ce Contrat peuvent être soumis à des 
+contrôles d'exportation aux États-Unis et à la législation commerciale 
+d'autres pays. Les parties s'engagent à respecter toutes les réglementations 
+de contrôle d'exportation et à obtenir les autorisations ou classifications 
+nécessaires pour exporter, réexporter ou importer des livrables. Les parties 
+s'engagent à ne pas exporter ou réexporter vers des entités figurant sur les 
+listes d'exclusion d'exportation américaines ou vers des pays sous embargo des 
+États-Unis ou représentant une menace terroriste conformément à la législation 
+des États-Unis en matière d'exportation. Les parties s'engagent à ne pas 
+employer de livrables à des fins d'utilisation illicite d'armes nucléaires, de 
+missiles ou d'armes biochimiques. Avant d'exporter des produits SUSE depuis 
+les États-Unis, consultez la page Web (en anglais) du Bureau of Industry and 
+Security : www.bis.doc.gov. Reportez-vous également à la page 
+https://www.suse.com/company/legal/ pour plus d'informations sur l'exportation 
+des logiciels SUSE. SUSE s'engage à vous fournir, sur demande, les 
+informations spécifiques relatives aux limitations applicables. Toutefois, 
+SUSE décline toute responsabilité quant à la non-obtention de Votre part des 
+agréments d'exportation nécessaires. Si vous installez, téléchargez ou 
+utilisez le présent logiciel, vous vous engagez à respecter la modalité 
+suivante : Nous certifions que le présent logiciel d'évaluation/de test bêta 
+ne sera utilisé qu'à cette fin et ne sera pas loué, cédé, vendu, concédé 
+sous-licence, assigné ni transféré de quelque façon que ce soit. Nous 
+certifions également que nous ne transférerons ni n'exporterons de produits, 
+de processus ou de services qui soient les produits directs du logiciel de 
+test bêta.
+Droits du Gouvernement des États-Unis. Toute utilisation, reproduction ou 
+divulgation de la part du Gouvernement des États-Unis est soumise aux 
+limitations prévues par les dispositions légales suivantes : FAR 52.227-14 
+(juin 1987) Alternate III (juin 1987), FAR 52.227-19 (juin 1987) ou DFARS 
+252.227-7013 (b)(3) (nov. 1995), ou par les clauses ultérieures appliquées en 
+remplacement des dispositions légales ci-avant. Contractant/fabricant : SUSE 
+LLC, 404 Wyman Street Waltham, MA 02415.
+Autre. L'application de la Convention des Nations Unies sur les contrats de 
+vente internationale de marchandises est expressément exclue.
+
+(c) 2013 SUSE LLC ou ses sociétés affiliées. Tous droits réservés.
+(020314)
+
+
+

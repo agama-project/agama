@@ -40,7 +40,10 @@ async fn handle_socket(mut socket: WebSocket, events: EventsSender) {
     let mut rx = events.subscribe();
     while let Ok(msg) = rx.recv().await {
         if let Ok(json) = serde_json::to_string(&msg) {
-            _ = socket.send(Message::Text(json)).await;
+            if socket.send(Message::Text(json)).await.is_err() {
+                tracing::info!("ws: client disconnected");
+                return;
+            }
         }
     }
 }

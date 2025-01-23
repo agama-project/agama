@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,16 +21,14 @@
  */
 
 import React, { useRef, useState } from "react";
-import { Flex, Form, FormGroup } from "@patternfly/react-core";
+import { Bullseye, Flex, Form, FormGroup } from "@patternfly/react-core";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Center } from "~/components/layout";
 import { Page, PasswordInput } from "~/components/core";
 import { useRootUserMutation } from "~/queries/users";
 import { ROOT as PATHS } from "~/routes/paths";
 import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
+import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
 
 /**
  * A page component for setting at least one root authentication method
@@ -60,24 +58,29 @@ function RootAuthMethodsPage() {
   return (
     <Page>
       <Page.Content>
-        <Center>
+        <Bullseye>
           <Page.Section
-            headerLevel="h2"
+            headingLevel="h1"
             title={_("Setup root user authentication")}
             description={
               <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-                <p className={textStyles.fontSizeLg}>
-                  {_("Provide a password to ensure administrative access to the system.")}
-                </p>
-                <p className={textStyles.fontSizeMd}>
+                <p>{_("Provide a password to ensure administrative access to the system.")}</p>
+                <p>
                   {_(
                     "You can change it or select another authentication method in the 'Users' section before installing.",
                   )}
                 </p>
               </Flex>
             }
-            pfCardProps={{ isCompact: false }}
+            pfCardProps={{
+              isCompact: false,
+              isFullHeight: false,
+              className: shadowUtils.boxShadowMd,
+            }}
             pfCardBodyProps={{ isFilled: true }}
+            actions={
+              <Page.Submit form="rootAuthMethods" isDisabled={!isFormValid} onClick={accept} />
+            }
           >
             <Form id="rootAuthMethods" onSubmit={accept}>
               <FormGroup fieldId="rootPassword" label={_("Password for root user")}>
@@ -85,17 +88,14 @@ function RootAuthMethodsPage() {
                   inputRef={passwordRef}
                   id="rootPassword"
                   value={password}
-                  className={sizingStyles.w_50OnMd}
                   onChange={(_, value) => setPassword(value)}
+                  autoFocus
                 />
               </FormGroup>
             </Form>
           </Page.Section>
-        </Center>
+        </Bullseye>
       </Page.Content>
-      <Page.Actions>
-        <Page.Submit form="rootAuthMethods" isDisabled={!isFormValid} onClick={accept} />
-      </Page.Actions>
     </Page>
   );
 }

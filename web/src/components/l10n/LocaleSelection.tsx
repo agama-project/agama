@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
+import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
@@ -57,10 +57,12 @@ export default function LocaleSelection() {
             <span className={textStyles.fontSizeLg}>
               <b>{name}</b>
             </span>
-            <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>
+            <span className={[textStyles.fontSizeMd, textStyles.textColorPlaceholder].join(" ")}>
               {territory}
             </span>
-            <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{id}</span>
+            <span className={[textStyles.fontSizeXs, textStyles.textColorSubtle].join(" ")}>
+              {id}
+            </span>
           </Flex>
         }
         value={id}
@@ -76,7 +78,7 @@ export default function LocaleSelection() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Locale selection")}</h2>
+        <Content component="h2">{_("Locale selection")}</Content>
         <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
       </Page.Header>
 

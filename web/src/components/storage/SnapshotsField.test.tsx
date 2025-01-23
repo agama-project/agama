@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -56,14 +56,14 @@ describe("SnapshotsField", () => {
   it("reflects snapshots status", () => {
     props = { rootVolume: { ...rootVolume, snapshots: true }, onChange: onChangeFn };
     plainRender(<SnapshotsField {...props} />);
-    const checkbox: HTMLInputElement = screen.getByRole("checkbox");
+    const checkbox: HTMLInputElement = screen.getByRole("switch");
     expect(checkbox.value).toEqual("on");
   });
 
   it("allows toggling snapshots status", async () => {
     props = { rootVolume: { ...rootVolume, snapshots: true }, onChange: onChangeFn };
     const { user } = plainRender(<SnapshotsField {...props} />);
-    const checkbox: HTMLInputElement = screen.getByRole("checkbox");
+    const checkbox: HTMLInputElement = screen.getByRole("switch");
     await user.click(checkbox);
     expect(onChangeFn).toHaveBeenCalledWith({ active: false });
   });

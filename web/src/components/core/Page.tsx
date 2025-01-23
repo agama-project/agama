@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import {
   PageSectionProps,
   Split,
   Stack,
+  Title,
   TitleProps,
 } from "@patternfly/react-core";
 import { Flex } from "~/components/layout";
@@ -65,7 +66,7 @@ type SectionProps = {
   /** A React node with a brief description of what the section is for */
   description?: React.ReactNode;
   /** The heading level used for the section title */
-  headerLevel?: TitleProps["headingLevel"];
+  headingLevel?: TitleProps["headingLevel"];
   /** Props to influence PF/Card component wrapping the section */
   pfCardProps?: CardProps;
   /** Props to influence PF/CardHeader component wrapping the section title */
@@ -85,7 +86,6 @@ type SubmitActionProps = {
 } & ButtonProps;
 
 const defaultCardProps: CardProps = {
-  isRounded: true,
   isCompact: true,
   isFullHeight: true,
   component: "section",
@@ -97,7 +97,7 @@ const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 // TODO: check if it should have the banner role
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
-    <PageSection variant="light" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
+    <PageSection component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
       <Stack hasGutter={hasGutter}>{children}</Stack>
     </PageSection>
   );
@@ -129,7 +129,7 @@ const Section = ({
   value,
   description,
   actions,
-  headerLevel: Title = "h3",
+  headingLevel = "h3",
   pfCardProps,
   pfCardHeaderProps,
   pfCardBodyProps,
@@ -156,14 +156,18 @@ const Section = ({
         <CardHeader {...pfCardHeaderProps}>
           <Flex direction="column" rowGap="rowGapXs" alignItems="alignItemsFlexStart">
             <Flex columnGap="columnGapSm" rowGap="rowGapXs" alignContent="alignContentFlexStart">
-              {hasTitle && <Title id={titleId}>{title}</Title>}
+              {hasTitle && (
+                <Title id={titleId} headingLevel={headingLevel}>
+                  {title}
+                </Title>
+              )}
               {hasValue && (
                 <Flex.Item grow="grow" className={textStyles.fontSizeXl}>
                   {value}
                 </Flex.Item>
               )}
             </Flex>
-            {hasDescription && <div className={textStyles.color_200}>{description}</div>}
+            {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
           </Flex>
         </CardHeader>
       )}
@@ -190,7 +194,10 @@ const Section = ({
  *   </Page.Actions>
  *
  */
-const Actions = ({ children }: React.PropsWithChildren) => {
+const Actions = ({
+  children,
+  justifyContent = "default",
+}: React.PropsWithChildren<{ justifyContent?: "default" | "none" }>) => {
   return (
     <PageGroup
       role="contentinfo"
@@ -198,8 +205,11 @@ const Actions = ({ children }: React.PropsWithChildren) => {
       stickyOnBreakpoint={STICK_TO_BOTTOM}
       className={flexStyles.flexGrow_0}
     >
-      <PageSection variant="light" component="div">
-        <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
+      <PageSection component="div">
+        {justifyContent === "none" && children}
+        {justifyContent === "default" && (
+          <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
+        )}
       </PageSection>
     </PageGroup>
   );
@@ -220,11 +230,7 @@ const Action = ({ navigateTo, children, ...props }: ActionProps) => {
     if (navigateTo) navigate(navigateTo);
   };
 
-  return (
-    <Button size="lg" {...props}>
-      {children}
-    </Button>
-  );
+  return <Button {...props}>{children}</Button>;
 };
 
 /**
@@ -258,7 +264,7 @@ const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
   const navigate = useNavigate();
 
   return (
-    <Button size="lg" variant="link" {...props} onClick={() => navigate(-1)}>
+    <Button variant="link" {...props} onClick={() => navigate(-1)}>
       {children || _("Back")}
     </Button>
   );
@@ -287,7 +293,7 @@ const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<Page
   return (
     <>
       {mountRegistrationAlert && <ProductRegistrationAlert />}
-      <PageSection isFilled component="div" {...pageSectionProps}>
+      <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
         {children}
       </PageSection>
     </>

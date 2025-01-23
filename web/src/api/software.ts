@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,7 +25,10 @@ import {
   Product,
   SoftwareConfig,
   RegistrationInfo,
+  Repository,
   SoftwareProposal,
+  License,
+  LicenseContent,
 } from "~/types/software";
 import { get, post, put } from "~/api/http";
 
@@ -45,6 +48,17 @@ const fetchProposal = (): Promise<SoftwareProposal> => get("/api/software/propos
 const fetchProducts = (): Promise<Product[]> => get("/api/software/products");
 
 /**
+ * Returns the list of available licenses
+ */
+const fetchLicenses = (): Promise<License[]> => get("/api/software/licenses");
+
+/**
+ * Returns the content for given license id
+ */
+const fetchLicense = (id: string, lang: string = "en"): Promise<LicenseContent> =>
+  get(`/api/software/licenses/${id}?lang=${lang}`);
+
+/**
  * Returns an object with the registration info
  */
 const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/registration");
@@ -55,11 +69,21 @@ const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/re
 const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
 
 /**
+ * Returns the list of configured repositories
+ */
+const fetchRepositories = (): Promise<Repository[]> => get("/api/software/repositories");
+
+/**
  * Updates the software configuration
  *
  * @param config - New software configuration
  */
 const updateConfig = (config: SoftwareConfig) => put("/api/software/config", config);
+
+/**
+ * Updates the software configuration
+ */
+const probe = () => post("/api/software/probe");
 
 /**
  * Request registration of selected product with given key
@@ -72,7 +96,11 @@ export {
   fetchPatterns,
   fetchProposal,
   fetchProducts,
+  fetchLicenses,
+  fetchLicense,
   fetchRegistration,
+  fetchRepositories,
   updateConfig,
+  probe,
   register,
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { Button, ButtonProps, Stack } from "@patternfly/react-core";
+import React, { useId, useState } from "react";
+import { Button, ButtonProps, Stack, Tooltip } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
@@ -41,7 +41,7 @@ import { Icon } from "../layout";
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => {
   return (
-    <Popup title={_("Confirm Installation")} isOpen>
+    <Popup title={_("Confirm Installation")} isOpen variant="medium">
       <Stack hasGutter>
         <p>
           {_(
@@ -77,6 +77,8 @@ according to the provided installation settings.",
 const InstallButton = (
   props: Omit<ButtonProps, "onClick"> & { onClickWithIssues?: () => void },
 ) => {
+  const labelId = useId();
+  const tooltipId = useId();
   const issues = useAllIssues();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -94,25 +96,23 @@ const InstallButton = (
 
   // TRANSLATORS: The install button label
   const buttonText = _("Install");
-  // TRANSLATORS: Accessible text included with the install button when there are issues
-  const withIssuesAriaLabel = _("Not possible with the current setup. Click to know more.");
+  // TRANSLATORS: Text included with the install button when there are issues
+  const withIssuesText = _("Not possible with the current setup. Click to know more.");
 
   return (
     <>
-      <Button
-        variant="primary"
-        size="lg"
-        className="agama-install-button"
-        {...buttonProps}
-        onClick={hasIssues ? onClickWithIssues : open}
-      >
-        {buttonText}
-        {hasIssues && (
-          <div className="agama-issues-mark" aria-label={withIssuesAriaLabel}>
-            <Icon name="exclamation" size="xs" color="custom-color-300" />
-          </div>
-        )}
-      </Button>
+      <Tooltip id={tooltipId} content={withIssuesText}>
+        <Button
+          variant="control"
+          className="agm-install-button"
+          {...buttonProps}
+          onClick={hasIssues ? onClickWithIssues : open}
+          icon={hasIssues && <Icon name="error_fill" />}
+          iconPosition="end"
+        >
+          <span id={labelId}>{buttonText}</span>
+        </Button>
+      </Tooltip>
 
       {isOpen && <InstallConfirmationPopup onAccept={onAccept} onClose={close} />}
     </>

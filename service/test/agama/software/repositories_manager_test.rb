@@ -25,7 +25,7 @@ require "agama/software/repositories_manager"
 describe Agama::Software::RepositoriesManager do
   let(:repo) do
     instance_double(
-      Agama::Software::Repository, enable!: nil, probe: true, enabled?: true
+      Agama::Software::Repository, enable!: nil, probe: true, enabled?: true, refresh: false
     )
   end
 
@@ -47,7 +47,7 @@ describe Agama::Software::RepositoriesManager do
   describe "#load" do
     let(:repo1) do
       instance_double(
-        Agama::Software::Repository, disable!: nil, probe: false
+        Agama::Software::Repository, disable!: nil, probe: false, refresh: false
       )
     end
 

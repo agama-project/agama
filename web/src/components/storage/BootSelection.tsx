@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
+import { Content, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
@@ -135,8 +135,8 @@ partitions in the appropriate disk.",
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Boot options")}</h2>
-        <p className={textStyles.color_400}>{description}</p>
+        <Content component="h2">{_("Boot options")}</Content>
+        <p className={textStyles.textColorSubtle}>{description}</p>
       </Page.Header>
 
       <Page.Content>
