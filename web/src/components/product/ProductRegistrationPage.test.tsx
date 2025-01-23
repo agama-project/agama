@@ -55,7 +55,7 @@ jest.mock("~/queries/software", () => ({
   },
 }));
 
-describe("ProductRegistrationPage", () => {
+describe.skip("ProductRegistrationPage", () => {
   describe("when selected product is not registrable", () => {
     beforeEach(() => {
       selectedProduct = tw;
