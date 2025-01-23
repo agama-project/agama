@@ -1,7 +1,7 @@
 #
 # spec file for package agama
 #
-# Copyright (c) 2023-2024 SUSE LLC
+# Copyright (c) 2023-2025 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -12,8 +12,19 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
+
+# Require at least 1.3GB RAM per each parallel job (the size is in MB)
+%define ram_per_cpu 1300
+
+# Redefine the _smp_mflags macro so it takes the amount of RAM into account
+%define _smp_mflags %([ -z "$RPM_BUILD_NCPUS" ] \\\
+  && RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"; \\\
+  ram_kb="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"; \\\
+  ncpus_max=$(("$ram_kb"/%ram_per_cpu/1024)); \\\
+  if [ -n "$ncpus_max" ] && [ "$ncpus_max" -gt 0 ] && [ "$RPM_BUILD_NCPUS" -gt "$ncpus_max" ]; then RPM_BUILD_NCPUS="$ncpus_max"; fi; \\\
+  if [ "$RPM_BUILD_NCPUS" -gt 1 ]; then echo "-j$RPM_BUILD_NCPUS"; fi)
 
 Name:           agama
 #               This will be set by osc services, that will run after this.
@@ -23,7 +34,7 @@ Summary:        Agama Installer
 #               If you know the license, put it's SPDX string here.
 #               Alternately, you can use cargo lock2rpmprovides to help generate this.
 License:        GPL-2.0-or-later
-Url:            https://github.com/opensuse/agama
+Url:            https://github.com/agama-project/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
 
@@ -70,7 +81,7 @@ Version:        0
 Release:        0
 Summary:        Agama command-line interface
 License:        GPL-2.0-only
-Url:            https://github.com/opensuse/agama
+Url:            https://github.com/agama-project/agama
 
 %description -n agama-cli
 Command line program to interact with the Agama installer.
@@ -129,6 +140,9 @@ package contains a systemd service to run scripts when booting the installed sys
 # find vendor -type f -name \*.rs -exec chmod -x '{}' \;
 
 %build
+# just for debugging failures with low memory
+cat /proc/meminfo | head -n 3
+
 %{cargo_build}
 cargo run --package xtask -- manpages
 gzip out/man/*
