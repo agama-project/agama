@@ -62,6 +62,18 @@ function isUsedDrive(model: configModel.Config, driveName: string) {
   return drive.partitions?.some((p) => isNewPartition(p) || isReusedPartition(p));
 }
 
+function findPartition(
+  model: configModel.Config,
+  driveName: string,
+  mountPath: string,
+): configModel.Partition | undefined {
+  const drive = findDrive(model, driveName);
+  if (drive === undefined) return undefined;
+
+  const partitions = drive.partitions || [];
+  return partitions.find((p) => p.mountPath === mountPath);
+}
+
 function isBoot(model: configModel.Config, driveName: string): boolean {
   return model.boot?.configure && driveName === model.boot?.device?.name;
 }
@@ -102,6 +114,20 @@ function setDefaultBootDevice(originalModel: configModel.Config): configModel.Co
 
 function disableBoot(originalModel: configModel.Config): configModel.Config {
   return setBoot(originalModel, { configure: false });
+}
+
+function deletePartition(
+  originalModel: configModel.Config,
+  driveName: string,
+  mountPath: string,
+): configModel.Config {
+  const model = copyModel(originalModel);
+  const drive = findDrive(model, driveName);
+  if (drive === undefined) return;
+
+  const partitions = (drive.partitions || []).filter((p) => p.mountPath !== mountPath);
+  drive.partitions = partitions;
+  return model;
 }
 
 function switchDrive(
@@ -249,6 +275,25 @@ export function useBoot(): BootHook {
     setDevice: (deviceName: string) => mutate(setBootDevice(model, deviceName)),
     setDefault: () => mutate(setDefaultBootDevice(model)),
     disable: () => mutate(disableBoot(model)),
+  };
+}
+
+export type PartitionHook = {
+  delete: () => void;
+};
+
+/**
+ * @param driveName like "/dev/sda"
+ * @param mountPath like "/" or "swap"
+ */
+export function usePartition(driveName: string, mountPath: string): PartitionHook | undefined {
+  const model = useConfigModel();
+  const { mutate } = useConfigModelMutation();
+
+  if (findPartition(model, driveName, mountPath) === undefined) return;
+
+  return {
+    delete: () => mutate(deletePartition(model, driveName, mountPath)),
   };
 }
 

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef, useState } from "react";
+import React, { useId, useRef, useState } from "react";
 import { useNavigate, generatePath } from "react-router-dom";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -29,7 +29,7 @@ import { useAvailableDevices } from "~/queries/storage";
 import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useDrive } from "~/queries/storage/config-model";
+import { useDrive, usePartition } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { typeDescription, contentDescription } from "~/components/storage/utils/device";
 import { Icon } from "../layout";
@@ -58,7 +58,7 @@ import {
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
+export type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
 
 export const InlineMenuToggle = React.forwardRef(
   (props: MenuToggleProps, ref: React.Ref<MenuToggleElement>) => (
@@ -506,7 +506,8 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const PartitionsNoContentSelector = () => {
+const PartitionsNoContentSelector = ({ toggleAriaLabel }) => {
+  const menuId = useId();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -518,19 +519,26 @@ const PartitionsNoContentSelector = () => {
       onOpenChange={setIsOpen}
       toggleRef={toggleMenuRef}
       toggle={
-        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
-          <span>{_("No additional partitions will be created")}</span>
+        <InlineMenuToggle
+          ref={toggleMenuRef}
+          onClick={onToggle}
+          isExpanded={isOpen}
+          aria-label={toggleAriaLabel}
+          aria-controls={menuId}
+        >
+          <span aria-hidden>{_("No additional partitions will be created")}</span>
         </InlineMenuToggle>
       }
       menuRef={menuRef}
       menu={
-        <Menu ref={menuRef}>
+        <Menu ref={menuRef} role="menu" id={menuId}>
           <MenuContent>
             <MenuList>
               <MenuItem
                 key="add-partition"
                 itemId="add-partition"
                 description={_("Add another partition or mount an existing one")}
+                role="menuitem"
               >
                 <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
                   <span>{_("Add or use partition")}</span>
@@ -544,7 +552,39 @@ const PartitionsNoContentSelector = () => {
   );
 };
 
-const PartitionsWithContentSelector = ({ drive }) => {
+const PartitionMenuItem = ({ driveName, mountPath }) => {
+  const { delete: deletePartition } = usePartition(driveName, mountPath);
+
+  return (
+    <MenuItem
+      itemId={mountPath}
+      description="Btrfs with snapshots"
+      role="menuitem"
+      actions={
+        <>
+          <MenuItemAction
+            style={{ paddingInline: "4px", alignSelf: "center" }}
+            icon={<Icon name="edit_square" size="xs" aria-label={"Edit"} />}
+            actionId={`edit-${mountPath}`}
+            aria-label={`Edit ${mountPath}`}
+          />
+          <MenuItemAction
+            style={{ paddingInline: "4px", alignSelf: "center" }}
+            icon={<Icon name="delete" size="xs" aria-label={"Delete"} />}
+            actionId={`delete-${mountPath}`}
+            aria-label={`Delete ${mountPath}`}
+            onClick={deletePartition}
+          />
+        </>
+      }
+    >
+      {mountPath}
+    </MenuItem>
+  );
+};
+
+const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
+  const menuId = useId();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -556,42 +596,30 @@ const PartitionsWithContentSelector = ({ drive }) => {
       onOpenChange={setIsOpen}
       toggleRef={toggleMenuRef}
       toggle={
-        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
-          <span>{driveUtils.contentDescription(drive)}</span>
+        <InlineMenuToggle
+          ref={toggleMenuRef}
+          onClick={onToggle}
+          isExpanded={isOpen}
+          aria-label={toggleAriaLabel}
+          aria-controls={menuId}
+        >
+          <span aria-hidden>{driveUtils.contentDescription(drive)}</span>
         </InlineMenuToggle>
       }
       menuRef={menuRef}
       menu={
-        <Menu ref={menuRef}>
+        <Menu ref={menuRef} id={menuId} role="menu">
           <MenuContent>
             <MenuList>
               {drive.partitions
                 .filter((p) => p.mountPath)
                 .map((partition) => {
                   return (
-                    <MenuItem
+                    <PartitionMenuItem
                       key={partition.mountPath}
-                      itemId={partition.mountPath}
-                      description="Btrfs with snapshots"
-                      actions={
-                        <>
-                          <MenuItemAction
-                            style={{ paddingInline: "4px", alignSelf: "center" }}
-                            icon={<Icon name="edit_square" size="xs" aria-label={"Edit"} />}
-                            actionId={`edit-${partition.mountPath}`}
-                            aria-label={`Edit ${partition.mountPath}`}
-                          />
-                          <MenuItemAction
-                            style={{ paddingInline: "4px", alignSelf: "center" }}
-                            icon={<Icon name="delete" size="xs" aria-label={"Edit"} />}
-                            actionId={`delete-${partition.mountPath}`}
-                            aria-label={`Delete ${partition.mountPath}`}
-                          />
-                        </>
-                      }
-                    >
-                      {partition.mountPath}
-                    </MenuItem>
+                      driveName={drive.name}
+                      mountPath={partition.mountPath}
+                    />
                   );
                 })}
               <Divider component="li" />
@@ -614,10 +642,10 @@ const PartitionsWithContentSelector = ({ drive }) => {
 
 const PartitionsSelector = ({ drive }) => {
   if (drive.partitions.some((p) => p.mountPath)) {
-    return <PartitionsWithContentSelector drive={drive} />;
+    return <PartitionsWithContentSelector drive={drive} toggleAriaLabel={_("Partitions")} />;
   }
 
-  return <PartitionsNoContentSelector />;
+  return <PartitionsNoContentSelector toggleAriaLabel={_("Partitions")} />;
 };
 
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {

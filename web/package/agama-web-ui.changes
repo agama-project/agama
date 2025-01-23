@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 23 15:09:09 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Make the trash can icon (Delete) of a proposed partition work
+  gh#agama-project/agama#1915)
+
+-------------------------------------------------------------------
 Mon Jan 20 16:45:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - The software page displays a link for reloading the repositories
