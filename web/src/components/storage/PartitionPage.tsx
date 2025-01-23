@@ -147,11 +147,13 @@ function FilesystemOptions({ mountPoint, target }): React.ReactElement {
           <FilesystemOptionLabel value="" target={target} />
         </SelectOption>
       )}
-      {mountPoint !== "" && partition && partition.filesystem && (
-        <SelectOption value="reuse" description={_("Do not format the existing file system")}>
-          <FilesystemOptionLabel value="reuse" target={target} />
-        </SelectOption>
-      )}
+      {mountPoint !== "" &&
+        partition?.filesystem &&
+        volume.outline.fsTypes.includes(partition.filesystem.type) && (
+          <SelectOption value="reuse" description={_("Do not format the existing file system")}>
+            <FilesystemOptionLabel value="reuse" target={target} />
+          </SelectOption>
+        )}
       {mountPoint !== "" && partition && partition.filesystem && volume.outline.fsTypes.length && (
         <Divider />
       )}
@@ -304,8 +306,9 @@ export default function PartitionPage() {
   const volume = useVolume(mountPoint);
   const partition = usePartition(target);
 
-  const volumeFilesystem = volume?.fsType || "";
-  const partitionFilesystem = partition?.filesystem;
+  const volumeFilesystem = volume?.fsType;
+  const suitableFilesystems = volume?.outline?.fsTypes;
+  const partitionFilesystem = partition?.filesystem?.type;
 
   // Automatically update filesystem.
   React.useEffect(() => {
@@ -316,9 +319,19 @@ export default function PartitionPage() {
     // Select default filesystem for the mount point if the partition has no filesystem.
     if (mountPoint !== "" && target !== "new" && !partitionFilesystem)
       setFilesystem(volumeFilesystem);
-    // Reuse the filesystem from the partition.
-    if (mountPoint !== "" && target !== "new" && partitionFilesystem) setFilesystem("reuse");
-  }, [mountPoint, target, setFilesystem, volumeFilesystem, partitionFilesystem]);
+    // Reuse the filesystem from the partition if possble.
+    if (mountPoint !== "" && target !== "new" && partitionFilesystem && suitableFilesystems) {
+      const reuse = suitableFilesystems.includes(partitionFilesystem);
+      setFilesystem(reuse ? "reuse" : volumeFilesystem);
+    }
+  }, [
+    mountPoint,
+    target,
+    setFilesystem,
+    volumeFilesystem,
+    suitableFilesystems,
+    partitionFilesystem,
+  ]);
 
   const setSize = ({ min, max }) => {
     if (min !== undefined) setMinSize(min);
