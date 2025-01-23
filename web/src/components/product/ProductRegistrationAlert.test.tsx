@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import ProductRegistrationAlert from "./ProductRegistrationAlert";
 import { Product } from "~/types/software";
-import { useProduct, useRegistration } from "~/queries/software";
+import { useProduct } from "~/queries/software";
 import { useIssues } from "~/queries/issues";
 import { PRODUCT, REGISTRATION, ROOT, USER } from "~/routes/paths";
 import { Issue } from "~/types/issues";
