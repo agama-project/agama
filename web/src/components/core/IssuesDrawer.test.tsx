@@ -63,6 +63,7 @@ describe("IssuesDrawer", () => {
         [
           {
             description: "Registration Fake Issue",
+            kind: "generic",
             source: 0,
             severity: 0,
             details: "Registration Fake Issue details",
