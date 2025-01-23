@@ -23,15 +23,12 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { installerRender } from "~/test-utils";
+import DriveEditor, { DriveEditorProps } from "~/components/storage/DriveEditor";
 import * as ConfigModel from "~/api/storage/types/config-model";
+import { StorageDevice } from "~/types/storage";
 
-import DriveEditor from "~/components/storage/DriveEditor";
-
-// TODO: copied from ExpandableSelector.test.tsx
-// TODO: no idea if it fits my purpose
-const sda: any = {
-  sid: "59",
+const sda: StorageDevice = {
+  sid: 59,
   isDrive: true,
   type: "disk",
   vendor: "Micron",
@@ -49,84 +46,48 @@ const sda: any = {
   systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  description: "",
 };
 
-const sda1 = {
-  sid: "60",
-  isDrive: false,
-  type: "",
-  active: true,
-  name: "/dev/sda1",
-  size: 512,
-  shrinking: { supported: 128 },
-  systems: [],
-  udevIds: [],
-  udevPaths: [],
-};
-
-const sda2 = {
-  sid: "61",
-  isDrive: false,
-  type: "",
-  active: true,
-  name: "/dev/sda2",
-  size: 512,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: [],
-  udevPaths: [],
-};
-
-sda.partitionTable = {
-  type: "gpt",
-  partitions: [sda1, sda2],
-  unpartitionedSize: 512,
-};
-
-const mockDrive = {
+const mockDrive: ConfigModel.Drive = {
   name: "/dev/sda",
-  //spacePolicy: "delete",
+  spacePolicy: "delete",
   partitions: [
     {
       mountPath: "swap",
       size: {
         min: 2_000_000_000,
         default: false, // WTF does default mean??
-      }
+      },
     },
-  ]
-}
+  ],
+};
 
-const mockConfig = { drives: [mockDrive] as ConfigModel.Drive[] };
-
+const mockDeletePartition = jest.fn();
 // TODO: why does "~/queries/storage" work elsewhere??
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockConfig,
-  useDrive: (name) => mockDrive,
+  useConfigModel: () => ({ drives: [mockDrive] }),
+  useDrive: () => mockDrive,
+  usePartition: () => ({ delete: mockDeletePartition }),
 }));
 
+const props: DriveEditorProps = {
+  drive: mockDrive,
+  driveDevice: sda,
+};
 
 describe("PartitionMenuItem", () => {
-  it("does something when the Delete icon is clicked", async () => {
-    // oh fun, cannot use DriveEditorProps as it is not exported? any works
-    let props: any = {
-      // configModel.Drive
-      drive: mockDrive,
-      // StorageDevice
-      driveDevice: sda,
-    };
-    // if I try to inline it in mockDrive, weird error, string is not SpacePolicy(?)
-    props.drive.spacePolicy = "delete";
-
-    //const { user } = installerRender(<DriveEditor {...props} />);
+  it("allows users delete a the partition", async () => {
     const { user } = plainRender(<DriveEditor {...props} />);
 
-    // How do I find this? There is no role attribute
-    // MenuItemAction actionId="delete-swap" aria-label="Delete swap"
-    const button = screen.getByRole("button", { name: /Delete swap/ });
-    // Oh, the UI I worked on will only be revealed once we click this:
-    //     A new partition will be created for "swap" (at least 1.86 GiB)
-    // but how do we identify it?
+    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
+    await user.click(partitionsButton);
+    const partitionsMenu = screen.getByRole("menu");
+    const deleteSwapButton = within(partitionsMenu).getByRole("button", {
+      name: "Delete swap",
+    });
+    await user.click(deleteSwapButton);
+    expect(mockDeletePartition).toHaveBeenCalled();
   });
 });

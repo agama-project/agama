@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef, useState } from "react";
+import React, { useId, useRef, useState } from "react";
 import { useNavigate, generatePath } from "react-router-dom";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -52,7 +52,7 @@ import {
   MenuToggle,
 } from "@patternfly/react-core";
 
-type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
+export type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
 
 // FIXME: Presentation is quite poor
 const SpacePolicySelectorIntro = ({ device }) => {
@@ -520,7 +520,8 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const PartitionsNoContentSelector = () => {
+const PartitionsNoContentSelector = ({ toggleAriaLabel }) => {
+  const menuId = useId();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -538,8 +539,10 @@ const PartitionsNoContentSelector = () => {
           onClick={onToggle}
           isExpanded={isOpen}
           className="menu-toggle-inline"
+          aria-label={toggleAriaLabel}
+          aria-controls={menuId}
         >
-          <span>
+          <span aria-hidden>
             {_("No additional partitions will be created")}
             <Icon name="keyboard_arrow_down" size="xs" />
           </span>
@@ -547,13 +550,14 @@ const PartitionsNoContentSelector = () => {
       }
       menuRef={menuRef}
       menu={
-        <Menu ref={menuRef}>
+        <Menu ref={menuRef} role="menu" id={menuId}>
           <MenuContent>
             <MenuList>
               <MenuItem
                 key="add-partition"
                 itemId="add-partition"
                 description={_("Add another partition or mount an existing one")}
+                role="menuitem"
               >
                 <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
                   <span>{_("Add or use partition")}</span>
@@ -574,6 +578,7 @@ const PartitionMenuItem = ({ driveName, mountPath }) => {
     <MenuItem
       itemId={mountPath}
       description="Btrfs with snapshots"
+      role="menuitem"
       actions={
         <>
           <MenuItemAction
@@ -597,7 +602,8 @@ const PartitionMenuItem = ({ driveName, mountPath }) => {
   );
 };
 
-const PartitionsWithContentSelector = ({ drive }) => {
+const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
+  const menuId = useId();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -615,8 +621,10 @@ const PartitionsWithContentSelector = ({ drive }) => {
           onClick={onToggle}
           isExpanded={isOpen}
           className="menu-toggle-inline"
+          aria-label={toggleAriaLabel}
+          aria-controls={menuId}
         >
-          <span>
+          <span aria-hidden>
             {driveUtils.contentDescription(drive)}
             <Icon name="keyboard_arrow_down" size="xs" />
           </span>
@@ -624,7 +632,7 @@ const PartitionsWithContentSelector = ({ drive }) => {
       }
       menuRef={menuRef}
       menu={
-        <Menu ref={menuRef}>
+        <Menu ref={menuRef} id={menuId} role="menu">
           <MenuContent>
             <MenuList>
               {drive.partitions
@@ -658,10 +666,10 @@ const PartitionsWithContentSelector = ({ drive }) => {
 
 const PartitionsSelector = ({ drive }) => {
   if (drive.partitions.some((p) => p.mountPath)) {
-    return <PartitionsWithContentSelector drive={drive} />;
+    return <PartitionsWithContentSelector drive={drive} toggleAriaLabel={_("Partitions")} />;
   }
 
-  return <PartitionsNoContentSelector />;
+  return <PartitionsNoContentSelector toggleAriaLabel={_("Partitions")} />;
 };
 
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
