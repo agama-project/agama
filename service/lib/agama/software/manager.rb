@@ -600,9 +600,7 @@ module Agama
       def missing_registration?
         return false unless product
 
-        registration.reg_code.nil? &&
-          product.registration &&
-          missing_base_product?
+        product.registration && missing_base_product?
       end
 
       # Whether the base product is missing

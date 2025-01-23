@@ -543,28 +543,37 @@ describe Agama::Software::Manager do
 
       context "and the product requires registration" do
         let(:product_id) { "test1" }
-
-        before do
-          allow(subject.registration).to receive(:reg_code).and_return(reg_code)
+        let(:product) do
+          Agama::Software::Product.new("test1").tap do |p|
+            p.registration = true
+            p.name = "test1"
+          end
         end
 
-        context "and the product is not registered" do
-          let(:reg_code) { nil }
+        before do
+          allow(subject).to receive(:product).and_return(product)
+          allow(Y2Packager::Resolvable).to receive(:find)
+            .with(kind: :product, name: product.name)
+            .and_return(resolvables)
+        end
+
+        context "and the base product is not available" do
+          let(:resolvables) { [] }
 
           it "contains a missing registration issue" do
             expect(subject.product_issues).to contain_exactly(
               an_object_having_attributes(
-                description: /product must be registered/i
+                kind: :missing_registration
               )
             )
           end
-        end
 
-        context "and the product is registered" do
-          let(:reg_code) { "1234XX5678" }
+          context "and the base product is available" do
+            let(:resolvables) { [instance_double("Product")] }
 
-          it "does not contain issues" do
-            expect(subject.product_issues).to be_empty
+            it "does not contain issues" do
+              expect(subject.product_issues).to be_empty
+            end
           end
         end
       end
