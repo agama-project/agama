@@ -34,7 +34,7 @@ const MainNavigation = (): React.ReactNode => {
 
   const links = rootRoutes().map((r) => {
     if (!r.handle) return null;
-    if (r.handle.needsRegistrableProduct && product.registration === "no") return null;
+    if (r.handle.needsRegistrableProduct && !product.registration) return null;
 
     // eslint-disable-next-line agama-i18n/string-literals
     const name = _(r.handle.name);

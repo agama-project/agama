@@ -30,13 +30,13 @@ import { useProduct, useRegistration } from "~/queries/software";
 const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
-  registration: "no",
+  registration: false,
 };
 
 const sle: Product = {
   id: "sle",
   name: "SLE",
-  registration: "mandatory",
+  registration: false,
 };
 
 let selectedProduct: Product;

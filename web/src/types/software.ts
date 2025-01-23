@@ -42,7 +42,7 @@ type Product = {
   /** Product icon (e.g., "default.svg") */
   icon?: string;
   /** If product is registrable or not */
-  registration: "no" | "optional" | "mandatory";
+  registration: boolean;
   /** The product license id, if any */
   license?: string;
 };
