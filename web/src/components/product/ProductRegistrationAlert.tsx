@@ -24,11 +24,11 @@ import React from "react";
 import { Alert } from "@patternfly/react-core";
 import { useLocation } from "react-router-dom";
 import { Link } from "~/components/core";
-import { useProduct, useRegistration } from "~/queries/software";
+import { useProduct } from "~/queries/software";
 import { REGISTRATION, SUPPORTIVE_PATHS } from "~/routes/paths";
-import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { useIssues } from "~/queries/issues";
 
 const LinkToRegistration = () => {
   const location = useLocation();
@@ -45,12 +45,13 @@ const LinkToRegistration = () => {
 export default function ProductRegistrationAlert() {
   const location = useLocation();
   const { selectedProduct: product } = useProduct();
-  const registration = useRegistration();
+  const issues = useIssues("product");
+  const registrationRequired = issues.find((i) => i.kind === "missing_registration");
 
   // NOTE: it shouldn't be mounted in these paths, but let's prevent rendering
   // if so just in case.
   if (SUPPORTIVE_PATHS.includes(location.pathname)) return;
-  if (!product.registration || !isEmpty(registration.key)) return;
+  if (!registrationRequired) return;
 
   return (
     <Alert isInline variant="warning" title={sprintf(_("%s must be registered."), product.name)}>

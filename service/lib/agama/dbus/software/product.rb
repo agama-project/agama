@@ -180,8 +180,6 @@ module Agama
             [1, "Product not selected yet"]
           elsif backend.registration.reg_code
             [2, "Product already registered"]
-          elsif !backend.product.registration
-            [3, "Product does not support registration"]
           else
             connect_result(first_error_code: 4) do
               backend.registration.register(reg_code, email: email)
@@ -254,6 +252,7 @@ module Agama
           #   software related issues.
           backend.registration.on_change { issues_properties_changed }
           backend.registration.on_change { registration_properties_changed }
+          backend.on_issues_change { issues_properties_changed }
         end
 
         def registration_properties_changed
