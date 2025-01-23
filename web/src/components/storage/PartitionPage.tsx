@@ -42,26 +42,44 @@ import {
 import { Page } from "~/components/core/";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import SelectToggle, { SelectToggleOption } from "~/components/core/SelectToggle";
-import { useDevices } from "~/queries/storage";
-import { StorageDevice } from "~/types/storage";
+import { useDevices, useVolumeTemplates } from "~/queries/storage";
+import { StorageDevice, Volume } from "~/types/storage";
 import { baseName, deviceSize } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
-const mountPointOptions: SelectOptionProps[] = [
-  { value: "/", children: "/" },
-  { value: "/home", children: "/home" },
-  { value: "/var/log", children: "/var/log" },
-  { value: "swap", children: "swap" },
-];
-
-function useDevice() {
+function useDevice(): StorageDevice {
   const { id } = useParams();
   const devices = useDevices("system", { suspense: true });
   return devices.find((d) => baseName(d.name) === id);
 }
 
-function targetOptionLabel(value: string, device: StorageDevice): string {
+function useVolume(mountPoint: string): Volume {
+  const volumes = useVolumeTemplates();
+  const volume = volumes.find((v) => v.mountPath === mountPoint);
+  const defaultVolume = volumes.find((v) => v.mountPath === "");
+
+  return volume || defaultVolume;
+}
+
+function usePartition(target: string): StorageDevice | null {
+  const device = useDevice();
+
+  if (target === "new") return null;
+
+  const partitions = device.partitionTable?.partitions || [];
+  return partitions.find((p) => p.name === target);
+}
+
+function mountPointOptions(volumes: Volume[]): SelectOptionProps[] {
+  return volumes
+    .filter((v) => v.mountPath.length)
+    .map((v) => ({ value: v.mountPath, children: v.mountPath }));
+}
+
+function TargetOptionLabel({ value }): React.ReactElement {
+  const device = useDevice();
+
   if (value === "new") {
     return sprintf(_("Create new partition on %s"), device.name);
   } else {
@@ -88,7 +106,7 @@ function TargetOptions(): React.ReactElement {
 
   return (
     <SelectList>
-      <SelectOption value="new">{targetOptionLabel("new", device)}</SelectOption>
+      <SelectOption value="new">{<TargetOptionLabel value="new" />}</SelectOption>
       <Divider />
       <SelectGroup label={_("Use an existing partition")}>
         {partitions.map((partition, index) => (
@@ -108,36 +126,52 @@ function TargetOptions(): React.ReactElement {
   );
 }
 
-function filesystemOptions(mountPoint: string, target: string): SelectToggleOption[] {
-  const options = [
-    {
-      value: "btrfsSnapshots",
-      label: "Btrfs with snapshots",
-      description: "Default file system for root",
-    },
-    { value: "btrfs", label: "Btrfs" },
-    { value: "xfs", label: "XFS" },
-    { value: "ext4", label: "EXT4" },
-  ];
+function FilesystemOptionLabel({ value, target }): React.ReactElement {
+  const partition = usePartition(target);
 
-  const reuseOption = {
-    value: "reuse",
-    label: "XFS from /dev/vdc1",
-    description: "Do not format the existing file system",
-  };
+  if (value === "") return <>{_("Waiting for a mount point")}</>;
+  if (value === "reuse")
+    return <>{sprintf(_("%s from %s"), partition?.filesystem?.type, target)}</>;
 
-  if (mountPoint === "") {
-    return [
-      {
-        value: "",
-        label: _("Waiting for a mount point"),
-      },
-    ];
-  } else if (target !== "new") {
-    return [reuseOption, ...options];
-  } else {
-    return options;
-  }
+  return <>{value}</>;
+}
+
+function FilesystemOptions({ mountPoint, target }): React.ReactElement {
+  const volume = useVolume(mountPoint);
+  const partition = usePartition(target);
+
+  return (
+    <SelectList>
+      {mountPoint === "" && (
+        <SelectOption value="">
+          <FilesystemOptionLabel value="" target={target} />
+        </SelectOption>
+      )}
+      {mountPoint !== "" && partition && partition.filesystem && (
+        <SelectOption value="reuse" description={_("Do not format the existing file system")}>
+          <FilesystemOptionLabel value="reuse" target={target} />
+        </SelectOption>
+      )}
+      {mountPoint !== "" && partition && partition.filesystem && volume.outline.fsTypes.length && (
+        <Divider />
+      )}
+      {mountPoint !== "" && (
+        <SelectGroup label={_("Format partition as")}>
+          {volume.outline.fsTypes.map((fsType, index) => (
+            <SelectOption
+              key={index}
+              value={fsType}
+              description={
+                fsType === volume.fsType && sprintf(_("Default file system for %s"), mountPoint)
+              }
+            >
+              <FilesystemOptionLabel value={fsType} target={target} />
+            </SelectOption>
+          ))}
+        </SelectGroup>
+      )}
+    </SelectList>
+  );
 }
 
 function sizeOptions(mountPoint: string, target: string): SelectToggleOption[] {
@@ -259,6 +293,7 @@ function CustomSize({ value, onChange }) {
 }
 
 export default function PartitionPage() {
+  const volumes = useVolumeTemplates();
   const [mountPoint, setMountPoint] = React.useState<string>("");
   const [target, setTarget] = React.useState<string>("new");
   const [filesystem, setFilesystem] = React.useState<string>("");
@@ -266,18 +301,28 @@ export default function PartitionPage() {
   const [minSize, setMinSize] = React.useState<string>("");
   const [maxSize, setMaxSize] = React.useState<string>("");
   const device = useDevice();
+  const volume = useVolume(mountPoint);
+  const partition = usePartition(target);
+
+  const volumeFilesystem = volume?.fsType || "";
+  const partitionFilesystem = partition?.filesystem;
+
+  // Automatically update filesystem.
+  React.useEffect(() => {
+    // Reset filesystem if there is no mount point yet.
+    if (mountPoint === "") setFilesystem("");
+    // Select default filesystem for the mount point.
+    if (mountPoint !== "" && target === "new") setFilesystem(volumeFilesystem);
+    // Select default filesystem for the mount point if the partition has no filesystem.
+    if (mountPoint !== "" && target !== "new" && !partitionFilesystem)
+      setFilesystem(volumeFilesystem);
+    // Reuse the filesystem from the partition.
+    if (mountPoint !== "" && target !== "new" && partitionFilesystem) setFilesystem("reuse");
+  }, [mountPoint, target, setFilesystem, volumeFilesystem, partitionFilesystem]);
 
   const setSize = ({ min, max }) => {
     if (min !== undefined) setMinSize(min);
     if (max !== undefined) setMaxSize(max);
-  };
-
-  const resetFilesystem = (mountPoint: string, target: string) => {
-    if (mountPoint === "") setFilesystem("");
-    // TODO select default filesystem for the mount point
-    if (mountPoint !== "" && target === "new") setFilesystem("btrfsSnapshots");
-    // TODO only set "reuse" if the partition has a file system
-    if (mountPoint !== "" && target !== "new") setFilesystem("reuse");
   };
 
   const resetSize = (mountPoint: string, target: string) => {
@@ -294,14 +339,14 @@ export default function PartitionPage() {
   const changeMountPoint = (value: string) => {
     if (value !== mountPoint) {
       setMountPoint(value);
-      resetFilesystem(value, target);
+      // resetFilesystem(value, target);
       resetSize(value, target);
     }
   };
 
   const changeTarget = (value: string) => {
     setTarget(value);
-    resetFilesystem(mountPoint, value);
+    // resetFilesystem(mountPoint, value);
     resetSize(mountPoint, value);
   };
 
@@ -321,17 +366,15 @@ export default function PartitionPage() {
                 <FlexItem>
                   <SelectTypeaheadCreatable
                     value={mountPoint}
-                    options={mountPointOptions}
+                    options={mountPointOptions(volumes)}
                     createText={_("Add mount point")}
-                    isStackable={false}
-                    isCleanable
                     onChange={changeMountPoint}
                   />
                 </FlexItem>
                 <FlexItem>
                   <SelectToggle
                     value={target}
-                    label={targetOptionLabel(target, device)}
+                    label={<TargetOptionLabel value={target} />}
                     onChange={changeTarget}
                   >
                     <TargetOptions />
@@ -346,11 +389,13 @@ export default function PartitionPage() {
             </FormGroup>
             <FormGroup fieldId="fileSystem" label={_("File system")}>
               <SelectToggle
-                options={filesystemOptions(mountPoint, target)}
                 isDisabled={mountPoint === ""}
                 value={filesystem}
+                label={<FilesystemOptionLabel value={filesystem} target={target} />}
                 onChange={setFilesystem}
-              />
+              >
+                <FilesystemOptions mountPoint={mountPoint} target={target} />
+              </SelectToggle>
             </FormGroup>
             <FormGroup fieldId="size" label={_("Size")}>
               <Stack hasGutter>

@@ -37,7 +37,7 @@ export type SelectToggleOption = {
 
 export type SelectToggleProps = {
   value: string;
-  label?: string;
+  label?: React.ReactElement;
   options?: SelectToggleOption[];
   onChange?: (value: string) => void;
   isDisabled?: boolean;

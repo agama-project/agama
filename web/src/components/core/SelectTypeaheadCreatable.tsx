@@ -38,16 +38,11 @@ import { _ } from "~/i18n";
 
 export type SelectTypeaheadCreatableProps = {
   value?: string;
-  onChange?: (value: string) => void;
   options: SelectOptionProps[];
-  // Placeholder for the select.
   placeholder?: string;
   // Text to show for creating a new option. By default is 'Add "value"'.
   createText?: string;
-  // Whether the new options are accumulated.
-  isStackable?: boolean;
-  // Whether the created options are removed as side effect of cleaning the field.
-  isCleanable?: boolean;
+  onChange?: (value: string) => void;
 };
 
 /**
@@ -56,24 +51,22 @@ export type SelectTypeaheadCreatableProps = {
  * The code of this component is almost 100% taken from the patternfly documentation, see
  * https://www.patternfly.org/components/menus/select#typeahead-with-create-option.
  */
-export default function SelectTypeaheadCreatable(
-  props: SelectTypeaheadCreatableProps,
-): React.ReactElement {
+export default function SelectTypeaheadCreatable({
+  value,
+  options,
+  placeholder,
+  createText = _("Add"),
+  onChange,
+}: SelectTypeaheadCreatableProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<string>(props.value || "");
   const [inputValue, setInputValue] = React.useState<string>("");
   const [filterValue, setFilterValue] = React.useState<string>("");
-  const [options, setOptions] = React.useState<SelectOptionProps[]>(props.options);
-  const [selectOptions, setSelectOptions] = React.useState<SelectOptionProps[]>(options);
+  const [selectOptions, setSelectOptions] = React.useState<SelectOptionProps[]>([]);
   const [focusedItemIndex, setFocusedItemIndex] = React.useState<number | null>(null);
   const [activeItemId, setActiveItemId] = React.useState<string | null>(null);
   const textInputRef = React.useRef<HTMLInputElement>();
 
   const CREATE_NEW = "create";
-  const createText = props.createText ?? _("Add");
-  const isStackable = props.isStackable ?? false;
-  const isCleanable = props.isCleanable ?? false;
-  const onChange = props.onChange;
 
   React.useEffect(() => {
     let newSelectOptions: SelectOptionProps[] = options;
@@ -109,6 +102,11 @@ export default function SelectTypeaheadCreatable(
     setActiveItemId(createItemId(focusedItem.value));
   };
 
+  const reset = () => {
+    setInputValue(value);
+    setFilterValue("");
+  };
+
   const resetActiveAndFocusedItem = () => {
     setFocusedItemIndex(null);
     setActiveItemId(null);
@@ -130,20 +128,14 @@ export default function SelectTypeaheadCreatable(
   const selectOption = (value: string | number, content?: string | number) => {
     setInputValue(String(content));
     setFilterValue("");
-    setSelected(String(value));
-    onChange(String(value));
-
+    onChange && onChange(String(value));
     closeMenu();
   };
 
   const onSelect = (event: React.UIEvent | undefined, value: string | number | undefined) => {
+    event.preventDefault();
     if (value) {
-      event.preventDefault();
       if (value === CREATE_NEW) {
-        if (!options.some((item) => item.children === filterValue)) {
-          const initialOptions = isStackable ? options : props.options;
-          setOptions([...initialOptions, { value: filterValue, children: filterValue }]);
-        }
         selectOption(filterValue, filterValue);
       } else {
         const optionText = selectOptions.find((option) => option.value === value)?.children;
@@ -155,12 +147,7 @@ export default function SelectTypeaheadCreatable(
   const onTextInputChange = (_event: React.FormEvent<HTMLInputElement>, value: string) => {
     setInputValue(value);
     setFilterValue(value);
-
     resetActiveAndFocusedItem();
-
-    // if (value !== selected) {
-    //   setSelected("");
-    // }
   };
 
   const handleMenuArrowKeys = (key: string) => {
@@ -241,13 +228,9 @@ export default function SelectTypeaheadCreatable(
   };
 
   const onClearButtonClick = () => {
-    // setSelected("");
-    // setInputValue("");
-    // setFilterValue("");
     selectOption("", "");
     resetActiveAndFocusedItem();
     textInputRef?.current?.focus();
-    if (isCleanable) setOptions(props.options);
   };
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
@@ -268,7 +251,7 @@ export default function SelectTypeaheadCreatable(
           id="create-typeahead-select-input"
           autoComplete="off"
           innerRef={textInputRef}
-          placeholder={props.placeholder}
+          placeholder={placeholder}
           {...(activeItemId && { "aria-activedescendant": activeItemId })}
           role="combobox"
           isExpanded={isOpen}
@@ -291,9 +274,10 @@ export default function SelectTypeaheadCreatable(
     <Select
       id="create-typeahead-select"
       isOpen={isOpen}
-      selected={selected}
+      selected={value}
       onSelect={onSelect}
       onOpenChange={(isOpen) => {
+        reset();
         !isOpen && closeMenu();
       }}
       toggle={toggle}
