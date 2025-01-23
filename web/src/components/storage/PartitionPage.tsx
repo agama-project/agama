@@ -27,6 +27,7 @@ import {
   Form,
   FormGroup,
   Stack,
+  Split,
   SelectOptionProps,
   SelectList,
   SelectOption,
@@ -43,7 +44,7 @@ import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable
 import SelectToggle, { SelectToggleOption } from "~/components/core/SelectToggle";
 import { useDevices } from "~/queries/storage";
 import { StorageDevice } from "~/types/storage";
-import { baseName } from "~/components/storage/utils";
+import { baseName, deviceSize } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
@@ -61,28 +62,47 @@ function useDevice() {
 }
 
 function targetOptionLabel(value: string, device: StorageDevice): string {
-  if (value !== "new") return value;
+  if (value === "new") {
+    return sprintf(_("Create new partition on %s"), device.name);
+  } else {
+    return sprintf(_("Use partition %s"), value);
+  }
+}
 
-  return sprintf(_("as new partition on %s"), device.name);
+type PartitionDescriptionProps = {
+  partition: StorageDevice;
+};
+
+function PartitionDescription({ partition }: PartitionDescriptionProps): React.ReactNode {
+  return (
+    <Split hasGutter>
+      <span>{partition.description}</span>
+      <span>{deviceSize(partition.size)}</span>
+    </Split>
+  );
 }
 
 function TargetOptions(): React.ReactElement {
   const device = useDevice();
+  const partitions = device.partitionTable?.partitions || [];
 
   return (
     <SelectList>
       <SelectOption value="new">{targetOptionLabel("new", device)}</SelectOption>
       <Divider />
       <SelectGroup label={_("Use an existing partition")}>
-        <SelectOption value="/dev/vdc1" description={_("XFS 10 GiB")}>
-          {targetOptionLabel("/dev/vdc1", device)}
-        </SelectOption>
-        <SelectOption value="/dev/vdc2" description={_("Btrfs 25.5 GiB")}>
-          {targetOptionLabel("/dev/vdc2", device)}
-        </SelectOption>
-        {/* <SelectOption value="" isDisabled>
-          {_("There is no usable partitions")}
-        </SelectOption> */}
+        {partitions.map((partition, index) => (
+          <SelectOption
+            key={index}
+            value={partition.name}
+            description={<PartitionDescription partition={partition} />}
+          >
+            {partition.name}
+          </SelectOption>
+        ))}
+        {partitions.length === 0 && (
+          <SelectOption isDisabled>{_("There are not usable partitions")}</SelectOption>
+        )}
       </SelectGroup>
     </SelectList>
   );
