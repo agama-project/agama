@@ -57,7 +57,7 @@ const mockDrive: ConfigModel.Drive = {
       mountPath: "swap",
       size: {
         min: 2_000_000_000,
-        default: false, // WTF does default mean??
+        default: false, // false: user provided, true: calculated
       },
     },
   ],
