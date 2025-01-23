@@ -282,8 +282,10 @@ export type PartitionHook = {
   delete: () => void;
 };
 
-// driveName, like "/dev/sda"
-// mountPath, like "/" or "swap"
+/**
+ * @param driveName like "/dev/sda"
+ * @param mountPath like "/" or "swap"
+ */
 export function usePartition(driveName: string, mountPath: string): PartitionHook | undefined {
   const model = useConfigModel();
   const { mutate } = useConfigModelMutation();
