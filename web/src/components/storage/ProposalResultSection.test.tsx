@@ -31,13 +31,22 @@ import { ProposalResultSectionProps } from "./ProposalResultSection";
 
 const errorMessage = "Something went wrong, proposal not possible";
 const errors = [{ severity: 0, message: errorMessage }];
-const defaultProps: ProposalResultSectionProps = {
-  system: devices.system,
-  staging: devices.staging,
-  actions,
-};
+const defaultProps: ProposalResultSectionProps = {};
+const mockUseActionsFn = jest.fn();
+const mockConfig = { drives: [] };
 
-describe.skip("ProposalResultSection", () => {
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useConfigModel: () => mockConfig,
+  useDevices: () => devices.staging,
+  useActions: () => mockUseActionsFn(),
+}));
+
+describe("ProposalResultSection", () => {
+  beforeEach(() => {
+    mockUseActionsFn.mockReturnValue(actions);
+  });
+
   describe("when there are errors (proposal was not possible)", () => {
     it("renders given errors", () => {
       plainRender(<ProposalResultSection {...defaultProps} errors={errors} />);
@@ -61,35 +70,36 @@ describe.skip("ProposalResultSection", () => {
   });
 
   describe("when there are no errors (proposal was possible)", () => {
-    it("does not render a warning when there are not delete actions", () => {
-      const props = {
-        ...defaultProps,
-        actions: defaultProps.actions.filter((a) => !a.delete),
-      };
+    describe("and there are no delete actions", () => {
+      beforeEach(() => {
+        mockUseActionsFn.mockReturnValue(actions.filter((a) => !a.delete));
+      });
 
-      plainRender(<ProposalResultSection {...props} />);
-      expect(screen.queryByText(/Warning alert:/)).toBeNull();
+      it("does not render a warning when there are not delete actions", () => {
+        plainRender(<ProposalResultSection {...defaultProps} />);
+        expect(screen.queryByText(/Warning alert:/)).toBeNull();
+      });
     });
 
-    it("renders a reminder when there are delete actions", () => {
+    describe("and there are delete actions affecting a previous system", () => {
+      beforeEach(() => {
+        // NOTE: simulate the deletion of vdc2 (sid: 79) for checking that
+        // affected systems are rendered in the warning summary
+        mockUseActionsFn.mockReturnValue([
+          { device: 79, subvol: false, delete: true, resize: false, text: "" },
+        ]);
+      });
+
+      it("renders the affected systems in the deletion reminder, if any", () => {
+        plainRender(<ProposalResultSection {...defaultProps} />);
+        expect(screen.queryByText(/affecting openSUSE/)).toBeInTheDocument();
+      });
+    });
+
+    it("renders a reminder about the delete actions", () => {
       plainRender(<ProposalResultSection {...defaultProps} />);
-      const reminder = screen.getByRole("status");
-      within(reminder).getByText(/4 destructive/);
-    });
-
-    it("renders the affected systems in the deletion reminder, if any", () => {
-      // NOTE: simulate the deletion of vdc2 (sid: 79) for checking that
-      // affected systems are rendered in the warning summary
-      const props = {
-        ...defaultProps,
-        actions: [{ device: 79, subvol: false, delete: true, resize: false, text: "" }],
-      };
-
-      plainRender(<ProposalResultSection {...props} />);
-      // FIXME: below line reveals that warning wrapper deserves a role or
-      // something
-      const reminder = screen.getByRole("status");
-      within(reminder).getByText(/openSUSE/);
+      expect(screen.queryByText(/Warning alert:/)).toBeInTheDocument();
+      expect(screen.queryByText(/4 destructive/)).toBeInTheDocument();
     });
 
     it("renders a treegrid including all relevant information about final result", () => {
@@ -99,8 +109,8 @@ describe.skip("ProposalResultSection", () => {
        * Expected rows for full-result-example
        * --------------------------------------------------
        * "/dev/vdc Disk GPT 30 GiB"
-       * "vdc1 New BIOS Boot Partition 8 MiB"
-       * "vdc3 swap New Swap Partition 1.5 GiB"
+       * "vdc1 BIOS Boot Partition 8 MiB"
+       * "vdc3 swap Swap Partition 1.5 GiB"
        * "Unused space 3.49 GiB"
        * "vdc2 openSUSE Leap 15.2, Fedora 10.30 5 GiB"
        * "Unused space 1 GiB"
@@ -110,23 +120,23 @@ describe.skip("ProposalResultSection", () => {
        * Device      Mount point      Details                                 Size
        * -------------------------------------------------------------------------
        * /dev/vdc                     Disk GPT                              30 GiB
-       *     vdc1                 New BIOS Boot Partition                    8 MiB
-       *     vdc3    swap         New Swap Partition                       1.5 GiB
+       *     vdc1                     BIOS Boot Partition                    8 MiB
+       *     vdc3    swap             Swap Partition                       1.5 GiB
        *                              Unused space                        3.49 GiB
        *     vdc2                     openSUSE Leap 15.2, Fedora 10.30       5 GiB
        *                              Unused space                           1 GiB
-       *     vdc4                     Linux                   Before 2 GiB 1.5 GiB
-       *     vdc5    /            New Btrfs Partition                     17.5 GiB
+       *     vdc4                     Linux                                1.5 GiB
+       *     vdc5    /                Btrfs Partition                     17.5 GiB
        * -------------------------------------------------------------------------
        */
       within(treegrid).getByRole("row", { name: "/dev/vdc Disk GPT 30 GiB" });
-      within(treegrid).getByRole("row", { name: "vdc1 New BIOS Boot Partition 8 MiB" });
-      within(treegrid).getByRole("row", { name: "vdc3 swap New Swap Partition 1.5 GiB" });
+      within(treegrid).getByRole("row", { name: "vdc1 BIOS Boot Partition 8 MiB" });
+      within(treegrid).getByRole("row", { name: "vdc3 swap Swap Partition 1.5 GiB" });
       within(treegrid).getByRole("row", { name: "Unused space 3.49 GiB" });
       within(treegrid).getByRole("row", { name: "vdc2 openSUSE Leap 15.2, Fedora 10.30 5 GiB" });
       within(treegrid).getByRole("row", { name: "Unused space 1 GiB" });
-      within(treegrid).getByRole("row", { name: "vdc4 Linux Before 2 GiB 1.5 GiB" });
-      within(treegrid).getByRole("row", { name: "vdc5 / New Btrfs Partition 17.5 GiB" });
+      within(treegrid).getByRole("row", { name: "vdc4 Linux 1.5 GiB" });
+      within(treegrid).getByRole("row", { name: "vdc5 / Btrfs Partition 17.5 GiB" });
     });
 
     it("renders a button for opening the planned actions dialog", async () => {
@@ -135,7 +145,7 @@ describe.skip("ProposalResultSection", () => {
 
       await user.click(button);
 
-      screen.getByRole("dialog", { name: "Planned Actions" });
+      screen.getByRole("button", { name: "Collapse the list of planned actions" });
     });
   });
 });
