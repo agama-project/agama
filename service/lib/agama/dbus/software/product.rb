@@ -180,6 +180,8 @@ module Agama
             [1, "Product not selected yet"]
           elsif backend.registration.reg_code
             [2, "Product already registered"]
+          elsif !backend.product.registration
+            [3, "Product does not require registration"]
           else
             connect_result(first_error_code: 4) do
               backend.registration.register(reg_code, email: email)

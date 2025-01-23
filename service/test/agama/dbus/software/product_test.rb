@@ -198,6 +198,7 @@ describe Agama::DBus::Software::Product do
         backend.select_product("Tumbleweed")
 
         allow(backend.product).to receive(:repositories).and_return(repositories)
+        allow(backend.product).to receive(:registration).and_return(true)
       end
 
       let(:repositories) { [] }
@@ -214,6 +215,10 @@ describe Agama::DBus::Software::Product do
 
       context "if the product does not require registration" do
         let(:repositories) { ["https://repo"] }
+
+        before do
+          allow(backend.product).to receive(:registration).and_return(false)
+        end
 
         it "returns result code 3 and description" do
           expect(subject.register("123XX432")).to contain_exactly(3, /not require registration/i)
