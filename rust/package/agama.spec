@@ -16,15 +16,10 @@
 #
 
 # Require at least 1.3GB RAM per each parallel job (the size is in MB)
-%define ram_per_cpu 1300
+%global _smp_tasksize_proc 1300
 
 # Redefine the _smp_mflags macro so it takes the amount of RAM into account
-%define _smp_mflags %([ -z "$RPM_BUILD_NCPUS" ] \\\
-  && RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"; \\\
-  ram_kb="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"; \\\
-  ncpus_max=$(("$ram_kb"/%ram_per_cpu/1024)); \\\
-  if [ -n "$ncpus_max" ] && [ "$ncpus_max" -gt 0 ] && [ "$RPM_BUILD_NCPUS" -gt "$ncpus_max" ]; then RPM_BUILD_NCPUS="$ncpus_max"; fi; \\\
-  if [ "$RPM_BUILD_NCPUS" -gt 1 ]; then echo "-j$RPM_BUILD_NCPUS"; fi)
+%define _smp_mflags "-j%{getncpus:proc}"
 
 Name:           agama
 #               This will be set by osc services, that will run after this.
