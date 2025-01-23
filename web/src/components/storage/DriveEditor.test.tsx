@@ -84,7 +84,7 @@ describe("PartitionMenuItem", () => {
     const partitionsButton = screen.getByRole("button", { name: "Partitions" });
     await user.click(partitionsButton);
     const partitionsMenu = screen.getByRole("menu");
-    const deleteSwapButton = within(partitionsMenu).getByRole("button", {
+    const deleteSwapButton = within(partitionsMenu).getByRole("menuitem", {
       name: "Delete swap",
     });
     await user.click(deleteSwapButton);
