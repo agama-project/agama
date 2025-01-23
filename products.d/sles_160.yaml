@@ -54,6 +54,15 @@ translations:
       bulutta ve uçta iş açısından kritik iş yüklerini çalıştırır.
 software:
   installation_repositories: []
+  installation_labels:
+    - label: SLES160-x86_64
+      archs: x86_64
+    - label: SLES160-arch64
+      archs: aarch64
+    - label: SLES160-s390x
+      archs: s390
+    - label: SLES160-ppc64
+      archs: ppc
 
   mandatory_patterns:
     - base_traditional
