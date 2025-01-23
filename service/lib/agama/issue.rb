@@ -55,6 +55,12 @@ module Agama
     # @return [Symbol]
     attr_reader :severity
 
+    # Kind of error
+    #
+    # It helps to identify the error without having to rely on the message
+    # @return [Symbol]
+    attr_reader :kind
+
     # Defines possible sources
     module Source
       SYSTEM = :system
@@ -73,8 +79,9 @@ module Agama
     # @param details [String, nil]
     # @param source [symbol, nil]
     # @param severity [symbol]
-    def initialize(description, details: "", source: nil, severity: Severity::WARN)
+    def initialize(description, kind: :generic, details: "", source: nil, severity: Severity::WARN)
       @description = description
+      @kind = kind
       @details = details
       @source = source
       @severity = severity

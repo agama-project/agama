@@ -52,9 +52,10 @@ module Agama
 
         dbus_object[ISSUES_IFACE]["All"].map do |dbus_issue|
           Issue.new(dbus_issue[0],
-            details:  dbus_issue[1],
-            source:   sources[dbus_issue[2]],
-            severity: severities[dbus_issue[3]])
+            kind:     dbus_issue[1].to_sym,
+            details:  dbus_issue[2],
+            source:   sources[dbus_issue[3]],
+            severity: severities[dbus_issue[4]])
         end
       end
     end

@@ -24,7 +24,7 @@ require "dbus"
 require "agama/dbus/interfaces/issues"
 require "agama/issue"
 
-class DBusObjectWithIssuesInterface < ::DBus::Object
+class DBusObjectWithIssuesInterface < DBus::Object
   include Agama::DBus::Interfaces::Issues
 
   def initialize
@@ -40,7 +40,8 @@ class DBusObjectWithIssuesInterface < ::DBus::Object
       Agama::Issue.new("Issue 2",
         details:  "Details 2",
         source:   Agama::Issue::Source::CONFIG,
-        severity: Agama::Issue::Severity::ERROR)
+        severity: Agama::Issue::Severity::ERROR,
+        kind:     :missing_product)
     ]
   end
 end
@@ -59,8 +60,8 @@ describe DBusObjectWithIssuesInterface do
       result = subject.dbus_issues
 
       expect(result).to contain_exactly(
-        ["Issue 1", "Details 1", 1, 0],
-        ["Issue 2", "Details 2", 2, 1]
+        ["Issue 1", "generic", "Details 1", 1, 0],
+        ["Issue 2", "missing_product", "Details 2", 2, 1]
       )
     end
   end

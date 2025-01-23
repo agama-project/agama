@@ -57,6 +57,8 @@ enum IssueSeverity {
 type Issue = {
   /** Issue description */
   description: string;
+  /** Issue kind **/
+  kind: string;
   /** Issue details. It is not mandatory. */
   details: string | undefined;
   /** Where the issue comes from */

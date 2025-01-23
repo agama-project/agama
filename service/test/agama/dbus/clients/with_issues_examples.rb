@@ -37,36 +37,36 @@ shared_examples "issues" do
   end
 
   let(:root_node) do
-    instance_double(::DBus::Node, descendant_objects: [dbus_object1, dbus_object2, dbus_object3])
+    instance_double(DBus::Node, descendant_objects: [dbus_object1, dbus_object2, dbus_object3])
   end
 
   let(:dbus_object1) do
-    instance_double(::DBus::ProxyObject,
+    instance_double(DBus::ProxyObject,
       interfaces: ["org.opensuse.Agama1.Test", "org.opensuse.Agama1.Issues"])
   end
 
   let(:dbus_object2) do
-    instance_double(::DBus::ProxyObject, interfaces: ["org.opensuse.Agama1.Test"])
+    instance_double(DBus::ProxyObject, interfaces: ["org.opensuse.Agama1.Test"])
   end
 
   let(:dbus_object3) do
-    instance_double(::DBus::ProxyObject, interfaces: ["org.opensuse.Agama1.Issues"])
+    instance_double(DBus::ProxyObject, interfaces: ["org.opensuse.Agama1.Issues"])
   end
 
-  let(:issues_interface1) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:issues_interface1) { instance_double(DBus::ProxyObjectInterface) }
 
-  let(:issues_interface3) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:issues_interface3) { instance_double(DBus::ProxyObjectInterface) }
 
   let(:issues1) do
     [
-      ["Issue 1", "Details 1", 1, 0],
-      ["Issue 2", "Details 2", 2, 1]
+      ["Issue 1", "generic", "Details 1", 1, 0],
+      ["Issue 2", "generic", "Details 2", 2, 1]
     ]
   end
 
   let(:issues3) do
     [
-      ["Issue 3", "Details 3", 1, 0]
+      ["Issue 3", "generic", "Details 3", 1, 0]
     ]
   end
 
