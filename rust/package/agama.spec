@@ -15,12 +15,6 @@
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
-# Require at least 1.3GB RAM per each parallel job (the size is in MB)
-%global _smp_tasksize_proc 1300
-
-# Redefine the _smp_mflags macro so it takes the amount of RAM into account
-%define _smp_mflags "-j%{getncpus:proc}"
-
 Name:           agama
 #               This will be set by osc services, that will run after this.
 Version:        0
@@ -135,9 +129,6 @@ package contains a systemd service to run scripts when booting the installed sys
 # find vendor -type f -name \*.rs -exec chmod -x '{}' \;
 
 %build
-# just for debugging failures with low memory
-cat /proc/meminfo | head -n 3
-
 %{cargo_build}
 cargo run --package xtask -- manpages
 gzip out/man/*
