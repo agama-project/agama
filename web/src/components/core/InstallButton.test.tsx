@@ -56,6 +56,7 @@ describe("InstallButton", () => {
         [
           {
             description: "Fake Issue",
+            kind: "generic",
             source: 0,
             severity: 0,
             details: "Fake Issue details",
