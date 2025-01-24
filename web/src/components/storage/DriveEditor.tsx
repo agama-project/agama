@@ -384,10 +384,14 @@ const SearchSelector = ({ drive, selected, onChange }) => {
 };
 
 const RemoveDriveOption = ({ drive }) => {
-  const { isExplicitBoot, delete: deleteDrive } = useDrive(drive.name);
+  const driveModel = useDrive(drive.name);
 
-  if (driveUtils.hasPv(drive)) return;
+  if (!driveModel) return;
+
+  const { isExplicitBoot, delete: deleteDrive } = driveModel;
+
   if (isExplicitBoot) return;
+  if (driveUtils.hasPv(drive)) return;
   if (driveUtils.hasRoot(drive)) return;
 
   return (
