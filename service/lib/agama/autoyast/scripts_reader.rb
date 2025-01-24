@@ -44,6 +44,7 @@ module Agama
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
+        @anonymous_counter=0
       end
 
       # Returns a hash that corresponds to Agama "scripts" section.
@@ -100,10 +101,10 @@ module Agama
       # @param section [Hash] AutoYaST script section
       def read_script(section)
         script = {
-          "name" => section["file_name"]
+          "name" => section["filename"] || "annonymous#{@anonymous_counter+=1}"
         }
 
-        if section["location"]
+        if section["location"] && !section["location"].empty?
           script["url"] = section["location"]
         elsif section["source"]
           script["body"] = section["source"]
