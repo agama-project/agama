@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -34,12 +34,13 @@ import { useDeprecatedChanges } from "~/queries/storage";
 import { useRootUser } from "~/queries/users";
 import { ROOT, PRODUCT, USER } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
-import { isEmpty } from "~/utils";
+import { isEmpty, useLocalStorage } from "~/utils";
 
 /**
  * Main application component.
  */
 function App() {
+  const [showWelcomePage] = useLocalStorage("agm-show-welcome-page", true);
   const location = useLocation();
   const { isBusy, phase } = useInstallerStatus({ suspense: true });
   const { connected, error } = useInstallerClientStatus();
@@ -54,6 +55,10 @@ function App() {
 
   const Content = () => {
     if (error) return <ServerError />;
+
+    if (showWelcomePage) {
+      return <Navigate to={ROOT.welcomePage} />;
+    }
 
     if (phase === InstallationPhase.Install && isBusy) {
       return <Navigate to={ROOT.installationProgress} />;
