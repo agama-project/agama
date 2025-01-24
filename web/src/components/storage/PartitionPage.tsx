@@ -23,6 +23,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import {
+  Alert,
   Flex,
   Form,
   FormGroup,
@@ -134,8 +135,11 @@ function TargetOptions(): React.ReactElement {
 }
 
 function FilesystemOptionLabel({ value, target }): React.ReactElement {
+  const partition = usePartition(target);
+  const filesystem = partition?.filesystem?.type;
+
   if (value === "") return <>{_("Waiting for a mount point")}</>;
-  if (value === "reuse") return <>{sprintf(_("Keep %s file system"), target)}</>;
+  if (value === "reuse") return <>{sprintf(_("Existing %s"), filesystem)}</>;
 
   return <>{value}</>;
 }
@@ -153,10 +157,7 @@ function FilesystemOptions({ mountPoint, target }): React.ReactElement {
         </SelectOption>
       )}
       {mountPoint !== "" && filesystem && volume.outline.fsTypes.includes(filesystem) && (
-        <SelectOption
-          value="reuse"
-          description={sprintf(_("Do not format the existing %s file system"), filesystem)}
-        >
+        <SelectOption value="reuse" description={sprintf(_("Do not format %s"), target)}>
           <FilesystemOptionLabel value="reuse" target={target} />
         </SelectOption>
       )}
@@ -185,7 +186,7 @@ function SizeOptionLabel({ value, mountPoint, target }): React.ReactElement {
 
   if (value === "" && mountPoint === "") return <>{_("Waiting for a mount point")}</>;
   if (value === "" && mountPoint !== "" && target !== "new")
-    return <>{sprintf(_("Keep %s size"), partition.name)}</>;
+    return <>{deviceSize(partition.size)}</>;
   if (value === "auto") return <>{_("Auto-calculated")}</>;
   if (value === "custom") return <>{_("Custom")}</>;
 
@@ -193,8 +194,6 @@ function SizeOptionLabel({ value, mountPoint, target }): React.ReactElement {
 }
 
 function SizeOptions({ mountPoint, target }): React.ReactElement {
-  const partition = usePartition(target);
-
   return (
     <SelectList>
       {mountPoint === "" && (
@@ -203,7 +202,7 @@ function SizeOptions({ mountPoint, target }): React.ReactElement {
         </SelectOption>
       )}
       {mountPoint !== "" && target !== "new" && (
-        <SelectOption value="" description={deviceSize(partition.size)}>
+        <SelectOption value="" description={sprintf(_("Keep %s size"), target)}>
           <SizeOptionLabel value="" mountPoint={mountPoint} target={target} />
         </SelectOption>
       )}
@@ -225,7 +224,7 @@ function SizeOptions({ mountPoint, target }): React.ReactElement {
 }
 
 function CustonSizeOptionLabel({ value }): React.ReactElement {
-  if (value === "fixed") return <>{_("Do not used")}</>;
+  if (value === "fixed") return <>{_("None")}</>;
   if (value === "unlimited") return <>{_("Unlimited")}</>;
   if (value === "range") return <>{_("Limited")}</>;
 
@@ -257,8 +256,41 @@ function CustonSizeOptions(): React.ReactElement {
   );
 }
 
-function AutoSize() {
-  return <p>{_("The size is auto calculated based on ...")}</p>;
+function AutoSize({ mountPoint }): React.ReactElement {
+  const volume = useVolume(mountPoint);
+
+  const conditions = [];
+
+  if (volume.outline.snapshotsAffectSizes)
+    // TRANSLATORS: item which affects the final computed partition size
+    conditions.push(_("the configuration of snapshots"));
+
+  if (volume.outline.sizeRelevantVolumes && volume.outline.sizeRelevantVolumes.length > 0)
+    // TRANSLATORS: item which affects the final computed partition size
+    // %s is replaced by a list of mount points like "/home, /boot"
+    conditions.push(
+      sprintf(
+        _("the presence of the file system for %s"),
+        // TRANSLATORS: conjunction for merging two list items
+        volume.outline.sizeRelevantVolumes.join(_(", ")),
+      ),
+    );
+
+  if (volume.outline.adjustByRam)
+    // TRANSLATORS: item which affects the final computed partition size
+    conditions.push(_("the amount of RAM in the system"));
+
+  if (!conditions.length) return null;
+
+  // TRANSLATORS: the %s is replaced by the items which affect the computed size
+  const conditionsText = sprintf(
+    _("The final size for %s depends on %s."),
+    mountPoint,
+    // TRANSLATORS: conjunction for merging two texts
+    conditions.join(_(" and ")),
+  );
+
+  return <Alert variant="info" isInline isPlain title={conditionsText} />;
 }
 
 function CustomSize({ value, mountPoint, onChange }) {
@@ -293,17 +325,12 @@ function CustomSize({ value, mountPoint, onChange }) {
   return (
     <Flex>
       <FlexItem>
-        <FormGroup fieldId="minSize" label={_("Minimum size")}>
+        <FormGroup fieldId="minSize" label={_("Minimum")}>
           <TextInput id="minSizeValue" value={value.min} onChange={(_, v) => changeMinSize(v)} />
-          <FormHelperText>
-            <HelperText>
-              <HelperTextItem>{_("Example: 5 GiB")}</HelperTextItem>
-            </HelperText>
-          </FormHelperText>
         </FormGroup>
       </FlexItem>
       <FlexItem>
-        <FormGroup fieldId="maxSize" label={_("Maximum size")}>
+        <FormGroup fieldId="maxSize" label={_("Maximum")}>
           <SelectToggle
             value={option}
             label={<CustonSizeOptionLabel value={option} />}
@@ -321,11 +348,6 @@ function CustomSize({ value, mountPoint, onChange }) {
               value={value.max}
               onChange={(_, v) => onChange({ max: v })}
             />
-            <FormHelperText>
-              <HelperText>
-                <HelperTextItem>{_("Example: 5 GiB")}</HelperTextItem>
-              </HelperText>
-            </FormHelperText>
           </FormGroup>
         </FlexItem>
       )}
@@ -458,9 +480,9 @@ export default function PartitionPage() {
                 <FilesystemOptions mountPoint={mountPoint} target={target} />
               </SelectToggle>
             </FormGroup>
-            <FormGroup fieldId="size" label={_("Size")}>
-              <Stack hasGutter>
-                <Flex>
+            <Flex>
+              <FlexItem>
+                <FormGroup fieldId="size" label={_("Size")}>
                   <SelectToggle
                     value={sizeOption}
                     label={
@@ -471,17 +493,21 @@ export default function PartitionPage() {
                   >
                     <SizeOptions mountPoint={mountPoint} target={target} />
                   </SelectToggle>
-                </Flex>
-                {target === "new" && sizeOption === "auto" && <AutoSize />}
-                {target === "new" && sizeOption === "custom" && (
+                  {target === "new" && sizeOption === "auto" && (
+                    <AutoSize mountPoint={mountPoint} />
+                  )}
+                </FormGroup>
+              </FlexItem>
+              {target === "new" && sizeOption === "custom" && (
+                <FlexItem>
                   <CustomSize
                     value={{ min: minSize, max: maxSize }}
                     mountPoint={mountPoint}
                     onChange={setSize}
                   />
-                )}
-              </Stack>
-            </FormGroup>
+                </FlexItem>
+              )}
+            </Flex>
           </Stack>
         </Form>
       </Page.Content>
