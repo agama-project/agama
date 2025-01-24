@@ -21,18 +21,20 @@
  */
 
 import React from "react";
+import { redirect } from "react-router-dom";
+import { N_ } from "~/i18n";
+import { Route } from "~/types/routes";
 import BootSelection from "~/components/storage/BootSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
-import { ISCSIPage, ProposalPage } from "~/components/storage";
-
-import { Route } from "~/types/routes";
+import ProposalPage from "~/components/storage/ProposalPage";
+import ISCSIPage from "~/components/storage/ISCSIPage";
+import PartitionPage from "~/components/storage/PartitionPage";
+import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
+import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
+import DASDPage from "~/components/storage/dasd/DASDPage";
 import { supportedDASD, probeDASD } from "~/api/storage/dasd";
 import { probeZFCP, supportedZFCP } from "~/api/storage/zfcp";
-import { redirect } from "react-router-dom";
-import { ZFCPPage, ZFCPDiskActivationPage } from "~/components/storage/zfcp";
-import { DASDPage } from "~/components/storage/dasd";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
 
 const routes = (): Route => ({
   path: PATHS.root,
@@ -47,8 +49,12 @@ const routes = (): Route => ({
       element: <BootSelection />,
     },
     {
-      path: PATHS.spacePolicy,
+      path: PATHS.findSpace,
       element: <SpacePolicySelection />,
+    },
+    {
+      path: PATHS.addPartition,
+      element: <PartitionPage />,
     },
     {
       path: PATHS.iscsi,
