@@ -215,7 +215,7 @@ describe("App", () => {
     });
   });
 
-  describe("on the idle finish phase", () => {
+  describe("on the finish phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Finish;
       mockSelectedProduct = tumbleweed;
