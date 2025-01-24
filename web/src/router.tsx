@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,7 +25,12 @@ import { createHashRouter, Outlet } from "react-router-dom";
 import App from "~/App";
 import Protected from "~/Protected";
 import { FullLayout, PlainLayout } from "~/components/layout";
-import { InstallationFinished, InstallationProgress, LoginPage } from "~/components/core";
+import {
+  InstallationFinished,
+  InstallationProgress,
+  LoginPage,
+  WelcomePage,
+} from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
@@ -86,6 +91,10 @@ const protectedRoutes = () => [
       </PlainLayout>
     ),
     children: [
+      {
+        path: PATHS.welcomePage,
+        element: <WelcomePage />,
+      },
       {
         path: PATHS.installationProgress,
         element: <InstallationProgress />,

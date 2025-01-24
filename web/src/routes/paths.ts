@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -51,6 +51,7 @@ const ROOT = {
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
   logs: "/api/manager/logs/store",
+  welcomePage: "/welcome",
 };
 
 const USER = {
@@ -83,6 +84,7 @@ const STORAGE = {
 };
 
 const SUPPORTIVE_PATHS = [
+  ROOT.welcomePage,
   ROOT.login,
   PRODUCT.changeProduct,
   PRODUCT.progress,

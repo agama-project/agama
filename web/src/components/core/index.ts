@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -49,5 +49,6 @@ export { default as TreeTable } from "./TreeTable";
 export { default as Link } from "./Link";
 export { default as EmptyState } from "./EmptyState";
 export { default as InstallerOptions } from "./InstallerOptions";
+export { default as WelcomePage } from "./WelcomePage";
 export { default as IssuesDrawer } from "./IssuesDrawer";
 export { default as Drawer } from "./Drawer";
