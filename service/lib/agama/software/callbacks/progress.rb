@@ -42,7 +42,9 @@ module Agama
 
         def setup
           Yast::Pkg.CallbackStartPackage(
-            fun_ref(method(:start_package), "void (string, string, string, integer, boolean)")
+            Yast::FunRef.new(
+              method(:start_package), "void (string, string, string, integer, boolean)"
+            )
           )
         end
 
@@ -50,10 +52,6 @@ module Agama
 
         # @return [Agama::Progress]
         attr_reader :progress
-
-        def fun_ref(method, signature)
-          Yast::FunRef.new(method, signature)
-        end
 
         def start_package(package, _file, _summary, _size, _other)
           progress.step("Installing #{package}")
