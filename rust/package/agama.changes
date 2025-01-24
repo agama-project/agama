@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 24 09:33:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new installation phase "finish"
+  (gh#agama-project/agama#1616).
+
+-------------------------------------------------------------------
 Fri Jan 24 06:43:05 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Change the registration property in a product's definition to a
