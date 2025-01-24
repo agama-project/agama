@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 24 09:34:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the "finish" to decide whether to navigate to the
+  congratulations screen (gh#agama-project/agama#1616).
+
+-------------------------------------------------------------------
 Fri Jan 24 06:43:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the "missing_registration" issue to determine whether to show

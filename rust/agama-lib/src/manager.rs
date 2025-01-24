@@ -67,6 +67,8 @@ pub enum InstallationPhase {
     Config,
     /// Installation phase.
     Install,
+    /// Finished installation phase.
+    Finish,
 }
 
 impl TryFrom<u32> for InstallationPhase {
@@ -77,6 +79,7 @@ impl TryFrom<u32> for InstallationPhase {
             0 => Ok(Self::Startup),
             1 => Ok(Self::Config),
             2 => Ok(Self::Install),
+            3 => Ok(Self::Finish),
             _ => Err(ServiceError::UnknownInstallationPhase(value)),
         }
     }
