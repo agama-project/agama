@@ -43,6 +43,7 @@ import { _ } from "~/i18n";
 import { suggestUsernames } from "~/components/users/utils";
 import { useFirstUser, useFirstUserMutation } from "~/queries/users";
 import { FirstUser } from "~/types/users";
+import * as styles from "./FirstUserForm.module.scss";
 
 const UsernameSuggestions = ({
   isOpen = false,
@@ -56,7 +57,7 @@ const UsernameSuggestions = ({
   return (
     <Menu
       aria-label={_("Username suggestion dropdown")}
-      className="first-username-dropdown"
+      className={styles.dropdown}
       onMouseEnter={() => setInsideDropDown(true)}
       onMouseLeave={() => setInsideDropDown(false)}
     >
@@ -233,11 +234,7 @@ export default function FirstUserForm() {
                     />
                   </FormGroup>
 
-                  <FormGroup
-                    className="first-username-wrapper"
-                    fieldId="userName"
-                    label={_("Username")}
-                  >
+                  <FormGroup className={styles.wrapper} fieldId="userName" label={_("Username")}>
                     <TextInput
                       id="userName"
                       name="userName"
