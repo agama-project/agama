@@ -15,21 +15,6 @@
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
-# Require at least 1.3GB RAM per each parallel job (the size is in MB)
-%global _smp_tasksize_proc 1300
-
-# Redefine the _smp_mflags macro so it takes the amount of RAM into account
-#
-# Unfortunately SLE16 contains older rpm v4.18 so we need to calculate that manually :-/
-# TODO: use this instead when rpm in SLE16 is updated to a newer version (4.19+):
-#       %%define _smp_mflags "-j%%{getncpus:proc}"
-%define _smp_mflags %([ -z "$RPM_BUILD_NCPUS" ] \\\
-  && RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"; \\\
-  ram_kb="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"; \\\
-  ncpus_max=$(("$ram_kb"/1024/%_smp_tasksize_proc)); \\\
-  if [ -n "$ncpus_max" ] && [ "$ncpus_max" -gt 0 ] && [ "$RPM_BUILD_NCPUS" -gt "$ncpus_max" ]; then RPM_BUILD_NCPUS="$ncpus_max"; fi; \\\
-  if [ "$RPM_BUILD_NCPUS" -gt 1 ]; then echo "-j$RPM_BUILD_NCPUS"; fi)
-
 Name:           agama
 #               This will be set by osc services, that will run after this.
 Version:        0
@@ -42,6 +27,8 @@ Url:            https://github.com/agama-project/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
 
+# defines the "limit_build" macro used in the "build" section below
+BuildRequires:  memory-constraints
 BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
@@ -144,6 +131,10 @@ package contains a systemd service to run scripts when booting the installed sys
 # find vendor -type f -name \*.rs -exec chmod -x '{}' \;
 
 %build
+# Require at least 1.3GB RAM per each parallel job (the size is in MB),
+# this can limit the number of parallel jobs on systems with relatively small memory.
+%{limit_build -m 1300}
+
 %{cargo_build}
 cargo run --package xtask -- manpages
 gzip out/man/*
