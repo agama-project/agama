@@ -95,6 +95,28 @@ describe Agama::InstallationPhase do
     end
   end
 
+  describe "finish?" do
+    context "if the installation phase is finish" do
+      before do
+        subject.finish
+      end
+
+      it "returns true" do
+        expect(subject.finish?).to eq(true)
+      end
+    end
+
+    context "if the installation phase is not finish" do
+      before do
+        subject.config
+      end
+
+      it "returns false" do
+        expect(subject.finish?).to eq(false)
+      end
+    end
+  end
+
   describe "#startup" do
     it "sets the installation phase to startup" do
       subject.startup
