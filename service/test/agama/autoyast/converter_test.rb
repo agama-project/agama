@@ -196,7 +196,8 @@ describe Agama::AutoYaST::Converter do
         __dir__
       )
 
-      result = `jsonschema -i '#{result_path}' '#{schema}' 2>&1`
+      # filter out deprecation warning as check-jsonschema is not packaged for TW yet
+      result = `jsonschema -i '#{result_path}' '#{schema}' 2>&1 | grep -v 'DeprecationWarning'`
       expect(result).to eq ""
     end
   end
