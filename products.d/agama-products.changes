@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 24 06:45:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change the registration property in a product's definition to a
+  boolean (gh#agama-project/agama#1938).
+
+-------------------------------------------------------------------
 Thu Jan 23 10:43:32 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Set installation labels for SLES and SLES4SAP

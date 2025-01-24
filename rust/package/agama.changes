@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 24 06:43:05 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change the registration property in a product's definition to a
+  boolean (gh#agama-project/agama#1938).
+
+-------------------------------------------------------------------
 Wed Jan 22 14:49:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Added a workaround for stuck web UI when importing auto
