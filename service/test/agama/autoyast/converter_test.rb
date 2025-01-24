@@ -40,8 +40,9 @@ describe Agama::AutoYaST::Converter do
   end
   let(:xml_valid?) { true }
   let(:xml_errors) { [] }
+  let(:result_path) { File.join(workdir, "autoinst.json") }
   let(:result) do
-    content = File.read(File.join(workdir, "autoinst.json"))
+    content = File.read(result_path)
     JSON.parse(content)
   end
   let(:storage_manager) do
@@ -175,6 +176,28 @@ describe Agama::AutoYaST::Converter do
     it "reports the problem" do
       expect(Yast2::Popup).to receive(:show)
       subject.to_agama(workdir)
+    end
+  end
+
+  context "for cloned profile" do
+    let(:profile_name) { "cloned.xml" }
+
+    it "generate json according to schema" do
+      # sadly rubygem-json-schema cannot be used due to too old supported format
+      if !system("which jsonschema")
+        pending "can run only if python3-jsonschema is installed"
+        break
+      end
+
+      subject.to_agama(workdir)
+
+      schema = File.expand_path(
+        "../../../../rust/agama-lib/share/profile.schema.json",
+        __dir__
+      )
+
+      result = `jsonschema -i '#{result_path}' '#{schema}' 2>&1`
+      expect(result).to eq ""
     end
   end
 end
