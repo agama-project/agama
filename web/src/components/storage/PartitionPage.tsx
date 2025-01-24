@@ -127,11 +127,8 @@ function TargetOptions(): React.ReactElement {
 }
 
 function FilesystemOptionLabel({ value, target }): React.ReactElement {
-  const partition = usePartition(target);
-
   if (value === "") return <>{_("Waiting for a mount point")}</>;
-  if (value === "reuse")
-    return <>{sprintf(_("%s from %s"), partition?.filesystem?.type, target)}</>;
+  if (value === "reuse") return <>{sprintf(_("Keep %s file system"), target)}</>;
 
   return <>{value}</>;
 }
@@ -139,6 +136,7 @@ function FilesystemOptionLabel({ value, target }): React.ReactElement {
 function FilesystemOptions({ mountPoint, target }): React.ReactElement {
   const volume = useVolume(mountPoint);
   const partition = usePartition(target);
+  const filesystem = partition?.filesystem?.type;
 
   return (
     <SelectList>
@@ -147,16 +145,15 @@ function FilesystemOptions({ mountPoint, target }): React.ReactElement {
           <FilesystemOptionLabel value="" target={target} />
         </SelectOption>
       )}
-      {mountPoint !== "" &&
-        partition?.filesystem &&
-        volume.outline.fsTypes.includes(partition.filesystem.type) && (
-          <SelectOption value="reuse" description={_("Do not format the existing file system")}>
-            <FilesystemOptionLabel value="reuse" target={target} />
-          </SelectOption>
-        )}
-      {mountPoint !== "" && partition && partition.filesystem && volume.outline.fsTypes.length && (
-        <Divider />
+      {mountPoint !== "" && filesystem && volume.outline.fsTypes.includes(filesystem) && (
+        <SelectOption
+          value="reuse"
+          description={sprintf(_("Do not format the existing %s file system"), filesystem)}
+        >
+          <FilesystemOptionLabel value="reuse" target={target} />
+        </SelectOption>
       )}
+      {mountPoint !== "" && filesystem && volume.outline.fsTypes.length && <Divider />}
       {mountPoint !== "" && (
         <SelectGroup label={_("Format partition as")}>
           {volume.outline.fsTypes.map((fsType, index) => (
@@ -176,36 +173,48 @@ function FilesystemOptions({ mountPoint, target }): React.ReactElement {
   );
 }
 
-function sizeOptions(mountPoint: string, target: string): SelectToggleOption[] {
-  if (mountPoint === "") {
-    return [
-      {
-        value: "",
-        label: _("Waiting for a mount point"),
-      },
-    ];
-  } else if (target !== "new") {
-    return [
-      {
-        value: "",
-        label: sprintf(_("Keep %s size"), target),
-        description: _("10 GiB"),
-      },
-    ];
-  } else {
-    return [
-      {
-        value: "auto",
-        label: "Auto-calculated",
-        description: _("A proper size is automatically calculated"),
-      },
-      {
-        value: "custom",
-        label: "Custom",
-        description: _("Define a custom size between a minimum and a maximum"),
-      },
-    ];
-  }
+function SizeOptionLabel({ value, mountPoint, target }): React.ReactElement {
+  const partition = usePartition(target);
+
+  if (value === "" && mountPoint === "") return <>{_("Waiting for a mount point")}</>;
+  if (value === "" && mountPoint !== "" && target !== "new")
+    return <>{sprintf(_("Keep %s size"), partition.name)}</>;
+  if (value === "auto") return <>{_("Auto-calculated")}</>;
+  if (value === "custom") return <>{_("Custom")}</>;
+
+  return <>{value}</>;
+}
+
+function SizeOptions({ mountPoint, target }): React.ReactElement {
+  const partition = usePartition(target);
+
+  return (
+    <SelectList>
+      {mountPoint === "" && (
+        <SelectOption value="">
+          <SizeOptionLabel value="" mountPoint={mountPoint} target={target} />
+        </SelectOption>
+      )}
+      {mountPoint !== "" && target !== "new" && (
+        <SelectOption value="" description={deviceSize(partition.size)}>
+          <SizeOptionLabel value="" mountPoint={mountPoint} target={target} />
+        </SelectOption>
+      )}
+      {mountPoint !== "" && target === "new" && (
+        <>
+          <SelectOption value="auto" description={_("A proper size is automatically calculated")}>
+            <SizeOptionLabel value="auto" mountPoint={mountPoint} target={target} />
+          </SelectOption>
+          <SelectOption
+            value="custom"
+            description={_("Define a custom size between a minimum and a maximum")}
+          >
+            <SizeOptionLabel value="custom" mountPoint={mountPoint} target={target} />
+          </SelectOption>
+        </>
+      )}
+    </SelectList>
+  );
 }
 
 const customSizeOptions: SelectToggleOption[] = [
@@ -295,14 +304,15 @@ function CustomSize({ value, onChange }) {
 }
 
 export default function PartitionPage() {
-  const volumes = useVolumeTemplates();
   const [mountPoint, setMountPoint] = React.useState<string>("");
   const [target, setTarget] = React.useState<string>("new");
   const [filesystem, setFilesystem] = React.useState<string>("");
   const [sizeOption, setSizeOption] = React.useState<string>("");
   const [minSize, setMinSize] = React.useState<string>("");
   const [maxSize, setMaxSize] = React.useState<string>("");
+
   const device = useDevice();
+  const volumes = useVolumeTemplates();
   const volume = useVolume(mountPoint);
   const partition = usePartition(target);
 
@@ -310,7 +320,7 @@ export default function PartitionPage() {
   const suitableFilesystems = volume?.outline?.fsTypes;
   const partitionFilesystem = partition?.filesystem?.type;
 
-  // Automatically update filesystem.
+  // Automatically update filesystem if mountPoint or target changes.
   React.useEffect(() => {
     // Reset filesystem if there is no mount point yet.
     if (mountPoint === "") setFilesystem("");
@@ -402,10 +412,10 @@ export default function PartitionPage() {
             </FormGroup>
             <FormGroup fieldId="fileSystem" label={_("File system")}>
               <SelectToggle
-                isDisabled={mountPoint === ""}
                 value={filesystem}
                 label={<FilesystemOptionLabel value={filesystem} target={target} />}
                 onChange={setFilesystem}
+                isDisabled={mountPoint === ""}
               >
                 <FilesystemOptions mountPoint={mountPoint} target={target} />
               </SelectToggle>
@@ -414,11 +424,15 @@ export default function PartitionPage() {
               <Stack hasGutter>
                 <Flex>
                   <SelectToggle
-                    options={sizeOptions(mountPoint, target)}
                     value={sizeOption}
+                    label={
+                      <SizeOptionLabel value={sizeOption} mountPoint={mountPoint} target={target} />
+                    }
                     onChange={setSizeOption}
                     isDisabled={mountPoint === ""}
-                  />
+                  >
+                    <SizeOptions mountPoint={mountPoint} target={target} />
+                  </SelectToggle>
                 </Flex>
                 {target === "new" && sizeOption === "auto" && <AutoSize />}
                 {target === "new" && sizeOption === "custom" && (
