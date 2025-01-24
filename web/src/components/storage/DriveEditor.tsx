@@ -384,16 +384,20 @@ const SearchSelector = ({ drive, selected, onChange }) => {
 };
 
 const RemoveDriveOption = ({ drive }) => {
-  const { isExplicitBoot } = useDrive(drive.name);
+  const driveModel = useDrive(drive.name);
 
-  if (driveUtils.hasPv(drive)) return;
+  if (!driveModel) return;
+
+  const { isExplicitBoot, delete: deleteDrive } = driveModel;
+
   if (isExplicitBoot) return;
+  if (driveUtils.hasPv(drive)) return;
   if (driveUtils.hasRoot(drive)) return;
 
   return (
     <>
       <Divider component="hr" />
-      <MenuItem description={_("Remove the configuration for this device")}>
+      <MenuItem description={_("REMOVE the configuration for this device")} onClick={deleteDrive}>
         {_("Do not use")}
       </MenuItem>
     </>

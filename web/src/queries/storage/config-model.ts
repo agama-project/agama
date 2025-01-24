@@ -51,8 +51,9 @@ function findDrive(model: configModel.Config, driveName: string): configModel.Dr
   return drives.find((d) => d.name === driveName);
 }
 
-function removeDrive(model: configModel.Config, driveName: string) {
+function removeDrive(model: configModel.Config, driveName: string): configModel.Config {
   model.drives = model.drives.filter((d) => d.name !== driveName);
+  return model;
 }
 
 function isUsedDrive(model: configModel.Config, driveName: string) {
@@ -302,6 +303,7 @@ export type DriveHook = {
   isExplicitBoot: boolean;
   switch: (newName: string) => void;
   setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
+  delete: () => void;
 };
 
 export function useDrive(name: string): DriveHook | undefined {
@@ -317,5 +319,6 @@ export function useDrive(name: string): DriveHook | undefined {
     setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => {
       mutate(setSpacePolicy(model, name, policy, actions));
     },
+    delete: () => mutate(removeDrive(model, name)),
   };
 }
