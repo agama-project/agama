@@ -41,7 +41,7 @@ import {
 } from "@patternfly/react-core";
 import { Page } from "~/components/core/";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
-import SelectToggle, { SelectToggleOption } from "~/components/core/SelectToggle";
+import SelectToggle from "~/components/core/SelectToggle";
 import { useDevices, useVolumeTemplates } from "~/queries/storage";
 import { StorageDevice, Volume } from "~/types/storage";
 import { baseName, deviceSize } from "~/components/storage/utils";
@@ -217,23 +217,35 @@ function SizeOptions({ mountPoint, target }): React.ReactElement {
   );
 }
 
-const customSizeOptions: SelectToggleOption[] = [
-  {
-    value: _("fixed"),
-    label: _("Do not allow growing"),
-    description: _("The partition is created exactly with the given size"),
-  },
-  {
-    value: _("unlimited"),
-    label: _("Allow growing as much as possible"),
-    description: _("The partition can grow if there is free space"),
-  },
-  {
-    value: _("range"),
-    label: _("Allow growing until a limit"),
-    description: _("The partition can grow until a max size"),
-  },
-];
+function CustonSizeOptionLabel({ value }): React.ReactElement {
+  if (value === "fixed") return <>{_("Do not allow growing")}</>;
+  if (value === "unlimited") return <>{_("Allow growing as much as possible")}</>;
+  if (value === "range") return <>{_("Allow growing until a limit")}</>;
+
+  return <></>;
+}
+
+function CustonSizeOptions(): React.ReactElement {
+  return (
+    <SelectList>
+      <SelectOption
+        value="fixed"
+        description={_("The partition is created exactly with the given size")}
+      >
+        <CustonSizeOptionLabel value="fixed" />
+      </SelectOption>
+      <SelectOption
+        value="unlimited"
+        description={_("The partition can grow if there is free space")}
+      >
+        <CustonSizeOptionLabel value="unlimited" />
+      </SelectOption>
+      <SelectOption value="range" description={_("The partition can grow until a given max size")}>
+        <CustonSizeOptionLabel value="range" />
+      </SelectOption>
+    </SelectList>
+  );
+}
 
 function AutoSize() {
   return <p>{_("The size is auto calculated based on ...")}</p>;
@@ -280,7 +292,13 @@ function CustomSize({ value, onChange }) {
         <FormGroup fieldId="maxSize" label={_("Maximum size")}>
           <Flex>
             <FlexItem>
-              <SelectToggle options={customSizeOptions} value={option} onChange={changeOption} />
+              <SelectToggle
+                value={option}
+                label={<CustonSizeOptionLabel value={option} />}
+                onChange={changeOption}
+              >
+                <CustonSizeOptions />
+              </SelectToggle>
             </FlexItem>
             {option === "range" && (
               <FlexItem>

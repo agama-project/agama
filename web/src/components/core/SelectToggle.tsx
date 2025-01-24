@@ -21,24 +21,11 @@
  */
 
 import React from "react";
-import {
-  Select,
-  SelectOption,
-  SelectList,
-  MenuToggle,
-  MenuToggleElement,
-} from "@patternfly/react-core";
-
-export type SelectToggleOption = {
-  value: string;
-  label: string;
-  description?: string;
-};
+import { Select, MenuToggle, MenuToggleElement } from "@patternfly/react-core";
 
 export type SelectToggleProps = {
   value: string;
-  label?: React.ReactElement;
-  options?: SelectToggleOption[];
+  label: React.ReactElement;
   onChange?: (value: string) => void;
   isDisabled?: boolean;
   children?: React.ReactElement;
@@ -47,7 +34,6 @@ export type SelectToggleProps = {
 export default function SelectToggle({
   value,
   label,
-  options = [],
   onChange,
   isDisabled = false,
   children,
@@ -67,8 +53,6 @@ export default function SelectToggle({
   };
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => {
-    const option = options.find((o) => o.value === value);
-
     return (
       <MenuToggle
         ref={toggleRef}
@@ -76,7 +60,7 @@ export default function SelectToggle({
         isExpanded={isOpen}
         isDisabled={isDisabled}
       >
-        {option?.label || label}
+        {label}
       </MenuToggle>
     );
   };
@@ -91,15 +75,6 @@ export default function SelectToggle({
       toggle={toggle}
       shouldFocusToggleOnSelect
     >
-      <SelectList>
-        {options.map((option, index) => {
-          return (
-            <SelectOption key={index} value={option.value} description={option.description}>
-              {option.label}
-            </SelectOption>
-          );
-        })}
-      </SelectList>
       {children}
     </Select>
   );
