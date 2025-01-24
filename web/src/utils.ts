@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -261,7 +261,7 @@ const useCancellablePromise = <T>() => {
  * @param storageKey
  * @param fallbackState
  */
-const useLocalStorage = (storageKey: string, fallbackState) => {
+const useLocalStorage = (storageKey: string, fallbackState?) => {
   const [value, setValue] = useState(JSON.parse(localStorage.getItem(storageKey)) ?? fallbackState);
 
   useEffect(() => {
