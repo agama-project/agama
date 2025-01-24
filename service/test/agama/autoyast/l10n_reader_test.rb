@@ -30,6 +30,8 @@ describe Agama::AutoYaST::L10nReader do
     {}
   end
 
+  let(:l10n) { subject.read["localization"] }
+
   subject do
     described_class.new(Yast::ProfileHash.new(profile))
   end
@@ -49,7 +51,6 @@ describe Agama::AutoYaST::L10nReader do
       end
 
       it "includes a 'keyboard' key with its value" do
-        l10n = subject.read["l10n"]
         expect(l10n["keyboard"]).to eq("us")
       end
     end
@@ -65,7 +66,6 @@ describe Agama::AutoYaST::L10nReader do
       end
 
       it "includes a 'languages' key with all the languages" do
-        l10n = subject.read["l10n"]
         expect(l10n["languages"]).to eq(["en_US.UTF-8", "es_ES.UTF-8", "cs_CZ.UTF-8"])
       end
 
@@ -80,7 +80,6 @@ describe Agama::AutoYaST::L10nReader do
         end
 
         it "uses the UTF-8 encoding" do
-          l10n = subject.read["l10n"]
           expect(l10n["languages"]).to eq(["en_US.UTF-8", "es_ES.UTF-8"])
         end
       end
@@ -92,7 +91,6 @@ describe Agama::AutoYaST::L10nReader do
       end
 
       it "includes a 'keyboard' key with its value" do
-        l10n = subject.read["l10n"]
         expect(l10n["timezone"]).to eq("Europe/Berlin")
       end
     end

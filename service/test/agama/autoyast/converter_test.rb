@@ -110,7 +110,7 @@ describe Agama::AutoYaST::Converter do
 
       it "evaluates the ERB code" do
         subject.to_agama(workdir)
-        expect(result["l10n"]).to include(
+        expect(result["localization"]).to include(
           "languages" => ["en_US.UTF-8", "es_ES.UTF-8"]
         )
       end
@@ -158,9 +158,9 @@ describe Agama::AutoYaST::Converter do
       end
     end
 
-    it "exports l10n settings" do
+    it "exports localization settings" do
       subject.to_agama(workdir)
-      expect(result["l10n"]).to include(
+      expect(result["localization"]).to include(
         "languages" => ["en_US.UTF-8"],
         "timezone"  => "Atlantic/Canary",
         "keyboard"  => "us"
@@ -197,7 +197,9 @@ describe Agama::AutoYaST::Converter do
       )
 
       # filter out deprecation warning as check-jsonschema is not packaged for TW yet
-      result = `jsonschema -i '#{result_path}' '#{schema}' 2>&1 | grep -v 'DeprecationWarning'`
+      result = `jsonschema -i '#{result_path}' '#{schema}' 2>&1 | \
+        grep -v 'DeprecationWarning' | \
+        grep -v 'from jsonschema.cli import main'`
       expect(result).to eq ""
     end
   end
