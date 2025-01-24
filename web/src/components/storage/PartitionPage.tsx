@@ -54,21 +54,28 @@ function useDevice(): StorageDevice {
   return devices.find((d) => baseName(d.name) === id);
 }
 
-function useVolume(mountPoint: string): Volume {
-  const volumes = useVolumeTemplates();
+function findVolume(volumes: Volume[], mountPoint: string): Volume {
   const volume = volumes.find((v) => v.mountPath === mountPoint);
   const defaultVolume = volumes.find((v) => v.mountPath === "");
 
   return volume || defaultVolume;
 }
 
-function usePartition(target: string): StorageDevice | null {
-  const device = useDevice();
+function useVolume(mountPoint: string): Volume {
+  const volumes = useVolumeTemplates();
+  return findVolume(volumes, mountPoint);
+}
 
+function findPartition(device: StorageDevice, target: string): StorageDevice | null {
   if (target === "new") return null;
 
   const partitions = device.partitionTable?.partitions || [];
   return partitions.find((p) => p.name === target);
+}
+
+function usePartition(target: string): StorageDevice | null {
+  const device = useDevice();
+  return findPartition(device, target);
 }
 
 function mountPointOptions(volumes: Volume[]): SelectOptionProps[] {
@@ -218,9 +225,9 @@ function SizeOptions({ mountPoint, target }): React.ReactElement {
 }
 
 function CustonSizeOptionLabel({ value }): React.ReactElement {
-  if (value === "fixed") return <>{_("Do not allow growing")}</>;
-  if (value === "unlimited") return <>{_("Allow growing as much as possible")}</>;
-  if (value === "range") return <>{_("Allow growing until a limit")}</>;
+  if (value === "fixed") return <>{_("Do not used")}</>;
+  if (value === "unlimited") return <>{_("Unlimited")}</>;
+  if (value === "range") return <>{_("Limited")}</>;
 
   return <></>;
 }
@@ -230,18 +237,21 @@ function CustonSizeOptions(): React.ReactElement {
     <SelectList>
       <SelectOption
         value="fixed"
-        description={_("The partition is created exactly with the given size")}
+        description={_("The partition is created exactly with the given minimum size")}
       >
         <CustonSizeOptionLabel value="fixed" />
       </SelectOption>
       <SelectOption
+        value="range"
+        description={_("The partition can grow until a given limit size")}
+      >
+        <CustonSizeOptionLabel value="range" />
+      </SelectOption>
+      <SelectOption
         value="unlimited"
-        description={_("The partition can grow if there is free space")}
+        description={_("The partition can grow to use all the contiguous free space")}
       >
         <CustonSizeOptionLabel value="unlimited" />
-      </SelectOption>
-      <SelectOption value="range" description={_("The partition can grow until a given max size")}>
-        <CustonSizeOptionLabel value="range" />
       </SelectOption>
     </SelectList>
   );
@@ -251,7 +261,9 @@ function AutoSize() {
   return <p>{_("The size is auto calculated based on ...")}</p>;
 }
 
-function CustomSize({ value, onChange }) {
+function CustomSize({ value, mountPoint, onChange }) {
+  const volume = useVolume(mountPoint);
+
   const initialOption = () => {
     if (value.min === "") return "fixed";
     if (value.min === value.max) return "fixed";
@@ -261,19 +273,21 @@ function CustomSize({ value, onChange }) {
 
   const [option, setOption] = React.useState(initialOption());
 
-  const resetMaxSize = (option: string, min: string) => {
-    if (option === "fixed") onChange({ max: min });
-    if (option === "unlimited") onChange({ max: "" });
-  };
-
   const changeMinSize = (v: string) => {
     onChange({ min: v });
-    resetMaxSize(option, v);
+
+    if (option === "fixed") onChange({ max: v });
   };
 
   const changeOption = (v: string) => {
     setOption(v);
-    resetMaxSize(v, value.min);
+
+    if (v === "fixed") onChange({ max: value.min });
+    if (v === "unlimited") onChange({ max: "" });
+    if (v === "range") {
+      const max = volume.maxSize ? deviceSize(volume.maxSize) : "";
+      onChange({ max });
+    }
   };
 
   return (
@@ -290,33 +304,31 @@ function CustomSize({ value, onChange }) {
       </FlexItem>
       <FlexItem>
         <FormGroup fieldId="maxSize" label={_("Maximum size")}>
-          <Flex>
-            <FlexItem>
-              <SelectToggle
-                value={option}
-                label={<CustonSizeOptionLabel value={option} />}
-                onChange={changeOption}
-              >
-                <CustonSizeOptions />
-              </SelectToggle>
-            </FlexItem>
-            {option === "range" && (
-              <FlexItem>
-                <TextInput
-                  id="maxSizeValue"
-                  value={value.max}
-                  onChange={(_, v) => onChange({ max: v })}
-                />
-                <FormHelperText>
-                  <HelperText>
-                    <HelperTextItem>{_("Example: 5 GiB")}</HelperTextItem>
-                  </HelperText>
-                </FormHelperText>
-              </FlexItem>
-            )}
-          </Flex>
+          <SelectToggle
+            value={option}
+            label={<CustonSizeOptionLabel value={option} />}
+            onChange={changeOption}
+          >
+            <CustonSizeOptions />
+          </SelectToggle>
         </FormGroup>
       </FlexItem>
+      {option === "range" && (
+        <FlexItem>
+          <FormGroup fieldId="maxSizeLimit" label={_("Limit")}>
+            <TextInput
+              id="maxSizeValue"
+              value={value.max}
+              onChange={(_, v) => onChange({ max: v })}
+            />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>{_("Example: 5 GiB")}</HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          </FormGroup>
+        </FlexItem>
+      )}
     </Flex>
   );
 }
@@ -328,18 +340,21 @@ export default function PartitionPage() {
   const [sizeOption, setSizeOption] = React.useState<string>("");
   const [minSize, setMinSize] = React.useState<string>("");
   const [maxSize, setMaxSize] = React.useState<string>("");
-
   const device = useDevice();
   const volumes = useVolumeTemplates();
-  const volume = useVolume(mountPoint);
-  const partition = usePartition(target);
 
-  const volumeFilesystem = volume?.fsType;
-  const suitableFilesystems = volume?.outline?.fsTypes;
-  const partitionFilesystem = partition?.filesystem?.type;
+  const setSize = ({ min, max }) => {
+    if (min !== undefined) setMinSize(min);
+    if (max !== undefined) setMaxSize(max);
+  };
 
-  // Automatically update filesystem if mountPoint or target changes.
-  React.useEffect(() => {
+  const updateFilesystem = (mountPoint: string, target: string) => {
+    const volume = findVolume(volumes, mountPoint);
+    const partition = findPartition(device, target);
+    const volumeFilesystem = volume?.fsType;
+    const suitableFilesystems = volume?.outline?.fsTypes;
+    const partitionFilesystem = partition?.filesystem?.type;
+
     // Reset filesystem if there is no mount point yet.
     if (mountPoint === "") setFilesystem("");
     // Select default filesystem for the mount point.
@@ -352,43 +367,48 @@ export default function PartitionPage() {
       const reuse = suitableFilesystems.includes(partitionFilesystem);
       setFilesystem(reuse ? "reuse" : volumeFilesystem);
     }
-  }, [
-    mountPoint,
-    target,
-    setFilesystem,
-    volumeFilesystem,
-    suitableFilesystems,
-    partitionFilesystem,
-  ]);
-
-  const setSize = ({ min, max }) => {
-    if (min !== undefined) setMinSize(min);
-    if (max !== undefined) setMaxSize(max);
   };
 
-  const resetSize = (mountPoint: string, target: string) => {
-    if (mountPoint === "" || target !== "new") {
-      setSizeOption("");
+  const updateSizes = (sizeOption: string) => {
+    if (sizeOption === "" || sizeOption === "auto") {
       setMinSize("");
       setMaxSize("");
     } else {
-      // TODO set the default sizes for the mount point
+      const volume = findVolume(volumes, mountPoint);
+      const minSize = deviceSize(volume.minSize);
+      const maxSize = volume.maxSize ? deviceSize(volume.maxSize) : "";
+      setMinSize(minSize);
+      setMaxSize(maxSize);
+    }
+  };
+
+  const updateSizeOption = (mountPoint: string, target: string) => {
+    if (mountPoint === "" || target !== "new") {
+      setSizeOption("");
+      updateSizes("");
+    } else {
       setSizeOption("auto");
+      updateSizes("auto");
     }
   };
 
   const changeMountPoint = (value: string) => {
     if (value !== mountPoint) {
       setMountPoint(value);
-      // resetFilesystem(value, target);
-      resetSize(value, target);
+      updateFilesystem(value, target);
+      updateSizeOption(value, target);
     }
   };
 
   const changeTarget = (value: string) => {
     setTarget(value);
-    // resetFilesystem(mountPoint, value);
-    resetSize(mountPoint, value);
+    updateFilesystem(mountPoint, value);
+    updateSizeOption(mountPoint, value);
+  };
+
+  const changeSizeOption = (value: string) => {
+    setSizeOption(value);
+    updateSizes(value);
   };
 
   console.log({ mountPoint, target, filesystem, sizeOption, minSize, maxSize });
@@ -446,7 +466,7 @@ export default function PartitionPage() {
                     label={
                       <SizeOptionLabel value={sizeOption} mountPoint={mountPoint} target={target} />
                     }
-                    onChange={setSizeOption}
+                    onChange={changeSizeOption}
                     isDisabled={mountPoint === ""}
                   >
                     <SizeOptions mountPoint={mountPoint} target={target} />
@@ -454,7 +474,11 @@ export default function PartitionPage() {
                 </Flex>
                 {target === "new" && sizeOption === "auto" && <AutoSize />}
                 {target === "new" && sizeOption === "custom" && (
-                  <CustomSize value={{ min: minSize, max: maxSize }} onChange={setSize} />
+                  <CustomSize
+                    value={{ min: minSize, max: maxSize }}
+                    mountPoint={mountPoint}
+                    onChange={setSize}
+                  />
                 )}
               </Stack>
             </FormGroup>

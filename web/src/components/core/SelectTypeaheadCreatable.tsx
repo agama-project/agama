@@ -37,7 +37,7 @@ import TimesIcon from "@patternfly/react-icons/dist/esm/icons/times-icon";
 import { _ } from "~/i18n";
 
 export type SelectTypeaheadCreatableProps = {
-  value?: string;
+  value: string;
   options: SelectOptionProps[];
   placeholder?: string;
   // Text to show for creating a new option. By default is 'Add "value"'.
