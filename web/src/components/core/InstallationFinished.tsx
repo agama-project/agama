@@ -100,15 +100,11 @@ function usingTpm(config): boolean {
 }
 
 function InstallationFinished() {
-  const { phase, isBusy, useIguana } = useInstallerStatus({ suspense: true });
+  const { phase, useIguana } = useInstallerStatus({ suspense: true });
   const config = useConfig();
 
-  if (phase !== InstallationPhase.Install) {
+  if (phase !== InstallationPhase.Finish) {
     return <Navigate to={PATHS.root} />;
-  }
-
-  if (isBusy) {
-    return <Navigate to={PATHS.installationProgress} />;
   }
 
   return (

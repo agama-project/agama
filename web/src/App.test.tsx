@@ -203,10 +203,9 @@ describe("App", () => {
     });
   });
 
-  describe("on the busy installation phase", () => {
+  describe("on the installation phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
-      mockClientStatus.isBusy = true;
       mockSelectedProduct = tumbleweed;
     });
 
@@ -216,10 +215,9 @@ describe("App", () => {
     });
   });
 
-  describe("on the idle installation phase", () => {
+  describe("on the idle finish phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = InstallationPhase.Install;
-      mockClientStatus.isBusy = false;
+      mockClientStatus.phase = InstallationPhase.Finish;
       mockSelectedProduct = tumbleweed;
     });
 
