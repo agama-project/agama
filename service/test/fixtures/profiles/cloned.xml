@@ -1116,4 +1116,31 @@
       <username>postfix</username>
     </user>
   </users>
+  <scripts>
+    <init-scripts config:type="list">
+      <script>
+        <!--
+          retrieving the scripts from FTP source doesn't work since YaST seems to
+          retrieve the stuff before we have (again) network ...
+        -->
+        <filename>02-install_scripts</filename>
+        <location/>
+        <source>
+#!/bin/sh
+mkdir /tmp/scripts cd /tmp/scripts
+wget http://perf-vm-lp.arch.suse.cz/autoinst/scripts/after_install.sh
+sh after_install.sh
+rm -fr /tmp/scripts
+        </source>
+      </script>
+      <script>
+        <!--
+        this script makes sure sshd gets started even if autoyast or systemd fail
+        -->
+        <source>
+systemctl enable sshd &amp;&amp; systemctl start sshd
+        </source>
+      </script>
+    </init-scripts>
+  </scripts>
 </profile>
