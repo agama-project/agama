@@ -51,7 +51,7 @@ module Agama
               "Target"        => volume.location.target.to_s,
               "TargetDevice"  => volume.location.device.to_s,
               "FsType"        => volume.fs_type&.to_human_string || "",
-              "MinSize"       => volume.min_size&.to_i,
+              "MinSize"       => min_size_conversion,
               "AutoSize"      => volume.auto_size?,
               "Snapshots"     => volume.btrfs.snapshots?,
               "Transactional" => volume.btrfs.read_only?,
@@ -67,11 +67,16 @@ module Agama
           # @return [Agama::Storage::Volume]
           attr_reader :volume
 
+          def min_size_conversion
+            volume.auto_size? ? volume.outline.base_min_size.to_i : volume.min_size.to_i
+          end
+
           # @param target [Hash]
           def max_size_conversion(target)
-            return if volume.max_size.nil? || volume.max_size.unlimited?
+            max_size = volume.auto_size? ? volume.outline.base_max_size : volume.max_size
 
-            target["MaxSize"] = volume.max_size.to_i
+            return if max_size.nil? || max_size.unlimited?
+            target["MaxSize"] = max_size.to_i
           end
 
           # Converts volume outline to D-Bus.
