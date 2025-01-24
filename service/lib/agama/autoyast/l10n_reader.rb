@@ -37,12 +37,12 @@ module Agama
       #
       # If there is no l10n information, it returns an empty hash.
       #
-      # @return [Hash] Agama "l10n" section
+      # @return [Hash] Agama "localization" section
       def read
         l10n = keyboard
           .merge(languages)
           .merge(timezone)
-        l10n.empty? ? {} : { "l10n" => l10n }
+        l10n.empty? ? {} : { "localization" => l10n }
       end
 
     private
