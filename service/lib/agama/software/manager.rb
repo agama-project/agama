@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2024] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -589,6 +589,7 @@ module Agama
       # @return [Agama::Issue]
       def missing_registration_issue
         Issue.new(_("Product must be registered"),
+          kind:     :missing_registration,
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
       end
@@ -597,8 +598,17 @@ module Agama
       #
       # @return [Boolean]
       def missing_registration?
-        registration.reg_code.nil? &&
-          registration.requirement == Agama::Registration::Requirement::MANDATORY
+        return false unless product
+
+        product.registration && missing_base_product?
+      end
+
+      # Whether the base product is missing
+      #
+      # @return [Boolean]
+      def missing_base_product?
+        products = Y2Packager::Resolvable.find(kind: :product, name: product.name)
+        products.empty?
       end
 
       def pattern_exist?(pattern_name)

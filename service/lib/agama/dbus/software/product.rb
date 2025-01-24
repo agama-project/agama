@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -180,7 +180,7 @@ module Agama
             [1, "Product not selected yet"]
           elsif backend.registration.reg_code
             [2, "Product already registered"]
-          elsif backend.registration.requirement == Agama::Registration::Requirement::NO
+          elsif !backend.product.registration
             [3, "Product does not require registration"]
           else
             connect_result(first_error_code: 4) do
@@ -254,6 +254,7 @@ module Agama
           #   software related issues.
           backend.registration.on_change { issues_properties_changed }
           backend.registration.on_change { registration_properties_changed }
+          backend.on_issues_change { issues_properties_changed }
         end
 
         def registration_properties_changed

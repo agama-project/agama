@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 24 06:43:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the "missing_registration" issue to determine whether to show
+  the registration alert (gh#agama-project/agama#1938).
+
+-------------------------------------------------------------------
 Tue Jan 21 09:44:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash at the end of the installation when using a legacy

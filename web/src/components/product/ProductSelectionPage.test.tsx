@@ -38,7 +38,7 @@ const tumbleweed: Product = {
   name: "openSUSE Tumbleweed",
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
-  registration: "no",
+  registration: false,
 };
 
 const microOs: Product = {
@@ -46,7 +46,7 @@ const microOs: Product = {
   name: "openSUSE MicroOS",
   icon: "microos.svg",
   description: "MicroOS description",
-  registration: "no",
+  registration: false,
   license: "fake.license",
 };
 

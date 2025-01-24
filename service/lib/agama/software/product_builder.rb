@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -65,7 +65,7 @@ module Agama
           product.name = data[:name]
           product.version = data[:version]
           product.icon = attrs["icon"] if attrs["icon"]
-          product.registration = attrs["registration"] if attrs["registration"]
+          product.registration = !!attrs["registration"]
           product.license = attrs["license"] if attrs["license"]
           product.version = attrs["version"] if attrs["version"]
         end

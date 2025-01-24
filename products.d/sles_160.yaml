@@ -1,6 +1,6 @@
 id: SLES
 name: SUSE Linux Enterprise Server 16.0 Beta
-registration: "mandatory"
+registration: true
 version: "16-0"
 license: "license.beta"
 # ------------------------------------------------------------------------------

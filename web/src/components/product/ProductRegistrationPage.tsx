@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -146,7 +146,7 @@ export default function ProductRegistrationPage() {
   const registration = useRegistration();
 
   // TODO: render something meaningful instead? "Product not registrable"?
-  if (product.registration === "no") return;
+  if (!product.registration) return;
 
   return (
     <Page>
