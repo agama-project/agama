@@ -567,6 +567,9 @@ export default {
   "Hide details": [
     "Skrýt podrobnosti"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP adresa"
   ],
@@ -1029,6 +1032,9 @@ export default {
   "Remove min channel filter": [
     "Odstranění filtru min. kanálu"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Výmaz umístění"
   ],
@@ -1159,6 +1165,9 @@ export default {
   ],
   "Software selection": [
     "Výběr softwaru"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
   ],
   "Something went wrong": [
     "Něco se nezdařilo"
@@ -1342,6 +1351,9 @@ export default {
   ],
   "Transactional root file system": [
     "Transakční kořenový souborový systém"
+  ],
+  "Try again": [
+    ""
   ],
   "Type": [
     "Typ"

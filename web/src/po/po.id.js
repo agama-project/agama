@@ -558,6 +558,9 @@ export default {
   "Hide details": [
     "Sembunyikan detail"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "Alamat IP"
   ],
@@ -1026,6 +1029,9 @@ export default {
   "Remove min channel filter": [
     "Menghapus filter saluran min"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Atur ulang lokasi"
   ],
@@ -1154,6 +1160,9 @@ export default {
   ],
   "Software selection": [
     "Pemilihan perangkat lunak"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
   ],
   "Something went wrong": [
     "Ada yang tidak beres"

@@ -531,6 +531,9 @@ export default {
   "Hide details": [
     "Skjul detaljer"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP Addresse"
   ],
@@ -978,6 +981,9 @@ export default {
   "Remove min channel filter": [
     "Fjern minimum kanal filter"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Tilbakestill plassering"
   ],
@@ -1101,6 +1107,9 @@ export default {
   ],
   "Software selection": [
     "Valg av programvare"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
   ],
   "Something went wrong": [
     "Noe gikk galt"
@@ -1278,6 +1287,9 @@ export default {
   ],
   "Transactional root file system": [
     "Transaksjonell root filsystem"
+  ],
+  "Try again": [
+    ""
   ],
   "Type": [
     "Type"

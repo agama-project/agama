@@ -522,6 +522,9 @@ export default {
   "Hide details": [
     "Details ausblenden"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP-Adresse"
   ],
@@ -966,6 +969,9 @@ export default {
   "Remove min channel filter": [
     ""
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Ort zurücksetzen"
   ],
@@ -1095,6 +1101,9 @@ export default {
   ],
   "Software selection": [
     "Softwareauswahl"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
   ],
   "Something went wrong": [
     "Etwas ist schiefgelaufen"

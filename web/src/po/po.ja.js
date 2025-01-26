@@ -561,6 +561,9 @@ export default {
   "Hide details": [
     "詳細を隠す"
   ],
+  "I have read and accept the [license] for %s": [
+    "%s に対する [ライセンス] を受け入れます"
+  ],
   "IP Address": [
     "IP アドレス"
   ],
@@ -690,6 +693,9 @@ export default {
   "Language": [
     "言語"
   ],
+  "License language": [
+    "ライセンスの言語"
+  ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "ファイルシステムに対するサイズ制限を範囲指定します。最終的なサイズは最小値と最大値の間になります。最大値を指定しない場合、ファイルシステムはできる限り大きくなるように設定されます。"
   ],
@@ -698,6 +704,9 @@ export default {
   ],
   "Loading installation environment, please wait.": [
     "インストール環境を読み込んでいます。しばらくお待ちください。"
+  ],
+  "Loading the installation repositories...": [
+    "インストール用リポジトリを読み込んでいます..."
   ],
   "Locale selection": [
     "ロケールの選択"
@@ -1041,6 +1050,9 @@ export default {
   "Remove min channel filter": [
     "最小チャネルのフィルタを削除"
   ],
+  "Repository load failed": [
+    "リポジトリ読み込み失敗"
+  ],
   "Reset location": [
     "場所のリセット"
   ],
@@ -1172,6 +1184,9 @@ export default {
   ],
   "Software selection": [
     "ソフトウエア選択"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    "インストール用リポジトリのうち、読み込めなかったものがあります。これらのリポジトリ無しにはシステムをインストールできません。"
   ],
   "Something went wrong": [
     "何らかの問題が発生しました"
@@ -1355,6 +1370,9 @@ export default {
   ],
   "Transactional root file system": [
     "トランザクション型のルートファイルシステム"
+  ],
+  "Try again": [
+    "再試行"
   ],
   "Type": [
     "種類"

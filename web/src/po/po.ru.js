@@ -564,6 +564,9 @@ export default {
   "Hide details": [
     "Скрыть подробности"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP-адрес"
   ],
@@ -1035,6 +1038,9 @@ export default {
   "Remove min channel filter": [
     "Удалить фильтр по минимальному каналу"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Сбросить расположение"
   ],
@@ -1165,6 +1171,9 @@ export default {
   ],
   "Software selection": [
     "Выбор программного обеспечения"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
   ],
   "Something went wrong": [
     "Что-то пошло не так"
@@ -1348,6 +1357,9 @@ export default {
   ],
   "Transactional root file system": [
     "Транзакционная корневая файловая система"
+  ],
+  "Try again": [
+    ""
   ],
   "Type": [
     "Тип"
