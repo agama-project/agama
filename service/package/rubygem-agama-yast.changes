@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 27 17:38:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix handling of script names from AutoYaST profiles
+  (gh#agama-project/agama#1903).
+
+-------------------------------------------------------------------
 Fri Jan 24 09:33:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce a new installation phase "finish"
