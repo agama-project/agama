@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
+import { Alert, Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
 import { Page } from "~/components/core/";
 import { Loading } from "~/components/layout";
 import EncryptionField from "~/components/storage/EncryptionField";
@@ -72,6 +72,8 @@ export default function ProposalPage() {
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
 
+  const validProposal = errors.length === 0;
+
   if (isDeprecated) {
     return (
       <Page>
@@ -94,9 +96,15 @@ export default function ProposalPage() {
 
       <Page.Content>
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <ProposalTransactionalInfo />
-          </GridItem>
+          <ProposalTransactionalInfo />
+          {!validProposal && (
+            <Alert variant="warning" title={_("Storage proposal not possible")}>
+              {errors.map((e, i) => (
+                <div key={i}>{e.message}</div>
+              ))}
+            </Alert>
+          )}
+
           <GridItem sm={12} xl={8}>
             <Page.Section
               title={_("Installation Devices")}
@@ -118,9 +126,7 @@ export default function ProposalPage() {
           <GridItem sm={12} xl={4}>
             <EncryptionField password={""} isLoading={false} />
           </GridItem>
-          <GridItem sm={12}>
-            <ProposalResultSection errors={errors} isLoading={false} />
-          </GridItem>
+          {validProposal && <ProposalResultSection isLoading={false} />}
         </Grid>
       </Page.Content>
     </Page>

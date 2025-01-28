@@ -27,7 +27,6 @@ import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
-import { ValidationError } from "~/types/issues";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
 
@@ -111,29 +110,16 @@ function ActionsList({ manager }: ActionsListProps) {
 }
 
 export type ProposalResultSectionProps = {
-  errors?: ValidationError[];
   isLoading?: boolean;
 };
 
-export default function ProposalResultSection({
-  errors = [],
-  isLoading = false,
-}: ProposalResultSectionProps) {
+export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
   const system = useDevices("system", { suspense: true });
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
 
   if (isLoading) return <ResultSkeleton />;
-
-  if (errors.length !== 0)
-    return (
-      <Alert variant="warning" title={_("Storage proposal not possible")}>
-        {errors.map((e, i) => (
-          <div key={i}>{e.message}</div>
-        ))}
-      </Alert>
-    );
 
   return (
     <Page.Section
