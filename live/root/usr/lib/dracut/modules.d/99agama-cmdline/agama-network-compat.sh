@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 [ -e /dracut-state.sh ] && . /dracut-state.sh
 
@@ -9,7 +9,6 @@ ifcfg_to_ip() {
   local ip
   local v="${2}",
   local interface="$1"
-  local mac="$3"
   local conf_path="/etc/cmdline.d/40-agama-network.conf"
   set --
   while [ -n "$v" ]; do
@@ -50,7 +49,6 @@ ifcfg_to_ip() {
   if strglob "$1" "*.*.*.*/*"; then
     [[ -n "$2" ]] && gateway=$2
     [[ -n "$3" ]] && nameserver=$3
-    [[ -n "$4" ]] && domain=$4
 
     ip="$1 "
     set --
@@ -92,25 +90,20 @@ ifcfg_to_ip() {
 
 translate_ifcfg() {
   local i
-  local first
-  local match
   local vlan
   local phydevice
   local conf_path="/etc/cmdline.d/40-agama-network.conf"
 
-  while read i; do
+  while read -r i; do
     set --
     echo "### Processing $i ###"
     set -- "$@" "${i%%=*}"
     options="${i#*=}"
     pattern="$1"
-    first=0
-    match=0
     unset vlan phydevice
 
     if str_starts "$options" "try,"; then
       options="${i#*try,*}"
-      first=1
     fi
 
     # The pattern Looks like a VLAN like eth0.10
@@ -118,60 +111,17 @@ translate_ifcfg() {
       phydevice=${pattern%.*}
       vlan="vlan=$1:$phydevice"
       echo "$vlan" >>$conf_path
-      ifcfg_to_ip "$pattern" "$options"
-      continue
     fi
 
-    # We cannot iterate over devices by now, therefore only '*' or an specific
-    # interface name is supported
-    #if [ "$pattern" = "*" ]; then
+    # Try to translate the pattern as it is, we cannot try to apply the config to check if
+    # it is valid because the nm-initrd-generator is called by a cmdline hook unless we call
+    # explicitly passing the getcmdline result
     ifcfg_to_ip "$pattern" "$options"
-    continue
-    #fi
-
-    # nm-initrd-generator is executed too early and there are no
-    # devices at all, therefore this code does not make sense by now
-    for path in /sys/class/net/*; do
-      iface=${path##*/}
-      mac=$(cat "$path/address")
-      echo "   $path"
-      case $iface in
-      lo)
-        echo "Skipping lo interface"
-        continue
-        ;;
-      $pattern)
-        ifcfg_to_ip "$iface" "$options"
-        if [[ $first == 1 ]]; then
-          echo "try given, breaking"
-          match=1
-        fi
-        #if [ -n "$ip" ]; then
-        #  echo "ip=${ip}" >>"/etc/cmdline.d/agama_network.conf"
-        #fi
-        ;;
-      esac
-      case $mac in
-      $pattern)
-        ifcfg_to_ip "$iface" "$options" "$mac"
-        if [[ $first == 1 ]]; then
-          echo "try given, breaking"
-          match=1
-        fi
-        ;;
-      esac
-
-      if [[ "$match" -eq 1 ]] && [[ $first == 1 ]]; then
-        break
-      fi
-    done
-    echo
 
     set --
-    unset options pattern
-  done <<<"$(getargs ifcfg=)"
+    unset options pattern CMDLINE
+  done <<<"$(getargs ifcfg)"
 
-  unset CMDLINE
   return 0
 }
 
