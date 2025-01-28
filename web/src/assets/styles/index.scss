@@ -54,6 +54,7 @@
   --pf-t--global--font--weight--200: 600;
   --pf-t--global--font--weight--300: 700;
   --pf-t--global--font--weight--400: 800;
+  --pf-t--global--color--status--warning--200: #fe7c3f;
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
 }
@@ -136,6 +137,17 @@
 
 .pf-v6-c-masthead {
   --pf-v6-c-masthead__logo--Width: fit-content;
+}
+
+.pf-v6-c-alert {
+  --pf-v6-c-alert__icon--FontSize: var(--pf-t--global--font--size--lg);
+  // --pf-v6-c-alert--BoxShadow: var(--pf-t--global--box-shadow--sm);
+  --pf-v6-c-alert--BoxShadow: none;
+  row-gap: var(--pf-t--global--spacer--sm);
+}
+
+.pf-v6-c-alert__title {
+  font-size: var(--pf-t--global--font--size--lg);
 }
 
 .pf-v6-c-menu {
