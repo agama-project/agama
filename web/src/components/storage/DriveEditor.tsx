@@ -403,14 +403,19 @@ const RemoveDriveOption = ({ drive }) => {
   return (
     <>
       <Divider component="hr" />
-      <MenuItem description={_("REMOVE the configuration for this device")} onClick={deleteDrive}>
+      <MenuItem
+        isDanger
+        description={_("Remove the configuration for this device")}
+        onClick={deleteDrive}
+      >
         {_("Do not use")}
       </MenuItem>
     </>
   );
 };
 
-const DriveSelector = ({ drive, selected }) => {
+const DriveSelector = ({ drive, selected, toggleAriaLabel }) => {
+  const menuId = useId();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -427,8 +432,14 @@ const DriveSelector = ({ drive, selected }) => {
       onOpenChange={setIsOpen}
       toggleRef={toggleMenuRef}
       toggle={
-        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
-          <b>{deviceLabel(selected)}</b>
+        <InlineMenuToggle
+          ref={toggleMenuRef}
+          onClick={onToggle}
+          isExpanded={isOpen}
+          aria-label={toggleAriaLabel}
+          aria-controls={menuId}
+        >
+          <b aria-hidden>{deviceLabel(selected)}</b>
         </InlineMenuToggle>
       }
       menuRef={menuRef}
@@ -510,7 +521,12 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   return (
     <h4>
       <span>{txt1}</span>
-      <DriveSelector drive={drive} selected={driveDevice} />
+      {
+        // how do I even make a translator comment in the syntactic context of a JSX component?
+        // FIXME: what label makes sense?
+        // TRANSLATORS: ...
+      }
+      <DriveSelector drive={drive} selected={driveDevice} toggleAriaLabel={_("Drive")} />
       <span>{txt2}</span>
     </h4>
   );
