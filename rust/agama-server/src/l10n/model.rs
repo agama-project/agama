@@ -240,7 +240,7 @@ impl L10n {
                 "--locale",
                 self.locales.first().unwrap_or(&"en_US.UTF-8".to_string()),
                 "--keymap",
-                &self.keymap.to_string(),
+                &self.keymap.dashed(),
                 "--timezone",
                 &self.timezone,
             ])
