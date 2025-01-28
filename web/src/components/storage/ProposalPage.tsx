@@ -35,29 +35,6 @@ import { IssueSeverity } from "~/types/issues";
 import { useDeprecated, useDeprecatedChanges, useReprobeMutation } from "~/queries/storage";
 import { _ } from "~/i18n";
 
-/**
- * Which UI item is being changed by user
- */
-export const CHANGING = Object.freeze({
-  ENCRYPTION: Symbol("encryption"),
-  TARGET: Symbol("target"),
-  VOLUMES: Symbol("volumes"),
-  POLICY: Symbol("policy"),
-  BOOT: Symbol("boot"),
-});
-
-// mapping of not affected values for settings components
-// key:   component name
-// value: list of items which can be changed without affecting
-//        the state of the component
-export const NOT_AFFECTED = {
-  // the EncryptionField shows the skeleton only during initial load,
-  // it does not depend on any changed item and does not show skeleton later.
-  // the ProposalResultSection is refreshed always
-  InstallationDeviceField: [CHANGING.ENCRYPTION, CHANGING.BOOT, CHANGING.POLICY, CHANGING.VOLUMES],
-  PartitionsField: [CHANGING.ENCRYPTION, CHANGING.POLICY],
-};
-
 export default function ProposalPage() {
   const isDeprecated = useDeprecated();
   const { mutateAsync: reprobe } = useReprobeMutation();
