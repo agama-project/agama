@@ -23,7 +23,7 @@
   --agm-t--color--jungle--hover: #c0efde;
   --agm-t--color--fog: #efefef;
 
-  --agm-t--action--background--color--hover: #c0efde; // #eafaf4;
+  --agm-t--action--background--color--hover: #eafaf4;
 
   --pf-t--global--background--color--secondary--default: var(--agm-t--color--fog);
   --pf-t--global--background--color--action--plain--hover: var(
@@ -144,7 +144,7 @@
 }
 
 .pf-v6-c-menu__item.pf-m-selected {
-  background: #eafaf4;
+  --pf-v6-c-menu__item-select-icon--Color: var(--agm-t--color--jungle);
 }
 
 .pf-v6-c-nav__link {
