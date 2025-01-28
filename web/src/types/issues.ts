@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -57,6 +57,8 @@ enum IssueSeverity {
 type Issue = {
   /** Issue description */
   description: string;
+  /** Issue kind **/
+  kind: string;
   /** Issue details. It is not mandatory. */
   details: string | undefined;
   /** Where the issue comes from */

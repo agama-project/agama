@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -43,7 +43,7 @@ pub struct Product {
     /// Product icon (e.g., "default.svg")
     pub icon: String,
     /// Registration requirement
-    pub registration: RegistrationRequirement,
+    pub registration: bool,
     /// License ID
     pub license: Option<String>,
 }
@@ -80,9 +80,7 @@ impl<'a> ProductClient<'a> {
                     None => "default.svg",
                 };
 
-                let registration = get_property::<String>(&data, "registration")
-                    .map(|r| RegistrationRequirement::from_str(&r).unwrap_or_default())
-                    .unwrap_or_default();
+                let registration = get_property::<bool>(&data, "registration").unwrap_or(false);
 
                 let license = get_optional_property::<String>(&data, "license").unwrap_or_default();
 

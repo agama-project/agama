@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -92,10 +92,9 @@ module Agama
       # @return [Array<String>]
       attr_accessor :user_patterns
 
-      # Determines if the product should be registered.
+      # Whether the registration is enabled for the product.
       #
-      # @see Agama::Registration::Requirement
-      # @return [String]
+      # @return [boolean]
       attr_accessor :registration
 
       # Product translations.
@@ -126,7 +125,7 @@ module Agama
         @optional_patterns = []
         # nil = display all visible patterns, [] = display no patterns
         @user_patterns = nil
-        @registration = Agama::Registration::Requirement::NO
+        @registration = false
         @license = nil
         @translations = {}
       end

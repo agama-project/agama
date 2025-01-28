@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -325,11 +325,12 @@ pub struct Issue {
     details: Option<String>,
     source: u32,
     severity: u32,
+    kind: String,
 }
 
 impl Issue {
     pub fn from_tuple(
-        (description, details, source, severity): (String, String, u32, u32),
+        (description, kind, details, source, severity): (String, String, String, u32, u32),
     ) -> Self {
         let details = if details.is_empty() {
             None
@@ -339,6 +340,7 @@ impl Issue {
 
         Self {
             description,
+            kind,
             details,
             source,
             severity,

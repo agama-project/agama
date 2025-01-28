@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -40,8 +40,8 @@ jest.mock("~/api/l10n", () => ({
   updateConfig: jest.fn(),
 }));
 
-const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: "no" };
-const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registration: "no" };
+const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: false };
+const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registration: false };
 
 // list of available products
 let mockProducts: Product[];
@@ -203,10 +203,9 @@ describe("App", () => {
     });
   });
 
-  describe("on the busy installation phase", () => {
+  describe("on the installation phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
-      mockClientStatus.isBusy = true;
       mockSelectedProduct = tumbleweed;
     });
 
@@ -216,10 +215,9 @@ describe("App", () => {
     });
   });
 
-  describe("on the idle installation phase", () => {
+  describe("on the finish phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = InstallationPhase.Install;
-      mockClientStatus.isBusy = false;
+      mockClientStatus.phase = InstallationPhase.Finish;
       mockSelectedProduct = tumbleweed;
     });
 

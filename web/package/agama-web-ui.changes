@@ -1,8 +1,27 @@
 -------------------------------------------------------------------
+Fri Jan 24 09:34:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the "finish" to decide whether to navigate to the
+  congratulations screen (gh#agama-project/agama#1616).
+
+-------------------------------------------------------------------
+Fri Jan 24 06:43:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the "missing_registration" issue to determine whether to show
+  the registration alert (gh#agama-project/agama#1938).
+
+-------------------------------------------------------------------
+
 Thu Jan 23 15:09:09 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Make the trash can icon (Delete) of a proposed partition work
   gh#agama-project/agama#1915)
+
+-------------------------------------------------------------------
+Tue Jan 21 09:44:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash at the end of the installation when using a legacy
+  AutoYaST mode (gh#agama-project/agama#1927).
 
 -------------------------------------------------------------------
 Mon Jan 20 16:45:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
