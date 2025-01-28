@@ -55,17 +55,37 @@ Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the
 
 %package sle
 Summary:        Definition of SLE products for the Agama installer.
+Requires:       agama-products-sles
+Requires:       agama-products-sles_sap
 
 %description sle
 SLE-based products definition for Agama installer.
 Definition of SLE-based products (e.g., SUSE Linux Enterprise Server) for the Agama installer.
 
-%files sle
+%package sles
+Summary:        Definition of SLES product for the Agama installer.
+
+%description sles
+SLES product definition for Agama installer.
+
+%files sles
 %doc README.md
 %license LICENSE
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
 %{_datadir}/agama/products.d/sles_160.yaml
+
+%package sles_sap
+Summary:        Definition of SLES for SAP product for the Agama installer.
+
+%description sles_sap
+SLES for SAP product definition for Agama installer.
+
+%files sles_sap
+%doc README.md
+%license LICENSE
+%dir %{_datadir}/agama
+%dir %{_datadir}/agama/products.d
 %{_datadir}/agama/products.d/sles_sap_160.yaml
 
 %changelog
