@@ -22,6 +22,8 @@
   --agm-t--color--jungle: #30ba78;
   --agm-t--color--jungle--hover: #c0efde;
   --agm-t--color--fog: #efefef;
+  --agm-t--color--midnight: #192072;
+  --agm-t--color--waterhole: #2453ff;
 
   --agm-t--action--background--color--hover: #eafaf4;
 
@@ -55,6 +57,8 @@
   --pf-t--global--font--weight--300: 700;
   --pf-t--global--font--weight--400: 800;
   --pf-t--global--color--status--warning--200: #fe7c3f;
+  --pf-t--global--color--status--info--default: var(--agm-t--color--waterhole);
+  --pf-t--global--icon--color--status--info--default: var(--agm-t--color--waterhole);
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
 }
@@ -140,10 +144,18 @@
 }
 
 .pf-v6-c-alert {
+  --pf-v6-c-alert--m-info__title--Color: var(--agm-t--color--waterhole);
   --pf-v6-c-alert__icon--FontSize: var(--pf-t--global--font--size--lg);
   // --pf-v6-c-alert--BoxShadow: var(--pf-t--global--box-shadow--sm);
   --pf-v6-c-alert--BoxShadow: none;
-  row-gap: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-alert--PaddingBlockStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-alert--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-alert--PaddingInlineStart: var(--pf-t--global--spacer--md);
+  --pf-v6-c-alert--PaddingInlineEnd: var(--pf-t--global--spacer--md);
+
+  &:has(.pf-v6-c-alert__description) {
+    row-gap: var(--pf-t--global--spacer--sm);
+  }
 }
 
 .pf-v6-c-alert__title {
