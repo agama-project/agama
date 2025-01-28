@@ -171,7 +171,10 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
 };
 
 const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
-  const { isBoot, isExplicitBoot } = useDrive(drive.name);
+  const driveModel = useDrive(drive.name);
+  if (!driveModel) return;
+
+  const { isBoot, isExplicitBoot } = driveModel;
   // TODO: Get volume groups associated to the drive.
   const volumeGroups = [];
 
@@ -357,7 +360,10 @@ const SearchSelectorSingleOption = ({ selected }) => {
 };
 
 const SearchSelectorOptions = ({ drive, selected, onChange }) => {
-  const { isExplicitBoot } = useDrive(drive.name);
+  const driveModel = useDrive(drive.name);
+  if (!driveModel) return;
+
+  const { isExplicitBoot } = driveModel;
   // const boot = isExplicitBoot(drive.name);
 
   if (driveUtils.hasReuse(drive)) return <SearchSelectorSingleOption selected={selected} />;
