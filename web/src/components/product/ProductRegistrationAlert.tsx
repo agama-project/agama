@@ -36,7 +36,7 @@ const LinkToRegistration = () => {
   if (location.pathname === REGISTRATION.root) return;
 
   return (
-    <Link to={REGISTRATION.root} variant="primary">
+    <Link to={REGISTRATION.root} variant="control">
       {_("Register it now")}
     </Link>
   );
@@ -54,7 +54,7 @@ export default function ProductRegistrationAlert() {
   if (!registrationRequired) return;
 
   return (
-    <Alert isInline variant="warning" title={sprintf(_("%s must be registered."), product.name)}>
+    <Alert variant="warning" title={sprintf(_("%s must be registered."), product.name)}>
       <LinkToRegistration />
     </Alert>
   );
