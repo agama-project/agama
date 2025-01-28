@@ -238,11 +238,21 @@ function useSolvedPartition(value: FormValue): configModel.Partition | undefined
   return drive?.partitions?.find((p) => p.mountPath === value.mountPoint);
 }
 
-/** @todo Filter used mount points */
+function useAssignedMountPaths(): string[] {
+  const model = useConfigModel({ suspense: true });
+  const drives = model.drives.map((d) => useDrive(d.name));
+
+  return drives.flatMap((d) => d.allMountPaths);
+}
+
+/** @todo include the currently used mount point when editing */
 function mountPointOptions(volumes: Volume[]): SelectOptionProps[] {
-  return volumes
-    .filter((v) => v.mountPath.length)
-    .map((v) => ({ value: v.mountPath, children: v.mountPath }));
+  const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
+  const assigned = useAssignedMountPaths();
+
+  return volPaths
+    .filter((p) => !assigned.includes(p))
+    .map((p) => ({ value: p, children: p }));
 }
 
 type TargetOptionLabelProps = {
