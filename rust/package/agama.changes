@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 28 07:13:17 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the "dashed" form of the keymap identifier when calling
+  systemd-firstboot (bsc#1236174).
+
+-------------------------------------------------------------------
 Fri Jan 24 09:33:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce a new installation phase "finish"
