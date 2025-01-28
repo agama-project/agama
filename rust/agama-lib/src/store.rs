@@ -104,6 +104,11 @@ impl Store {
             }
         }
 
+        // import the users (esp. the root password) before initializing software,
+        // if software fails the Web UI would be stuck in the root password dialog
+        if let Some(user) = &settings.user {
+            self.users.store(user).await?;
+        }
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
         }
@@ -118,9 +123,6 @@ impl Store {
         }
         if let Some(software) = &settings.software {
             self.software.store(software).await?;
-        }
-        if let Some(user) = &settings.user {
-            self.users.store(user).await?;
         }
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?

@@ -70,8 +70,8 @@ module Agama
           # array of repository properties: pkg-bindings ID, alias, name, URL, product dir, enabled
           # and loaded flag
           dbus_method :ListRepositories, "out Result:a(issssbb)" do
-            backend.repositories.repositories.map do |repo|
-              [
+            [
+              backend.repositories.repositories.map do |repo|
                 [
                   repo.repo_id,
                   repo.repo_alias,
@@ -81,8 +81,8 @@ module Agama
                   repo.enabled?,
                   !!repo.loaded?
                 ]
-              ]
-            end
+              end
+            ]
           end
 
           # value of result hash is category, description, icon, summary and order

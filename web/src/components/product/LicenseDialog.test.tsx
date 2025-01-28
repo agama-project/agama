@@ -32,7 +32,7 @@ const sle: Product = {
   name: "SUSE Linux Enterprise",
   icon: "sle.svg",
   description: "SLE description",
-  registration: "mandatory",
+  registration: true,
   license: "license.sle",
 };
 

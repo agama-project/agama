@@ -99,6 +99,14 @@ describe Agama::DBus::Clients::Manager do
         expect(subject.current_installation_phase).to eq(Agama::InstallationPhase::INSTALL)
       end
     end
+
+    context "when the current phase is finish" do
+      let(:current_phase) { Agama::DBus::Manager::FINISH_PHASE }
+
+      it "returns the install phase value" do
+        expect(subject.current_installation_phase).to eq(Agama::InstallationPhase::FINISH)
+      end
+    end
   end
 
   include_examples "service status"

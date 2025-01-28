@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,14 +31,14 @@ const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   description: "Tumbleweed description...",
-  registration: "no",
+  registration: false,
 };
 
 const microos: Product = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
   description: "MicroOS description",
-  registration: "no",
+  registration: false,
 };
 
 let phase: InstallationPhase;

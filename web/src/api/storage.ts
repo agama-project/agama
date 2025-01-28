@@ -33,8 +33,8 @@ const probe = (): Promise<any> => post("/api/storage/probe");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reprobe = (): Promise<any> => post("/api/storage/reprobe");
 
-const fetchConfig = (): Promise<config.Config | undefined> =>
-  get("/api/storage/config").then((config) => config.storage);
+const fetchConfig = (): Promise<config.Config | null> =>
+  get("/api/storage/config").then((config) => config.storage ?? null);
 
 const fetchConfigModel = (): Promise<configModel.Config | undefined> =>
   get("/api/storage/config_model");

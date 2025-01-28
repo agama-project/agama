@@ -27,7 +27,6 @@ import { InstallationPhase } from "~/types/status";
 import InstallationProgress from "./InstallationProgress";
 import { ROOT } from "~/routes/paths";
 
-let isBusy = false;
 let phase = InstallationPhase.Install;
 const mockInstallerStatusChanges = jest.fn();
 
@@ -35,7 +34,7 @@ jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mo
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
-  useInstallerStatus: () => ({ isBusy, phase }),
+  useInstallerStatus: () => ({ phase }),
   useInstallerStatusChanges: () => mockInstallerStatusChanges(),
 }));
 
@@ -56,27 +55,14 @@ describe("InstallationProgress", () => {
     });
   });
 
-  describe("when installer in the installation phase and busy", () => {
+  describe("when installer in the installation phase", () => {
     beforeEach(() => {
       phase = InstallationPhase.Install;
-      isBusy = true;
     });
 
     it("renders progress report", () => {
       installerRender(<InstallationProgress />);
       screen.getByText("ProgressReport Mock");
-    });
-  });
-
-  describe("when installer in the installation phase but not busy", () => {
-    beforeEach(() => {
-      phase = InstallationPhase.Install;
-      isBusy = false;
-    });
-
-    it("redirect to installation finished path", async () => {
-      installerRender(<InstallationProgress />);
-      await screen.findByText(`Navigating to ${ROOT.installationFinished}`);
     });
   });
 });
