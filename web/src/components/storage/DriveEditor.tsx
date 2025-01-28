@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useRef, useState } from "react";
+import React, { useId, useRef, useState, startTransition } from "react";
 import { useNavigate, generatePath } from "react-router-dom";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -424,7 +424,12 @@ const DriveSelector = ({ drive, selected, toggleAriaLabel }) => {
     driveHandler.switch(newDriveName);
     setIsOpen(false);
   };
-  const onToggle = () => setIsOpen(!isOpen);
+  // const onToggle = () => setIsOpen(!isOpen);
+  const onToggle = () => {
+    console.log("onToggle BEFORE");
+    startTransition(() => setIsOpen(!isOpen));
+    console.log("onToggle AFTER");
+  };
 
   return (
     <MenuContainer
