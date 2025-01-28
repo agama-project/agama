@@ -89,6 +89,14 @@ function allMountPaths(drive: configModel.Drive): string[] {
   return drive.partitions.map((p) => p.mountPath).filter((m) => m);
 }
 
+function configuredExistingPartitions(drive: configModel.Drive) : configModel.Partition[] {
+  const allPartitions = drive.partitions || [];
+
+  if (drive.spacePolicy === "custom") return allPartitions.filter((p) => p.name);
+
+  return allPartitions.filter((p) => p.name && p.mountPath);
+}
+
 function setBoot(originalModel: configModel.Config, boot: configModel.Boot) {
   const model = copyModel(originalModel);
   const name = model.boot?.device?.name;
@@ -335,6 +343,7 @@ export type DriveHook = {
   isBoot: boolean;
   isExplicitBoot: boolean;
   allMountPaths: string[],
+  configuredExistingPartitions: configModel.Partition[],
   switch: (newName: string) => void;
   addPartition: (partition: configModel.Partition) => void;
   setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
@@ -352,6 +361,7 @@ export function useDrive(name: string): DriveHook | undefined {
     isBoot: isBoot(model, name),
     isExplicitBoot: isExplicitBoot(model, name),
     allMountPaths: allMountPaths(drive),
+    configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
     delete: () => mutate(removeDrive(model, name)),
     addPartition: (partition: configModel.Partition) =>

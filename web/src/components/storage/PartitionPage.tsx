@@ -282,10 +282,12 @@ function PartitionDescription({ partition }: PartitionDescriptionProps): React.R
   );
 }
 
-/** @todo Filter used partitions */
+/** @todo include the currently used partition when editing */
 function TargetOptions(): React.ReactNode {
   const device = useDevice();
-  const partitions = device.partitionTable?.partitions || [];
+  const usedPartitions = useDrive(device?.name).configuredExistingPartitions.map((p) => p.name);
+  const allPartitions = device.partitionTable?.partitions || []
+  const partitions = allPartitions.filter((p) => !usedPartitions.includes(p.name));
 
   return (
     <SelectList>
