@@ -30,14 +30,14 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useIssues } from "~/queries/issues";
 
-const LinkToRegistration = () => {
+const LinkToRegistration = ({ text }: { text: string }) => {
   const location = useLocation();
 
-  if (location.pathname === REGISTRATION.root) return;
+  if (location.pathname === REGISTRATION.root) return text;
 
   return (
-    <Link to={REGISTRATION.root} variant="control">
-      {_("Register it now")}
+    <Link to={REGISTRATION.root} variant="link" isInline>
+      {text}
     </Link>
   );
 };
@@ -53,9 +53,20 @@ export default function ProductRegistrationAlert() {
   if (SUPPORTIVE_PATHS.includes(location.pathname)) return;
   if (!registrationRequired) return;
 
+  const [textStart, text, textEnd] = sprintf(_("%s [must be registered]."), product.name).split(
+    /[[\]]/,
+  );
+
   return (
-    <Alert variant="warning" title={sprintf(_("%s must be registered."), product.name)}>
-      <LinkToRegistration />
-    </Alert>
+    <Alert
+      variant="warning"
+      title={
+        <>
+          {textStart}
+          <LinkToRegistration text={text} />
+          {textEnd}
+        </>
+      }
+    />
   );
 }
