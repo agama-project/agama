@@ -22,10 +22,22 @@
 
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { ActionGroup, Bullseye, Button, Card, Form, FormGroup } from "@patternfly/react-core";
-import { EmptyState, FormValidationError, Page, PasswordInput } from "~/components/core";
+import {
+  Bullseye,
+  Button,
+  Content,
+  Divider,
+  Flex,
+  Form,
+  FormGroup,
+  Stack,
+} from "@patternfly/react-core";
+import { FormValidationError, Page, PasswordInput } from "~/components/core";
 import { AuthErrors, useAuth } from "~/context/auth";
 import { _ } from "~/i18n";
+import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
+import alignmentUtils from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+import { Icon } from "../layout";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -69,15 +81,35 @@ user privileges.",
   return (
     <Page.Content>
       <Bullseye>
-        <Card component="section">
-          {/** @ts-ignore */}
-          <EmptyState title={sectionTitle} icon="lock" color="color-info-200" variant="xl">
-            <p>
-              {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
-            </p>
-            <p>{_("Please, provide its password to log in to the system.")}</p>
+        <Page.Section
+          pfCardProps={{
+            isCompact: false,
+            isFullHeight: false,
+            className: shadowUtils.boxShadowMd,
+          }}
+        >
+          <Stack hasGutter>
+            <Content component="h1" className={alignmentUtils.textAlignCenter}>
+              <Flex
+                alignItems={{ default: "alignItemsCenter" }}
+                direction={{ default: "column" }}
+                gap={{ default: "gapSm" }}
+              >
+                <Icon name="lock" width="3rem" height="3rem" />
+                {sectionTitle}
+              </Flex>
+            </Content>
+            <div>
+              <Content component="p">
+                {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
+              </Content>
+              <Content component="p">
+                {_("Please, provide its password to log in to the system.")}
+              </Content>
+            </div>
+            <Divider />
             <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-              <FormGroup fieldId="password">
+              <FormGroup fieldId="password" label={_("Password")}>
                 <PasswordInput
                   id="password"
                   name="password"
@@ -89,14 +121,12 @@ user privileges.",
 
               {error && <FormValidationError message={errorMessage(loginError)} />}
 
-              <ActionGroup>
-                <Button type="submit" variant="primary">
-                  {_("Log in")}
-                </Button>
-              </ActionGroup>
+              <Button type="submit" variant="primary">
+                {_("Log in")}
+              </Button>
             </Form>
-          </EmptyState>
-        </Card>
+          </Stack>
+        </Page.Section>
       </Bullseye>
     </Page.Content>
   );
