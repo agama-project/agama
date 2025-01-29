@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,12 +22,11 @@
 
 import React, { useState } from "react";
 import { Alert, ExpandableSection, Skeleton, Stack } from "@patternfly/react-core";
-import { EmptyState, Page } from "~/components/core";
+import { Page } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
-import { ValidationError } from "~/types/issues";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
 
@@ -111,18 +110,16 @@ function ActionsList({ manager }: ActionsListProps) {
 }
 
 export type ProposalResultSectionProps = {
-  errors?: ValidationError[];
   isLoading?: boolean;
 };
 
-export default function ProposalResultSection({
-  errors = [],
-  isLoading = false,
-}: ProposalResultSectionProps) {
+export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
   const system = useDevices("system", { suspense: true });
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
+
+  if (isLoading) return <ResultSkeleton />;
 
   return (
     <Page.Section
@@ -131,23 +128,10 @@ export default function ProposalResultSection({
         "During installation, several actions will be performed to setup the layout shown at the table below.",
       )}
     >
-      {isLoading && <ResultSkeleton />}
-      {errors.length === 0 ? (
-        <Stack>
-          <ActionsList manager={devicesManager} />
-          <ProposalResultTable devicesManager={devicesManager} />
-        </Stack>
-      ) : (
-        <EmptyState
-          icon="error"
-          title={_("Storage proposal not possible")}
-          color="danger-color-100"
-        >
-          {errors.map((e, i) => (
-            <div key={i}>{e.message}</div>
-          ))}
-        </EmptyState>
-      )}
+      <Stack>
+        <ActionsList manager={devicesManager} />
+        <ProposalResultTable devicesManager={devicesManager} />
+      </Stack>
     </Page.Section>
   );
 }

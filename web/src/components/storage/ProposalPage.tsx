@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
+import { Alert, Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
 import { Page } from "~/components/core/";
 import { Loading } from "~/components/layout";
 import EncryptionField from "~/components/storage/EncryptionField";
@@ -34,29 +34,6 @@ import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
 import { useDeprecated, useDeprecatedChanges, useReprobeMutation } from "~/queries/storage";
 import { _ } from "~/i18n";
-
-/**
- * Which UI item is being changed by user
- */
-export const CHANGING = Object.freeze({
-  ENCRYPTION: Symbol("encryption"),
-  TARGET: Symbol("target"),
-  VOLUMES: Symbol("volumes"),
-  POLICY: Symbol("policy"),
-  BOOT: Symbol("boot"),
-});
-
-// mapping of not affected values for settings components
-// key:   component name
-// value: list of items which can be changed without affecting
-//        the state of the component
-export const NOT_AFFECTED = {
-  // the EncryptionField shows the skeleton only during initial load,
-  // it does not depend on any changed item and does not show skeleton later.
-  // the ProposalResultSection is refreshed always
-  InstallationDeviceField: [CHANGING.ENCRYPTION, CHANGING.BOOT, CHANGING.POLICY, CHANGING.VOLUMES],
-  PartitionsField: [CHANGING.ENCRYPTION, CHANGING.POLICY],
-};
 
 export default function ProposalPage() {
   const isDeprecated = useDeprecated();
@@ -71,6 +48,8 @@ export default function ProposalPage() {
   const errors = useIssues("storage")
     .filter((s) => s.severity === IssueSeverity.Error)
     .map(toValidationError);
+
+  const validProposal = errors.length === 0;
 
   if (isDeprecated) {
     return (
@@ -94,9 +73,15 @@ export default function ProposalPage() {
 
       <Page.Content>
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <ProposalTransactionalInfo />
-          </GridItem>
+          <ProposalTransactionalInfo />
+          {!validProposal && (
+            <Alert variant="warning" title={_("Storage proposal not possible")}>
+              {errors.map((e, i) => (
+                <div key={i}>{e.message}</div>
+              ))}
+            </Alert>
+          )}
+
           <GridItem sm={12} xl={8}>
             <Page.Section
               title={_("Installation Devices")}
@@ -118,9 +103,7 @@ export default function ProposalPage() {
           <GridItem sm={12} xl={4}>
             <EncryptionField password={""} isLoading={false} />
           </GridItem>
-          <GridItem sm={12}>
-            <ProposalResultSection errors={errors} isLoading={false} />
-          </GridItem>
+          {validProposal && <ProposalResultSection isLoading={false} />}
         </Grid>
       </Page.Content>
     </Page>

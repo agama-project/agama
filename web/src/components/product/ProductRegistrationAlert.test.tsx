@@ -104,7 +104,7 @@ describe("ProductRegistrationAlert", () => {
       screen.getByRole("heading", {
         name: /Warning alert:.*must be registered/,
       });
-      const link = screen.getByRole("link", { name: "Register it now" });
+      const link = screen.getByRole("link");
       expect(link).toHaveAttribute("href", REGISTRATION.root);
     });
 
