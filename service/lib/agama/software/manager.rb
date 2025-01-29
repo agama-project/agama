@@ -470,6 +470,27 @@ module Agama
       end
 
       def add_base_repos
+        return if add_repos_by_label
+        return if add_repos_by_dir
+
+        # local repositories not found, use the online repositories
+        product.repositories.each { |url| repositories.add(url) }
+      end
+
+      def add_repos_by_dir
+        # path to cdrom which can contain installation repositories
+        dir_path = "/run/initramfs/live/install"
+
+        if File.exist?(dir_path)
+          logger.info "/install found on source cd"
+          repositories.add("dir://" + dir_path)
+          return true
+        end
+
+        false
+      end
+
+      def add_repos_by_label
         # NOTE: support multiple labels/installation media?
         label = product.labels.first
 
@@ -481,12 +502,11 @@ module Agama
           if device
             logger.info "Installation device: #{device}"
             repositories.add("hd:/?device=" + device)
-            return
+            return true
           end
         end
 
-        # disk label not found or not configured, use the online repositories
-        product.repositories.each { |url| repositories.add(url) }
+        false
       end
 
       # find all devices with the required disk label
