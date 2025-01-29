@@ -753,6 +753,7 @@ describe Agama::DBus::Storage::Manager do
                   {
                     mountPath:      "/",
                     filesystem:     {
+                      reuse:   false,
                       default: true,
                       type:    "ext4"
                     },

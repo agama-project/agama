@@ -288,6 +288,25 @@ shared_examples "with filesystem" do |config_proc|
       expect(filesystem.mount_options).to eq([])
     end
   end
+
+  context "if the filesystem specifies 'reuse'" do
+    let(:filesystem) { { reuse: true } }
+
+    it "sets #filesystem to the expected value" do
+      config = config_proc.call(subject.convert)
+      filesystem = config.filesystem
+      expect(filesystem).to be_a(Agama::Storage::Configs::Filesystem)
+      expect(filesystem.reuse?).to eq(true)
+      expect(filesystem.type.default?).to eq(true)
+      expect(filesystem.type.fs_type).to be_nil
+      expect(filesystem.type.btrfs).to be_nil
+      expect(filesystem.label).to be_nil
+      expect(filesystem.path).to be_nil
+      expect(filesystem.mount_by).to be_nil
+      expect(filesystem.mkfs_options).to be_empty
+      expect(filesystem.mount_options).to be_empty
+    end
+  end
 end
 
 shared_examples "with mountPath and filesystem" do |config_proc|
