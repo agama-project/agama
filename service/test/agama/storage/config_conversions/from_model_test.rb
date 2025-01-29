@@ -808,22 +808,46 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     end
 
     context "if a partition specifies 'delete'" do
-      let(:partitions) { [{ delete: true }] }
+      let(:partitions) { [{ delete: true, mountPath: mount_path }] }
+
+      let(:mount_path) { nil }
 
       it "sets #delete to true" do
         config = config_proc.call(subject.convert)
         partition = config.partitions.first
         expect(partition.delete?).to eq(true)
       end
+
+      context "and the partition has a mount path" do
+        let(:mount_path) { "/test" }
+
+        it "sets #delete to false" do
+          config = config_proc.call(subject.convert)
+          partition = config.partitions.first
+          expect(partition.delete?).to eq(false)
+        end
+      end
     end
 
     context "if a partition specifies 'deleteIfNeeded'" do
-      let(:partitions) { [{ deleteIfNeeded: true }] }
+      let(:partitions) { [{ deleteIfNeeded: true, mountPath: mount_path }] }
+
+      let(:mount_path) { nil }
 
       it "sets #delete_if_needed to true" do
         config = config_proc.call(subject.convert)
         partition = config.partitions.first
         expect(partition.delete_if_needed?).to eq(true)
+      end
+
+      context "and the partition has a mount path" do
+        let(:mount_path) { "/test" }
+
+        it "sets #delete_if_needed to false" do
+          config = config_proc.call(subject.convert)
+          partition = config.partitions.first
+          expect(partition.delete_if_needed?).to eq(false)
+        end
       end
     end
   end
