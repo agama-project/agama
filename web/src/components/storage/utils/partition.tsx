@@ -24,7 +24,7 @@
 
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { formattedPath, sizeDescription } from "~/components/storage/utils";
+import { filesystemType, formattedPath, sizeDescription } from "~/components/storage/utils";
 import { configModel } from "~/api/storage/types";
 
 /**
@@ -40,4 +40,38 @@ const pathWithSize = (partition: configModel.Partition): string => {
   );
 };
 
-export { pathWithSize };
+/**
+ * String to identify the type of partition to be created (or used).
+ */
+const typeDescription = (partition: configModel.Partition): string => {
+  const fs = filesystemType(partition.filesystem);
+
+  if (partition.name) {
+    if (partition.filesystem.reuse) {
+      // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a device name (eg. /dev/sda3).
+      if (fs) return sprintf(_("Current %1$s at %2$s"), fs, partition.name);
+
+      // TRANSLATORS: %s is a device name (eg. /dev/sda3).
+      return sprintf(_("Current %s"), partition.name);
+    }
+
+    // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a device name (eg. /dev/sda3).
+    return sprintf(_("%1$s at %2$s"), fs, partition.name);
+  }
+  return fs;
+};
+
+/**
+ * Combination of {@link typeDescription} and the size of the target partition.
+ */
+const typeWithSize = (partition: configModel.Partition): string => {
+  return sprintf(
+    // TRANSLATORS: %1$s is a filesystem type description (eg. "Btrfs with snapshots"),
+    // %2$s is a description of the size or the size limits (eg. "at least 10 GiB")
+    _("%1$s (%2$s)"),
+    typeDescription(partition),
+    sizeDescription(partition.size)
+  );
+};
+
+export { pathWithSize, typeDescription, typeWithSize };

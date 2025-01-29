@@ -31,6 +31,7 @@ import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive, usePartition } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
+import * as partitionUtils from "~/components/storage/utils/partition";
 import { typeDescription, contentDescription } from "~/components/storage/utils/device";
 import { Icon } from "../layout";
 import {
@@ -575,13 +576,13 @@ const PartitionsNoContentSelector = ({ toggleAriaLabel }) => {
   );
 };
 
-const PartitionMenuItem = ({ driveName, mountPath }) => {
+const PartitionMenuItem = ({ driveName, mountPath, description }) => {
   const { delete: deletePartition } = usePartition(driveName, mountPath);
 
   return (
     <MenuItem
       itemId={mountPath}
-      description="Btrfs with snapshots"
+      description={description}
       role="menuitem"
       actions={
         <>
@@ -643,6 +644,7 @@ const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
                       key={partition.mountPath}
                       driveName={drive.name}
                       mountPath={partition.mountPath}
+                      description={partitionUtils.typeWithSize(partition)}
                     />
                   );
                 })}

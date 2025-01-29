@@ -67,6 +67,26 @@ const SIZE_UNITS = Object.freeze({
   P: N_("PiB"),
 });
 
+const FILESYSTEM_NAMES = Object.freeze({
+  bcachefs: N_("Bcachefs"),
+  bitlocke: N_("BitLocker"),
+  btrfs: N_("Btrfs"),
+  exfat: N_("ExFAT"),
+  ext2: N_("Ext2"),
+  ext3: N_("Ext3"),
+  ext4: N_("Ext4"),
+  f2fs: N_("F2FS"),
+  jfs: N_("JFS"),
+  nfs: N_("NFS"),
+  nilfs2: N_("NILFS2"),
+  ntfs: N_("NTFS"),
+  reiserfs: N_("ReiserFS"),
+  swap: N_("Swap"),
+  tmpfs: N_("Tmpfs"),
+  vfat: N_("FAT"),
+  xfs: N_("XFS"),
+});
+
 const DEFAULT_SIZE_UNIT = "GiB";
 
 const SPACE_POLICIES: SpacePolicy[] = [
@@ -258,6 +278,34 @@ const volumeLabel = (volume: Volume): string =>
   volume.mountPath === "/" ? "root" : volume.mountPath;
 
 /**
+ * @see filesystemType
+ */
+const filesystemName = (fstype: string): string => {
+  const name = FILESYSTEM_NAMES[fstype];
+
+  // eslint-disable-next-line agama-i18n/string-literals
+  if (name) return _(name);
+
+  // Fallback for unknown filesystem types
+  return (fstype.charAt(0).toUpperCase() + fstype.slice(1));
+}
+
+/**
+ * String to represent the filesystem type
+ *
+ * @returns undefined if there is not enough information
+ */
+const filesystemType = (filesystem: configModel.Filesystem): string | undefined=> {
+  if (filesystem.type) {
+    if (filesystem.snapshots) return _("Btrfs with snapshots");
+
+    return filesystemName(filesystem.type);
+  }
+
+  return undefined;
+}
+
+/**
  * GiB to Bytes.
  */
 const gib: (value: number) => number = (value): number => value * 1024 ** 3;
@@ -297,6 +345,7 @@ export {
   deviceLabel,
   deviceChildren,
   deviceSize,
+  filesystemType,
   formattedPath,
   gib,
   parseToBytes,
