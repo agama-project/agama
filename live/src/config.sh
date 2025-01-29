@@ -55,6 +55,7 @@ systemctl enable live-password-dialog.service
 systemctl enable live-password-iso.service
 systemctl enable live-password-random.service
 systemctl enable live-password-systemd.service
+systemctl enable checkmedia.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
@@ -92,6 +93,7 @@ fi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
+sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/checkmedia-service
 
 # Increase the Live ISO image size to have some extra free space for installing
 # additional debugging or development packages.
