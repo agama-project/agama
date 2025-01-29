@@ -472,6 +472,8 @@ function partitionConfig(value: FormValue): configModel.Partition {
   };
 
   const filesystem = (): configModel.Filesystem | undefined => {
+    if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true, default: true };
+
     const type = filesystemType();
     if (type === undefined) return undefined;
 
