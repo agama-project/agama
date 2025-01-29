@@ -17,11 +17,15 @@ fi
 # but that's not the case.
 test -f $dst/.profile && . $dst/.profile
 
+arch=`uname -m`
+profile=$(echo "$kiwi_profiles" | tr "-" " ")
+label="$profile ($arch)"
+
 #
 # Create grub.cfg
 #
 cat >$dst/boot/grub2/grub.cfg <<XXX
-# kiwi generated one time grub2 config file
+# Agama generated grub2 config file
 set btrfs_relative_path="y"
 export btrfs_relative_path
 search --file --set=root /boot/0xebe87947
@@ -65,21 +69,21 @@ if [ -f (\$root)/boot/grub2/themes/openSUSE/theme.txt ];then
 fi
 terminal_input console
 terminal_output gfxterm
-menuentry "$kiwi_iname" --class os --unrestricted {
+menuentry "Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
     linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot}
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
-menuentry "Failsafe -- $kiwi_iname" --class os --unrestricted {
+menuentry "Failsafe -- Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot}   ide=nodma apm=off noresume edd=off nomodeset 3
+    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} ide=nodma apm=off noresume edd=off nomodeset 3
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
-menuentry "Mediacheck" --class os --unrestricted {
+menuentry "Check Installation Medium" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
     linux (\$root)/boot/x86_64/loader/linux mediacheck=1 plymouth.enable=0 \${isoboot}
@@ -105,6 +109,15 @@ if [ "\${grub_platform}" = "efi" ]; then
         set textmode=true
         terminal_output console
     }
+    menuentry "UEFI Firmware Settings" {
+        fwsetup --is-supported
+        if [ "$?" = 0 ]; then
+            fwsetup
+        else
+            echo "Your firmware doesn't support setup menu entry from a boot loader"
+            echo "Press any key to return ..."
+            read
+        fi
+    }
 fi
 XXX
-

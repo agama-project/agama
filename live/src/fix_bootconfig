@@ -15,7 +15,6 @@
 #
 set -ex
 
-
 dst=${1#iso:}
 
 # KIWI config
@@ -26,11 +25,6 @@ if [ -f .profile ]; then
 fi
 
 arch=`uname -m`
-
-# removing live root setting from command line - it's in /etc/cmdline.d instead
-if [ -f $dst/boot/grub2/grub.cfg ] ; then
-  sed -i -E -e 's/\s+root=\S+//' -e 's/\s+rd.live\.image//' $dst/boot/grub2/grub.cfg
-fi
 
 bootfix=$dst/fix_bootconfig.$arch
 if [ -f $bootfix ] ; then
@@ -66,12 +60,6 @@ volid="Install-$kiwi_profiles-$arch"
 
 [ -x $bootfix ] && $bootfix $dst
 rm -f $dst/fix_bootconfig.* $dst/.profile
-
-# update the boot menu labels
-boot_label=\$(echo "$kiwi_profiles" | tr "-" " ")
-sed -i -E -e "s/^menuentry \\"$kiwi_iname\\"/menuentry \"Install \$boot_label ($arch)\"/" \
-  -e "s/^menuentry \\"Failsafe -- $kiwi_iname\\"/menuentry \\"Failsafe -- Install \$boot_label ($arch)\\"/" \
-  $dst/boot/grub2/grub.cfg
 
 case $arch in
   s390x)
