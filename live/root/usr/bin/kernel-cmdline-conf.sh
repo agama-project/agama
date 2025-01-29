@@ -1,7 +1,7 @@
 #! /bin/sh
 
 SOURCE="${1:-/proc/cmdline}"
-TARGET="${2:-/etc/agama.d/kernel.cmdline.conf}"
+TARGET="${2:-/run/agama/cmdline.d/kernel}"
 
 write_kernel_args() {
   DIR=$(dirname "${TARGET}")

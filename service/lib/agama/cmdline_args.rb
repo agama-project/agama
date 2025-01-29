@@ -22,7 +22,6 @@
 module Agama
   # This class is responsible for reading Agama kernel cmdline options
   class CmdlineArgs
-    CMDLINE_PATH = "/proc/cmdline"
     CMDLINE_PREFIX = "agama."
 
     attr_accessor :config_url

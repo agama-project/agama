@@ -2,8 +2,8 @@
 
 set -e
 
-TARGET="${1:-/etc/agama.d/cmdline.conf}"
-INFO_CONTENT="${2:-/etc/agama.d/cmdline.info.conf}"
+TARGET="${1:-/run/agama/cmdline.d/agama}"
+INFO_CONTENT="${2:-/run/agama/cmdline.d/info}"
 
 expand_info_arg() {
   INFO_URL=$(sed -n 's/\(.*[[:space:]]\|^\)agama\.info=\([^[:space:]]\+\).*/\2/p' "$TARGET")
