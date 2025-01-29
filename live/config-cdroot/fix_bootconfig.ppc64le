@@ -75,7 +75,7 @@ fi
 chmod 644 $boot_dir/{initrd,linux}
 
 arch=`uname -m`
-profile=\$(echo "$kiwi_profiles" | tr "-" " ")
+profile=$(echo "$kiwi_profiles" | tr "-" " ")
 label="$profile ($arch)"
 
 # Create grub.cfg.

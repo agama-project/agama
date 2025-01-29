@@ -21,6 +21,12 @@ arch=`uname -m`
 profile=$(echo "$kiwi_profiles" | tr "-" " ")
 label="$profile ($arch)"
 
+if [ -d "$dst/boot/grub2/themes/SLE" ]; then
+  theme="SLE"
+else
+  theme="openSUSE"
+fi
+
 #
 # Create grub.cfg
 #
@@ -45,10 +51,10 @@ if [ "\${grub_platform}" = "efi" ]; then
 fi
 set gfxmode=auto
 set font=(\$root)/boot/x86_64/loader/grub2/fonts/unicode.pf2
-set ascii_font=grub2/themes/openSUSE/ascii.pf2
-set sans_bold_14_font=grub2/themes/openSUSE/DejaVuSans-Bold14.pf2
-set sans_10_font=grub2/themes/openSUSE/DejaVuSans10.pf2
-set sans_12_font=grub2/themes/openSUSE/DejaVuSans12.pf2
+set ascii_font=grub2/themes/$theme/ascii.pf2
+set sans_bold_14_font=grub2/themes/$theme/DejaVuSans-Bold14.pf2
+set sans_10_font=grub2/themes/$theme/DejaVuSans10.pf2
+set sans_12_font=grub2/themes/$theme/DejaVuSans12.pf2
 if [ -f \${font} ];then
     loadfont \${font}
 fi
@@ -64,8 +70,8 @@ fi
 if [ -f (\$root)/boot/\${sans_12_font} ];then
     loadfont (\$root)/boot/\${sans_12_font}
 fi
-if [ -f (\$root)/boot/grub2/themes/openSUSE/theme.txt ];then
-    set theme=(\$root)/boot/grub2/themes/openSUSE/theme.txt
+if [ -f (\$root)/boot/grub2/themes/$theme/theme.txt ];then
+    set theme=(\$root)/boot/grub2/themes/$theme/theme.txt
 fi
 terminal_input console
 terminal_output gfxterm
