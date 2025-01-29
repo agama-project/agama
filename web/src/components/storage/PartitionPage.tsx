@@ -33,6 +33,7 @@ import {
   SelectList,
   SelectOption,
   SelectGroup,
+  MenuToggleStatus,
   Divider,
   FlexItem,
   TextInput,
@@ -51,6 +52,7 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
+import { compact } from "~/utils";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -100,6 +102,13 @@ function findPartition(device: StorageDevice, target: string): StorageDevice | n
 function usePartition(target: string): StorageDevice | null {
   const device = useDevice();
   return findPartition(device, target);
+}
+
+/** @todo Filter used mount points */
+function mountPointOptions(volumes: Volume[]): SelectOptionProps[] {
+  return volumes
+    .filter((v) => v.mountPath.length)
+    .map((v) => ({ value: v.mountPath, children: v.mountPath }));
 }
 
 type TargetOptionLabelProps = {
@@ -491,11 +500,47 @@ function partitionConfig(value: FormValue): configModel.Partition {
   };
 }
 
-/** @todo Filter used mount points */
-function mountPointOptions(volumes: Volume[]): SelectOptionProps[] {
-  return volumes
-    .filter((v) => v.mountPath.length)
-    .map((v) => ({ value: v.mountPath, children: v.mountPath }));
+type Error = {
+  id: string;
+  message?: string;
+  isVisible: boolean;
+};
+
+type ErrorsHandler = {
+  errors: Error[];
+  getError: (id: string) => Error | undefined;
+  getVisibleError: (id: string) => Error | undefined;
+};
+
+function mountPointError(mountPoint: string): Error | undefined {
+  if (mountPoint === NO_VALUE) {
+    return {
+      id: "mountPoint",
+      isVisible: false,
+    };
+  }
+
+  const regex = /^swap$|^\/$|^(\/[^/\s]+([^/]*[^/\s])*)+$/;
+  if (!regex.test(mountPoint)) {
+    return {
+      id: "mountPoint",
+      message: _("The mount point is invalid"),
+      isVisible: true,
+    };
+  }
+}
+
+function useErrors(value: FormValue): ErrorsHandler {
+  const errors = compact([mountPointError(value.mountPoint)]);
+
+  const getError = (id: string): Error | undefined => errors.find((e) => e.id === id);
+
+  const getVisibleError = (id: string): Error | undefined => {
+    const error = getError(id);
+    return error?.isVisible ? error : undefined;
+  };
+
+  return { errors, getError, getVisibleError };
 }
 
 export default function PartitionPage() {
@@ -510,10 +555,8 @@ export default function PartitionPage() {
   const volumes = useVolumeTemplates();
   const driveConfig = useDrive(device?.name);
 
-  const setSize = ({ min, max }) => {
-    if (min !== undefined) setMinSize(min);
-    if (max !== undefined) setMaxSize(max);
-  };
+  const value = { mountPoint, target, filesystem, sizeOption, minSize, maxSize };
+  const { errors, getVisibleError } = useErrors(value);
 
   const updateFilesystem = (mountPoint: string, target: string) => {
     const volume = findVolume(volumes, mountPoint);
@@ -579,14 +622,20 @@ export default function PartitionPage() {
     updateSizes(value);
   };
 
+  const changeSize = ({ min, max }) => {
+    if (min !== undefined) setMinSize(min);
+    if (max !== undefined) setMaxSize(max);
+  };
+
   const onSubmit = () => {
-    driveConfig.addPartition(
-      partitionConfig({ mountPoint, target, filesystem, sizeOption, minSize, maxSize }),
-    );
+    driveConfig.addPartition(partitionConfig(value));
     navigate(PATHS.root);
   };
 
-  console.log({ mountPoint, target, filesystem, sizeOption, minSize, maxSize });
+  const isFormValid = errors.length === 0;
+  const mountPointError = getVisibleError("mountPoint");
+
+  console.log(value);
 
   return (
     <Page id="partitionPage">
@@ -605,6 +654,7 @@ export default function PartitionPage() {
                     options={mountPointOptions(volumes)}
                     createText={_("Add mount point")}
                     onChange={changeMountPoint}
+                    status={mountPointError && MenuToggleStatus.danger}
                   />
                 </FlexItem>
                 <FlexItem>
@@ -619,7 +669,10 @@ export default function PartitionPage() {
               </Flex>
               <FormHelperText>
                 <HelperText>
-                  <HelperTextItem>{_("Select or enter a mount point")}</HelperTextItem>
+                  <HelperTextItem variant={mountPointError ? "error" : "default"}>
+                    {!mountPointError && _("Select or enter a mount point")}
+                    {mountPointError?.message}
+                  </HelperTextItem>
                 </HelperText>
               </FormHelperText>
             </FormGroup>
@@ -656,7 +709,7 @@ export default function PartitionPage() {
                   <CustomSize
                     value={{ min: minSize, max: maxSize }}
                     mountPoint={mountPoint}
-                    onChange={setSize}
+                    onChange={changeSize}
                   />
                 </FlexItem>
               )}
@@ -667,7 +720,7 @@ export default function PartitionPage() {
 
       <Page.Actions>
         <Page.Cancel />
-        <Page.Submit form="partitionForm" />
+        <Page.Submit isDisabled={!isFormValid} form="partitionForm" />
       </Page.Actions>
     </Page>
   );
