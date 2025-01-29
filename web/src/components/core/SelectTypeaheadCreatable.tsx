@@ -28,6 +28,7 @@ import {
   SelectOptionProps,
   MenuToggle,
   MenuToggleElement,
+  MenuToggleStatus,
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
@@ -43,6 +44,7 @@ export type SelectTypeaheadCreatableProps = {
   // Text to show for creating a new option.
   createText?: string;
   onChange?: (value: string) => void;
+  status?: MenuToggleStatus;
 };
 
 /**
@@ -57,6 +59,7 @@ export default function SelectTypeaheadCreatable({
   placeholder,
   createText = _("Add"),
   onChange,
+  status,
 }: SelectTypeaheadCreatableProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState<string>("");
@@ -240,6 +243,7 @@ export default function SelectTypeaheadCreatable({
       aria-label={_("Typeahead creatable menu toggle")}
       onClick={onToggleClick}
       isExpanded={isOpen}
+      status={status}
       isFullWidth
     >
       <TextInputGroup isPlain>
