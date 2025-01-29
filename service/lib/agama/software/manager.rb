@@ -481,13 +481,11 @@ module Agama
         # path to cdrom which can contain installation repositories
         dir_path = "/run/initramfs/live/install"
 
-        if File.exist?(dir_path)
-          logger.info "/install found on source cd"
-          repositories.add("dir://" + dir_path)
-          return true
-        end
+        return false unless File.exist?(dir_path)
 
-        false
+        logger.info "/install found on source cd"
+        repositories.add("dir://" + dir_path)
+        true
       end
 
       def add_repos_by_label
