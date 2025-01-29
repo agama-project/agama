@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 28 15:47:52 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use better ISO Volume ID labels (bsc#1236401)
+- Improve also the boot menu labels
+
+-------------------------------------------------------------------
 Mon Jan 20 10:37:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add SUSE licenses (jsc#PED-11987).
