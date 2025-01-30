@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 30 12:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Make deletion of a proposed drive work:
+  "Do not use, Remove the configuration for this device"
+  (gh#agama-project/agama#1934)
+
+-------------------------------------------------------------------
 Fri Jan 24 09:34:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the "finish" to decide whether to navigate to the
@@ -11,11 +18,10 @@ Fri Jan 24 06:43:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   the registration alert (gh#agama-project/agama#1938).
 
 -------------------------------------------------------------------
-
 Thu Jan 23 15:09:09 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Make the trash can icon (Delete) of a proposed partition work
-  gh#agama-project/agama#1915)
+  (gh#agama-project/agama#1915)
 
 -------------------------------------------------------------------
 Tue Jan 21 09:44:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
