@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -171,7 +171,10 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
 };
 
 const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
-  const { isBoot, isExplicitBoot } = useDrive(drive.name);
+  const driveModel = useDrive(drive.name);
+  if (!driveModel) return;
+
+  const { isBoot, isExplicitBoot } = driveModel;
   // TODO: Get volume groups associated to the drive.
   const volumeGroups = [];
 
@@ -357,7 +360,10 @@ const SearchSelectorSingleOption = ({ selected }) => {
 };
 
 const SearchSelectorOptions = ({ drive, selected, onChange }) => {
-  const { isExplicitBoot } = useDrive(drive.name);
+  const driveModel = useDrive(drive.name);
+  if (!driveModel) return;
+
+  const { isExplicitBoot } = driveModel;
   // const boot = isExplicitBoot(drive.name);
 
   if (driveUtils.hasReuse(drive)) return <SearchSelectorSingleOption selected={selected} />;
@@ -384,23 +390,32 @@ const SearchSelector = ({ drive, selected, onChange }) => {
 };
 
 const RemoveDriveOption = ({ drive }) => {
-  const { isExplicitBoot } = useDrive(drive.name);
+  const driveModel = useDrive(drive.name);
 
-  if (driveUtils.hasPv(drive)) return;
+  if (!driveModel) return;
+
+  const { isExplicitBoot, delete: deleteDrive } = driveModel;
+
   if (isExplicitBoot) return;
+  if (driveUtils.hasPv(drive)) return;
   if (driveUtils.hasRoot(drive)) return;
 
   return (
     <>
       <Divider component="hr" />
-      <MenuItem description={_("Remove the configuration for this device")}>
+      <MenuItem
+        isDanger
+        description={_("Remove the configuration for this device")}
+        onClick={deleteDrive}
+      >
         {_("Do not use")}
       </MenuItem>
     </>
   );
 };
 
-const DriveSelector = ({ drive, selected }) => {
+const DriveSelector = ({ drive, selected, toggleAriaLabel }) => {
+  const menuId = useId();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -417,8 +432,14 @@ const DriveSelector = ({ drive, selected }) => {
       onOpenChange={setIsOpen}
       toggleRef={toggleMenuRef}
       toggle={
-        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
-          <b>{deviceLabel(selected)}</b>
+        <InlineMenuToggle
+          ref={toggleMenuRef}
+          onClick={onToggle}
+          isExpanded={isOpen}
+          aria-label={toggleAriaLabel}
+          aria-controls={menuId}
+        >
+          <b aria-hidden>{deviceLabel(selected)}</b>
         </InlineMenuToggle>
       }
       menuRef={menuRef}
@@ -496,11 +517,13 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   };
 
   const [txt1, txt2] = text(drive).split("%s");
+  // TRANSLATORS: a disk drive
+  const toggleAriaLabel = _("Drive");
 
   return (
     <h4>
       <span>{txt1}</span>
-      <DriveSelector drive={drive} selected={driveDevice} />
+      <DriveSelector drive={drive} selected={driveDevice} toggleAriaLabel={toggleAriaLabel} />
       <span>{txt2}</span>
     </h4>
   );

@@ -63,12 +63,18 @@ const mockDrive: ConfigModel.Drive = {
   ],
 };
 
+const mockDeleteDrive = jest.fn();
 const mockDeletePartition = jest.fn();
-// TODO: why does "~/queries/storage" work elsewhere??
+
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useAvailableDevices: () => [sda],
+}));
+
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
   useConfigModel: () => ({ drives: [mockDrive] }),
-  useDrive: () => mockDrive,
+  useDrive: () => ({ delete: mockDeleteDrive }),
   usePartition: () => ({ delete: mockDeletePartition }),
 }));
 
@@ -78,7 +84,7 @@ const props: DriveEditorProps = {
 };
 
 describe("PartitionMenuItem", () => {
-  it("allows users delete a the partition", async () => {
+  it("allows users to delete the partition", async () => {
     const { user } = plainRender(<DriveEditor {...props} />);
 
     const partitionsButton = screen.getByRole("button", { name: "Partitions" });
@@ -89,5 +95,20 @@ describe("PartitionMenuItem", () => {
     });
     await user.click(deleteSwapButton);
     expect(mockDeletePartition).toHaveBeenCalled();
+  });
+});
+
+describe("RemoveDriveOption", () => {
+  it("allows users to delete the drive", async () => {
+    const { user } = plainRender(<DriveEditor {...props} />);
+
+    const driveButton = screen.getByRole("button", { name: "Drive" });
+    await user.click(driveButton);
+    const drivesMenu = screen.getByRole("menu");
+    const deleteDriveButton = within(drivesMenu).getByRole("menuitem", {
+      name: /Do not use/,
+    });
+    await user.click(deleteDriveButton);
+    expect(mockDeleteDrive).toHaveBeenCalled();
   });
 });
