@@ -51,15 +51,15 @@ jest.mock("~/queries/software", () => ({
   useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
 }));
 
-describe("ChangeProductLink", () => {
+describe("ChangeProductOption", () => {
   describe("when there is more than one product available", () => {
     beforeEach(() => {
       mockUseProduct = { products: [tumbleweed, microos] };
     });
 
-    it("renders a link for navigating to product selection page", () => {
+    it("renders a menu item for navigating to product selection page", () => {
       installerRender(<ChangeProductLink />);
-      const link = screen.getByRole("link", { name: "Change product" });
+      const link = screen.getByRole("menuitem", { name: "Change product" });
       expect(link).toHaveAttribute("href", PATHS.changeProduct);
     });
 

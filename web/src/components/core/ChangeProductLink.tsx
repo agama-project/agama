@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,25 +21,29 @@
  */
 
 import React from "react";
-import { Link, LinkProps } from "react-router-dom";
+import { DropdownItem, DropdownItemProps } from "@patternfly/react-core";
+import { useHref, useLocation } from "react-router-dom";
 import { useProduct, useRegistration } from "~/queries/software";
-import { PRODUCT as PATHS } from "~/routes/paths";
+import { PRODUCT as PATHS, SUPPORTIVE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { isEmpty } from "~/utils";
 
 /**
- * Link for navigating to the selection product.
+ * DropdownItem Option for navigating to the selection product.
  */
-export default function ChangeProductLink({ children, ...props }: Omit<LinkProps, "to">) {
+export default function ChangeProductOption({ children, ...props }: Omit<DropdownItemProps, "to">) {
   const { products } = useProduct();
   const registration = useRegistration();
+  const currentLocation = useLocation();
+  const to = useHref(PATHS.changeProduct);
 
   if (products.length <= 1) return null;
   if (!isEmpty(registration?.key)) return null;
+  if (SUPPORTIVE_PATHS.includes(currentLocation.pathname)) return null;
 
   return (
-    <Link to={PATHS.changeProduct} {...props}>
+    <DropdownItem to={to} {...props}>
       {children || _("Change product")}
-    </Link>
+    </DropdownItem>
   );
 }

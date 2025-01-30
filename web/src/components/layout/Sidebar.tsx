@@ -29,10 +29,8 @@ import {
   PageSidebar,
   PageSidebarBody,
   PageSidebarProps,
-  Stack,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { ChangeProductLink } from "~/components/core";
 import { rootRoutes } from "~/router";
 import { _ } from "~/i18n";
 import { useProduct } from "~/queries/software";
@@ -75,11 +73,6 @@ export default function Sidebar(props: PageSidebarProps): React.ReactNode {
     <PageSidebar id="agama-sidebar" {...props}>
       <PageSidebarBody isFilled>
         <MainNavigation />
-      </PageSidebarBody>
-      <PageSidebarBody isFilled={false} usePageInsets>
-        <Stack hasGutter className="pf-v5-u-py-sm">
-          <ChangeProductLink className="pf-v5-c-button pf-m-primary" />
-        </Stack>
       </PageSidebarBody>
     </PageSidebar>
   );
