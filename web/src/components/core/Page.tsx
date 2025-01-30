@@ -57,10 +57,6 @@ type SectionProps = {
   title?: string;
   /** The value used for accessible label */
   "aria-label"?: string;
-  /** Part of the header that complements the title as a representation of the
-   * section state. E.g. "Encryption enabled", where "Encryption" is the title
-   * and "enabled" the value */
-  value?: React.ReactNode;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
   /** A React node with a brief description of what the section is for */
@@ -114,7 +110,6 @@ const Header = ({ hasGutter = true, children, ...props }) => {
  * @example <caption>Complex usage</caption>
  *   <Page.Section
  *     title="Encryption"
- *     value={isEnabled ? "Enabled" : "Disabled"}
  *     description="Whether device should be protected or not"
  *     pfCardBodyProps={{ isFilled: true }}
  *     actions={isEnabled ? <DisableAction /> : <EnableAction />}
@@ -126,7 +121,6 @@ const Header = ({ hasGutter = true, children, ...props }) => {
 const Section = ({
   title,
   "aria-label": ariaLabel,
-  value,
   description,
   actions,
   headingLevel = "h3",
@@ -137,9 +131,8 @@ const Section = ({
 }: React.PropsWithChildren<SectionProps>) => {
   const titleId = useId();
   const hasTitle = !isEmpty(title);
-  const hasValue = !isEmpty(value);
   const hasDescription = !isEmpty(description);
-  const hasHeader = hasTitle || hasValue || hasDescription;
+  const hasHeader = hasTitle || hasDescription;
   const hasAriaLabel =
     !isEmpty(ariaLabel) || (isObject(pfCardProps) && "aria-label" in pfCardProps);
   const props = { ...defaultCardProps, "aria-label": ariaLabel };
@@ -154,21 +147,12 @@ const Section = ({
     <Card {...props} {...pfCardProps}>
       {hasHeader && (
         <CardHeader {...pfCardHeaderProps}>
-          <Flex direction="column" rowGap="rowGapXs" alignItems="alignItemsFlexStart">
-            <Flex columnGap="columnGapSm" rowGap="rowGapXs" alignContent="alignContentFlexStart">
-              {hasTitle && (
-                <Title id={titleId} headingLevel={headingLevel}>
-                  {title}
-                </Title>
-              )}
-              {hasValue && (
-                <Flex.Item grow="grow" className={textStyles.fontSizeXl}>
-                  {value}
-                </Flex.Item>
-              )}
-            </Flex>
-            {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
-          </Flex>
+          {hasTitle && (
+            <Title id={titleId} headingLevel={headingLevel}>
+              {title}
+            </Title>
+          )}
+          {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
         </CardHeader>
       )}
       <CardBody {...pfCardBodyProps}>{children}</CardBody>
