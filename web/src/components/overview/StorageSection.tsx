@@ -23,16 +23,15 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { Em } from "~/components/core";
-import { _ } from "~/i18n";
 import { useDevices, useConfigModel } from "~/queries/storage";
 import * as ConfigModel from "~/api/storage/types/config-model";
+import { _ } from "~/i18n";
 
 const SectionContent = ({ children }) => (
-  <>
+  <Content>
     <Content component="h3">{_("Storage")}</Content>
     {children}
-  </>
+  </Content>
 );
 
 /**
@@ -112,7 +111,7 @@ export default function StorageSection() {
     <SectionContent>
       <Content>
         <span>{msg1}</span>
-        <Em>{label(drives[0])}</Em>
+        <b>{label(drives[0])}</b>
         <span>{msg2}</span>
       </Content>
     </SectionContent>
