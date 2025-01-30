@@ -24,15 +24,68 @@ import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
 import { useDevices, useConfigModel } from "~/queries/storage";
+import { StorageDevice } from "~/types/storage";
 import * as ConfigModel from "~/api/storage/types/config-model";
 import { _ } from "~/i18n";
 
-const SectionContent = ({ children }) => (
-  <Content>
-    <Content component="h3">{_("Storage")}</Content>
-    {children}
-  </Content>
-);
+const findDriveDevice = (drive: ConfigModel.Drive, devices: StorageDevice[]) =>
+  devices.find((d) => d.name === drive.name);
+
+const NoDeviceSummary = () => _("No device selected yet");
+
+const SingleDiskSummary = ({ drive }: { drive: ConfigModel.Drive }) => {
+  const devices = useDevices("system", { suspense: true });
+  const device = findDriveDevice(drive, devices);
+  const label = device ? deviceLabel(device) : drive.name;
+  let text: string;
+
+  switch (drive.spacePolicy) {
+    case "resize":
+      // TRANSLATORS: %s will be replaced by the device name and its size,
+      // example: "/dev/sda, 20 GiB"
+      text = _("Install using device %s shrinking existing partitions as needed.");
+      break;
+    case "keep":
+      // TRANSLATORS: %s will be replaced by the device name and its size,
+      // example: "/dev/sda, 20 GiB"
+      text = _("Install using device %s without modifying existing partitions.");
+      break;
+    case "delete":
+      // TRANSLATORS: %s will be replaced by the device name and its size,
+      // example: "/dev/sda, 20 GiB"
+      text = _("Install using device %s and deleting all its content.");
+      break;
+    default:
+      // TRANSLATORS: %s will be replaced by the device name and its size,
+      // example: "/dev/sda, 20 GiB"
+      text = _("Install using device %s with a custom strategy to find the needed space.");
+  }
+
+  const [textStart, textEnd] = text.split("%s");
+
+  return (
+    <>
+      <span>{textStart}</span>
+      <b>{label}</b>
+      <span>{textEnd}</span>
+    </>
+  );
+};
+
+const MultipleDisksSummary = ({ drives }: { drives: ConfigModel.Drive[] }): string => {
+  if (drives.every((d: ConfigModel.Drive) => d.spacePolicy === drives[0].spacePolicy)) {
+    switch (drives[0].spacePolicy) {
+      case "resize":
+        return _("Install using several devices shrinking existing partitions as needed.");
+      case "keep":
+        return _("Install using several devices without modifying existing partitions.");
+      case "delete":
+        return _("Install using several devices and deleting all its content.");
+    }
+  }
+
+  return _("Install using several devices with a custom strategy to find the needed space.");
+};
 
 /**
  * Text explaining the storage proposal
@@ -45,75 +98,15 @@ export default function StorageSection() {
   const configModel = useConfigModel();
   const devices = useDevices("system", { suspense: true });
   const drives = configModel?.drives || [];
-
-  const label = (drive) => {
-    const device = devices.find((d) => d.name === drive.name);
-    return device ? deviceLabel(device) : drive.name;
-  };
-
-  const msgSingleDisk = (drive: ConfigModel.Drive): string => {
-    switch (drive.spacePolicy) {
-      case "resize":
-        // TRANSLATORS: %s will be replaced by the device name and its size,
-        // example: "/dev/sda, 20 GiB"
-        return _("Install using device %s shrinking existing partitions as needed.");
-      case "keep":
-        // TRANSLATORS: %s will be replaced by the device name and its size,
-        // example: "/dev/sda, 20 GiB"
-        return _("Install using device %s without modifying existing partitions.");
-      case "delete":
-        // TRANSLATORS: %s will be replaced by the device name and its size,
-        // example: "/dev/sda, 20 GiB"
-        return _("Install using device %s and deleting all its content.");
-    }
-
-    // TRANSLATORS: %s will be replaced by the device name and its size,
-    // example: "/dev/sda, 20 GiB"
-    return _("Install using device %s with a custom strategy to find the needed space.");
-  };
-
-  const msgMultipleDisks = (drives: ConfigModel.Drive[]): string => {
-    if (drives.every((d) => d.spacePolicy === drives[0].spacePolicy)) {
-      switch (drives[0].spacePolicy) {
-        case "resize":
-          return _("Install using several devices shrinking existing partitions as needed.");
-        case "keep":
-          return _("Install using several devices without modifying existing partitions.");
-        case "delete":
-          return _("Install using several devices and deleting all its content.");
-      }
-    }
-
-    return _("Install using several devices with a custom strategy to find the needed space.");
-  };
-
-  const existDevice = (name) => devices.some((d) => d.name === name);
+  const existDevice = (name: string) => devices.some((d) => d.name === name);
   const noDrive = drives.length === 0 || drives.some((d) => !existDevice(d.name));
 
-  if (noDrive)
-    return (
-      <SectionContent>
-        <Content>{_("No device selected yet")}</Content>
-      </SectionContent>
-    );
-
-  if (drives.length > 1) {
-    return (
-      <SectionContent>
-        <span>{msgMultipleDisks(drives)}</span>
-      </SectionContent>
-    );
-  }
-
-  const [msg1, msg2] = msgSingleDisk(drives[0]).split("%s");
-
   return (
-    <SectionContent>
-      <Content>
-        <span>{msg1}</span>
-        <b>{label(drives[0])}</b>
-        <span>{msg2}</span>
-      </Content>
-    </SectionContent>
+    <Content>
+      <Content component="h3">{_("Storage")}</Content>
+      {noDrive && <NoDeviceSummary />}
+      {drives.length === 1 && <SingleDiskSummary drive={drives[0]} />}
+      {drives.length > 1 && <MultipleDisksSummary drives={drives} />}
+    </Content>
   );
 }
