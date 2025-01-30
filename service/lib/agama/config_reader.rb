@@ -117,7 +117,7 @@ module Agama
 
     # @return [CmdlineArgs]
     def cmdline_args
-      @cmdline_args ||= CmdlineArgs.read_from(File.join(workdir, "/proc/cmdline"))
+      @cmdline_args ||= CmdlineArgs.read_from(File.join(workdir, "/run/agama/cmdline.d/agama"))
     end
 
     # return [Config]
