@@ -66,7 +66,11 @@ const mockDrive: ConfigModel.Drive = {
 const mockDeleteDrive = jest.fn();
 const mockDeletePartition = jest.fn();
 
-// TODO: why does "~/queries/storage" work elsewhere??
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useAvailableDevices: () => [sda],
+}));
+
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
   useConfigModel: () => ({ drives: [mockDrive] }),
@@ -102,7 +106,7 @@ describe("RemoveDriveOption", () => {
     await user.click(driveButton);
     const drivesMenu = screen.getByRole("menu");
     const deleteDriveButton = within(drivesMenu).getByRole("menuitem", {
-      name: "Do not use",
+      name: /Do not use/,
     });
     await user.click(deleteDriveButton);
     expect(mockDeleteDrive).toHaveBeenCalled();
