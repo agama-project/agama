@@ -517,16 +517,13 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   };
 
   const [txt1, txt2] = text(drive).split("%s");
+  // TRANSLATORS: a disk drive
+  const toggleAriaLabel = _("Drive");
 
   return (
     <h4>
       <span>{txt1}</span>
-      {
-        // how do I even make a translator comment in the syntactic context of a JSX component?
-        // FIXME: what label makes sense?
-        // TRANSLATORS: ...
-      }
-      <DriveSelector drive={drive} selected={driveDevice} toggleAriaLabel={_("Drive")} />
+      <DriveSelector drive={drive} selected={driveDevice} toggleAriaLabel={toggleAriaLabel} />
       <span>{txt2}</span>
     </h4>
   );
