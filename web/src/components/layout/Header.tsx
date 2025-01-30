@@ -46,7 +46,7 @@ import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { Route } from "~/types/routes";
-import { ChangeProductLink, InstallButton, InstallerOptions } from "~/components/core";
+import { ChangeProductOption, InstallButton, InstallerOptions } from "~/components/core";
 import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
 
@@ -91,7 +91,7 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         )}
       >
         <DropdownList>
-          <ChangeProductLink />
+          <ChangeProductOption />
           <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
             {_("Download logs")}
           </DropdownItem>

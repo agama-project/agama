@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ChangeProductLink } from "./ChangeProductLink";
+export { default as ChangeProductOption } from "./ChangeProductOption";
 export { default as FormLabel } from "./FormLabel";
 export { default as FormValidationError } from "./FormValidationError";
 export { default as Fieldset } from "./Fieldset";
