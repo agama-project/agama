@@ -40,8 +40,9 @@ describe Agama::AutoYaST::Converter do
   end
   let(:xml_valid?) { true }
   let(:xml_errors) { [] }
+  let(:result_path) { File.join(workdir, "autoinst.json") }
   let(:result) do
-    content = File.read(File.join(workdir, "autoinst.json"))
+    content = File.read(result_path)
     JSON.parse(content)
   end
   let(:storage_manager) do
@@ -109,7 +110,7 @@ describe Agama::AutoYaST::Converter do
 
       it "evaluates the ERB code" do
         subject.to_agama(workdir)
-        expect(result["l10n"]).to include(
+        expect(result["localization"]).to include(
           "languages" => ["en_US.UTF-8", "es_ES.UTF-8"]
         )
       end
@@ -157,9 +158,9 @@ describe Agama::AutoYaST::Converter do
       end
     end
 
-    it "exports l10n settings" do
+    it "exports localization settings" do
       subject.to_agama(workdir)
-      expect(result["l10n"]).to include(
+      expect(result["localization"]).to include(
         "languages" => ["en_US.UTF-8"],
         "timezone"  => "Atlantic/Canary",
         "keyboard"  => "us"
@@ -175,6 +176,31 @@ describe Agama::AutoYaST::Converter do
     it "reports the problem" do
       expect(Yast2::Popup).to receive(:show)
       subject.to_agama(workdir)
+    end
+  end
+
+  context "for cloned profile" do
+    let(:profile_name) { "cloned.xml" }
+
+    it "generate json according to schema" do
+      # sadly rubygem-json-schema cannot be used due to too old supported format
+      if !system("which jsonschema")
+        pending "can run only if python3-jsonschema is installed"
+        break
+      end
+
+      subject.to_agama(workdir)
+
+      schema = File.expand_path(
+        "../../../../rust/agama-lib/share/profile.schema.json",
+        __dir__
+      )
+
+      # filter out deprecation warning as check-jsonschema is not packaged for TW yet
+      result = `jsonschema -i '#{result_path}' '#{schema}' 2>&1 | \
+        grep -v 'DeprecationWarning' | \
+        grep -v 'from jsonschema.cli import main'`
+      expect(result).to eq ""
     end
   end
 end

@@ -63,7 +63,7 @@ module Agama
         FileUtils.mkdir_p(path)
         import_yast
         profile = read_profile
-        File.write(path.join("autoinst.json"), export_profile(profile).to_json)
+        File.write(path.join("autoinst.json"), JSON.pretty_generate(export_profile(profile)))
       end
 
     private

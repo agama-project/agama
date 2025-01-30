@@ -32,8 +32,8 @@ RSpec.shared_examples "a script reader" do |ay_section, section|
 
   context "when the script definition includes the sources" do
     let(:script) do
-      { "file_name" => "script.sh",
-        "location"  => "https://example.com/script.sh" }
+      { "filename" => "script.sh",
+        "location" => "https://example.com/script.sh" }
     end
 
     it "sets the \"url\" to the \"location\"" do
@@ -45,8 +45,8 @@ RSpec.shared_examples "a script reader" do |ay_section, section|
   context "when the script definition specifies a location" do
     let(:script) do
       {
-        "file_name" => "script.sh",
-        "source"    => "#!/bin/bash\necho 'Hello World!'"
+        "filename" => "script.sh",
+        "source"   => "#!/bin/bash\necho 'Hello World!'"
       }
     end
 
@@ -77,9 +77,9 @@ describe Agama::AutoYaST::ScriptsReader do
       it_behaves_like "a script reader", "chroot-scripts", "post"
 
       let(:chroot_script) do
-        { "file_name" => "test.sh",
-          "chrooted"  => true,
-          "source"    => "#!/bin/bash\necho 'Hello World!'" }
+        { "filename" => "test.sh",
+          "chrooted" => true,
+          "source"   => "#!/bin/bash\necho 'Hello World!'" }
       end
 
       let(:profile) do
@@ -92,8 +92,8 @@ describe Agama::AutoYaST::ScriptsReader do
 
       context "when the \"chrooted\" option is not set" do
         let(:chroot_script) do
-          { "file_name" => "test.sh",
-            "source"    => "#!/bin/bash\necho 'Hello World!'" }
+          { "filename" => "test.sh",
+            "source"   => "#!/bin/bash\necho 'Hello World!'" }
         end
 
         it "sets the \"chroot\" option to false" do
