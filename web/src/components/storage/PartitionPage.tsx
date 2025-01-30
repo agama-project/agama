@@ -203,9 +203,47 @@ function mountPointError(mountPoint: string, assignedPoints: string[]): Error | 
   }
 }
 
+function sizeError(min: string, max: string): Error | undefined {
+  if (!min) {
+    return {
+      id: "customSize",
+      isVisible: false,
+    };
+  }
+
+  const regexp = /^[0-9]+(\.[0-9]+)?(\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$/;
+  const validMin = regexp.test(min);
+  const validMax = max ? regexp.test(max) : true;
+
+  if (validMin && validMax) return;
+
+  if (validMin) {
+    return {
+      id: "customSize",
+      message: _("The maximum is invalid"),
+      isVisible: true,
+    };
+  }
+
+  if (validMax) {
+    return {
+      id: "customSize",
+      message: _("The minimum is invalid"),
+      isVisible: true,
+    };
+  }
+
+  return {
+    id: "customSize",
+    message: _("Size limits are invalid"),
+    isVisible: true,
+  };
+}
+
 function useErrors(value: FormValue): ErrorsHandler {
   const assigned = useAssignedMountPaths();
-  const errors = compact([mountPointError(value.mountPoint, assigned)]);
+  const size = (value.sizeOption === "custom") ? sizeError(value.minSize, value.maxSize) : null;
+  const errors = compact([mountPointError(value.mountPoint, assigned), size]);
 
   const getError = (id: string): Error | undefined => errors.find((e) => e.id === id);
 
@@ -554,11 +592,12 @@ function CustomSizeOptions(): React.ReactNode {
 
 type CustomSizeProps = {
   value: SizeRange;
+  error: Error,
   mountPoint: string;
   onChange: (size: SizeRange) => void;
 };
 
-function CustomSize({ value, mountPoint, onChange }: CustomSizeProps) {
+function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
   const initialOption = (): CustomSizeValue => {
     if (value.min === NO_VALUE) return "fixed";
     if (value.min === value.max) return "fixed";
@@ -591,31 +630,41 @@ function CustomSize({ value, mountPoint, onChange }: CustomSizeProps) {
   };
 
   return (
-    <Flex>
-      <FlexItem>
-        <FormGroup fieldId="minSize" label={_("Minimum")}>
-          <TextInput id="minSizeValue" value={value.min} onChange={(_, v) => changeMinSize(v)} />
-        </FormGroup>
-      </FlexItem>
-      <FlexItem>
-        <FormGroup fieldId="maxSize" label={_("Maximum")}>
-          <Select
-            value={option}
-            label={<CustomSizeOptionLabel value={option} />}
-            onChange={changeOption}
-          >
-            <CustomSizeOptions />
-          </Select>
-        </FormGroup>
-      </FlexItem>
-      {option === "range" && (
+    <FormGroup>
+      <Flex>
         <FlexItem>
-          <FormGroup fieldId="maxSizeLimit" label={_("Limit")}>
-            <TextInput id="maxSizeValue" value={value.max} onChange={(_, v) => changeMaxSize(v)} />
+          <FormGroup fieldId="minSize" label={_("Minimum")}>
+            <TextInput id="minSizeValue" value={value.min} onChange={(_, v) => changeMinSize(v)} />
           </FormGroup>
         </FlexItem>
-      )}
-    </Flex>
+        <FlexItem>
+          <FormGroup fieldId="maxSize" label={_("Maximum")}>
+            <Select
+              value={option}
+              label={<CustomSizeOptionLabel value={option} />}
+              onChange={changeOption}
+            >
+              <CustomSizeOptions />
+            </Select>
+          </FormGroup>
+        </FlexItem>
+        {option === "range" && (
+          <FlexItem>
+            <FormGroup fieldId="maxSizeLimit" label={_("Limit")}>
+              <TextInput id="maxSizeValue" value={value.max} onChange={(_, v) => changeMaxSize(v)} />
+            </FormGroup>
+          </FlexItem>
+        )}
+      </Flex>
+      <FormHelperText>
+        <HelperText>
+          <HelperTextItem variant={error ? "error" : "default"}>
+            {!error && _("Size units can be power of 2 (eg. GiB) or 10 (eg. GB)")}
+            {error?.message}
+          </HelperTextItem>
+        </HelperText>
+      </FormHelperText>
+    </FormGroup>
   );
 }
 export default function PartitionPage() {
@@ -634,7 +683,7 @@ export default function PartitionPage() {
 
   const value = { mountPoint, target, filesystem, sizeOption, minSize, maxSize };
   const solvedPartition = useSolvedPartition(value);
-  const { errors, getError } = useErrors(value);
+  const { errors, getError, getVisibleError } = useErrors(value);
 
   const updateFilesystem = React.useCallback(
     (mountPoint: string, target: string) => {
@@ -740,7 +789,8 @@ export default function PartitionPage() {
   };
 
   const isFormValid = errors.length === 0;
-  const mountPointError = getError("mountPoint");
+  const mountPointError = getVisibleError("mountPoint");
+  const customSizeError = getVisibleError("customSize");
 
   console.log(value);
 
@@ -761,7 +811,7 @@ export default function PartitionPage() {
                     options={mountPointOptions(volumes)}
                     createText={_("Add mount point")}
                     onChange={changeMountPoint}
-                    status={mountPointError?.isVisible && MenuToggleStatus.danger}
+                    status={mountPointError && MenuToggleStatus.danger}
                   />
                 </FlexItem>
                 <FlexItem>
@@ -776,8 +826,8 @@ export default function PartitionPage() {
               </Flex>
               <FormHelperText>
                 <HelperText>
-                  <HelperTextItem variant={mountPointError?.isVisible ? "error" : "default"}>
-                    {!mountPointError?.isVisible && _("Select or enter a mount point")}
+                  <HelperTextItem variant={mountPointError ? "error" : "default"}>
+                    {!mountPointError && _("Select or enter a mount point")}
                     {mountPointError?.message}
                   </HelperTextItem>
                 </HelperText>
@@ -788,7 +838,7 @@ export default function PartitionPage() {
                 value={filesystem}
                 label={<FilesystemOptionLabel value={filesystem} target={target} />}
                 onChange={changeFilesystem}
-                isDisabled={mountPointError !== undefined}
+                isDisabled={mountPoint === NO_VALUE}
               >
                 <FilesystemOptions mountPoint={mountPoint} target={target} />
               </Select>
@@ -802,7 +852,7 @@ export default function PartitionPage() {
                       <SizeOptionLabel value={sizeOption} mountPoint={mountPoint} target={target} />
                     }
                     onChange={changeSizeOption}
-                    isDisabled={mountPointError !== undefined}
+                    isDisabled={mountPoint === NO_VALUE}
                   >
                     <SizeOptions mountPoint={mountPoint} target={target} />
                   </Select>
@@ -815,6 +865,7 @@ export default function PartitionPage() {
                 <FlexItem>
                   <CustomSize
                     value={{ min: minSize, max: maxSize }}
+                    error={customSizeError}
                     mountPoint={mountPoint}
                     onChange={changeSize}
                   />
