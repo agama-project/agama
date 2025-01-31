@@ -115,6 +115,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let router = Router::new()
         .route("/config", put(set_config).get(get_config))
         .route("/config_model", put(set_config_model).get(get_config_model))
+        .route("/config_model/solve", get(solve_config_model))
         .route("/probe", post(probe))
         .route("/reprobe", post(reprobe))
         .route("/devices/dirty", get(devices_dirty))
@@ -234,6 +235,37 @@ async fn set_config_model(
         .map_err(Error::Service)?;
     Ok(Json(()))
 }
+
+/// Solves a storage config model.
+#[utoipa::path(
+    get,
+    path = "/config_model/solve",
+    context_path = "/api/storage",
+    params(SolveModelQuery),
+    operation_id = "solve_storage_config_model",
+    responses(
+        (status = 200, description = "Solve the storage config model", body = String),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn solve_config_model(
+    State(state): State<StorageState<'_>>,
+    query: Query<SolveModelQuery>,
+) -> Result<Json<Box<RawValue>>, Error> {
+    let solved_model = state
+        .client
+        .solve_config_model(query.model.as_str())
+        .await
+        .map_err(Error::Service)?;
+    Ok(Json(solved_model))
+}
+
+#[derive(Deserialize, utoipa::IntoParams)]
+struct SolveModelQuery {
+    /// Serialized config model.
+    model: String,
+}
+
 
 /// Probes the storage devices.
 #[utoipa::path(
