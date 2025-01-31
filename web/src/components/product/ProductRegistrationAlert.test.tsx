@@ -30,8 +30,6 @@ import { useIssues } from "~/queries/issues";
 import { PRODUCT, REGISTRATION, ROOT, USER } from "~/routes/paths";
 import { Issue } from "~/types/issues";
 
-jest.mock("~/components/core/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
-
 const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
