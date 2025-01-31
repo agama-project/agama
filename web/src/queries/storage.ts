@@ -20,27 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  useSuspenseQueries,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
 import {
   fetchConfig,
   setConfig,
   fetchActions,
-  fetchDefaultVolume,
+  fetchVolumeTemplates,
   fetchProductParams,
   fetchUsableDevices,
   reprobe,
 } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
-import { config, ProductParams, Volume as APIVolume } from "~/api/storage/types";
-import { Action, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
+import { config, ProductParams } from "~/api/storage/types";
+import { Action, StorageDevice, Volume } from "~/types/storage";
 
 import { QueryHookOptions } from "~/types/queries";
 
@@ -68,36 +62,10 @@ const productParamsQuery = {
   staleTime: Infinity,
 };
 
-const defaultVolumeQuery = (mountPath: string) => ({
-  queryKey: ["storage", "volumeFor", mountPath],
-  queryFn: () => fetchDefaultVolume(mountPath),
+const volumeTemplatesQuery = {
+  queryKey: ["storage", "volumeTemplates"],
+  queryFn: fetchVolumeTemplates,
   staleTime: Infinity,
-});
-
-/**
- * @private
- * Builds a volume from the D-Bus data
- */
-const buildVolume = (
-  rawVolume: APIVolume,
-  devices: StorageDevice[],
-  productMountPoints: string[],
-): Volume => {
-  const outline = {
-    ...rawVolume.outline,
-    // Indicate whether a volume is defined by the product.
-    productDefined: productMountPoints.includes(rawVolume.mountPath),
-  };
-  const volume: Volume = {
-    ...rawVolume,
-    outline,
-    minSize: rawVolume.minSize || 0,
-    transactional: rawVolume.transactional || false,
-    target: rawVolume.target as VolumeTarget,
-    targetDevice: devices.find((d) => d.name === rawVolume.targetDevice),
-  };
-
-  return volume;
 };
 
 /**
@@ -170,21 +138,8 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
  * Hook that returns the volume templates for the current product.
  */
 const useVolumeTemplates = (): Volume[] => {
-  const buildDefaultVolumeQueries = (product: ProductParams) => {
-    const queries = product.mountPoints.map((p) => defaultVolumeQuery(p));
-    queries.push(defaultVolumeQuery(""));
-    return queries;
-  };
-
-  const systemDevices = useDevices("system", { suspense: true });
-  const product = useProductParams();
-  const results = useSuspenseQueries({
-    queries: product ? buildDefaultVolumeQueries(product) : [],
-  }) as Array<{ data: APIVolume }>;
-
-  if (results.length === 0) return [];
-
-  return results.map(({ data }) => buildVolume(data, systemDevices, product.mountPoints));
+  const { data } = useSuspenseQuery(volumeTemplatesQuery);
+  return data;
 };
 
 /**
