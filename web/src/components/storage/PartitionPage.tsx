@@ -215,7 +215,15 @@ function sizeError(min: string, max: string): Error | undefined {
   const validMin = regexp.test(min);
   const validMax = max ? regexp.test(max) : true;
 
-  if (validMin && validMax) return;
+  if (validMin && validMax) {
+    if (!max || parseToBytes(min) <= parseToBytes(max)) return;
+
+    return {
+      id: "customSize",
+      message: _("The minimum cannot be greater than the maximum"),
+      isVisible: true,
+    };
+  }
 
   if (validMin) {
     return {
