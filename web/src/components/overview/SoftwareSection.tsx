@@ -22,7 +22,6 @@
 
 import React from "react";
 import { Content, List, ListItem } from "@patternfly/react-core";
-import { Em } from "~/components/core";
 import { SelectedBy } from "~/types/software";
 import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
 import { isObjectEmpty } from "~/utils";
@@ -39,7 +38,7 @@ export default function SoftwareSection(): React.ReactNode {
   const TextWithoutList = () => {
     return (
       <>
-        {_("The installation will take")} <Em>{proposal.size}</Em>
+        {_("The installation will take")} <b>{proposal.size}</b>
       </>
     );
   };
@@ -53,7 +52,7 @@ export default function SoftwareSection(): React.ReactNode {
       <>
         <Content>
           {msg1}
-          <Em>{proposal.size}</Em>
+          <b>{proposal.size}</b>
           {msg2}
         </Content>
         <List>

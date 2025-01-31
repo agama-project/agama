@@ -215,12 +215,11 @@ describe("Page", () => {
       expect(section).not.toHaveAttribute("aria-labelledby");
     });
 
-    it("renders given content props (title, value, description, actions, and children (content)", () => {
+    it("renders given content props (title, description, actions, and children (content)", () => {
       plainRender(
         <Page.Section
           title="A section"
-          value="Enabled"
-          description="Testing section with title, value, description, content, and actions"
+          description="Testing section with title, description, content, and actions"
           actions={<Page.Action>Disable</Page.Action>}
         >
           The Content
@@ -228,10 +227,7 @@ describe("Page", () => {
       );
       const section = screen.getByRole("region");
       within(section).getByText("A section");
-      within(section).getByText("Enabled");
-      within(section).getByText(
-        "Testing section with title, value, description, content, and actions",
-      );
+      within(section).getByText("Testing section with title, description, content, and actions");
       within(section).getByText("The Content");
       within(section).getByRole("button", { name: "Disable" });
     });

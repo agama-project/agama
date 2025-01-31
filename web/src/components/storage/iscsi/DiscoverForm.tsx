@@ -22,7 +22,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, Form, FormGroup, TextInput } from "@patternfly/react-core";
-
 import { FormValidationError, Popup } from "~/components/core";
 import { AuthFields } from "~/components/storage/iscsi";
 import { useLocalStorage } from "~/utils";

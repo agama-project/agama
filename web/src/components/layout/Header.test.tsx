@@ -52,6 +52,7 @@ jest.mock("~/queries/software", () => ({
     products: [tumbleweed, microos],
     selectedProduct: tumbleweed,
   }),
+  useRegistration: () => undefined,
 }));
 
 jest.mock("~/queries/status", () => ({
@@ -96,6 +97,7 @@ describe("Header", () => {
     const toggler = screen.getByRole("button", { name: "Options toggle" });
     await user.click(toggler);
     const menu = screen.getByRole("menu");
+    within(menu).getByRole("menuitem", { name: "Change product" });
     within(menu).getByRole("menuitem", { name: "Download logs" });
     within(menu).getByRole("menuitem", { name: "Installer Options" });
   });

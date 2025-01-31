@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import { Button, Stack, Truncate } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { Em, Page, RowActions } from "~/components/core";
+import { Page, RowActions } from "~/components/core";
 import { RootPasswordPopup, RootSSHKeyPopup } from "~/components/users";
 
 import { _ } from "~/i18n";
@@ -45,11 +45,7 @@ const NoMethodDefined = () => (
 const SSHKeyLabel = ({ sshKey }) => {
   const trailingChars = Math.min(sshKey.length - sshKey.lastIndexOf(" "), 30);
 
-  return (
-    <Em>
-      <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />
-    </Em>
-  );
+  return <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />;
 };
 
 const Content = ({
