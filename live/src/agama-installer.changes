@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 31 11:37:57 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- added fonts to avoid xterm crash when trying to open xterm's
+  popup menu (Ctrl + click) 
+
+-------------------------------------------------------------------
 Wed Jan 22 09:46:50 UTC 2025 - Michal Filka <mfilka@suse.com>
 
 - bsc#1235478
