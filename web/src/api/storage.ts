@@ -45,6 +45,11 @@ const setConfig = (config: config.Config) => put("/api/storage/config", { storag
 
 const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
 
+const solveConfigModel = (model: configModel.Config): Promise<configModel.Config> => {
+  const serializedModel = encodeURIComponent(JSON.stringify(model));
+  return get(`/api/storage/config_model/solve?model=${serializedModel}`);
+};
+
 const fetchUsableDevices = (): Promise<number[]> => get(`/api/storage/proposal/usable_devices`);
 
 const fetchProductParams = (): Promise<ProductParams> => get("/api/storage/product/params");
@@ -101,6 +106,7 @@ export {
   fetchConfigModel,
   setConfig,
   setConfigModel,
+  solveConfigModel,
   fetchUsableDevices,
   fetchProductParams,
   fetchDefaultVolume,

@@ -72,6 +72,10 @@ export default function SelectTypeaheadCreatable({
   const CREATE_NEW = "create";
 
   React.useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
+  React.useEffect(() => {
     let newSelectOptions: SelectOptionProps[] = options;
 
     // Filter menu items based on the text input value when one exists.
