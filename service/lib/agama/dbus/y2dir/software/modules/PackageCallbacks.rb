@@ -34,11 +34,19 @@ module Yast
     def InitPackageCallbacks(logger = nil)
       @logger = logger || ::Logger.new($stdout)
 
+      Agama::Software::Callbacks::Media.new(
+        questions_client, logger
+      ).setup
+
+      Agama::Software::Callbacks::Provide.new(
+        questions_client, logger
+      ).setup
+
       Agama::Software::Callbacks::Signature.new(
         questions_client, logger
       ).setup
 
-      Agama::Software::Callbacks::Media.new(
+      Agama::Software::Callbacks::Source.new(
         questions_client, logger
       ).setup
     end
@@ -59,4 +67,3 @@ module Yast
   PackageCallbacks = PackageCallbacksClass.new
   PackageCallbacks.main
 end
-
