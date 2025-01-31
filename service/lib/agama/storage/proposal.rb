@@ -22,6 +22,7 @@
 require "agama/issue"
 require "agama/storage/actions_generator"
 require "agama/storage/config_conversions"
+require "agama/storage/config_solver"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
 require "json"
@@ -96,6 +97,24 @@ module Agama
       def model_json
         config = config(solved: true)
         return unless config
+
+        ConfigConversions::ToModel.new(config).convert
+      end
+
+      # Solves a given model.
+      #
+      # @param model_json [Hash] Config model according to the JSON schema.
+      # @param [Hash, nil] Solved config model or nil if the model cannot be solved yet.
+      def solve_model(model_json)
+        return unless storage_manager.probed?
+
+        config = ConfigConversions::FromModel
+          .new(model_json, product_config: product_config)
+          .convert
+
+        ConfigSolver
+          .new(product_config, storage_manager.probed, disk_analyzer: disk_analyzer)
+          .solve(config)
 
         ConfigConversions::ToModel.new(config).convert
       end

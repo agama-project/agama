@@ -376,6 +376,7 @@ describe Agama::Storage::Proposal do
                   {
                     mountPath:      "/",
                     filesystem:     {
+                      reuse:   false,
                       default: true,
                       type:    "ext4"
                     },

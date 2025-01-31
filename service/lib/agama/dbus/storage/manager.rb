@@ -147,6 +147,18 @@ module Agama
           JSON.pretty_generate(json)
         end
 
+        # Solves the given serialized config model.
+        #
+        # @param serialized_model [String] Serialized storage config model.
+        # @return [String] Serialized solved model.
+        def solve_model(serialized_model)
+          logger.info("Solving storage config model from D-Bus: #{serialized_model}")
+
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          solved_model_json = proposal.solve_model(model_json)
+          JSON.pretty_generate(solved_model_json)
+        end
+
         def install
           busy_while { backend.install }
         end
@@ -173,6 +185,9 @@ module Agama
             busy_while { apply_config_model(serialized_model) }
           end
           dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
+          dbus_method(:SolveConfigModel, "in sparse_model:s, out solved_model:s") do |sparse_model|
+            solve_model(sparse_model)
+          end
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_reader(:deprecated_system, "b")

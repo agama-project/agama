@@ -21,7 +21,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchConfigModel, setConfigModel } from "~/api/storage";
+import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
 import { configModel } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
 import { SpacePolicyAction } from "~/types/storage";
@@ -47,7 +47,7 @@ function isReusedPartition(partition: configModel.Partition): boolean {
 }
 
 function findDrive(model: configModel.Config, driveName: string): configModel.Drive | undefined {
-  const drives = model.drives || [];
+  const drives = model?.drives || [];
   return drives.find((d) => d.name === driveName);
 }
 
@@ -128,6 +128,19 @@ function deletePartition(
 
   const partitions = (drive.partitions || []).filter((p) => p.mountPath !== mountPath);
   drive.partitions = partitions;
+  return model;
+}
+
+export function addPartition(
+  originalModel: configModel.Config,
+  driveName: string,
+  partition: configModel.Partition,
+): configModel.Config {
+  const model = copyModel(originalModel);
+  const drive = findDrive(model, driveName);
+  if (drive === undefined) return;
+
+  drive.partitions.push(partition);
   return model;
 }
 
@@ -256,6 +269,20 @@ export function useConfigModelMutation() {
   return useMutation(query);
 }
 
+/**
+ * @todo Use a hash key from the model object as id for the query.
+ * Hook that returns the config model.
+ */
+export function useSolvedConfigModel(model?: configModel.Config): configModel.Config | null {
+  const query = useSuspenseQuery({
+    queryKey: ["storage", "solvedConfigModel", JSON.stringify(model)],
+    queryFn: () => (model ? solveConfigModel(model) : Promise.resolve(null)),
+    staleTime: Infinity,
+  });
+
+  return query.data;
+}
+
 export type BootHook = {
   configure: boolean;
   isDefault: boolean;
@@ -302,6 +329,8 @@ export type DriveHook = {
   isBoot: boolean;
   isExplicitBoot: boolean;
   switch: (newName: string) => void;
+  // solveWithPartition: (partition: configModel.Partition) => configModel.Config;
+  addPartition: (partition: configModel.Partition) => void;
   setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
   delete: () => void;
 };
@@ -316,9 +345,10 @@ export function useDrive(name: string): DriveHook | undefined {
     isBoot: isBoot(model, name),
     isExplicitBoot: isExplicitBoot(model, name),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
-    setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => {
-      mutate(setSpacePolicy(model, name, policy, actions));
-    },
     delete: () => mutate(removeDrive(model, name)),
+    addPartition: (partition: configModel.Partition) =>
+      mutate(addPartition(model, name, partition)),
+    setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) =>
+      mutate(setSpacePolicy(model, name, policy, actions)),
   };
 }

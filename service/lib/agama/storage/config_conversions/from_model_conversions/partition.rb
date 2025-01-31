@@ -55,8 +55,8 @@ module Agama
               filesystem:       convert_filesystem,
               size:             convert_size,
               id:               convert_id,
-              delete:           partition_model[:delete],
-              delete_if_needed: partition_model[:deleteIfNeeded]
+              delete:           convert_delete,
+              delete_if_needed: convert_delete_if_needed
             }
           end
 
@@ -66,6 +66,24 @@ module Agama
             return unless value
 
             Y2Storage::PartitionId.find(value)
+          end
+
+          # TODO: do not delete if the partition is used by other device (VG, RAID, etc).
+          # @return [Boolean]
+          def convert_delete
+            # Do not mark to delete if the partition is used.
+            return false if partition_model[:mountPath]
+
+            partition_model[:delete]
+          end
+
+          # TODO: do not delete if the partition is used by other device (VG, RAID, etc).
+          # @return [Boolean]
+          def convert_delete_if_needed
+            # Do not mark to delete if the partition is used.
+            return false if partition_model[:mountPath]
+
+            partition_model[:deleteIfNeeded]
           end
         end
       end
