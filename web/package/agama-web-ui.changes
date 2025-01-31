@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 31 09:03:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Always perform mutations (PATH/POST/PUT/DELETE) when connecting
+  to "localhost", no matter whether the network is connected or not
+  (gh#agama-project/agama#1963).
+
+-------------------------------------------------------------------
 Fri Jan 24 09:34:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the "finish" to decide whether to navigate to the
