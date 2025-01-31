@@ -441,6 +441,28 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
   );
 }
 
+type FilesystemSelectProps = {
+  value: string;
+  mountPoint: string;
+  target: string;
+  onChange: (v: string) => void;
+};
+
+function FilesystemSelect({ value, mountPoint, target, onChange }: FilesystemSelectProps): React.ReactNode {
+  const usedValue = mountPoint === NO_VALUE ? NO_VALUE : value;
+
+  return (
+    <Select
+      value={usedValue}
+      label={<FilesystemOptionLabel value={usedValue} target={target} />}
+      onChange={onChange}
+      isDisabled={mountPoint === NO_VALUE}
+    >
+      <FilesystemOptions mountPoint={mountPoint} target={target} />
+    </Select>
+  );
+}
+
 type SizeOptionLabelProps = {
   value: SizeOptionValue;
   mountPoint: string;
@@ -449,9 +471,8 @@ type SizeOptionLabelProps = {
 
 function SizeOptionLabel({ value, mountPoint, target }: SizeOptionLabelProps): React.ReactNode {
   const partition = usePartition(target);
-  if (value === NO_VALUE && mountPoint !== NO_VALUE && target !== NEW_PARTITION)
-    return deviceSize(partition.size);
-  if (value === NO_VALUE) return _("Waiting for a mount point");
+  if (mountPoint === NO_VALUE) return _("Waiting for a mount point");
+  if (value === NO_VALUE && target !== NEW_PARTITION) return deviceSize(partition.size);
   if (value === "auto") return _("Auto-calculated");
   if (value === "custom") return _("Custom");
 
@@ -791,8 +812,7 @@ export default function PartitionPage() {
   const isFormValid = errors.length === 0;
   const mountPointError = getVisibleError("mountPoint");
   const customSizeError = getVisibleError("customSize");
-
-  console.log(value);
+  const usedMountPt = mountPointError ? NO_VALUE : mountPoint;
 
   return (
     <Page id="partitionPage">
@@ -834,14 +854,12 @@ export default function PartitionPage() {
               </FormHelperText>
             </FormGroup>
             <FormGroup fieldId="fileSystem" label={_("File system")}>
-              <Select
+              <FilesystemSelect
                 value={filesystem}
-                label={<FilesystemOptionLabel value={filesystem} target={target} />}
-                onChange={changeFilesystem}
-                isDisabled={mountPoint === NO_VALUE}
-              >
-                <FilesystemOptions mountPoint={mountPoint} target={target} />
-              </Select>
+                mountPoint={usedMountPt}
+                target={target}
+                onChange={(v: string) => setFilesystem(v)}
+              />
             </FormGroup>
             <Flex>
               <FlexItem>
@@ -849,12 +867,16 @@ export default function PartitionPage() {
                   <Select
                     value={sizeOption}
                     label={
-                      <SizeOptionLabel value={sizeOption} mountPoint={mountPoint} target={target} />
+                      <SizeOptionLabel
+                        value={sizeOption}
+                        mountPoint={usedMountPt}
+                        target={target}
+                      />
                     }
                     onChange={changeSizeOption}
-                    isDisabled={mountPoint === NO_VALUE}
+                    isDisabled={usedMountPt === NO_VALUE}
                   >
-                    <SizeOptions mountPoint={mountPoint} target={target} />
+                    <SizeOptions mountPoint={usedMountPt} target={target} />
                   </Select>
                   {target === NEW_PARTITION && sizeOption === "auto" && (
                     <AutoSize mountPoint={mountPoint} partition={solvedPartition} />
