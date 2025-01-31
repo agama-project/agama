@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,16 +21,23 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import { IssuesHint } from "~/components/core";
+import { Alert, List, ListItem } from "@patternfly/react-core";
+import { _ } from "~/i18n";
+import { Issue } from "~/types/issues";
 
-it("renders a list of issues", () => {
-  const issue = {
-    description: "You need to create a user",
-    source: "config",
-    severity: "error",
-  };
-  plainRender(<IssuesHint issues={[issue]} />);
-  expect(screen.getByText(issue.description)).toBeInTheDocument();
-});
+export default function IssuesAlert({ issues }) {
+  if (issues === undefined || issues.length === 0) return;
+
+  return (
+    <Alert
+      variant="warning"
+      title={_("Before starting the installation, you need to address the following problems:")}
+    >
+      <List>
+        {issues.map((i: Issue, idx: number) => (
+          <ListItem key={idx}>{i.description}</ListItem>
+        ))}
+      </List>
+    </Alert>
+  );
+}

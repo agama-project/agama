@@ -27,7 +27,7 @@ export { default as EmailInput } from "./EmailInput";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
-export { default as IssuesHint } from "./IssuesHint";
+export { default as IssuesAlert } from "./IssuesAlert";
 export { default as ListSearch } from "./ListSearch";
 export { default as LoginPage } from "./LoginPage";
 export { default as RowActions } from "./RowActions";
