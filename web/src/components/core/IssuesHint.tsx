@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Hint, HintBody, List, ListItem, Stack } from "@patternfly/react-core";
+import { Alert, List, ListItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Issue } from "~/types/issues";
 
@@ -29,19 +29,15 @@ export default function IssuesHint({ issues }) {
   if (issues === undefined || issues.length === 0) return;
 
   return (
-    <Hint>
-      <HintBody>
-        <Stack hasGutter>
-          <p>
-            {_("Before starting the installation, you need to address the following problems:")}
-          </p>
-          <List>
-            {issues.map((i: Issue, idx: number) => (
-              <ListItem key={idx}>{i.description}</ListItem>
-            ))}
-          </List>
-        </Stack>
-      </HintBody>
-    </Hint>
+    <Alert
+      variant="warning"
+      title={_("Before starting the installation, you need to address the following problems:")}
+    >
+      <List>
+        {issues.map((i: Issue, idx: number) => (
+          <ListItem key={idx}>{i.description}</ListItem>
+        ))}
+      </List>
+    </Alert>
   );
 }

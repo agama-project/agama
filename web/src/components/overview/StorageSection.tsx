@@ -36,37 +36,27 @@ const NoDeviceSummary = () => _("No device selected yet");
 const SingleDiskSummary = ({ drive }: { drive: ConfigModel.Drive }) => {
   const devices = useDevices("system", { suspense: true });
   const device = findDriveDevice(drive, devices);
-  const label = device ? deviceLabel(device) : drive.name;
-  let text: string;
+  const options = {
+    // TRANSLATORS: %s will be replaced by the device name and its size,
+    // example: "/dev/sda, 20 GiB"
+    resize: _("Install using device %s shrinking existing partitions as needed."),
+    // TRANSLATORS: %s will be replaced by the device name and its size,
+    // example: "/dev/sda, 20 GiB"
+    keep: _("Install using device %s without modifying existing partitions."),
+    // TRANSLATORS: %s will be replaced by the device name and its size,
+    // example: "/dev/sda, 20 GiB"
+    delete: _("Install using device %s and deleting all its content."),
+    // TRANSLATORS: %s will be replaced by the device name and its size,
+    // example: "/dev/sda, 20 GiB"
+    custom: _("Install using device %s with a custom strategy to find the needed space."),
+  };
 
-  switch (drive.spacePolicy) {
-    case "resize":
-      // TRANSLATORS: %s will be replaced by the device name and its size,
-      // example: "/dev/sda, 20 GiB"
-      text = _("Install using device %s shrinking existing partitions as needed.");
-      break;
-    case "keep":
-      // TRANSLATORS: %s will be replaced by the device name and its size,
-      // example: "/dev/sda, 20 GiB"
-      text = _("Install using device %s without modifying existing partitions.");
-      break;
-    case "delete":
-      // TRANSLATORS: %s will be replaced by the device name and its size,
-      // example: "/dev/sda, 20 GiB"
-      text = _("Install using device %s and deleting all its content.");
-      break;
-    default:
-      // TRANSLATORS: %s will be replaced by the device name and its size,
-      // example: "/dev/sda, 20 GiB"
-      text = _("Install using device %s with a custom strategy to find the needed space.");
-  }
-
-  const [textStart, textEnd] = text.split("%s");
+  const [textStart, textEnd] = options[drive.spacePolicy].split("%s");
 
   return (
     <>
       <span>{textStart}</span>
-      <b>{label}</b>
+      <b>{device ? deviceLabel(device) : drive.name}</b>
       <span>{textEnd}</span>
     </>
   );
