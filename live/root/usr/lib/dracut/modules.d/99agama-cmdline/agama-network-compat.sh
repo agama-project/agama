@@ -16,23 +16,18 @@ ifcfg_to_ip() {
     v=${v#*,}
   done
 
-  if [[ $# -eq 0 ]]; then
-    echo "IFCFG 0 options given, must be wrong"
-    return 1
-  fi
-
   ### See https://en.opensuse.org/SDB:Linuxrc#Network_Config
   # ifcfg=<interface_spec>=[try,]dhcp*,[rfc2132,]OPTION1=value1,OPTION2=value2...
   if str_starts "$1" "dhcp"; then
     autoconf="$1"
     if [ "$autoconf" = "dhcp4" ]; then
-      echo "AUTOCONF"
       autoconf="dhcp"
     fi
     case $autoconf in
     "dhcp" | "dhcp6")
       if [ "$interface" = "*" ]; then
-        echo "ip=${1}" >>"/etc/cmdline.d/40-agama-network.conf"
+        echo "ip=${1}" >>$conf_path
+
       else
         echo "ip=${interface}:${1}" >>$conf_path
       fi
