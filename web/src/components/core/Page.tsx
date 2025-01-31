@@ -31,6 +31,7 @@ import {
   CardHeader,
   CardHeaderProps,
   CardProps,
+  Divider,
   PageGroup,
   PageGroupProps,
   PageSection,
@@ -63,6 +64,8 @@ type SectionProps = {
   description?: React.ReactNode;
   /** The heading level used for the section title */
   headingLevel?: TitleProps["headingLevel"];
+  /** Whether the section should have a divider between header and body */
+  hasHeaderDivider?: boolean;
   /** Props to influence PF/Card component wrapping the section */
   pfCardProps?: CardProps;
   /** Props to influence PF/CardHeader component wrapping the section title */
@@ -124,6 +127,7 @@ const Section = ({
   description,
   actions,
   headingLevel = "h3",
+  hasHeaderDivider = false,
   pfCardProps,
   pfCardHeaderProps,
   pfCardBodyProps,
@@ -155,6 +159,7 @@ const Section = ({
           {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
         </CardHeader>
       )}
+      {hasHeaderDivider && <Divider />}
       <CardBody {...pfCardBodyProps}>{children}</CardBody>
       {actions && (
         <CardFooter>
