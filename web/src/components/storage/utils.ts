@@ -173,7 +173,8 @@ const deviceSize = (size: number): string => {
 const parseToBytes = (size: string | number): number => {
   if (!size || size === undefined || size === "") return 0;
 
-  const value = xbytes.parseSize(size.toString(), { iec: true }) || parseInt(size.toString());
+  const value = xbytes.parseSize(size.toString().toUpperCase(), { iec: true })
+    || parseInt(size.toString());
 
   // Avoid decimals resulting from the conversion. D-Bus iface only accepts integer
   return Math.trunc(value);

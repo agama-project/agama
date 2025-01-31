@@ -241,6 +241,16 @@ describe("parseToBytes", () => {
   it("does not include decimal part of resulting conversion", () => {
     expect(parseToBytes("1024.32 KiB")).toEqual(1048903); // Not 1048903.68
   });
+
+  it("always considers a downcase 'b' as bytes (like Y2Storage)", () => {
+    expect(parseToBytes("1 KiB")).toEqual(1024);
+    expect(parseToBytes("1 Kib")).toEqual(1024);
+    expect(parseToBytes("1 kib")).toEqual(1024);
+    expect(parseToBytes("1 kIb")).toEqual(1024);
+    expect(parseToBytes("1 KIb")).toEqual(1024);
+    expect(parseToBytes("1 KIB")).toEqual(1024);
+  });
+
 });
 
 describe("splitSize", () => {
