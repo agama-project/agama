@@ -93,7 +93,7 @@ function useVolume(mountPoint: string): Volume {
 }
 
 function findPartition(device: StorageDevice, target: string): StorageDevice | null {
-  if (target === "new") return null;
+  if (target === NEW_PARTITION) return null;
 
   const partitions = device.partitionTable?.partitions || [];
   return partitions.find((p) => p.name === target);
@@ -459,7 +459,7 @@ function isFileystemType(_value: string): _value is configModel.FilesystemType {
 
 function partitionConfig(value: FormValue): configModel.Partition {
   const name = (): string | undefined => {
-    if (value.target === NO_VALUE || value.target === "new") return undefined;
+    if (value.target === NO_VALUE || value.target === NEW_PARTITION) return undefined;
 
     return value.target;
   };
@@ -552,6 +552,7 @@ export default function PartitionPage() {
   const [sizeOption, setSizeOption] = React.useState<SizeOptionValue>(NO_VALUE);
   const [minSize, setMinSize] = React.useState<string>(NO_VALUE);
   const [maxSize, setMaxSize] = React.useState<string>(NO_VALUE);
+
   const navigate = useNavigate();
   const device = useDevice();
   const volumes = useVolumeTemplates();
@@ -560,68 +561,82 @@ export default function PartitionPage() {
   const value = { mountPoint, target, filesystem, sizeOption, minSize, maxSize };
   const { errors, getVisibleError } = useErrors(value);
 
-  const updateFilesystem = (mountPoint: string, target: string) => {
-    const volume = findVolume(volumes, mountPoint);
-    const partition = findPartition(device, target);
-    const volumeFilesystem = defaultFilesystem(volume);
-    const suitableFilesystems = volume?.outline?.fsTypes;
-    const partitionFilesystem = partition?.filesystem?.type;
-
-    // Reset filesystem if there is no mount point yet.
-    if (mountPoint === NO_VALUE) setFilesystem(NO_VALUE);
-    // Select default filesystem for the mount point.
-    if (mountPoint !== NO_VALUE && target === NEW_PARTITION) setFilesystem(volumeFilesystem);
-    // Select default filesystem for the mount point if the partition has no filesystem.
-    if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && !partitionFilesystem)
-      setFilesystem(volumeFilesystem);
-    // Reuse the filesystem from the partition if possble.
-    if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && partitionFilesystem) {
-      const filesystems = suitableFilesystems || [];
-      const reuse = filesystems.includes(partitionFilesystem);
-      setFilesystem(reuse ? REUSE_FILESYSTEM : volumeFilesystem);
-    }
-  };
-
-  const updateSizes = (sizeOption: SizeOptionValue) => {
-    if (sizeOption === NO_VALUE || sizeOption === "auto") {
-      setMinSize(NO_VALUE);
-      setMaxSize(NO_VALUE);
-    } else {
+  const updateFilesystem = React.useCallback(
+    (mountPoint: string, target: string) => {
       const volume = findVolume(volumes, mountPoint);
-      const minSize = deviceSize(volume.minSize);
-      const maxSize = volume.maxSize ? deviceSize(volume.maxSize) : NO_VALUE;
-      setMinSize(minSize);
-      setMaxSize(maxSize);
-    }
-  };
+      const partition = findPartition(device, target);
+      const volumeFilesystem = volume ? defaultFilesystem(volume) : NO_VALUE;
+      const suitableFilesystems = volume?.outline?.fsTypes;
+      const partitionFilesystem = partition?.filesystem?.type;
 
-  const updateSizeOption = (mountPoint: string, target: string) => {
-    if (mountPoint === NO_VALUE || target !== NEW_PARTITION) {
-      setSizeOption(NO_VALUE);
-      updateSizes(NO_VALUE);
-    } else {
-      setSizeOption("auto");
-      updateSizes("auto");
-    }
-  };
+      // Reset filesystem if there is no mount point yet.
+      if (mountPoint === NO_VALUE) setFilesystem(NO_VALUE);
+      // Select default filesystem for the mount point.
+      if (mountPoint !== NO_VALUE && target === NEW_PARTITION) setFilesystem(volumeFilesystem);
+      // Select default filesystem for the mount point if the partition has no filesystem.
+      if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && !partitionFilesystem)
+        setFilesystem(volumeFilesystem);
+      // Reuse the filesystem from the partition if possble.
+      if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && partitionFilesystem) {
+        const filesystems = suitableFilesystems || [];
+        const reuse = filesystems.includes(partitionFilesystem);
+        setFilesystem(reuse ? REUSE_FILESYSTEM : volumeFilesystem);
+      }
+    },
+    [volumes, device, setFilesystem],
+  );
+
+  const updateSizes = React.useCallback(
+    (sizeOption: SizeOptionValue) => {
+      if (sizeOption === NO_VALUE || sizeOption === "auto") {
+        setMinSize(NO_VALUE);
+        setMaxSize(NO_VALUE);
+      } else {
+        /** @todo recover initial values from props if possible (editing case) */
+        const volume = findVolume(volumes, mountPoint);
+        const minSize = volume ? deviceSize(volume.minSize) : NO_VALUE;
+        const maxSize = volume?.maxSize ? deviceSize(volume.maxSize) : NO_VALUE;
+        setMinSize(minSize);
+        setMaxSize(maxSize);
+      }
+    },
+    [volumes, mountPoint, setMinSize, setMaxSize],
+  );
+
+  const updateSizeOption = React.useCallback(
+    (mountPoint: string, target: string) => {
+      if (mountPoint === NO_VALUE || target !== NEW_PARTITION) {
+        setSizeOption(NO_VALUE);
+        updateSizes(NO_VALUE);
+      } else {
+        setSizeOption("auto");
+        updateSizes("auto");
+      }
+    },
+    [setSizeOption, updateSizes],
+  );
+
+  React.useEffect(() => {
+    updateFilesystem(mountPoint, target);
+    updateSizeOption(mountPoint, target);
+  }, [mountPoint, target, updateFilesystem, updateSizeOption]);
+
+  React.useEffect(() => {
+    updateSizes(sizeOption);
+  }, [sizeOption, updateSizes]);
 
   const changeMountPoint = (value: string) => {
-    if (value !== mountPoint) {
-      setMountPoint(value);
-      updateFilesystem(value, target);
-      updateSizeOption(value, target);
-    }
+    if (value !== mountPoint) setMountPoint(value);
   };
 
-  const changeTarget = (value: string) => {
-    setTarget(value);
-    updateFilesystem(mountPoint, value);
-    updateSizeOption(mountPoint, value);
-  };
-
+  /**
+   * @fixme CustomSize component initializes its state based on the sizes passed as prop in the
+   * first render. It is important to set the correct sizes before changing the size option to
+   * custom.
+   */
   const changeSizeOption = (value: SizeOptionValue) => {
-    setSizeOption(value);
     updateSizes(value);
+    setSizeOption(value);
   };
 
   const changeSize = ({ min, max }) => {
@@ -663,7 +678,7 @@ export default function PartitionPage() {
                   <SelectToggle
                     value={target}
                     label={<TargetOptionLabel value={target} />}
-                    onChange={changeTarget}
+                    onChange={(v: string) => setTarget(v)}
                   >
                     <TargetOptions />
                   </SelectToggle>
@@ -701,12 +716,12 @@ export default function PartitionPage() {
                   >
                     <SizeOptions mountPoint={mountPoint} target={target} />
                   </SelectToggle>
-                  {target === "new" && sizeOption === "auto" && (
+                  {target === NEW_PARTITION && sizeOption === "auto" && (
                     <AutoSize mountPoint={mountPoint} />
                   )}
                 </FormGroup>
               </FlexItem>
-              {target === "new" && sizeOption === "custom" && (
+              {target === NEW_PARTITION && sizeOption === "custom" && (
                 <FlexItem>
                   <CustomSize
                     value={{ min: minSize, max: maxSize }}
