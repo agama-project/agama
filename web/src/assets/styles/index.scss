@@ -155,6 +155,10 @@
   --pf-v6-c-page__main-section--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
 }
 
+.pf-v6-c-page__main-group.pf-m-sticky-bottom {
+  --pf-v6-c-page--section--m-sticky-bottom--BoxShadow: var(--pf-t--global--box-shadow--md--top);
+}
+
 // .pf-v6-c-page__sidebar-body .pf-v6-c-nav:first-child {
 //   --pf-v6-c-nav--PaddingBlockStart: 0;
 // }
