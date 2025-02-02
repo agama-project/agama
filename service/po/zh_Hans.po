@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 02:40+0000\n"
+"POT-Creation-Date: 2025-01-30 02:33+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -43,11 +43,11 @@ msgid "Configure the system"
 msgstr "配置系统"
 
 #. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:156
+#: service/lib/agama/manager.rb:157
 msgid "Load software translations"
 msgstr "载入软件翻译"
 
-#: service/lib/agama/manager.rb:157
+#: service/lib/agama/manager.rb:158
 msgid "Load storage translations"
 msgstr "载入存储翻译"
 
@@ -103,7 +103,7 @@ msgstr "正在计算软件提案"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:561
+#: service/lib/agama/software/manager.rb:590
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "无法读取仓库 “ %s”"
@@ -111,14 +111,14 @@ msgstr "无法读取仓库 “ %s”"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:571
+#: service/lib/agama/software/manager.rb:600
 msgid "Product not selected yet"
 msgstr "尚未选择产品"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:580
+#: service/lib/agama/software/manager.rb:609
 msgid "Product must be registered"
 msgstr "产品必须注册"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 02:40+0000\n"
+"POT-Creation-Date: 2025-01-30 02:33+0000\n"
 "PO-Revision-Date: 2024-11-07 21:48+0000\n"
 "Last-Translator: yok4 <y50003377@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -43,11 +43,11 @@ msgid "Configure the system"
 msgstr "Sistemi yapılandırın"
 
 #. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:156
+#: service/lib/agama/manager.rb:157
 msgid "Load software translations"
 msgstr "Yazılım çevirilerini yükle"
 
-#: service/lib/agama/manager.rb:157
+#: service/lib/agama/manager.rb:158
 msgid "Load storage translations"
 msgstr "Depolama alanı çevirilerini yükleyin"
 
@@ -105,7 +105,7 @@ msgstr "Yazılım önerisi hesaplanıyor"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:561
+#: service/lib/agama/software/manager.rb:590
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "\"%s\" deposu okunamadı"
@@ -113,14 +113,14 @@ msgstr "\"%s\" deposu okunamadı"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:571
+#: service/lib/agama/software/manager.rb:600
 msgid "Product not selected yet"
 msgstr "Ürün henüz seçilmedi"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:580
+#: service/lib/agama/software/manager.rb:609
 msgid "Product must be registered"
 msgstr "Ürün kayıtlı olmalı"
 
