@@ -161,10 +161,8 @@ function SoftwarePage(): React.ReactNode {
       </Page.Header>
 
       <Page.Content>
+        <IssuesAlert issues={issues} />
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <IssuesAlert issues={issues} />
-          </GridItem>
           {showReposAlert && (
             <GridItem sm={12}>
               <ReloadSection loading={loading} action={startProbing} />

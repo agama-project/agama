@@ -37,10 +37,8 @@ export default function UsersPage() {
       </Page.Header>
 
       <Page.Content>
+        <IssuesAlert issues={issues} />
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <IssuesAlert issues={issues} />
-          </GridItem>
           <GridItem sm={12} xl={6}>
             <FirstUser />
           </GridItem>
