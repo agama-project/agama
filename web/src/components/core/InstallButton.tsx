@@ -68,11 +68,9 @@ according to the provided installation settings.",
 /**
  * Installation button
  *
- * It will be shown only if there aren't installation issues and the current
- * path is not in the EXCLUDED_FROM list.
- *
- * When clicked, it will ask for a confirmation before triggering the request
- * for starting the installation.
+ * It will always be displayed unless in a side path. If any issues are
+ * detected, a drawer listing them will be shown; otherwise, confirmation will
+ * be requested before initiating the installation process.
  */
 const InstallButton = (
   props: Omit<ButtonProps, "onClick"> & { onClickWithIssues?: () => void },
@@ -99,9 +97,12 @@ const InstallButton = (
   // TRANSLATORS: Text included with the install button when there are issues
   const withIssuesText = _("Not possible with the current setup. Click to know more.");
 
+  const Wrapper = !hasIssues ? React.Fragment : Tooltip;
+  const tooltipProps = { id: tooltipId, content: withIssuesText };
+
   return (
     <>
-      <Tooltip id={tooltipId} content={withIssuesText}>
+      <Wrapper {...(hasIssues && tooltipProps)}>
         <Button
           variant="control"
           className="agm-install-button"
@@ -112,8 +113,7 @@ const InstallButton = (
         >
           <span id={labelId}>{buttonText}</span>
         </Button>
-      </Tooltip>
-
+      </Wrapper>
       {isOpen && <InstallConfirmationPopup onAccept={onAccept} onClose={close} />}
     </>
   );
