@@ -19,6 +19,7 @@
 
 :root {
   --agm-t--color--pine: #0c322c;
+  --agm-t--color--pine--shade--100: #025937;
   --agm-t--color--jungle: #30ba78;
   --agm-t--color--jungle--hover: #c0efde;
   --agm-t--color--fog: #efefef;
@@ -37,8 +38,11 @@
   --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle);
 
   --agm-t--install--button--background: var(--agm-t--color--pine);
+  --agm-t--install--button--background--hover: var(--agm-t--color--pine--shade--100);
   --agm-t--install--button--color: var(--pf-t--color--white);
 
+  --pf-t--global--color--brand--default: var(--agm-t--color--pine);
+  --pf-t--global--color--brand--hover: var(--agm-t--color--pine--shade--100);
   --pf-t--global--font--family--100: "SUSE Text";
   --pf-t--global--font--family--200: "SUSE Display";
   --pf-t--global--font--family--300: "Roboto mono", monospace;
@@ -96,6 +100,10 @@
 
   svg {
     fill: var(--agm-t--install--button--color);
+  }
+
+  &:hover {
+    background: var(--agm-t--install--button--background--hover);
   }
 }
 
