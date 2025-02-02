@@ -142,7 +142,22 @@
 
 .pf-v6-c-masthead {
   --pf-v6-c-masthead__logo--Width: fit-content;
+  --pf-v6-c-masthead--PaddingBlock: var(--pf-t--global--spacer--sm);
 }
+
+.pf-v6-c-page__main-section {
+  --pf-v6-c-page__main-section--PaddingInlineStart: var(--pf-t--global--spacer--md);
+  --pf-v6-c-page__main-section--PaddingInlineEnd: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-page__main-section.pf-m-sticky-top {
+  --pf-v6-c-page__main-section--PaddingBlockStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-page__main-section--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
+}
+
+// .pf-v6-c-page__sidebar-body .pf-v6-c-nav:first-child {
+//   --pf-v6-c-nav--PaddingBlockStart: 0;
+// }
 
 .pf-v6-c-alert {
   --pf-v6-c-alert--m-info__title--Color: var(--agm-t--color--waterhole);
