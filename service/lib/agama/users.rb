@@ -118,6 +118,12 @@ module Agama
       return fatal_issues.map(&:message) unless fatal_issues.empty?
 
       config.attach(user)
+
+      wheel = config.groups.by_name(wheel)
+      wheel ||= Y2Users::Group.new("wheel")
+      wheel.users_name << user_name
+      config.attach(wheel) unless wheel.attached?
+
       config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil
       update_issues
