@@ -29,15 +29,11 @@ import { Navigate } from "react-router-dom";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 
 function InstallationProgress() {
-  const { isBusy, phase } = useInstallerStatus({ suspense: true });
+  const { phase } = useInstallerStatus({ suspense: true });
   useInstallerStatusChanges();
 
   if (phase !== InstallationPhase.Install) {
     return <Navigate to={PATHS.root} replace />;
-  }
-
-  if (!isBusy) {
-    return <Navigate to={PATHS.installationFinished} replace />;
   }
 
   return <ProgressReport title={_("Installing the system, please wait...")} />;

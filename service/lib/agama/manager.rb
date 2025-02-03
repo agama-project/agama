@@ -144,6 +144,7 @@ module Agama
       logger.error "Installation error: #{e.inspect}. Backtrace: #{e.backtrace}"
     ensure
       service_status.idle
+      installation_phase.finish
       finish_progress
     end
     # rubocop:enable Metrics/AbcSize

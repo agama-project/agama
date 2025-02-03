@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -63,6 +63,7 @@ describe("IssuesDrawer", () => {
         [
           {
             description: "Registration Fake Issue",
+            kind: "generic",
             source: 0,
             severity: 0,
             details: "Registration Fake Issue details",
@@ -71,6 +72,7 @@ describe("IssuesDrawer", () => {
         [
           {
             description: "Software Fake Issue",
+            kind: "generic",
             source: 0,
             severity: 0,
             details: "Software Fake Issue details",
@@ -79,12 +81,14 @@ describe("IssuesDrawer", () => {
         [
           {
             description: "Storage Fake Issue 1",
+            kind: "generic",
             source: 0,
             severity: 0,
             details: "Storage Fake Issue 1 details",
           },
           {
             description: "Storage Fake Issue 2",
+            kind: "generic",
             source: 0,
             severity: 0,
             details: "Storage Fake Issue 2 details",
@@ -93,6 +97,7 @@ describe("IssuesDrawer", () => {
         [
           {
             description: "Users Fake Issue",
+            kind: "generic",
             source: 0,
             severity: 0,
             details: "Users Fake Issue details",

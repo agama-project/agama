@@ -55,11 +55,11 @@ function App() {
   const Content = () => {
     if (error) return <ServerError />;
 
-    if (phase === InstallationPhase.Install && isBusy) {
+    if (phase === InstallationPhase.Install) {
       return <Navigate to={ROOT.installationProgress} />;
     }
 
-    if (phase === InstallationPhase.Install && !isBusy) {
+    if (phase === InstallationPhase.Finish) {
       return <Navigate to={ROOT.installationFinished} />;
     }
 

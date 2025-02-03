@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -56,6 +56,7 @@ describe("InstallButton", () => {
         [
           {
             description: "Fake Issue",
+            kind: "generic",
             source: 0,
             severity: 0,
             details: "Fake Issue details",

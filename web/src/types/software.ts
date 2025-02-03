@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -42,7 +42,7 @@ type Product = {
   /** Product icon (e.g., "default.svg") */
   icon?: string;
   /** If product is registrable or not */
-  registration: "no" | "optional" | "mandatory";
+  registration: boolean;
   /** The product license id, if any */
   license?: string;
 };
