@@ -719,6 +719,7 @@ export default function PartitionPage() {
 
   const isFormValid = errors.length === 0;
   const mountPointError = getError("mountPoint");
+  const validMountPoint = mountPointError ? "" : mountPoint;
 
   console.log(value);
 
@@ -777,12 +778,16 @@ export default function PartitionPage() {
                   <Select
                     value={sizeOption}
                     label={
-                      <SizeOptionLabel value={sizeOption} mountPoint={mountPoint} target={target} />
+                      <SizeOptionLabel
+                        value={sizeOption}
+                        mountPoint={validMountPoint}
+                        target={target}
+                      />
                     }
                     onChange={changeSizeOption}
                     isDisabled={mountPointError !== undefined}
                   >
-                    <SizeOptions mountPoint={mountPoint} target={target} />
+                    <SizeOptions mountPoint={validMountPoint} target={target} />
                   </Select>
                   {target === NEW_PARTITION && sizeOption === "auto" && (
                     <AutoSize mountPoint={mountPoint} partition={solvedPartition} />
