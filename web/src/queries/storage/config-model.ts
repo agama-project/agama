@@ -21,7 +21,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchConfigModel, setConfigModel } from "~/api/storage";
+import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
 import { configModel } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
 import { SpacePolicyAction } from "~/types/storage";
@@ -131,7 +131,7 @@ function deletePartition(
   return model;
 }
 
-function addPartition(
+export function addPartition(
   originalModel: configModel.Config,
   driveName: string,
   partition: configModel.Partition,
@@ -267,6 +267,20 @@ export function useConfigModelMutation() {
   };
 
   return useMutation(query);
+}
+
+/**
+ * @todo Use a hash key from the model object as id for the query.
+ * Hook that returns the config model.
+ */
+export function useSolvedConfigModel(model?: configModel.Config): configModel.Config | null {
+  const query = useSuspenseQuery({
+    queryKey: ["storage", "solvedConfigModel", JSON.stringify(model)],
+    queryFn: () => (model ? solveConfigModel(model) : Promise.resolve(null)),
+    staleTime: Infinity,
+  });
+
+  return query.data;
 }
 
 export type BootHook = {
