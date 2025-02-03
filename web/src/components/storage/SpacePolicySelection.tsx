@@ -124,8 +124,8 @@ export default function SpacePolicySelection() {
         </Form>
       </Page.Content>
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="space-policy-form" type="submit" />
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );

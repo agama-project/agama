@@ -68,12 +68,14 @@ describe("InstallButton", () => {
       );
     });
 
-    it("renders additional information to warn users about found problems", () => {
-      const { container } = installerRender(<InstallButton />);
-      screen.getByRole("button", { name: /Install/ });
+    it("renders additional information to warn users about found problems", async () => {
+      const { user, container } = installerRender(<InstallButton />);
+      const button = screen.getByRole("button", { name: /Install/ });
       // An exlamation icon as visual mark
       const icon = container.querySelector("svg");
       expect(icon).toHaveAttribute("data-icon-name", "error_fill");
+      await user.hover(button);
+      screen.getByRole("tooltip", { name: /Not possible with the current setup/ });
     });
 
     it("triggers the onClickWithIssues callback without rendering the confirmation dialog", async () => {
@@ -91,13 +93,16 @@ describe("InstallButton", () => {
       mockIssuesList = new IssuesList([], [], [], []);
     });
 
-    it("renders the button without any additional information", () => {
-      const { container } = installerRender(<InstallButton />);
+    it("renders the button without any additional information", async () => {
+      const { user, container } = installerRender(<InstallButton />);
       const button = screen.getByRole("button", { name: "Install" });
       // Renders nothing else
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
-      expect(within(button).queryByLabelText(/Not possible with the current setup/)).toBeNull();
+      await user.hover(button);
+      expect(
+        screen.queryByRole("tooltip", { name: /Not possible with the current setup/ }),
+      ).toBeNull();
     });
 
     it("renders a confirmation dialog when clicked without triggering the onClickWithIssues callback", async () => {

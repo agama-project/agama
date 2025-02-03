@@ -48,28 +48,6 @@ describe("Icon", () => {
       const icon = container.querySelector("svg");
       expect(icon).toHaveAttribute("data-icon-name", "wifi");
     });
-
-    describe("and a predefined size", () => {
-      it("adds a CSS class for given size", () => {
-        const { container } = plainRender(<Icon name="wifi" size="xxxl" />);
-        const icon = container.querySelector("svg");
-        // Check that width and height are set to default (see .svgrrc for
-        // production, __mocks__/svg.js for testing)
-        expect(icon).toHaveAttribute("width", "28");
-        expect(icon).toHaveAttribute("height", "28");
-        // Check that "size" CSS class was added
-        expect(icon.classList.contains("icon-xxxl")).toBe(true);
-      });
-    });
-
-    describe("and an arbitrary size", () => {
-      it("change the width and height attributes to given value", () => {
-        const { container } = plainRender(<Icon name="wifi" size="1dhv" />);
-        const icon = container.querySelector("svg");
-        expect(icon).toHaveAttribute("width", "1dhv");
-        expect(icon).toHaveAttribute("height", "1dhv");
-      });
-    });
   });
 
   describe("mounted with unknown name", () => {

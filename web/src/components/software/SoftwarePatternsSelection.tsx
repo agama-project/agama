@@ -204,7 +204,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel>{_("Close")}</Page.Cancel>
+        <Page.Cancel variant="secondary">{_("Close")}</Page.Cancel>
       </Page.Actions>
     </Page>
   );

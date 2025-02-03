@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,16 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ChangeProductLink } from "./ChangeProductLink";
+export { default as ChangeProductOption } from "./ChangeProductOption";
 export { default as FormLabel } from "./FormLabel";
 export { default as FormValidationError } from "./FormValidationError";
-export { default as Fieldset } from "./Fieldset";
-export { default as Em } from "./Em";
 export { default as EmailInput } from "./EmailInput";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
-export { default as IssuesHint } from "./IssuesHint";
+export { default as IssuesAlert } from "./IssuesAlert";
 export { default as ListSearch } from "./ListSearch";
 export { default as LoginPage } from "./LoginPage";
 export { default as RowActions } from "./RowActions";

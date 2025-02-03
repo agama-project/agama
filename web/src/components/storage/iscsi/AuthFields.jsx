@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,10 +21,8 @@
  */
 
 import React, { useEffect } from "react";
-import { FormGroup, TextInput } from "@patternfly/react-core";
-
-import { Fieldset, FormValidationError, PasswordInput } from "~/components/core";
-import { Icon } from "~/components/layout";
+import { Alert, FormGroup, Stack, TextInput } from "@patternfly/react-core";
+import { FormValidationError, Page, PasswordInput } from "~/components/core";
 import { _ } from "~/i18n";
 
 export default function AuthFields({ data, onChange, onValidate }) {
@@ -62,76 +60,81 @@ export default function AuthFields({ data, onChange, onValidate }) {
     if (isValidAuth()) return null;
 
     return (
-      <p>
-        <Icon
-          name="info"
-          size="16"
-          style={{ verticalAlign: "text-bottom", marginRight: "0.3em" }}
-        />
-        {_("Only available if authentication by target is provided")}
-      </p>
+      <Alert
+        isPlain
+        component="small"
+        title={_("Only available if authentication by target is provided")}
+      />
     );
   };
 
   return (
     <>
-      <Fieldset legend={_("Authentication by target")}>
-        <FormGroup fieldId="username" label={_("User name")}>
-          <TextInput
-            id="username"
-            name="username"
-            aria-label={_("User name")}
-            value={data.username || ""}
-            label={_("User name")}
-            onChange={onUsernameChange}
-            validated={showUsernameError() ? "error" : "default"}
-          />
-          <FormValidationError message={showUsernameError() ? _("Incorrect user name") : ""} />
-        </FormGroup>
-        <FormGroup fieldId="password" label={_("Password")}>
-          <PasswordInput
-            id="password"
-            name="password"
-            aria-label={_("Password")}
-            value={data.password || ""}
-            onChange={onPasswordChange}
-            validated={showPasswordError() ? "error" : "default"}
-          />
-          <FormValidationError message={showPasswordError() ? _("Incorrect password") : ""} />
-        </FormGroup>
-      </Fieldset>
-      <Fieldset legend={_("Authentication by initiator")}>
-        <ByInitiatorAuthTip />
-        <FormGroup fieldId="reverseUsername" label={_("User name")}>
-          <TextInput
-            id="reverseUsername"
-            name="reverseUsername"
-            aria-label={_("User name")}
-            value={data.reverseUsername || ""}
-            label={_("User name")}
-            isDisabled={!isValidAuth()}
-            onChange={onReverseUsernameChange}
-            validated={showReverseUsernameError() ? "error" : "default"}
-          />
-          <FormValidationError
-            message={showReverseUsernameError() ? _("Incorrect user name") : ""}
-          />
-        </FormGroup>
-        <FormGroup fieldId="reversePassword" label="Password">
-          <PasswordInput
-            id="reversePassword"
-            name="reversePassword"
-            aria-label={_("Target Password")}
-            value={data.reversePassword || ""}
-            isDisabled={!isValidAuth()}
-            onChange={onReversePasswordChange}
-            validated={showReversePasswordError() ? "error" : "default"}
-          />
-          <FormValidationError
-            message={showReverseUsernameError() ? _("Incorrect password") : ""}
-          />
-        </FormGroup>
-      </Fieldset>
+      <Page.Section title={_("Authentication by target")} hasHeaderDivider>
+        <Stack hasGutter>
+          <FormGroup fieldId="username" label={_("User name")}>
+            <TextInput
+              id="username"
+              name="username"
+              aria-label={_("User name")}
+              value={data.username || ""}
+              label={_("User name")}
+              onChange={onUsernameChange}
+              validated={showUsernameError() ? "error" : "default"}
+            />
+            <FormValidationError message={showUsernameError() ? _("Incorrect user name") : ""} />
+          </FormGroup>
+          <FormGroup fieldId="password" label={_("Password")}>
+            <PasswordInput
+              id="password"
+              name="password"
+              aria-label={_("Password")}
+              value={data.password || ""}
+              onChange={onPasswordChange}
+              validated={showPasswordError() ? "error" : "default"}
+            />
+            <FormValidationError message={showPasswordError() ? _("Incorrect password") : ""} />
+          </FormGroup>
+        </Stack>
+      </Page.Section>
+      <Page.Section
+        pfCardProps={{ variant: isValidAuth() ? "default" : "secondary" }}
+        title={_("Authentication by initiator")}
+        hasHeaderDivider
+      >
+        <Stack hasGutter>
+          <ByInitiatorAuthTip />
+          <FormGroup fieldId="reverseUsername" label={_("User name")}>
+            <TextInput
+              id="reverseUsername"
+              name="reverseUsername"
+              aria-label={_("User name")}
+              value={data.reverseUsername || ""}
+              label={_("User name")}
+              isDisabled={!isValidAuth()}
+              onChange={onReverseUsernameChange}
+              validated={showReverseUsernameError() ? "error" : "default"}
+            />
+            <FormValidationError
+              message={showReverseUsernameError() ? _("Incorrect user name") : ""}
+            />
+          </FormGroup>
+          <FormGroup fieldId="reversePassword" label="Password">
+            <PasswordInput
+              id="reversePassword"
+              name="reversePassword"
+              aria-label={_("Target Password")}
+              value={data.reversePassword || ""}
+              isDisabled={!isValidAuth()}
+              onChange={onReversePasswordChange}
+              validated={showReversePasswordError() ? "error" : "default"}
+            />
+            <FormValidationError
+              message={showReverseUsernameError() ? _("Incorrect password") : ""}
+            />
+          </FormGroup>
+        </Stack>
+      </Page.Section>
     </>
   );
 }

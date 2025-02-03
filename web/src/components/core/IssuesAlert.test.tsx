@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,25 +21,16 @@
  */
 
 import React from "react";
-import { Link, LinkProps } from "react-router-dom";
-import { useProduct, useRegistration } from "~/queries/software";
-import { PRODUCT as PATHS } from "~/routes/paths";
-import { _ } from "~/i18n";
-import { isEmpty } from "~/utils";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import { IssuesAlert } from "~/components/core";
 
-/**
- * Link for navigating to the selection product.
- */
-export default function ChangeProductLink({ children, ...props }: Omit<LinkProps, "to">) {
-  const { products } = useProduct();
-  const registration = useRegistration();
-
-  if (products.length <= 1) return null;
-  if (!isEmpty(registration?.key)) return null;
-
-  return (
-    <Link to={PATHS.changeProduct} {...props}>
-      {children || _("Change product")}
-    </Link>
-  );
-}
+it("renders a list of issues", () => {
+  const issue = {
+    description: "You need to create a user",
+    source: "config",
+    severity: "error",
+  };
+  plainRender(<IssuesAlert issues={[issue]} />);
+  expect(screen.getByText(issue.description)).toBeInTheDocument();
+});

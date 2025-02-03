@@ -22,23 +22,23 @@
 
 import React, { useState } from "react";
 import {
+  Content,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   Masthead,
   MastheadContent,
-  MastheadToggle,
-  MastheadMain,
   MastheadLogo,
+  MastheadMain,
+  MastheadToggle,
+  MenuToggle,
+  MenuToggleElement,
   PageToggleButton,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Dropdown,
-  MenuToggleElement,
-  MenuToggle,
-  DropdownList,
-  DropdownItem,
-  Divider,
-  Content,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
@@ -46,7 +46,7 @@ import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { Route } from "~/types/routes";
-import { InstallButton, InstallerOptions } from "~/components/core";
+import { ChangeProductOption, InstallButton, InstallerOptions } from "~/components/core";
 import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
 
@@ -91,6 +91,7 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         )}
       >
         <DropdownList>
+          <ChangeProductOption />
           <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
             {_("Download logs")}
           </DropdownItem>

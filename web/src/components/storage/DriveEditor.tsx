@@ -586,14 +586,14 @@ const PartitionMenuItem = ({ driveName, mountPath }) => {
       actions={
         <>
           <MenuItemAction
-            style={{ paddingInline: "4px", alignSelf: "center" }}
-            icon={<Icon name="edit_square" size="xs" aria-label={"Edit"} />}
+            style={{ alignSelf: "center" }}
+            icon={<Icon name="edit_square" aria-label={"Edit"} />}
             actionId={`edit-${mountPath}`}
             aria-label={`Edit ${mountPath}`}
           />
           <MenuItemAction
-            style={{ paddingInline: "4px", alignSelf: "center" }}
-            icon={<Icon name="delete" size="xs" aria-label={"Delete"} />}
+            style={{ alignSelf: "center" }}
+            icon={<Icon name="delete" aria-label={"Delete"} />}
             actionId={`delete-${mountPath}`}
             aria-label={`Delete ${mountPath}`}
             onClick={deletePartition}

@@ -209,10 +209,10 @@ const NetworkListItem = ({ network }) => {
                   columnGap={{ default: "columnGapSm" }}
                 >
                   <div>
-                    <Icon name="lock" size="10" /> {network.security.join(", ")}
+                    <Icon name="lock" /> {network.security.join(", ")}
                   </div>
                   <div>
-                    <Icon name="signal_cellular_alt" size="10" /> {network.strength}
+                    <Icon name="signal_cellular_alt" /> {network.strength}
                   </div>
                 </Flex>
               </Flex>

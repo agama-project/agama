@@ -40,7 +40,7 @@ const actions: IAction[] = [
   {
     title: "Delete",
     "aria-label": "Dummy delete action",
-    icon: <Icon name="delete" size="s" />,
+    icon: <Icon name="delete" />,
     onClick: mockDeleteFn,
     isDanger: true,
   },

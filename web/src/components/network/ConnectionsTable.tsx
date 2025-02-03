@@ -84,7 +84,7 @@ const ConnectionsTable = ({
               title: _("Forget"),
               // TRANSLATORS: %s is replaced by a network connection name
               "aria-label": sprintf(_("Forget connection %s"), connection.id),
-              icon: <Icon name="delete" size="s" />,
+              icon: <Icon name="delete" />,
               onClick: () => onForget(connection),
               isDanger: true,
             },

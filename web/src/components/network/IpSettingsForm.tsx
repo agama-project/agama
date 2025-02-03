@@ -226,8 +226,8 @@ export default function IpSettingsForm() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="editConnectionForm" />
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );

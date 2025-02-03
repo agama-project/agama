@@ -27,7 +27,6 @@ import {
   Card,
   CardBody,
   Checkbox,
-  Flex,
   Form,
   FormGroup,
   Grid,
@@ -171,41 +170,32 @@ function ProductSelectionPage() {
           />
         )}
       </Page.Content>
-      <Page.Actions justifyContent="none">
+      <Page.Actions noDefaultWrapper>
         <Grid>
           <ResponsiveGridItem>
             <Stack hasGutter>
               <StackItem>
-                <Flex
-                  justifyContent={{ default: "justifyContentFlexEnd" }}
-                  columnGap={{ default: "columnGapSm" }}
-                >
-                  {mountLicenseCheckbox && (
-                    <Checkbox
-                      isChecked={licenseAccepted}
-                      onChange={(_, accepted) => setLicenseAccepted(accepted)}
-                      isDisabled={selectedProduct === nextProduct}
-                      id="license-acceptance"
-                      form="productSelectionForm"
-                      label={
-                        <>
-                          {eulaTextStart}{" "}
-                          <Button variant="link" isInline onClick={() => setShowLicense(true)}>
-                            {eulaTextLink}
-                          </Button>{" "}
-                          {eulaTextEnd}
-                        </>
-                      }
-                    />
-                  )}
-                </Flex>
+                {mountLicenseCheckbox && (
+                  <Checkbox
+                    isChecked={licenseAccepted}
+                    onChange={(_, accepted) => setLicenseAccepted(accepted)}
+                    isDisabled={selectedProduct === nextProduct}
+                    id="license-acceptance"
+                    form="productSelectionForm"
+                    label={
+                      <>
+                        {eulaTextStart}{" "}
+                        <Button variant="link" isInline onClick={() => setShowLicense(true)}>
+                          {eulaTextLink}
+                        </Button>{" "}
+                        {eulaTextEnd}
+                      </>
+                    }
+                  />
+                )}
               </StackItem>
               <StackItem>
-                <Flex
-                  justifyContent={{ default: "justifyContentFlexEnd" }}
-                  columnGap={{ default: "columnGapSm" }}
-                >
-                  {selectedProduct && !isLoading && <BackLink />}
+                <Split hasGutter>
                   <Page.Submit
                     form="productSelectionForm"
                     isDisabled={isSelectionDisabled}
@@ -213,7 +203,8 @@ function ProductSelectionPage() {
                   >
                     {_("Select")}
                   </Page.Submit>
-                </Flex>
+                  {selectedProduct && !isLoading && <BackLink />}
+                </Split>
               </StackItem>
             </Stack>
           </ResponsiveGridItem>

@@ -19,6 +19,7 @@
 
 :root {
   --agm-t--color--pine: #0c322c;
+  --agm-t--color--pine--shade--100: #025937;
   --agm-t--color--jungle: #30ba78;
   --agm-t--color--jungle--hover: #c0efde;
   --agm-t--color--fog: #efefef;
@@ -37,8 +38,11 @@
   --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle);
 
   --agm-t--install--button--background: var(--agm-t--color--pine);
+  --agm-t--install--button--background--hover: var(--agm-t--color--pine--shade--100);
   --agm-t--install--button--color: var(--pf-t--color--white);
 
+  --pf-t--global--color--brand--default: var(--agm-t--color--pine);
+  --pf-t--global--color--brand--hover: var(--agm-t--color--pine--shade--100);
   --pf-t--global--font--family--100: "SUSE Text";
   --pf-t--global--font--family--200: "SUSE Display";
   --pf-t--global--font--family--300: "Roboto mono", monospace;
@@ -61,6 +65,7 @@
   --pf-t--global--icon--color--status--info--default: var(--agm-t--color--waterhole);
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
+  --pf-t--global--background--color--disabled--default: #dcdbdc;
 }
 
 // Temporary CSS rules written during migration to PFv6
@@ -95,6 +100,10 @@
 
   svg {
     fill: var(--agm-t--install--button--color);
+  }
+
+  &:hover {
+    background: var(--agm-t--install--button--background--hover);
   }
 }
 
@@ -139,9 +148,36 @@
   inline-size: 50dvw;
 }
 
+.pf-v6-c-masthead__toggle button {
+  --pf-v6-c-button--LineHeight: 0;
+
+  svg {
+    font-size: var(--pf-t--global--font--size--xl);
+  }
+}
+
 .pf-v6-c-masthead {
   --pf-v6-c-masthead__logo--Width: fit-content;
+  --pf-v6-c-masthead--PaddingBlock: var(--pf-t--global--spacer--sm);
 }
+
+.pf-v6-c-page__main-section {
+  --pf-v6-c-page__main-section--PaddingInlineStart: var(--pf-t--global--spacer--md);
+  --pf-v6-c-page__main-section--PaddingInlineEnd: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-page__main-section.pf-m-sticky-top {
+  --pf-v6-c-page__main-section--PaddingBlockStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-page__main-section--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
+}
+
+.pf-v6-c-page__main-group.pf-m-sticky-bottom {
+  --pf-v6-c-page--section--m-sticky-bottom--BoxShadow: var(--pf-t--global--box-shadow--md--top);
+}
+
+// .pf-v6-c-page__sidebar-body .pf-v6-c-nav:first-child {
+//   --pf-v6-c-nav--PaddingBlockStart: 0;
+// }
 
 .pf-v6-c-alert {
   --pf-v6-c-alert--m-info__title--Color: var(--agm-t--color--waterhole);
@@ -173,6 +209,10 @@
 
 .pf-v6-c-nav__link {
   --pf-v6-c-nav__link--AlignItems: center;
+
+  svg {
+    font-size: var(--pf-t--global--font--size--lg);
+  }
 }
 
 .pf-v6-c-nav__link.pf-m-current {

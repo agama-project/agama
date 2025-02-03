@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import { Product, RegistrationInfo } from "~/types/software";
-import ChangeProductLink from "./ChangeProductLink";
+import ChangeProductOption from "./ChangeProductOption";
 import { useRegistration } from "~/queries/software";
 
 const tumbleweed: Product = {
@@ -51,15 +51,15 @@ jest.mock("~/queries/software", () => ({
   useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
 }));
 
-describe("ChangeProductLink", () => {
+describe("ChangeProductOption", () => {
   describe("when there is more than one product available", () => {
     beforeEach(() => {
       mockUseProduct = { products: [tumbleweed, microos] };
     });
 
-    it("renders a link for navigating to product selection page", () => {
-      installerRender(<ChangeProductLink />);
-      const link = screen.getByRole("link", { name: "Change product" });
+    it("renders a menu item for navigating to product selection page", () => {
+      installerRender(<ChangeProductOption />);
+      const link = screen.getByRole("menuitem", { name: "Change product" });
       expect(link).toHaveAttribute("href", PATHS.changeProduct);
     });
 
@@ -69,7 +69,7 @@ describe("ChangeProductLink", () => {
       });
 
       it("renders nothing", () => {
-        const { container } = installerRender(<ChangeProductLink />);
+        const { container } = installerRender(<ChangeProductOption />);
         expect(container).toBeEmptyDOMElement();
       });
     });
@@ -81,7 +81,7 @@ describe("ChangeProductLink", () => {
     });
 
     it("renders nothing", () => {
-      const { container } = installerRender(<ChangeProductLink />);
+      const { container } = installerRender(<ChangeProductOption />);
       expect(container).toBeEmptyDOMElement();
     });
   });

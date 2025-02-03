@@ -27,8 +27,6 @@ import Sidebar from "./Sidebar";
 import { Product } from "~/types/software";
 import { useProduct } from "~/queries/software";
 
-jest.mock("~/components/core/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
-
 const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
@@ -95,10 +93,5 @@ describe("Sidebar", () => {
       screen.getByRole("link", { name: "Main" });
       screen.getByRole("link", { name: "L10n" });
     });
-  });
-
-  it("mounts core/ChangeProductLink component", () => {
-    installerRender(<Sidebar />);
-    screen.getByText("ChangeProductLink Mock");
   });
 });

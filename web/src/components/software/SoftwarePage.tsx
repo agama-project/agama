@@ -34,7 +34,7 @@ import {
   Spinner,
   Stack,
 } from "@patternfly/react-core";
-import { Link, IssuesHint, Page } from "~/components/core";
+import { Link, Page, IssuesAlert } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
 import {
@@ -161,10 +161,8 @@ function SoftwarePage(): React.ReactNode {
       </Page.Header>
 
       <Page.Content>
+        <IssuesAlert issues={issues} />
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <IssuesHint issues={issues} />
-          </GridItem>
           {showReposAlert && (
             <GridItem sm={12}>
               <ReloadSection loading={loading} action={startProbing} />

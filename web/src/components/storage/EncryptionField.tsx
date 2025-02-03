@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Skeleton } from "@patternfly/react-core";
+import { Button, Content, Skeleton } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import EncryptionSettingsDialog, {
   EncryptionSetting,
@@ -31,9 +31,9 @@ import { _ } from "~/i18n";
 import { noop } from "~/utils";
 
 const encryptionMethods = () => ({
-  disabled: _("disabled"),
-  [EncryptionMethods.LUKS2]: _("enabled"),
-  [EncryptionMethods.TPM]: _("using TPM unlocking"),
+  disabled: _("Disabled"),
+  [EncryptionMethods.LUKS2]: _("Enabled"),
+  [EncryptionMethods.TPM]: _("Using TPM unlocking"),
 });
 
 const Value = ({ isLoading, isEnabled, method }) => {
@@ -102,7 +102,6 @@ export default function EncryptionField({
   return (
     <Page.Section
       title={_("Encryption")}
-      value={<Value isLoading={isLoading} isEnabled={isEnabled} method={method} />}
       description={_(
         "Protection for the information stored at \
 the device, including data, programs, and system files.",
@@ -110,6 +109,9 @@ the device, including data, programs, and system files.",
       pfCardBodyProps={{ isFilled: true }}
       actions={<Action isEnabled={isEnabled} isLoading={isLoading} onClick={openDialog} />}
     >
+      <Content isEditorial>
+        <Value isLoading={isLoading} isEnabled={isEnabled} method={method} />
+      </Content>
       {isDialogOpen && (
         <EncryptionSettingsDialog
           isOpen
