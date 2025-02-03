@@ -43,7 +43,7 @@ import {
 } from "@patternfly/react-core";
 import { Page, SelectWrapper as Select } from "~/components/core/";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
-import { useDevices, useVolumeTemplates } from "~/queries/storage";
+import { useDevices, useVolumeTemplates, useVolume } from "~/queries/storage";
 import {
   useDrive,
   useConfigModel,
@@ -152,28 +152,13 @@ function useDevice(): StorageDevice {
   return devices.find((d) => baseName(d.name) === id);
 }
 
-function findVolume(volumes: Volume[], mountPoint: string): Volume {
-  const volume = volumes.find((v) => v.mountPath === mountPoint);
-  const defaultVolume = volumes.find((v) => v.mountPath === "");
+function usePartition(target: string): StorageDevice | null {
+  const device = useDevice();
 
-  return volume || defaultVolume;
-}
-
-function useVolume(mountPoint: string): Volume {
-  const volumes = useVolumeTemplates();
-  return findVolume(volumes, mountPoint);
-}
-
-function findPartition(device: StorageDevice, target: string): StorageDevice | null {
   if (target === NEW_PARTITION) return null;
 
   const partitions = device.partitionTable?.partitions || [];
-  return partitions.find((p) => p.name === target);
-}
-
-function usePartition(target: string): StorageDevice | null {
-  const device = useDevice();
-  return findPartition(device, target);
+  return partitions.find((p: StorageDevice) => p.name === target);
 }
 
 function useAssignedMountPaths(): string[] {
@@ -287,6 +272,12 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
     value.filesystem !== NO_VALUE &&
     value.sizeOption !== NO_VALUE
   ) {
+    /**
+     * @todo Use a specific hook which returns functions like addPartition instead of directly
+     * exporting the function. For example:
+     *
+     * const { model, addPartition } = useEditableModel();
+     */
     sparseModel = addPartition(model, device.name, partition);
   }
 
@@ -307,6 +298,27 @@ function mountPointOptions(volumes: Volume[]): SelectOptionProps[] {
   const assigned = useAssignedMountPaths();
 
   return volPaths.filter((p) => !assigned.includes(p)).map((p) => ({ value: p, children: p }));
+}
+
+function defaultFilesystem(volume: Volume): string {
+  return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
+}
+
+function filesystemOptions(volume: Volume): string[] {
+  if (volume.mountPath !== "/") return volume.outline.fsTypes;
+
+  if (!volume.outline.snapshotsConfigurable && volume.snapshots) {
+    // Btrfs without snapshots is not an option
+    const options = volume.outline.fsTypes.filter((t) => t !== "Btrfs");
+    return [BTRFS_SNAPSHOTS, ...options];
+  }
+
+  if (!volume.outline.snapshotsConfigurable && !volume.snapshots) {
+    // Btrfs with snapshots is not an option
+    return volume.outline.fsTypes;
+  }
+
+  return [BTRFS_SNAPSHOTS, ...volume.outline.fsTypes];
 }
 
 type TargetOptionLabelProps = {
@@ -365,27 +377,6 @@ function TargetOptions(): React.ReactNode {
       </SelectGroup>
     </SelectList>
   );
-}
-
-function defaultFilesystem(volume: Volume): string {
-  return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
-}
-
-function filesystemOptions(volume: Volume): string[] {
-  if (volume.mountPath !== "/") return volume.outline.fsTypes;
-
-  if (!volume.outline.snapshotsConfigurable && volume.snapshots) {
-    // Btrfs without snapshots is not an option
-    const options = volume.outline.fsTypes.filter((t) => t !== "Btrfs");
-    return [BTRFS_SNAPSHOTS, ...options];
-  }
-
-  if (!volume.outline.snapshotsConfigurable && !volume.snapshots) {
-    // Btrfs with snapshots is not an option
-    return volume.outline.fsTypes;
-  }
-
-  return [BTRFS_SNAPSHOTS, ...volume.outline.fsTypes];
 }
 
 type FilesystemOptionLabelProps = {
@@ -533,8 +524,7 @@ type AutoSizeProps = {
 function AutoSize({ mountPoint, partition }: AutoSizeProps): React.ReactNode {
   const volume = useVolume(mountPoint);
   const size = partition?.size;
-
-  const conditions = [];
+  const conditions: string[] = [];
 
   if (volume.outline.snapshotsAffectSizes)
     // TRANSLATORS: item which affects the final computed partition size
@@ -721,30 +711,28 @@ export default function PartitionPage() {
   const solvedPartition = useSolvedPartition(value);
   const { errors, getError, getVisibleError } = useErrors(value);
 
-  const updateFilesystem = React.useCallback(
-    (mountPoint: string, target: string) => {
-      const volume = findVolume(volumes, mountPoint);
-      const partition = findPartition(device, target);
-      const volumeFilesystem = volume ? defaultFilesystem(volume) : NO_VALUE;
-      const suitableFilesystems = volume?.outline?.fsTypes;
-      const partitionFilesystem = partition?.filesystem?.type;
+  const volume = useVolume(mountPoint);
+  const partition = usePartition(target);
 
-      // Reset filesystem if there is no mount point yet.
-      if (mountPoint === NO_VALUE) setFilesystem(NO_VALUE);
-      // Select default filesystem for the mount point.
-      if (mountPoint !== NO_VALUE && target === NEW_PARTITION) setFilesystem(volumeFilesystem);
-      // Select default filesystem for the mount point if the partition has no filesystem.
-      if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && !partitionFilesystem)
-        setFilesystem(volumeFilesystem);
-      // Reuse the filesystem from the partition if possble.
-      if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && partitionFilesystem) {
-        const filesystems = suitableFilesystems || [];
-        const reuse = filesystems.includes(partitionFilesystem);
-        setFilesystem(reuse ? REUSE_FILESYSTEM : volumeFilesystem);
-      }
-    },
-    [volumes, device, setFilesystem],
-  );
+  const updateFilesystem = React.useCallback(() => {
+    const volumeFilesystem = volume ? defaultFilesystem(volume) : NO_VALUE;
+    const suitableFilesystems = volume?.outline?.fsTypes;
+    const partitionFilesystem = partition?.filesystem?.type;
+
+    // Reset filesystem if there is no mount point yet.
+    if (mountPoint === NO_VALUE) setFilesystem(NO_VALUE);
+    // Select default filesystem for the mount point.
+    if (mountPoint !== NO_VALUE && target === NEW_PARTITION) setFilesystem(volumeFilesystem);
+    // Select default filesystem for the mount point if the partition has no filesystem.
+    if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && !partitionFilesystem)
+      setFilesystem(volumeFilesystem);
+    // Reuse the filesystem from the partition if possble.
+    if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && partitionFilesystem) {
+      const filesystems = suitableFilesystems || [];
+      const reuse = filesystems.includes(partitionFilesystem);
+      setFilesystem(reuse ? REUSE_FILESYSTEM : volumeFilesystem);
+    }
+  }, [mountPoint, target, volume, partition, setFilesystem]);
 
   const updateSizes = React.useCallback(
     (sizeOption: SizeOptionValue) => {
@@ -773,7 +761,7 @@ export default function PartitionPage() {
 
       const mountPointError = getError("mountPoint");
       if (!mountPointError && target === NEW_PARTITION) setSizeOption("auto");
-      if (!mountPointError) updateFilesystem(mountPoint, target);
+      if (!mountPointError) updateFilesystem();
     }
   }, [
     mountPoint,
@@ -805,7 +793,7 @@ export default function PartitionPage() {
   };
 
   /**
-   * @fixme The CustomSize component initializes its state based on the sizes passed as prop in the
+   * @note The CustomSize component initializes its state based on the sizes passed as prop in the
    * first render. It is important to set the correct sizes before changing the size option to
    * custom.
    */

@@ -142,6 +142,14 @@ const useVolumeTemplates = (): Volume[] => {
   return data;
 };
 
+function useVolume(mountPoint: string): Volume {
+  const volumes = useVolumeTemplates();
+  const volume = volumes.find((v) => v.mountPath === mountPoint);
+  const defaultVolume = volumes.find((v) => v.mountPath === "");
+
+  return volume || defaultVolume;
+}
+
 /**
  * Hook that returns the devices that can be selected as target for volume.
  *
@@ -237,6 +245,7 @@ export {
   useAvailableDevices,
   useProductParams,
   useVolumeTemplates,
+  useVolume,
   useVolumeDevices,
   useActions,
   useDeprecated,
