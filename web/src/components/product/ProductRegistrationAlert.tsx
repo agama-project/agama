@@ -25,7 +25,7 @@ import { Alert } from "@patternfly/react-core";
 import { useLocation } from "react-router-dom";
 import { Link } from "~/components/core";
 import { useProduct } from "~/queries/software";
-import { REGISTRATION, SUPPORTIVE_PATHS } from "~/routes/paths";
+import { REGISTRATION, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useIssues } from "~/queries/issues";
@@ -50,7 +50,7 @@ export default function ProductRegistrationAlert() {
 
   // NOTE: it shouldn't be mounted in these paths, but let's prevent rendering
   // if so just in case.
-  if (SUPPORTIVE_PATHS.includes(location.pathname)) return;
+  if (SIDE_PATHS.includes(location.pathname)) return;
   if (!registrationRequired) return;
 
   const [textStart, text, textEnd] = sprintf(_("%s [must be registered]."), product.name).split(

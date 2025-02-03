@@ -48,7 +48,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { To, useLocation, useNavigate } from "react-router-dom";
 import { isEmpty, isObject } from "~/utils";
-import { SUPPORTIVE_PATHS } from "~/routes/paths";
+import { SIDE_PATHS } from "~/routes/paths";
 
 /**
  * Props accepted by Page.Section
@@ -277,7 +277,7 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  */
 const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
   const location = useLocation();
-  const mountRegistrationAlert = !SUPPORTIVE_PATHS.includes(location.pathname);
+  const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
 
   return (
     <>

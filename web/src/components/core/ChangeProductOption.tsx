@@ -24,7 +24,7 @@ import React from "react";
 import { DropdownItem, DropdownItemProps } from "@patternfly/react-core";
 import { useHref, useLocation } from "react-router-dom";
 import { useProduct, useRegistration } from "~/queries/software";
-import { PRODUCT as PATHS, SUPPORTIVE_PATHS } from "~/routes/paths";
+import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { isEmpty } from "~/utils";
 
@@ -39,7 +39,7 @@ export default function ChangeProductOption({ children, ...props }: Omit<Dropdow
 
   if (products.length <= 1) return null;
   if (!isEmpty(registration?.key)) return null;
-  if (SUPPORTIVE_PATHS.includes(currentLocation.pathname)) return null;
+  if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
 
   return (
     <DropdownItem to={to} {...props}>

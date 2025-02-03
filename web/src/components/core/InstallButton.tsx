@@ -26,7 +26,7 @@ import { Popup } from "~/components/core";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { useLocation } from "react-router-dom";
-import { SUPPORTIVE_PATHS } from "~/routes/paths";
+import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { Icon } from "../layout";
 
@@ -82,7 +82,7 @@ const InstallButton = (
   const location = useLocation();
   const hasIssues = !issues.isEmpty;
 
-  if (SUPPORTIVE_PATHS.includes(location.pathname)) return;
+  if (SIDE_PATHS.includes(location.pathname)) return;
 
   const { onClickWithIssues, ...buttonProps } = props;
   const open = async () => setIsOpen(true);
