@@ -21,23 +21,31 @@
  */
 
 import React from "react";
-import { Select, MenuToggle, MenuToggleElement } from "@patternfly/react-core";
+import { Select, MenuToggle, MenuToggleElement, SelectProps } from "@patternfly/react-core";
 
-export type SelectToggleProps = {
+export type SelectWrapperProps = {
+  id?: string;
   value: number | string;
   label?: React.ReactNode;
   onChange?: (value: number | string) => void;
   isDisabled?: boolean;
-  children?: React.ReactNode;
-};
+} & Omit<SelectProps, "toggle">;
 
-export default function SelectToggle({
+/**
+ * Wrapper to simplify the usage of PF/Menu/Select
+ *
+ * Abstracts the toggle setup by building it internally based on the received props.
+ *
+ * @see https://www.patternfly.org/components/menus/select/
+ */
+export default function SelectWrapper({
+  id,
   value,
   label,
   onChange,
   isDisabled = false,
   children,
-}: SelectToggleProps): React.ReactElement {
+}: SelectWrapperProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const onToggleClick = () => {
@@ -45,11 +53,11 @@ export default function SelectToggle({
   };
 
   const onSelect = (
-    _event: React.MouseEvent<Element, MouseEvent> | undefined,
-    value: string | number | undefined,
+    _: React.MouseEvent<Element, MouseEvent> | undefined,
+    nextValue: string | number | undefined,
   ) => {
     setIsOpen(false);
-    onChange && onChange(value as string);
+    onChange && nextValue !== value && onChange(nextValue as string);
   };
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => {
@@ -67,7 +75,7 @@ export default function SelectToggle({
 
   return (
     <Select
-      id="option-variations-select"
+      id={id}
       isOpen={isOpen}
       selected={value}
       onSelect={onSelect}

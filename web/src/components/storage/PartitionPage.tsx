@@ -41,9 +41,8 @@ import {
   HelperText,
   HelperTextItem,
 } from "@patternfly/react-core";
-import { Page } from "~/components/core/";
+import { Page, SelectWrapper as Select } from "~/components/core/";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
-import SelectToggle from "~/components/core/SelectToggle";
 import { useDevices, useVolumeTemplates } from "~/queries/storage";
 import {
   useDrive,
@@ -578,13 +577,13 @@ function CustomSize({ value, mountPoint, onChange }: CustomSizeProps) {
       </FlexItem>
       <FlexItem>
         <FormGroup fieldId="maxSize" label={_("Maximum")}>
-          <SelectToggle
+          <Select
             value={option}
             label={<CustomSizeOptionLabel value={option} />}
             onChange={changeOption}
           >
             <CustomSizeOptions />
-          </SelectToggle>
+          </Select>
         </FormGroup>
       </FlexItem>
       {option === "range" && (
@@ -744,13 +743,13 @@ export default function PartitionPage() {
                   />
                 </FlexItem>
                 <FlexItem>
-                  <SelectToggle
+                  <Select
                     value={target}
                     label={<TargetOptionLabel value={target} />}
                     onChange={changeTarget}
                   >
                     <TargetOptions />
-                  </SelectToggle>
+                  </Select>
                 </FlexItem>
               </Flex>
               <FormHelperText>
@@ -763,19 +762,19 @@ export default function PartitionPage() {
               </FormHelperText>
             </FormGroup>
             <FormGroup fieldId="fileSystem" label={_("File system")}>
-              <SelectToggle
+              <Select
                 value={filesystem}
                 label={<FilesystemOptionLabel value={filesystem} target={target} />}
                 onChange={changeFilesystem}
                 isDisabled={mountPointError !== undefined}
               >
                 <FilesystemOptions mountPoint={mountPoint} target={target} />
-              </SelectToggle>
+              </Select>
             </FormGroup>
             <Flex>
               <FlexItem>
                 <FormGroup fieldId="size" label={_("Size")}>
-                  <SelectToggle
+                  <Select
                     value={sizeOption}
                     label={
                       <SizeOptionLabel value={sizeOption} mountPoint={mountPoint} target={target} />
@@ -784,7 +783,7 @@ export default function PartitionPage() {
                     isDisabled={mountPointError !== undefined}
                   >
                     <SizeOptions mountPoint={mountPoint} target={target} />
-                  </SelectToggle>
+                  </Select>
                   {target === NEW_PARTITION && sizeOption === "auto" && (
                     <AutoSize mountPoint={mountPoint} partition={solvedPartition} />
                   )}

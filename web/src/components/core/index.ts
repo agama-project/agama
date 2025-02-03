@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -46,3 +46,4 @@ export { default as EmptyState } from "./EmptyState";
 export { default as InstallerOptions } from "./InstallerOptions";
 export { default as IssuesDrawer } from "./IssuesDrawer";
 export { default as Drawer } from "./Drawer";
+export { default as SelectWrapper } from "./SelectWrapper";
