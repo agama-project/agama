@@ -88,7 +88,7 @@ const DeviceInfo = ({ device }: { device: StorageDevice }) => {
       <Button
         aria-label={sprintf(_("Show information about %s"), device.name)}
         variant="plain"
-        icon={<Icon name="info" size="xs" />}
+        icon={<Icon name="info" />}
       />
     </Popover>
   );

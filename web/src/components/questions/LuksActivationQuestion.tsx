@@ -68,7 +68,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       isOpen
       title={_("Encrypted Device")}
       aria-label={_("Question")}
-      titleIconVariant={() => <Icon name="lock" size="s" />}
+      titleIconVariant={() => <Icon name="lock" />}
     >
       <Stack hasGutter>
         <Alert attempt={question.data.attempt} />

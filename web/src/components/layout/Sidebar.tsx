@@ -54,7 +54,7 @@ const MainNavigation = (): React.ReactNode => {
             to={r.path}
             className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}
           >
-            {iconName && <Icon size="s" name={iconName} />} {name}
+            {iconName && <Icon name={iconName} />} {name}
           </NavLink>
         )}
       />

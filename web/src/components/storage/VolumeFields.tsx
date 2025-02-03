@@ -244,7 +244,7 @@ const FsField = ({ value, volume, isDisabled = false, onChange }: FsFieldProps) 
           onClick={(e) => e.preventDefault()}
           className="pf-v5-c-form__group-label-help"
         >
-          <Icon name="info" size="xxs" />
+          <Icon name="info" />
         </button>
       </Popover>
     );
