@@ -21,13 +21,20 @@
  */
 
 import React from "react";
-import { Bullseye, EmptyState, EmptyStateBody } from "@patternfly/react-core";
+import {
+  Bullseye,
+  Button,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateFooter,
+} from "@patternfly/react-core";
 import { Icon, PlainLayout } from "~/components/layout";
 import { Page } from "~/components/core";
-import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
+import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
+import { _ } from "~/i18n";
 
-const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
+const ErrorIcon = () => <Icon name="error" />;
 
 function ServerError() {
   return (
@@ -35,20 +42,24 @@ function ServerError() {
       <Page>
         <Page.Content>
           <Bullseye>
-            <EmptyState
-              variant="xl"
-              titleText={_("Cannot connect to Agama server")}
-              headingLevel="h2"
-              icon={ErrorIcon}
-            >
-              <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
-            </EmptyState>
+            <Page.Section pfCardProps={{ isFullHeight: false, className: shadowUtils.boxShadowMd }}>
+              <EmptyState
+                variant="xl"
+                titleText={_("Cannot connect to Agama server")}
+                headingLevel="h1"
+                icon={ErrorIcon}
+                status="warning"
+              >
+                <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+                <EmptyStateFooter>
+                  <Button variant="primary" size="lg" onClick={locationReload}>
+                    {_("Reload")}
+                  </Button>
+                </EmptyStateFooter>
+              </EmptyState>
+            </Page.Section>
           </Bullseye>
         </Page.Content>
-
-        <Page.Actions>
-          <Page.Action onClick={locationReload}>{_("Reload")}</Page.Action>
-        </Page.Actions>
       </Page>
     </PlainLayout>
   );
