@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 28 16:38:26 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- packages SLES and SLES4SAP in separate packages. Keep
+  agama-products-sle that will install both.
+
+-------------------------------------------------------------------
 Fri Jan 24 06:45:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Change the registration property in a product's definition to a
