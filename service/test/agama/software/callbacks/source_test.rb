@@ -33,10 +33,6 @@ describe Agama::Software::Callbacks::Source do
 
   let(:answer) { :Retry }
 
-  let(:url) { "https://example.net/repo" }
-
-  let(:description) { "Some description" }
-
   describe "#source_create_error" do
     before do
       allow(questions_client).to receive(:ask).and_yield(question_client)
@@ -46,48 +42,16 @@ describe Agama::Software::Callbacks::Source do
     let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
     it "registers a question with the details" do
-      expect(questions_client).to receive(:ask) do |q|
-        expect(q.text).to include("Unable to retrieve")
-        expect(q.data).to include(
-          "url" => url, "description" => description
-        )
-      end
-      subject.source_create_error(url, :NOT_FOUND, description)
+      expect(questions_client).to_not receive(:ask)
+      subject.source_create_error("https://example.net/repo", :NOT_FOUND, "Some description")
     end
 
     context "when the user answers :Retry" do
       let(:answer) { :Retry }
 
       it "returns 'R'" do
-        ret = subject.source_create_error(url, :NOT_FOUND, description)
-        expect(ret).to eq(:RETRY)
-      end
-    end
-  end
-
-  describe "#source_probe_error" do
-    before do
-      allow(questions_client).to receive(:ask).and_yield(question_client)
-      allow(question_client).to receive(:answer).and_return(answer)
-    end
-
-    let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
-
-    it "registers a question with the details" do
-      expect(questions_client).to receive(:ask) do |q|
-        expect(q.text).to include("metadata is invalid")
-        expect(q.data).to include(
-          "url" => url, "description" => description
-        )
-      end
-      subject.source_probe_error(url, :REJECTED, description)
-    end
-
-    context "when the user answers :Retry" do
-      let(:answer) { :Retry }
-
-      it "returns 'R'" do
-        ret = subject.source_probe_error(url, :NOT_FOUND, description)
+        ret = subject.source_create_error("https://example.net/repo", :NOT_FOUND,
+          "Some description")
         expect(ret).to eq(:RETRY)
       end
     end
