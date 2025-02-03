@@ -256,6 +256,11 @@ module Agama
 
       logger.info("Installation logs stored in #{logs}")
 
+      unless installation_phase.finish?
+        logger.error "The installer has not finished correctly. Please check logs"
+        return false
+      end
+
       cmd = if iguana?
         "/usr/bin/agamactl -k"
       else
