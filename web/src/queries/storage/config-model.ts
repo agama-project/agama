@@ -168,6 +168,15 @@ function switchDrive(
   return model;
 }
 
+function addDrive(originalModel: configModel.Config, driveName: string): configModel.Config {
+  if (findDrive(originalModel, driveName)) return;
+
+  const model = copyModel(originalModel);
+  model.drives.push({ name: driveName });
+
+  return model;
+}
+
 function setCustomSpacePolicy(
   originalModel: configModel.Config,
   driveName: string,
@@ -320,5 +329,21 @@ export function useDrive(name: string): DriveHook | undefined {
       mutate(setSpacePolicy(model, name, policy, actions));
     },
     delete: () => mutate(removeDrive(model, name)),
+  };
+}
+
+/**
+ * Hook for operating on the collections of the model.
+ */
+export type ModelHook = {
+  addDrive: (driveName: string) => void;
+};
+
+export function useModel(): ModelHook {
+  const model = useConfigModel();
+  const { mutate } = useConfigModelMutation();
+
+  return {
+    addDrive: (driveName) => mutate(addDrive(model, driveName)),
   };
 }
