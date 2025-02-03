@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb  3 23:01:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- fix_bootimage: exit on failures (gh#agama-project/agama#1969)
+
+-------------------------------------------------------------------
 Mon Jan 20 10:37:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add SUSE licenses (jsc#PED-11987).
