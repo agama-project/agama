@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb  3 11:40:00 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
+
+- Add ISO publisher (gh#agama-project/agama#1967).
+
+-------------------------------------------------------------------
 Mon Jan 20 10:37:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add SUSE licenses (jsc#PED-11987).
