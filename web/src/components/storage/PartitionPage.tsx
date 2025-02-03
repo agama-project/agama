@@ -23,7 +23,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Alert,
+  Content,
   Flex,
   Form,
   FormGroup,
@@ -45,7 +45,12 @@ import { Page } from "~/components/core/";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import SelectToggle from "~/components/core/SelectToggle";
 import { useDevices, useVolumeTemplates } from "~/queries/storage";
-import { useDrive } from "~/queries/storage/config-model";
+import {
+  useDrive,
+  useConfigModel,
+  useSolvedConfigModel,
+  addPartition,
+} from "~/queries/storage/config-model";
 import { StorageDevice, Volume } from "~/types/storage";
 import { baseName, deviceSize, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -73,6 +78,74 @@ type SizeRange = {
   min: string;
   max: string;
 };
+type Error = {
+  id: string;
+  message?: string;
+  isVisible: boolean;
+};
+
+type ErrorsHandler = {
+  errors: Error[];
+  getError: (id: string) => Error | undefined;
+  getVisibleError: (id: string) => Error | undefined;
+};
+
+/**
+ * @note This type guard is needed because the list of filesystems coming from a volume is not
+ *  enumerated (the volume simply contains a list of strings). This implies we have to rely on
+ *  whatever value coming from such a list as a filesystem type accepted by the config model.
+ *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
+ *  config model. The schema for the volumes will define the explicit list of filesystem types.
+ */
+function isFilesystemType(_value: string): _value is configModel.FilesystemType {
+  return true;
+}
+
+function partitionConfig(value: FormValue): configModel.Partition {
+  const name = (): string | undefined => {
+    if (value.target === NO_VALUE || value.target === NEW_PARTITION) return undefined;
+
+    return value.target;
+  };
+
+  const filesystemType = (): configModel.FilesystemType | undefined => {
+    if (value.filesystem === NO_VALUE) return undefined;
+    if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
+
+    const fs_value = value.filesystem.toLowerCase();
+    return isFilesystemType(fs_value) ? fs_value : undefined;
+  };
+
+  const filesystem = (): configModel.Filesystem | undefined => {
+    if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true, default: true };
+
+    const type = filesystemType();
+    if (type === undefined) return undefined;
+
+    return {
+      default: false,
+      type,
+      snapshots: value.filesystem === BTRFS_SNAPSHOTS,
+    };
+  };
+
+  const size = (): configModel.Size | undefined => {
+    if (value.minSize === NO_VALUE) return undefined;
+
+    return {
+      default: false,
+      min: parseToBytes(value.minSize),
+      max: value.maxSize === NO_VALUE ? undefined : parseToBytes(value.maxSize),
+    };
+  };
+
+  return {
+    mountPath: value.mountPoint,
+    name: name(),
+    filesystem: filesystem(),
+    size: size(),
+  };
+}
 
 function useDevice(): StorageDevice {
   const { id } = useParams();
@@ -102,6 +175,68 @@ function findPartition(device: StorageDevice, target: string): StorageDevice | n
 function usePartition(target: string): StorageDevice | null {
   const device = useDevice();
   return findPartition(device, target);
+}
+
+function mountPointError(mountPoint: string): Error | undefined {
+  if (mountPoint === NO_VALUE) {
+    return {
+      id: "mountPoint",
+      isVisible: false,
+    };
+  }
+
+  const regex = /^swap$|^\/$|^(\/[^/\s]+([^/]*[^/\s])*)+$/;
+  if (!regex.test(mountPoint)) {
+    return {
+      id: "mountPoint",
+      message: _("The mount point is invalid"),
+      isVisible: true,
+    };
+  }
+}
+
+function useErrors(value: FormValue): ErrorsHandler {
+  const errors = compact([mountPointError(value.mountPoint)]);
+
+  const getError = (id: string): Error | undefined => errors.find((e) => e.id === id);
+
+  const getVisibleError = (id: string): Error | undefined => {
+    const error = getError(id);
+    return error?.isVisible ? error : undefined;
+  };
+
+  return { errors, getError, getVisibleError };
+}
+
+function useSolvedModel(value: FormValue): configModel.Config | null {
+  const device = useDevice();
+  const model = useConfigModel();
+  const { errors } = useErrors(value);
+  const partition = partitionConfig(value);
+  // Remove size in order to always get a solved size.
+  partition.size = undefined;
+
+  let sparseModel: configModel.Config | undefined;
+
+  if (
+    device &&
+    !errors.length &&
+    value.target === NEW_PARTITION &&
+    value.filesystem !== NO_VALUE &&
+    value.sizeOption !== NO_VALUE
+  ) {
+    sparseModel = addPartition(model, device.name, partition);
+  }
+
+  const solvedModel = useSolvedConfigModel(sparseModel);
+  return solvedModel;
+}
+
+function useSolvedPartition(value: FormValue): configModel.Partition | undefined {
+  const model = useSolvedModel(value);
+  const device = useDevice();
+  const drive = model?.drives?.find((d) => d.name === device.name);
+  return drive?.partitions?.find((p) => p.mountPath === value.mountPoint);
 }
 
 /** @todo Filter used mount points */
@@ -255,9 +390,9 @@ type SizeOptionLabelProps = {
 
 function SizeOptionLabel({ value, mountPoint, target }: SizeOptionLabelProps): React.ReactNode {
   const partition = usePartition(target);
-  if (value === NO_VALUE && mountPoint === NO_VALUE) return _("Waiting for a mount point");
   if (value === NO_VALUE && mountPoint !== NO_VALUE && target !== NEW_PARTITION)
     return deviceSize(partition.size);
+  if (value === NO_VALUE) return _("Waiting for a mount point");
   if (value === "auto") return _("Auto-calculated");
   if (value === "custom") return _("Custom");
 
@@ -301,10 +436,12 @@ function SizeOptions({ mountPoint, target }: SizeOptionsProps): React.ReactNode 
 
 type AutoSizeProps = {
   mountPoint: string;
+  partition?: configModel.Partition;
 };
 
-function AutoSize({ mountPoint }: AutoSizeProps): React.ReactNode {
+function AutoSize({ mountPoint, partition }: AutoSizeProps): React.ReactNode {
   const volume = useVolume(mountPoint);
+  const size = partition?.size;
 
   const conditions = [];
 
@@ -327,17 +464,32 @@ function AutoSize({ mountPoint }: AutoSizeProps): React.ReactNode {
     // TRANSLATORS: item which affects the final computed partition size
     conditions.push(_("the amount of RAM in the system"));
 
-  if (!conditions.length) return null;
+  if (!conditions.length && !size) return null;
 
   // TRANSLATORS: the %s is replaced by the items which affect the computed size
-  const conditionsText = sprintf(
-    _("The final size for %s depends on %s."),
-    mountPoint,
-    // TRANSLATORS: conjunction for merging two texts
-    conditions.join(_(" and ")),
-  );
+  let conditionsText;
 
-  return <Alert variant="info" isInline isPlain title={conditionsText} />;
+  /** @todo Improve texts. */
+
+  if (conditions.length) {
+    conditionsText = sprintf(
+      _("The final size for %s depends on %s."),
+      mountPoint,
+      // TRANSLATORS: conjunction for merging two texts
+      conditions.join(_(" and ")),
+    );
+  }
+
+  if (conditionsText && size) {
+    conditionsText = sprintf(_("%s . (min: %s, max: %s)"), conditionsText, size.min, size.max);
+  }
+
+  if (!conditionsText && size) {
+    conditionsText = sprintf(_("(min: %s, max: %s)"), size.min, size.max);
+  }
+
+  // return <Alert variant="info" isInline isPlain title={conditionsText} />;
+  return <Content component="blockquote">{conditionsText}</Content>;
 }
 
 type CustomSizeOptionLabelProps = {
@@ -445,106 +597,6 @@ function CustomSize({ value, mountPoint, onChange }: CustomSizeProps) {
     </Flex>
   );
 }
-
-/**
- * @note This type guard is needed because the list of filesystems coming from a volume is not
- *  enumerated (the volume simply contains a list of strings). This implies we have to rely on
- *  whatever value coming from such a list as a filesystem type accepted by the config model.
- *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
- *  config model. The schema for the volumes will define the explicit list of filesystem types.
- */
-function isFileystemType(_value: string): _value is configModel.FilesystemType {
-  return true;
-}
-
-function partitionConfig(value: FormValue): configModel.Partition {
-  const name = (): string | undefined => {
-    if (value.target === NO_VALUE || value.target === NEW_PARTITION) return undefined;
-
-    return value.target;
-  };
-
-  const filesystemType = (): configModel.FilesystemType | undefined => {
-    if (value.filesystem === NO_VALUE) return undefined;
-    if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
-
-    isFileystemType(value.filesystem) ? value.filesystem : undefined;
-  };
-
-  const filesystem = (): configModel.Filesystem | undefined => {
-    if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true, default: true };
-
-    const type = filesystemType();
-    if (type === undefined) return undefined;
-
-    return {
-      default: false,
-      type,
-      snapshots: value.filesystem === BTRFS_SNAPSHOTS,
-    };
-  };
-
-  const size = (): configModel.Size | undefined => {
-    if (value.minSize === NO_VALUE) return undefined;
-
-    return {
-      default: false,
-      min: parseToBytes(value.minSize),
-      max: value.maxSize === NO_VALUE ? undefined : parseToBytes(value.maxSize),
-    };
-  };
-
-  return {
-    mountPath: value.mountPoint,
-    name: name(),
-    filesystem: filesystem(),
-    size: size(),
-  };
-}
-
-type Error = {
-  id: string;
-  message?: string;
-  isVisible: boolean;
-};
-
-type ErrorsHandler = {
-  errors: Error[];
-  getError: (id: string) => Error | undefined;
-  getVisibleError: (id: string) => Error | undefined;
-};
-
-function mountPointError(mountPoint: string): Error | undefined {
-  if (mountPoint === NO_VALUE) {
-    return {
-      id: "mountPoint",
-      isVisible: false,
-    };
-  }
-
-  const regex = /^swap$|^\/$|^(\/[^/\s]+([^/]*[^/\s])*)+$/;
-  if (!regex.test(mountPoint)) {
-    return {
-      id: "mountPoint",
-      message: _("The mount point is invalid"),
-      isVisible: true,
-    };
-  }
-}
-
-function useErrors(value: FormValue): ErrorsHandler {
-  const errors = compact([mountPointError(value.mountPoint)]);
-
-  const getError = (id: string): Error | undefined => errors.find((e) => e.id === id);
-
-  const getVisibleError = (id: string): Error | undefined => {
-    const error = getError(id);
-    return error?.isVisible ? error : undefined;
-  };
-
-  return { errors, getError, getVisibleError };
-}
-
 export default function PartitionPage() {
   const [mountPoint, setMountPoint] = React.useState<string>(NO_VALUE);
   const [target, setTarget] = React.useState<string>(NEW_PARTITION);
@@ -552,6 +604,7 @@ export default function PartitionPage() {
   const [sizeOption, setSizeOption] = React.useState<SizeOptionValue>(NO_VALUE);
   const [minSize, setMinSize] = React.useState<string>(NO_VALUE);
   const [maxSize, setMaxSize] = React.useState<string>(NO_VALUE);
+  const [isReset, setIsReset] = React.useState<boolean>(false);
 
   const navigate = useNavigate();
   const device = useDevice();
@@ -559,7 +612,8 @@ export default function PartitionPage() {
   const driveConfig = useDrive(device?.name);
 
   const value = { mountPoint, target, filesystem, sizeOption, minSize, maxSize };
-  const { errors, getVisibleError } = useErrors(value);
+  const solvedPartition = useSolvedPartition(value);
+  const { errors, getError } = useErrors(value);
 
   const updateFilesystem = React.useCallback(
     (mountPoint: string, target: string) => {
@@ -592,45 +646,60 @@ export default function PartitionPage() {
         setMinSize(NO_VALUE);
         setMaxSize(NO_VALUE);
       } else {
-        /** @todo recover initial values from props if possible (editing case) */
-        const volume = findVolume(volumes, mountPoint);
-        const minSize = volume ? deviceSize(volume.minSize) : NO_VALUE;
-        const maxSize = volume?.maxSize ? deviceSize(volume.maxSize) : NO_VALUE;
-        setMinSize(minSize);
-        setMaxSize(maxSize);
+        const solvedMin = solvedPartition?.size?.min;
+        const solvedMax = solvedPartition?.size?.max;
+        const min = solvedMin ? deviceSize(solvedMin) : NO_VALUE;
+        const max = solvedMax ? deviceSize(solvedMax) : NO_VALUE;
+        setMinSize(min);
+        setMaxSize(max);
       }
     },
-    [volumes, mountPoint, setMinSize, setMaxSize],
-  );
-
-  const updateSizeOption = React.useCallback(
-    (mountPoint: string, target: string) => {
-      if (mountPoint === NO_VALUE || target !== NEW_PARTITION) {
-        setSizeOption(NO_VALUE);
-        updateSizes(NO_VALUE);
-      } else {
-        setSizeOption("auto");
-        updateSizes("auto");
-      }
-    },
-    [setSizeOption, updateSizes],
+    [solvedPartition, setMinSize, setMaxSize],
   );
 
   React.useEffect(() => {
-    updateFilesystem(mountPoint, target);
-    updateSizeOption(mountPoint, target);
-  }, [mountPoint, target, updateFilesystem, updateSizeOption]);
+    if (isReset) {
+      setIsReset(false);
+      setFilesystem(NO_VALUE);
+      setSizeOption(NO_VALUE);
+      setMinSize(NO_VALUE);
+      setMaxSize(NO_VALUE);
 
-  React.useEffect(() => {
-    updateSizes(sizeOption);
-  }, [sizeOption, updateSizes]);
+      const mountPointError = getError("mountPoint");
+      if (!mountPointError && target === NEW_PARTITION) setSizeOption("auto");
+      if (!mountPointError) updateFilesystem(mountPoint, target);
+    }
+  }, [
+    mountPoint,
+    target,
+    isReset,
+    setFilesystem,
+    setSizeOption,
+    setMinSize,
+    setMaxSize,
+    updateFilesystem,
+    getError,
+  ]);
 
   const changeMountPoint = (value: string) => {
-    if (value !== mountPoint) setMountPoint(value);
+    if (value !== mountPoint) {
+      setMountPoint(value);
+      setIsReset(true);
+    }
+  };
+
+  const changeTarget = (value: string) => {
+    setTarget(value);
+    setIsReset(true);
+  };
+
+  const changeFilesystem = (value: string) => {
+    setFilesystem(value);
+    setSizeOption("auto");
   };
 
   /**
-   * @fixme CustomSize component initializes its state based on the sizes passed as prop in the
+   * @fixme The CustomSize component initializes its state based on the sizes passed as prop in the
    * first render. It is important to set the correct sizes before changing the size option to
    * custom.
    */
@@ -650,7 +719,7 @@ export default function PartitionPage() {
   };
 
   const isFormValid = errors.length === 0;
-  const mountPointError = getVisibleError("mountPoint");
+  const mountPointError = getError("mountPoint");
 
   console.log(value);
 
@@ -671,14 +740,14 @@ export default function PartitionPage() {
                     options={mountPointOptions(volumes)}
                     createText={_("Add mount point")}
                     onChange={changeMountPoint}
-                    status={mountPointError && MenuToggleStatus.danger}
+                    status={mountPointError?.isVisible && MenuToggleStatus.danger}
                   />
                 </FlexItem>
                 <FlexItem>
                   <SelectToggle
                     value={target}
                     label={<TargetOptionLabel value={target} />}
-                    onChange={(v: string) => setTarget(v)}
+                    onChange={changeTarget}
                   >
                     <TargetOptions />
                   </SelectToggle>
@@ -686,8 +755,8 @@ export default function PartitionPage() {
               </Flex>
               <FormHelperText>
                 <HelperText>
-                  <HelperTextItem variant={mountPointError ? "error" : "default"}>
-                    {!mountPointError && _("Select or enter a mount point")}
+                  <HelperTextItem variant={mountPointError?.isVisible ? "error" : "default"}>
+                    {!mountPointError?.isVisible && _("Select or enter a mount point")}
                     {mountPointError?.message}
                   </HelperTextItem>
                 </HelperText>
@@ -697,8 +766,8 @@ export default function PartitionPage() {
               <SelectToggle
                 value={filesystem}
                 label={<FilesystemOptionLabel value={filesystem} target={target} />}
-                onChange={(v: string) => setFilesystem(v)}
-                isDisabled={mountPoint === ""}
+                onChange={changeFilesystem}
+                isDisabled={mountPointError !== undefined}
               >
                 <FilesystemOptions mountPoint={mountPoint} target={target} />
               </SelectToggle>
@@ -712,12 +781,12 @@ export default function PartitionPage() {
                       <SizeOptionLabel value={sizeOption} mountPoint={mountPoint} target={target} />
                     }
                     onChange={changeSizeOption}
-                    isDisabled={mountPoint === ""}
+                    isDisabled={mountPointError !== undefined}
                   >
                     <SizeOptions mountPoint={mountPoint} target={target} />
                   </SelectToggle>
                   {target === NEW_PARTITION && sizeOption === "auto" && (
-                    <AutoSize mountPoint={mountPoint} />
+                    <AutoSize mountPoint={mountPoint} partition={solvedPartition} />
                   )}
                 </FormGroup>
               </FlexItem>
