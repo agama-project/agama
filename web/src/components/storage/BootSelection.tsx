@@ -221,8 +221,8 @@ partitions in the appropriate disk.",
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="bootSelectionForm" isDisabled={isAcceptDisabled()} />
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );

@@ -41,7 +41,6 @@ import {
   Title,
   TitleProps,
 } from "@patternfly/react-core";
-import { Flex } from "~/components/layout";
 import { ProductRegistrationAlert } from "~/components/product";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -185,8 +184,11 @@ const Section = ({
  */
 const Actions = ({
   children,
-  justifyContent = "default",
-}: React.PropsWithChildren<{ justifyContent?: "default" | "none" }>) => {
+  noDefaultWrapper = false,
+}: React.PropsWithChildren<{ noDefaultWrapper?: boolean }>) => {
+  const Wrapper = noDefaultWrapper ? React.Fragment : Split;
+  const wrapperProps = noDefaultWrapper ? {} : { hasGutter: true };
+
   return (
     <PageGroup
       role="contentinfo"
@@ -195,10 +197,7 @@ const Actions = ({
       className={flexStyles.flexGrow_0}
     >
       <PageSection component="div">
-        {justifyContent === "none" && children}
-        {justifyContent === "default" && (
-          <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
-        )}
+        <Wrapper {...wrapperProps}>{children}</Wrapper>
       </PageSection>
     </PageGroup>
   );

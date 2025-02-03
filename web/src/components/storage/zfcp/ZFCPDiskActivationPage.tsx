@@ -71,8 +71,8 @@ export default function ZFCPDiskActivationPage() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel navigateTo={PATHS.zfcp.root} />
         <Page.Submit form={formId} disabled={isAcceptDisabled} />
+        <Page.Cancel navigateTo={PATHS.zfcp.root} />
       </Page.Actions>
     </Page>
   );
