@@ -9,11 +9,14 @@
         <specification>Agama Live ISO</specification>
     </description>
     <profiles>
-        <profile name="Leap" description="openSUSE Leap image" import="true" />
+        <!-- use at most 16 characters for the profile name, it is used in the ISO Volume ID -->
+        <!-- which is limited to max. 32 characters -->
+        <profile name="Leap-16.0" description="openSUSE Leap image" import="true" />
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
-        <profile name="SLE" description="SLE-based image" import="true" />
-        <profile name="openSUSE-PXE" description="openSUSE OEM image for remote instalaltion" import="true" />
-        <profile name="Leap-PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
+        <!-- TODO: add SPx in the future -->
+        <profile name="SUSE-SLE-16" description="SLE-based image" import="true" />
+        <profile name="openSUSE-PXE" description="openSUSE OEM image for remote installation" import="true" />
+        <profile name="Leap-16.0-PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
     <preferences>
         <version>11.0.0</version>
@@ -26,24 +29,25 @@
         <bootsplash-theme>bgrt</bootsplash-theme>
         <bootloader-theme>openSUSE</bootloader-theme>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE,SLE,Leap">
-        <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
+    <!-- the ISO Volume ID is set by the fix_bootconfig script -->
+    <preferences arch="ppc64le" profiles="openSUSE,SUSE-SLE-16,Leap-16.0">
+        <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE,SLE,Leap">
-        <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE-SLE-16,Leap-16.0">
+        <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE,SLE,Leap">
-        <type image="iso" flags="dmsquash" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
+    <preferences arch="s390x" profiles="openSUSE,SUSE-SLE-16,Leap-16.0">
+        <type image="iso" flags="dmsquash" mediacheck="true" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
         </type>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE-PXE,Leap-PXE">
+    <preferences arch="ppc64le" profiles="openSUSE-PXE,Leap-16.0-PXE">
         <!-- For some reason the compression results on ppc64le are not as good as on the other archs -->
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="ofw" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=3174400" volid="agama">
+        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="ofw" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=3174400">
             <bootloader name="grub2" console="serial" timeout="1"/>
             <oemconfig>
                 <oem-skip-verify>true</oem-skip-verify>
@@ -55,8 +59,8 @@
             <size unit="M">3000</size>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE-PXE,Leap-PXE">
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152" volid="agama">
+    <preferences arch="s390x" profiles="openSUSE-PXE,Leap-16.0-PXE">
+        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152">
             <bootloader name="custom"/>
             <oemconfig>
                 <oem-skip-verify>true</oem-skip-verify>
@@ -68,8 +72,8 @@
             <size unit="M">1900</size>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE-PXE,Leap-PXE">
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="uefi" installiso="true" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152" volid="agama">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE-PXE,Leap-16.0-PXE">
+        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="uefi" installiso="true" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152">
             <bootloader name="grub2" timeout="1"/>
             <oemconfig>
                 <oem-skip-verify>true</oem-skip-verify>
@@ -88,7 +92,7 @@
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
     </repository>
-    <packages type="image" profiles="openSUSE-PXE,Leap-PXE">
+    <packages type="image" profiles="openSUSE-PXE,Leap-16.0-PXE">
         <package name="dracut-kiwi-oem-repart"/>
         <package name="dracut-kiwi-oem-dump"/>
         <archive name="root-openSUSE-PXE.tar.xz"/>
@@ -162,7 +166,7 @@
         <archive name="root.tar.xz"/>
     </packages>
     <!-- additional packages for the Leap distributions -->
-    <packages type="image" profiles="Leap,Leap-PXE">
+    <packages type="image" profiles="Leap-16.0,Leap-16.0-PXE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="openSUSE-repos-Leap"/>
@@ -182,7 +186,7 @@
         <package name="MozillaFirefox-branding-openSUSE"/>
     </packages>
     <!-- additional packages for the SLE distributions -->
-    <packages type="image" profiles="SLE">
+    <packages type="image" profiles="SUSE-SLE-16">
         <package name="agama-products-sle"/>
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-sles-base"/>
@@ -197,14 +201,14 @@
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
     </packages>
-    <packages type="bootstrap" profiles="Leap,Leap-PXE">
+    <packages type="bootstrap" profiles="Leap-16.0,Leap-16.0-PXE">
         <package name="Leap-release"/>
     </packages>
     <packages type="bootstrap" profiles="openSUSE,openSUSE-PXE">
         <package name="openSUSE-release"/>
         <package name="openSUSE-release-ftp"/>
     </packages>
-    <packages type="bootstrap" profiles="SLE">
+    <packages type="bootstrap" profiles="SUSE-SLE-16">
         <package name="SLES-release"/>
     </packages>
 </image>
