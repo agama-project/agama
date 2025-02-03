@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  3 23:08:34 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: use initrd.ofs for the initrd
+  offset filename (gh#agama-project/agama#1969)
+
+-------------------------------------------------------------------
 Mon Feb  3 23:01:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - fix_bootimage: exit on failures (gh#agama-project/agama#1969)

@@ -29,7 +29,7 @@
 # │   └── s390x
 # │       ├── cd.ikr
 # │       ├── initrd
-# │       ├── initrd.off
+# │       ├── initrd.ofs
 # │       ├── initrd.siz
 # │       ├── linux
 # │       ├── parmfile
@@ -97,8 +97,8 @@ initrd_siz_ofs=0x00010414
 initrd_ofs=0x01000000
 parmfile_ofs=0x00010480
 
-# Create initrd.off (note: 32 bit, stored in big endian).
-printf "%08x" $((initrd_ofs)) | xxd -r -p - $boot_dir/initrd.off
+# Create initrd.ofs (note: 32 bit, stored in big endian).
+printf "%08x" $((initrd_ofs)) | xxd -r -p - $boot_dir/initrd.ofs
 
 # Create initrd.siz (note: 32 bit, stored in big endian).
 read initrd_size x < <(du -b $boot_dir/initrd)
@@ -108,7 +108,7 @@ printf "%08x" $((initrd_size)) | xxd -r -p - $boot_dir/initrd.siz
 cat >$boot_dir/suse.ins <<XXX
 * SUSE Linux for IBM z Systems Installation System
 linux 0x00000000
-initrd.off $initrd_ofs_ofs
+initrd.ofs $initrd_ofs_ofs
 initrd.siz $initrd_siz_ofs
 initrd $initrd_ofs
 parmfile $parmfile_ofs
@@ -118,7 +118,7 @@ XXX
 cat >$dst/suse.ins <<XXX
 * SUSE Linux for IBM z Systems Installation System
 boot/s390x/linux 0x00000000
-boot/s390x/initrd.off $initrd_ofs_ofs
+boot/s390x/initrd.ofs $initrd_ofs_ofs
 boot/s390x/initrd.siz $initrd_siz_ofs
 boot/s390x/initrd $initrd_ofs
 boot/s390x/parmfile $parmfile_ofs
@@ -128,7 +128,7 @@ XXX
 cat >$dst/susehmc.ins <<XXX
 * SUSE Linux for IBM z Systems Installation System via HMC
 boot/s390x/linux 0x00000000
-boot/s390x/initrd.off $initrd_ofs_ofs
+boot/s390x/initrd.ofs $initrd_ofs_ofs
 boot/s390x/initrd.siz $initrd_siz_ofs
 boot/s390x/initrd $initrd_ofs
 boot/s390x/parmfile.hmc $parmfile_ofs
@@ -158,7 +158,7 @@ XXX
 
 # Create cd.ikr with all the file blobs mentioned in suse.ins.
 dd status=none if=$boot_dir/linux of=$boot_dir/cd.ikr
-dd status=none conv=notrunc obs=1 seek=$((initrd_ofs_ofs)) if=$boot_dir/initrd.off of=$boot_dir/cd.ikr
+dd status=none conv=notrunc obs=1 seek=$((initrd_ofs_ofs)) if=$boot_dir/initrd.ofs of=$boot_dir/cd.ikr
 dd status=none conv=notrunc obs=1 seek=$((initrd_siz_ofs)) if=$boot_dir/initrd.siz of=$boot_dir/cd.ikr
 dd status=none conv=notrunc obs=4096 seek=$((initrd_ofs/4096)) if=$boot_dir/initrd of=$boot_dir/cd.ikr
 # clear kernel cmdline area; it's actually 4 kiB, but 1 block should be more than enough
