@@ -89,7 +89,7 @@ function allMountPaths(drive: configModel.Drive): string[] {
   return drive.partitions.map((p) => p.mountPath).filter((m) => m);
 }
 
-function configuredExistingPartitions(drive: configModel.Drive) : configModel.Partition[] {
+function configuredExistingPartitions(drive: configModel.Drive): configModel.Partition[] {
   const allPartitions = drive.partitions || [];
 
   if (drive.spacePolicy === "custom") return allPartitions.filter((p) => p.name);
@@ -342,8 +342,8 @@ export function usePartition(driveName: string, mountPath: string): PartitionHoo
 export type DriveHook = {
   isBoot: boolean;
   isExplicitBoot: boolean;
-  allMountPaths: string[],
-  configuredExistingPartitions: configModel.Partition[],
+  allMountPaths: string[];
+  configuredExistingPartitions: configModel.Partition[];
   switch: (newName: string) => void;
   addPartition: (partition: configModel.Partition) => void;
   setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;

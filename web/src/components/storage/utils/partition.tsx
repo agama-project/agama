@@ -70,7 +70,7 @@ const typeWithSize = (partition: configModel.Partition): string => {
     // %2$s is a description of the size or the size limits (eg. "at least 10 GiB")
     _("%1$s (%2$s)"),
     typeDescription(partition),
-    sizeDescription(partition.size)
+    sizeDescription(partition.size),
   );
 };
 

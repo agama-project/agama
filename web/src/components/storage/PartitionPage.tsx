@@ -176,6 +176,13 @@ function usePartition(target: string): StorageDevice | null {
   return findPartition(device, target);
 }
 
+function useAssignedMountPaths(): string[] {
+  const model = useConfigModel({ suspense: true });
+  const drives = model.drives.map((d) => useDrive(d.name));
+
+  return drives.flatMap((d) => d.allMountPaths);
+}
+
 function mountPointError(mountPoint: string, assignedPoints: string[]): Error | undefined {
   if (mountPoint === NO_VALUE) {
     return {
@@ -250,7 +257,7 @@ function sizeError(min: string, max: string): Error | undefined {
 
 function useErrors(value: FormValue): ErrorsHandler {
   const assigned = useAssignedMountPaths();
-  const size = (value.sizeOption === "custom") ? sizeError(value.minSize, value.maxSize) : null;
+  const size = value.sizeOption === "custom" ? sizeError(value.minSize, value.maxSize) : null;
   const errors = compact([mountPointError(value.mountPoint, assigned), size]);
 
   const getError = (id: string): Error | undefined => errors.find((e) => e.id === id);
@@ -294,21 +301,12 @@ function useSolvedPartition(value: FormValue): configModel.Partition | undefined
   return drive?.partitions?.find((p) => p.mountPath === value.mountPoint);
 }
 
-function useAssignedMountPaths(): string[] {
-  const model = useConfigModel({ suspense: true });
-  const drives = model.drives.map((d) => useDrive(d.name));
-
-  return drives.flatMap((d) => d.allMountPaths);
-}
-
 /** @todo include the currently used mount point when editing */
 function mountPointOptions(volumes: Volume[]): SelectOptionProps[] {
   const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
   const assigned = useAssignedMountPaths();
 
-  return volPaths
-    .filter((p) => !assigned.includes(p))
-    .map((p) => ({ value: p, children: p }));
+  return volPaths.filter((p) => !assigned.includes(p)).map((p) => ({ value: p, children: p }));
 }
 
 type TargetOptionLabelProps = {
@@ -342,7 +340,7 @@ function PartitionDescription({ partition }: PartitionDescriptionProps): React.R
 function TargetOptions(): React.ReactNode {
   const device = useDevice();
   const usedPartitions = useDrive(device?.name).configuredExistingPartitions.map((p) => p.name);
-  const allPartitions = device.partitionTable?.partitions || []
+  const allPartitions = device.partitionTable?.partitions || [];
   const partitions = allPartitions.filter((p) => !usedPartitions.includes(p.name));
 
   return (
@@ -456,7 +454,12 @@ type FilesystemSelectProps = {
   onChange: (v: string) => void;
 };
 
-function FilesystemSelect({ value, mountPoint, target, onChange }: FilesystemSelectProps): React.ReactNode {
+function FilesystemSelect({
+  value,
+  mountPoint,
+  target,
+  onChange,
+}: FilesystemSelectProps): React.ReactNode {
   const usedValue = mountPoint === NO_VALUE ? NO_VALUE : value;
 
   return (
@@ -621,7 +624,7 @@ function CustomSizeOptions(): React.ReactNode {
 
 type CustomSizeProps = {
   value: SizeRange;
-  error: Error,
+  error: Error;
   mountPoint: string;
   onChange: (size: SizeRange) => void;
 };
@@ -680,7 +683,11 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
         {option === "range" && (
           <FlexItem>
             <FormGroup fieldId="maxSizeLimit" label={_("Limit")}>
-              <TextInput id="maxSizeValue" value={value.max} onChange={(_, v) => changeMaxSize(v)} />
+              <TextInput
+                id="maxSizeValue"
+                value={value.max}
+                onChange={(_, v) => changeMaxSize(v)}
+              />
             </FormGroup>
           </FlexItem>
         )}

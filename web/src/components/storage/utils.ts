@@ -173,8 +173,8 @@ const deviceSize = (size: number): string => {
 const parseToBytes = (size: string | number): number => {
   if (!size || size === undefined || size === "") return 0;
 
-  const value = xbytes.parseSize(size.toString().toUpperCase(), { iec: true })
-    || parseInt(size.toString());
+  const value =
+    xbytes.parseSize(size.toString().toUpperCase(), { iec: true }) || parseInt(size.toString());
 
   // Avoid decimals resulting from the conversion. D-Bus iface only accepts integer
   return Math.trunc(value);
@@ -288,15 +288,15 @@ const filesystemName = (fstype: string): string => {
   if (name) return _(name);
 
   // Fallback for unknown filesystem types
-  return (fstype.charAt(0).toUpperCase() + fstype.slice(1));
-}
+  return fstype.charAt(0).toUpperCase() + fstype.slice(1);
+};
 
 /**
  * String to represent the filesystem type
  *
  * @returns undefined if there is not enough information
  */
-const filesystemType = (filesystem: configModel.Filesystem): string | undefined=> {
+const filesystemType = (filesystem: configModel.Filesystem): string | undefined => {
   if (filesystem.type) {
     if (filesystem.snapshots) return _("Btrfs with snapshots");
 
@@ -304,7 +304,7 @@ const filesystemType = (filesystem: configModel.Filesystem): string | undefined=
   }
 
   return undefined;
-}
+};
 
 /**
  * GiB to Bytes.
