@@ -21,15 +21,23 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import { Em } from "~/components/core";
+import { Alert, List, ListItem } from "@patternfly/react-core";
+import { _ } from "~/i18n";
+import { Issue } from "~/types/issues";
 
-describe("Em", () => {
-  it.skip("wraps given children inside a compact PF/Label", () => {
-    plainRender(<Em>Whatever</Em>);
-    const children = screen.getByText("Whatever");
-    const parent = children.closest("span.pf-v5-c-label");
-    expect(parent.classList.contains("pf-m-compact")).toBe(true);
-  });
-});
+export default function IssuesAlert({ issues }) {
+  if (issues === undefined || issues.length === 0) return;
+
+  return (
+    <Alert
+      variant="warning"
+      title={_("Before starting the installation, you need to address the following problems:")}
+    >
+      <List>
+        {issues.map((i: Issue, idx: number) => (
+          <ListItem key={idx}>{i.description}</ListItem>
+        ))}
+      </List>
+    </Alert>
+  );
+}

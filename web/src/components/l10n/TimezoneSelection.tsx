@@ -134,8 +134,8 @@ export default function TimezoneSelection() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="timezoneSelection">{_("Select")}</Page.Submit>
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );

@@ -51,11 +51,7 @@ export default function QuestionWithPassword({
   };
 
   return (
-    <Popup
-      isOpen
-      title={_("Password Required")}
-      titleIconVariant={() => <Icon name="lock" size="s" />}
-    >
+    <Popup isOpen title={_("Password Required")} titleIconVariant={() => <Icon name="lock" />}>
       <Stack hasGutter>
         <Content>{question.text}</Content>
         <Form>

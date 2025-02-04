@@ -31,6 +31,7 @@ import {
   CardHeader,
   CardHeaderProps,
   CardProps,
+  Divider,
   PageGroup,
   PageGroupProps,
   PageSection,
@@ -40,14 +41,13 @@ import {
   Title,
   TitleProps,
 } from "@patternfly/react-core";
-import { Flex } from "~/components/layout";
 import { ProductRegistrationAlert } from "~/components/product";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { To, useLocation, useNavigate } from "react-router-dom";
 import { isEmpty, isObject } from "~/utils";
-import { SUPPORTIVE_PATHS } from "~/routes/paths";
+import { SIDE_PATHS } from "~/routes/paths";
 
 /**
  * Props accepted by Page.Section
@@ -57,16 +57,14 @@ type SectionProps = {
   title?: string;
   /** The value used for accessible label */
   "aria-label"?: string;
-  /** Part of the header that complements the title as a representation of the
-   * section state. E.g. "Encryption enabled", where "Encryption" is the title
-   * and "enabled" the value */
-  value?: React.ReactNode;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
   /** A React node with a brief description of what the section is for */
   description?: React.ReactNode;
   /** The heading level used for the section title */
   headingLevel?: TitleProps["headingLevel"];
+  /** Whether the section should have a divider between header and body */
+  hasHeaderDivider?: boolean;
   /** Props to influence PF/Card component wrapping the section */
   pfCardProps?: CardProps;
   /** Props to influence PF/CardHeader component wrapping the section title */
@@ -114,7 +112,6 @@ const Header = ({ hasGutter = true, children, ...props }) => {
  * @example <caption>Complex usage</caption>
  *   <Page.Section
  *     title="Encryption"
- *     value={isEnabled ? "Enabled" : "Disabled"}
  *     description="Whether device should be protected or not"
  *     pfCardBodyProps={{ isFilled: true }}
  *     actions={isEnabled ? <DisableAction /> : <EnableAction />}
@@ -126,10 +123,10 @@ const Header = ({ hasGutter = true, children, ...props }) => {
 const Section = ({
   title,
   "aria-label": ariaLabel,
-  value,
   description,
   actions,
   headingLevel = "h3",
+  hasHeaderDivider = false,
   pfCardProps,
   pfCardHeaderProps,
   pfCardBodyProps,
@@ -137,9 +134,8 @@ const Section = ({
 }: React.PropsWithChildren<SectionProps>) => {
   const titleId = useId();
   const hasTitle = !isEmpty(title);
-  const hasValue = !isEmpty(value);
   const hasDescription = !isEmpty(description);
-  const hasHeader = hasTitle || hasValue || hasDescription;
+  const hasHeader = hasTitle || hasDescription;
   const hasAriaLabel =
     !isEmpty(ariaLabel) || (isObject(pfCardProps) && "aria-label" in pfCardProps);
   const props = { ...defaultCardProps, "aria-label": ariaLabel };
@@ -154,23 +150,15 @@ const Section = ({
     <Card {...props} {...pfCardProps}>
       {hasHeader && (
         <CardHeader {...pfCardHeaderProps}>
-          <Flex direction="column" rowGap="rowGapXs" alignItems="alignItemsFlexStart">
-            <Flex columnGap="columnGapSm" rowGap="rowGapXs" alignContent="alignContentFlexStart">
-              {hasTitle && (
-                <Title id={titleId} headingLevel={headingLevel}>
-                  {title}
-                </Title>
-              )}
-              {hasValue && (
-                <Flex.Item grow="grow" className={textStyles.fontSizeXl}>
-                  {value}
-                </Flex.Item>
-              )}
-            </Flex>
-            {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
-          </Flex>
+          {hasTitle && (
+            <Title id={titleId} headingLevel={headingLevel}>
+              {title}
+            </Title>
+          )}
+          {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
         </CardHeader>
       )}
+      {hasHeaderDivider && <Divider />}
       <CardBody {...pfCardBodyProps}>{children}</CardBody>
       {actions && (
         <CardFooter>
@@ -196,8 +184,11 @@ const Section = ({
  */
 const Actions = ({
   children,
-  justifyContent = "default",
-}: React.PropsWithChildren<{ justifyContent?: "default" | "none" }>) => {
+  noDefaultWrapper = false,
+}: React.PropsWithChildren<{ noDefaultWrapper?: boolean }>) => {
+  const Wrapper = noDefaultWrapper ? React.Fragment : Split;
+  const wrapperProps = noDefaultWrapper ? {} : { hasGutter: true };
+
   return (
     <PageGroup
       role="contentinfo"
@@ -206,10 +197,7 @@ const Actions = ({
       className={flexStyles.flexGrow_0}
     >
       <PageSection component="div">
-        {justifyContent === "none" && children}
-        {justifyContent === "default" && (
-          <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
-        )}
+        <Wrapper {...wrapperProps}>{children}</Wrapper>
       </PageSection>
     </PageGroup>
   );
@@ -288,7 +276,7 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  */
 const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
   const location = useLocation();
-  const mountRegistrationAlert = !SUPPORTIVE_PATHS.includes(location.pathname);
+  const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
 
   return (
     <>

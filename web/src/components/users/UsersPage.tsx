@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
-import { IssuesHint, Page } from "~/components/core";
+import { IssuesAlert, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
 import { useIssues } from "~/queries/issues";
 import { _ } from "~/i18n";
@@ -37,10 +37,8 @@ export default function UsersPage() {
       </Page.Header>
 
       <Page.Content>
+        <IssuesAlert issues={issues} />
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <IssuesHint issues={issues} />
-          </GridItem>
           <GridItem sm={12} xl={6}>
             <FirstUser />
           </GridItem>

@@ -22,9 +22,8 @@
 
 import React from "react";
 import { Content } from "@patternfly/react-core";
-import { Em } from "~/components/core";
-import { _ } from "~/i18n";
 import { useL10n } from "~/queries/l10n";
+import { _ } from "~/i18n";
 
 export default function L10nSection() {
   const { selectedLocale: locale } = useL10n();
@@ -38,7 +37,7 @@ export default function L10nSection() {
       <Content component="h3">{_("Localization")}</Content>
       <Content>
         {msg1}
-        <Em>{`${locale.name} (${locale.territory})`}</Em>
+        <b>{`${locale.name} (${locale.territory})`}</b>
         {msg2}
       </Content>
     </Content>

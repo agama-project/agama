@@ -64,7 +64,7 @@ export default function EmptyStateWrapper({
   // @ts-ignore
   if (noPadding) rest.className = [rest.className, "no-padding"].join(" ").trim();
 
-  const EmptyStateIcon = () => <Icon name={icon} size="xxl" color={color} />;
+  const EmptyStateIcon = () => <Icon name={icon} />;
 
   return (
     <EmptyState

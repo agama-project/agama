@@ -88,8 +88,8 @@ export default function KeyboardSelection() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="keymapSelection">{_("Select")}</Page.Submit>
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );

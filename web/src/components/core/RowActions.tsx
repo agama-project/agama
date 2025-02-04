@@ -70,7 +70,7 @@ export default function RowActions({
       onClick={props.onToggle}
       aria-label={toggleAriaLabel || _("Actions")}
     >
-      <Icon name="more_vert" size="24" />
+      <Icon name="more_vert" />
     </MenuToggle>
   );
 

@@ -297,8 +297,8 @@ export default function FirstUserForm() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="firstUserForm" />
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );
