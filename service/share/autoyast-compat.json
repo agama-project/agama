@@ -1,0 +1,111 @@
+[
+  {
+    "key": "networking.backend",
+    "support": "no"
+  },
+  {
+    "key": "services-manager",
+    "support": "planned",
+    "advice": "You can use a post-installation script to handle these cases."
+  },
+  {
+    "key": "iscsi-client",
+    "support": "planned"
+  },
+  {
+    "key": "networking.dhcp_options",
+    "support": "no"
+  },
+  {
+    "key": "networking.dns",
+    "support": "no"
+  },
+  {
+    "key": "networking.keep_install_network",
+    "support": "no"
+  },
+  {
+    "key": "networking.managed",
+    "support": "no"
+  },
+  {
+    "key": "networking.modules",
+    "support": "no"
+  },
+  {
+    "key": "networking.net-udev",
+    "support": "no"
+  },
+  {
+    "key": "networking.routing",
+    "support": "no"
+  },
+  {
+    "key": "networking.s390-devices",
+    "support": "no"
+  },
+  {
+    "key": "networking.setup_before_proposal",
+    "support": "no"
+  },
+  {
+    "key": "networking.strict_IP_check_timeout",
+    "support": "no"
+  },
+  {
+    "key": "networking.virt_bridge_proposal",
+    "support": "no"
+  },
+  {
+    "key": "scripts.pre-script.feedback",
+    "support": "no"
+  },
+  {
+    "key": "scripts.pre-script[].rerun",
+    "support": "no"
+  },
+  {
+    "key": "scripts.pre-script[].intepreter",
+    "support": "no"
+  },
+  {
+    "key": "keyboard.capslock",
+    "support": "no"
+  },
+  {
+    "key": "keyboard.delay",
+    "support": "no"
+  },
+  {
+    "key": "keyboard.discaps",
+    "support": "no"
+  },
+  {
+    "key": "keyboard.numlock",
+    "support": "no"
+  },
+  {
+    "key": "keyboard.rate",
+    "support": "no"
+  },
+  {
+    "key": "keyboard.scrlock",
+    "support": "no"
+  },
+  {
+    "key": "keyboard.tty",
+    "support": "no"
+  },
+  {
+    "key": "scripts.pre-script.feedback",
+    "support": "no"
+  },
+  {
+    "key": "scripts.pre-script.rerun",
+    "support": "no"
+  },
+  {
+    "key": "scripts.pre-script.intepreter",
+    "support": "no"
+  }
+]
