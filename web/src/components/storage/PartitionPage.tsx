@@ -53,7 +53,7 @@ import {
 } from "~/queries/storage/config-model";
 import { StorageDevice, Volume } from "~/types/storage";
 import { baseName, deviceSize, parseToBytes } from "~/components/storage/utils";
-import { _ } from "~/i18n";
+import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -477,7 +477,7 @@ function SizeOptionLabel({ value, mountPoint, target }: SizeOptionLabelProps): R
   const partition = usePartition(target);
   if (mountPoint === NO_VALUE) return _("Waiting for a mount point");
   if (value === NO_VALUE && target !== NEW_PARTITION) return deviceSize(partition.size);
-  if (value === "auto") return _("Auto-calculated");
+  if (value === "auto") return _("Calculated automatically");
   if (value === "custom") return _("Custom");
 
   return value;
@@ -497,19 +497,20 @@ function SizeOptions({ mountPoint, target }: SizeOptionsProps): React.ReactNode 
         </SelectOption>
       )}
       {mountPoint !== NO_VALUE && target !== NEW_PARTITION && (
-        <SelectOption value={NO_VALUE} description={sprintf(_("Keep %s size"), target)}>
+        // TRANSLATORS: %s is a partition name like /dev/vda2
+        <SelectOption value={NO_VALUE} description={sprintf(_("Keep size of %s"), target)}>
           <SizeOptionLabel value={NO_VALUE} mountPoint={mountPoint} target={target} />
         </SelectOption>
       )}
       {mountPoint !== NO_VALUE && target === NEW_PARTITION && (
         <>
-          <SelectOption value="auto" description={_("A proper size is automatically calculated")}>
+          <SelectOption
+            value="auto"
+            description={_("Let the installer propose a sensible range of sizes")}
+          >
             <SizeOptionLabel value="auto" mountPoint={mountPoint} target={target} />
           </SelectOption>
-          <SelectOption
-            value="custom"
-            description={_("Define a custom size between a minimum and a maximum")}
-          >
+          <SelectOption value="custom" description={_("Define a custom size or a range")}>
             <SizeOptionLabel value="custom" mountPoint={mountPoint} target={target} />
           </SelectOption>
         </>
@@ -523,56 +524,269 @@ type AutoSizeProps = {
   partition?: configModel.Partition;
 };
 
+function autoSizeTextFallback(size): string {
+  if (size.max) {
+    if (size.max === size.min) {
+      return sprintf(
+        // TRANSLATORS: %s is a size with units, like "3 GiB"
+        _("A generic size of %s will be used for the new partition"),
+        deviceSize(size.min),
+      );
+    }
+
+    return sprintf(
+      // TRANSLATORS: %1$s is a min size and %2$s is the max, both with units like "3 GiB"
+      _("A generic size range between %1$s and %2$s will be used for the new partition"),
+      deviceSize(size.min),
+      deviceSize(size.max),
+    );
+  }
+
+  return sprintf(
+    // TRANSLATORS: %s is a size with units, like "3 GiB"
+    _("A generic minimum size of %s will be used for the new partition"),
+    deviceSize(size.min),
+  );
+}
+
+function autoSizeTextFixed(path, size): string {
+  if (size.max) {
+    if (size.max === size.min) {
+      return sprintf(
+        // TRANSLATORS: %1$s is a size with units (10 GiB) and %2$s is a mount path (/home)
+        _("A partition of %1$s will be created for %2$s"),
+        deviceSize(size.min),
+        path,
+      );
+    }
+
+    return sprintf(
+      // TRANSLATORS: %1$s is a min size, %2$s is the max size and %3$s is a mount path
+      _("A partition with a size between %1$s and %2$s will be created for %3$s"),
+      deviceSize(size.min),
+      deviceSize(size.max),
+      path,
+    );
+  }
+
+  return sprintf(
+    // TRANSLATORS: %1$s is a size with units (10 GiB) and %2$s is a mount path (/home)
+    _("A partition of at least %1$s will be created for %2$s"),
+    deviceSize(size.min),
+    path,
+  );
+}
+
+function autoSizeTextRam(path, size): string {
+  if (size.max) {
+    if (size.max === size.min) {
+      return sprintf(
+        // TRANSLATORS: %1$s is a size with units (10 GiB) and %2$s is a mount path (/home)
+        _("Based on the amount of RAM in the system, a partition of %1$s will be created for %2$s"),
+        deviceSize(size.min),
+        path,
+      );
+    }
+
+    return sprintf(
+      // TRANSLATORS: %1$s is a min size, %2$s is the max size and %3$s is a mount path
+      _(
+        "Based on the amount of RAM in the system, a partition with a size between %1$s and %2$s will be created for %3$s",
+      ),
+      deviceSize(size.min),
+      deviceSize(size.max),
+      path,
+    );
+  }
+
+  return sprintf(
+    // TRANSLATORS: %1$s is a size with units (10 GiB) and %2$s is a mount path (/home)
+    _(
+      "Based on the amount of RAM in the system a partition of at least %1$s will be created for %2$s",
+    ),
+    deviceSize(size.min),
+    path,
+  );
+}
+
+function autoSizeTextDynamic(volume, size): string {
+  const introText = (volume) => {
+    const path = volume.mountPath;
+    const otherPaths = volume.outline.sizeRelevantVolumes || [];
+    const snapshots = !!volume.outline.snapshotsAffectSizes;
+    const ram = !!volume.outline.adjustByRam;
+
+    if (ram && snapshots) {
+      if (otherPaths.length === 1) {
+        return sprintf(
+          // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
+          _(
+            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
+          ),
+          path,
+          otherPaths[0],
+        );
+      }
+
+      if (otherPaths.length > 1) {
+        // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
+        return sprintf(
+          _(
+            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
+          ),
+          path,
+          formatList(otherPaths),
+        );
+      }
+
+      return sprintf(
+        // TRANSLATORS: %s is a mount point (eg. /)
+        _(
+          "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.",
+        ),
+        path,
+      );
+    }
+
+    if (ram) {
+      if (otherPaths.length === 1) {
+        return sprintf(
+          // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
+          _(
+            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.",
+          ),
+          path,
+          otherPaths[0],
+        );
+      }
+
+      return sprintf(
+        // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
+        _(
+          "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.",
+        ),
+        path,
+        formatList(otherPaths),
+      );
+    }
+
+    if (snapshots) {
+      if (otherPaths.length === 1) {
+        return sprintf(
+          // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
+          _(
+            "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
+          ),
+          path,
+          otherPaths[0],
+        );
+      }
+
+      if (otherPaths.length > 1) {
+        // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
+        return sprintf(
+          _(
+            "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
+          ),
+          path,
+          formatList(otherPaths),
+        );
+      }
+
+      return sprintf(
+        // TRANSLATORS: %s is a mount point (eg. /)
+        _(
+          "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.",
+        ),
+        path,
+      );
+    }
+
+    if (otherPaths.length === 1) {
+      return sprintf(
+        // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
+        _(
+          "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.",
+        ),
+        path,
+        otherPaths[0],
+      );
+    }
+
+    return sprintf(
+      // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
+      _(
+        "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.",
+      ),
+      path,
+      formatList(otherPaths),
+    );
+  };
+
+  const limitsText = (size) => {
+    if (size.max) {
+      if (size.max === size.min) {
+        return sprintf(
+          // TRANSLATORS: %s is a size with units (eg. 10 GiB)
+          _("The current configuration will result in a partition of %s."),
+          deviceSize(size.min),
+        );
+      }
+
+      return sprintf(
+        // TRANSLATORS: %1$s is a min size, %2$s is the max size
+        _(
+          "The current configuration will result in a partition with a size between %1$s and %2$s.",
+        ),
+        deviceSize(size.min),
+        deviceSize(size.max),
+      );
+    }
+
+    return sprintf(
+      // TRANSLATORS: %s is a size with units (eg. 10 GiB)
+      _("The current configuration will result in a partition of at least %s."),
+      deviceSize(size.min),
+    );
+  };
+
+  const intro = introText(volume);
+  const limits = limitsText(size);
+  // TRANSLATORS: used just to concatenate the explanation about how a size is calculated and the
+  // range resulting of that calculation.
+  return sprintf(_("%1$s %2$s"), intro, limits);
+}
+
+function autoSizeText(volume, size): string {
+  const path = volume.mountPath;
+
+  if (path) {
+    if (volume.autoSize) {
+      const otherPaths = volume.outline.sizeRelevantVolumes || [];
+
+      if (otherPaths.length || volume.outline.snapshotsAffectSizes) {
+        return autoSizeTextDynamic(volume, size);
+      }
+
+      // This assumes volume.autoSize is correctly set. Ie. if it is set to true then at least one
+      // of the relevant outline fields (snapshots, RAM and sizeRelevantVolumes) is used.
+      return autoSizeTextRam(path, size);
+    }
+
+    return autoSizeTextFixed(path, size);
+  }
+
+  // Fallback volume
+  // This assumes the fallback volume never uses automatic sizes (ie. re-calculated based on
+  // other aspects of the configuration). It would be VERY surprising if that's the case.
+  return autoSizeTextFallback(size);
+}
+
 function AutoSize({ mountPoint, partition }: AutoSizeProps): React.ReactNode {
   const volume = useVolume(mountPoint);
   const size = partition?.size;
-  const conditions: string[] = [];
-
-  if (volume.outline.snapshotsAffectSizes)
-    // TRANSLATORS: item which affects the final computed partition size
-    conditions.push(_("the configuration of snapshots"));
-
-  if (volume.outline.sizeRelevantVolumes && volume.outline.sizeRelevantVolumes.length > 0)
-    // TRANSLATORS: item which affects the final computed partition size
-    // %s is replaced by a list of mount points like "/home, /boot"
-    conditions.push(
-      sprintf(
-        _("the presence of the file system for %s"),
-        // TRANSLATORS: conjunction for merging two list items
-        volume.outline.sizeRelevantVolumes.join(_(", ")),
-      ),
-    );
-
-  if (volume.outline.adjustByRam)
-    // TRANSLATORS: item which affects the final computed partition size
-    conditions.push(_("the amount of RAM in the system"));
-
-  if (!conditions.length && !size) return null;
-
-  // TRANSLATORS: the %s is replaced by the items which affect the computed size
-  let conditionsText;
-
-  /** @todo Improve texts. */
-
-  if (conditions.length) {
-    conditionsText = sprintf(
-      _("The final size for %s depends on %s."),
-      mountPoint,
-      // TRANSLATORS: conjunction for merging two texts
-      conditions.join(_(" and ")),
-    );
-  }
-
-  if (conditionsText && size) {
-    conditionsText = sprintf(_("%s . (min: %s, max: %s)"), conditionsText, size.min, size.max);
-  }
-
-  if (!conditionsText && size) {
-    conditionsText = sprintf(_("(min: %s, max: %s)"), size.min, size.max);
-  }
-
-  // return <Alert variant="info" isInline isPlain title={conditionsText} />;
-  return <Content component="blockquote">{conditionsText}</Content>;
+  const text = autoSizeText(volume, size);
+  return <Content component="blockquote">{text}</Content>;
 }
 
 type CustomSizeOptionLabelProps = {
@@ -581,8 +795,8 @@ type CustomSizeOptionLabelProps = {
 
 function CustomSizeOptionLabel({ value }: CustomSizeOptionLabelProps): React.ReactNode {
   const labels = {
-    fixed: _("None"),
-    unlimited: _("Unlimited"),
+    fixed: _("Same as minimum"),
+    unlimited: _("None"),
     range: _("Limited"),
   };
 
@@ -594,7 +808,7 @@ function CustomSizeOptions(): React.ReactNode {
     <SelectList>
       <SelectOption
         value="fixed"
-        description={_("The partition is created exactly with the given minimum size")}
+        description={_("The partition is created exactly with the given size")}
       >
         <CustomSizeOptionLabel value="fixed" />
       </SelectOption>
