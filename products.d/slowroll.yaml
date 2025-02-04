@@ -61,6 +61,7 @@ software:
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Slowroll
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
   base_product: openSUSE
 
