@@ -104,7 +104,7 @@ module Agama
       # Solves a given model.
       #
       # @param model_json [Hash] Config model according to the JSON schema.
-      # @param [Hash, nil] Solved config model or nil if the model cannot be solved yet.
+      # @return [Hash, nil] Solved config model or nil if the model cannot be solved yet.
       def solve_model(model_json)
         return unless storage_manager.probed?
 
