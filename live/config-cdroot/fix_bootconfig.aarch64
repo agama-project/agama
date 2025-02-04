@@ -5,6 +5,8 @@
 # https://github.com/openSUSE/agama/issues/1609
 # KIWI config
 
+set -e
+
 dst="$1"
 
 if [ ! -d "$dst" ] ; then
