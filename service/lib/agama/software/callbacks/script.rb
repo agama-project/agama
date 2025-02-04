@@ -36,6 +36,7 @@ module Agama
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
+          textdomain "agama"
           @questions_client = questions_client
           @logger = logger
         end
