@@ -61,6 +61,10 @@
     <method name="GetConfigModel">
       <arg name="serialized_model" direction="out" type="s"/>
     </method>
+    <method name="SolveConfigModel">
+      <arg name="model" direction="in" type="s"/>
+      <arg name="solved_model" direction="out" type="s"/>
+    </method>
     <method name="Install">
     </method>
     <method name="Finish">
