@@ -379,7 +379,8 @@ function FilesystemOptionLabel({ value, target }: FilesystemOptionLabelProps): R
   const partition = usePartition(target);
   const filesystem = partition?.filesystem?.type;
   if (value === NO_VALUE) return _("Waiting for a mount point");
-  if (value === REUSE_FILESYSTEM) return sprintf(_("Existing %s"), filesystem);
+  // TRANSLATORS: %s is a filesystem type, like Btrfs
+  if (value === REUSE_FILESYSTEM) return sprintf(_("Current %s"), filesystem);
   if (value === BTRFS_SNAPSHOTS) return _("Btrfs with snapshots");
 
   return value;
@@ -394,8 +395,16 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
   const volume = useVolume(mountPoint);
   const partition = usePartition(target);
   const filesystem = partition?.filesystem?.type;
-  const options = filesystemOptions(volume);
-  const defaultOption = defaultFilesystem(volume);
+  const defaultOpt = defaultFilesystem(volume);
+  const options = [defaultOpt].concat(filesystemOptions(volume).filter((o) => o !== defaultOpt));
+  const canKeep = !!filesystem && options.includes(filesystem);
+
+  const defaultOptText = volume.mountPath
+    ? sprintf(_("Default file system for %s"), mountPoint)
+    : _("Default for system for generic partitions");
+  const formatText = filesystem
+    ? _("Destroy current data and format partition as")
+    : _("Format partition as");
 
   return (
     <SelectList>
@@ -404,21 +413,23 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
           <FilesystemOptionLabel value={NO_VALUE} target={target} />
         </SelectOption>
       )}
-      {mountPoint !== NO_VALUE && filesystem && options.includes(filesystem) && (
-        <SelectOption value={REUSE_FILESYSTEM} description={sprintf(_("Do not format %s"), target)}>
+      {mountPoint !== NO_VALUE && canKeep && (
+        <SelectOption
+          value={REUSE_FILESYSTEM}
+          // TRANSLATORS: %s is the name of a partition, like /dev/vda2
+          description={sprintf(_("Do not format %s and keep the data"), target)}
+        >
           <FilesystemOptionLabel value={REUSE_FILESYSTEM} target={target} />
         </SelectOption>
       )}
-      {mountPoint !== NO_VALUE && filesystem && options.length && <Divider />}
+      {mountPoint !== NO_VALUE && canKeep && options.length && <Divider />}
       {mountPoint !== NO_VALUE && (
-        <SelectGroup label={_("Format partition as")}>
+        <SelectGroup label={formatText}>
           {options.map((fsType, index) => (
             <SelectOption
               key={index}
               value={fsType}
-              description={
-                fsType === defaultOption && sprintf(_("Default file system for %s"), mountPoint)
-              }
+              description={fsType === defaultOpt && defaultOptText}
             >
               <FilesystemOptionLabel value={fsType} target={target} />
             </SelectOption>
