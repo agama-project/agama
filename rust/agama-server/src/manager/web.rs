@@ -173,7 +173,7 @@ async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Err
 /// Executes the post installation tasks (e.g., rebooting the system).
 #[utoipa::path(
     post,
-    path = "/install",
+    path = "/finish",
     context_path = "/api/manager",
     responses(
       (status = 200, description = "The installation tasks are executed.")

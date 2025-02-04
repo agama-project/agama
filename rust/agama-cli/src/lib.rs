@@ -42,9 +42,10 @@ use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
+use std::error::Error;
 use std::{
     collections::HashMap,
-    process::{ExitCode, Termination},
+    process::{Command, ExitCode, Termination},
     thread::sleep,
     time::Duration,
 };
@@ -129,6 +130,26 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
     Ok(())
 }
 
+/// Finish the instalation rebooting the system
+///
+/// Before rebooting, it makes sure that the manager is idle.
+///
+/// * `manager`: the manager client.
+async fn reboot(manager: &ManagerClient<'_>) -> anyhow::Result<()> {
+    if manager.is_busy().await {
+        println!("Agama's manager is busy. Waiting until it is ready...");
+    }
+
+    // Make sure that the manager is ready
+    manager.wait().await?;
+
+    let phase = manager.current_installation_phase().await?;
+    match phase {
+        agama_lib::manager::InstallationPhase::Finish => Ok(manager.finish().await?),
+        _ => Err(CliError::NotFinished)?,
+    }
+}
+
 async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
     tokio::time::sleep(Duration::from_secs(1)).await;
@@ -210,6 +231,10 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         Commands::Install => {
             let manager = build_manager().await?;
             install(&manager, 3).await?
+        }
+        Commands::Reboot => {
+            let manager = build_manager().await?;
+            reboot(&manager).await?;
         }
         Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,
         Commands::Logs(subcommand) => run_logs_cmd(client, subcommand).await?,

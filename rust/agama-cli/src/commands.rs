@@ -105,4 +105,9 @@ pub enum Commands {
         /// URL pointing to file for download
         url: String,
     },
+    /// Reboot the system.
+    ///
+    /// This command reboots the system which is mainly done after the installation is completed
+    /// successfuly
+    Reboot,
 }
