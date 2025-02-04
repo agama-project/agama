@@ -34,6 +34,7 @@ Dir.chdir(__dir__) do
   require "bundler/setup"
 end
 require "agama/autoyast/converter"
+require "agama/autoyast/profile_fetcher"
 
 if ARGV.length != 2
   warn "Usage: #{$PROGRAM_NAME} URL DIRECTORY"
@@ -42,9 +43,13 @@ end
 
 begin
   url, directory = ARGV
-  converter = Agama::AutoYaST::Converter.new(url)
-  converter.to_agama(directory)
+  profile = Agama::AutoYaST::ProfileFetcher.new(url)
 rescue RuntimeError => e
   warn "Could not load the profile from #{url}: #{e}"
   exit 2
 end
+
+converter = Agama::AutoYaST::Converter.new
+agama_config = converter.to_agama(profile)
+FileUtils.mkdir_p(directory)
+File.write(File.join(directory, "autoinst.json"), agama_config.to_json)
