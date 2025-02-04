@@ -36,7 +36,7 @@ import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import { PartitionSlot, StorageDevice } from "~/types/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { DeviceInfo } from "~/api/storage/types";
-import { useConfigModel } from "~/queries/storage";
+import { useConfigModel } from "~/queries/storage/config-model";
 
 type TableItem = StorageDevice | PartitionSlot;
 

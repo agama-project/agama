@@ -252,5 +252,3 @@ export {
   useDeprecatedChanges,
   useReprobeMutation,
 };
-
-export * from "~/queries/storage/config-model";

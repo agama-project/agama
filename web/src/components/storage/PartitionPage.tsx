@@ -43,8 +43,9 @@ import {
 } from "@patternfly/react-core";
 import { Page, SelectWrapper as Select } from "~/components/core/";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
-import { useDevices, useVolumeTemplates, useVolume } from "~/queries/storage";
+import { useDevices, useVolume } from "~/queries/storage";
 import {
+  useModel,
   useDrive,
   useConfigModel,
   useSolvedConfigModel,
@@ -161,13 +162,6 @@ function usePartition(target: string): StorageDevice | null {
   return partitions.find((p: StorageDevice) => p.name === target);
 }
 
-function useAssignedMountPaths(): string[] {
-  const model = useConfigModel({ suspense: true });
-  const drives = model.drives.map((d) => useDrive(d.name));
-
-  return drives.flatMap((d) => d.allMountPaths);
-}
-
 function mountPointError(mountPoint: string, assignedPoints: string[]): Error | undefined {
   if (mountPoint === NO_VALUE) {
     return {
@@ -241,7 +235,7 @@ function sizeError(min: string, max: string): Error | undefined {
 }
 
 function useErrors(value: FormValue): ErrorsHandler {
-  const assigned = useAssignedMountPaths();
+  const { usedMountPaths: assigned } = useModel();
   const size = value.sizeOption === "custom" ? sizeError(value.minSize, value.maxSize) : null;
   const errors = compact([mountPointError(value.mountPoint, assigned), size]);
 
@@ -293,11 +287,8 @@ function useSolvedPartition(value: FormValue): configModel.Partition | undefined
 }
 
 /** @todo include the currently used mount point when editing */
-function mountPointOptions(volumes: Volume[]): SelectOptionProps[] {
-  const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
-  const assigned = useAssignedMountPaths();
-
-  return volPaths.filter((p) => !assigned.includes(p)).map((p) => ({ value: p, children: p }));
+function mountPointOptions(mountPoints: string[]): SelectOptionProps[] {
+  return mountPoints.map((p) => ({ value: p, children: p }));
 }
 
 function defaultFilesystem(volume: Volume): string {
@@ -704,8 +695,8 @@ export default function PartitionPage() {
 
   const navigate = useNavigate();
   const device = useDevice();
-  const volumes = useVolumeTemplates();
   const driveConfig = useDrive(device?.name);
+  const { unusedMountPaths } = useModel();
 
   const value = { mountPoint, target, filesystem, sizeOption, minSize, maxSize };
   const solvedPartition = useSolvedPartition(value);
@@ -831,7 +822,7 @@ export default function PartitionPage() {
                 <FlexItem>
                   <SelectTypeaheadCreatable
                     value={mountPoint}
-                    options={mountPointOptions(volumes)}
+                    options={mountPointOptions(unusedMountPaths)}
                     createText={_("Add mount point")}
                     onChange={changeMountPoint}
                     status={mountPointError && MenuToggleStatus.danger}
@@ -861,7 +852,7 @@ export default function PartitionPage() {
                 value={filesystem}
                 mountPoint={usedMountPt}
                 target={target}
-                onChange={(v: string) => setFilesystem(v)}
+                onChange={changeFilesystem}
               />
             </FormGroup>
             <Flex>

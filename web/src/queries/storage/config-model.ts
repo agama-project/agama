@@ -24,7 +24,8 @@ import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tansta
 import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
 import { configModel } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
-import { SpacePolicyAction } from "~/types/storage";
+import { SpacePolicyAction, Volume } from "~/types/storage";
+import { useVolumeTemplates } from "~/queries/storage";
 
 function copyModel(model: configModel.Config): configModel.Config {
   return JSON.parse(JSON.stringify(model));
@@ -254,6 +255,18 @@ function setSpacePolicy(
   return model;
 }
 
+function usedMountPaths(model: configModel.Config): string[] {
+  if (!model.drives) return [];
+
+  return model.drives.flatMap(allMountPaths);
+}
+
+function unusedMountPaths(model: configModel.Config, volumes: Volume[]): string[] {
+  const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
+  const assigned = usedMountPaths(model);
+  return volPaths.filter((p) => !assigned.includes(p));
+}
+
 const configModelQuery = {
   queryKey: ["storage", "configModel"],
   queryFn: fetchConfigModel,
@@ -350,12 +363,12 @@ export type DriveHook = {
   delete: () => void;
 };
 
-export function useDrive(name: string): DriveHook | undefined {
+export function useDrive(name: string): DriveHook | null {
   const model = useConfigModel();
   const { mutate } = useConfigModelMutation();
   const drive = findDrive(model, name);
 
-  if (drive === undefined) return;
+  if (drive === undefined) return null;
 
   return {
     isBoot: isBoot(model, name),
@@ -368,5 +381,22 @@ export function useDrive(name: string): DriveHook | undefined {
       mutate(addPartition(model, name, partition)),
     setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) =>
       mutate(setSpacePolicy(model, name, policy, actions)),
+  };
+}
+
+export type ModelHook = {
+  model: configModel.Config;
+  usedMountPaths: string[];
+  unusedMountPaths: string[];
+};
+
+export function useModel(): ModelHook {
+  const model = useConfigModel();
+  const volumes = useVolumeTemplates();
+
+  return {
+    model,
+    usedMountPaths: model ? usedMountPaths(model) : [],
+    unusedMountPaths: model ? unusedMountPaths(model, volumes) : [],
   };
 }

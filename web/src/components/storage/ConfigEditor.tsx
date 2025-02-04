@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { useDevices, useConfigModel } from "~/queries/storage";
+import { useDevices } from "~/queries/storage";
+import { useConfigModel } from "~/queries/storage/config-model";
 import DriveEditor from "~/components/storage/DriveEditor";
 import { List, ListItem } from "@patternfly/react-core";
 

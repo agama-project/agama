@@ -25,7 +25,8 @@ import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
-import { useDevices, useConfigModel } from "~/queries/storage";
+import { useDevices } from "~/queries/storage";
+import { useConfigModel } from "~/queries/storage/config-model";
 import * as ConfigModel from "~/api/storage/types/config-model";
 
 const SectionContent = ({ children }) => (
