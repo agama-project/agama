@@ -32,7 +32,6 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
-  MenuToggleStatus,
   SelectGroup,
   SelectList,
   SelectOption,
@@ -175,7 +174,7 @@ function mountPointError(mountPoint: string, assignedPoints: string[]): Error | 
   if (!regex.test(mountPoint)) {
     return {
       id: "mountPoint",
-      message: _("The mount point is invalid"),
+      message: _("Select or enter a valid mount point"),
       isVisible: true,
     };
   }
@@ -184,7 +183,7 @@ function mountPointError(mountPoint: string, assignedPoints: string[]): Error | 
   if (assignedPoints.includes(mountPoint)) {
     return {
       id: "mountPoint",
-      message: _("The mount point is already assigned to another device"),
+      message: _("Select or enter a mount point that is not already assigned to another device"),
       isVisible: true,
     };
   }
@@ -215,7 +214,7 @@ function sizeError(min: string, max: string): Error | undefined {
   if (validMin) {
     return {
       id: "customSize",
-      message: _("The maximum is invalid"),
+      message: _("The maximum must be a number optionally followed by a unit like GiB or GB"),
       isVisible: true,
     };
   }
@@ -223,14 +222,14 @@ function sizeError(min: string, max: string): Error | undefined {
   if (validMax) {
     return {
       id: "customSize",
-      message: _("The minimum is invalid"),
+      message: _("The minimum must be a number optionally followed by a unit like GiB or GB"),
       isVisible: true,
     };
   }
 
   return {
     id: "customSize",
-    message: _("Size limits are invalid"),
+    message: _("Size limits must be numbers optionally followed by a unit like GiB or GB"),
     isVisible: true,
   };
 }
@@ -826,7 +825,6 @@ export default function PartitionPage() {
                     options={mountPointOptions(unusedMountPaths)}
                     createText={_("Add mount point")}
                     onChange={changeMountPoint}
-                    status={mountPointError && MenuToggleStatus.danger}
                   />
                 </FlexItem>
                 <FlexItem>
