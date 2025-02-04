@@ -24,24 +24,25 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Content,
+  Divider,
   Flex,
+  FlexItem,
   Form,
   FormGroup,
-  Stack,
-  Split,
-  SelectOptionProps,
-  SelectList,
-  SelectOption,
-  SelectGroup,
-  MenuToggleStatus,
-  Divider,
-  FlexItem,
-  TextInput,
   FormHelperText,
   HelperText,
   HelperTextItem,
+  MenuToggleStatus,
+  SelectGroup,
+  SelectList,
+  SelectOption,
+  SelectOptionProps,
+  Split,
+  Stack,
+  TextInput,
 } from "@patternfly/react-core";
 import { Page, SelectWrapper as Select } from "~/components/core/";
+import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import { useDevices, useVolume } from "~/queries/storage";
 import {
@@ -433,7 +434,7 @@ type FilesystemSelectProps = {
   value: string;
   mountPoint: string;
   target: string;
-  onChange: (v: string) => void;
+  onChange: SelectProps["onChange"];
 };
 
 function FilesystemSelect({

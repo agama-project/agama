@@ -29,7 +29,7 @@ export type SelectWrapperProps = {
   label?: React.ReactNode;
   onChange?: (value: number | string) => void;
   isDisabled?: boolean;
-} & Omit<SelectProps, "toggle">;
+} & Omit<SelectProps, "toggle" | "onChange">;
 
 /**
  * Wrapper to simplify the usage of PF/Menu/Select
