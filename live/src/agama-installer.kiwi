@@ -150,7 +150,6 @@
         <package name="xinit"/>
         <package name="xorg-x11-server"/>
         <package name="xorg-x11-fonts-core"/>
-        <package name="efont-unicode-bitmap-fonts"/>
         <package name="xf86-input-libinput" />
         <package name="psmisc"/>
         <package name="joe"/>

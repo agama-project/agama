@@ -1,0 +1,2 @@
+! Use the default font also for the xterm menus (Ctrl + click)
+XTerm*font: fixed
