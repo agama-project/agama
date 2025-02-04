@@ -266,7 +266,6 @@ struct SolveModelQuery {
     model: String,
 }
 
-
 /// Probes the storage devices.
 #[utoipa::path(
     post,
