@@ -152,6 +152,9 @@ module Agama
             firewalld.api.add_service(firewalld.default_zone, "ssh") if firewalld.installed?
           end
 
+          # disable root password if not set
+          assign_root_password("!", true) unless root_password?
+
           system_config = Y2Users::ConfigManager.instance.system(force_read: true)
           target_config = system_config.copy
           Y2Users::ConfigMerger.new(target_config, config).merge
