@@ -13,21 +13,17 @@ Agama is a new Linux installer born in the core of the YaST team. It is designed
 re-usability, integration with third party tools and the possibility of building advanced user
 interfaces over it.
 
-|                                                                      |                                                                 |
-| -------------------------------------------------------------------- | --------------------------------------------------------------- |
-| ![Product selection](./doc/images/screenshots/product-selection.png) | ![Installation overview](./doc/images/screenshots/overview.png) |
+| ![Product selection](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/user/product-selection.png) | ![Installation overview](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/user/overview.png) |
+| --- | --- |
 
 <details>
 <summary>Click to show/hide more screenshots</summary>
 
 ---
 
-|                                                              |                                                                |
-| ------------------------------------------------------------ | -------------------------------------------------------------- |
-| ![Software page](./doc/images/screenshots/software-page.png) | ![Storage settings](./doc/images/screenshots/storage-page.png) |
-
-|                                                        |                                                                 |
-| ------------------------------------------------------ | --------------------------------------------------------------- |
+<!-- TODO: move these screenshots to the web repository as well -->
+| ![Software page](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/user/software.png) | ![Storage settings](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/storage.png) |
+| --- | --- |
 | ![Installing](./doc/images/screenshots/installing.png) | ![Installation finished](./doc/images/screenshots/finished.png) |
 
 </details>
