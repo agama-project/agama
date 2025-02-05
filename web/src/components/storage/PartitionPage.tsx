@@ -874,7 +874,7 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
           <FormGroup fieldId="minSize" label={_("Minimum")}>
             <TextInput
               id="minSizeValue"
-              className="w-100"
+              className="w-14ch"
               value={value.min}
               onChange={(_, v) => changeMinSize(v)}
             />
@@ -893,7 +893,7 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
               {option === "range" && (
                 <TextInput
                   id="maxSizeValue"
-                  className="w-100"
+                  className="w-14ch"
                   value={value.max}
                   onChange={(_, v) => changeMaxSize(v)}
                 />
