@@ -384,6 +384,15 @@ describe Agama::Software::Manager do
     end
 
     it "copies the libzypp cache and credentials to the target system" do
+      allow(Agama::Software::Repository).to receive(:all).and_return(
+        [
+          Agama::Software::Repository.new(
+            repo_id: 42, repo_alias: "alias", name: "name",
+            url: "http://example.com", enabled: true, autorefresh: false
+          )
+        ]
+      )
+
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:entries).and_call_original
 
