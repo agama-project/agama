@@ -401,7 +401,7 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
 
   const defaultOptText = volume.mountPath
     ? sprintf(_("Default file system for %s"), mountPoint)
-    : _("Default for system for generic partitions");
+    : _("Default file system for generic partitions");
   const formatText = filesystem
     ? _("Destroy current data and format partition as")
     : _("Format partition as");
