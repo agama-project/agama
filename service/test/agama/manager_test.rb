@@ -222,6 +222,50 @@ describe Agama::Manager do
     end
   end
 
+  describe "#finish_installation" do
+    let(:finished) { false }
+    let(:iguana) { true }
+
+    before do
+      allow(subject).to receive(:collect_logs)
+      allow(subject).to receive(:iguana?).and_return(iguana)
+      allow(subject.installation_phase).to receive(:finish?).and_return(finished)
+      allow(logger).to receive(:error)
+    end
+
+    it "colects the logs" do
+      expect(subject).to receive(:collect_logs)
+      subject.finish_installation
+    end
+
+    context "when it is not in finish phase" do
+      it "logs the error and returns false" do
+        expect(logger).to receive(:error).with(/not finished/)
+        expect(subject.finish_installation).to eq(false)
+      end
+    end
+
+    context "when it is in the finish phase" do
+      let(:finished) { true }
+
+      context "and it is executed using iguana" do
+        it "runs agamactl -k" do
+          expect(subject).to receive(:system).with(/agamactl -k/).and_return(true)
+          expect(subject.finish_installation).to eq(true)
+        end
+      end
+
+      context "and it is not executed using iguana" do
+        let(:iguana) { false }
+
+        it "runs shutdown -r" do
+          expect(subject).to receive(:system).with(/shutdown -r now/).and_return(true)
+          expect(subject.finish_installation).to eq(true)
+        end
+      end
+    end
+  end
+
   describe "#collect_logs" do
     it "collects the logs and returns the path to the archive" do
       # %x returns the command output including trailing \n
