@@ -142,12 +142,12 @@ async fn reboot(manager: &ManagerClient<'_>) -> anyhow::Result<()> {
 
     // Make sure that the manager is ready
     manager.wait().await?;
-
-    let phase = manager.current_installation_phase().await?;
-    match phase {
-        agama_lib::manager::InstallationPhase::Finish => Ok(manager.finish().await?),
-        _ => Err(CliError::NotFinished)?,
+    let finished = manager.finish().await?;
+    if !manager.finish().await? {
+        eprintln!("Cannot reboot the system");
+        return Err(CliError::NotFinished)?;
     }
+    Ok(())
 }
 
 async fn show_progress() -> Result<(), ServiceError> {
