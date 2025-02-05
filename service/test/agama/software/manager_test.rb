@@ -446,7 +446,9 @@ describe Agama::Software::Manager do
               repo_id: repo_id, repo_alias: "alias", name: "name",
               url: "dir:///run/initramfs/live/install", enabled: true, autorefresh: false
             )
-          ]
+          ],
+          # for the second and further calls return empty list, the repo has been removed
+          []
         )
       end
 
