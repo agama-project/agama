@@ -117,7 +117,7 @@ impl<'a> ManagerClient<'a> {
     }
 
     /// Executes the after installation tasks.
-    pub async fn finish(&self) -> Result<(), ServiceError> {
+    pub async fn finish(&self) -> Result<bool, ServiceError> {
         Ok(self.manager_proxy.finish().await?)
     }
 

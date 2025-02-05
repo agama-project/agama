@@ -251,6 +251,8 @@ module Agama
     end
 
     # Whatever has to be done at the end of installation
+    #
+    # @return [Boolean]
     def finish_installation
       logs = collect_logs(path: "/tmp/var/logs/")
 
@@ -269,7 +271,7 @@ module Agama
 
       logger.info("Finishing installation with #{cmd}")
 
-      system(cmd)
+      !!system(cmd)
     end
 
     # Says whether running on iguana or not
