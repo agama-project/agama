@@ -882,27 +882,25 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
         </FlexItem>
         <FlexItem>
           <FormGroup fieldId="maxSize" label={_("Maximum")}>
-            <Select
-              value={option}
-              label={<CustomSizeOptionLabel value={option} />}
-              onChange={changeOption}
-            >
-              <CustomSizeOptions />
-            </Select>
+            <Split hasGutter>
+              <Select
+                value={option}
+                label={<CustomSizeOptionLabel value={option} />}
+                onChange={changeOption}
+              >
+                <CustomSizeOptions />
+              </Select>
+              {option === "range" && (
+                <TextInput
+                  id="maxSizeValue"
+                  className="w-100"
+                  value={value.max}
+                  onChange={(_, v) => changeMaxSize(v)}
+                />
+              )}
+            </Split>
           </FormGroup>
         </FlexItem>
-        {option === "range" && (
-          <FlexItem>
-            <FormGroup fieldId="maxSizeLimit" label={_("Limit")}>
-              <TextInput
-                id="maxSizeValue"
-                className="w-100"
-                value={value.max}
-                onChange={(_, v) => changeMaxSize(v)}
-              />
-            </FormGroup>
-          </FlexItem>
-        )}
       </Flex>
       <FormHelperText>
         <HelperText>
