@@ -1,0 +1,98 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# Copyright (c) [2024] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+require "agama/autoyast/converter"
+require "agama/autoyast/profile_fetcher"
+require "agama/autoyast/profile_reporter"
+require "agama/autoyast/profile_checker"
+require "agama/dbus/clients/questions"
+
+module Agama
+  module Commands
+    class CouldNotFetchProfile < StandardError; end
+    class CouldNotWriteAgamaConfig < StandardError; end
+
+    # Command to convert an AutoYaST profile to an Agama configuration.
+    #
+    # It fetches the profile, checks for unsupported elements and converts it to an Agama
+    # configuration file.
+    class AgamaAutoYaST
+      def initialize(url, directory)
+        @url = url
+        @directory = directory
+        @logger = Logger.new($stdout)
+      end
+
+      # Run the command fetching, checking, converting and writing the Agama configuration.
+      def run
+        profile = fetch_profile
+        unsupported = check_profile(profile)
+        return false unless report_unsupported(unsupported)
+
+        write_agama_config(profile)
+      end
+
+    private
+
+      attr_reader :url, :directory, :logger
+
+      # Fetch the AutoYaST profile from the given URL.
+      def fetch_profile
+        Agama::AutoYaST::ProfileFetcher.new(url).fetch
+      rescue RuntimeError
+        raise CouldNotFetchProfile
+      end
+
+      # Check the profile for unsupported
+      def check_profile(profile)
+        checker = Agama::AutoYaST::ProfileChecker.new
+        checker.find_unsupported(profile)
+      end
+
+      def report_unsupported(elements)
+        return true if elements.empty?
+
+        reporter = Agama::AutoYaST::ProfileReporter.new(questions_client, logger)
+        reporter.report(elements)
+      end
+
+      def write_agama_config(profile)
+        converter = Agama::AutoYaST::Converter.new
+        agama_config = converter.to_agama(profile)
+        FileUtils.mkdir_p(directory)
+        File.write(File.join(directory, "autoinst.json"), agama_config.to_json)
+      rescue StandardError
+        raise CouldNotWriteAgamaConfig
+      end
+
+      def questions_client
+        @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
+      end
+    end
+
+    if ARGV.length != 2
+      warn "Usage: #{$PROGRAM_NAME} URL DIRECTORY"
+      exit 1
+    end
+  end
+end
