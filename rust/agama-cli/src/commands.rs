@@ -108,6 +108,6 @@ pub enum Commands {
     /// Reboot the system.
     ///
     /// This command reboots the system which is mainly done after the installation is completed
-    /// successfuly
+    /// successfully
     Reboot,
 }

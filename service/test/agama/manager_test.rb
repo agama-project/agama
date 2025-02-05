@@ -233,12 +233,12 @@ describe Agama::Manager do
       allow(logger).to receive(:error)
     end
 
-    it "colects the logs" do
+    it "collects the logs" do
       expect(subject).to receive(:collect_logs)
       subject.finish_installation
     end
 
-    context "when it is not in finish phase" do
+    context "when it is not in finish the phase" do
       it "logs the error and returns false" do
         expect(logger).to receive(:error).with(/not finished/)
         expect(subject.finish_installation).to eq(false)
