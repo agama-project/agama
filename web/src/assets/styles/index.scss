@@ -142,6 +142,36 @@
   }
 }
 
+#productSelectionForm {
+  input[type="radio"] {
+    align-self: center;
+    flex-shrink: 0;
+    inline-size: 20px;
+    block-size: 20px;
+  }
+
+  .pf-v6-c-card {
+    img {
+      max-inline-size: 80px;
+    }
+
+    label {
+      cursor: pointer;
+    }
+
+    label::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+  }
+}
+
 // PatternFly overrides
 
 .pf-v6-c-masthead__main {
