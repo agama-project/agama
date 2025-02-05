@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 10 09:38:35 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Added reboot command to the CLI (gh#agama-project/agama#1960)
+
+-------------------------------------------------------------------
 Fri Feb  7 11:03:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Forward the "lang" URL query parameter when redirecting in the
