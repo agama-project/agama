@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 17 17:18:35 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Added reboot command to the CLI (gh#agama-project/agama#1970)
+
+-------------------------------------------------------------------
 Fri Feb 14 17:00:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Set console and X11 keymaps when changing the installer keymap

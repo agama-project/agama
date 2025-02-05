@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Feb 17 17:19:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- (gh#agama-project/agama#1970).
+  - In an unattended installation the system will try to reboot
+    the system automatically.
+  - The finish installation will not reboot the system if it is not
+    in the "finish" installation phase.
+
+-------------------------------------------------------------------
 Tue Feb 18 11:27:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Implement basic support for RMT/SCC proxies (gh#agama-project/agama#2007).
