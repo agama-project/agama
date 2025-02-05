@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Feb  5 13:14:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- (gh#agama-project/agama#1930).
+  - In an unattended installation the system will try to reboot
+    the system automatically.
+  - The finish installation will not reboot the system if it is not
+    in the "finish" installation phase.
+
+-------------------------------------------------------------------
 Wed Jan 29 16:28:32 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow reading repository in /install directory on iso
