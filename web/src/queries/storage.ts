@@ -50,12 +50,6 @@ const devicesQuery = (scope: "result" | "system") => ({
   staleTime: Infinity,
 });
 
-const usableDevicesQuery = {
-  queryKey: ["storage", "usableDevices"],
-  queryFn: fetchUsableDevices,
-  staleTime: Infinity,
-};
-
 const productParamsQuery = {
   queryKey: ["storage", "encryptionMethods"],
   queryFn: fetchProductParams,
@@ -107,22 +101,34 @@ const useDevices = (
   return data;
 };
 
-/**
- * Hook that returns the list of available devices for installation.
- */
-const useAvailableDevices = (): StorageDevice[] => {
-  const findDevice = (devices: StorageDevice[], sid: number) => {
+const availableDevices = async (devices: StorageDevice[]): Promise<StorageDevice[]> => {
+  const findDevice = (devices: StorageDevice[], sid: number): StorageDevice | undefined => {
     const device = devices.find((d) => d.sid === sid);
-
     if (device === undefined) console.warn("Device not found:", sid);
 
     return device;
   };
 
-  const devices = useDevices("system", { suspense: true });
-  const { data } = useSuspenseQuery(usableDevicesQuery);
+  const availableDevices = await fetchUsableDevices();
 
-  return data.map((sid) => findDevice(devices, sid)).filter((d) => d);
+  return availableDevices
+    .map((sid: number) => findDevice(devices, sid))
+    .filter((d: StorageDevice | undefined) => d);
+};
+
+const availableDevicesQuery = (devices: StorageDevice[]) => ({
+  queryKey: ["storage", "availableDevices"],
+  queryFn: () => availableDevices(devices),
+  staleTime: Infinity,
+});
+
+/**
+ * Hook that returns the list of available devices for installation.
+ */
+const useAvailableDevices = (): StorageDevice[] => {
+  const devices = useDevices("system", { suspense: true });
+  const { data } = useSuspenseQuery(availableDevicesQuery(devices));
+  return data;
 };
 
 /**
