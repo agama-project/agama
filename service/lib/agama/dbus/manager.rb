@@ -65,7 +65,7 @@ module Agama
         dbus_method(:Commit, "") { install_phase }
         dbus_method(:CanInstall, "out result:b") { can_install? }
         dbus_method(:CollectLogs, "out tarball_filesystem_path:s") { collect_logs }
-        dbus_method(:Finish, "") { finish_phase }
+        dbus_method(:Finish, "out result:b") { finish_phase }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
         dbus_reader :iguana_backend, "b"
@@ -101,6 +101,8 @@ module Agama
       end
 
       # Last action for the installer
+      #
+      # @return [Boolean]
       def finish_phase
         backend.finish_installation
       end

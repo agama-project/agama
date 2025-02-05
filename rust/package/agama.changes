@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb  5 13:15:35 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Added reboot command to the CLI (gh#agama-project/agama#1960)
+
+-------------------------------------------------------------------
 Fri Jan 24 09:33:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce a new installation phase "finish"
