@@ -320,9 +320,9 @@ function TargetOptionLabel({ value }: TargetOptionLabelProps): React.ReactNode {
   const device = useDevice();
 
   if (value === NEW_PARTITION) {
-    return sprintf(_("Create new partition on %s"), device.name);
+    return sprintf(_("As a new partition on %s"), device.name);
   } else {
-    return sprintf(_("Use partition %s"), value);
+    return sprintf(_("Using partition %s"), value);
   }
 }
 
@@ -352,7 +352,7 @@ function TargetOptions(): React.ReactNode {
         <TargetOptionLabel value={NEW_PARTITION} />
       </SelectOption>
       <Divider />
-      <SelectGroup label={_("Use an existing partition")}>
+      <SelectGroup label={_("Using an existing partition")}>
         {partitions.map((partition, index) => (
           <SelectOption
             key={index}
