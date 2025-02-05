@@ -872,7 +872,12 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
       <Flex>
         <FlexItem>
           <FormGroup fieldId="minSize" label={_("Minimum")}>
-            <TextInput id="minSizeValue" value={value.min} onChange={(_, v) => changeMinSize(v)} />
+            <TextInput
+              id="minSizeValue"
+              className="w-100"
+              value={value.min}
+              onChange={(_, v) => changeMinSize(v)}
+            />
           </FormGroup>
         </FlexItem>
         <FlexItem>
@@ -891,6 +896,7 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
             <FormGroup fieldId="maxSizeLimit" label={_("Limit")}>
               <TextInput
                 id="maxSizeValue"
+                className="w-100"
                 value={value.max}
                 onChange={(_, v) => changeMaxSize(v)}
               />

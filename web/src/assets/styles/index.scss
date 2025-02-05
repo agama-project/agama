@@ -222,3 +222,8 @@
 .pf-v6-c-button {
   --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
 }
+
+// Some utilities not found at PF
+.w-100 {
+  inline-size: 100px;
+}
