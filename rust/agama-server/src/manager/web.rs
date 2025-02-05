@@ -179,9 +179,8 @@ async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Err
       (status = 200, description = "The installation tasks are executed.")
     )
 )]
-async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
-    state.manager.finish().await?;
-    Ok(())
+async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<Json<bool>, Error> {
+    Ok(Json(state.manager.finish().await?))
 }
 
 /// Returns the manager status.
