@@ -42,10 +42,9 @@ use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
-use std::error::Error;
 use std::{
     collections::HashMap,
-    process::{Command, ExitCode, Termination},
+    process::{ExitCode, Termination},
     thread::sleep,
     time::Duration,
 };
@@ -142,7 +141,6 @@ async fn reboot(manager: &ManagerClient<'_>) -> anyhow::Result<()> {
 
     // Make sure that the manager is ready
     manager.wait().await?;
-    let finished = manager.finish().await?;
     if !manager.finish().await? {
         eprintln!("Cannot reboot the system");
         return Err(CliError::NotFinished)?;
