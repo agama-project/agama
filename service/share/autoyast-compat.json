@@ -1,111 +1,258 @@
 [
+  { "key": "add-on", "support": "no" },
+  { "key": "audit-laf", "support": "no" },
+  { "key": "auth-client", "support": "no" },
+  { "key": "configuration_management", "support": "no" },
+  { "key": "deploy_image", "support": "no" },
+  { "key": "dhcp-server", "support": "no" },
+  { "key": "dns-server", "support": "no" },
+  { "key": "fcoe-client", "support": "no" },
+  { "key": "files", "support": "planned" },
+  { "key": "firstboot", "support": "no" },
+  { "key": "ftp-server", "support": "no" },
+  { "key": "general", "support": "no" },
+  { "key": "groups", "support": "no" },
+  { "key": "host", "support": "no" },
+  { "key": "http-server", "support": "no" },
   {
-    "key": "networking.backend",
-    "support": "no"
+    "key": "keyboard",
+    "children": [
+      { "key": "keymap", "support": "yes", "agama": "localization.keyboard" },
+      { "key": "capslock", "support": "no" },
+      { "key": "delay", "support": "no" },
+      { "key": "discaps", "support": "no" },
+      { "key": "numlock", "support": "no" },
+      { "key": "rate", "support": "no" },
+      { "key": "scrlock", "support": "no" },
+      { "key": "tty", "support": "no" }
+    ]
+  },
+  {
+    "key": "language",
+    "children": [
+      { "key": "language", "support": "yes", "agama": "localization.language" },
+      { "key": "languages", "support": "no" }
+    ]
+  },
+  {
+    "key": "networking",
+    "children": [
+      { "key": "backend", "support": "no" },
+      { "key": "dhcp_options", "support": "no" },
+      { "key": "dns", "support": "no" },
+      { "key": "keep_install_network", "support": "no" },
+      { "key": "managed", "support": "no" },
+      { "key": "modules", "support": "no" },
+      { "key": "net-udev", "support": "no" },
+      { "key": "routing", "support": "no" },
+      { "key": "s390-devices", "support": "no" },
+      { "key": "setup_before_proposal", "support": "no" },
+      { "key": "strict_IP_check_timeout", "support": "no" },
+      { "key": "virt_bridge_proposal", "support": "no" }
+    ]
   },
   {
     "key": "services-manager",
     "support": "planned",
-    "advice": "You can use a post-installation script to handle these cases."
+    "notes": "You can use a post-installation script to handle these cases."
   },
   {
-    "key": "iscsi-client",
-    "support": "planned"
+    "key": "scripts",
+    "children": [
+      {
+        "key": "pre-scripts[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.pre[].name"
+          },
+          { "key": "location", "support": "yes", "agama": "scripts.pre[].url" },
+          { "key": "source", "support": "yes", "agama": "scripts.pre[].body" },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
+        "key": "chroot-scripts[]",
+        "agama": "scripts.post[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.chroot[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.chroot[].url"
+          },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.chroot[].body"
+          },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
+        "key": "post-scripts[]",
+        "agama": "scripts.init[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.init[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.init[].url"
+          },
+          { "key": "source", "support": "yes", "agama": "scripts.init[].body" },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
+        "key": "init-scripts[]",
+        "agama": "scripts.init[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.init[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.init[].url"
+          },
+          { "key": "source", "support": "yes", "agama": "scripts.init[].body" },
+          { "key": "rerun", "support": "no" }
+        ]
+      }
+    ]
   },
+  { "key": "mail", "support": "no" },
+  { "key": "nfs", "support": "no" },
+  { "key": "nfs_server", "support": "no" },
+  { "key": "nis", "support": "no" },
+  { "key": "nis_server", "support": "no" },
+  { "key": "ntp-client", "support": "no" },
+  { "key": "printer", "support": "no" },
   {
-    "key": "networking.dhcp_options",
-    "support": "no"
+    "key": "proxy",
+    "support": "planned",
+    "notes": "Set the proxy using the kernels' command line"
   },
+  { "key": "report", "support": "no" },
+  { "key": "samba-client", "support": "no" },
   {
-    "key": "networking.dns",
-    "support": "no"
+    "key": "software",
+    "children": [
+      { "key": "do_online_update", "support": "no", "notes": "No 2nd stage" },
+      { "key": "install_recommended", "support": "no" },
+      { "key": "instsource", "support": "no" },
+      { "key": "kernel", "support": "no" },
+      { "key": "packages[]", "support": "planned" },
+      { "key": "post-packages[]", "support": "no" },
+      { "key": "patterns[]", "support": "yes", "agama": "software.patterns[]" },
+      { "key": "products[]", "support": "yes", "agama": "software.id" },
+      { "key": "remove-packages[]", "support": "no" },
+      { "key": "remove-patterns[]", "support": "no" },
+      { "key": "remove-products[]", "support": "no" }
+    ]
   },
+  { "key": "sound", "support": "no" },
+  { "key": "squid", "support": "no" },
+  { "key": "ssh_import", "support": "no" },
   {
-    "key": "networking.keep_install_network",
-    "support": "no"
+    "key": "suse_register",
+    "children": [
+      {
+        "key": "do_registration",
+        "support": "yes",
+        "notes": "The while section is ignored if \"false\""
+      },
+      {
+        "key": "email",
+        "support": "yes",
+        "agama": "product.registrationEmail"
+      },
+      { "key": "install_updates", "support": "no" },
+      {
+        "key": "reg_code",
+        "support": "yes",
+        "agama": "product.registrationCode"
+      },
+      { "key": "reg_server", "support": "planned" },
+      { "key": "reg_server_cert", "support": "planned" },
+      { "key": "reg_server_cert_fingerprint", "support": "planned" },
+      { "key": "reg_server_cert_fingerprint_type", "support": "planned" },
+      { "key": "addons", "support": "planned" },
+      { "key": "slp_discovery", "support": "planned" }
+    ]
   },
+  { "key": "sysconfig", "support": "no" },
+  { "key": "tftp-server", "support": "no" },
   {
-    "key": "networking.managed",
-    "support": "no"
+    "key": "timezone",
+    "children": [
+      { "key": "timezone", "support": "yes", "agama": "localization.timezone" },
+      { "key": "hwclock", "support": "no" }
+    ]
   },
+  { "key": "upgrade", "support": "no" },
+  { "key": "iscsi-client", "support": "planned" },
   {
-    "key": "networking.modules",
-    "support": "no"
-  },
-  {
-    "key": "networking.net-udev",
-    "support": "no"
-  },
-  {
-    "key": "networking.routing",
-    "support": "no"
-  },
-  {
-    "key": "networking.s390-devices",
-    "support": "no"
-  },
-  {
-    "key": "networking.setup_before_proposal",
-    "support": "no"
-  },
-  {
-    "key": "networking.strict_IP_check_timeout",
-    "support": "no"
-  },
-  {
-    "key": "networking.virt_bridge_proposal",
-    "support": "no"
-  },
-  {
-    "key": "scripts.pre-script.feedback",
-    "support": "no"
-  },
-  {
-    "key": "scripts.pre-script[].rerun",
-    "support": "no"
-  },
-  {
-    "key": "scripts.pre-script[].intepreter",
-    "support": "no"
-  },
-  {
-    "key": "keyboard.capslock",
-    "support": "no"
-  },
-  {
-    "key": "keyboard.delay",
-    "support": "no"
-  },
-  {
-    "key": "keyboard.discaps",
-    "support": "no"
-  },
-  {
-    "key": "keyboard.numlock",
-    "support": "no"
-  },
-  {
-    "key": "keyboard.rate",
-    "support": "no"
-  },
-  {
-    "key": "keyboard.scrlock",
-    "support": "no"
-  },
-  {
-    "key": "keyboard.tty",
-    "support": "no"
-  },
-  {
-    "key": "scripts.pre-script.feedback",
-    "support": "no"
-  },
-  {
-    "key": "scripts.pre-script.rerun",
-    "support": "no"
-  },
-  {
-    "key": "scripts.pre-script.intepreter",
-    "support": "no"
+    "key": "users[]",
+    "support": "yes",
+    "notes": "Only the root and the first user are considered.",
+    "children": [
+      { "key": "username", "support": "yes", "agama": "user.userName" },
+      { "key": "fullName", "support": "yes", "agama": "user.fullName" },
+      { "key": "password", "support": "yes", "agama": "user.password" },
+      {
+        "key": "encrypted",
+        "support": "yes",
+        "agama": "user.hashedPassword",
+        "notes": "If set to true, it uses \"hashedPassword\" instead of \"password\""
+      },
+      {
+        "key": "authorized_keys",
+        "support": "yes",
+        "agama": "root.sshPublicKey",
+        "notes": "It only considers one password and only for the root user."
+      }
+    ]
   }
 ]

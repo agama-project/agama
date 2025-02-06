@@ -62,7 +62,7 @@ describe Agama::AutoYaST::ProfileChecker do
       let(:profile) do
         {
           "scripts" => {
-            "pre-script" => [
+            "pre-scripts" => [
               { "location" => "http://example.net/pre-script.sh",
                 "rerun"    => true }
             ]
@@ -72,7 +72,7 @@ describe Agama::AutoYaST::ProfileChecker do
 
       it "returns an array with the unsupported element" do
         expect(subject.find_unsupported(profile)).to contain_exactly(
-          an_object_having_attributes(key: "scripts.pre-script[].rerun")
+          an_object_having_attributes(key: "scripts.pre-scripts[].rerun")
         )
       end
     end

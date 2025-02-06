@@ -25,19 +25,29 @@ require "agama/autoyast/profile_description"
 module Agama
   module AutoYaST
     # This class checks an AutoYaST profile and determines which unsupported elements are used.
+    #
+    # It does not report unknown elements.
     class ProfileChecker
+      # Finds unsupported profile elements.
+      #
+      # @param profile [Yast::ProfileHash] AutoYaST profile to check
+      # @return [Array<ProfileElement>] List of unsupported elements
       def find_unsupported(profile)
         description = ProfileDescription.load
         elements = elements_from(profile)
 
         elements.map do |e|
           normalized_key = e.gsub(/\[\d+\]/, "[]")
-          description.find_element(normalized_key)
+          element = description.find_element(normalized_key)
+          element unless element&.supported?
         end.compact
       end
 
     private
 
+      # Returns the elements from the profile
+      #
+      # @return [Array<String>] List of element IDs (e.g., "networking.backend")
       def elements_from(profile, parent = "")
         return [] unless profile.is_a?(Hash)
 

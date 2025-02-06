@@ -30,40 +30,101 @@ module Agama
       attr_reader :key
       # @return [Symbol] Support level (:no or :planned).
       attr_reader :support
-      # @return [String] How to handle the case where the attribute is needed.
-      attr_reader :advice
+      # @return [String] Additional information about the element.
+      attr_reader :notes
+      # @return [String] Agama equivalent attribute
+      attr_reader :agama
+      # @return [Array<ProfileElement>] Children elements.
+      attr_reader :children
 
-      def initialize(key, support)
+      class << self
+        def from_json(json, parent = nil)
+          support = json.key?("children") ? :yes : json["support"].to_sym
+          key = parent ? "#{parent}.#{json["key"]}" : json["key"]
+          children = json.fetch("children", []).map do |json_element|
+            ProfileElement.from_json(json_element, key)
+          end
+          ProfileElement.new(key, support, json["agama"], json["notes"], children)
+        end
+      end
+
+      def initialize(key, support, agama, hint, children = [])
         @key = key
         @support = support
+        @hint = hint
+        @agama = agama
+        @children = children
+      end
+
+      # Whether the element is supported.
+      #
+      # @return [Boolean]
+      def supported?
+        @support == :yes
+      end
+
+      # Whether it is a top level element.
+      #
+      # @return [Boolean]
+      def top_level?
+        !key.include?(".")
+      end
+
+      # Short key name.
+      #
+      # @return [String]
+      def short_key
+        key.split(".").last
       end
     end
 
     # Describes the AutoYaST profile format.
-    #
-    # At this point, it only includes the information of the unsupported sections.
     class ProfileDescription
       attr_reader :elements
 
-      DESCRIPTION_PATH = File.expand_path("#{__dir__}/../../../share/autoyast-compat.json")
+      DEFAULT_PATH = File.expand_path("#{__dir__}/../../../share/autoyast-compat.json")
 
       class << self
-        def load(path = DESCRIPTION_PATH)
+        # Load the AutoYaST profile definition.
+        #
+        # @param path [String] Path of the profile definition.
+        # @return [ProfileDescription]
+        def load(path = DEFAULT_PATH)
           json = JSON.load_file(path)
-          elements = json.map do |e|
-            ProfileElement.new(e["key"], e["support"].to_sym)
+          elements = json.map do |json_element|
+            ProfileElement.from_json(json_element)
           end
           new(elements)
         end
       end
 
+      # Constructor
+      #
+      # @param elements [Array<ProfileElement>] List of profile elements
       def initialize(elements)
         @elements = elements
+        @index = create_index(elements)
       end
 
+      # Find an element by its key
+      #
+      # @param key [String] Element key (e.g., "networking.base")
       def find_element(key)
-        section = key.split(".").first
-        elements.find { |e| [key, section].include?(e.key) }
+        element = @index.dig(*key.split("."))
+        element.is_a?(ProfileElement) ? element : nil
+      end
+
+    private
+
+      # Creates an index to make searching for an element faster and easier.
+      def create_index(elements)
+        elements.each_with_object({}) do |e, index|
+          index[e.short_key] = if e.children.empty?
+            e
+          else
+            create_index(e.children)
+          end
+        end
       end
     end
   end
