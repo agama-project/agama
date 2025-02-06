@@ -21,10 +21,10 @@ interfaces over it.
 
 ---
 
-<!-- TODO: move these screenshots to the web repository as well -->
 | ![Software page](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/user/software.png) | ![Storage settings](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/storage.png) |
 | --- | --- |
 | ![Installing](./doc/images/screenshots/installing.png) | ![Installation finished](./doc/images/screenshots/finished.png) |
+<!-- TODO: move these ^^^ screenshots to the web repository as well -->
 
 </details>
 
