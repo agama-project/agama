@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 # Copyright (c) [2025] SUSE LLC
@@ -25,6 +24,7 @@ require "yast"
 # :nodoc:
 module Agama
   module AutoYaST
+    # Reports the problems found by the {ProfileChecker} using the questions client.
     class ProfileReporter
       include Yast::I18n
 

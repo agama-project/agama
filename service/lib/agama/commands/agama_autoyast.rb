@@ -1,8 +1,7 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 #
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,6 +27,7 @@ require "agama/autoyast/profile_checker"
 require "agama/dbus/clients/questions"
 
 module Agama
+  # :nodoc:
   module Commands
     class CouldNotFetchProfile < StandardError; end
     class CouldNotWriteAgamaConfig < StandardError; end
