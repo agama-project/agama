@@ -29,7 +29,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalPage from "~/components/storage/ProposalPage";
-import { Action, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
+import { Action, StorageDevice } from "~/types/storage";
+import { Volume } from "~/api/storage/types";
 
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
@@ -79,7 +80,8 @@ const vdb: StorageDevice = {
 const volume = (mountPath: string): Volume => {
   return {
     mountPath,
-    target: VolumeTarget.DEFAULT,
+    mountOptions: [],
+    target: "default",
     fsType: "Btrfs",
     minSize: 1024,
     maxSize: 1024,
@@ -94,7 +96,6 @@ const volume = (mountPath: string): Volume => {
       snapshotsAffectSizes: false,
       sizeRelevantVolumes: [],
       adjustByRam: false,
-      productDefined: false,
     },
   };
 };
@@ -106,7 +107,7 @@ jest.mock("~/queries/storage", () => ({
   useDevices: () => [vda, vdb],
   useAvailableDevices: () => [vda, vdb],
   useVolumeDevices: () => [vda, vdb],
-  useVolumeTemplates: () => [volume("/")],
+  useVolumes: () => [volume("/")],
   useProductParams: () => ({
     encryptionMethods: [],
     mountPoints: ["/", "swap"],
