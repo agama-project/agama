@@ -253,6 +253,16 @@
   --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
 }
 
+// Do not change the default cursor for labels forms because it is confusing
+//
+// See:
+//  * https://github.com/openSUSE/Agama/issues/115#issuecomment-1090205696
+//  * https://github.com/patternfly/patternfly/issues/4777#issuecomment-1092090484
+.pf-v6-c-form__label {
+  --pf-v6-c-form__label--hover--Cursor: default;
+  --pf-v6-c-form__label--m-disabled--hover--Cursor: default;
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
