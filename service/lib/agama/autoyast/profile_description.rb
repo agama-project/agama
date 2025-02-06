@@ -131,7 +131,9 @@ module Agama
       # @param key [String] Element key (e.g., "networking.base")
       def find_element(key)
         element = @index.dig(*key.split("."))
-        element.is_a?(ProfileElement) ? element : nil
+        element if element.is_a?(ProfileElement)
+      rescue TypeError
+        nil
       end
 
     private

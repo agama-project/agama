@@ -33,5 +33,11 @@ describe Agama::AutoYaST::ProfileDescription do
         expect(element.support).to eq(:no)
       end
     end
+
+    context "when the element is unknown" do
+      it "returns nil" do
+        expect(subject.find_element("iscsi-client.dummy")).to be_nil
+      end
+    end
   end
 end
