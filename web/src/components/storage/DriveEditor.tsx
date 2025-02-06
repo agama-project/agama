@@ -33,6 +33,8 @@ import { useDrive, usePartition } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { typeDescription, contentDescription } from "~/components/storage/utils/device";
 import { Icon } from "../layout";
+import { MenuHeader } from "~/components/core";
+import MenuDeviceDescription from "./MenuDeviceDescription";
 import {
   Card,
   CardBody,
@@ -42,7 +44,6 @@ import {
   Flex,
   Label,
   Split,
-  Stack,
   Menu,
   MenuContainer,
   MenuContent,
@@ -53,7 +54,6 @@ import {
   MenuToggleProps,
   MenuToggleElement,
   MenuGroup,
-  Content,
 } from "@patternfly/react-core";
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
@@ -70,17 +70,6 @@ export const InlineMenuToggle = React.forwardRef(
       {...props}
     />
   ),
-);
-
-const MenuHeader = ({ title, description }) => (
-  <Flex
-    direction={{ default: "column" }}
-    gap={{ default: "gapXs" }}
-    className={[spacingStyles.pxMd, spacingStyles.pyXs].join(" ")}
-  >
-    <Content component="h4">{title}</Content>
-    {description && <small>{description}</small>}
-  </Flex>
 );
 
 // FIXME: Presentation is quite poor
@@ -287,25 +276,6 @@ const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }
   const navigate = useNavigate();
   const devices = useAvailableDevices();
 
-  // FIXME: Presentation is quite poor
-  const DeviceDescription = ({ device }) => {
-    return (
-      <Stack>
-        <Split hasGutter>
-          <span>{typeDescription(device)}</span>
-          <span>{contentDescription(device)}</span>
-        </Split>
-        <Split hasGutter>
-          {device.systems.map((s, i) => (
-            <Label key={i} isCompact>
-              {s}
-            </Label>
-          ))}
-        </Split>
-      </Stack>
-    );
-  };
-
   const NewVgOption = () => {
     if (withNewVg)
       return (
@@ -334,7 +304,7 @@ const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }
             key={device.sid}
             itemId={device.sid}
             isSelected={isSelected}
-            description={<DeviceDescription device={device} />}
+            description={<MenuDeviceDescription device={device} />}
             onClick={() => onChange(device.name)}
           >
             <Name />

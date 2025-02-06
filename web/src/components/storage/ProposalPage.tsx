@@ -29,6 +29,7 @@ import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
+import AddExistingDeviceMenu from "./AddExistingDeviceMenu";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
@@ -91,6 +92,9 @@ export default function ProposalPage() {
               actions={
                 <>
                   <SplitItem isFilled> </SplitItem>
+                  <SplitItem>
+                    <AddExistingDeviceMenu />
+                  </SplitItem>
                   <SplitItem>
                     <ConfigEditorMenu />
                   </SplitItem>
