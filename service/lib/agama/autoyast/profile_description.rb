@@ -28,8 +28,6 @@ module Agama
     class ProfileElement
       # @return [String] Element key.
       attr_reader :key
-      # @return [Symbol] Support level (:no or :planned).
-      attr_reader :support
       # @return [String] Additional information about the element.
       attr_reader :notes
       # @return [String] Agama equivalent attribute
@@ -38,8 +36,9 @@ module Agama
       attr_reader :children
 
       class << self
+        # Builds a ProfileElement from its JSON description.
         def from_json(json, parent = nil)
-          support = json.key?("children") ? :yes : json["support"].to_sym
+          support = json.key?("children") ? :yes : json["support"]&.to_sym
           key = parent ? "#{parent}.#{json["key"]}" : json["key"]
           children = json.fetch("children", []).map do |json_element|
             ProfileElement.from_json(json_element, key)
@@ -48,10 +47,17 @@ module Agama
         end
       end
 
-      def initialize(key, support, agama, hint, children = [])
+      # Constructor
+      #
+      # @param key [String] Element key.
+      # @param support [String, nil] Support level.
+      # @param notes [String] Additional information about the element.
+      # @param agama [String] Agama equivalent attribute
+      # @param children [Array<ProfileElement>] Children elements.
+      def initialize(key, support, agama, notes, children = [])
         @key = key
         @support = support
-        @hint = hint
+        @notes = notes
         @agama = agama
         @children = children
       end
@@ -60,7 +66,22 @@ module Agama
       #
       # @return [Boolean]
       def supported?
-        @support == :yes
+        support == :yes
+      end
+
+      # Returns the support level.
+      #
+      # If it was not specified when building the object, it infers it from its children. If the
+      # element has no children, it returns :no.
+      def support
+        return @support if @support
+
+        nested = children.map(&:support).uniq
+        return nested.first if nested.size == 1
+        return :partial if nested.include?(:yes) || nested.include?(:partial)
+        return :planned if nested.include?(:planned)
+
+        :no
       end
 
       # Whether it is a top level element.

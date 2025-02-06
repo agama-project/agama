@@ -43,7 +43,7 @@ module Agama
       #
       # @param elements [Array<Element>] List of unsupported elements.
       def report(elements)
-        keys = elements.map { |e| e.key }.join(", ")
+        keys = elements.map(&:key).join(", ")
         unsupported = elements.select { |e| e.support == :no }
         planned = elements.select { |e| e.support == :planned }
 
