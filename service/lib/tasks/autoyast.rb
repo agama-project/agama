@@ -79,7 +79,8 @@ module Agama
           "|----------|-----------|-------|-------|"
         ]
         elements.each do |e|
-          lines << "| #{e.short_key} | #{e.support} | #{e.agama} | #{e.notes} |"
+          agama_key = e.agama ? "`#{e.agama}`" : ""
+          lines << "| `#{e.short_key}` | #{e.support} | #{agama_key} | #{e.notes} |"
         end
         lines << ""
         lines
@@ -96,6 +97,8 @@ module Agama
           "This section is not supported."
         when :planned
           "There are plans to support this section in the future."
+        when :partial
+          "There is partial support for this section."
         else
           "Support for this element is still undecided."
         end

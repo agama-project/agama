@@ -37,9 +37,18 @@
   {
     "key": "networking",
     "children": [
-      { "key": "backend", "support": "no" },
+      {
+        "key": "backend",
+        "support": "no",
+        "notes": "Only NetworkManager is supported."
+      },
       { "key": "dhcp_options", "support": "no" },
       { "key": "dns", "support": "no" },
+      {
+        "key": "ipv6",
+        "support": "yes",
+        "notes": "It affects `method4` and `method6`."
+      },
       { "key": "keep_install_network", "support": "no" },
       { "key": "managed", "support": "no" },
       { "key": "modules", "support": "no" },
@@ -48,7 +57,128 @@
       { "key": "s390-devices", "support": "no" },
       { "key": "setup_before_proposal", "support": "no" },
       { "key": "strict_IP_check_timeout", "support": "no" },
-      { "key": "virt_bridge_proposal", "support": "no" }
+      { "key": "virt_bridge_proposal", "support": "no" },
+      {
+        "key": "interfaces[]",
+        "agama": "connections",
+        "notes": "It corresponds to Agama `connections`, but the format is not exactly the same.",
+        "children": [
+          { "key": "device", "agama": "interface", "support": "yes" },
+          { "key": "name", "agama": "id", "support": "yes" },
+          { "key": "description", "support": "no" },
+          {
+            "key": "bootproto",
+            "agama": "method6",
+            "notes": "Different set of values."
+          },
+          {
+            "key": "startmode",
+            "support": "no",
+            "notes": "Do not set up network connections you won't use."
+          },
+          {
+            "key": "lladdr",
+            "support": "yes",
+            "agama": "macAddress"
+          },
+          {
+            "key": "ifplugd_priority",
+            "support": "no",
+            "notes": "Not relevant (no ifplugd support)."
+          },
+          { "key": "usercontrol", "support": "no" },
+          { "key": "dhclient_set_hostname", "support": "no" },
+          {
+            "key": "ipaddr",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "prefixlen",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "netmask",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "aliases",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "broadcast",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "network",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "mtu",
+            "support": "no"
+          },
+          {
+            "key": "ethtool_options",
+            "support": "no"
+          },
+          {
+            "key": "wireless",
+            "support": "yes",
+            "agama": "wireless",
+            "notes": "It uses a different format."
+          },
+          { "key": "dhclient_set_down_link", "support": "no" },
+          { "key": "dhclient_set_default_route", "support": "no" },
+          { "key": "zone", "support": "no" },
+          { "key": "firewall", "support": "no" },
+          { "key": "bonding_master", "support": "planned" },
+          { "key": "bonding_module_opts", "support": "planned" },
+          { "key": "bonding_slave0", "support": "planned" },
+          { "key": "bonding_slave1", "support": "planned" },
+          { "key": "bridge", "support": "planned" },
+          { "key": "bridge_forwarddelay", "support": "planned" },
+          { "key": "bridge_ports", "support": "planned" },
+          { "key": "bridge_stp", "support": "planned" },
+          { "key": "vlan_id", "support": "planned" },
+          { "key": "wireless_auth_mode", "support": "yes" },
+          { "key": "wireless_ap", "support": "no" },
+          { "key": "wireless_bitrate", "support": "no" },
+          { "key": "wireless_ca_cert", "support": "no" },
+          { "key": "wireless_channel", "support": "no" },
+          { "key": "wireless_client_cert", "support": "no" },
+          { "key": "wireless_client_key", "support": "no" },
+          { "key": "wireless_client_key_password", "support": "no" },
+          { "key": "wireless_default_key", "support": "no" },
+          { "key": "wireless_eap_auth", "support": "no" },
+          { "key": "wireless_eap_mode", "support": "no" },
+          { "key": "wireless_essid", "support": "yes", "agama": "ssid" },
+          { "key": "wireless_frequency", "support": "no" },
+          { "key": "wireless_key", "support": "no" },
+          { "key": "wireless_key_0", "support": "no" },
+          { "key": "wireless_key_1", "support": "no" },
+          { "key": "wireless_key_2", "support": "no" },
+          { "key": "wireless_key_3", "support": "no" },
+          { "key": "wireless_key_length", "support": "no" },
+          { "key": "wireless_mode", "support": "yes", "agama": "mode" },
+          { "key": "wireless_nick", "support": "no" },
+          { "key": "wireless_nwid", "support": "no" },
+          { "key": "wireless_peap_version", "support": "no" },
+          { "key": "wireless_power", "support": "no" },
+          { "key": "wireless_wpa_anonid", "support": "no" },
+          { "key": "wireless_wpa_identity", "support": "no" },
+          {
+            "key": "wireless_wpa_password",
+            "support": "yes",
+            "agama": "password"
+          },
+          { "key": "wireless_wpa_psk", "support": "yes", "agama": "password" }
+        ]
+      }
     ]
   },
   {
