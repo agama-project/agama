@@ -23,6 +23,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
+  ActionGroup,
   Content,
   Divider,
   Flex,
@@ -1134,14 +1135,13 @@ export default function PartitionPage() {
                 </Content>
               </Flex>
             </FormGroup>
+            <ActionGroup>
+              <Page.Submit isDisabled={!isFormValid} form="partitionForm" />
+              <Page.Cancel />
+            </ActionGroup>
           </Stack>
         </Form>
       </Page.Content>
-
-      <Page.Actions>
-        <Page.Cancel />
-        <Page.Submit isDisabled={!isFormValid} form="partitionForm" />
-      </Page.Actions>
     </Page>
   );
 }

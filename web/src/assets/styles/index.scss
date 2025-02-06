@@ -263,7 +263,15 @@
   --pf-v6-c-form__label--m-disabled--hover--Cursor: default;
 }
 
+.pf-v6-c-form {
+  --pf-v6-c-form__group--m-action--MarginBlockStart: var(--pf-t--global--spacer--md);
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
+}
+
+div[aria-live]:empty {
+  display: none;
 }
