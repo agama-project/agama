@@ -41,6 +41,10 @@ module Yast
       Agama::Software::Callbacks::Media.new(
         questions_client, logger
       ).setup
+
+      Agama::Software::Callbacks::Provide.new(
+        questions_client, logger
+      ).setup
     end
 
     # Returns the client to ask questions
@@ -59,4 +63,3 @@ module Yast
   PackageCallbacks = PackageCallbacksClass.new
   PackageCallbacks.main
 end
-
