@@ -80,6 +80,7 @@ export default function AddExistingDeviceMenu() {
       )}
     >
       <DropdownList>
+        {/* @ts-ignore:next-line See https://github.com/patternfly/patternfly/issues/7327 */}
         <DropdownGroup label={<Header drives={model.drives} />}>
           <Divider />
           {devices.map((device) => (
