@@ -80,6 +80,7 @@
       "additionalProperties": false,
       "required": ["default"],
       "properties": {
+        "reuse": { "type": "boolean" },
         "default": { "type": "boolean" },
         "type": { "$ref": "#/$defs/filesystemType" },
         "snapshots": { "type": "boolean" }

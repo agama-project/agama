@@ -41,8 +41,9 @@ module Agama
           # @return [Hash]
           def conversions
             {
-              path: model_json[:mountPath],
-              type: convert_type
+              reuse: model_json.dig(:filesystem, :reuse),
+              path:  model_json[:mountPath],
+              type:  convert_type
             }
           end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,7 +21,9 @@
 
 require "agama/issue"
 require "agama/storage/actions_generator"
+require "agama/storage/config_checker"
 require "agama/storage/config_conversions"
+require "agama/storage/config_solver"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
 require "json"
@@ -92,10 +94,34 @@ module Agama
 
       # Config model according to the JSON schema.
       #
-      # @return [Hash, nil] nil if there is no config.
+      # The config model is generated only if the config has not errors and all the config features
+      # are supported by the model.
+      #
+      # @return [Hash, nil] nil if the config model cannot be generated.
       def model_json
         config = config(solved: true)
-        return unless config
+        return unless config && model_supported?(config)
+
+        issues = Agama::Storage::ConfigChecker.new(config, product_config).issues
+        return if issues.any?(&:error?)
+
+        ConfigConversions::ToModel.new(config).convert
+      end
+
+      # Solves a given model.
+      #
+      # @param model_json [Hash] Config model according to the JSON schema.
+      # @return [Hash, nil] Solved config model or nil if the model cannot be solved yet.
+      def solve_model(model_json)
+        return unless storage_manager.probed?
+
+        config = ConfigConversions::FromModel
+          .new(model_json, product_config: product_config)
+          .convert
+
+        ConfigSolver
+          .new(product_config, storage_manager.probed, disk_analyzer: disk_analyzer)
+          .solve(config)
 
         ConfigConversions::ToModel.new(config).convert
       end
@@ -261,6 +287,26 @@ module Agama
         return unless strategy.is_a?(ProposalStrategies::Agama)
 
         solved ? strategy.config : source_config
+      end
+
+      # Whether the config model supports all features of the given config.
+      #
+      # @param config [Storage::Config]
+      # @return [Boolean]
+      def model_supported?(config)
+        unsupported_configs = [
+          config.volume_groups,
+          config.md_raids,
+          config.btrfs_raids,
+          config.nfs_mounts
+        ].flatten
+
+        encryptable_configs = [
+          config.drives,
+          config.partitions
+        ].flatten
+
+        unsupported_configs.empty? && encryptable_configs.none?(&:encryption)
       end
 
       # Calculates a proposal from guided JSON settings.

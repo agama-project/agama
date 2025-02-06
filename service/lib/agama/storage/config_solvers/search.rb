@@ -144,7 +144,9 @@ module Agama
         # Finds the partitions matching the given search config, if any
         #
         # @param search_config [Agama::Storage::Configs::Search]
-        # @return [Y2Storage::Device, nil]
+        # @param device [#partitions]
+        #
+        # @return [Array<Y2Storage::Partition>]
         def find_partitions(search_config, device)
           candidates = candidate_devices(search_config, default: device.partitions)
           candidates.select! { |d| d.is?(:partition) }
@@ -175,7 +177,7 @@ module Agama
         #
         # @param devices [Array<Y2Storage::Device>]
         # @param search [Config::Search]
-        # @return [Y2Storage::Device, nil]
+        # @return [Array<Y2Storage::Device>]
         def next_unassigned_devices(devices, search)
           devices
             .reject { |d| sids.include?(d.sid) }

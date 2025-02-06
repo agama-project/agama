@@ -101,6 +101,7 @@ shared_examples "with filesystem" do |result_scope|
     expect(model_json[:mountPath]).to eq("/test")
     expect(model_json[:filesystem]).to eq(
       {
+        reuse:   true,
         default: false,
         type:    "xfs"
       }
@@ -115,6 +116,7 @@ shared_examples "with filesystem" do |result_scope|
       expect(model_json[:mountPath]).to eq("/")
       expect(model_json[:filesystem]).to eq(
         {
+          reuse:     false,
           default:   true,
           type:      "btrfs",
           snapshots: true

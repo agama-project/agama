@@ -54,6 +54,7 @@ export interface Drive {
   partitions?: Partition[];
 }
 export interface Filesystem {
+  reuse?: boolean;
   default: boolean;
   type?: FilesystemType;
   snapshots?: boolean;
