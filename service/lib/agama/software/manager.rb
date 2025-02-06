@@ -201,10 +201,16 @@ module Agama
 
       # Writes the repositories information to the installed system
       def finish
+        # remove the dir:///run/initramfs/live/install repository and similar
+        remove_local_repos
         Yast::Pkg.SourceSaveAll
         Yast::Pkg.TargetFinish
         # copy the libzypp caches to the target
-        copy_zypp_to_target
+        if Agama::Software::Repository.all.empty?
+          logger.info("No repository defined, not copying the libzypp caches")
+        else
+          copy_zypp_to_target
+        end
         registration.finish
       end
 
@@ -699,6 +705,11 @@ module Agama
           # to write the repository setup to the disk
           Yast::Pkg.SourceSaveAll
         end
+      end
+
+      # remove all local repositories
+      def remove_local_repos
+        Agama::Software::Repository.all.select(&:local?).each(&:delete!)
       end
     end
   end
