@@ -40,8 +40,9 @@ import {
   Stack,
   TextInput,
 } from "@patternfly/react-core";
-import { Page, SelectWrapper as Select } from "~/components/core/";
+import { NestedContent, Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
+import { Icon } from "~/components/layout";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import { useDevices, useVolume } from "~/queries/storage";
 import {
@@ -786,7 +787,16 @@ function AutoSize({ mountPoint, partition }: AutoSizeProps): React.ReactNode {
   const volume = useVolume(mountPoint);
   const size = partition?.size;
   const text = autoSizeText(volume, size);
-  return <Content component="blockquote">{text}</Content>;
+  return (
+    <NestedContent>
+      <SubtleContent>
+        <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+          <Icon name="arrow_right_alt" />
+          {text}
+        </Flex>
+      </SubtleContent>
+    </NestedContent>
+  );
 }
 
 type CustomSizeOptionLabelProps = {
@@ -868,49 +878,59 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
   };
 
   return (
-    <FormGroup>
-      <Flex>
-        <FlexItem>
-          <FormGroup fieldId="minSize" label={_("Minimum")}>
-            <TextInput
-              id="minSizeValue"
-              className="w-14ch"
-              value={value.min}
-              onChange={(_, v) => changeMinSize(v)}
-            />
-          </FormGroup>
-        </FlexItem>
-        <FlexItem>
-          <FormGroup fieldId="maxSize" label={_("Maximum")}>
-            <Split hasGutter>
-              <Select
-                value={option}
-                label={<CustomSizeOptionLabel value={option} />}
-                onChange={changeOption}
-              >
-                <CustomSizeOptions />
-              </Select>
-              {option === "range" && (
+    <NestedContent margin="mxMd">
+      <Stack hasGutter>
+        <SubtleContent>
+          {_("Sizes must be entered as a numbers optionally followed by a unit.")}
+        </SubtleContent>
+        <SubtleContent>
+          {_(
+            "If the unit is omitted, bytes (B) will be used. Greater units can be of \
+            the form GiB (power of 2) or GB (power of 10).",
+          )}
+        </SubtleContent>
+        <FormGroup>
+          <Flex>
+            <FlexItem>
+              <FormGroup fieldId="minSize" label={_("Minimum")}>
                 <TextInput
-                  id="maxSizeValue"
+                  id="minSizeValue"
                   className="w-14ch"
-                  value={value.max}
-                  onChange={(_, v) => changeMaxSize(v)}
+                  value={value.min}
+                  onChange={(_, v) => changeMinSize(v)}
                 />
-              )}
-            </Split>
-          </FormGroup>
-        </FlexItem>
-      </Flex>
-      <FormHelperText>
-        <HelperText>
-          <HelperTextItem variant={error ? "error" : "default"}>
-            {!error && _("Size units can be power of 2 (eg. GiB) or 10 (eg. GB)")}
-            {error?.message}
-          </HelperTextItem>
-        </HelperText>
-      </FormHelperText>
-    </FormGroup>
+              </FormGroup>
+            </FlexItem>
+            <FlexItem>
+              <FormGroup fieldId="maxSize" label={_("Maximum")}>
+                <Split hasGutter>
+                  <Select
+                    value={option}
+                    label={<CustomSizeOptionLabel value={option} />}
+                    onChange={changeOption}
+                  >
+                    <CustomSizeOptions />
+                  </Select>
+                  {option === "range" && (
+                    <TextInput
+                      id="maxSizeValue"
+                      className="w-14ch"
+                      value={value.max}
+                      onChange={(_, v) => changeMaxSize(v)}
+                    />
+                  )}
+                </Split>
+              </FormGroup>
+            </FlexItem>
+          </Flex>
+          <FormHelperText>
+            <HelperText>
+              {error && <HelperTextItem variant="error">{error.message}</HelperTextItem>}
+            </HelperText>
+          </FormHelperText>
+        </FormGroup>
+      </Stack>
+    </NestedContent>
   );
 }
 export default function PartitionPage() {
@@ -1083,39 +1103,37 @@ export default function PartitionPage() {
                 onChange={changeFilesystem}
               />
             </FormGroup>
-            <Flex>
-              <FlexItem>
-                <FormGroup fieldId="size" label={_("Size")}>
-                  <Select
-                    value={sizeOption}
-                    label={
-                      <SizeOptionLabel
-                        value={sizeOption}
-                        mountPoint={usedMountPt}
-                        target={target}
-                      />
-                    }
-                    onChange={changeSizeOption}
-                    isDisabled={usedMountPt === NO_VALUE}
-                  >
-                    <SizeOptions mountPoint={usedMountPt} target={target} />
-                  </Select>
+            <FormGroup fieldId="size" label={_("Size")}>
+              <Flex
+                direction={{ default: "column" }}
+                alignItems={{ default: "alignItemsFlexStart" }}
+                gap={{ default: "gapMd" }}
+              >
+                <Select
+                  value={sizeOption}
+                  label={
+                    <SizeOptionLabel value={sizeOption} mountPoint={usedMountPt} target={target} />
+                  }
+                  onChange={changeSizeOption}
+                  isDisabled={usedMountPt === NO_VALUE}
+                >
+                  <SizeOptions mountPoint={usedMountPt} target={target} />
+                </Select>
+                <Content aria-live="polite">
                   {target === NEW_PARTITION && sizeOption === "auto" && (
                     <AutoSize mountPoint={mountPoint} partition={solvedPartition} />
                   )}
-                </FormGroup>
-              </FlexItem>
-              {target === NEW_PARTITION && sizeOption === "custom" && (
-                <FlexItem>
-                  <CustomSize
-                    value={{ min: minSize, max: maxSize }}
-                    error={customSizeError}
-                    mountPoint={mountPoint}
-                    onChange={changeSize}
-                  />
-                </FlexItem>
-              )}
-            </Flex>
+                  {target === NEW_PARTITION && sizeOption === "custom" && (
+                    <CustomSize
+                      value={{ min: minSize, max: maxSize }}
+                      error={customSizeError}
+                      mountPoint={mountPoint}
+                      onChange={changeSize}
+                    />
+                  )}
+                </Content>
+              </Flex>
+            </FormGroup>
           </Stack>
         </Form>
       </Page.Content>
