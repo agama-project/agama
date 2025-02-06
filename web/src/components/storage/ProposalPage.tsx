@@ -33,13 +33,15 @@ import {
   EmptyStateBody,
   EmptyStateFooter,
 } from "@patternfly/react-core";
-import { Page } from "~/components/core/";
+import { Page, Link } from "~/components/core/";
 import { Icon, Loading } from "~/components/layout";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
 import { toValidationError } from "~/utils";
+import { useZFCPSupported } from "~/queries/storage/zfcp";
+import { useDASDSupported } from "~/queries/storage/dasd";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
 import {
@@ -47,68 +49,92 @@ import {
   useDeprecated,
   useDeprecatedChanges,
   useReprobeMutation,
+  useConfigMutation,
 } from "~/queries/storage";
 import { useConfigModel } from "~/queries/storage/config-model";
+import { STORAGE as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-const ErrorIcon = () => <Icon name="error" />;
+/** @todo Call to API method to reset the config instead of setting a config. */
+function useResetConfig() {
+  const { mutate } = useConfigMutation();
+  return () =>
+    mutate({
+      drives: [
+        {
+          partitions: [{ search: "*", delete: true }, { generate: "default" }],
+        },
+      ],
+    });
+}
 
 function ProposalEmptyDevicesState() {
+  const isZFCPSupported = useZFCPSupported();
+  const isDASDSupported = useDASDSupported();
+
+  const description = _(
+    "There are not devices available for the installation. Do you want to activate devices?",
+  );
+
   return (
-    <Page.Section>
-      <EmptyState
-        // variant="xl"
-        titleText={_("No devices found")}
-        // headingLevel="h1"
-        icon={ErrorIcon}
-        status="warning"
-      >
-        <EmptyStateBody>{_("todo")}</EmptyStateBody>
-        <EmptyStateFooter>
-          <Split hasGutter>
+    <EmptyState
+      titleText={_("No devices found")}
+      icon={() => <Icon name="error" />}
+      status="warning"
+    >
+      <EmptyStateBody>{description}</EmptyStateBody>
+      <EmptyStateFooter>
+        <Split hasGutter>
+          <SplitItem>
+            <Link to={PATHS.iscsi} variant="link">
+              {_("Activate iSCSI")}
+            </Link>
+          </SplitItem>
+          {isZFCPSupported && (
             <SplitItem>
-              <Button variant="primary" size="lg" onClick={() => console.log("reload")}>
-                {_("iscsi")}
-              </Button>
+              <Link to={PATHS.zfcp.root} variant="link">
+                {_("Activate zFCP")}
+              </Link>
             </SplitItem>
+          )}
+          {isDASDSupported && (
             <SplitItem>
-              <Button variant="primary" size="lg" onClick={() => console.log("reload")}>
-                {_("dasd")}
-              </Button>
+              <Link to={PATHS.dasd} variant="link">
+                {_("Activate DASD")}
+              </Link>
             </SplitItem>
-          </Split>
-        </EmptyStateFooter>
-      </EmptyState>
-    </Page.Section>
+          )}
+        </Split>
+      </EmptyStateFooter>
+    </EmptyState>
   );
 }
 
 function ProposalEmptyState() {
+  const reset = useResetConfig();
+
+  const description = _(
+    "The current storage config cannot be edited. Do you want to reset the default config?",
+  );
   return (
     <EmptyState
-      variant="xl"
-      titleText={_("No proposal possible with unknown settings")}
-      headingLevel="h1"
-      icon={ErrorIcon}
+      titleText={_("Unknown storage config")}
+      icon={() => <Icon name="error" />}
       status="warning"
     >
-      <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+      <EmptyStateBody>{description}</EmptyStateBody>
       <EmptyStateFooter>
-        <Button variant="primary" size="lg" onClick={() => console.log("reload")}>
-          {_("Reload")}
+        <Button variant="secondary" onClick={reset}>
+          {_("Reset")}
         </Button>
       </EmptyStateFooter>
     </EmptyState>
   );
 }
 
-function ProposalSections() {
-  const model = useConfigModel();
-  const issues = useIssues("storage");
-
-  const errors = issues.filter((s) => s.severity === IssueSeverity.Error).map(toValidationError);
-  const isValid = errors.length === 0;
-  const isEditable = model !== undefined;
+function ProposalSections({ isEditable, errors }) {
+  const reset = useResetConfig();
+  const isValid = !errors.length;
 
   return (
     <Grid hasGutter>
@@ -121,8 +147,15 @@ function ProposalSections() {
         </Alert>
       )}
       {!isEditable && (
-        <Alert variant="warning" title={_("Storage settings cannot be edited")}>
-          <div>{_("Explain and button (restart)")}</div>
+        <Alert variant="info" title={_("Unknown storage config")}>
+          <>
+            {_(
+              "The current storage config cannot be edited. Do you want to reset the default config?",
+            )}
+            <Button variant="plain" isInline onClick={reset}>
+              {_("Reset")}
+            </Button>
+          </>
         </Alert>
       )}
       {isEditable && (
@@ -152,7 +185,7 @@ function ProposalSections() {
 
 export default function ProposalPage() {
   const isDeprecated = useDeprecated();
-  const model = useConfigModel();
+  const model = useConfigModel({ suspense: true });
   const devices = useAvailableDevices();
   const issues = useIssues("storage");
   const { mutateAsync: reprobe } = useReprobeMutation();
@@ -163,11 +196,10 @@ export default function ProposalPage() {
     if (isDeprecated) reprobe().catch(console.log);
   }, [isDeprecated, reprobe]);
 
-  const isValid = issues.length === 0;
-  const isEditable = model !== undefined;
-  // const isDevicesEmpty = devices.length === 0;
-  console.log(devices);
-  const isDevicesEmpty = true;
+  const errors = issues.filter((s) => s.severity === IssueSeverity.Error).map(toValidationError);
+  const isValid = !issues.length;
+  const isEditable = !!model;
+  const isDevicesEmpty = !devices.length;
 
   return (
     <Page>
@@ -176,7 +208,9 @@ export default function ProposalPage() {
       </Page.Header>
       <Page.Content>
         {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}
-        {!isDeprecated && !isDevicesEmpty && (isEditable || isValid) && <ProposalSections />}
+        {!isDeprecated && !isDevicesEmpty && (isEditable || isValid) && (
+          <ProposalSections isEditable={isEditable} errors={errors} />
+        )}
         {!isDeprecated && !isDevicesEmpty && !isEditable && !isValid && <ProposalEmptyState />}
         {!isDeprecated && isDevicesEmpty && <ProposalEmptyDevicesState />}
       </Page.Content>
