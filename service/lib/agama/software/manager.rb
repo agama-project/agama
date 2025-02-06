@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2024] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -470,6 +470,25 @@ module Agama
       end
 
       def add_base_repos
+        return if add_repos_by_label
+        return if add_repos_by_dir
+
+        # local repositories not found, use the online repositories
+        product.repositories.each { |url| repositories.add(url) }
+      end
+
+      def add_repos_by_dir
+        # path to cdrom which can contain installation repositories
+        dir_path = "/run/initramfs/live/install"
+
+        return false unless File.exist?(dir_path)
+
+        logger.info "/install found on source cd"
+        repositories.add("dir://" + dir_path)
+        true
+      end
+
+      def add_repos_by_label
         # NOTE: support multiple labels/installation media?
         label = product.labels.first
 
@@ -481,12 +500,11 @@ module Agama
           if device
             logger.info "Installation device: #{device}"
             repositories.add("hd:/?device=" + device)
-            return
+            return true
           end
         end
 
-        # disk label not found or not configured, use the online repositories
-        product.repositories.each { |url| repositories.add(url) }
+        false
       end
 
       # find all devices with the required disk label
@@ -589,6 +607,7 @@ module Agama
       # @return [Agama::Issue]
       def missing_registration_issue
         Issue.new(_("Product must be registered"),
+          kind:     :missing_registration,
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
       end
@@ -597,8 +616,17 @@ module Agama
       #
       # @return [Boolean]
       def missing_registration?
-        registration.reg_code.nil? &&
-          registration.requirement == Agama::Registration::Requirement::MANDATORY
+        return false unless product
+
+        product.registration && missing_base_product?
+      end
+
+      # Whether the base product is missing
+      #
+      # @return [Boolean]
+      def missing_base_product?
+        products = Y2Packager::Resolvable.find(kind: :product, name: product.name)
+        products.empty?
       end
 
       def pattern_exist?(pattern_name)

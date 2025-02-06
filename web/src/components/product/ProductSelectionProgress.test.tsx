@@ -30,7 +30,7 @@ import { Product } from "~/types/software";
 jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mock</div>);
 
 let isBusy = false;
-const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: "no" };
+const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: false };
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),

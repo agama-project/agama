@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,18 +30,22 @@ import { useProduct, useRegistration } from "~/queries/software";
 const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
-  registration: "no",
+  registration: false,
 };
 
 const sle: Product = {
   id: "sle",
   name: "SLE",
-  registration: "mandatory",
+  registration: true,
 };
 
 let selectedProduct: Product;
 let registrationInfoMock: RegistrationInfo;
 const registerMutationMock = jest.fn();
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -74,11 +78,6 @@ describe("ProductRegistrationPage", () => {
       registrationInfoMock = { key: "", email: "" };
     });
 
-    it("renders ProductRegistrationAlert component", () => {
-      installerRender(<ProductRegistrationPage />);
-      screen.getByText("Warning alert:");
-    });
-
     it("renders a form to allow user registering the product", async () => {
       const { user } = installerRender(<ProductRegistrationPage />);
       const registrationCodeInput = screen.getByLabelText("Registration code");
@@ -107,11 +106,6 @@ describe("ProductRegistrationPage", () => {
       registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
     });
 
-    it("does not render ProductRegistrationAlert component", () => {
-      installerRender(<ProductRegistrationPage />);
-      expect(screen.queryByText("Warning alert:")).toBeNull();
-    });
-
     it("renders registration information with code partially hidden", async () => {
       const { user } = installerRender(<ProductRegistrationPage />);
       const visibilityCodeToggler = screen.getByRole("button", { name: "Show" });
@@ -125,42 +119,5 @@ describe("ProductRegistrationPage", () => {
       expect(screen.queryByText("INTERNAL-USE-ONLY-1234-5678")).toBeNull();
       screen.getByText(/\*?5678/);
     });
-
-    //   describe("but at registration path already", () => {
-    //     beforeEach(() => {
-    //       mockRoutes(REGISTRATION.root);
-    //     });
-    //
-    //     it("does not render the link to registration", () => {
-    //       installerRender(<ProductRegistrationAlert />);
-    //       screen.getByRole("heading", {
-    //         name: /Warning alert:.*must be registered/,
-    //       });
-    //       expect(screen.queryAllByRole("link")).toEqual([]);
-    //     });
-    //   });
-    // });
-    //
-    // describe("when product is registrable and registration code is already set", () => {
-    //   beforeEach(() => {
-    //     selectedProduct = sle;
-    //     registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "" };
-    //   });
-    //
-    //   it("renders nothing", () => {
-    //     const { container } = installerRender(<ProductRegistrationAlert />);
-    //     expect(container).toBeEmptyDOMElement();
-    //   });
-    // });
-    //
-    // describe("when product is not registrable", () => {
-    //   beforeEach(() => {
-    //     selectedProduct = tw;
-    //   });
-    //
-    //   it("renders nothing", () => {
-    //     const { container } = installerRender(<ProductRegistrationAlert />);
-    //     expect(container).toBeEmptyDOMElement();
-    //   });
   });
 });

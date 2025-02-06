@@ -29,7 +29,7 @@ import { Encryption } from "~/api/storage/types/config";
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
-  useInstallerStatus: () => ({ isBusy: false, useIguana: false, phase: 2, canInstall: false }),
+  useInstallerStatus: () => ({ isBusy: false, useIguana: false, phase: 3, canInstall: false }),
 }));
 
 type storageConfigType = "guided" | "raw";

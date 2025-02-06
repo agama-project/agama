@@ -157,7 +157,7 @@ describe Agama::DBus::Manager do
   describe "#installation_phases" do
     it "includes all possible values for the installation phase" do
       labels = subject.installation_phases.map { |i| i["label"] }
-      expect(labels).to contain_exactly("startup", "config", "install")
+      expect(labels).to contain_exactly("startup", "config", "install", "finish")
     end
 
     it "associates 'startup' with the id 0" do
@@ -173,6 +173,11 @@ describe Agama::DBus::Manager do
     it "associates 'install' with the id 2" do
       install = subject.installation_phases.find { |i| i["label"] == "install" }
       expect(install["id"]).to eq(described_class::INSTALL_PHASE)
+    end
+
+    it "associates 'finish' with the id 3" do
+      install = subject.installation_phases.find { |i| i["label"] == "finish" }
+      expect(install["id"]).to eq(described_class::FINISH_PHASE)
     end
   end
 

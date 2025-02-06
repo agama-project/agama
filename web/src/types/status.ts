@@ -27,6 +27,7 @@ enum InstallationPhase {
   Startup = 0,
   Config = 1,
   Install = 2,
+  Finish = 3,
 }
 
 /*
