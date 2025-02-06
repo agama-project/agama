@@ -22,10 +22,10 @@
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
-import { configModel } from "~/api/storage/types";
+import { configModel, Volume } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
-import { SpacePolicyAction, Volume } from "~/types/storage";
-import { useVolumeTemplates } from "~/queries/storage";
+import { SpacePolicyAction } from "~/types/storage";
+import { useVolumes } from "~/queries/storage";
 
 function copyModel(model: configModel.Config): configModel.Config {
   return JSON.parse(JSON.stringify(model));
@@ -415,7 +415,7 @@ export type ModelHook = {
 export function useModel(): ModelHook {
   const model = useConfigModel();
   const { mutate } = useConfigModelMutation();
-  const volumes = useVolumeTemplates();
+  const volumes = useVolumes();
 
   return {
     model,

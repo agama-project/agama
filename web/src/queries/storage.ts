@@ -26,39 +26,20 @@ import {
   fetchConfig,
   setConfig,
   fetchActions,
-  fetchVolumeTemplates,
+  fetchVolumes,
   fetchProductParams,
   fetchUsableDevices,
   reprobe,
 } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
-import { config, ProductParams } from "~/api/storage/types";
-import { Action, StorageDevice, Volume } from "~/types/storage";
-
+import { config, ProductParams, Volume } from "~/api/storage/types";
+import { Action, StorageDevice } from "~/types/storage";
 import { QueryHookOptions } from "~/types/queries";
 
 const configQuery = {
   queryKey: ["storage", "config"],
   queryFn: fetchConfig,
-  staleTime: Infinity,
-};
-
-const devicesQuery = (scope: "result" | "system") => ({
-  queryKey: ["storage", "devices", scope],
-  queryFn: () => fetchDevices(scope),
-  staleTime: Infinity,
-});
-
-const productParamsQuery = {
-  queryKey: ["storage", "encryptionMethods"],
-  queryFn: fetchProductParams,
-  staleTime: Infinity,
-};
-
-const volumeTemplatesQuery = {
-  queryKey: ["storage", "volumeTemplates"],
-  queryFn: fetchVolumeTemplates,
   staleTime: Infinity,
 };
 
@@ -84,6 +65,12 @@ const useConfigMutation = () => {
 
   return useMutation(query);
 };
+
+const devicesQuery = (scope: "result" | "system") => ({
+  queryKey: ["storage", "devices", scope],
+  queryFn: () => fetchDevices(scope),
+  staleTime: Infinity,
+});
 
 /**
  * Hook that returns the list of storage devices for the given scope.
@@ -131,6 +118,12 @@ const useAvailableDevices = (): StorageDevice[] => {
   return data;
 };
 
+const productParamsQuery = {
+  queryKey: ["storage", "encryptionMethods"],
+  queryFn: fetchProductParams,
+  staleTime: Infinity,
+};
+
 /**
  * Hook that returns the product parameters (e.g., mount points).
  */
@@ -140,19 +133,26 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
   return data;
 };
 
+const volumesQuery = (mountPaths: string[]) => ({
+  queryKey: ["storage", "volumes"],
+  queryFn: () => fetchVolumes(mountPaths),
+  staleTime: Infinity,
+});
+
 /**
- * Hook that returns the volume templates for the current product.
+ * Hook that returns the volumes for the current product.
  */
-const useVolumeTemplates = (): Volume[] => {
-  const { data } = useSuspenseQuery(volumeTemplatesQuery);
+const useVolumes = (): Volume[] => {
+  const product = useProductParams({ suspense: true });
+  const mountPoints = ["", ...product.mountPoints];
+  const { data } = useSuspenseQuery(volumesQuery(mountPoints));
   return data;
 };
 
 function useVolume(mountPoint: string): Volume {
-  const volumes = useVolumeTemplates();
+  const volumes = useVolumes();
   const volume = volumes.find((v) => v.mountPath === mountPoint);
   const defaultVolume = volumes.find((v) => v.mountPath === "");
-
   return volume || defaultVolume;
 }
 
@@ -250,7 +250,7 @@ export {
   useDevices,
   useAvailableDevices,
   useProductParams,
-  useVolumeTemplates,
+  useVolumes,
   useVolume,
   useVolumeDevices,
   useActions,

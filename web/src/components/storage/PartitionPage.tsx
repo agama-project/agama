@@ -52,11 +52,11 @@ import {
   useSolvedConfigModel,
   addPartition,
 } from "~/queries/storage/config-model";
-import { StorageDevice, Volume } from "~/types/storage";
+import { StorageDevice } from "~/types/storage";
 import { baseName, deviceSize, parseToBytes } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { configModel } from "~/api/storage/types";
+import { configModel, Volume } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { compact } from "~/utils";
 
