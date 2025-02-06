@@ -376,6 +376,7 @@ describe Agama::Storage::Proposal do
                   {
                     mountPath:      "/",
                     filesystem:     {
+                      reuse:   false,
                       default: true,
                       type:    "ext4"
                     },
@@ -411,6 +412,72 @@ describe Agama::Storage::Proposal do
 
       it "returns nil" do
         expect(subject.model_json).to be_nil
+      end
+    end
+  end
+
+  describe "#solve_model" do
+    let(:model) do
+      {
+        drives: [
+          {
+            name:       "/dev/sda",
+            alias:      "sda",
+            partitions: [
+              { mountPath: "/" }
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns the solved model" do
+      result = subject.solve_model(model)
+
+      expect(result).to eq({
+        boot:   {
+          configure: true,
+          device:    {
+            default: true,
+            name:    "/dev/sda"
+          }
+        },
+        drives: [
+          {
+            name:        "/dev/sda",
+            alias:       "sda",
+            spacePolicy: "keep",
+            partitions:  [
+              {
+                mountPath:      "/",
+                filesystem:     {
+                  reuse:   false,
+                  default: true,
+                  type:    "ext4"
+                },
+                size:           {
+                  default: true,
+                  min:     0
+                },
+                delete:         false,
+                deleteIfNeeded: false,
+                resize:         false,
+                resizeIfNeeded: false
+              }
+            ]
+          }
+        ]
+      })
+    end
+
+    context "if the system has not been probed yet" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
+      end
+
+      it "returns nil" do
+        result = subject.solve_model(model)
+        expect(result).to be_nil
       end
     end
   end

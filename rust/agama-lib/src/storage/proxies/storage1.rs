@@ -71,6 +71,9 @@ pub trait Storage1 {
     /// Get the storage config model according to the JSON schema
     fn get_config_model(&self) -> zbus::Result<String>;
 
+    /// Solve a storage config model
+    fn solve_config_model(&self, model: &str) -> zbus::Result<String>;
+
     /// DeprecatedSystem property
     #[zbus(property)]
     fn deprecated_system(&self) -> zbus::Result<bool>;
