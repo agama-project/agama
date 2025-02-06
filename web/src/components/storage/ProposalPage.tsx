@@ -21,10 +21,20 @@
  */
 
 import React from "react";
-import { Alert, Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
+import {
+  Alert,
+  Button,
+  Content,
+  Grid,
+  GridItem,
+  Split,
+  SplitItem,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateFooter,
+} from "@patternfly/react-core";
 import { Page } from "~/components/core/";
-import { Loading } from "~/components/layout";
-import EncryptionField from "~/components/storage/EncryptionField";
+import { Icon, Loading } from "~/components/layout";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ConfigEditor from "./ConfigEditor";
@@ -32,11 +42,119 @@ import ConfigEditorMenu from "./ConfigEditorMenu";
 import { toValidationError } from "~/utils";
 import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useDeprecated, useDeprecatedChanges, useReprobeMutation } from "~/queries/storage";
+import {
+  useAvailableDevices,
+  useDeprecated,
+  useDeprecatedChanges,
+  useReprobeMutation,
+} from "~/queries/storage";
+import { useConfigModel } from "~/queries/storage/config-model";
 import { _ } from "~/i18n";
+
+const ErrorIcon = () => <Icon name="error" />;
+
+function ProposalEmptyDevicesState() {
+  return (
+    <Page.Section>
+      <EmptyState
+        // variant="xl"
+        titleText={_("No devices found")}
+        // headingLevel="h1"
+        icon={ErrorIcon}
+        status="warning"
+      >
+        <EmptyStateBody>{_("todo")}</EmptyStateBody>
+        <EmptyStateFooter>
+          <Split hasGutter>
+            <SplitItem>
+              <Button variant="primary" size="lg" onClick={() => console.log("reload")}>
+                {_("iscsi")}
+              </Button>
+            </SplitItem>
+            <SplitItem>
+              <Button variant="primary" size="lg" onClick={() => console.log("reload")}>
+                {_("dasd")}
+              </Button>
+            </SplitItem>
+          </Split>
+        </EmptyStateFooter>
+      </EmptyState>
+    </Page.Section>
+  );
+}
+
+function ProposalEmptyState() {
+  return (
+    <EmptyState
+      variant="xl"
+      titleText={_("No proposal possible with unknown settings")}
+      headingLevel="h1"
+      icon={ErrorIcon}
+      status="warning"
+    >
+      <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+      <EmptyStateFooter>
+        <Button variant="primary" size="lg" onClick={() => console.log("reload")}>
+          {_("Reload")}
+        </Button>
+      </EmptyStateFooter>
+    </EmptyState>
+  );
+}
+
+function ProposalSections() {
+  const model = useConfigModel();
+  const issues = useIssues("storage");
+
+  const errors = issues.filter((s) => s.severity === IssueSeverity.Error).map(toValidationError);
+  const isValid = errors.length === 0;
+  const isEditable = model !== undefined;
+
+  return (
+    <Grid hasGutter>
+      <ProposalTransactionalInfo />
+      {!isValid && (
+        <Alert variant="warning" title={_("Storage proposal not possible")}>
+          {errors.map((e, i) => (
+            <div key={i}>{e.message}</div>
+          ))}
+        </Alert>
+      )}
+      {!isEditable && (
+        <Alert variant="warning" title={_("Storage settings cannot be edited")}>
+          <div>{_("Explain and button (restart)")}</div>
+        </Alert>
+      )}
+      {isEditable && (
+        <GridItem sm={12} xl={8}>
+          <Page.Section
+            title={_("Installation Devices")}
+            description={_(
+              "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+            )}
+            actions={
+              <>
+                <SplitItem isFilled> </SplitItem>
+                <SplitItem>
+                  <ConfigEditorMenu />
+                </SplitItem>
+              </>
+            }
+          >
+            <ConfigEditor />
+          </Page.Section>
+        </GridItem>
+      )}
+      {isValid && <ProposalResultSection />}
+    </Grid>
+  );
+}
 
 export default function ProposalPage() {
   const isDeprecated = useDeprecated();
+  const model = useConfigModel();
+  const devices = useAvailableDevices();
+  const issues = useIssues("storage");
   const { mutateAsync: reprobe } = useReprobeMutation();
 
   useDeprecatedChanges();
@@ -45,66 +163,22 @@ export default function ProposalPage() {
     if (isDeprecated) reprobe().catch(console.log);
   }, [isDeprecated, reprobe]);
 
-  const errors = useIssues("storage")
-    .filter((s) => s.severity === IssueSeverity.Error)
-    .map(toValidationError);
-
-  const validProposal = errors.length === 0;
-
-  if (isDeprecated) {
-    return (
-      <Page>
-        <Page.Header>
-          <Content component="h2">{_("Storage")}</Content>
-        </Page.Header>
-
-        <Page.Content>
-          <Loading text={_("Reloading data, please wait...")} />
-        </Page.Content>
-      </Page>
-    );
-  }
+  const isValid = issues.length === 0;
+  const isEditable = model !== undefined;
+  // const isDevicesEmpty = devices.length === 0;
+  console.log(devices);
+  const isDevicesEmpty = true;
 
   return (
     <Page>
       <Page.Header>
         <Content component="h2">{_("Storage")}</Content>
       </Page.Header>
-
       <Page.Content>
-        <Grid hasGutter>
-          <ProposalTransactionalInfo />
-          {!validProposal && (
-            <Alert variant="warning" title={_("Storage proposal not possible")}>
-              {errors.map((e, i) => (
-                <div key={i}>{e.message}</div>
-              ))}
-            </Alert>
-          )}
-
-          <GridItem sm={12} xl={8}>
-            <Page.Section
-              title={_("Installation Devices")}
-              description={_(
-                "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
-              )}
-              actions={
-                <>
-                  <SplitItem isFilled> </SplitItem>
-                  <SplitItem>
-                    <ConfigEditorMenu />
-                  </SplitItem>
-                </>
-              }
-            >
-              <ConfigEditor />
-            </Page.Section>
-          </GridItem>
-          <GridItem sm={12} xl={4}>
-            <EncryptionField password={""} isLoading={false} />
-          </GridItem>
-          {validProposal && <ProposalResultSection isLoading={false} />}
-        </Grid>
+        {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}
+        {!isDeprecated && !isDevicesEmpty && (isEditable || isValid) && <ProposalSections />}
+        {!isDeprecated && !isDevicesEmpty && !isEditable && !isValid && <ProposalEmptyState />}
+        {!isDeprecated && isDevicesEmpty && <ProposalEmptyDevicesState />}
       </Page.Content>
     </Page>
   );
