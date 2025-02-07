@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb  7 08:21:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Implemented media check functionality (bsc#1236103)
+
+-------------------------------------------------------------------
 Fri Feb  7 08:10:46 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use better ISO Volume ID labels (bsc#1236401)
