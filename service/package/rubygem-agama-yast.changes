@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  7 14:42:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report unsupported AutoYaST elements
+  (gh#agama-project/agama#1976).
+
+-------------------------------------------------------------------
 Wed Jan 29 16:28:32 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow reading repository in /install directory on iso
