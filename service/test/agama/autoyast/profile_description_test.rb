@@ -28,15 +28,15 @@ describe Agama::AutoYaST::ProfileDescription do
   describe "#find_element" do
     context "when the element exists" do
       it "returns the element data" do
-        element = subject.find_element("networking.backend")
-        expect(element.key).to eq("networking.backend")
+        element = subject.find_element("networking/backend")
+        expect(element.key).to eq("networking/backend")
         expect(element.support).to eq(:no)
       end
     end
 
     context "when the element is unknown" do
       it "returns nil" do
-        expect(subject.find_element("iscsi-client.dummy")).to be_nil
+        expect(subject.find_element("iscsi-client/dummy")).to be_nil
       end
     end
   end

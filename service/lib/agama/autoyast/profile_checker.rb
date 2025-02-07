@@ -46,15 +46,17 @@ module Agama
 
       # Returns the elements from the profile
       #
-      # @return [Array<String>] List of element IDs (e.g., "networking.backend")
+      # @return [Array<String>] List of element IDs (e.g., "networking/backend")
       def elements_from(profile, parent = "")
         return [] unless profile.is_a?(Hash)
 
         profile.map do |k, v|
-          current = parent.empty? ? k : "#{parent}.#{k}"
+          current = parent.empty? ? k : "#{parent}#{ProfileDescription::SEPARATOR}#{k}"
 
           children = if v.is_a?(Array)
-            v.map.with_index { |e, i| elements_from(e, "#{parent}.#{k}[#{i}]") }
+            v.map.with_index do |e, i|
+              elements_from(e, "#{parent}#{ProfileDescription::SEPARATOR}#{k}[#{i}]")
+            end
           else
             elements_from(v, k)
           end

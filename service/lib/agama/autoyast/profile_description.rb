@@ -38,7 +38,7 @@ module Agama
         # Builds a ProfileElement from its JSON description.
         def from_json(json, parent = nil)
           support = json.key?("children") ? :yes : json["support"]&.to_sym
-          key = parent ? "#{parent}.#{json["key"]}" : json["key"]
+          key = parent ? "#{parent}#{ProfileDescription::SEPARATOR}#{json["key"]}" : json["key"]
           children = json.fetch("children", []).map do |json_element|
             ProfileElement.from_json(json_element, key)
           end
@@ -87,19 +87,21 @@ module Agama
       #
       # @return [Boolean]
       def top_level?
-        !key.include?(".")
+        !key.include?(ProfileDescription::SEPARATOR)
       end
 
       # Short key name.
       #
       # @return [String]
       def short_key
-        key.split(".").last
+        key.split(ProfileDescription::SEPARATOR).last
       end
     end
 
     # Describes the AutoYaST profile format.
     class ProfileDescription
+      SEPARATOR = "/"
+
       attr_reader :elements
 
       DEFAULT_PATH = File.expand_path("#{__dir__}/../../../share/autoyast-compat.json")
@@ -128,9 +130,9 @@ module Agama
 
       # Find an element by its key
       #
-      # @param key [String] Element key (e.g., "networking.base")
+      # @param key [String] Element key (e.g., "networking/base")
       def find_element(key)
-        element = @index.dig(*key.split("."))
+        element = @index.dig(*key.split(SEPARATOR))
         element if element.is_a?(ProfileElement)
       rescue TypeError
         nil

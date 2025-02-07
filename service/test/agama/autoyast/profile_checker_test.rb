@@ -53,7 +53,7 @@ describe Agama::AutoYaST::ProfileChecker do
 
       it "returns an array with the unsupported element" do
         expect(subject.find_unsupported(profile)).to contain_exactly(
-          an_object_having_attributes(key: "networking.backend")
+          an_object_having_attributes(key: "networking/backend")
         )
       end
     end
@@ -72,7 +72,7 @@ describe Agama::AutoYaST::ProfileChecker do
 
       it "returns an array with the unsupported element" do
         expect(subject.find_unsupported(profile)).to contain_exactly(
-          an_object_having_attributes(key: "scripts.pre-scripts[].rerun")
+          an_object_having_attributes(key: "scripts/pre-scripts[]/rerun")
         )
       end
     end
