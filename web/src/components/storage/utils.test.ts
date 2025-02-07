@@ -250,7 +250,6 @@ describe("parseToBytes", () => {
     expect(parseToBytes("1 KIb")).toEqual(1024);
     expect(parseToBytes("1 KIB")).toEqual(1024);
   });
-
 });
 
 describe("splitSize", () => {
