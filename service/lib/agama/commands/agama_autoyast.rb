@@ -24,6 +24,7 @@ require "agama/autoyast/converter"
 require "agama/autoyast/profile_fetcher"
 require "agama/autoyast/profile_reporter"
 require "agama/autoyast/profile_checker"
+require "agama/cmdline_args"
 require "agama/dbus/clients/questions"
 
 module Agama
@@ -66,11 +67,13 @@ module Agama
       # Check the profile for unsupported
       def check_profile(profile)
         checker = Agama::AutoYaST::ProfileChecker.new
-        checker.find_unsupported(profile)
+        elements = checker.find_unsupported(profile)
+        logger.info "Found unsupported AutoYaST elements: #{elements.map(&:key)}"
+        elements
       end
 
       def report_unsupported(elements)
-        return true if elements.empty?
+        return true if elements.empty? || !report?
 
         reporter = Agama::AutoYaST::ProfileReporter.new(questions_client, logger)
         reporter.report(elements)
@@ -87,6 +90,12 @@ module Agama
 
       def questions_client
         @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
+      end
+
+      # Whether the report is enabled or not.
+      def report?
+        cmdline = CmdlineArgs.read_from("/proc/cmdline")
+        cmdline.data.fetch("ay_check", "1") != "0"
       end
     end
 

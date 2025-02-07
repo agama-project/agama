@@ -48,7 +48,7 @@ module Agama
         planned = elements.select { |e| e.support == :planned }
 
         message = format(
-          _("Some AutoYaST elements are not supported."), keys: keys
+          _("Found unsupported elements in the AutoYaST profile: %{keys}."), keys: keys
         )
         question = Agama::Question.new(
           qclass:         "autoyast.unsupported",
