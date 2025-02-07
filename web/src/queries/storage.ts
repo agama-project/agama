@@ -185,7 +185,7 @@ const useVolumeDevices = (): StorageDevice[] => {
   return [...availableDevices, ...mds, ...vgs];
 };
 
-const proposalActionsQuery = {
+const actionsQuery = {
   queryKey: ["storage", "devices", "actions"],
   queryFn: fetchActions,
 };
@@ -193,8 +193,8 @@ const proposalActionsQuery = {
 /**
  * Hook that returns the actions to perform in the storage devices.
  */
-const useActions = (): Action[] | undefined => {
-  const { data } = useSuspenseQuery(proposalActionsQuery);
+const useActions = (): Action[] => {
+  const { data } = useSuspenseQuery(actionsQuery);
   return data;
 };
 
