@@ -564,6 +564,9 @@ export default {
   "Hide details": [
     "Dölj detaljer"
   ],
+  "I have read and accept the [license] for %s": [
+    "Jag har läst och accepterar [licensen] för %s"
+  ],
   "IP Address": [
     "IP address"
   ],
@@ -693,6 +696,9 @@ export default {
   "Language": [
     "Språk"
   ],
+  "License language": [
+    "Licens språk"
+  ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "Gränser för filsystemets storlek. Den slutliga storleken kommer att vara ett värde mellan angivet minsta och maximal. Om inget maximalt anges kommer filsystemet att vara så stort som möjligt."
   ],
@@ -701,6 +707,9 @@ export default {
   ],
   "Loading installation environment, please wait.": [
     "Laddar installationsmiljö, vänligen vänta."
+  ],
+  "Loading the installation repositories...": [
+    "Laddar installationsförråd..."
   ],
   "Locale selection": [
     "Lokal val"
@@ -1044,6 +1053,9 @@ export default {
   "Remove min channel filter": [
     "Ta bort minimum kanal filter"
   ],
+  "Repository load failed": [
+    "Det gick inte att ladda förråd"
+  ],
   "Reset location": [
     "Återställ plats"
   ],
@@ -1176,6 +1188,9 @@ export default {
   ],
   "Software selection": [
     "Val av programvara"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    "Vissa installationsförråd kunde inte laddas. Utan dem kan systemet inte installeras."
   ],
   "Something went wrong": [
     "Något gick fel"
@@ -1359,6 +1374,9 @@ export default {
   ],
   "Transactional root file system": [
     "Transaktionellt root filsystem"
+  ],
+  "Try again": [
+    "Försök igen"
   ],
   "Type": [
     "Typ"

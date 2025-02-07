@@ -42,7 +42,7 @@ describe Agama::Storage::Proposal do
   let(:scenario) { "windows-linux-pc.yml" }
 
   let(:arch) do
-    instance_double(Y2Storage::Arch, efiboot?: true, ram_size: 4.GiB.to_i)
+    instance_double(Y2Storage::Arch, x86?: true, efiboot?: true, ram_size: 4.GiB.to_i)
   end
 
   let(:config_path) do
@@ -121,7 +121,7 @@ describe Agama::Storage::Proposal do
           expect(efi).to have_attributes(
             filesystem_type:       Y2Storage::Filesystems::Type::VFAT,
             filesystem_mountpoint: "/boot/efi",
-            size:                  512.MiB
+            size:                  1.GiB
           )
 
           expect(root).to have_attributes(
@@ -292,7 +292,7 @@ describe Agama::Storage::Proposal do
           filesystem_type:       Y2Storage::Filesystems::Type::VFAT,
           filesystem_mountpoint: "/boot/efi",
           id:                    Y2Storage::PartitionId::ESP,
-          size:                  512.MiB
+          size:                  1.GiB
         )
       end
 

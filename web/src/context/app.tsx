@@ -39,11 +39,14 @@ const networkMode = (): "always" | "online" => {
   return localConnection() ? "always" : "online";
 };
 
+const sharedOptions = {
+  networkMode: networkMode(),
+};
+
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: {
-      networkMode: networkMode(),
-    },
+    queries: sharedOptions,
+    mutations: sharedOptions,
   },
 });
 
