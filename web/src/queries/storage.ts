@@ -59,7 +59,7 @@ const useConfig = (options?: QueryHookOptions): config.Config => {
 const useConfigMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (config: config.Config) => setConfig(config),
+    mutationFn: async (config: config.Config) => await setConfig(config),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
   };
 
