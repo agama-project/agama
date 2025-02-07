@@ -68,6 +68,7 @@
           { "key": "description", "support": "no" },
           {
             "key": "bootproto",
+            "support": "no",
             "agama": "method6",
             "notes": "Different set of values."
           },
@@ -365,7 +366,6 @@
   { "key": "iscsi-client", "support": "planned" },
   {
     "key": "users[]",
-    "support": "yes",
     "notes": "Only the root and the first user are considered.",
     "children": [
       { "key": "username", "support": "yes", "agama": "user.userName" },
