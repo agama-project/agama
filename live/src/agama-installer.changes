@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb  7 16:31:50 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: restore initrd.off naming for the initrd offset
+  This essentially reverts the previous change (bsc#1236781, gh#agama-project/agama#1969,
+  gh#agama-project/agama#1974)
+
+-------------------------------------------------------------------
 Fri Feb  7 09:15:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - In local installation prefer the language configured in the
