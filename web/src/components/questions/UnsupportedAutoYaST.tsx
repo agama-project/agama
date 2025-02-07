@@ -21,44 +21,38 @@
  */
 
 import React from "react";
-import { Text } from "@patternfly/react-core";
+import { Flex, Grid, GridItem, Text } from "@patternfly/react-core";
 import { AnswerCallback, Question } from "~/types/questions";
-import { Popup } from "~/components/core";
+import { Page, Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { sprintf } from "sprintf-js";
 
-const UnsupportedElementsText = ({ data }: { data: { [key: string]: string } }) => {
-  if (data.unsupported.length === 0) {
+const UnsupportedElements = ({
+  elements,
+  title,
+  description,
+}: {
+  elements: string[];
+  title: string;
+  description: string;
+}) => {
+  if (elements.length === 0) {
     return undefined;
   }
 
-  const elements = data.unsupported.split(",");
-
   return (
-    <Text>
-      {sprintf(
-        _("These elements are not supported and there are no plans to support them: %s."),
-        elements.join(", "),
-      )}
-    </Text>
-  );
-};
-
-const PlannedElementsText = ({ data }: { data: { [key: string]: string } }) => {
-  if (data.planned.length === 0) {
-    return undefined;
-  }
-
-  const elements = data.planned.split(",");
-
-  return (
-    <Text>
-      {sprintf(
-        _("These elements are not supported but there are plans to support them: %s."),
-        elements.join(", "),
-      )}
-    </Text>
+    <GridItem sm={12} lg={6}>
+      <Page.Section title={title} description={description}>
+        <Flex gap={{ default: "gapSm" }} aria-role="list">
+          {elements.map((e: string, i: number) => (
+            <span key={i} aria-role="listitem">
+              {e}
+            </span>
+          ))}
+        </Flex>
+      </Page.Section>
+    </GridItem>
   );
 };
 
@@ -74,11 +68,30 @@ export default function UnsupportedAutoYaST({
     answerCallback(question);
   };
 
+  const planned = question.data.planned?.split(",") || [];
+  const unsupported = question.data.unsupported?.split(",") || [];
+
   return (
-    <Popup isOpen aria-label={_("Unsupported AutoYaST elements")}>
-      <Text>{question.text}</Text>
-      <UnsupportedElementsText data={question.data} />
-      <PlannedElementsText data={question.data} />
+    <Popup isOpen title={_("Not supported AutoYaST elements")}>
+      <Text>{_("Some elements found in the AutoYaST profile are not supported.")}</Text>
+      <Grid hasGutter>
+        <UnsupportedElements
+          elements={planned}
+          title={
+            /** TRANSLATORS: %s is replaced by the quantity of not implemented elements */
+            sprintf(_("Not implemented yet (%s)"), planned.length)
+          }
+          description={_("Will be supported in a future version.")}
+        />
+        <UnsupportedElements
+          elements={unsupported}
+          title={
+            /** TRANSLATORS: %s is replaced by the quantity of not supported elements */
+            sprintf(_("Not supported (%s)"), unsupported.length)
+          }
+          description={_("No support is planned.")}
+        />
+      </Grid>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}

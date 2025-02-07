@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { AnswerCallback, Question } from "~/types/questions";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import { plainRender } from "~/test-utils";
@@ -38,18 +38,50 @@ const question: Question = {
   },
 };
 
+let mockQuestion = question;
+
 const answerFn: AnswerCallback = jest.fn();
 
 describe("UnsupportedAutoYaST", () => {
+  beforeEach(() => {
+    mockQuestion = { ...question };
+  });
+
   it("mentions the planned elements", () => {
     plainRender(<UnsupportedAutoYaST question={question} answerCallback={answerFn} />);
 
-    expect(screen.getByText(/there are plans to support them: iscsi-client/)).toBeInTheDocument();
+    const list = screen.getByRole("region", { name: "Not implemented yet (1)" });
+    within(list).getByText("iscsi-client");
   });
 
-  it("mentions the unsupported elements", () => {
+  it("mentions the unsuported elements", () => {
     plainRender(<UnsupportedAutoYaST question={question} answerCallback={answerFn} />);
 
-    expect(screen.getByText(/no plans to support them: dns-server/)).toBeInTheDocument();
+    const list = screen.getByRole("region", { name: "Not supported (1)" });
+    within(list).getByText("dns-server");
+  });
+
+  describe("when there are no unsupported (but planned) elements", () => {
+    beforeEach(() => {
+      mockQuestion = { ...question, data: {} };
+    });
+
+    it('does not render the "Not implemented yet" list', () => {
+      plainRender(<UnsupportedAutoYaST question={mockQuestion} answerCallback={answerFn} />);
+
+      expect(screen.queryByRole("region", { name: /Not implemented/ })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when there are no unsupported (but planned) elements", () => {
+    beforeEach(() => {
+      mockQuestion = { ...question, data: {} };
+    });
+
+    it('does not render the "Not supported" list', () => {
+      plainRender(<UnsupportedAutoYaST question={mockQuestion} answerCallback={answerFn} />);
+
+      expect(screen.queryByRole("region", { name: /Not supported/ })).not.toBeInTheDocument();
+    });
   });
 });
