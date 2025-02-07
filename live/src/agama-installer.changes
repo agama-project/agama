@@ -1,8 +1,29 @@
 -------------------------------------------------------------------
-Tue Jan 28 15:47:52 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+Fri Feb  7 08:10:46 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use better ISO Volume ID labels (bsc#1236401)
 - Improve also the boot menu labels
+- Use the graphical boot menu also in SLE
+
+-------------------------------------------------------------------
+Tue Feb  4 13:25:35 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- configure xterm to use the default fixed font also in the
+  configuration popup menu (Ctrl + click) to avoid crash
+- bsc#1235478
+  - tuned IceWM setup to disable some desktop functionality like
+    opening main menu using the Win key (by mfilka@suse.com)
+
+-------------------------------------------------------------------
+Mon Feb  3 23:08:34 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: use initrd.ofs for the initrd
+  offset filename (gh#agama-project/agama#1969)
+
+-------------------------------------------------------------------
+Mon Feb  3 23:01:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- fix_bootimage: exit on failures (gh#agama-project/agama#1969)
 
 -------------------------------------------------------------------
 Mon Jan 20 10:37:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

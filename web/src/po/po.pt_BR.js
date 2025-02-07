@@ -561,6 +561,9 @@ export default {
   "Hide details": [
     "Ocultar Detalhes"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "Endereço IP"
   ],
@@ -1032,6 +1035,9 @@ export default {
   "Remove min channel filter": [
     "Remover filtro de canal mínimo"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Redefinir local"
   ],
@@ -1161,6 +1167,9 @@ export default {
   ],
   "Software selection": [
     "Seleção de software"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
   ],
   "Something went wrong": [
     "Alguma coisa deu errado"

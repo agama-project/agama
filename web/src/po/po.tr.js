@@ -564,6 +564,9 @@ export default {
   "Hide details": [
     "Detayları gizle"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP Adres"
   ],
@@ -1023,6 +1026,9 @@ export default {
   "Remove min channel filter": [
     "Min kanal filtresini kaldır"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Konumu sıfırla"
   ],
@@ -1149,6 +1155,9 @@ export default {
   ],
   "Software selection": [
     "Yazılım seçimi"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
   ],
   "Something went wrong": [
     "Bir şeyler ters gitti"
@@ -1332,6 +1341,9 @@ export default {
   ],
   "Transactional root file system": [
     "İşlemsel kök dosya sistemi"
+  ],
+  "Try again": [
+    ""
   ],
   "Type": [
     "Tip"

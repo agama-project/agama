@@ -36,7 +36,7 @@ jobs:
       - name: Install DocBook tooling
         run: |
           sudo apt-get update
-          sudo apt-get --assume-yes --no-install-recommends install xmlto docbook-xsl xmlstarlet
+          sudo apt-get --assume-yes --no-install-recommends install xmlto docbook-xsl xmlstarlet libglib2.0-dev
 
       - name: Build HTML via DocBook
         run: make -C doc
@@ -55,14 +55,14 @@ jobs:
         run: cd web && npm run typedoc && mv typedoc.out/ ../doc/dist/web-ui
 
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           # upload the built docs
           path: 'doc/dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4

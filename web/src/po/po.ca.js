@@ -564,6 +564,9 @@ export default {
   "Hide details": [
     "Amaga els detalls"
   ],
+  "I have read and accept the [license] for %s": [
+    "He llegit i accepto la [llicència] de %s"
+  ],
   "IP Address": [
     "Adreça IP"
   ],
@@ -693,6 +696,9 @@ export default {
   "Language": [
     "Llengua"
   ],
+  "License language": [
+    "Llengua de la llicència"
+  ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "Límits per a la mida del sistema de fitxers. La mida final serà un valor entre el mínim i el màxim proporcionats. Si no hi ha cap màxim, el sistema de fitxers serà el més gros possible."
   ],
@@ -701,6 +707,9 @@ export default {
   ],
   "Loading installation environment, please wait.": [
     "Carregant l'entorn d'instal·lació. Espereu, si us plau."
+  ],
+  "Loading the installation repositories...": [
+    "Carregant els repositoris d'instal·lació..."
   ],
   "Locale selection": [
     "Selecció de la llengua"
@@ -1044,6 +1053,9 @@ export default {
   "Remove min channel filter": [
     "Suprimeix el filtre del canal mínim"
   ],
+  "Repository load failed": [
+    "Ha fallat carregar el repositori."
+  ],
   "Reset location": [
     "Restableix la ubicació"
   ],
@@ -1176,6 +1188,9 @@ export default {
   ],
   "Software selection": [
     "Selecció de programari"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
   ],
   "Something went wrong": [
     "Alguna cosa ha anat malament."
@@ -1359,6 +1374,9 @@ export default {
   ],
   "Transactional root file system": [
     "Sistema de fitxers d'arrel transaccional"
+  ],
+  "Try again": [
+    "Torna-ho a provar"
   ],
   "Type": [
     "Tipus"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 02:40+0000\n"
+"POT-Creation-Date: 2025-01-26 02:37+0000\n"
 "PO-Revision-Date: 2025-01-02 16:50+0000\n"
 "Last-Translator: Natasha Ament <stacheldrahtje@ament-teusink.eu>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -43,11 +43,11 @@ msgid "Configure the system"
 msgstr "Configureer het systeem"
 
 #. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:156
+#: service/lib/agama/manager.rb:157
 msgid "Load software translations"
 msgstr "Laad software vertalingen"
 
-#: service/lib/agama/manager.rb:157
+#: service/lib/agama/manager.rb:158
 msgid "Load storage translations"
 msgstr "Laad opslag vertalingen"
 
@@ -105,7 +105,7 @@ msgstr "Berekenen van het softwarevoorstel"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:561
+#: service/lib/agama/software/manager.rb:572
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Kan opslagruimte \"%s\" niet lezen"
@@ -113,14 +113,14 @@ msgstr "Kan opslagruimte \"%s\" niet lezen"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:571
+#: service/lib/agama/software/manager.rb:582
 msgid "Product not selected yet"
 msgstr "Nog geen product geselecteerd"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:580
+#: service/lib/agama/software/manager.rb:591
 msgid "Product must be registered"
 msgstr "Product moet geregistreerd zijn"
 

@@ -201,10 +201,16 @@ module Agama
 
       # Writes the repositories information to the installed system
       def finish
+        # remove the dir:///run/initramfs/live/install repository and similar
+        remove_local_repos
         Yast::Pkg.SourceSaveAll
         Yast::Pkg.TargetFinish
         # copy the libzypp caches to the target
-        copy_zypp_to_target
+        if Agama::Software::Repository.all.empty?
+          logger.info("No repository defined, not copying the libzypp caches")
+        else
+          copy_zypp_to_target
+        end
         registration.finish
       end
 
@@ -470,6 +476,25 @@ module Agama
       end
 
       def add_base_repos
+        return if add_repos_by_label
+        return if add_repos_by_dir
+
+        # local repositories not found, use the online repositories
+        product.repositories.each { |url| repositories.add(url) }
+      end
+
+      def add_repos_by_dir
+        # path to cdrom which can contain installation repositories
+        dir_path = "/run/initramfs/live/install"
+
+        return false unless File.exist?(dir_path)
+
+        logger.info "/install found on source cd"
+        repositories.add("dir://" + dir_path)
+        true
+      end
+
+      def add_repos_by_label
         # NOTE: support multiple labels/installation media?
         label = product.labels.first
 
@@ -481,12 +506,11 @@ module Agama
           if device
             logger.info "Installation device: #{device}"
             repositories.add("hd:/?device=" + device)
-            return
+            return true
           end
         end
 
-        # disk label not found or not configured, use the online repositories
-        product.repositories.each { |url| repositories.add(url) }
+        false
       end
 
       # find all devices with the required disk label
@@ -681,6 +705,11 @@ module Agama
           # to write the repository setup to the disk
           Yast::Pkg.SourceSaveAll
         end
+      end
+
+      # remove all local repositories
+      def remove_local_repos
+        Agama::Software::Repository.all.select(&:local?).each(&:delete!)
       end
     end
   end
