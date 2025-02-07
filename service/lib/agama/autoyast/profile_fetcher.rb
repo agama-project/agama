@@ -48,8 +48,6 @@ module Agama
 
       attr_reader :profile_url
 
-      def copy_profile; end
-
       # @return [Hash] AutoYaST profile
       def read_profile
         FileUtils.mkdir_p(Yast::AutoinstConfig.profile_dir)
