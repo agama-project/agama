@@ -21,12 +21,13 @@
  */
 
 import React from "react";
-import { Alert, Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
 import { Page } from "~/components/core/";
 import { Loading } from "~/components/layout";
 import EncryptionField from "~/components/storage/EncryptionField";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
+import ProposalFailedInfo from "./ProposalFailedInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
 import AddExistingDeviceMenu from "./AddExistingDeviceMenu";
@@ -75,13 +76,7 @@ export default function ProposalPage() {
       <Page.Content>
         <Grid hasGutter>
           <ProposalTransactionalInfo />
-          {!validProposal && (
-            <Alert variant="warning" title={_("Storage proposal not possible")}>
-              {errors.map((e, i) => (
-                <div key={i}>{e.message}</div>
-              ))}
-            </Alert>
-          )}
+          <ProposalFailedInfo />
 
           <GridItem sm={12} xl={8}>
             <Page.Section
