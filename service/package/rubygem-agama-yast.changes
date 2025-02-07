@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  7 16:29:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report problems when trying to download a package, install it
+  or run a script (gh#agama/agama-project#1932).
+
+-------------------------------------------------------------------
 Fri Feb  7 16:16:14 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Adapt tests to use the BLS size requirements

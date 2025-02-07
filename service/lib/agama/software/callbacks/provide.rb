@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2023] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "logger"
 require "yast"
 require "agama/question"
 
@@ -27,64 +28,67 @@ Yast.import "Pkg"
 module Agama
   module Software
     module Callbacks
-      # Callbacks related to media handling
-      class Media
+      # Provide callbacks
+      class Provide
+        include Yast::I18n
+
+        # From https://github.com/openSUSE/libzypp/blob/d90a93fc2a248e6592bd98114f82a0b88abadb72/zypp/ZYppCallbacks.h#L111
+        NO_ERROR = 0
+        NOT_FOUND = 1
+        IO_ERROR = 2
+        INVALID = 3
+
         # Constructor
         #
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
+          textdomain "agama"
           @questions_client = questions_client
-          @logger = logger
+          @logger = logger || ::Logger.new($stdout)
         end
 
         # Register the callbacks
         def setup
-          Yast::Pkg.CallbackMediaChange(
-            Yast::FunRef.new(
-              method(:media_change),
-              "string (string, string, string, string, integer, string, integer, string, " \
-              "boolean, list <string>, integer)"
-            )
+          Yast::Pkg.CallbackDoneProvide(
+            Yast::FunRef.new(method(:done_provide), "string (integer, string, string)")
           )
         end
 
-        # Media change callback
+        # DoneProvide callback
         #
-        # @return [String]
+        # @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-        # rubocop:disable Metrics/ParameterLists
-        def media_change(error_code, error, url, product, current, current_label, wanted,
-          wanted_label, double_sided, devices, current_device)
-          logger.debug(
-            format("MediaChange callback: error_code: %s, error: %s, url: %s, product: %s, " \
-                   "current: %s, current_label: %s, wanted: %s, wanted_label: %s, " \
-                   "double_sided: %s, devices: %s, current_device",
-              error_code,
-              error,
-              Yast::URL.HidePassword(url),
-              product,
-              current,
-              current_label,
-              wanted,
-              wanted_label,
-              double_sided,
-              devices,
-              current_device)
-          )
+        def done_provide(error, reason, name)
+          args = [error, reason, name]
+          logger.debug "DoneProvide callback: #{args.inspect}"
+
+          message = case error
+          when NO_ERROR, NOT_FOUND
+            # "Not found" (error 1) is handled by the MediaChange callback.
+            nil
+          when IO_ERROR
+            Yast::Builtins.sformat(_("Package %1 could not be downloaded (input/output error)."),
+              name)
+          when INVALID
+            Yast::Builtins.sformat(_("Package %1 is broken, integrity check has failed."), name)
+          else
+            logger.warn "DoneProvide: unknown error: '#{error}'"
+          end
+
+          return if message.nil?
 
           question = Agama::Question.new(
-            qclass:         "software.medium_error",
-            text:           error,
-            options:        [:Retry, :Skip],
-            default_option: :Skip,
-            data:           { "url" => url }
+            qclass:         "software.provide_error",
+            text:           message,
+            options:        [:Retry, :Ignore],
+            default_option: :Retry,
+            data:           { "reason" => reason }
           )
           questions_client.ask(question) do |question_client|
-            (question_client.answer == :Retry) ? "" : "S"
+            (question_client.answer == :Retry) ? "R" : "I"
           end
         end
-      # rubocop:enable Metrics/ParameterLists
 
       private
 
