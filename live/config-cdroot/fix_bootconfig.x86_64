@@ -19,11 +19,21 @@ fi
 # but that's not the case.
 test -f $dst/.profile && . $dst/.profile
 
+arch=`uname -m`
+profile=$(echo "$kiwi_profiles" | tr "-" " ")
+label="$profile ($arch)"
+
+if [ -d "$dst/boot/grub2/themes/SLE" ]; then
+  theme="SLE"
+else
+  theme="openSUSE"
+fi
+
 #
 # Create grub.cfg
 #
 cat >$dst/boot/grub2/grub.cfg <<XXX
-# kiwi generated one time grub2 config file
+# Agama generated grub2 config file
 set btrfs_relative_path="y"
 export btrfs_relative_path
 search --file --set=root /boot/0xebe87947
@@ -43,10 +53,10 @@ if [ "\${grub_platform}" = "efi" ]; then
 fi
 set gfxmode=auto
 set font=(\$root)/boot/x86_64/loader/grub2/fonts/unicode.pf2
-set ascii_font=grub2/themes/openSUSE/ascii.pf2
-set sans_bold_14_font=grub2/themes/openSUSE/DejaVuSans-Bold14.pf2
-set sans_10_font=grub2/themes/openSUSE/DejaVuSans10.pf2
-set sans_12_font=grub2/themes/openSUSE/DejaVuSans12.pf2
+set ascii_font=grub2/themes/$theme/ascii.pf2
+set sans_bold_14_font=grub2/themes/$theme/DejaVuSans-Bold14.pf2
+set sans_10_font=grub2/themes/$theme/DejaVuSans10.pf2
+set sans_12_font=grub2/themes/$theme/DejaVuSans12.pf2
 if [ -f \${font} ];then
     loadfont \${font}
 fi
@@ -62,26 +72,26 @@ fi
 if [ -f (\$root)/boot/\${sans_12_font} ];then
     loadfont (\$root)/boot/\${sans_12_font}
 fi
-if [ -f (\$root)/boot/grub2/themes/openSUSE/theme.txt ];then
-    set theme=(\$root)/boot/grub2/themes/openSUSE/theme.txt
+if [ -f (\$root)/boot/grub2/themes/$theme/theme.txt ];then
+    set theme=(\$root)/boot/grub2/themes/$theme/theme.txt
 fi
 terminal_input console
 terminal_output gfxterm
-menuentry "$kiwi_iname" --class os --unrestricted {
+menuentry "Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
     linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot}
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
-menuentry "Failsafe -- $kiwi_iname" --class os --unrestricted {
+menuentry "Failsafe -- Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot}   ide=nodma apm=off noresume edd=off nomodeset 3
+    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} ide=nodma apm=off noresume edd=off nomodeset 3
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
-menuentry "Mediacheck" --class os --unrestricted {
+menuentry "Check Installation Medium" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
     linux (\$root)/boot/x86_64/loader/linux mediacheck=1 plymouth.enable=0 \${isoboot}
@@ -107,6 +117,15 @@ if [ "\${grub_platform}" = "efi" ]; then
         set textmode=true
         terminal_output console
     }
+    menuentry "UEFI Firmware Settings" {
+        fwsetup --is-supported
+        if [ "$?" = 0 ]; then
+            fwsetup
+        else
+            echo "Your firmware doesn't support setup menu entry from a boot loader"
+            echo "Press any key to return ..."
+            read
+        fi
+    }
 fi
 XXX
-
