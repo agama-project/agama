@@ -72,7 +72,7 @@ export default function UnsupportedAutoYaST({
   const unsupported = question.data.unsupported?.split(",") || [];
 
   return (
-    <Popup isOpen title={_("Not supported AutoYaST elements")}>
+    <Popup isOpen title={_("Unsupported AutoYaST elements")}>
       <Text>{_("Some elements found in the AutoYaST profile are not supported.")}</Text>
       <Grid hasGutter>
         <UnsupportedElements
