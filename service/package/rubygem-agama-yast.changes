@@ -5,6 +5,13 @@ Fri Feb  7 11:11:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   run a script (gh#agama/agama-project#1932).
 
 -------------------------------------------------------------------
+Wed Feb  5 14:32:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable the local media in the installed system, esp. the
+  offline repository with URL dir:///run/initramfs/live/install
+  (bsc#1236813)
+
+-------------------------------------------------------------------
 Wed Jan 29 16:28:32 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow reading repository in /install directory on iso

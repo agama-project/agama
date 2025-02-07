@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb  6 12:52:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Describe licenses API in OpenAPI documentation
+  (gh#agama-project/agama#1929).
+
+-------------------------------------------------------------------
 Fri Jan 24 09:33:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce a new installation phase "finish"
