@@ -37,6 +37,9 @@ module Agama
     #
     # It fetches the profile, checks for unsupported elements and converts it to an Agama
     # configuration file.
+    #
+    # @param url [String] URL of the AutoYaST profile
+    # @param dir [String] Directory to write the converted profile
     class AgamaAutoYaST
       def initialize(url, directory)
         @url = url
@@ -97,11 +100,6 @@ module Agama
         cmdline = CmdlineArgs.read_from("/proc/cmdline")
         cmdline.data.fetch("ay_check", "1") != "0"
       end
-    end
-
-    if ARGV.length != 2
-      warn "Usage: #{$PROGRAM_NAME} URL DIRECTORY"
-      exit 1
     end
   end
 end
