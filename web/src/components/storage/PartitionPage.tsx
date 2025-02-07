@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useId } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ActionGroup,
@@ -349,7 +349,7 @@ function TargetOptions(): React.ReactNode {
   const partitions = allPartitions.filter((p) => !usedPartitions.includes(p.name));
 
   return (
-    <SelectList>
+    <SelectList aria-label={_("Mount point options")}>
       <SelectOption value={NEW_PARTITION}>
         <TargetOptionLabel value={NEW_PARTITION} />
       </SelectOption>
@@ -409,7 +409,7 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
     : _("Format partition as");
 
   return (
-    <SelectList>
+    <SelectList aria-label="Available file systems">
       {mountPoint === NO_VALUE && (
         <SelectOption value={NO_VALUE}>
           <FilesystemOptionLabel value={NO_VALUE} target={target} />
@@ -495,7 +495,7 @@ type SizeOptionsProps = {
 
 function SizeOptions({ mountPoint, target }: SizeOptionsProps): React.ReactNode {
   return (
-    <SelectList>
+    <SelectList aria-label={_("Size options")}>
       {mountPoint === NO_VALUE && (
         <SelectOption value={NO_VALUE}>
           <SizeOptionLabel value={NO_VALUE} mountPoint={mountPoint} target={target} />
@@ -790,6 +790,9 @@ function autoSizeText(volume, size): string {
 function AutoSize({ mountPoint, partition }: AutoSizeProps): React.ReactNode {
   const volume = useVolume(mountPoint);
   const size = partition?.size;
+
+  if (!size) return;
+
   const text = autoSizeText(volume, size);
   return (
     <SubtleContent>
@@ -817,7 +820,7 @@ function CustomSizeOptionLabel({ value }: CustomSizeOptionLabelProps): React.Rea
 
 function CustomSizeOptions(): React.ReactNode {
   return (
-    <SelectList>
+    <SelectList aria-label={_("Max size options")}>
       <SelectOption
         value="fixed"
         description={_("The partition is created exactly with the given size")}
@@ -910,6 +913,7 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
                   value={option}
                   label={<CustomSizeOptionLabel value={option} />}
                   onChange={changeOption}
+                  toggleName={_("Max size mode")}
                 >
                   <CustomSizeOptions />
                 </Select>
@@ -918,6 +922,7 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
                     id="maxSizeValue"
                     className="w-14ch"
                     value={value.max}
+                    aria-label={_("Maximum size value")}
                     onChange={(_, v) => changeMaxSize(v)}
                   />
                 )}
@@ -935,6 +940,7 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
   );
 }
 export default function PartitionPage() {
+  const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState<string>(NO_VALUE);
   const [target, setTarget] = React.useState<string>(NEW_PARTITION);
   const [filesystem, setFilesystem] = React.useState<string>(NO_VALUE);
@@ -1061,25 +1067,32 @@ export default function PartitionPage() {
   return (
     <Page id="partitionPage">
       <Page.Header>
-        <Content component="h2">{sprintf(_("Define partition at %s"), device.name)}</Content>
+        <Content component="h2" id={headingId}>
+          {sprintf(_("Define partition at %s"), device.name)}
+        </Content>
       </Page.Header>
 
       <Page.Content>
-        <Form id="partitionForm" onSubmit={onSubmit}>
+        <Form id="partitionForm" aria-labelledby={headingId} onSubmit={onSubmit}>
           <Stack hasGutter>
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>
               <Flex>
                 <FlexItem>
                   <SelectTypeaheadCreatable
                     id="mountPoint"
+                    toggleName={_("Mount point toggle")}
+                    listName={_("Suggested mount points")}
+                    inputName={_("Mount point")}
+                    clearButtonName={_("Clear selected mount point")}
                     value={mountPoint}
                     options={mountPointOptions(unusedMountPaths)}
-                    createText={_("Add mount point")}
+                    createText={_("Use")}
                     onChange={changeMountPoint}
                   />
                 </FlexItem>
                 <FlexItem>
                   <Select
+                    toggleName={_("Mount point mode")}
                     value={target}
                     label={<TargetOptionLabel value={target} />}
                     onChange={changeTarget}

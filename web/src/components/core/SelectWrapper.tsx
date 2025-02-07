@@ -29,6 +29,8 @@ export type SelectWrapperProps = {
   label?: React.ReactNode;
   onChange?: (value: number | string) => void;
   isDisabled?: boolean;
+  // Accessible name for the toggle
+  toggleName?: string;
 } & Omit<SelectProps, "toggle" | "onChange">;
 
 /**
@@ -45,6 +47,7 @@ export default function SelectWrapper({
   onChange,
   isDisabled = false,
   children,
+  toggleName,
 }: SelectWrapperProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -68,6 +71,7 @@ export default function SelectWrapper({
         onClick={onToggleClick}
         isExpanded={isOpen}
         isDisabled={isDisabled}
+        {...(toggleName && { "aria-label": toggleName })}
       >
         {label || value}
       </MenuToggle>

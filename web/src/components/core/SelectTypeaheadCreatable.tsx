@@ -46,6 +46,14 @@ export type SelectTypeaheadCreatableProps = {
   createText?: string;
   onChange?: (value: string) => void;
   status?: MenuToggleStatus;
+  // Accessible name for the toggle
+  toggleName: string;
+  // Accessible name for the options list
+  listName: string;
+  // Accessible name for input text
+  inputName: string;
+  // Accessible name for clear button
+  clearButtonName: string;
 };
 
 /**
@@ -62,6 +70,10 @@ export default function SelectTypeaheadCreatable({
   createText = _("Add"),
   onChange,
   status,
+  toggleName,
+  listName,
+  inputName,
+  clearButtonName,
 }: SelectTypeaheadCreatableProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState<string>("");
@@ -245,8 +257,8 @@ export default function SelectTypeaheadCreatable({
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle
       ref={toggleRef}
+      aria-label={toggleName}
       variant="typeahead"
-      aria-label={_("Typeahead creatable menu toggle")}
       onClick={onToggleClick}
       isExpanded={isOpen}
       status={status}
@@ -256,6 +268,7 @@ export default function SelectTypeaheadCreatable({
         <TextInputGroupMain
           inputId={id}
           value={inputValue}
+          aria-label={inputName}
           onClick={onInputClick}
           onChange={onTextInputChange}
           onKeyDown={onInputKeyDown}
@@ -272,7 +285,7 @@ export default function SelectTypeaheadCreatable({
           <Button
             variant="plain"
             onClick={onClearButtonClick}
-            aria-label={_("Clear input value")}
+            aria-label={clearButtonName}
             icon={<TimesIcon aria-hidden />}
           />
         </TextInputGroupUtilities>
@@ -293,7 +306,7 @@ export default function SelectTypeaheadCreatable({
       toggle={toggle}
       variant="typeahead"
     >
-      <SelectList id="select-create-typeahead-listbox">
+      <SelectList id="select-create-typeahead-listbox" aria-label={listName}>
         {selectOptions.map((option, index) => (
           <SelectOption
             key={option.value || option.children}
