@@ -28,6 +28,7 @@ import {
   enableDiag,
   fetchDASDDevices,
   formatDASD,
+  supportedDASD,
 } from "~/api/storage/dasd";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
@@ -49,6 +50,19 @@ const dasdDevicesQuery = () => ({
 const useDASDDevices = () => {
   const { data: devices } = useSuspenseQuery(dasdDevicesQuery());
   return devices.map((d) => ({ ...d, hexId: hex(d.id) }));
+};
+
+const dasdSupportedQuery = {
+  queryKey: ["dasd", "supported"],
+  queryFn: supportedDASD,
+};
+
+/**
+ * Hook that returns whether DASD is supported.
+ */
+const useDASDSupported = (): boolean => {
+  const { data: supported } = useSuspenseQuery(dasdSupportedQuery);
+  return supported;
 };
 
 /**
@@ -239,6 +253,7 @@ const useFormatDASDMutation = () => {
 
 export {
   useDASDDevices,
+  useDASDSupported,
   useDASDDevicesChanges,
   useDASDFormatJobChanges,
   useDASDRunningFormatJobs,
