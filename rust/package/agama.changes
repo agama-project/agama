@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb  7 11:03:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Forward the "lang" URL query parameter when redirecting in the
+  "/login" endpoint (this allows to define the default language
+  in the Firefox configuration file in local installation)
+
+-------------------------------------------------------------------
 Thu Feb  6 12:52:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Describe licenses API in OpenAPI documentation
