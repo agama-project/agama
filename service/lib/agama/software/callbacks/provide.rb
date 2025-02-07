@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "logger"
 require "yast"
 require "agama/question"
 
@@ -44,7 +45,7 @@ module Agama
         def initialize(questions_client, logger)
           textdomain "agama"
           @questions_client = questions_client
-          @logger = logger
+          @logger = logger || ::Logger.new($stdout)
         end
 
         # Register the callbacks
