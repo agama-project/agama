@@ -27,6 +27,7 @@ import { useIssues } from "~/queries/issues";
 import { useConfigModel } from "~/queries/storage";
 import { IssueSeverity } from "~/types/issues";
 import * as partitionUtils from "~/components/storage/utils/partition";
+import { sprintf } from "sprintf-js";
 
 function Description({ partitions }) {
   const newPartitions = partitions.filter((p) => !p.name);
