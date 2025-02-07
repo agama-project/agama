@@ -443,6 +443,7 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
 }
 
 type FilesystemSelectProps = {
+  id?: string;
   value: string;
   mountPoint: string;
   target: string;
@@ -450,6 +451,7 @@ type FilesystemSelectProps = {
 };
 
 function FilesystemSelect({
+  id,
   value,
   mountPoint,
   target,
@@ -459,6 +461,7 @@ function FilesystemSelect({
 
   return (
     <Select
+      id={id}
       value={usedValue}
       label={<FilesystemOptionLabel value={usedValue} target={target} />}
       onChange={onChange}
@@ -890,7 +893,7 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
       <FormGroup>
         <Flex>
           <FlexItem>
-            <FormGroup fieldId="minSize" label={_("Minimum")}>
+            <FormGroup fieldId="minSizeValue" label={_("Minimum")}>
               <TextInput
                 id="minSizeValue"
                 className="w-14ch"
@@ -903,6 +906,7 @@ function CustomSize({ value, error, mountPoint, onChange }: CustomSizeProps) {
             <FormGroup fieldId="maxSize" label={_("Maximum")}>
               <Split hasGutter>
                 <Select
+                  id="maxSize"
                   value={option}
                   label={<CustomSizeOptionLabel value={option} />}
                   onChange={changeOption}
@@ -1067,6 +1071,7 @@ export default function PartitionPage() {
               <Flex>
                 <FlexItem>
                   <SelectTypeaheadCreatable
+                    id="mountPoint"
                     value={mountPoint}
                     options={mountPointOptions(unusedMountPaths)}
                     createText={_("Add mount point")}
@@ -1094,6 +1099,7 @@ export default function PartitionPage() {
             </FormGroup>
             <FormGroup fieldId="fileSystem" label={_("File system")}>
               <FilesystemSelect
+                id="fileSystem"
                 value={filesystem}
                 mountPoint={usedMountPt}
                 target={target}
@@ -1107,6 +1113,7 @@ export default function PartitionPage() {
                 gap={{ default: "gapMd" }}
               >
                 <Select
+                  id="size"
                   value={sizeOption}
                   label={
                     <SizeOptionLabel value={sizeOption} mountPoint={usedMountPt} target={target} />

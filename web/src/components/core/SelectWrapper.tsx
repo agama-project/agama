@@ -63,6 +63,7 @@ export default function SelectWrapper({
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => {
     return (
       <MenuToggle
+        id={id}
         ref={toggleRef}
         onClick={onToggleClick}
         isExpanded={isOpen}
@@ -75,7 +76,6 @@ export default function SelectWrapper({
 
   return (
     <Select
-      id={id}
       isOpen={isOpen}
       selected={value}
       onSelect={onSelect}

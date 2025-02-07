@@ -38,6 +38,7 @@ import TimesIcon from "@patternfly/react-icons/dist/esm/icons/times-icon";
 import { _ } from "~/i18n";
 
 export type SelectTypeaheadCreatableProps = {
+  id?: string;
   value: string;
   options: SelectOptionProps[];
   placeholder?: string;
@@ -54,6 +55,7 @@ export type SelectTypeaheadCreatableProps = {
  * https://www.patternfly.org/components/menus/select#typeahead-with-create-option.
  */
 export default function SelectTypeaheadCreatable({
+  id,
   value,
   options,
   placeholder,
@@ -252,11 +254,11 @@ export default function SelectTypeaheadCreatable({
     >
       <TextInputGroup isPlain>
         <TextInputGroupMain
+          inputId={id}
           value={inputValue}
           onClick={onInputClick}
           onChange={onTextInputChange}
           onKeyDown={onInputKeyDown}
-          id="create-typeahead-select-input"
           autoComplete="off"
           innerRef={textInputRef}
           placeholder={placeholder}
