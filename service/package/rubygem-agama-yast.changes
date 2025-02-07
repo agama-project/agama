@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  7 11:11:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report problems when trying to download a package or
+  run a script (gh#agama/agama-project#1932).
+
+-------------------------------------------------------------------
 Wed Jan 29 16:28:32 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow reading repository in /install directory on iso
