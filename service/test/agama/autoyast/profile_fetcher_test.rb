@@ -26,6 +26,8 @@ require "tmpdir"
 require "autoinstall/xml_checks"
 require "y2storage"
 
+Yast.import "ProfileLocation"
+
 describe Agama::AutoYaST::ProfileFetcher do
   let(:profile) { File.join(FIXTURES_PATH, "profiles", profile_name) }
   let(:profile_name) { "simple.xml" }
@@ -115,6 +117,21 @@ describe Agama::AutoYaST::ProfileFetcher do
       it "evaluates the rules" do
         result = subject.fetch
         expect(result["software"]).to include("products" => ["Tumbleweed"])
+      end
+    end
+
+    context "when it cannot download the profile" do
+      before do
+        allow(Yast::ProfileLocation).to receive(:Process).and_return(false)
+      end
+
+      it "returns nil" do
+        expect(subject.fetch).to be_nil
+      end
+
+      it "does not process the profile" do
+        expect(Yast::Profile).to_not receive(:ReadXML)
+        subject.fetch
       end
     end
   end

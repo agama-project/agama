@@ -54,7 +54,7 @@ module Agama
 
         # fetch the profile
         Yast::AutoinstConfig.ParseCmdLine(profile_url)
-        Yast::ProfileLocation.Process
+        return unless Yast::ProfileLocation.Process
 
         # put the profile in the tmp directory
         FileUtils.cp(
