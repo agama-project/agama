@@ -56,7 +56,6 @@ export default function ConfigEditorMenu() {
       )}
     >
       <DropdownList>
-        <DropdownItem key="disk">{_("Use additional disk")}</DropdownItem>
         <DropdownItem key="vg">{_("Add LVM volume group")}</DropdownItem>
         <DropdownItem key="raid">{_("Add MD RAID")}</DropdownItem>
         <Divider />
