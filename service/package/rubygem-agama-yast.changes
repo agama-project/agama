@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  7 16:16:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Adapt tests to use the BLS size requirements
+  (gh#agama-project/agama#1979).
+
+-------------------------------------------------------------------
 Wed Feb  5 14:32:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Disable the local media in the installed system, esp. the
