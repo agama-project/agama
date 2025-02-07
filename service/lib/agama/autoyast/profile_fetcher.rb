@@ -37,8 +37,6 @@ module Agama
       end
 
       # Converts the profile into a set of files that Agama can process.
-      #
-      # @param dir [Pathname,String] Directory to write the profile.
       def fetch
         import_yast
         read_profile
@@ -48,7 +46,7 @@ module Agama
 
       attr_reader :profile_url
 
-      # @return [Hash] AutoYaST profile
+      # @return [Hash, nil] AutoYaST profile
       def read_profile
         FileUtils.mkdir_p(Yast::AutoinstConfig.profile_dir)
 
