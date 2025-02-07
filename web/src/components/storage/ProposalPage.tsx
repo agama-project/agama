@@ -21,24 +21,176 @@
  */
 
 import React from "react";
-import { Content, Grid, GridItem, SplitItem } from "@patternfly/react-core";
-import { Page } from "~/components/core/";
-import { Loading } from "~/components/layout";
-import EncryptionField from "~/components/storage/EncryptionField";
+import {
+  Alert,
+  Button,
+  Content,
+  Grid,
+  GridItem,
+  Split,
+  SplitItem,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateFooter,
+} from "@patternfly/react-core";
+import { Page, Link } from "~/components/core/";
+import { Icon, Loading } from "~/components/layout";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
 import AddExistingDeviceMenu from "./AddExistingDeviceMenu";
-import { toValidationError } from "~/utils";
-import { useIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useDeprecated, useDeprecatedChanges, useReprobeMutation } from "~/queries/storage";
+import {
+  useAvailableDevices,
+  useConfigMutation,
+  useDeprecated,
+  useDeprecatedChanges,
+  useReprobeMutation,
+} from "~/queries/storage";
+import { useConfigModel } from "~/queries/storage/config-model";
+import { useZFCPSupported } from "~/queries/storage/zfcp";
+import { useDASDSupported } from "~/queries/storage/dasd";
+import { useIssues } from "~/queries/issues";
+import { STORAGE as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-export default function ProposalPage() {
+/** @todo Call to an API method to reset the default config instead of setting a config. */
+function useResetConfig() {
+  const { mutate } = useConfigMutation();
+
+  return () =>
+    mutate({
+      drives: [
+        {
+          partitions: [{ search: "*", delete: true }, { generate: "default" }],
+        },
+      ],
+    });
+}
+
+function ResetEmptyState() {
+  const reset = useResetConfig();
+
+  const description = _(
+    "The current storage config cannot be edited. Do you want to reset to the default config?",
+  );
+  return (
+    <EmptyState
+      titleText={_("Unknown storage config")}
+      icon={() => <Icon name="error" />}
+      status="warning"
+    >
+      <EmptyStateBody>{description}</EmptyStateBody>
+      <EmptyStateFooter>
+        <Button variant="secondary" onClick={reset}>
+          {_("Reset")}
+        </Button>
+      </EmptyStateFooter>
+    </EmptyState>
+  );
+}
+
+function DevicesEmptyState() {
+  const isZFCPSupported = useZFCPSupported();
+  const isDASDSupported = useDASDSupported();
+
+  const description = _(
+    "There are not devices available for the installation. Do you want to activate devices?",
+  );
+
+  return (
+    <EmptyState
+      titleText={_("No devices found")}
+      icon={() => <Icon name="error" />}
+      status="warning"
+    >
+      <EmptyStateBody>{description}</EmptyStateBody>
+      <EmptyStateFooter>
+        <Split hasGutter>
+          <SplitItem>
+            <Link to={PATHS.iscsi} variant="link">
+              {_("Activate iSCSI")}
+            </Link>
+          </SplitItem>
+          {isZFCPSupported && (
+            <SplitItem>
+              <Link to={PATHS.zfcp.root} variant="link">
+                {_("Activate zFCP")}
+              </Link>
+            </SplitItem>
+          )}
+          {isDASDSupported && (
+            <SplitItem>
+              <Link to={PATHS.dasd} variant="link">
+                {_("Activate DASD")}
+              </Link>
+            </SplitItem>
+          )}
+        </Split>
+      </EmptyStateFooter>
+    </EmptyState>
+  );
+}
+
+type ProposalSectionsProps = {
+  isEditable: boolean;
+  isValid: boolean;
+};
+
+function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React.ReactNode {
+  const reset = useResetConfig();
+
+  return (
+    <Grid hasGutter>
+      <ProposalTransactionalInfo />
+      <ProposalFailedInfo />
+      {!isEditable && (
+        <Alert variant="info" title={_("Unknown storage config")}>
+          <>
+            {_(
+              "The current storage config cannot be edited. Do you want to reset to the default config?",
+            )}
+            <Button variant="plain" isInline onClick={reset}>
+              {_("Reset")}
+            </Button>
+          </>
+        </Alert>
+      )}
+      {isEditable && (
+        <GridItem sm={12} xl={8}>
+          <Page.Section
+            title={_("Installation Devices")}
+            description={_(
+              "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+            )}
+            actions={
+              <>
+                <SplitItem isFilled> </SplitItem>
+                <SplitItem>
+                  <AddExistingDeviceMenu />
+                </SplitItem>
+                <SplitItem>
+                  <ConfigEditorMenu />
+                </SplitItem>
+              </>
+            }
+          >
+            <ConfigEditor />
+          </Page.Section>
+        </GridItem>
+      )}
+      {isValid && <ProposalResultSection />}
+    </Grid>
+  );
+}
+
+export default function ProposalPage(): React.ReactNode {
   const isDeprecated = useDeprecated();
+  const model = useConfigModel({ suspense: true });
+  const devices = useAvailableDevices();
+  const issues = useIssues("storage");
   const { mutateAsync: reprobe } = useReprobeMutation();
 
   useDeprecatedChanges();
@@ -47,63 +199,23 @@ export default function ProposalPage() {
     if (isDeprecated) reprobe().catch(console.log);
   }, [isDeprecated, reprobe]);
 
-  const errors = useIssues("storage")
-    .filter((s) => s.severity === IssueSeverity.Error)
-    .map(toValidationError);
-
-  const validProposal = errors.length === 0;
-
-  if (isDeprecated) {
-    return (
-      <Page>
-        <Page.Header>
-          <Content component="h2">{_("Storage")}</Content>
-        </Page.Header>
-
-        <Page.Content>
-          <Loading text={_("Reloading data, please wait...")} />
-        </Page.Content>
-      </Page>
-    );
-  }
+  const errors = issues.filter((s) => s.severity === IssueSeverity.Error);
+  const isValid = !errors.length;
+  const isEditable = !!model;
+  const isDevicesEmpty = !devices.length;
 
   return (
     <Page>
       <Page.Header>
         <Content component="h2">{_("Storage")}</Content>
       </Page.Header>
-
       <Page.Content>
-        <Grid hasGutter>
-          <ProposalTransactionalInfo />
-          <ProposalFailedInfo />
-
-          <GridItem sm={12} xl={8}>
-            <Page.Section
-              title={_("Installation Devices")}
-              description={_(
-                "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
-              )}
-              actions={
-                <>
-                  <SplitItem isFilled> </SplitItem>
-                  <SplitItem>
-                    <AddExistingDeviceMenu />
-                  </SplitItem>
-                  <SplitItem>
-                    <ConfigEditorMenu />
-                  </SplitItem>
-                </>
-              }
-            >
-              <ConfigEditor />
-            </Page.Section>
-          </GridItem>
-          <GridItem sm={12} xl={4}>
-            <EncryptionField password={""} isLoading={false} />
-          </GridItem>
-          {validProposal && <ProposalResultSection isLoading={false} />}
-        </Grid>
+        {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}
+        {!isDeprecated && !isDevicesEmpty && (isEditable || isValid) && (
+          <ProposalSections isEditable={isEditable} isValid={isValid} />
+        )}
+        {!isDeprecated && !isDevicesEmpty && !isEditable && !isValid && <ResetEmptyState />}
+        {!isDeprecated && isDevicesEmpty && <DevicesEmptyState />}
       </Page.Content>
     </Page>
   );
