@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  7 09:15:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- In local installation prefer the language configured in the
+  UEFI firmware
+
+-------------------------------------------------------------------
 Fri Feb  7 08:21:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Implemented media check functionality (bsc#1236103)
