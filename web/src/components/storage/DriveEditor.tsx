@@ -500,11 +500,12 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const PartitionsNoContentSelector = ({ toggleAriaLabel }) => {
+const PartitionsNoContentSelector = ({ drive, toggleAriaLabel }) => {
   const menuId = useId();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const onToggle = () => setIsOpen(!isOpen);
 
   return (
@@ -533,6 +534,9 @@ const PartitionsNoContentSelector = ({ toggleAriaLabel }) => {
                 itemId="add-partition"
                 description={_("Add another partition or mount an existing one")}
                 role="menuitem"
+                onClick={() =>
+                  navigate(generatePath(PATHS.addPartition, { id: baseName(drive.name) }))
+                }
               >
                 <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
                   <span>{_("Add or use partition")}</span>
@@ -644,7 +648,7 @@ const PartitionsSelector = ({ drive }) => {
     return <PartitionsWithContentSelector drive={drive} toggleAriaLabel={_("Partitions")} />;
   }
 
-  return <PartitionsNoContentSelector toggleAriaLabel={_("Partitions")} />;
+  return <PartitionsNoContentSelector drive={drive} toggleAriaLabel={_("Partitions")} />;
 };
 
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
