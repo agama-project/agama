@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Alert } from "@patternfly/react-core";
+import { Alert, Content } from "@patternfly/react-core";
 import { _, n_, formatList } from "~/i18n";
 import { useIssues } from "~/queries/issues";
 import { useConfigModel } from "~/queries/storage";
@@ -34,11 +34,11 @@ function Description({ partitions }) {
 
   if (!newPartitions.length) {
     return (
-      <p>
+      <Content>
         {_(
           "It is not possible to install the system with the current configuration. Adjust the settings below.",
         )}
-      </p>
+      </Content>
     );
   }
 
@@ -57,15 +57,16 @@ function Description({ partitions }) {
 
   return (
     <>
-      <p>{msg1}</p>
-      <p>{_("Adjust the settings below to make the new system fit into the available space.")}</p>
+      <Content>{msg1}</Content>
+      <Content>
+        {_("Adjust the settings below to make the new system fit into the available space.")}
+      </Content>
     </>
   );
 }
 
 /**
  * Information about a failed storage proposal
- * @component
  *
  */
 export default function ProposalFailedInfo() {
