@@ -51,7 +51,8 @@ impl AutoyastProfileImporter {
         let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
         Command::new("agama-autoyast")
             .args([url.as_str(), &tmp_dir.path().to_string_lossy()])
-            .status()?;
+            .status()
+            .context("Failed to run agama-autoyast")?;
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
         let content = fs::read_to_string(autoinst_json)?;
