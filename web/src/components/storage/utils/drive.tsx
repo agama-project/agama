@@ -25,7 +25,6 @@
 import { _, n_, formatList } from "~/i18n";
 import { configModel } from "~/api/storage/types";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
-import * as partitionUtils from "~/components/storage/utils/partition";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -127,11 +126,10 @@ const contentDescription = (drive: configModel.Drive): string => {
   }
 
   if (reusedPartitions.length === 0) {
-    const mountPaths = newPartitions.map((p) => partitionUtils.pathWithSize(p));
+    const mountPaths = newPartitions.map((p) => formattedPath(p.mountPath));
     return sprintf(
-      // TRANSLATORS: %s is a list of formatted mount points with a partition size like
-      // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
-      // (or a single mount point in the singular case).
+      // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+      // single mount point in the singular case).
       n_(
         "A new partition will be created for %s",
         "New partitions will be created for %s",
