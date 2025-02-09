@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-26 02:37+0000\n"
+"POT-Creation-Date: 2025-02-09 02:40+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -50,6 +50,32 @@ msgstr "载入软件翻译"
 #: service/lib/agama/manager.rb:158
 msgid "Load storage translations"
 msgstr "载入存储翻译"
+
+#. TRANSLATORS: %s is a package name
+#: service/lib/agama/software/callbacks/progress.rb:92
+#, c-format
+msgid "Package %s could not be installed."
+msgstr ""
+
+#. "Not found" (error 1) is handled by the MediaChange callback.
+#: service/lib/agama/software/callbacks/provide.rb:71
+#, ycp-format
+msgid "Package %1 could not be downloaded (input/output error)."
+msgstr ""
+
+#: service/lib/agama/software/callbacks/provide.rb:74
+#, ycp-format
+msgid "Package %1 is broken, integrity check has failed."
+msgstr ""
+
+#. DoneProvide callback
+#.
+#. @param description [String] Problem description
+#. @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
+#. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
+#: service/lib/agama/software/callbacks/script.rb:59
+msgid "There was a problem running a package script."
+msgstr ""
 
 #. Callback to handle unsigned files
 #.
@@ -103,7 +129,7 @@ msgstr "正在计算软件提案"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:572
+#: service/lib/agama/software/manager.rb:596
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "无法读取仓库 “ %s”"
@@ -111,14 +137,14 @@ msgstr "无法读取仓库 “ %s”"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:582
+#: service/lib/agama/software/manager.rb:606
 msgid "Product not selected yet"
 msgstr "尚未选择产品"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:591
+#: service/lib/agama/software/manager.rb:615
 msgid "Product must be registered"
 msgstr "产品必须注册"
 
