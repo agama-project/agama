@@ -159,7 +159,7 @@ impl<'a> StorageClient<'a> {
         Ok(settings)
     }
 
-    /// Set the storage config according to the JSON schema
+    /// Set the storage config model according to the JSON schema
     pub async fn set_config_model(&self, model: Box<RawValue>) -> Result<u32, ServiceError> {
         Ok(self
             .storage_proxy
@@ -172,6 +172,13 @@ impl<'a> StorageClient<'a> {
         let serialized_config_model = self.storage_proxy.get_config_model().await?;
         let config_model = serde_json::from_str(serialized_config_model.as_str()).unwrap();
         Ok(config_model)
+    }
+
+    /// Solves the storage config model
+    pub async fn solve_config_model(&self, model: &str) -> Result<Box<RawValue>, ServiceError> {
+        let serialized_solved_model = self.storage_proxy.solve_config_model(model).await?;
+        let solved_model = serde_json::from_str(serialized_solved_model.as_str()).unwrap();
+        Ok(solved_model)
     }
 
     pub async fn calculate(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {

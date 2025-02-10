@@ -57,7 +57,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tokio_stream::{Stream, StreamExt};
 
-use super::license::{License, LicenseContent};
+use super::license::License;
 
 #[derive(Clone)]
 struct SoftwareState<'a> {

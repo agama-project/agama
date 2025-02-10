@@ -20,84 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  useSuspenseQueries,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
 import {
   fetchConfig,
   setConfig,
   fetchActions,
-  fetchDefaultVolume,
+  fetchVolumes,
   fetchProductParams,
   fetchUsableDevices,
   reprobe,
 } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
-import { config, ProductParams, Volume as APIVolume } from "~/api/storage/types";
-import { Action, StorageDevice, Volume, VolumeTarget } from "~/types/storage";
-
+import { config, ProductParams, Volume } from "~/api/storage/types";
+import { Action, StorageDevice } from "~/types/storage";
 import { QueryHookOptions } from "~/types/queries";
 
 const configQuery = {
   queryKey: ["storage", "config"],
   queryFn: fetchConfig,
   staleTime: Infinity,
-};
-
-const devicesQuery = (scope: "result" | "system") => ({
-  queryKey: ["storage", "devices", scope],
-  queryFn: () => fetchDevices(scope),
-  staleTime: Infinity,
-});
-
-const usableDevicesQuery = {
-  queryKey: ["storage", "usableDevices"],
-  queryFn: fetchUsableDevices,
-  staleTime: Infinity,
-};
-
-const productParamsQuery = {
-  queryKey: ["storage", "encryptionMethods"],
-  queryFn: fetchProductParams,
-  staleTime: Infinity,
-};
-
-const defaultVolumeQuery = (mountPath: string) => ({
-  queryKey: ["storage", "volumeFor", mountPath],
-  queryFn: () => fetchDefaultVolume(mountPath),
-  staleTime: Infinity,
-});
-
-/**
- * @private
- * Builds a volume from the D-Bus data
- */
-const buildVolume = (
-  rawVolume: APIVolume,
-  devices: StorageDevice[],
-  productMountPoints: string[],
-): Volume => {
-  const outline = {
-    ...rawVolume.outline,
-    // Indicate whether a volume is defined by the product.
-    productDefined: productMountPoints.includes(rawVolume.mountPath),
-  };
-  const volume: Volume = {
-    ...rawVolume,
-    outline,
-    minSize: rawVolume.minSize || 0,
-    transactional: rawVolume.transactional || false,
-    target: rawVolume.target as VolumeTarget,
-    targetDevice: devices.find((d) => d.name === rawVolume.targetDevice),
-  };
-
-  return volume;
 };
 
 /**
@@ -116,12 +59,18 @@ const useConfig = (options?: QueryHookOptions): config.Config => {
 const useConfigMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (config: config.Config) => setConfig(config),
+    mutationFn: async (config: config.Config) => await setConfig(config),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
   };
 
   return useMutation(query);
 };
+
+const devicesQuery = (scope: "result" | "system") => ({
+  queryKey: ["storage", "devices", scope],
+  queryFn: () => fetchDevices(scope),
+  staleTime: Infinity,
+});
 
 /**
  * Hook that returns the list of storage devices for the given scope.
@@ -139,22 +88,40 @@ const useDevices = (
   return data;
 };
 
-/**
- * Hook that returns the list of available devices for installation.
- */
-const useAvailableDevices = (): StorageDevice[] => {
-  const findDevice = (devices: StorageDevice[], sid: number) => {
+const availableDevices = async (devices: StorageDevice[]): Promise<StorageDevice[]> => {
+  const findDevice = (devices: StorageDevice[], sid: number): StorageDevice | undefined => {
     const device = devices.find((d) => d.sid === sid);
-
     if (device === undefined) console.warn("Device not found:", sid);
 
     return device;
   };
 
-  const devices = useDevices("system", { suspense: true });
-  const { data } = useSuspenseQuery(usableDevicesQuery);
+  const availableDevices = await fetchUsableDevices();
 
-  return data.map((sid) => findDevice(devices, sid)).filter((d) => d);
+  return availableDevices
+    .map((sid: number) => findDevice(devices, sid))
+    .filter((d: StorageDevice | undefined) => d);
+};
+
+const availableDevicesQuery = (devices: StorageDevice[]) => ({
+  queryKey: ["storage", "availableDevices"],
+  queryFn: () => availableDevices(devices),
+  staleTime: Infinity,
+});
+
+/**
+ * Hook that returns the list of available devices for installation.
+ */
+const useAvailableDevices = (): StorageDevice[] => {
+  const devices = useDevices("system", { suspense: true });
+  const { data } = useSuspenseQuery(availableDevicesQuery(devices));
+  return data;
+};
+
+const productParamsQuery = {
+  queryKey: ["storage", "encryptionMethods"],
+  queryFn: fetchProductParams,
+  staleTime: Infinity,
 };
 
 /**
@@ -166,26 +133,28 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
   return data;
 };
 
+const volumesQuery = (mountPaths: string[]) => ({
+  queryKey: ["storage", "volumes"],
+  queryFn: () => fetchVolumes(mountPaths),
+  staleTime: Infinity,
+});
+
 /**
- * Hook that returns the volume templates for the current product.
+ * Hook that returns the volumes for the current product.
  */
-const useVolumeTemplates = (): Volume[] => {
-  const buildDefaultVolumeQueries = (product: ProductParams) => {
-    const queries = product.mountPoints.map((p) => defaultVolumeQuery(p));
-    queries.push(defaultVolumeQuery(""));
-    return queries;
-  };
-
-  const systemDevices = useDevices("system", { suspense: true });
-  const product = useProductParams();
-  const results = useSuspenseQueries({
-    queries: product ? buildDefaultVolumeQueries(product) : [],
-  }) as Array<{ data: APIVolume }>;
-
-  if (results.length === 0) return [];
-
-  return results.map(({ data }) => buildVolume(data, systemDevices, product.mountPoints));
+const useVolumes = (): Volume[] => {
+  const product = useProductParams({ suspense: true });
+  const mountPoints = ["", ...product.mountPoints];
+  const { data } = useSuspenseQuery(volumesQuery(mountPoints));
+  return data;
 };
+
+function useVolume(mountPoint: string): Volume {
+  const volumes = useVolumes();
+  const volume = volumes.find((v) => v.mountPath === mountPoint);
+  const defaultVolume = volumes.find((v) => v.mountPath === "");
+  return volume || defaultVolume;
+}
 
 /**
  * Hook that returns the devices that can be selected as target for volume.
@@ -216,7 +185,7 @@ const useVolumeDevices = (): StorageDevice[] => {
   return [...availableDevices, ...mds, ...vgs];
 };
 
-const proposalActionsQuery = {
+const actionsQuery = {
   queryKey: ["storage", "devices", "actions"],
   queryFn: fetchActions,
 };
@@ -224,8 +193,8 @@ const proposalActionsQuery = {
 /**
  * Hook that returns the actions to perform in the storage devices.
  */
-const useActions = (): Action[] | undefined => {
-  const { data } = useSuspenseQuery(proposalActionsQuery);
+const useActions = (): Action[] => {
+  const { data } = useSuspenseQuery(actionsQuery);
   return data;
 };
 
@@ -281,12 +250,11 @@ export {
   useDevices,
   useAvailableDevices,
   useProductParams,
-  useVolumeTemplates,
+  useVolumes,
+  useVolume,
   useVolumeDevices,
   useActions,
   useDeprecated,
   useDeprecatedChanges,
   useReprobeMutation,
 };
-
-export * from "~/queries/storage/config-model";

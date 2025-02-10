@@ -36,7 +36,7 @@ import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import { PartitionSlot, StorageDevice } from "~/types/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { DeviceInfo } from "~/api/storage/types";
-import { useConfigModel } from "~/queries/storage";
+import { useConfigModel } from "~/queries/storage/config-model";
 
 type TableItem = StorageDevice | PartitionSlot;
 
@@ -146,7 +146,7 @@ type ProposalResultTableProps = {
  */
 export default function ProposalResultTable({ devicesManager }: ProposalResultTableProps) {
   const model = useConfigModel({ suspense: true });
-  const devices = devicesManager.usedDevices(model.drives.map((d) => d.name));
+  const devices = devicesManager.usedDevices(model?.drives.map((d) => d.name) || []);
 
   return (
     <TreeTable

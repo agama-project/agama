@@ -29,7 +29,7 @@
  */
 
 import React from "react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useParams } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
@@ -43,6 +43,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
  * Internal mock for manipulating routes, using ["/"] by default
  */
 const initialRoutes = jest.fn().mockReturnValue(["/"]);
+
+/**
+ * Internal mock for manipulating params
+ */
+let paramsMock: ReturnType<typeof useParams> = {};
 
 /**
  * Allows checking when react-router-dom navigate function  was
@@ -73,12 +78,21 @@ const mockUseRevalidator = jest.fn();
  */
 const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
 
+/**
+ * Allows mocking useParams react-router-dom hook for testing purpose
+ *
+ * @example
+ *   mockParams({ id: "vda" });
+ */
+const mockParams = (params: ReturnType<typeof useParams>) => (paramsMock = params);
+
 // Centralize the react-router-dom mock here
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHref: (to) => to,
   useNavigate: () => mockNavigateFn,
   useMatches: () => [],
+  useParams: () => paramsMock,
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
   Outlet: () => <>Outlet Content</>,
   useRevalidator: () => mockUseRevalidator,
@@ -196,6 +210,7 @@ export {
   installerRender,
   createCallbackMock,
   mockNavigateFn,
+  mockParams,
   mockRoutes,
   mockUseRevalidator,
   resetLocalStorage,

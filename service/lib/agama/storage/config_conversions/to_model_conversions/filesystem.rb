@@ -38,6 +38,7 @@ module Agama
           # @see Base#conversions
           def conversions
             {
+              reuse:     config.reuse?,
               default:   convert_default,
               type:      convert_type,
               snapshots: convert_snapshots

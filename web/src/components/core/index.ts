@@ -44,4 +44,7 @@ export { default as EmptyState } from "./EmptyState";
 export { default as InstallerOptions } from "./InstallerOptions";
 export { default as IssuesDrawer } from "./IssuesDrawer";
 export { default as Drawer } from "./Drawer";
+export { default as SelectWrapper } from "./SelectWrapper";
+export { default as NestedContent } from "./NestedContent";
+export { default as SubtleContent } from "./SubtleContent";
 export { default as MenuHeader } from "./MenuHeader";

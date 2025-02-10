@@ -24,7 +24,7 @@ import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
 import { _, n_, formatList } from "~/i18n";
 import { useIssues } from "~/queries/issues";
-import { useConfigModel } from "~/queries/storage";
+import { useConfigModel } from "~/queries/storage/config-model";
 import { IssueSeverity } from "~/types/issues";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { sprintf } from "sprintf-js";

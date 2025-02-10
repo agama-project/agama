@@ -43,14 +43,22 @@ const setConfig = (config: config.Config) => put("/api/storage/config", { storag
 
 const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
 
+const solveConfigModel = (model: configModel.Config): Promise<configModel.Config> => {
+  const serializedModel = encodeURIComponent(JSON.stringify(model));
+  return get(`/api/storage/config_model/solve?model=${serializedModel}`);
+};
+
 const fetchUsableDevices = (): Promise<number[]> => get(`/api/storage/proposal/usable_devices`);
 
 const fetchProductParams = (): Promise<ProductParams> => get("/api/storage/product/params");
 
-const fetchDefaultVolume = (mountPath: string): Promise<Volume | undefined> => {
+const fetchVolume = (mountPath: string): Promise<Volume> => {
   const path = encodeURIComponent(mountPath);
   return get(`/api/storage/product/volume_for?mount_path=${path}`);
 };
+
+const fetchVolumes = (mountPaths: string[]): Promise<Volume[]> =>
+  Promise.all(mountPaths.map(fetchVolume));
 
 const fetchActions = (): Promise<Action[]> => get("/api/storage/devices/actions");
 
@@ -72,9 +80,10 @@ export {
   fetchConfigModel,
   setConfig,
   setConfigModel,
+  solveConfigModel,
   fetchUsableDevices,
   fetchProductParams,
-  fetchDefaultVolume,
+  fetchVolumes,
   fetchActions,
   fetchStorageJobs,
   findStorageJob,

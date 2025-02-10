@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,29 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalTransactionalInfo } from "./ProposalTransactionalInfo";
-export { default as ProposalActionsDialog } from "./ProposalActionsDialog";
-export { default as ProposalResultSection } from "./ProposalResultSection";
-export { default as DevicesFormSelect } from "./DevicesFormSelect";
-export { default as SpaceActionsTable } from "./SpaceActionsTable";
+import React from "react";
+import { Content, ContentProps } from "@patternfly/react-core";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+
+type NestedContentProps = {
+  margin?: keyof typeof spacingStyles;
+} & ContentProps;
+
+/**
+ * Wrapper on top of PF/Content to allow visually nesting its content by adding
+ * given margin
+ *
+ */
+export default function NestedContent({
+  margin = "mxMd",
+  className,
+  children,
+  ...props
+}: NestedContentProps) {
+  const classNames = [className, spacingStyles[margin]].join(" ");
+  return (
+    <Content {...props} className={classNames}>
+      {children}
+    </Content>
+  );
+}
