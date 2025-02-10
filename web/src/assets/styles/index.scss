@@ -211,7 +211,8 @@
 
 .pf-v6-c-alert {
   --pf-v6-c-alert--m-info__title--Color: var(--agm-t--color--waterhole);
-  --pf-v6-c-alert__icon--FontSize: var(--pf-t--global--font--size--lg);
+  --pf-v6-c-alert__icon--FontSize: var(--pf-t--global--font--size--md);
+  --pf-v6-c-content--MarginBlockEnd: var(--pf-t--global--spacer--xs);
   // --pf-v6-c-alert--BoxShadow: var(--pf-t--global--box-shadow--sm);
   --pf-v6-c-alert--BoxShadow: none;
   --pf-v6-c-alert--PaddingBlockStart: var(--pf-t--global--spacer--sm);
@@ -220,12 +221,12 @@
   --pf-v6-c-alert--PaddingInlineEnd: var(--pf-t--global--spacer--md);
 
   &:has(.pf-v6-c-alert__description) {
-    row-gap: var(--pf-t--global--spacer--sm);
+    row-gap: var(--pf-t--global--spacer--xs);
   }
 }
 
 .pf-v6-c-alert__title {
-  font-size: var(--pf-t--global--font--size--lg);
+  font-size: var(--pf-t--global--font--size--md);
 }
 
 .pf-v6-c-menu {
