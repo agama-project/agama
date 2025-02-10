@@ -72,9 +72,12 @@ const mockAddDriveFn = jest.fn();
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useConfigModel: () => mockUseConfigModelFn(),
   useAvailableDevices: () => [vda, vdb],
+}));
+
+jest.mock("~/queries/storage/config-model", () => ({
   useModel: () => ({ addDrive: mockAddDriveFn }),
+  useConfigModel: () => mockUseConfigModelFn(),
 }));
 
 describe("when there are unused disks", () => {
