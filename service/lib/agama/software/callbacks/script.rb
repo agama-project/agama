@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2023] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,64 +27,47 @@ Yast.import "Pkg"
 module Agama
   module Software
     module Callbacks
-      # Callbacks related to media handling
-      class Media
+      # Script callbacks
+      class Script
+        include Yast::I18n
+
         # Constructor
         #
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
+          textdomain "agama"
           @questions_client = questions_client
           @logger = logger
         end
 
         # Register the callbacks
         def setup
-          Yast::Pkg.CallbackMediaChange(
-            Yast::FunRef.new(
-              method(:media_change),
-              "string (string, string, string, string, integer, string, integer, string, " \
-              "boolean, list <string>, integer)"
-            )
+          Yast::Pkg.CallbackScriptProblem(
+            Yast::FunRef.new(method(:ScriptProblem), "string (string)")
           )
         end
 
-        # Media change callback
+        # DoneProvide callback
         #
-        # @return [String]
+        # @param description [String] Problem description
+        # @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-        # rubocop:disable Metrics/ParameterLists
-        def media_change(error_code, error, url, product, current, current_label, wanted,
-          wanted_label, double_sided, devices, current_device)
-          logger.debug(
-            format("MediaChange callback: error_code: %s, error: %s, url: %s, product: %s, " \
-                   "current: %s, current_label: %s, wanted: %s, wanted_label: %s, " \
-                   "double_sided: %s, devices: %s, current_device",
-              error_code,
-              error,
-              Yast::URL.HidePassword(url),
-              product,
-              current,
-              current_label,
-              wanted,
-              wanted_label,
-              double_sided,
-              devices,
-              current_device)
-          )
+        def script_problem(description)
+          logger.debug "ScriptProblem callback: description: #{description}"
 
+          message = _("There was a problem running a package script.")
           question = Agama::Question.new(
-            qclass:         "software.medium_error",
-            text:           error,
-            options:        [:Retry, :Skip],
-            default_option: :Skip,
-            data:           { "url" => url }
+            qclass:         "software.script_problem",
+            text:           message,
+            options:        [:Retry, :Ignore],
+            default_option: :Retry,
+            data:           { "details" => description }
           )
           questions_client.ask(question) do |question_client|
-            (question_client.answer == :Retry) ? "" : "S"
+            (question_client.answer == :Retry) ? "R" : "I"
           end
         end
-      # rubocop:enable Metrics/ParameterLists
 
       private
 

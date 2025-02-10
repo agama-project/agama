@@ -100,8 +100,8 @@ pub async fn login(
 pub struct LoginFromQueryParams {
     /// Token to use for authentication.
     token: String,
-    /// Requested locale
-    lang: String,
+    /// Optional requested locale
+    lang: Option<String>,
 }
 
 #[utoipa::path(get, path = "/login", responses(
@@ -126,8 +126,10 @@ pub async fn login_from_query(
     let mut target = String::from("/");
 
     // keep the "lang" URL query if it was present in the original request
-    if !&params.lang.is_empty() {
-        target.push_str(format!("?lang={}", params.lang).as_str());
+    if let Some(lang) = params.lang {
+        if !lang.is_empty() {
+            target.push_str(format!("?lang={}", lang).as_str());
+        }
     }
 
     let location = HeaderValue::from_str(target.as_str());
