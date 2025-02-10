@@ -31,9 +31,13 @@ const mockConfig = { drives: [] };
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useConfigModel: () => mockConfig,
   useDevices: () => devices.staging,
   useActions: () => mockUseActionsFn(),
+}));
+
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useConfigModel: () => mockConfig,
 }));
 
 describe("ProposalResultSection", () => {
@@ -110,7 +114,7 @@ describe("ProposalResultSection", () => {
     within(treegrid).getByRole("row", { name: "vdc5 / Btrfs Partition 17.5 GiB" });
   });
 
-  it("renders a button for opening the planned actions dialog", async () => {
+  it("allows toggling the planned actions", async () => {
     const { user } = plainRender(<ProposalResultSection />);
     const button = screen.getByRole("button", { name: /planned actions/ });
 

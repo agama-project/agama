@@ -34,7 +34,8 @@ import {
 } from "@patternfly/react-core";
 import { MenuHeader } from "~/components/core";
 import MenuDeviceDescription from "./MenuDeviceDescription";
-import { useAvailableDevices, useConfigModel, useModel } from "~/queries/storage";
+import { useAvailableDevices } from "~/queries/storage";
+import { useConfigModel, useModel } from "~/queries/storage/config-model";
 import { deviceLabel } from "~/components/storage/utils";
 
 export default function AddExistingDeviceMenu() {

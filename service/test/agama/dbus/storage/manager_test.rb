@@ -36,6 +36,10 @@ require "agama/dbus/clients/software"
 require "y2storage"
 require "dbus"
 
+def serialize(value)
+  JSON.pretty_generate(value)
+end
+
 describe Agama::DBus::Storage::Manager do
   include Agama::RSpec::StorageHelpers
 
@@ -589,10 +593,6 @@ describe Agama::DBus::Storage::Manager do
   end
 
   describe "#recover_config" do
-    def serialize(value)
-      JSON.pretty_generate(value)
-    end
-
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
         expect(subject.recover_config).to eq("null")
@@ -682,10 +682,6 @@ describe Agama::DBus::Storage::Manager do
   end
 
   describe "#recover_model" do
-    def serialize(value)
-      JSON.pretty_generate(value)
-    end
-
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
         expect(subject.recover_model).to eq("null")
@@ -753,6 +749,7 @@ describe Agama::DBus::Storage::Manager do
                   {
                     mountPath:      "/",
                     filesystem:     {
+                      reuse:   false,
                       default: true,
                       type:    "ext4"
                     },
@@ -788,6 +785,74 @@ describe Agama::DBus::Storage::Manager do
 
       it "returns 'null'" do
         expect(subject.recover_model).to eq("null")
+      end
+    end
+  end
+
+  describe "#solve_model" do
+    let(:model) do
+      {
+        drives: [
+          {
+            name:       "/dev/sda",
+            alias:      "sda",
+            partitions: [
+              { mountPath: "/" }
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns the serialized solved model" do
+      result = subject.solve_model(model.to_json)
+
+      expect(result).to eq(
+        serialize({
+          boot:   {
+            configure: true,
+            device:    {
+              default: true,
+              name:    "/dev/sda"
+            }
+          },
+          drives: [
+            {
+              name:        "/dev/sda",
+              alias:       "sda",
+              spacePolicy: "keep",
+              partitions:  [
+                {
+                  mountPath:      "/",
+                  filesystem:     {
+                    reuse:   false,
+                    default: true,
+                    type:    "ext4"
+                  },
+                  size:           {
+                    default: true,
+                    min:     0
+                  },
+                  delete:         false,
+                  deleteIfNeeded: false,
+                  resize:         false,
+                  resizeIfNeeded: false
+                }
+              ]
+            }
+          ]
+        })
+      )
+    end
+
+    context "if the system has not been probed yet" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
+      end
+
+      it "returns 'null'" do
+        result = subject.solve_model(model.to_json)
+        expect(result).to eq("null")
       end
     end
   end

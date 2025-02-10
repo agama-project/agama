@@ -22,9 +22,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Content, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
+import { ActionGroup, Content, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { DevicesFormSelect } from "~/components/storage";
-import { Page } from "~/components/core";
+import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { StorageDevice } from "~/types/storage";
 import { useAvailableDevices } from "~/queries/storage";
@@ -136,94 +136,91 @@ partitions in the appropriate disk.",
     <Page>
       <Page.Header>
         <Content component="h2">{_("Boot options")}</Content>
-        <p className={textStyles.textColorSubtle}>{description}</p>
+        <SubtleContent>{description}</SubtleContent>
       </Page.Header>
 
       <Page.Content>
         <Form id="bootSelectionForm" onSubmit={onSubmit}>
-          <Page.Section aria-label={_("Select a boot option")}>
-            <FormGroup isStack>
-              <Radio
-                name="bootMode"
-                id={BOOT_AUTO_ID}
-                value={BOOT_AUTO_ID}
-                defaultChecked={state.selectedOption === BOOT_AUTO_ID}
-                onChange={updateSelectedOption}
-                label={
-                  <span
-                    className={[
-                      textStyles.fontSizeLg,
-                      state.selectedOption === BOOT_AUTO_ID && textStyles.fontWeightBold,
-                    ].join(" ")}
-                  >
-                    {_("Automatic")}
-                  </span>
-                }
-                body={automaticText()}
-              />
-              <Radio
-                name="bootMode"
-                id={BOOT_MANUAL_ID}
-                value={BOOT_MANUAL_ID}
-                defaultChecked={state.selectedOption === BOOT_MANUAL_ID}
-                onChange={updateSelectedOption}
-                label={
-                  <span
-                    className={[
-                      textStyles.fontSizeLg,
-                      state.selectedOption === BOOT_MANUAL_ID && textStyles.fontWeightBold,
-                    ].join(" ")}
-                  >
-                    {_("Select a disk")}
-                  </span>
-                }
-                body={
-                  <Stack hasGutter>
-                    <div>{_("Partitions to boot will be allocated at the following device.")}</div>
-                    <DevicesFormSelect
-                      aria-label={_("Choose a disk for placing the boot loader")}
-                      name="bootDevice"
-                      devices={state?.availableDevices || []}
-                      selectedDevice={state.bootDevice}
-                      onChange={changeBootDevice}
-                      isDisabled={state.selectedOption !== BOOT_MANUAL_ID}
-                    />
-                  </Stack>
-                }
-              />
-              <Radio
-                name="bootMode"
-                id={BOOT_DISABLED_ID}
-                value={BOOT_DISABLED_ID}
-                defaultChecked={state.selectedOption === BOOT_DISABLED_ID}
-                onChange={updateSelectedOption}
-                label={
-                  <span
-                    className={[
-                      textStyles.fontSizeLg,
-                      state.selectedOption === BOOT_DISABLED_ID && textStyles.fontWeightBold,
-                    ].join(" ")}
-                  >
-                    {_("Do not configure")}
-                  </span>
-                }
-                body={
-                  <div>
-                    {_(
-                      "No partitions will be automatically configured for booting. Use with caution.",
-                    )}
-                  </div>
-                }
-              />
-            </FormGroup>
-          </Page.Section>
+          <FormGroup isStack>
+            <Radio
+              name="bootMode"
+              id={BOOT_AUTO_ID}
+              value={BOOT_AUTO_ID}
+              defaultChecked={state.selectedOption === BOOT_AUTO_ID}
+              onChange={updateSelectedOption}
+              label={
+                <span
+                  className={[
+                    textStyles.fontSizeLg,
+                    state.selectedOption === BOOT_AUTO_ID && textStyles.fontWeightBold,
+                  ].join(" ")}
+                >
+                  {_("Automatic")}
+                </span>
+              }
+              body={automaticText()}
+            />
+            <Radio
+              name="bootMode"
+              id={BOOT_MANUAL_ID}
+              value={BOOT_MANUAL_ID}
+              defaultChecked={state.selectedOption === BOOT_MANUAL_ID}
+              onChange={updateSelectedOption}
+              label={
+                <span
+                  className={[
+                    textStyles.fontSizeLg,
+                    state.selectedOption === BOOT_MANUAL_ID && textStyles.fontWeightBold,
+                  ].join(" ")}
+                >
+                  {_("Select a disk")}
+                </span>
+              }
+              body={
+                <Stack hasGutter>
+                  <div>{_("Partitions to boot will be allocated at the following device.")}</div>
+                  <DevicesFormSelect
+                    aria-label={_("Choose a disk for placing the boot loader")}
+                    name="bootDevice"
+                    devices={state?.availableDevices || []}
+                    selectedDevice={state.bootDevice}
+                    onChange={changeBootDevice}
+                    isDisabled={state.selectedOption !== BOOT_MANUAL_ID}
+                  />
+                </Stack>
+              }
+            />
+            <Radio
+              name="bootMode"
+              id={BOOT_DISABLED_ID}
+              value={BOOT_DISABLED_ID}
+              defaultChecked={state.selectedOption === BOOT_DISABLED_ID}
+              onChange={updateSelectedOption}
+              label={
+                <span
+                  className={[
+                    textStyles.fontSizeLg,
+                    state.selectedOption === BOOT_DISABLED_ID && textStyles.fontWeightBold,
+                  ].join(" ")}
+                >
+                  {_("Do not configure")}
+                </span>
+              }
+              body={
+                <div>
+                  {_(
+                    "No partitions will be automatically configured for booting. Use with caution.",
+                  )}
+                </div>
+              }
+            />
+          </FormGroup>
+          <ActionGroup>
+            <Page.Submit form="bootSelectionForm" isDisabled={isAcceptDisabled()} />
+            <Page.Cancel />
+          </ActionGroup>
         </Form>
       </Page.Content>
-
-      <Page.Actions>
-        <Page.Submit form="bootSelectionForm" isDisabled={isAcceptDisabled()} />
-        <Page.Cancel />
-      </Page.Actions>
     </Page>
   );
 }

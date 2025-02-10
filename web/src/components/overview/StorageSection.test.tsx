@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,23 +26,38 @@ import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
 import * as ConfigModel from "~/api/storage/types/config-model";
 
+const sdaDrive: ConfigModel.Drive = {
+  name: "/dev/sda",
+  spacePolicy: "delete",
+  partitions: [],
+};
+
+const sdbDrive: ConfigModel.Drive = {
+  name: "/dev/sdb",
+  spacePolicy: "delete",
+  partitions: [],
+};
+
 const mockDevices = [
   { name: "/dev/sda", size: 536870912000 },
   { name: "/dev/sdb", size: 697932185600 },
 ];
 
-const mockConfig = { drives: [] as ConfigModel.Drive[] };
+const mockUseConfigModelFn = jest.fn();
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useConfigModel: () => mockConfig,
   useDevices: () => mockDevices,
-  useConfigDevices: () => mockConfig.drives,
+}));
+
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useConfigModel: () => mockUseConfigModelFn(),
 }));
 
 describe("when the configuration does not include any device", () => {
   beforeEach(() => {
-    mockConfig.drives = [];
+    mockUseConfigModelFn.mockReturnValue({ drives: [] });
   });
 
   it("indicates that a device is not selected", async () => {
@@ -54,7 +69,7 @@ describe("when the configuration does not include any device", () => {
 
 describe("when the configuration contains one drive", () => {
   beforeEach(() => {
-    mockConfig.drives = [{ name: "/dev/sda", spacePolicy: "delete" }];
+    mockUseConfigModelFn.mockReturnValue({ drives: [sdaDrive] });
   });
 
   it("renders the proposal summary", async () => {
@@ -67,7 +82,7 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'resize'", () => {
     beforeEach(() => {
-      mockConfig.drives[0].spacePolicy = "resize";
+      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "resize" }] });
     });
 
     it("indicates that partitions may be shrunk", async () => {
@@ -79,7 +94,7 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'keep'", () => {
     beforeEach(() => {
-      mockConfig.drives[0].spacePolicy = "keep";
+      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "keep" }] });
     });
 
     it("indicates that partitions will be kept", async () => {
@@ -89,9 +104,21 @@ describe("when the configuration contains one drive", () => {
     });
   });
 
+  describe("and the space policy is set to 'custom'", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "custom" }] });
+    });
+
+    it("indicates that custom strategy for allocating space is set", async () => {
+      plainRender(<StorageSection />);
+
+      await screen.findByText(/custom strategy to find the needed space/);
+    });
+  });
+
   describe("and the drive matches no disk", () => {
     beforeEach(() => {
-      mockConfig.drives[0].name = null;
+      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, name: null }] });
     });
 
     it("indicates that a device is not selected", async () => {
@@ -104,10 +131,7 @@ describe("when the configuration contains one drive", () => {
 
 describe("when the configuration contains several drives", () => {
   beforeEach(() => {
-    mockConfig.drives = [
-      { name: "/dev/sda", spacePolicy: "delete" },
-      { name: "/dev/sdb", spacePolicy: "delete" },
-    ];
+    mockUseConfigModelFn.mockReturnValue({ drives: [sdaDrive, sdbDrive] });
   });
 
   it("renders the proposal summary", async () => {
@@ -115,5 +139,19 @@ describe("when the configuration contains several drives", () => {
 
     await screen.findByText(/Install using several devices/);
     await screen.findByText(/and deleting all its content/);
+  });
+
+  describe("but one of them has a different space policy", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({
+        drives: [sdaDrive, { ...sdbDrive, spacePolicy: "resize" }],
+      });
+    });
+
+    it("indicates that custom strategy for allocating space is set", async () => {
+      plainRender(<StorageSection />);
+
+      await screen.findByText(/custom strategy to find the needed space/);
+    });
   });
 });

@@ -23,7 +23,8 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { useDevices, useConfigModel } from "~/queries/storage";
+import { useDevices } from "~/queries/storage";
+import { useConfigModel } from "~/queries/storage/config-model";
 import { StorageDevice } from "~/types/storage";
 import * as ConfigModel from "~/api/storage/types/config-model";
 import { _ } from "~/i18n";
@@ -63,18 +64,18 @@ const SingleDiskSummary = ({ drive }: { drive: ConfigModel.Drive }) => {
 };
 
 const MultipleDisksSummary = ({ drives }: { drives: ConfigModel.Drive[] }): string => {
-  if (drives.every((d: ConfigModel.Drive) => d.spacePolicy === drives[0].spacePolicy)) {
-    switch (drives[0].spacePolicy) {
-      case "resize":
-        return _("Install using several devices shrinking existing partitions as needed.");
-      case "keep":
-        return _("Install using several devices without modifying existing partitions.");
-      case "delete":
-        return _("Install using several devices and deleting all its content.");
-    }
+  const options = {
+    resize: _("Install using several devices shrinking existing partitions as needed."),
+    keep: _("Install using several devices without modifying existing partitions."),
+    delete: _("Install using several devices and deleting all its content."),
+    custom: _("Install using several devices with a custom strategy to find the needed space."),
+  };
+
+  if (drives.find((d) => d.spacePolicy !== drives[0].spacePolicy)) {
+    return options.custom;
   }
 
-  return _("Install using several devices with a custom strategy to find the needed space.");
+  return options[drives[0].spacePolicy];
 };
 
 /**
