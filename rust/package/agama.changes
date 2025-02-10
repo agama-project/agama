@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 10 13:28:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixup: Make the "lang" URL query optional, do not fail when it
+  is missing. This fixes crash on non-UEFI systems.
+
+-------------------------------------------------------------------
 Fri Feb  7 11:03:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Forward the "lang" URL query parameter when redirecting in the
