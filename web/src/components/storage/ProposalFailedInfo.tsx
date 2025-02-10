@@ -34,7 +34,7 @@ function Description({ partitions }) {
 
   if (!newPartitions.length) {
     return (
-      <Content>
+      <Content component="p">
         {_(
           "It is not possible to install the system with the current configuration. Adjust the settings below.",
         )}
@@ -57,8 +57,8 @@ function Description({ partitions }) {
 
   return (
     <>
-      <Content>{msg1}</Content>
-      <Content>
+      <Content component="p">{msg1}</Content>
+      <Content component="p">
         {_("Adjust the settings below to make the new system fit into the available space.")}
       </Content>
     </>
