@@ -244,4 +244,26 @@ describe Agama::DBus::Manager do
       end
     end
   end
+
+  describe "#finish_phase" do
+    before do
+      allow(backend).to receive(:finish_installation).and_return(finished)
+    end
+
+    context "when finished" do
+      let(:finished) { true }
+
+      it "returns true" do
+        expect(subject.finish_phase).to eq(true)
+      end
+    end
+
+    context "when not finished" do
+      let(:finished) { false }
+
+      it "returns false" do
+        expect(subject.finish_phase).to eq(false)
+      end
+    end
+  end
 end
