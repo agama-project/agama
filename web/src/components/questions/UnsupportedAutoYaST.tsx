@@ -73,7 +73,7 @@ export default function UnsupportedAutoYaST({
 
   return (
     <Popup isOpen title={_("Unsupported AutoYaST elements")}>
-      <Text>{_("Some elements found in the AutoYaST profile are not supported.")}</Text>
+      <Text>{_("Some of the elements in your AutoYaST profile are not supported.")}</Text>
       <Grid hasGutter>
         <UnsupportedElements
           elements={planned}
@@ -92,6 +92,11 @@ export default function UnsupportedAutoYaST({
           description={_("No support is planned.")}
         />
       </Grid>
+      <Text>
+        {_(
+          'If you want to disable this check, please specify "agama.ay_check=0" at kernel\'s command-line',
+        )}
+      </Text>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}
