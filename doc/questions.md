@@ -63,9 +63,11 @@ Sensitive answers or params will be replaced, so the user has to explicitly spec
 
 | class  | description  | possible answers  | available data  | notes  |
 |---     |---           |---                |---              |---     |
+| `autoyast.unsupported` | When there are unsupported elements in an AutoYaST profile | `Abort` `Continue` | `planned` elements to be supported in the future, `unsupported` unsupported elements | |
 | `software.medium_error` | When there is issue with access to medium  | `Retry` `Skip`  | `url` with url where failed access happen  |   |
 | `software.unsigned_file`  | When file from repository is not digitally signed. If it should be used  | `Yes` `No`  | `filename` with name of file  |   |
 | `software.import_gpg`  | When signature is sign with unknown GPG key  | `Trust` `Skip`  | `id` of key `name` of key and `fingerprint` of key |   |
 | `storage.activate_multipath` | When it looks like system has multipath and if it should be activated | `yes` `no` |  | Here it is used lower case. It should be unified. |
 | `storage.commit_error` | When some storage actions failed and if it should continue | `yes` `no` |  | Also here it is lowercase |
 | `storage.luks_activation` | When LUKS encrypted device is detected and it needs password to probe it | `skip` `decrypt` | `device` name, `label` of device, `size` of device and `attempt` the number of attempt | Answer contain additional field password that has to be filled if answer is `decrypt`. Attempt data can be used to limit passing wrong password. |
+

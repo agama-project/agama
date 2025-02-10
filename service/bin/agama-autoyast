@@ -28,12 +28,16 @@ $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 # Set the PATH to a known value
 ENV["PATH"] = "/sbin:/usr/sbin:/usr/bin:/bin"
 
+# Disable AutoYaST XML validation. It will be enabled in the future.
+ENV["YAST_SKIP_XML_VALIDATION"] = "1"
+
 require "rubygems"
 # find Gemfile when D-Bus activates a git checkout
 Dir.chdir(__dir__) do
   require "bundler/setup"
 end
-require "agama/autoyast/converter"
+
+require "agama/commands/agama_autoyast"
 
 if ARGV.length != 2
   warn "Usage: #{$PROGRAM_NAME} URL DIRECTORY"
@@ -42,9 +46,15 @@ end
 
 begin
   url, directory = ARGV
-  converter = Agama::AutoYaST::Converter.new(url)
-  converter.to_agama(directory)
-rescue RuntimeError => e
-  warn "Could not load the profile from #{url}: #{e}"
-  exit 2
+  result = Agama::Commands::AgamaAutoYaST.new(url, directory).run
+  if !result
+    warn "Did not convert the profile (canceled by the user)."
+    exit 2
+  end
+rescue Agama::Commands::CouldNotFetchProfile
+  warn "Could not fetch the AutoYaST profile."
+  exit 3
+rescue Agama::Commands::CouldNotWriteAgamaConfig
+  warn "Could not write the Agama configuration."
+  exit 4
 end

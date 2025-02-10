@@ -24,6 +24,7 @@ import React from "react";
 import GenericQuestion from "~/components/questions/GenericQuestion";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
+import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import { useQuestions, useQuestionsConfig, useQuestionsChanges } from "~/queries/questions";
 import { AnswerCallback, QuestionType } from "~/types/questions";
 
@@ -51,6 +52,10 @@ export default function Questions(): React.ReactNode {
   // more can follow as it will be needed
   if (currentQuestion.class === "storage.luks_activation") {
     QuestionComponent = LuksActivationQuestion;
+  }
+
+  if (currentQuestion.class === "autoyast.unsupported") {
+    QuestionComponent = UnsupportedAutoYaST;
   }
 
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;

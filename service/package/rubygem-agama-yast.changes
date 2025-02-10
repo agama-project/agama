@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 10 15:32:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report unsupported AutoYaST elements
+  (gh#agama-project/agama#1976).
+
+-------------------------------------------------------------------
 Fri Feb  7 16:29:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Report problems when trying to download a package, install it
