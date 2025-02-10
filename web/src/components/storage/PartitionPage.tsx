@@ -43,7 +43,6 @@ import {
 } from "@patternfly/react-core";
 import { NestedContent, Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
-import { Icon } from "~/components/layout";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import { useDevices, useVolume } from "~/queries/storage";
 import {
@@ -524,12 +523,12 @@ function SizeOptions({ mountPoint, target }: SizeOptionsProps): React.ReactNode 
   );
 }
 
-type AutoSizeProps = {
+type AutoSizeInfoProps = {
   mountPoint: string;
   partition?: configModel.Partition;
 };
 
-function autoSizeTextFallback(size): string {
+function AutoSizeTextFallback({ size }) {
   if (size.max) {
     if (size.max === size.min) {
       return sprintf(
@@ -554,7 +553,7 @@ function autoSizeTextFallback(size): string {
   );
 }
 
-function autoSizeTextFixed(path, size): string {
+function AutoSizeTextFixed({ path, size }) {
   if (size.max) {
     if (size.max === size.min) {
       return sprintf(
@@ -582,7 +581,7 @@ function autoSizeTextFixed(path, size): string {
   );
 }
 
-function autoSizeTextRam(path, size): string {
+function AutoSizeTextRam({ path, size }) {
   if (size.max) {
     if (size.max === size.min) {
       return sprintf(
@@ -614,7 +613,7 @@ function autoSizeTextRam(path, size): string {
   );
 }
 
-function autoSizeTextDynamic(volume, size): string {
+function AutoSizeTextDynamic({ volume, size }) {
   const introText = (volume) => {
     const path = volume.mountPath;
     const otherPaths = volume.outline.sizeRelevantVolumes || [];
@@ -755,14 +754,15 @@ function autoSizeTextDynamic(volume, size): string {
     );
   };
 
-  const intro = introText(volume);
-  const limits = limitsText(size);
-  // TRANSLATORS: used just to concatenate the explanation about how a size is calculated and the
-  // range resulting of that calculation.
-  return sprintf(_("%1$s %2$s"), intro, limits);
+  return (
+    <>
+      <SubtleContent component="p">{introText(volume)}</SubtleContent>
+      <SubtleContent component="p">{limitsText(size)}</SubtleContent>
+    </>
+  );
 }
 
-function autoSizeText(volume, size): string {
+function AutoSizeText({ volume, size }) {
   const path = volume.mountPath;
 
   if (path) {
@@ -770,36 +770,32 @@ function autoSizeText(volume, size): string {
       const otherPaths = volume.outline.sizeRelevantVolumes || [];
 
       if (otherPaths.length || volume.outline.snapshotsAffectSizes) {
-        return autoSizeTextDynamic(volume, size);
+        return <AutoSizeTextDynamic volume={volume} size={size} />;
       }
 
       // This assumes volume.autoSize is correctly set. Ie. if it is set to true then at least one
       // of the relevant outline fields (snapshots, RAM and sizeRelevantVolumes) is used.
-      return autoSizeTextRam(path, size);
+      return <AutoSizeTextRam path={path} size={size} />;
     }
 
-    return autoSizeTextFixed(path, size);
+    return <AutoSizeTextFixed path={path} size={size} />;
   }
 
   // Fallback volume
   // This assumes the fallback volume never uses automatic sizes (ie. re-calculated based on
   // other aspects of the configuration). It would be VERY surprising if that's the case.
-  return autoSizeTextFallback(size);
+  return <AutoSizeTextFallback size={size} />;
 }
 
-function AutoSize({ mountPoint, partition }: AutoSizeProps): React.ReactNode {
+function AutoSizeInfo({ mountPoint, partition }: AutoSizeInfoProps): React.ReactNode {
   const volume = useVolume(mountPoint);
   const size = partition?.size;
 
   if (!size) return;
 
-  const text = autoSizeText(volume, size);
   return (
     <SubtleContent>
-      <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-        <Icon name="arrow_right_alt" />
-        {text}
-      </Flex>
+      <AutoSizeText volume={volume} size={size} />
     </SubtleContent>
   );
 }
@@ -1138,7 +1134,7 @@ export default function PartitionPage() {
                 </Select>
                 <NestedContent margin="mxMd" aria-live="polite">
                   {target === NEW_PARTITION && sizeOption === "auto" && (
-                    <AutoSize mountPoint={mountPoint} partition={solvedPartition} />
+                    <AutoSizeInfo mountPoint={mountPoint} partition={solvedPartition} />
                   )}
                   {target === NEW_PARTITION && sizeOption === "custom" && (
                     <CustomSize
