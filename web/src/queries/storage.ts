@@ -25,6 +25,7 @@ import React from "react";
 import {
   fetchConfig,
   setConfig,
+  resetConfig,
   fetchActions,
   fetchVolumes,
   fetchProductParams,
@@ -66,20 +67,17 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
-/** @todo Call to an API method to reset the default config instead of setting a config. */
+/**
+ * Hook for setting the default config.
+ */
 const useResetConfigMutation = () => {
-  const { mutate } = useConfigMutation();
-
-  return {
-    mutate: () =>
-      mutate({
-        drives: [
-          {
-            partitions: [{ search: "*", delete: true }, { generate: "default" }],
-          },
-        ],
-      }),
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: async () => await resetConfig(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
   };
+
+  return useMutation(query);
 };
 
 const devicesQuery = (scope: "result" | "system") => ({
