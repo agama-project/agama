@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,10 +31,12 @@ import {
   DropdownItem,
   Divider,
 } from "@patternfly/react-core";
+import { useResetConfigMutation } from "~/queries/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 
 export default function ConfigEditorMenu() {
   const navigate = useNavigate();
+  const { mutate: reset } = useResetConfigMutation();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -66,6 +68,10 @@ export default function ConfigEditorMenu() {
         <Divider />
         <DropdownItem key="iscsi-link" to={useHref("/storage/iscsi")}>
           {_("Configure iSCSI")}
+        </DropdownItem>
+        <Divider />
+        <DropdownItem key="reset" onClick={() => reset()}>
+          {_("Reset to defaults")}
         </DropdownItem>
       </DropdownList>
     </Dropdown>
