@@ -37,6 +37,7 @@ module Agama
       end
 
       # Converts the profile into a set of files that Agama can process.
+      # @return [Hash,nil] an evaluated AutoYaST profile
       def fetch
         import_yast
         read_profile

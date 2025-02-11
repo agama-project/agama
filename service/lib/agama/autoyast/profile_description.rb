@@ -102,6 +102,7 @@ module Agama
     class ProfileDescription
       SEPARATOR = "/"
 
+      # @return [Array<ProfileElement>]
       attr_reader :elements
 
       DEFAULT_PATH = File.expand_path("#{__dir__}/../../../share/autoyast-compat.json")
