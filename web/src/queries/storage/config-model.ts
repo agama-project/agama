@@ -90,10 +90,18 @@ function allMountPaths(drive: configModel.Drive): string[] {
   return drive.partitions.map((p) => p.mountPath).filter((m) => m);
 }
 
+function isAffectedByCustom(partition: configModel.Partition): boolean {
+  if (!partition.name) return false;
+
+  return (
+    partition.delete || partition.deleteIfNeeded || partition.resize || partition.resizeIfNeeded
+  );
+}
+
 function configuredExistingPartitions(drive: configModel.Drive): configModel.Partition[] {
   const allPartitions = drive.partitions || [];
 
-  if (drive.spacePolicy === "custom") return allPartitions.filter((p) => p.name);
+  if (drive.spacePolicy === "custom") return allPartitions.filter((p) => isAffectedByCustom(p));
 
   return allPartitions.filter((p) => p.name && p.mountPath);
 }
