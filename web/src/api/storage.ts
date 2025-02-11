@@ -41,6 +41,8 @@ const fetchConfigModel = (): Promise<configModel.Config | undefined> =>
 
 const setConfig = (config: config.Config) => put("/api/storage/config", { storage: config });
 
+const resetConfig = () => put("/api/storage/config/reset", {});
+
 const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
 
 const solveConfigModel = (model: configModel.Config): Promise<configModel.Config> => {
@@ -79,6 +81,7 @@ export {
   fetchConfig,
   fetchConfigModel,
   setConfig,
+  resetConfig,
   setConfigModel,
   solveConfigModel,
   fetchUsableDevices,
