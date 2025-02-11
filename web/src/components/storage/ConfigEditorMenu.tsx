@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate, useHref } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import {
   Dropdown,
@@ -31,10 +31,16 @@ import {
   DropdownItem,
   Divider,
 } from "@patternfly/react-core";
+import { useResetConfigMutation } from "~/queries/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
+import { useZFCPSupported } from "~/queries/storage/zfcp";
+import { useDASDSupported } from "~/queries/storage/dasd";
 
 export default function ConfigEditorMenu() {
   const navigate = useNavigate();
+  const isZFCPSupported = useZFCPSupported();
+  const isDASDSupported = useDASDSupported();
+  const { mutate: reset } = useResetConfigMutation();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -56,17 +62,26 @@ export default function ConfigEditorMenu() {
       )}
     >
       <DropdownList>
-        <DropdownItem key="vg">{_("Add LVM volume group")}</DropdownItem>
-        <DropdownItem key="raid">{_("Add MD RAID")}</DropdownItem>
-        <Divider />
-        <DropdownItem key="boot" onClick={() => navigate(PATHS.bootDevice)}>
+        <DropdownItem key="boot-link" onClick={() => navigate(PATHS.bootDevice)}>
           {_("Change boot options")}
         </DropdownItem>
-        <DropdownItem key="reinstall">{_("Reinstall an existing system")}</DropdownItem>
-        <Divider />
-        <DropdownItem key="iscsi-link" to={useHref("/storage/iscsi")}>
-          {_("Configure iSCSI")}
+        <DropdownItem key="reset-link" onClick={() => reset()}>
+          {_("Reset to default configuration")}
         </DropdownItem>
+        <Divider />
+        <DropdownItem key="iscsi-link" onClick={() => navigate(PATHS.iscsi)}>
+          {_("Connect to iSCSI targets")}
+        </DropdownItem>
+        {isZFCPSupported && (
+          <DropdownItem key="zfcp-link" onClick={() => navigate(PATHS.zfcp.root)}>
+            {_("Activate zFCP disks")}
+          </DropdownItem>
+        )}
+        {isDASDSupported && (
+          <DropdownItem key="dasd-link" onClick={() => navigate(PATHS.dasd)}>
+            {_("Manage DASD devices")}
+          </DropdownItem>
+        )}
       </DropdownList>
     </Dropdown>
   );
