@@ -62,6 +62,9 @@ pub trait Storage1 {
     /// Set the storage config according to the JSON schema
     fn set_config(&self, settings: &str) -> zbus::Result<u32>;
 
+    /// Reset the storage config to the default value
+    fn reset_config(&self) -> zbus::Result<u32>;
+
     /// Get the current storage config according to the JSON schema
     fn get_config(&self) -> zbus::Result<String>;
 

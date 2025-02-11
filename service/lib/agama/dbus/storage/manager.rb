@@ -45,7 +45,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         include WithISCSIAuth
         include WithServiceStatus
         include ::DBus::ObjectManager
@@ -119,6 +119,15 @@ module Agama
           proposal.success? ? 0 : 1
         end
 
+        # Calculates the initial proposal.
+        #
+        # @return [Integer] 0 success; 1 error
+        def reset_config
+          logger.info("Reset storage config from D-Bus")
+          backend.calculate_proposal
+          backend.proposal.success? ? 0 : 1
+        end
+
         # Gets and serializes the storage config used for calculating the current proposal.
         #
         # @return [String]
@@ -174,11 +183,18 @@ module Agama
           backend.deprecated_system?
         end
 
+        # FIXME: Revisit return values.
+        #   * Methods like #SetConfig or #ResetConfig return whether the proposal successes, but
+        #     they should return whether the config was actually applied.
+        #   * Methods like #Probe or #Install return nothing.
         dbus_interface STORAGE_INTERFACE do
           dbus_method(:Probe) { probe }
           dbus_method(:Reprobe) { probe(keep_config: true) }
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
             busy_while { apply_config(serialized_config) }
+          end
+          dbus_method(:ResetConfig, "out result:u") do
+            busy_while { reset_config }
           end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
           dbus_method(:SetConfigModel, "in serialized_model:s, out result:u") do |serialized_model|

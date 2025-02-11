@@ -51,6 +51,9 @@
       <arg name="serialized_config" direction="in" type="s"/>
       <arg name="result" direction="out" type="u"/>
     </method>
+    <method name="ResetConfig">
+      <arg name="result" direction="out" type="u"/>
+    </method>
     <method name="GetConfig">
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
