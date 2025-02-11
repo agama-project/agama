@@ -46,7 +46,7 @@ import AddExistingDeviceMenu from "./AddExistingDeviceMenu";
 import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
 import {
   useAvailableDevices,
-  useConfigMutation,
+  useResetConfigMutation,
   useDeprecated,
   useDeprecatedChanges,
   useReprobeMutation,
@@ -58,26 +58,12 @@ import { useIssues } from "~/queries/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-/** @todo Call to an API method to reset the default config instead of setting a config. */
-function useResetConfig() {
-  const { mutate } = useConfigMutation();
-
-  return () =>
-    mutate({
-      drives: [
-        {
-          partitions: [{ search: "*", delete: true }, { generate: "default" }],
-        },
-      ],
-    });
-}
-
 type ErrorsEmptyStateProps = {
   errors: Issue[];
 };
 
 function ErrorsEmptyState({ errors }: ErrorsEmptyStateProps) {
-  const reset = useResetConfig();
+  const { mutate: reset } = useResetConfigMutation();
 
   return (
     <EmptyState
@@ -95,7 +81,7 @@ function ErrorsEmptyState({ errors }: ErrorsEmptyStateProps) {
       </EmptyStateBody>
       <EmptyStateFooter>
         <p>{_("Do you want to reset to the default settings?")}</p>
-        <Button variant="secondary" onClick={reset}>
+        <Button variant="secondary" onClick={() => reset()}>
           {_("Reset")}
         </Button>
       </EmptyStateFooter>
@@ -104,7 +90,7 @@ function ErrorsEmptyState({ errors }: ErrorsEmptyStateProps) {
 }
 
 function ConfigEmptyState() {
-  const reset = useResetConfig();
+  const { mutate: reset } = useResetConfigMutation();
 
   return (
     <EmptyState
@@ -117,7 +103,7 @@ function ConfigEmptyState() {
       </EmptyStateBody>
       <EmptyStateFooter>
         <p>{_("Do you want to reset to the default settings?")}</p>
-        <Button variant="secondary" onClick={reset}>
+        <Button variant="secondary" onClick={() => reset()}>
           {_("Reset")}
         </Button>
       </EmptyStateFooter>
@@ -173,7 +159,7 @@ type ProposalSectionsProps = {
 };
 
 function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React.ReactNode {
-  const reset = useResetConfig();
+  const { mutate: reset } = useResetConfigMutation();
 
   return (
     <Grid hasGutter>
@@ -185,7 +171,7 @@ function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React
             {_(
               "The current storage settings cannot be edited. Do you want to reset to the default settings?",
             )}
-            <Button variant="plain" isInline onClick={reset}>
+            <Button variant="plain" isInline onClick={() => reset()}>
               {_("Reset")}
             </Button>
           </>
