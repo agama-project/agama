@@ -154,6 +154,7 @@ function deletePartition(
   return model;
 }
 
+/** Adds a new partition or replaces an existing partition. */
 export function addPartition(
   originalModel: configModel.Config,
   driveName: string,
@@ -163,7 +164,12 @@ export function addPartition(
   const drive = findDrive(model, driveName);
   if (drive === undefined) return;
 
-  drive.partitions.push(partition);
+  drive.partitions ||= [];
+  const index = drive.partitions.findIndex((p) => p.name && p.name === partition.name);
+
+  if (index === -1) drive.partitions.push(partition);
+  else drive.partitions[index] = partition;
+
   return model;
 }
 
