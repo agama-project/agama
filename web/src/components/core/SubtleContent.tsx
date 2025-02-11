@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalTransactionalInfo } from "./ProposalTransactionalInfo";
-export { default as ProposalActionsDialog } from "./ProposalActionsDialog";
-export { default as ProposalResultSection } from "./ProposalResultSection";
-export { default as DevicesFormSelect } from "./DevicesFormSelect";
-export { default as SpaceActionsTable } from "./SpaceActionsTable";
+import React from "react";
+import { Content, ContentProps } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
+/**
+ * Wrapper on top of PF/Content using subtle text color by default
+ *
+ */
+export default function NestedContent({ className, children, ...props }: ContentProps) {
+  const classNames = [className, textStyles.textColorSubtle].join(" ");
+  return (
+    <Content {...props} className={classNames}>
+      {children}
+    </Content>
+  );
+}

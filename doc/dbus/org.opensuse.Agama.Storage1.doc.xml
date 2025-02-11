@@ -116,6 +116,53 @@
       -->
       <arg name="serialized_model" direction="out" type="s"/>
     </method>
+    <!--
+      Solves the given storage config model.
+    -->
+    <method name="SolveConfigModel">
+      <!--
+        E.g.,
+        {
+          "drives": [
+            {
+              "name": "/dev/vda",
+              "partitions": [
+                {
+                  "mountPath": "/"
+                }
+              ]
+            }
+          ]
+        }
+      -->
+      <arg name="model" direction="in" type="s"/>
+      <!--
+        E.g.,
+        {
+          "drives": [
+            {
+              "name": "/dev/vda",
+              "spacePolicy": "keep",
+              "partitions": [
+                {
+                  "mountPath": "/",
+                  "filesystem": {
+                    "default": true,
+                    "type": "xfs"
+                  },
+                  "size": {
+                    "default": true,
+                    "min": "10 GiB",
+                    "max": "10 GiB"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      -->
+      <arg name="solved_model" direction="out" type="s"/>
+    </method>
     <method name="Install">
     </method>
     <method name="Finish">

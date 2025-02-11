@@ -37,7 +37,6 @@ import {
   PageSection,
   PageSectionProps,
   Split,
-  Stack,
   Title,
   TitleProps,
 } from "@patternfly/react-core";
@@ -93,10 +92,10 @@ const STICK_TO_TOP = Object.freeze({ default: "top" });
 const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 
 // TODO: check if it should have the banner role
-const Header = ({ hasGutter = true, children, ...props }) => {
+const Header = ({ children, ...props }) => {
   return (
     <PageSection component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
-      <Stack hasGutter={hasGutter}>{children}</Stack>
+      {children}
     </PageSection>
   );
 };

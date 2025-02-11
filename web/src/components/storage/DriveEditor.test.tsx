@@ -59,6 +59,7 @@ const mockDrive: ConfigModel.Drive = {
         min: 2_000_000_000,
         default: false, // false: user provided, true: calculated
       },
+      filesystem: { default: false, type: "swap" },
     },
   ],
 };

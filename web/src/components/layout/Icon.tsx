@@ -27,6 +27,7 @@ import React from "react";
 import AddAPhoto from "@icons/add_a_photo.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
+import ArrowRightAlt from "@icons/arrow_right_alt.svg?component";
 import Badge from "@icons/badge.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
@@ -95,6 +96,7 @@ const icons = {
   add_a_photo: AddAPhoto,
   apps: Apps,
   app_registration: AppRegistration,
+  arrow_right_alt: ArrowRightAlt,
   badge: Badge,
   backspace: Backspace,
   check_circle: CheckCircle,

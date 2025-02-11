@@ -21,10 +21,11 @@
  */
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchConfigModel, setConfigModel } from "~/api/storage";
+import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
 import { configModel } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
-import { SpacePolicyAction } from "~/types/storage";
+import { SpacePolicyAction, Volume } from "~/types/storage";
+import { useVolumeTemplates } from "~/queries/storage";
 
 function copyModel(model: configModel.Config): configModel.Config {
   return JSON.parse(JSON.stringify(model));
@@ -47,7 +48,7 @@ function isReusedPartition(partition: configModel.Partition): boolean {
 }
 
 function findDrive(model: configModel.Config, driveName: string): configModel.Drive | undefined {
-  const drives = model.drives || [];
+  const drives = model?.drives || [];
   return drives.find((d) => d.name === driveName);
 }
 
@@ -81,6 +82,23 @@ function isBoot(model: configModel.Config, driveName: string): boolean {
 
 function isExplicitBoot(model: configModel.Config, driveName: string): boolean {
   return !model.boot?.device?.default && driveName === model.boot?.device?.name;
+}
+
+function allMountPaths(drive: configModel.Drive): string[] {
+  if (drive.mountPath) return [drive.mountPath];
+
+  return drive.partitions.map((p) => p.mountPath).filter((m) => m);
+}
+
+function configuredExistingPartitions(drive: configModel.Drive): configModel.Partition[] {
+  const allPartitions = drive.partitions || [];
+
+  if (drive.spacePolicy === "custom")
+    return allPartitions.filter(
+      (p) => !isNewPartition(p) && (isUsedPartition(p) || isSpacePartition(p)),
+    );
+
+  return allPartitions.filter((p) => isReusedPartition(p));
 }
 
 function setBoot(originalModel: configModel.Config, boot: configModel.Boot) {
@@ -128,6 +146,25 @@ function deletePartition(
 
   const partitions = (drive.partitions || []).filter((p) => p.mountPath !== mountPath);
   drive.partitions = partitions;
+  return model;
+}
+
+/** Adds a new partition or replaces an existing partition. */
+export function addPartition(
+  originalModel: configModel.Config,
+  driveName: string,
+  partition: configModel.Partition,
+): configModel.Config {
+  const model = copyModel(originalModel);
+  const drive = findDrive(model, driveName);
+  if (drive === undefined) return;
+
+  drive.partitions ||= [];
+  const index = drive.partitions.findIndex((p) => p.name && p.name === partition.name);
+
+  if (index === -1) drive.partitions.push(partition);
+  else drive.partitions[index] = partition;
+
   return model;
 }
 
@@ -236,6 +273,18 @@ function setSpacePolicy(
   return model;
 }
 
+function usedMountPaths(model: configModel.Config): string[] {
+  if (!model.drives) return [];
+
+  return model.drives.flatMap(allMountPaths);
+}
+
+function unusedMountPaths(model: configModel.Config, volumes: Volume[]): string[] {
+  const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
+  const assigned = usedMountPaths(model);
+  return volPaths.filter((p) => !assigned.includes(p));
+}
+
 const configModelQuery = {
   queryKey: ["storage", "configModel"],
   queryFn: fetchConfigModel,
@@ -263,6 +312,20 @@ export function useConfigModelMutation() {
   };
 
   return useMutation(query);
+}
+
+/**
+ * @todo Use a hash key from the model object as id for the query.
+ * Hook that returns the config model.
+ */
+export function useSolvedConfigModel(model?: configModel.Config): configModel.Config | null {
+  const query = useSuspenseQuery({
+    queryKey: ["storage", "solvedConfigModel", JSON.stringify(model)],
+    queryFn: () => (model ? solveConfigModel(model) : Promise.resolve(null)),
+    staleTime: Infinity,
+  });
+
+  return query.data;
 }
 
 export type BootHook = {
@@ -310,40 +373,54 @@ export function usePartition(driveName: string, mountPath: string): PartitionHoo
 export type DriveHook = {
   isBoot: boolean;
   isExplicitBoot: boolean;
+  allMountPaths: string[];
+  configuredExistingPartitions: configModel.Partition[];
   switch: (newName: string) => void;
+  addPartition: (partition: configModel.Partition) => void;
   setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
   delete: () => void;
 };
 
-export function useDrive(name: string): DriveHook | undefined {
+export function useDrive(name: string): DriveHook | null {
   const model = useConfigModel();
   const { mutate } = useConfigModelMutation();
+  const drive = findDrive(model, name);
 
-  if (findDrive(model, name) === undefined) return;
+  if (drive === undefined) return null;
 
   return {
     isBoot: isBoot(model, name),
     isExplicitBoot: isExplicitBoot(model, name),
+    allMountPaths: allMountPaths(drive),
+    configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
-    setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => {
-      mutate(setSpacePolicy(model, name, policy, actions));
-    },
     delete: () => mutate(removeDrive(model, name)),
+    addPartition: (partition: configModel.Partition) =>
+      mutate(addPartition(model, name, partition)),
+    setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) =>
+      mutate(setSpacePolicy(model, name, policy, actions)),
   };
 }
+
+export type ModelHook = {
+  model: configModel.Config;
+  usedMountPaths: string[];
+  unusedMountPaths: string[];
+  addDrive: (driveName: string) => void;
+};
 
 /**
  * Hook for operating on the collections of the model.
  */
-export type ModelHook = {
-  addDrive: (driveName: string) => void;
-};
-
 export function useModel(): ModelHook {
   const model = useConfigModel();
   const { mutate } = useConfigModelMutation();
+  const volumes = useVolumeTemplates();
 
   return {
+    model,
     addDrive: (driveName) => mutate(addDrive(model, driveName)),
+    usedMountPaths: model ? usedMountPaths(model) : [],
+    unusedMountPaths: model ? unusedMountPaths(model, volumes) : [],
   };
 }
