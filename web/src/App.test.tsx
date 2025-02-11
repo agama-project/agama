@@ -163,42 +163,9 @@ describe("App", () => {
         mockClientStatus.isBusy = false;
       });
 
-      describe("when there are no authentication method for root user", () => {
-        beforeEach(() => {
-          mockRootUser = { password: false, hashedPassword: false, sshkey: "" };
-        });
-
-        it("redirects to root user edition", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText("Navigating to /users/root/edit");
-        });
-      });
-
-      describe("when only root password is set", () => {
-        beforeEach(() => {
-          mockRootUser = { password: true, hashedPassword: false, sshkey: "" };
-        });
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
-      });
-
-      describe("when only root SSH public key is set", () => {
-        beforeEach(() => {
-          mockRootUser = { password: false, hashedPassword: false, sshkey: "FAKE-SSH-KEY" };
-        });
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
-      });
-
-      describe("when root password and SSH public key are set", () => {
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
+      it("renders the application content", async () => {
+        installerRender(<App />, { withL10n: true });
+        await screen.findByText(/Outlet Content/);
       });
     });
   });

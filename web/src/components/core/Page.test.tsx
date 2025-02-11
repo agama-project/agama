@@ -25,7 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { plainRender, mockNavigateFn, mockRoutes, installerRender } from "~/test-utils";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { PRODUCT, ROOT, USER } from "~/routes/paths";
+import { PRODUCT, ROOT } from "~/routes/paths";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -108,7 +108,6 @@ describe("Page", () => {
       ["product selection progress", PRODUCT.progress],
       ["installation progress", ROOT.installationProgress],
       ["installation finished", ROOT.installationFinished],
-      ["root authentication", USER.rootUser.edit],
     ])(`but at %s path`, (_, path) => {
       beforeEach(() => {
         mockRoutes(path);
