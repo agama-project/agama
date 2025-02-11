@@ -71,7 +71,11 @@ module Agama
         repositories.each do |repo|
           if repo.probe
             repo.enable!
-            repo.refresh
+            # In some rare scenarios although the repository probe succeeded the refresh might fail
+            # with network timeout. In that case disable the repository to avoid implicitly
+            # refreshing it again in the Pkg.SourceLoad call which could time out again, effectively
+            # doubling the total timeout.
+            repo.disable! unless repo.refresh
           else
             repo.disable!
           end
