@@ -23,7 +23,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Alert,
-  Checkbox,
   Form,
   FormGroup,
   TextInput,
@@ -141,7 +140,6 @@ export default function FirstUserForm() {
       user.hashedPassword = false;
     }
     delete user.passwordConfirmation;
-    user.autologin = !!user.autologin;
 
     if (!passwordInput?.validity.valid) {
       setErrors([passwordInput?.validationMessage]);
@@ -278,18 +276,6 @@ export default function FirstUserForm() {
                     showErrors={false}
                   />
                 </Stack>
-              </Page.Section>
-            </GridItem>
-            <GridItem sm={12} xl={6}>
-              <Page.Section>
-                <Checkbox
-                  aria-label={_("user autologin")}
-                  id="autologin"
-                  name="autologin"
-                  // TRANSLATORS: check box label
-                  label={_("Auto-login")}
-                  defaultChecked={state.user.autologin}
-                />
               </Page.Section>
             </GridItem>
           </Grid>
