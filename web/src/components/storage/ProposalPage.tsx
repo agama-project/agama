@@ -44,7 +44,7 @@ import AddExistingDeviceMenu from "./AddExistingDeviceMenu";
 import { IssueSeverity } from "~/types/issues";
 import {
   useAvailableDevices,
-  useConfigMutation,
+  useResetConfigMutation,
   useDeprecated,
   useDeprecatedChanges,
   useReprobeMutation,
@@ -56,22 +56,8 @@ import { useIssues } from "~/queries/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-/** @todo Call to an API method to reset the default config instead of setting a config. */
-function useResetConfig() {
-  const { mutate } = useConfigMutation();
-
-  return () =>
-    mutate({
-      drives: [
-        {
-          partitions: [{ search: "*", delete: true }, { generate: "default" }],
-        },
-      ],
-    });
-}
-
 function ResetEmptyState() {
-  const reset = useResetConfig();
+  const { mutate: reset } = useResetConfigMutation();
 
   const description = _(
     "The current storage config cannot be edited. Do you want to reset to the default config?",
@@ -84,7 +70,7 @@ function ResetEmptyState() {
     >
       <EmptyStateBody>{description}</EmptyStateBody>
       <EmptyStateFooter>
-        <Button variant="secondary" onClick={reset}>
+        <Button variant="secondary" onClick={() => reset()}>
           {_("Reset")}
         </Button>
       </EmptyStateFooter>
@@ -140,7 +126,7 @@ type ProposalSectionsProps = {
 };
 
 function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React.ReactNode {
-  const reset = useResetConfig();
+  const { mutate: reset } = useResetConfigMutation();
 
   return (
     <Grid hasGutter>
@@ -152,7 +138,7 @@ function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React
             {_(
               "The current storage config cannot be edited. Do you want to reset to the default config?",
             )}
-            <Button variant="plain" isInline onClick={reset}>
+            <Button variant="plain" isInline onClick={() => reset()}>
               {_("Reset")}
             </Button>
           </>
