@@ -25,6 +25,7 @@ import React from "react";
 import {
   fetchConfig,
   setConfig,
+  resetConfig,
   fetchActions,
   fetchVolumes,
   fetchProductParams,
@@ -60,6 +61,19 @@ const useConfigMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: async (config: config.Config) => await setConfig(config),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
+
+  return useMutation(query);
+};
+
+/**
+ * Hook for setting the default config.
+ */
+const useResetConfigMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: async () => await resetConfig(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
   };
 
@@ -247,6 +261,7 @@ const useReprobeMutation = () => {
 export {
   useConfig,
   useConfigMutation,
+  useResetConfigMutation,
   useDevices,
   useAvailableDevices,
   useProductParams,
