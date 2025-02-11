@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalTransactionalInfo } from "~/components/storage";
-import { Volume, VolumeTarget } from "~/types/storage";
+import { Volume } from "~/api/storage/types";
 
 let mockVolumes: Volume[] = [];
 jest.mock("~/queries/software", () => ({
@@ -37,12 +37,13 @@ jest.mock("~/queries/software", () => ({
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useVolumeTemplates: () => mockVolumes,
+  useVolumes: () => mockVolumes,
 }));
 
 const rootVolume: Volume = {
   mountPath: "/",
-  target: VolumeTarget.DEFAULT,
+  mountOptions: [],
+  target: "default",
   fsType: "Btrfs",
   minSize: 1024,
   maxSize: 2048,
@@ -57,7 +58,6 @@ const rootVolume: Volume = {
     snapshotsAffectSizes: true,
     sizeRelevantVolumes: [],
     adjustByRam: false,
-    productDefined: true,
   },
 };
 
