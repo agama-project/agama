@@ -138,9 +138,61 @@
           { "key": "zone", "support": "no" },
           { "key": "firewall", "support": "no" },
           { "key": "bonding_master", "support": "planned" },
-          { "key": "bonding_module_opts", "support": "planned" },
-          { "key": "bonding_slave0", "support": "planned" },
-          { "key": "bonding_slave1", "support": "planned" },
+          {
+            "key": "bonding_module_opts",
+            "support": "yes",
+            "agama": "network.connections[].bond.options"
+          },
+          {
+            "key": "bonding_slave0",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave1",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave2",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave3",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave4",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave5",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave6",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave7",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave8",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave9",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
           { "key": "bridge", "support": "planned" },
           { "key": "bridge_forwarddelay", "support": "planned" },
           { "key": "bridge_ports", "support": "planned" },
