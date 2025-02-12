@@ -25,7 +25,7 @@ import { useNavigate, generatePath } from "react-router-dom";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
-import { useAvailableDevices } from "~/queries/storage";
+import { useAvailableDevices, useVolume } from "~/queries/storage";
 import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -552,6 +552,8 @@ const PartitionsNoContentSelector = ({ drive, toggleAriaLabel }) => {
 
 const PartitionMenuItem = ({ driveName, mountPath, description }) => {
   const { delete: deletePartition } = usePartition(driveName, mountPath);
+  const volume = useVolume(mountPath);
+  const isRequired = volume.outline?.required || false;
 
   return (
     <MenuItem
@@ -566,13 +568,15 @@ const PartitionMenuItem = ({ driveName, mountPath, description }) => {
             actionId={`edit-${mountPath}`}
             aria-label={`Edit ${mountPath}`}
           />
-          <MenuItemAction
-            style={{ alignSelf: "center" }}
-            icon={<Icon name="delete" aria-label={"Delete"} />}
-            actionId={`delete-${mountPath}`}
-            aria-label={`Delete ${mountPath}`}
-            onClick={deletePartition}
-          />
+          {!isRequired && (
+            <MenuItemAction
+              style={{ alignSelf: "center" }}
+              icon={<Icon name="delete" aria-label={"Delete"} />}
+              actionId={`delete-${mountPath}`}
+              aria-label={`Delete ${mountPath}`}
+              onClick={deletePartition}
+            />
+          )}
         </>
       }
     >
