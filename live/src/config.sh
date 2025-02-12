@@ -179,8 +179,18 @@ du -h -s /lib/modules /lib/firmware
 
 ################################################################################
 # The rest of the file was copied from the openSUSE Tumbleweed Live ISO
-# https://build.opensuse.org/package/view_file/openSUSE:Factory:Live/livecd-tumbleweed-kde/config.sh?expand=1
+# https://build.opensuse.org/projects/openSUSE:Factory:Live/packages/livecd-tumbleweed-kde/files/config.sh?expand=1
 #
+
+# Decompress kernel modules, better for squashfs (boo#1192457)
+find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +
+find /lib/modules/*/kernel -name '*.ko.zst' -exec zstd --rm -d {} +
+for moddir in /lib/modules/*; do
+  depmod "$(basename "$moddir")"
+done
+
+# Reuse what the macro does
+rpm --eval "%fdupes /usr/share/licenses" | sh
 
 # disable the services included by dependencies
 for s in purge-kernels; do

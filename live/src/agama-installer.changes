@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Wed Feb 12 12:02:39 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not print details about removed kernel drivers and firmware
+  files during build, this speeds up the build significantly
+  (~1 minute faster build) and avoids huge build log.
+- Uncompress the kernel drivers, no need to compress them twice
+  (they are compressed by the squashfs as well). Compressing
+  all drivers together in the image is more effective than
+  compressing several thousands individual files.
+  This makes the image about 33MB smaller (on x86_64). (boo#1192457)
+- Hardlink the duplicate licenses, makes the ISO ~1MB smaller
+
+-------------------------------------------------------------------
 Wed Feb 12 10:17:47 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
 
 - Add ISO publisher (gh#agama-project/agama#1967)
