@@ -30,11 +30,9 @@ import {
   MenuContent,
   MenuList,
   MenuItem,
-  Grid,
-  GridItem,
-  Stack,
   Switch,
   Content,
+  ActionGroup,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
@@ -217,75 +215,54 @@ export default function FirstUserForm() {
               ))}
             </Alert>
           )}
-          <Grid hasGutter>
-            <GridItem sm={12} xl={6} rowSpan={2}>
-              <Page.Section>
-                <Stack hasGutter>
-                  <FormGroup fieldId="userFullName" label={_("Full name")}>
-                    <TextInput
-                      id="userFullName"
-                      name="fullName"
-                      aria-label={_("User full name")}
-                      defaultValue={state.user.fullName}
-                      label={_("User full name")}
-                      onBlur={(e) => setSuggestions(suggestUsernames(e.target.value))}
-                    />
-                  </FormGroup>
+          <FormGroup fieldId="userFullName" label={_("Full name")}>
+            <TextInput
+              id="userFullName"
+              name="fullName"
+              aria-label={_("User full name")}
+              defaultValue={state.user.fullName}
+              label={_("User full name")}
+              onBlur={(e) => setSuggestions(suggestUsernames(e.target.value))}
+            />
+          </FormGroup>
 
-                  <FormGroup
-                    className="first-username-wrapper"
-                    fieldId="userName"
-                    label={_("Username")}
-                  >
-                    <TextInput
-                      id="userName"
-                      name="userName"
-                      aria-label={_("Username")}
-                      ref={usernameInputRef}
-                      defaultValue={state.user.userName}
-                      label={_("Username")}
-                      isRequired
-                      onFocus={renderSuggestions}
-                      onKeyDown={handleKeyDown}
-                      onBlur={() => !insideDropDown && setShowSuggestions(false)}
-                    />
-                    <UsernameSuggestions
-                      isOpen={showSuggestions}
-                      entries={suggestions}
-                      onSelect={onSuggestionSelected}
-                      setInsideDropDown={setInsideDropDown}
-                      focusedIndex={focusedIndex}
-                    />
-                  </FormGroup>
-                </Stack>
-              </Page.Section>
-            </GridItem>
-            <GridItem sm={12} xl={6}>
-              <Page.Section>
-                <Stack hasGutter>
-                  {state.isEditing && (
-                    <Switch
-                      label={_("Edit password too")}
-                      isChecked={changePassword}
-                      onChange={() => setChangePassword(!changePassword)}
-                    />
-                  )}
-                  <PasswordAndConfirmationInput
-                    inputRef={passwordRef}
-                    isDisabled={!changePassword}
-                    showErrors={false}
-                  />
-                </Stack>
-              </Page.Section>
-            </GridItem>
-          </Grid>
+          <FormGroup className="first-username-wrapper" fieldId="userName" label={_("Username")}>
+            <TextInput
+              id="userName"
+              name="userName"
+              aria-label={_("Username")}
+              ref={usernameInputRef}
+              defaultValue={state.user.userName}
+              label={_("Username")}
+              isRequired
+              onFocus={renderSuggestions}
+              onKeyDown={handleKeyDown}
+              onBlur={() => !insideDropDown && setShowSuggestions(false)}
+            />
+            <UsernameSuggestions
+              isOpen={showSuggestions}
+              entries={suggestions}
+              onSelect={onSuggestionSelected}
+              setInsideDropDown={setInsideDropDown}
+              focusedIndex={focusedIndex}
+            />
+          </FormGroup>
+          {state.isEditing && (
+            <Switch
+              label={_("Edit password too")}
+              isChecked={changePassword}
+              onChange={() => setChangePassword(!changePassword)}
+            />
+          )}
+          {changePassword && (
+            <PasswordAndConfirmationInput inputRef={passwordRef} showErrors={false} />
+          )}
+          <ActionGroup>
+            <Page.Submit form="firstUserForm" />
+            <Page.Cancel />
+          </ActionGroup>
         </Form>
       </Page.Content>
-
-      <Page.Actions>
-        <Page.Submit form="firstUserForm" />
-        <Page.Cancel />
-      </Page.Actions>
     </Page>
   );
 }
