@@ -26,6 +26,7 @@ import { plainRender } from "~/test-utils";
 import DriveEditor, { DriveEditorProps } from "~/components/storage/DriveEditor";
 import * as ConfigModel from "~/api/storage/types/config-model";
 import { StorageDevice } from "~/types/storage";
+import { Volume } from "~/api/storage/types";
 
 const sda: StorageDevice = {
   sid: 59,

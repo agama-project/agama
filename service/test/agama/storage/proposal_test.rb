@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -335,68 +335,6 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    context "if an agama proposal has been calculated" do
-      before do
-        subject.calculate_from_json(config_json)
-      end
-
-      let(:config_json) do
-        {
-          storage: {
-            drives: [
-              {
-                alias:      "root",
-                partitions: [
-                  {
-                    filesystem: { path: "/" }
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      end
-
-      it "returns the config model" do
-        expect(subject.model_json).to eq(
-          {
-            boot:   {
-              configure: true,
-              device:    {
-                default: true,
-                name:    "/dev/sda"
-              }
-            },
-            drives: [
-              {
-                name:        "/dev/sda",
-                alias:       "root",
-                spacePolicy: "keep",
-                partitions:  [
-                  {
-                    mountPath:      "/",
-                    filesystem:     {
-                      reuse:   false,
-                      default: true,
-                      type:    "ext4"
-                    },
-                    size:           {
-                      default: true,
-                      min:     0
-                    },
-                    delete:         false,
-                    deleteIfNeeded: false,
-                    resize:         false,
-                    resizeIfNeeded: false
-                  }
-                ]
-              }
-            ]
-          }
-        )
-      end
-    end
-
     context "if an AutoYaST proposal has been calculated" do
       before do
         subject.calculate_from_json(autoyast_json)
@@ -412,6 +350,150 @@ describe Agama::Storage::Proposal do
 
       it "returns nil" do
         expect(subject.model_json).to be_nil
+      end
+    end
+
+    context "if an agama proposal has been calculated" do
+      before do
+        subject.calculate_from_json(config_json)
+      end
+
+      context "and the config contains an encrypted drive" do
+        let(:config_json) do
+          {
+            storage: {
+              drives: [
+                {
+                  encryption: {
+                    luks1: { password: "12345" }
+                  }
+                }
+              ]
+            }
+          }
+        end
+
+        it "returns nil" do
+          expect(subject.model_json).to be_nil
+        end
+      end
+
+      context "and the config contains an encrypted partition" do
+        let(:config_json) do
+          {
+            storage: {
+              drives: [
+                {
+                  partitions: [
+                    {
+                      encryption: {
+                        luks1: { password: "12345" }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        end
+
+        it "returns nil" do
+          expect(subject.model_json).to be_nil
+        end
+      end
+
+      context "and the config contains volume groups" do
+        let(:config_json) do
+          {
+            storage: {
+              volumeGroups: [
+                {
+                  name: "vg0"
+                }
+              ]
+            }
+          }
+        end
+
+        it "returns nil" do
+          expect(subject.model_json).to be_nil
+        end
+      end
+
+      context "and the config has errors" do
+        let(:config_json) do
+          {
+            storage: {
+              drives: [
+                {
+                  name: "unknown"
+                }
+              ]
+            }
+          }
+        end
+
+        it "returns nil" do
+          expect(subject.model_json).to be_nil
+        end
+      end
+
+      context "and the config has not errors" do
+        let(:config_json) do
+          {
+            storage: {
+              drives: [
+                {
+                  alias:      "root",
+                  partitions: [
+                    {
+                      filesystem: { path: "/" }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        end
+
+        it "returns the config model" do
+          expect(subject.model_json).to eq(
+            {
+              boot:   {
+                configure: true,
+                device:    {
+                  default: true,
+                  name:    "/dev/sda"
+                }
+              },
+              drives: [
+                {
+                  name:        "/dev/sda",
+                  alias:       "root",
+                  spacePolicy: "keep",
+                  partitions:  [
+                    {
+                      mountPath:      "/",
+                      filesystem:     {
+                        reuse:   false,
+                        default: true,
+                        type:    "ext4"
+                      },
+                      size:           {
+                        default: true,
+                        min:     0
+                      },
+                      delete:         false,
+                      deleteIfNeeded: false,
+                      resize:         false,
+                      resizeIfNeeded: false
+                    }
+                  ]
+                }
+              ]
+            }
+          )
+        end
       end
     end
   end
