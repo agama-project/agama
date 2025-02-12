@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 12 08:16:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report unsupported AutoYaST elements
+  (gh#agama-project/agama#1976).
+
+-------------------------------------------------------------------
 Tue Feb 11 15:11:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed possible double timeout when refreshing the installation
