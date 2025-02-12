@@ -183,7 +183,7 @@ module Agama
 
         steps = proposal.packages_count
         start_progress_with_size(steps)
-        Callbacks::Progress.setup(steps, progress)
+        Callbacks::Progress.setup(steps, progress, logger)
 
         # TODO: error handling
         commit_result = Yast::Pkg.Commit({})

@@ -55,6 +55,7 @@ systemctl enable live-password-dialog.service
 systemctl enable live-password-iso.service
 systemctl enable live-password-random.service
 systemctl enable live-password-systemd.service
+systemctl enable live-root-shell.service
 systemctl enable checkmedia.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service

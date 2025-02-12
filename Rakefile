@@ -19,9 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+$LOAD_PATH.unshift File.expand_path("service/lib", __dir__)
+
 require "shellwords"
 require "fileutils"
 require "yast/rake"
+require_relative "service/lib/tasks/autoyast"
 
 # Infers the gem name from the source code
 #
@@ -207,5 +210,13 @@ if ENV["YUPDATE_FORCE"] == "1" || File.exist?("/.packages.initrd") || live_iso?
         end
       end
     end
+  end
+end
+
+desc "Documentation tasks"
+namespace :doc do
+  desc "Generate the AutoYaST compatibility documentation"
+  task :autoyast_compat do
+    puts Agama::Tasks::AutoYaSTCompatGenerator.new.generate
   end
 end

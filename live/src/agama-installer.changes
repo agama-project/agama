@@ -1,7 +1,29 @@
 -------------------------------------------------------------------
-Mon Feb  7 11:40:00 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
+Wed Feb 12 10:17:47 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
 
-- Add ISO publisher (gh#agama-project/agama#1967).
+- Add ISO publisher (gh#agama-project/agama#1967)
+
+-------------------------------------------------------------------
+Wed Feb 12 08:04:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Start root shell in a free terminal (usually tty2)
+- Fixed restarting the x11-autologin service
+- Do not ask to restore the browser session after restarting it
+- Print only kernel errors or more severe messages on the console,
+  avoid spamming the terminal with useless texts (bsc#1237056)
+
+-------------------------------------------------------------------
+Fri Feb  7 16:31:50 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: restore initrd.off naming for the initrd offset
+  This essentially reverts the previous change (bsc#1236781, gh#agama-project/agama#1969,
+  gh#agama-project/agama#1974)
+
+-------------------------------------------------------------------
+Fri Feb  7 09:15:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- In local installation prefer the language configured in the
+  UEFI firmware
 
 -------------------------------------------------------------------
 Fri Feb  7 08:21:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
