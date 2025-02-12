@@ -1,0 +1,15 @@
+[Unit]
+Description=Start root shell in a free terminal (usually tty2)
+# after setting the host name to correctly display it in the shell prompt
+After=agama-hostname.service
+
+[Service]
+ExecStart=openvt --verbose --wait bash
+# start it again after crashing or accidentally closing the shell via "exit" or Ctrl+D,
+# unfortunately it might use a different tty after restart :-/
+Restart=always
+Type=exec
+Environment=TERM=linux
+
+[Install]
+WantedBy=default.target
