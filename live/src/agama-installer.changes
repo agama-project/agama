@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Feb 12 08:04:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Start root shell in a free terminal (usually tty2)
+- Fixed restarting the x11-autologin service
+- Do not ask to restore the browser session after restarting it
+- Print only kernel errors or more severe messages on the console,
+  avoid spamming the terminal with useless texts (bsc#1237056)
+
+-------------------------------------------------------------------
 Fri Feb  7 16:31:50 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - live: fix_bootconfig.s390x: restore initrd.off naming for the initrd offset

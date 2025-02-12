@@ -57,10 +57,10 @@ $(DESTDIR)/%.tar.xz: % $$(shell find % -type f,l)
 	echo "$@ $${MSG}"
 
 # build the ISO locally
+# allow passing optional parameters to osc like "-p <dir>" or "-k <dir>" via OSC_OPTS
 build: $(DESTDIR)
 	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc -A $(OBS_API) co -o $(DESTDIR) $(OBS_PROJECT) $(OBS_PACKAGE); fi
 	$(MAKE) all
-	# allow passing optional parameters to osc like "-p <dir>" or "-k <dir>"
 	(cd $(DESTDIR) && osc -A $(OBS_API) build -M $(FLAVOR) $(OSC_OPTS) $(OBS_TARGET) $(ARCH) $(KIWI_FILE))
 
 .PHONY: build all clean

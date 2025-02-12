@@ -80,21 +80,21 @@ terminal_output gfxterm
 menuentry "Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot}
+    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} loglevel=4
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
 menuentry "Failsafe -- Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} ide=nodma apm=off noresume edd=off nomodeset 3
+    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} loglevel=4 ide=nodma apm=off noresume edd=off nomodeset 3
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
 menuentry "Check Installation Medium" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux mediacheck=1 plymouth.enable=0 \${isoboot}
+    linux (\$root)/boot/x86_64/loader/linux loglevel=4 mediacheck=1 plymouth.enable=0 \${isoboot}
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
