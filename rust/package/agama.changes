@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 12 09:38:35 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Added reboot command to the CLI (gh#agama-project/agama#1960)
+
+-------------------------------------------------------------------
 Mon Feb 10 13:28:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixup: Make the "lang" URL query optional, do not fail when it

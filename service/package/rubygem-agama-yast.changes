@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Feb 12 09:39:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- (gh#agama-project/agama#1930).
+  - In an unattended installation, the system will reboot
+    automatically.
+  - The D-Bus method to finish the installation will not reboot the
+    system if it is not in the "finish" installation phase.
+
+-------------------------------------------------------------------
 Wed Feb 12 08:16:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Report unsupported AutoYaST elements
