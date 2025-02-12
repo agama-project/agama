@@ -8,7 +8,7 @@ Wed Feb 12 12:02:39 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
   (they are compressed by the squashfs as well). Compressing
   all drivers together in the image is more effective than
   compressing several thousands individual files.
-  This makes the image about 33MB smaller (on x86_64).
+  This makes the image about 33MB smaller (on x86_64). (boo#1192457)
 - Hardlink the duplicate licenses, makes the ISO ~1MB smaller
 
 -------------------------------------------------------------------
