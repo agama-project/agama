@@ -23,7 +23,7 @@ module Agama
   # This class is responsible for reading Agama kernel cmdline options
   class CmdlineArgs
     CMDLINE_PATH = "/proc/cmdline"
-    CMDLINE_PREFIX = "agama."
+    CMDLINE_PREFIX = "inst."
 
     attr_accessor :config_url
     attr_reader :data
@@ -40,7 +40,7 @@ module Agama
       options = File.read(path)
       args = new({})
 
-      options.split.each do |option|
+      purge(options).split.each do |option|
         next unless option.start_with?(CMDLINE_PREFIX)
 
         key, value = option.split("=", 2)
@@ -61,6 +61,15 @@ module Agama
       end
 
       args
+    end
+
+    # Despite Agama is young it already contains some relicts. This method should purge them
+    def self.purge(options)
+      obsolete_cmdline_prefix = "agama."
+
+      # TODO: For now it doesn't care if obsolete_cmdline_prefix<key>=... or
+      #  <key>=obsolete_cmdline_prefix is it something we need to deal with?
+      options.gsub(obsolete_cmdline_prefix, CMDLINE_PREFIX)
     end
 
     # Convenience method to normalize the given value by now it just convert "true" and "false"
