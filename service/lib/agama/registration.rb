@@ -50,12 +50,6 @@ module Agama
     # @return [String, nil]
     attr_reader :email
 
-    module Requirement
-      NO = :no
-      OPTIONAL = :optional
-      MANDATORY = :mandatory
-    end
-
     # @param software_manager [Agama::Software::Manager]
     # @param logger [Logger]
     def initialize(software_manager, logger)
@@ -155,16 +149,6 @@ module Agama
       files.each do |src_dest|
         FileUtils.cp(*src_dest)
       end
-    end
-
-    # Indicates whether the registration is optional, mandatory or not required.
-    #
-    # @return [Symbol] See {Requirement}.
-    def requirement
-      return Requirement::NO unless product
-      return Requirement::MANDATORY if product.repositories.none?
-
-      Requirement::NO
     end
 
     # Callbacks to be called when registration changes (e.g., a different product is selected).
