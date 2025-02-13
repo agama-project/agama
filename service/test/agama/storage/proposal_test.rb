@@ -426,15 +426,25 @@ describe Agama::Storage::Proposal do
             storage: {
               drives: [
                 {
-                  name: "unknown"
+                  search: "unknown"
                 }
               ]
             }
           }
         end
 
-        it "returns nil" do
-          expect(subject.model_json).to be_nil
+        it "returns the config model" do
+          expect(subject.model_json).to eq(
+            {
+              boot:   {
+                configure: true,
+                device:    {
+                  default: true
+                }
+              },
+              drives: []
+            }
+          )
         end
       end
 
