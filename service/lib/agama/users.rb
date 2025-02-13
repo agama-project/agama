@@ -23,9 +23,12 @@ require "yast"
 require "y2users"
 require "y2users/linux" # FIXME: linux is not in y2users file
 require "yast2/execute"
+require "y2firewall/firewalld"
 require "agama/helpers"
 require "agama/issue"
 require "agama/with_issues"
+
+Yast.import "Service"
 
 module Agama
   # Backend class using YaST code.
@@ -118,6 +121,12 @@ module Agama
       return fatal_issues.map(&:message) unless fatal_issues.empty?
 
       config.attach(user)
+
+      wheel = config.groups.by_name(wheel)
+      wheel ||= Y2Users::Group.new("wheel")
+      wheel.users_name << user_name
+      config.attach(wheel) unless wheel.attached?
+
       config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil
       update_issues
@@ -134,6 +143,18 @@ module Agama
     def write
       without_run_mount do
         on_target do
+          # if root ssh key is specified ensure that sshd running and firewall has port opened
+          if root_ssh_key?
+            @logger.info "root ssh key is set, enabling sshd and opening firewall"
+            Yast::Service.Enable("sshd")
+            firewalld = Y2Firewall::Firewalld.instance
+            # open port only if firewalld is installed, otherwise it will crash
+            firewalld.api.add_service(firewalld.default_zone, "ssh") if firewalld.installed?
+          end
+
+          # disable root password if not set
+          assign_root_password("!", true) unless root_password?
+
           system_config = Y2Users::ConfigManager.instance.system(force_read: true)
           target_config = system_config.copy
           Y2Users::ConfigMerger.new(target_config, config).merge
