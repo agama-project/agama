@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Fri Feb  7 14:43:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report unsupported AutoYaST elements
+  (gh#agama-project/agama#1976).
+
+-------------------------------------------------------------------
+Fri Jan 31 09:03:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Always perform mutations (PATH/POST/PUT/DELETE) when connecting
+  to "localhost", no matter whether the network is connected or not
+  (gh#agama-project/agama#1963).
+
+-------------------------------------------------------------------
 Thu Jan 30 12:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Make deletion of a proposed drive work:

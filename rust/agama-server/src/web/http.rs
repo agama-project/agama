@@ -100,10 +100,12 @@ pub async fn login(
 pub struct LoginFromQueryParams {
     /// Token to use for authentication.
     token: String,
+    /// Optional requested locale
+    lang: Option<String>,
 }
 
 #[utoipa::path(get, path = "/login", responses(
-    (status = 301, description = "Injects the authentication cookie if correct and redirects to the web UI")
+    (status = 307, description = "Injects the authentication cookie if correct and redirects to the web UI")
 ))]
 pub async fn login_from_query(
     State(state): State<ServiceState>,
@@ -120,7 +122,23 @@ pub async fn login_from_query(
         );
     }
 
-    headers.insert(header::LOCATION, HeaderValue::from_static("/"));
+    // the redirection path
+    let mut target = String::from("/");
+
+    // keep the "lang" URL query if it was present in the original request
+    if let Some(lang) = params.lang {
+        if !lang.is_empty() {
+            target.push_str(format!("?lang={}", lang).as_str());
+        }
+    }
+
+    let location = HeaderValue::from_str(target.as_str());
+
+    headers.insert(
+        header::LOCATION,
+        location.unwrap_or(HeaderValue::from_static("/")),
+    );
+
     (StatusCode::TEMPORARY_REDIRECT, headers)
 }
 

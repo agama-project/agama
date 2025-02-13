@@ -1,4 +1,77 @@
 -------------------------------------------------------------------
+Wed Feb 12 12:02:39 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not print details about removed kernel drivers and firmware
+  files during build, this speeds up the build significantly
+  (~1 minute faster build) and avoids huge build log.
+- Uncompress the kernel drivers, no need to compress them twice
+  (they are compressed by the squashfs as well). Compressing
+  all drivers together in the image is more effective than
+  compressing several thousands individual files.
+  This makes the image about 33MB smaller (on x86_64). (boo#1192457)
+- Hardlink the duplicate licenses, makes the ISO ~1MB smaller
+
+-------------------------------------------------------------------
+Wed Feb 12 10:17:47 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
+
+- Add ISO publisher (gh#agama-project/agama#1967)
+
+-------------------------------------------------------------------
+Wed Feb 12 08:04:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Start root shell in a free terminal (usually tty2)
+- Fixed restarting the x11-autologin service
+- Do not ask to restore the browser session after restarting it
+- Print only kernel errors or more severe messages on the console,
+  avoid spamming the terminal with useless texts (bsc#1237056)
+
+-------------------------------------------------------------------
+Fri Feb  7 16:31:50 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: restore initrd.off naming for the initrd offset
+  This essentially reverts the previous change (bsc#1236781, gh#agama-project/agama#1969,
+  gh#agama-project/agama#1974)
+
+-------------------------------------------------------------------
+Fri Feb  7 09:15:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- In local installation prefer the language configured in the
+  UEFI firmware
+
+-------------------------------------------------------------------
+Fri Feb  7 08:21:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Implemented media check functionality (bsc#1236103)
+
+-------------------------------------------------------------------
+Fri Feb  7 08:10:46 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use better ISO Volume ID labels (bsc#1236401)
+- Improve also the boot menu labels
+- Use the graphical boot menu also in SLE
+- Added UEFI firmware settings boot menu option
+
+-------------------------------------------------------------------
+Tue Feb  4 13:25:35 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- configure xterm to use the default fixed font also in the
+  configuration popup menu (Ctrl + click) to avoid crash
+- bsc#1235478
+  - tuned IceWM setup to disable some desktop functionality like
+    opening main menu using the Win key (by mfilka@suse.com)
+
+-------------------------------------------------------------------
+Mon Feb  3 23:08:34 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: use initrd.ofs for the initrd
+  offset filename (gh#agama-project/agama#1969)
+
+-------------------------------------------------------------------
+Mon Feb  3 23:01:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- fix_bootimage: exit on failures (gh#agama-project/agama#1969)
+
+-------------------------------------------------------------------
 Mon Jan 20 10:37:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add SUSE licenses (jsc#PED-11987).

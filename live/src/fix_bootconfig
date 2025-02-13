@@ -15,7 +15,6 @@
 #
 set -ex
 
-
 dst=${1#iso:}
 
 # KIWI config
@@ -26,11 +25,6 @@ if [ -f .profile ]; then
 fi
 
 arch=`uname -m`
-
-# removing live root setting from command line - it's in /etc/cmdline.d instead
-if [ -f $dst/boot/grub2/grub.cfg ] ; then
-  sed -i -E -e 's/\s+root=\S+//' -e 's/\s+rd.live\.image//' $dst/boot/grub2/grub.cfg
-fi
 
 bootfix=$dst/fix_bootconfig.$arch
 if [ -f $bootfix ] ; then
@@ -55,22 +49,14 @@ for i in "\$@" ; do
     export iso="\$i"
     continue
   fi
-  if [ -n "\$volid_opt" ] ; then
-    volid_opt=
-    export volid="\$i"
-    continue
-  fi
   if [ "\$i" = "-outdev" ] ; then
     iso_opt=1
     continue
   fi
-  if [ "\$i" = "-volid" ] ; then
-    volid_opt=1
-    continue
-  fi
 done
 
-volid=${kiwi_install_volid:-$kiwi_iname}
+# keep in sync with ISO Volume ID set in the config.sh script
+volid="Install-$kiwi_profiles-$arch"
 
 [ -x $bootfix ] && $bootfix $dst
 rm -f $dst/fix_bootconfig.* $dst/.profile
@@ -87,6 +73,7 @@ case $arch in
     ;;
   *)
     /usr/bin/xorriso "\$@" -volid "\$volid"
+    err=\$?
 esac
 
 exit \$err

@@ -37,6 +37,8 @@
 #     └── bootinfo.txt
 #
 
+set -e
+
 dst="$1"
 
 if [ ! -d "$dst" ] ; then
@@ -74,12 +76,18 @@ fi
 
 chmod 644 $boot_dir/{initrd,linux}
 
+arch=`uname -m`
+profile=$(echo "$kiwi_profiles" | tr "-" " ")
+label="$profile ($arch)"
+
 # Create grub.cfg.
 #
 cat >$dst/boot/grub2/grub.cfg <<XXX
+# Agama generated grub2 config file
+
 gfxmode=auto
 
-set default="$kiwi_iname"
+set default="Install $label"
 
 insmod gettext
 
@@ -87,16 +95,16 @@ if sleep --interruptible 0 ; then
   timeout=60
 fi
 
-menuentry "$kiwi_iname" --class os --unrestricted {
+menuentry "Install $label" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux
+  linux /boot/ppc64le/linux loglevel=4
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }
 
-menuentry "Check Installation Media -- $kiwi_iname" --class os --unrestricted {
+menuentry "Check Installation Medium" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux mediacheck=1 plymouth.enable=0
+  linux /boot/ppc64le/linux loglevel=4 mediacheck=1 plymouth.enable=0
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }
@@ -120,8 +128,8 @@ XXX
 #
 cat >$dst/ppc/bootinfo.txt <<XXX
 <chrp-boot>
-<description>$kiwi_iname</description>
-<os-name>openSuSE Tumbleweed</os-name>
+<description>Install $label</description>
+<os-name>$label</os-name>
 <boot-script>boot &device;:1,\boot\grub2\grub.elf</boot-script>
 </chrp-boot>
 XXX

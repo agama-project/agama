@@ -525,6 +525,9 @@ export default {
   "Hide details": [
     "隐藏细节"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP 地址"
   ],
@@ -969,6 +972,9 @@ export default {
   "Remove min channel filter": [
     "移除最小通道过滤器"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "重设位置"
   ],
@@ -1088,6 +1094,9 @@ export default {
   ],
   "Software selection": [
     "软件选择"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
   ],
   "Something went wrong": [
     "出了点问题"
