@@ -72,11 +72,8 @@ function useResetConfig() {
     });
 }
 
-type ErrorsEmptyStateProps = {
-  errors: Issue[];
-};
-
-function ErrorsEmptyState({ errors }: ErrorsEmptyStateProps) {
+function InvalidConfigEmptyState(): React.ReactNode {
+  const errors = useConfigErrors("storage");
   const reset = useResetConfig();
 
   return (
@@ -103,7 +100,7 @@ function ErrorsEmptyState({ errors }: ErrorsEmptyStateProps) {
   );
 }
 
-function ConfigEmptyState() {
+function UnknowConfigEmptyState(): React.ReactNode {
   const reset = useResetConfig();
 
   return (
@@ -125,7 +122,7 @@ function ConfigEmptyState() {
   );
 }
 
-function DevicesEmptyState() {
+function UnavailableDevicesEmptyState(): React.ReactNode {
   const isZFCPSupported = useZFCPSupported();
   const isDASDSupported = useDASDSupported();
 
@@ -167,19 +164,28 @@ function DevicesEmptyState() {
   );
 }
 
-type ProposalSectionsProps = {
-  isEditable: boolean;
-  isValid: boolean;
-};
 
-function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React.ReactNode {
+function ProposalEmptyState(): React.ReactNode {
+  const model = useConfigModel({ suspense: true });
+  const availableDevices = useAvailableDevices();
+
+  if (!availableDevices.length) return <UnavailableDevicesEmptyState />;
+
+  return model ? <InvalidConfigEmptyState/> : <UnknowConfigEmptyState />;
+}
+
+function ProposalSections(): React.ReactNode {
   const reset = useResetConfig();
+  const model = useConfigModel({ suspense: true });
+  const systemErrors = useSystemErrors("storage");
+
+  const hasResult = !systemErrors.length;
 
   return (
     <Grid hasGutter>
       <ProposalTransactionalInfo />
       <ProposalFailedInfo />
-      {!isEditable && (
+      {!model && (
         <Alert variant="info" title={_("Unknown storage settings")}>
           <>
             {_(
@@ -191,7 +197,7 @@ function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React
           </>
         </Alert>
       )}
-      {isEditable && (
+      {model && (
         <GridItem sm={12}>
           <Page.Section
             title={_("Installation Devices")}
@@ -214,22 +220,17 @@ function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React
           </Page.Section>
         </GridItem>
       )}
-      {isValid && <ProposalResultSection />}
+      {hasResult && <ProposalResultSection />}
     </Grid>
   );
 }
 
-/**
- * @fixme The UI for editing a config model is not prepared yet to properly work with a model that
- *  contains errors. For that reason, a config is considered as unknown (non-editable) if there is
- *  no model and also if there is some config error. In the future, components like ConfigEditor
- *  should be extended in order to make them to work with a model containg issues.
- */
 export default function ProposalPage(): React.ReactNode {
   const isDeprecated = useDeprecated();
   const model = useConfigModel({ suspense: true });
-  const devices = useAvailableDevices();
-  const issues = useIssues("storage");
+  const availableDevices = useAvailableDevices();
+  const systemErrors = useSystemErrors("storage");
+  const configErrors = useConfigErrors("storage");
   const { mutateAsync: reprobe } = useReprobeMutation();
 
   useDeprecatedChanges();
@@ -238,15 +239,16 @@ export default function ProposalPage(): React.ReactNode {
     if (isDeprecated) reprobe().catch(console.log);
   }, [isDeprecated, reprobe]);
 
-  const systemErrors = issues
-    .filter((s) => s.severity === IssueSeverity.Error)
-    .filter((s) => s.source === IssueSource.System);
-  const configErrors = issues
-    .filter((s) => s.severity === IssueSeverity.Error)
-    .filter((s) => s.source === IssueSource.Config);
-  const isValid = !systemErrors.length && !configErrors.length;
-  const isEditable = model && !configErrors.length;
-  const isDevicesEmpty = !devices.length;
+  /**
+   * @fixme For now, a config model is only considered as editable if there is no config error. The
+   *  UI for handling a model is not prepared yet to properly work with a model generated from a
+   *  config with errors. Components like ConfigEditor should be adapted in order to properly manage
+   *  those scenarios.
+   */
+  const isModelEditable = model && !configErrors.length;
+  const hasDevices = !!availableDevices.length;
+  const hasResult = !systemErrors.length;
+  const showSections = hasDevices && (isModelEditable || hasResult);
 
   return (
     <Page>
@@ -255,16 +257,8 @@ export default function ProposalPage(): React.ReactNode {
       </Page.Header>
       <Page.Content>
         {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}
-        {!isDeprecated && isDevicesEmpty && <DevicesEmptyState />}
-        {!isDeprecated && !isDevicesEmpty && !isEditable && !isValid && !model && (
-          <ConfigEmptyState />
-        )}
-        {!isDeprecated && !isDevicesEmpty && !isEditable && !isValid && model && (
-          <ErrorsEmptyState errors={configErrors} />
-        )}
-        {!isDeprecated && !isDevicesEmpty && (isEditable || isValid) && (
-          <ProposalSections isEditable={isEditable} isValid={isValid} />
-        )}
+        {!isDeprecated && !showSections && <ProposalEmptyState />}
+        {!isDeprecated && showSections && <ProposalSections />}
       </Page.Content>
     </Page>
   );
