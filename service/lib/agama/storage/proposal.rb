@@ -370,7 +370,7 @@ module Agama
       def failed_issue
         Issue.new(
           _("Cannot accommodate the required file systems for installation"),
-          source:   Issue::Source::CONFIG,
+          source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR
         )
       end
@@ -382,7 +382,7 @@ module Agama
         Issue.new(
           _("A problem ocurred while calculating the storage setup"),
           details:  error.message,
-          source:   Issue::Source::CONFIG,
+          source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR
         )
       end
