@@ -27,7 +27,6 @@
 
 use crate::{
     error::Error,
-    software::license::LicensesRepo,
     web::{
         common::{issues_router, progress_router, service_status_router, EventStreams},
         Event,
@@ -39,8 +38,8 @@ use agama_lib::{
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
-            RegistrationError, RegistrationInfo, RegistrationParams, Repository, ResolvableParams,
-            SoftwareConfig,
+            License, LicenseContent, LicensesRepo, RegistrationError, RegistrationInfo,
+            RegistrationParams, Repository, ResolvableParams, SoftwareConfig,
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -56,8 +55,6 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tokio_stream::{Stream, StreamExt};
-
-use super::license::License;
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
@@ -501,7 +498,7 @@ async fn set_resolvables(
     path = "/licenses",
     context_path = "/api/software",
     responses(
-        (status = 200, description = "List of known licenses")
+        (status = 200, description = "List of known licenses", body = Vec<License>)
     )
 )]
 async fn licenses(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<License>>, Error> {
@@ -521,8 +518,9 @@ struct LicenseQuery {
     get,
     path = "/licenses/:id",
     context_path = "/api/software",
+    params(LicenseQuery),
     responses(
-        (status = 200, description = "License with the given ID"),
+        (status = 200, description = "License with the given ID", body = LicenseContent),
         (status = 400, description = "The specified language tag is not valid"),
         (status = 404, description = "There is not license with the given ID")
     )

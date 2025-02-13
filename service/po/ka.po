@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 02:40+0000\n"
+"POT-Creation-Date: 2025-02-09 02:40+0000\n"
 "PO-Revision-Date: 2024-10-31 13:48+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -43,13 +43,39 @@ msgid "Configure the system"
 msgstr "სისტემის მორგება"
 
 #. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:156
+#: service/lib/agama/manager.rb:157
 msgid "Load software translations"
 msgstr "პროგრამის თარგმანების ჩატვირთვა"
 
-#: service/lib/agama/manager.rb:157
+#: service/lib/agama/manager.rb:158
 msgid "Load storage translations"
 msgstr "საცავის თარგმანების ჩატვირთვა"
+
+#. TRANSLATORS: %s is a package name
+#: service/lib/agama/software/callbacks/progress.rb:92
+#, c-format
+msgid "Package %s could not be installed."
+msgstr ""
+
+#. "Not found" (error 1) is handled by the MediaChange callback.
+#: service/lib/agama/software/callbacks/provide.rb:71
+#, ycp-format
+msgid "Package %1 could not be downloaded (input/output error)."
+msgstr ""
+
+#: service/lib/agama/software/callbacks/provide.rb:74
+#, ycp-format
+msgid "Package %1 is broken, integrity check has failed."
+msgstr ""
+
+#. DoneProvide callback
+#.
+#. @param description [String] Problem description
+#. @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
+#. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
+#: service/lib/agama/software/callbacks/script.rb:59
+msgid "There was a problem running a package script."
+msgstr ""
 
 #. Callback to handle unsigned files
 #.
@@ -101,7 +127,7 @@ msgstr ""
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:561
+#: service/lib/agama/software/manager.rb:596
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr ""
@@ -109,14 +135,14 @@ msgstr ""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:571
+#: service/lib/agama/software/manager.rb:606
 msgid "Product not selected yet"
 msgstr ""
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:580
+#: service/lib/agama/software/manager.rb:615
 msgid "Product must be registered"
 msgstr ""
 
