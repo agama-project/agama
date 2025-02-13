@@ -36,7 +36,7 @@ module Agama
         #
         # @return [Array<Array(String, String, Integer, Integer)>] The description, details, source
         #   and severity of each issue.
-        #   Source: 1 for system, 2 for config and 3 for unknown.
+        #   Source: 1 for system, 2 for config and 0 for unknown.
         #   Severity: 0 for warn and 1 for error.
         def dbus_issues
           issues.map do |issue|
