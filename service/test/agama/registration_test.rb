@@ -345,38 +345,6 @@ describe Agama::Registration do
     end
   end
 
-  describe "#requirement" do
-    context "if there is not product selected yet" do
-      let(:product) { nil }
-
-      it "returns not required" do
-        expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
-      end
-    end
-
-    context "if there is a selected product" do
-      let(:product) do
-        Agama::Software::Product.new("test").tap { |p| p.repositories = repositories }
-      end
-
-      context "and the product has repositories" do
-        let(:repositories) { ["https://repo"] }
-
-        it "returns not required" do
-          expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
-        end
-      end
-
-      context "and the product has no repositories" do
-        let(:repositories) { [] }
-
-        it "returns mandatory" do
-          expect(subject.requirement).to eq(Agama::Registration::Requirement::MANDATORY)
-        end
-      end
-    end
-  end
-
   describe "#finish" do
     context "system is not registered" do
       before do

@@ -114,7 +114,6 @@ module Agama
 
             if code == 0
               dbus_properties_changed(PRODUCT_INTERFACE, { "SelectedProduct" => id }, [])
-              dbus_properties_changed(REGISTRATION_INTERFACE, { "Requirement" => requirement }, [])
               # FIXME: Product issues might change after selecting a product. Nevertheless,
               #   #on_issues_change callbacks should be used for emitting issues signals, ensuring
               #   they are emitted every time the backend changes its issues. Currently,
@@ -134,23 +133,6 @@ module Agama
 
         def email
           backend.registration.email || ""
-        end
-
-        # Registration requirement.
-        #
-        # @return [Integer] Possible values:
-        #   0: not required
-        #   1: optional
-        #   2: mandatory
-        def requirement
-          case backend.registration.requirement
-          when Agama::Registration::Requirement::MANDATORY
-            2
-          when Agama::Registration::Requirement::OPTIONAL
-            1
-          else
-            0
-          end
         end
 
         # Tries to register with the given registration code.
@@ -226,8 +208,6 @@ module Agama
           dbus_reader(:reg_code, "s")
 
           dbus_reader(:email, "s")
-
-          dbus_reader(:requirement, "u")
 
           dbus_method(:Register, "in reg_code:s, in options:a{sv}, out result:(us)") do |*args|
             [register(args[0], email: args[1]["Email"])]
