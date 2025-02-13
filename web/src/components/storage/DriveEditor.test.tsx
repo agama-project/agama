@@ -23,9 +23,73 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import DriveEditor, { DriveEditorProps } from "~/components/storage/DriveEditor";
+import DriveEditor from "~/components/storage/DriveEditor";
 import * as ConfigModel from "~/api/storage/types/config-model";
 import { StorageDevice } from "~/types/storage";
+import { Volume } from "~/api/storage/types";
+
+const volume1: Volume = {
+  mountPath: "/",
+  mountOptions: [],
+  target: "default",
+  fsType: "Btrfs",
+  minSize: 1024,
+  maxSize: 1024,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: true,
+    fsTypes: ["Btrfs"],
+    supportAutoSize: false,
+    snapshotsConfigurable: false,
+    snapshotsAffectSizes: false,
+    sizeRelevantVolumes: [],
+    adjustByRam: false,
+  },
+};
+
+const volume2: Volume = {
+  mountPath: "swap",
+  mountOptions: [],
+  target: "default",
+  fsType: "Swap",
+  minSize: 1024,
+  maxSize: 1024,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: false,
+    fsTypes: ["Swap"],
+    supportAutoSize: false,
+    snapshotsConfigurable: false,
+    snapshotsAffectSizes: false,
+    sizeRelevantVolumes: [],
+    adjustByRam: false,
+  },
+};
+
+const volume3: Volume = {
+  mountPath: "/home",
+  mountOptions: [],
+  target: "default",
+  fsType: "XFS",
+  minSize: 1024,
+  maxSize: 1024,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: false,
+    fsTypes: ["XFS"],
+    supportAutoSize: false,
+    snapshotsConfigurable: false,
+    snapshotsAffectSizes: false,
+    sizeRelevantVolumes: [],
+    adjustByRam: false,
+  },
+};
 
 const sda: StorageDevice = {
   sid: 59,
@@ -49,10 +113,27 @@ const sda: StorageDevice = {
   description: "",
 };
 
-const mockDrive: ConfigModel.Drive = {
+const sdb: StorageDevice = {
+  sid: 60,
+  isDrive: true,
+  type: "disk",
+  name: "/dev/sdb",
+  size: 1024,
+  description: "",
+};
+
+const drive1: ConfigModel.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: [
+    {
+      mountPath: "/",
+      size: {
+        min: 1_000_000_000,
+        default: true,
+      },
+      filesystem: { default: true, type: "btrfs" },
+    },
     {
       mountPath: "swap",
       size: {
@@ -64,29 +145,41 @@ const mockDrive: ConfigModel.Drive = {
   ],
 };
 
+const drive2: ConfigModel.Drive = {
+  name: "/dev/sdb",
+  spacePolicy: "delete",
+  partitions: [
+    {
+      mountPath: "/home",
+      size: {
+        min: 1_000_000_000,
+        default: true,
+      },
+      filesystem: { default: true, type: "xfs" },
+    },
+  ],
+};
+
 const mockDeleteDrive = jest.fn();
 const mockDeletePartition = jest.fn();
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => [sda],
+  useVolume: (mountPath: string): Volume =>
+    [volume1, volume2, volume3].find((v) => v.mountPath === mountPath),
 }));
 
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => ({ drives: [mockDrive] }),
+  useConfigModel: () => ({ drives: [drive1, drive2] }),
   useDrive: () => ({ delete: mockDeleteDrive }),
   usePartition: () => ({ delete: mockDeletePartition }),
 }));
 
-const props: DriveEditorProps = {
-  drive: mockDrive,
-  driveDevice: sda,
-};
-
 describe("PartitionMenuItem", () => {
-  it("allows users to delete the partition", async () => {
-    const { user } = plainRender(<DriveEditor {...props} />);
+  it("allows users to delete a not required partition", async () => {
+    const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
     const partitionsButton = screen.getByRole("button", { name: "Partitions" });
     await user.click(partitionsButton);
@@ -97,11 +190,23 @@ describe("PartitionMenuItem", () => {
     await user.click(deleteSwapButton);
     expect(mockDeletePartition).toHaveBeenCalled();
   });
+
+  it("does not allow users to delete a required partition", async () => {
+    const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
+
+    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
+    await user.click(partitionsButton);
+    const partitionsMenu = screen.getByRole("menu");
+    const deleteRootButton = within(partitionsMenu).queryByRole("menuitem", {
+      name: "Delete /",
+    });
+    expect(deleteRootButton).not.toBeInTheDocument();
+  });
 });
 
 describe("RemoveDriveOption", () => {
-  it("allows users to delete the drive", async () => {
-    const { user } = plainRender(<DriveEditor {...props} />);
+  it("allows users to delete a drive which does not contain root", async () => {
+    const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
     const driveButton = screen.getByRole("button", { name: "Drive" });
     await user.click(driveButton);
@@ -111,5 +216,17 @@ describe("RemoveDriveOption", () => {
     });
     await user.click(deleteDriveButton);
     expect(mockDeleteDrive).toHaveBeenCalled();
+  });
+
+  it("does not allow users to delete a drive which contains root", async () => {
+    const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
+
+    const driveButton = screen.getByRole("button", { name: "Drive" });
+    await user.click(driveButton);
+    const drivesMenu = screen.getByRole("menu");
+    const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
+      name: /Do not use/,
+    });
+    expect(deleteDriveButton).not.toBeInTheDocument();
   });
 });
