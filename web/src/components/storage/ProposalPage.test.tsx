@@ -30,6 +30,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalPage from "~/components/storage/ProposalPage";
 import { StorageDevice } from "~/types/storage";
+import { Issue } from "~/types/issues";
 
 const disk: StorageDevice = {
   sid: 60,
@@ -42,6 +43,22 @@ const disk: StorageDevice = {
   bus: "IDE",
   name: "/dev/vda",
   size: 1e6,
+};
+
+const systemError: Issue = {
+  description: "System error",
+  kind: "storage",
+  details: "",
+  source: 1,
+  severity: 1,
+};
+
+const configError: Issue = {
+  description: "Config error",
+  kind: "storage",
+  details: "",
+  source: 2,
+  severity: 1,
 };
 
 const mockUseAvailableDevices = jest.fn();
@@ -160,26 +177,18 @@ describe("if there are not devices", () => {
   });
 });
 
-describe("if there is not model", () => {
+describe("if there is not a model", () => {
   beforeEach(() => {
     mockUseAvailableDevices.mockReturnValue([disk]);
     mockUseConfigModel.mockReturnValue(null);
   });
 
-  describe("and there are errors", () => {
+  describe("and there are system errors", () => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([
-        {
-          description: "Error",
-          kind: "storage",
-          details: "",
-          source: 2,
-          severity: 1,
-        },
-      ]);
+      mockUseIssues.mockReturnValue([systemError]);
     });
 
-    it("renders an option for reseting the config", () => {
+    it("renders an option for resetting the config", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByRole("button", { name: "Reset" })).toBeInTheDocument();
     });
@@ -195,7 +204,7 @@ describe("if there is not model", () => {
     });
   });
 
-  describe("and there are not errors", () => {
+  describe("and there are not system errors", () => {
     beforeEach(() => {
       mockUseIssues.mockReturnValue([]);
     });
@@ -223,17 +232,35 @@ describe("if there is a model", () => {
     mockUseConfigModel.mockReturnValue({ drives: [] });
   });
 
-  describe("and there are errors", () => {
+  describe("and there are config errors", () => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([
-        {
-          description: "Error",
-          kind: "storage",
-          details: "",
-          source: 2,
-          severity: 1,
-        },
-      ]);
+      mockUseIssues.mockReturnValue([configError]);
+    });
+
+    it("renders the config errors", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("Config error")).toBeInTheDocument();
+    });
+
+    it("renders an option for resetting the config", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("button", { name: "Reset" })).toBeInTheDocument();
+    });
+
+    it("does not render the installation devices", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+    });
+
+    it("does not render the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("and there are not config errors but there are system errors", () => {
+    beforeEach(() => {
+      mockUseIssues.mockReturnValue([systemError]);
     });
 
     it("renders an error message", () => {
@@ -252,7 +279,7 @@ describe("if there is a model", () => {
     });
   });
 
-  describe("and there are not errors", () => {
+  describe("and there are neither config errors nor system errors", () => {
     beforeEach(() => {
       mockUseIssues.mockReturnValue([]);
     });
