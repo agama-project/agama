@@ -94,16 +94,12 @@ module Agama
 
       # Config model according to the JSON schema.
       #
-      # The config model is generated only if the config has not errors and all the config features
-      # are supported by the model.
+      # The config model is generated only if all the config features are supported by the model.
       #
       # @return [Hash, nil] nil if the config model cannot be generated.
       def model_json
         config = config(solved: true)
         return unless config && model_supported?(config)
-
-        issues = Agama::Storage::ConfigChecker.new(config, product_config).issues
-        return if issues.any?(&:error?)
 
         ConfigConversions::ToModel.new(config).convert
       end
