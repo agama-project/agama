@@ -114,6 +114,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let state = StorageState { client };
     let router = Router::new()
         .route("/config", put(set_config).get(get_config))
+        .route("/config/reset", put(reset_config))
         .route("/config_model", put(set_config_model).get(get_config_model))
         .route("/config_model/solve", get(solve_config_model))
         .route("/probe", post(probe))
@@ -207,6 +208,24 @@ async fn get_config_model(
         .await
         .map_err(Error::Service)?;
     Ok(Json(config_model))
+}
+
+/// Resets the storage config to the default value.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    put,
+    path = "/config/reset",
+    context_path = "/api/storage",
+    operation_id = "reset_storage_config",
+    responses(
+        (status = 200, description = "Reset the storage configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn reset_config(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
+    let _status: u32 = state.client.reset_config().await.map_err(Error::Service)?;
+    Ok(Json(()))
 }
 
 /// Sets the storage config model.

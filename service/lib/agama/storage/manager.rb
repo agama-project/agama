@@ -156,6 +156,16 @@ module Agama
         Finisher.new(logger, product_config, security).run
       end
 
+      # Calculates the proposal.
+      #
+      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
+      #   proposal. If false, then the default config from the product is used.
+      def calculate_proposal(keep_config: false)
+        config_json = proposal.storage_json if keep_config
+        config_json ||= ConfigJSONReader.new(product_config).read
+        proposal.calculate_from_json(config_json)
+      end
+
       # Storage proposal manager
       #
       # @return [Storage::Proposal]
@@ -223,16 +233,6 @@ module Agama
 
         iscsi.probe
         Y2Storage::StorageManager.instance.probe(callbacks)
-      end
-
-      # Calculates the proposal.
-      #
-      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
-      #   proposal. If false, then the default config from the product is used.
-      def calculate_proposal(keep_config: false)
-        config_json = proposal.storage_json if keep_config
-        config_json ||= ConfigJSONReader.new(product_config).read
-        proposal.calculate_from_json(config_json)
       end
 
       # Adds the required packages to the list of resolvables to install
