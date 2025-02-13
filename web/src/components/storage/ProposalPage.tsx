@@ -32,6 +32,8 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateFooter,
+  List,
+  ListItem,
 } from "@patternfly/react-core";
 import { Page, Link } from "~/components/core/";
 import { Icon, Loading } from "~/components/layout";
@@ -41,7 +43,7 @@ import ProposalFailedInfo from "./ProposalFailedInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
 import AddExistingDeviceMenu from "./AddExistingDeviceMenu";
-import { IssueSeverity } from "~/types/issues";
+import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
 import {
   useAvailableDevices,
   useConfigMutation,
@@ -70,20 +72,51 @@ function useResetConfig() {
     });
 }
 
-function ResetEmptyState() {
+type ErrorsEmptyStateProps = {
+  errors: Issue[];
+};
+
+function ErrorsEmptyState({ errors }: ErrorsEmptyStateProps) {
   const reset = useResetConfig();
 
-  const description = _(
-    "The current storage config cannot be edited. Do you want to reset to the default config?",
-  );
   return (
     <EmptyState
-      titleText={_("Unknown storage config")}
+      titleText={_("Invalid storage settings")}
       icon={() => <Icon name="error" />}
       status="warning"
     >
-      <EmptyStateBody>{description}</EmptyStateBody>
+      <EmptyStateBody>
+        <p>{_("The current storage settings contains the following issues:")}</p>
+        <List isPlain>
+          {errors.map((e, i) => (
+            <ListItem key={i}>{e.description}</ListItem>
+          ))}
+        </List>
+      </EmptyStateBody>
       <EmptyStateFooter>
+        <p>{_("Do you want to reset to the default settings?")}</p>
+        <Button variant="secondary" onClick={reset}>
+          {_("Reset")}
+        </Button>
+      </EmptyStateFooter>
+    </EmptyState>
+  );
+}
+
+function ConfigEmptyState() {
+  const reset = useResetConfig();
+
+  return (
+    <EmptyState
+      titleText={_("Unknown storage settings")}
+      icon={() => <Icon name="error" />}
+      status="warning"
+    >
+      <EmptyStateBody>
+        <p>{_("The current storage settings cannot be edited.")}</p>
+      </EmptyStateBody>
+      <EmptyStateFooter>
+        <p>{_("Do you want to reset to the default settings?")}</p>
         <Button variant="secondary" onClick={reset}>
           {_("Reset")}
         </Button>
@@ -147,10 +180,10 @@ function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React
       <ProposalTransactionalInfo />
       <ProposalFailedInfo />
       {!isEditable && (
-        <Alert variant="info" title={_("Unknown storage config")}>
+        <Alert variant="info" title={_("Unknown storage settings")}>
           <>
             {_(
-              "The current storage config cannot be edited. Do you want to reset to the default config?",
+              "The current storage settings cannot be edited. Do you want to reset to the default settings?",
             )}
             <Button variant="plain" isInline onClick={reset}>
               {_("Reset")}
@@ -159,7 +192,7 @@ function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React
         </Alert>
       )}
       {isEditable && (
-        <GridItem sm={12} xl={8}>
+        <GridItem sm={12}>
           <Page.Section
             title={_("Installation Devices")}
             description={_(
@@ -186,6 +219,12 @@ function ProposalSections({ isEditable, isValid }: ProposalSectionsProps): React
   );
 }
 
+/**
+ * @fixme The UI for editing a config model is not prepared yet to properly work with a model that
+ *  contains errors. For that reason, a config is considered as unknown (non-editable) if there is
+ *  no model and also if there is some config error. In the future, components like ConfigEditor
+ *  should be extended in order to make them to work with a model containg issues.
+ */
 export default function ProposalPage(): React.ReactNode {
   const isDeprecated = useDeprecated();
   const model = useConfigModel({ suspense: true });
@@ -199,9 +238,14 @@ export default function ProposalPage(): React.ReactNode {
     if (isDeprecated) reprobe().catch(console.log);
   }, [isDeprecated, reprobe]);
 
-  const errors = issues.filter((s) => s.severity === IssueSeverity.Error);
-  const isValid = !errors.length;
-  const isEditable = !!model;
+  const systemErrors = issues
+    .filter((s) => s.severity === IssueSeverity.Error)
+    .filter((s) => s.source === IssueSource.System);
+  const configErrors = issues
+    .filter((s) => s.severity === IssueSeverity.Error)
+    .filter((s) => s.source === IssueSource.Config);
+  const isValid = !systemErrors.length && !configErrors.length;
+  const isEditable = model && !configErrors.length;
   const isDevicesEmpty = !devices.length;
 
   return (
@@ -211,11 +255,16 @@ export default function ProposalPage(): React.ReactNode {
       </Page.Header>
       <Page.Content>
         {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}
+        {!isDeprecated && isDevicesEmpty && <DevicesEmptyState />}
+        {!isDeprecated && !isDevicesEmpty && !isEditable && !isValid && !model && (
+          <ConfigEmptyState />
+        )}
+        {!isDeprecated && !isDevicesEmpty && !isEditable && !isValid && model && (
+          <ErrorsEmptyState errors={configErrors} />
+        )}
         {!isDeprecated && !isDevicesEmpty && (isEditable || isValid) && (
           <ProposalSections isEditable={isEditable} isValid={isValid} />
         )}
-        {!isDeprecated && !isDevicesEmpty && !isEditable && !isValid && <ResetEmptyState />}
-        {!isDeprecated && isDevicesEmpty && <DevicesEmptyState />}
       </Page.Content>
     </Page>
   );
