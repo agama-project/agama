@@ -27,7 +27,7 @@ local memory = agama.findByID(agama.lshw, 'memory').size;
   },
   software: {
     patterns: [
-      'gnome'
+      'gnome',
     ],
   },
   user: {
@@ -41,20 +41,20 @@ local memory = agama.findByID(agama.lshw, 'memory').size;
   },
   // look ma, there are comments!
   localization: {
-    language: 'en_US',
+    language: 'en_US.UTF-8',
     keyboard: 'us',
   },
   storage: {
     boot: {
       configure: true,
-      device: "boot"
+      device: 'boot',
     },
     drives: [
       {
         search: findBiggestDisk(agama.selectByClass(agama.lshw, 'disk')),
-        alias: "boot"
-      }
-    ]
+        alias: 'boot',
+      },
+    ],
   },
   hostname: {
     static: 'agama',
@@ -67,32 +67,32 @@ local memory = agama.findByID(agama.lshw, 'memory').size;
           password: 'agama.test',
           security: 'wpa-psk',
           ssid: 'AgamaNetwork',
-          mode: 'infrastructure'
-        }
+          mode: 'infrastructure',
+        },
       },
       {
         id: 'Etherned device 1',
         method4: 'manual',
         gateway4: '192.168.122.1',
         addresses: [
-          '192.168.122.100/24'
+          '192.168.122.100/24',
         ],
         nameservers: [
-          '1.2.3.4'
+          '1.2.3.4',
         ],
         match: {
-            path: ["pci-0000:00:19.0"]
-          }
+          path: ['pci-0000:00:19.0'],
+        },
       },
       {
         id: 'bond0',
         bond: {
-            ports: ['eth0', 'eth1'],
-            mode: 'active-backup',
-            options: "primary=eth1"
+          ports: ['eth0', 'eth1'],
+          mode: 'active-backup',
+          options: 'primary=eth1',
 
-        }
-      }
-    ]
-  }
+        },
+      },
+    ],
+  },
 }
