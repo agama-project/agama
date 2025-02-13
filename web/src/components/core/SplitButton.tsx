@@ -31,30 +31,37 @@ import {
   MenuToggleProps,
 } from "@patternfly/react-core";
 import { Link } from "~/components/core";
-import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 
 /**
- * Types for props accepted by SplitButton
+ * Type for props accepted by SplitButton
+ *
+ * Children prop is specifically declared below to make it required.
  *
  * NOTE: Unfortunately, it's not easy to restrict children to a specific
  * component type. For more information, see
  * https://www.totaltypescript.com/type-safe-children-in-react-and-typescript.
- * If necessary, consider replacing the children prop with explicit props instead.
+ * If necessary, consider using an specific prop instead.
  */
-export type SplitButtonProps = React.PropsWithChildren<{
-  /** The URL or path for the main action when it should be a link */
-  href?: string;
+type SplitButtonBaseProps = React.PropsWithChildren<{
   /** Label for the link or button acting as a main action */
   label: React.ReactNode;
   /** Accessible label for the toggle button */
   toggleAriaLabel?: MenuToggleProps["aria-label"];
   /** Variant styles of the menu toggle */
   variant?: MenuToggleProps["variant"];
+  /** The URL or path for the main action when it should be a link */
+  href?: string;
   /** Callback to be triggred when main action is clicked */
   onClick?: MenuToggleActionProps["onClick"];
+  /** Actions to be placed in the expandable menu */
+  children: React.ReactNode;
 }>;
 
+export type SplitButtonProps =
+  | (SplitButtonBaseProps & { href: string; onClick?: never })
+  | (SplitButtonBaseProps & { href?: never; onClick: MenuToggleActionProps["onClick"] })
+  | (SplitButtonBaseProps & { href: string; onClick: MenuToggleActionProps["onClick"] });
 /**
  * Displays a primary, visible action with a set of related options hidden in an
  * expandable menu for the user to choose from.
@@ -75,18 +82,6 @@ const SplitButton = ({
   const toggleKey = `${menuId}-toggle`;
   const onSelect = () => setIsOpen(false);
   const onToggle = () => setIsOpen(!isOpen);
-
-  if (isEmpty(href) && isEmpty(onClick)) {
-    console.error(
-      "`SplitButton` mounted with neither, `href` nor `onClick`. Please, provide at least one of these props.",
-    );
-  }
-
-  if (isEmpty(children)) {
-    console.error(
-      "`SplitButton` mounted without additional actions, please provide them through children.",
-    );
-  }
 
   return (
     <Dropdown

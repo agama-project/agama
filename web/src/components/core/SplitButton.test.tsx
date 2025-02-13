@@ -23,28 +23,18 @@
 import React from "react";
 import { screen, waitForElementToBeRemoved, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import SplitButton, { SplitButtonProps } from "./SplitButton";
+import SplitButton from "./SplitButton";
 
-let consoleErrorSpy: jest.SpyInstance;
 const mainOnClickFn = jest.fn();
 const secondaryOnClickFn = jest.fn();
 
-const SplitButtonTest = (props: Partial<SplitButtonProps>) => (
-  <SplitButton label="Test" onClick={mainOnClickFn} toggleAriaLabel="More actions" {...props}>
+const SplitButtonTest = ({ href }: { href?: string }) => (
+  <SplitButton label="Test" toggleAriaLabel="More actions" href={href} onClick={mainOnClickFn}>
     <SplitButton.Item onClick={secondaryOnClickFn}>Second test</SplitButton.Item>
   </SplitButton>
 );
 
 describe("SplitButton", () => {
-  beforeAll(() => {
-    consoleErrorSpy = jest.spyOn(console, "error");
-    consoleErrorSpy.mockImplementation();
-  });
-
-  afterAll(() => {
-    consoleErrorSpy.mockRestore();
-  });
-
   it("renders two buttons if href prop is not provided: the main action button and the toggle button", () => {
     plainRender(<SplitButtonTest />);
 
@@ -107,25 +97,5 @@ describe("SplitButton", () => {
     // Ensure that the menu is closed
     expect(toggleAction).toHaveAttribute("aria-expanded", "false");
     await waitForElementToBeRemoved(moreActions);
-  });
-
-  it("outputs a console.error when neither 'href' nor 'onClick' are provided", () => {
-    plainRender(
-      <SplitButton label="Edit">
-        <SplitButton.Item>Delete</SplitButton.Item>
-      </SplitButton>,
-    );
-
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining("`SplitButton` mounted with neither, `href` nor `onClick`."),
-    );
-  });
-
-  it("outputs a console.error when no children are provided", () => {
-    plainRender(<SplitButton label="Edit" href="/edit" />);
-
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining("`SplitButton` mounted without additional actions"),
-    );
   });
 });
