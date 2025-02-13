@@ -48,3 +48,4 @@ export { default as SelectWrapper } from "./SelectWrapper";
 export { default as NestedContent } from "./NestedContent";
 export { default as SubtleContent } from "./SubtleContent";
 export { default as MenuHeader } from "./MenuHeader";
+export { default as SplitButton } from "./SplitButton";
