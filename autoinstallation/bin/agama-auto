@@ -15,12 +15,19 @@ if [ -z "$url" ]; then
   exit 0
 fi
 
+method=$(awk -F 'agama.finish=' '{sub(/ .*$/, "", $2); print $2}' </proc/cmdline)
+
 echo "Using the profile at $url"
 
 case "$url" in
 *)
   /usr/bin/agama profile import "$url"
   /usr/bin/agama install
-  /usr/bin/agama reboot
+  case "$method" in
+  "stop") ;;
+  *)
+    /usr/bin/agama reboot
+    ;;
+  esac
   ;;
 esac
