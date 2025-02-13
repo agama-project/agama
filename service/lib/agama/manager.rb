@@ -249,10 +249,17 @@ module Agama
     end
 
     # Whatever has to be done at the end of installation
+    #
+    # @return [Boolean]
     def finish_installation
       logs = collect_logs(path: "/tmp/var/logs/")
 
       logger.info("Installation logs stored in #{logs}")
+
+      unless installation_phase.finish?
+        logger.error "The installer has not finished correctly. Please check logs"
+        return false
+      end
 
       cmd = if iguana?
         "/usr/bin/agamactl -k"
@@ -262,7 +269,7 @@ module Agama
 
       logger.info("Finishing installation with #{cmd}")
 
-      system(cmd)
+      !!system(cmd)
     end
 
     # Says whether running on iguana or not

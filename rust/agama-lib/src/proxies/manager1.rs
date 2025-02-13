@@ -36,7 +36,7 @@ pub trait Manager1 {
     fn commit(&self) -> zbus::Result<()>;
 
     /// Finish method
-    fn finish(&self) -> zbus::Result<()>;
+    fn finish(&self) -> zbus::Result<bool>;
 
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
