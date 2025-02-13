@@ -26,7 +26,6 @@ pub mod proxies;
 mod settings;
 mod store;
 
-pub use crate::software::model::RegistrationRequirement;
 pub use client::{Product, ProductClient};
 pub use http_client::ProductHTTPClient;
 pub use settings::ProductSettings;

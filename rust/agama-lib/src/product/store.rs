@@ -121,8 +121,7 @@ mod test {
                 .body(
                     r#"{
                     "key": "",
-                    "email": "",
-                    "requirement": "NotRequired"
+                    "email": ""
                 }"#,
                 );
         });

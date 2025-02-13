@@ -39,28 +39,6 @@ pub struct RegistrationInfo {
     pub email: String,
 }
 
-#[derive(
-    Clone,
-    Default,
-    Debug,
-    Serialize,
-    Deserialize,
-    strum::Display,
-    strum::EnumString,
-    utoipa::ToSchema,
-)]
-#[strum(serialize_all = "camelCase")]
-#[serde(rename_all = "camelCase")]
-pub enum RegistrationRequirement {
-    /// Product does not require registration
-    #[default]
-    No = 0,
-    /// Product has optional registration
-    Optional = 1,
-    /// It is mandatory to register the product
-    Mandatory = 2,
-}
-
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct RegistrationError {
     /// ID of error. See dbus API for possible values
