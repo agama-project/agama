@@ -52,11 +52,11 @@ pub enum NetworkError {
     UnknownConnection(String),
     #[error("Cannot translate: {0}")]
     CannotTranslate(#[from] Error),
-    #[error("Cannot add new connection: {0}")]
+    #[error("Cannot add new network connection: {0}")]
     CannotAddConnection(String),
-    #[error("Cannot update configuration: {0}")]
+    #[error("Cannot update the network configuration: {0}")]
     CannotUpdate(String),
-    #[error("Cannot apply configuration")]
+    #[error("Cannot apply the network configuration")]
     CannotApplyConfig,
     // TODO: to be removed after adapting to the NetworkSystemServer API
     #[error("Network state error: {0}")]
