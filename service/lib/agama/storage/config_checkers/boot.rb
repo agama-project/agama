@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -55,7 +55,12 @@ module Agama
         def missing_alias_issue
           return unless configure? && device_alias.nil?
 
-          error(_("There is no boot device alias"))
+          # Currently this situation only happens because the config solver was not able to find
+          # a device config containing a root volume. The message could become inaccurate if the
+          # solver logic changes.
+          error(
+            _("The boot device cannot be automatically selected because there is not root volume")
+          )
         end
 
         # @return [Issue, nil]
