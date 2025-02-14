@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+Yast.import "URL"
 
 # :nodoc:
 module Agama
@@ -44,6 +45,7 @@ module Agama
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
+        @index = 0
       end
 
       # Returns a hash that corresponds to Agama "scripts" section.
@@ -100,10 +102,10 @@ module Agama
       # @param section [Hash] AutoYaST script section
       def read_script(section)
         script = {
-          "name" => section["file_name"]
+          "name" => filename_for(section)
         }
 
-        if section["location"]
+        if section["location"] && !section["location"].empty?
           script["url"] = section["location"]
         elsif section["source"]
           script["body"] = section["source"]
@@ -120,6 +122,28 @@ module Agama
       def read_post_script(section)
         read_script(section)
           .merge("chroot" => section.fetch("chrooted", false))
+      end
+
+      # Extracts the name of the script
+      #
+      # If the "filename" attribute is defined, it is used. Otherwise, it tries
+      # to infer the name from the "location" attribute. If the "location" is
+      # not defined, it uses a generic name plus the index of the script.
+      #
+      # @param section [Hash] AutoYaST script definition
+      # @return [String]
+      def filename_for(section)
+        return section["filename"] if section["filename"]
+
+        location = section["location"].to_s
+        if !location.empty?
+          url = Yast::URL.Parse(location)
+          path = File.basename(url["path"].to_s)
+          return path unless path.empty? || path == "/"
+        end
+
+        @index += 1
+        "script-#{@index}"
       end
     end
   end

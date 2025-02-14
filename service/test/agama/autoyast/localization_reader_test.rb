@@ -21,11 +21,11 @@
 
 require_relative "../../test_helper"
 require "yast"
-require "agama/autoyast/l10n_reader"
+require "agama/autoyast/localization_reader"
 
 Yast.import "Profile"
 
-describe Agama::AutoYaST::L10nReader do
+describe Agama::AutoYaST::LocalizationReader do
   let(:profile) do
     {}
   end
@@ -35,7 +35,7 @@ describe Agama::AutoYaST::L10nReader do
   end
 
   describe "#read" do
-    context "when there is no l10n-related sections" do
+    context "when there is no localization-related sections" do
       let(:profile) { {} }
 
       it "returns an empty hash" do
@@ -49,8 +49,8 @@ describe Agama::AutoYaST::L10nReader do
       end
 
       it "includes a 'keyboard' key with its value" do
-        l10n = subject.read["l10n"]
-        expect(l10n["keyboard"]).to eq("us")
+        localization = subject.read["localization"]
+        expect(localization["keyboard"]).to eq("us")
       end
     end
 
@@ -65,8 +65,8 @@ describe Agama::AutoYaST::L10nReader do
       end
 
       it "includes a 'languages' key with all the languages" do
-        l10n = subject.read["l10n"]
-        expect(l10n["languages"]).to eq(["en_US.UTF-8", "es_ES.UTF-8", "cs_CZ.UTF-8"])
+        localization = subject.read["localization"]
+        expect(localization["languages"]).to eq(["en_US.UTF-8", "es_ES.UTF-8", "cs_CZ.UTF-8"])
       end
 
       context "when the encoding is not included" do
@@ -80,8 +80,8 @@ describe Agama::AutoYaST::L10nReader do
         end
 
         it "uses the UTF-8 encoding" do
-          l10n = subject.read["l10n"]
-          expect(l10n["languages"]).to eq(["en_US.UTF-8", "es_ES.UTF-8"])
+          localization = subject.read["localization"]
+          expect(localization["languages"]).to eq(["en_US.UTF-8", "es_ES.UTF-8"])
         end
       end
     end
@@ -92,8 +92,8 @@ describe Agama::AutoYaST::L10nReader do
       end
 
       it "includes a 'keyboard' key with its value" do
-        l10n = subject.read["l10n"]
-        expect(l10n["timezone"]).to eq("Europe/Berlin")
+        localization = subject.read["localization"]
+        expect(localization["timezone"]).to eq("Europe/Berlin")
       end
     end
   end

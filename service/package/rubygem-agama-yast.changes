@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Feb 13 21:37:32 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix several AutoYaST conversion problems (gh#agama-project/agama#1995):
+  - Fix handling of scripts file names and location
+    (gh#agama-project/agama#1903).
+  - Fix the name of the localization section (gh#agama-project/agama#1960).
+  - Use a more readable JSON format (gh#agama-project/agama#1907).
+
+-------------------------------------------------------------------
 Wed Feb 12 08:16:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Report unsupported AutoYaST elements
