@@ -23,7 +23,7 @@
 import React from "react";
 import { useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { IssuesList, IssuesScope } from "~/types/issues";
+import { IssuesList, IssuesScope, IssueSeverity, IssueSource } from "~/types/issues";
 import { fetchIssues } from "~/api/issues";
 
 const scopesFromPath = {
@@ -86,4 +86,26 @@ const useIssuesChanges = () => {
   }, [client, queryClient]);
 };
 
-export { useIssues, useAllIssues, useIssuesChanges };
+/**
+ * Returns the system errors for the given scope.
+ */
+const useSystemErrors = (scope: IssuesScope) => {
+  const issues = useIssues(scope);
+
+  return issues
+    .filter((i) => i.severity === IssueSeverity.Error)
+    .filter((i) => i.source === IssueSource.System);
+};
+
+/**
+ * Returns the config errors for the given scope.
+ */
+const useConfigErrors = (scope: IssuesScope) => {
+  const issues = useIssues(scope);
+
+  return issues
+    .filter((i) => i.severity === IssueSeverity.Error)
+    .filter((i) => i.source === IssueSource.Config);
+};
+
+export { useIssues, useAllIssues, useIssuesChanges, useSystemErrors, useConfigErrors };
