@@ -23,7 +23,7 @@ module Agama
   # This class is responsible for reading Agama kernel cmdline options
   class CmdlineArgs
     CMDLINE_PATH = "/proc/cmdline"
-    CMDLINE_PREFIX = "agama."
+    CMDLINE_PREFIX = "inst."
 
     attr_accessor :config_url
     attr_reader :data
@@ -41,6 +41,7 @@ module Agama
       args = new({})
 
       options.split.each do |option|
+        option = standardize(option)
         next unless option.start_with?(CMDLINE_PREFIX)
 
         key, value = option.split("=", 2)
@@ -61,6 +62,13 @@ module Agama
       end
 
       args
+    end
+
+    # Despite Agama is young it already contains some relicts. This method should purge them and put
+    # command line options into a standard shape
+    def self.standardize(option)
+      # agama. is now obsolete original kernel argument prefix
+      option.sub("agama.", CMDLINE_PREFIX)
     end
 
     # Convenience method to normalize the given value by now it just convert "true" and "false"
