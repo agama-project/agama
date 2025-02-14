@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 14 17:00:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set console and X11 keymaps when changing the installer keymap
+  (bsc#1236174).
+
+-------------------------------------------------------------------
 Mon Feb 10 13:28:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixup: Make the "lang" URL query optional, do not fail when it
