@@ -47,7 +47,9 @@ export default function GenericQuestion({
 
   return (
     <Popup isOpen aria-label={_("Question")}>
-      <Text>{question.text}</Text>
+      {/* workaround to allow displaying multiple paragraphs separated by newlines */}
+      {/* TODO: allow passing multiple texts/paragraphs */}
+      <Text style={{ whiteSpace: "pre-wrap" }}>{question.text}</Text>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}

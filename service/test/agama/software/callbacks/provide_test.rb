@@ -31,7 +31,7 @@ describe Agama::Software::Callbacks::Provide do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:answer) { :Retry }
+  let(:answer) { subject.retry_label.to_sym }
 
   describe "#done_provide" do
     before do
@@ -67,7 +67,7 @@ describe Agama::Software::Callbacks::Provide do
     end
 
     context "when the user answers :Retry" do
-      let(:answer) { :Retry }
+      let(:answer) { subject.retry_label.to_sym }
 
       it "returns 'R'" do
         ret = subject.done_provide(
@@ -78,7 +78,7 @@ describe Agama::Software::Callbacks::Provide do
     end
 
     context "when the user answers :Skip" do
-      let(:answer) { :Ignore }
+      let(:answer) { subject.continue_label.to_sym }
 
       it "returns 'I'" do
         ret = subject.done_provide(
