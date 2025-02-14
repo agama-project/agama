@@ -36,18 +36,23 @@ export default function UnsupportedModelInfo(): React.ReactNode {
   if (model) return null;
 
   return (
-    <Alert variant="info" title={_("Unknown storage settings")}>
+    <Alert variant="info" title={_("Unable to modify the settings")}>
       <Stack hasGutter>
         <StackItem>
           <Content component="p">
             {_(
-              "The current storage settings cannot be edited. Do you want to reset to the default settings?",
+              "The storage configuration is valid (see result below) but uses elements not supported by this interface.",
+            )}
+          </Content>
+          <Content component="p">
+            {_(
+              "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.",
             )}
           </Content>
         </StackItem>
         <StackItem>
           <Button variant="secondary" onClick={() => reset()}>
-            {_("Reset")}
+            {_("Reset to default configuration")}
           </Button>
         </StackItem>
       </Stack>

@@ -127,7 +127,7 @@ describe("if there are not devices", () => {
 
   it("renders an option for activating iSCSI", () => {
     installerRender(<ProposalPage />);
-    expect(screen.queryByRole("link", { name: "Activate iSCSI" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /iSCSI/ })).toBeInTheDocument();
   });
 
   it("does not render the installation devices", () => {
@@ -147,7 +147,7 @@ describe("if there are not devices", () => {
 
     it("does not render an option for activating zFCP", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("link", { name: "Activate zFCP" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: /zFCP/ })).not.toBeInTheDocument();
     });
   });
 
@@ -158,7 +158,7 @@ describe("if there are not devices", () => {
 
     it("does not render an option for activating DASD", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("link", { name: "Activate DASD" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: /DASD/ })).not.toBeInTheDocument();
     });
   });
 
@@ -169,7 +169,7 @@ describe("if there are not devices", () => {
 
     it("renders an option for activating zFCP", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("link", { name: "Activate zFCP" })).toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: /zFCP/ })).toBeInTheDocument();
     });
   });
 
@@ -180,7 +180,7 @@ describe("if there are not devices", () => {
 
     it("renders an option for activating DASD", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("link", { name: "Activate DASD" })).toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: /DASD/ })).toBeInTheDocument();
     });
   });
 });
@@ -198,7 +198,7 @@ describe("if there is not a model", () => {
 
     it("renders an option for resetting the config", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("button", { name: "Reset" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
     it("does not render the installation devices", () => {
@@ -253,7 +253,7 @@ describe("if there is a model", () => {
 
     it("renders an option for resetting the config", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("button", { name: "Reset" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
     });
 
     it("does not render the installation devices", () => {

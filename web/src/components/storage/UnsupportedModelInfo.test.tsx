@@ -48,12 +48,12 @@ describe("if there is not a model", () => {
 
   it("renders an alert", () => {
     plainRender(<UnsupportedModelInfo />);
-    expect(screen.queryByText(/settings cannot be edited/)).toBeInTheDocument();
+    expect(screen.queryByText(/Unable to modify the settings/)).toBeInTheDocument();
   });
 
   it("renders a button for resetting the config", () => {
     plainRender(<UnsupportedModelInfo />);
-    expect(screen.queryByRole("button", { name: "Reset" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
   });
 });
 

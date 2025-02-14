@@ -55,7 +55,7 @@ import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
 import { useSystemErrors, useConfigErrors } from "~/queries/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 
 function InvalidConfigEmptyState(): React.ReactNode {
   const errors = useConfigErrors("storage");
@@ -69,7 +69,11 @@ function InvalidConfigEmptyState(): React.ReactNode {
     >
       <EmptyStateBody>
         <Content component="p">
-          {_("The current storage settings contains the following issues:")}
+          {n_(
+            "The current storage configuration has the following issue:",
+            "The current storage configuration has the following issues:",
+            errors.length,
+          )}
         </Content>
         <List isPlain>
           {errors.map((e, i) => (
@@ -78,9 +82,13 @@ function InvalidConfigEmptyState(): React.ReactNode {
         </List>
       </EmptyStateBody>
       <EmptyStateFooter>
-        <Content component="p">{_("Do you want to reset to the default settings?")}</Content>
+        <Content component="p">
+          {_(
+            "You may want to discard those settings and start from scratch with a simple configuration.",
+          )}
+        </Content>
         <Button variant="secondary" onClick={() => reset()}>
-          {_("Reset")}
+          {_("Reset to default configuration")}
         </Button>
       </EmptyStateFooter>
     </EmptyState>
@@ -92,17 +100,23 @@ function UnknowConfigEmptyState(): React.ReactNode {
 
   return (
     <EmptyState
-      titleText={_("Unknown storage settings")}
+      titleText={_("Unable to modify the settings")}
       icon={() => <Icon name="error" />}
       status="warning"
     >
       <EmptyStateBody>
-        <Content component="p">{_("The current storage settings cannot be edited.")}</Content>
+        <Content component="p">
+          {_("The storage configuration uses elements not supported by this interface.")}
+        </Content>
       </EmptyStateBody>
       <EmptyStateFooter>
-        <Content component="p">{_("Do you want to reset to the default settings?")}</Content>
+        <Content component="p">
+          {_(
+            "You may want to discard the current settings and start from scratch with a simple configuration.",
+          )}
+        </Content>
         <Button variant="secondary" onClick={() => reset()}>
-          {_("Reset")}
+          {_("Reset to default configuration")}
         </Button>
       </EmptyStateFooter>
     </EmptyState>
@@ -114,7 +128,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
   const isDASDSupported = useDASDSupported();
 
   const description = _(
-    "There are not devices available for the installation. Do you want to activate devices?",
+    "There are not disks available for the installation. You may need to configure some device.",
   );
 
   return (
@@ -128,20 +142,20 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
         <Split hasGutter>
           <SplitItem>
             <Link to={PATHS.iscsi} variant="link">
-              {_("Activate iSCSI")}
+              {_("Connect to iSCSI targets")}
             </Link>
           </SplitItem>
           {isZFCPSupported && (
             <SplitItem>
               <Link to={PATHS.zfcp.root} variant="link">
-                {_("Activate zFCP")}
+                {_("Activate zFCP disks")}
               </Link>
             </SplitItem>
           )}
           {isDASDSupported && (
             <SplitItem>
               <Link to={PATHS.dasd} variant="link">
-                {_("Activate DASD")}
+                {_("Manage DASD devices")}
               </Link>
             </SplitItem>
           )}
