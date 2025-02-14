@@ -88,7 +88,7 @@ function InvalidConfigEmptyState(): React.ReactNode {
           )}
         </Content>
         <Button variant="secondary" onClick={() => reset()}>
-          {_("Reset to default configuration")}
+          {_("Reset to the default configuration")}
         </Button>
       </EmptyStateFooter>
     </EmptyState>
@@ -116,7 +116,7 @@ function UnknowConfigEmptyState(): React.ReactNode {
           )}
         </Content>
         <Button variant="secondary" onClick={() => reset()}>
-          {_("Reset to default configuration")}
+          {_("Reset to the default configuration")}
         </Button>
       </EmptyStateFooter>
     </EmptyState>

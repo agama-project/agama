@@ -52,7 +52,7 @@ export default function UnsupportedModelInfo(): React.ReactNode {
         </StackItem>
         <StackItem>
           <Button variant="secondary" onClick={() => reset()}>
-            {_("Reset to default configuration")}
+            {_("Reset to the default configuration")}
           </Button>
         </StackItem>
       </Stack>
