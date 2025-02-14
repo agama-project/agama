@@ -32,8 +32,8 @@
 
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
-import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
-import { configModel } from "~/api/storage/types";
+import { PartitionSlot, StorageDevice } from "~/types/storage";
+import { configModel, Volume } from "~/api/storage/types";
 import { sprintf } from "sprintf-js";
 
 /**

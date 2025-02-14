@@ -23,8 +23,6 @@
 import { get, post, put } from "~/api/http";
 import { Job } from "~/types/job";
 import { Action, config, configModel, ProductParams, Volume } from "~/api/storage/types";
-import { fetchDevices } from "~/api/storage/devices";
-import { StorageDevice, Volume as StorageVolume, VolumeTarget } from "~/types/storage";
 
 /**
  * Starts the storage probing process.
@@ -54,37 +52,13 @@ const fetchUsableDevices = (): Promise<number[]> => get(`/api/storage/proposal/u
 
 const fetchProductParams = (): Promise<ProductParams> => get("/api/storage/product/params");
 
-const fetchDefaultVolume = (mountPath: string): Promise<Volume | undefined> => {
+const fetchVolume = (mountPath: string): Promise<Volume> => {
   const path = encodeURIComponent(mountPath);
   return get(`/api/storage/product/volume_for?mount_path=${path}`);
 };
 
-const fetchVolumeTemplates = async (): Promise<StorageVolume[]> => {
-  const buildVolume = (
-    rawVolume: Volume,
-    devices: StorageDevice[],
-    productMountPoints: string[],
-  ): StorageVolume => ({
-    ...rawVolume,
-    outline: {
-      ...rawVolume.outline,
-      // Indicate whether a volume is defined by the product.
-      productDefined: productMountPoints.includes(rawVolume.mountPath),
-    },
-    minSize: rawVolume.minSize || 0,
-    transactional: rawVolume.transactional || false,
-    target: rawVolume.target as VolumeTarget,
-    targetDevice: devices.find((d) => d.name === rawVolume.targetDevice),
-  });
-
-  const systemDevices = await fetchDevices("system");
-  const product = await fetchProductParams();
-  const mountPoints = ["", ...product.mountPoints];
-  const rawVolumes = await Promise.all(mountPoints.map(fetchDefaultVolume));
-  return rawVolumes
-    .filter((v) => v !== undefined)
-    .map((v) => buildVolume(v, systemDevices, product.mountPoints));
-};
+const fetchVolumes = (mountPaths: string[]): Promise<Volume[]> =>
+  Promise.all(mountPaths.map(fetchVolume));
 
 const fetchActions = (): Promise<Action[]> => get("/api/storage/devices/actions");
 
@@ -109,8 +83,7 @@ export {
   solveConfigModel,
   fetchUsableDevices,
   fetchProductParams,
-  fetchDefaultVolume,
-  fetchVolumeTemplates,
+  fetchVolumes,
   fetchActions,
   fetchStorageJobs,
   findStorageJob,

@@ -97,43 +97,6 @@ type SpacePolicyAction = {
   value: "delete" | "resizeIfNeeded";
 };
 
-type Volume = {
-  mountPath: string;
-  target: VolumeTarget;
-  targetDevice?: StorageDevice;
-  fsType: string;
-  minSize: number;
-  maxSize?: number;
-  autoSize: boolean;
-  snapshots: boolean;
-  transactional: boolean;
-  outline: VolumeOutline;
-};
-
-type VolumeOutline = {
-  required: boolean;
-  productDefined: boolean;
-  fsTypes: string[];
-  adjustByRam: boolean;
-  supportAutoSize: boolean;
-  snapshotsConfigurable: boolean;
-  snapshotsAffectSizes: boolean;
-  sizeRelevantVolumes: string[];
-};
-
-/**
- * Enum for the possible volume targets.
- *
- * @readonly
- */
-enum VolumeTarget {
-  DEFAULT = "default",
-  NEW_PARTITION = "new_partition",
-  NEW_VG = "new_vg",
-  DEVICE = "device",
-  FILESYSTEM = "filesystem",
-}
-
 /**
  * Enum for the encryption method values
  *
@@ -173,8 +136,6 @@ export type {
   ShrinkingInfo,
   SpacePolicyAction,
   StorageDevice,
-  Volume,
-  VolumeOutline,
 };
 
-export { EncryptionMethods, VolumeTarget };
+export { EncryptionMethods };

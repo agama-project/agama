@@ -26,45 +26,20 @@ import {
   fetchConfig,
   setConfig,
   fetchActions,
-  fetchVolumeTemplates,
+  fetchVolumes,
   fetchProductParams,
   fetchUsableDevices,
   reprobe,
 } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
-import { config, ProductParams } from "~/api/storage/types";
-import { Action, StorageDevice, Volume } from "~/types/storage";
-
+import { config, ProductParams, Volume } from "~/api/storage/types";
+import { Action, StorageDevice } from "~/types/storage";
 import { QueryHookOptions } from "~/types/queries";
 
 const configQuery = {
   queryKey: ["storage", "config"],
   queryFn: fetchConfig,
-  staleTime: Infinity,
-};
-
-const devicesQuery = (scope: "result" | "system") => ({
-  queryKey: ["storage", "devices", scope],
-  queryFn: () => fetchDevices(scope),
-  staleTime: Infinity,
-});
-
-const usableDevicesQuery = {
-  queryKey: ["storage", "usableDevices"],
-  queryFn: fetchUsableDevices,
-  staleTime: Infinity,
-};
-
-const productParamsQuery = {
-  queryKey: ["storage", "encryptionMethods"],
-  queryFn: fetchProductParams,
-  staleTime: Infinity,
-};
-
-const volumeTemplatesQuery = {
-  queryKey: ["storage", "volumeTemplates"],
-  queryFn: fetchVolumeTemplates,
   staleTime: Infinity,
 };
 
@@ -84,12 +59,34 @@ const useConfig = (options?: QueryHookOptions): config.Config => {
 const useConfigMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (config: config.Config) => setConfig(config),
+    mutationFn: async (config: config.Config) => await setConfig(config),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
   };
 
   return useMutation(query);
 };
+
+/** @todo Call to an API method to reset the default config instead of setting a config. */
+const useResetConfigMutation = () => {
+  const { mutate } = useConfigMutation();
+
+  return {
+    mutate: () =>
+      mutate({
+        drives: [
+          {
+            partitions: [{ search: "*", delete: true }, { generate: "default" }],
+          },
+        ],
+      }),
+  };
+};
+
+const devicesQuery = (scope: "result" | "system") => ({
+  queryKey: ["storage", "devices", scope],
+  queryFn: () => fetchDevices(scope),
+  staleTime: Infinity,
+});
 
 /**
  * Hook that returns the list of storage devices for the given scope.
@@ -107,22 +104,40 @@ const useDevices = (
   return data;
 };
 
-/**
- * Hook that returns the list of available devices for installation.
- */
-const useAvailableDevices = (): StorageDevice[] => {
-  const findDevice = (devices: StorageDevice[], sid: number) => {
+const availableDevices = async (devices: StorageDevice[]): Promise<StorageDevice[]> => {
+  const findDevice = (devices: StorageDevice[], sid: number): StorageDevice | undefined => {
     const device = devices.find((d) => d.sid === sid);
-
     if (device === undefined) console.warn("Device not found:", sid);
 
     return device;
   };
 
-  const devices = useDevices("system", { suspense: true });
-  const { data } = useSuspenseQuery(usableDevicesQuery);
+  const availableDevices = await fetchUsableDevices();
 
-  return data.map((sid) => findDevice(devices, sid)).filter((d) => d);
+  return availableDevices
+    .map((sid: number) => findDevice(devices, sid))
+    .filter((d: StorageDevice | undefined) => d);
+};
+
+const availableDevicesQuery = (devices: StorageDevice[]) => ({
+  queryKey: ["storage", "availableDevices"],
+  queryFn: () => availableDevices(devices),
+  staleTime: Infinity,
+});
+
+/**
+ * Hook that returns the list of available devices for installation.
+ */
+const useAvailableDevices = (): StorageDevice[] => {
+  const devices = useDevices("system", { suspense: true });
+  const { data } = useSuspenseQuery(availableDevicesQuery(devices));
+  return data;
+};
+
+const productParamsQuery = {
+  queryKey: ["storage", "encryptionMethods"],
+  queryFn: fetchProductParams,
+  staleTime: Infinity,
 };
 
 /**
@@ -134,19 +149,26 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
   return data;
 };
 
+const volumesQuery = (mountPaths: string[]) => ({
+  queryKey: ["storage", "volumes"],
+  queryFn: () => fetchVolumes(mountPaths),
+  staleTime: Infinity,
+});
+
 /**
- * Hook that returns the volume templates for the current product.
+ * Hook that returns the volumes for the current product.
  */
-const useVolumeTemplates = (): Volume[] => {
-  const { data } = useSuspenseQuery(volumeTemplatesQuery);
+const useVolumes = (): Volume[] => {
+  const product = useProductParams({ suspense: true });
+  const mountPoints = ["", ...product.mountPoints];
+  const { data } = useSuspenseQuery(volumesQuery(mountPoints));
   return data;
 };
 
 function useVolume(mountPoint: string): Volume {
-  const volumes = useVolumeTemplates();
+  const volumes = useVolumes();
   const volume = volumes.find((v) => v.mountPath === mountPoint);
   const defaultVolume = volumes.find((v) => v.mountPath === "");
-
   return volume || defaultVolume;
 }
 
@@ -179,7 +201,7 @@ const useVolumeDevices = (): StorageDevice[] => {
   return [...availableDevices, ...mds, ...vgs];
 };
 
-const proposalActionsQuery = {
+const actionsQuery = {
   queryKey: ["storage", "devices", "actions"],
   queryFn: fetchActions,
 };
@@ -187,8 +209,8 @@ const proposalActionsQuery = {
 /**
  * Hook that returns the actions to perform in the storage devices.
  */
-const useActions = (): Action[] | undefined => {
-  const { data } = useSuspenseQuery(proposalActionsQuery);
+const useActions = (): Action[] => {
+  const { data } = useSuspenseQuery(actionsQuery);
   return data;
 };
 
@@ -241,10 +263,11 @@ const useReprobeMutation = () => {
 export {
   useConfig,
   useConfigMutation,
+  useResetConfigMutation,
   useDevices,
   useAvailableDevices,
   useProductParams,
-  useVolumeTemplates,
+  useVolumes,
   useVolume,
   useVolumeDevices,
   useActions,

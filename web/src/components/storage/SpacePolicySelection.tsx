@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardBody, Content, Form, Grid, GridItem } from "@patternfly/react-core";
+import { ActionGroup, Content, Form } from "@patternfly/react-core";
 import { useNavigate, useParams } from "react-router-dom";
 import { Page } from "~/components/core";
 import { SpaceActionsTable } from "~/components/storage";
@@ -92,7 +92,6 @@ export default function SpacePolicySelection() {
     navigate("..");
   };
 
-  const xl2Columns = 6;
   const description = _(
     "Select what to do with each partition in order to find space for allocating the new system.",
   );
@@ -106,27 +105,17 @@ export default function SpacePolicySelection() {
 
       <Page.Content>
         <Form id="space-policy-form" onSubmit={onSubmit}>
-          <Grid hasGutter>
-            {children.length > 0 && (
-              <GridItem sm={12} xl2={xl2Columns}>
-                <Card isFullHeight>
-                  <CardBody>
-                    <SpaceActionsTable
-                      devices={children}
-                      deviceAction={deviceAction}
-                      onActionChange={changeActions}
-                    />
-                  </CardBody>
-                </Card>
-              </GridItem>
-            )}
-          </Grid>
+          <SpaceActionsTable
+            devices={children}
+            deviceAction={deviceAction}
+            onActionChange={changeActions}
+          />
+          <ActionGroup>
+            <Page.Submit form="space-policy-form" type="submit" />
+            <Page.Cancel />
+          </ActionGroup>
         </Form>
       </Page.Content>
-      <Page.Actions>
-        <Page.Submit form="space-policy-form" type="submit" />
-        <Page.Cancel />
-      </Page.Actions>
     </Page>
   );
 }

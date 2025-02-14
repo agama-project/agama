@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -288,7 +288,7 @@ describe Agama::Storage::ConfigChecker do
 
           issue = issues.first
           expect(issue.error?).to eq(true)
-          expect(issue.description).to eq("There is no boot device alias")
+          expect(issue.description).to match(/there is no root \(\/\) file system/)
         end
       end
 

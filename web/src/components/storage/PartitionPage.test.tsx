@@ -24,8 +24,8 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import PartitionPage from "./PartitionPage";
-import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
-import { configModel } from "~/api/storage/types";
+import { StorageDevice } from "~/types/storage";
+import { configModel, Volume } from "~/api/storage/types";
 import { gib } from "./utils";
 
 jest.mock("~/queries/issues", () => ({
@@ -105,7 +105,8 @@ const mockSolvedConfigModel: configModel.Config = {
 
 const homeVolumeMock: Volume = {
   mountPath: "/home",
-  target: VolumeTarget.DEFAULT,
+  mountOptions: [],
+  target: "default",
   fsType: "Btrfs",
   minSize: 1024,
   maxSize: 1024,
@@ -120,7 +121,6 @@ const homeVolumeMock: Volume = {
     snapshotsAffectSizes: false,
     sizeRelevantVolumes: [],
     adjustByRam: false,
-    productDefined: false,
   },
 };
 
