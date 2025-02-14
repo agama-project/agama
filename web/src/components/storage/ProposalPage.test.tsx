@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -62,14 +62,14 @@ const configError: Issue = {
 };
 
 const mockUseAvailableDevices = jest.fn();
-const mockUseConfigMutation = jest.fn();
+const mockUseResetConfigMutation = jest.fn();
 const mockUseDeprecated = jest.fn();
 const mockUseDeprecatedChanges = jest.fn();
 const mockUseReprobeMutation = jest.fn();
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => mockUseAvailableDevices(),
-  useConfigMutation: () => mockUseConfigMutation(),
+  useResetConfigMutation: () => mockUseResetConfigMutation(),
   useDeprecated: () => mockUseDeprecated(),
   useDeprecatedChanges: () => mockUseDeprecatedChanges(),
   useReprobeMutation: () => mockUseReprobeMutation(),
@@ -93,23 +93,31 @@ jest.mock("~/queries/storage/dasd", () => ({
   useDASDSupported: () => mockUseDASDSupported(),
 }));
 
-const mockUseIssues = jest.fn();
+const mockUseSystemErrors = jest.fn();
+const mockUseConfigErrors = jest.fn();
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
-  useIssues: () => mockUseIssues(),
+  useSystemErrors: () => mockUseSystemErrors(),
+  useConfigErrors: () => mockUseConfigErrors(),
 }));
 
-jest.mock("./ProposalResultSection", () => () => <div>result</div>);
 jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
+jest.mock("./ProposalFailedInfo", () => () => <div>failed info</div>);
+jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported info</div>);
+jest.mock("./ProposalResultSection", () => () => <div>result</div>);
 jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
 jest.mock("./AddExistingDeviceMenu", () => () => <div>add device menu</div>);
 jest.mock("./ConfigEditorMenu", () => () => <div>config editor menu</div>);
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
 
 beforeEach(() => {
-  mockUseConfigMutation.mockReturnValue({ mutate: jest.fn() });
+  mockUseResetConfigMutation.mockReturnValue({ mutate: jest.fn() });
   mockUseReprobeMutation.mockReturnValue({ mutateAsync: jest.fn() });
   mockUseDeprecated.mockReturnValue(false);
-  mockUseIssues.mockReturnValue([]);
+  mockUseSystemErrors.mockReturnValue([]);
+  mockUseConfigErrors.mockReturnValue([]);
 });
 
 describe("if there are not devices", () => {
@@ -185,7 +193,7 @@ describe("if there is not a model", () => {
 
   describe("and there are system errors", () => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([systemError]);
+      mockUseSystemErrors.mockReturnValue([systemError]);
     });
 
     it("renders an option for resetting the config", () => {
@@ -206,12 +214,12 @@ describe("if there is not a model", () => {
 
   describe("and there are not system errors", () => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([]);
+      mockUseSystemErrors.mockReturnValue([]);
     });
 
-    it("renders an option for reseting the config", () => {
+    it("renders an unsupported model alert", async () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("button", { name: "Reset" })).toBeInTheDocument();
+      expect(screen.queryByText("unsupported info")).toBeInTheDocument();
     });
 
     it("does not render the installation devices", async () => {
@@ -232,9 +240,10 @@ describe("if there is a model", () => {
     mockUseConfigModel.mockReturnValue({ drives: [] });
   });
 
-  describe("and there are config errors", () => {
+  describe("and there are config errors and system errors", () => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([configError]);
+      mockUseConfigErrors.mockReturnValue([configError]);
+      mockUseSystemErrors.mockReturnValue([systemError]);
     });
 
     it("renders the config errors", () => {
@@ -260,12 +269,12 @@ describe("if there is a model", () => {
 
   describe("and there are not config errors but there are system errors", () => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([systemError]);
+      mockUseSystemErrors.mockReturnValue([systemError]);
     });
 
-    it("renders an error message", () => {
+    it("renders a failed proposal failed", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByText(/Adjust the settings/)).toBeInTheDocument();
+      expect(screen.queryByText("failed info")).toBeInTheDocument();
     });
 
     it("renders the installation devices", () => {
@@ -281,12 +290,8 @@ describe("if there is a model", () => {
 
   describe("and there are neither config errors nor system errors", () => {
     beforeEach(() => {
-      mockUseIssues.mockReturnValue([]);
-    });
-
-    it("does not render an error message", () => {
-      installerRender(<ProposalPage />);
-      expect(screen.queryByText(/Adjust the settings/)).not.toBeInTheDocument();
+      mockUseSystemErrors.mockReturnValue([]);
+      mockUseConfigErrors.mockReturnValue([]);
     });
 
     it("renders the installation devices", () => {

@@ -66,6 +66,22 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
+/** @todo Call to an API method to reset the default config instead of setting a config. */
+const useResetConfigMutation = () => {
+  const { mutate } = useConfigMutation();
+
+  return {
+    mutate: () =>
+      mutate({
+        drives: [
+          {
+            partitions: [{ search: "*", delete: true }, { generate: "default" }],
+          },
+        ],
+      }),
+  };
+};
+
 const devicesQuery = (scope: "result" | "system") => ({
   queryKey: ["storage", "devices", scope],
   queryFn: () => fetchDevices(scope),
@@ -247,6 +263,7 @@ const useReprobeMutation = () => {
 export {
   useConfig,
   useConfigMutation,
+  useResetConfigMutation,
   useDevices,
   useAvailableDevices,
   useProductParams,
