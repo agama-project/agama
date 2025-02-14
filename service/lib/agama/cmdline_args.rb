@@ -73,9 +73,8 @@ module Agama
     # Despite Agama is young it already contains some relicts. This method should purge them and put
     # command line options into a standard shape
     def self.standardize(option)
-      obsolete_cmdline_prefix = "agama."
-
-      option.sub(obsolete_cmdline_prefix, CMDLINE_PREFIX)
+      # agama. is now obsolete original kernel argument prefix
+      option.sub("agama.", CMDLINE_PREFIX)
     end
 
     # Convenience method to normalize the given value by now it just convert "true" and "false"
