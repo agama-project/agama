@@ -213,7 +213,7 @@ impl L10n {
         self.ui_keymap = keymap_id;
 
         Command::new("/usr/bin/localectl")
-            .args(["set-x11-keymap", &keymap])
+            .args(["set-keymap", &keymap])
             .output()
             .map_err(LocaleError::Commit)?;
 
