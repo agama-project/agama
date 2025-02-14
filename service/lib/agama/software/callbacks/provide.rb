@@ -22,6 +22,7 @@
 require "logger"
 require "yast"
 require "agama/question"
+require "agama/software/callbacks/base"
 
 Yast.import "Pkg"
 
@@ -29,9 +30,7 @@ module Agama
   module Software
     module Callbacks
       # Provide callbacks
-      class Provide
-        include Yast::I18n
-
+      class Provide < Base
         # From https://github.com/openSUSE/libzypp/blob/d90a93fc2a248e6592bd98114f82a0b88abadb72/zypp/ZYppCallbacks.h#L111
         NO_ERROR = 0
         NOT_FOUND = 1
@@ -43,6 +42,8 @@ module Agama
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
+          super()
+
           textdomain "agama"
           @questions_client = questions_client
           @logger = logger || ::Logger.new($stdout)
@@ -68,10 +69,15 @@ module Agama
             # "Not found" (error 1) is handled by the MediaChange callback.
             nil
           when IO_ERROR
+            # TRANSLATORS: error message, package download failed, %1 is the name of the package
             Yast::Builtins.sformat(_("Package %1 could not be downloaded (input/output error)."),
               name)
           when INVALID
-            Yast::Builtins.sformat(_("Package %1 is broken, integrity check has failed."), name)
+            # TRANSLATORS: error message, package verification failed, %1 is the name of the package
+            Yast::Builtins.sformat(_("Package %1 is broken, integrity check has failed."), name) +
+              # TRANSLATORS: warning message
+              "\n\n" + _("Installing a broken package affects system stability and is a big " \
+                         "security risk!")
           else
             logger.warn "DoneProvide: unknown error: '#{error}'"
           end
@@ -80,17 +86,28 @@ module Agama
 
           question = Agama::Question.new(
             qclass:         "software.provide_error",
-            text:           message,
-            options:        [:Retry, :Ignore],
-            default_option: :Retry,
+            text:           text(message, reason),
+            options:        [retry_label.to_sym, continue_label.to_sym],
+            default_option: retry_label.to_sym,
             data:           { "reason" => reason }
           )
+
           questions_client.ask(question) do |question_client|
-            (question_client.answer == :Retry) ? "R" : "I"
+            (question_client.answer == retry_label.to_sym) ? "R" : "I"
           end
         end
 
       private
+
+        def text(message, reason)
+          msg = title + separator + message
+
+          # TODO: later implement some generic "details" property, for now append the details
+          # into to the main text
+          msg += separator + reason if !reason.empty?
+
+          broken_system_warning(msg)
+        end
 
         # @return [Agama::DBus::Clients::Questions]
         attr_reader :questions_client

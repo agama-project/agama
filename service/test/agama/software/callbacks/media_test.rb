@@ -40,7 +40,7 @@ describe Agama::Software::Callbacks::Media do
     let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
     context "when the user answers :Retry" do
-      let(:answer) { :Retry }
+      let(:answer) { subject.retry_label.to_sym }
 
       it "returns ''" do
         ret = subject.media_change(
@@ -51,7 +51,7 @@ describe Agama::Software::Callbacks::Media do
     end
 
     context "when the user answers :Skip" do
-      let(:answer) { :Skip }
+      let(:answer) { subject.continue_label.to_sym }
 
       it "returns 'S'" do
         ret = subject.media_change(
