@@ -77,38 +77,21 @@ const UsernameSuggestions = ({
   );
 };
 
-type FormState = {
-  load?: boolean;
-  user?: FirstUser;
-  isEditing?: boolean;
-};
-
 // TODO: create an object for errors using the input name as key and show them
 // close to the related input.
 // TODO: extract the suggestions logic.
 export default function FirstUserForm() {
   const firstUser = useFirstUser();
   const setFirstUser = useFirstUserMutation();
-  const [state, setState] = useState<FormState>({});
   const [errors, setErrors] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [insideDropDown, setInsideDropDown] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState([]);
-  const [changePassword, setChangePassword] = useState(true);
+  const [changePassword, setChangePassword] = useState(firstUser?.userName === "");
   const usernameInputRef = useRef<HTMLInputElement>();
   const navigate = useNavigate();
   const passwordRef = useRef<HTMLInputElement>();
-
-  useEffect(() => {
-    const editing = firstUser.userName !== "";
-    setState({
-      load: true,
-      user: firstUser,
-      isEditing: editing,
-    });
-    setChangePassword(!editing);
-  }, [firstUser]);
 
   useEffect(() => {
     if (showSuggestions) {
@@ -116,7 +99,9 @@ export default function FirstUserForm() {
     }
   }, [showSuggestions]);
 
-  if (!state.load) return <Loading />;
+  if (!firstUser) return <Loading />;
+
+  const isEditing = firstUser.userName !== "";
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -139,7 +124,7 @@ export default function FirstUserForm() {
     }
     delete user.passwordConfirmation;
 
-    if (!passwordInput?.validity.valid) {
+    if (changePassword && !passwordInput?.validity.valid) {
       setErrors([passwordInput?.validationMessage]);
       return;
     }
@@ -151,7 +136,7 @@ export default function FirstUserForm() {
     }
 
     setFirstUser
-      .mutateAsync({ ...state.user, ...user })
+      .mutateAsync({ ...firstUser, ...user })
       .catch((e) => setErrors(e))
       .then(() => navigate(".."));
   };
@@ -203,7 +188,7 @@ export default function FirstUserForm() {
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{state.isEditing ? _("Edit user") : _("Create user")}</Content>
+        <Content component="h2">{isEditing ? _("Edit user") : _("Create user")}</Content>
       </Page.Header>
 
       <Page.Content>
@@ -219,9 +204,7 @@ export default function FirstUserForm() {
             <TextInput
               id="userFullName"
               name="fullName"
-              aria-label={_("User full name")}
-              defaultValue={state.user.fullName}
-              label={_("User full name")}
+              defaultValue={firstUser.fullName}
               onBlur={(e) => setSuggestions(suggestUsernames(e.target.value))}
             />
           </FormGroup>
@@ -230,10 +213,8 @@ export default function FirstUserForm() {
             <TextInput
               id="userName"
               name="userName"
-              aria-label={_("Username")}
               ref={usernameInputRef}
-              defaultValue={state.user.userName}
-              label={_("Username")}
+              defaultValue={firstUser.userName}
               isRequired
               onFocus={renderSuggestions}
               onKeyDown={handleKeyDown}
@@ -247,7 +228,7 @@ export default function FirstUserForm() {
               focusedIndex={focusedIndex}
             />
           </FormGroup>
-          {state.isEditing && (
+          {isEditing && (
             <Switch
               label={_("Edit password too")}
               isChecked={changePassword}
