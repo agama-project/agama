@@ -121,11 +121,16 @@ describe("Page", () => {
   });
 
   describe("Page.Cancel", () => {
-    it("renders a 'Cancel' button that navigates to the top level route by default", async () => {
-      const { user } = plainRender(<Page.Cancel />);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      await user.click(button);
-      expect(mockNavigateFn).toHaveBeenCalledWith("..");
+    it("renders a link that navigates to the top level route by default", () => {
+      plainRender(<Page.Cancel />);
+      const link = screen.getByRole("link", { name: "Cancel" });
+      expect(link).toHaveAttribute("href", "..");
+    });
+
+    it("renders a link that navigates to the given route", () => {
+      plainRender(<Page.Cancel navigateTo="somewhere" />);
+      const link = screen.getByRole("link", { name: "Cancel" });
+      expect(link).toHaveAttribute("href", "somewhere");
     });
   });
 

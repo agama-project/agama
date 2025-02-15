@@ -41,12 +41,13 @@ import {
   TitleProps,
 } from "@patternfly/react-core";
 import { ProductRegistrationAlert } from "~/components/product";
-import { _ } from "~/i18n";
+import Link, { LinkProps } from "~/components/core/Link";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { To, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { isEmpty, isObject } from "~/utils";
 import { SIDE_PATHS } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 /**
  * Props accepted by Page.Section
@@ -74,7 +75,7 @@ type SectionProps = {
 
 type ActionProps = {
   /** Path to navigate to */
-  navigateTo?: To;
+  navigateTo?: LinkProps["to"];
 } & ButtonProps;
 
 type SubmitActionProps = {
@@ -229,18 +230,17 @@ const Action = ({ navigateTo, children, ...props }: ActionProps) => {
  */
 const Cancel = ({ navigateTo = "..", children, ...props }: ActionProps) => {
   return (
-    <Action variant="link" navigateTo={navigateTo} {...props}>
+    <Link to={navigateTo} variant="link" {...props}>
       {children || _("Cancel")}
-    </Action>
+    </Link>
   );
 };
 
 /**
  * Handy component for rendering a "Back" action
  *
- * NOTE: It does not behave like Page.Cancel, since
- *   * does not support changing the path to navigate to, and
- *   * always goes one path back in the history (-1)
+ * NOTE: It does not behave like Page.Cancel, since does not support changing
+ * the path to navigate to, and always goes one path back in the history (-1)
  *
  * NOTE: Not using Page.Cancel for practical reasons about useNavigate
  * overloading, which kind of forces to write an ugly code for supporting both

@@ -22,11 +22,11 @@
 
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
-import { useHref } from "react-router-dom";
+import { To, useHref } from "react-router-dom";
 
 export type LinkProps = Omit<ButtonProps, "component"> & {
   /** The target route */
-  to: string;
+  to: string | To;
   /** Whether use PF/Button primary variant */
   isPrimary?: boolean;
 };
