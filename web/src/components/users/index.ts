@@ -22,6 +22,4 @@
 
 export { default as FirstUser } from "./FirstUser";
 export { default as RootUser } from "./RootUser";
-export { default as RootPasswordPopup } from "./RootPasswordPopup";
-export { default as RootSSHKeyPopup } from "./RootSSHKeyPopup";
 export { default as UsersPage } from "./UsersPage";
