@@ -42,6 +42,7 @@ impl ApiDocBuilder for ScriptsApiDocBuilder {
         ComponentsBuilder::new()
             .schema_from::<agama_lib::scripts::BaseScript>()
             .schema_from::<agama_lib::scripts::InitScript>()
+            .schema_from::<agama_lib::scripts::PostPartitioningScript>()
             .schema_from::<agama_lib::scripts::PostScript>()
             .schema_from::<agama_lib::scripts::PreScript>()
             .schema_from::<agama_lib::scripts::Script>()
