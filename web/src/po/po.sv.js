@@ -846,6 +846,9 @@ export default {
   "No root authentication method defined yet.": [
     "Ingen rootautentiseringsmetod har definierats ännu."
   ],
+  "No support is planned.": [
+    "Inget stöd är planerat."
+  ],
   "No user defined yet.": [
     "Ingen användare definierad ännu."
   ],
@@ -876,6 +879,9 @@ export default {
   "None of the time zones match the filter.": [
     "Inget av tidszonerna matchar filtret."
   ],
+  "Not implemented yet (%s)": [
+    "Inte implementerat ännu (%s)"
+  ],
   "Not possible with the current setup. Click to know more.": [
     "Inte möjligt med den aktuella konfigurationen. Klicka för att veta mer."
   ],
@@ -884,6 +890,9 @@ export default {
   ],
   "Not set": [
     "Inte inställt"
+  ],
+  "Not supported (%s)": [
+    "Stöds inte (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Offlineenheter måste aktiveras innan de formateras. Vänligen avmarkera eller aktivera enheterna listade nedan och försök igen"
@@ -1192,6 +1201,9 @@ export default {
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     "Vissa installationsförråd kunde inte laddas. Utan dem kan systemet inte installeras."
   ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    "En del av elementen i din AutoYaST-profil stöds inte."
+  ],
   "Something went wrong": [
     "Något gick fel"
   ],
@@ -1390,6 +1402,9 @@ export default {
   "Unselect": [
     "Avmarkera"
   ],
+  "Unsupported AutoYaST elements": [
+    "Ostödda AutoYaST-element"
+  ],
   "Unused space": [
     "Oanvänt utrymme"
   ],
@@ -1458,6 +1473,9 @@ export default {
   ],
   "WiFi connection form": [
     "WiFi anslutningsformulär"
+  ],
+  "Will be supported in a future version.": [
+    "Kommer att stödjas i en framtida version."
   ],
   "Wired": [
     "Trådbunden"

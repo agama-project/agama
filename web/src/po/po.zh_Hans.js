@@ -1098,6 +1098,9 @@ export default {
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     ""
   ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
+  ],
   "Something went wrong": [
     "出了点问题"
   ],
@@ -1284,6 +1287,9 @@ export default {
   "Unit for the minimum size": [
     "最小尺寸的单位"
   ],
+  "Unsupported AutoYaST elements": [
+    ""
+  ],
   "Unused space": [
     "未使用的空间"
   ],
@@ -1346,6 +1352,9 @@ export default {
   ],
   "Wi-Fi": [
     "Wi-Fi"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "有线连接"

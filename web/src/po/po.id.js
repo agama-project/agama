@@ -1188,6 +1188,9 @@ export default {
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     "Beberapa repositori instalasi tidak dapat dimuat. Sistem tidak dapat diinstal tanpa repositori tersebut."
   ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
+  ],
   "Something went wrong": [
     "Ada yang tidak beres"
   ],
@@ -1386,6 +1389,9 @@ export default {
   "Unselect": [
     "Batalkan pilihan"
   ],
+  "Unsupported AutoYaST elements": [
+    ""
+  ],
   "Unused space": [
     "Ruang tidak terpakai"
   ],
@@ -1454,6 +1460,9 @@ export default {
   ],
   "WiFi connection form": [
     "Formulir koneksi WiFi"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Kabel"
