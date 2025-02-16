@@ -141,6 +141,10 @@ describe Agama::AutoYaST::ScriptsReader do
       end
     end
 
+    context "when a post-partitioning scripts is defined" do
+      it_behaves_like "a script reader", "postpartitioning-scripts", "postPartitioning"
+    end
+
     context "when an init script is defined" do
       it_behaves_like "a script reader", "init-scripts", "init"
     end
