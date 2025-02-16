@@ -60,6 +60,11 @@ describe Agama::Manager do
       on_service_status_change: nil, errors?: false
     )
   end
+  let(:scripts) do
+    instance_double(
+      Agama::HTTP::Clients::Scripts, run: nil
+    )
+  end
 
   let(:product) { nil }
 
@@ -70,6 +75,8 @@ describe Agama::Manager do
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)
+    allow(Agama::HTTP::Clients::Scripts).to receive(:new)
+      .and_return(scripts)
   end
 
   describe "#startup_phase" do
@@ -133,6 +140,7 @@ describe Agama::Manager do
       expect(software).to receive(:finish)
       expect(locale).to receive(:finish)
       expect(storage).to receive(:install)
+      expect(scripts).to receive(:run).with("post_partitioning")
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
       subject.install_phase

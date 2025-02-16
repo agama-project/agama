@@ -34,6 +34,7 @@ require "agama/dbus/clients/locale"
 require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
 require "agama/helpers"
+require "agama/http"
 
 Yast.import "Stage"
 
@@ -108,7 +109,7 @@ module Agama
     end
 
     # Runs the install phase
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def install_phase
       service_status.busy
       installation_phase.install
@@ -122,6 +123,7 @@ module Agama
 
       progress.step do
         storage.install
+        run_post_partitioning_scripts
         proxy.propose
         # propose software after /mnt is already separated, so it uses proper
         # target
@@ -147,7 +149,7 @@ module Agama
       installation_phase.finish
       finish_progress
     end
-    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def locale=(locale)
       service_status.busy
@@ -284,6 +286,12 @@ module Agama
       storage_config = storage.config
       storage.probe
       storage.config = storage_config unless storage_config.empty?
+    end
+
+    # Runs post partitioning scripts
+    def run_post_partitioning_scripts
+      client = Agama::HTTP::Clients::Scripts.new
+      client.run("post_partitioning")
     end
   end
 end
