@@ -59,6 +59,9 @@ const USER = {
     create: "/users/first",
     edit: "/users/first/edit",
   },
+  rootUser: {
+    edit: "/users/root/edit",
+  },
 };
 
 const SOFTWARE = {
