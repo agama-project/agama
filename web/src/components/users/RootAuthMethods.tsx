@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,27 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { Button, Stack, Truncate } from "@patternfly/react-core";
-import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { Page, RowActions } from "~/components/core";
-import { RootPasswordPopup, RootSSHKeyPopup } from "~/components/users";
-
+import React from "react";
+import {
+  Card,
+  CardBody,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  Truncate,
+} from "@patternfly/react-core";
+import { Link, Page } from "~/components/core";
+import { useRootUser, useRootUserChanges } from "~/queries/users";
+import { USER } from "~/routes/paths";
+import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
-import { useRootUser, useRootUserChanges, useRootUserMutation } from "~/queries/users";
-
-const NoMethodDefined = () => (
-  <Stack hasGutter>
-    <div>{_("No root authentication method defined yet.")}</div>
-    <div>
-      <strong>
-        {_(
-          "Please, define at least one authentication method for logging into the system as root.",
-        )}
-      </strong>
-    </div>
-  </Stack>
-);
 
 const SSHKeyLabel = ({ sshKey }) => {
   const trailingChars = Math.min(sshKey.length - sshKey.lastIndexOf(" "), 30);
@@ -48,134 +42,36 @@ const SSHKeyLabel = ({ sshKey }) => {
   return <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />;
 };
 
-const Content = ({
-  isPasswordDefined,
-  isSSHKeyDefined,
-  sshKey,
-  passwordActions,
-  sshKeyActions,
-}) => {
-  if (!isPasswordDefined && !isSSHKeyDefined) return <NoMethodDefined />;
-
-  return (
-    <Table variant="compact" gridBreakPoint="grid-md">
-      <Thead>
-        <Tr>
-          {/* TRANSLATORS: table header, user authentication method */}
-          <Th width={25}>{_("Method")}</Th>
-          {/* TRANSLATORS: table header */}
-          <Th>{_("Status")}</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        <Tr>
-          <Td dataLabel="Method">{_("Password")}</Td>
-          <Td dataLabel="Status">{isPasswordDefined ? _("Already set") : _("Not set")}</Td>
-          <Td isActionCell>
-            <RowActions actions={passwordActions} id="actions-for-root-password" />
-          </Td>
-        </Tr>
-        <Tr>
-          <Td dataLabel="Method">{_("SSH Key")}</Td>
-          <Td dataLabel="Status">
-            {isSSHKeyDefined ? <SSHKeyLabel sshKey={sshKey} /> : _("Not set")}
-          </Td>
-          <Td isActionCell>
-            <RowActions actions={sshKeyActions} id="actions-for-root-sshKey" />
-          </Td>
-        </Tr>
-      </Tbody>
-    </Table>
-  );
-};
-
 export default function RootAuthMethods() {
-  const setRootUser = useRootUserMutation();
-  const [isSSHKeyFormOpen, setIsSSHKeyFormOpen] = useState(false);
-  const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
-
-  const { password: isPasswordDefined, sshkey: sshKey } = useRootUser();
-
+  const { password, sshkey } = useRootUser();
   useRootUserChanges();
-
-  const isSSHKeyDefined = sshKey !== "";
-  const openPasswordForm = () => setIsPasswordFormOpen(true);
-  const openSSHKeyForm = () => setIsSSHKeyFormOpen(true);
-  const closePasswordForm = () => setIsPasswordFormOpen(false);
-  const closeSSHKeyForm = () => setIsSSHKeyFormOpen(false);
-
-  const passwordActions = [
-    {
-      title: isPasswordDefined ? _("Change") : _("Set"),
-      onClick: openPasswordForm,
-    },
-    isPasswordDefined && {
-      title: _("Discard"),
-      onClick: () => setRootUser.mutate({ password: "" }),
-      isDanger: true,
-    },
-  ].filter(Boolean);
-
-  const sshKeyActions = [
-    {
-      title: isSSHKeyDefined ? _("Change") : _("Set"),
-      onClick: openSSHKeyForm,
-    },
-    sshKey && {
-      title: _("Discard"),
-      onClick: () => setRootUser.mutate({ sshkey: "" }),
-      isDanger: true,
-    },
-  ].filter(Boolean);
 
   return (
     <Page.Section
-      title={_("Root authentication")}
-      actions={
-        !isPasswordDefined &&
-        !isSSHKeyDefined && (
-          <>
-            {/* TRANSLATORS: push button label */}
-            <Button variant="primary" onClick={openPasswordForm}>
-              {_("Set a password")}
-            </Button>
-            {/* TRANSLATORS: push button label */}
-            <Button variant="secondary" onClick={openSSHKeyForm}>
-              {_("Upload a SSH Public Key")}
-            </Button>
-          </>
-        )
-      }
+      title={_("Root user")}
+      description={_(
+        "Alongside defining the first user, authentication methods for the root user can be configured.",
+      )}
+      actions={<Link to={USER.rootUser.edit}>{_("Edit")}</Link>}
     >
-      <Content
-        isPasswordDefined={isPasswordDefined}
-        isSSHKeyDefined={isSSHKeyDefined}
-        sshKey={sshKey}
-        passwordActions={passwordActions}
-        sshKeyActions={sshKeyActions}
-      />
-
-      {isPasswordFormOpen && (
-        <RootPasswordPopup
-          isOpen
-          title={isPasswordDefined ? _("Change the root password") : _("Set a root password")}
-          onClose={closePasswordForm}
-        />
-      )}
-
-      {isSSHKeyFormOpen && (
-        <RootSSHKeyPopup
-          isOpen
-          title={
-            isSSHKeyDefined
-              ? _("Edit the SSH Public Key for root")
-              : _("Add a SSH Public Key for root")
-          }
-          currentKey={sshKey}
-          onClose={closeSSHKeyForm}
-        />
-      )}
+      <Card isCompact isPlain>
+        <CardBody>
+          <DescriptionList isHorizontal isFluid displaySize="lg" isCompact>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Password")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                {password ? _("Defined (hidden)") : _("Not defined")}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("SSH Key")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                {isEmpty(sshkey) ? _("Not defined") : <SSHKeyLabel sshKey={sshkey} />}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
+        </CardBody>
+      </Card>
     </Page.Section>
   );
 }

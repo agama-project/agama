@@ -21,18 +21,17 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { RootAuthMethods } from "~/components/users";
+import { USER } from "~/routes/paths";
 
-const mockRootUserMutation = { mutate: jest.fn(), mutateAsync: jest.fn() };
 let mockPassword: boolean;
 let mockSSHKey: string;
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),
   useRootUser: () => ({ password: mockPassword, sshkey: mockSSHKey }),
-  useRootUserMutation: () => mockRootUserMutation,
   useRootUserChanges: () => jest.fn(),
 }));
 
@@ -43,204 +42,44 @@ beforeEach(() => {
   mockSSHKey = "";
 });
 
-describe("when no method is defined", () => {
-  it("renders a text inviting the user to define at least one", () => {
+describe("RootAuthMethods", () => {
+  it("renders an edit action", () => {
     plainRender(<RootAuthMethods />);
 
-    screen.getByText("No root authentication method defined yet.");
-    screen.getByText(/at least one/);
-  });
-});
-
-describe("and the password has been set", () => {
-  beforeEach(() => {
-    mockPassword = true;
+    const editLink = screen.getByRole("link", { name: "Edit" });
+    expect(editLink).toHaveAttribute("href", USER.rootUser.edit);
   });
 
-  it("renders the 'Already set' status", async () => {
-    plainRender(<RootAuthMethods />);
+  describe("if no method is defined", () => {
+    it("renders them as 'Not defined'", () => {
+      plainRender(<RootAuthMethods />);
 
-    const table = await screen.findByRole("grid");
-    const passwordRow = within(table).getByText("Password").closest("tr");
-    within(passwordRow).getByText("Already set");
+      expect(screen.getAllByText("Not defined").length).toEqual(2);
+    });
   });
 
-  it("does not renders the 'Set' action", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
+  describe("when password has been defined", () => {
+    beforeEach(() => {
+      mockPassword = true;
+    });
 
-    const table = await screen.findByRole("grid");
-    const passwordRow = within(table).getByText("Password").closest("tr");
-    const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const setAction = within(menu).queryByRole("menuitem", { name: "Set" });
-    expect(setAction).toBeNull();
+    it("renders the 'Defined (hidden)' text", async () => {
+      plainRender(<RootAuthMethods />);
+
+      screen.getByText("Defined (hidden)");
+    });
   });
 
-  it("allows the user to change the already set password", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
+  describe("when SSH Key has been defined", () => {
+    beforeEach(() => {
+      mockSSHKey = testKey;
+    });
 
-    const table = await screen.findByRole("grid");
-    const passwordRow = within(table).getByText("Password").closest("tr");
-    const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const changeAction = within(menu).queryByRole("menuitem", { name: "Change" });
-    await user.click(changeAction);
-    screen.getByRole("dialog", { name: "Change the root password" });
-  });
+    it("renders its truncated content keeping the comment visible when possible", async () => {
+      plainRender(<RootAuthMethods />);
 
-  it("allows the user to discard the chosen password", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const passwordRow = within(table).getByText("Password").closest("tr");
-    const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const discardAction = within(menu).queryByRole("menuitem", { name: "Discard" });
-    await user.click(discardAction);
-
-    expect(mockRootUserMutation.mutate).toHaveBeenCalledWith({ password: "" });
-  });
-});
-
-describe("the password is not set yet", () => {
-  // Mock another auth method for reaching the table
-  beforeEach(() => {
-    mockSSHKey = "Fake";
-  });
-
-  it("renders the 'Not set' status", async () => {
-    plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const passwordRow = within(table).getByText("Password").closest("tr");
-    within(passwordRow).getByText("Not set");
-  });
-
-  it("allows the user to set a password", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const passwordRow = within(table).getByText("Password").closest("tr");
-    const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const setAction = within(menu).getByRole("menuitem", { name: "Set" });
-    await user.click(setAction);
-    screen.getByRole("dialog", { name: "Set a root password" });
-  });
-
-  it("does not render the 'Change' nor the 'Discard' actions", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const passwordRow = within(table).getByText("Password").closest("tr");
-    const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const changeAction = within(menu).queryByRole("menuitem", { name: "Change" });
-    const discardAction = within(menu).queryByRole("menuitem", { name: "Discard" });
-
-    expect(changeAction).toBeNull();
-    expect(discardAction).toBeNull();
-  });
-});
-
-describe("and the SSH Key has been set", () => {
-  beforeEach(() => {
-    mockSSHKey = testKey;
-  });
-
-  it("renders its truncated content keeping the comment visible when possible", async () => {
-    plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
-    within(sshKeyRow).getByText("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+");
-    within(sshKeyRow).getByText("test@example");
-  });
-
-  it("does not renders the 'Set' action", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
-    const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const setAction = within(menu).queryByRole("menuitem", { name: "Set" });
-    expect(setAction).toBeNull();
-  });
-
-  it("allows the user to change it", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
-    const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const changeAction = within(menu).queryByRole("menuitem", { name: "Change" });
-    await user.click(changeAction);
-    screen.getByRole("dialog", { name: "Edit the SSH Public Key for root" });
-  });
-
-  it("allows the user to discard it", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
-    const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const discardAction = within(menu).queryByRole("menuitem", { name: "Discard" });
-    await user.click(discardAction);
-
-    expect(mockRootUserMutation.mutate).toHaveBeenCalledWith({ sshkey: "" });
-  });
-});
-
-describe("but the SSH Key is not set yet", () => {
-  // Mock another auth method for reaching the table
-  beforeEach(() => {
-    mockPassword = true;
-  });
-
-  it("renders the 'Not set' status", async () => {
-    plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
-    within(sshKeyRow).getByText("Not set");
-  });
-
-  it("allows the user to set a key", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
-    const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const setAction = within(menu).getByRole("menuitem", { name: "Set" });
-    await user.click(setAction);
-    screen.getByRole("dialog", { name: "Add a SSH Public Key for root" });
-  });
-
-  it("does not render the 'Change' nor the 'Discard' actions", async () => {
-    const { user } = plainRender(<RootAuthMethods />);
-
-    const table = await screen.findByRole("grid");
-    const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
-    const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
-    await user.click(actionsToggler);
-    const menu = screen.getByRole("menu");
-    const changeAction = within(menu).queryByRole("menuitem", { name: "Change" });
-    const discardAction = within(menu).queryByRole("menuitem", { name: "Discard" });
-
-    expect(changeAction).toBeNull();
-    expect(discardAction).toBeNull();
+      screen.getByText("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+");
+      screen.getByText("test@example");
+    });
   });
 });
