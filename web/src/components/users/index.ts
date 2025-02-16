@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 export { default as FirstUser } from "./FirstUser";
-export { default as RootAuthMethods } from "./RootAuthMethods";
+export { default as RootUser } from "./RootUser";
 export { default as RootPasswordPopup } from "./RootPasswordPopup";
 export { default as RootSSHKeyPopup } from "./RootSSHKeyPopup";
 export { default as UsersPage } from "./UsersPage";

@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { RootAuthMethods } from "~/components/users";
+import { RootUser } from "~/components/users";
 import { USER } from "~/routes/paths";
 
 let mockPassword: boolean;
@@ -42,9 +42,9 @@ beforeEach(() => {
   mockSSHKey = "";
 });
 
-describe("RootAuthMethods", () => {
+describe("RootUser", () => {
   it("renders an edit action", () => {
-    plainRender(<RootAuthMethods />);
+    plainRender(<RootUser />);
 
     const editLink = screen.getByRole("link", { name: "Edit" });
     expect(editLink).toHaveAttribute("href", USER.rootUser.edit);
@@ -52,7 +52,7 @@ describe("RootAuthMethods", () => {
 
   describe("if no method is defined", () => {
     it("renders them as 'Not defined'", () => {
-      plainRender(<RootAuthMethods />);
+      plainRender(<RootUser />);
 
       expect(screen.getAllByText("Not defined").length).toEqual(2);
     });
@@ -64,7 +64,7 @@ describe("RootAuthMethods", () => {
     });
 
     it("renders the 'Defined (hidden)' text", async () => {
-      plainRender(<RootAuthMethods />);
+      plainRender(<RootUser />);
 
       screen.getByText("Defined (hidden)");
     });
@@ -76,7 +76,7 @@ describe("RootAuthMethods", () => {
     });
 
     it("renders its truncated content keeping the comment visible when possible", async () => {
-      plainRender(<RootAuthMethods />);
+      plainRender(<RootUser />);
 
       screen.getByText("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+");
       screen.getByText("test@example");

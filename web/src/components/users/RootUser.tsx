@@ -42,7 +42,7 @@ const SSHKeyLabel = ({ sshKey }) => {
   return <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />;
 };
 
-export default function RootAuthMethods() {
+export default function RootUser() {
   const { password, sshkey } = useRootUser();
   useRootUserChanges();
 
