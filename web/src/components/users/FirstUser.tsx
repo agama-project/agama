@@ -49,7 +49,7 @@ const UserActions = () => {
   }
 
   return (
-    <SplitButton label={_("Edit")} href={PATHS.firstUser.edit}>
+    <SplitButton label={_("Edit")} href={PATHS.firstUser.edit} variant="secondary">
       <SplitButton.Item isDanger onClick={() => removeUser()}>
         {_("Discard")}
       </SplitButton.Item>
@@ -95,7 +95,7 @@ export default function FirstUser() {
     <Page.Section
       title={_("First user")}
       actions={<UserActions />}
-      description={_("If defined, a user with admin privileges (sudo) will be created.")}
+      description={_("Define the first user with admin (sudo) privileges for system management.")}
     >
       <UserData />
     </Page.Section>
