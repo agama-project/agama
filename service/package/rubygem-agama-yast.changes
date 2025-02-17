@@ -1,7 +1,12 @@
 -------------------------------------------------------------------
-Fri Feb 14 09:45:09 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+Mon Feb 17 14:38:50 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - UX: Improve the libzypp callbacks (gh#agama-project/agama#1985)
+
+-------------------------------------------------------------------
+Mon Feb 17 09:17:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for post-partitioning scripts (jsc#AGM-108).
 
 -------------------------------------------------------------------
 Thu Feb 13 21:37:32 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

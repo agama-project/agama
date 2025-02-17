@@ -20,7 +20,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::{InitScript, PostScript, PreScript};
+use super::{InitScript, PostPartitioningScript, PostScript, PreScript};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -28,6 +28,9 @@ pub struct ScriptsConfig {
     /// User-defined pre-installation scripts
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pre: Option<Vec<PreScript>>,
+    /// User-defined post-partitioning scripts
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post_partitioning: Option<Vec<PostPartitioningScript>>,
     /// User-defined post-installation scripts
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post: Option<Vec<PostScript>>,

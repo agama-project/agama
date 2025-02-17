@@ -39,6 +39,7 @@ use super::ScriptError;
 #[serde(rename_all = "camelCase")]
 pub enum ScriptsGroup {
     Pre,
+    PostPartitioning,
     Post,
     Init,
 }
@@ -84,9 +85,10 @@ pub enum ScriptSource {
 ///
 /// There are different types of scripts that can run at different stages of the installation.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(tag = "type")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum Script {
     Pre(PreScript),
+    PostPartitioning(PostPartitioningScript),
     Post(PostScript),
     Init(InitScript),
 }
@@ -95,6 +97,7 @@ impl Script {
     fn base(&self) -> &BaseScript {
         match self {
             Script::Pre(inner) => &inner.base,
+            Script::PostPartitioning(inner) => &inner.base,
             Script::Post(inner) => &inner.base,
             Script::Init(inner) => &inner.base,
         }
@@ -119,6 +122,7 @@ impl Script {
     pub fn group(&self) -> ScriptsGroup {
         match self {
             Script::Pre(_) => ScriptsGroup::Pre,
+            Script::PostPartitioning(_) => ScriptsGroup::PostPartitioning,
             Script::Post(_) => ScriptsGroup::Post,
             Script::Init(_) => ScriptsGroup::Init,
         }
@@ -136,6 +140,7 @@ impl Script {
             .join(self.name());
         let runner = match self {
             Script::Pre(inner) => &inner.runner(),
+            Script::PostPartitioning(inner) => &inner.runner(),
             Script::Post(inner) => &inner.runner(),
             Script::Init(inner) => &inner.runner(),
         };
@@ -183,6 +188,31 @@ impl TryFrom<Script> for PreScript {
 
 impl WithRunner for PreScript {}
 
+/// Represents a script that runs after partitioning.
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct PostPartitioningScript {
+    #[serde(flatten)]
+    pub base: BaseScript,
+}
+
+impl From<PostPartitioningScript> for Script {
+    fn from(value: PostPartitioningScript) -> Self {
+        Self::PostPartitioning(value)
+    }
+}
+
+impl TryFrom<Script> for PostPartitioningScript {
+    type Error = ScriptError;
+
+    fn try_from(value: Script) -> Result<Self, Self::Error> {
+        match value {
+            Script::PostPartitioning(inner) => Ok(inner),
+            _ => Err(ScriptError::WrongScriptType),
+        }
+    }
+}
+
+impl WithRunner for PostPartitioningScript {}
 /// Represents a script that runs after the installation finishes.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct PostScript {

@@ -1111,6 +1111,9 @@ export default {
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     ""
   ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
+  ],
   "Something went wrong": [
     "Noe gikk galt"
   ],
@@ -1300,6 +1303,9 @@ export default {
   "Unit for the minimum size": [
     "Enhet for minimum størrelse"
   ],
+  "Unsupported AutoYaST elements": [
+    ""
+  ],
   "Unused space": [
     "Ubrukt plass"
   ],
@@ -1362,6 +1368,9 @@ export default {
   ],
   "Wi-Fi": [
     "Wi-Fi"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Kablet"

@@ -53,6 +53,7 @@ module Agama
       # @return [Hash] Agama "scripts" section
       def read
         scripts = {}
+          .merge(read_post_partitioning_scripts)
           .merge(read_post_scripts)
           .merge(read_init_scripts)
         return {} if scripts.empty?
@@ -66,6 +67,17 @@ module Agama
 
       def scripts_section
         @scripts_section ||= profile.fetch("scripts", {})
+      end
+
+      # Reads the "postpartitioning-scripts" section and builds an Agama "postPartitioning"
+      # section.
+      def read_post_partitioning_scripts
+        scripts = scripts_section.fetch("postpartitioning-scripts", []).map do |script|
+          read_script(script)
+        end
+        return {} if scripts.empty?
+
+        { "postPartitioning" => scripts }
       end
 
       # Reads the "chroot-scripts" section and builds an Agama "post" section.

@@ -209,16 +209,20 @@ impl L10n {
             return Err(LocaleError::UnknownKeymap(keymap_id));
         }
 
-        let keymap = keymap_id.to_string();
         self.ui_keymap = keymap_id;
 
         Command::new("/usr/bin/localectl")
-            .args(["set-x11-keymap", &keymap])
+            .args(["set-keymap", &self.ui_keymap.dashed()])
             .output()
             .map_err(LocaleError::Commit)?;
 
         let output = run_with_timeout(
-            &["setxkbmap", "-display", &display(), &keymap],
+            &[
+                "setxkbmap",
+                "-display",
+                &display(),
+                &self.ui_keymap.to_string(),
+            ],
             SETXKBMAP_TIMEOUT,
         );
         output.map_err(|e| {
@@ -240,7 +244,7 @@ impl L10n {
                 "--locale",
                 self.locales.first().unwrap_or(&"en_US.UTF-8".to_string()),
                 "--keymap",
-                &self.keymap.to_string(),
+                &self.keymap.dashed(),
                 "--timezone",
                 &self.timezone,
             ])
