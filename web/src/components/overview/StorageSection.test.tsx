@@ -25,6 +25,7 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
 import * as ConfigModel from "~/api/storage/types/config-model";
+import { Issue } from "~/types/issues";
 
 const sdaDrive: ConfigModel.Drive = {
   name: "/dev/sda",
@@ -43,16 +44,32 @@ const mockDevices = [
   { name: "/dev/sdb", size: 697932185600 },
 ];
 
+const systemError: Issue = {
+  description: "System error",
+  kind: "storage",
+  details: "",
+  source: 1,
+  severity: 1,
+};
+
 const mockUseConfigModelFn = jest.fn();
+const mockUseAvailableDevicesFn = jest.fn();
+const mockUseSystemErrorsFn = jest.fn();
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useDevices: () => mockDevices,
+  useAvailableDevices: () => mockUseAvailableDevicesFn(),
 }));
 
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
   useConfigModel: () => mockUseConfigModelFn(),
+}));
+
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useSystemErrors: () => mockUseSystemErrorsFn(),
 }));
 
 describe("when the configuration does not include any device", () => {
@@ -152,6 +169,68 @@ describe("when the configuration contains several drives", () => {
       plainRender(<StorageSection />);
 
       await screen.findByText(/custom strategy to find the needed space/);
+    });
+  });
+});
+
+describe("when there is no configuration model (unsupported features)", () => {
+  beforeEach(() => {
+    mockUseConfigModelFn.mockReturnValue(undefined);
+  });
+
+  describe("if the storage proposal succeeded", () => {
+    beforeEach(() => {
+      mockUseSystemErrorsFn.mockReturnValue([]);
+    });
+
+    describe("and there are no available disks", () => {
+      beforeEach(() => {
+        mockUseAvailableDevicesFn.mockReturnValue([]);
+      });
+
+      it("indicates that an unhandled configuration was used", async () => {
+        plainRender(<StorageSection />);
+        await screen.findByText(/advanced configuration/);
+      });
+    });
+
+    describe("and there are available disks", () => {
+      beforeEach(() => {
+        mockUseAvailableDevicesFn.mockReturnValue(mockDevices);
+      });
+
+      it("indicates that an unhandled configuration was used", async () => {
+        plainRender(<StorageSection />);
+        await screen.findByText(/advanced configuration/);
+      });
+    });
+  });
+
+  describe("if the storage proposal was not possible", () => {
+    beforeEach(() => {
+      mockUseSystemErrorsFn.mockReturnValue([systemError]);
+    });
+
+    describe("and there are no available disks", () => {
+      beforeEach(() => {
+        mockUseAvailableDevicesFn.mockReturnValue([]);
+      });
+
+      it("indicates that there are no available disks", async () => {
+        plainRender(<StorageSection />);
+        await screen.findByText(/no disks available/);
+      });
+    });
+
+    describe("and there are available disks", () => {
+      beforeEach(() => {
+        mockUseAvailableDevicesFn.mockReturnValue(mockDevices);
+      });
+
+      it("indicates that an unhandled configuration was used", async () => {
+        plainRender(<StorageSection />);
+        await screen.findByText(/advanced configuration/);
+      });
     });
   });
 });
