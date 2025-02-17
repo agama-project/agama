@@ -59,7 +59,7 @@ module Agama
       private_constant :USERS_INTERFACE
 
       FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in HashedPassword:b, " \
-                  "in AutoLogin:b, in data:a{sv}"
+                  "in data:a{sv}"
       private_constant :FUSER_SIG
 
       dbus_interface USERS_INTERFACE do
@@ -99,10 +99,10 @@ module Agama
           # It returns an Struct with the first field with the result of the operation as a boolean
           # and the second parameter as an array of issues found in case of failure
           FUSER_SIG + ", out result:(bas)" do
-            |full_name, user_name, password, hashed_password, auto_login, data|
+            |full_name, user_name, password, hashed_password, data|
           logger.info "Setting first user #{full_name}"
           user_issues = backend.assign_first_user(full_name, user_name, password,
-            hashed_password, auto_login, data)
+            hashed_password, data)
 
           if user_issues.empty?
             dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
@@ -143,7 +143,6 @@ module Agama
           user.name,
           user.password_content || "",
           user.password&.value&.encrypted? || false,
-          backend.autologin?(user),
           {}
         ]
       end

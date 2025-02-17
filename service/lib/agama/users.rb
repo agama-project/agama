@@ -72,13 +72,7 @@ module Agama
       update_issues
     end
 
-    # Whether the given user is configured for autologin
     #
-    # @param [Y2Users::User] user
-    # @return [Boolean]
-    def autologin?(user)
-      config.login.autologin_user == user
-    end
 
     # First created user
     #
@@ -118,8 +112,6 @@ module Agama
       return fatal_issues.map(&:message) unless fatal_issues.empty?
 
       config.attach(user)
-      config.login ||= Y2Users::LoginConfig.new
-      config.login.autologin_user = auto_login ? user : nil
       update_issues
       []
     end

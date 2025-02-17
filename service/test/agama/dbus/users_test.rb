@@ -84,10 +84,6 @@ describe Agama::DBus::Users do
           password_content: password.value.to_s)
       end
 
-      before do
-        allow(backend).to receive(:autologin?).with(user).and_return(true)
-      end
-
       it "returns the first user data" do
         expect(subject.first_user).to eq(["Test user", "test", password.value.to_s, true, true, {}])
       end
