@@ -48,7 +48,7 @@ impl UsersStore {
             password: Some(first_user.password),
             hashed_password: Some(first_user.hashed_password),
         };
-        let root_user = RootUserSettings::default();
+        let root_user = self.users_client.root_user().await?;
         let root_user = RootUserSettings {
             password: root_user.password,
             hashed_password: root_user.hashed_password,
@@ -138,8 +138,9 @@ mod test {
                 .header("content-type", "application/json")
                 .body(
                     r#"{
-                    "sshkey": "keykeykey",
-                    "password": true
+                    "sshPublicKey": "keykeykey",
+                    "password": "nots3cr3t",
+                    "hashedPassword": false
                 }"#,
                 );
         });
@@ -156,8 +157,8 @@ mod test {
         };
         let root_user = RootUserSettings {
             // FIXME this is weird: no matter what HTTP reports, we end up with None
-            password: None,
-            hashed_password: None,
+            password: Some("nots3cr3t".to_owned()),
+            hashed_password: Some(false),
             ssh_public_key: Some("keykeykey".to_owned()),
         };
         let expected = UserSettings {
