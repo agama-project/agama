@@ -23,8 +23,9 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { useDevices } from "~/queries/storage";
+import { useDevices, useAvailableDevices } from "~/queries/storage";
 import { useConfigModel } from "~/queries/storage/config-model";
+import { useSystemErrors } from "~/queries/issues";
 import { StorageDevice } from "~/types/storage";
 import * as ConfigModel from "~/api/storage/types/config-model";
 import { _ } from "~/i18n";
@@ -78,26 +79,40 @@ const MultipleDisksSummary = ({ drives }: { drives: ConfigModel.Drive[] }): stri
   return options[drives[0].spacePolicy];
 };
 
+const ModelSummary = ({ model }: { model: ConfigModel.Config }): React.ReactNode => {
+  const devices = useDevices("system", { suspense: true });
+  const drives = model?.drives || [];
+  const existDevice = (name: string) => devices.some((d) => d.name === name);
+  const noDrive = drives.length === 0 || drives.some((d) => !existDevice(d.name));
+
+  if (noDrive) return <NoDeviceSummary />;
+  if (drives.length > 1) return <MultipleDisksSummary drives={drives} />;
+  return <SingleDiskSummary drive={drives[0]} />;
+};
+
+const NoModelSummary = (): React.ReactNode => {
+  const availableDevices = useAvailableDevices();
+  const systemErrors = useSystemErrors("storage");
+  const hasDisks = !!availableDevices.length;
+  const hasResult = !systemErrors.length;
+
+  if (!hasResult && !hasDisks) return _("There are no disks available for the installation.");
+  return _("Install using an advanced configuration.");
+};
+
 /**
  * Text explaining the storage proposal
- *
- * TODO: The current implementation assumes there are only drives and no other kind of devices like
- * LVM volume groups or MD raids. Support for more cases (like LVM installation) will be added as
- * the rest of the interface is also adapted.
  */
 export default function StorageSection() {
   const configModel = useConfigModel();
-  const devices = useDevices("system", { suspense: true });
-  const drives = configModel?.drives || [];
-  const existDevice = (name: string) => devices.some((d) => d.name === name);
-  const noDrive = drives.length === 0 || drives.some((d) => !existDevice(d.name));
 
   return (
     <Content>
       <Content component="h3">{_("Storage")}</Content>
-      {noDrive && <NoDeviceSummary />}
-      {drives.length === 1 && <SingleDiskSummary drive={drives[0]} />}
-      {drives.length > 1 && <MultipleDisksSummary drives={drives} />}
+      <Content>
+        {configModel && <ModelSummary model={configModel} />}
+        {!configModel && <NoModelSummary />}
+      </Content>
     </Content>
   );
 }
