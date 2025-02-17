@@ -144,13 +144,7 @@ module Agama
       without_run_mount do
         on_target do
           # if root ssh key is specified ensure that sshd running and firewall has port opened
-          if root_ssh_key?
-            @logger.info "root ssh key is set, enabling sshd and opening firewall"
-            Yast::Service.Enable("sshd")
-            firewalld = Y2Firewall::Firewalld.instance
-            # open port only if firewalld is installed, otherwise it will crash
-            firewalld.api.add_service(firewalld.default_zone, "ssh") if firewalld.installed?
-          end
+          enable_ssh if root_ssh_key?
 
           # disable root password if not set
           assign_root_password("!", true) unless root_password?
@@ -220,6 +214,14 @@ module Agama
       @root_user = Y2Users::User.create_root
       config.attach(@root_user)
       @root_user
+    end
+
+    def enable_ssh
+      logger.info "root SSH public key is set, enabling sshd and opening the firewall"
+      Yast::Service.Enable("sshd")
+      firewalld = Y2Firewall::Firewalld.instance
+      # open port only if firewalld is installed, otherwise it will crash
+      firewalld.api.add_service(firewalld.default_zone, "ssh") if firewalld.installed?
     end
   end
 end
