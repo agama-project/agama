@@ -152,6 +152,11 @@ impl<'a> StorageClient<'a> {
             .await?)
     }
 
+    /// Reset the storage config to the default value
+    pub async fn reset_config(&self) -> Result<u32, ServiceError> {
+        Ok(self.storage_proxy.reset_config().await?)
+    }
+
     /// Get the storage config according to the JSON schema
     pub async fn get_config(&self) -> Result<StorageSettings, ServiceError> {
         let serialized_settings = self.storage_proxy.get_config().await?;

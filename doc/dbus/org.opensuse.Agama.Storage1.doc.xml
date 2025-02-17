@@ -40,6 +40,17 @@
       <arg name="result" direction="out" type="u"/>
     </method>
     <!--
+      Resets the default storage config defined by the selected product.
+    -->
+    <method name="ResetConfig">
+      <!--
+        Whether the proposal was correctly calculated:
+          0: success
+          1: failure
+      -->
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <!--
       Gets the unsolved storage config.
     -->
     <method name="GetConfig">
