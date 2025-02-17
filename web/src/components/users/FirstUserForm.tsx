@@ -230,7 +230,7 @@ export default function FirstUserForm() {
           </FormGroup>
           {isEditing && (
             <Switch
-              label={_("Edit password too")}
+              label={_("Edit the password too")}
               isChecked={changePassword}
               onChange={() => setChangePassword(!changePassword)}
             />

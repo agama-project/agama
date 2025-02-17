@@ -60,7 +60,9 @@ describe("FirstUserForm", () => {
       screen.getByRole("button", { name: "Accept" });
       screen.getByRole("link", { name: "Cancel" });
 
-      expect(screen.queryByRole("switch", { name: "Edit password too" })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("switch", { name: "Edit the password too" }),
+      ).not.toBeInTheDocument();
     });
 
     it("allows defining the user when all data is provided", async () => {
@@ -130,7 +132,7 @@ describe("FirstUserForm", () => {
       screen.getByRole("heading", { name: "Edit user" });
       screen.getByRole("textbox", { name: "Full name" });
       screen.getByRole("textbox", { name: "Username" });
-      screen.getByRole("switch", { name: "Edit password too" });
+      screen.getByRole("switch", { name: "Edit the password too" });
       expect(screen.queryByLabelText("Password")).not.toBeInTheDocument();
       expect(screen.queryByLabelText("Password confirmation")).not.toBeInTheDocument();
       screen.getByRole("button", { name: "Accept" });
@@ -162,7 +164,7 @@ describe("FirstUserForm", () => {
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
       const username = screen.getByRole("textbox", { name: "Username" });
-      const editPasswordToggle = screen.queryByRole("switch", { name: "Edit password too" });
+      const editPasswordToggle = screen.queryByRole("switch", { name: "Edit the password too" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.clear(fullname);
       await user.type(fullname, "Gecko Loco");

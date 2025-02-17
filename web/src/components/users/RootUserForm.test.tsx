@@ -106,9 +106,9 @@ describe("RootUserForm", () => {
     );
   });
 
-  it("allows setting an SSH Key ", async () => {
+  it("allows setting a public SSH Key ", async () => {
     const { user } = installerRender(<RootUserForm />);
-    const sshkeyToggle = screen.getByRole("switch", { name: "Use SSH Key" });
+    const sshkeyToggle = screen.getByRole("switch", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     await user.click(sshkeyToggle);
     const sshKeyInput = screen.getByRole("textbox", { name: "File upload" });
@@ -119,22 +119,22 @@ describe("RootUserForm", () => {
     );
   });
 
-  it("does not allow setting an empty SSH Key", async () => {
+  it("does not allow setting an empty public SSH Key", async () => {
     const { user } = installerRender(<RootUserForm />);
-    const sshkeyToggle = screen.getByRole("switch", { name: "Use SSH Key" });
+    const sshkeyToggle = screen.getByRole("switch", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     await user.click(sshkeyToggle);
     expect(sshkeyToggle).toBeChecked();
     await user.click(acceptButton);
     screen.getByText("Warning alert:");
-    screen.getByText("SSH Key is empty.");
+    screen.getByText("Public SSH Key is empty.");
     expect(mockRootUserMutation).not.toHaveBeenCalled();
   });
 
-  it("allows clearing the SSH Key", async () => {
+  it("allows clearing the public SSH Key", async () => {
     mockSshKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
     const { user } = installerRender(<RootUserForm />);
-    const sshkeyToggle = screen.getByRole("switch", { name: "Use SSH Key" });
+    const sshkeyToggle = screen.getByRole("switch", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     expect(sshkeyToggle).toBeChecked();
     await user.click(sshkeyToggle);

@@ -107,7 +107,7 @@ const RootUserForm = () => {
     }
 
     if (activeMethods.sshkey && isEmpty(sshkey)) {
-      nextErrors.push(_("SSH Key is empty."));
+      nextErrors.push(_("Public SSH Key is empty."));
     }
 
     if (nextErrors.length > 0) {
@@ -166,7 +166,7 @@ const RootUserForm = () => {
           <FormGroup
             label={
               <Switch
-                label={_("Use SSH Key")}
+                label={_("Use public SSH Key")}
                 isChecked={activeMethods.sshkey}
                 onChange={() => toggleMethod("sshkey")}
               />

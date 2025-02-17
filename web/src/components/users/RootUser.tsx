@@ -64,7 +64,7 @@ export default function RootUser() {
               </DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionListGroup>
-              <DescriptionListTerm>{_("SSH Key")}</DescriptionListTerm>
+              <DescriptionListTerm>{_("Public SSH Key")}</DescriptionListTerm>
               <DescriptionListDescription>
                 {isEmpty(sshkey) ? _("Not defined") : <SSHKeyLabel sshKey={sshkey} />}
               </DescriptionListDescription>
