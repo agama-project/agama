@@ -192,7 +192,7 @@ export default function FirstUserForm() {
       </Page.Header>
 
       <Page.Content>
-        <Form id="firstUserForm" onSubmit={onSubmit}>
+        <Form id="firstUserForm" onSubmit={onSubmit} isWidthLimited maxWidth="fit-content">
           {errors.length > 0 && (
             <Alert variant="warning" isInline title={_("Something went wrong")}>
               {errors.map((e, i) => (

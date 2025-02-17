@@ -132,7 +132,7 @@ const RootUserForm = () => {
       </Page.Header>
 
       <Page.Content>
-        <Form id="rootAuthMethods" onSubmit={onSubmit}>
+        <Form id="rootAuthMethods" onSubmit={onSubmit} isWidthLimited maxWidth="fit-content">
           {errors.length > 0 && (
             <Alert variant="warning" isInline title={_("Something went wrong")}>
               {errors.map((e, i) => (
