@@ -62,24 +62,44 @@ export default function ConfigEditorMenu() {
       )}
     >
       <DropdownList>
-        <DropdownItem key="boot-link" onClick={() => navigate(PATHS.bootDevice)}>
+        <DropdownItem
+          key="boot-link"
+          onClick={() => navigate(PATHS.bootDevice)}
+          description={_("Select the disk to configure partitions for booting")}
+        >
           {_("Change boot options")}
         </DropdownItem>
-        <DropdownItem key="reset-link" onClick={() => reset()}>
-          {_("Reset to default configuration")}
+        <DropdownItem
+          key="reset-link"
+          onClick={() => reset()}
+          description={_("Start from scratch with the default configuration")}
+        >
+          {_("Reset to defaults")}
         </DropdownItem>
         <Divider />
-        <DropdownItem key="iscsi-link" onClick={() => navigate(PATHS.iscsi)}>
-          {_("Connect to iSCSI targets")}
+        <DropdownItem
+          key="iscsi-link"
+          onClick={() => navigate(PATHS.iscsi)}
+          description={_("Discover and connect to iSCSI targets")}
+        >
+          {_("Configure iSCSI")}
         </DropdownItem>
         {isZFCPSupported && (
-          <DropdownItem key="zfcp-link" onClick={() => navigate(PATHS.zfcp.root)}>
-            {_("Activate zFCP disks")}
+          <DropdownItem
+            key="zfcp-link"
+            onClick={() => navigate(PATHS.zfcp.root)}
+            description={_("Activate zFCP disks")}
+          >
+            {_("Configure zFCP")}
           </DropdownItem>
         )}
         {isDASDSupported && (
-          <DropdownItem key="dasd-link" onClick={() => navigate(PATHS.dasd)}>
-            {_("Manage DASD devices")}
+          <DropdownItem
+            key="dasd-link"
+            onClick={() => navigate(PATHS.dasd)}
+            description={_("Activate and format DASD devices")}
+          >
+            {_("Configure DASD")}
           </DropdownItem>
         )}
       </DropdownList>

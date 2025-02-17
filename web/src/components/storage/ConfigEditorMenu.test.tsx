@@ -80,7 +80,7 @@ it("allows users to reset the config", async () => {
 
 it("allows users to configure iSCSI", async () => {
   const { user, menu } = await openMenu();
-  const iscsiItem = within(menu).getByRole("menuitem", { name: /iSCSI targets/ });
+  const iscsiItem = within(menu).getByRole("menuitem", { name: /Configure iSCSI/ });
   await user.click(iscsiItem);
   expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.iscsi);
 });
@@ -92,7 +92,7 @@ describe("if zFCP is not supported", () => {
 
   it("does not allow users to configure zFCP", async () => {
     const { menu } = await openMenu();
-    const zfcpItem = within(menu).queryByRole("menuitem", { name: /Activate zFCP/ });
+    const zfcpItem = within(menu).queryByRole("menuitem", { name: /Configure zFCP/ });
     expect(zfcpItem).not.toBeInTheDocument();
   });
 });
@@ -104,7 +104,7 @@ describe("if zFCP is supported", () => {
 
   it("allows users to configure zFCP", async () => {
     const { user, menu } = await openMenu();
-    const zfcpItem = within(menu).getByRole("menuitem", { name: /Activate zFCP/ });
+    const zfcpItem = within(menu).getByRole("menuitem", { name: /Configure zFCP/ });
     await user.click(zfcpItem);
     expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.zfcp.root);
   });
@@ -117,7 +117,7 @@ describe("if DASD is not supported", () => {
 
   it("does not allow users to configure DASD", async () => {
     const { menu } = await openMenu();
-    const dasdItem = within(menu).queryByRole("menuitem", { name: /Manage DASD/ });
+    const dasdItem = within(menu).queryByRole("menuitem", { name: /Configure DASD/ });
     expect(dasdItem).not.toBeInTheDocument();
   });
 });
@@ -129,7 +129,7 @@ describe("if DASD is supported", () => {
 
   it("allows users to configure DASD", async () => {
     const { user, menu } = await openMenu();
-    const dasdItem = within(menu).getByRole("menuitem", { name: /Manage DASD/ });
+    const dasdItem = within(menu).getByRole("menuitem", { name: /Configure DASD/ });
     await user.click(dasdItem);
     expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.dasd);
   });

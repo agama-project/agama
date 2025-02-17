@@ -193,12 +193,11 @@ function ProposalSections(): React.ReactNode {
             )}
             actions={
               <>
-                <SplitItem isFilled> </SplitItem>
-                <SplitItem>
-                  <AddExistingDeviceMenu />
-                </SplitItem>
                 <SplitItem>
                   <ConfigEditorMenu />
+                </SplitItem>
+                <SplitItem>
+                  <AddExistingDeviceMenu />
                 </SplitItem>
               </>
             }
