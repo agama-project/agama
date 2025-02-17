@@ -136,7 +136,7 @@ storage:
         auto_size:
           base_min: 5 GiB
           base_max: 15 GiB
-          snapshots_increment: 250%
+          snapshots_increment: 150%
           max_fallback_for:
             - "/home"
         snapshots_configurable: true
@@ -153,7 +153,7 @@ storage:
       filesystem: xfs
       size:
         auto: false
-        min: 10 GiB
+        min: 5 GiB
         max: unlimited
       outline:
         required: false
@@ -166,7 +166,7 @@ storage:
     - filesystem: xfs
       size:
         auto: false
-        min: 1 GiB
+        min: 512 MiB
       outline:
         required: false
         filesystems:
