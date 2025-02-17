@@ -24,6 +24,7 @@ import React, { useRef, useState } from "react";
 import {
   ActionGroup,
   Alert,
+  Button,
   Card,
   CardBody,
   Content,
@@ -82,6 +83,9 @@ const RootUserForm = () => {
   const [errors, setErrors] = useState([]);
   // FIXME: root.password should be the set password instead of "true"
   const [password, setPassword] = useState(""); // useState(rootUser.password);
+  const [usingHashedPassword, setUsingHashedPassword] = useState(
+    rootUser ? rootUser.hashedPassword : false,
+  );
   const [sshkey, setSshKey] = useState(rootUser.sshkey);
   const passwordRef = useRef<HTMLInputElement>();
 
@@ -98,12 +102,9 @@ const RootUserForm = () => {
 
     const passwordInput = passwordRef.current;
 
-    if (activeMethods.password && !passwordInput?.validity.valid) {
-      nextErrors.push(passwordInput?.validationMessage);
-    }
-
-    if (activeMethods.password && isEmpty(password)) {
-      nextErrors.push(_("Password is empty."));
+    if (activeMethods.password && !usingHashedPassword) {
+      isEmpty(password) && nextErrors.push(_("Password is empty."));
+      !passwordInput?.validity.valid && nextErrors.push(passwordInput?.validationMessage);
     }
 
     if (activeMethods.sshkey && isEmpty(sshkey)) {
@@ -115,11 +116,19 @@ const RootUserForm = () => {
       return;
     }
 
-    const data: RootUserChanges = {
-      password: activeMethods.password ? password : "",
-      hashedPassword: false,
+    const data: Partial<RootUserChanges> = {
       sshkey: activeMethods.sshkey ? sshkey : "",
     };
+
+    if (!activeMethods.password) {
+      data.password = "";
+      data.hashedPassword = false;
+    }
+
+    if (activeMethods.password && !usingHashedPassword) {
+      data.password = password;
+      data.hashedPassword = false;
+    }
 
     updateRootUser(data)
       .catch((e) => setErrors(e))
@@ -152,12 +161,21 @@ const RootUserForm = () => {
             {activeMethods.password && (
               <Card isPlain isCompact>
                 <CardBody>
-                  <PasswordAndConfirmationInput
-                    inputRef={passwordRef}
-                    value={password}
-                    onChange={onPasswordChange}
-                    showErrors={false}
-                  />
+                  {usingHashedPassword ? (
+                    <Content isEditorial>
+                      {_("Using a hashed password.")}{" "}
+                      <Button variant="link" isInline onClick={() => setUsingHashedPassword(false)}>
+                        {_("Change")}
+                      </Button>
+                    </Content>
+                  ) : (
+                    <PasswordAndConfirmationInput
+                      inputRef={passwordRef}
+                      value={password}
+                      onChange={onPasswordChange}
+                      showErrors={false}
+                    />
+                  )}
                 </CardBody>
               </Card>
             )}

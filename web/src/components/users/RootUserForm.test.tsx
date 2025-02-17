@@ -27,6 +27,7 @@ import RootUserForm from "./RootUserForm";
 
 let mockPassword: boolean;
 let mockSshKey: string;
+let mockHashedPassword: boolean;
 const mockRootUserMutation = jest.fn().mockResolvedValue(true);
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
@@ -35,7 +36,11 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),
-  useRootUser: () => ({ password: mockPassword, sshkey: mockSshKey }),
+  useRootUser: () => ({
+    password: mockPassword,
+    sshkey: mockSshKey,
+    hashedPassword: mockHashedPassword,
+  }),
   useRootUserMutation: () => ({
     mutateAsync: mockRootUserMutation,
   }),
@@ -44,7 +49,55 @@ jest.mock("~/queries/users", () => ({
 describe("RootUserForm", () => {
   beforeEach(() => {
     mockPassword = false;
+    mockHashedPassword = false;
     mockSshKey = "";
+  });
+
+  describe("when a hashed password is set", () => {
+    beforeEach(() => {
+      mockPassword = true;
+      mockHashedPassword = true;
+    });
+
+    it("allows preserving it", async () => {
+      const { user } = installerRender(<RootUserForm />);
+      const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      expect(passwordToggle).toBeChecked();
+      screen.getByText("Using a hashed password.");
+      await user.click(acceptButton);
+      expect(mockRootUserMutation).toHaveBeenCalledWith(
+        expect.not.objectContaining({ hashedPassword: false }),
+      );
+    });
+
+    it("allows discarding it", async () => {
+      const { user } = installerRender(<RootUserForm />);
+      const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      expect(passwordToggle).toBeChecked();
+      await user.click(passwordToggle);
+      expect(passwordToggle).not.toBeChecked();
+      await user.click(acceptButton);
+      expect(mockRootUserMutation).toHaveBeenCalledWith(
+        expect.objectContaining({ hashedPassword: false, password: "" }),
+      );
+    });
+
+    it("allows using a plain password instead", async () => {
+      const { user } = installerRender(<RootUserForm />);
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      const changeToPlainButton = screen.getByRole("button", { name: "Change" });
+      await user.click(changeToPlainButton);
+      const passwordInput = screen.getByLabelText("Password");
+      const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+      await user.type(passwordInput, "n0tS3cr3t");
+      await user.type(passwordConfirmationInput, "n0tS3cr3t");
+      await user.click(acceptButton);
+      expect(mockRootUserMutation).toHaveBeenCalledWith(
+        expect.objectContaining({ hashedPassword: false, password: "n0tS3cr3t" }),
+      );
+    });
   });
 
   it("allows setting a password", async () => {

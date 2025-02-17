@@ -33,14 +33,15 @@ import {
   Switch,
   Content,
   ActionGroup,
+  Button,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
 import { PasswordAndConfirmationInput, Page } from "~/components/core";
-import { _ } from "~/i18n";
 import { suggestUsernames } from "~/components/users/utils";
 import { useFirstUser, useFirstUserMutation } from "~/queries/users";
 import { FirstUser } from "~/types/users";
+import { _ } from "~/i18n";
 
 const UsernameSuggestions = ({
   isOpen = false,
@@ -83,7 +84,15 @@ const UsernameSuggestions = ({
 export default function FirstUserForm() {
   const firstUser = useFirstUser();
   const setFirstUser = useFirstUserMutation();
+  const [fullName, setFullName] = useState(firstUser?.fullName);
+  const [userName, setUserName] = useState(firstUser?.userName);
+  const [password, setPassword] = useState(
+    firstUser && firstUser.hashedPassword ? "" : firstUser.password,
+  );
   const [errors, setErrors] = useState([]);
+  const [usingHashedPassword, setUsingHashedPassword] = useState(
+    firstUser ? firstUser.hashedPassword : false,
+  );
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [insideDropDown, setInsideDropDown] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
@@ -106,37 +115,39 @@ export default function FirstUserForm() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors([]);
-
+    const nextErrors = [];
     const passwordInput = passwordRef.current;
-    const formData = new FormData(e.currentTarget);
-    const user: Partial<FirstUser> & { passwordConfirmation?: string } = {};
-    // FIXME: have a look to https://www.patternfly.org/components/forms/form#form-state
-    formData.forEach((value, key) => {
-      user[key] = value;
-    });
 
-    if (!changePassword) {
-      delete user.password;
-    } else {
-      // the web UI only supports plain text passwords, this resets the flag if a hashed
-      // password was previously set from CLI
-      user.hashedPassword = false;
-    }
-    delete user.passwordConfirmation;
+    const data: Partial<FirstUser> = {
+      fullName,
+      userName,
+      // FIXME: Stop sending the password conditionally (requires backend changes)
+      password: changePassword && !usingHashedPassword ? password : firstUser.password,
+      hashedPassword: usingHashedPassword,
+    };
 
-    if (changePassword && !passwordInput?.validity.valid) {
-      setErrors([passwordInput?.validationMessage]);
-      return;
+    const requiredData = { ...data };
+
+    if (!changePassword) delete requiredData.password;
+
+    if (Object.values(requiredData).some((v) => v === "")) {
+      nextErrors.push(_("All fields are required"));
     }
 
-    // FIXME: improve validations
-    if (Object.values(user).some((v) => v === "")) {
-      setErrors([_("All fields are required")]);
+    if (changePassword && !usingHashedPassword) {
+      data.hashedPassword = false;
+      !passwordInput?.validity.valid && nextErrors.push(passwordInput?.validationMessage);
+    }
+
+    if (nextErrors.length > 0) {
+      setErrors(nextErrors);
       return;
     }
 
     setFirstUser
-      .mutateAsync({ ...firstUser, ...user })
+      // FIXME: Sending autologin as it has not been fully deprecated yet.
+      // yet.
+      .mutateAsync({ ...data, autologin: false })
       .catch((e) => setErrors(e))
       .then(() => navigate(".."));
   };
@@ -204,18 +215,19 @@ export default function FirstUserForm() {
             <TextInput
               id="userFullName"
               name="fullName"
-              defaultValue={firstUser.fullName}
+              value={fullName}
+              onChange={(_, value) => setFullName(value)}
               onBlur={(e) => setSuggestions(suggestUsernames(e.target.value))}
             />
           </FormGroup>
-
           <FormGroup className="first-username-wrapper" fieldId="userName" label={_("Username")}>
             <TextInput
               id="userName"
               name="userName"
               ref={usernameInputRef}
-              defaultValue={firstUser.userName}
+              value={userName}
               isRequired
+              onChange={(_, value) => setUserName(value)}
               onFocus={renderSuggestions}
               onKeyDown={handleKeyDown}
               onBlur={() => !insideDropDown && setShowSuggestions(false)}
@@ -235,8 +247,20 @@ export default function FirstUserForm() {
               onChange={() => setChangePassword(!changePassword)}
             />
           )}
-          {changePassword && (
-            <PasswordAndConfirmationInput inputRef={passwordRef} showErrors={false} />
+          {changePassword && usingHashedPassword && (
+            <Content isEditorial>
+              {_("Using a hashed password.")}{" "}
+              <Button variant="link" isInline onClick={() => setUsingHashedPassword(false)}>
+                {_("Change")}
+              </Button>
+            </Content>
+          )}
+          {changePassword && !usingHashedPassword && (
+            <PasswordAndConfirmationInput
+              inputRef={passwordRef}
+              showErrors={false}
+              onChange={(_, value) => setPassword(value)}
+            />
           )}
           <ActionGroup>
             <Page.Submit form="firstUserForm" />

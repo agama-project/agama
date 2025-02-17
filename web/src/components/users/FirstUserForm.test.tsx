@@ -25,7 +25,10 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import FirstUserForm from "./FirstUserForm";
 
-const mockFirstUser = jest.fn();
+let mockFullName: string;
+let mockUserName: string;
+let mockPassword: string;
+let mockHashedPassword: boolean;
 const mockFirstUserMutation = jest.fn().mockResolvedValue(true);
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
@@ -34,7 +37,12 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),
-  useFirstUser: () => mockFirstUser(),
+  useFirstUser: () => ({
+    userName: mockUserName,
+    fullName: mockFullName,
+    password: mockPassword,
+    hashedPassword: mockHashedPassword,
+  }),
   useFirstUserMutation: () => ({
     mutateAsync: mockFirstUserMutation,
   }),
@@ -43,7 +51,10 @@ jest.mock("~/queries/users", () => ({
 describe("FirstUserForm", () => {
   describe("when user is not defined", () => {
     beforeEach(() => {
-      mockFirstUser.mockReturnValue({ userName: "" });
+      mockUserName = "";
+      mockFullName = "";
+      mockPassword = "";
+      mockHashedPassword = false;
     });
 
     it("renders the form in 'create' mode", () => {
@@ -79,15 +90,17 @@ describe("FirstUserForm", () => {
       await user.type(passwordConfirmation, "n0ts3cr3t");
       await user.click(acceptButton);
 
-      expect(mockFirstUserMutation).toHaveBeenCalledWith({
-        fullName: "Gecko Migo",
-        userName: "gmigo",
-        password: "n0ts3cr3t",
-        hashedPassword: false,
-      });
+      expect(mockFirstUserMutation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fullName: "Gecko Migo",
+          userName: "gmigo",
+          password: "n0ts3cr3t",
+          hashedPassword: false,
+        }),
+      );
     });
 
-    it("does not requests to define the user when data is missing", async () => {
+    it("warning about missing data", async () => {
       const { user } = installerRender(<FirstUserForm />);
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
@@ -101,7 +114,7 @@ describe("FirstUserForm", () => {
     });
 
     it("renders errors from the server, if any", async () => {
-      mockFirstUserMutation.mockRejectedValue(["Username not valid"]);
+      mockFirstUserMutation.mockRejectedValue({ response: { data: "Username not valid" } });
       const { user } = installerRender(<FirstUserForm />);
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
@@ -123,7 +136,10 @@ describe("FirstUserForm", () => {
 
   describe("when user is defined", () => {
     beforeEach(() => {
-      mockFirstUser.mockReturnValue({ fullName: "Gecko Migo", userName: "gmigo", password: "" });
+      mockUserName = "Gecko Migo";
+      mockFullName = "gmigo";
+      mockPassword = "";
+      mockHashedPassword = false;
     });
 
     it("renders the form in 'edit' mode", () => {
@@ -151,12 +167,14 @@ describe("FirstUserForm", () => {
       await user.type(username, "gloco");
       await user.click(acceptButton);
 
-      expect(mockFirstUserMutation).toHaveBeenCalledWith({
-        fullName: "Gecko Loco",
-        userName: "gloco",
-        // FIXME: setting empty password really means not touching previous one?
-        password: "",
-      });
+      expect(mockFirstUserMutation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fullName: "Gecko Loco",
+          userName: "gloco",
+          // FIXME: setting empty password really means not touching previous one?
+          password: "",
+        }),
+      );
     });
 
     it("allows editing full user definition", async () => {
@@ -179,11 +197,54 @@ describe("FirstUserForm", () => {
       await user.type(passwordConfirmation, "m0r3s3cr3t");
       await user.click(acceptButton);
 
-      expect(mockFirstUserMutation).toHaveBeenCalledWith({
-        fullName: "Gecko Loco",
-        userName: "gloco",
-        password: "m0r3s3cr3t",
-        hashedPassword: false,
+      expect(mockFirstUserMutation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fullName: "Gecko Loco",
+          userName: "gloco",
+          password: "m0r3s3cr3t",
+          hashedPassword: false,
+        }),
+      );
+    });
+
+    describe("and a hashed password is set", () => {
+      beforeEach(() => {
+        mockPassword = "s3cr3th4$h";
+        mockHashedPassword = true;
+      });
+
+      it("allows preserving it", async () => {
+        const { user } = installerRender(<FirstUserForm />);
+        const passwordToggle = screen.getByRole("switch", { name: "Edit the password too" });
+        const acceptButton = screen.getByRole("button", { name: "Accept" });
+        expect(passwordToggle).not.toBeChecked();
+        await user.click(passwordToggle);
+        expect(passwordToggle).toBeChecked();
+        screen.getByText("Using a hashed password.");
+        await user.click(acceptButton);
+        expect(mockFirstUserMutation).toHaveBeenCalledWith(
+          expect.not.objectContaining({ hashedPassword: false }),
+        );
+      });
+
+      it("allows using a plain password instead", async () => {
+        const { user } = installerRender(<FirstUserForm />);
+        const passwordToggle = screen.getByRole("switch", { name: "Edit the password too" });
+        const acceptButton = screen.getByRole("button", { name: "Accept" });
+        expect(passwordToggle).not.toBeChecked();
+        await user.click(passwordToggle);
+        expect(passwordToggle).toBeChecked();
+        screen.getByText("Using a hashed password.");
+        const changeToPlainButton = screen.getByRole("button", { name: "Change" });
+        await user.click(changeToPlainButton);
+        const passwordInput = screen.getByLabelText("Password");
+        const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+        await user.type(passwordInput, "n0tS3cr3t");
+        await user.type(passwordConfirmationInput, "n0tS3cr3t");
+        await user.click(acceptButton);
+        expect(mockFirstUserMutation).toHaveBeenCalledWith(
+          expect.objectContaining({ hashedPassword: false, password: "n0tS3cr3t" }),
+        );
       });
     });
   });

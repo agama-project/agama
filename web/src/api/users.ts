@@ -33,7 +33,7 @@ const fetchFirstUser = (): Promise<FirstUser> => get("/api/users/first");
  *
  * @param user - Full first user's definition
  */
-const updateFirstUser = (user: FirstUser) => put("/api/users/first", user);
+const updateFirstUser = (user: Partial<FirstUser>) => put("/api/users/first", user);
 
 /**
  * Removes the first user definition
