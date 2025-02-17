@@ -7,17 +7,25 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-09 02:40+0000\n"
-"PO-Revision-Date: 2024-10-30 00:48+0000\n"
+"POT-Creation-Date: 2025-02-13 02:38+0000\n"
+"PO-Revision-Date: 2025-02-13 06:50+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
-"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/ja/>\n"
+"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.9.2\n"
+
+#. Reports the problems and decide whether to continue or not.
+#.
+#. @param elements [Array<Element>] List of unsupported elements.
+#: service/lib/agama/autoyast/profile_reporter.rb:51
+#, perl-brace-format
+msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+msgstr "AutoYaST プロファイル内にサポートされていない要素が見つかりました: %{keys}."
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:93
@@ -55,18 +63,18 @@ msgstr "ストレージの翻訳の読み込み"
 #: service/lib/agama/software/callbacks/progress.rb:92
 #, c-format
 msgid "Package %s could not be installed."
-msgstr ""
+msgstr "パッケージ %s をインストールできませんでした。"
 
 #. "Not found" (error 1) is handled by the MediaChange callback.
 #: service/lib/agama/software/callbacks/provide.rb:71
 #, ycp-format
 msgid "Package %1 could not be downloaded (input/output error)."
-msgstr ""
+msgstr "パッケージ %1 をダウンロードできませんでした (入出力エラーです) 。"
 
 #: service/lib/agama/software/callbacks/provide.rb:74
 #, ycp-format
 msgid "Package %1 is broken, integrity check has failed."
-msgstr ""
+msgstr "パッケージ %1 は壊れています。整合性チェックが失敗しました。"
 
 #. DoneProvide callback
 #.
@@ -75,7 +83,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:59
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "パッケージスクリプトの実行時に問題が発生しました。"
 
 #. Callback to handle unsigned files
 #.

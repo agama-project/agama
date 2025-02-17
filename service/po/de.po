@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-09 02:40+0000\n"
-"PO-Revision-Date: 2024-12-12 06:48+0000\n"
+"POT-Creation-Date: 2025-02-13 02:38+0000\n"
+"PO-Revision-Date: 2025-02-09 14:50+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/de/>\n"
@@ -17,7 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.4\n"
+"X-Generator: Weblate 5.9.2\n"
+
+#. Reports the problems and decide whether to continue or not.
+#.
+#. @param elements [Array<Element>] List of unsupported elements.
+#: service/lib/agama/autoyast/profile_reporter.rb:51
+#, perl-brace-format
+msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+msgstr ""
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:93
@@ -55,18 +63,18 @@ msgstr ""
 #: service/lib/agama/software/callbacks/progress.rb:92
 #, c-format
 msgid "Package %s could not be installed."
-msgstr ""
+msgstr "Paket %s konnte nicht installiert werden."
 
 #. "Not found" (error 1) is handled by the MediaChange callback.
 #: service/lib/agama/software/callbacks/provide.rb:71
 #, ycp-format
 msgid "Package %1 could not be downloaded (input/output error)."
-msgstr ""
+msgstr "Paket %1 konnte nicht heruntergeladen werden (Eingabe-/Ausgabefehler)."
 
 #: service/lib/agama/software/callbacks/provide.rb:74
 #, ycp-format
 msgid "Package %1 is broken, integrity check has failed."
-msgstr ""
+msgstr "Paket %1 ist defekt, die Integritätsprüfung ist fehlgeschlagen."
 
 #. DoneProvide callback
 #.
@@ -75,7 +83,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:59
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "Es gab ein Problem bei der Ausführung eines Paketskripts."
 
 #. Callback to handle unsigned files
 #.
