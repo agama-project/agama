@@ -66,6 +66,8 @@
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
   --pf-t--global--background--color--disabled--default: #dcdbdc;
+  --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
+  --pf-t--global--color--brand--clicked: var(--agm-t--color--pine);
 }
 
 // Temporary CSS rules written during migration to PFv6
@@ -252,6 +254,11 @@
 
 .pf-v6-c-button {
   --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
+}
+
+.pf-v6-c-menu-toggle.pf-m-split-button > :first-child {
+  text-decoration: none;
+  color: inherit;
 }
 
 // Do not change the default cursor for labels forms because it is confusing
