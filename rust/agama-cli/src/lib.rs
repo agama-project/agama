@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_lib::manager::FinishMethod;
 use clap::{Args, Parser};
 
 mod auth;
@@ -129,20 +130,21 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
     Ok(())
 }
 
-/// Finish the instalation rebooting the system
+/// Finish the instalation with the given method or rebooting the system by default
 ///
-/// Before rebooting, it makes sure that the manager is idle.
+/// Before finishing, it makes sure that the manager is idle.
 ///
 /// * `manager`: the manager client.
-async fn reboot(manager: &ManagerClient<'_>) -> anyhow::Result<()> {
+async fn finish(manager: &ManagerClient<'_>, method: Option<FinishMethod>) -> anyhow::Result<()> {
     if manager.is_busy().await {
         println!("Agama's manager is busy. Waiting until it is ready...");
     }
 
     // Make sure that the manager is ready
     manager.wait().await?;
-    if !manager.finish().await? {
-        eprintln!("Cannot reboot the system");
+    if !manager.finish(method).await? {
+        let cmd = method.unwrap_or_default();
+        eprintln!("Cannot finish the installation ({cmd})");
         return Err(CliError::NotFinished)?;
     }
     Ok(())
@@ -230,9 +232,9 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             let manager = build_manager().await?;
             install(&manager, 3).await?
         }
-        Commands::Reboot => {
+        Commands::Finish { method } => {
             let manager = build_manager().await?;
-            reboot(&manager).await?;
+            finish(&manager, method).await?;
         }
         Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,
         Commands::Logs(subcommand) => run_logs_cmd(client, subcommand).await?,

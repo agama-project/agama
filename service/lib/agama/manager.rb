@@ -252,8 +252,9 @@ module Agama
 
     # Whatever has to be done at the end of installation
     #
+    # @param method [String, nil]
     # @return [Boolean]
-    def finish_installation
+    def finish_installation(method)
       logs = collect_logs(path: "/tmp/var/logs/")
 
       logger.info("Installation logs stored in #{logs}")
@@ -263,12 +264,12 @@ module Agama
         return false
       end
 
-      cmd = if iguana?
-        "/usr/bin/agamactl -k"
-      else
-        "/usr/sbin/shutdown -r now"
+      if method == "stop"
+        logger.info("Finished the installation.")
+        return true
       end
 
+      cmd = finish_cmd(method)
       logger.info("Finishing installation with #{cmd}")
 
       !!system(cmd)
@@ -282,6 +283,22 @@ module Agama
     end
 
   private
+
+    SHUTDOWN_OPT = { "reboot" => "-r", "halt" => "-H", "poweroff" => "-P" }.freeze
+    DEFAULT_METHOD = "reboot"
+
+    # @param method [String, nil]
+    # @return [String] the cmd to be run for finishing the installation
+    def finish_cmd(method)
+      return "/usr/bin/agamactl -k" if iguana?
+
+      opt = SHUTDOWN_OPT[method]
+      unless opt
+        log.info "Not recognized method, using the default one (reboot)."
+        opt = SHUTDOWN_OPT[DEFAULT_METHOD]
+      end
+      "/usr/sbin/shutdown #{opt} now"
+    end
 
     attr_reader :config
 

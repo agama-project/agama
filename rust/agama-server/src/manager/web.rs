@@ -28,7 +28,7 @@
 use agama_lib::{
     error::ServiceError,
     logs,
-    manager::{InstallationPhase, InstallerStatus, ManagerClient},
+    manager::{FinishMethod, InstallationPhase, InstallerStatus, ManagerClient},
     proxies::Manager1Proxy,
 };
 use axum::{
@@ -176,11 +176,18 @@ async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Err
     path = "/finish",
     context_path = "/api/manager",
     responses(
-      (status = 200, description = "The installation tasks are executed.")
+      (status = 200, description = "The installation tasks are executed.", body = Option<FinishMethod>)
     )
 )]
-async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<Json<bool>, Error> {
-    Ok(Json(state.manager.finish().await?))
+async fn finish_action(
+    State(state): State<ManagerState<'_>>,
+    method: Option<Json<FinishMethod>>,
+) -> Result<Json<bool>, Error> {
+    if let Some(Json(method)) = method {
+        Ok(Json(state.manager.finish(Some(method)).await?))
+    } else {
+        Ok(Json(state.manager.finish(None).await?))
+    }
 }
 
 /// Returns the manager status.

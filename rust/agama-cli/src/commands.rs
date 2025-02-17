@@ -23,6 +23,7 @@ use crate::config::ConfigCommands;
 use crate::logs::LogsCommands;
 use crate::profile::ProfileCommands;
 use crate::questions::QuestionsCommands;
+use crate::FinishMethod;
 use clap::Subcommand;
 
 #[derive(Subcommand, Debug)]
@@ -105,9 +106,9 @@ pub enum Commands {
         /// URL pointing to file for download
         url: String,
     },
-    /// Reboot the system.
+    /// Finish the installation (reboots the system by default)
     ///
-    /// This command reboots the system which is mainly done after the installation is completed
-    /// successfully
-    Reboot,
+    /// This command finish the installation performing a set of tasks and rebooting the system by
+    /// default if the installation is completed successfully.
+    Finish { method: Option<FinishMethod> },
 }
