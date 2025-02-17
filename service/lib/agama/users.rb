@@ -121,11 +121,7 @@ module Agama
       return fatal_issues.map(&:message) unless fatal_issues.empty?
 
       config.attach(user)
-
-      wheel = config.groups.by_name(wheel)
-      wheel ||= Y2Users::Group.new("wheel")
-      wheel.users_name << user_name
-      config.attach(wheel) unless wheel.attached?
+      add_user_to_group(user_name, "wheel")
 
       config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil
@@ -222,6 +218,13 @@ module Agama
       firewalld = Y2Firewall::Firewalld.instance
       # open port only if firewalld is installed, otherwise it will crash
       firewalld.api.add_service(firewalld.default_zone, "ssh") if firewalld.installed?
+    end
+
+    def add_user_to_group(user_name, group_name)
+      group = config.groups.by_name(group_name)
+      group ||= Y2Users::Group.new(group_name)
+      group.users_name << user_name
+      config.attach(group) unless group.attached?
     end
   end
 end
