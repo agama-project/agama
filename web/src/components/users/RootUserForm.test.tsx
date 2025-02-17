@@ -1,0 +1,145 @@
+/*
+ * Copyright (c) [2025] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React from "react";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
+import RootUserForm from "./RootUserForm";
+
+let mockPassword: boolean;
+let mockSshKey: string;
+const mockRootUserMutation = jest.fn().mockResolvedValue(true);
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
+
+jest.mock("~/queries/users", () => ({
+  ...jest.requireActual("~/queries/users"),
+  useRootUser: () => ({ password: mockPassword, sshkey: mockSshKey }),
+  useRootUserMutation: () => ({
+    mutateAsync: mockRootUserMutation,
+  }),
+}));
+
+describe("RootUserForm", () => {
+  beforeEach(() => {
+    mockPassword = false;
+    mockSshKey = "";
+  });
+
+  it("allows setting a password", async () => {
+    const { user } = installerRender(<RootUserForm />);
+    const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(passwordToggle);
+    const passwordInput = screen.getByLabelText("Password");
+    const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+    await user.type(passwordInput, "n0tS3cr3t");
+    await user.type(passwordConfirmationInput, "n0tS3cr3t");
+    await user.click(acceptButton);
+    expect(mockRootUserMutation).toHaveBeenCalledWith(
+      expect.objectContaining({ password: "n0tS3cr3t", hashedPassword: false }),
+    );
+  });
+
+  it("does not allow setting an empty password", async () => {
+    const { user } = installerRender(<RootUserForm />);
+    const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(passwordToggle);
+    const passwordInput = screen.getByLabelText("Password");
+    const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+    expect(passwordInput).toHaveValue("");
+    expect(passwordConfirmationInput).toHaveValue("");
+    await user.click(acceptButton);
+    screen.getByText("Warning alert:");
+    screen.getByText("Password is empty.");
+    expect(mockRootUserMutation).not.toHaveBeenCalled();
+  });
+
+  it("renders password validation errors, if any", async () => {
+    const { user } = installerRender(<RootUserForm />);
+    const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(passwordToggle);
+    const passwordInput = screen.getByLabelText("Password");
+    const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+    await user.type(passwordInput, "n0tS3cr3t");
+    await user.type(passwordConfirmationInput, "S3cr3t");
+    await user.click(acceptButton);
+    screen.getByText("Warning alert:");
+    screen.getByText("Passwords do not match");
+    expect(mockRootUserMutation).not.toHaveBeenCalled();
+  });
+
+  it("allows clearing the password", async () => {
+    mockPassword = true;
+    const { user } = installerRender(<RootUserForm />);
+    const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    expect(passwordToggle).toBeChecked();
+    await user.click(passwordToggle);
+    expect(passwordToggle).not.toBeChecked();
+    await user.click(acceptButton);
+    expect(mockRootUserMutation).toHaveBeenCalledWith(
+      expect.objectContaining({ password: "", hashedPassword: false }),
+    );
+  });
+
+  it("allows setting an SSH Key ", async () => {
+    const { user } = installerRender(<RootUserForm />);
+    const sshkeyToggle = screen.getByRole("switch", { name: "Use SSH Key" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(sshkeyToggle);
+    const sshKeyInput = screen.getByRole("textbox", { name: "File upload" });
+    await user.type(sshKeyInput, "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example");
+    await user.click(acceptButton);
+    expect(mockRootUserMutation).toHaveBeenCalledWith(
+      expect.objectContaining({ sshkey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example" }),
+    );
+  });
+
+  it("does not allow setting an empty SSH Key", async () => {
+    const { user } = installerRender(<RootUserForm />);
+    const sshkeyToggle = screen.getByRole("switch", { name: "Use SSH Key" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(sshkeyToggle);
+    expect(sshkeyToggle).toBeChecked();
+    await user.click(acceptButton);
+    screen.getByText("Warning alert:");
+    screen.getByText("SSH Key is empty.");
+    expect(mockRootUserMutation).not.toHaveBeenCalled();
+  });
+
+  it("allows clearing the SSH Key", async () => {
+    mockSshKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
+    const { user } = installerRender(<RootUserForm />);
+    const sshkeyToggle = screen.getByRole("switch", { name: "Use SSH Key" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    expect(sshkeyToggle).toBeChecked();
+    await user.click(sshkeyToggle);
+    expect(sshkeyToggle).not.toBeChecked();
+    await user.click(acceptButton);
+    expect(mockRootUserMutation).toHaveBeenCalledWith(expect.objectContaining({ sshkey: "" }));
+  });
+});

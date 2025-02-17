@@ -35,9 +35,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Page, PasswordAndConfirmationInput } from "~/components/core";
 import { useRootUser, useRootUserMutation } from "~/queries/users";
-import { _ } from "~/i18n";
 import { RootUser, RootUserChanges } from "~/types/users";
 import { isEmpty } from "~/utils";
+import { _ } from "~/i18n";
 
 const AVAILABLE_METHODS = ["password", "sshkey"] as const;
 type ActiveMethods = { [key in (typeof AVAILABLE_METHODS)[number]]?: boolean };
@@ -102,8 +102,12 @@ const RootUserForm = () => {
       nextErrors.push(passwordInput?.validationMessage);
     }
 
+    if (activeMethods.password && isEmpty(password)) {
+      nextErrors.push(_("Password is empty."));
+    }
+
     if (activeMethods.sshkey && isEmpty(sshkey)) {
-      nextErrors.push(_("SSH Key is empty"));
+      nextErrors.push(_("SSH Key is empty."));
     }
 
     if (nextErrors.length > 0) {
