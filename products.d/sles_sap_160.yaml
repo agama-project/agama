@@ -1,5 +1,5 @@
 id: SLES_SAP
-name: SUSE Linux Enterprise Server for SAP Applications 16.0 Beta
+name: SUSE Linux Enterprise Server for SAP applications 16.0 Beta
 archs: x86_64,aarch64,ppc
 registration: true
 version: "16-0"
@@ -10,7 +10,7 @@ license: "license.beta"
 # translations!!
 # ------------------------------------------------------------------------------
 description: "The leading OS for a secure and reliable SAP platform.
-Endorsed for SAP deployments, SUSE Linux Enterprise Server for SAP Applications
+Endorsed for SAP deployments, SUSE Linux Enterprise Server for SAP applications
 futureproofs the SAP project, offers uninterrupted business, and minimizes
 operational risks and costs."
 icon: SUSE.svg
@@ -106,7 +106,7 @@ storage:
         auto_size:
           base_min: 5 GiB
           base_max: 15 GiB
-          snapshots_increment: 250%
+          snapshots_increment: 150%
           max_fallback_for:
             - "/home"
         snapshots_configurable: true
@@ -123,7 +123,7 @@ storage:
       filesystem: xfs
       size:
         auto: false
-        min: 10 GiB
+        min: 5 GiB
         max: unlimited
       outline:
         required: false
@@ -136,7 +136,7 @@ storage:
     - filesystem: xfs
       size:
         auto: false
-        min: 1 GiB
+        min: 512 MiB
       outline:
         required: false
         filesystems:
