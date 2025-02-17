@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -55,7 +55,6 @@ pub type FirstUser = (
     String,
     String,
     String,
-    bool,
     bool,
     std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 );

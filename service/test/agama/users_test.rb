@@ -37,6 +37,13 @@ describe Agama::Users do
   describe "#assign_root_password" do
     let(:root_user) { instance_double(Y2Users::User) }
 
+    describe "#root_user" do
+      it "returns the root user" do
+        root = subject.root_user
+        expect(root.name).to eq("root")
+      end
+    end
+
     context "when the password is hashed" do
       it "sets the password as hashed" do
         subject.assign_root_password("hashed", true)
@@ -57,24 +64,10 @@ describe Agama::Users do
   describe "#remove_root_password" do
     it "removes the password" do
       subject.assign_root_password("12345", false)
-      expect { subject.remove_root_password }.to change { subject.root_password? }
-        .from(true).to(false)
-    end
-  end
-
-  describe "#root_password?" do
-    it "returns true if the root password is set" do
-      subject.assign_root_password("12345", false)
-      expect(subject.root_password?).to eq(true)
-    end
-
-    it "returns false if the root password is not set" do
-      expect(subject.root_password?).to eq(false)
-    end
-
-    it "returns true if the root password is set to nil" do
-      subject.assign_root_password("", false)
-      expect(subject.root_password?).to eq(false)
+      root = subject.root_user
+      expect(root.password).to be_kind_of(Y2Users::Password)
+      subject.remove_root_password
+      expect(root.password).to be_nil
     end
   end
 

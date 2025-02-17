@@ -63,18 +63,16 @@ module Agama
       private_constant :FUSER_SIG
 
       dbus_interface USERS_INTERFACE do
-        dbus_reader :root_password_set, "b"
+        dbus_reader :root_user, "(sbs)"
 
-        dbus_reader :root_ssh_key, "s", dbus_name: "RootSSHKey"
-
-        dbus_reader :first_user, "(sssbba{sv})"
+        dbus_reader :first_user, "(sssba{sv})"
 
         dbus_method :SetRootPassword,
           "in Value:s, in Hashed:b, out result:u" do |value, hashed|
           logger.info "Setting Root Password"
           backend.assign_root_password(value, hashed)
 
-          dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "RootUser" => root_user }, [])
           0
         end
 
@@ -82,7 +80,7 @@ module Agama
           logger.info "Clearing the root password"
           backend.remove_root_password
 
-          dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => backend.root_password? },
+          dbus_properties_changed(USERS_INTERFACE, { "RootUser" => root_user },
             [])
           0
         end
@@ -91,15 +89,14 @@ module Agama
           logger.info "Setting Root ssh key"
           backend.root_ssh_key = (value)
 
-          dbus_properties_changed(USERS_INTERFACE, { "RootSSHKey" => value }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "RootUser" => root_user }, [])
           0
         end
 
-        dbus_method :SetFirstUser,
-          # It returns an Struct with the first field with the result of the operation as a boolean
-          # and the second parameter as an array of issues found in case of failure
-          FUSER_SIG + ", out result:(bas)" do
-            |full_name, user_name, password, hashed_password, data|
+        # It returns an Struct with the first field with the result of the operation as a boolean
+        # and the second parameter as an array of issues found in case of failure
+        dbus_method :SetFirstUser, FUSER_SIG + ", out result:(bas)" do |full_name, user_name,
+          password, hashed_password, data|
           logger.info "Setting first user #{full_name}"
           user_issues = backend.assign_first_user(full_name, user_name, password,
             hashed_password, data)
@@ -129,14 +126,20 @@ module Agama
         end
       end
 
-      def root_ssh_key
-        backend.root_ssh_key
+      def root_user
+        root = backend.root_user
+
+        [
+          root.password_content || "",
+          root.password&.value&.encrypted?,
+          root.authorized_keys.first || ""
+        ]
       end
 
       def first_user
         user = backend.first_user
 
-        return ["", "", "", false, false, {}] unless user
+        return ["", "", "", false, {}] unless user
 
         [
           user.full_name,
@@ -145,10 +148,6 @@ module Agama
           user.password&.value&.encrypted? || false,
           {}
         ]
-      end
-
-      def root_password_set
-        backend.root_password?
       end
 
     private
