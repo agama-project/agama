@@ -44,7 +44,6 @@ impl UsersStore {
         let first_user = self.users_client.first_user().await?;
         let first_user = FirstUserSettings {
             user_name: Some(first_user.user_name),
-            autologin: Some(first_user.autologin),
             full_name: Some(first_user.full_name),
             password: Some(first_user.password),
             hashed_password: Some(first_user.hashed_password),
@@ -76,7 +75,6 @@ impl UsersStore {
         let first_user = FirstUser {
             user_name: settings.user_name.clone().unwrap_or_default(),
             full_name: settings.full_name.clone().unwrap_or_default(),
-            autologin: settings.autologin.unwrap_or_default(),
             password: settings.password.clone().unwrap_or_default(),
             hashed_password: settings.hashed_password.unwrap_or_default(),
         };
@@ -128,8 +126,7 @@ mod test {
                     "fullName": "Tux",
                     "userName": "tux",
                     "password": "fish",
-                    "hashedPassword": false,
-                    "autologin": true
+                    "hashedPassword": false
                 }"#,
                 );
         });
@@ -154,7 +151,6 @@ mod test {
             user_name: Some("tux".to_owned()),
             password: Some("fish".to_owned()),
             hashed_password: Some(false),
-            autologin: Some(true),
         };
         let root_user = RootUserSettings {
             // FIXME this is weird: no matter what HTTP reports, we end up with None
@@ -184,7 +180,7 @@ mod test {
             when.method(PUT)
                 .path("/api/users/first")
                 .header("content-type", "application/json")
-                .body(r#"{"fullName":"Tux","userName":"tux","password":"fish","hashedPassword":false,"autologin":true}"#);
+                .body(r#"{"fullName":"Tux","userName":"tux","password":"fish","hashedPassword":false}"#);
             then.status(200);
         });
         // note that we use 2 requests for root
@@ -211,7 +207,6 @@ mod test {
             user_name: Some("tux".to_owned()),
             password: Some("fish".to_owned()),
             hashed_password: Some(false),
-            autologin: Some(true),
         };
         let root_user = RootUserSettings {
             password: Some("1234".to_owned()),

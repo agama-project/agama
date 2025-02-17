@@ -48,7 +48,6 @@ use zbus::proxy;
 /// * user name
 /// * password
 /// * hashed_password (true = hashed, false = plain text)
-/// * auto-login (enabled or not)
 /// * some optional and additional data
 // NOTE: Manually added to this file.
 pub type FirstUser = (
@@ -79,7 +78,6 @@ pub trait Users1 {
         user_name: &str,
         password: &str,
         hashed_password: bool,
-        auto_login: bool,
         data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<(bool, Vec<String>)>;
 

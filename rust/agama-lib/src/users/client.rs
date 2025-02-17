@@ -37,8 +37,6 @@ pub struct FirstUser {
     pub password: String,
     /// Whether the password is hashed (true) or is plain text (false)
     pub hashed_password: bool,
-    /// Whether auto-login should enabled or not
-    pub autologin: bool,
 }
 
 impl FirstUser {
@@ -49,7 +47,6 @@ impl FirstUser {
             user_name: data.1,
             password: data.2,
             hashed_password: data.3,
-            autologin: data.4,
         })
     }
 }
@@ -107,7 +104,6 @@ impl<'a> UsersClient<'a> {
                 &first_user.user_name,
                 &first_user.password,
                 first_user.hashed_password,
-                first_user.autologin,
                 std::collections::HashMap::new(),
             )
             .await
