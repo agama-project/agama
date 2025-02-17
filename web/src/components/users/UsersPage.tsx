@@ -33,7 +33,7 @@ export default function UsersPage() {
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{_("Users")}</Content>
+        <Content component="h2">{_("Authentication")}</Content>
       </Page.Header>
 
       <Page.Content>

@@ -31,7 +31,7 @@ import { N_ } from "~/i18n";
 const routes = (): Route => ({
   path: PATHS.root,
   handle: {
-    name: N_("Users"),
+    name: N_("Authentication"),
     icon: "manage_accounts",
   },
   children: [
