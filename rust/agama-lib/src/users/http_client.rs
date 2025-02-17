@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::client::FirstUser;
-use crate::users::model::{RootConfig, RootPatchSettings};
+use super::client::{FirstUser, RootUser};
+use crate::users::model::RootPatchSettings;
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 
 pub struct UsersHTTPClient {
@@ -46,14 +46,8 @@ impl UsersHTTPClient {
         result
     }
 
-    async fn root_config(&self) -> Result<RootConfig, ServiceError> {
+    pub async fn root_user(&self) -> Result<RootUser, ServiceError> {
         self.client.get("/users/root").await
-    }
-
-    /// Whether the root password is set or not
-    pub async fn is_root_password(&self) -> Result<bool, ServiceError> {
-        let root_config = self.root_config().await?;
-        Ok(root_config.password)
     }
 
     /// SetRootPassword method.
@@ -66,12 +60,6 @@ impl UsersHTTPClient {
         };
         let ret = self.client.patch("/users/root", &rps).await?;
         Ok(ret)
-    }
-
-    /// Returns the SSH key for the root user
-    pub async fn root_ssh_key(&self) -> Result<String, ServiceError> {
-        let root_config = self.root_config().await?;
-        Ok(root_config.sshkey)
     }
 
     /// SetRootSSHKey method.

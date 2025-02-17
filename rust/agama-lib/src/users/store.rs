@@ -48,11 +48,13 @@ impl UsersStore {
             password: Some(first_user.password),
             hashed_password: Some(first_user.hashed_password),
         };
-        let mut root_user = RootUserSettings::default();
-        let ssh_public_key = self.users_client.root_ssh_key().await?;
-        if !ssh_public_key.is_empty() {
-            root_user.ssh_public_key = Some(ssh_public_key)
-        }
+        let root_user = RootUserSettings::default();
+        let root_user = RootUserSettings {
+            password: root_user.password,
+            hashed_password: root_user.hashed_password,
+            ssh_public_key: root_user.ssh_public_key,
+        };
+
         Ok(UserSettings {
             first_user: Some(first_user),
             root: Some(root_user),
