@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 17 09:17:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for post-partitioning scripts (jsc#AGM-108).
+
+-------------------------------------------------------------------
 Thu Feb 13 21:37:32 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix several AutoYaST conversion problems (gh#agama-project/agama#1995):
