@@ -153,7 +153,6 @@ impl<'a> ManagerClient<'a> {
     /// Executes the after installation tasks finishing with the method given or rebooting the
     /// system by default.
     pub async fn finish(&self, method: FinishMethod) -> Result<bool, ServiceError> {
-        dbg!("THE METHOD IS {}", &method);
         Ok(self
             .manager_proxy
             .finish(&method.to_string().as_str())
