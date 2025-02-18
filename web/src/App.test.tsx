@@ -27,7 +27,6 @@ import App from "./App";
 import { InstallationPhase } from "./types/status";
 import { createClient } from "~/client";
 import { Product } from "./types/software";
-import { RootUser } from "./types/users";
 
 jest.mock("~/client");
 
@@ -46,7 +45,6 @@ const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registratio
 // list of available products
 let mockProducts: Product[];
 let mockSelectedProduct: Product;
-let mockRootUser: RootUser;
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -73,11 +71,6 @@ jest.mock("~/queries/issues", () => ({
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useDeprecatedChanges: () => jest.fn(),
-}));
-
-jest.mock("~/queries/users", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useRootUser: () => mockRootUser,
 }));
 
 const mockClientStatus = {
@@ -110,7 +103,6 @@ describe("App", () => {
     });
 
     mockProducts = [tumbleweed, microos];
-    mockRootUser = { password: true, hashedPassword: false, sshkey: "FAKE-SSH-KEY" };
   });
 
   afterEach(() => {

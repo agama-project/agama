@@ -26,20 +26,20 @@ import { plainRender } from "~/test-utils";
 import { RootUser } from "~/components/users";
 import { USER } from "~/routes/paths";
 
-let mockPassword: boolean;
-let mockSSHKey: string;
+let mockPassword: string;
+let mockPublicKey: string;
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),
-  useRootUser: () => ({ password: mockPassword, sshkey: mockSSHKey }),
+  useRootUser: () => ({ password: mockPassword, sshPublicKey: mockPublicKey }),
   useRootUserChanges: () => jest.fn(),
 }));
 
 const testKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
 
 beforeEach(() => {
-  mockPassword = false;
-  mockSSHKey = "";
+  mockPassword = "";
+  mockPublicKey = "";
 });
 
 describe("RootUser", () => {
@@ -60,7 +60,7 @@ describe("RootUser", () => {
 
   describe("when password has been defined", () => {
     beforeEach(() => {
-      mockPassword = true;
+      mockPassword = "n0tS3cr3t";
     });
 
     it("renders the 'Defined (hidden)' text", async () => {
@@ -72,7 +72,7 @@ describe("RootUser", () => {
 
   describe("when SSH Key has been defined", () => {
     beforeEach(() => {
-      mockSSHKey = testKey;
+      mockPublicKey = testKey;
     });
 
     it("renders its truncated content keeping the comment visible when possible", async () => {
