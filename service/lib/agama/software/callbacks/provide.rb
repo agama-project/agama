@@ -64,17 +64,20 @@ module Agama
           args = [error, reason, name]
           logger.debug "DoneProvide callback: #{args.inspect}"
 
-          # "Not found" (error 1) is handled by the MediaChange callback.
-          return nil if error == NO_ERROR || error == NOT_FOUND
-
-          if error == IO_ERROR
-            error_code = "IO_ERROR"
-          elsif error == INVALID
-            error_code = "INVALID"
+          error_code = case error
+          when NO_ERROR, NOT_FOUND
+            # "Not found" (error 1) is handled by the MediaChange callback.
+            nil
+          when IO_ERROR
+            "IO_ERROR"
+          when INVALID
+            "INVALID"
           else
             logger.warn "DoneProvide: unknown error: '#{error}'"
-            return nil
+            nil
           end
+
+          return nil if error_code.nil?
 
           question = Agama::Question.new(
             qclass:         "software.package_error.provide_error",
