@@ -62,6 +62,6 @@
       <arg name="result" direction="out" type="u"/>
     </method>
     <property type="(sbs)" name="RootUser" access="read"/>
-    <property type="(sssbba{sv})" name="FirstUser" access="read"/>
+    <property type="(sssba{sv})" name="FirstUser" access="read"/>
   </interface>
 </node>
