@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { screen } from "@testing-library/react";
+import React, { act } from "react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import FirstUserForm from "./FirstUserForm";
 
@@ -49,6 +49,25 @@ jest.mock("~/queries/users", () => ({
 }));
 
 describe("FirstUserForm", () => {
+  it("allows using suggested username", async () => {
+    const { user } = installerRender(<FirstUserForm />);
+    const fullNameInput = screen.getByRole("textbox", { name: "Full name" });
+    const userNameInput = screen.getByRole("textbox", { name: "Username" });
+    await user.type(fullNameInput, "Gecko Giggles");
+    // Suggestions rely on blur/focus,
+    // See https://testing-library.com/docs/guide-events#focusblur
+    act(() => {
+      fullNameInput.blur();
+    });
+    act(() => {
+      userNameInput.focus();
+    });
+    const suggestions = screen.getByRole("menu");
+    const secondSuggestion = within(suggestions).getByRole("menuitem", { name: /ggiggles$/ });
+    await user.click(secondSuggestion);
+    expect(userNameInput).toHaveValue("ggiggles");
+  });
+
   describe("when user is not defined", () => {
     beforeEach(() => {
       mockUserName = "";
