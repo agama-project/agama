@@ -46,7 +46,7 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
 
   // FIXME: share below headers with navigation menu
   const scopeHeaders = {
-    users: _("Users"),
+    users: _("Authentication"),
     storage: _("Storage"),
     software: _("Software"),
     product: _("Registration"),
