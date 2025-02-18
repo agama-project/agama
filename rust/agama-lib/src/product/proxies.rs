@@ -63,8 +63,4 @@ pub trait Registration {
     /// RegCode property
     #[zbus(property)]
     fn reg_code(&self) -> zbus::Result<String>;
-
-    /// Requirement property
-    #[zbus(property)]
-    fn requirement(&self) -> zbus::Result<u32>;
 }
