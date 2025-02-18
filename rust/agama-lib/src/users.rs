@@ -27,7 +27,7 @@ pub mod proxies;
 mod settings;
 mod store;
 
-pub use client::{FirstUser, UsersClient};
+pub use client::{FirstUser, RootUser, UsersClient};
 pub use http_client::UsersHTTPClient;
 pub use settings::{FirstUserSettings, RootUserSettings, UserSettings};
 pub use store::UsersStore;
