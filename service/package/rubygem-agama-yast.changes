@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 18 11:27:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement basic support for RMT/SCC proxies (gh#agama-project/agama#2007).
+
+-------------------------------------------------------------------
 Mon Feb 17 09:17:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for post-partitioning scripts (jsc#AGM-108).
