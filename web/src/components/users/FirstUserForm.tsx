@@ -148,9 +148,7 @@ export default function FirstUserForm() {
   };
 
   const onSuggestionSelected = (suggestion: string) => {
-    if (!usernameInputRef.current) return;
-    usernameInputRef.current.value = suggestion;
-    usernameInputRef.current.focus();
+    setUserName(suggestion);
     setInsideDropDown(false);
     setShowSuggestions(false);
   };
