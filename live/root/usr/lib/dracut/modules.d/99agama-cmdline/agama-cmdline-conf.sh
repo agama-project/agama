@@ -7,11 +7,15 @@
 TARGET="${1:-/run/agama/cmdline.d/agama}"
 ENV_TARGET="${1:-/run/agama/cmdline.d/environment}"
 get_agama_args() {
-  local _i _found
+  local _i _found _env
 
   for _i in $CMDLINE; do
     case $_i in
-    LIBSTORAGE_* | YAST_* | agama* | Y2* | ZYPP_*)
+    LIBSTORAGE_* | YAST_* | Y2* | ZYPP_*)
+      _found=1
+      _env=1
+      ;;
+    agama*)
       _found=1
       ;;
     esac
@@ -22,10 +26,12 @@ get_agama_args() {
         _i="${_i}=1"
       fi
       echo $_i >>"${TARGET}"
-      _i=$(echo "$_i" | tr '[:lower:].-' '[:upper:]__'
-      echo $_i >>"${ENV_TARGET}"
+      if [ -n "$_env" ]; then
+        _i=$(echo "$_i" | tr '[:lower:].-' '[:upper:]__'
+        echo $_i >>"${ENV_TARGET}"
+      fi
     fi
-    unset _found
+    unset _found _env
   done
 
   return 0
