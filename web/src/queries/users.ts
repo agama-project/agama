@@ -116,8 +116,7 @@ const useRootUser = () => {
 const useRootUserMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    // FIXME: use sshPublicKey too
-    mutationFn: (data) => updateRoot({ ...data, sshkey: data.sshPublicKey }),
+    mutationFn: updateRoot,
     onMutate: async (newRoot: RootUser) => {
       await queryClient.cancelQueries({ queryKey: ["users", "root"] });
 
