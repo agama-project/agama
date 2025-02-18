@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue Feb 18 12:49:24 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Added support for giving a file url with extra kernel cmdline
+- Added support for giving a file URL with extra kernel cmdline
   arguments (agama.info) which was known as the info file in 
   linuxrc.
 - Added basic support for translating the ifcfg kernel cmdline arg
