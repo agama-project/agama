@@ -21,7 +21,7 @@
  */
 
 import { del, get, patch, put } from "~/api/http";
-import { FirstUser, RootUser, RootUserChanges } from "~/types/users";
+import { FirstUser, RootUser } from "~/types/users";
 
 /**
  * Returns the first user's definition
@@ -50,6 +50,6 @@ const fetchRoot = (): Promise<RootUser> => get("/api/users/root");
  *
  * @param changes - Changes to apply to the root user configuration
  */
-const updateRoot = (changes: Partial<RootUserChanges>) => patch("/api/users/root", changes);
+const updateRoot = (changes: Partial<RootUser>) => patch("/api/users/root", changes);
 
 export { fetchFirstUser, updateFirstUser, removeFirstUser, fetchRoot, updateRoot };

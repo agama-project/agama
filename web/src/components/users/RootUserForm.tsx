@@ -36,16 +36,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Page, PasswordAndConfirmationInput } from "~/components/core";
 import { useRootUser, useRootUserMutation } from "~/queries/users";
-import { RootUser, RootUserChanges } from "~/types/users";
+import { RootUser } from "~/types/users";
 import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 
-const AVAILABLE_METHODS = ["password", "sshkey"] as const;
+const AVAILABLE_METHODS = ["password", "sshPublicKey"] as const;
 type ActiveMethods = { [key in (typeof AVAILABLE_METHODS)[number]]?: boolean };
 
 const initialState = (user: RootUser): ActiveMethods =>
   AVAILABLE_METHODS.reduce((result, key) => {
-    return { ...result, [key]: user[key] };
+    return { ...result, [key]: !isEmpty(user[key]) };
   }, {});
 
 const SSHKeyField = ({ value, onChange }) => {
@@ -81,15 +81,14 @@ const RootUserForm = () => {
   const { mutateAsync: updateRootUser } = useRootUserMutation();
   const [activeMethods, setActiveMethods] = useState(initialState(rootUser));
   const [errors, setErrors] = useState([]);
-  // FIXME: root.password should be the set password instead of "true"
-  const [password, setPassword] = useState(""); // useState(rootUser.password);
   const [usingHashedPassword, setUsingHashedPassword] = useState(
     rootUser ? rootUser.hashedPassword : false,
   );
-  const [sshkey, setSshKey] = useState(rootUser.sshkey);
+  const [password, setPassword] = useState(usingHashedPassword ? "" : rootUser?.password);
+  const [sshkey, setSshKey] = useState(rootUser?.sshPublicKey);
   const passwordRef = useRef<HTMLInputElement>();
 
-  const onPasswordChange = (_, value) => setPassword(value);
+  const onPasswordChange = (_, value: string) => setPassword(value);
   const toggleMethod = (method: keyof ActiveMethods) => {
     const nextMethodsState = { ...activeMethods, [method]: !activeMethods[method] };
     setActiveMethods(nextMethodsState);
@@ -107,7 +106,7 @@ const RootUserForm = () => {
       !passwordInput?.validity.valid && nextErrors.push(passwordInput?.validationMessage);
     }
 
-    if (activeMethods.sshkey && isEmpty(sshkey)) {
+    if (activeMethods.sshPublicKey && isEmpty(sshkey)) {
       nextErrors.push(_("Public SSH Key is empty."));
     }
 
@@ -116,8 +115,8 @@ const RootUserForm = () => {
       return;
     }
 
-    const data: Partial<RootUserChanges> = {
-      sshkey: activeMethods.sshkey ? sshkey : "",
+    const data: Partial<RootUser> = {
+      sshPublicKey: activeMethods.sshPublicKey ? sshkey : "",
     };
 
     if (!activeMethods.password) {
@@ -125,14 +124,14 @@ const RootUserForm = () => {
       data.hashedPassword = false;
     }
 
-    if (activeMethods.password && !usingHashedPassword) {
-      data.password = password;
-      data.hashedPassword = false;
+    if (activeMethods.password) {
+      data.password = usingHashedPassword ? rootUser.password : password;
+      data.hashedPassword = usingHashedPassword;
     }
 
     updateRootUser(data)
-      .catch((e) => setErrors(e))
-      .then(() => navigate(".."));
+      .then(() => navigate(".."))
+      .catch((e) => setErrors([e.response.data]));
   };
   return (
     <Page>
@@ -185,12 +184,12 @@ const RootUserForm = () => {
             label={
               <Switch
                 label={_("Use public SSH Key")}
-                isChecked={activeMethods.sshkey}
-                onChange={() => toggleMethod("sshkey")}
+                isChecked={activeMethods.sshPublicKey}
+                onChange={() => toggleMethod("sshPublicKey")}
               />
             }
           >
-            {activeMethods.sshkey && (
+            {activeMethods.sshPublicKey && (
               <Card isPlain isCompact>
                 <CardBody>
                   <SSHKeyField value={sshkey} onChange={setSshKey} />

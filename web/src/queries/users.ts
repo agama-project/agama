@@ -23,7 +23,7 @@
 import React from "react";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { RootUser, RootUserChanges } from "~/types/users";
+import { RootUser } from "~/types/users";
 import {
   fetchFirstUser,
   fetchRoot,
@@ -116,14 +116,15 @@ const useRootUser = () => {
 const useRootUserMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: updateRoot,
-    onMutate: async (newRoot: RootUserChanges) => {
+    // FIXME: use sshPublicKey too
+    mutationFn: (data) => updateRoot({ ...data, sshkey: data.sshPublicKey }),
+    onMutate: async (newRoot: RootUser) => {
       await queryClient.cancelQueries({ queryKey: ["users", "root"] });
 
       const previousRoot: RootUser = queryClient.getQueryData(["users", "root"]);
       queryClient.setQueryData(["users", "root"], {
         password: !!newRoot.password,
-        sshkey: newRoot.sshkey || previousRoot.sshkey,
+        sshPublicKey: newRoot.sshPublicKey || previousRoot.sshPublicKey,
       });
       return { previousRoot };
     },
@@ -150,7 +151,7 @@ const useRootUserChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "RootChanged") {
-        const { password, sshkey } = event;
+        const { password, sshPublickKey } = event;
         queryClient.setQueryData(["users", "root"], (oldRoot: RootUser) => {
           const newRoot = { ...oldRoot };
           if (password !== undefined) {
@@ -158,8 +159,8 @@ const useRootUserChanges = () => {
             newRoot.hashedPassword = false;
           }
 
-          if (sshkey) {
-            newRoot.sshkey = sshkey;
+          if (sshPublickKey) {
+            newRoot.sshPublicKey = sshPublickKey;
           }
 
           return newRoot;

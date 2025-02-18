@@ -43,7 +43,7 @@ const SSHKeyLabel = ({ sshKey }) => {
 };
 
 export default function RootUser() {
-  const { password, sshkey } = useRootUser();
+  const { password, sshPublicKey } = useRootUser();
   useRootUserChanges();
 
   return (
@@ -66,7 +66,7 @@ export default function RootUser() {
             <DescriptionListGroup>
               <DescriptionListTerm>{_("Public SSH Key")}</DescriptionListTerm>
               <DescriptionListDescription>
-                {isEmpty(sshkey) ? _("Not defined") : <SSHKeyLabel sshKey={sshkey} />}
+                {isEmpty(sshPublicKey) ? _("Not defined") : <SSHKeyLabel sshKey={sshPublicKey} />}
               </DescriptionListDescription>
             </DescriptionListGroup>
           </DescriptionList>
