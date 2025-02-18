@@ -55,8 +55,9 @@ for i in "\$@" ; do
   fi
 done
 
+profile=$(echo "$kiwi_profiles" | tr "_" "-")
 # keep in sync with ISO Volume ID set in the config.sh script
-volid="Install-$kiwi_profiles-$arch"
+volid="Install-$profile-$arch"
 
 [ -x $bootfix ] && $bootfix $dst
 rm -f $dst/fix_bootconfig.* $dst/.profile
