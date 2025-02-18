@@ -145,9 +145,7 @@ export default function FirstUserForm() {
     }
 
     setFirstUser
-      // FIXME: Sending autologin as it has not been fully deprecated yet.
-      // yet.
-      .mutateAsync({ ...data, autologin: false })
+      .mutateAsync({ ...data })
       .then(() => navigate(".."))
       .catch((e) => setErrors([e.response.data]));
   };

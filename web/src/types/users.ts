@@ -25,7 +25,6 @@ type FirstUser = {
   userName: string;
   password: string;
   hashedPassword: boolean;
-  autologin: boolean;
 };
 
 type RootUser = {
