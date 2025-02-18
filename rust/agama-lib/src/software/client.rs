@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use super::{
-    model::ResolvableType,
+    model::{Repository, ResolvableType},
     proxies::{ProposalProxy, Software1Proxy},
 };
 use crate::error::ServiceError;
@@ -28,6 +28,7 @@ use serde_repr::Serialize_repr;
 use std::collections::HashMap;
 use zbus::Connection;
 
+// TODO: move it to model?
 /// Represents a software product
 #[derive(Debug, Serialize, utoipa::ToSchema)]
 pub struct Pattern {
@@ -86,6 +87,28 @@ impl<'a> SoftwareClient<'a> {
             software_proxy: Software1Proxy::new(&connection).await?,
             proposal_proxy: ProposalProxy::new(&connection).await?,
         })
+    }
+
+    /// Returns list of defined repositories
+    pub async fn repositories(&self) -> Result<Vec<Repository>, ServiceError> {
+        let repositories: Vec<Repository> = self
+            .software_proxy
+            .list_repositories()
+            .await?
+            .into_iter()
+            .map(
+                |(id, alias, name, url, product_dir, enabled, loaded)| Repository {
+                    id,
+                    alias,
+                    name,
+                    url,
+                    product_dir,
+                    enabled,
+                    loaded,
+                },
+            )
+            .collect();
+        Ok(repositories)
     }
 
     /// Returns the available patterns

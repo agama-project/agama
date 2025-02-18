@@ -65,12 +65,17 @@ module Agama
       # Loads the repository metadata
       #
       # As a side effect, it disables those repositories that cannot be read.
-      # The intentation is to prevent the proposal from trying to read them
+      # The intent is to prevent the proposal from trying to read them
       # again.
       def load
         repositories.each do |repo|
           if repo.probe
             repo.enable!
+            # In some rare scenarios although the repository probe succeeded the refresh might fail
+            # with network timeout. In that case disable the repository to avoid implicitly
+            # refreshing it again in the Pkg.SourceLoad call which could time out again, effectively
+            # doubling the total timeout.
+            repo.disable! unless repo.refresh
           else
             repo.disable!
           end

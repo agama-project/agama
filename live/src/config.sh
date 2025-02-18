@@ -56,6 +56,8 @@ systemctl enable live-password-dialog.service
 systemctl enable live-password-iso.service
 systemctl enable live-password-random.service
 systemctl enable live-password-systemd.service
+systemctl enable live-root-shell.service
+systemctl enable checkmedia.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
@@ -73,8 +75,9 @@ systemctl disable YaST2-Firstboot.service
 systemctl disable YaST2-Second-Stage.service
 
 ### setup dracut for live system
-label=${kiwi_install_volid:-$kiwi_iname}
 arch=$(uname -m)
+# keep in sync with ISO Volume ID set in the fix_bootconfig script
+label="Install-$kiwi_profiles-$arch"
 
 echo "Setting default live root: live:LABEL=$label"
 mkdir /etc/cmdline.d
@@ -92,6 +95,7 @@ fi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
+sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/checkmedia-service
 
 # Increase the Live ISO image size to have some extra free space for installing
 # additional debugging or development packages.
@@ -176,8 +180,18 @@ du -h -s /lib/modules /lib/firmware
 
 ################################################################################
 # The rest of the file was copied from the openSUSE Tumbleweed Live ISO
-# https://build.opensuse.org/package/view_file/openSUSE:Factory:Live/livecd-tumbleweed-kde/config.sh?expand=1
+# https://build.opensuse.org/projects/openSUSE:Factory:Live/packages/livecd-tumbleweed-kde/files/config.sh?expand=1
 #
+
+# Decompress kernel modules, better for squashfs (boo#1192457)
+find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +
+find /lib/modules/*/kernel -name '*.ko.zst' -exec zstd --rm -d {} +
+for moddir in /lib/modules/*; do
+  depmod "$(basename "$moddir")"
+done
+
+# Reuse what the macro does
+rpm --eval "%fdupes /usr/share/licenses" | sh
 
 # disable the services included by dependencies
 for s in purge-kernels; do

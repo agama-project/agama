@@ -1,7 +1,8 @@
 id: SLES
 name: SUSE Linux Enterprise Server 16.0 Beta
-registration: "mandatory"
+registration: true
 version: "16-0"
+license: "license.beta"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -53,6 +54,15 @@ translations:
       bulutta ve uçta iş açısından kritik iş yüklerini çalıştırır.
 software:
   installation_repositories: []
+  installation_labels:
+    - label: SLES160-x86_64
+      archs: x86_64
+    - label: SLES160-arch64
+      archs: aarch64
+    - label: SLES160-s390x
+      archs: s390
+    - label: SLES160-ppc64
+      archs: ppc
 
   mandatory_patterns:
     - base_traditional
@@ -61,6 +71,7 @@ software:
     - kvm_host
     - cockpit
     - sles_enhanced_base
+    - sles_minimal_sap
   mandatory_packages:
     - NetworkManager
   optional_packages: null

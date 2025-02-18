@@ -8,6 +8,11 @@ user_pref("signon.generation.enabled", false);
 // disable the initial configuration workflow
 user_pref("browser.aboutwelcome.enabled", false);
 
+// do not ask to restore the session after restarting the browser
+// via "systemctl restart x11-autologin"
+user_pref("browser.sessionstore.resume_from_crash", false);
+user_pref("browser.startup.couldRestoreSession.count", 0);
+
 // disable homepage override on updates
 user_pref("browser.startup.homepage_override.mstone", "ignore");
 

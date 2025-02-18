@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2024] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -99,7 +99,7 @@ module Agama
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = build_products
-        @product = @products.first if @products.size == 1
+        @product = find_initial_product
         @repositories = RepositoriesManager.new
         # patterns selected by user
         @user_patterns = []
@@ -183,7 +183,7 @@ module Agama
 
         steps = proposal.packages_count
         start_progress_with_size(steps)
-        Callbacks::Progress.setup(steps, progress)
+        Callbacks::Progress.setup(steps, progress, logger)
 
         # TODO: error handling
         commit_result = Yast::Pkg.Commit({})
@@ -201,10 +201,16 @@ module Agama
 
       # Writes the repositories information to the installed system
       def finish
+        # remove the dir:///run/initramfs/live/install repository and similar
+        remove_local_repos
         Yast::Pkg.SourceSaveAll
         Yast::Pkg.TargetFinish
         # copy the libzypp caches to the target
-        copy_zypp_to_target
+        if Agama::Software::Repository.all.empty?
+          logger.info("No repository defined, not copying the libzypp caches")
+        else
+          copy_zypp_to_target
+        end
         registration.finish
       end
 
@@ -444,6 +450,17 @@ module Agama
         ProductBuilder.new(config).build
       end
 
+      # Determines the initially selected product.
+      #
+      # A product is automatically selected if it is the only product
+      # and it does not require acccepting a license.
+      def find_initial_product
+        product = @products.first
+        return product if @products.size == 1 && product.license.to_s.empty?
+
+        nil
+      end
+
       def proposal
         @proposal ||= Proposal.new.tap do |proposal|
           proposal.on_issues_change { update_issues }
@@ -459,6 +476,25 @@ module Agama
       end
 
       def add_base_repos
+        return if add_repos_by_label
+        return if add_repos_by_dir
+
+        # local repositories not found, use the online repositories
+        product.repositories.each { |url| repositories.add(url) }
+      end
+
+      def add_repos_by_dir
+        # path to cdrom which can contain installation repositories
+        dir_path = "/run/initramfs/live/install"
+
+        return false unless File.exist?(dir_path)
+
+        logger.info "/install found on source cd"
+        repositories.add("dir://" + dir_path)
+        true
+      end
+
+      def add_repos_by_label
         # NOTE: support multiple labels/installation media?
         label = product.labels.first
 
@@ -470,12 +506,11 @@ module Agama
           if device
             logger.info "Installation device: #{device}"
             repositories.add("hd:/?device=" + device)
-            return
+            return true
           end
         end
 
-        # disk label not found or not configured, use the online repositories
-        product.repositories.each { |url| repositories.add(url) }
+        false
       end
 
       # find all devices with the required disk label
@@ -578,6 +613,7 @@ module Agama
       # @return [Agama::Issue]
       def missing_registration_issue
         Issue.new(_("Product must be registered"),
+          kind:     :missing_registration,
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
       end
@@ -586,8 +622,17 @@ module Agama
       #
       # @return [Boolean]
       def missing_registration?
-        registration.reg_code.nil? &&
-          registration.requirement == Agama::Registration::Requirement::MANDATORY
+        return false unless product
+
+        product.registration && missing_base_product?
+      end
+
+      # Whether the base product is missing
+      #
+      # @return [Boolean]
+      def missing_base_product?
+        products = Y2Packager::Resolvable.find(kind: :product, name: product.name)
+        products.empty?
       end
 
       def pattern_exist?(pattern_name)
@@ -660,6 +705,11 @@ module Agama
           # to write the repository setup to the disk
           Yast::Pkg.SourceSaveAll
         end
+      end
+
+      # remove all local repositories
+      def remove_local_repos
+        Agama::Software::Repository.all.select(&:local?).each(&:delete!)
       end
     end
   end

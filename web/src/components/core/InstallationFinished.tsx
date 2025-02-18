@@ -79,6 +79,10 @@ const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-s
 // TODO: define some utility method to get the device used as root (drive, partition, logical volume).
 // TODO: use type checking for config.
 function usingTpm(config): boolean {
+  if (!config) {
+    return null;
+  }
+
   const { guided, drives = [], volumeGroups = [] } = config;
 
   if (guided !== undefined) {
@@ -96,15 +100,11 @@ function usingTpm(config): boolean {
 }
 
 function InstallationFinished() {
-  const { phase, isBusy, useIguana } = useInstallerStatus({ suspense: true });
+  const { phase, useIguana } = useInstallerStatus({ suspense: true });
   const config = useConfig();
 
-  if (phase !== InstallationPhase.Install) {
+  if (phase !== InstallationPhase.Finish) {
     return <Navigate to={PATHS.root} />;
-  }
-
-  if (isBusy) {
-    return <Navigate to={PATHS.installationProgress} />;
   }
 
   return (

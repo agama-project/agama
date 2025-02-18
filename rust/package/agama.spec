@@ -1,7 +1,7 @@
 #
 # spec file for package agama
 #
-# Copyright (c) 2023-2024 SUSE LLC
+# Copyright (c) 2023-2025 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -12,7 +12,7 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
 Name:           agama
@@ -23,10 +23,12 @@ Summary:        Agama Installer
 #               If you know the license, put it's SPDX string here.
 #               Alternately, you can use cargo lock2rpmprovides to help generate this.
 License:        GPL-2.0-or-later
-Url:            https://github.com/opensuse/agama
+Url:            https://github.com/agama-project/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
 
+# defines the "limit_build" macro used in the "build" section below
+BuildRequires:  memory-constraints
 BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
@@ -70,7 +72,7 @@ Version:        0
 Release:        0
 Summary:        Agama command-line interface
 License:        GPL-2.0-only
-Url:            https://github.com/opensuse/agama
+Url:            https://github.com/agama-project/agama
 
 %description -n agama-cli
 Command line program to interact with the Agama installer.
@@ -129,6 +131,10 @@ package contains a systemd service to run scripts when booting the installed sys
 # find vendor -type f -name \*.rs -exec chmod -x '{}' \;
 
 %build
+# Require at least 1.3GB RAM per each parallel job (the size is in MB),
+# this can limit the number of parallel jobs on systems with relatively small memory.
+%{limit_build -m 1300}
+
 %{cargo_build}
 cargo run --package xtask -- manpages
 gzip out/man/*

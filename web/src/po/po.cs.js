@@ -567,6 +567,9 @@ export default {
   "Hide details": [
     "Skrýt podrobnosti"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP adresa"
   ],
@@ -1029,6 +1032,9 @@ export default {
   "Remove min channel filter": [
     "Odstranění filtru min. kanálu"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Výmaz umístění"
   ],
@@ -1159,6 +1165,12 @@ export default {
   ],
   "Software selection": [
     "Výběr softwaru"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
   ],
   "Something went wrong": [
     "Něco se nezdařilo"
@@ -1343,6 +1355,9 @@ export default {
   "Transactional root file system": [
     "Transakční kořenový souborový systém"
   ],
+  "Try again": [
+    ""
+  ],
   "Type": [
     "Typ"
   ],
@@ -1354,6 +1369,9 @@ export default {
   ],
   "Unselect": [
     "Zrušit výběr"
+  ],
+  "Unsupported AutoYaST elements": [
+    ""
   ],
   "Unused space": [
     "Nevyužitý prostor"
@@ -1423,6 +1441,9 @@ export default {
   ],
   "WiFi connection form": [
     "Formulář pro připojení WiFi"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Připojení kabelem"

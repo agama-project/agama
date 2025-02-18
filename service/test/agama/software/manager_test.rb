@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -89,6 +89,7 @@ describe Agama::Software::Manager do
     allow(Yast::Pkg).to receive(:TargetFinish)
     allow(Yast::Pkg).to receive(:TargetLoad)
     allow(Yast::Pkg).to receive(:SourceSaveAll)
+    allow(Yast::Pkg).to receive(:SourceDelete)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
     # allow glob to work for other calls
     allow(Dir).to receive(:glob).and_call_original
@@ -383,6 +384,15 @@ describe Agama::Software::Manager do
     end
 
     it "copies the libzypp cache and credentials to the target system" do
+      allow(Agama::Software::Repository).to receive(:all).and_return(
+        [
+          Agama::Software::Repository.new(
+            repo_id: 42, repo_alias: "alias", name: "name",
+            url: "http://example.com", enabled: true, autorefresh: false
+          )
+        ]
+      )
+
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:entries).and_call_original
 
@@ -434,6 +444,34 @@ describe Agama::Software::Manager do
       )
 
       subject.finish
+    end
+
+    context "only a local repository is used" do
+      let(:repo_id) { 42 }
+      before do
+        expect(Agama::Software::Repository).to receive(:all).and_return(
+          [
+            Agama::Software::Repository.new(
+              repo_id: repo_id, repo_alias: "alias", name: "name",
+              url: "dir:///run/initramfs/live/install", enabled: true, autorefresh: false
+            )
+          ],
+          # for the second and further calls return empty list, the repo has been removed
+          []
+        )
+      end
+
+      it "removes the local repository" do
+        expect(Yast::Pkg).to receive(:SourceDelete).with(repo_id)
+
+        subject.finish
+      end
+
+      it "does not copy the libzypp cache" do
+        expect(subject).to_not receive(:copy_zypp_to_target)
+
+        subject.finish
+      end
     end
   end
 
@@ -543,28 +581,37 @@ describe Agama::Software::Manager do
 
       context "and the product requires registration" do
         let(:product_id) { "test1" }
-
-        before do
-          allow(subject.registration).to receive(:reg_code).and_return(reg_code)
+        let(:product) do
+          Agama::Software::Product.new("test1").tap do |p|
+            p.registration = true
+            p.name = "test1"
+          end
         end
 
-        context "and the product is not registered" do
-          let(:reg_code) { nil }
+        before do
+          allow(subject).to receive(:product).and_return(product)
+          allow(Y2Packager::Resolvable).to receive(:find)
+            .with(kind: :product, name: product.name)
+            .and_return(resolvables)
+        end
+
+        context "and the base product is not available" do
+          let(:resolvables) { [] }
 
           it "contains a missing registration issue" do
             expect(subject.product_issues).to contain_exactly(
               an_object_having_attributes(
-                description: /product must be registered/i
+                kind: :missing_registration
               )
             )
           end
-        end
 
-        context "and the product is registered" do
-          let(:reg_code) { "1234XX5678" }
+          context "and the base product is available" do
+            let(:resolvables) { [instance_double("Product")] }
 
-          it "does not contain issues" do
-            expect(subject.product_issues).to be_empty
+            it "does not contain issues" do
+              expect(subject.product_issues).to be_empty
+            end
           end
         end
       end

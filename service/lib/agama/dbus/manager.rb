@@ -58,6 +58,7 @@ module Agama
       STARTUP_PHASE = 0
       CONFIG_PHASE = 1
       INSTALL_PHASE = 2
+      FINISH_PHASE = 3
 
       dbus_interface MANAGER_INTERFACE do
         dbus_method(:Probe, "") { config_phase }
@@ -111,7 +112,8 @@ module Agama
         [
           { "id" => STARTUP_PHASE, "label" => "startup" },
           { "id" => CONFIG_PHASE,  "label" => "config" },
-          { "id" => INSTALL_PHASE, "label" => "install" }
+          { "id" => INSTALL_PHASE, "label" => "install" },
+          { "id" => FINISH_PHASE, "label"  => "finish" }
         ]
       end
 
@@ -122,6 +124,7 @@ module Agama
         return STARTUP_PHASE if backend.installation_phase.startup?
         return CONFIG_PHASE if backend.installation_phase.config?
         return INSTALL_PHASE if backend.installation_phase.install?
+        return FINISH_PHASE if backend.installation_phase.finish?
       end
 
       # States whether installation runs on iguana

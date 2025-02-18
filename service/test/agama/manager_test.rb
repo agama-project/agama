@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require_relative "./with_progress_examples"
+require_relative "with_progress_examples"
 require "agama/manager"
 require "agama/config"
 require "agama/issue"
@@ -60,6 +60,11 @@ describe Agama::Manager do
       on_service_status_change: nil, errors?: false
     )
   end
+  let(:scripts) do
+    instance_double(
+      Agama::HTTP::Clients::Scripts, run: nil
+    )
+  end
 
   let(:product) { nil }
 
@@ -70,6 +75,8 @@ describe Agama::Manager do
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)
+    allow(Agama::HTTP::Clients::Scripts).to receive(:new)
+      .and_return(scripts)
   end
 
   describe "#startup_phase" do
@@ -115,9 +122,10 @@ describe Agama::Manager do
   end
 
   describe "#install_phase" do
-    it "sets the installation phase to install" do
+    it "sets the installation phase to install and later to finish" do
+      expect(subject.installation_phase).to receive(:install)
       subject.install_phase
-      expect(subject.installation_phase.install?).to eq(true)
+      expect(subject.installation_phase.finish?).to eq(true)
     end
 
     it "calls #propose on proxy and software modules" do
@@ -132,6 +140,7 @@ describe Agama::Manager do
       expect(software).to receive(:finish)
       expect(locale).to receive(:finish)
       expect(storage).to receive(:install)
+      expect(scripts).to receive(:run).with("post_partitioning")
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
       subject.install_phase

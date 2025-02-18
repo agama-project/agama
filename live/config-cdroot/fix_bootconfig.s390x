@@ -40,6 +40,8 @@
 # └── susehmc.ins
 #
 
+set -e
+
 dst="$1"
 
 if [ ! -d "$dst" ] ; then

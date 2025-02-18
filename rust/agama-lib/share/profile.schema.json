@@ -21,6 +21,14 @@
             "$ref": "#/$defs/preScript"
           }
         },
+        "postPartitioning": {
+          "title": "Post-partitioning scripts",
+          "description": "User-defined scripts to run after the partitioning finishes",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/postPartitioning"
+          }
+        },
         "post": {
           "title": "Post-installation scripts",
           "description": "User-defined scripts to run after the installation finishes",
@@ -1446,6 +1454,28 @@
     },
     "preScript": {
       "title": "User-defined installation script that runs before the installation starts",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Script name, to be used as file name",
+          "type": "string"
+        },
+        "body": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang",
+          "type": "string"
+        },
+        "url": {
+          "title": "Script URL",
+          "description": "URL to fetch the script from"
+        }
+      },
+      "required": ["name"],
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+    },
+    "postPartitioning": {
+      "title": "User-defined installation script that runs after the partitioning finishes",
       "type": "object",
       "additionalProperties": false,
       "properties": {

@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -21,7 +21,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 
-use crate::dbus::get_property;
+use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
 use crate::software::model::RegistrationRequirement;
 use crate::software::proxies::SoftwareProductProxy;
@@ -32,6 +32,7 @@ use super::proxies::RegistrationProxy;
 
 /// Represents a software product
 #[derive(Default, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Product {
     /// Product ID (eg., "ALP", "Tumbleweed", etc.)
     pub id: String,
@@ -42,7 +43,9 @@ pub struct Product {
     /// Product icon (e.g., "default.svg")
     pub icon: String,
     /// Registration requirement
-    pub registration: RegistrationRequirement,
+    pub registration: bool,
+    /// License ID
+    pub license: Option<String>,
 }
 
 /// D-Bus client for the software service
@@ -77,9 +80,9 @@ impl<'a> ProductClient<'a> {
                     None => "default.svg",
                 };
 
-                let registration = get_property::<String>(&data, "registration")
-                    .map(|r| RegistrationRequirement::from_str(&r).unwrap_or_default())
-                    .unwrap_or_default();
+                let registration = get_property::<bool>(&data, "registration").unwrap_or(false);
+
+                let license = get_optional_property::<String>(&data, "license").unwrap_or_default();
 
                 Product {
                     id,
@@ -87,6 +90,7 @@ impl<'a> ProductClient<'a> {
                     description: description.to_string(),
                     icon: icon.to_string(),
                     registration,
+                    license,
                 }
             })
             .collect();

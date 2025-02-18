@@ -35,7 +35,7 @@ export default {
     "%s disk"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s har registrerats med uppgifterna nedan."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s är ett oföränderligt system med atomära uppdateringar. Det använder ett skrivskyddat Btrfs filsystem som uppdateras via ögonblicksavbilder."
@@ -43,11 +43,14 @@ export default {
   "%s logo": [
     "%s logotyp"
   ],
+  "%s must be registered.": [
+    "%s måste registreras."
+  ],
   "%s with %d partitions": [
     "%s med %d partitioner"
   ],
   "(optional)": [
-    ""
+    "(valfritt)"
   ],
   ", ": [
     ", "
@@ -462,7 +465,7 @@ export default {
     "Krypteringslösenord"
   ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
-    ""
+    "Ange en registreringskod och valfritt en giltig e-postadress för att registrera produkten."
   ],
   "Exact size": [
     "Exakt storlek"
@@ -552,7 +555,7 @@ export default {
     "GiB"
   ],
   "Hide": [
-    ""
+    "Dölj"
   ],
   "Hide %d subvolume action": [
     "Dölj %d undervolym åtgärd",
@@ -560,6 +563,9 @@ export default {
   ],
   "Hide details": [
     "Dölj detaljer"
+  ],
+  "I have read and accept the [license] for %s": [
+    "Jag har läst och accepterar [licensen] för %s"
   ],
   "IP Address": [
     "IP address"
@@ -627,6 +633,9 @@ export default {
   "Install new system on": [
     "Installera nytt system på"
   ],
+  "Install using an advanced configuration.": [
+    "Installera med en avancerad konfiguration."
+  ],
   "Install using device %s and deleting all its content": [
     "Installerar på enhet %s och raderar allt innehåll"
   ],
@@ -687,6 +696,9 @@ export default {
   "Language": [
     "Språk"
   ],
+  "License language": [
+    "Licens språk"
+  ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "Gränser för filsystemets storlek. Den slutliga storleken kommer att vara ett värde mellan angivet minsta och maximal. Om inget maximalt anges kommer filsystemet att vara så stort som möjligt."
   ],
@@ -695,6 +707,9 @@ export default {
   ],
   "Loading installation environment, please wait.": [
     "Laddar installationsmiljö, vänligen vänta."
+  ],
+  "Loading the installation repositories...": [
+    "Laddar installationsförråd..."
   ],
   "Locale selection": [
     "Lokal val"
@@ -831,6 +846,9 @@ export default {
   "No root authentication method defined yet.": [
     "Ingen rootautentiseringsmetod har definierats ännu."
   ],
+  "No support is planned.": [
+    "Inget stöd är planerat."
+  ],
   "No user defined yet.": [
     "Ingen användare definierad ännu."
   ],
@@ -861,6 +879,9 @@ export default {
   "None of the time zones match the filter.": [
     "Inget av tidszonerna matchar filtret."
   ],
+  "Not implemented yet (%s)": [
+    "Inte implementerat ännu (%s)"
+  ],
   "Not possible with the current setup. Click to know more.": [
     "Inte möjligt med den aktuella konfigurationen. Klicka för att veta mer."
   ],
@@ -869,6 +890,9 @@ export default {
   ],
   "Not set": [
     "Inte inställt"
+  ],
+  "Not supported (%s)": [
+    "Stöds inte (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Offlineenheter måste aktiveras innan de formateras. Vänligen avmarkera eller aktivera enheterna listade nedan och försök igen"
@@ -990,6 +1014,12 @@ export default {
   "Presence of other volumes (%s)": [
     "Närvaro av andra volymer (%s)"
   ],
+  "Product registered": [
+    "Produkt registrerad"
+  ],
+  "Product registration form": [
+    "Produktregistreringsformulär"
+  ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Skydd för informationen som lagras på enheten, inklusive data, program och systemfiler."
   ],
@@ -1011,6 +1041,9 @@ export default {
   "Register": [
     "Registrera"
   ],
+  "Register it now": [
+    "Registrera det nu"
+  ],
   "Registration": [
     "Registrering"
   ],
@@ -1028,6 +1061,9 @@ export default {
   ],
   "Remove min channel filter": [
     "Ta bort minimum kanal filter"
+  ],
+  "Repository load failed": [
+    "Det gick inte att ladda förråd"
   ],
   "Reset location": [
     "Återställ plats"
@@ -1122,6 +1158,9 @@ export default {
   "Setup root user authentication": [
     "Ställ in rootautentisering"
   ],
+  "Show": [
+    "Visa"
+  ],
   "Show %d subvolume action": [
     "Visa %d undervolym åtgärd",
     "Visa %d undervolymer åtgärder"
@@ -1158,6 +1197,12 @@ export default {
   ],
   "Software selection": [
     "Val av programvara"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    "Vissa installationsförråd kunde inte laddas. Utan dem kan systemet inte installeras."
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    "En del av elementen i din AutoYaST-profil stöds inte."
   ],
   "Something went wrong": [
     "Något gick fel"
@@ -1286,7 +1331,7 @@ export default {
     "Systemet har inte konfigurerats för att ansluta till ett WiFi-nätverk än."
   ],
   "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    ""
+    "Systemlayouten sattes upp med en avancerad konfiguration som inte kan ändras med den aktuella versionen av detta visuella gränssnitt. Denna begränsning kommer att tas bort i en framtida version av Agama."
   ],
   "The system will use %s as its default language.": [
     "Systemet kommer att använda %s som dess standardspråk."
@@ -1342,6 +1387,9 @@ export default {
   "Transactional root file system": [
     "Transaktionellt root filsystem"
   ],
+  "Try again": [
+    "Försök igen"
+  ],
   "Type": [
     "Typ"
   ],
@@ -1353,6 +1401,9 @@ export default {
   ],
   "Unselect": [
     "Avmarkera"
+  ],
+  "Unsupported AutoYaST elements": [
+    "Ostödda AutoYaST-element"
   ],
   "Unused space": [
     "Oanvänt utrymme"
@@ -1422,6 +1473,9 @@ export default {
   ],
   "WiFi connection form": [
     "WiFi anslutningsformulär"
+  ],
+  "Will be supported in a future version.": [
+    "Kommer att stödjas i en framtida version."
   ],
   "Wired": [
     "Trådbunden"

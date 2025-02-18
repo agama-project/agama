@@ -54,8 +54,25 @@ module Agama
         # @return [String]
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
         # rubocop:disable Metrics/ParameterLists
-        def media_change(_error_code, error, url, _product, _current, _current_label, _wanted,
-          _wanted_label, _double_sided, _devices, _current_device)
+        def media_change(error_code, error, url, product, current, current_label, wanted,
+          wanted_label, double_sided, devices, current_device)
+          logger.debug(
+            format("MediaChange callback: error_code: %s, error: %s, url: %s, product: %s, " \
+                   "current: %s, current_label: %s, wanted: %s, wanted_label: %s, " \
+                   "double_sided: %s, devices: %s, current_device",
+              error_code,
+              error,
+              Yast::URL.HidePassword(url),
+              product,
+              current,
+              current_label,
+              wanted,
+              wanted_label,
+              double_sided,
+              devices,
+              current_device)
+          )
+
           question = Agama::Question.new(
             qclass:         "software.medium_error",
             text:           error,

@@ -564,6 +564,9 @@ export default {
   "Hide details": [
     "Detayları gizle"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP Adres"
   ],
@@ -1023,6 +1026,9 @@ export default {
   "Remove min channel filter": [
     "Min kanal filtresini kaldır"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Konumu sıfırla"
   ],
@@ -1149,6 +1155,12 @@ export default {
   ],
   "Software selection": [
     "Yazılım seçimi"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
   ],
   "Something went wrong": [
     "Bir şeyler ters gitti"
@@ -1333,6 +1345,9 @@ export default {
   "Transactional root file system": [
     "İşlemsel kök dosya sistemi"
   ],
+  "Try again": [
+    ""
+  ],
   "Type": [
     "Tip"
   ],
@@ -1344,6 +1359,9 @@ export default {
   ],
   "Unselect": [
     "Seçimi kaldır"
+  ],
+  "Unsupported AutoYaST elements": [
+    ""
   ],
   "Unused space": [
     "Kullanılmayan alan"
@@ -1413,6 +1431,9 @@ export default {
   ],
   "WiFi connection form": [
     "WiFi bağlantı formu"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Kablolu"

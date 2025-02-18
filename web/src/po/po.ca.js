@@ -35,7 +35,7 @@ export default {
     "Disc %s"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s s'ha registrat amb la informació següent."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de fitxers Btrfs només de lectura actualitzat a través d'instantànies."
@@ -43,11 +43,14 @@ export default {
   "%s logo": [
     "Logotip per a %s"
   ],
+  "%s must be registered.": [
+    "%s ha d'estar registrat."
+  ],
   "%s with %d partitions": [
     "%s amb %d particions"
   ],
   "(optional)": [
-    ""
+    "(opcional)"
   ],
   ", ": [
     ", "
@@ -462,7 +465,7 @@ export default {
     "Contrasenya d'encriptació"
   ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
-    ""
+    "Introduïu un codi de registre i, opcionalment, una adreça de correu electrònic vàlida per a registrar el producte."
   ],
   "Exact size": [
     "Mida exacta"
@@ -552,7 +555,7 @@ export default {
     "GiB"
   ],
   "Hide": [
-    ""
+    "Amaga"
   ],
   "Hide %d subvolume action": [
     "Amaga %d acció de subvolum",
@@ -560,6 +563,9 @@ export default {
   ],
   "Hide details": [
     "Amaga els detalls"
+  ],
+  "I have read and accept the [license] for %s": [
+    "He llegit i accepto la [llicència] de %s"
   ],
   "IP Address": [
     "Adreça IP"
@@ -627,6 +633,9 @@ export default {
   "Install new system on": [
     "Instal·la el sistema nou"
   ],
+  "Install using an advanced configuration.": [
+    "Instal·la mitjançant una configuració avançada."
+  ],
   "Install using device %s and deleting all its content": [
     "Instal·la al dispositiu %s suprimint-ne tot el contingut"
   ],
@@ -687,6 +696,9 @@ export default {
   "Language": [
     "Llengua"
   ],
+  "License language": [
+    "Llengua de la llicència"
+  ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "Límits per a la mida del sistema de fitxers. La mida final serà un valor entre el mínim i el màxim proporcionats. Si no hi ha cap màxim, el sistema de fitxers serà el més gros possible."
   ],
@@ -695,6 +707,9 @@ export default {
   ],
   "Loading installation environment, please wait.": [
     "Carregant l'entorn d'instal·lació. Espereu, si us plau."
+  ],
+  "Loading the installation repositories...": [
+    "Carregant els repositoris d'instal·lació..."
   ],
   "Locale selection": [
     "Selecció de la llengua"
@@ -831,6 +846,9 @@ export default {
   "No root authentication method defined yet.": [
     "Encara no s'ha definit cap mètode d'autenticació d'arrel."
   ],
+  "No support is planned.": [
+    "No té compatibilitat prevista."
+  ],
   "No user defined yet.": [
     "Encara no s'ha definit cap usuari."
   ],
@@ -861,6 +879,9 @@ export default {
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
   ],
+  "Not implemented yet (%s)": [
+    "Encara no s'ha implementat (%s)"
+  ],
   "Not possible with the current setup. Click to know more.": [
     "No és possible amb la configuració actual. Feu clic per saber-ne més."
   ],
@@ -869,6 +890,9 @@ export default {
   ],
   "Not set": [
     "No s'ha establert"
+  ],
+  "Not supported (%s)": [
+    "No compatible (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
@@ -990,6 +1014,12 @@ export default {
   "Presence of other volumes (%s)": [
     "La presència d'altres volums (%s)"
   ],
+  "Product registered": [
+    "Producte registrat"
+  ],
+  "Product registration form": [
+    "Formulari de registre del producte"
+  ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Protecció per a la informació emmagatzemada al dispositiu, incloses les dades, els programes i els fitxers del sistema."
   ],
@@ -1011,6 +1041,9 @@ export default {
   "Register": [
     "Registra"
   ],
+  "Register it now": [
+    "Registra'l ara"
+  ],
   "Registration": [
     "Registre"
   ],
@@ -1028,6 +1061,9 @@ export default {
   ],
   "Remove min channel filter": [
     "Suprimeix el filtre del canal mínim"
+  ],
+  "Repository load failed": [
+    "Ha fallat carregar el repositori."
   ],
   "Reset location": [
     "Restableix la ubicació"
@@ -1122,6 +1158,9 @@ export default {
   "Setup root user authentication": [
     "Configura l'autenticació d'usuari d'arrel"
   ],
+  "Show": [
+    "Mostra"
+  ],
   "Show %d subvolume action": [
     "Mostra %d acció de subvolum",
     "Mostra %d accions de subvolum"
@@ -1158,6 +1197,12 @@ export default {
   ],
   "Software selection": [
     "Selecció de programari"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
   ],
   "Something went wrong": [
     "Alguna cosa ha anat malament."
@@ -1286,7 +1331,7 @@ export default {
     "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
   ],
   "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    ""
+    "El disseny del sistema s'ha establert mitjançant una configuració avançada que no es pot modificar amb la versió actual d'aquesta interfície visual. Aquesta limitació se suprimirà en una versió futura d'Agama."
   ],
   "The system will use %s as its default language.": [
     "El sistema usarà el %s com a llengua per defecte."
@@ -1342,6 +1387,9 @@ export default {
   "Transactional root file system": [
     "Sistema de fitxers d'arrel transaccional"
   ],
+  "Try again": [
+    "Torna-ho a provar"
+  ],
   "Type": [
     "Tipus"
   ],
@@ -1353,6 +1401,9 @@ export default {
   ],
   "Unselect": [
     "Desmarca"
+  ],
+  "Unsupported AutoYaST elements": [
+    "Elements d'AutoYaST no compatibles"
   ],
   "Unused space": [
     "Espai sense ús"
@@ -1422,6 +1473,9 @@ export default {
   ],
   "WiFi connection form": [
     "Formulari de connexió per WiFi"
+  ],
+  "Will be supported in a future version.": [
+    "Serà compatible en una versió futura."
   ],
   "Wired": [
     "Amb fil"

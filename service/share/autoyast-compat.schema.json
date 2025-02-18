@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/openSUSE/agama/blob/master/service/share/autoyast-compat.schema.json",
+  "title": "AutoYaST profile compatibility description",
+  "description": "For elements of AutoYaST profiles, describes whether Agama will understand them",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/profileElement"
+  },
+  "definitions": {
+    "profileElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "support": {
+          "type": "string",
+          "enum": ["yes", "no", "planned"]
+        },
+        "notes": {
+          "type": "string"
+        },
+        "agama": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/profileElement"
+          }
+        }
+      },
+      "required": [
+        "key"
+      ],
+      "oneOf": [
+        { "required": ["support"] },
+        { "required": ["children"] }
+      ]
+    }
+  }
+}

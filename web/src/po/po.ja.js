@@ -34,7 +34,7 @@ export default {
     "%s ディスク"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s を下記の情報で登録しました。"
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s は一括更新のできる不可変なシステムです。読み込み専用の btrfs ルートファイルシステムを利用して更新を適用します。"
@@ -42,11 +42,14 @@ export default {
   "%s logo": [
     "%s ロゴ"
   ],
+  "%s must be registered.": [
+    "%s を登録しなければなりません。"
+  ],
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
   ],
   "(optional)": [
-    ""
+    "(任意)"
   ],
   ", ": [
     ", "
@@ -460,7 +463,7 @@ export default {
     "暗号化パスワード"
   ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
-    ""
+    "製品を登録するのに必要な登録コードと、任意でメールアドレスを入力してください。"
   ],
   "Exact size": [
     "正確なサイズ"
@@ -550,13 +553,16 @@ export default {
     "GiB"
   ],
   "Hide": [
-    ""
+    "隠す"
   ],
   "Hide %d subvolume action": [
     "%d 個のサブボリューム処理を隠す"
   ],
   "Hide details": [
     "詳細を隠す"
+  ],
+  "I have read and accept the [license] for %s": [
+    "%s に対する [ライセンス] を受け入れます"
   ],
   "IP Address": [
     "IP アドレス"
@@ -624,6 +630,9 @@ export default {
   "Install new system on": [
     "新しいシステムのインストール先"
   ],
+  "Install using an advanced configuration.": [
+    "高度な設定項目を利用してインストールします。"
+  ],
   "Install using device %s and deleting all its content": [
     "デバイス %s の内容を全て削除してインストールします"
   ],
@@ -684,6 +693,9 @@ export default {
   "Language": [
     "言語"
   ],
+  "License language": [
+    "ライセンスの言語"
+  ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "ファイルシステムに対するサイズ制限を範囲指定します。最終的なサイズは最小値と最大値の間になります。最大値を指定しない場合、ファイルシステムはできる限り大きくなるように設定されます。"
   ],
@@ -692,6 +704,9 @@ export default {
   ],
   "Loading installation environment, please wait.": [
     "インストール環境を読み込んでいます。しばらくお待ちください。"
+  ],
+  "Loading the installation repositories...": [
+    "インストール用リポジトリを読み込んでいます..."
   ],
   "Locale selection": [
     "ロケールの選択"
@@ -828,6 +843,9 @@ export default {
   "No root authentication method defined yet.": [
     "まだ root 認証方式を設定していません。"
   ],
+  "No support is planned.": [
+    "サポートを提供する計画はありません。"
+  ],
   "No user defined yet.": [
     "ユーザを設定していません。"
   ],
@@ -858,6 +876,9 @@ export default {
   "None of the time zones match the filter.": [
     "フィルタに該当するタイムゾーンがありません。"
   ],
+  "Not implemented yet (%s)": [
+    "実装されていません (%s)"
+  ],
   "Not possible with the current setup. Click to know more.": [
     "現在の設定ではインストールできません。詳しく表示したい場合は、ここを押してください。"
   ],
@@ -866,6 +887,9 @@ export default {
   ],
   "Not set": [
     "未設定"
+  ],
+  "Not supported (%s)": [
+    "サポート対象外です (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "フォーマットを実施する前にオフラインのデバイスを有効化する必要があります。下記に示されたデバイスの選択を外すか、有効化してからやり直してください"
@@ -987,6 +1011,12 @@ export default {
   "Presence of other volumes (%s)": [
     "その他のボリューム (%s) の存在"
   ],
+  "Product registered": [
+    "製品を登録しました"
+  ],
+  "Product registration form": [
+    "製品登録フォーム"
+  ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "データやプログラム、システムファイルを含むデバイス内の情報を保護する仕組みです。"
   ],
@@ -1008,6 +1038,9 @@ export default {
   "Register": [
     "登録"
   ],
+  "Register it now": [
+    "今すぐ登録"
+  ],
   "Registration": [
     "登録"
   ],
@@ -1025,6 +1058,9 @@ export default {
   ],
   "Remove min channel filter": [
     "最小チャネルのフィルタを削除"
+  ],
+  "Repository load failed": [
+    "リポジトリ読み込み失敗"
   ],
   "Reset location": [
     "場所のリセット"
@@ -1119,6 +1155,9 @@ export default {
   "Setup root user authentication": [
     "root の認証方式の設定"
   ],
+  "Show": [
+    "表示"
+  ],
   "Show %d subvolume action": [
     "%d 個のサブボリューム処理を表示"
   ],
@@ -1154,6 +1193,12 @@ export default {
   ],
   "Software selection": [
     "ソフトウエア選択"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    "インストール用リポジトリのうち、読み込めなかったものがあります。これらのリポジトリ無しにはシステムをインストールできません。"
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    "お使いの AutoYaST プロファイルのうち、いくつかの要素がサポート対象外となっています。"
   ],
   "Something went wrong": [
     "何らかの問題が発生しました"
@@ -1282,7 +1327,7 @@ export default {
     "このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
   ],
   "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    ""
+    "現在のバージョンのビジュアルインターフェイスでは編集できない高度な設定を利用して、システム配置を行っています。この制限は将来バージョンの Agama でなくなる予定です。"
   ],
   "The system will use %s as its default language.": [
     "システムは %s を既定の言語として使用します。"
@@ -1338,6 +1383,9 @@ export default {
   "Transactional root file system": [
     "トランザクション型のルートファイルシステム"
   ],
+  "Try again": [
+    "再試行"
+  ],
   "Type": [
     "種類"
   ],
@@ -1349,6 +1397,9 @@ export default {
   ],
   "Unselect": [
     "未選択"
+  ],
+  "Unsupported AutoYaST elements": [
+    "サポートされていない AutoYaST 要素"
   ],
   "Unused space": [
     "未使用の領域"
@@ -1418,6 +1469,9 @@ export default {
   ],
   "WiFi connection form": [
     "WiFi 接続フォーム"
+  ],
+  "Will be supported in a future version.": [
+    "将来のバージョンでサポートされる予定です。"
   ],
   "Wired": [
     "有線"

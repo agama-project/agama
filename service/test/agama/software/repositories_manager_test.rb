@@ -23,9 +23,10 @@ require_relative "../../test_helper"
 require "agama/software/repositories_manager"
 
 describe Agama::Software::RepositoriesManager do
+  # probe and refresh succeed
   let(:repo) do
     instance_double(
-      Agama::Software::Repository, enable!: nil, probe: true, enabled?: true
+      Agama::Software::Repository, enable!: nil, probe: true, enabled?: true, refresh: true
     )
   end
 
@@ -45,25 +46,40 @@ describe Agama::Software::RepositoriesManager do
   end
 
   describe "#load" do
+    # probe and refresh fail
     let(:repo1) do
       instance_double(
-        Agama::Software::Repository, disable!: nil, probe: false
+        Agama::Software::Repository, enable!: nil, disable!: nil, probe: false, refresh: false
+      )
+    end
+
+    # corner case, probe succeeds but refresh fails
+    let(:repo2) do
+      instance_double(
+        Agama::Software::Repository, enable!: nil, disable!: nil, probe: true, refresh: false
       )
     end
 
     before do
       subject.repositories << repo
       subject.repositories << repo1
+      subject.repositories << repo2
       allow(Yast::Pkg).to receive(:SourceLoad)
     end
 
     it "enables the repositories that can be read" do
       expect(repo).to receive(:enable!)
+      expect(repo).to_not receive(:disable!)
       subject.load
     end
 
-    it "disables the repositories that cannot be read" do
+    it "disables the repositories that cannot be probed" do
       expect(repo1).to receive(:disable!)
+      subject.load
+    end
+
+    it "disables the repositories that cannot be refreshed" do
+      expect(repo2).to receive(:disable!)
       subject.load
     end
 

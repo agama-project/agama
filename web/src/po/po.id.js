@@ -34,7 +34,7 @@ export default {
     "%s diska"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s telah terdaftar dengan informasi di bawah ini."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     "%s adalah sistem yang tidak dapat diubah (immutable) dan mendukung pembaruan atomik. Sistem ini menggunakan file system Btrfs yang hanya-baca dan diperbarui melalui snapshot."
@@ -42,11 +42,14 @@ export default {
   "%s logo": [
     "logo %s"
   ],
+  "%s must be registered.": [
+    "%s harus didaftarkan."
+  ],
   "%s with %d partitions": [
     "%s dengan partisi %d"
   ],
   "(optional)": [
-    ""
+    "(opsional)"
   ],
   ", ": [
     ", "
@@ -460,7 +463,7 @@ export default {
     "Kata Sandi Enkripsi"
   ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
-    ""
+    "Masukkan kode registrasi dan alamat email yang valid untuk mendaftarkan produk."
   ],
   "Exact size": [
     "Ukuran yang tepat"
@@ -550,13 +553,16 @@ export default {
     "GiB"
   ],
   "Hide": [
-    ""
+    "Sembunyikan"
   ],
   "Hide %d subvolume action": [
     "Menyembunyikan tindakan subvolume %d"
   ],
   "Hide details": [
     "Sembunyikan detail"
+  ],
+  "I have read and accept the [license] for %s": [
+    "Saya telah membaca dan menerima [lisensi] untuk %s"
   ],
   "IP Address": [
     "Alamat IP"
@@ -624,6 +630,9 @@ export default {
   "Install new system on": [
     "Instal sistem baru pada"
   ],
+  "Install using an advanced configuration.": [
+    "Instal menggunakan konfigurasi lanjutan."
+  ],
   "Install using device %s and deleting all its content": [
     "Menginstal menggunakan perangkat %s dan menghapus semua isinya"
   ],
@@ -684,6 +693,9 @@ export default {
   "Language": [
     "Bahasa"
   ],
+  "License language": [
+    "Bahasa lisensi"
+  ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "Batas untuk ukuran sistem berkas. Ukuran akhir akan berupa nilai antara minimum dan maksimum yang diberikan. Jika tidak ada nilai maksimum yang diberikan, maka sistem berkas akan sebesar mungkin."
   ],
@@ -692,6 +704,9 @@ export default {
   ],
   "Loading installation environment, please wait.": [
     "Memuat lingkungan penginstalan, harap tunggu."
+  ],
+  "Loading the installation repositories...": [
+    "Memuat repositori instalasi..."
   ],
   "Locale selection": [
     "Pemilihan lokasi"
@@ -987,6 +1002,12 @@ export default {
   "Presence of other volumes (%s)": [
     "Keberadaan volume lain (%s)"
   ],
+  "Product registered": [
+    "Produk terdaftar"
+  ],
+  "Product registration form": [
+    "Formulir pendaftaran produk"
+  ],
   "Protection for the information stored at the device, including data, programs, and system files.": [
     "Perlindungan untuk informasi yang tersimpan di perangkat, termasuk data, program, dan file sistem."
   ],
@@ -1008,6 +1029,9 @@ export default {
   "Register": [
     "Mendaftar"
   ],
+  "Register it now": [
+    "Daftarkan sekarang"
+  ],
   "Registration": [
     "Pendaftaran"
   ],
@@ -1025,6 +1049,9 @@ export default {
   ],
   "Remove min channel filter": [
     "Menghapus filter saluran min"
+  ],
+  "Repository load failed": [
+    "Pemuatan repositori gagal"
   ],
   "Reset location": [
     "Atur ulang lokasi"
@@ -1119,6 +1146,9 @@ export default {
   "Setup root user authentication": [
     "Menyiapkan autentikasi pengguna root"
   ],
+  "Show": [
+    "Tampilkan"
+  ],
   "Show %d subvolume action": [
     "Tampilkan tindakan subvolume %d"
   ],
@@ -1154,6 +1184,12 @@ export default {
   ],
   "Software selection": [
     "Pemilihan perangkat lunak"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    "Beberapa repositori instalasi tidak dapat dimuat. Sistem tidak dapat diinstal tanpa repositori tersebut."
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
   ],
   "Something went wrong": [
     "Ada yang tidak beres"
@@ -1282,7 +1318,7 @@ export default {
     "Sistem belum dikonfigurasi untuk menghubungkan ke jaringan Wi-Fi."
   ],
   "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    ""
+    "Tata letak sistem diatur menggunakan konfigurasi tingkat lanjut yang tidak dapat dimodifikasi dengan versi antarmuka visual saat ini. Keterbatasan ini akan dihilangkan pada versi Agama yang akan datang."
   ],
   "The system will use %s as its default language.": [
     "Sistem akan menggunakan %s sebagai bahasa default."
@@ -1338,6 +1374,9 @@ export default {
   "Transactional root file system": [
     "Sistem file root transaksional"
   ],
+  "Try again": [
+    "Coba lagi"
+  ],
   "Type": [
     "Jenis"
   ],
@@ -1349,6 +1388,9 @@ export default {
   ],
   "Unselect": [
     "Batalkan pilihan"
+  ],
+  "Unsupported AutoYaST elements": [
+    ""
   ],
   "Unused space": [
     "Ruang tidak terpakai"
@@ -1418,6 +1460,9 @@ export default {
   ],
   "WiFi connection form": [
     "Formulir koneksi WiFi"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Kabel"

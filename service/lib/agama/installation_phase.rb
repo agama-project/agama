@@ -27,6 +27,7 @@ module Agama
     STARTUP = "startup"
     CONFIG = "config"
     INSTALL = "install"
+    FINISH = "finish"
 
     def initialize
       @on_change_callbacks = []
@@ -51,6 +52,13 @@ module Agama
     # @return [Boolean]
     def install?
       value == INSTALL
+    end
+
+    # Whether the current installation phase value is finish
+    #
+    # @return [Boolean]
+    def finish?
+      value == FINISH
     end
 
     # Sets the installation phase value to startup
@@ -80,6 +88,16 @@ module Agama
     # @return [self]
     def install
       change_to(INSTALL)
+      self
+    end
+
+    # Sets the installation phase value to finish
+    #
+    # @note Callbacks are called.
+    #
+    # @return [self]
+    def finish
+      change_to(FINISH)
       self
     end
 

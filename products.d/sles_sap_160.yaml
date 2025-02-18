@@ -1,8 +1,9 @@
 id: SLES_SAP
 name: SUSE Linux Enterprise Server for SAP Applications 16.0 Beta
 archs: x86_64,aarch64,ppc
-registration: "mandatory"
+registration: true
 version: "16-0"
+license: "license.beta"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -18,6 +19,13 @@ translations:
   description:
 software:
   installation_repositories: []
+  installation_labels:
+    - label: S4SAP160-x86_64
+      archs: x86_64
+    - label: S4SAP160-arch64
+      archs: aarch64
+    - label: S4SAP160-ppc64
+      archs: ppc
 
   mandatory_patterns:
     - base_traditional
@@ -37,7 +45,7 @@ software:
   mandatory_packages:
     - NetworkManager
   optional_packages: null
-  base_product: SLES-SAP
+  base_product: SLES_SAP
 
 security:
   lsm: selinux
