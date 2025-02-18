@@ -191,14 +191,14 @@ mod test {
             when.method(PATCH)
                 .path("/api/users/root")
                 .header("content-type", "application/json")
-                .body(r#"{"sshkey":null,"password":"1234","hashedPassword":false}"#);
+                .body(r#"{"sshPublicKey":null,"password":"1234","hashedPassword":false}"#);
             then.status(200).body("0");
         });
         let root_mock2 = server.mock(|when, then| {
             when.method(PATCH)
                 .path("/api/users/root")
                 .header("content-type", "application/json")
-                .body(r#"{"sshkey":"keykeykey","password":null,"hashedPassword":null}"#);
+                .body(r#"{"sshPublicKey":"keykeykey","password":null,"hashedPassword":null}"#);
             then.status(200).body("0");
         });
         let url = server.url("/api");

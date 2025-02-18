@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct RootPatchSettings {
     /// empty string here means remove ssh key for root
-    pub sshkey: Option<String>,
+    pub ssh_public_key: Option<String>,
     /// empty string here means remove password for root
     pub password: Option<String>,
     /// specify if patched password is provided in plain text (default) or hashed

@@ -198,7 +198,7 @@ async fn patch_root(
     Json(config): Json<RootPatchSettings>,
 ) -> Result<impl IntoResponse, Error> {
     let mut retcode1 = 0;
-    if let Some(key) = config.sshkey {
+    if let Some(key) = config.ssh_public_key {
         retcode1 = state.users.set_root_sshkey(&key).await?;
     }
 
