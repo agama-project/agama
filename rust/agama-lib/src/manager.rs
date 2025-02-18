@@ -23,9 +23,6 @@
 pub mod http_client;
 pub use http_client::ManagerHTTPClient;
 use serde::{Deserialize, Serialize};
-use std::fmt;
-use std::str::FromStr;
-use thiserror::Error;
 
 use crate::error::ServiceError;
 use crate::proxies::ServiceStatusProxy;
@@ -89,7 +86,19 @@ impl TryFrom<u32> for InstallationPhase {
 }
 
 /// Finish method
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
+#[derive(
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
 pub enum FinishMethod {
     #[serde(rename = "halt")]
     // Halt the system
@@ -107,50 +116,6 @@ pub enum FinishMethod {
 impl Default for FinishMethod {
     fn default() -> Self {
         Self::Reboot
-    }
-}
-
-impl fmt::Display for FinishMethod {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            FinishMethod::Halt => "halt",
-            FinishMethod::Reboot => "reboot",
-            FinishMethod::Stop => "stop",
-            FinishMethod::Poweroff => "poweroff",
-        };
-        write!(f, "{}", name)
-    }
-}
-
-#[derive(Debug, Error, PartialEq)]
-#[error("Invalid finish method: {0}")]
-pub struct InvalidFinishMethod(String);
-
-impl TryFrom<&str> for FinishMethod {
-    type Error = InvalidFinishMethod;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
-            "halt" => Ok(FinishMethod::Halt),
-            "stop" => Ok(FinishMethod::Stop),
-            "reboot" => Ok(FinishMethod::Reboot),
-            "poweroff" => Ok(FinishMethod::Poweroff),
-            _ => Err(InvalidFinishMethod(value.to_string())),
-        }
-    }
-}
-
-impl FromStr for FinishMethod {
-    type Err = InvalidFinishMethod;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "halt" => Ok(FinishMethod::Halt),
-            "stop" => Ok(FinishMethod::Stop),
-            "reboot" => Ok(FinishMethod::Reboot),
-            "poweroff" => Ok(FinishMethod::Poweroff),
-            _ => Err(InvalidFinishMethod(s.to_string())),
-        }
     }
 }
 
@@ -187,10 +152,11 @@ impl<'a> ManagerClient<'a> {
 
     /// Executes the after installation tasks finishing with the method given or rebooting the
     /// system by default.
-    pub async fn finish(&self, method: Option<FinishMethod>) -> Result<bool, ServiceError> {
+    pub async fn finish(&self, method: FinishMethod) -> Result<bool, ServiceError> {
+        dbg!("THE METHOD IS {}", &method);
         Ok(self
             .manager_proxy
-            .finish(method.unwrap_or_default().to_string().as_str())
+            .finish(&method.to_string().as_str())
             .await?)
     }
 

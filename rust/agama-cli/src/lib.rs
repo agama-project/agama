@@ -130,12 +130,12 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
     Ok(())
 }
 
-/// Finish the instalation with the given method or rebooting the system by default
+/// Finish the instalation with the given method
 ///
 /// Before finishing, it makes sure that the manager is idle.
 ///
 /// * `manager`: the manager client.
-async fn finish(manager: &ManagerClient<'_>, method: Option<FinishMethod>) -> anyhow::Result<()> {
+async fn finish(manager: &ManagerClient<'_>, method: FinishMethod) -> anyhow::Result<()> {
     if manager.is_busy().await {
         println!("Agama's manager is busy. Waiting until it is ready...");
     }
@@ -143,8 +143,7 @@ async fn finish(manager: &ManagerClient<'_>, method: Option<FinishMethod>) -> an
     // Make sure that the manager is ready
     manager.wait().await?;
     if !manager.finish(method).await? {
-        let cmd = method.unwrap_or_default();
-        eprintln!("Cannot finish the installation ({cmd})");
+        eprintln!("Cannot finish the installation ({method})");
         return Err(CliError::NotFinished)?;
     }
     Ok(())
@@ -234,6 +233,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         }
         Commands::Finish { method } => {
             let manager = build_manager().await?;
+            let method = method.unwrap_or_default();
             finish(&manager, method).await?;
         }
         Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,

@@ -183,11 +183,11 @@ async fn finish_action(
     State(state): State<ManagerState<'_>>,
     method: Option<Json<FinishMethod>>,
 ) -> Result<Json<bool>, Error> {
-    if let Some(Json(method)) = method {
-        Ok(Json(state.manager.finish(Some(method)).await?))
-    } else {
-        Ok(Json(state.manager.finish(None).await?))
-    }
+    let method = match method {
+        Some(Json(method)) => method,
+        _ => FinishMethod::default(),
+    };
+    Ok(Json(state.manager.finish(method).await?))
 }
 
 /// Returns the manager status.
