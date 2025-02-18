@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Feb 18 12:10:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Remove step forcing root user password entry.
+- Revamp the Authentication page (formerly Users page) to simplify
+  the interface and improve user interactions
+  (gh#agama-project/agama#1999).
+
+-------------------------------------------------------------------
 Fri Feb  7 14:43:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Report unsupported AutoYaST elements
