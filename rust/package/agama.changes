@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 18 12:05:56 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose root and first user passwords (gh#agama-project/agama#2005).
+- Remove support for auto-login.
+
+-------------------------------------------------------------------
 Mon Feb 10 13:28:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixup: Make the "lang" URL query optional, do not fail when it
