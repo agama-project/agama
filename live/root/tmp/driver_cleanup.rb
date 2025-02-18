@@ -60,6 +60,7 @@ end
 
 # really delete or just do a smoke test?
 do_delete = ARGV[0] == "--delete"
+debug = ENV["DEBUG"] == "1"
 
 # read the configuration files
 config = File.read(File.join(__dir__, "module.list")).split("\n")
@@ -127,25 +128,10 @@ loop do
   to_delete.reject!{|a| referenced.any?{|d| d.path == a.path}}
 end
 
-# total size counter
-driver_size = 0
+delete_drivers = to_delete.map(&:path)
+puts "Found #{delete_drivers.size} drivers to delete"
+puts delete_drivers if debug
+File.delete(*delete_drivers) if do_delete
 
-# process the list of the drivers to delete
-to_delete.each do |d|
-  driver_size += File.size(d.path)
-
-  if (do_delete)
-    puts "Deleting #{d.path}"
-    File.delete(d.path)
-  else
-    puts "Driver to delete #{d.path}"
-  end
-end
-
-puts "Found #{to_delete.size} drivers to delete (#{driver_size/1024/1024} MiB)"
-
-# at the end update the kernel driver metadata (modules.dep and others)
-if (do_delete)
-  puts "Updating driver metadata..."
-  system("/sbin/depmod -a -F #{dir.shellescape}/System.map")
-end
+# Note: The module dependencies are updated by the config.sh script
+# after decompressing the drivers.

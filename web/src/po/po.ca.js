@@ -564,6 +564,9 @@ export default {
   "Hide details": [
     "Amaga els detalls"
   ],
+  "I have read and accept the [license] for %s": [
+    "He llegit i accepto la [llicència] de %s"
+  ],
   "IP Address": [
     "Adreça IP"
   ],
@@ -693,6 +696,9 @@ export default {
   "Language": [
     "Llengua"
   ],
+  "License language": [
+    "Llengua de la llicència"
+  ],
   "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
     "Límits per a la mida del sistema de fitxers. La mida final serà un valor entre el mínim i el màxim proporcionats. Si no hi ha cap màxim, el sistema de fitxers serà el més gros possible."
   ],
@@ -701,6 +707,9 @@ export default {
   ],
   "Loading installation environment, please wait.": [
     "Carregant l'entorn d'instal·lació. Espereu, si us plau."
+  ],
+  "Loading the installation repositories...": [
+    "Carregant els repositoris d'instal·lació..."
   ],
   "Locale selection": [
     "Selecció de la llengua"
@@ -837,6 +846,9 @@ export default {
   "No root authentication method defined yet.": [
     "Encara no s'ha definit cap mètode d'autenticació d'arrel."
   ],
+  "No support is planned.": [
+    "No té compatibilitat prevista."
+  ],
   "No user defined yet.": [
     "Encara no s'ha definit cap usuari."
   ],
@@ -867,6 +879,9 @@ export default {
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
   ],
+  "Not implemented yet (%s)": [
+    "Encara no s'ha implementat (%s)"
+  ],
   "Not possible with the current setup. Click to know more.": [
     "No és possible amb la configuració actual. Feu clic per saber-ne més."
   ],
@@ -875,6 +890,9 @@ export default {
   ],
   "Not set": [
     "No s'ha establert"
+  ],
+  "Not supported (%s)": [
+    "No compatible (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
@@ -1044,6 +1062,9 @@ export default {
   "Remove min channel filter": [
     "Suprimeix el filtre del canal mínim"
   ],
+  "Repository load failed": [
+    "Ha fallat carregar el repositori."
+  ],
   "Reset location": [
     "Restableix la ubicació"
   ],
@@ -1176,6 +1197,12 @@ export default {
   ],
   "Software selection": [
     "Selecció de programari"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
   ],
   "Something went wrong": [
     "Alguna cosa ha anat malament."
@@ -1360,6 +1387,9 @@ export default {
   "Transactional root file system": [
     "Sistema de fitxers d'arrel transaccional"
   ],
+  "Try again": [
+    "Torna-ho a provar"
+  ],
   "Type": [
     "Tipus"
   ],
@@ -1371,6 +1401,9 @@ export default {
   ],
   "Unselect": [
     "Desmarca"
+  ],
+  "Unsupported AutoYaST elements": [
+    "Elements d'AutoYaST no compatibles"
   ],
   "Unused space": [
     "Espai sense ús"
@@ -1440,6 +1473,9 @@ export default {
   ],
   "WiFi connection form": [
     "Formulari de connexió per WiFi"
+  ],
+  "Will be supported in a future version.": [
+    "Serà compatible en una versió futura."
   ],
   "Wired": [
     "Amb fil"

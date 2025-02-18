@@ -1,4 +1,31 @@
 -------------------------------------------------------------------
+Fri Feb 14 17:00:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set console and X11 keymaps when changing the installer keymap
+  (bsc#1236174).
+- Use the "dashed" form of the keymap identifier when calling
+  systemd-firstboot (bsc#1236174).
+
+-------------------------------------------------------------------
+Mon Feb 10 13:28:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixup: Make the "lang" URL query optional, do not fail when it
+  is missing. This fixes crash on non-UEFI systems.
+
+-------------------------------------------------------------------
+Fri Feb  7 11:03:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Forward the "lang" URL query parameter when redirecting in the
+  "/login" endpoint (this allows to define the default language
+  in the Firefox configuration file in local installation)
+
+-------------------------------------------------------------------
+Thu Feb  6 12:52:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Describe licenses API in OpenAPI documentation
+  (gh#agama-project/agama#1929).
+
+-------------------------------------------------------------------
 Fri Jan 24 09:33:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce a new installation phase "finish"

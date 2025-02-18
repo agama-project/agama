@@ -564,6 +564,9 @@ export default {
   "Hide details": [
     "Скрыть подробности"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP-адрес"
   ],
@@ -1035,6 +1038,9 @@ export default {
   "Remove min channel filter": [
     "Удалить фильтр по минимальному каналу"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Сбросить расположение"
   ],
@@ -1165,6 +1171,12 @@ export default {
   ],
   "Software selection": [
     "Выбор программного обеспечения"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
   ],
   "Something went wrong": [
     "Что-то пошло не так"
@@ -1349,6 +1361,9 @@ export default {
   "Transactional root file system": [
     "Транзакционная корневая файловая система"
   ],
+  "Try again": [
+    ""
+  ],
   "Type": [
     "Тип"
   ],
@@ -1360,6 +1375,9 @@ export default {
   ],
   "Unselect": [
     "Отменить выбор"
+  ],
+  "Unsupported AutoYaST elements": [
+    ""
   ],
   "Unused space": [
     "Неиспользуемое пространство"
@@ -1429,6 +1447,9 @@ export default {
   ],
   "WiFi connection form": [
     "Форма WiFi соединения"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Проводное"

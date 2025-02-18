@@ -7,17 +7,25 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 02:40+0000\n"
-"PO-Revision-Date: 2024-10-29 12:48+0000\n"
+"POT-Creation-Date: 2025-02-13 02:38+0000\n"
+"PO-Revision-Date: 2025-02-13 06:50+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
-"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/sv/>\n"
+"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.9.2\n"
+
+#. Reports the problems and decide whether to continue or not.
+#.
+#. @param elements [Array<Element>] List of unsupported elements.
+#: service/lib/agama/autoyast/profile_reporter.rb:51
+#, perl-brace-format
+msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+msgstr "Hittade ostödda element i AutoYaST-profilen: %{keys}."
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:93
@@ -43,13 +51,39 @@ msgid "Configure the system"
 msgstr "Konfigurera systemet"
 
 #. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:156
+#: service/lib/agama/manager.rb:157
 msgid "Load software translations"
 msgstr "Laddar översättningar av programvara"
 
-#: service/lib/agama/manager.rb:157
+#: service/lib/agama/manager.rb:158
 msgid "Load storage translations"
 msgstr "Laddar översättningar för lagring"
+
+#. TRANSLATORS: %s is a package name
+#: service/lib/agama/software/callbacks/progress.rb:92
+#, c-format
+msgid "Package %s could not be installed."
+msgstr "Paket %s kunde inte installeras."
+
+#. "Not found" (error 1) is handled by the MediaChange callback.
+#: service/lib/agama/software/callbacks/provide.rb:71
+#, ycp-format
+msgid "Package %1 could not be downloaded (input/output error)."
+msgstr "Paket %1 kunde inte laddas ner (in/utmatningsfel)."
+
+#: service/lib/agama/software/callbacks/provide.rb:74
+#, ycp-format
+msgid "Package %1 is broken, integrity check has failed."
+msgstr "Paket %1 är trasigt, integritetskontrollen har misslyckats."
+
+#. DoneProvide callback
+#.
+#. @param description [String] Problem description
+#. @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
+#. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
+#: service/lib/agama/software/callbacks/script.rb:59
+msgid "There was a problem running a package script."
+msgstr "Det uppstod ett problem med att köra ett paketskript."
 
 #. Callback to handle unsigned files
 #.
@@ -105,7 +139,7 @@ msgstr "Beräknar programvaruförslaget"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:561
+#: service/lib/agama/software/manager.rb:596
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Kunde inte läsa förråd \"%s\""
@@ -113,14 +147,14 @@ msgstr "Kunde inte läsa förråd \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:571
+#: service/lib/agama/software/manager.rb:606
 msgid "Product not selected yet"
 msgstr "Produkt har inte valts ännu"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:580
+#: service/lib/agama/software/manager.rb:615
 msgid "Product must be registered"
 msgstr "Produkt måste registreras"
 

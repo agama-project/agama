@@ -117,7 +117,7 @@ software:
   base_product: openSUSE
 
 security:
-  lsm: apparmor
+  lsm: selinux
   available_lsms:
     apparmor:
       patterns:
@@ -125,7 +125,7 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: permissive
+      policy: enforcing
     none:
       patterns: null
 

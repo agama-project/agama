@@ -531,6 +531,9 @@ export default {
   "Hide details": [
     "Skjul detaljer"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP Addresse"
   ],
@@ -978,6 +981,9 @@ export default {
   "Remove min channel filter": [
     "Fjern minimum kanal filter"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "Tilbakestill plassering"
   ],
@@ -1101,6 +1107,12 @@ export default {
   ],
   "Software selection": [
     "Valg av programvare"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
   ],
   "Something went wrong": [
     "Noe gikk galt"
@@ -1279,6 +1291,9 @@ export default {
   "Transactional root file system": [
     "Transaksjonell root filsystem"
   ],
+  "Try again": [
+    ""
+  ],
   "Type": [
     "Type"
   ],
@@ -1287,6 +1302,9 @@ export default {
   ],
   "Unit for the minimum size": [
     "Enhet for minimum størrelse"
+  ],
+  "Unsupported AutoYaST elements": [
+    ""
   ],
   "Unused space": [
     "Ubrukt plass"
@@ -1350,6 +1368,9 @@ export default {
   ],
   "Wi-Fi": [
     "Wi-Fi"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Kablet"

@@ -55,6 +55,8 @@ systemctl enable live-password-dialog.service
 systemctl enable live-password-iso.service
 systemctl enable live-password-random.service
 systemctl enable live-password-systemd.service
+systemctl enable live-root-shell.service
+systemctl enable checkmedia.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
@@ -72,8 +74,9 @@ systemctl disable YaST2-Firstboot.service
 systemctl disable YaST2-Second-Stage.service
 
 ### setup dracut for live system
-label=${kiwi_install_volid:-$kiwi_iname}
 arch=$(uname -m)
+# keep in sync with ISO Volume ID set in the fix_bootconfig script
+label="Install-$kiwi_profiles-$arch"
 
 echo "Setting default live root: live:LABEL=$label"
 mkdir /etc/cmdline.d
@@ -84,6 +87,15 @@ echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
 echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
+# add xhci-pci-renesas to initrd if available (workaround for bsc#1237235)
+# FIXME: remove when the module is included in the default driver list in
+# in /usr/lib/dracut/modules.d/90kernel-modules/module-setup.sh, see
+# https://github.com/openSUSE/dracut/blob/7559201e7480a65b0da050263d96a1cd8f15f50d/modules.d/90kernel-modules/module-setup.sh#L42-L46
+if [ -f /lib/modules/*/kernel/drivers/usb/host/xhci-pci-renesas.ko* ]; then
+  echo "Adding xhci-pci-renesas driver to initrd..."
+  echo 'add_drivers+=" xhci-pci-renesas "' > /etc/dracut.conf.d/10-extra-drivers.conf
+fi
+
 if [ "${arch}" = "s390x" ]; then
   # workaround for custom bootloader setting
   touch /config.bootoptions
@@ -91,6 +103,7 @@ fi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
+sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/checkmedia-service
 
 # Increase the Live ISO image size to have some extra free space for installing
 # additional debugging or development packages.
@@ -163,6 +176,7 @@ rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 du -h -s /lib/modules /lib/firmware
 
 # remove the multimedia drivers
+# set DEBUG=1 to print the deleted drivers
 /tmp/driver_cleanup.rb --delete
 # remove the script, not needed anymore
 rm /tmp/driver_cleanup.rb
@@ -175,8 +189,18 @@ du -h -s /lib/modules /lib/firmware
 
 ################################################################################
 # The rest of the file was copied from the openSUSE Tumbleweed Live ISO
-# https://build.opensuse.org/package/view_file/openSUSE:Factory:Live/livecd-tumbleweed-kde/config.sh?expand=1
+# https://build.opensuse.org/projects/openSUSE:Factory:Live/packages/livecd-tumbleweed-kde/files/config.sh?expand=1
 #
+
+# Decompress kernel modules, better for squashfs (boo#1192457)
+find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +
+find /lib/modules/*/kernel -name '*.ko.zst' -exec zstd --rm -d {} +
+for moddir in /lib/modules/*; do
+  depmod "$(basename "$moddir")"
+done
+
+# Reuse what the macro does
+rpm --eval "%fdupes /usr/share/licenses" | sh
 
 # disable the services included by dependencies
 for s in purge-kernels; do

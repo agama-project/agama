@@ -26,6 +26,7 @@ require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "agama/with_progress"
 require "agama/helpers"
+require "agama/http"
 require "abstract_method"
 
 Yast.import "Arch"

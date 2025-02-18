@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 # Copyright (c) [2024] SUSE LLC
@@ -26,8 +25,8 @@ require "yast"
 module Agama
   # :nodoc:
   module AutoYaST
-    # Builds an Agama "l10n" section from an AutoYaST profile.
-    class L10nReader
+    # Builds an Agama "localization" section from an AutoYaST profile.
+    class LocalizationReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
@@ -37,12 +36,12 @@ module Agama
       #
       # If there is no l10n information, it returns an empty hash.
       #
-      # @return [Hash] Agama "l10n" section
+      # @return [Hash] Agama "localization" section
       def read
-        l10n = keyboard
+        localization = keyboard
           .merge(languages)
           .merge(timezone)
-        l10n.empty? ? {} : { "l10n" => l10n }
+        localization.empty? ? {} : { "localization" => localization }
       end
 
     private

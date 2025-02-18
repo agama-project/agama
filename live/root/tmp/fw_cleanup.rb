@@ -72,6 +72,7 @@ Find.find(dir) do |path|
   end
 end
 
+puts "Removing unused firmware..."
 # counter for total unused firmware size
 unused_size = 0
 
@@ -84,7 +85,6 @@ Find.find(fw_dir) do |fw_path|
   if !fw.include?(fw_name)
     unused_size += File.size(fw_path)
     if (do_delete)
-      puts "Deleting firmware file #{fw_path}"
       File.delete(fw_path)
     else
       puts "Found unused firmware #{fw_path}"
@@ -95,9 +95,9 @@ end
 # do some cleanup at the end
 if (do_delete)
   puts "Removing dangling symlinks..."
-  system("find #{fw_dir.shellescape} -xtype l -print -delete")
+  system("find #{fw_dir.shellescape} -xtype l -delete")
   puts "Removing empty directories..."
-  system("find #{fw_dir.shellescape} -type d -empty -print -delete")
+  system("find #{fw_dir.shellescape} -type d -empty -delete")
 end
 
 puts "Unused firmware size: #{unused_size} (#{unused_size >> 20} MiB)"

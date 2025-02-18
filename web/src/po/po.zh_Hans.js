@@ -525,6 +525,9 @@ export default {
   "Hide details": [
     "隐藏细节"
   ],
+  "I have read and accept the [license] for %s": [
+    ""
+  ],
   "IP Address": [
     "IP 地址"
   ],
@@ -969,6 +972,9 @@ export default {
   "Remove min channel filter": [
     "移除最小通道过滤器"
   ],
+  "Repository load failed": [
+    ""
+  ],
   "Reset location": [
     "重设位置"
   ],
@@ -1088,6 +1094,12 @@ export default {
   ],
   "Software selection": [
     "软件选择"
+  ],
+  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
+    ""
+  ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
   ],
   "Something went wrong": [
     "出了点问题"
@@ -1275,6 +1287,9 @@ export default {
   "Unit for the minimum size": [
     "最小尺寸的单位"
   ],
+  "Unsupported AutoYaST elements": [
+    ""
+  ],
   "Unused space": [
     "未使用的空间"
   ],
@@ -1337,6 +1352,9 @@ export default {
   ],
   "Wi-Fi": [
     "Wi-Fi"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "有线连接"

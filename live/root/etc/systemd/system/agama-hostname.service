@@ -5,7 +5,7 @@ After=systemd-hostnamed.target
 # but before starting the mDNS server
 Before=avahi-daemon.service
 # run only if the hostname has the default value, if it has been changed
-# by the hernel command line or systemd then keep it
+# by the kernel command line or systemd then keep it
 ConditionHost=localhost
 
 [Service]
