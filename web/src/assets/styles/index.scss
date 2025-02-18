@@ -242,6 +242,8 @@
 
 .pf-v6-c-nav__link {
   --pf-v6-c-nav__link--AlignItems: center;
+  padding-inline-start: var(--pf-t--global--spacer--sm);
+  padding-inline-end: var(--pf-t--global--spacer--sm);
 
   svg {
     font-size: var(--pf-t--global--font--size--lg);
