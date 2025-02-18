@@ -11,13 +11,13 @@
     <profiles>
         <!-- use at most 16 characters for the profile name, it is used in the ISO Volume ID -->
         <!-- which is limited to max. 32 characters -->
-        <profile name="Leap-16.0" description="openSUSE Leap image" import="true" />
+        <profile name="Leap_16.0" description="openSUSE Leap image" import="true" />
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
         <!-- TODO: add SPx in the future -->
         <profile name="SUSE_SLE_16" description="SLE-based image" import="true" />
         <profile name="SUSE_SLE_16_PXE" description="SLE OEM image for remote installation" import="true" />
-        <profile name="openSUSE-PXE" description="openSUSE OEM image for remote installation" import="true" />
-        <profile name="Leap-16.0-PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
+        <profile name="openSUSE_PXE" description="openSUSE OEM image for remote installation" import="true" />
+        <profile name="Leap_16.0_PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
     <preferences>
         <version>11.0.0</version>
@@ -31,22 +31,22 @@
         <bootloader-theme>openSUSE</bootloader-theme>
     </preferences>
     <!-- the ISO Volume ID is set by the fix_bootconfig script -->
-    <preferences arch="ppc64le" profiles="openSUSE,SUSE_SLE_16,Leap-16.0">
+    <preferences arch="ppc64le" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
         <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16,Leap-16.0">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE,SUSE_SLE_16,Leap-16.0">
+    <preferences arch="s390x" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
         <type image="iso" flags="dmsquash" mediacheck="true" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
         </type>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE-PXE,Leap-16.0-PXE,SUSE_SLE_16_PXE">
+    <preferences arch="ppc64le" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE">
         <!-- For some reason the compression results on ppc64le are not as good as on the other archs -->
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="ofw" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=3174400">
             <bootloader name="grub2" console="serial" timeout="1"/>
@@ -60,7 +60,7 @@
             <size unit="M">3000</size>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE-PXE,Leap-16.0-PXE,SUSE_SLE_16_PXE">
+    <preferences arch="s390x" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE">
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152">
             <bootloader name="custom"/>
             <oemconfig>
@@ -73,7 +73,7 @@
             <size unit="M">1900</size>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE-PXE,Leap-16.0-PXE,SUSE_SLE_16_PXE">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE">
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="uefi" installiso="true" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152">
             <bootloader name="grub2" timeout="1"/>
             <oemconfig>
@@ -93,7 +93,7 @@
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
     </repository>
-    <packages type="image" profiles="openSUSE-PXE,Leap-16.0-PXE,SUSE_SLE_16_PXE">
+    <packages type="image" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE">
         <package name="dracut-kiwi-oem-repart"/>
         <package name="dracut-kiwi-oem-dump"/>
         <archive name="root-PXE.tar.xz"/>
@@ -167,7 +167,7 @@
         <archive name="root.tar.xz"/>
     </packages>
     <!-- additional packages for the Leap distributions -->
-    <packages type="image" profiles="Leap-16.0,Leap-16.0-PXE">
+    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="openSUSE-repos-Leap"/>
@@ -177,7 +177,7 @@
         <package name="MozillaFirefox-branding-openSUSE"/>
     </packages>
     <!-- additional packages for the openSUSE distributions -->
-    <packages type="image" profiles="openSUSE,openSUSE-PXE">
+    <packages type="image" profiles="openSUSE,openSUSE_PXE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="openSUSE-repos-Tumbleweed"/>
@@ -202,10 +202,10 @@
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
     </packages>
-    <packages type="bootstrap" profiles="Leap-16.0,Leap-16.0-PXE">
+    <packages type="bootstrap" profiles="Leap_16.0,Leap_16.0_PXE">
         <package name="Leap-release"/>
     </packages>
-    <packages type="bootstrap" profiles="openSUSE,openSUSE-PXE">
+    <packages type="bootstrap" profiles="openSUSE,openSUSE_PXE">
         <package name="openSUSE-release"/>
         <package name="openSUSE-release-ftp"/>
     </packages>
