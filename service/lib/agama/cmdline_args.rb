@@ -34,6 +34,10 @@ module Agama
       @data = data
     end
 
+    def self.read
+      read_from("/proc/cmdline")
+    end
+
     # Reads the kernel command line options
     def self.read_from(path)
       args = new({})
