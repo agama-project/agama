@@ -32,17 +32,17 @@
     </preferences>
     <!-- the ISO Volume ID is set by the fix_bootconfig script -->
     <preferences arch="ppc64le" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
-        <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" editbootconfig="fix_bootconfig">
+        <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
     <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
-        <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" editbootconfig="fix_bootconfig">
+        <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
     <preferences arch="s390x" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
-        <type image="iso" flags="dmsquash" mediacheck="true" editbootconfig="fix_bootconfig">
+        <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
         </type>
     </preferences>
