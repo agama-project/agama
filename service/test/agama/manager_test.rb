@@ -225,6 +225,7 @@ describe Agama::Manager do
   describe "#finish_installation" do
     let(:finished) { false }
     let(:iguana) { true }
+    let(:method) { "reboot" }
 
     before do
       allow(subject).to receive(:collect_logs)
@@ -235,13 +236,13 @@ describe Agama::Manager do
 
     it "collects the logs" do
       expect(subject).to receive(:collect_logs)
-      subject.finish_installation
+      subject.finish_installation(method)
     end
 
     context "when it is not in finish the phase" do
       it "logs the error and returns false" do
         expect(logger).to receive(:error).with(/not finished/)
-        expect(subject.finish_installation).to eq(false)
+        expect(subject.finish_installation(method)).to eq(false)
       end
     end
 
@@ -251,16 +252,16 @@ describe Agama::Manager do
       context "and it is executed using iguana" do
         it "runs agamactl -k" do
           expect(subject).to receive(:system).with(/agamactl -k/).and_return(true)
-          expect(subject.finish_installation).to eq(true)
+          expect(subject.finish_installation(method)).to eq(true)
         end
       end
 
       context "and it is not executed using iguana" do
         let(:iguana) { false }
 
-        it "runs shutdown -r" do
+        it "executes the command to the finish method given" do
           expect(subject).to receive(:system).with(/shutdown -r now/).and_return(true)
-          expect(subject.finish_installation).to eq(true)
+          expect(subject.finish_installation(method)).to eq(true)
         end
       end
     end

@@ -246,15 +246,21 @@ describe Agama::DBus::Manager do
   end
 
   describe "#finish_phase" do
+    let(:finished) { true }
+
     before do
       allow(backend).to receive(:finish_installation).and_return(finished)
     end
 
-    context "when finished" do
-      let(:finished) { true }
+    it "finish the installation with the method given" do
+      method = "reboot"
+      expect(backend).to receive(:finish_installation).with(method)
+      subject.finish_phase("reboot")
+    end
 
+    context "when finished" do
       it "returns true" do
-        expect(subject.finish_phase).to eq(true)
+        expect(subject.finish_phase("poweroff")).to eq(true)
       end
     end
 
@@ -262,7 +268,7 @@ describe Agama::DBus::Manager do
       let(:finished) { false }
 
       it "returns false" do
-        expect(subject.finish_phase).to eq(false)
+        expect(subject.finish_phase("halt")).to eq(false)
       end
     end
   end
