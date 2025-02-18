@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 18 11:10:22 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add the xhci-pci-renesas driver to the initrd if available
+  (workaround for bsc#1237235)
+
+-------------------------------------------------------------------
 Wed Feb 12 12:02:39 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not print details about removed kernel drivers and firmware
