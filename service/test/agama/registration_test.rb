@@ -49,9 +49,11 @@ describe Agama::Registration do
     allow(SUSE::Connect::YaST).to receive(:create_credentials_file)
     allow(SUSE::Connect::YaST).to receive(:activate_product).and_return(service)
     allow(Y2Packager::NewRepositorySetup.instance).to receive(:add_service)
+    allow(Agama::CmdlineArgs).to receive(:read).and_return(cmdline_args)
   end
 
   let(:service) { OpenStruct.new(name: "test-service", url: nil) }
+  let(:cmdline_args) { Agama::CmdlineArgs.new({}) }
 
   describe "#register" do
     context "if there is no product selected yet" do
@@ -87,6 +89,21 @@ describe Agama::Registration do
           )
 
           subject.register("11112222", email: "test@test.com")
+        end
+
+        context "when a registration URL is set through the cmdline" do
+          let(:cmdline_args) do
+            Agama::CmdlineArgs.new("register_url" => "http://scc.example.net")
+          end
+
+          it "registers using the given URL" do
+            expect(SUSE::Connect::YaST).to receive(:announce_system).with(
+              { token: "11112222", email: "test@test.com", url: "http://scc.example.net" },
+              "test-5-x86_64"
+            )
+
+            subject.register("11112222", email: "test@test.com")
+          end
         end
 
         it "creates credentials file" do

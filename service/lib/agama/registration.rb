@@ -24,6 +24,7 @@ require "yast"
 require "ostruct"
 require "suse/connect"
 require "y2packager/new_repository_setup"
+require "agama/cmdline_args"
 
 Yast.import "Arch"
 
@@ -70,12 +71,9 @@ module Agama
     def register(code, email: "")
       return if product.nil? || reg_code
 
-      connect_params = {
-        token: code,
-        email: email
-      }
+      reg_params = connect_params(token: code, email: email)
 
-      login, password = SUSE::Connect::YaST.announce_system(connect_params, target_distro)
+      login, password = SUSE::Connect::YaST.announce_system(reg_params, target_distro)
       # write the global credentials
       # TODO: check if we can do it in memory for libzypp
       SUSE::Connect::YaST.create_credentials_file(login, password, GLOBAL_CREDENTIALS_PATH)
@@ -116,11 +114,8 @@ module Agama
       Y2Packager::NewRepositorySetup.instance.services.delete(@service.name)
       @software.remove_service(@service)
 
-      connect_params = {
-        token: reg_code,
-        email: email
-      }
-      SUSE::Connect::YaST.deactivate_system(connect_params)
+      reg_params = connect_params(token: reg_code, email: email)
+      SUSE::Connect::YaST.deactivate_system(reg_params)
       FileUtils.rm(GLOBAL_CREDENTIALS_PATH) # connect does not remove it itself
       if @credentials_file
         FileUtils.rm(File.join(TARGET_DIR, credentials_path(@credentials_file)))
@@ -194,6 +189,26 @@ module Agama
 
     def credentials_path(file)
       File.join(SUSE::Connect::YaST::DEFAULT_CREDENTIALS_DIR, file)
+    end
+
+    # Returns the arguments to connect to the registration server
+    #
+    # @param params [Hash] additional parameters (e.g., email and token)
+    # @return [Hash]
+    def connect_params(params = {})
+      default_params = {}
+      default_params[:url] = registration_url if registration_url
+      default_params.merge(params)
+    end
+
+    # Returns the URL of the registration server
+    #
+    # At this point, it just checks the kernel's command-line.
+    #
+    # @return [String, nil]
+    def registration_url
+      cmdline_args = CmdlineArgs.read
+      cmdline_args.data["register_url"]
     end
   end
 end
