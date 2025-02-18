@@ -58,38 +58,30 @@ module Agama
 
         # DoneProvide callback
         #
-        # @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
+        # @return [String, nil] "I" for ignore, "R" for retry and "C" for abort (not implemented)
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
         def done_provide(error, reason, name)
           args = [error, reason, name]
           logger.debug "DoneProvide callback: #{args.inspect}"
 
-          message = case error
-          when NO_ERROR, NOT_FOUND
-            # "Not found" (error 1) is handled by the MediaChange callback.
-            nil
-          when IO_ERROR
-            # TRANSLATORS: error message, package download failed, %1 is the name of the package
-            Yast::Builtins.sformat(_("Package %1 could not be downloaded (input/output error)."),
-              name)
-          when INVALID
-            # TRANSLATORS: error message, package verification failed, %1 is the name of the package
-            Yast::Builtins.sformat(_("Package %1 is broken, integrity check has failed."), name) +
-              # TRANSLATORS: warning message
-              "\n\n" + _("Installing a broken package affects system stability and is a big " \
-                         "security risk!")
+          # "Not found" (error 1) is handled by the MediaChange callback.
+          return nil if error == NO_ERROR || error == NOT_FOUND
+
+          if error == IO_ERROR
+            error_code = "IO_ERROR"
+          elsif error == INVALID
+            error_code = "INVALID"
           else
             logger.warn "DoneProvide: unknown error: '#{error}'"
+            return nil
           end
 
-          return if message.nil?
-
           question = Agama::Question.new(
-            qclass:         "software.provide_error",
-            text:           text(message, reason),
+            qclass:         "software.package_error.provide_error",
+            text:           reason,
             options:        [retry_label.to_sym, continue_label.to_sym],
             default_option: retry_label.to_sym,
-            data:           { "reason" => reason }
+            data:           { "package" => name, "error_code" => error_code }
           )
 
           questions_client.ask(question) do |question_client|
@@ -98,16 +90,6 @@ module Agama
         end
 
       private
-
-        def text(message, reason)
-          msg = title + separator + message
-
-          # TODO: later implement some generic "details" property, for now append the details
-          # into to the main text
-          msg += separator + reason if !reason.empty?
-
-          broken_system_warning(msg)
-        end
 
         # @return [Agama::DBus::Clients::Questions]
         attr_reader :questions_client

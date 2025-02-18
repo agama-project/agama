@@ -23,17 +23,18 @@
 import React from "react";
 import { Text } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { AnswerCallback, Question } from "~/types/questions";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 
 /**
- * Component for rendering generic questions
+ * Component for rendering libzypp error callbacks
  *
  * @param question - the question to be answered
  * @param answerCallback - the callback to be triggered on answer
  */
-export default function GenericQuestion({
+export default function PackageErrorQuestion({
   question,
   answerCallback,
 }: {
@@ -45,9 +46,26 @@ export default function GenericQuestion({
     answerCallback(question);
   };
 
+  const warning =
+    question.class === "software.package_error.provide_error" &&
+    question.data.error_code === "INVALID"
+      ? // TRANSLATORS: a special warning message for installing broken package
+        _("Installing a broken package affects system stability and is a big security risk!")
+      : // TRANSLATORS: a generic warning message, consequences of skipping a package installation
+        _(
+          "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.",
+        );
+
   return (
-    <Popup isOpen aria-label={_("Question")}>
+    <Popup
+      isOpen
+      title={_("Package installation failed")}
+      titleIconVariant={() => <Icon name="error" size="s" />}
+    >
       <Text>{question.text}</Text>
+      {/* non-breaking space for extra empty line between texts */}
+      <Text>&nbsp;</Text>
+      <Text>{warning}</Text>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}

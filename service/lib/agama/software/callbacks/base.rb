@@ -33,11 +33,6 @@ module Agama
           textdomain "agama"
         end
 
-        # separator between multiple messages
-        def separator
-          "\n\n"
-        end
-
         # label for the "retry" action
         def retry_label
           # TRANSLATORS: button label, try downloading the failed package again
@@ -54,20 +49,6 @@ module Agama
         def abort_label
           # TRANSLATORS: button label, abort the installation completely after an error
           _("Abort installation")
-        end
-
-        # dialog title
-        def title
-          # TRANSLATORS: Dialog title
-          _("Package installation failed")
-        end
-
-        # append a warning about possible broken system to the error message
-        # @param message [String] input message
-        def broken_system_warning(message)
-          # TRANSLATORS: warning message, you can use multiple lines
-          message + separator + _("Continuing without installing the package can result in " \
-                                  "a broken system.\nIn some cases the system might not even boot.")
         end
       end
     end

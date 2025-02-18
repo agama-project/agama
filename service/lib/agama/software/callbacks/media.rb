@@ -79,8 +79,8 @@ module Agama
           )
 
           question = Agama::Question.new(
-            qclass:         "software.medium_error",
-            text:           title + separator + broken_system_warning(error),
+            qclass:         "software.package_error.medium_error",
+            text:           error,
             options:        [retry_label.to_sym, continue_label.to_sym],
             default_option: retry_label.to_sym,
             data:           { "url" => url }

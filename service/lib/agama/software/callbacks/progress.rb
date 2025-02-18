@@ -90,11 +90,11 @@ module Agama
           logger.error("Package #{current_package} failed: #{description}")
 
           question = Agama::Question.new(
-            qclass:         "software.install_error",
-            text:           text,
+            qclass:         "software.package_error.install_error",
+            text:           description,
             options:        [retry_label.to_sym, abort_label.to_sym, continue_label.to_sym],
             default_option: retry_label.to_sym,
-            data:           { "description" => description }
+            data:           { "package" => current_package }
           )
 
           questions_client.ask(question) do |question_client|
@@ -111,12 +111,6 @@ module Agama
               "I"
             end
           end
-        end
-
-        def text
-          broken_system_warning(title + separator +
-            # TRANSLATORS: %s is a package name
-            (_("Package %s could not be installed.") % current_package))
         end
 
         def msg
