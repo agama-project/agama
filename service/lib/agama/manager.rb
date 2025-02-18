@@ -265,12 +265,12 @@ module Agama
       end
 
       if method == "stop"
-        logger.info("Finished the installation.")
+        logger.info("Finished the installation (stop).")
         return true
       end
 
       cmd = finish_cmd(method)
-      logger.info("Finishing installation with #{cmd}")
+      logger.info("Finishing installation with '#{cmd}' (#{method})")
 
       !!system(cmd)
     end

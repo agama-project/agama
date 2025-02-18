@@ -106,9 +106,15 @@ pub enum Commands {
         /// URL pointing to file for download
         url: String,
     },
-    /// Finish the installation (reboot the system by default)
+    /// Finish the installation rebooting the system by default.
     ///
     /// This command finishes the installation by performing a set of tasks and rebooting the system by
     /// default if the installation is completed successfully.
-    Finish { method: Option<FinishMethod> },
+    ///
+    /// Optionally an argument can be given for determining whether the system should be rebooted,
+    /// poweroff, halt or just stop at the of the installation. Values: [stop|reboot|poweroff|halt]
+    Finish {
+        #[clap(default_value = "reboot")]
+        method: Option<FinishMethod>,
+    },
 }

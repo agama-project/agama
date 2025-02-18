@@ -99,6 +99,7 @@ impl TryFrom<u32> for InstallationPhase {
     utoipa::ToSchema,
 )]
 #[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub enum FinishMethod {
     // Halt the system
     Halt,
