@@ -35,7 +35,7 @@ module Agama
     end
 
     def self.read
-      read_from("/proc/cmdline")
+      read_from("/run/agama/cmdline.d/agama")
     end
 
     # Reads the kernel command line options
