@@ -60,7 +60,7 @@ export default function Questions(): React.ReactNode {
   }
 
   // special popup for package errors (libzypp callbacks)
-  if (currentQuestion.class.startsWith("software.package_error.")) {
+  if (currentQuestion.class?.startsWith("software.package_error.")) {
     QuestionComponent = PackageErrorQuestion;
   }
 

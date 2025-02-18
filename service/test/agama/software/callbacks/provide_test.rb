@@ -50,19 +50,21 @@ describe Agama::Software::Callbacks::Provide do
 
     context "when the there is an I/O error" do
       it "registers a question informing of the error" do
+        reason = "could not be downloaded"
         expect(questions_client).to receive(:ask) do |q|
-          expect(q.text).to include("could not be downloaded")
+          expect(q.text).to include(reason)
         end
-        subject.done_provide(2, "Some dummy reason", "dummy-package")
+        subject.done_provide(2, reason, "dummy-package")
       end
     end
 
     context "when the there is an I/O error" do
       it "registers a question informing of the error" do
+        reason = "integrity check has failed"
         expect(questions_client).to receive(:ask) do |q|
-          expect(q.text).to include("integrity check has failed")
+          expect(q.text).to include(reason)
         end
-        subject.done_provide(3, "Some dummy reason", "dummy-package")
+        subject.done_provide(3, "integrity check has failed", "dummy-package")
       end
     end
 
