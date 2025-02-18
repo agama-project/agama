@@ -21,7 +21,7 @@
  */
 
 import React, { useId, useState } from "react";
-import { Button, ButtonProps, Stack, Tooltip } from "@patternfly/react-core";
+import { Button, ButtonProps, Stack, Tooltip, TooltipProps } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
@@ -98,7 +98,12 @@ const InstallButton = (
   const withIssuesText = _("Not possible with the current setup. Click to know more.");
 
   const Wrapper = !hasIssues ? React.Fragment : Tooltip;
-  const tooltipProps = { id: tooltipId, content: withIssuesText };
+  const tooltipProps: TooltipProps = {
+    id: tooltipId,
+    content: withIssuesText,
+    position: "left-start",
+    flipBehavior: ["bottom-end"],
+  };
 
   return (
     <>

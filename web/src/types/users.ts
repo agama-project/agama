@@ -25,19 +25,12 @@ type FirstUser = {
   userName: string;
   password: string;
   hashedPassword: boolean;
-  autologin: boolean;
 };
 
 type RootUser = {
-  password: boolean;
-  hashedPassword: boolean;
-  sshkey: string;
-};
-
-type RootUserChanges = {
   password: string;
   hashedPassword: boolean;
-  sshkey: string;
+  sshPublicKey: string;
 };
 
-export type { FirstUser, RootUserChanges, RootUser };
+export type { FirstUser, RootUser };

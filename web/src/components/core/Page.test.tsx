@@ -25,7 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { plainRender, mockNavigateFn, mockRoutes, installerRender } from "~/test-utils";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { PRODUCT, ROOT, USER } from "~/routes/paths";
+import { PRODUCT, ROOT } from "~/routes/paths";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -108,7 +108,6 @@ describe("Page", () => {
       ["product selection progress", PRODUCT.progress],
       ["installation progress", ROOT.installationProgress],
       ["installation finished", ROOT.installationFinished],
-      ["root authentication", USER.rootUser.edit],
     ])(`but at %s path`, (_, path) => {
       beforeEach(() => {
         mockRoutes(path);
@@ -122,11 +121,16 @@ describe("Page", () => {
   });
 
   describe("Page.Cancel", () => {
-    it("renders a 'Cancel' button that navigates to the top level route by default", async () => {
-      const { user } = plainRender(<Page.Cancel />);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      await user.click(button);
-      expect(mockNavigateFn).toHaveBeenCalledWith("..");
+    it("renders a link that navigates to the top level route by default", () => {
+      plainRender(<Page.Cancel />);
+      const link = screen.getByRole("link", { name: "Cancel" });
+      expect(link).toHaveAttribute("href", "..");
+    });
+
+    it("renders a link that navigates to the given route", () => {
+      plainRender(<Page.Cancel navigateTo="somewhere" />);
+      const link = screen.getByRole("link", { name: "Cancel" });
+      expect(link).toHaveAttribute("href", "somewhere");
     });
   });
 

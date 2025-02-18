@@ -194,7 +194,7 @@ describe("BootSelection", () => {
 
   it("does not change the boot options on cancel", async () => {
     const { user } = installerRender(<BootSelection />);
-    const cancel = screen.getByRole("button", { name: "Cancel" });
+    const cancel = screen.getByRole("link", { name: "Cancel" });
 
     await user.click(cancel);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,80 +20,84 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Stack } from "@patternfly/react-core";
-import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { useNavigate } from "react-router-dom";
-import { Link, Page, RowActions } from "~/components/core";
-import { _ } from "~/i18n";
+import React, { useId } from "react";
+import {
+  Card,
+  CardBody,
+  Content,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+} from "@patternfly/react-core";
+import { Link, Page, SplitButton } from "~/components/core";
 import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
 import { PATHS } from "~/routes/users";
+import { isEmpty } from "~/utils";
+import { _ } from "~/i18n";
 
-const DefineUserNow = () => (
-  <Link to={PATHS.firstUser.create} isPrimary>
-    {_("Define a user now")}
-  </Link>
-);
+const UserActions = () => {
+  const user = useFirstUser();
+  const { mutate: removeUser } = useRemoveFirstUserMutation();
 
-const UserNotDefined = () => (
-  <Stack hasGutter>
-    <div>{_("No user defined yet.")}</div>
-    <div>
-      <strong>
-        {_(
-          "Please, be aware that a user must be defined before installing the system to be able to log into it.",
-        )}
-      </strong>
-    </div>
-  </Stack>
-);
+  if (isEmpty(user?.userName)) {
+    return (
+      <Link to={PATHS.firstUser.create} isPrimary>
+        {_("Define a user now")}
+      </Link>
+    );
+  }
 
-const UserData = ({ user, actions }) => {
   return (
-    <Table variant="compact">
-      <Thead>
-        <Tr>
-          <Th width={25}>{_("Full name")}</Th>
-          <Th>{_("Username")}</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        <Tr>
-          <Td dataLabel="Fullname">{user.fullName}</Td>
-          <Td dataLabel="Username">{user.userName}</Td>
-          <Td isActionCell>
-            <RowActions actions={actions} id={`actions-for-${user.userName}`} />
-          </Td>
-        </Tr>
-      </Tbody>
-    </Table>
+    <SplitButton label={_("Edit")} href={PATHS.firstUser.edit} variant="secondary">
+      <SplitButton.Item isDanger onClick={() => removeUser()}>
+        {_("Discard")}
+      </SplitButton.Item>
+    </SplitButton>
+  );
+};
+
+const UserData = () => {
+  const user = useFirstUser();
+  const fullnameTermId = useId();
+  const usernameTermId = useId();
+
+  if (isEmpty(user?.userName)) {
+    return <Content isEditorial>{_("No user defined yet.")}</Content>;
+  }
+
+  return (
+    <Card isCompact isPlain>
+      <CardBody>
+        <DescriptionList isHorizontal isFluid displaySize="lg" isCompact>
+          <DescriptionListGroup>
+            <DescriptionListTerm id={fullnameTermId}>{_("Full name")}</DescriptionListTerm>
+            <DescriptionListDescription aria-labelledby={fullnameTermId}>
+              {user.fullName}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm id={usernameTermId}>{_("Username")}</DescriptionListTerm>
+            <DescriptionListDescription aria-labelledby={usernameTermId}>
+              {user.userName}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+        </DescriptionList>
+      </CardBody>
+    </Card>
   );
 };
 
 export default function FirstUser() {
-  const user = useFirstUser();
-  const removeUser = useRemoveFirstUserMutation();
-  const navigate = useNavigate();
-
   useFirstUserChanges();
 
-  const isUserDefined = user?.userName && user?.userName !== "";
-  const actions = [
-    {
-      title: _("Edit"),
-      onClick: () => navigate(PATHS.firstUser.edit),
-    },
-    {
-      title: _("Discard"),
-      onClick: () => removeUser.mutate(),
-      isDanger: true,
-    },
-  ];
-
   return (
-    <Page.Section title={_("First user")} actions={!isUserDefined && <DefineUserNow />}>
-      {isUserDefined ? <UserData user={user} actions={actions} /> : <UserNotDefined />}
+    <Page.Section
+      title={_("First user")}
+      actions={<UserActions />}
+      description={_("Define the first user with admin (sudo) privileges for system management.")}
+    >
+      <UserData />
     </Page.Section>
   );
 }

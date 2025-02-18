@@ -44,16 +44,17 @@ impl UsersStore {
         let first_user = self.users_client.first_user().await?;
         let first_user = FirstUserSettings {
             user_name: Some(first_user.user_name),
-            autologin: Some(first_user.autologin),
             full_name: Some(first_user.full_name),
             password: Some(first_user.password),
             hashed_password: Some(first_user.hashed_password),
         };
-        let mut root_user = RootUserSettings::default();
-        let ssh_public_key = self.users_client.root_ssh_key().await?;
-        if !ssh_public_key.is_empty() {
-            root_user.ssh_public_key = Some(ssh_public_key)
-        }
+        let root_user = self.users_client.root_user().await?;
+        let root_user = RootUserSettings {
+            password: root_user.password,
+            hashed_password: root_user.hashed_password,
+            ssh_public_key: root_user.ssh_public_key,
+        };
+
         Ok(UserSettings {
             first_user: Some(first_user),
             root: Some(root_user),
@@ -76,7 +77,6 @@ impl UsersStore {
         let first_user = FirstUser {
             user_name: settings.user_name.clone().unwrap_or_default(),
             full_name: settings.full_name.clone().unwrap_or_default(),
-            autologin: settings.autologin.unwrap_or_default(),
             password: settings.password.clone().unwrap_or_default(),
             hashed_password: settings.hashed_password.unwrap_or_default(),
         };
@@ -128,8 +128,7 @@ mod test {
                     "fullName": "Tux",
                     "userName": "tux",
                     "password": "fish",
-                    "hashedPassword": false,
-                    "autologin": true
+                    "hashedPassword": false
                 }"#,
                 );
         });
@@ -139,8 +138,9 @@ mod test {
                 .header("content-type", "application/json")
                 .body(
                     r#"{
-                    "sshkey": "keykeykey",
-                    "password": true
+                    "sshPublicKey": "keykeykey",
+                    "password": "nots3cr3t",
+                    "hashedPassword": false
                 }"#,
                 );
         });
@@ -154,12 +154,11 @@ mod test {
             user_name: Some("tux".to_owned()),
             password: Some("fish".to_owned()),
             hashed_password: Some(false),
-            autologin: Some(true),
         };
         let root_user = RootUserSettings {
             // FIXME this is weird: no matter what HTTP reports, we end up with None
-            password: None,
-            hashed_password: None,
+            password: Some("nots3cr3t".to_owned()),
+            hashed_password: Some(false),
             ssh_public_key: Some("keykeykey".to_owned()),
         };
         let expected = UserSettings {
@@ -184,7 +183,7 @@ mod test {
             when.method(PUT)
                 .path("/api/users/first")
                 .header("content-type", "application/json")
-                .body(r#"{"fullName":"Tux","userName":"tux","password":"fish","hashedPassword":false,"autologin":true}"#);
+                .body(r#"{"fullName":"Tux","userName":"tux","password":"fish","hashedPassword":false}"#);
             then.status(200);
         });
         // note that we use 2 requests for root
@@ -192,14 +191,14 @@ mod test {
             when.method(PATCH)
                 .path("/api/users/root")
                 .header("content-type", "application/json")
-                .body(r#"{"sshkey":null,"password":"1234","hashedPassword":false}"#);
+                .body(r#"{"sshPublicKey":null,"password":"1234","hashedPassword":false}"#);
             then.status(200).body("0");
         });
         let root_mock2 = server.mock(|when, then| {
             when.method(PATCH)
                 .path("/api/users/root")
                 .header("content-type", "application/json")
-                .body(r#"{"sshkey":"keykeykey","password":null,"hashedPassword":null}"#);
+                .body(r#"{"sshPublicKey":"keykeykey","password":null,"hashedPassword":null}"#);
             then.status(200).body("0");
         });
         let url = server.url("/api");
@@ -211,7 +210,6 @@ mod test {
             user_name: Some("tux".to_owned()),
             password: Some("fish".to_owned()),
             hashed_password: Some(false),
-            autologin: Some(true),
         };
         let root_user = RootUserSettings {
             password: Some("1234".to_owned()),

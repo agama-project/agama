@@ -27,7 +27,7 @@ import ProductRegistrationAlert from "./ProductRegistrationAlert";
 import { Product } from "~/types/software";
 import { useProduct } from "~/queries/software";
 import { useIssues } from "~/queries/issues";
-import { PRODUCT, REGISTRATION, ROOT, USER } from "~/routes/paths";
+import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
 import { Issue } from "~/types/issues";
 
 const tw: Product = {
@@ -75,7 +75,6 @@ const rendersNothingInSomePaths = () => {
     ["product selection progress", PRODUCT.progress],
     ["installation progress", ROOT.installationProgress],
     ["installation finished", ROOT.installationFinished],
-    ["root authentication", USER.rootUser.edit],
   ])(`but at %s path`, (_, path) => {
     beforeEach(() => {
       mockRoutes(path);

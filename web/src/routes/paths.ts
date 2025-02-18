@@ -55,12 +55,12 @@ const ROOT = {
 
 const USER = {
   root: "/users",
-  rootUser: {
-    edit: "/users/root/edit",
-  },
   firstUser: {
     create: "/users/first",
     edit: "/users/first/edit",
+  },
+  rootUser: {
+    edit: "/users/root/edit",
   },
 };
 
@@ -98,7 +98,6 @@ const SIDE_PATHS = [
   PRODUCT.progress,
   ROOT.installationProgress,
   ROOT.installationFinished,
-  USER.rootUser.edit,
 ];
 
 export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER, SIDE_PATHS };

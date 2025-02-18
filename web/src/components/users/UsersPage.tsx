@@ -23,7 +23,7 @@
 import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { IssuesAlert, Page } from "~/components/core";
-import { FirstUser, RootAuthMethods } from "~/components/users";
+import { FirstUser, RootUser } from "~/components/users";
 import { useIssues } from "~/queries/issues";
 import { _ } from "~/i18n";
 
@@ -33,7 +33,7 @@ export default function UsersPage() {
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{_("Users")}</Content>
+        <Content component="h2">{_("Authentication")}</Content>
       </Page.Header>
 
       <Page.Content>
@@ -43,7 +43,7 @@ export default function UsersPage() {
             <FirstUser />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <RootAuthMethods />
+            <RootUser />
           </GridItem>
         </Grid>
       </Page.Content>
