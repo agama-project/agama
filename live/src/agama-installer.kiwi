@@ -146,6 +146,7 @@
         <package name="agama-yast"/>
         <package name="agama-web-ui"/>
         <package name="agama-cli"/>
+        <package name="agama-cli-bash-completion"/>
         <package name="agama-auto"/>
         <package name="agama-integration-tests"/>
         <package name="rubygem(agama-yast)"/>
