@@ -21,7 +21,7 @@
  */
 
 import React, { act } from "react";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import FirstUserForm from "./FirstUserForm";
 
