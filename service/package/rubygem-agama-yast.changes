@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 19 17:54:19 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Instead of "agama." use more generic "inst." prefix for kernel
+  boot options controling the agama installer
+
+-------------------------------------------------------------------
 Wed Feb 19 14:21:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - if root ssh key is used, ensure that sshd is enabled and firewall
@@ -10,7 +16,6 @@ Wed Feb 19 14:21:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 Wed Feb 19 13:35:07 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - UX: Improve the libzypp callbacks (gh#agama-project/agama#1985)
-
 
 -------------------------------------------------------------------
 Tue Feb 18 17:19:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
