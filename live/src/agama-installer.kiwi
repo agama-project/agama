@@ -15,6 +15,7 @@
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
         <!-- TODO: add SPx in the future -->
         <profile name="SUSE_SLE_16" description="SLE-based image" import="true" />
+        <profile name="SUSE_SLE_16_PXE" description="SLE OEM image for remote installation" import="true" />
         <profile name="openSUSE-PXE" description="openSUSE OEM image for remote installation" import="true" />
         <profile name="Leap-16.0-PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
@@ -45,7 +46,7 @@
             <bootloader name="custom" />
         </type>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE-PXE,Leap-16.0-PXE">
+    <preferences arch="ppc64le" profiles="openSUSE-PXE,Leap-16.0-PXE,SUSE_SLE_16_PXE">
         <!-- For some reason the compression results on ppc64le are not as good as on the other archs -->
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="ofw" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=3174400">
             <bootloader name="grub2" console="serial" timeout="1"/>
@@ -59,7 +60,7 @@
             <size unit="M">3000</size>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE-PXE,Leap-16.0-PXE">
+    <preferences arch="s390x" profiles="openSUSE-PXE,Leap-16.0-PXE,SUSE_SLE_16_PXE">
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152">
             <bootloader name="custom"/>
             <oemconfig>
@@ -72,7 +73,7 @@
             <size unit="M">1900</size>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE-PXE,Leap-16.0-PXE">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE-PXE,Leap-16.0-PXE,SUSE_SLE_16_PXE">
         <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="uefi" installiso="true" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152">
             <bootloader name="grub2" timeout="1"/>
             <oemconfig>
@@ -92,10 +93,10 @@
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
     </repository>
-    <packages type="image" profiles="openSUSE-PXE,Leap-16.0-PXE">
+    <packages type="image" profiles="openSUSE-PXE,Leap-16.0-PXE,SUSE_SLE_16_PXE">
         <package name="dracut-kiwi-oem-repart"/>
         <package name="dracut-kiwi-oem-dump"/>
-        <archive name="root-openSUSE-PXE.tar.xz"/>
+        <archive name="root-PXE.tar.xz"/>
     </packages>
     <packages type="image">
         <package name="avahi"/>
@@ -186,7 +187,7 @@
         <package name="MozillaFirefox-branding-openSUSE"/>
     </packages>
     <!-- additional packages for the SLE distributions -->
-    <packages type="image" profiles="SUSE_SLE_16">
+    <packages type="image" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE">
         <package name="agama-products-sle"/>
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-sles-base"/>
@@ -208,7 +209,7 @@
         <package name="openSUSE-release"/>
         <package name="openSUSE-release-ftp"/>
     </packages>
-    <packages type="bootstrap" profiles="SUSE_SLE_16">
+    <packages type="bootstrap" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE">
         <package name="SLES-release"/>
     </packages>
 </image>
