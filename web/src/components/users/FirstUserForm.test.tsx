@@ -70,10 +70,6 @@ describe("FirstUserForm", () => {
       screen.getByLabelText("Password confirmation");
       screen.getByRole("button", { name: "Accept" });
       screen.getByRole("link", { name: "Cancel" });
-
-      expect(
-        screen.queryByRole("switch", { name: "Edit the password too" }),
-      ).not.toBeInTheDocument();
     });
 
     it("allows defining the user when all data is provided", async () => {
@@ -136,9 +132,9 @@ describe("FirstUserForm", () => {
 
   describe("when user is defined", () => {
     beforeEach(() => {
-      mockUserName = "Gecko Migo";
-      mockFullName = "gmigo";
-      mockPassword = "";
+      mockFullName = "Gecko Migo";
+      mockUserName = "gmigo";
+      mockPassword = "n0ts3cr3t";
       mockHashedPassword = false;
     });
 
@@ -146,11 +142,14 @@ describe("FirstUserForm", () => {
       installerRender(<FirstUserForm />);
 
       screen.getByRole("heading", { name: "Edit user" });
-      screen.getByRole("textbox", { name: "Full name" });
-      screen.getByRole("textbox", { name: "Username" });
-      screen.getByRole("switch", { name: "Edit the password too" });
-      expect(screen.queryByLabelText("Password")).not.toBeInTheDocument();
-      expect(screen.queryByLabelText("Password confirmation")).not.toBeInTheDocument();
+      const fullNameInput = screen.getByRole("textbox", { name: "Full name" });
+      expect(fullNameInput).toHaveValue("Gecko Migo");
+      const userNameInput = screen.getByRole("textbox", { name: "Username" });
+      expect(userNameInput).toHaveValue("gmigo");
+      const passwordInput = screen.queryByLabelText("Password");
+      expect(passwordInput).toHaveValue("n0ts3cr3t");
+      const passwordConfirmationInput = screen.queryByLabelText("Password confirmation");
+      expect(passwordConfirmationInput).toHaveValue("n0ts3cr3t");
       screen.getByRole("button", { name: "Accept" });
       screen.getByRole("link", { name: "Cancel" });
     });
@@ -171,8 +170,6 @@ describe("FirstUserForm", () => {
         expect.objectContaining({
           fullName: "Gecko Loco",
           userName: "gloco",
-          // FIXME: setting empty password really means not touching previous one?
-          password: "",
         }),
       );
     });
@@ -182,13 +179,11 @@ describe("FirstUserForm", () => {
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
       const username = screen.getByRole("textbox", { name: "Username" });
-      const editPasswordToggle = screen.queryByRole("switch", { name: "Edit the password too" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.clear(fullname);
       await user.type(fullname, "Gecko Loco");
       await user.clear(username);
       await user.type(username, "gloco");
-      await user.click(editPasswordToggle);
       const password = screen.getByLabelText("Password");
       const passwordConfirmation = screen.getByLabelText("Password confirmation");
       await user.clear(password);
@@ -215,11 +210,7 @@ describe("FirstUserForm", () => {
 
       it("allows preserving it", async () => {
         const { user } = installerRender(<FirstUserForm />);
-        const passwordToggle = screen.getByRole("switch", { name: "Edit the password too" });
         const acceptButton = screen.getByRole("button", { name: "Accept" });
-        expect(passwordToggle).not.toBeChecked();
-        await user.click(passwordToggle);
-        expect(passwordToggle).toBeChecked();
         screen.getByText("Using a hashed password.");
         await user.click(acceptButton);
         expect(mockFirstUserMutation).toHaveBeenCalledWith(
@@ -229,16 +220,15 @@ describe("FirstUserForm", () => {
 
       it("allows using a plain password instead", async () => {
         const { user } = installerRender(<FirstUserForm />);
-        const passwordToggle = screen.getByRole("switch", { name: "Edit the password too" });
         const acceptButton = screen.getByRole("button", { name: "Accept" });
-        expect(passwordToggle).not.toBeChecked();
-        await user.click(passwordToggle);
-        expect(passwordToggle).toBeChecked();
         screen.getByText("Using a hashed password.");
+        expect(screen.queryByText(mockPassword)).not.toBeInTheDocument();
         const changeToPlainButton = screen.getByRole("button", { name: "Change" });
         await user.click(changeToPlainButton);
         const passwordInput = screen.getByLabelText("Password");
+        expect(passwordInput).not.toHaveValue(mockPassword);
         const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+        expect(passwordConfirmationInput).not.toHaveValue(mockPassword);
         await user.type(passwordInput, "n0tS3cr3t");
         await user.type(passwordConfirmationInput, "n0tS3cr3t");
         await user.click(acceptButton);

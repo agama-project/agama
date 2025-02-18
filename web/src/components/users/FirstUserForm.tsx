@@ -30,7 +30,6 @@ import {
   MenuContent,
   MenuList,
   MenuItem,
-  Switch,
   Content,
   ActionGroup,
   Button,
@@ -84,20 +83,19 @@ const UsernameSuggestions = ({
 export default function FirstUserForm() {
   const firstUser = useFirstUser();
   const setFirstUser = useFirstUserMutation();
-  const [fullName, setFullName] = useState(firstUser?.fullName);
-  const [userName, setUserName] = useState(firstUser?.userName);
-  const [password, setPassword] = useState(
-    firstUser && firstUser.hashedPassword ? "" : firstUser.password,
-  );
-  const [errors, setErrors] = useState([]);
   const [usingHashedPassword, setUsingHashedPassword] = useState(
     firstUser ? firstUser.hashedPassword : false,
   );
+  const [fullName, setFullName] = useState(firstUser?.fullName);
+  const [userName, setUserName] = useState(firstUser?.userName);
+  const [password, setPassword] = useState(usingHashedPassword ? "" : firstUser?.password);
+  const [errors, setErrors] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [insideDropDown, setInsideDropDown] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState([]);
-  const [changePassword, setChangePassword] = useState(firstUser?.userName === "");
+  // FIXME
+  const [changePassword] = useState(firstUser?.userName === "");
   const usernameInputRef = useRef<HTMLInputElement>();
   const navigate = useNavigate();
   const passwordRef = useRef<HTMLInputElement>();
@@ -121,8 +119,7 @@ export default function FirstUserForm() {
     const data: Partial<FirstUser> = {
       fullName,
       userName,
-      // FIXME: Stop sending the password conditionally (requires backend changes)
-      password: changePassword && !usingHashedPassword ? password : firstUser.password,
+      password: usingHashedPassword ? firstUser.password : password,
       hashedPassword: usingHashedPassword,
     };
 
@@ -238,14 +235,7 @@ export default function FirstUserForm() {
               focusedIndex={focusedIndex}
             />
           </FormGroup>
-          {isEditing && (
-            <Switch
-              label={_("Edit the password too")}
-              isChecked={changePassword}
-              onChange={() => setChangePassword(!changePassword)}
-            />
-          )}
-          {changePassword && usingHashedPassword && (
+          {usingHashedPassword && (
             <Content isEditorial>
               {_("Using a hashed password.")}{" "}
               <Button variant="link" isInline onClick={() => setUsingHashedPassword(false)}>
@@ -253,9 +243,10 @@ export default function FirstUserForm() {
               </Button>
             </Content>
           )}
-          {changePassword && !usingHashedPassword && (
+          {!usingHashedPassword && (
             <PasswordAndConfirmationInput
               inputRef={passwordRef}
+              value={password}
               showErrors={false}
               onChange={(_, value) => setPassword(value)}
             />
