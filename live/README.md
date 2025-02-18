@@ -36,8 +36,8 @@ This directory contains a set of files that are used to build the Agama Live ISO
 - [src](src) subdirectory contains all source files which are copied unmodified to the OBS project
 - [root](root) subdirectory contains files which are added to the Live ISO root system (inside the
   squashfs image)
-- [root-openSUSE-PXE](root-openSUSE-PXE) subdirectory contains specific files for the openSUSE image used for the
-  PXE boot, see a separate [PXE documentation](PXE.md) for more details about the PXE boot
+- [root-PXE](root-PXE) subdirectory contains specific files for the image used for the PXE boot, see
+  a separate [PXE documentation](PXE.md) for more details about the PXE boot
 - [config-cdroot](config-cdroot) subdirectory contains file which are copied to the uncompressed
   root of the ISO image, the files can be accessed just by mounting the ISO file or the DVD medium
 
