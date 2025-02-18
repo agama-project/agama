@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb 18 12:03:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose root and first user passwords (gh#agama-project/agama#2005).
+- Use a single D-Bus property for the root user data.
+- Remove support for auto-login.
+
+-------------------------------------------------------------------
 Wed Feb 12 08:16:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Report unsupported AutoYaST elements
