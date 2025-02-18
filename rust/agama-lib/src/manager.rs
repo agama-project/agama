@@ -100,15 +100,12 @@ impl TryFrom<u32> for InstallationPhase {
 )]
 #[strum(serialize_all = "camelCase")]
 pub enum FinishMethod {
-    #[serde(rename = "halt")]
     // Halt the system
     Halt,
-    #[serde(rename = "reboot")]
     // Reboots the system
     Reboot,
-    #[serde(rename = "stop")]
+    // Do nothing at the end of the installation
     Stop,
-    #[serde(rename = "poweroff")]
     // Poweroff the system
     Poweroff,
 }
