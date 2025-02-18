@@ -94,9 +94,6 @@ export default function FirstUserForm() {
   const [insideDropDown, setInsideDropDown] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState([]);
-  // FIXME
-  const [changePassword] = useState(firstUser?.userName === "");
-  const usernameInputRef = useRef<HTMLInputElement>();
   const navigate = useNavigate();
   const passwordRef = useRef<HTMLInputElement>();
 
@@ -125,13 +122,11 @@ export default function FirstUserForm() {
 
     const requiredData = { ...data };
 
-    if (!changePassword) delete requiredData.password;
-
     if (Object.values(requiredData).some((v) => v === "")) {
       nextErrors.push(_("All fields are required"));
     }
 
-    if (changePassword && !usingHashedPassword) {
+    if (!usingHashedPassword) {
       data.hashedPassword = false;
       !passwordInput?.validity.valid && nextErrors.push(passwordInput?.validationMessage);
     }
@@ -217,7 +212,6 @@ export default function FirstUserForm() {
             <TextInput
               id="userName"
               name="userName"
-              ref={usernameInputRef}
               value={userName}
               isRequired
               onChange={(_, value) => setUserName(value)}
