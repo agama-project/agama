@@ -106,9 +106,9 @@ pub enum Commands {
         /// URL pointing to file for download
         url: String,
     },
-    /// Finish the installation (reboots the system by default)
+    /// Finish the installation (reboot the system by default)
     ///
-    /// This command finish the installation performing a set of tasks and rebooting the system by
+    /// This command finishes the installation by performing a set of tasks and rebooting the system by
     /// default if the installation is completed successfully.
     Finish { method: Option<FinishMethod> },
 }
