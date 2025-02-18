@@ -37,7 +37,7 @@ local memory = agama.findByID(agama.lshw, 'memory').size;
   },
   root: {
     password: 'nots3cr3t',
-    sshKey: '...',
+    sshPublicKey: '...',
   },
   // look ma, there are comments!
   localization: {
