@@ -4,8 +4,8 @@
 
 . /lib/dracut-lib.sh
 
-TARGET="${1:-/run/agama/cmdline.d/agama}"
-ENV_TARGET="${1:-/run/agama/cmdline.d/environment}"
+TARGET="${1:-/run/agama/cmdline.d/agama.conf}"
+ENV_TARGET="${1:-/run/agama/environment.conf}"
 get_agama_args() {
   local _i _found _env
 
