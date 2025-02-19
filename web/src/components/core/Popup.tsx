@@ -234,7 +234,14 @@ const Popup = ({
       aria-labelledby={titleId}
       aria-describedby={contentId}
     >
-      {title && <ModalHeader labelId={titleId} title={title} description={description} />}
+      {title && (
+        <ModalHeader
+          labelId={titleId}
+          title={title}
+          description={description}
+          titleIconVariant={titleIconVariant}
+        />
+      )}
       <ModalBody id={contentId}>{isLoading ? <Loading text={loadingText} /> : content}</ModalBody>
       <ModalFooter>{actions}</ModalFooter>
     </Modal>
