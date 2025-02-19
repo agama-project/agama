@@ -7,6 +7,12 @@ Wed Feb 19 14:21:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 - first user will be in wheel group (jsc#PM-2128)
 
 -------------------------------------------------------------------
+Wed Feb 19 13:35:07 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- UX: Improve the libzypp callbacks (gh#agama-project/agama#1985)
+
+
+-------------------------------------------------------------------
 Tue Feb 18 17:19:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - (gh#agama-project/agama#1970).
