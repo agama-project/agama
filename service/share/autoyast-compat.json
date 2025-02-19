@@ -266,6 +266,37 @@
         ]
       },
       {
+        "key": "postpartitioning-scripts[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].url"
+          },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].body"
+          },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
         "key": "chroot-scripts[]",
         "agama": "scripts.post[]",
         "children": [

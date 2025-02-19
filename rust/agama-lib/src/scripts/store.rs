@@ -44,6 +44,7 @@ impl ScriptsStore {
 
         Ok(ScriptsConfig {
             pre: Self::scripts_by_type(&scripts),
+            post_partitioning: Self::scripts_by_type(&scripts),
             post: Self::scripts_by_type(&scripts),
             init: Self::scripts_by_type(&scripts),
         })
@@ -55,6 +56,12 @@ impl ScriptsStore {
         if let Some(scripts) = &settings.pre {
             for pre in scripts {
                 self.scripts.add_script(pre.clone().into()).await?;
+            }
+        }
+
+        if let Some(scripts) = &settings.post_partitioning {
+            for post in scripts {
+                self.scripts.add_script(post.clone().into()).await?;
             }
         }
 

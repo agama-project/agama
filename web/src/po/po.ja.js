@@ -843,6 +843,9 @@ export default {
   "No root authentication method defined yet.": [
     "まだ root 認証方式を設定していません。"
   ],
+  "No support is planned.": [
+    "サポートを提供する計画はありません。"
+  ],
   "No user defined yet.": [
     "ユーザを設定していません。"
   ],
@@ -873,6 +876,9 @@ export default {
   "None of the time zones match the filter.": [
     "フィルタに該当するタイムゾーンがありません。"
   ],
+  "Not implemented yet (%s)": [
+    "実装されていません (%s)"
+  ],
   "Not possible with the current setup. Click to know more.": [
     "現在の設定ではインストールできません。詳しく表示したい場合は、ここを押してください。"
   ],
@@ -881,6 +887,9 @@ export default {
   ],
   "Not set": [
     "未設定"
+  ],
+  "Not supported (%s)": [
+    "サポート対象外です (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "フォーマットを実施する前にオフラインのデバイスを有効化する必要があります。下記に示されたデバイスの選択を外すか、有効化してからやり直してください"
@@ -1188,6 +1197,9 @@ export default {
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     "インストール用リポジトリのうち、読み込めなかったものがあります。これらのリポジトリ無しにはシステムをインストールできません。"
   ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    "お使いの AutoYaST プロファイルのうち、いくつかの要素がサポート対象外となっています。"
+  ],
   "Something went wrong": [
     "何らかの問題が発生しました"
   ],
@@ -1386,6 +1398,9 @@ export default {
   "Unselect": [
     "未選択"
   ],
+  "Unsupported AutoYaST elements": [
+    "サポートされていない AutoYaST 要素"
+  ],
   "Unused space": [
     "未使用の領域"
   ],
@@ -1454,6 +1469,9 @@ export default {
   ],
   "WiFi connection form": [
     "WiFi 接続フォーム"
+  ],
+  "Will be supported in a future version.": [
+    "将来のバージョンでサポートされる予定です。"
   ],
   "Wired": [
     "有線"

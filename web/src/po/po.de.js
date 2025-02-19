@@ -1105,6 +1105,9 @@ export default {
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     ""
   ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
+  ],
   "Something went wrong": [
     "Etwas ist schiefgelaufen"
   ],
@@ -1276,6 +1279,9 @@ export default {
   "Unselect": [
     "Abwählen"
   ],
+  "Unsupported AutoYaST elements": [
+    ""
+  ],
   "Unused space": [
     "Ungenutzter Platz"
   ],
@@ -1332,6 +1338,9 @@ export default {
   ],
   "Waiting for information about storage configuration": [
     "Warten auf Informationen zur Speicherkonfiguration"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Kabelgebunden"

@@ -53,7 +53,6 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
     fn components(&self) -> Components {
         ComponentsBuilder::new()
             .schema_from::<agama_lib::product::Product>()
-            .schema_from::<agama_lib::product::RegistrationRequirement>()
             .schema_from::<agama_lib::software::Pattern>()
             .schema_from::<agama_lib::software::SelectedBy>()
             .schema_from::<agama_lib::software::model::LanguageTag>()

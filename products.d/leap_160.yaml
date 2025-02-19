@@ -59,7 +59,7 @@ software:
   base_product: openSUSE
 
 security:
-  lsm: apparmor
+  lsm: selinux
   available_lsms:
     apparmor:
       patterns:

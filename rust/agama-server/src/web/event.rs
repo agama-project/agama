@@ -23,7 +23,6 @@ use agama_lib::{
     jobs::Job,
     localization::model::LocaleConfig,
     manager::InstallationPhase,
-    product::RegistrationRequirement,
     progress::Progress,
     software::SelectedBy,
     storage::{
@@ -58,9 +57,6 @@ pub enum Event {
     },
     ProductChanged {
         id: String,
-    },
-    RegistrationRequirementChanged {
-        requirement: RegistrationRequirement,
     },
     RegistrationChanged,
     FirstUserChanged(FirstUser),

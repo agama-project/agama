@@ -1169,6 +1169,9 @@ export default {
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     ""
   ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    ""
+  ],
   "Something went wrong": [
     "Něco se nezdařilo"
   ],
@@ -1367,6 +1370,9 @@ export default {
   "Unselect": [
     "Zrušit výběr"
   ],
+  "Unsupported AutoYaST elements": [
+    ""
+  ],
   "Unused space": [
     "Nevyužitý prostor"
   ],
@@ -1435,6 +1441,9 @@ export default {
   ],
   "WiFi connection form": [
     "Formulář pro připojení WiFi"
+  ],
+  "Will be supported in a future version.": [
+    ""
   ],
   "Wired": [
     "Připojení kabelem"
