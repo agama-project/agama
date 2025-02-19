@@ -50,6 +50,24 @@ module Agama
           # TRANSLATORS: button label, abort the installation completely after an error
           _("Abort installation")
         end
+
+        # label for the "skip" action
+        def skip_label
+          # TRANSLATORS: button label, skip the error
+          _("Skip")
+        end
+
+        # label for the "yes" action
+        def yes_label
+          # TRANSLATORS: button label
+          _("Yes")
+        end
+
+        # label for the "no" action
+        def no_label
+          # TRANSLATORS: button label
+          _("No")
+        end
       end
     end
   end

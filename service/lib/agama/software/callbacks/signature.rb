@@ -21,6 +21,7 @@
 
 require "yast"
 require "agama/question"
+require "agama/software/callbacks/base"
 
 Yast.import "Pkg"
 
@@ -28,7 +29,7 @@ module Agama
   module Software
     module Callbacks
       # Callbacks related to signatures handling
-      class Signature
+      class Signature < Base
         include Yast::I18n
 
         # Constructor
@@ -76,12 +77,12 @@ module Agama
           question = Agama::Question.new(
             qclass:         "software.unsigned_file",
             text:           message,
-            options:        [:Yes, :No],
-            default_option: :No,
+            options:        [yes_label.to_sym, no_label.to_sym],
+            default_option: no_label.to_sym,
             data:           { "filename" => filename }
           )
           questions_client.ask(question) do |question_client|
-            question_client.answer == :Yes
+            question_client.answer == yes_label.to_sym
           end
         end
 
@@ -100,8 +101,8 @@ module Agama
           question = Agama::Question.new(
             qclass:         "software.import_gpg",
             text:           message,
-            options:        [:Trust, :Skip],
-            default_option: :Skip,
+            options:        [trust_label.to_sym, skip_label.to_sym],
+            default_option: skip_label.to_sym,
             data:           {
               "id"          => key["id"],
               "name"        => key["name"],
@@ -110,7 +111,7 @@ module Agama
           )
 
           questions_client.ask(question) do |question_client|
-            question_client.answer == :Trust
+            question_client.answer == trust_label.to_sym
           end
         end
 
@@ -129,8 +130,8 @@ module Agama
           question = Agama::Question.new(
             qclass:         "software.unknown_gpg",
             text:           message,
-            options:        [:Yes, :No],
-            default_option: :no,
+            options:        [yes_label.to_sym, no_label.to_sym],
+            default_option: no_label.to_sym,
             data:           {
               "id"       => key_id,
               "filename" => filename
@@ -138,7 +139,7 @@ module Agama
           )
 
           questions_client.ask(question) do |question_client|
-            question_client.answer == :Yes
+            question_client.answer == yes_label.to_sym
           end
         end
 
@@ -157,12 +158,12 @@ module Agama
           question = Agama::Question.new(
             qclass:         "software.unsigned_file",
             text:           message,
-            options:        [:Yes, :No],
-            default_option: :No,
+            options:        [yes_label.to_sym, no_label.to_sym],
+            default_option: no_label.to_sym,
             data:           { "filename" => filename }
           )
           questions_client.ask(question) do |question_client|
-            question_client.answer == :Yes
+            question_client.answer == yes_label.to_sym
           end
         end
 
@@ -189,6 +190,12 @@ module Agama
           else
             format(_("The file %{filename}"), filename: filename)
           end
+        end
+
+        # label for the "trust" action
+        def trust_label
+          # TRANSLATORS: button label, trust the GPG key or the signature
+          _("Trust")
         end
       end
     end
