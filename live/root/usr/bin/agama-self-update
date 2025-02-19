@@ -5,6 +5,10 @@
 # This script updates the Agama packages in the Live system from the
 # Agama Devel OBS project.
 
+# check if self-update is required
+if ! grep -q "[[:space:]^]agama.self_update=1\([[:space:]]\|$\)" /run/agama/cmdline.d/agama.conf; then
+  exit 0
+fi
 
 # first try a quick and simple solution, refreshing the distributions repository takes a
 # lot of time so try using only the agama-devel for update

@@ -22,7 +22,6 @@
 module Agama
   # This class is responsible for reading Agama kernel cmdline options
   class CmdlineArgs
-    CMDLINE_PATH = "/proc/cmdline"
     CMDLINE_PREFIX = "agama."
 
     attr_accessor :config_url
@@ -36,14 +35,16 @@ module Agama
     end
 
     def self.read
-      read_from("/proc/cmdline")
+      read_from("/run/agama/cmdline.d/agama.conf")
     end
 
     # Reads the kernel command line options
     def self.read_from(path)
-      options = File.read(path)
       args = new({})
 
+      return args unless File.exist?(path)
+
+      options = File.read(path)
       options.split.each do |option|
         next unless option.start_with?(CMDLINE_PREFIX)
 
