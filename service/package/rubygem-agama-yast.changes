@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Feb 19 14:21:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- if root ssh key is used, ensure that sshd is enabled and firewall
+  has port open (jsc#PM-2128)
+- root password is explicitelly locked if not specified
+- first user will be in wheel group (jsc#PM-2128)
+
+-------------------------------------------------------------------
 Tue Feb 18 17:19:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - (gh#agama-project/agama#1970).
