@@ -114,9 +114,6 @@ module Agama
 
       config.attach(user)
       add_user_to_group(user_name, "wheel")
-
-      config.login ||= Y2Users::LoginConfig.new
-      config.login.autologin_user = auto_login ? user : nil
       update_issues
       []
     end
