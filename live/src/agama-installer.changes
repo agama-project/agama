@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 19 10:38:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the QEMU guest agent (gh#agama-project/agama#1816,
+  gh#agama-project/agama#2025).
+
+-------------------------------------------------------------------
 Wed Feb 19 08:49:24 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for giving a file URL with extra kernel cmdline
