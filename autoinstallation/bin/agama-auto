@@ -5,9 +5,9 @@ set -ex
 export YAST_SKIP_XML_VALIDATION=1
 
 if [ -z "$1" ]; then
-	url=$(grep 'agama.auto=' </run/agama/cmdline.d/agama.conf | awk -F 'agama.auto=' '{sub(/ .*$/, "", $2); print $2}')
+  url=$(grep 'agama.auto=' </run/agama/cmdline.d/agama.conf | awk -F 'agama.auto=' '{sub(/ .*$/, "", $2); print $2}')
 else
-	url="$1"
+  url="$1"
 fi
 
 if [ -z "$url" ]; then
@@ -15,19 +15,21 @@ if [ -z "$url" ]; then
 	exit 0
 fi
 
-method=$(awk -F 'agama.finish=' '{sub(/ .*$/, "", $2); print $2}' </run/agama/cmdline.d/agama.conf)
+method=$(grep 'agama.finish=' </run/agama/cmdline.d/agama.conf | awk -F 'agama.finish=' '{sub(/ .*$/, "", $2); print $2}')
 
 echo "Using the profile at $url"
 
 case "$url" in
 *)
-	/usr/bin/agama profile import "$url"
-	/usr/bin/agama install
-	case "$method" in
-	"stop") ;;
-	*)
-		/usr/bin/agama reboot
-		;;
+  /usr/bin/agama profile import "$url"
+  /usr/bin/agama install
+  case "$method" in
+  "stop" | "halt" | "poweroff")
+    /usr/bin/agama finish $method
+    ;;
+  *)
+    /usr/bin/agama finish
+    ;;
 	esac
 	;;
 esac
