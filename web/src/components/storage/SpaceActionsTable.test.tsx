@@ -28,6 +28,7 @@ import { deviceChildren, gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
 import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
 import { StorageDevice } from "~/types/storage";
+import * as configModel from "~/api/storage/types/config-model";
 
 const sda: StorageDevice = {
   sid: 59,
@@ -80,6 +81,22 @@ sda.partitionTable = {
   unusedSlots: [{ start: 3, size: gib(2) }],
 };
 
+const mockDrive: configModel.Drive = {
+  name: "/dev/sda",
+  partitions: [
+    {
+      name: "/dev/sda2",
+      mountPath: "swap",
+      filesystem: { reuse: false, default: true },
+    },
+  ],
+};
+
+const mockUseConfigModelFn = jest.fn();
+jest.mock("~/queries/storage/config-model", () => ({
+  useConfigModel: () => mockUseConfigModelFn(),
+}));
+
 /**
  * Function to ask for the action of a device.
  *
@@ -101,6 +118,8 @@ describe("SpaceActionsTable", () => {
       deviceAction,
       onActionChange: jest.fn(),
     };
+
+    mockUseConfigModelFn.mockReturnValue({ drives: [] });
   });
 
   it("shows the devices to configure the space actions", () => {
@@ -139,6 +158,22 @@ describe("SpaceActionsTable", () => {
     const sda2Row = screen.getByRole("row", { name: /sda2/ });
     const sda2ShrinkButton = within(sda2Row).getByRole("button", { name: "Allow shrink" });
     expect(sda2ShrinkButton).not.toBeDisabled();
+  });
+
+  describe("if a partition is going to be used", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({ drives: [mockDrive] });
+    });
+
+    it("disables shrink and delete actions for the partition", () => {
+      plainRender(<SpaceActionsTable {...props} />);
+
+      const sda2Row = screen.getByRole("row", { name: /sda2/ });
+      const sda2ShrinkButton = within(sda2Row).getByRole("button", { name: "Allow shrink" });
+      const sda2DeleteButton = within(sda2Row).getByRole("button", { name: "Delete" });
+      expect(sda2ShrinkButton).toBeDisabled();
+      expect(sda2DeleteButton).toBeDisabled();
+    });
   });
 
   it("allows to change the action", async () => {

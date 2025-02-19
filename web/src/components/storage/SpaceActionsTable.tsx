@@ -34,7 +34,7 @@ import {
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { deviceSize } from "~/components/storage/utils";
+import { deviceSize, formattedPath } from "~/components/storage/utils";
 import {
   DeviceName,
   DeviceDetails,
@@ -43,8 +43,25 @@ import {
 } from "~/components/storage/device-utils";
 import { Icon } from "~/components/layout";
 import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
+import { configModel } from "~/api/storage/types";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
+import { useConfigModel } from "~/queries/storage/config-model";
+
+const isUsedPartition = (partition: configModel.Partition): boolean => {
+  return partition.filesystem !== undefined || partition.alias !== undefined;
+};
+
+// FIXME: there is too much logic here. This is one of those cases that should be considered
+// when restructuring the hooks and queries.
+const useReusedPartition = (name: string): configModel.Partition | undefined => {
+  const model = useConfigModel();
+
+  if (!model || !name) return;
+
+  const allPartitions = model.drives.flatMap((d) => d.partitions);
+  return allPartitions.find((p) => p.name === name && isUsedPartition(p));
+};
 
 /**
  * Info about the device.
@@ -52,6 +69,14 @@ import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
  */
 const DeviceInfoContent = ({ device }: { device: StorageDevice }) => {
   const minSize = device.shrinking?.supported;
+
+  const reused = useReusedPartition(device.name);
+  if (reused) {
+    if (!reused.mountPath) return _("The device will be used by the new system.");
+
+    // TRANSLATORS: %s is a mount path like "/home".
+    return sprintf(_("The device will be mounted at %s."), formattedPath(reused.mountPath));
+  }
 
   if (minSize) {
     const recoverable = device.size - minSize;
@@ -114,8 +139,11 @@ const DeviceActionSelector = ({
 }) => {
   const changeAction = (value) => onChange({ deviceName: device.name, value });
 
-  const isResizeDisabled = device.shrinking?.supported === undefined;
-  const hasInfo = device.shrinking !== undefined;
+  const forceKeep = !!useReusedPartition(device.name);
+  const isResizeDisabled = forceKeep || device.shrinking?.supported === undefined;
+  const isDeleteDisabled = forceKeep;
+  const hasInfo = forceKeep || device.shrinking !== undefined;
+  const adjustedAction = forceKeep ? "keep" : action;
 
   return (
     <Flex>
@@ -124,20 +152,21 @@ const DeviceActionSelector = ({
           <ToggleGroupItem
             text="Do not modify"
             buttonId="not-modify"
-            isSelected={action === "keep"}
+            isSelected={adjustedAction === "keep"}
             onChange={() => changeAction("keep")}
           />
           <ToggleGroupItem
             text="Allow shrink"
             buttonId="resize"
             isDisabled={isResizeDisabled}
-            isSelected={action === "resizeIfNeeded"}
+            isSelected={adjustedAction === "resizeIfNeeded"}
             onChange={() => changeAction("resizeIfNeeded")}
           />
           <ToggleGroupItem
             text="Delete"
             buttonId="delete"
-            isSelected={action === "delete"}
+            isDisabled={isDeleteDisabled}
+            isSelected={adjustedAction === "delete"}
             onChange={() => changeAction("delete")}
           />
         </ToggleGroup>
