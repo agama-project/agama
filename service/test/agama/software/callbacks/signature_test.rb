@@ -170,4 +170,42 @@ describe Agama::Software::Callbacks::Signature do
       end
     end
   end
+
+  describe "accept_verification_failed" do
+    let(:answer) { :Trust }
+
+    let(:key) do
+      {
+        "id"          => "0123456789ABCDEF",
+        "fingerprint" => "2E2EA448C9DDD7A91BC28441AEE969E90F05DB9D",
+        "name"        => "YaST:Head:Agama"
+      }
+    end
+
+    let(:filename) { "repomd.xml" }
+
+    context "when the user answers :Yes" do
+      let(:answer) { :Yes }
+
+      it "returns true" do
+        expect(subject.accept_verification_failed(filename, key, 1)).to eq(true)
+      end
+    end
+
+    context "when the user answers :No" do
+      let(:answer) { :No }
+
+      it "returns false" do
+        expect(subject.accept_verification_failed(filename, key, 1)).to eq(false)
+      end
+    end
+
+    it "includes a message" do
+      expect(questions_client).to receive(:ask) do |question|
+        expect(question.text).to include(key["id"])
+        expect(question.text).to include(key["name"])
+      end
+      subject.accept_verification_failed(filename, key, 1)
+    end
+  end
 end

@@ -55,6 +55,11 @@ module Agama
               method(:accept_unknown_gpg_key), "boolean (string, string, integer)"
             )
           )
+          Yast::Pkg.CallbackAcceptVerificationFailed(
+            Yast::FunRef.new(
+              method(:accept_verification_failed), "boolean (string, map <string, any>, integer)"
+            )
+          )
         end
 
         # Callback to handle unsigned files
@@ -62,16 +67,7 @@ module Agama
         # @param filename [String] File name
         # @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
         def accept_unsigned_file(filename, repo_id)
-          repo = Yast::Pkg.SourceGeneralData(repo_id)
-          source = if repo
-            format(
-              _("The file %{filename} from repository %{repo_name} (%{repo_url})"),
-              filename: filename, repo_name: repo["name"], repo_url: repo["url"]
-            )
-          else
-            format(_("The file %{filename}"), filename: filename)
-          end
-
+          source = build_source(filename, repo_id)
           message = format(
             _("%{source} is not digitally signed. The origin and integrity of the file cannot be " \
               "verified. Use it anyway?"), source: source
@@ -124,16 +120,7 @@ module Agama
         # @param key_id [String] Key ID.
         # @param repo_id [String] Repository ID.
         def accept_unknown_gpg_key(filename, key_id, repo_id)
-          repo = Yast::Pkg.SourceGeneralData(repo_id)
-          source = if repo
-            format(
-              _("The file %{filename} from repository %{repo_name} (%{repo_url})"),
-              filename: filename, repo_name: repo["name"], repo_url: repo["url"]
-            )
-          else
-            format(_("The file %{filename}"), filename: filename)
-          end
-
+          source = build_source(filename, repo_id)
           message = format(
             _("%{source} is digitally signed with the following unknown GnuPG key: %{key_id}. Use it anyway?"),
             source: source, key_id: key_id
@@ -155,6 +142,30 @@ module Agama
           end
         end
 
+        # Callback to handle file verification failures
+        #
+        # @param filename [String] File name
+        # @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+        # @param repo_id [Integer] Repository ID
+        def accept_verification_failed(filename, key, repo_id)
+          source = build_source(filename, repo_id)
+          message = format(
+            _("%{source} is signed with the following GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
+             ), source: source, key_id: key["id"], key_name: key["name"]
+          )
+
+          question = Agama::Question.new(
+            qclass:         "software.unsigned_file",
+            text:           message,
+            options:        [:Yes, :No],
+            default_option: :No,
+            data:           { "filename" => filename }
+          )
+          questions_client.ask(question) do |question_client|
+            question_client.answer == :Yes
+          end
+        end
+
       private
 
         # @return [Agama::DBus::Clients::Questions]
@@ -162,6 +173,23 @@ module Agama
 
         # @return [Logger]
         attr_reader :logger
+
+        # Builds the file source description
+        #
+        # @param filename [String] File name
+        # @param repo_id [Integer] Repository ID
+        # @return [String]
+        def build_source(filename, repo_id)
+          repo = Yast::Pkg.SourceGeneralData(repo_id)
+          if repo
+            format(
+              _("The file %{filename} from repository %{repo_name} (%{repo_url})"),
+              filename: filename, repo_name: repo["name"], repo_url: repo["url"]
+            )
+          else
+            format(_("The file %{filename}"), filename: filename)
+          end
+        end
       end
     end
   end
