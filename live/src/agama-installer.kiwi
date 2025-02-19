@@ -165,6 +165,7 @@
         <package name="jq"/>
         <package name="yast2-schema"/>
         <package name="qrencode"/>
+        <package name="qemu-guest-agent" />
         <archive name="root.tar.xz"/>
     </packages>
     <!-- additional packages for the Leap distributions -->
