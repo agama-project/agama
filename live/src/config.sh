@@ -77,7 +77,8 @@ systemctl disable YaST2-Second-Stage.service
 ### setup dracut for live system
 arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
-label="Install-$kiwi_profiles-$arch"
+profile=$(echo "$kiwi_profiles" | tr "_" "-")
+label="Install-$profile-$arch"
 
 echo "Setting default live root: live:LABEL=$label"
 mkdir /etc/cmdline.d
