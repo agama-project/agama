@@ -74,6 +74,8 @@ module Agama
     # command line options into a standard shape
     def self.standardize(option)
       # agama. is now obsolete original kernel argument prefix
+      return if !option.start_with?("agama.")
+
       option.sub("agama.", CMDLINE_PREFIX)
     end
 
