@@ -11,8 +11,8 @@ else
 fi
 
 if [ -z "$url" ]; then
-	echo "no autoinstallation profile"
-	exit 0
+  echo "no autoinstallation profile"
+  exit 0
 fi
 
 method=$(grep 'agama.finish=' </run/agama/cmdline.d/agama.conf | awk -F 'agama.finish=' '{sub(/ .*$/, "", $2); print $2}')
@@ -30,6 +30,6 @@ case "$url" in
   *)
     /usr/bin/agama finish
     ;;
-	esac
-	;;
+  esac
+  ;;
 esac
