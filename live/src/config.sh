@@ -44,6 +44,7 @@ systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
 systemctl enable agama-certificate-issue.path
 systemctl enable agama-certificate-wait.service
+systemctl enable agama-cmdline-process.service
 systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
 systemctl enable agama-url-issue.service
@@ -57,6 +58,7 @@ systemctl enable live-password-random.service
 systemctl enable live-password-systemd.service
 systemctl enable live-root-shell.service
 systemctl enable checkmedia.service
+systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
@@ -76,7 +78,8 @@ systemctl disable YaST2-Second-Stage.service
 ### setup dracut for live system
 arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
-label="Install-$kiwi_profiles-$arch"
+profile=$(echo "$kiwi_profiles" | tr "_" "-")
+label="Install-$profile-$arch"
 
 echo "Setting default live root: live:LABEL=$label"
 mkdir /etc/cmdline.d

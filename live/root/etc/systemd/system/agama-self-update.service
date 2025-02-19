@@ -3,6 +3,9 @@ Description=Agama self-update
 
 After=network-online.target
 
+# and after we process agama params like info which can contain password
+After=agama-cmdline-process.service
+
 # before starting the Agama servers so they use the new packages
 Before=agama-web-server.service
 Before=agama.service
@@ -10,11 +13,6 @@ Before=x11-autologin.service
 # before interactive password services
 Before=live-password-dialog.service
 Before=live-password-systemd.service
-
-# kernel command line option
-ConditionKernelCommandLine=|agama.self_update
-# linuxrc/YaST backward compatibility
-ConditionKernelCommandLine=|agama.selfupdate
 
 [Service]
 Type=oneshot

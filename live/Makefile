@@ -24,7 +24,7 @@ ARCH = $(shell uname -m)
 # files to copy from src/
 COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%,$(wildcard $(SRCDIR)/*))
 
-all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/root.tar.xz $(DESTDIR)/root-openSUSE-PXE.tar.xz
+all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/root.tar.xz $(DESTDIR)/root-PXE.tar.xz
 
 # clean the destination directory (but keep the .osc directory if it is present)
 clean:
@@ -62,5 +62,8 @@ build: $(DESTDIR)
 	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc -A $(OBS_API) co -o $(DESTDIR) $(OBS_PROJECT) $(OBS_PACKAGE); fi
 	$(MAKE) all
 	(cd $(DESTDIR) && osc -A $(OBS_API) build -M $(FLAVOR) $(OSC_OPTS) $(OBS_TARGET) $(ARCH) $(KIWI_FILE))
+
+check:
+	for i in ./test/*_test.*; do $${i}; done
 
 .PHONY: build all clean

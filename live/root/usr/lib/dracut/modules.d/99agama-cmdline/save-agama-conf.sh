@@ -6,6 +6,6 @@
 
 if [ -e /etc/cmdline.d/99-agama-cmdline.conf ]; then
   echo "Creating agama conf"
-  mkdir -p "$NEWROOT/etc/agama.d"
-  cp /etc/cmdline.d/99-agama-cmdline.conf "$NEWROOT/etc/agama.d/cmdline.conf"
+  mkdir -p "$NEWROOT/run/agama/cmdline.d"
+  cp /etc/cmdline.d/99-agama-cmdline.conf "$NEWROOT/run/agama/cmdline.d/agama.conf"
 fi
