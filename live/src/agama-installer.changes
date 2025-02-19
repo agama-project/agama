@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Feb 19 07:37:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed reboot delay caused by the root shell service
+  (gh#agama-project/agama#2018)
+- Run the shell at tty8 (there was a collision with the login
+  prompt at tty2)
+
+-------------------------------------------------------------------
 Tue Feb 18 13:14:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Rename kiwi profiles to avoid using dashes, using underscores
