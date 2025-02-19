@@ -23,6 +23,7 @@ require "logger"
 require "yast"
 require "agama/question"
 require "agama/dbus/clients/questions"
+require "agama/software/callbacks/base"
 
 Yast.import "Pkg"
 
@@ -30,9 +31,7 @@ module Agama
   module Software
     module Callbacks
       # This class represents the installer status
-      class Progress
-        include Yast::I18n
-
+      class Progress < Base
         class << self
           def setup(pkg_count, progress, logger)
             new(pkg_count, progress, logger).setup
@@ -40,6 +39,8 @@ module Agama
         end
 
         def initialize(pkg_count, progress, logger)
+          super()
+
           textdomain "agama"
 
           @total = pkg_count
@@ -88,24 +89,21 @@ module Agama
 
           logger.error("Package #{current_package} failed: #{description}")
 
-          # TRANSLATORS: %s is a package name
-          text = _("Package %s could not be installed.") % current_package
-
           question = Agama::Question.new(
-            qclass:         "software.install_error",
-            text:           text,
-            options:        [:Retry, :Cancel, :Ignore],
-            default_option: :Retry,
-            data:           { "description" => description }
+            qclass:         "software.package_error.install_error",
+            text:           description,
+            options:        [retry_label.to_sym, continue_label.to_sym, abort_label.to_sym],
+            default_option: retry_label.to_sym,
+            data:           { "package" => current_package }
           )
 
           questions_client.ask(question) do |question_client|
             case question_client.answer
-            when :Retry
+            when retry_label.to_sym
               "R"
-            when :Cancel
+            when abort_label.to_sym
               "C"
-            when :Ignore
+            when continue_label.to_sym
               "I"
             else
               logger.error("Unexpected response #{question_client.answer.inspect}, " \

@@ -22,6 +22,7 @@
 require "logger"
 require "yast"
 require "agama/question"
+require "agama/software/callbacks/base"
 
 Yast.import "Pkg"
 
@@ -29,9 +30,7 @@ module Agama
   module Software
     module Callbacks
       # Provide callbacks
-      class Provide
-        include Yast::I18n
-
+      class Provide < Base
         # From https://github.com/openSUSE/libzypp/blob/d90a93fc2a248e6592bd98114f82a0b88abadb72/zypp/ZYppCallbacks.h#L111
         NO_ERROR = 0
         NOT_FOUND = 1
@@ -43,6 +42,8 @@ module Agama
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
+          super()
+
           textdomain "agama"
           @questions_client = questions_client
           @logger = logger || ::Logger.new($stdout)
@@ -57,36 +58,37 @@ module Agama
 
         # DoneProvide callback
         #
-        # @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
+        # @return [String, nil] "I" for ignore, "R" for retry and "C" for abort (not implemented)
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
         def done_provide(error, reason, name)
           args = [error, reason, name]
           logger.debug "DoneProvide callback: #{args.inspect}"
 
-          message = case error
+          error_code = case error
           when NO_ERROR, NOT_FOUND
             # "Not found" (error 1) is handled by the MediaChange callback.
             nil
           when IO_ERROR
-            Yast::Builtins.sformat(_("Package %1 could not be downloaded (input/output error)."),
-              name)
+            "IO_ERROR"
           when INVALID
-            Yast::Builtins.sformat(_("Package %1 is broken, integrity check has failed."), name)
+            "INVALID"
           else
             logger.warn "DoneProvide: unknown error: '#{error}'"
+            nil
           end
 
-          return if message.nil?
+          return nil if error_code.nil?
 
           question = Agama::Question.new(
-            qclass:         "software.provide_error",
-            text:           message,
-            options:        [:Retry, :Ignore],
-            default_option: :Retry,
-            data:           { "reason" => reason }
+            qclass:         "software.package_error.provide_error",
+            text:           reason,
+            options:        [retry_label.to_sym, continue_label.to_sym],
+            default_option: retry_label.to_sym,
+            data:           { "package" => name, "error_code" => error_code }
           )
+
           questions_client.ask(question) do |question_client|
-            (question_client.answer == :Retry) ? "R" : "I"
+            (question_client.answer == retry_label.to_sym) ? "R" : "I"
           end
         end
 

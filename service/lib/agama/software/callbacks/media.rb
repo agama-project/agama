@@ -19,8 +19,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "logger"
 require "yast"
 require "agama/question"
+require "agama/software/callbacks/base"
 
 Yast.import "Pkg"
 
@@ -28,14 +30,17 @@ module Agama
   module Software
     module Callbacks
       # Callbacks related to media handling
-      class Media
+      class Media < Base
         # Constructor
         #
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
+          super()
+
+          textdomain "agama"
           @questions_client = questions_client
-          @logger = logger
+          @logger = logger || ::Logger.new($stdout)
         end
 
         # Register the callbacks
@@ -74,14 +79,14 @@ module Agama
           )
 
           question = Agama::Question.new(
-            qclass:         "software.medium_error",
+            qclass:         "software.package_error.medium_error",
             text:           error,
-            options:        [:Retry, :Skip],
-            default_option: :Skip,
+            options:        [retry_label.to_sym, continue_label.to_sym],
+            default_option: retry_label.to_sym,
             data:           { "url" => url }
           )
           questions_client.ask(question) do |question_client|
-            (question_client.answer == :Retry) ? "" : "S"
+            (question_client.answer == retry_label.to_sym) ? "" : "S"
           end
         end
       # rubocop:enable Metrics/ParameterLists
