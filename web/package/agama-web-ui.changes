@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Fri Feb 14 09:46:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
-- Render newlines in question messages
-  (related to gh#agama-project/agama#1985)
+- Implement specific question dialogs for the libzypp callbacks
+  (gh#agama-project/agama#1985)
 
 -------------------------------------------------------------------
 Fri Feb  7 14:43:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
