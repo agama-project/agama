@@ -60,6 +60,7 @@ end
 
 # really delete or just do a smoke test?
 do_delete = ARGV[0] == "--delete"
+debug = ENV["DEBUG"] == "1"
 
 # read the configuration files
 config = File.read(File.join(__dir__, "module.list")).split("\n")
@@ -129,6 +130,7 @@ end
 
 delete_drivers = to_delete.map(&:path)
 puts "Found #{delete_drivers.size} drivers to delete"
+puts delete_drivers if debug
 File.delete(*delete_drivers) if do_delete
 
 # Note: The module dependencies are updated by the config.sh script

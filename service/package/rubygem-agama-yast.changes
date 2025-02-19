@@ -1,7 +1,12 @@
 -------------------------------------------------------------------
-Mon Feb 17 14:38:50 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+Wed Feb 19 08:35:41 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - UX: Improve the libzypp callbacks (gh#agama-project/agama#1985)
+
+-------------------------------------------------------------------
+Tue Feb 18 11:27:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement basic support for RMT/SCC proxies (gh#agama-project/agama#2007).
 
 -------------------------------------------------------------------
 Mon Feb 17 09:17:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

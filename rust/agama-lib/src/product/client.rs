@@ -23,7 +23,6 @@ use std::str::FromStr;
 
 use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
-use crate::software::model::RegistrationRequirement;
 use crate::software::proxies::SoftwareProductProxy;
 use serde::Serialize;
 use zbus::Connection;
