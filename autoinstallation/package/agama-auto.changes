@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Feb 13 12:10:11 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- gh#agama-project/agama#1970
+  - Adapted agama-auto script to reboot by default once the 
+    unattended installation is finished.
+  - Allow to modify the finish method through the 'agama.finish' 
+    kernel cmdline argument.
+
+-------------------------------------------------------------------
 Fri Sep 20 11:27:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Change the license to GPL-2.0-or-later (gh#openSUSE/agama#1621).

@@ -85,6 +85,38 @@ impl TryFrom<u32> for InstallationPhase {
     }
 }
 
+/// Finish method
+#[derive(
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum FinishMethod {
+    // Halt the system
+    Halt,
+    // Reboots the system
+    Reboot,
+    // Do nothing at the end of the installation
+    Stop,
+    // Poweroff the system
+    Poweroff,
+}
+
+impl Default for FinishMethod {
+    fn default() -> Self {
+        Self::Reboot
+    }
+}
+
 impl<'a> ManagerClient<'a> {
     pub async fn new(connection: Connection) -> zbus::Result<ManagerClient<'a>> {
         Ok(Self {
@@ -116,9 +148,13 @@ impl<'a> ManagerClient<'a> {
         Ok(self.manager_proxy.commit().await?)
     }
 
-    /// Executes the after installation tasks.
-    pub async fn finish(&self) -> Result<(), ServiceError> {
-        Ok(self.manager_proxy.finish().await?)
+    /// Executes the after installation tasks finishing with the method given or rebooting the
+    /// system by default.
+    pub async fn finish(&self, method: FinishMethod) -> Result<bool, ServiceError> {
+        Ok(self
+            .manager_proxy
+            .finish(&method.to_string().as_str())
+            .await?)
     }
 
     /// Determines whether it is possible to start the installation.
