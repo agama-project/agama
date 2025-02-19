@@ -252,7 +252,10 @@ module Agama
 
     # Whatever has to be done at the end of installation
     #
-    # @param method [String, nil]
+    # If a finish method is given it will call the related shutdown
+    # command.
+    #
+    # @param method [HALT, POWEROFF, STOP, REBOOT]
     # @return [Boolean]
     def finish_installation(method)
       logs = collect_logs(path: "/tmp/var/logs/")
@@ -264,7 +267,7 @@ module Agama
         return false
       end
 
-      if method == "stop"
+      if method == STOP
         logger.info("Finished the installation (stop).")
         return true
       end
@@ -284,8 +287,16 @@ module Agama
 
   private
 
-    SHUTDOWN_OPT = { "reboot" => "-r", "halt" => "-H", "poweroff" => "-P" }.freeze
+    # Possible finish methods
+    STOP = "stop"
+    REBOOT = "reboot"
+    HALT = "halt"
+    POWEROFF = "poweroff"
+
+    # Default finish method to be called if not given or not find
     DEFAULT_METHOD = "reboot"
+    # Finish shutdown option for each finish method
+    SHUTDOWN_OPT = { REBOOT => "-r", HALT => "-H", POWEROFF => "-P" }.freeze
 
     # @param method [String, nil]
     # @return [String] the cmd to be run for finishing the installation
