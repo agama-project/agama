@@ -123,4 +123,51 @@ describe Agama::Software::Callbacks::Signature do
       subject.import_gpg_key(key, 1)
     end
   end
+
+  describe "#accept_unknown_gpg_key" do
+    context "when the user answers :Yes" do
+      let(:answer) { :Yes }
+
+      it "returns true" do
+        expect(subject.accept_unknown_gpg_key("repomd.xml", "KEYID", 1)).to eq(true)
+      end
+    end
+
+    context "when the user answers :No" do
+      let(:answer) { :No }
+
+      it "returns false" do
+        expect(subject.accept_unknown_gpg_key("repomd.xml", "KEYID", 1)).to eq(false)
+      end
+    end
+
+    context "when the repo information is available" do
+      before do
+        allow(Yast::Pkg).to receive(:SourceGeneralData).with(1)
+          .and_return("name" => "OSS", "url" => "http://localhost/repo")
+      end
+
+      it "includes the name and the URL in the question" do
+        expect(questions_client).to receive(:ask) do |question|
+          expect(question.text).to include("OSS (http://localhost/repo)")
+        end
+
+        expect(subject.accept_unknown_gpg_key("repomd.xml", "KEYID", 1))
+      end
+    end
+
+    context "when the repo information is not available" do
+      before do
+        allow(Yast::Pkg).to receive(:SourceGeneralData).with(1).and_return(nil)
+      end
+
+      it "includes a generic message containing the filename" do
+        expect(questions_client).to receive(:ask) do |question|
+          expect(question.text).to include("repomd.xml")
+        end
+
+        expect(subject.accept_unknown_gpg_key("repomd.xml", "KEYID", 1))
+      end
+    end
+  end
 end
