@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Text } from "@patternfly/react-core";
+import { Stack, Text } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { AnswerCallback, Question } from "~/types/questions";
@@ -62,10 +62,10 @@ export default function PackageErrorQuestion({
       title={_("Package installation failed")}
       titleIconVariant={() => <Icon name="error" size="s" />}
     >
-      <Text>{question.text}</Text>
-      {/* non-breaking space for extra empty line between texts */}
-      <Text>&nbsp;</Text>
-      <Text>{warning}</Text>
+      <Stack hasGutter>
+        <Text>{question.text}</Text>
+        <Text>{warning}</Text>
+      </Stack>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}
