@@ -1,9 +1,12 @@
 #! /bin/sh
 
+# Script that expand agama.info parameter by downloading its file and appending it to agama.conf
+# the info content is stored in info.conf
+
 set -e
 
-TARGET="${1:-/run/agama/cmdline.d/agama}"
-INFO_CONTENT="${2:-/run/agama/cmdline.d/info}"
+TARGET="${1:-/run/agama/cmdline.d/agama.conf}"
+INFO_CONTENT="${2:-/run/agama/cmdline.d/info.conf}"
 
 expand_info_arg() {
   INFO_URL=$(sed -n 's/\(.*[[:space:]]\|^\)agama\.info=\([^[:space:]]\+\).*/\2/p' "$TARGET")

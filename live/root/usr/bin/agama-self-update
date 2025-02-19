@@ -6,7 +6,7 @@
 # Agama Devel OBS project.
 
 # check if self-update is required
-if ! grep -q "[[:space:]^]agama.self_update=1\([[:space:]]\|$\)" /run/agama/cmdline.d/agama; then
+if ! grep -q "[[:space:]^]agama.self_update=1\([[:space:]]\|$\)" /run/agama/cmdline.d/agama.conf; then
   exit 0
 fi
 

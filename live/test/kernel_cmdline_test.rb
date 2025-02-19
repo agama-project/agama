@@ -9,7 +9,6 @@ describe "kernel-cmdline-conf.sh" do
     tmpdir = Dir.mktmpdir do |tmpdir|
       target_path = File.join(tmpdir, "cmdline")
       command = "#{script_path} #{source_path} #{target_path}"
-      puts command
       cmd_result = system(command)
       expect(cmd_result).to eq true
       expected = File.read(expected_path)

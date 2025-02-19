@@ -1,7 +1,9 @@
 #! /bin/sh
 
+# Script to clean kernel command line from agama specific parameters. Result is later used for bootloader proposal.
+
 SOURCE="${1:-/proc/cmdline}"
-TARGET="${2:-/run/agama/cmdline.d/kernel}"
+TARGET="${2:-/run/agama/cmdline.d/kernel.conf}"
 
 write_kernel_args() {
   DIR=$(dirname "${TARGET}")
