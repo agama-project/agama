@@ -78,6 +78,7 @@ describe Agama::Users do
         user = users_config.users.by_name("jane")
         expect(user.full_name).to eq("Jane Doe")
         expect(user.password).to eq(Y2Users::Password.create_plain("12345"))
+        expect(user.groups.map(&:name)).to eq(["wheel"])
       end
 
       context "when a first user exists" do
@@ -159,6 +160,34 @@ describe Agama::Users do
 
       expect(writer).to receive(:write).and_return([])
       subject.write
+    end
+
+    context "when a SSH public key for the root user is given" do
+      let(:firewalld) do
+        Y2Firewall::Firewalld.instance
+      end
+
+      before do
+        subject.root_ssh_key = "ssh-rsa ..."
+        allow(firewalld).to receive(:installed?).and_return(true)
+      end
+
+      it "enables the sshd service" do
+        expect(Yast::Service).to receive(:Enable).with("sshd")
+        expect(firewalld.api).to receive(:add_service).with(firewalld.default_zone, "ssh")
+        subject.write
+      end
+    end
+
+    context "when no SSH public key is given" do
+      before do
+        subject.assign_root_password("", false)
+      end
+
+      it "disables the root password" do
+        expect(subject).to receive(:assign_root_password).with("!", true)
+        subject.write
+      end
     end
 
     context "if some issue occurs" do
