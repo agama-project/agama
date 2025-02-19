@@ -23,6 +23,7 @@ use crate::config::ConfigCommands;
 use crate::logs::LogsCommands;
 use crate::profile::ProfileCommands;
 use crate::questions::QuestionsCommands;
+use crate::FinishMethod;
 use clap::Subcommand;
 
 #[derive(Subcommand, Debug)]
@@ -104,5 +105,16 @@ pub enum Commands {
     Download {
         /// URL pointing to file for download
         url: String,
+    },
+    /// Finish the installation rebooting the system by default.
+    ///
+    /// This command finishes the installation by performing a set of tasks and rebooting the system by
+    /// default if the installation is completed successfully.
+    ///
+    /// Optionally an argument can be given for determining whether the system should be rebooted,
+    /// poweroff, halt or just stop at the of the installation. Values: [stop|reboot|poweroff|halt]
+    Finish {
+        #[clap(default_value = "reboot")]
+        method: Option<FinishMethod>,
     },
 }
