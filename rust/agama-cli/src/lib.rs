@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_lib::manager::FinishMethod;
 use clap::{Args, Parser};
 
 mod auth;
@@ -129,6 +130,25 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
     Ok(())
 }
 
+/// Finish the instalation with the given method
+///
+/// Before finishing, it makes sure that the manager is idle.
+///
+/// * `manager`: the manager client.
+async fn finish(manager: &ManagerClient<'_>, method: FinishMethod) -> anyhow::Result<()> {
+    if manager.is_busy().await {
+        println!("Agama's manager is busy. Waiting until it is ready...");
+    }
+
+    // Make sure that the manager is ready
+    manager.wait().await?;
+    if !manager.finish(method).await? {
+        eprintln!("Cannot finish the installation ({method})");
+        return Err(CliError::NotFinished)?;
+    }
+    Ok(())
+}
+
 async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
     tokio::time::sleep(Duration::from_secs(1)).await;
@@ -210,6 +230,11 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         Commands::Install => {
             let manager = build_manager().await?;
             install(&manager, 3).await?
+        }
+        Commands::Finish { method } => {
+            let manager = build_manager().await?;
+            let method = method.unwrap_or_default();
+            finish(&manager, method).await?;
         }
         Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,
         Commands::Logs(subcommand) => run_logs_cmd(client, subcommand).await?,

@@ -37,7 +37,7 @@ module Agama
       #
       # @return [Array<Agama::Product>]
       def build
-        cmdline_args = CmdlineArgs.read_from("/proc/cmdline")
+        cmdline_args = CmdlineArgs.read_from("/run/agama/cmdline.d/agama.conf")
         @logger.info cmdline_args
         config.products.map do |id, attrs|
           data = product_data_from_config(id)

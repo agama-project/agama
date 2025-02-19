@@ -28,7 +28,7 @@
 use agama_lib::{
     error::ServiceError,
     logs,
-    manager::{InstallationPhase, InstallerStatus, ManagerClient},
+    manager::{FinishMethod, InstallationPhase, InstallerStatus, ManagerClient},
     proxies::Manager1Proxy,
 };
 use axum::{
@@ -173,15 +173,21 @@ async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Err
 /// Executes the post installation tasks (e.g., rebooting the system).
 #[utoipa::path(
     post,
-    path = "/install",
+    path = "/finish",
     context_path = "/api/manager",
     responses(
-      (status = 200, description = "The installation tasks are executed.")
+      (status = 200, description = "The installation tasks are executed.", body = Option<FinishMethod>)
     )
 )]
-async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
-    state.manager.finish().await?;
-    Ok(())
+async fn finish_action(
+    State(state): State<ManagerState<'_>>,
+    method: Option<Json<FinishMethod>>,
+) -> Result<Json<bool>, Error> {
+    let method = match method {
+        Some(Json(method)) => method,
+        _ => FinishMethod::default(),
+    };
+    Ok(Json(state.manager.finish(method).await?))
 }
 
 /// Returns the manager status.

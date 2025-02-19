@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Wed Feb 19 13:35:07 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- UX: Improve the libzypp callbacks (gh#agama-project/agama#1985)
+
+-------------------------------------------------------------------
+
+Tue Feb 18 17:19:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- (gh#agama-project/agama#1970).
+  - In an unattended installation, the system will reboot
+    automatically.
+  - The D-Bus method to finish the installation will not reboot the
+    system if it is not in the "finish" installation phase.
+
+-------------------------------------------------------------------
 Tue Feb 18 12:03:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Expose root and first user passwords (gh#agama-project/agama#2005).
