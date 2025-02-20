@@ -37,18 +37,6 @@ module Agama
         IO_ERROR = 2
         INVALID = 3
 
-        # Constructor
-        #
-        # @param questions_client [Agama::DBus::Clients::Questions]
-        # @param logger [Logger]
-        def initialize(questions_client, logger)
-          super()
-
-          textdomain "agama"
-          @questions_client = questions_client
-          @logger = logger || ::Logger.new($stdout)
-        end
-
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackDoneProvide(
@@ -91,14 +79,6 @@ module Agama
             (question_client.answer == retry_label.to_sym) ? "R" : "I"
           end
         end
-
-      private
-
-        # @return [Agama::DBus::Clients::Questions]
-        attr_reader :questions_client
-
-        # @return [Logger]
-        attr_reader :logger
       end
     end
   end

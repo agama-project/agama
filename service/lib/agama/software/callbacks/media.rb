@@ -25,24 +25,13 @@ require "agama/question"
 require "agama/software/callbacks/base"
 
 Yast.import "Pkg"
+Yast.import "URL"
 
 module Agama
   module Software
     module Callbacks
       # Callbacks related to media handling
       class Media < Base
-        # Constructor
-        #
-        # @param questions_client [Agama::DBus::Clients::Questions]
-        # @param logger [Logger]
-        def initialize(questions_client, logger)
-          super()
-
-          textdomain "agama"
-          @questions_client = questions_client
-          @logger = logger || ::Logger.new($stdout)
-        end
-
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackMediaChange(
@@ -64,7 +53,7 @@ module Agama
           logger.debug(
             format("MediaChange callback: error_code: %s, error: %s, url: %s, product: %s, " \
                    "current: %s, current_label: %s, wanted: %s, wanted_label: %s, " \
-                   "double_sided: %s, devices: %s, current_device",
+                   "double_sided: %s, devices: %s, current_device: %s",
               error_code,
               error,
               Yast::URL.HidePassword(url),
@@ -89,15 +78,7 @@ module Agama
             (question_client.answer == retry_label.to_sym) ? "" : "S"
           end
         end
-      # rubocop:enable Metrics/ParameterLists
-
-      private
-
-        # @return [Agama::DBus::Clients::Questions]
-        attr_reader :questions_client
-
-        # @return [Logger]
-        attr_reader :logger
+        # rubocop:enable Metrics/ParameterLists
       end
     end
   end

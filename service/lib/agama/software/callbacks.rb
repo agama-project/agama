@@ -27,6 +27,7 @@ module Agama
   end
 end
 
+require "agama/software/callbacks/digest"
 require "agama/software/callbacks/media"
 require "agama/software/callbacks/progress"
 require "agama/software/callbacks/provide"

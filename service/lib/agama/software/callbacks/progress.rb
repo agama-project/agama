@@ -39,7 +39,7 @@ module Agama
         end
 
         def initialize(pkg_count, progress, logger)
-          super()
+          super(questions_client, logger)
 
           textdomain "agama"
 
