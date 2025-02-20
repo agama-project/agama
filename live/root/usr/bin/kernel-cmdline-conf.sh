@@ -16,7 +16,7 @@ write_kernel_args() {
     case ${_i} in
     # remove all agama kernel params
     # Add here also all linuxrc supported parameters
-    LIBSTORAGE_* | YAST_* | inst* | agama* | Y2* | ZYPP_* | autoyast* )
+    LIBSTORAGE_* | YAST_* | inst* | agama* | live* | Y2* | ZYPP_* | autoyast*)
       _found=1
       ;;
     esac
