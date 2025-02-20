@@ -5,7 +5,7 @@ set -ex
 export YAST_SKIP_XML_VALIDATION=1
 
 if [ -z "$1" ]; then
-  url=$(grep 'agama.auto=' </run/agama/cmdline.d/agama.conf | awk -F 'agama.auto=' '{sub(/ .*$/, "", $2); print $2}')
+  url=$(grep '\(agama\|inst\).auto=' < /run/agama/cmdline.d/agama.conf | awk -F ':?(inst|agama).auto=' '{sub(/ .*$/, "", $2); print $2}')
 else
   url="$1"
 fi
