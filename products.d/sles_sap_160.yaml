@@ -1,6 +1,6 @@
 id: SLES_SAP
 name: SUSE Linux Enterprise Server for SAP Applications 16.0 Beta
-archs: x86_64,aarch64,ppc
+archs: x86_64,ppc
 registration: true
 version: "16-0"
 license: "license.beta"
@@ -22,8 +22,6 @@ software:
   installation_labels:
     - label: S4SAP160-x86_64
       archs: x86_64
-    - label: S4SAP160-arch64
-      archs: aarch64
     - label: S4SAP160-ppc64
       archs: ppc
 
