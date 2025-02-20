@@ -44,6 +44,7 @@ systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
 systemctl enable agama-certificate-issue.path
 systemctl enable agama-certificate-wait.service
+systemctl enable agama-cmdline-process.service
 systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
 systemctl enable agama-url-issue.service
@@ -57,6 +58,7 @@ systemctl enable live-password-random.service
 systemctl enable live-password-systemd.service
 systemctl enable live-root-shell.service
 systemctl enable checkmedia.service
+systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
@@ -76,7 +78,8 @@ systemctl disable YaST2-Second-Stage.service
 ### setup dracut for live system
 arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
-label="Install-$kiwi_profiles-$arch"
+profile=$(echo "$kiwi_profiles" | tr "_" "-")
+label="Install-$profile-$arch"
 
 echo "Setting default live root: live:LABEL=$label"
 mkdir /etc/cmdline.d
@@ -86,6 +89,15 @@ echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 # echo "root_net=" >> /etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
 echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+
+# add xhci-pci-renesas to initrd if available (workaround for bsc#1237235)
+# FIXME: remove when the module is included in the default driver list in
+# in /usr/lib/dracut/modules.d/90kernel-modules/module-setup.sh, see
+# https://github.com/openSUSE/dracut/blob/7559201e7480a65b0da050263d96a1cd8f15f50d/modules.d/90kernel-modules/module-setup.sh#L42-L46
+if [ -f /lib/modules/*/kernel/drivers/usb/host/xhci-pci-renesas.ko* ]; then
+  echo "Adding xhci-pci-renesas driver to initrd..."
+  echo 'add_drivers+=" xhci-pci-renesas "' > /etc/dracut.conf.d/10-extra-drivers.conf
+fi
 
 if [ "${arch}" = "s390x" ]; then
   # workaround for custom bootloader setting
@@ -167,6 +179,7 @@ rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 du -h -s /lib/modules /lib/firmware
 
 # remove the multimedia drivers
+# set DEBUG=1 to print the deleted drivers
 /tmp/driver_cleanup.rb --delete
 # remove the script, not needed anymore
 rm /tmp/driver_cleanup.rb

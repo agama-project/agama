@@ -41,7 +41,7 @@ const rootRoutes = () => [
   {
     path: "/overview",
     element: <OverviewPage />,
-    handle: { name: N_("Overview"), icon: "list_alt" },
+    handle: { name: N_("Overview"), icon: "list_alt", alsoActiveOn: ["/"] },
   },
   registrationRoutes(),
   l10nRoutes(),

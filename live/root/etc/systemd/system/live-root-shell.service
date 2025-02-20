@@ -1,15 +1,18 @@
 [Unit]
-Description=Start root shell in a free terminal (usually tty2)
+Description=Root shell at tty8
 # after setting the host name to correctly display it in the shell prompt
 After=agama-hostname.service
 
 [Service]
-ExecStart=openvt --verbose --wait bash
-# start it again after crashing or accidentally closing the shell via "exit" or Ctrl+D,
-# unfortunately it might use a different tty after restart :-/
+TTYPath=/dev/tty8
+StandardInput=tty
+ExecStart=/usr/bin/bash
+# start it again after crashing or accidentally closing the shell via "exit" or Ctrl+D
 Restart=always
 Type=exec
 Environment=TERM=linux
+# Bash ignores SIGTERM, send SIGHUP to ensure that it terminates cleanly
+KillSignal=SIGHUP
 
 [Install]
 WantedBy=default.target

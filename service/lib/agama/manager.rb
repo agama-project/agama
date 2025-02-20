@@ -34,6 +34,7 @@ require "agama/dbus/clients/locale"
 require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
 require "agama/helpers"
+require "agama/http"
 
 Yast.import "Stage"
 
@@ -108,7 +109,7 @@ module Agama
     end
 
     # Runs the install phase
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def install_phase
       service_status.busy
       installation_phase.install
@@ -122,6 +123,7 @@ module Agama
 
       progress.step do
         storage.install
+        run_post_partitioning_scripts
         proxy.propose
         # propose software after /mnt is already separated, so it uses proper
         # target
@@ -147,7 +149,7 @@ module Agama
       installation_phase.finish
       finish_progress
     end
-    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def locale=(locale)
       service_status.busy
@@ -249,20 +251,31 @@ module Agama
     end
 
     # Whatever has to be done at the end of installation
-    def finish_installation
+    #
+    # If a finish method is given it will call the related shutdown
+    # command.
+    #
+    # @param method [HALT, POWEROFF, STOP, REBOOT]
+    # @return [Boolean]
+    def finish_installation(method)
       logs = collect_logs(path: "/tmp/var/logs/")
 
       logger.info("Installation logs stored in #{logs}")
 
-      cmd = if iguana?
-        "/usr/bin/agamactl -k"
-      else
-        "/usr/sbin/shutdown -r now"
+      unless installation_phase.finish?
+        logger.error "The installer has not finished correctly. Please check logs"
+        return false
       end
 
-      logger.info("Finishing installation with #{cmd}")
+      if method == STOP
+        logger.info("Finished the installation (stop).")
+        return true
+      end
 
-      system(cmd)
+      cmd = finish_cmd(method)
+      logger.info("Finishing installation with '#{cmd}' (#{method})")
+
+      !!system(cmd)
     end
 
     # Says whether running on iguana or not
@@ -274,6 +287,30 @@ module Agama
 
   private
 
+    # Possible finish methods
+    STOP = "stop"
+    REBOOT = "reboot"
+    HALT = "halt"
+    POWEROFF = "poweroff"
+
+    # Default finish method to be called if not given or not find
+    DEFAULT_METHOD = "reboot"
+    # Finish shutdown option for each finish method
+    SHUTDOWN_OPT = { REBOOT => "-r", HALT => "-H", POWEROFF => "-P" }.freeze
+
+    # @param method [String, nil]
+    # @return [String] the cmd to be run for finishing the installation
+    def finish_cmd(method)
+      return "/usr/bin/agamactl -k" if iguana?
+
+      opt = SHUTDOWN_OPT[method]
+      unless opt
+        log.info "Not recognized method, using the default one (reboot)."
+        opt = SHUTDOWN_OPT[DEFAULT_METHOD]
+      end
+      "/usr/sbin/shutdown #{opt} now"
+    end
+
     attr_reader :config
 
     # @return [ServiceStatusRecorder]
@@ -284,6 +321,12 @@ module Agama
       storage_config = storage.config
       storage.probe
       storage.config = storage_config if storage_config
+    end
+
+    # Runs post partitioning scripts
+    def run_post_partitioning_scripts
+      client = Agama::HTTP::Clients::Scripts.new
+      client.run("post_partitioning")
     end
   end
 end

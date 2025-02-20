@@ -60,6 +60,11 @@ describe Agama::Manager do
       on_service_status_change: nil, errors?: false
     )
   end
+  let(:scripts) do
+    instance_double(
+      Agama::HTTP::Clients::Scripts, run: nil
+    )
+  end
 
   let(:product) { nil }
 
@@ -70,6 +75,8 @@ describe Agama::Manager do
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)
+    allow(Agama::HTTP::Clients::Scripts).to receive(:new)
+      .and_return(scripts)
   end
 
   describe "#startup_phase" do
@@ -133,6 +140,7 @@ describe Agama::Manager do
       expect(software).to receive(:finish)
       expect(locale).to receive(:finish)
       expect(storage).to receive(:install)
+      expect(scripts).to receive(:run).with("post_partitioning")
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
       subject.install_phase
@@ -210,6 +218,51 @@ describe Agama::Manager do
 
       it "returns false" do
         expect(subject.valid?).to eq(false)
+      end
+    end
+  end
+
+  describe "#finish_installation" do
+    let(:finished) { false }
+    let(:iguana) { true }
+    let(:method) { "reboot" }
+
+    before do
+      allow(subject).to receive(:collect_logs)
+      allow(subject).to receive(:iguana?).and_return(iguana)
+      allow(subject.installation_phase).to receive(:finish?).and_return(finished)
+      allow(logger).to receive(:error)
+    end
+
+    it "collects the logs" do
+      expect(subject).to receive(:collect_logs)
+      subject.finish_installation(method)
+    end
+
+    context "when it is not in finish the phase" do
+      it "logs the error and returns false" do
+        expect(logger).to receive(:error).with(/not finished/)
+        expect(subject.finish_installation(method)).to eq(false)
+      end
+    end
+
+    context "when it is in the finish phase" do
+      let(:finished) { true }
+
+      context "and it is executed using iguana" do
+        it "runs agamactl -k" do
+          expect(subject).to receive(:system).with(/agamactl -k/).and_return(true)
+          expect(subject.finish_installation(method)).to eq(true)
+        end
+      end
+
+      context "and it is not executed using iguana" do
+        let(:iguana) { false }
+
+        it "executes the command to the finish method given" do
+          expect(subject).to receive(:system).with(/shutdown -r now/).and_return(true)
+          expect(subject.finish_installation(method)).to eq(true)
+        end
       end
     end
   end

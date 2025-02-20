@@ -18,12 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::collections::HashMap;
-
 use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
 use crate::software::proxies::SoftwareProductProxy;
 use serde::Serialize;
+use std::collections::HashMap;
 use zbus::Connection;
 
 use super::proxies::RegistrationProxy;

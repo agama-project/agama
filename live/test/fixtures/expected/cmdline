@@ -1,0 +1,1 @@
+ BOOT_IMAGE=/boot/vmlinuz splash=silent mitigations=auto quiet nosimplefb=1

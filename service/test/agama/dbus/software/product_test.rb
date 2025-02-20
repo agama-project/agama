@@ -152,36 +152,6 @@ describe Agama::DBus::Software::Product do
     end
   end
 
-  describe "#requirement" do
-    before do
-      allow(backend.registration).to receive(:requirement).and_return(requirement)
-    end
-
-    context "if the registration is not required" do
-      let(:requirement) { Agama::Registration::Requirement::NO }
-
-      it "returns 0" do
-        expect(subject.requirement).to eq(0)
-      end
-    end
-
-    context "if the registration is optional" do
-      let(:requirement) { Agama::Registration::Requirement::OPTIONAL }
-
-      it "returns 1" do
-        expect(subject.requirement).to eq(1)
-      end
-    end
-
-    context "if the registration is mandatory" do
-      let(:requirement) { Agama::Registration::Requirement::MANDATORY }
-
-      it "returns 2" do
-        expect(subject.requirement).to eq(2)
-      end
-    end
-  end
-
   describe "#register" do
     before do
       allow(backend.registration).to receive(:reg_code).and_return(nil)

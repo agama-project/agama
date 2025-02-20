@@ -846,6 +846,9 @@ export default {
   "No root authentication method defined yet.": [
     "Encara no s'ha definit cap mètode d'autenticació d'arrel."
   ],
+  "No support is planned.": [
+    "No té compatibilitat prevista."
+  ],
   "No user defined yet.": [
     "Encara no s'ha definit cap usuari."
   ],
@@ -876,6 +879,9 @@ export default {
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
   ],
+  "Not implemented yet (%s)": [
+    "Encara no s'ha implementat (%s)"
+  ],
   "Not possible with the current setup. Click to know more.": [
     "No és possible amb la configuració actual. Feu clic per saber-ne més."
   ],
@@ -884,6 +890,9 @@ export default {
   ],
   "Not set": [
     "No s'ha establert"
+  ],
+  "Not supported (%s)": [
+    "No compatible (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
@@ -1192,6 +1201,9 @@ export default {
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
   ],
+  "Some of the elements in your AutoYaST profile are not supported.": [
+    "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
+  ],
   "Something went wrong": [
     "Alguna cosa ha anat malament."
   ],
@@ -1390,6 +1402,9 @@ export default {
   "Unselect": [
     "Desmarca"
   ],
+  "Unsupported AutoYaST elements": [
+    "Elements d'AutoYaST no compatibles"
+  ],
   "Unused space": [
     "Espai sense ús"
   ],
@@ -1458,6 +1473,9 @@ export default {
   ],
   "WiFi connection form": [
     "Formulari de connexió per WiFi"
+  ],
+  "Will be supported in a future version.": [
+    "Serà compatible en una versió futura."
   ],
   "Wired": [
     "Amb fil"

@@ -237,7 +237,7 @@
   {
     "key": "services-manager",
     "support": "planned",
-    "notes": "You can use a post-installation script to handle these cases."
+    "notes": "Meanwhile you can use post-installation scripts to handle these cases."
   },
   {
     "key": "scripts",
@@ -252,6 +252,37 @@
           },
           { "key": "location", "support": "yes", "agama": "scripts.pre[].url" },
           { "key": "source", "support": "yes", "agama": "scripts.pre[].body" },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
+        "key": "postpartitioning-scripts[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].url"
+          },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].body"
+          },
           {
             "key": "interpreter",
             "support": "no",
@@ -355,7 +386,7 @@
   {
     "key": "proxy",
     "support": "planned",
-    "notes": "Set the proxy using the kernels' command line"
+    "notes": "Meanwhile set the proxy using the kernels' command line."
   },
   { "key": "report", "support": "no" },
   { "key": "samba-client", "support": "no" },
@@ -384,7 +415,7 @@
       {
         "key": "do_registration",
         "support": "yes",
-        "notes": "The while section is ignored if \"false\""
+        "notes": "The whole suse_register section is ignored if \"false\"."
       },
       {
         "key": "email",
@@ -433,7 +464,7 @@
         "key": "authorized_keys",
         "support": "yes",
         "agama": "root.sshPublicKey",
-        "notes": "It only considers one password and only for the root user."
+        "notes": "It only considers a single key."
       }
     ]
   }

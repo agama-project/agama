@@ -1,9 +1,52 @@
 -------------------------------------------------------------------
+Wed Feb 19 14:21:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- if root ssh key is used, ensure that sshd is enabled and firewall
+  has port open (jsc#PM-2128)
+- root password is explicitelly locked if not specified
+- first user will be in wheel group (jsc#PM-2128)
+
+-------------------------------------------------------------------
+Wed Feb 19 13:35:07 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- UX: Improve the libzypp callbacks (gh#agama-project/agama#1985)
+
+
+-------------------------------------------------------------------
+
+Tue Feb 18 17:19:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- (gh#agama-project/agama#1970).
+  - In an unattended installation, the system will reboot
+    automatically.
+  - The D-Bus method to finish the installation will not reboot the
+    system if it is not in the "finish" installation phase.
+
+-------------------------------------------------------------------
 Tue Feb 18 12:03:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Expose root and first user passwords (gh#agama-project/agama#2005).
 - Use a single D-Bus property for the root user data.
 - Remove support for auto-login.
+
+-------------------------------------------------------------------
+Tue Feb 18 11:27:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement basic support for RMT/SCC proxies (gh#agama-project/agama#2007).
+
+-------------------------------------------------------------------
+Mon Feb 17 09:17:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for post-partitioning scripts (jsc#AGM-108).
+
+-------------------------------------------------------------------
+Thu Feb 13 21:37:32 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix several AutoYaST conversion problems (gh#agama-project/agama#1995):
+  - Fix handling of scripts file names and location
+    (gh#agama-project/agama#1903).
+  - Fix the name of the localization section (gh#agama-project/agama#1960).
+  - Use a more readable JSON format (gh#agama-project/agama#1907).
 
 -------------------------------------------------------------------
 Wed Feb 12 08:16:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

@@ -4,25 +4,34 @@
 
 . /lib/dracut-lib.sh
 
+TARGET="${1:-/run/agama/cmdline.d/agama.conf}"
+ENV_TARGET="${1:-/run/agama/environment.conf}"
 get_agama_args() {
-  local _i _found
+  local _i _found _env
 
   for _i in $CMDLINE; do
     case $_i in
-    LIBSTORAGE_* | YAST_* | agama* | Y2* | ZYPP_*)
+    LIBSTORAGE_* | YAST_* | Y2* | ZYPP_*)
+      _found=1
+      _env=1
+      ;;
+    agama*)
       _found=1
       ;;
     esac
 
     if [ -n "$_found" ]; then
-      printf "Agama variable found ($_i)"
       if ! strstr "$_i" "="; then
         # Set the variable as a boolean if there is no assignation
         _i="${_i}=1"
       fi
-      echo $_i >>/etc/cmdline.d/99-agama-cmdline.conf
+      echo $_i >>"${TARGET}"
+      if [ -n "$_env" ]; then
+        _i=$(echo "$_i" | tr '[:lower:].-' '[:upper:]__')
+        echo $_i >>"${ENV_TARGET}"
+      fi
     fi
-    unset _found
+    unset _found _env
   done
 
   return 0

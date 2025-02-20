@@ -31,6 +31,12 @@ type RouteHandle = {
   icon?: string;
   /** Whether the route link will be rendered for registrable products only */
   needsRegistrableProduct?: boolean;
+  /**
+   * Alternative paths where the navigation menu item should be highlighted as active.
+   * This is useful when multiple routes lead to the same component or section,
+   * allowing the menu item to remain highlighted across those paths.
+   */
+  alsoActiveOn?: string[];
 };
 
 type Route = RouteObject & { handle?: RouteHandle };

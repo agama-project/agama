@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Wed Feb 19 14:16:28 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add sudo-policy-wheel-auth-self package as mandatory for products
+  that do not do it automatic to allow just non-root user for
+  initial login (jsc#PM-2128)
+
+-------------------------------------------------------------------
+Thu Feb 13 11:19:19 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Change the default lsm to SELinux in enforcing for both Leap and Tumblweed
+  keep AppArmor around as an option jsc#PED-12021
+  https://news.opensuse.org/2025/02/13/tw-plans-to-adopt-selinux-as-default/ 
+
+-------------------------------------------------------------------
 Fri Jan 24 06:45:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Change the registration property in a product's definition to a

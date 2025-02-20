@@ -20,6 +20,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "json"
 require "agama/autoyast/converter"
 require "agama/autoyast/profile_fetcher"
 require "agama/autoyast/profile_reporter"
@@ -86,7 +87,10 @@ module Agama
         converter = Agama::AutoYaST::Converter.new
         agama_config = converter.to_agama(profile)
         FileUtils.mkdir_p(directory)
-        File.write(File.join(directory, "autoinst.json"), agama_config.to_json)
+        File.write(
+          File.join(directory, "autoinst.json"),
+          JSON.pretty_generate(agama_config)
+        )
       rescue StandardError
         raise CouldNotWriteAgamaConfig
       end

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-09 02:40+0000\n"
+"POT-Creation-Date: 2025-02-13 02:38+0000\n"
 "PO-Revision-Date: 2024-11-13 18:48+0000\n"
 "Last-Translator: Jan Papež <honyczek@centrum.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -18,6 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Weblate 5.8.3\n"
+
+#. Reports the problems and decide whether to continue or not.
+#.
+#. @param elements [Array<Element>] List of unsupported elements.
+#: service/lib/agama/autoyast/profile_reporter.rb:51
+#, perl-brace-format
+msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
+msgstr ""
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:93
