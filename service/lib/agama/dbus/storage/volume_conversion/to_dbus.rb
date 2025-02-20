@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -50,7 +50,7 @@ module Agama
               "MountOptions"  => volume.mount_options,
               "Target"        => volume.location.target.to_s,
               "TargetDevice"  => volume.location.device.to_s,
-              "FsType"        => volume.fs_type&.to_human_string || "",
+              "FsType"        => volume.fs_type&.to_s || "",
               "MinSize"       => min_size_conversion,
               "AutoSize"      => volume.auto_size?,
               "Snapshots"     => volume.btrfs.snapshots?,
@@ -98,7 +98,7 @@ module Agama
 
             {
               "Required"              => outline.required?,
-              "FsTypes"               => outline.filesystems.map(&:to_human_string),
+              "FsTypes"               => outline.filesystems.map(&:to_s),
               "SupportAutoSize"       => outline.adaptive_sizes?,
               "AdjustByRam"           => outline.adjust_by_ram?,
               "SnapshotsConfigurable" => outline.snapshots_configurable?,

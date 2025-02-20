@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -269,7 +269,7 @@ describe Agama::DBus::Storage::Manager do
 
       it "returns the same generic default volume for any path" do
         generic = {
-          "FsType" => "Ext4", "MountOptions" => [],
+          "FsType" => "ext4", "MountOptions" => [],
           "MinSize" => 0, "AutoSize" => false
         }
         generic_outline = { "Required" => false, "FsTypes" => [], "SupportAutoSize" => false }
@@ -316,23 +316,23 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the appropriate volume if there is a corresponding template" do
-        expect(subject.default_volume("/")).to include("FsType" => "Btrfs", "AutoSize" => true)
+        expect(subject.default_volume("/")).to include("FsType" => "btrfs", "AutoSize" => true)
         expect(subject.default_volume("/")["Outline"]).to include(
-          "Required" => true, "FsTypes" => ["Btrfs"],
+          "Required" => true, "FsTypes" => ["btrfs"],
           "SupportAutoSize" => true, "SizeRelevantVolumes" => ["/home"]
         )
 
         expect(subject.default_volume("swap")).to include(
-          "FsType" => "Swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2 * (1024**3)
+          "FsType" => "swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2 * (1024**3)
         )
         expect(subject.default_volume("swap")["Outline"]).to include(
-          "Required" => false, "FsTypes" => ["Swap"], "SupportAutoSize" => false
+          "Required" => false, "FsTypes" => ["swap"], "SupportAutoSize" => false
         )
       end
 
       it "returns the default volume for any path without a template" do
-        default = { "FsType" => "Ext4", "AutoSize" => false, "MinSize" => 10 * (1024**3) }
-        default_outline = { "FsTypes" => ["Ext3", "Ext4", "XFS"], "SupportAutoSize" => false }
+        default = { "FsType" => "ext4", "AutoSize" => false, "MinSize" => 10 * (1024**3) }
+        default_outline = { "FsTypes" => ["ext3", "ext4", "xfs"], "SupportAutoSize" => false }
 
         expect(subject.default_volume("/foo")).to include(default)
         expect(subject.default_volume("/foo")["Outline"]).to include(default_outline)

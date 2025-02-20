@@ -103,11 +103,11 @@ const mockSolvedConfigModel: configModel.Config = {
   drives: [mockDrive],
 };
 
-const homeVolumeMock: Volume = {
+const mockHomeVolume: Volume = {
   mountPath: "/home",
   mountOptions: [],
   target: "default",
-  fsType: "Btrfs",
+  fsType: "btrfs",
   minSize: 1024,
   maxSize: 1024,
   autoSize: false,
@@ -115,7 +115,7 @@ const homeVolumeMock: Volume = {
   transactional: false,
   outline: {
     required: false,
-    fsTypes: ["Btrfs"],
+    fsTypes: ["btrfs"],
     supportAutoSize: false,
     snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
@@ -124,21 +124,22 @@ const homeVolumeMock: Volume = {
   },
 };
 
-const mockDeleteDrive = jest.fn();
-const mockDeletePartition = jest.fn();
+const mockGetPartition = jest.fn();
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => [sda],
   useDevices: () => [sda],
-  useVolume: () => homeVolumeMock,
+  useVolume: () => mockHomeVolume,
 }));
 
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
   useConfigModel: () => ({ drives: [mockDrive] }),
-  useDrive: () => ({ delete: mockDeleteDrive, configuredExistingPartitions: [sda1] }),
-  usePartition: () => ({ delete: mockDeletePartition }),
+  useDrive: () => ({
+    getPartition: mockGetPartition,
+    configuredExistingPartitions: [sda1],
+  }),
   useModel: () => ({ unusedMountPaths: ["/home", "swap"], usedMountPaths: [] }),
   useSolvedConfigModel: () => mockSolvedConfigModel,
 }));
@@ -177,12 +178,12 @@ describe("PartitionPage", () => {
     // Display custom size
     const customSize = within(sizeOptions).getByRole("option", { name: /Custom/ });
     await user.click(customSize);
-    screen.getByRole("textbox", { name: "Minimum" });
-    const maxSizeModeToggle = screen.getByRole("button", { name: "Max size mode" });
+    screen.getByRole("textbox", { name: "Minimum size value" });
+    const maxSizeModeToggle = screen.getByRole("button", { name: "Maximum size mode" });
     // Do not display input for a maximum size value by default
     expect(screen.queryByRole("textbox", { name: "Maximum size value" })).toBeNull();
     await user.click(maxSizeModeToggle);
-    const maxSizeOptions = screen.getByRole("listbox", { name: "Max size options" });
+    const maxSizeOptions = screen.getByRole("listbox", { name: "Maximum size options" });
     const limitedMaxSizeOption = within(maxSizeOptions).getByRole("option", { name: /Limited/ });
     await user.click(limitedMaxSizeOption);
     screen.getByRole("textbox", { name: "Maximum size value" });
@@ -214,5 +215,38 @@ describe("PartitionPage", () => {
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
     expect(size).toBeDisabled();
+  });
+
+  describe("if editing a partition", () => {
+    beforeEach(() => {
+      mockParams({ id: "sda", partitionId: "/home" });
+      mockGetPartition.mockReturnValue({
+        mountPath: "/home",
+        size: {
+          default: false,
+          min: gib(5),
+          max: gib(15),
+        },
+        filesystem: { default: false, type: "xfs" },
+      });
+    });
+
+    it("initializes the form with the partition values", async () => {
+      installerRender(<PartitionPage />);
+      const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
+      expect(mountPointSelector).toHaveValue("/home");
+      const targetButton = screen.getByRole("button", { name: "Mount point mode" });
+      within(targetButton).getByText(/As a new partition/);
+      const filesystemButton = screen.getByRole("button", { name: "File system" });
+      within(filesystemButton).getByText("XFS");
+      const sizeOptionButton = screen.getByRole("button", { name: "Size" });
+      within(sizeOptionButton).getByText("Custom");
+      const minSizeInput = screen.getByRole("textbox", { name: "Minimum size value" });
+      expect(minSizeInput).toHaveValue("5 GiB");
+      const maximumButton = screen.getByRole("button", { name: "Maximum size mode" });
+      within(maximumButton).getByText("Limited");
+      const maxSizeInput = screen.getByRole("textbox", { name: "Maximum size value" });
+      expect(maxSizeInput).toHaveValue("15 GiB");
+    });
   });
 });

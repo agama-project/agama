@@ -149,7 +149,12 @@ function deletePartition(
   return model;
 }
 
-/** Adds a new partition or replaces an existing partition. */
+/**
+ * Adds a new partition.
+ *
+ * If a partition already exists in the model (e.g., as effect of using the custom policy), then
+ * the partition is replaced.
+ * */
 export function addPartition(
   originalModel: configModel.Config,
   driveName: string,
@@ -163,6 +168,23 @@ export function addPartition(
   const index = drive.partitions.findIndex((p) => p.name && p.name === partition.name);
 
   if (index === -1) drive.partitions.push(partition);
+  else drive.partitions[index] = partition;
+
+  return model;
+}
+
+export function editPartition(
+  originalModel: configModel.Config,
+  driveName: string,
+  mountPath: string,
+  partition: configModel.Partition,
+): configModel.Config {
+  const model = copyModel(originalModel);
+  const drive = findDrive(model, driveName);
+  const partitions = drive?.partitions || [];
+  const index = partitions.findIndex((p) => p.mountPath === mountPath);
+
+  if (index === -1) return;
   else drive.partitions[index] = partition;
 
   return model;
@@ -351,32 +373,16 @@ export function useBoot(): BootHook {
   };
 }
 
-export type PartitionHook = {
-  delete: () => void;
-};
-
-/**
- * @param driveName like "/dev/sda"
- * @param mountPath like "/" or "swap"
- */
-export function usePartition(driveName: string, mountPath: string): PartitionHook | undefined {
-  const model = useConfigModel();
-  const { mutate } = useConfigModelMutation();
-
-  if (findPartition(model, driveName, mountPath) === undefined) return;
-
-  return {
-    delete: () => mutate(deletePartition(model, driveName, mountPath)),
-  };
-}
-
 export type DriveHook = {
   isBoot: boolean;
   isExplicitBoot: boolean;
   allMountPaths: string[];
   configuredExistingPartitions: configModel.Partition[];
   switch: (newName: string) => void;
+  getPartition: (mountPath: string) => configModel.Partition | undefined;
   addPartition: (partition: configModel.Partition) => void;
+  editPartition: (mountPath: string, partition: configModel.Partition) => void;
+  deletePartition: (mountPath: string) => void;
   setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
   delete: () => void;
 };
@@ -395,8 +401,12 @@ export function useDrive(name: string): DriveHook | null {
     configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
     delete: () => mutate(removeDrive(model, name)),
+    getPartition: (mountPath: string) => findPartition(model, name, mountPath),
     addPartition: (partition: configModel.Partition) =>
       mutate(addPartition(model, name, partition)),
+    editPartition: (mountPath: string, partition: configModel.Partition) =>
+      mutate(editPartition(model, name, mountPath, partition)),
+    deletePartition: (mountPath: string) => mutate(deletePartition(model, name, mountPath)),
     setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) =>
       mutate(setSpacePolicy(model, name, policy, actions)),
   };

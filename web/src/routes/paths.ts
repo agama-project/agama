@@ -73,6 +73,7 @@ const STORAGE = {
   root: "/storage",
   bootDevice: "/storage/select-boot-device",
   addPartition: "/storage/:id/add-partition",
+  editPartition: "/storage/:id/edit-partition/:partitionId",
   findSpace: "/storage/:id/find-space",
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
