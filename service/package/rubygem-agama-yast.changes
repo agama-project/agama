@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 20 17:22:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add libzypp callbacks to handle more checksum and signatures
+  problems (gh#agama-project/agama#2030).
+
+-------------------------------------------------------------------
 Thu Feb 20 12:56:13 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Introduce the storage model to support the new storage user
