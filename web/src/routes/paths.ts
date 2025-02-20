@@ -72,6 +72,7 @@ const SOFTWARE = {
 const STORAGE = {
   root: "/storage",
   bootDevice: "/storage/select-boot-device",
+  encryption: "/storage/encryption",
   addPartition: "/storage/:id/add-partition",
   findSpace: "/storage/:id/find-space",
   iscsi: "/storage/iscsi",
