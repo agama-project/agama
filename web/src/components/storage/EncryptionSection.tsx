@@ -20,84 +20,37 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-import { Button, Content, Skeleton } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-import EncryptionSettingsDialog, {
-  EncryptionSetting,
-} from "~/components/storage/EncryptionSettingsDialog";
+import React from "react";
+import {
+  Card,
+  CardBody,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+} from "@patternfly/react-core";
+import { Link, Page } from "~/components/core";
 import { EncryptionMethods } from "~/types/storage";
+import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { noop } from "~/utils";
 
-const encryptionMethods = () => ({
+const encryptionMethods = {
   disabled: _("Disabled"),
   [EncryptionMethods.LUKS2]: _("Enabled"),
   [EncryptionMethods.TPM]: _("Using TPM unlocking"),
-});
-
-const Value = ({ isLoading, isEnabled, method }) => {
-  const values = encryptionMethods();
-  if (isLoading) return <Skeleton fontSize="sm" width="75%" />;
-  if (isEnabled) return values[method];
-
-  return values.disabled;
 };
 
-const Action = ({ isEnabled, isLoading, onClick }) => {
-  if (isLoading) return <Skeleton fontSize="sm" width="100px" />;
-
-  const variant = isEnabled ? "secondary" : "primary";
-  const label = isEnabled ? _("Modify") : _("Enable");
-
-  return (
-    <Button variant={variant} onClick={onClick}>
-      {label}
-    </Button>
+// FIXME: temporary "mocks", please remove them after importing real code.
+const useEncryption = () => ({ mode: "disabled" });
+const useEncryptionChanges = () =>
+  console.info(
+    "Do not forget to susbscribe component to potential encryption changes. Maybe not needed if they come from model and subscribed to it.",
   );
-};
+// FIXME: read above ^^^
 
-export type EncryptionConfig = {
-  password: string;
-  method?: string;
-};
-
-export type EncryptionFieldProps = {
-  password?: string;
-  method?: string;
-  methods?: string[];
-  isLoading?: boolean;
-  onChange?: (config: EncryptionConfig) => void;
-};
-
-/**
- * Allows to define encryption
- * @component
- */
-export default function EncryptionField({
-  password = "",
-  method = "",
-  // FIXME: should be available methods actually a prop?
-  methods = [],
-  isLoading = false,
-  onChange = noop,
-}: EncryptionFieldProps) {
-  const validPassword = useCallback(() => password?.length > 0, [password]);
-  const [isEnabled, setIsEnabled] = useState(validPassword());
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  useEffect(() => {
-    setIsEnabled(validPassword());
-  }, [password, validPassword]);
-
-  const openDialog = () => setIsDialogOpen(true);
-
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const onAccept = (encryptionSetting: EncryptionSetting) => {
-    closeDialog();
-    onChange(encryptionSetting);
-  };
+export default function EncryptionSection() {
+  const { mode: value } = useEncryption();
+  useEncryptionChanges();
 
   return (
     <Page.Section
@@ -107,22 +60,18 @@ export default function EncryptionField({
 the device, including data, programs, and system files.",
       )}
       pfCardBodyProps={{ isFilled: true }}
-      actions={<Action isEnabled={isEnabled} isLoading={isLoading} onClick={openDialog} />}
+      actions={<Link to={STORAGE.encryption}>{_("Edit")}</Link>}
     >
-      <Content isEditorial>
-        <Value isLoading={isLoading} isEnabled={isEnabled} method={method} />
-      </Content>
-      {isDialogOpen && (
-        <EncryptionSettingsDialog
-          isOpen
-          password={password}
-          method={method}
-          methods={methods}
-          isLoading={isLoading}
-          onCancel={closeDialog}
-          onAccept={onAccept}
-        />
-      )}
+      <Card isCompact isPlain>
+        <CardBody>
+          <DescriptionList isHorizontal isFluid displaySize="lg" isCompact>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
+              <DescriptionListDescription>{encryptionMethods[value]}</DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
+        </CardBody>
+      </Card>
     </Page.Section>
   );
 }

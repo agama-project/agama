@@ -21,31 +21,37 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { EncryptionMethods } from "~/types/storage";
-import EncryptionField from "~/components/storage/EncryptionField";
+import EncryptionSection from "./EncryptionSection";
+import { STORAGE } from "~/routes/paths";
 
-describe("EncryptionField", () => {
-  it("renders proper value depending on encryption status", () => {
+describe("EncryptionSection", () => {
+  it("renders proper value depending on encryption mode", () => {
     // No encryption set
-    const { rerender } = plainRender(<EncryptionField />);
+    plainRender(<EncryptionSection />);
+    screen.getByText("Disabled");
+  });
+
+  // Replace previous example with below one after adapting it accordingly once
+  // the real hook is in use and can be mocked.
+  it.skip("renders proper value depending on encryption mode", () => {
+    // No encryption set
+    const { rerender } = plainRender(<EncryptionSection />);
     screen.getByText("Disabled");
 
     // Encryption set with LUKS2
-    rerender(<EncryptionField password="1234" method={EncryptionMethods.LUKS2} />);
+    rerender(<EncryptionSection />);
     screen.getByText("Enabled");
 
     // Encryption set with TPM
-    rerender(<EncryptionField password="1234" method={EncryptionMethods.TPM} />);
+    rerender(<EncryptionSection />);
     screen.getByText("Using TPM unlocking");
   });
 
-  it("allows opening the encryption settings dialog", async () => {
-    const { user } = plainRender(<EncryptionField />);
-    const button = screen.getByRole("button", { name: /Enable/ });
-    await user.click(button);
-    const dialog = await screen.findByRole("dialog");
-    within(dialog).getByRole("heading", { name: "Encryption" });
+  it("renders a link for navigating to encryption settings", () => {
+    plainRender(<EncryptionSection />);
+    const editLink = screen.getByRole("link", { name: "Edit" });
+    expect(editLink).toHaveAttribute("href", STORAGE.encryption);
   });
 });
