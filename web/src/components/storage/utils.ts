@@ -281,7 +281,7 @@ const volumeLabel = (volume: Volume): string =>
 /**
  * @see filesystemType
  */
-const filesystemName = (fstype: string): string => {
+const filesystemLabel = (fstype: string): string => {
   const name = FILESYSTEM_NAMES[fstype];
 
   // eslint-disable-next-line agama-i18n/string-literals
@@ -300,7 +300,7 @@ const filesystemType = (filesystem: configModel.Filesystem): string | undefined 
   if (filesystem.type) {
     if (filesystem.snapshots) return _("Btrfs with snapshots");
 
-    return filesystemName(filesystem.type);
+    return filesystemLabel(filesystem.type);
   }
 
   return undefined;
@@ -346,6 +346,7 @@ export {
   deviceLabel,
   deviceChildren,
   deviceSize,
+  filesystemLabel,
   filesystemType,
   formattedPath,
   gib,
