@@ -64,6 +64,6 @@ build: $(DESTDIR)
 	(cd $(DESTDIR) && osc -A $(OBS_API) build -M $(FLAVOR) $(OSC_OPTS) $(OBS_TARGET) $(ARCH) $(KIWI_FILE))
 
 check:
-	for i in ./test/*_test.*; do $${i}; done
+	for i in ./test/*_test.*; do $${i} || exit 1; done
 
 .PHONY: build all clean
