@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Feb 20 12:46:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Include the migration to PatternFly 6 made by dgonzalez@suse.com
+  (gh#openSUSE/agama#1900, gh#openSUSE/agama#1921,
+  gh#openSUSE/agama#1954 and gh#openSUSE/agama#1961)
+- New interface to configure the storage proposal.
+
+-------------------------------------------------------------------
 Tue Feb 18 12:10:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Remove step forcing root user password entry.
