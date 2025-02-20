@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   Nav,
   NavItem,
@@ -37,22 +37,27 @@ import { useProduct } from "~/queries/software";
 
 const MainNavigation = (): React.ReactNode => {
   const { selectedProduct: product } = useProduct();
+  const location = useLocation();
 
-  const links = rootRoutes().map((r) => {
-    if (!r.handle) return null;
-    if (r.handle.needsRegistrableProduct && !product.registration) return null;
+  const links = rootRoutes().map((route) => {
+    const { path, handle: data } = route;
+    if (!data) return null;
+    if (data.needsRegistrableProduct && !product.registration) return null;
 
     // eslint-disable-next-line agama-i18n/string-literals
-    const name = _(r.handle.name);
-    const iconName = r.handle.icon;
+    const name = _(data.name);
+    const iconName = data.icon;
 
     return (
       <NavItem
-        key={r.path}
+        key={path}
         component={({ className }) => (
           <NavLink
-            to={r.path}
-            className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}
+            to={path}
+            className={({ isActive: isNavLinkActive }) => {
+              const isActive = isNavLinkActive || data.alsoActiveOn?.includes(location.pathname);
+              return [className, isActive ? "pf-m-current" : ""].join(" ");
+            }}
           >
             {iconName && <Icon name={iconName} />} {name}
           </NavLink>
