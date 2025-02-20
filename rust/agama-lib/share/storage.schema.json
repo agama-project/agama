@@ -1,0 +1,599 @@
+{
+  "$comment": "Based on doc/auto_storage.md",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Config",
+  "description": "Storage config.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "boot": { "$ref": "#/$defs/boot" },
+    "drives": {
+      "description": "Drives (disks, BIOS RAIDs and multipath devices).",
+      "type": "array",
+      "items": { "$ref": "#/$defs/driveElement" }
+    },
+    "volumeGroups": {
+      "description": "LVM volume groups.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/volumeGroup" }
+    },
+    "guided": { "$ref": "#/$defs/guided" }
+  },
+  "$defs": {
+    "boot": {
+      "description": "Allows configuring boot partitions automatically.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configure"],
+      "properties": {
+        "configure": {
+          "description": "Whether to configure partitions for booting.",
+          "type": "boolean"
+        },
+        "device": { "$ref": "#/$defs/alias" }
+      }
+    },
+    "driveElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/formattedDrive" },
+        { "$ref": "#/$defs/partitionedDrive" }
+      ]
+    },
+    "formattedDrive": {
+      "description": "Drive without a partition table (e.g., directly formatted).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesystem"],
+      "properties": {
+        "search": { "$ref": "#/$defs/searchElement" },
+        "alias": { "$ref": "#/$defs/alias" },
+        "encryption": { "$ref": "#/$defs/encryption" },
+        "filesystem": { "$ref": "#/$defs/filesystem" }
+      }
+    },
+    "partitionedDrive": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "search": { "$ref": "#/$defs/searchElement" },
+        "alias": { "$ref": "#/$defs/alias" },
+        "ptableType": { "$ref": "#/$defs/ptableType" },
+        "partitions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionElement" }
+        }
+      }
+    },
+    "ptableType": {
+      "description": "Partition table type.",
+      "$comment": "The partition table is created only if all the current partitions are deleted.",
+      "enum": ["gpt", "msdos", "dasd"]
+    },
+    "partitionElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/simpleVolumesGenerator" },
+        { "$ref": "#/$defs/advancedPartitionsGenerator" },
+        { "$ref": "#/$defs/regularPartition" },
+        { "$ref": "#/$defs/partitionToDelete" },
+        { "$ref": "#/$defs/PartitionToDeleteIfNeeded" }
+      ]
+    },
+    "simpleVolumesGenerator": {
+      "description": "Automatically creates the default or mandatory volumes configured by the selected product.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate"],
+      "properties": {
+        "generate": {
+          "enum": ["default", "mandatory"]
+        }
+      }
+    },
+    "advancedPartitionsGenerator": {
+      "description": "Creates the default or mandatory partitions configured by the selected product.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate"],
+      "properties": {
+        "generate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["partitions"],
+          "properties": {
+            "partitions": {
+              "enum": ["default", "mandatory"]
+            },
+            "encryption": { "$ref": "#/$defs/encryption" }
+          }
+        }
+      }
+    },
+    "regularPartition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "search": { "$ref": "#/$defs/searchElement" },
+        "alias": { "$ref": "#/$defs/alias" },
+        "id": {
+          "title": "Partition id",
+          "enum": [
+            "linux",
+            "swap",
+            "lvm",
+            "raid",
+            "esp",
+            "prep",
+            "bios_boot"
+          ]
+        },
+        "size": { "$ref": "#/$defs/size" },
+        "encryption": { "$ref": "#/$defs/encryption" },
+        "filesystem": { "$ref": "#/$defs/filesystem" }
+      }
+    },
+    "partitionToDelete": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["delete", "search"],
+      "properties": {
+        "search": { "$ref": "#/$defs/searchElement" },
+        "delete": {
+          "description": "Delete the partition.",
+          "const": true
+        }
+      }
+    },
+    "PartitionToDeleteIfNeeded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deleteIfNeeded", "search"],
+      "properties": {
+        "search": { "$ref": "#/$defs/searchElement" },
+        "deleteIfNeeded": {
+          "description": "Delete the partition if needed to make space.",
+          "const": true
+        },
+        "size": { "$ref": "#/$defs/size" }
+      }
+    },
+    "volumeGroup": {
+      "description": "LVM volume group.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Volume group name.",
+          "type": "string",
+          "examples": ["vg0"]
+        },
+        "extentSize": { "$ref": "#/$defs/sizeValue" },
+        "physicalVolumes": {
+          "description": "Devices to use as physical volumes.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/physicalVolumeElement" }
+        },
+        "logicalVolumes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicalVolumeElement" }
+        }
+      }
+    },
+    "physicalVolumeElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/alias" },
+        { "$ref": "#/$defs/simplePhysicalVolumesGenerator" },
+        { "$ref": "#/$defs/advancedPhysicalVolumesGenerator" }
+      ]
+    },
+    "simplePhysicalVolumesGenerator": {
+      "description": "Automatically creates the needed physical volumes in the indicated devices.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate"],
+      "properties": {
+        "generate": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/alias" }
+        }
+      }
+    },
+    "advancedPhysicalVolumesGenerator": {
+      "description": "Automatically creates the needed physical volumes in the indicated devices.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate"],
+      "properties": {
+        "generate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["targetDevices"],
+          "properties": {
+            "targetDevices": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/alias" }
+            },
+            "encryption": { "$ref": "#/$defs/encryption" }
+          }
+        }
+      }
+    },
+    "logicalVolumeElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/simpleVolumesGenerator" },
+        { "$ref": "#/$defs/advancedLogicalVolumesGenerator" },
+        { "$ref": "#/$defs/logicalVolume" },
+        { "$ref": "#/$defs/thinPoolLogicalVolume" },
+        { "$ref": "#/$defs/thinLogicalVolume" }
+      ]
+    },
+    "advancedLogicalVolumesGenerator": {
+      "description": "Automatically creates the default or mandatory logical volumes configured by the selected product.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate"],
+      "properties": {
+        "generate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["logicalVolumes"],
+          "properties": {
+            "logicalVolumes": {
+              "enum": ["default", "mandatory"]
+            },
+            "encryption": { "$ref": "#/$defs/encryption" },
+            "stripes": { "$ref": "#/$defs/logicalVolumeStripes" },
+            "stripeSize": { "$ref": "#/$defs/sizeValue" }
+          }
+        }
+      }
+    },
+    "logicalVolume": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Logical volume name.",
+          "type": "string",
+          "examples": ["lv0"]
+        },
+        "size": { "$ref": "#/$defs/size" },
+        "stripes": { "$ref": "#/$defs/logicalVolumeStripes" },
+        "stripeSize": { "$ref": "#/$defs/sizeValue" },
+        "encryption": { "$ref": "#/$defs/encryption" },
+        "filesystem": { "$ref": "#/$defs/filesystem" }
+      }
+    },
+    "thinPoolLogicalVolume": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pool"],
+      "properties": {
+        "pool": {
+          "description": "LVM thin pool.",
+          "const": true
+        },
+        "alias": { "$ref": "#/$defs/alias" },
+        "name": {
+          "description": "Logical volume name.",
+          "type": "string",
+          "examples": ["lv0"]
+        },
+        "size": { "$ref": "#/$defs/size" },
+        "stripes": { "$ref": "#/$defs/logicalVolumeStripes" },
+        "stripeSize": { "$ref": "#/$defs/sizeValue" },
+        "encryption": { "$ref": "#/$defs/encryption" }
+      }
+    },
+    "thinLogicalVolume": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["usedPool"],
+      "properties": {
+        "name": {
+          "description": "Thin logical volume name.",
+          "type": "string",
+          "examples": ["lv0"]
+        },
+        "size": { "$ref": "#/$defs/size" },
+        "usedPool": { "$ref": "#/$defs/alias" },
+        "encryption": { "$ref": "#/$defs/encryption" },
+        "filesystem": { "$ref": "#/$defs/filesystem" }
+      }
+    },
+    "logicalVolumeStripes": {
+      "description": "Number of stripes.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 128
+    },
+    "searchElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/simpleSearchAll" },
+        { "$ref": "#/$defs/simpleSearchByName" },
+        { "$ref": "#/$defs/advancedSearch" }
+      ]
+    },
+    "simpleSearchAll": {
+      "description": "Shortcut to match all devices if there is any (equivalent to specify no conditions and to skip the entry if no device is found).",
+      "const": "*"
+    },
+    "simpleSearchByName": {
+      "descrition": "Search by device name",
+      "type": "string",
+      "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
+    },
+    "advancedSearch": {
+      "description": "Advanced options for searching devices.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "title": "Search condition",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name"],
+          "properties": {
+            "name": { "$ref": "#/$defs/simpleSearchByName" }
+          }
+        },
+        "max": {
+          "description": "Maximum devices to match.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "ifNotFound": {
+          "title": "Search action",
+          "description": "How to handle the section if the device is not found.",
+          "enum": ["skip", "error"],
+          "default": "error"
+        }
+      }
+    },
+    "alias": {
+      "description": "Alias used to reference a device.",
+      "type": "string"
+    },
+    "size": {
+      "title": "Size",
+      "anyOf": [
+        { "$ref": "#/$defs/sizeValue" },
+        {
+          "title": "Size tuple",
+          "description": "Lower size limit and optionally upper size limit.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/sizeValueWithCurrent" },
+          "minItems": 1,
+          "maxItems": 2,
+          "examples": [
+            [1024, "current"],
+            ["1 GiB", "5 GiB"],
+            [1024, "2 GiB"],
+            ["2 GiB"]
+          ]
+        },
+        {
+          "title": "Size range",
+          "description": "Size range.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min"],
+          "properties": {
+            "min": { "$ref": "#/$defs/sizeValueWithCurrent" },
+            "max": { "$ref": "#/$defs/sizeValueWithCurrent" }
+          }
+        }
+      ]
+    },
+    "sizeValue": {
+      "anyOf": [
+        { "$ref": "#/$defs/sizeString" },
+        { "$ref": "#/$defs/sizeBytes" }
+      ]
+    },
+    "sizeValueWithCurrent": {
+      "anyOf": [
+        { "$ref": "#/$defs/sizeValue" },
+        {
+          "title": "Size current",
+          "description": "The current size of the device.",
+          "const": "current"
+        }
+      ]
+    },
+    "sizeString": {
+      "description": "Human readable size.",
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$",
+      "examples": ["2 GiB", "1.5 TB", "1TIB", "1073741824 b", "1073741824"]
+    },
+    "sizeBytes": {
+      "description": "Size in bytes.",
+      "type": "integer",
+      "minimum": 0,
+      "examples": [1024, 2048]
+    },
+    "encryption": {
+      "anyOf": [
+        { "$ref": "#/$defs/encryptionLuks1" },
+        { "$ref": "#/$defs/encryptionLuks2" },
+        { "$ref": "#/$defs/encryptionPervasiveLuks2" },
+        { "$ref": "#/$defs/encryptionTPM" },
+        { "$ref": "#/$defs/encryptionSwap" }
+      ]
+    },
+    "encryptionLuks1": {
+      "description": "LUKS1 encryption.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["luks1"],
+      "properties": {
+        "luks1": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": { "$ref": "#/$defs/encryptionPassword" },
+            "cipher": { "$ref": "#/$defs/encryptionCipher" },
+            "keySize": { "$ref": "#/$defs/encryptionKeySize" }
+          }
+        }
+      }
+    },
+    "encryptionLuks2": {
+      "description": "LUKS2 encryption.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["luks2"],
+      "properties": {
+        "luks2": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": { "$ref": "#/$defs/encryptionPassword" },
+            "cipher": { "$ref": "#/$defs/encryptionCipher" },
+            "keySize": { "$ref": "#/$defs/encryptionKeySize" },
+            "pbkdFunction": { "$ref": "#/$defs/encryptionPbkdFunction" },
+            "label": {
+              "description": "LUKS2 label.",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "encryptionPervasiveLuks2": {
+      "description": "LUKS2 pervasive encryption.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pervasiveLuks2"],
+      "properties": {
+        "pervasiveLuks2": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": { "$ref": "#/$defs/encryptionPassword" }
+          }
+        }
+      }
+    },
+    "encryptionTPM": {
+      "description": "TPM-Based Full Disk Encrytion.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tpmFde"],
+      "properties": {
+        "tpmFde": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["password"],
+          "properties": {
+            "password": { "$ref": "#/$defs/encryptionPassword" }
+          }
+        }
+      }
+    },
+    "encryptionSwap": {
+      "description": "Swap encryptions.",
+      "enum": ["protected_swap", "secure_swap", "random_swap"]
+    },
+    "encryptionPassword": {
+      "description": "Password to use when creating a new encryption device.",
+      "type": "string"
+    },
+    "encryptionCipher": {
+      "description": "The value must be compatible with the --cipher argument of the command cryptsetup.",
+      "type": "string"
+    },
+    "encryptionKeySize": {
+      "description": "The value (in bits) has to be a multiple of 8. The possible key sizes are limited by the used cipher.",
+      "type": "integer"
+    },
+    "encryptionPbkdFunction": {
+      "enum": ["pbkdf2", "argon2i", "argon2id"]
+    },
+    "filesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reuseIfPossible": {
+          "description": "Try to reuse the existing file system. In some cases the file system could not be reused, for example, if the device is re-encrypted.",
+          "type": "boolean",
+          "default": false
+        },
+        "type": { "$ref": "#/$defs/filesystemType" },
+        "label": {
+          "description": "File system label.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Mount path.",
+          "type": "string",
+          "examples": ["/var/log"]
+        },
+        "mountBy": {
+          "title": "Mount by",
+          "description": "How to mount the device.",
+          "enum": ["device", "id", "label", "path", "uuid"]
+        },
+        "mkfsOptions": {
+          "description": "Options for creating the file system.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mountOptions": {
+          "description": "Options to add to the fourth field of fstab.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "filesystemType": {
+      "anyOf": [
+        { "$ref": "#/$defs/filesystemTypeAny" },
+        { "$ref": "#/$defs/filesystemTypeBtrfs" }
+      ]
+    },
+    "filesystemTypeAny": {
+      "enum": [
+        "bcachefs",
+        "btrfs",
+        "exfat",
+        "ext2",
+        "ext3",
+        "ext4",
+        "f2fs",
+        "jfs",
+        "nfs",
+        "nilfs2",
+        "ntfs",
+        "reiserfs",
+        "swap",
+        "tmpfs",
+        "vfat",
+        "xfs"
+      ]
+    },
+    "filesystemTypeBtrfs": {
+      "description": "Btrfs file system.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["btrfs"],
+      "properties": {
+        "btrfs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "snapshots": {
+              "description": "Whether to configrue Btrfs snapshots.",
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

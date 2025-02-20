@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Alert as PFAlert, Form, FormGroup, Text, Stack } from "@patternfly/react-core";
+import { Alert as PFAlert, Content, Form, FormGroup, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
@@ -68,11 +68,11 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       isOpen
       title={_("Encrypted Device")}
       aria-label={_("Question")}
-      titleIconVariant={() => <Icon name="lock" size="s" />}
+      titleIconVariant={() => <Icon name="lock" />}
     >
       <Stack hasGutter>
         <Alert attempt={question.data.attempt} />
-        <Text>{question.text}</Text>
+        <Content>{question.text}</Content>
         <Form onSubmit={triggerDefaultAction}>
           {/* TRANSLATORS: field label */}
           <FormGroup label={_("Encryption Password")} fieldId="luks-password">

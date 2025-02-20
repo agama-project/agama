@@ -112,7 +112,7 @@ describe("IssuesDrawer", () => {
       const registrationIssues = screen.getByRole("region", { name: "Registration" });
       const softwareIssues = screen.getByRole("region", { name: "Software" });
       const storageIssues = screen.getByRole("region", { name: "Storage" });
-      const usersIssues = screen.getByRole("region", { name: "Users" });
+      const usersIssues = screen.getByRole("region", { name: "Authentication" });
 
       const softwareLink = within(softwareIssues).getByRole("link", { name: "Software" });
       expect(softwareLink).toHaveAttribute("href", "/software");
@@ -123,7 +123,7 @@ describe("IssuesDrawer", () => {
       within(storageIssues).getByText("Storage Fake Issue 1");
       within(storageIssues).getByText("Storage Fake Issue 2");
 
-      const usersLink = within(usersIssues).getByRole("link", { name: "Users" });
+      const usersLink = within(usersIssues).getByRole("link", { name: "Authentication" });
       expect(usersLink).toHaveAttribute("href", "/users");
       within(usersIssues).getByText("Users Fake Issue");
 

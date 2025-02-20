@@ -45,8 +45,6 @@ pub struct FirstUserSettings {
     pub password: Option<String>,
     /// Whether the password is hashed or is plain text
     pub hashed_password: Option<bool>,
-    /// Whether auto-login should enabled or not
-    pub autologin: Option<bool>,
 }
 
 /// Root user settings

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,16 +22,17 @@
 require_relative "../../test_helper"
 require_relative "../with_progress_examples"
 require_relative "../with_issues_examples"
-require_relative "storage_helpers"
+require_relative "./storage_helpers"
+require "agama/dbus/clients/questions"
+require "agama/config"
+require "agama/http"
+require "agama/issue"
+require "agama/storage/config_json_reader"
+require "agama/storage/iscsi/manager"
 require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
-require "agama/storage/iscsi/manager"
 require "agama/storage/volume"
-require "agama/config"
-require "agama/issue"
-require "agama/dbus/clients/questions"
-require "agama/http"
 require "y2storage/issue"
 
 Yast.import "Installation"
@@ -165,17 +166,17 @@ describe Agama::Storage::Manager do
 
       allow(proposal).to receive(:issues).and_return(proposal_issues)
       allow(proposal).to receive(:available_devices).and_return(devices)
-      allow(proposal).to receive(:settings).and_return(settings)
-      allow(proposal).to receive(:calculate_guided)
+      allow(proposal).to receive(:calculate_from_json)
+      allow(proposal).to receive(:storage_json).and_return(current_config)
+
+      allow_any_instance_of(Agama::Storage::ConfigJSONReader)
+        .to receive(:read).and_return(default_config)
 
       allow(config).to receive(:pick_product)
       allow(iscsi).to receive(:activate)
       allow(y2storage_manager).to receive(:activate)
       allow(iscsi).to receive(:probe)
       allow(y2storage_manager).to receive(:probe)
-
-      allow_any_instance_of(Agama::Storage::ProposalSettingsReader).to receive(:read)
-        .and_return(config_settings)
     end
 
     let(:raw_devicegraph) do
@@ -184,12 +185,29 @@ describe Agama::Storage::Manager do
 
     let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
 
+    let(:default_config) do
+      {
+        storage: {
+          drives: [
+            search: "/dev/vda1"
+          ]
+        }
+      }
+    end
+
+    let(:current_config) do
+      {
+        storage: {
+          drives: [
+            search: "/dev/vda2"
+          ]
+        }
+      }
+    end
+
     let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     let(:devices) { [disk1, disk2] }
-
-    let(:settings) { Agama::Storage::ProposalSettings.new }
-    let(:config_settings) { Agama::Storage::ProposalSettings.new }
 
     let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
@@ -200,7 +218,7 @@ describe Agama::Storage::Manager do
 
     let(:callback) { proc {} }
 
-    it "probes the storage devices and calculates a proposal with the default settings" do
+    it "probes the storage devices and calculates a proposal" do
       expect(config).to receive(:pick_product).with("ALP")
       expect(iscsi).to receive(:activate)
       expect(y2storage_manager).to receive(:activate) do |callbacks|
@@ -208,7 +226,7 @@ describe Agama::Storage::Manager do
       end
       expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe)
-      expect(proposal).to receive(:calculate_guided).with(config_settings)
+      expect(proposal).to receive(:calculate_from_json)
       storage.probe
     end
 
@@ -241,6 +259,24 @@ describe Agama::Storage::Manager do
       expect(callback).to receive(:call)
 
       storage.probe
+    end
+
+    context "if :keep_config is false" do
+      let(:keep_config) { false }
+
+      it "calculates a proposal using the default product config" do
+        expect(proposal).to receive(:calculate_from_json).with(default_config)
+        storage.probe(keep_config: keep_config)
+      end
+    end
+
+    context "if :keep_config is true" do
+      let(:keep_config) { true }
+
+      it "calculates a proposal using the current config" do
+        expect(proposal).to receive(:calculate_from_json).with(current_config)
+        storage.probe(keep_config: keep_config)
+      end
     end
 
     context "if there are available devices" do

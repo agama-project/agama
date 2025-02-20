@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -84,11 +84,6 @@ type ShrinkingInfo = {
   unsupported?: string[];
 };
 
-type ProposalResult = {
-  settings: ProposalSettings;
-  actions: Action[];
-};
-
 type Action = {
   device: number;
   text: string;
@@ -97,74 +92,10 @@ type Action = {
   resize: boolean;
 };
 
-type ProposalSettings = {
-  target: ProposalTarget;
-  targetDevice?: string;
-  targetPVDevices: string[];
-  configureBoot: boolean;
-  bootDevice: string;
-  defaultBootDevice: string;
-  encryptionPassword: string;
-  encryptionMethod: string;
-  encryptionPBKDFunction?: string;
-  spacePolicy: string;
-  spaceActions: SpaceAction[];
-  volumes: Volume[];
-  installationDevices: StorageDevice[];
+type SpacePolicyAction = {
+  deviceName: string;
+  value: "delete" | "resizeIfNeeded";
 };
-
-type SpaceAction = {
-  device: string;
-  action: "force_delete" | "resize" | "keep";
-};
-
-type Volume = {
-  mountPath: string;
-  target: VolumeTarget;
-  targetDevice?: StorageDevice;
-  fsType: string;
-  minSize: number;
-  maxSize?: number;
-  autoSize: boolean;
-  snapshots: boolean;
-  transactional: boolean;
-  outline: VolumeOutline;
-};
-
-type VolumeOutline = {
-  required: boolean;
-  productDefined: boolean;
-  fsTypes: string[];
-  adjustByRam: boolean;
-  supportAutoSize: boolean;
-  snapshotsConfigurable: boolean;
-  snapshotsAffectSizes: boolean;
-  sizeRelevantVolumes: string[];
-};
-
-/**
- * Enum for the possible proposal targets.
- *
- * @readonly
- */
-enum ProposalTarget {
-  DISK = "disk",
-  NEW_LVM_VG = "newLvmVg",
-  REUSED_LVM_VG = "reusedLvmVg",
-}
-
-/**
- * Enum for the possible volume targets.
- *
- * @readonly
- */
-enum VolumeTarget {
-  DEFAULT = "default",
-  NEW_PARTITION = "new_partition",
-  NEW_VG = "new_vg",
-  DEVICE = "device",
-  FILESYSTEM = "filesystem",
-}
 
 /**
  * Enum for the encryption method values
@@ -202,13 +133,9 @@ export type {
   ISCSINode,
   PartitionSlot,
   PartitionTable,
-  ProposalResult,
-  ProposalSettings,
   ShrinkingInfo,
-  SpaceAction,
+  SpacePolicyAction,
   StorageDevice,
-  Volume,
-  VolumeOutline,
 };
 
-export { EncryptionMethods, ProposalTarget, VolumeTarget };
+export { EncryptionMethods };

@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -56,11 +56,26 @@ pub trait Storage1 {
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
 
+    /// Reprobe method
+    fn reprobe(&self) -> zbus::Result<()>;
+
     /// Set the storage config according to the JSON schema
     fn set_config(&self, settings: &str) -> zbus::Result<u32>;
 
+    /// Reset the storage config to the default value
+    fn reset_config(&self) -> zbus::Result<u32>;
+
     /// Get the current storage config according to the JSON schema
     fn get_config(&self) -> zbus::Result<String>;
+
+    /// Set the storage config model according to the JSON schema
+    fn set_config_model(&self, model: &str) -> zbus::Result<u32>;
+
+    /// Get the storage config model according to the JSON schema
+    fn get_config_model(&self) -> zbus::Result<String>;
+
+    /// Solve a storage config model
+    fn solve_config_model(&self, model: &str) -> zbus::Result<String>;
 
     /// DeprecatedSystem property
     #[zbus(property)]

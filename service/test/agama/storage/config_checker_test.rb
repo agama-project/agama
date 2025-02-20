@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -258,15 +258,106 @@ describe Agama::Storage::ConfigChecker do
       allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
 
       Agama::Storage::ConfigSolver
-        .new(devicegraph, product_config)
+        .new(product_config, devicegraph)
         .solve(config)
     end
 
     let(:scenario) { "disks.yaml" }
 
+    context "if the boot configuration is enabled" do
+      let(:config_json) do
+        {
+          boot:   {
+            configure: true,
+            device:    device_alias
+          },
+          drives: [
+            {
+              alias: "disk"
+            }
+          ]
+        }
+      end
+
+      context "and there is no device alias" do
+        let(:device_alias) { nil }
+
+        it "includes the expected issue" do
+          issues = subject.issues
+          expect(issues.size).to eq(1)
+
+          issue = issues.first
+          expect(issue.error?).to eq(true)
+          expect(issue.description).to match(/there is no root \(\/\) file system/)
+        end
+      end
+
+      context "and the given alias does not exist" do
+        let(:device_alias) { "foo" }
+
+        it "includes the expected issue" do
+          issues = subject.issues
+          expect(issues.size).to eq(1)
+
+          issue = issues.first
+          expect(issue.error?).to eq(true)
+          expect(issue.description).to eq("There is no boot device with alias 'foo'")
+        end
+      end
+
+      context "and the given alias exists" do
+        let(:device_alias) { "disk" }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
+      end
+    end
+
+    context "if the boot configuration is not enabled" do
+      let(:config_json) do
+        {
+          boot:   {
+            configure: false,
+            device:    device_alias
+          },
+          drives: [
+            {
+              alias: "disk"
+            }
+          ]
+        }
+      end
+
+      context "and there is no device alias" do
+        let(:device_alias) { nil }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
+      end
+
+      context "and the given alias does not exist" do
+        let(:device_alias) { "foo" }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
+      end
+
+      context "and the given alias exists" do
+        let(:device_alias) { "disk" }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
+      end
+    end
+
     context "if a drive has not found device" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             {
               search: {
@@ -295,7 +386,7 @@ describe Agama::Storage::ConfigChecker do
 
           issue = issues.first
           expect(issue.error?).to eq(true)
-          expect(issue.description).to eq("No device found for a mandatory drive")
+          expect(issue.description).to eq("Mandatory device /dev/vdd not found")
         end
       end
     end
@@ -303,6 +394,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has a found device" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             { search: "/dev/vda" }
           ]
@@ -317,6 +409,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has encryption" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             {
               encryption: encryption,
@@ -332,6 +425,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has filesystem" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             {
               filesystem: filesystem
@@ -348,6 +442,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a drive has partitions" do
       let(:config_json) do
         {
+          boot:   { configure: false },
           drives: [
             {
               partitions: [partition]
@@ -383,7 +478,7 @@ describe Agama::Storage::ConfigChecker do
 
             issue = issues.first
             expect(issue.error?).to eq(true)
-            expect(issue.description).to eq("No device found for a mandatory partition")
+            expect(issue.description).to eq("Mandatory device /dev/vdb1 not found")
           end
         end
       end
@@ -423,6 +518,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a volume group has logical volumes" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           volumeGroups: [
             {
               logicalVolumes: [
@@ -487,6 +583,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a volume group has an unknown physical volume" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             {
               alias: "first-disk"
@@ -513,6 +610,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a volume group has an unknown target device for physical volumes" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             {
               alias: "first-disk"
@@ -546,6 +644,7 @@ describe Agama::Storage::ConfigChecker do
     context "if a volume group has encryption for physical volumes" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             {
               alias: "first-disk"
@@ -638,6 +737,7 @@ describe Agama::Storage::ConfigChecker do
     context "if there are overused physical volumes devices" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             { alias: "disk1" },
             { alias: "disk2" },
@@ -688,6 +788,7 @@ describe Agama::Storage::ConfigChecker do
     context "if the config has several issues" do
       let(:config_json) do
         {
+          boot:         { configure: false },
           drives:       [
             {
               search:     "/dev/vdd",
@@ -705,7 +806,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the expected issues" do
         expect(subject.issues).to contain_exactly(
           an_object_having_attributes(
-            description: match(/No device found for a mandatory drive/)
+            description: match("Mandatory device /dev/vdd not found")
           ),
           an_object_having_attributes(
             description: match(/No passphrase provided/)

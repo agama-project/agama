@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -73,7 +73,7 @@ const Drawer = forwardRef(
               <DrawerPanelBody>{panelContent}</DrawerPanelBody>
             </DrawerPanelContent>
           }
-          colorVariant="no-background"
+          colorVariant="primary"
         >
           <DrawerContentBody>{children}</DrawerContentBody>
         </DrawerContent>

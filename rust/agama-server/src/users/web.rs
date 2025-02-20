@@ -33,11 +33,7 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError,
-    users::{
-        model::{RootConfig, RootPatchSettings},
-        proxies::Users1Proxy,
-        FirstUser, UsersClient,
-    },
+    users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
 };
 use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use tokio_stream::{Stream, StreamExt};
@@ -54,23 +50,15 @@ struct UsersState<'a> {
 /// * `connection`: D-Bus connection to listen for events.
 pub async fn users_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
     const FIRST_USER_ID: &str = "first_user";
-    const ROOT_PASSWORD_ID: &str = "root_password";
-    const ROOT_SSHKEY_ID: &str = "root_sshkey";
-    // here we have three streams, but only two events. Reason is
-    // that we have three streams from dbus about property change
-    // and unify two root user properties into single event to http API
+    const ROOT_USER_ID: &str = "root_user";
     let result: EventStreams = vec![
         (
             FIRST_USER_ID,
             Box::pin(first_user_changed_stream(dbus.clone()).await?),
         ),
         (
-            ROOT_PASSWORD_ID,
-            Box::pin(root_password_changed_stream(dbus.clone()).await?),
-        ),
-        (
-            ROOT_SSHKEY_ID,
-            Box::pin(root_ssh_key_changed_stream(dbus.clone()).await?),
+            ROOT_USER_ID,
+            Box::pin(root_user_changed_stream(dbus.clone()).await?),
         ),
     ];
 
@@ -91,7 +79,6 @@ async fn first_user_changed_stream(
                     user_name: user.1,
                     password: user.2,
                     hashed_password: user.3,
-                    autologin: user.4,
                 };
                 return Some(Event::FirstUserChanged(user_struct));
             }
@@ -101,39 +88,18 @@ async fn first_user_changed_stream(
     Ok(stream)
 }
 
-async fn root_password_changed_stream(
+async fn root_user_changed_stream(
     dbus: zbus::Connection,
 ) -> Result<impl Stream<Item = Event> + Send, Error> {
     let proxy = Users1Proxy::new(&dbus).await?;
     let stream = proxy
-        .receive_root_password_set_changed()
+        .receive_root_user_changed()
         .await
         .then(|change| async move {
-            if let Ok(is_set) = change.get().await {
-                return Some(Event::RootChanged {
-                    password: Some(is_set),
-                    sshkey: None,
-                });
-            }
-            None
-        })
-        .filter_map(|e| e);
-    Ok(stream)
-}
-
-async fn root_ssh_key_changed_stream(
-    dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event> + Send, Error> {
-    let proxy = Users1Proxy::new(&dbus).await?;
-    let stream = proxy
-        .receive_root_sshkey_changed()
-        .await
-        .then(|change| async move {
-            if let Ok(key) = change.get().await {
-                return Some(Event::RootChanged {
-                    password: None,
-                    sshkey: Some(key),
-                });
+            if let Ok(user) = change.get().await {
+                if let Ok(root) = RootUser::from_dbus(user) {
+                    return Some(Event::RootUserChanged(root));
+                }
             }
             None
         })
@@ -232,7 +198,7 @@ async fn patch_root(
     Json(config): Json<RootPatchSettings>,
 ) -> Result<impl IntoResponse, Error> {
     let mut retcode1 = 0;
-    if let Some(key) = config.sshkey {
+    if let Some(key) = config.ssh_public_key {
         retcode1 = state.users.set_root_sshkey(&key).await?;
     }
 
@@ -258,13 +224,10 @@ async fn patch_root(
     path = "/root",
     context_path = "/api/users",
     responses(
-        (status = 200, description = "Configuration for the root user", body = RootConfig),
+        (status = 200, description = "Configuration for the root user", body = RootUser),
         (status = 400, description = "The D-Bus service could not perform the action"),
     )
 )]
-async fn get_root_config(State(state): State<UsersState<'_>>) -> Result<Json<RootConfig>, Error> {
-    let password = state.users.is_root_password().await?;
-    let sshkey = state.users.root_ssh_key().await?;
-    let config = RootConfig { password, sshkey };
-    Ok(Json(config))
+async fn get_root_config(State(state): State<UsersState<'_>>) -> Result<Json<RootUser>, Error> {
+    Ok(Json(state.users.root_user().await?))
 }

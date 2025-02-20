@@ -24,6 +24,7 @@ import React, { useState } from "react";
 import {
   Alert,
   Button,
+  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -33,7 +34,7 @@ import {
   Spinner,
   Stack,
 } from "@patternfly/react-core";
-import { Link, IssuesHint, Page } from "~/components/core";
+import { Link, Page, IssuesAlert } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
 import {
@@ -156,14 +157,12 @@ function SoftwarePage(): React.ReactNode {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Software")}</h2>
+        <Content component="h2">{_("Software")}</Content>
       </Page.Header>
 
       <Page.Content>
+        <IssuesAlert issues={issues} />
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <IssuesHint issues={issues} />
-          </GridItem>
           {showReposAlert && (
             <GridItem sm={12}>
               <ReloadSection loading={loading} action={startProbing} />

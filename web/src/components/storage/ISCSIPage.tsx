@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
 import React from "react";
 import { Page } from "~/components/core";
 import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
@@ -31,7 +31,7 @@ export default function ISCSIPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("iSCSI")}</h2>
+        <Content component="h2">{_("iSCSI")}</Content>
       </Page.Header>
       <Page.Content>
         <Grid hasGutter>
@@ -44,8 +44,8 @@ export default function ISCSIPage() {
         </Grid>
       </Page.Content>
       <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.targetDevice}>
-          {_("Back to device selection")}
+        <Page.Action variant="secondary" navigateTo={PATHS.root}>
+          {_("Back")}
         </Page.Action>
       </Page.Actions>
     </Page>

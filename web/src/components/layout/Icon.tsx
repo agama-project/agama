@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import React from "react";
 import AddAPhoto from "@icons/add_a_photo.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
+import ArrowRightAlt from "@icons/arrow_right_alt.svg?component";
 import Badge from "@icons/badge.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
@@ -39,6 +40,7 @@ import Downloading from "@icons/downloading.svg?component";
 import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
+import ErrorFill from "@icons/error-fill.svg?component";
 import Exclamation from "@icons/exclamation.svg?component";
 import ExpandAll from "@icons/expand_all.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
@@ -46,6 +48,7 @@ import Feedback from "@icons/feedback.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
 import FrameInspect from "@icons/frame_inspect.svg?component";
+import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
@@ -93,6 +96,7 @@ const icons = {
   add_a_photo: AddAPhoto,
   apps: Apps,
   app_registration: AppRegistration,
+  arrow_right_alt: ArrowRightAlt,
   badge: Badge,
   backspace: Backspace,
   check_circle: CheckCircle,
@@ -105,6 +109,7 @@ const icons = {
   edit: Edit,
   edit_square: EditSquare,
   error: Error,
+  error_fill: ErrorFill,
   exclamation: Exclamation,
   expand_all: ExpandAll,
   expand_circle_down: ExpandCircleDown,
@@ -119,6 +124,7 @@ const icons = {
   info: Info,
   inventory_2: Inventory,
   keyboard: Keyboard,
+  keyboard_arrow_down: KeyboardArrowDown,
   lan: Lan,
   list_alt: ListAlt,
   lock: Lock,
@@ -154,13 +160,9 @@ const icons = {
   linux_logo: SiLinux,
 };
 
-const PREDEFINED_SIZES = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"];
-
 export type IconProps = React.SVGAttributes<SVGElement> & {
   /** Name of the desired icon */
   name: keyof typeof icons;
-  /** Size used for both, width and height.It can be a CSS unit or one of PREDEFINED_SIZES */
-  size?: string | number;
 };
 
 /**
@@ -171,41 +173,18 @@ export type IconProps = React.SVGAttributes<SVGElement> & {
  *   - https://ryanhutzley.medium.com/dynamic-svg-imports-in-create-react-app-d6d411f6d6c6
  *
  * @example
- *   <Icon name="warning" size="16" />
+ *   <Icon name="warning" />
  *
- * @note width and height props will be overwritten by the size value if it was given.
- *
- * @returns {JSX.Element|null} null if requested icon is not available or given a falsy value as name; JSX block otherwise.
+ * @returns null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
-export default function Icon({ name, size, color, ...otherProps }: IconProps) {
+export default function Icon({ name, ...otherProps }: IconProps): JSX.Element | null {
   // NOTE: Reaching this is unlikely, but let's be safe.
   if (!name || !icons[name]) {
     console.error(`Icon '${name}' not found.`);
     return null;
   }
 
-  let classes = otherProps.className || "";
-
-  if (size && typeof size === "string" && PREDEFINED_SIZES.includes(size)) {
-    classes += ` icon-${size}`;
-  } else if (size) {
-    otherProps.width = size;
-    otherProps.height = size;
-  }
-
-  // FIXME: Allow more colors, not only PF text utils
-  if (color) classes += ` pf-v5-u-${color}`;
-
-  otherProps.className = classes.trim();
-
   const IconComponent = icons[name];
 
-  return (
-    <IconComponent
-      aria-hidden="true"
-      data-icon-name={name}
-      style={{ fill: "currentColor" }}
-      {...otherProps}
-    />
-  );
+  return <IconComponent aria-hidden="true" data-icon-name={name} {...otherProps} />;
 }

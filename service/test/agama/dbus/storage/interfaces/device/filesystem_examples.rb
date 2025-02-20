@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -36,7 +36,7 @@ shared_examples "Filesystem interface" do
 
     describe "#filesystem_type" do
       it "returns the file system type" do
-        expect(subject.filesystem_type).to eq("Ext4")
+        expect(subject.filesystem_type).to eq("ext4")
       end
     end
 

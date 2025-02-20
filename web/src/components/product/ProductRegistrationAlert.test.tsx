@@ -27,10 +27,8 @@ import ProductRegistrationAlert from "./ProductRegistrationAlert";
 import { Product } from "~/types/software";
 import { useProduct } from "~/queries/software";
 import { useIssues } from "~/queries/issues";
-import { PRODUCT, REGISTRATION, ROOT, USER } from "~/routes/paths";
+import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
 import { Issue } from "~/types/issues";
-
-jest.mock("~/components/core/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -77,7 +75,6 @@ const rendersNothingInSomePaths = () => {
     ["product selection progress", PRODUCT.progress],
     ["installation progress", ROOT.installationProgress],
     ["installation finished", ROOT.installationFinished],
-    ["root authentication", USER.rootUser.edit],
   ])(`but at %s path`, (_, path) => {
     beforeEach(() => {
       mockRoutes(path);
@@ -104,7 +101,7 @@ describe("ProductRegistrationAlert", () => {
       screen.getByRole("heading", {
         name: /Warning alert:.*must be registered/,
       });
-      const link = screen.getByRole("link", { name: "Register it now" });
+      const link = screen.getByRole("link");
       expect(link).toHaveAttribute("href", REGISTRATION.root);
     });
 

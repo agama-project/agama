@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -126,16 +126,16 @@ describe("WifiConnectionForm", () => {
 
     it("disables cancel and submission actions", async () => {
       const { user } = renderForm(networkMock);
-      const connectButton = screen.getByText("Connect");
-      const cancelLink = screen.getByText("Cancel");
+      const connectButton = screen.getByRole("button", { name: "Connect" });
+      const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(connectButton).not.toBeDisabled();
-      expect(cancelLink).not.toBeDisabled();
+      expect(cancelButton).not.toBeDisabled();
 
       await waitFor(() => {
         user.click(connectButton);
         expect(connectButton).toBeDisabled();
-        expect(cancelLink).toBeDisabled();
+        expect(cancelButton).toBeDisabled();
       });
     });
 

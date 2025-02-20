@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Text } from "@patternfly/react-core";
+import { Content } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { AnswerCallback, Question } from "~/types/questions";
 import QuestionActions from "~/components/questions/QuestionActions";
@@ -47,7 +47,7 @@ export default function GenericQuestion({
 
   return (
     <Popup isOpen aria-label={_("Question")}>
-      <Text>{question.text}</Text>
+      <Content>{question.text}</Content>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}

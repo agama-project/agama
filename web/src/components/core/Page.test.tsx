@@ -25,7 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { plainRender, mockNavigateFn, mockRoutes, installerRender } from "~/test-utils";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { PRODUCT, ROOT, USER } from "~/routes/paths";
+import { PRODUCT, ROOT } from "~/routes/paths";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -72,12 +72,6 @@ describe("Page", () => {
       screen.getByRole("button", { name: "Save" });
     });
 
-    it("renders an 'lg' button when size prop is not given", () => {
-      plainRender(<Page.Action>Cancel</Page.Action>);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      expect(button.classList.contains("pf-m-display-lg")).toBe(true);
-    });
-
     describe("when user clicks on it", () => {
       it("triggers given onClick handler, if valid", async () => {
         const onClick = jest.fn();
@@ -114,7 +108,6 @@ describe("Page", () => {
       ["product selection progress", PRODUCT.progress],
       ["installation progress", ROOT.installationProgress],
       ["installation finished", ROOT.installationFinished],
-      ["root authentication", USER.rootUser.edit],
     ])(`but at %s path`, (_, path) => {
       beforeEach(() => {
         mockRoutes(path);
@@ -128,11 +121,16 @@ describe("Page", () => {
   });
 
   describe("Page.Cancel", () => {
-    it("renders a 'Cancel' button that navigates to the top level route by default", async () => {
-      const { user } = plainRender(<Page.Cancel />);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      await user.click(button);
-      expect(mockNavigateFn).toHaveBeenCalledWith("..");
+    it("renders a link that navigates to the top level route by default", () => {
+      plainRender(<Page.Cancel />);
+      const link = screen.getByRole("link", { name: "Cancel" });
+      expect(link).toHaveAttribute("href", "..");
+    });
+
+    it("renders a link that navigates to the given route", () => {
+      plainRender(<Page.Cancel navigateTo="somewhere" />);
+      const link = screen.getByRole("link", { name: "Cancel" });
+      expect(link).toHaveAttribute("href", "somewhere");
     });
   });
 
@@ -144,11 +142,10 @@ describe("Page", () => {
       expect(mockNavigateFn).toHaveBeenCalledWith(-1);
     });
 
-    it("uses `lg` size and `link` variant by default", () => {
+    it("uses `link` variant by default", () => {
       plainRender(<Page.Back />);
       const button = screen.getByRole("button", { name: "Back" });
       expect(button.classList.contains("pf-m-link")).toBe(true);
-      expect(button.classList.contains("pf-m-display-lg")).toBe(true);
     });
   });
 
@@ -177,10 +174,8 @@ describe("Page", () => {
   });
   describe("Page.Header", () => {
     it("renders a node that sticks to top", () => {
-      plainRender(<Page.Header>The Header</Page.Header>);
-      const content = screen.getByText("The Header");
-      const container = content.parentNode as HTMLElement;
-      expect(container.classList.contains("pf-m-sticky-top")).toBe(true);
+      const { container } = plainRender(<Page.Header>The Header</Page.Header>);
+      expect(container.children[0].classList.contains("pf-m-sticky-top")).toBe(true);
     });
   });
 
@@ -224,12 +219,11 @@ describe("Page", () => {
       expect(section).not.toHaveAttribute("aria-labelledby");
     });
 
-    it("renders given content props (title, value, description, actions, and children (content)", () => {
+    it("renders given content props (title, description, actions, and children (content)", () => {
       plainRender(
         <Page.Section
           title="A section"
-          value="Enabled"
-          description="Testing section with title, value, description, content, and actions"
+          description="Testing section with title, description, content, and actions"
           actions={<Page.Action>Disable</Page.Action>}
         >
           The Content
@@ -237,10 +231,7 @@ describe("Page", () => {
       );
       const section = screen.getByRole("region");
       within(section).getByText("A section");
-      within(section).getByText("Enabled");
-      within(section).getByText(
-        "Testing section with title, value, description, content, and actions",
-      );
+      within(section).getByText("Testing section with title, description, content, and actions");
       within(section).getByText("The Content");
       within(section).getByRole("button", { name: "Disable" });
     });

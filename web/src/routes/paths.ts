@@ -55,12 +55,12 @@ const ROOT = {
 
 const USER = {
   root: "/users",
-  rootUser: {
-    edit: "/users/root/edit",
-  },
   firstUser: {
     create: "/users/first",
     edit: "/users/first/edit",
+  },
+  rootUser: {
+    edit: "/users/root/edit",
   },
 };
 
@@ -71,9 +71,10 @@ const SOFTWARE = {
 
 const STORAGE = {
   root: "/storage",
-  targetDevice: "/storage/target-device",
-  bootingPartition: "/storage/booting-partition",
-  spacePolicy: "/storage/space-policy",
+  bootDevice: "/storage/select-boot-device",
+  addPartition: "/storage/:id/add-partition",
+  editPartition: "/storage/:id/edit-partition/:partitionId",
+  findSpace: "/storage/:id/find-space",
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
   zfcp: {
@@ -82,13 +83,22 @@ const STORAGE = {
   },
 };
 
-const SUPPORTIVE_PATHS = [
+/**
+ * A set of routes that do not directly allow fine-tuning the installation
+ * settings for the selected product,  but rather serve special purposes, such
+ * as authentication (e.g., login), product selection change,  or transitions
+ * between states (e.g., progress, error, success).
+ *
+ * These routes are defined separately to adjust the UI accordingly,  ensuring
+ * that certain core elements, like the Install button,  are not displayed when
+ * visiting them.
+ */
+const SIDE_PATHS = [
   ROOT.login,
   PRODUCT.changeProduct,
   PRODUCT.progress,
   ROOT.installationProgress,
   ROOT.installationFinished,
-  USER.rootUser.edit,
 ];
 
-export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER, SUPPORTIVE_PATHS };
+export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER, SIDE_PATHS };

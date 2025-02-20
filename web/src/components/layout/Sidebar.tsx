@@ -21,34 +21,45 @@
  */
 
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { Nav, NavItem, NavList, PageSidebar, PageSidebarBody, Stack } from "@patternfly/react-core";
+import { NavLink, useLocation } from "react-router-dom";
+import {
+  Nav,
+  NavItem,
+  NavList,
+  PageSidebar,
+  PageSidebarBody,
+  PageSidebarProps,
+} from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { ChangeProductLink } from "~/components/core";
 import { rootRoutes } from "~/router";
 import { _ } from "~/i18n";
 import { useProduct } from "~/queries/software";
 
 const MainNavigation = (): React.ReactNode => {
   const { selectedProduct: product } = useProduct();
+  const location = useLocation();
 
-  const links = rootRoutes().map((r) => {
-    if (!r.handle) return null;
-    if (r.handle.needsRegistrableProduct && !product.registration) return null;
+  const links = rootRoutes().map((route) => {
+    const { path, handle: data } = route;
+    if (!data) return null;
+    if (data.needsRegistrableProduct && !product.registration) return null;
 
     // eslint-disable-next-line agama-i18n/string-literals
-    const name = _(r.handle.name);
-    const iconName = r.handle.icon;
+    const name = _(data.name);
+    const iconName = data.icon;
 
     return (
       <NavItem
-        key={r.path}
+        key={path}
         component={({ className }) => (
           <NavLink
-            to={r.path}
-            className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}
+            to={path}
+            className={({ isActive: isNavLinkActive }) => {
+              const isActive = isNavLinkActive || data.alsoActiveOn?.includes(location.pathname);
+              return [className, isActive ? "pf-m-current" : ""].join(" ");
+            }}
           >
-            {iconName && <Icon size="s" name={iconName} />} {name}
+            {iconName && <Icon name={iconName} />} {name}
           </NavLink>
         )}
       />
@@ -62,16 +73,11 @@ const MainNavigation = (): React.ReactNode => {
   );
 };
 
-export default function Sidebar(): React.ReactNode {
+export default function Sidebar(props: PageSidebarProps): React.ReactNode {
   return (
-    <PageSidebar id="agama-sidebar">
+    <PageSidebar id="agama-sidebar" {...props}>
       <PageSidebarBody isFilled>
         <MainNavigation />
-      </PageSidebarBody>
-      <PageSidebarBody isFilled={false} usePageInsets>
-        <Stack hasGutter className="pf-v5-u-py-sm">
-          <ChangeProductLink className="pf-v5-c-button pf-m-primary" />
-        </Stack>
       </PageSidebarBody>
     </PageSidebar>
   );

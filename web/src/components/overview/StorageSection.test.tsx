@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,42 +24,69 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
+import * as ConfigModel from "~/api/storage/types/config-model";
+import { Issue } from "~/types/issues";
 
-const mockAvailableDevices = [
+const sdaDrive: ConfigModel.Drive = {
+  name: "/dev/sda",
+  spacePolicy: "delete",
+  partitions: [],
+};
+
+const sdbDrive: ConfigModel.Drive = {
+  name: "/dev/sdb",
+  spacePolicy: "delete",
+  partitions: [],
+};
+
+const mockDevices = [
   { name: "/dev/sda", size: 536870912000 },
   { name: "/dev/sdb", size: 697932185600 },
 ];
 
-const mockResultSettings = { target: "disk", targetDevice: "/dev/sda", spacePolicy: "delete" };
-let mockProposalResult;
+const systemError: Issue = {
+  description: "System error",
+  kind: "storage",
+  details: "",
+  source: 1,
+  severity: 1,
+};
+
+const mockUseConfigModelFn = jest.fn();
+const mockUseAvailableDevicesFn = jest.fn();
+const mockUseSystemErrorsFn = jest.fn();
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => mockAvailableDevices,
-  useProposalResult: () => mockProposalResult,
+  useDevices: () => mockDevices,
+  useAvailableDevices: () => mockUseAvailableDevicesFn(),
 }));
 
-beforeEach(() => {
-  mockProposalResult = {
-    settings: mockResultSettings,
-    actions: [],
-  };
-});
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useConfigModel: () => mockUseConfigModelFn(),
+}));
 
-describe("when using the new storage settings", () => {
-  beforeEach(() => (mockProposalResult = undefined));
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useSystemErrors: () => mockUseSystemErrorsFn(),
+}));
 
-  it("renders a warning message", () => {
+describe("when the configuration does not include any device", () => {
+  beforeEach(() => {
+    mockUseConfigModelFn.mockReturnValue({ drives: [] });
+  });
+
+  it("indicates that a device is not selected", async () => {
     plainRender(<StorageSection />);
 
-    expect(screen.getByText("Install using an advanced configuration.")).toBeInTheDocument();
+    await screen.findByText(/No device selected/);
   });
 });
 
-describe("when there is a proposal", () => {
+describe("when the configuration contains one drive", () => {
   beforeEach(() => {
-    mockResultSettings.target = "disk";
-    mockResultSettings.spacePolicy = "delete";
+    mockUseConfigModelFn.mockReturnValue({ drives: [sdaDrive] });
   });
 
   it("renders the proposal summary", async () => {
@@ -72,9 +99,7 @@ describe("when there is a proposal", () => {
 
   describe("and the space policy is set to 'resize'", () => {
     beforeEach(() => {
-      // const result = { settings: { spacePolicy: "resize", targetDevice: "/dev/sda" } };
-      mockResultSettings.spacePolicy = "resize";
-      mockResultSettings.targetDevice = "/dev/sda";
+      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "resize" }] });
     });
 
     it("indicates that partitions may be shrunk", async () => {
@@ -86,8 +111,7 @@ describe("when there is a proposal", () => {
 
   describe("and the space policy is set to 'keep'", () => {
     beforeEach(() => {
-      mockResultSettings.spacePolicy = "keep";
-      mockResultSettings.targetDevice = "/dev/sda";
+      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "keep" }] });
     });
 
     it("indicates that partitions will be kept", async () => {
@@ -97,15 +121,116 @@ describe("when there is a proposal", () => {
     });
   });
 
-  describe("and there is no target device", () => {
+  describe("and the space policy is set to 'custom'", () => {
     beforeEach(() => {
-      mockResultSettings.targetDevice = "";
+      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "custom" }] });
+    });
+
+    it("indicates that custom strategy for allocating space is set", async () => {
+      plainRender(<StorageSection />);
+
+      await screen.findByText(/custom strategy to find the needed space/);
+    });
+  });
+
+  describe("and the drive matches no disk", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, name: null }] });
     });
 
     it("indicates that a device is not selected", async () => {
       plainRender(<StorageSection />);
 
       await screen.findByText(/No device selected/);
+    });
+  });
+});
+
+describe("when the configuration contains several drives", () => {
+  beforeEach(() => {
+    mockUseConfigModelFn.mockReturnValue({ drives: [sdaDrive, sdbDrive] });
+  });
+
+  it("renders the proposal summary", async () => {
+    plainRender(<StorageSection />);
+
+    await screen.findByText(/Install using several devices/);
+    await screen.findByText(/and deleting all its content/);
+  });
+
+  describe("but one of them has a different space policy", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({
+        drives: [sdaDrive, { ...sdbDrive, spacePolicy: "resize" }],
+      });
+    });
+
+    it("indicates that custom strategy for allocating space is set", async () => {
+      plainRender(<StorageSection />);
+
+      await screen.findByText(/custom strategy to find the needed space/);
+    });
+  });
+});
+
+describe("when there is no configuration model (unsupported features)", () => {
+  beforeEach(() => {
+    mockUseConfigModelFn.mockReturnValue(undefined);
+  });
+
+  describe("if the storage proposal succeeded", () => {
+    beforeEach(() => {
+      mockUseSystemErrorsFn.mockReturnValue([]);
+    });
+
+    describe("and there are no available disks", () => {
+      beforeEach(() => {
+        mockUseAvailableDevicesFn.mockReturnValue([]);
+      });
+
+      it("indicates that an unhandled configuration was used", async () => {
+        plainRender(<StorageSection />);
+        await screen.findByText(/advanced configuration/);
+      });
+    });
+
+    describe("and there are available disks", () => {
+      beforeEach(() => {
+        mockUseAvailableDevicesFn.mockReturnValue(mockDevices);
+      });
+
+      it("indicates that an unhandled configuration was used", async () => {
+        plainRender(<StorageSection />);
+        await screen.findByText(/advanced configuration/);
+      });
+    });
+  });
+
+  describe("if the storage proposal was not possible", () => {
+    beforeEach(() => {
+      mockUseSystemErrorsFn.mockReturnValue([systemError]);
+    });
+
+    describe("and there are no available disks", () => {
+      beforeEach(() => {
+        mockUseAvailableDevicesFn.mockReturnValue([]);
+      });
+
+      it("indicates that there are no available disks", async () => {
+        plainRender(<StorageSection />);
+        await screen.findByText(/no disks available/);
+      });
+    });
+
+    describe("and there are available disks", () => {
+      beforeEach(() => {
+        mockUseAvailableDevicesFn.mockReturnValue(mockDevices);
+      });
+
+      it("indicates that an unhandled configuration was used", async () => {
+        plainRender(<StorageSection />);
+        await screen.findByText(/advanced configuration/);
+      });
     });
   });
 });

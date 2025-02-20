@@ -195,7 +195,7 @@ storage:
       filesystem: xfs
       size:
         auto: false
-        min: 10 GiB
+        min: 5 GiB
         max: unlimited
       outline:
         required: false
@@ -208,7 +208,7 @@ storage:
     - filesystem: xfs
       size:
         auto: false
-        min: 1 GiB
+        min: 512 MiB
       outline:
         required: false
         filesystems:

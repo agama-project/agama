@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -407,6 +407,36 @@ const mask = (value, visible = 4, character = "*") => {
   return value.replace(regex, character);
 };
 
+const agamaWidthBreakpoints = {
+  sm: parseInt("36rem") * 16,
+  md: parseInt("48rem") * 16,
+  lg: parseInt("64rem") * 16,
+  xl: parseInt("75rem") * 16,
+  "2xl": parseInt("90rem") * 16,
+};
+
+const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "2xl" => {
+  if (width === null) {
+    return null;
+  }
+  if (width >= agamaWidthBreakpoints["2xl"]) {
+    return "2xl";
+  }
+  if (width >= agamaWidthBreakpoints.xl) {
+    return "xl";
+  }
+  if (width >= agamaWidthBreakpoints.lg) {
+    return "lg";
+  }
+  if (width >= agamaWidthBreakpoints.md) {
+    return "md";
+  }
+  if (width >= agamaWidthBreakpoints.sm) {
+    return "sm";
+  }
+  return "default";
+};
+
 export {
   noop,
   identity,
@@ -428,4 +458,6 @@ export {
   slugify,
   timezoneTime,
   mask,
+  getBreakpoint,
+  agamaWidthBreakpoints,
 };

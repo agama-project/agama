@@ -32,7 +32,7 @@ use agama_lib::{
         },
         ISCSINode,
     },
-    users::FirstUser,
+    users::{FirstUser, RootUser},
 };
 use serde::Serialize;
 use std::collections::HashMap;
@@ -60,10 +60,7 @@ pub enum Event {
     },
     RegistrationChanged,
     FirstUserChanged(FirstUser),
-    RootChanged {
-        password: Option<bool>,
-        sshkey: Option<String>,
-    },
+    RootUserChanged(RootUser),
     NetworkChange {
         #[serde(flatten)]
         change: NetworkChange,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { EmptyState, EmptyStateIcon, EmptyStateHeader, Spinner } from "@patternfly/react-core";
-import { Center, PlainLayout } from "~/components/layout";
+import { Bullseye, EmptyState, Spinner } from "@patternfly/react-core";
+import { PlainLayout } from "~/components/layout";
 import { LayoutProps } from "~/components/layout/Layout";
 import { _ } from "~/i18n";
 
@@ -38,15 +38,9 @@ function Loading({
   const Wrapper = useLayout ? Layout : React.Fragment;
   return (
     <Wrapper>
-      <Center>
-        <EmptyState variant="xl">
-          <EmptyStateHeader
-            titleText={text}
-            headingLevel="h1"
-            icon={<EmptyStateIcon icon={LoadingIcon} />}
-          />
-        </EmptyState>
-      </Center>
+      <Bullseye>
+        <EmptyState variant="xl" titleText={text} headingLevel="h1" icon={LoadingIcon} />
+      </Bullseye>
     </Wrapper>
   );
 }

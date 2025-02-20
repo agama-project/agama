@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::client::FirstUser;
-use crate::users::model::{RootConfig, RootPatchSettings};
+use super::client::{FirstUser, RootUser};
+use crate::users::model::RootPatchSettings;
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 
 pub struct UsersHTTPClient {
@@ -46,21 +46,15 @@ impl UsersHTTPClient {
         result
     }
 
-    async fn root_config(&self) -> Result<RootConfig, ServiceError> {
+    pub async fn root_user(&self) -> Result<RootUser, ServiceError> {
         self.client.get("/users/root").await
-    }
-
-    /// Whether the root password is set or not
-    pub async fn is_root_password(&self) -> Result<bool, ServiceError> {
-        let root_config = self.root_config().await?;
-        Ok(root_config.password)
     }
 
     /// SetRootPassword method.
     /// Returns 0 if successful (always, for current backend)
     pub async fn set_root_password(&self, value: &str, hashed: bool) -> Result<u32, ServiceError> {
         let rps = RootPatchSettings {
-            sshkey: None,
+            ssh_public_key: None,
             password: Some(value.to_owned()),
             hashed_password: Some(hashed),
         };
@@ -68,17 +62,11 @@ impl UsersHTTPClient {
         Ok(ret)
     }
 
-    /// Returns the SSH key for the root user
-    pub async fn root_ssh_key(&self) -> Result<String, ServiceError> {
-        let root_config = self.root_config().await?;
-        Ok(root_config.sshkey)
-    }
-
     /// SetRootSSHKey method.
     /// Returns 0 if successful (always, for current backend)
     pub async fn set_root_sshkey(&self, value: &str) -> Result<u32, ServiceError> {
         let rps = RootPatchSettings {
-            sshkey: Some(value.to_owned()),
+            ssh_public_key: Some(value.to_owned()),
             password: None,
             hashed_password: None,
         };

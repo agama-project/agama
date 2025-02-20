@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Flex, Grid, GridItem, Text } from "@patternfly/react-core";
+import { Flex, Grid, GridItem, Content } from "@patternfly/react-core";
 import { AnswerCallback, Question } from "~/types/questions";
 import { Page, Popup } from "~/components/core";
 import { _ } from "~/i18n";
@@ -73,7 +73,7 @@ export default function UnsupportedAutoYaST({
 
   return (
     <Popup isOpen title={_("Unsupported AutoYaST elements")}>
-      <Text>{_("Some of the elements in your AutoYaST profile are not supported.")}</Text>
+      <Content>{_("Some of the elements in your AutoYaST profile are not supported.")}</Content>
       <Grid hasGutter>
         <UnsupportedElements
           elements={planned}
@@ -92,11 +92,11 @@ export default function UnsupportedAutoYaST({
           description={_("No support is planned.")}
         />
       </Grid>
-      <Text>
+      <Content>
         {_(
           'If you want to disable this check, please specify "agama.ay_check=0" at kernel\'s command-line',
         )}
-      </Text>
+      </Content>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}

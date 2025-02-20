@@ -45,6 +45,29 @@
   <interface name="org.opensuse.Agama.Storage1">
     <method name="Probe">
     </method>
+    <method name="Reprobe">
+    </method>
+    <method name="SetConfig">
+      <arg name="serialized_config" direction="in" type="s"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="ResetConfig">
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="GetConfig">
+      <arg name="serialized_config" direction="out" type="s"/>
+    </method>
+    <method name="SetConfigModel">
+      <arg name="serialized_model" direction="in" type="s"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="GetConfigModel">
+      <arg name="serialized_model" direction="out" type="s"/>
+    </method>
+    <method name="SolveConfigModel">
+      <arg name="model" direction="in" type="s"/>
+      <arg name="solved_model" direction="out" type="s"/>
+    </method>
     <method name="Install">
     </method>
     <method name="Finish">
@@ -59,6 +82,9 @@
     <method name="GetConfig">
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.Devices">
+    <property type="aa{sv}" name="Actions" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama.Storage1.DASD.Manager">
     <method name="Probe">

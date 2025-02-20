@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config"
 require "agama/storage/config_conversions/to_json_conversions/base"
 require "agama/storage/config_conversions/to_json_conversions/boot"
 require "agama/storage/config_conversions/to_json_conversions/drive"
@@ -31,9 +30,10 @@ module Agama
       module ToJSONConversions
         # Config conversion to JSON hash according to schema.
         class Config < Base
-          # @see Base
-          def self.config_type
-            Storage::Config
+          # @param config [Storage::Config]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private

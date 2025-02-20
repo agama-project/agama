@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -45,7 +45,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         include WithISCSIAuth
         include WithServiceStatus
         include ::DBus::ObjectManager
@@ -87,13 +87,15 @@ module Agama
         STORAGE_INTERFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_INTERFACE
 
-        def probe
+        # @param keep_config [Boolean] Whether to use the current storage config for calculating
+        #   the proposal.
+        def probe(keep_config: false)
           busy_while do
             # Clean trees in advance to avoid having old objects exported in D-Bus.
             system_devices_tree.clean
             staging_devices_tree.clean
 
-            backend.probe
+            backend.probe(keep_config: keep_config)
           end
         end
 
@@ -117,11 +119,53 @@ module Agama
           proposal.success? ? 0 : 1
         end
 
-        # Gets and serializes the storage config used to calculate the current proposal.
+        # Calculates the initial proposal.
         #
-        # @return [String] Serialized config according to the JSON schema.
+        # @return [Integer] 0 success; 1 error
+        def reset_config
+          logger.info("Reset storage config from D-Bus")
+          backend.calculate_proposal
+          backend.proposal.success? ? 0 : 1
+        end
+
+        # Gets and serializes the storage config used for calculating the current proposal.
+        #
+        # @return [String]
         def recover_config
-          JSON.pretty_generate(proposal.config_json)
+          json = proposal.storage_json
+          JSON.pretty_generate(json)
+        end
+
+        # Applies the given serialized config model according to the JSON schema.
+        #
+        # @param serialized_model [String] Serialized storage config model.
+        # @return [Integer] 0 success; 1 error
+        def apply_config_model(serialized_model)
+          logger.info("Setting storage config model from D-Bus: #{serialized_model}")
+
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          proposal.calculate_from_model(model_json)
+          proposal.success? ? 0 : 1
+        end
+
+        # Gets and serializes the storage config model.
+        #
+        # @return [String]
+        def recover_model
+          json = proposal.model_json
+          JSON.pretty_generate(json)
+        end
+
+        # Solves the given serialized config model.
+        #
+        # @param serialized_model [String] Serialized storage config model.
+        # @return [String] Serialized solved model.
+        def solve_model(serialized_model)
+          logger.info("Solving storage config model from D-Bus: #{serialized_model}")
+
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          solved_model_json = proposal.solve_model(model_json)
+          JSON.pretty_generate(solved_model_json)
         end
 
         def install
@@ -139,12 +183,27 @@ module Agama
           backend.deprecated_system?
         end
 
+        # FIXME: Revisit return values.
+        #   * Methods like #SetConfig or #ResetConfig return whether the proposal successes, but
+        #     they should return whether the config was actually applied.
+        #   * Methods like #Probe or #Install return nothing.
         dbus_interface STORAGE_INTERFACE do
           dbus_method(:Probe) { probe }
+          dbus_method(:Reprobe) { probe(keep_config: true) }
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
             busy_while { apply_config(serialized_config) }
           end
+          dbus_method(:ResetConfig, "out result:u") do
+            busy_while { reset_config }
+          end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
+          dbus_method(:SetConfigModel, "in serialized_model:s, out result:u") do |serialized_model|
+            busy_while { apply_config_model(serialized_model) }
+          end
+          dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
+          dbus_method(:SolveConfigModel, "in sparse_model:s, out solved_model:s") do |sparse_model|
+            solve_model(sparse_model)
+          end
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_reader(:deprecated_system, "b")
@@ -495,7 +554,7 @@ module Agama
 
         # @return [Agama::Config]
         def config
-          backend.config
+          backend.product_config
         end
 
         # @return [Agama::VolumeTemplatesBuilder]

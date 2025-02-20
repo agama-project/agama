@@ -1,4 +1,4 @@
 {
-  "icon": 28,
+  "icon": "1.2em",
   "plugins": ["@svgr/plugin-jsx"]
 }

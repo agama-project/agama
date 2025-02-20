@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -70,7 +70,7 @@ export default function TargetsSection() {
       <>
         <Toolbar>
           <ToolbarContent>
-            <ToolbarItem align={{ default: "alignRight" }}>
+            <ToolbarItem align={{ default: "alignEnd" }}>
               {/* TRANSLATORS: button label, starts iSCSI discovery */}
               <Button onClick={openDiscoverForm}>{_("Discover")}</Button>
             </ToolbarItem>

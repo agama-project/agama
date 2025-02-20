@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -39,6 +39,7 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::value::RawValue;
 use tokio_stream::{Stream, StreamExt};
 use zfcp::{zfcp_service, zfcp_stream};
 
@@ -113,13 +114,17 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let state = StorageState { client };
     let router = Router::new()
         .route("/config", put(set_config).get(get_config))
+        .route("/config/reset", put(reset_config))
+        .route("/config_model", put(set_config_model).get(get_config_model))
+        .route("/config_model/solve", get(solve_config_model))
         .route("/probe", post(probe))
+        .route("/reprobe", post(reprobe))
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
         .route("/product/volume_for", get(volume_for))
         .route("/product/params", get(product_params))
-        .route("/proposal/actions", get(actions))
+        .route("/devices/actions", get(actions))
         .route("/proposal/usable_devices", get(usable_devices))
         .route(
             "/proposal/settings",
@@ -181,19 +186,133 @@ async fn set_config(
     Ok(Json(()))
 }
 
+/// Returns the storage config model.
+///
+/// * `state` : service state.
+#[utoipa::path(
+    get,
+    path = "/config_model",
+    context_path = "/api/storage",
+    operation_id = "get_storage_config_model",
+    responses(
+        (status = 200, description = "storage config model", body = String),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_config_model(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Box<RawValue>>, Error> {
+    let config_model = state
+        .client
+        .get_config_model()
+        .await
+        .map_err(Error::Service)?;
+    Ok(Json(config_model))
+}
+
+/// Resets the storage config to the default value.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    put,
+    path = "/config/reset",
+    context_path = "/api/storage",
+    operation_id = "reset_storage_config",
+    responses(
+        (status = 200, description = "Reset the storage configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn reset_config(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
+    let _status: u32 = state.client.reset_config().await.map_err(Error::Service)?;
+    Ok(Json(()))
+}
+
+/// Sets the storage config model.
+///
+/// * `state`: service state.
+/// * `config_model`: storage config model.
+#[utoipa::path(
+    put,
+    request_body = String,
+    path = "/config_model",
+    context_path = "/api/storage",
+    operation_id = "set_storage_config_model",
+    responses(
+        (status = 200, description = "Set the storage config model"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn set_config_model(
+    State(state): State<StorageState<'_>>,
+    Json(model): Json<Box<RawValue>>,
+) -> Result<Json<()>, Error> {
+    let _status: u32 = state
+        .client
+        .set_config_model(model)
+        .await
+        .map_err(Error::Service)?;
+    Ok(Json(()))
+}
+
+/// Solves a storage config model.
+#[utoipa::path(
+    get,
+    path = "/config_model/solve",
+    context_path = "/api/storage",
+    params(SolveModelQuery),
+    operation_id = "solve_storage_config_model",
+    responses(
+        (status = 200, description = "Solve the storage config model", body = String),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn solve_config_model(
+    State(state): State<StorageState<'_>>,
+    query: Query<SolveModelQuery>,
+) -> Result<Json<Box<RawValue>>, Error> {
+    let solved_model = state
+        .client
+        .solve_config_model(query.model.as_str())
+        .await
+        .map_err(Error::Service)?;
+    Ok(Json(solved_model))
+}
+
+#[derive(Deserialize, utoipa::IntoParams)]
+struct SolveModelQuery {
+    /// Serialized config model.
+    model: String,
+}
+
 /// Probes the storage devices.
 #[utoipa::path(
     post,
     path = "/probe",
     context_path = "/api/storage",
     responses(
-        (status = 200, description = "Devices were probed and an initial proposal were performed"),
+        (status = 200, description = "Devices were probed and an initial proposal was performed"),
         (status = 400, description = "The D-Bus service could not perform the action")
     ),
     operation_id = "storage_probe"
 )]
 async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
     Ok(Json(state.client.probe().await?))
+}
+
+/// Reprobes the storage devices.
+#[utoipa::path(
+    post,
+    path = "/reprobe",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Devices were probed and the proposal was recalculated"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    ),
+    operation_id = "storage_reprobe"
+)]
+async fn reprobe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.reprobe().await?))
 }
 
 /// Gets whether the system is in a deprecated status.
@@ -305,7 +424,7 @@ pub struct ProductParams {
 /// Gets the actions to perform in the storage devices.
 #[utoipa::path(
     get,
-    path = "/proposal/actions",
+    path = "/devices/actions",
     context_path = "/api/storage",
     responses(
         (status = 200, description = "List of actions", body = Vec<Action>),

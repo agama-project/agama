@@ -21,17 +21,16 @@
  */
 
 import React from "react";
-import { Gallery, GalleryItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
-import { _ } from "~/i18n";
 import { useL10n } from "~/queries/l10n";
+import { _ } from "~/i18n";
 
 // FIXME: re-evaluate the need of "Thing not selected yet"
 
 /**
  * Page for configuring localization.
- * @component
  */
 export default function L10nPage() {
   const { selectedLocale: locale, selectedTimezone: timezone, selectedKeymap: keymap } = useL10n();
@@ -39,44 +38,52 @@ export default function L10nPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Localization")}</h2>
+        <Content component="h2">{_("Localization")}</Content>
       </Page.Header>
 
       <Page.Content>
-        <Gallery hasGutter minWidths={{ default: "300px" }}>
-          <GalleryItem>
+        <Grid hasGutter>
+          <GridItem md={4}>
             <Page.Section
               title={_("Language")}
-              value={locale ? `${locale.name} - ${locale.territory}` : _("Not selected yet")}
+              actions={
+                <Link to={PATHS.localeSelection} isPrimary={!locale}>
+                  {locale ? _("Change") : _("Select")}
+                </Link>
+              }
             >
-              <Link to={PATHS.localeSelection} isPrimary={!locale}>
-                {locale ? _("Change") : _("Select")}
-              </Link>
+              <Content isEditorial>
+                {locale ? `${locale.name} - ${locale.territory}` : _("Not selected yet")}
+              </Content>
             </Page.Section>
-          </GalleryItem>
-
-          <GalleryItem>
+          </GridItem>
+          <GridItem md={4}>
             <Page.Section
               title={_("Keyboard")}
-              value={keymap ? keymap.name : _("Not selected yet")}
+              actions={
+                <Link to={PATHS.keymapSelection} isPrimary={!keymap}>
+                  {keymap ? _("Change") : _("Select")}
+                </Link>
+              }
             >
-              <Link to={PATHS.keymapSelection} isPrimary={!keymap}>
-                {keymap ? _("Change") : _("Select")}
-              </Link>
+              <Content isEditorial>{keymap ? keymap.name : _("Not selected yet")}</Content>
             </Page.Section>
-          </GalleryItem>
-
-          <GalleryItem>
+          </GridItem>
+          <GridItem md={4}>
             <Page.Section
               title={_("Time zone")}
-              value={timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
+              actions={
+                <Link to={PATHS.timezoneSelection} isPrimary={!timezone}>
+                  {timezone ? _("Change") : _("Select")}
+                </Link>
+              }
             >
-              <Link to={PATHS.timezoneSelection} isPrimary={!timezone}>
-                {timezone ? _("Change") : _("Select")}
-              </Link>
+              <Content isEditorial>
+                {timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
+              </Content>
             </Page.Section>
-          </GalleryItem>
-        </Gallery>
+          </GridItem>
+        </Grid>
       </Page.Content>
     </Page>
   );

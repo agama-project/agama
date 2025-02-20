@@ -20,14 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
 export { default as ProposalTransactionalInfo } from "./ProposalTransactionalInfo";
 export { default as ProposalActionsDialog } from "./ProposalActionsDialog";
 export { default as ProposalResultSection } from "./ProposalResultSection";
-export { default as ISCSIPage } from "./ISCSIPage";
-export { default as BootSelection } from "./BootSelection";
-export { default as DeviceSelectorTable } from "./DeviceSelectorTable";
 export { default as DevicesFormSelect } from "./DevicesFormSelect";
 export { default as SpaceActionsTable } from "./SpaceActionsTable";
-export { default as DeviceSelection } from "./DeviceSelection";

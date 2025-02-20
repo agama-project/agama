@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import {
   DataListItemRow,
   SearchInput,
   Stack,
+  Content,
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { useConfigMutation, usePatterns } from "~/queries/software";
@@ -136,7 +137,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
       .map((p) => p.name);
     return (
       <section key={groupName}>
-        <h3>{groupName}</h3>
+        <Content component="h3">{groupName}</Content>
         <DataList isCompact aria-label={groupName}>
           {groups[groupName].map((option) => {
             const titleId = `${option.name}-title`;
@@ -184,7 +185,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Software selection")}</h2>
+        <Content component="h2">{_("Software selection")}</Content>
         <SearchInput
           // TRANSLATORS: search field placeholder text
           placeholder={_("Filter by pattern title or description")}
@@ -203,7 +204,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel>{_("Close")}</Page.Cancel>
+        <Page.Cancel variant="secondary">{_("Close")}</Page.Cancel>
       </Page.Actions>
     </Page>
   );

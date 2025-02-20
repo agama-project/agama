@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,8 +22,10 @@
 
 import React, { useEffect, useState } from "react";
 import {
+  Bullseye,
   Card,
   CardBody,
+  Content,
   Flex,
   Grid,
   GridItem,
@@ -36,7 +38,6 @@ import {
 } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { Center } from "~/components/layout";
 import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
 import { Progress as ProgressType } from "~/types/progress";
 
@@ -130,12 +131,8 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
   }, [progress, steps]);
   const detail = findDetail([softwareProgress, storageProgress]);
 
-  const Content = () => (
-    <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
-  );
-
   return (
-    <Center>
+    <Bullseye>
       <Grid hasGutter>
         <GridItem sm={10} smOffset={1}>
           <Card isPlain>
@@ -146,16 +143,16 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
                 alignItems={{ default: "alignItemsCenter" }}
               >
                 <Spinner size="xl" />
-                <h1 id="progress-title" style={{ textAlign: "center" }}>
+                <Content component="h1" id="progress-title" style={{ textAlign: "center" }}>
                   {title}
-                </h1>
-                <Content />
+                </Content>
+                <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
               </Flex>
             </CardBody>
           </Card>
         </GridItem>
       </Grid>
-    </Center>
+    </Bullseye>
   );
 }
 

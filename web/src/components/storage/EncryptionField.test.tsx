@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,15 +30,15 @@ describe("EncryptionField", () => {
   it("renders proper value depending on encryption status", () => {
     // No encryption set
     const { rerender } = plainRender(<EncryptionField />);
-    screen.getByText("disabled");
+    screen.getByText("Disabled");
 
     // Encryption set with LUKS2
     rerender(<EncryptionField password="1234" method={EncryptionMethods.LUKS2} />);
-    screen.getByText("enabled");
+    screen.getByText("Enabled");
 
     // Encryption set with TPM
     rerender(<EncryptionField password="1234" method={EncryptionMethods.TPM} />);
-    screen.getByText("using TPM unlocking");
+    screen.getByText("Using TPM unlocking");
   });
 
   it("allows opening the encryption settings dialog", async () => {

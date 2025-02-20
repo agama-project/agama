@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,47 +28,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { ProposalPage } from "~/components/storage";
-import {
-  ProposalResult,
-  ProposalTarget,
-  StorageDevice,
-  Volume,
-  VolumeTarget,
-} from "~/types/storage";
+import ProposalPage from "~/components/storage/ProposalPage";
+import { StorageDevice } from "~/types/storage";
+import { Issue } from "~/types/issues";
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssuesChanges: jest.fn(),
-  useIssues: () => [],
-}));
-
-jest.mock("./ProposalSettingsSection", () => () => <div>proposal settings</div>);
-jest.mock("./ProposalActionsSummary", () => () => <div>actions section</div>);
-jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
-jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
-
-const vda: StorageDevice = {
-  sid: 59,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
-  name: "/dev/vda",
-  size: 1e12,
-  systems: ["Windows 11", "openSUSE Leap 15.2"],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-};
-
-const vdb: StorageDevice = {
+const disk: StorageDevice = {
   sid: 60,
   type: "disk",
   isDrive: true,
@@ -77,70 +41,267 @@ const vdb: StorageDevice = {
   model: "Unknown",
   driver: ["ahci", "mmcblk"],
   bus: "IDE",
-  name: "/dev/vdb",
+  name: "/dev/vda",
   size: 1e6,
 };
 
-/**
- * Returns a volume specification with the given path.
- */
-const volume = (mountPath: string): Volume => {
-  return {
-    mountPath,
-    target: VolumeTarget.DEFAULT,
-    fsType: "Btrfs",
-    minSize: 1024,
-    maxSize: 1024,
-    autoSize: false,
-    snapshots: false,
-    transactional: false,
-    outline: {
-      required: false,
-      fsTypes: ["Btrfs"],
-      supportAutoSize: false,
-      snapshotsConfigurable: false,
-      snapshotsAffectSizes: false,
-      sizeRelevantVolumes: [],
-      adjustByRam: false,
-      productDefined: false,
-    },
-  };
+const systemError: Issue = {
+  description: "System error",
+  kind: "storage",
+  details: "",
+  source: 1,
+  severity: 1,
 };
 
-const mockProposalResult: ProposalResult = {
-  settings: {
-    target: ProposalTarget.DISK,
-    targetPVDevices: [],
-    configureBoot: false,
-    bootDevice: "",
-    defaultBootDevice: "",
-    encryptionPassword: "",
-    encryptionMethod: "",
-    spacePolicy: "",
-    spaceActions: [],
-    volumes: [],
-    installationDevices: [],
-  },
-  actions: [],
+const configError: Issue = {
+  description: "Config error",
+  kind: "storage",
+  details: "",
+  source: 2,
+  severity: 1,
 };
 
+const mockUseAvailableDevices = jest.fn();
+const mockUseResetConfigMutation = jest.fn();
+const mockUseDeprecated = jest.fn();
+const mockUseDeprecatedChanges = jest.fn();
+const mockUseReprobeMutation = jest.fn();
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useDevices: () => [vda, vdb],
-  useAvailableDevices: () => [vda, vdb],
-  useVolumeDevices: () => [vda, vdb],
-  useVolumeTemplates: () => [volume("/")],
-  useProductParams: () => ({
-    encryptionMethods: [],
-    mountPoints: ["/", "swap"],
-  }),
-  useProposalResult: () => mockProposalResult,
-  useDeprecated: () => false,
-  useDeprecatedChanges: jest.fn(),
-  useProposalMutation: jest.fn(),
+  useAvailableDevices: () => mockUseAvailableDevices(),
+  useResetConfigMutation: () => mockUseResetConfigMutation(),
+  useDeprecated: () => mockUseDeprecated(),
+  useDeprecatedChanges: () => mockUseDeprecatedChanges(),
+  useReprobeMutation: () => mockUseReprobeMutation(),
 }));
 
-it("renders the device, settings and result sections", () => {
-  installerRender(<ProposalPage />);
-  screen.findByText("Device");
+const mockUseConfigModel = jest.fn();
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useConfigModel: () => mockUseConfigModel(),
+}));
+
+const mockUseZFCPSupported = jest.fn();
+jest.mock("~/queries/storage/zfcp", () => ({
+  ...jest.requireActual("~/queries/storage/zfcp"),
+  useZFCPSupported: () => mockUseZFCPSupported(),
+}));
+
+const mockUseDASDSupported = jest.fn();
+jest.mock("~/queries/storage/dasd", () => ({
+  ...jest.requireActual("~/queries/storage/dasd"),
+  useDASDSupported: () => mockUseDASDSupported(),
+}));
+
+const mockUseSystemErrors = jest.fn();
+const mockUseConfigErrors = jest.fn();
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useSystemErrors: () => mockUseSystemErrors(),
+  useConfigErrors: () => mockUseConfigErrors(),
+}));
+
+jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
+jest.mock("./ProposalFailedInfo", () => () => <div>failed info</div>);
+jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported info</div>);
+jest.mock("./ProposalResultSection", () => () => <div>result</div>);
+jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
+jest.mock("./AddExistingDeviceMenu", () => () => <div>add device menu</div>);
+jest.mock("./ConfigEditorMenu", () => () => <div>config editor menu</div>);
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
+
+beforeEach(() => {
+  mockUseResetConfigMutation.mockReturnValue({ mutate: jest.fn() });
+  mockUseReprobeMutation.mockReturnValue({ mutateAsync: jest.fn() });
+  mockUseDeprecated.mockReturnValue(false);
+  mockUseSystemErrors.mockReturnValue([]);
+  mockUseConfigErrors.mockReturnValue([]);
+});
+
+describe("if there are not devices", () => {
+  beforeEach(() => {
+    mockUseAvailableDevices.mockReturnValue([]);
+  });
+
+  it("renders an option for activating iSCSI", () => {
+    installerRender(<ProposalPage />);
+    expect(screen.queryByRole("link", { name: /iSCSI/ })).toBeInTheDocument();
+  });
+
+  it("does not render the installation devices", () => {
+    installerRender(<ProposalPage />);
+    expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+  });
+
+  it("does not render the result", () => {
+    installerRender(<ProposalPage />);
+    expect(screen.queryByText("result")).not.toBeInTheDocument();
+  });
+
+  describe("if zFCP is not supported", () => {
+    beforeEach(() => {
+      mockUseZFCPSupported.mockReturnValue(false);
+    });
+
+    it("does not render an option for activating zFCP", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("link", { name: /zFCP/ })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("if DASD is not supported", () => {
+    beforeEach(() => {
+      mockUseDASDSupported.mockReturnValue(false);
+    });
+
+    it("does not render an option for activating DASD", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("link", { name: /DASD/ })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("if zFCP is supported", () => {
+    beforeEach(() => {
+      mockUseZFCPSupported.mockReturnValue(true);
+    });
+
+    it("renders an option for activating zFCP", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("link", { name: /zFCP/ })).toBeInTheDocument();
+    });
+  });
+
+  describe("if DASD is supported", () => {
+    beforeEach(() => {
+      mockUseDASDSupported.mockReturnValue(true);
+    });
+
+    it("renders an option for activating DASD", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("link", { name: /DASD/ })).toBeInTheDocument();
+    });
+  });
+});
+
+describe("if there is not a model", () => {
+  beforeEach(() => {
+    mockUseAvailableDevices.mockReturnValue([disk]);
+    mockUseConfigModel.mockReturnValue(null);
+  });
+
+  describe("and there are system errors", () => {
+    beforeEach(() => {
+      mockUseSystemErrors.mockReturnValue([systemError]);
+    });
+
+    it("renders an option for resetting the config", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
+    });
+
+    it("does not render the installation devices", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+    });
+
+    it("does not render the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("and there are not system errors", () => {
+    beforeEach(() => {
+      mockUseSystemErrors.mockReturnValue([]);
+    });
+
+    it("renders an unsupported model alert", async () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("unsupported info")).toBeInTheDocument();
+    });
+
+    it("does not render the installation devices", async () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+    });
+
+    it("renders the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).toBeInTheDocument();
+    });
+  });
+});
+
+describe("if there is a model", () => {
+  beforeEach(() => {
+    mockUseAvailableDevices.mockReturnValue([disk]);
+    mockUseConfigModel.mockReturnValue({ drives: [] });
+  });
+
+  describe("and there are config errors and system errors", () => {
+    beforeEach(() => {
+      mockUseConfigErrors.mockReturnValue([configError]);
+      mockUseSystemErrors.mockReturnValue([systemError]);
+    });
+
+    it("renders the config errors", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("Config error")).toBeInTheDocument();
+    });
+
+    it("renders an option for resetting the config", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
+    });
+
+    it("does not render the installation devices", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+    });
+
+    it("does not render the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("and there are not config errors but there are system errors", () => {
+    beforeEach(() => {
+      mockUseSystemErrors.mockReturnValue([systemError]);
+    });
+
+    it("renders a failed proposal failed", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("failed info")).toBeInTheDocument();
+    });
+
+    it("renders the installation devices", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).toBeInTheDocument();
+    });
+
+    it("does not render the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("and there are neither config errors nor system errors", () => {
+    beforeEach(() => {
+      mockUseSystemErrors.mockReturnValue([]);
+      mockUseConfigErrors.mockReturnValue([]);
+    });
+
+    it("renders the installation devices", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).toBeInTheDocument();
+    });
+
+    it("renders the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).toBeInTheDocument();
+    });
+  });
 });

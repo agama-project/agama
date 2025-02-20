@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "securerandom"
+
 module Agama
   module Storage
     module Configs
@@ -32,6 +34,11 @@ module Agama
         # @return [Boolean]
         def alias?(value)
           self.alias == value
+        end
+
+        # Ensures the config has a value for alias.
+        def ensure_alias
+          self.alias ||= SecureRandom.alphanumeric(10)
         end
       end
     end

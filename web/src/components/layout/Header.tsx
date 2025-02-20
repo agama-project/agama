@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,23 +22,23 @@
 
 import React, { useState } from "react";
 import {
+  Content,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   Masthead,
-  MastheadProps,
   MastheadContent,
-  MastheadToggle,
+  MastheadLogo,
   MastheadMain,
-  MastheadBrand,
+  MastheadToggle,
+  MenuToggle,
+  MenuToggleElement,
   PageToggleButton,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Dropdown,
-  MenuToggleElement,
-  MenuToggle,
-  DropdownList,
-  DropdownItem,
-  Divider,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
@@ -46,7 +46,7 @@ import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { Route } from "~/types/routes";
-import { InstallButton, InstallerOptions } from "~/components/core";
+import { ChangeProductOption, InstallButton, InstallerOptions } from "~/components/core";
 import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
 
@@ -57,10 +57,10 @@ export type HeaderProps = {
   showProductName?: boolean;
   /** Whether the installer options link should be mounted */
   showInstallerOptions?: boolean;
-  /** The background color for the top bar */
-  background?: MastheadProps["backgroundColor"];
   /** Callback to be triggered for toggling the IssuesDrawer visibility */
   toggleIssuesDrawer?: () => void;
+  isSidebarOpen?: boolean;
+  toggleSidebar?: () => void;
 };
 
 const OptionsDropdown = ({ showInstallerOptions }) => {
@@ -91,6 +91,7 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
         )}
       >
         <DropdownList>
+          <ChangeProductOption />
           <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
             {_("Download logs")}
           </DropdownItem>
@@ -124,8 +125,9 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
 export default function Header({
   showSidebarToggle = true,
   showProductName = true,
-  background = "dark",
   toggleIssuesDrawer,
+  isSidebarOpen,
+  toggleSidebar,
 }: HeaderProps): React.ReactNode {
   const location = useLocation();
   const { selectedProduct } = useProduct();
@@ -141,24 +143,32 @@ export default function Header({
     !["/login", "/products/progress"].includes(location.pathname);
 
   return (
-    <Masthead backgroundColor={background}>
-      {showSidebarToggle && (
-        <MastheadToggle>
-          <PageToggleButton
-            id="uncontrolled-nav-toggle"
-            variant="plain"
-            aria-label={_("Main navigation")}
-          >
-            <Icon name="menu" color="color-light-100" />
-          </PageToggleButton>
-        </MastheadToggle>
-      )}
-      <MastheadMain>{title && <MastheadBrand component="h1">{title}</MastheadBrand>}</MastheadMain>
+    <Masthead>
+      <MastheadMain>
+        {showSidebarToggle && (
+          <MastheadToggle>
+            <PageToggleButton
+              isSidebarOpen={isSidebarOpen}
+              onSidebarToggle={toggleSidebar}
+              id="uncontrolled-nav-toggle"
+              variant="plain"
+              aria-label={_("Main navigation")}
+            >
+              <Icon name="menu" color="color-light-100" />
+            </PageToggleButton>
+          </MastheadToggle>
+        )}
+        {title && (
+          <MastheadLogo>
+            <Content component="h1">{title}</Content>
+          </MastheadLogo>
+        )}
+      </MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>
-            <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem spacer={{ default: "spacerSm" }}>
+            <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
+              <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
               <ToolbarItem>

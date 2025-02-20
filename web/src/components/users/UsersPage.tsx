@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,9 +21,9 @@
  */
 
 import React from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
-import { IssuesHint, Page } from "~/components/core";
-import { FirstUser, RootAuthMethods } from "~/components/users";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
+import { IssuesAlert, Page } from "~/components/core";
+import { FirstUser, RootUser } from "~/components/users";
 import { useIssues } from "~/queries/issues";
 import { _ } from "~/i18n";
 
@@ -33,19 +33,17 @@ export default function UsersPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Users")}</h2>
+        <Content component="h2">{_("Authentication")}</Content>
       </Page.Header>
 
       <Page.Content>
+        <IssuesAlert issues={issues} />
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <IssuesHint issues={issues} />
-          </GridItem>
           <GridItem sm={12} xl={6}>
             <FirstUser />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <RootAuthMethods />
+            <RootUser />
           </GridItem>
         </Grid>
       </Page.Content>

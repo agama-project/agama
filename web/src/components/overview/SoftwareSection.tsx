@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,8 +21,7 @@
  */
 
 import React from "react";
-import { List, ListItem, Text, TextContent, TextVariants } from "@patternfly/react-core";
-import { Em } from "~/components/core";
+import { Content, List, ListItem } from "@patternfly/react-core";
 import { SelectedBy } from "~/types/software";
 import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
 import { isObjectEmpty } from "~/utils";
@@ -39,7 +38,7 @@ export default function SoftwareSection(): React.ReactNode {
   const TextWithoutList = () => {
     return (
       <>
-        {_("The installation will take")} <Em>{proposal.size}</Em>
+        {_("The installation will take")} <b>{proposal.size}</b>
       </>
     );
   };
@@ -51,11 +50,11 @@ export default function SoftwareSection(): React.ReactNode {
 
     return (
       <>
-        <Text>
+        <Content>
           {msg1}
-          <Em>{proposal.size}</Em>
+          <b>{proposal.size}</b>
           {msg2}
-        </Text>
+        </Content>
         <List>
           {selectedPatterns.map((p) => (
             <ListItem key={p.name}>{p.summary}</ListItem>
@@ -66,9 +65,9 @@ export default function SoftwareSection(): React.ReactNode {
   };
 
   return (
-    <TextContent>
-      <Text component={TextVariants.h3}>{_("Software")}</Text>
+    <Content>
+      <Content component="h3">{_("Software")}</Content>
       {patterns.length ? <TextWithList /> : <TextWithoutList />}
-    </TextContent>
+    </Content>
   );
 }

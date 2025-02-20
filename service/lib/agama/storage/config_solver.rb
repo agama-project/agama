@@ -19,10 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_encryption_solver"
-require "agama/storage/config_filesystem_solver"
-require "agama/storage/config_search_solver"
-require "agama/storage/config_size_solver"
+require "agama/storage/config_solvers"
 
 module Agama
   module Storage
@@ -31,14 +28,17 @@ module Agama
     # Solving a config means to assign proper values according to the product and the system. For
     # example, the sizes of a partition config taking into account its fallbacks, assigning a
     # specific device when a config has a search, etc.
+    #
+    # See doc/storage_proposal_from_profile.md for a complete description of how the config is
+    # generated from a profile.
     class ConfigSolver
-      # @param devicegraph [Y2Storage::Devicegraph] initial layout of the system
       # @param product_config [Agama::Config] configuration of the product to install
+      # @param devicegraph [Y2Storage::Devicegraph] initial layout of the system
       # @param disk_analyzer [Y2Storage::DiskAnalyzer, nil] optional extra information about the
       #   initial layout of the system
-      def initialize(devicegraph, product_config, disk_analyzer: nil)
-        @devicegraph = devicegraph
+      def initialize(product_config, devicegraph, disk_analyzer: nil)
         @product_config = product_config
+        @devicegraph = devicegraph
         @disk_analyzer = disk_analyzer
       end
 
@@ -48,20 +48,21 @@ module Agama
       #
       # @param config [Config]
       def solve(config)
-        ConfigEncryptionSolver.new(product_config).solve(config)
-        ConfigFilesystemSolver.new(product_config).solve(config)
-        ConfigSearchSolver.new(devicegraph, disk_analyzer).solve(config)
+        ConfigSolvers::Boot.new(product_config).solve(config)
+        ConfigSolvers::Encryption.new(product_config).solve(config)
+        ConfigSolvers::Filesystem.new(product_config).solve(config)
+        ConfigSolvers::Search.new(product_config, devicegraph, disk_analyzer).solve(config)
         # Sizes must be solved once the searches are solved.
-        ConfigSizeSolver.new(devicegraph, product_config).solve(config)
+        ConfigSolvers::Size.new(product_config, devicegraph).solve(config)
       end
 
     private
 
-      # @return [Y2Storage::Devicegraph]
-      attr_reader :devicegraph
-
       # @return [Agama::Config]
       attr_reader :product_config
+
+      # @return [Y2Storage::Devicegraph]
+      attr_reader :devicegraph
 
       # @return [Y2Storage::DiskAnalyzer, nil]
       attr_reader :disk_analyzer

@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -31,8 +31,8 @@
 //! This type implements the [D-Bus standard interfaces], (`org.freedesktop.DBus.*`) for which the
 //! following zbus API can be used:
 //!
-//! * [`zbus::fdo::IntrospectableProxy`]
 //! * [`zbus::fdo::PropertiesProxy`]
+//! * [`zbus::fdo::IntrospectableProxy`]
 //!
 //! Consequently `zbus-xmlgen` did not generate code for the above interfaces.
 //!
@@ -48,7 +48,6 @@ use zbus::proxy;
 /// * user name
 /// * password
 /// * hashed_password (true = hashed, false = plain text)
-/// * auto-login (enabled or not)
 /// * some optional and additional data
 // NOTE: Manually added to this file.
 pub type FirstUser = (
@@ -56,9 +55,17 @@ pub type FirstUser = (
     String,
     String,
     bool,
-    bool,
     std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 );
+
+/// Root user as it comes from D-Bus.
+///
+/// It is composed of:
+///
+/// * password (an empty string if it is not set)
+/// * hashed_password (true = hashed, false = plain text)
+/// * SSH public key
+pub type RootUser = (String, bool, String);
 
 #[proxy(
     default_service = "org.opensuse.Agama.Manager1",
@@ -80,7 +87,6 @@ pub trait Users1 {
         user_name: &str,
         password: &str,
         hashed_password: bool,
-        auto_login: bool,
         data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<(bool, Vec<String>)>;
 
@@ -98,11 +104,7 @@ pub trait Users1 {
     #[zbus(property)]
     fn first_user(&self) -> zbus::Result<FirstUser>;
 
-    /// RootPasswordSet property
+    /// RootUser property
     #[zbus(property)]
-    fn root_password_set(&self) -> zbus::Result<bool>;
-
-    /// RootSSHKey property
-    #[zbus(property, name = "RootSSHKey")]
-    fn root_sshkey(&self) -> zbus::Result<String>;
+    fn root_user(&self) -> zbus::Result<RootUser>;
 }

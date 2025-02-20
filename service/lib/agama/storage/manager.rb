@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,7 +30,7 @@ require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
 require "agama/storage/iscsi/manager"
 require "agama/storage/finisher"
-require "agama/storage/proposal_settings_reader"
+require "agama/storage/config_json_reader"
 require "agama/issue"
 require "agama/with_locale"
 require "agama/with_issues"
@@ -50,20 +50,20 @@ module Agama
       include WithProgress
       include Yast::I18n
 
-      # @return [Config]
-      attr_reader :config
+      # @return [Agama::Config]
+      attr_reader :product_config
 
       # @return [Bootloader]
       attr_reader :bootloader
 
       # Constructor
       #
-      # @param config [Config]
+      # @param product_config [Agama::Config]
       # @param logger [Logger]
-      def initialize(config, logger)
+      def initialize(product_config, logger)
         textdomain "agama"
 
-        @config = config
+        @product_config = product_config
         @logger = logger
         @bootloader = Bootloader.new(logger)
         register_proposal_callbacks
@@ -113,14 +113,21 @@ module Agama
       end
 
       # Probes storage devices and performs an initial proposal
-      def probe
+      #
+      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
+      #   proposal.
+      def probe(keep_config: false)
         start_progress_with_size(4)
-        config.pick_product(software.selected_product)
+        product_config.pick_product(software.selected_product)
         check_multipath
         progress.step(_("Activating storage devices")) { activate_devices }
         progress.step(_("Probing storage devices")) { probe_devices }
-        progress.step(_("Calculating the storage proposal")) { calculate_proposal }
+        progress.step(_("Calculating the storage proposal")) do
+          calculate_proposal(keep_config: keep_config)
+        end
         progress.step(_("Selecting Linux Security Modules")) { security.probe }
+        # The system is not deprecated anymore
+        self.deprecated_system = false
         update_issues
         @on_probe_callbacks&.each(&:call)
       end
@@ -146,14 +153,24 @@ module Agama
 
       # Performs the final steps on the target file system(s)
       def finish
-        Finisher.new(logger, config, security).run
+        Finisher.new(logger, product_config, security).run
+      end
+
+      # Calculates the proposal.
+      #
+      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
+      #   proposal. If false, then the default config from the product is used.
+      def calculate_proposal(keep_config: false)
+        config_json = proposal.storage_json if keep_config
+        config_json ||= ConfigJSONReader.new(product_config).read
+        proposal.calculate_from_json(config_json)
       end
 
       # Storage proposal manager
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(config, logger: logger)
+        @proposal ||= Proposal.new(product_config, logger: logger)
       end
 
       # iSCSI manager
@@ -216,15 +233,6 @@ module Agama
 
         iscsi.probe
         Y2Storage::StorageManager.instance.probe(callbacks)
-
-        # The system is not deprecated anymore
-        self.deprecated_system = false
-      end
-
-      # Calculates the proposal using the settings from the config file.
-      def calculate_proposal
-        settings = ProposalSettingsReader.new(config).read
-        proposal.calculate_guided(settings)
       end
 
       # Adds the required packages to the list of resolvables to install
@@ -305,7 +313,7 @@ module Agama
       #
       # @return [Security]
       def security
-        @security ||= Security.new(logger, config)
+        @security ||= Security.new(logger, product_config)
       end
 
       # Returns the client to ask questions

@@ -34,15 +34,14 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { ROOT as PATHS, USER } from "./routes/paths";
+import { ROOT as PATHS } from "./routes/paths";
 import { N_ } from "~/i18n";
-import { RootAuthMethodsPage } from "~/components/users";
 
 const rootRoutes = () => [
   {
     path: "/overview",
     element: <OverviewPage />,
-    handle: { name: N_("Overview"), icon: "list_alt" },
+    handle: { name: N_("Overview"), icon: "list_alt", alsoActiveOn: ["/"] },
   },
   registrationRoutes(),
   l10nRoutes(),
@@ -69,13 +68,7 @@ const protectedRoutes = () => [
       },
       {
         element: <PlainLayout />,
-        children: [
-          {
-            path: USER.rootUser.edit,
-            element: <RootAuthMethodsPage />,
-          },
-          productsRoutes(),
-        ],
+        children: [productsRoutes()],
       },
     ],
   },

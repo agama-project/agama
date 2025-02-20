@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,18 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ChangeProductLink } from "./ChangeProductLink";
-export { default as Description } from "./Description";
+export { default as ChangeProductOption } from "./ChangeProductOption";
 export { default as FormLabel } from "./FormLabel";
-export { default as FormReadOnlyField } from "./FormReadOnlyField";
 export { default as FormValidationError } from "./FormValidationError";
-export { default as Fieldset } from "./Fieldset";
-export { default as Em } from "./Em";
 export { default as EmailInput } from "./EmailInput";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
-export { default as IssuesHint } from "./IssuesHint";
+export { default as IssuesAlert } from "./IssuesAlert";
 export { default as ListSearch } from "./ListSearch";
 export { default as LoginPage } from "./LoginPage";
 export { default as RowActions } from "./RowActions";
@@ -40,14 +36,16 @@ export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmati
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
 export { default as ProgressText } from "./ProgressText";
-export { default as Tip } from "./Tip";
-export { default as NumericTextInput } from "./NumericTextInput";
 export { default as PasswordInput } from "./PasswordInput";
 export { default as ServerError } from "./ServerError";
-export { default as ExpandableSelector } from "./ExpandableSelector";
 export { default as TreeTable } from "./TreeTable";
 export { default as Link } from "./Link";
 export { default as EmptyState } from "./EmptyState";
 export { default as InstallerOptions } from "./InstallerOptions";
 export { default as IssuesDrawer } from "./IssuesDrawer";
 export { default as Drawer } from "./Drawer";
+export { default as SelectWrapper } from "./SelectWrapper";
+export { default as NestedContent } from "./NestedContent";
+export { default as SubtleContent } from "./SubtleContent";
+export { default as MenuHeader } from "./MenuHeader";
+export { default as SplitButton } from "./SplitButton";

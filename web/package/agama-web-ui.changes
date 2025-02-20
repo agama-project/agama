@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Thu Feb 20 12:46:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Include the migration to PatternFly 6 made by dgonzalez@suse.com
+  (gh#openSUSE/agama#1900, gh#openSUSE/agama#1921,
+  gh#openSUSE/agama#1954 and gh#openSUSE/agama#1961)
+- New interface to configure the storage proposal.
+
+-------------------------------------------------------------------
+Tue Feb 18 12:10:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Remove step forcing root user password entry.
+- Revamp the Authentication page (formerly Users page) to simplify
+  the interface and improve user interactions
+  (gh#agama-project/agama#1999).
+
+-------------------------------------------------------------------
 Fri Feb 14 09:46:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Implement specific question dialogs for the libzypp callbacks
@@ -18,6 +34,13 @@ Fri Jan 31 09:03:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   (gh#agama-project/agama#1963).
 
 -------------------------------------------------------------------
+Thu Jan 30 12:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Make deletion of a proposed drive work:
+  "Do not use, Remove the configuration for this device"
+  (gh#agama-project/agama#1934)
+
+-------------------------------------------------------------------
 Fri Jan 24 09:34:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the "finish" to decide whether to navigate to the
@@ -28,6 +51,12 @@ Fri Jan 24 06:43:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the "missing_registration" issue to determine whether to show
   the registration alert (gh#agama-project/agama#1938).
+
+-------------------------------------------------------------------
+Thu Jan 23 15:09:09 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Make the trash can icon (Delete) of a proposed partition work
+  (gh#agama-project/agama#1915)
 
 -------------------------------------------------------------------
 Tue Jan 21 09:44:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

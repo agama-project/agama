@@ -22,7 +22,6 @@
 require "agama/storage/config_conversions/to_json_conversions/base"
 require "agama/storage/config_conversions/to_json_conversions/encryption"
 require "agama/storage/config_conversions/to_json_conversions/logical_volume"
-require "agama/storage/configs/volume_group"
 
 module Agama
   module Storage
@@ -30,9 +29,10 @@ module Agama
       module ToJSONConversions
         # Volume group conversion to JSON hash according to schema.
         class VolumeGroup < Base
-          # @see Base
-          def self.config_type
-            Configs::VolumeGroup
+          # @param config [Configs::VolumeGroup]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private

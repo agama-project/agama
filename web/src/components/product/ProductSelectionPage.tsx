@@ -22,24 +22,23 @@
 
 import React, { useState } from "react";
 import {
+  Bullseye,
+  Button,
   Card,
   CardBody,
+  Checkbox,
   Form,
+  FormGroup,
   Grid,
   GridItem,
   List,
   ListItem,
   Split,
   Stack,
-  FormGroup,
-  Button,
-  Checkbox,
   StackItem,
-  Flex,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Page } from "~/components/core";
-import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct, useRegistration } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
@@ -64,7 +63,7 @@ const Option = ({ product, isChecked, onChange }) => {
 
   return (
     <ListItem aria-label={product.name}>
-      <Card isRounded>
+      <Card>
         <CardBody>
           <Split hasGutter>
             <input
@@ -96,7 +95,7 @@ const Option = ({ product, isChecked, onChange }) => {
 const BackLink = () => {
   const navigate = useNavigate();
   return (
-    <Button size="lg" variant="link" onClick={() => navigate("/")}>
+    <Button variant="link" onClick={() => navigate("/")}>
       {_("Cancel")}
     </Button>
   );
@@ -144,7 +143,7 @@ function ProductSelectionPage() {
   return (
     <Page>
       <Page.Content>
-        <Center>
+        <Bullseye>
           <Form id="productSelectionForm" onSubmit={onSubmit}>
             <Grid hasGutter>
               <ResponsiveGridItem>
@@ -163,7 +162,7 @@ function ProductSelectionPage() {
               </ResponsiveGridItem>
             </Grid>
           </Form>
-        </Center>
+        </Bullseye>
         {showLicense && (
           <LicenseDialog
             onClose={() => setShowLicense(false)}
@@ -171,41 +170,32 @@ function ProductSelectionPage() {
           />
         )}
       </Page.Content>
-      <Page.Actions justifyContent="none">
+      <Page.Actions noDefaultWrapper>
         <Grid>
           <ResponsiveGridItem>
             <Stack hasGutter>
               <StackItem>
-                <Flex
-                  justifyContent={{ default: "justifyContentFlexEnd" }}
-                  columnGap={{ default: "columnGapSm" }}
-                >
-                  {mountLicenseCheckbox && (
-                    <Checkbox
-                      isChecked={licenseAccepted}
-                      onChange={(_, accepted) => setLicenseAccepted(accepted)}
-                      isDisabled={selectedProduct === nextProduct}
-                      id="license-acceptance"
-                      form="productSelectionForm"
-                      label={
-                        <>
-                          {eulaTextStart}{" "}
-                          <Button variant="link" isInline onClick={() => setShowLicense(true)}>
-                            {eulaTextLink}
-                          </Button>{" "}
-                          {eulaTextEnd}
-                        </>
-                      }
-                    />
-                  )}
-                </Flex>
+                {mountLicenseCheckbox && (
+                  <Checkbox
+                    isChecked={licenseAccepted}
+                    onChange={(_, accepted) => setLicenseAccepted(accepted)}
+                    isDisabled={selectedProduct === nextProduct}
+                    id="license-acceptance"
+                    form="productSelectionForm"
+                    label={
+                      <>
+                        {eulaTextStart}{" "}
+                        <Button variant="link" isInline onClick={() => setShowLicense(true)}>
+                          {eulaTextLink}
+                        </Button>{" "}
+                        {eulaTextEnd}
+                      </>
+                    }
+                  />
+                )}
               </StackItem>
               <StackItem>
-                <Flex
-                  justifyContent={{ default: "justifyContentFlexEnd" }}
-                  columnGap={{ default: "columnGapSm" }}
-                >
-                  {selectedProduct && !isLoading && <BackLink />}
+                <Split hasGutter>
                   <Page.Submit
                     form="productSelectionForm"
                     isDisabled={isSelectionDisabled}
@@ -213,7 +203,8 @@ function ProductSelectionPage() {
                   >
                     {_("Select")}
                   </Page.Submit>
-                </Flex>
+                  {selectedProduct && !isLoading && <BackLink />}
+                </Split>
               </StackItem>
             </Stack>
           </ResponsiveGridItem>

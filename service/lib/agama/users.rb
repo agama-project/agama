@@ -45,22 +45,9 @@ module Agama
       update_issues
     end
 
-    def root_ssh_key
-      root_user.authorized_keys.first || ""
-    end
-
     def root_ssh_key=(value)
       root_user.authorized_keys = [value] # just one supported for now
       update_issues
-    end
-
-    # NOTE: the root user is created if it does not exist
-    def root_password?
-      !!root_user.password_content
-    end
-
-    def root_ssh_key?
-      !root_ssh_key.empty?
     end
 
     def assign_root_password(value, hashed)
@@ -75,12 +62,18 @@ module Agama
       update_issues
     end
 
-    # Whether the given user is configured for autologin
+    # Root user
     #
-    # @param [Y2Users::User] user
-    # @return [Boolean]
-    def autologin?(user)
-      config.login.autologin_user == user
+    # @return [Y2Users::User]
+    def root_user
+      return @root_user if @root_user
+
+      @root_user = config.users.root
+      return @root_user if @root_user
+
+      @root_user = Y2Users::User.create_root
+      config.attach(@root_user)
+      @root_user
     end
 
     # First created user
@@ -103,10 +96,9 @@ module Agama
     # @param user_name [String]
     # @param password [String]
     # @param hashed_password [Boolean] true = hashed password, false = plain text password
-    # @param auto_login [Boolean]
     # @param _data [Hash]
     # @return [Array] the list of fatal issues found
-    def assign_first_user(full_name, user_name, password, hashed_password, auto_login, _data)
+    def assign_first_user(full_name, user_name, password, hashed_password, _data)
       remove_first_user
 
       user = Y2Users::User.new(user_name)
@@ -122,9 +114,6 @@ module Agama
 
       config.attach(user)
       add_user_to_group(user_name, "wheel")
-
-      config.login ||= Y2Users::LoginConfig.new
-      config.login.autologin_user = auto_login ? user : nil
       update_issues
       []
     end
@@ -201,15 +190,17 @@ module Agama
       @config
     end
 
-    def root_user
-      return @root_user if @root_user
+    # NOTE: the root user is created if it does not exist
+    def root_password?
+      !!root_user.password_content
+    end
 
-      @root_user = config.users.root
-      return @root_user if @root_user
+    def root_ssh_key
+      root_user.authorized_keys.first || ""
+    end
 
-      @root_user = Y2Users::User.create_root
-      config.attach(@root_user)
-      @root_user
+    def root_ssh_key?
+      !root_ssh_key.empty?
     end
 
     def enable_ssh

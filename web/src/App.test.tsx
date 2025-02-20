@@ -27,7 +27,6 @@ import App from "./App";
 import { InstallationPhase } from "./types/status";
 import { createClient } from "~/client";
 import { Product } from "./types/software";
-import { RootUser } from "./types/users";
 
 jest.mock("~/client");
 
@@ -46,7 +45,6 @@ const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registratio
 // list of available products
 let mockProducts: Product[];
 let mockSelectedProduct: Product;
-let mockRootUser: RootUser;
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -73,11 +71,6 @@ jest.mock("~/queries/issues", () => ({
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useDeprecatedChanges: () => jest.fn(),
-}));
-
-jest.mock("~/queries/users", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useRootUser: () => mockRootUser,
 }));
 
 const mockClientStatus = {
@@ -110,7 +103,6 @@ describe("App", () => {
     });
 
     mockProducts = [tumbleweed, microos];
-    mockRootUser = { password: true, hashedPassword: false, sshkey: "FAKE-SSH-KEY" };
   });
 
   afterEach(() => {
@@ -163,42 +155,9 @@ describe("App", () => {
         mockClientStatus.isBusy = false;
       });
 
-      describe("when there are no authentication method for root user", () => {
-        beforeEach(() => {
-          mockRootUser = { password: false, hashedPassword: false, sshkey: "" };
-        });
-
-        it("redirects to root user edition", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText("Navigating to /users/root/edit");
-        });
-      });
-
-      describe("when only root password is set", () => {
-        beforeEach(() => {
-          mockRootUser = { password: true, hashedPassword: false, sshkey: "" };
-        });
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
-      });
-
-      describe("when only root SSH public key is set", () => {
-        beforeEach(() => {
-          mockRootUser = { password: false, hashedPassword: false, sshkey: "FAKE-SSH-KEY" };
-        });
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
-      });
-
-      describe("when root password and SSH public key are set", () => {
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
+      it("renders the application content", async () => {
+        installerRender(<App />, { withL10n: true });
+        await screen.findByText(/Outlet Content/);
       });
     });
   });

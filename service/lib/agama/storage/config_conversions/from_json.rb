@@ -27,6 +27,9 @@ module Agama
   module Storage
     module ConfigConversions
       # Config conversion from JSON hash according to schema.
+      #
+      # See doc/storage_proposal_from_profile.md for a complete description of how the config is
+      # generated from a profile.
       class FromJSON
         # @param config_json [Hash]
         # @param default_paths [Array<String>] Default paths of the product.

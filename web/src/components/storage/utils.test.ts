@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
+import { StorageDevice } from "~/types/storage";
+import { Volume } from "~/api/storage/types";
 import {
   deviceSize,
   deviceBaseName,
@@ -40,7 +41,8 @@ import {
 const volume = (properties: object = {}): Volume => {
   const testVolume: Volume = {
     mountPath: "/test",
-    target: VolumeTarget.DEFAULT,
+    mountOptions: [],
+    target: "default",
     fsType: "Btrfs",
     minSize: 1024,
     maxSize: 2048,
@@ -55,7 +57,6 @@ const volume = (properties: object = {}): Volume => {
       snapshotsAffectSizes: false,
       sizeRelevantVolumes: [],
       adjustByRam: false,
-      productDefined: false,
     },
   };
 
@@ -240,6 +241,15 @@ describe("parseToBytes", () => {
 
   it("does not include decimal part of resulting conversion", () => {
     expect(parseToBytes("1024.32 KiB")).toEqual(1048903); // Not 1048903.68
+  });
+
+  it("always considers a downcase 'b' as bytes (like Y2Storage)", () => {
+    expect(parseToBytes("1 KiB")).toEqual(1024);
+    expect(parseToBytes("1 Kib")).toEqual(1024);
+    expect(parseToBytes("1 kib")).toEqual(1024);
+    expect(parseToBytes("1 kIb")).toEqual(1024);
+    expect(parseToBytes("1 KIb")).toEqual(1024);
+    expect(parseToBytes("1 KIB")).toEqual(1024);
   });
 });
 

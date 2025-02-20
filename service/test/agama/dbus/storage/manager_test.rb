@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -36,6 +36,10 @@ require "agama/dbus/clients/software"
 require "y2storage"
 require "dbus"
 
+def serialize(value)
+  JSON.pretty_generate(value)
+end
+
 describe Agama::DBus::Storage::Manager do
   include Agama::RSpec::StorageHelpers
 
@@ -49,7 +53,8 @@ describe Agama::DBus::Storage::Manager do
       proposal:                    proposal,
       iscsi:                       iscsi,
       software:                    software,
-      config:                      config,
+      product_config:              product_config,
+      calculate_proposal:          nil,
       on_probe:                    nil,
       on_progress_change:          nil,
       on_progress_finish:          nil,
@@ -57,10 +62,10 @@ describe Agama::DBus::Storage::Manager do
       on_deprecated_system_change: nil)
   end
 
-  let(:config) { Agama::Config.new(config_data) }
+  let(:product_config) { Agama::Config.new(config_data) }
   let(:config_data) { {} }
 
-  let(:proposal) { Agama::Storage::Proposal.new(config) }
+  let(:proposal) { Agama::Storage::Proposal.new(product_config) }
 
   let(:iscsi) do
     instance_double(Agama::Storage::ISCSI::Manager,
@@ -264,7 +269,7 @@ describe Agama::DBus::Storage::Manager do
 
       it "returns the same generic default volume for any path" do
         generic = {
-          "FsType" => "Ext4", "MountOptions" => [],
+          "FsType" => "ext4", "MountOptions" => [],
           "MinSize" => 0, "AutoSize" => false
         }
         generic_outline = { "Required" => false, "FsTypes" => [], "SupportAutoSize" => false }
@@ -311,23 +316,23 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the appropriate volume if there is a corresponding template" do
-        expect(subject.default_volume("/")).to include("FsType" => "Btrfs", "AutoSize" => true)
+        expect(subject.default_volume("/")).to include("FsType" => "btrfs", "AutoSize" => true)
         expect(subject.default_volume("/")["Outline"]).to include(
-          "Required" => true, "FsTypes" => ["Btrfs"],
+          "Required" => true, "FsTypes" => ["btrfs"],
           "SupportAutoSize" => true, "SizeRelevantVolumes" => ["/home"]
         )
 
         expect(subject.default_volume("swap")).to include(
-          "FsType" => "Swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2 * (1024**3)
+          "FsType" => "swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2 * (1024**3)
         )
         expect(subject.default_volume("swap")["Outline"]).to include(
-          "Required" => false, "FsTypes" => ["Swap"], "SupportAutoSize" => false
+          "Required" => false, "FsTypes" => ["swap"], "SupportAutoSize" => false
         )
       end
 
       it "returns the default volume for any path without a template" do
-        default = { "FsType" => "Ext4", "AutoSize" => false, "MinSize" => 10 * (1024**3) }
-        default_outline = { "FsTypes" => ["Ext3", "Ext4", "XFS"], "SupportAutoSize" => false }
+        default = { "FsType" => "ext4", "AutoSize" => false, "MinSize" => 10 * (1024**3) }
+        default_outline = { "FsTypes" => ["ext3", "ext4", "xfs"], "SupportAutoSize" => false }
 
         expect(subject.default_volume("/foo")).to include(default)
         expect(subject.default_volume("/foo")["Outline"]).to include(default_outline)
@@ -557,87 +562,82 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#recover_config" do
-    def serialize(value)
-      JSON.pretty_generate(value)
+  describe "#apply_config_model" do
+    let(:serialized_model) { model_json.to_json }
+
+    let(:model_json) do
+      {
+        drives: [
+          name:       "/dev/vda",
+          partitions: [
+            { mountPath: "/" }
+          ]
+        ]
+      }
     end
 
+    it "calculates an agama proposal with the given config" do
+      expect(proposal).to receive(:calculate_agama) do |config|
+        expect(config).to be_a(Agama::Storage::Config)
+        expect(config.drives.size).to eq(1)
+
+        drive = config.drives.first
+        expect(drive.search.name).to eq("/dev/vda")
+        expect(drive.partitions.size).to eq(1)
+
+        partition = drive.partitions.first
+        expect(partition.filesystem.path).to eq("/")
+      end
+
+      subject.apply_config_model(serialized_model)
+    end
+  end
+
+  describe "#recover_config" do
     context "if a proposal has not been calculated" do
-      it "returns serialized empty storage config" do
-        expect(subject.recover_config).to eq(serialize({}))
+      it "returns 'null'" do
+        expect(subject.recover_config).to eq("null")
       end
     end
 
     context "if a guided proposal has been calculated" do
       before do
-        proposal.calculate_guided(settings)
+        proposal.calculate_from_json(settings_json)
       end
 
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap do |settings|
-          settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
-        end
-      end
-
-      it "returns serialized guided storage config" do
-        expected_config = {
+      let(:settings_json) do
+        {
           storage: {
-            guided: settings.to_json_settings
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
           }
         }
+      end
 
-        expect(subject.recover_config).to eq(serialize(expected_config))
+      it "returns serialized solved guided storage config" do
+        expect(subject.recover_config).to eq(
+          serialize({
+            storage: {
+              guided: {
+                target:  {
+                  disk: "/dev/vda"
+                },
+                boot:    {
+                  configure: true
+                },
+                space:   {
+                  policy: "keep"
+                },
+                volumes: []
+              }
+            }
+          })
+        )
       end
     end
 
     context "if an agama proposal has been calculated" do
-      before do
-        proposal.calculate_agama(storage_config)
-      end
-
-      let(:storage_config) do
-        fs_type = Agama::Storage::Configs::FilesystemType.new.tap do |t|
-          t.fs_type = Y2Storage::Filesystems::Type::BTRFS
-        end
-
-        filesystem = Agama::Storage::Configs::Filesystem.new.tap do |f|
-          f.type = fs_type
-        end
-
-        drive = Agama::Storage::Configs::Drive.new.tap do |d|
-          d.filesystem = filesystem
-        end
-
-        boot = Agama::Storage::Configs::Boot.new.tap do |b|
-          b.configure = false
-        end
-
-        Agama::Storage::Config.new.tap do |config|
-          config.drives = [drive]
-          config.boot = boot
-        end
-      end
-
-      it "returns serialized storage config" do
-        skip "Missing conversion from Agama::Storage::Config to JSON"
-
-        expected_config = {
-          storage: {
-            drives: [
-              {
-                filesystem: {
-                  type: "btrfs"
-                }
-              }
-            ]
-          }
-        }
-
-        expect(subject.recover_config).to eq(serialize(expected_config))
-      end
-    end
-
-    context "if a proposal was calculated from storage json" do
       before do
         proposal.calculate_from_json(config_json)
       end
@@ -646,26 +646,24 @@ describe Agama::DBus::Storage::Manager do
         {
           storage: {
             drives: [
-              ptableType: "gpt",
-              partitions: [
-                {
-                  filesystem: {
-                    type: "btrfs",
-                    path: "/"
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
                   }
-                }
-              ]
+                ]
+              }
             ]
           }
         }
       end
 
-      it "returns the serialized storage config" do
+      it "returns serialized storage config" do
         expect(subject.recover_config).to eq(serialize(config_json))
       end
     end
 
-    context "if a proposal was calculated from AutoYaST json" do
+    context "if an AutoYaST proposal has been calculated" do
       before do
         proposal.calculate_from_json(autoyast_json)
       end
@@ -680,6 +678,182 @@ describe Agama::DBus::Storage::Manager do
 
       it "returns the serialized AutoYaST config" do
         expect(subject.recover_config).to eq(serialize(autoyast_json))
+      end
+    end
+  end
+
+  describe "#recover_model" do
+    context "if a proposal has not been calculated" do
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+
+    context "if a guided proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(settings_json)
+      end
+
+      let(:settings_json) do
+        {
+          storage: {
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
+          }
+        }
+      end
+
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+
+    context "if an agama proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                alias:      "root",
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns the serialized config model" do
+        expect(subject.recover_model).to eq(
+          serialize({
+            boot:   {
+              configure: true,
+              device:    {
+                default: true,
+                name:    "/dev/sda"
+              }
+            },
+            drives: [
+              {
+                name:        "/dev/sda",
+                alias:       "root",
+                spacePolicy: "keep",
+                partitions:  [
+                  {
+                    mountPath:      "/",
+                    filesystem:     {
+                      reuse:   false,
+                      default: true,
+                      type:    "ext4"
+                    },
+                    size:           {
+                      default: true,
+                      min:     0
+                    },
+                    delete:         false,
+                    deleteIfNeeded: false,
+                    resize:         false,
+                    resizeIfNeeded: false
+                  }
+                ]
+              }
+            ]
+          })
+        )
+      end
+    end
+
+    context "if an AutoYaST proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(autoyast_json)
+      end
+
+      let(:autoyast_json) do
+        {
+          legacyAutoyastStorage: [
+            { device: "/dev/vda" }
+          ]
+        }
+      end
+
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+  end
+
+  describe "#solve_model" do
+    let(:model) do
+      {
+        drives: [
+          {
+            name:       "/dev/sda",
+            alias:      "sda",
+            partitions: [
+              { mountPath: "/" }
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns the serialized solved model" do
+      result = subject.solve_model(model.to_json)
+
+      expect(result).to eq(
+        serialize({
+          boot:   {
+            configure: true,
+            device:    {
+              default: true,
+              name:    "/dev/sda"
+            }
+          },
+          drives: [
+            {
+              name:        "/dev/sda",
+              alias:       "sda",
+              spacePolicy: "keep",
+              partitions:  [
+                {
+                  mountPath:      "/",
+                  filesystem:     {
+                    reuse:   false,
+                    default: true,
+                    type:    "ext4"
+                  },
+                  size:           {
+                    default: true,
+                    min:     0
+                  },
+                  delete:         false,
+                  deleteIfNeeded: false,
+                  resize:         false,
+                  resizeIfNeeded: false
+                }
+              ]
+            }
+          ]
+        })
+      )
+    end
+
+    context "if the system has not been probed yet" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
+      end
+
+      it "returns 'null'" do
+        result = subject.solve_model(model.to_json)
+        expect(result).to eq("null")
       end
     end
   end
