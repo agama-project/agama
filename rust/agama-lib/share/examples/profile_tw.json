@@ -1,12 +1,11 @@
 {
   "localization": {
-    "keyboard": "us",
-    "language": "en_US"
+    "keyboard": "es",
+    "language": "es_ES.UTF-8",
+    "keymap": "es_ES.UTF-8"
   },
   "software": {
-    "patterns": [
-      "gnome"
-    ]
+    "patterns": ["gnome"]
   },
   "product": {
     "id": "Tumbleweed"
@@ -35,16 +34,10 @@
         "method4": "manual",
         "method6": "manual",
         "interface": "eth0",
-        "addresses": [
-          "192.168.122.100/24",
-          "::ffff:c0a8:7ac7/64"
-        ],
+        "addresses": ["192.168.122.100/24", "::ffff:c0a8:7ac7/64"],
         "gateway4": "192.168.122.1",
         "gateway6": "::ffff:c0a8:7a01",
-        "nameservers": [
-          "192.168.122.1",
-          "2001:4860:4860::8888"
-        ]
+        "nameservers": ["192.168.122.1", "2001:4860:4860::8888"]
       }
     ]
   }
