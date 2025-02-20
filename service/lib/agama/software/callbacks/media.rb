@@ -53,7 +53,7 @@ module Agama
           logger.debug(
             format("MediaChange callback: error_code: %s, error: %s, url: %s, product: %s, " \
                    "current: %s, current_label: %s, wanted: %s, wanted_label: %s, " \
-                   "double_sided: %s, devices: %s, current_device",
+                   "double_sided: %s, devices: %s, current_device: %s",
               error_code,
               error,
               Yast::URL.HidePassword(url),
