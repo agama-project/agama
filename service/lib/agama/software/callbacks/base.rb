@@ -29,8 +29,17 @@ module Agama
         include Yast::I18n
 
         # Constructor
-        def initialize
+        #
+        # @param questions_client [Agama::DBus::Clients::Questions]
+        # @param logger [Logger]
+        def initialize(questions_client, logger)
           textdomain "agama"
+          @questions_client = questions_client
+          @logger = logger || ::Logger.new($stdout)
+        end
+
+        def setup
+          raise NotImplementedError
         end
 
         # label for the "retry" action
@@ -68,6 +77,14 @@ module Agama
           # TRANSLATORS: button label
           _("No")
         end
+
+      private
+
+        # @return [Agama::DBus::Clients::Questions]
+        attr_reader :questions_client
+
+        # @return [Logger]
+        attr_reader :logger
       end
     end
   end

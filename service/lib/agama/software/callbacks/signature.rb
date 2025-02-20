@@ -30,19 +30,6 @@ module Agama
     module Callbacks
       # Callbacks related to signatures handling
       class Signature < Base
-        include Yast::I18n
-
-        # Constructor
-        #
-        # @param questions_client [Agama::DBus::Clients::Questions]
-        # @param logger [Logger]
-        def initialize(questions_client, logger)
-          textdomain "agama"
-
-          @questions_client = questions_client
-          @logger = logger
-        end
-
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackAcceptUnsignedFile(
@@ -70,8 +57,9 @@ module Agama
         def accept_unsigned_file(filename, repo_id)
           source = build_source(filename, repo_id)
           message = format(
-            _("%{source} is not digitally signed. The origin and integrity of the file cannot be " \
-              "verified. Use it anyway?"), source: source
+            _("%{source} is not digitally signed. The origin and integrity of the " \
+              "file cannot be verified. Use it anyway?"),
+            source: source
           )
 
           question = Agama::Question.new(
@@ -123,7 +111,8 @@ module Agama
         def accept_unknown_gpg_key(filename, key_id, repo_id)
           source = build_source(filename, repo_id)
           message = format(
-            _("%{source} is digitally signed with the following unknown GnuPG key: %{key_id}. Use it anyway?"),
+            _("%{source} is digitally signed with the following unknown GnuPG key: " \
+              "%{key_id}. Use it anyway?"),
             source: source, key_id: key_id
           )
 
@@ -169,12 +158,6 @@ module Agama
         end
 
       private
-
-        # @return [Agama::DBus::Clients::Questions]
-        attr_reader :questions_client
-
-        # @return [Logger]
-        attr_reader :logger
 
         # Builds the file source description
         #

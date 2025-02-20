@@ -30,16 +30,6 @@ module Agama
     module Callbacks
       # Callbacks related to digest handling
       class Digest < Base
-        # Constructor
-        #
-        # @param questions_client [Agama::DBus::Clients::Questions]
-        # @param logger [Logger]
-        def initialize(questions_client, logger)
-          textdomain "agama"
-          @questions_client = questions_client
-          @logger = logger || ::Logger.new($stdout)
-        end
-
         def setup
           Yast::Pkg.CallbackAcceptFileWithoutChecksum(
             Yast::FunRef.new(
@@ -119,8 +109,8 @@ module Agama
           name = strip_download_prefix(filename)
           message = format(
             _(
-              "The expected checksum of file %{file} is \"%{found}\" but it was expected to be "\
-              "\"%{expected}\". The file has changed by accident or by an attacker since the "\
+              "The expected checksum of file %{file} is \"%{found}\" but it was expected to be " \
+              "\"%{expected}\". The file has changed by accident or by an attacker since the " \
               "creater signed it. Use it anyway?"
             ), file: name, found: found_digest, expected: expected_digest
           )
@@ -137,12 +127,6 @@ module Agama
         end
 
       private
-
-        # @return [Agama::DBus::Clients::Questions]
-        attr_reader :questions_client
-
-        # @return [Logger]
-        attr_reader :logger
 
         # helper to strip download path. It uses internal knowledge that download
         # prefix ends in TmpDir.* zypp location
