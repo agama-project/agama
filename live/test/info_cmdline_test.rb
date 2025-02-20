@@ -19,7 +19,7 @@ describe "info-cmdline-conf.sh" do
         expected = File.read(expected_path)
         result = File.read(target_path)
         expect(result).to eq expected
-        expect(File.exists?(info_path)).to eq false
+        expect(File.exist?(info_path)).to eq false
       end
     end
   end
