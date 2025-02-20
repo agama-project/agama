@@ -33,17 +33,17 @@ module Agama
         def setup
           Yast::Pkg.CallbackAcceptFileWithoutChecksum(
             Yast::FunRef.new(
-              :accept_file_without_checksum, "boolean (string)"
+              method(:accept_file_without_checksum), "boolean (string)"
             )
           )
           Yast::Pkg.CallbackAcceptUnknownDigest(
             Yast::FunRef.new(
-              :accept_unknown_digest, "boolean (string, string)"
+              method(:accept_unknown_digest), "boolean (string, string)"
             )
           )
           Yast::Pkg.CallbackAcceptWrongDigest(
             Yast::FunRef.new(
-              :accept_wrong_digest, "boolean (string, string, string)"
+              method(:accept_wrong_digest), "boolean (string, string, string)"
             )
           )
         end
