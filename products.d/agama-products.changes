@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 20 13:13:18 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- drop sles_sap for aarch64 (bsc#1236370#c8)
+
+-------------------------------------------------------------------
 Wed Feb 19 14:16:28 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add sudo-policy-wheel-auth-self package as mandatory for products
