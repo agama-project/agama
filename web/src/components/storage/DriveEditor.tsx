@@ -29,7 +29,7 @@ import { useAvailableDevices, useVolume } from "~/queries/storage";
 import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useDrive, usePartition } from "~/queries/storage/config-model";
+import { useDrive } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { typeDescription, contentDescription } from "~/components/storage/utils/device";
@@ -550,10 +550,13 @@ const PartitionsNoContentSelector = ({ drive, toggleAriaLabel }) => {
   );
 };
 
-const PartitionMenuItem = ({ driveName, mountPath, description }) => {
-  const { delete: deletePartition } = usePartition(driveName, mountPath);
+const PartitionMenuItem = ({ driveName, mountPath }) => {
+  const navigate = useNavigate();
+  const drive = useDrive(driveName);
+  const partition = drive.getPartition(mountPath);
   const volume = useVolume(mountPath);
   const isRequired = volume.outline?.required || false;
+  const description = partition ? partitionUtils.typeWithSize(partition) : null;
 
   return (
     <MenuItem
@@ -567,6 +570,14 @@ const PartitionMenuItem = ({ driveName, mountPath, description }) => {
             icon={<Icon name="edit_square" aria-label={"Edit"} />}
             actionId={`edit-${mountPath}`}
             aria-label={`Edit ${mountPath}`}
+            onClick={() =>
+              navigate(
+                generatePath(PATHS.editPartition, {
+                  id: baseName(driveName),
+                  partitionId: encodeURIComponent(mountPath),
+                }),
+              )
+            }
           />
           {!isRequired && (
             <MenuItemAction
@@ -574,7 +585,7 @@ const PartitionMenuItem = ({ driveName, mountPath, description }) => {
               icon={<Icon name="delete" aria-label={"Delete"} />}
               actionId={`delete-${mountPath}`}
               aria-label={`Delete ${mountPath}`}
-              onClick={deletePartition}
+              onClick={() => drive.deletePartition(mountPath)}
             />
           )}
         </>
@@ -622,7 +633,6 @@ const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
                       key={partition.mountPath}
                       driveName={drive.name}
                       mountPath={partition.mountPath}
-                      description={partitionUtils.typeWithSize(partition)}
                     />
                   );
                 })}

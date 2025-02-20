@@ -57,6 +57,10 @@ const routes = (): Route => ({
       element: <PartitionPage />,
     },
     {
+      path: PATHS.editPartition,
+      element: <PartitionPage />,
+    },
+    {
       path: PATHS.iscsi,
       element: <ISCSIPage />,
       handle: { name: N_("iSCSI") },

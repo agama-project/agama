@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { plainRender, mockNavigateFn } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
 import * as ConfigModel from "~/api/storage/types/config-model";
 import { StorageDevice } from "~/types/storage";
@@ -161,6 +161,7 @@ const drive2: ConfigModel.Drive = {
 };
 
 const mockDeleteDrive = jest.fn();
+const mockGetPartition = jest.fn();
 const mockDeletePartition = jest.fn();
 
 jest.mock("~/queries/storage", () => ({
@@ -173,8 +174,11 @@ jest.mock("~/queries/storage", () => ({
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
   useConfigModel: () => ({ drives: [drive1, drive2] }),
-  useDrive: () => ({ delete: mockDeleteDrive }),
-  usePartition: () => ({ delete: mockDeletePartition }),
+  useDrive: () => ({
+    delete: mockDeleteDrive,
+    getPartition: mockGetPartition,
+    deletePartition: mockDeletePartition,
+  }),
 }));
 
 describe("PartitionMenuItem", () => {
@@ -201,6 +205,19 @@ describe("PartitionMenuItem", () => {
       name: "Delete /",
     });
     expect(deleteRootButton).not.toBeInTheDocument();
+  });
+
+  it("allows users to edit a partition", async () => {
+    const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
+
+    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
+    await user.click(partitionsButton);
+    const partitionsMenu = screen.getByRole("menu");
+    const editSwapButton = within(partitionsMenu).getByRole("menuitem", {
+      name: "Edit swap",
+    });
+    await user.click(editSwapButton);
+    expect(mockNavigateFn).toHaveBeenCalledWith("/storage/sda/edit-partition/swap");
   });
 });
 
