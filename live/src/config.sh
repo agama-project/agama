@@ -90,6 +90,9 @@ echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
 echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
+# decrease the kernel logging on the console, use a dracut module to do it early in the boot process
+echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
+
 # add xhci-pci-renesas to initrd if available (workaround for bsc#1237235)
 # FIXME: remove when the module is included in the default driver list in
 # in /usr/lib/dracut/modules.d/90kernel-modules/module-setup.sh, see
