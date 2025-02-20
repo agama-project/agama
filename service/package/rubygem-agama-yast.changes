@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 20 14:23:49 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed a bug in the storage model conversion that was causing some
+  partition sizes to be reset (gh#openSUSE/agama#2036).
+
+-------------------------------------------------------------------
 Thu Feb 20 12:56:13 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Introduce the storage model to support the new storage user
