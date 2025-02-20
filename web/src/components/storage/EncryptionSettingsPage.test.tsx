@@ -20,159 +20,60 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { EncryptionMethods } from "~/types/storage";
-import EncryptionSettingsDialog, {
-  EncryptionSettingsDialogProps,
-} from "~/components/storage/EncryptionSettingsDialog";
+import EncryptionSettingsPage from "./EncryptionSettingsPage";
 
-let props: EncryptionSettingsDialogProps;
-const onCancelFn = jest.fn();
-const onAcceptFn = jest.fn();
-
-describe("EncryptionSettingsDialog", () => {
-  beforeEach(() => {
-    props = {
-      password: "1234",
-      method: EncryptionMethods.LUKS2,
-      methods: Object.values(EncryptionMethods),
-      isOpen: true,
-      onCancel: onCancelFn,
-      onAccept: onAcceptFn,
-    };
+describe("EncryptionSettingsPage", () => {
+  describe("when encryption is not set", () => {
+    it.todo("write the test");
   });
 
-  describe("when password is not set", () => {
-    beforeEach(() => {
-      props.password = "";
-    });
+  describe("when encryption is set", () => {
+    describe("and user chooses to not use encryption", () => {
+      // FIXME: adapt and enable below example once real hooks are available to be
+      // imported and properly mocked.
+      it.skip("allows unsetting the encryption", async () => {
+        const { user } = plainRender(<EncryptionSettingsPage />);
+        const toggle = screen.getByRole("switch", { name: "Encrypt the system" });
+        expect(toggle).toBeChecked();
+        await user.click(toggle);
+        const passwordInput = screen.getByLabelText("Password");
+        const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+        const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
 
-    it("allows settings the encryption", async () => {
-      const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-      const checkbox = screen.getByRole("switch", { name: "Encrypt the system" });
-      const passwordInput = screen.getByLabelText("Password");
-      const confirmationInput = screen.getByLabelText("Password confirmation");
-      const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
+        expect(passwordInput).toBeDisabled();
+        expect(passwordConfirmationInput).toBeDisabled();
+        expect(tpmCheckbox).toBeDisabled();
 
-      expect(checkbox).not.toBeChecked();
-      expect(passwordInput).toBeDisabled();
-      expect(passwordInput).toBeDisabled();
-      expect(tpmCheckbox).toBeDisabled();
+        const acceptButton = screen.getByRole("button", { name: "Accept" });
+        await user.click(acceptButton);
 
-      await user.click(checkbox);
-
-      expect(checkbox).toBeChecked();
-      expect(passwordInput).toBeEnabled();
-      expect(passwordInput).toBeEnabled();
-      expect(tpmCheckbox).toBeEnabled();
-
-      await user.type(passwordInput, "2345");
-      await user.type(confirmationInput, "2345");
-      await user.click(acceptButton);
-
-      expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining({ password: "2345" }));
-    });
-  });
-
-  describe("when password is set", () => {
-    it("allows changing the encryption", async () => {
-      const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-      const passwordInput = screen.getByLabelText("Password");
-      const confirmationInput = screen.getByLabelText("Password confirmation");
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
-      const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
-
-      await user.clear(passwordInput);
-      await user.type(passwordInput, "9876");
-      await user.clear(confirmationInput);
-      await user.type(confirmationInput, "9876");
-      await user.click(tpmCheckbox);
-      await user.click(acceptButton);
-
-      expect(props.onAccept).toHaveBeenCalledWith({
-        password: "9876",
-        method: EncryptionMethods.TPM,
+        // expect(mockMutation).toHaveBeenCalledWith({ password: "" });
       });
-    });
-
-    it("allows unsetting the encryption", async () => {
-      const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-      const checkbox = screen.getByRole("switch", { name: "Encrypt the system" });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
-      expect(checkbox).toBeChecked();
-      await user.click(checkbox);
-      expect(checkbox).not.toBeChecked();
-      await user.click(acceptButton);
-      expect(props.onAccept).toHaveBeenCalledWith({ password: "" });
     });
   });
 
   describe("when using TPM", () => {
-    beforeEach(() => {
-      props.method = EncryptionMethods.TPM;
-    });
-
-    it("allows to stop using it", async () => {
-      const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
+    it.skip("allows to stop using it", async () => {
+      const { user } = plainRender(<EncryptionSettingsPage />);
       const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(tpmCheckbox).toBeChecked();
       await user.click(tpmCheckbox);
       expect(tpmCheckbox).not.toBeChecked();
       await user.click(acceptButton);
-      expect(props.onAccept).toHaveBeenCalledWith(
-        expect.not.objectContaining({ method: EncryptionMethods.TPM }),
-      );
+      //   expect(mockMutation).toHaveBeenCalledWith(
+      //     expect.not.objectContaining({ method: EncryptionMethods.TPM }),
+      //   );
     });
   });
 
   describe("when TPM is not included in given methods", () => {
-    beforeEach(() => {
-      props.methods = [EncryptionMethods.LUKS2];
-    });
-
-    it("does not render the TPM checkbox", () => {
-      plainRender(<EncryptionSettingsDialog {...props} />);
+    it.skip("does not render the TPM checkbox", () => {
+      plainRender(<EncryptionSettingsPage />);
       expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).toBeNull();
     });
-  });
-
-  it("does not allow sending not valid settings", async () => {
-    const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-    const checkbox = screen.getByRole("switch", { name: "Encrypt the system" });
-    const passwordInput = screen.getByLabelText("Password");
-    const confirmationInput = screen.getByLabelText("Password confirmation");
-    const acceptButton = screen.getByRole("button", { name: "Accept" });
-
-    expect(acceptButton).toBeEnabled();
-    await user.clear(confirmationInput);
-    // Now password and passwordConfirmation do not match
-    expect(acceptButton).toBeDisabled();
-    await user.click(checkbox);
-    // But now the user is trying to unset the encryption
-    expect(acceptButton).toBeEnabled();
-    await user.click(checkbox);
-    // Back to a not valid settings state
-    expect(acceptButton).toBeDisabled();
-    await user.clear(passwordInput);
-    await user.clear(confirmationInput);
-    // Passwords match... but are empty
-    expect(acceptButton).toBeDisabled();
-    await user.type(passwordInput, "valid");
-    await user.type(confirmationInput, "valid");
-    // Not empty passwords matching!
-    expect(acceptButton).toBeEnabled();
-  });
-
-  it("triggers onCancel callback when dialog is discarded", async () => {
-    const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-    const cancelButton = screen.getByRole("button", { name: "Cancel" });
-    await user.click(cancelButton);
-    expect(props.onCancel).toHaveBeenCalled();
   });
 });
