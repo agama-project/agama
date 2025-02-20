@@ -15,7 +15,7 @@ get_agama_args() {
       _found=1
       _env=1
       ;;
-    agama*)
+    inst* | agama*)
       _found=1
       ;;
     esac

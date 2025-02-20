@@ -9,7 +9,7 @@ TARGET="${1:-/run/agama/cmdline.d/agama.conf}"
 INFO_CONTENT="${2:-/run/agama/cmdline.d/info.conf}"
 
 expand_info_arg() {
-  INFO_URL=$(sed -n 's/\(.*[[:space:]]\|^\)agama\.info=\([^[:space:]]\+\).*/\2/p' "$TARGET")
+  INFO_URL=$(sed -n 's/\(.*[[:space:]]\|^\)\(inst\|agama\)\.info=\([^[:space:]]\+\).*/\2/p' "$TARGET")
   if [ -z "${INFO_URL}" ]; then
     return 0
   fi
@@ -18,7 +18,7 @@ expand_info_arg() {
   # if so check with security team
   curl --location --silent "${INFO_URL}" > "${INFO_CONTENT}"
   # remove info param
-  sed -in 's/\([[:space:]]\|^\)agama\.info=[^[:space:]]\+//' "${TARGET}"
+  sed -in 's/\([[:space:]]\|^\)\(inst\|agama\)\.info=[^[:space:]]\+//' "${TARGET}"
   # and add content of info file
   cat "${INFO_CONTENT}" >> "${TARGET}"
 
