@@ -56,6 +56,7 @@ import { useDASDSupported } from "~/queries/storage/dasd";
 import { useSystemErrors, useConfigErrors } from "~/queries/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
+import EncryptionSection from "./EncryptionSection";
 
 function InvalidConfigEmptyState(): React.ReactNode {
   const errors = useConfigErrors("storage");
@@ -185,26 +186,31 @@ function ProposalSections(): React.ReactNode {
       <ProposalFailedInfo />
       <UnsupportedModelInfo />
       {model && (
-        <GridItem sm={12}>
-          <Page.Section
-            title={_("Installation Devices")}
-            description={_(
-              "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
-            )}
-            actions={
-              <>
-                <SplitItem>
-                  <ConfigEditorMenu />
-                </SplitItem>
-                <SplitItem>
-                  <AddExistingDeviceMenu />
-                </SplitItem>
-              </>
-            }
-          >
-            <ConfigEditor />
-          </Page.Section>
-        </GridItem>
+        <>
+          <GridItem sm={8}>
+            <Page.Section
+              title={_("Installation Devices")}
+              description={_(
+                "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+              )}
+              actions={
+                <>
+                  <SplitItem>
+                    <ConfigEditorMenu />
+                  </SplitItem>
+                  <SplitItem>
+                    <AddExistingDeviceMenu />
+                  </SplitItem>
+                </>
+              }
+            >
+              <ConfigEditor />
+            </Page.Section>
+          </GridItem>
+          <GridItem sm={4}>
+            <EncryptionSection />
+          </GridItem>
+        </>
       )}
       {hasResult && <ProposalResultSection />}
     </Grid>
