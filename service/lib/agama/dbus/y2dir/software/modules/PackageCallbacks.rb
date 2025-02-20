@@ -34,7 +34,7 @@ module Yast
     def InitPackageCallbacks(logger = nil)
       @logger = logger || ::Logger.new($stdout)
 
-      Agama::Software::Callbacks::Signature.new(
+      Agama::Software::Callbacks::Digest.new(
         questions_client, logger
       ).setup
 
@@ -43,6 +43,14 @@ module Yast
       ).setup
 
       Agama::Software::Callbacks::Provide.new(
+        questions_client, logger
+      ).setup
+
+      Agama::Software::Callbacks::Signature.new(
+        questions_client, logger
+      ).setup
+
+      Agama::Software::Callbacks::Script.new(
         questions_client, logger
       ).setup
     end

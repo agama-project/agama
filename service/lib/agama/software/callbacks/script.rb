@@ -44,7 +44,7 @@ module Agama
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackScriptProblem(
-            Yast::FunRef.new(method(:ScriptProblem), "string (string)")
+            Yast::FunRef.new(method(:script_problem), "string (string)")
           )
         end
 
