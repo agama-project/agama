@@ -65,7 +65,7 @@ describe Agama::Software::Callbacks::Signature do
 
       it "includes the name and the URL in the question" do
         expect(questions_client).to receive(:ask) do |question|
-          expect(question.text).to include("OSS (http://localhost/repo)")
+          expect(question.text).to include("repomd.xml from http://localhost/repo")
         end
 
         expect(subject.accept_unsigned_file("repomd.xml", 1))
@@ -149,7 +149,7 @@ describe Agama::Software::Callbacks::Signature do
 
       it "includes the name and the URL in the question" do
         expect(questions_client).to receive(:ask) do |question|
-          expect(question.text).to include("OSS (http://localhost/repo)")
+          expect(question.text).to include("repomd.xml from http://localhost/repo")
         end
 
         expect(subject.accept_unknown_gpg_key("repomd.xml", "KEYID", 1))

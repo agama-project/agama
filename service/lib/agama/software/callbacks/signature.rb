@@ -55,12 +55,20 @@ module Agama
         # @param filename [String] File name
         # @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
         def accept_unsigned_file(filename, repo_id)
-          source = build_source(filename, repo_id)
-          message = format(
-            _("%{source} is not digitally signed. The origin and integrity of the " \
-              "file cannot be verified. Use it anyway?"),
-            source: source
-          )
+          repo = Yast::Pkg.SourceGeneralData(repo_id)
+          message = if repo
+            format(
+              _("The file %{filename} from %{repo_url} is not digitally signed. The origin " \
+                "and integrity of the file cannot be verified. Use it anyway?"),
+              filename: filename, repo_url: repo["url"]
+            )
+          else
+            format(
+              _("The file %{filename} is not digitally signed. The origin " \
+                "and integrity of the file cannot be verified. Use it anyway?"),
+              filename: filename
+            )
+          end
 
           question = Agama::Question.new(
             qclass:         "software.unsigned_file",
@@ -109,12 +117,20 @@ module Agama
         # @param key_id [String] Key ID.
         # @param repo_id [String] Repository ID.
         def accept_unknown_gpg_key(filename, key_id, repo_id)
-          source = build_source(filename, repo_id)
-          message = format(
-            _("%{source} is digitally signed with the following unknown GnuPG key: " \
-              "%{key_id}. Use it anyway?"),
-            source: source, key_id: key_id
-          )
+          repo = Yast::Pkg.SourceGeneralData(repo_id)
+          message = if repo
+            format(
+              _("The file %{filename} from %{repo_url} is digitally signed with " \
+                "the following unknown GnuPG key: %{key_id}. Use it anyway?"),
+              filename: filename, repo_url: repo["url"], key_id: key_id
+            )
+          else
+            format(
+              _("The file %{filename} is digitally signed with " \
+                "the following unknown GnuPG key: %{key_id}. Use it anyway?"),
+              filename: filename, key_id: key_id
+            )
+          end
 
           question = Agama::Question.new(
             qclass:         "software.unknown_gpg",
@@ -138,12 +154,22 @@ module Agama
         # @param key [Hash] GPG key data (id, name, fingerprint, etc.)
         # @param repo_id [Integer] Repository ID
         def accept_verification_failed(filename, key, repo_id)
-          source = build_source(filename, repo_id)
-          message = format(
-            _("%{source} is signed with the following GnuPG key, but the integrity check failed: " \
-              "%{key_id} (%{key_name}). Use it anyway?"),
-            source: source, key_id: key["id"], key_name: key["name"]
-          )
+          repo = Yast::Pkg.SourceGeneralData(repo_id)
+          message = if repo
+            format(
+              _("The file %{filename} from %{repo_url} is digitally signed with the " \
+                "following GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). " \
+                "Use it anyway?"),
+              filename: filename, repo_url: repo["url"], key_id: key["id"], key_name: key["name"]
+            )
+          else
+            format(
+              _("The file %{filename} is digitally signed with the " \
+                "following GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). " \
+                "Use it anyway?"),
+              filename: filename, key_id: key["id"], key_name: key["name"]
+            )
+          end
 
           question = Agama::Question.new(
             qclass:         "software.unsigned_file",
@@ -158,23 +184,6 @@ module Agama
         end
 
       private
-
-        # Builds the file source description
-        #
-        # @param filename [String] File name
-        # @param repo_id [Integer] Repository ID
-        # @return [String]
-        def build_source(filename, repo_id)
-          repo = Yast::Pkg.SourceGeneralData(repo_id)
-          if repo
-            format(
-              _("The file %{filename} from repository %{repo_name} (%{repo_url})"),
-              filename: filename, repo_name: repo["name"], repo_url: repo["url"]
-            )
-          else
-            format(_("The file %{filename}"), filename: filename)
-          end
-        end
 
         # label for the "trust" action
         def trust_label
