@@ -97,14 +97,14 @@ fi
 
 menuentry "Install $label" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux loglevel=4
+  linux /boot/ppc64le/linux
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }
 
 menuentry "Check Installation Medium" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux loglevel=4 mediacheck=1 plymouth.enable=0
+  linux /boot/ppc64le/linux mediacheck=1 plymouth.enable=0
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }
