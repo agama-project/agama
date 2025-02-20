@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import { redirect } from "react-router-dom";
 import { N_ } from "~/i18n";
 import { Route } from "~/types/routes";
 import BootSelection from "~/components/storage/BootSelection";
+import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
@@ -47,6 +48,10 @@ const routes = (): Route => ({
     {
       path: PATHS.bootDevice,
       element: <BootSelection />,
+    },
+    {
+      path: PATHS.encryption,
+      element: <EncryptionSettingsPage />,
     },
     {
       path: PATHS.findSpace,
