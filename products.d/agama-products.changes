@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 20 13:13:18 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- drop sles_sap for aarch64 (bsc#1236370#c8)
+
+-------------------------------------------------------------------
 Thu Feb 20 12:53:13 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adjust product name of sles_sap_160 and some sizes for the
