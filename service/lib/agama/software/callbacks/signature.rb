@@ -151,8 +151,9 @@ module Agama
         def accept_verification_failed(filename, key, repo_id)
           source = build_source(filename, repo_id)
           message = format(
-            _("%{source} is signed with the following GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
-             ), source: source, key_id: key["id"], key_name: key["name"]
+            _("%{source} is signed with the following GnuPG key, but the integrity check failed: " \
+              "%{key_id} (%{key_name}). Use it anyway?"),
+            source: source, key_id: key["id"], key_name: key["name"]
           )
 
           question = Agama::Question.new(
