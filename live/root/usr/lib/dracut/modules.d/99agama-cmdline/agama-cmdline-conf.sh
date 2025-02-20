@@ -27,7 +27,7 @@ get_agama_args() {
       fi
       echo $_i >>"${TARGET}"
       if [ -n "$_env" ]; then
-        _i=$(echo "$_i" | tr '[:lower:].-' '[:upper:]__'
+        _i=$(echo "$_i" | tr '[:lower:].-' '[:upper:]__')
         echo $_i >>"${ENV_TARGET}"
       fi
     fi
