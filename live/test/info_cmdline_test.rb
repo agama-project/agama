@@ -1,5 +1,6 @@
 #! /usr/bin/rspec
 require "tmpdir"
+require "cheetah"
 
 describe "info-cmdline-conf.sh" do
   let(:script_path) { File.expand_path("../root/usr/bin/info-cmdline-conf.sh", __dir__, ) }
@@ -14,13 +15,11 @@ describe "info-cmdline-conf.sh" do
         target_path = File.join(tmpdir, "cmdline")
         FileUtils.cp(source_path, target_path)
         info_path = File.join(tmpdir, "cmdline.info")
-        command = "#{script_path} #{target_path} #{info_path}"
-        cmd_result = system(command)
-        expect(cmd_result).to eq true
+        Cheetah.run(script_path, target_path, info_path)
         expected = File.read(expected_path)
         result = File.read(target_path)
         expect(result).to eq expected
-        expect(File.exists?(info_path)).to eq false
+        expect(File.exist?(info_path)).to eq false
       end
     end
   end
@@ -35,9 +34,7 @@ describe "info-cmdline-conf.sh" do
         target_path = File.join(tmpdir, "cmdline")
         FileUtils.cp(source_path, target_path)
         info_path = File.join(tmpdir, "cmdline.info")
-        command = "#{script_path} #{target_path} #{info_path}"
-        cmd_result = system(command)
-        expect(cmd_result).to eq true
+        Cheetah.run(script_path, target_path, info_path)
         expected = File.read(expected_path)
         result = File.read(target_path)
         expect(result).to eq expected

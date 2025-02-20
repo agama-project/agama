@@ -6,6 +6,9 @@
 
 TARGET="${1:-/run/agama/cmdline.d/agama.conf}"
 ENV_TARGET="${1:-/run/agama/environment.conf}"
+mkdir -p "/run/agama/cmdline.d"
+echo -n "" >> "$TARGET"
+echo -n "" >> "$ENV_TARGET"
 get_agama_args() {
   local _i _found _env
 
@@ -15,7 +18,7 @@ get_agama_args() {
       _found=1
       _env=1
       ;;
-    inst* | agama*)
+    agama* | live* | inst*)
       _found=1
       ;;
     esac

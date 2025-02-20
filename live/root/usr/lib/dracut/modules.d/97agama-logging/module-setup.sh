@@ -16,6 +16,5 @@ installkernel() {
 
 # called by dracut
 install() {
-  inst_hook cmdline 99 "$moddir/agama-cmdline-conf.sh"
-  inst_hook cmdline 99 "$moddir/agama-network-compat.sh"
+  inst_hook cmdline 97 "$moddir/agama-logging.sh"
 }

@@ -52,5 +52,10 @@ describe Agama::CmdlineArgs do
       args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
       expect(args.data["install_url"]).to eq("cd:/?devices=/dev/sr1")
     end
+
+    it "properly parse values starting with inst" do
+      args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
+      expect(args.data["install_url"]).to eq("cd:/?devices=/dev/sr1")
+    end
   end
 end
