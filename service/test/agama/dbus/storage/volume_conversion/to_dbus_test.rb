@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -117,7 +117,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         "MountOptions"  => ["rw", "default"],
         "TargetDevice"  => "/dev/sda",
         "Target"        => "new_partition",
-        "FsType"        => "Ext4",
+        "FsType"        => "ext4",
         "MinSize"       => 2048,
         "MaxSize"       => 4096,
         "AutoSize"      => true,
@@ -125,7 +125,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         "Transactional" => true,
         "Outline"       => {
           "Required"              => true,
-          "FsTypes"               => ["Ext3", "Ext4"],
+          "FsTypes"               => ["ext3", "ext4"],
           "AdjustByRam"           => true,
           "SupportAutoSize"       => true,
           "SnapshotsConfigurable" => true,
