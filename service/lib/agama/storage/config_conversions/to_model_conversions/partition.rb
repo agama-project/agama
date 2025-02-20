@@ -58,15 +58,17 @@ module Agama
 
           # @return [Booelan]
           def convert_resize
-            size = config.size
+            return false unless config.found_device
 
+            size = config.size
             !size.nil? && !size.default? && size.min == size.max
           end
 
           # @return [Booelan]
           def convert_resize_if_needed
-            size = config.size
+            return false unless config.found_device
 
+            size = config.size
             !size.nil? && !size.default? && size.min != size.max
           end
         end
