@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,83 +20,80 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
-import React, { useEffect, useState, useRef } from "react";
-import { Checkbox, Form, Switch, Stack } from "@patternfly/react-core";
-import { _ } from "~/i18n";
-import { PasswordAndConfirmationInput, Popup } from "~/components/core";
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { ActionGroup, Alert, Checkbox, Content, Form, Stack, Switch } from "@patternfly/react-core";
+import { Page, PasswordAndConfirmationInput } from "~/components/core";
 import { EncryptionMethods } from "~/types/storage";
+import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
+import { isEmpty } from "~/utils";
+import { _ } from "~/i18n";
 
-export type EncryptionSetting = {
+// FIXME: temporary "mocks", please remove them after importing real code.
+type Methods = (typeof EncryptionMethods)[keyof typeof EncryptionMethods];
+
+type EncryptionHook = {
+  mode: string;
   password: string;
-  method?: string;
+  method: Methods;
+  methods: Methods[];
 };
 
-export type EncryptionSettingsDialogProps = {
-  password: string;
-  method: string;
-  methods: string[];
-  isOpen?: boolean;
-  isLoading?: boolean;
-  onCancel: () => void;
-  onAccept: (settings: EncryptionSetting) => void;
+const useEncryption = (): EncryptionHook => ({
+  mode: "disabled",
+  password: "s3cr3t",
+  method: EncryptionMethods.LUKS2,
+  methods: Object.values(EncryptionMethods),
+});
+const useEncryptionMutation = () => {
+  console.info("Do not forget to replace this hook mock with real code.");
+
+  return { mutate: async (args) => console.log("Performing a mutation with", args) };
 };
+// FIXME: read above ^^^
 
 /**
- * Renders a dialog that allows the user change encryption settings
- * @component
+ * Renders a form that allows the user change encryption settings
  */
-export default function EncryptionSettingsDialog({
-  password: passwordProp,
-  method: methodProp,
-  methods,
-  isOpen = false,
-  isLoading = false,
-  onCancel,
-  onAccept,
-}: EncryptionSettingsDialogProps) {
-  const [isEnabled, setIsEnabled] = useState(passwordProp?.length > 0);
-  const [password, setPassword] = useState(passwordProp);
-  const [method, setMethod] = useState(methodProp);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const [validSettings, setValidSettings] = useState(true);
-  const [wasLoading, setWasLoading] = useState(isLoading);
-  const passwordRef = useRef();
+export default function EncryptionSettingsDialog() {
+  const navigate = useNavigate();
+  const encryption = useEncryption();
+  const { mutate: updateEncryption } = useEncryptionMutation();
+  const [errors, setErrors] = useState([]);
+  const [isEnabled, setIsEnabled] = useState(encryption.password.length > 0);
+  const [password, setPassword] = useState(encryption.password);
+  const [method, setMethod] = useState(encryption.method);
+  const passwordRef = useRef<HTMLInputElement>();
   const formId = "encryptionSettingsForm";
 
-  // reset the settings only after loading is finished
-  if (isLoading && !wasLoading) {
-    setWasLoading(true);
-  }
-  if (!isLoading && wasLoading) {
-    setWasLoading(false);
-    // refresh the state when the real values are loaded
-    if (method !== methodProp) {
-      setMethod(methodProp);
-    }
-    if (password !== passwordProp) {
-      setPassword(passwordProp);
-      setIsEnabled(passwordProp?.length > 0);
-    }
-  }
-
-  useEffect(() => {
-    setValidSettings(!isEnabled || (password.length > 0 && passwordsMatch));
-  }, [isEnabled, password, passwordsMatch]);
-
-  const changePassword = (_, v) => setPassword(v);
+  const onPasswordChange = (_, v) => setPassword(v);
   const changeMethod = (_, useTPM) =>
     setMethod(useTPM ? EncryptionMethods.TPM : EncryptionMethods.LUKS2);
 
   const submitSettings = (e) => {
     e.preventDefault();
 
+    const nextErrors = [];
+    setErrors([]);
+
+    const passwordInput = passwordRef.current;
+
     if (isEnabled) {
-      onAccept({ password, method });
-    } else {
-      onAccept({ password: "" });
+      isEmpty(password) && nextErrors.push(_("Password is empty."));
+      !passwordInput?.validity.valid && nextErrors.push(passwordInput?.validationMessage);
     }
+
+    if (nextErrors.length > 0) {
+      setErrors(nextErrors);
+      return;
+    }
+
+    // FIXME: improve once the real hook is imported.
+    const data = isEnabled ? { password, method } : { password: "" };
+
+    updateEncryption(data)
+      .then(() => navigate(".."))
+      .catch((e) => setErrors([e.response.data]));
   };
 
   // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
@@ -111,34 +108,46 @@ TPM can verify the integrity of the system. TPM sealing requires the new system 
 directly on its first run.",
   );
 
-  const tpmAvailable = methods.includes(EncryptionMethods.TPM);
+  const tpmAvailable = encryption.methods.includes(EncryptionMethods.TPM);
 
   return (
-    <Popup
-      title={_("Encryption")}
-      description={_(
-        "Full Disk Encryption (FDE) allows to protect the information stored \
+    <Page>
+      <Page.Header>
+        <Content component="h2">{_("Encryption settings")}</Content>
+        <Content component="small">
+          {_(
+            "Full Disk Encryption (FDE) allows to protect the information stored \
 at the device, including data, programs, and system files.",
-      )}
-      isOpen={isOpen}
-      isLoading={isLoading}
-    >
-      <Stack hasGutter>
-        <Switch
-          label={_("Encrypt the system")}
-          isChecked={isEnabled}
-          onChange={() => setIsEnabled(!isEnabled)}
-        />
-        <Form id={formId} onSubmit={submitSettings}>
-          <PasswordAndConfirmationInput
-            inputRef={passwordRef}
-            value={password}
-            onChange={changePassword}
-            onValidation={setPasswordsMatch}
-            isDisabled={!isEnabled}
+          )}
+        </Content>
+      </Page.Header>
+
+      <Page.Content>
+        <Form id={formId} onSubmit={submitSettings} isWidthLimited maxWidth="fit-content">
+          {errors.length > 0 && (
+            <Alert variant="warning" isInline title={_("Something went wrong")}>
+              {errors.map((e, i) => (
+                <p key={`error_${i}`}>{e}</p>
+              ))}
+            </Alert>
+          )}
+          <Switch
+            label={_("Encrypt the system")}
+            isChecked={isEnabled}
+            onChange={() => setIsEnabled(!isEnabled)}
           />
+          <Stack className={sizingStyles.w_50OnLg} hasGutter>
+            <PasswordAndConfirmationInput
+              inputRef={passwordRef}
+              value={password}
+              onChange={onPasswordChange}
+              isDisabled={!isEnabled}
+              showErrors={false}
+            />
+          </Stack>
           {tpmAvailable && (
             <Checkbox
+              className={sizingStyles.w_50OnLg}
               id="tpm_encryption_method"
               label={tpm_label}
               description={tpm_explanation}
@@ -147,14 +156,12 @@ at the device, including data, programs, and system files.",
               onChange={changeMethod}
             />
           )}
+          <ActionGroup>
+            <Page.Submit form={formId} />
+            <Page.Cancel />
+          </ActionGroup>
         </Form>
-      </Stack>
-      <Popup.Actions>
-        <Popup.Confirm form={formId} type="submit" isDisabled={!validSettings}>
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onCancel} />
-      </Popup.Actions>
-    </Popup>
+      </Page.Content>
+    </Page>
   );
 }
