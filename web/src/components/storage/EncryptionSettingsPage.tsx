@@ -107,7 +107,7 @@ directly on its first run.",
         <Content component="small">
           {_(
             "Full Disk Encryption (FDE) allows to protect the information stored \
-at the device, including data, programs, and system files.",
+at the new file systems, including data, programs, and system files.",
           )}
         </Content>
       </Page.Header>
@@ -126,7 +126,7 @@ at the device, including data, programs, and system files.",
             isChecked={isEnabled}
             onChange={() => setIsEnabled(!isEnabled)}
           />
-          <Stack className={sizingStyles.w_50OnLg} hasGutter>
+          <Stack className={isTpmAvailable && sizingStyles.w_50OnLg} hasGutter>
             <PasswordAndConfirmationInput
               inputRef={passwordRef}
               initialValue={encryptionConfig?.password}
