@@ -4,6 +4,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+export type EncryptionMethod =
+  | "luks1"
+  | "luks2"
+  | "pervasiveLuks2"
+  | "tpmFde"
+  | "protectedSwap"
+  | "secureSwap"
+  | "randomSwap";
 /**
  * Alias used to reference a device.
  */
@@ -34,6 +42,7 @@ export type PartitionId = "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "
  */
 export interface Config {
   boot?: Boot;
+  encryption?: Encryption;
   drives?: Drive[];
 }
 export interface Boot {
@@ -43,6 +52,10 @@ export interface Boot {
 export interface BootDevice {
   default: boolean;
   name?: string;
+}
+export interface Encryption {
+  method: EncryptionMethod;
+  password?: string;
 }
 export interface Drive {
   name: string;
