@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -719,6 +719,90 @@ describe Agama::Storage::ConfigConversions::ToModel do
             configure: false
           }
         )
+      end
+    end
+
+    context "if the root partition is encrypted" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  filesystem: { path: "/" },
+                  encryption: {
+                    luks1: { password: "12345" }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "generates the expected JSON for 'encryption'" do
+        encryption_model = subject.convert[:encryption]
+
+        expect(encryption_model).to eq(
+          {
+            method:   "luks1",
+            password: "12345"
+          }
+        )
+      end
+    end
+
+    context "if the root partition is not encrypted but other partition is encrypted" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  filesystem: { path: "/" }
+                },
+                {
+                  encryption: {
+                    luks1: { password: "12345" }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "generates the expected JSON for 'encryption'" do
+        encryption_model = subject.convert[:encryption]
+
+        expect(encryption_model).to eq(
+          {
+            method:   "luks1",
+            password: "12345"
+          }
+        )
+      end
+    end
+
+    context "if there is not an encrypted partition" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  filesystem: { path: "/" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "generates the expected JSON for 'encryption'" do
+        encryption_model = subject.convert[:encryption]
+
+        expect(encryption_model).to be_nil
       end
     end
 

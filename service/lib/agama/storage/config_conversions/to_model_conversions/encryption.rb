@@ -1,0 +1,65 @@
+# frozen_string_literal: true
+
+# Copyright (c) [2025] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+require "agama/storage/config_conversions/to_model_conversions/base"
+require "y2storage/encryption_method"
+
+module Agama
+  module Storage
+    module ConfigConversions
+      module ToModelConversions
+        # Encryption config conversion to model according to the JSON schema.
+        class Encryption < Base
+          # @param config [Configs::Encryption]
+          def initialize(config)
+            super()
+            @config = config
+          end
+
+        private
+
+          # @see Base#conversions
+          def conversions
+            {
+              method:   convert_method,
+              password: config.password
+            }
+          end
+
+          # @return [string]
+          def convert_method
+            method_conversions = {
+              Y2Storage::EncryptionMethod::LUKS1.id           => "luks1",
+              Y2Storage::EncryptionMethod::LUKS2.id           => "luks2",
+              Y2Storage::EncryptionMethod::PERVASIVE_LUKS2.id => "pervasiveLuks2",
+              Y2Storage::EncryptionMethod::TPM_FDE.id         => "tpmFde",
+              Y2Storage::EncryptionMethod::RANDOM_SWAP.id     => "randomSwap",
+              Y2Storage::EncryptionMethod::PROTECTED_SWAP.id  => "protectedSwap",
+              Y2Storage::EncryptionMethod::SECURE_SWAP.id     => "secureSwap"
+            }
+
+            method_conversions[config.method.id]
+          end
+        end
+      end
+    end
+  end
+end

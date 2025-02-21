@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,6 +24,7 @@ require "agama/storage/config_conversions/to_model_conversions/boot"
 require "agama/storage/config_conversions/to_model_conversions/boot_device"
 require "agama/storage/config_conversions/to_model_conversions/config"
 require "agama/storage/config_conversions/to_model_conversions/drive"
+require "agama/storage/config_conversions/to_model_conversions/encryption"
 require "agama/storage/config_conversions/to_model_conversions/filesystem"
 require "agama/storage/config_conversions/to_model_conversions/partition"
 require "agama/storage/config_conversions/to_model_conversions/size"

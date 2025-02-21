@@ -298,8 +298,7 @@ module Agama
         ].flatten
 
         encryptable_configs = [
-          config.drives,
-          config.partitions
+          config.drives
         ].flatten
 
         unsupported_configs.empty? && encryptable_configs.none?(&:encryption)
