@@ -4,14 +4,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type EncryptionMethod =
-  | "luks1"
-  | "luks2"
-  | "pervasiveLuks2"
-  | "tpmFde"
-  | "protectedSwap"
-  | "secureSwap"
-  | "randomSwap";
+export type EncryptionMethod = "luks1" | "luks2" | "tpmFde";
 /**
  * Alias used to reference a device.
  */

@@ -48,13 +48,9 @@ module Agama
           # @return [Y2Storage::EncryptionMethod::Base]
           def convert_method
             method_conversions = {
-              "luks1"          => Y2Storage::EncryptionMethod::LUKS1,
-              "luks2"          => Y2Storage::EncryptionMethod::LUKS2,
-              "pervasiveLuks2" => Y2Storage::EncryptionMethod::PERVASIVE_LUKS2,
-              "tpmFde"         => Y2Storage::EncryptionMethod::TPM_FDE,
-              "randomSwap"     => Y2Storage::EncryptionMethod::RANDOM_SWAP,
-              "protectedSwap"  => Y2Storage::EncryptionMethod::PROTECTED_SWAP,
-              "secureSwap"     => Y2Storage::EncryptionMethod::SECURE_SWAP
+              "luks1"  => Y2Storage::EncryptionMethod::LUKS1,
+              "luks2"  => Y2Storage::EncryptionMethod::LUKS2,
+              "tpmFde" => Y2Storage::EncryptionMethod::TPM_FDE
             }
 
             method_conversions[model_json[:method]]

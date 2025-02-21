@@ -47,16 +47,12 @@ module Agama
           # @return [string]
           def convert_method
             method_conversions = {
-              Y2Storage::EncryptionMethod::LUKS1.id           => "luks1",
-              Y2Storage::EncryptionMethod::LUKS2.id           => "luks2",
-              Y2Storage::EncryptionMethod::PERVASIVE_LUKS2.id => "pervasiveLuks2",
-              Y2Storage::EncryptionMethod::TPM_FDE.id         => "tpmFde",
-              Y2Storage::EncryptionMethod::RANDOM_SWAP.id     => "randomSwap",
-              Y2Storage::EncryptionMethod::PROTECTED_SWAP.id  => "protectedSwap",
-              Y2Storage::EncryptionMethod::SECURE_SWAP.id     => "secureSwap"
+              Y2Storage::EncryptionMethod::LUKS1.id   => "luks1",
+              Y2Storage::EncryptionMethod::LUKS2.id   => "luks2",
+              Y2Storage::EncryptionMethod::TPM_FDE.id => "tpmFde"
             }
 
-            method_conversions[config.method.id]
+            method_conversions[config.method.id] || "luks2"
           end
         end
       end

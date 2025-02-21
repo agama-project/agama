@@ -43,11 +43,7 @@
       "enum": [
         "luks1",
         "luks2",
-        "pervasiveLuks2",
-        "tpmFde",
-        "protectedSwap",
-        "secureSwap",
-        "randomSwap"
+        "tpmFde"
       ]
     },
     "drive": {
