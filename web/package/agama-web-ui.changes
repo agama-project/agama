@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 21 13:56:52 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Bring encryption section back to the proposal page
+  (gh#agama-project/agama#2031).
+
+-------------------------------------------------------------------
 Thu Feb 20 12:46:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Include the migration to PatternFly 6 made by dgonzalez@suse.com
