@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Feb 21 16:34:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- ISO size reduction, delete not needed packages (python, Mesa,
+  libyui-qt, Qt libs,...)
+- Use XZ compression for initrd to have a smaller image
+  (esp. important for PPC) (part of gh#agama-project/agama#2026)
+
+-------------------------------------------------------------------
 Fri Feb 21 16:03:42 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed broken "live.password_dialog" boot option
