@@ -164,6 +164,34 @@ rm -rf /usr/share/doc/packages/*
 du -h -s /usr/share/man
 rm -rf /usr/share/man/*
 
+# python is installed just because of few simple scripts /usr/sbin/bcache-status (bcache-tools package)
+# and /usr/sbin/xfs_protofile (xfsprogs package)
+# both are not used by libtorage-ng, yast2-storage-ng nor agama
+python=$(rpm -q --whatprovides python3-base || true)
+if [ -n "$python" ]; then
+  echo "Python package: $python"
+  python_deps=$(rpm -e "$python" 2>&1 || true)
+  # avoid removing python accidentally because of some new unknown dependency
+  python_deps=$(echo "$python_deps" | grep -v -e "Failed dependencies" -e "needed by .* libpython" -e "needed by .* bcache-tools" -e "needed by .* xfsprogs" || true)
+
+  if [ -z "$python_deps"]; then
+    echo "Removing Python..."
+    # remove libpython as well
+    rpm -e --nodeps "$python" $(rpm -qa | grep "^libpython3")
+  else
+    echo "Warning: Extra Python dependency detected:"
+    echo "$python_deps"
+    echo "Keeping the python packages installed"
+  fi
+fi
+
+# remove OpenGL support
+rpm -qa | grep ^Mesa | xargs rpm -e --nodeps
+
+# uninstall libyui-qt and libqt (pulled in by the YaST dependencies)
+rpm -q --whatprovides libyui-qt libyui-qt-pkg | xargs rpm -e --nodeps
+rpm -qa | grep ^libQt | xargs rpm -e --nodeps
+
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
 #
 # Agama does not use sound, added by icewm dependencies
@@ -193,6 +221,19 @@ du -h -s /lib/modules /lib/firmware
 # The rest of the file was copied from the openSUSE Tumbleweed Live ISO
 # https://build.opensuse.org/projects/openSUSE:Factory:Live/packages/livecd-tumbleweed-kde/files/config.sh?expand=1
 #
+
+# Stronger compression for the initrd
+echo 'compress="xz -9 --check=crc32 --memlimit-compress=50%"' >> /etc/dracut.conf.d/less-storage.conf
+
+# Kernel modules (+ firmware) for X13s
+if [ "$(arch)" == "aarch64" ]; then
+	echo 'add_drivers+=" clk-rpmh dispcc-sc8280xp gcc-sc8280xp gpucc-sc8280xp nvmem_qcom-spmi-sdam qcom_hwspinlock qcom_q6v5 qcom_q6v5_pas qnoc-sc8280xp pmic_glink pmic_glink_altmode smp2p spmi-pmic-arb leds-qcom-lpg "'  > /etc/dracut.conf.d/x13s_modules.conf
+	echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >> /etc/dracut.conf.d/x13s_modules.conf
+	echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >> /etc/dracut.conf.d/x13s_modules.conf
+fi
+
+# delete some AMD GPU firmware
+rm -rf /lib/firmware/amdgpu/{gc_,isp,psp}*
 
 # Decompress kernel modules, better for squashfs (boo#1192457)
 find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +
