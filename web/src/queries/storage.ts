@@ -35,6 +35,7 @@ import {
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
 import { config, ProductParams, Volume } from "~/api/storage/types";
+import { EncryptionMethod } from "~/api/storage/types/config-model";
 import { Action, StorageDevice } from "~/types/storage";
 import { QueryHookOptions } from "~/types/queries";
 
@@ -133,7 +134,7 @@ const useAvailableDevices = (): StorageDevice[] => {
 };
 
 const productParamsQuery = {
-  queryKey: ["storage", "encryptionMethods"],
+  queryKey: ["storage", "productParams"],
   queryFn: fetchProductParams,
   staleTime: Infinity,
 };
@@ -145,6 +146,33 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(productParamsQuery);
   return data;
+};
+
+/**
+ * Hook that returns the available encryption methods.
+ *
+ * @note The ids of the encryption methods reported by product params are different to the
+ * EncryptionMethod values. This should be fixed at the bakcend size.
+ */
+const useEncryptionMethods = (options?: QueryHookOptions): EncryptionMethod[] => {
+  const productParams = useProductParams(options);
+
+  const encryptionMethods = React.useMemo((): EncryptionMethod[] => {
+    const conversions = {
+      luks1: "luks1",
+      luks2: "luks2",
+      pervasive_encryption: "pervasiveEncryption",
+      tpm_fde: "tpmFde",
+      protected_swap: "protectedSwap",
+      secure_swap: "secureSwap",
+      random_swap: "randomSwap",
+    };
+
+    const apiMethods = productParams?.encryptionMethods || [];
+    return apiMethods.map((v) => conversions[v] || "luks2");
+  }, [productParams]);
+
+  return encryptionMethods;
 };
 
 const volumesQuery = (mountPaths: string[]) => ({
@@ -264,7 +292,7 @@ export {
   useResetConfigMutation,
   useDevices,
   useAvailableDevices,
-  useProductParams,
+  useEncryptionMethods,
   useVolumes,
   useVolume,
   useVolumeDevices,
