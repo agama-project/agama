@@ -51,11 +51,7 @@ systemctl enable agama-url-issue.service
 systemctl enable agama-ssh-issue.service
 systemctl enable agama-self-update.service
 systemctl enable live-free-space.service
-systemctl enable live-password-cmdline.service
-systemctl enable live-password-dialog.service
-systemctl enable live-password-iso.service
-systemctl enable live-password-random.service
-systemctl enable live-password-systemd.service
+systemctl enable live-password.service
 systemctl enable live-root-shell.service
 systemctl enable checkmedia.service
 systemctl enable qemu-guest-agent.service
