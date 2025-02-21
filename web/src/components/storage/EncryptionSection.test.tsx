@@ -26,27 +26,54 @@ import { plainRender } from "~/test-utils";
 import EncryptionSection from "./EncryptionSection";
 import { STORAGE } from "~/routes/paths";
 
+const mockUseEncryption = jest.fn();
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useEncryption: () => mockUseEncryption(),
+}));
+
 describe("EncryptionSection", () => {
-  it("renders proper value depending on encryption mode", () => {
-    // No encryption set
-    plainRender(<EncryptionSection />);
-    screen.getByText("Disabled");
+  describe("if encryption is enabled", () => {
+    beforeEach(() => {
+      mockUseEncryption.mockReturnValue({
+        encryption: {
+          method: "luks2",
+          password: "12345",
+        },
+      });
+    });
+
+    it("renders encryption as enabled", () => {
+      plainRender(<EncryptionSection />);
+      screen.getByText(/is enabled/);
+    });
+
+    describe("and uses TPM", () => {
+      beforeEach(() => {
+        mockUseEncryption.mockReturnValue({
+          encryption: {
+            method: "tpmFde",
+            password: "12345",
+          },
+        });
+      });
+
+      it("renders encryption as TPM enabled", () => {
+        plainRender(<EncryptionSection />);
+        screen.getByText(/using TPM/);
+      });
+    });
   });
 
-  // Replace previous example with below one after adapting it accordingly once
-  // the real hook is in use and can be mocked.
-  it.skip("renders proper value depending on encryption mode", () => {
-    // No encryption set
-    const { rerender } = plainRender(<EncryptionSection />);
-    screen.getByText("Disabled");
+  describe("if encryption is disabled", () => {
+    beforeEach(() => {
+      mockUseEncryption.mockReturnValue({});
+    });
 
-    // Encryption set with LUKS2
-    rerender(<EncryptionSection />);
-    screen.getByText("Enabled");
-
-    // Encryption set with TPM
-    rerender(<EncryptionSection />);
-    screen.getByText("Using TPM unlocking");
+    it("renders encryption as disabled", () => {
+      plainRender(<EncryptionSection />);
+      screen.getByText(/is disabled/);
+    });
   });
 
   it("renders a link for navigating to encryption settings", () => {

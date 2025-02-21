@@ -21,21 +21,84 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { screen, fireEvent } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import EncryptionSettingsPage from "./EncryptionSettingsPage";
+import { EncryptionHook } from "~/queries/storage/config-model";
+
+const mockLuks2Encryption: EncryptionHook = {
+  encryption: {
+    method: "luks2",
+    password: "12345",
+  },
+  enable: jest.fn(),
+  disable: jest.fn(),
+};
+
+const mockTpmEncryption: EncryptionHook = {
+  encryption: {
+    method: "tpmFde",
+    password: "12345",
+  },
+  enable: jest.fn(),
+  disable: jest.fn(),
+};
+
+const mockNoEncryption: EncryptionHook = {
+  encryption: undefined,
+  enable: jest.fn(),
+  disable: jest.fn(),
+};
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
+
+const mockUseEncryptionMethods = jest.fn();
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useEncryptionMethods: () => mockUseEncryptionMethods(),
+}));
+
+const mockUseEncryption = jest.fn();
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useEncryption: () => mockUseEncryption(),
+}));
 
 describe("EncryptionSettingsPage", () => {
-  describe("when encryption is not set", () => {
-    it.todo("write the test");
+  beforeEach(() => {
+    mockUseEncryptionMethods.mockReturnValue(["luks2", "tpmFde"]);
   });
 
-  describe("when encryption is set", () => {
+  describe("when encryption is not enabled", () => {
+    beforeEach(() => {
+      mockUseEncryption.mockReturnValue(mockNoEncryption);
+    });
+
+    it("allows enabling the encryption", async () => {
+      const { user } = installerRender(<EncryptionSettingsPage />);
+      const toggle = screen.getByRole("switch", { name: "Encrypt the system" });
+      expect(toggle).not.toBeChecked();
+      await user.click(toggle);
+      const passwordInput = screen.getByLabelText("Password");
+      const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+      fireEvent.change(passwordInput, { target: { value: "12345" } });
+      fireEvent.change(passwordConfirmationInput, { target: { value: "12345" } });
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      await user.click(acceptButton);
+      expect(mockNoEncryption.enable).toHaveBeenCalledWith("luks2", "12345");
+    });
+  });
+
+  describe("when encryption is enabled", () => {
+    beforeEach(() => {
+      mockUseEncryption.mockReturnValue(mockLuks2Encryption);
+    });
+
     describe("and user chooses to not use encryption", () => {
-      // FIXME: adapt and enable below example once real hooks are available to be
-      // imported and properly mocked.
-      it.skip("allows unsetting the encryption", async () => {
-        const { user } = plainRender(<EncryptionSettingsPage />);
+      it("allows disabling the encryption", async () => {
+        const { user } = installerRender(<EncryptionSettingsPage />);
         const toggle = screen.getByRole("switch", { name: "Encrypt the system" });
         expect(toggle).toBeChecked();
         await user.click(toggle);
@@ -50,30 +113,36 @@ describe("EncryptionSettingsPage", () => {
         const acceptButton = screen.getByRole("button", { name: "Accept" });
         await user.click(acceptButton);
 
-        // expect(mockMutation).toHaveBeenCalledWith({ password: "" });
+        expect(mockLuks2Encryption.disable).toHaveBeenCalled();
       });
     });
   });
 
   describe("when using TPM", () => {
-    it.skip("allows to stop using it", async () => {
-      const { user } = plainRender(<EncryptionSettingsPage />);
+    beforeEach(() => {
+      mockUseEncryption.mockReturnValue(mockTpmEncryption);
+    });
+
+    it("allows disabling TPM", async () => {
+      const { user } = installerRender(<EncryptionSettingsPage />);
       const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(tpmCheckbox).toBeChecked();
       await user.click(tpmCheckbox);
       expect(tpmCheckbox).not.toBeChecked();
       await user.click(acceptButton);
-      //   expect(mockMutation).toHaveBeenCalledWith(
-      //     expect.not.objectContaining({ method: EncryptionMethods.TPM }),
-      //   );
+      expect(mockTpmEncryption.enable).toHaveBeenCalledWith("luks2", "12345");
     });
   });
 
-  describe("when TPM is not included in given methods", () => {
-    it.skip("does not render the TPM checkbox", () => {
-      plainRender(<EncryptionSettingsPage />);
-      expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).toBeNull();
+  describe("when TPM is not available", () => {
+    beforeEach(() => {
+      mockUseEncryptionMethods.mockReturnValue(["luks1", "luks2"]);
+    });
+
+    it("does not offer TPM", () => {
+      installerRender(<EncryptionSettingsPage />);
+      expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).not.toBeInTheDocument();
     });
   });
 });
