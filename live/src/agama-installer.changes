@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 21 16:03:42 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed broken "live.password_dialog" boot option
+  (gh#agama-project/agama#2043)
+
+-------------------------------------------------------------------
 Wed Feb 19 10:38:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the QEMU guest agent (gh#agama-project/agama#1816,
