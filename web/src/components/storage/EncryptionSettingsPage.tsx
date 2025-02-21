@@ -24,53 +24,45 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ActionGroup, Alert, Checkbox, Content, Form, Stack, Switch } from "@patternfly/react-core";
 import { Page, PasswordAndConfirmationInput } from "~/components/core";
-import { EncryptionMethods } from "~/types/storage";
+import { useEncryptionMethods } from "~/queries/storage";
+import { useEncryption } from "~/queries/storage/config-model";
+import { EncryptionMethod } from "~/api/storage/types/config-model";
 import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 
-// FIXME: temporary "mocks", please remove them after importing real code.
-type Methods = (typeof EncryptionMethods)[keyof typeof EncryptionMethods];
-
-type EncryptionHook = {
-  mode: string;
-  password: string;
-  method: Methods;
-  methods: Methods[];
-};
-
-const useEncryption = (): EncryptionHook => ({
-  mode: "disabled",
-  password: "s3cr3t",
-  method: EncryptionMethods.LUKS2,
-  methods: Object.values(EncryptionMethods),
-});
-const useEncryptionMutation = () => {
-  console.info("Do not forget to replace this hook mock with real code.");
-
-  return { mutate: async (args) => console.log("Performing a mutation with", args) };
-};
-// FIXME: read above ^^^
-
 /**
  * Renders a form that allows the user change encryption settings
  */
-export default function EncryptionSettingsDialog() {
+export default function EncryptionSettingsPage() {
   const navigate = useNavigate();
-  const encryption = useEncryption();
-  const { mutate: updateEncryption } = useEncryptionMutation();
+  const { encryption: encryptionConfig, enable, disable } = useEncryption();
+  const methods = useEncryptionMethods();
+
   const [errors, setErrors] = useState([]);
-  const [isEnabled, setIsEnabled] = useState(encryption.password.length > 0);
-  const [password, setPassword] = useState(encryption.password);
-  const [method, setMethod] = useState(encryption.method);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [password, setPassword] = useState("");
+  const [method, setMethod] = useState<EncryptionMethod>("luks2");
+
   const passwordRef = useRef<HTMLInputElement>();
   const formId = "encryptionSettingsForm";
 
-  const onPasswordChange = (_, v) => setPassword(v);
-  const changeMethod = (_, useTPM) =>
-    setMethod(useTPM ? EncryptionMethods.TPM : EncryptionMethods.LUKS2);
+  React.useEffect(() => {
+    if (encryptionConfig) {
+      setIsEnabled(true);
+      setMethod(encryptionConfig.method);
+      setPassword(encryptionConfig.password || "");
+    }
+  }, [encryptionConfig]);
 
-  const submitSettings = (e) => {
+  const changePassword = (_, v) => setPassword(v);
+
+  const changeMethod = (_, useTPM) => {
+    const method = useTPM ? "tpmFde" : "luks2";
+    setMethod(method);
+  };
+
+  const onSubmit = (e) => {
     e.preventDefault();
 
     const nextErrors = [];
@@ -88,12 +80,10 @@ export default function EncryptionSettingsDialog() {
       return;
     }
 
-    // FIXME: improve once the real hook is imported.
-    const data = isEnabled ? { password, method } : { password: "" };
+    const commit = () => (isEnabled ? enable(method, password) : disable());
 
-    updateEncryption(data)
-      .then(() => navigate(".."))
-      .catch((e) => setErrors([e.response.data]));
+    commit();
+    navigate("..");
   };
 
   // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
@@ -108,7 +98,7 @@ TPM can verify the integrity of the system. TPM sealing requires the new system 
 directly on its first run.",
   );
 
-  const tpmAvailable = encryption.methods.includes(EncryptionMethods.TPM);
+  const isTpmAvailable = methods.includes("tpmFde");
 
   return (
     <Page>
@@ -123,7 +113,7 @@ at the device, including data, programs, and system files.",
       </Page.Header>
 
       <Page.Content>
-        <Form id={formId} onSubmit={submitSettings} isWidthLimited maxWidth="fit-content">
+        <Form id={formId} onSubmit={onSubmit} isWidthLimited maxWidth="fit-content">
           {errors.length > 0 && (
             <Alert variant="warning" isInline title={_("Something went wrong")}>
               {errors.map((e, i) => (
@@ -139,19 +129,20 @@ at the device, including data, programs, and system files.",
           <Stack className={sizingStyles.w_50OnLg} hasGutter>
             <PasswordAndConfirmationInput
               inputRef={passwordRef}
+              initialValue={encryptionConfig?.password}
               value={password}
-              onChange={onPasswordChange}
+              onChange={changePassword}
               isDisabled={!isEnabled}
               showErrors={false}
             />
           </Stack>
-          {tpmAvailable && (
+          {isTpmAvailable && (
             <Checkbox
               className={sizingStyles.w_50OnLg}
               id="tpm_encryption_method"
               label={tpm_label}
               description={tpm_explanation}
-              isChecked={method === EncryptionMethods.TPM}
+              isChecked={method === "tpmFde"}
               isDisabled={!isEnabled}
               onChange={changeMethod}
             />

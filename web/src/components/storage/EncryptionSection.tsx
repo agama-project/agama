@@ -21,36 +21,23 @@
  */
 
 import React from "react";
-import {
-  Card,
-  CardBody,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
-} from "@patternfly/react-core";
+import { Card, CardBody, Content } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
-import { EncryptionMethods } from "~/types/storage";
+import { useEncryption } from "~/queries/storage/config-model";
+import { EncryptionMethod } from "~/api/storage/types/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-const encryptionMethods = {
-  disabled: _("Disabled"),
-  [EncryptionMethods.LUKS2]: _("Enabled"),
-  [EncryptionMethods.TPM]: _("Using TPM unlocking"),
-};
+function encryptionLabel(method?: EncryptionMethod) {
+  if (!method) return _("Encryption is disabled");
+  if (method === "tpmFde") return _("Encryption is enabled using TPM unlocking");
 
-// FIXME: temporary "mocks", please remove them after importing real code.
-const useEncryption = () => ({ mode: "disabled" });
-const useEncryptionChanges = () =>
-  console.info(
-    "Do not forget to susbscribe component to potential encryption changes. Maybe not needed if they come from model and subscribed to it.",
-  );
-// FIXME: read above ^^^
+  return _("Encryption is enabled");
+}
 
 export default function EncryptionSection() {
-  const { mode: value } = useEncryption();
-  useEncryptionChanges();
+  const { encryption } = useEncryption();
+  const method = encryption?.method;
 
   return (
     <Page.Section
@@ -64,12 +51,7 @@ the device, including data, programs, and system files.",
     >
       <Card isCompact isPlain>
         <CardBody>
-          <DescriptionList isHorizontal isFluid displaySize="lg" isCompact>
-            <DescriptionListGroup>
-              <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
-              <DescriptionListDescription>{encryptionMethods[value]}</DescriptionListDescription>
-            </DescriptionListGroup>
-          </DescriptionList>
+          <Content component="p">{encryptionLabel(method)}</Content>
         </CardBody>
       </Card>
     </Page.Section>
