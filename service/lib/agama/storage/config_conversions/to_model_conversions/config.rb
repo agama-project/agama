@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/boot"
+require "agama/storage/config_conversions/to_model_conversions/encryption"
 require "agama/storage/config_conversions/to_model_conversions/drive"
 
 module Agama
@@ -40,14 +41,23 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              boot:   convert_boot,
-              drives: convert_drives
+              boot:       convert_boot,
+              encryption: convert_encryption,
+              drives:     convert_drives
             }
           end
 
           # @return [Hash]
           def convert_boot
             ToModelConversions::Boot.new(config).convert
+          end
+
+          # @return [Hash]
+          def convert_encryption
+            encryption = base_encryption
+            return unless encryption
+
+            ToModelConversions::Encryption.new(encryption).convert
           end
 
           # @return [Array<Hash>]
@@ -58,6 +68,32 @@ module Agama
           # @return [Array<Configs::Drive>]
           def valid_drives
             config.drives.select(&:found_device)
+          end
+
+          # TODO: proper support for a base encryption.
+          #   The current implementation is a temporary solution which assumes that all the
+          #   partitions are encrypted in the very same way (encryption method, password, etc).
+          #
+          # Detects the base encryption.
+          #
+          # @return [Configs::Encryption, nil] nil if there is no encrypted partition.
+          def base_encryption
+            root_encryption || first_encryption
+          end
+
+          # Encryption from root partition.
+          #
+          # @return [Configs::Encryption, nil] nil if there is no encryption for root partition.
+          def root_encryption
+            root_partition = config.partitions.find { |p| p.filesystem&.root? }
+            root_partition&.encryption
+          end
+
+          # Encryption from the first encrypted partition.
+          #
+          # @return [Configs::Encryption, nil] nil if there is no encrypted partition.
+          def first_encryption
+            config.partitions.find(&:encryption)&.encryption
           end
         end
       end

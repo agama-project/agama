@@ -97,17 +97,6 @@ type SpacePolicyAction = {
   value: "delete" | "resizeIfNeeded";
 };
 
-/**
- * Enum for the encryption method values
- *
- * @readonly
- * @enum { string }
- */
-const EncryptionMethods = Object.freeze({
-  LUKS2: "luks2",
-  TPM: "tpm_fde",
-});
-
 type ISCSIInitiator = {
   name: string;
   ibft: boolean;
@@ -137,5 +126,3 @@ export type {
   SpacePolicyAction,
   StorageDevice,
 };
-
-export { EncryptionMethods };

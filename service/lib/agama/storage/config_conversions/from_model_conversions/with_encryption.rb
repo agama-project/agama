@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,22 +19,24 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_model_conversions/boot"
-require "agama/storage/config_conversions/from_model_conversions/boot_device"
-require "agama/storage/config_conversions/from_model_conversions/config"
-require "agama/storage/config_conversions/from_model_conversions/drive"
 require "agama/storage/config_conversions/from_model_conversions/encryption"
-require "agama/storage/config_conversions/from_model_conversions/filesystem"
-require "agama/storage/config_conversions/from_model_conversions/filesystem_type"
-require "agama/storage/config_conversions/from_model_conversions/partition"
-require "agama/storage/config_conversions/from_model_conversions/search"
-require "agama/storage/config_conversions/from_model_conversions/size"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions from model according to the JSON schema.
       module FromModelConversions
+        # Mixin for encryption conversion.
+        module WithEncryption
+          # @return [Configs::Encryption, nil]
+          def convert_encryption
+            # Do not encrypt reused partitions.
+            return if model_json[:name]
+
+            return if encryption_model.nil?
+
+            FromModelConversions::Encryption.new(encryption_model).convert
+          end
+        end
       end
     end
   end

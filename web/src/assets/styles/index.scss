@@ -263,6 +263,10 @@
   color: inherit;
 }
 
+label.pf-m-disabled + .pf-v6-c-check__description {
+  color: var(--pf-v6-c-check__label--disabled--Color);
+}
+
 // Do not change the default cursor for labels forms because it is confusing
 //
 // See:

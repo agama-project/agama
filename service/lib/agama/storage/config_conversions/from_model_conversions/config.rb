@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -79,7 +79,6 @@ module Agama
             FromModelConversions::Boot.new(boot_model).convert
           end
 
-          # @return [Array<Configs::Drive>, nil]
           def convert_drives
             return unless drive_models
 
@@ -89,7 +88,9 @@ module Agama
           # @param drive_model [Hash]
           # @return [Configs::Drive]
           def convert_drive(drive_model)
-            FromModelConversions::Drive.new(drive_model, product_config).convert
+            FromModelConversions::Drive
+              .new(drive_model, product_config, model_json[:encryption])
+              .convert
           end
 
           # Conversion for the boot device alias.

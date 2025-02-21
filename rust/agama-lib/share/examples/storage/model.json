@@ -1,4 +1,8 @@
 {
+  "encryption": {
+    "method": "luks1",
+    "password": "12345"
+  },
   "boot": {
     "configure": true,
     "device": {

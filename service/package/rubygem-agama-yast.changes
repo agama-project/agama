@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
+Fri Feb 21 13:59:30 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Initial support for global encryption in the storage model
+  (gh#agama-project/agama#2031).
+
+-------------------------------------------------------------------
 Thu Feb 20 17:22:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add libzypp callbacks to handle more checksum and signatures
   problems (gh#agama-project/agama#2030).
-  
+
 -------------------------------------------------------------------
 Thu Feb 20 14:23:49 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
@@ -137,7 +143,7 @@ Mon Jan 20 10:35:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Add support for specifying a license for each product
   (jsc#PED-11987).
 
--------------------------------------------------------------------  
+-------------------------------------------------------------------
 Fri Jan 17 20:42:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Relax gems version in the gemspec file
@@ -169,7 +175,7 @@ Fri Jan 10 15:44:30 UTC 2025 - José Iván López González <jlopez@suse.com>
 -------------------------------------------------------------------
 Thu Jan  9 12:21:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Activate multipath in case it is forced by the user 
+- Activate multipath in case it is forced by the user
   (gh#agama-project/agama#1875).
 
 -------------------------------------------------------------------

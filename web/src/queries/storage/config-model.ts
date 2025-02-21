@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,6 +23,7 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
 import { configModel, Volume } from "~/api/storage/types";
+import { EncryptionMethod } from "~/api/storage/types/config-model";
 import { QueryHookOptions } from "~/types/queries";
 import { SpacePolicyAction } from "~/types/storage";
 import { useVolumes } from "~/queries/storage";
@@ -133,6 +134,22 @@ function setDefaultBootDevice(originalModel: configModel.Config): configModel.Co
 
 function disableBoot(originalModel: configModel.Config): configModel.Config {
   return setBoot(originalModel, { configure: false });
+}
+
+function setEncryption(
+  originalModel: configModel.Config,
+  method: EncryptionMethod,
+  password: string,
+): configModel.Config {
+  const model = copyModel(originalModel);
+  model.encryption = { method, password };
+  return model;
+}
+
+function disableEncryption(originalModel: configModel.Config): configModel.Config {
+  const model = copyModel(originalModel);
+  model.encryption = null;
+  return model;
 }
 
 function deletePartition(
@@ -370,6 +387,24 @@ export function useBoot(): BootHook {
     setDevice: (deviceName: string) => mutate(setBootDevice(model, deviceName)),
     setDefault: () => mutate(setDefaultBootDevice(model)),
     disable: () => mutate(disableBoot(model)),
+  };
+}
+
+export type EncryptionHook = {
+  encryption?: configModel.Encryption;
+  enable: (method: EncryptionMethod, password: string) => void;
+  disable: () => void;
+};
+
+export function useEncryption(): EncryptionHook {
+  const model = useConfigModel();
+  const { mutate } = useConfigModelMutation();
+
+  return {
+    encryption: model?.encryption,
+    enable: (method: EncryptionMethod, password: string) =>
+      mutate(setEncryption(model, method, password)),
+    disable: () => mutate(disableEncryption(model)),
   };
 }
 
