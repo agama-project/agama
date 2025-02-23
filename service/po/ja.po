@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-13 02:38+0000\n"
-"PO-Revision-Date: 2025-02-13 06:50+0000\n"
+"POT-Creation-Date: 2025-02-20 02:39+0000\n"
+"PO-Revision-Date: 2025-02-21 08:50+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -25,56 +25,55 @@ msgstr ""
 #: service/lib/agama/autoyast/profile_reporter.rb:51
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr "AutoYaST プロファイル内にサポートされていない要素が見つかりました: %{keys}."
+msgstr ""
+"AutoYaST プロファイル内にサポートされていない要素が見つかりました: %{keys}."
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Analyze disks"
 msgstr "ディスクの分析"
 
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Configure software"
 msgstr "ソフトウエアの設定"
 
 #. Runs the install phase
-#. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:116
+#. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
 msgstr "ディスクの準備"
 
-#: service/lib/agama/manager.rb:117
+#: service/lib/agama/manager.rb:118
 msgid "Install software"
 msgstr "ソフトウエアのインストール"
 
-#: service/lib/agama/manager.rb:118
+#: service/lib/agama/manager.rb:119
 msgid "Configure the system"
 msgstr "システムの設定"
 
-#. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:157
+#. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:159
 msgid "Load software translations"
 msgstr "ソフトウエアの翻訳の読み込み"
 
-#: service/lib/agama/manager.rb:158
+#: service/lib/agama/manager.rb:160
 msgid "Load storage translations"
 msgstr "ストレージの翻訳の読み込み"
 
-#. TRANSLATORS: %s is a package name
-#: service/lib/agama/software/callbacks/progress.rb:92
-#, c-format
-msgid "Package %s could not be installed."
-msgstr "パッケージ %s をインストールできませんでした。"
+#. TRANSLATORS: button label, try downloading the failed package again
+#: service/lib/agama/software/callbacks/base.rb:39
+msgid "Try again"
+msgstr "再試行"
 
-#. "Not found" (error 1) is handled by the MediaChange callback.
-#: service/lib/agama/software/callbacks/provide.rb:71
-#, ycp-format
-msgid "Package %1 could not be downloaded (input/output error)."
-msgstr "パッケージ %1 をダウンロードできませんでした (入出力エラーです) 。"
+#. TRANSLATORS: button label, ignore the failed download, skip package installation
+#: service/lib/agama/software/callbacks/base.rb:45
+msgid "Continue anyway"
+msgstr "無視して続行"
 
-#: service/lib/agama/software/callbacks/provide.rb:74
-#, ycp-format
-msgid "Package %1 is broken, integrity check has failed."
-msgstr "パッケージ %1 は壊れています。整合性チェックが失敗しました。"
+#. TRANSLATORS: button label, abort the installation completely after an error
+#: service/lib/agama/software/callbacks/base.rb:51
+msgid "Abort installation"
+msgstr "インストールの中止"
 
 #. DoneProvide callback
 #.
@@ -336,11 +335,23 @@ msgid_plural ""
 msgstr[0] "システム内には下記のデバイスが見つかりません: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:154
+#: service/lib/agama/users.rb:165
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "ユーザの設定、 root パスワードの設定、 SSH 公開鍵の設定のいずれかが必要です"
+
+#, c-format
+#~ msgid "Package %s could not be installed."
+#~ msgstr "パッケージ %s をインストールできませんでした。"
+
+#, ycp-format
+#~ msgid "Package %1 could not be downloaded (input/output error)."
+#~ msgstr "パッケージ %1 をダウンロードできませんでした (入出力エラーです) 。"
+
+#, ycp-format
+#~ msgid "Package %1 is broken, integrity check has failed."
+#~ msgstr "パッケージ %1 は壊れています。整合性チェックが失敗しました。"
 
 #~ msgid "No device found for an optional drive"
 #~ msgstr "任意指定のドライブに対応するデバイスが見つかりません"

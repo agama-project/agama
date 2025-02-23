@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-13 02:38+0000\n"
-"PO-Revision-Date: 2024-12-25 18:50+0000\n"
+"POT-Creation-Date: 2025-02-20 02:39+0000\n"
+"PO-Revision-Date: 2025-02-17 07:50+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/id/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -25,55 +25,53 @@ msgstr ""
 #: service/lib/agama/autoyast/profile_reporter.rb:51
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr ""
+msgstr "Menemukan elemen yang tidak didukung dalam profil AutoYaST: %{keys}."
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Analyze disks"
 msgstr "Menganalisis disk"
 
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Configure software"
 msgstr "Mengkonfigurasi perangkat lunak"
 
 #. Runs the install phase
-#. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:116
+#. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
 msgstr "Siapkan disk"
 
-#: service/lib/agama/manager.rb:117
+#: service/lib/agama/manager.rb:118
 msgid "Install software"
 msgstr "Menginstal perangkat lunak"
 
-#: service/lib/agama/manager.rb:118
+#: service/lib/agama/manager.rb:119
 msgid "Configure the system"
 msgstr "Mengkonfigurasi sistem"
 
-#. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:157
+#. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:159
 msgid "Load software translations"
 msgstr "Memuat terjemahan perangkat lunak"
 
-#: service/lib/agama/manager.rb:158
+#: service/lib/agama/manager.rb:160
 msgid "Load storage translations"
 msgstr "Memuat terjemahan penyimpanan"
 
-#. TRANSLATORS: %s is a package name
-#: service/lib/agama/software/callbacks/progress.rb:92
-#, c-format
-msgid "Package %s could not be installed."
+#. TRANSLATORS: button label, try downloading the failed package again
+#: service/lib/agama/software/callbacks/base.rb:39
+msgid "Try again"
 msgstr ""
 
-#. "Not found" (error 1) is handled by the MediaChange callback.
-#: service/lib/agama/software/callbacks/provide.rb:71
-#, ycp-format
-msgid "Package %1 could not be downloaded (input/output error)."
+#. TRANSLATORS: button label, ignore the failed download, skip package installation
+#: service/lib/agama/software/callbacks/base.rb:45
+msgid "Continue anyway"
 msgstr ""
 
-#: service/lib/agama/software/callbacks/provide.rb:74
-#, ycp-format
-msgid "Package %1 is broken, integrity check has failed."
+#. TRANSLATORS: button label, abort the installation completely after an error
+#: service/lib/agama/software/callbacks/base.rb:51
+msgid "Abort installation"
 msgstr ""
 
 #. DoneProvide callback
@@ -83,7 +81,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:59
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "Ada masalah dalam menjalankan skrip paket."
 
 #. Callback to handle unsigned files
 #.
@@ -342,11 +340,23 @@ msgstr[0] ""
 "Perangkat yang dipilih berikut ini tidak ditemukan dalam sistem: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:154
+#: service/lib/agama/users.rb:165
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Wajib menentukan pengguna, mengatur kata sandi root atau kunci publik SSH"
+
+#, c-format
+#~ msgid "Package %s could not be installed."
+#~ msgstr "Paket %s tidak dapat diinstal."
+
+#, ycp-format
+#~ msgid "Package %1 could not be downloaded (input/output error)."
+#~ msgstr "Paket %1 tidak dapat diunduh (kesalahan input/output)."
+
+#, ycp-format
+#~ msgid "Package %1 is broken, integrity check has failed."
+#~ msgstr "Paket %1 rusak, pemeriksaan integritas gagal."
 
 #~ msgid "Probing Storage"
 #~ msgstr "Memeriksa Penyimpanan"

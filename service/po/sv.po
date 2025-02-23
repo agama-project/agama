@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-13 02:38+0000\n"
-"PO-Revision-Date: 2025-02-13 06:50+0000\n"
+"POT-Creation-Date: 2025-02-20 02:39+0000\n"
+"PO-Revision-Date: 2025-02-22 11:50+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/sv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -28,53 +28,51 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Hittade ostödda element i AutoYaST-profilen: %{keys}."
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Analyze disks"
 msgstr "Analysera diskar"
 
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Configure software"
 msgstr "Konfigurera programvara"
 
 #. Runs the install phase
-#. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:116
+#. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
 msgstr "Förbered diskar"
 
-#: service/lib/agama/manager.rb:117
+#: service/lib/agama/manager.rb:118
 msgid "Install software"
 msgstr "Installera programvara"
 
-#: service/lib/agama/manager.rb:118
+#: service/lib/agama/manager.rb:119
 msgid "Configure the system"
 msgstr "Konfigurera systemet"
 
-#. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:157
+#. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:159
 msgid "Load software translations"
 msgstr "Laddar översättningar av programvara"
 
-#: service/lib/agama/manager.rb:158
+#: service/lib/agama/manager.rb:160
 msgid "Load storage translations"
 msgstr "Laddar översättningar för lagring"
 
-#. TRANSLATORS: %s is a package name
-#: service/lib/agama/software/callbacks/progress.rb:92
-#, c-format
-msgid "Package %s could not be installed."
-msgstr "Paket %s kunde inte installeras."
+#. TRANSLATORS: button label, try downloading the failed package again
+#: service/lib/agama/software/callbacks/base.rb:39
+msgid "Try again"
+msgstr "Försök igen"
 
-#. "Not found" (error 1) is handled by the MediaChange callback.
-#: service/lib/agama/software/callbacks/provide.rb:71
-#, ycp-format
-msgid "Package %1 could not be downloaded (input/output error)."
-msgstr "Paket %1 kunde inte laddas ner (in/utmatningsfel)."
+#. TRANSLATORS: button label, ignore the failed download, skip package installation
+#: service/lib/agama/software/callbacks/base.rb:45
+msgid "Continue anyway"
+msgstr "Fortsätt ändå"
 
-#: service/lib/agama/software/callbacks/provide.rb:74
-#, ycp-format
-msgid "Package %1 is broken, integrity check has failed."
-msgstr "Paket %1 är trasigt, integritetskontrollen har misslyckats."
+#. TRANSLATORS: button label, abort the installation completely after an error
+#: service/lib/agama/software/callbacks/base.rb:51
+msgid "Abort installation"
+msgstr "Avbryt installationen"
 
 #. DoneProvide callback
 #.
@@ -339,12 +337,24 @@ msgstr[0] "Följande valda enhet hittades inte i systemet: %{devices}"
 msgstr[1] "Följande valda enheter hittades inte i systemet: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:154
+#: service/lib/agama/users.rb:165
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Definiera en användare, för att ställa in root-lösenordet eller en offentlig "
 "SSH-nyckel krävs"
+
+#, c-format
+#~ msgid "Package %s could not be installed."
+#~ msgstr "Paket %s kunde inte installeras."
+
+#, ycp-format
+#~ msgid "Package %1 could not be downloaded (input/output error)."
+#~ msgstr "Paket %1 kunde inte laddas ner (in/utmatningsfel)."
+
+#, ycp-format
+#~ msgid "Package %1 is broken, integrity check has failed."
+#~ msgstr "Paket %1 är trasigt, integritetskontrollen har misslyckats."
 
 #~ msgid "No device found for an optional drive"
 #~ msgstr "Ingen enhet hittades för en tillvalsenhet"
