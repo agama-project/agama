@@ -92,7 +92,9 @@ module Agama
           question = Agama::Question.new(
             qclass:         "software.package_error.install_error",
             text:           description,
-            options:        [retry_label.to_sym, continue_label.to_sym, abort_label.to_sym],
+            # FIXME: temporarily removed the "Abort" option until the final failed
+            # state is handled properly
+            options:        [retry_label.to_sym, continue_label.to_sym],
             default_option: retry_label.to_sym,
             data:           { "package" => current_package }
           )
@@ -101,8 +103,9 @@ module Agama
             case question_client.answer
             when retry_label.to_sym
               "R"
-            when abort_label.to_sym
-              "C"
+            # FIXME: temporarily disabled
+            # when abort_label.to_sym
+            #   "C"
             when continue_label.to_sym
               "I"
             else
