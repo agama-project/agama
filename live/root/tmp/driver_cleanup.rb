@@ -58,16 +58,56 @@ class Driver
   end
 end
 
+# Remove lines for other architectures than the current machine architecture. The arch specific
+# lines start with the <$arch> line and end with the </$arch> line.
+def arch_filter(lines)
+  # the current state for a finite-state machine with two states (inside or outside an arch tag)
+  skipping = false
+  # the current machine architecture
+  arch = `arch`.strip
+  # the architecture from the tag line
+  arch_tag = nil
+
+  lines.reject! do |line|
+    # opening arch tag
+    if line.match(/^\s*<\s*(\w+)\s*>\s*$/)
+      arch_tag = Regexp.last_match[1]
+      skipping = arch_tag != arch
+      # always remove the arch tag
+      next true
+    end
+
+    # closing arch tag, for simplicity let's assume it matches the previous opening tag, the tags
+    # cannot be nested and the input file is under our control and so we can be sure it is valid
+    if line.match(/^\s*<\/\s*\w+\s*>\s*$/)
+      skipping = false
+      # always remove the arch tag
+      next true
+    end
+
+    if skipping
+      puts "Ignoring #{arch_tag} specific line: #{line}"
+    end
+
+    skipping
+  end
+end
+
 # really delete or just do a smoke test?
 do_delete = ARGV[0] == "--delete"
 debug = ENV["DEBUG"] == "1"
 
 # read the configuration files
+# this file is a copy from https://github.com/openSUSE/installation-images/blob/master/etc/module.list
 config = File.read(File.join(__dir__, "module.list")).split("\n")
+# here are Agama specific overrides
 config += File.read(File.join(__dir__, "module.list.extra")).split("\n")
 
 # remove comments and empty lines
 config.reject!{|l| l.empty? || l.start_with?("#")}
+
+# process the architecture specific lines
+arch_filter(config)
 
 # split the list into keep and delete parts (starting with "-")
 delete, keep = config.partition{|c| c.start_with?("-")}

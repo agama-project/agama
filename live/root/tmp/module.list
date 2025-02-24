@@ -3,6 +3,10 @@
 # Lines starting with '-' specify modules to drop.
 # The lines below are actually perl regexps, so be careful.
 #
+# If a module is specified both to be added and dropped, it is dropped.
+#
+# Arch-dependend blocks start with <ARCH> and end with </ARCH> (on separate lines).
+#
 kernel/drivers/base/
 kernel/drivers/block/
 -kernel/drivers/block/paride
@@ -311,3 +315,14 @@ updates/
 -updates/net/sunrpc/
 -updates/fs/lockd/
 -updates/fs/nfs*
+
+<ppc64le>
+# for the source of this module list, see bsc#1213879 comment 35
+-kernel/drivers/net/wireless/
+-kernel/net/ieee80211/
+-kernel/net/mac80211/
+-kernel/net/wireless/
+-kernel/net/wimax/
+-kernel/drivers/gpu/
+-kernel/drivers/video/
+</ppc64le>

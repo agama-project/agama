@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 24 16:19:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Reduce the PPC initrd size (gh#agama-project/agama#2026),
+  use the same solution from installation-images
+  (gh#openSUSE/installation-images#754)
+
+-------------------------------------------------------------------
 Mon Feb 24 13:35:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use a TrueType font in xterm
