@@ -208,8 +208,8 @@ du -h -s /lib/modules /lib/firmware
 # remove the multimedia drivers
 # set DEBUG=1 to print the deleted drivers
 /tmp/driver_cleanup.rb --delete
-# remove the script, not needed anymore
-rm /tmp/driver_cleanup.rb
+# remove the script and data, not needed anymore
+rm /tmp/driver_cleanup.rb /tmp/module.list*
 
 # remove the unused firmware (not referenced by kernel drivers)
 /tmp/fw_cleanup.rb --delete
