@@ -126,8 +126,8 @@ export default function IpSettingsForm() {
       nameservers: sanitizedNameservers.map((s) => s.address),
     });
     updateConnection(updatedConnection)
-      .catch((error) => setErrors(error))
-      .then(() => navigate(-1));
+      .then(() => navigate(-1))
+      .catch((error) => setError(error));
   };
 
   const renderError = (field: string) => {
