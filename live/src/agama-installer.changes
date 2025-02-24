@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 24 16:30:28 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add kernel-firmware-iwlwifi to support latest Intel WiFi
+  gh#agama-project/agama#2059
+ 
+
+-------------------------------------------------------------------
 Mon Feb 24 13:35:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use a TrueType font in xterm

@@ -126,6 +126,7 @@
         <package name="kernel-default"/>
         <!-- the firmware files not referenced by any kernel driver are removed from the image -->
         <package name="kernel-firmware"/>
+        <package name="kernel-firmware-iwlwifi"/> <!-- #2059 Intel WiFi drivers -->
         <package name="adaptec-firmware"/>
         <package name="atmel-firmware"/>
         <package name="bluez-firmware"/>
