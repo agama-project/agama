@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 24 15:57:12 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Display network edition errors instead of navigating back
+  (gh#agama-project/agama#2064).
+
+-------------------------------------------------------------------
 Mon Feb 24 14:17:34 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Ignore non-critical issues to avoid preventing the installation
