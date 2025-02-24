@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 24 12:03:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Temporarily hide the abort installation option in the package
+  installation failure question until the failed state is properly
+  handled. (related to gh#agama-project/agama#2049)
+
+-------------------------------------------------------------------
 Mon Feb 24 07:41:17 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adjust default encryption settings to better support TPM-based
