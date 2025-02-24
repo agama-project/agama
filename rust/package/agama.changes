@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 24 14:42:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Keep the encoding when storing the locale (gh#agama-project/agama#2062).
+
+-------------------------------------------------------------------
 Thu Feb 20 12:58:09 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Introduce the storage model to support the new storage user
