@@ -104,7 +104,7 @@ make build OBS_PROJECT=home:<USER>:branches:systemsmanagement:Agama:Devel
 To build a SLE image using the internal OBS instance run
 
 ```shell
-make build OBS_API=https://api.suse.de OBS_PROJECT=<project> OBS_PACKAGE=agama-installer-SLE FLAVOR=SLE
+make build OBS_API=https://api.suse.de OBS_PROJECT=Devel:YaST:Agama:Head OBS_PACKAGE=agama-installer FLAVOR=SUSE_SLE_16
 ```
 
 #### Using locally built RPM packages

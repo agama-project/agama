@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 24 17:07:07 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed build in SLE16, some packages to remove are not
+  preinstalled in SLE16, do not fail in that case
+
+-------------------------------------------------------------------
 Mon Feb 24 16:19:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Reduce the PPC initrd size (gh#agama-project/agama#2026),
