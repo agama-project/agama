@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 24 13:35:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use a TrueType font in xterm
+
+-------------------------------------------------------------------
 Fri Feb 21 16:34:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - ISO size reduction, delete not needed packages (python, Mesa,
