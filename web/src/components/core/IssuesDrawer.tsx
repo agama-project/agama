@@ -40,7 +40,7 @@ import { _ } from "~/i18n";
  * Drawer for displaying installation issues
  */
 const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
-  const issues = useAllIssues();
+  const issues = useAllIssues().filter((i) => i.severity === IssueSeverity.Error);
   const { phase } = useInstallerStatus({ suspense: true });
   const { issues: issuesByScope } = issues;
 

@@ -58,7 +58,7 @@ describe("InstallButton", () => {
             description: "Fake Issue",
             kind: "generic",
             source: 0,
-            severity: 0,
+            severity: 1,
             details: "Fake Issue details",
           },
         ],
@@ -129,6 +129,37 @@ describe("InstallButton", () => {
         const { container } = installerRender(<InstallButton />);
         expect(container).toBeEmptyDOMElement();
       });
+    });
+  });
+
+  describe("when there are only non-critical issues", () => {
+    beforeEach(() => {
+      mockIssuesList = new IssuesList(
+        [
+          {
+            description: "Fake warning",
+            kind: "generic",
+            source: 0,
+            severity: 0,
+            details: "Fake Issue details",
+          },
+        ],
+        [],
+        [],
+        [],
+      );
+    });
+
+    it("renders the button without any additional information", async () => {
+      const { user, container } = installerRender(<InstallButton />);
+      const button = screen.getByRole("button", { name: "Install" });
+      // Renders nothing else
+      const icon = container.querySelector("svg");
+      expect(icon).toBeNull();
+      await user.hover(button);
+      expect(
+        screen.queryByRole("tooltip", { name: /Not possible with the current setup/ }),
+      ).toBeNull();
     });
   });
 });
