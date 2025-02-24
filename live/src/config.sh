@@ -188,9 +188,12 @@ fi
 # remove OpenGL support
 rpm -qa | grep ^Mesa | xargs rpm -e --nodeps
 
-# uninstall libyui-qt and libqt (pulled in by the YaST dependencies)
-rpm -q --whatprovides libyui-qt libyui-qt-pkg | xargs rpm -e --nodeps
-rpm -qa | grep ^libQt | xargs rpm -e --nodeps
+# uninstall libyui-qt and libqt (pulled in by the YaST dependencies),
+# not present in SLES, do not fail if not installed
+if rpm -q --whatprovides libyui-qt libyui-qt-pkg > /dev/null; then
+  rpm -q --whatprovides libyui-qt libyui-qt-pkg | xargs rpm -e --nodeps
+fi
+rpm -qa | grep ^libQt | xargs --no-run-if-empty rpm -e --nodeps
 
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
 #
