@@ -15,7 +15,7 @@ if [ -z "$url" ]; then
   exit 0
 fi
 
-method=$(grep 'agama.finish=' </run/agama/cmdline.d/agama.conf | awk -F 'agama.finish=' '{sub(/ .*$/, "", $2); print $2}')
+method=$(grep '\(agama\|inst\).finish=' </run/agama/cmdline.d/agama.conf | awk -F ':?(inst|agama).finish=' '{sub(/ .*$/, "", $2); print $2}')
 
 echo "Using the profile at $url"
 
@@ -25,7 +25,7 @@ case "$url" in
   /usr/bin/agama install
   case "$method" in
   "stop" | "halt" | "poweroff")
-    /usr/bin/agama finish $method
+    /usr/bin/agama finish "$method"
     ;;
   *)
     /usr/bin/agama finish
