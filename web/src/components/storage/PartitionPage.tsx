@@ -479,7 +479,8 @@ function TargetOptionLabel({ value }: TargetOptionLabelProps): React.ReactNode {
   const device = useDevice();
 
   if (value === NEW_PARTITION) {
-    return sprintf(_("As a new partition on %s"), device.name);
+    // TRANSLATORS: %1$s is a disk name (eg. "/dev/sda") and %2$s is its size (eg. "250 GiB")
+    return sprintf(_("As a new partition on %1$s (%2$s)"), device.name, deviceSize(device.size));
   } else {
     return sprintf(_("Using partition %s"), value);
   }
@@ -1034,15 +1035,17 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
 
   return (
     <Stack hasGutter>
-      <SubtleContent>
-        {_("Sizes must be entered as a numbers optionally followed by a unit.")}
-      </SubtleContent>
-      <SubtleContent>
-        {_(
-          "If the unit is omitted, bytes (B) will be used. Greater units can be of \
-            the form GiB (power of 2) or GB (power of 10).",
-        )}
-      </SubtleContent>
+      <Stack>
+        <SubtleContent>
+          {_("Sizes must be entered as a numbers optionally followed by a unit.")}
+        </SubtleContent>
+        <SubtleContent>
+          {_(
+            "If the unit is omitted, bytes (B) will be used. Greater units can be of \
+              the form GiB (power of 2) or GB (power of 10).",
+          )}
+        </SubtleContent>
+      </Stack>
       <FormGroup>
         <Flex>
           <FlexItem>
