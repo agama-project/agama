@@ -246,19 +246,23 @@ impl L10n {
         const ROOT: &str = "/mnt";
 
         let locale = self.locales.first().cloned().unwrap_or_default();
-        Command::new("/usr/bin/systemd-firstboot")
-            .args([
-                "--root",
-                ROOT,
-                "--force",
-                "--locale",
-                &locale.to_string(),
-                "--keymap",
-                &self.keymap.dashed(),
-                "--timezone",
-                &self.timezone,
-            ])
-            .status()?;
+        let mut cmd = Command::new("/usr/bin/systemd-firstboot");
+        cmd.args([
+            "--root",
+            ROOT,
+            "--force",
+            "--locale",
+            &locale.to_string(),
+            "--keymap",
+            &self.keymap.dashed(),
+            "--timezone",
+            &self.timezone,
+        ]);
+        tracing::info!("{:?}", &cmd);
+
+        let output = cmd.output()?;
+        tracing::info!("{:?}", &output);
+
         Ok(())
     }
 
