@@ -135,8 +135,6 @@ export default function IpSettingsForm() {
       });
   };
 
-  console.log("errors", fieldErrors);
-
   const renderError = (field: string) => {
     if (!isSetAsInvalid(field)) return null;
 
