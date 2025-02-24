@@ -25,7 +25,7 @@ case "$url" in
   /usr/bin/agama install
   case "$method" in
   "stop" | "halt" | "poweroff")
-    /usr/bin/agama finish $method
+    /usr/bin/agama finish "$method"
     ;;
   *)
     /usr/bin/agama finish
