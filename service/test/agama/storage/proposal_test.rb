@@ -378,30 +378,6 @@ describe Agama::Storage::Proposal do
         end
       end
 
-      context "and the config contains an encrypted partition" do
-        let(:config_json) do
-          {
-            storage: {
-              drives: [
-                {
-                  partitions: [
-                    {
-                      encryption: {
-                        luks1: { password: "12345" }
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        end
-
-        it "returns nil" do
-          expect(subject.model_json).to be_nil
-        end
-      end
-
       context "and the config contains volume groups" do
         let(:config_json) do
           {
@@ -457,7 +433,10 @@ describe Agama::Storage::Proposal do
                   alias:      "root",
                   partitions: [
                     {
-                      filesystem: { path: "/" }
+                      filesystem: { path: "/" },
+                      encryption: {
+                        luks1: { password: "12345" }
+                      }
                     }
                   ]
                 }
@@ -469,14 +448,18 @@ describe Agama::Storage::Proposal do
         it "returns the config model" do
           expect(subject.model_json).to eq(
             {
-              boot:   {
+              boot:       {
                 configure: true,
                 device:    {
                   default: true,
                   name:    "/dev/sda"
                 }
               },
-              drives: [
+              encryption: {
+                method:   "luks1",
+                password: "12345"
+              },
+              drives:     [
                 {
                   name:        "/dev/sda",
                   alias:       "root",

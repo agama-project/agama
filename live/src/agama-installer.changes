@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Mon Feb 24 13:35:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use a TrueType font in xterm
+
+-------------------------------------------------------------------
+Fri Feb 21 16:34:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- ISO size reduction, delete not needed packages (python, Mesa,
+  libyui-qt, Qt libs,...)
+- Use XZ compression for initrd to have a smaller image
+  (esp. important for PPC) (part of gh#agama-project/agama#2026)
+
+-------------------------------------------------------------------
+Fri Feb 21 16:03:42 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed broken "live.password_dialog" boot option
+  (gh#agama-project/agama#2043)
+
+-------------------------------------------------------------------
 Wed Feb 19 10:38:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the QEMU guest agent (gh#agama-project/agama#1816,

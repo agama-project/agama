@@ -85,6 +85,18 @@ class IssuesList {
     };
     this.isEmpty = !Object.values(this.issues).some((v) => v.length > 0);
   }
+
+  /**
+   * Creates a new list only with the issues that match the given function
+   */
+  filter(fn) {
+    return new IssuesList(
+      this.issues["product"].filter(fn),
+      this.issues["software"].filter(fn),
+      this.issues["storage"].filter(fn),
+      this.issues["users"].filter(fn),
+    );
+  }
 }
 
 /**

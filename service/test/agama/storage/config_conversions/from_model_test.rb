@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -1041,6 +1041,37 @@ describe Agama::Storage::ConfigConversions::FromModel do
           expect(boot.device.default?).to eq(true)
           expect(boot.device.device_alias).to be_nil
         end
+      end
+    end
+
+    context "with a JSON specifying 'encryption'" do
+      let(:model_json) do
+        {
+          encryption: {
+            method:   "luks1",
+            password: "12345"
+          },
+          drives:     [
+            {
+              name:       "/dev/vda",
+              partitions: [
+                { name: "/dev/vda1" },
+                {}
+              ]
+            }
+          ]
+        }
+      end
+
+      it "sets #encryption to the new partitions" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+        new_partition = partitions.find { |p| p.search.nil? }
+        reused_partition = partitions.find { |p| p.search&.name == "/dev/vda1" }
+
+        expect(new_partition.encryption.method.id).to eq(:luks1)
+        expect(new_partition.encryption.password).to eq("12345")
+        expect(reused_partition.encryption).to be_nil
       end
     end
 

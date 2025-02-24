@@ -5,6 +5,7 @@
   "additionalProperties": false,
   "properties": {
     "boot": { "$ref": "#/$defs/boot" },
+    "encryption": { "$ref": "#/$defs/encryption" },
     "drives": {
       "type": "array",
       "items": { "$ref": "#/$defs/drive" }
@@ -28,6 +29,22 @@
         "default": { "type": "boolean" },
         "name": { "type": "string" }
       }
+    },
+    "encryption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method"],
+      "properties": {
+        "method": { "$ref": "#/$defs/encryptionMethod" },
+        "password": { "type": "string" }
+      }
+    },
+    "encryptionMethod": {
+      "enum": [
+        "luks1",
+        "luks2",
+        "tpmFde"
+      ]
     },
     "drive": {
       "type": "object",

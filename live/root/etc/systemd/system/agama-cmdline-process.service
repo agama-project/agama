@@ -12,10 +12,8 @@ Before=x11-autologin.service
 
 [Service]
 Type=oneshot
-Environment=TERM=linux
 ExecStart=agama-kernel-cmdline.sh
-StandardInput=tty
-TimeoutSec=0
+StandardOutput=journal
 
 [Install]
 WantedBy=default.target

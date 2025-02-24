@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,40 +28,45 @@ module Agama
       module FromModelConversions
         # Mixin for partitions conversion.
         module WithPartitions
+          # @param encryption_model [Hash, nil]
           # @return [Array<Configs::Partition>]
-          def convert_partitions
+          def convert_partitions(encryption_model = nil)
             # If the model does not indicate a space policy, then the space policy defined by the
             # product is applied.
             space_policy = model_json[:spacePolicy] || product_config.space_policy
 
             case space_policy
             when "keep"
-              used_partition_configs
+              used_partition_configs(encryption_model)
             when "delete"
-              [used_partition_configs, delete_all_partition_config].flatten
+              [used_partition_configs(encryption_model), delete_all_partition_config].flatten
             when "resize"
-              [used_partition_configs, resize_all_partition_config].flatten
+              [used_partition_configs(encryption_model), resize_all_partition_config].flatten
             else
-              partition_configs
+              partition_configs(encryption_model)
             end
           end
 
           # @param partition_model [Hash]
+          # @param encryption_model [Hash, nil]
+          #
           # @return [Configs::Partition]
-          def convert_partition(partition_model)
-            FromModelConversions::Partition.new(partition_model).convert
+          def convert_partition(partition_model, encryption_model = nil)
+            FromModelConversions::Partition.new(partition_model, encryption_model).convert
           end
 
           # @return [Array<Configs::Partition>]
-          def partition_configs
-            partitions.map { |p| convert_partition(p) }
+          # @param encryption_model [Hash, nil]
+          def partition_configs(encryption_model = nil)
+            partitions.map { |p| convert_partition(p, encryption_model) }
           end
 
           # Partitions with any usage (format, mount, etc).
+          # @param encryption_model [Hash, nil]
           #
           # @return [Array<Configs::Partition>]
-          def used_partition_configs
-            used_partitions.map { |p| convert_partition(p) }
+          def used_partition_configs(encryption_model = nil)
+            used_partitions.map { |p| convert_partition(p, encryption_model) }
           end
 
           # @return [Array<Hash>]

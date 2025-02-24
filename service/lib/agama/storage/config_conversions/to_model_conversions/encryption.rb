@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,21 +20,41 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_model_conversions/base"
-require "agama/storage/config_conversions/to_model_conversions/boot"
-require "agama/storage/config_conversions/to_model_conversions/boot_device"
-require "agama/storage/config_conversions/to_model_conversions/config"
-require "agama/storage/config_conversions/to_model_conversions/drive"
-require "agama/storage/config_conversions/to_model_conversions/encryption"
-require "agama/storage/config_conversions/to_model_conversions/filesystem"
-require "agama/storage/config_conversions/to_model_conversions/partition"
-require "agama/storage/config_conversions/to_model_conversions/size"
-require "agama/storage/config_conversions/to_model_conversions/space_policy"
+require "y2storage/encryption_method"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions to model according to the JSON schema.
       module ToModelConversions
+        # Encryption config conversion to model according to the JSON schema.
+        class Encryption < Base
+          # @param config [Configs::Encryption]
+          def initialize(config)
+            super()
+            @config = config
+          end
+
+        private
+
+          # @see Base#conversions
+          def conversions
+            {
+              method:   convert_method,
+              password: config.password
+            }
+          end
+
+          # @return [string]
+          def convert_method
+            method_conversions = {
+              Y2Storage::EncryptionMethod::LUKS1.id   => "luks1",
+              Y2Storage::EncryptionMethod::LUKS2.id   => "luks2",
+              Y2Storage::EncryptionMethod::TPM_FDE.id => "tpmFde"
+            }
+
+            method_conversions[config.method.id] || "luks2"
+          end
+        end
       end
     end
   end
