@@ -24,6 +24,7 @@ use std::process::Command;
 use std::time::Duration;
 
 use crate::error::Error;
+use agama_locale_data::InvalidLocaleCode;
 use agama_locale_data::{KeymapId, LocaleId};
 use regex::Regex;
 use subprocess::{Popen, PopenConfig, PopenError, Redirection};
@@ -44,7 +45,7 @@ use timezone::TimezonesDatabase;
 pub struct L10n {
     pub timezone: String,
     pub timezones_db: TimezonesDatabase,
-    pub locales: Vec<String>,
+    pub locales: Vec<LocaleId>,
     pub locales_db: LocalesDatabase,
     pub keymap: KeymapId,
     pub keymaps_db: KeymapsDatabase,
@@ -133,10 +134,10 @@ impl L10n {
         let mut locales_db = LocalesDatabase::new();
         locales_db.read(&locale)?;
 
-        let mut default_locale = ui_locale.to_string();
-        if !locales_db.exists(locale.as_str()) {
+        let mut default_locale = ui_locale.clone();
+        if !locales_db.exists(&ui_locale) {
             // TODO: handle the case where the database is empty (not expected!)
-            default_locale = locales_db.entries().first().unwrap().id.to_string();
+            default_locale = locales_db.entries().first().unwrap().id.clone();
         };
 
         let mut timezones_db = TimezonesDatabase::new();
@@ -167,12 +168,20 @@ impl L10n {
     }
 
     pub fn set_locales(&mut self, locales: &Vec<String>) -> Result<(), LocaleError> {
-        for loc in locales {
-            if !self.locales_db.exists(loc.as_str()) {
-                return Err(LocaleError::UnknownLocale(loc.to_string()))?;
+        let locale_ids: Result<Vec<LocaleId>, InvalidLocaleCode> = locales
+            .iter()
+            .cloned()
+            .map(|l| l.as_str().try_into())
+            .collect();
+        let locale_ids = locale_ids?;
+
+        for loc in &locale_ids {
+            if !self.locales_db.exists(loc) {
+                return Err(LocaleError::UnknownLocale(loc.clone()));
             }
         }
-        self.locales.clone_from(locales);
+
+        self.locales = locale_ids;
         Ok(())
     }
 
@@ -236,13 +245,14 @@ impl L10n {
     pub fn commit(&self) -> Result<(), LocaleError> {
         const ROOT: &str = "/mnt";
 
+        let locale = self.locales.first().cloned().unwrap_or_default();
         Command::new("/usr/bin/systemd-firstboot")
             .args([
                 "--root",
                 ROOT,
                 "--force",
                 "--locale",
-                self.locales.first().unwrap_or(&"en_US.UTF-8".to_string()),
+                &locale.to_string(),
                 "--keymap",
                 &self.keymap.dashed(),
                 "--timezone",

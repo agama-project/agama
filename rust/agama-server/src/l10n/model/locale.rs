@@ -21,7 +21,7 @@
 //! This module provides support for reading the locales database.
 
 use crate::error::Error;
-use agama_locale_data::{InvalidLocaleCode, LocaleId};
+use agama_locale_data::LocaleId;
 use anyhow::Context;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
@@ -68,16 +68,8 @@ impl LocalesDatabase {
     }
 
     /// Determines whether a locale exists in the database.
-    pub fn exists<T>(&self, locale: T) -> bool
-    where
-        T: TryInto<LocaleId>,
-        T::Error: Into<InvalidLocaleCode>,
-    {
-        if let Ok(locale) = TryInto::<LocaleId>::try_into(locale) {
-            return self.known_locales.contains(&locale);
-        }
-
-        false
+    pub fn exists(&self, locale: &LocaleId) -> bool {
+        self.known_locales.contains(&locale)
     }
 
     /// Returns the list of locales.
@@ -176,10 +168,23 @@ mod tests {
     }
 
     #[test]
+    fn test_try_into_locale() {
+        let locale = LocaleId::try_from("es_ES.UTF-16").unwrap();
+        assert_eq!(&locale.language, "es");
+        assert_eq!(&locale.territory, "ES");
+        assert_eq!(&locale.encoding, "UTF-16");
+
+        let invalid = LocaleId::try_from(".");
+        assert!(invalid.is_err());
+    }
+
+    #[test]
     fn test_locale_exists() {
         let mut db = LocalesDatabase::new();
         db.read("en").unwrap();
-        assert!(db.exists("en_US"));
-        assert!(!db.exists("unknown_UNKNOWN"));
+        let en_us = LocaleId::try_from("en_US").unwrap();
+        let unknown = LocaleId::try_from("unknown_UNKNOWN").unwrap();
+        assert!(db.exists(&en_us));
+        assert!(!db.exists(&unknown));
     }
 }
