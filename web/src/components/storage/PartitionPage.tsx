@@ -1035,15 +1035,17 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
 
   return (
     <Stack hasGutter>
-      <SubtleContent>
-        {_("Sizes must be entered as a numbers optionally followed by a unit.")}
-      </SubtleContent>
-      <SubtleContent>
-        {_(
-          "If the unit is omitted, bytes (B) will be used. Greater units can be of \
-            the form GiB (power of 2) or GB (power of 10).",
-        )}
-      </SubtleContent>
+      <Stack>
+        <SubtleContent>
+          {_("Sizes must be entered as a numbers optionally followed by a unit.")}
+        </SubtleContent>
+        <SubtleContent>
+          {_(
+            "If the unit is omitted, bytes (B) will be used. Greater units can be of \
+              the form GiB (power of 2) or GB (power of 10).",
+          )}
+        </SubtleContent>
+      </Stack>
       <FormGroup>
         <Flex>
           <FlexItem>
