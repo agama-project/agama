@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 24 12:44:15 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Prevented table overflow to avoid hiding the actions column
+  (gh#agama-project/agama#2044).
+
+-------------------------------------------------------------------
 Mon Feb 24 08:50:54 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Some visual changes at the form to add and edit partitions
