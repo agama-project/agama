@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -51,7 +51,9 @@ export default function InitiatorPresenter({ initiator }) {
   const Content = () => {
     return (
       <Tr>
-        <Td dataLabel={_("Name")}>{initiator.name}</Td>
+        <Td dataLabel={_("Name")} modifier="breakWord">
+          {initiator.name}
+        </Td>
         {/* TRANSLATORS: usually just keep the original text */}
         {/* iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI */}
         <Td dataLabel={_("iBFT")}>{initiator.ibft ? _("Yes") : _("No")}</Td>
@@ -70,7 +72,7 @@ export default function InitiatorPresenter({ initiator }) {
           <Tr>
             <Th width={50}>{_("Name")}</Th>
             <Th>{_("iBFT")}</Th>
-            <Th>{_("Offload card")}</Th>
+            <Th modifier="nowrap">{_("Offload card")}</Th>
             <Th />
           </Tr>
         </Thead>
