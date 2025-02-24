@@ -174,6 +174,8 @@ mod tests {
         assert_eq!(&locale.territory, "ES");
         assert_eq!(&locale.encoding, "UTF-16");
 
+        assert_eq!(locale.to_string(), String::from("es_ES.UTF-16"));
+
         let invalid = LocaleId::try_from(".");
         assert!(invalid.is_err());
     }
