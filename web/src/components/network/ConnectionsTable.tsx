@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,11 +30,27 @@ import { NETWORK as PATHS } from "~/routes/paths";
 import { formatIp } from "~/utils/network";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { Stack, StackItem } from "@patternfly/react-core";
 
 type ConnectionsTableProps = {
   connections: Connection[];
   devices: Device[];
   onForget?: (connection: Connection) => void;
+};
+
+const IPAddresses = ({ devices, connection }: { devices: Device[]; connection: Connection }) => {
+  const device = devices.find(
+    ({ connection: deviceConnectionId }) => deviceConnectionId === connection.id,
+  );
+  const addresses = device ? device.addresses : connection.addresses;
+
+  return (
+    <Stack>
+      {addresses.map((address, index) => (
+        <StackItem key={index}>{formatIp(address)}</StackItem>
+      ))}
+    </Stack>
+  );
 };
 
 /**
@@ -49,14 +65,6 @@ const ConnectionsTable = ({
 }: ConnectionsTableProps): React.ReactNode => {
   const navigate = useNavigate();
   if (connections.length === 0) return null;
-
-  const connectionDevice = ({ id }) => devices.find(({ connection }) => id === connection);
-  const connectionAddresses = (connection: Connection) => {
-    const device = connectionDevice(connection);
-    const addresses = device ? device.addresses : connection.addresses;
-
-    return addresses?.map(formatIp).join(", ");
-  };
 
   return (
     <Table variant="compact">
@@ -93,7 +101,9 @@ const ConnectionsTable = ({
           return (
             <Tr key={connection.id}>
               <Td dataLabel={_("Name")}>{connection.id}</Td>
-              <Td dataLabel={_("IP addresses")}>{connectionAddresses(connection)}</Td>
+              <Td dataLabel={_("IP addresses")} modifier="breakWord">
+                <IPAddresses devices={devices} connection={connection} />
+              </Td>
               <Td isActionCell>
                 <RowActions
                   id={`actions-for-connection-${connection.id}`}
