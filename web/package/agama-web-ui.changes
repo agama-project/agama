@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 24 08:50:54 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Some visual changes at the form to add and edit partitions
+  (gh#agama-project/agama#2054).
+
+-------------------------------------------------------------------
 Fri Feb 21 13:56:52 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Bring encryption section back to the proposal page
