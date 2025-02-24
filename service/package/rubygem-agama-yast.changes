@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 24 07:41:17 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adjust default encryption settings to better support TPM-based
+  unlocking (gh#agama-project/agama#2053).
+
+-------------------------------------------------------------------
 Fri Feb 21 13:59:30 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Initial support for global encryption in the storage model
