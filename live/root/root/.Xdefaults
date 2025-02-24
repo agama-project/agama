@@ -1,2 +1,7 @@
 ! Use the default font also for the xterm menus (Ctrl + click)
 XTerm*font: fixed
+
+! enable TrueType rendering, it looks better and supports UTF-8
+XTerm*renderFont: true
+XTerm*faceName: fixed
+XTerm*faceSize: 10
