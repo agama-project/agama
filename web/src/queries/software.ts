@@ -195,7 +195,10 @@ const useProduct = (
   }) as [{ data: string; isPending: boolean }, { data: Product[]; isPending: boolean }];
 
   if (isSelectedPending || isProductsPending) {
-    return {};
+    return {
+      products: [],
+      selectedProduct: undefined,
+    };
   }
 
   const selectedProduct = products.find((p: Product) => p.id === selected);
