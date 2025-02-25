@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-13 02:38+0000\n"
+"POT-Creation-Date: 2025-02-20 02:39+0000\n"
 "PO-Revision-Date: 2025-02-09 14:50+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
@@ -28,53 +28,51 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr ""
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Analyze disks"
 msgstr "Festplatten analysieren"
 
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Configure software"
 msgstr "Software konfigurieren"
 
 #. Runs the install phase
-#. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:116
+#. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
 msgstr "Festplatten vorbereiten"
 
-#: service/lib/agama/manager.rb:117
+#: service/lib/agama/manager.rb:118
 msgid "Install software"
 msgstr "Software installieren"
 
-#: service/lib/agama/manager.rb:118
+#: service/lib/agama/manager.rb:119
 msgid "Configure the system"
 msgstr "System konfigurieren"
 
-#. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:157
+#. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:159
 msgid "Load software translations"
 msgstr "Softwareübersetzungen laden"
 
-#: service/lib/agama/manager.rb:158
+#: service/lib/agama/manager.rb:160
 msgid "Load storage translations"
 msgstr ""
 
-#. TRANSLATORS: %s is a package name
-#: service/lib/agama/software/callbacks/progress.rb:92
-#, c-format
-msgid "Package %s could not be installed."
-msgstr "Paket %s konnte nicht installiert werden."
+#. TRANSLATORS: button label, try downloading the failed package again
+#: service/lib/agama/software/callbacks/base.rb:39
+msgid "Try again"
+msgstr ""
 
-#. "Not found" (error 1) is handled by the MediaChange callback.
-#: service/lib/agama/software/callbacks/provide.rb:71
-#, ycp-format
-msgid "Package %1 could not be downloaded (input/output error)."
-msgstr "Paket %1 konnte nicht heruntergeladen werden (Eingabe-/Ausgabefehler)."
+#. TRANSLATORS: button label, ignore the failed download, skip package installation
+#: service/lib/agama/software/callbacks/base.rb:45
+msgid "Continue anyway"
+msgstr ""
 
-#: service/lib/agama/software/callbacks/provide.rb:74
-#, ycp-format
-msgid "Package %1 is broken, integrity check has failed."
-msgstr "Paket %1 ist defekt, die Integritätsprüfung ist fehlgeschlagen."
+#. TRANSLATORS: button label, abort the installation completely after an error
+#: service/lib/agama/software/callbacks/base.rb:51
+msgid "Abort installation"
+msgstr ""
 
 #. DoneProvide callback
 #.
@@ -348,12 +346,25 @@ msgstr[1] ""
 "Die folgenden ausgewählten Geräte werden im System nicht gefunden: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:154
+#: service/lib/agama/users.rb:165
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Die Definition eines Benutzers, das Festlegen des Root-Passworts oder eines "
 "öffentlichen SSH-Schlüssels ist erforderlich"
+
+#, c-format
+#~ msgid "Package %s could not be installed."
+#~ msgstr "Paket %s konnte nicht installiert werden."
+
+#, ycp-format
+#~ msgid "Package %1 could not be downloaded (input/output error)."
+#~ msgstr ""
+#~ "Paket %1 konnte nicht heruntergeladen werden (Eingabe-/Ausgabefehler)."
+
+#, ycp-format
+#~ msgid "Package %1 is broken, integrity check has failed."
+#~ msgstr "Paket %1 ist defekt, die Integritätsprüfung ist fehlgeschlagen."
 
 #~ msgid "No device found for an optional drive"
 #~ msgstr "Kein Gerät für ein optionales Laufwerk gefunden"

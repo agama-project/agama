@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-13 02:38+0000\n"
-"PO-Revision-Date: 2025-02-13 12:50+0000\n"
+"POT-Creation-Date: 2025-02-20 02:39+0000\n"
+"PO-Revision-Date: 2025-02-20 12:50+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -28,53 +28,51 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "S'han trobat elements no compatibles al perfil d'AutoYaST: %{keys}."
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Analyze disks"
 msgstr "Anàlisi dels discs"
 
-#: service/lib/agama/manager.rb:93
+#: service/lib/agama/manager.rb:94
 msgid "Configure software"
 msgstr "Configuració del programari"
 
 #. Runs the install phase
-#. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:116
+#. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
 msgstr "Preparació dels discs"
 
-#: service/lib/agama/manager.rb:117
+#: service/lib/agama/manager.rb:118
 msgid "Install software"
 msgstr "Instal·lació de programari"
 
-#: service/lib/agama/manager.rb:118
+#: service/lib/agama/manager.rb:119
 msgid "Configure the system"
 msgstr "Configuració del sistema"
 
-#. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/manager.rb:157
+#. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+#: service/lib/agama/manager.rb:159
 msgid "Load software translations"
 msgstr "Carrega les traduccions del programari"
 
-#: service/lib/agama/manager.rb:158
+#: service/lib/agama/manager.rb:160
 msgid "Load storage translations"
 msgstr "Carrega les traduccions de l'emmagatzematge"
 
-#. TRANSLATORS: %s is a package name
-#: service/lib/agama/software/callbacks/progress.rb:92
-#, c-format
-msgid "Package %s could not be installed."
-msgstr "No s'ha pogut instal·lar el paquet %s."
+#. TRANSLATORS: button label, try downloading the failed package again
+#: service/lib/agama/software/callbacks/base.rb:39
+msgid "Try again"
+msgstr "Torna-ho a provar"
 
-#. "Not found" (error 1) is handled by the MediaChange callback.
-#: service/lib/agama/software/callbacks/provide.rb:71
-#, ycp-format
-msgid "Package %1 could not be downloaded (input/output error)."
-msgstr "No s'ha pogut baixar el paquet %1 (error d'entrada / sortida)."
+#. TRANSLATORS: button label, ignore the failed download, skip package installation
+#: service/lib/agama/software/callbacks/base.rb:45
+msgid "Continue anyway"
+msgstr "Continua tanmateix"
 
-#: service/lib/agama/software/callbacks/provide.rb:74
-#, ycp-format
-msgid "Package %1 is broken, integrity check has failed."
-msgstr "El paquet %1 està trencat, la comprovació d'integritat ha fallat."
+#. TRANSLATORS: button label, abort the installation completely after an error
+#: service/lib/agama/software/callbacks/base.rb:51
+msgid "Abort installation"
+msgstr "Avorta la instal·lació"
 
 #. DoneProvide callback
 #.
@@ -352,12 +350,24 @@ msgstr[1] ""
 "Els dispositius seleccionats següents no es troben al sistema: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:154
+#: service/lib/agama/users.rb:165
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Cal definir un usuari, establir la contrasenya d'arrel o una clau pública "
 "SSH."
+
+#, c-format
+#~ msgid "Package %s could not be installed."
+#~ msgstr "No s'ha pogut instal·lar el paquet %s."
+
+#, ycp-format
+#~ msgid "Package %1 could not be downloaded (input/output error)."
+#~ msgstr "No s'ha pogut baixar el paquet %1 (error d'entrada / sortida)."
+
+#, ycp-format
+#~ msgid "Package %1 is broken, integrity check has failed."
+#~ msgstr "El paquet %1 està trencat, la comprovació d'integritat ha fallat."
 
 #~ msgid "No device found for an optional drive"
 #~ msgstr "No s'ha trobat cap dispositiu per a una unitat opcional."
