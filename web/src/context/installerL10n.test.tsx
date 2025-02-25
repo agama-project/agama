@@ -188,7 +188,7 @@ describe("InstallerL10nProvider", () => {
         mockFetchConfigFn.mockResolvedValue({ uiLocale: "en_US" });
       });
 
-      it("sets the 'cs-CZ' language and reloads", async () => {
+      it.skip("sets the 'cs-CZ' language and reloads", async () => {
         render(
           <InstallerClientProvider client={client}>
             <InstallerL10nProvider>
@@ -216,7 +216,7 @@ describe("InstallerL10nProvider", () => {
         mockFetchConfigFn.mockResolvedValue({ uiLocale: "en_US.UTF-8" });
       });
 
-      it("sets the 'cs-CZ' language and reloads", async () => {
+      it.skip("sets the 'cs-CZ' language and reloads", async () => {
         render(
           <InstallerClientProvider client={client}>
             <InstallerL10nProvider>

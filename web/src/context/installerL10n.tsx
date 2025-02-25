@@ -255,7 +255,7 @@ function InstallerL10nProvider({
 
   const changeLanguage = useCallback(
     async (lang?: string) => {
-      const wanted = lang || languageFromQuery() || (await languageFromBackend());
+      const wanted = lang || languageFromQuery();
 
       // Just for development purposes
       if (wanted === "xx" || wanted === "xx-XX") {
@@ -268,6 +268,7 @@ function InstallerL10nProvider({
         wanted,
         wanted?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
         agamaLanguage(),
+        await languageFromBackend(),
       ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       const mustReload = storeAgamaLanguage(newLanguage);
