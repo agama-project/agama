@@ -54,7 +54,7 @@ import {
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
-import { startProbing } from "~/api/manager";
+import { probe as systemProbe } from "~/api/manager";
 
 /**
  * Query to retrieve software configuration
@@ -133,13 +133,13 @@ const useConfigMutation = () => {
 
   const query = {
     mutationFn: updateConfig,
-    onSuccess: (_, config: SoftwareConfig) => {
+    onSuccess: async (_, config: SoftwareConfig) => {
       queryClient.invalidateQueries({ queryKey: ["software/config"] });
+      queryClient.invalidateQueries({ queryKey: ["software/product"] });
       queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       if (config.product) {
-        queryClient.invalidateQueries({ queryKey: ["software/product"] });
+        await systemProbe();
         queryClient.invalidateQueries({ queryKey: ["storage"] });
-        startProbing();
       }
     },
   };
@@ -157,10 +157,10 @@ const useRegisterMutation = () => {
 
   const query = {
     mutationFn: register,
-    onSuccess: () => {
+    onSuccess: async () => {
+      await systemProbe();
       queryClient.invalidateQueries({ queryKey: ["software/registration"] });
-      queryClient.invalidateQueries({ queryKey: ["storage", "productParams"] });
-      startProbing();
+      queryClient.invalidateQueries({ queryKey: ["storage"] });
     },
   };
   return useMutation(query);
