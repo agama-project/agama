@@ -39,7 +39,6 @@ import {
   SelectOption,
   SelectOptionProps,
   Split,
-  SplitItem,
   Stack,
   TextInput,
 } from "@patternfly/react-core";
@@ -68,6 +67,7 @@ import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { compact, uniq } from "~/utils";
+import FlexRow from "../core/FlexRow";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -499,24 +499,22 @@ type PartitionDescriptionProps = {
 };
 
 function PartitionDescription({ partition }: PartitionDescriptionProps): React.ReactNode {
-  const label = partition.filesystem?.label;
+  const label = partition.filesystem?.label || "Fake label";
 
   return (
-    <Split hasGutter>
-      <SplitItem>{partition.description}</SplitItem>
+    <FlexRow title={partition.description} titleGap="Sm" childrenGap="Sm">
       {label && (
-        <SplitItem>
-          <Label isCompact variant="outline">
-            {label}
-          </Label>
-        </SplitItem>
+        <Label isCompact variant="outline">
+          {label}
+        </Label>
       )}
-    </Split>
+    </FlexRow>
   );
 }
 
 function TargetOptions(): React.ReactNode {
-  const partitions = useUnusedPartitions();
+  const partitions = [{ name: "Fake partition", description: "Fake description" }];
+  console.log(useUnusedPartitions());
 
   return (
     <SelectList aria-label={_("Mount point options")}>

@@ -21,13 +21,14 @@
  */
 
 import React from "react";
-import { Stack, Flex, Split, Label } from "@patternfly/react-core";
+import { Stack, Label, Content } from "@patternfly/react-core";
 import {
   typeDescription,
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
 import { StorageDevice } from "~/types/storage";
+import FlexRow from "../core/FlexRow";
 
 /**
  * Renders the content to be used at a menu entry describing a device.
@@ -36,19 +37,24 @@ import { StorageDevice } from "~/types/storage";
  * @param device - Device to represent
  */
 export default function MenuDeviceDescription({ device }: { device: StorageDevice }) {
+  console.log(filesystemLabels);
+
   return (
     <Stack>
-      <Split hasGutter>
-        <span>{typeDescription(device)}</span>
-        <span>{contentDescription(device)}</span>
-      </Split>
-      <Flex columnGap={{ default: "columnGapXs" }}>
-        {filesystemLabels(device).map((s, i) => (
+      <FlexRow
+        title={
+          <FlexRow childrenGap="Sm">
+            <Content>{typeDescription(device)}</Content>
+            <Content component="small">{contentDescription(device)}</Content>
+          </FlexRow>
+        }
+      >
+        {["FAKE", "label", "LI-ST"].map((s, i) => (
           <Label key={i} variant="outline" isCompact>
             {s}
           </Label>
         ))}
-      </Flex>
+      </FlexRow>
     </Stack>
   );
 }

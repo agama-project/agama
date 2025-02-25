@@ -31,8 +31,6 @@ import {
   MenuToggleElement,
   MenuToggle,
   Divider,
-  Split,
-  Flex,
   Label,
 } from "@patternfly/react-core";
 import { MenuHeader } from "~/components/core";
@@ -40,6 +38,7 @@ import MenuDeviceDescription from "./MenuDeviceDescription";
 import { useAvailableDevices } from "~/queries/storage";
 import { useConfigModel, useModel } from "~/queries/storage/config-model";
 import { deviceLabel } from "~/components/storage/utils";
+import FlexRow from "../core/FlexRow";
 
 export default function AddExistingDeviceMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -93,16 +92,13 @@ export default function AddExistingDeviceMenu() {
               description={<MenuDeviceDescription device={device} />}
               onClick={() => modelHook.addDrive(device.name)}
             >
-              <Split hasGutter>
-                {deviceLabel(device)}
-                <Flex columnGap={{ default: "columnGapXs" }}>
-                  {device.systems.map((s, i) => (
-                    <Label key={i} isCompact>
-                      {s}
-                    </Label>
-                  ))}
-                </Flex>
-              </Split>
+              <FlexRow title={deviceLabel(device)} titleGap="Sm" childrenGap="Xs">
+                {["Windows", "Leap"].map((s, i) => (
+                  <Label key={i} isCompact>
+                    {s}
+                  </Label>
+                ))}
+              </FlexRow>
             </DropdownItem>
           ))}
         </DropdownGroup>
