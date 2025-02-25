@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 25 18:44:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Add fonts for CJK characters and monospaced text
+  (gh#agama-project/agama#2076, bsc#1237457).
+
+-------------------------------------------------------------------
 Tue Feb 25 15:57:49 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Display the file system labels in most selectors for disks and

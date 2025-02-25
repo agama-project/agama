@@ -17,6 +17,62 @@
   src: local(""), url("./fonts/SUSE-VariableFont_wght.ttf");
 }
 
+@font-face {
+  font-family: "Noto Sans SC";
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansSC-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans SC Display";
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansSC-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans JP";
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansJP-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans JP Display";
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansJP-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansKR-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans KR Display";
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansKR-VariableFont_wght.ttf");
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  src: local(""), url("./fonts/RobotoMono-VariableFont_wght.ttf");
+}
+
 :root {
   --agm-t--color--pine: #0c322c;
   --agm-t--color--pine--shade--100: #025937;
@@ -43,9 +99,9 @@
 
   --pf-t--global--color--brand--default: var(--agm-t--color--pine);
   --pf-t--global--color--brand--hover: var(--agm-t--color--pine--shade--100);
-  --pf-t--global--font--family--100: "SUSE Text";
-  --pf-t--global--font--family--200: "SUSE Display";
-  --pf-t--global--font--family--300: "Roboto mono", monospace;
+  --pf-t--global--font--family--100: "SUSE Text", verdana;
+  --pf-t--global--font--family--200: "SUSE Display", verdana;
+  --pf-t--global--font--family--300: "Roboto Mono", monospace;
   --pf-t--global--font--line-height--100: 1.3;
   --pf-t--global--font--line-height--200: 1.5;
   --pf-t--global--font--size--100: 0.875rem;
@@ -68,6 +124,21 @@
   --pf-t--global--background--color--disabled--default: #dcdbdc;
   --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
   --pf-t--global--color--brand--clicked: var(--agm-t--color--pine);
+}
+
+:root[lang="zh"] {
+  --pf-t--global--font--family--100: "Noto Sans SC";
+  --pf-t--global--font--family--200: "Noto Sans SC Display", "Noto Sans SC", serif;
+}
+
+:root[lang="ja"] {
+  --pf-t--global--font--family--100: "Noto Sans JP", serif;
+  --pf-t--global--font--family--200: "Noto Sans JP Display", "Noto Sans JP", serif;
+}
+
+:root[lang="ko"] {
+  --pf-t--global--font--family--100: "Noto Sans KR", serif;
+  --pf-t--global--font--family--200: "Noto Sans KR Display", "Noto Sans KR", serif;
 }
 
 // Temporary CSS rules written during migration to PFv6

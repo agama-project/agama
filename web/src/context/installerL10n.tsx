@@ -273,6 +273,8 @@ function InstallerL10nProvider({
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       const mustReload = storeAgamaLanguage(newLanguage);
 
+      document.documentElement.lang = newLanguage.split("-")[0];
+
       if (mustReload) {
         reload(newLanguage);
       } else {
