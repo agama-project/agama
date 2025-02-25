@@ -135,6 +135,16 @@ function languageToLocale(language: string): string {
 }
 
 /**
+ * Returns the language tag from the backend.
+ *
+ * @return Language tag from the backend locale.
+ */
+async function languageFromBackend(): Promise<string> {
+  const config = await fetchConfig();
+  return languageFromLocale(config.uiLocale);
+}
+
+/**
  * Returns the first supported language from the given list.
  *
  * @param languages - list of RFC 5646 language tags (e.g., ["en-US", "en"]) to check
@@ -230,8 +240,7 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
   const [keymap, setKeymap] = useState(undefined);
 
   const syncBackendLanguage = useCallback(async () => {
-    const config = await fetchConfig();
-    const backendLanguage = languageFromLocale(config.uiLocale);
+    const backendLanguage = await languageFromBackend();
     if (backendLanguage === language) return;
 
     // FIXME: fallback to en-US if the language is not supported.
@@ -240,7 +249,7 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
 
   const changeLanguage = useCallback(
     async (lang?: string) => {
-      const wanted = lang || languageFromQuery();
+      const wanted = lang || languageFromQuery() || (await languageFromBackend());
 
       // Just for development purposes
       if (wanted === "xx" || wanted === "xx-XX") {
@@ -253,7 +262,6 @@ function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
         wanted,
         wanted?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
         agamaLanguage(),
-        ...navigator.languages,
       ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       const mustReload = storeAgamaLanguage(newLanguage);
