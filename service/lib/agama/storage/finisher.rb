@@ -80,8 +80,8 @@ module Agama
           BootloaderStep.new(logger),
           IguanaStep.new(logger),
           SnapshotsStep.new(logger),
-          CopyLogsStep.new(logger),
           PostScripts.new(logger),
+          CopyLogsStep.new(logger),
           UnmountStep.new(logger)
         ]
       end
