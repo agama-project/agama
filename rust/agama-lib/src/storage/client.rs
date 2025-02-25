@@ -158,7 +158,7 @@ impl<'a> StorageClient<'a> {
     }
 
     /// Get the storage config according to the JSON schema
-    pub async fn get_config(&self) -> Result<StorageSettings, ServiceError> {
+    pub async fn get_config(&self) -> Result<Option<StorageSettings>, ServiceError> {
         let serialized_settings = self.storage_proxy.get_config().await?;
         let settings = serde_json::from_str(serialized_settings.as_str())?;
         Ok(settings)

@@ -32,7 +32,7 @@ impl StorageHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<StorageSettings, ServiceError> {
+    pub async fn get_config(&self) -> Result<Option<StorageSettings>, ServiceError> {
         self.client.get("/storage/config").await
     }
 

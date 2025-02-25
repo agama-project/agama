@@ -154,7 +154,9 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
-async fn get_config(State(state): State<StorageState<'_>>) -> Result<Json<StorageSettings>, Error> {
+async fn get_config(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Option<StorageSettings>>, Error> {
     // StorageSettings is just a wrapper over serde_json::value::RawValue
     let settings = state.client.get_config().await.map_err(Error::Service)?;
     Ok(Json(settings))

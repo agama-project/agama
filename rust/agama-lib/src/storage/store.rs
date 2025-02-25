@@ -37,7 +37,7 @@ impl StorageStore {
         })
     }
 
-    pub async fn load(&self) -> Result<StorageSettings, ServiceError> {
+    pub async fn load(&self) -> Result<Option<StorageSettings>, ServiceError> {
         self.storage_client.get_config().await
     }
 
