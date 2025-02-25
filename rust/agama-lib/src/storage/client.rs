@@ -148,7 +148,7 @@ impl<'a> StorageClient<'a> {
     pub async fn set_config(&self, settings: StorageSettings) -> Result<u32, ServiceError> {
         Ok(self
             .storage_proxy
-            .set_config(serde_json::to_string(&settings).unwrap().as_str())
+            .set_config(serde_json::to_string(&settings)?.as_str())
             .await?)
     }
 
@@ -158,9 +158,9 @@ impl<'a> StorageClient<'a> {
     }
 
     /// Get the storage config according to the JSON schema
-    pub async fn get_config(&self) -> Result<StorageSettings, ServiceError> {
+    pub async fn get_config(&self) -> Result<Option<StorageSettings>, ServiceError> {
         let serialized_settings = self.storage_proxy.get_config().await?;
-        let settings = serde_json::from_str(serialized_settings.as_str()).unwrap();
+        let settings = serde_json::from_str(serialized_settings.as_str())?;
         Ok(settings)
     }
 
@@ -230,7 +230,7 @@ impl<'a> StorageClient<'a> {
         &'b self,
         object: &'b DBusObject,
         name: &str,
-    ) -> Option<&HashMap<String, OwnedValue>> {
+    ) -> Option<&'b HashMap<String, OwnedValue>> {
         let interface: OwnedInterfaceName = InterfaceName::from_str_unchecked(name).into();
         let interfaces = &object.1;
         interfaces.get(&interface)

@@ -80,9 +80,10 @@ impl Store {
             ..Default::default()
         };
 
-        let storage_settings = self.storage.load().await?;
-        settings.storage = storage_settings.storage;
-        settings.storage_autoyast = storage_settings.storage_autoyast;
+        if let Some(storage_settings) = self.storage.load().await? {
+            settings.storage = storage_settings.storage;
+            settings.storage_autoyast = storage_settings.storage_autoyast;
+        }
 
         // TODO: use try_join here
         Ok(settings)
