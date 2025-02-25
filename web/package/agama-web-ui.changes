@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 25 12:36:50 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Synchronous system probing when choosing or registering the
+  product (gh#agama-project/agama#2072).
+
+-------------------------------------------------------------------
 Mon Feb 24 15:57:12 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Display network edition errors instead of navigating back
