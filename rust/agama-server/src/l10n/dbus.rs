@@ -34,7 +34,7 @@ impl L10nInterface {
     #[zbus(property)]
     pub fn locales(&self) -> Vec<String> {
         let backend = self.backend.read().unwrap();
-        backend.locales.to_owned()
+        backend.locales.iter().map(ToString::to_string).collect()
     }
 
     #[zbus(property)]

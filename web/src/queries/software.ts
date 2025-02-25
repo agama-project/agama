@@ -138,6 +138,7 @@ const useConfigMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       if (config.product) {
         queryClient.invalidateQueries({ queryKey: ["software/product"] });
+        queryClient.invalidateQueries({ queryKey: ["storage"] });
         startProbing();
       }
     },
@@ -158,6 +159,7 @@ const useRegisterMutation = () => {
     mutationFn: register,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["software/registration"] });
+      queryClient.invalidateQueries({ queryKey: ["storage", "productParams"] });
       startProbing();
     },
   };

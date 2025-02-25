@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_model_conversions/base"
+require "agama/storage/config_conversions/from_model_conversions/with_encryption"
 require "agama/storage/config_conversions/from_model_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_model_conversions/with_search"
 require "agama/storage/config_conversions/from_model_conversions/with_size"
@@ -32,11 +33,24 @@ module Agama
       module FromModelConversions
         # Partition conversion from model according to the JSON schema.
         class Partition < Base
-        private
-
           include WithSearch
+          include WithEncryption
           include WithFilesystem
           include WithSize
+
+          # @param model_json [Hash]
+          # @param encryption_model [Hash, nil]
+          def initialize(model_json, encryption_model = nil)
+            super(model_json)
+            @encryption_model = encryption_model
+          end
+
+        private
+
+          alias_method :partition_model, :model_json
+
+          # @return [Hash, nil]
+          attr_reader :encryption_model
 
           # @see Base
           # @return [Configs::Partition]
@@ -44,14 +58,13 @@ module Agama
             Configs::Partition.new
           end
 
-          alias_method :partition_model, :model_json
-
           # @see Base#conversions
           # @return [Hash]
           def conversions
             {
               search:           convert_search,
               alias:            partition_model[:alias],
+              encryption:       convert_encryption,
               filesystem:       convert_filesystem,
               size:             convert_size,
               id:               convert_id,

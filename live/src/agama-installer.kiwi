@@ -154,6 +154,7 @@
         <package name="microos-tools"/>
         <package name="icewm-lite"/>
         <package name="xinit"/>
+        <package name="xset"/>
         <package name="xorg-x11-server"/>
         <package name="xorg-x11-fonts-core"/>
         <package name="xf86-input-libinput" />

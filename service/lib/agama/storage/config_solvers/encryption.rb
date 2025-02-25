@@ -53,10 +53,7 @@ module Agama
 
           encryption = config.encryption
           encryption.method ||= default_encryption.method
-
-          # Recovering values from the default encryption only makes sense if the encryption method
-          # is the same.
-          solve_encryption_values(encryption) if encryption.method == default_encryption.method
+          solve_encryption_values(encryption)
         end
 
         def solve_physical_volumes_encryptions
@@ -69,14 +66,17 @@ module Agama
 
           encryption = config.physical_volumes_encryption
           encryption.method ||= default_encryption.method
-
-          # Recovering values from the default encryption only makes sense if the encryption method
-          # is the same.
-          solve_encryption_values(encryption) if encryption.method == default_encryption.method
+          solve_encryption_values(encryption)
         end
 
         # @param config [Configs::Encryption]
         def solve_encryption_values(config)
+          # FIXME: We need better mechanisms to define these values (eg. the process for TpmFde
+          # enforces pbkdf2, but that is not reflected in the case of planned devices).
+          # As a first (not perfect) control mechanism, the values are ignored if the default
+          # encryption type does not match
+          return if config.method.encryption_type != default_encryption.method.encryption_type
+
           config.password ||= default_encryption.password
           config.pbkd_function ||= default_encryption.pbkd_function
           config.label ||= default_encryption.label

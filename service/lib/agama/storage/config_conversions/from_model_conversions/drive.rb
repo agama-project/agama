@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -39,17 +39,22 @@ module Agama
 
           # @param model_json [Hash]
           # @param product_config [Agama::Config]
-          def initialize(model_json, product_config)
+          # @param encryption_model [Hash, nil]
+          def initialize(model_json, product_config, encryption_model = nil)
             super(model_json)
             @product_config = product_config
+            @encryption_model = encryption_model
           end
 
         private
 
+          alias_method :drive_model, :model_json
+
           # @return [Agama::Config]
           attr_reader :product_config
 
-          alias_method :drive_model, :model_json
+          # @return [Hash, nil]
+          attr_reader :encryption_model
 
           # @see Base
           # @return [Configs::Drive]
@@ -65,7 +70,7 @@ module Agama
               alias:       drive_model[:alias],
               filesystem:  convert_filesystem,
               ptable_type: convert_ptable_type,
-              partitions:  convert_partitions
+              partitions:  convert_partitions(encryption_model)
             }
           end
         end
