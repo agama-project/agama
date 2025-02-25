@@ -33,11 +33,13 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  Label,
   SelectGroup,
   SelectList,
   SelectOption,
   SelectOptionProps,
   Split,
+  SplitItem,
   Stack,
   TextInput,
 } from "@patternfly/react-core";
@@ -491,10 +493,17 @@ type PartitionDescriptionProps = {
 };
 
 function PartitionDescription({ partition }: PartitionDescriptionProps): React.ReactNode {
+  const label = partition.filesystem?.label;
+
   return (
     <Split hasGutter>
-      <span>{partition.description}</span>
-      <span>{deviceSize(partition.size)}</span>
+      <SplitItem>{deviceSize(partition.size)}</SplitItem>
+      <SplitItem>{partition.description}</SplitItem>
+      {label && (
+        <SplitItem>
+          <Label isCompact>{label}</Label>
+        </SplitItem>
+      )}
     </Split>
   );
 }
