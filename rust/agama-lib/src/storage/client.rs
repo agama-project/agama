@@ -230,7 +230,7 @@ impl<'a> StorageClient<'a> {
         &'b self,
         object: &'b DBusObject,
         name: &str,
-    ) -> Option<&HashMap<String, OwnedValue>> {
+    ) -> Option<&'b HashMap<String, OwnedValue>> {
         let interface: OwnedInterfaceName = InterfaceName::from_str_unchecked(name).into();
         let interfaces = &object.1;
         interfaces.get(&interface)
