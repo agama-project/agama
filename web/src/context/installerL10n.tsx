@@ -234,9 +234,15 @@ async function loadTranslations(locale: string) {
  *
  * @see useInstallerL10n
  */
-function InstallerL10nProvider({ children }: { children?: React.ReactNode }) {
+function InstallerL10nProvider({
+  initialLanguage,
+  children,
+}: {
+  initialLanguage?: string;
+  children?: React.ReactNode;
+}) {
   const { connected } = useInstallerClientStatus();
-  const [language, setLanguage] = useState(undefined);
+  const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(undefined);
 
   const syncBackendLanguage = useCallback(async () => {
