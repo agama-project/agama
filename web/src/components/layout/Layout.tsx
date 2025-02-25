@@ -74,13 +74,10 @@ const Layout = ({
     mountSidebar && setIsSidebarOpen(newWindowSize >= agamaWidthBreakpoints.lg);
   };
 
-  const pageProps: Omit<PageProps, keyof React.HTMLProps<HTMLDivElement>> = {
-    isManagedSidebar: true,
-  };
+  const pageProps: Omit<PageProps, keyof React.HTMLProps<HTMLDivElement>> = {};
 
   if (mountSidebar) {
-    pageProps.sidebar = <Sidebar isManagedSidebar={false} isSidebarOpen={isSidebarOpen} />;
-    pageProps.isManagedSidebar = false;
+    pageProps.sidebar = <Sidebar isSidebarOpen={isSidebarOpen} />;
   }
   if (mountHeader) {
     pageProps.masthead = (
