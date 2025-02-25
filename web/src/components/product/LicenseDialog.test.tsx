@@ -46,11 +46,6 @@ jest.mock("~/utils", () => ({
   locationReload: jest.fn(),
 }));
 
-jest.mock("~/api/l10n", () => ({
-  ...jest.requireActual("~/api/l10n"),
-  fetchConfig: () => ({ uiLocale: "en_US.UTF-8" }),
-}));
-
 jest.mock("~/context/installerL10n", () => ({
   ...jest.requireActual("~/context/installerL10n"),
   useInstallerL10n: () => ({ language: mockUILanguage }),
