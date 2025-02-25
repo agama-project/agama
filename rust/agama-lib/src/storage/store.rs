@@ -80,11 +80,35 @@ mod test {
         let url = server.url("/api");
 
         let store = storage_store(url);
-        let settings = store.load().await?;
+        let opt_settings = store.load().await?;
+        assert!(opt_settings.is_some());
+        let settings = opt_settings.unwrap();
 
         // main assertion
         assert_eq!(settings.storage.unwrap().get(), r#"{ "some": "stuff" }"#);
         assert!(settings.storage_autoyast.is_none());
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        storage_mock.assert();
+        Ok(())
+    }
+
+    #[test]
+    async fn test_getting_storage_null() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let storage_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/storage/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body("null");
+        });
+        let url = server.url("/api");
+
+        let store = storage_store(url);
+        let opt_settings = store.load().await?;
+
+        // main assertion
+        assert!(opt_settings.is_none());
 
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
         storage_mock.assert();
