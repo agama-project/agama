@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Tue Feb 25 12:02:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Tue Feb 25 13:08:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the backend's language as fallback, ignoring the browser's one
   It reduces the chances to produce unwanted side-effects when connecting
