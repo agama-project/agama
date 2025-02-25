@@ -60,6 +60,7 @@ import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { compact, uniq } from "~/utils";
+import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -72,6 +73,7 @@ type FormValue = {
   mountPoint: string;
   target: string;
   filesystem: string;
+  filesystemLabel: string;
   sizeOption: SizeOptionValue;
   minSize: string;
   maxSize: string;
@@ -123,6 +125,7 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
       default: false,
       type,
       snapshots: value.filesystem === BTRFS_SNAPSHOTS,
+      label: value.filesystemLabel,
     };
   };
 
@@ -159,6 +162,8 @@ function toFormValue(partitionConfig: configModel.Partition): FormValue {
     return fsConfig.type;
   };
 
+  const filesystemLabel = (): string => partitionConfig.filesystem?.label || NO_VALUE;
+
   const sizeOption = (): SizeOptionValue => {
     const reusePartition = partitionConfig.name !== undefined;
     const sizeConfig = partitionConfig.size;
@@ -174,6 +179,7 @@ function toFormValue(partitionConfig: configModel.Partition): FormValue {
     mountPoint: mountPoint(),
     target: target(),
     filesystem: filesystem(),
+    filesystemLabel: filesystemLabel(),
     sizeOption: sizeOption(),
     minSize: size(partitionConfig.size?.min),
     maxSize: size(partitionConfig.size?.max),
@@ -377,6 +383,7 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
   const initialPartitionConfig = useInitialPartitionConfig();
   const partitionConfig = toPartitionConfig(value);
   partitionConfig.size = undefined;
+  if (partitionConfig.filesystem) partitionConfig.filesystem.label = undefined;
 
   let sparseModel: configModel.Config | undefined;
 
@@ -536,7 +543,7 @@ function FilesystemOptionLabel({ value, target }: FilesystemOptionLabelProps): R
   const filesystem = partition?.filesystem?.type;
   if (value === NO_VALUE) return _("Waiting for a mount point");
   // TRANSLATORS: %s is a filesystem type, like Btrfs
-  if (value === REUSE_FILESYSTEM) return sprintf(_("Current %s"), filesystem);
+  if (value === REUSE_FILESYSTEM) return sprintf(_("Current %s"), filesystemLabel(filesystem));
   if (value === BTRFS_SNAPSHOTS) return _("Btrfs with snapshots");
 
   return filesystemLabel(value);
@@ -622,6 +629,26 @@ function FilesystemSelect({
     >
       <FilesystemOptions mountPoint={mountPoint} target={target} />
     </Select>
+  );
+}
+
+type FilesystemLabelProps = {
+  id?: string;
+  value: string;
+  onChange: (v: string) => void;
+};
+
+function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.ReactNode {
+  const change = (v: string) => /^[\w-_.]*$/.test(v) && onChange(v);
+
+  return (
+    <TextInput
+      id={id}
+      aria-label={_("File system label")}
+      value={value}
+      onChange={(_, v) => change(v)}
+      className={sizingStyles.w_100OnLg}
+    />
   );
 }
 
@@ -1100,6 +1127,7 @@ export default function PartitionPage() {
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
   const [target, setTarget] = React.useState(NEW_PARTITION);
   const [filesystem, setFilesystem] = React.useState(NO_VALUE);
+  const [filesystemLabel, setFilesystemLabel] = React.useState(NO_VALUE);
   const [sizeOption, setSizeOption] = React.useState<SizeOptionValue>(NO_VALUE);
   const [minSize, setMinSize] = React.useState(NO_VALUE);
   const [maxSize, setMaxSize] = React.useState(NO_VALUE);
@@ -1109,7 +1137,7 @@ export default function PartitionPage() {
   const [autoRefreshSize, setAutoRefreshSize] = React.useState(false);
 
   const initialValue = useInitialFormValue();
-  const value = { mountPoint, target, filesystem, sizeOption, minSize, maxSize };
+  const value = { mountPoint, target, filesystem, filesystemLabel, sizeOption, minSize, maxSize };
   const { errors, getVisibleError } = useErrors(value);
 
   const device = useDevice();
@@ -1122,6 +1150,7 @@ export default function PartitionPage() {
       setMountPoint(initialValue.mountPoint);
       setTarget(initialValue.target);
       setFilesystem(initialValue.filesystem);
+      setFilesystemLabel(initialValue.filesystemLabel);
       setSizeOption(initialValue.sizeOption);
       setMinSize(initialValue.minSize);
       setMaxSize(initialValue.maxSize);
@@ -1131,6 +1160,7 @@ export default function PartitionPage() {
     setMountPoint,
     setTarget,
     setFilesystem,
+    setFilesystemLabel,
     setSizeOption,
     setMinSize,
     setMaxSize,
@@ -1193,6 +1223,7 @@ export default function PartitionPage() {
   const isFormValid = errors.length === 0;
   const mountPointError = getVisibleError("mountPoint");
   const usedMountPt = mountPointError ? NO_VALUE : mountPoint;
+  const showLabel = filesystem !== NO_VALUE && filesystem !== REUSE_FILESYSTEM;
 
   return (
     <Page id="partitionPage">
@@ -1240,14 +1271,31 @@ export default function PartitionPage() {
                 </HelperText>
               </FormHelperText>
             </FormGroup>
-            <FormGroup fieldId="fileSystem" label={_("File system")}>
-              <FilesystemSelect
-                id="fileSystem"
-                value={filesystem}
-                mountPoint={usedMountPt}
-                target={target}
-                onChange={changeFilesystem}
-              />
+            <FormGroup>
+              <Flex>
+                <FlexItem>
+                  <FormGroup fieldId="fileSystem" label={_("File system")}>
+                    <FilesystemSelect
+                      id="fileSystem"
+                      value={filesystem}
+                      mountPoint={usedMountPt}
+                      target={target}
+                      onChange={changeFilesystem}
+                    />
+                  </FormGroup>
+                </FlexItem>
+                {showLabel && (
+                  <FlexItem>
+                    <FormGroup fieldId="fileSystemLabel" label={_("Label")}>
+                      <FilesystemLabel
+                        id="fileSystemLabel"
+                        value={filesystemLabel}
+                        onChange={setFilesystemLabel}
+                      />
+                    </FormGroup>
+                  </FlexItem>
+                )}
+              </Flex>
             </FormGroup>
             <FormGroup fieldId="size" label={_("Size")}>
               <Flex
