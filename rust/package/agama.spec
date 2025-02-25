@@ -156,6 +156,7 @@ install -D -m 0644 %{_builddir}/agama/share/agama-web-server.service %{buildroot
 install -D -d -m 0755 %{buildroot}%{_libexecdir}
 install -D -m 0755 %{_builddir}/agama/share/agama-scripts.sh %{buildroot}%{_libexecdir}/agama-scripts.sh
 install -D -m 0644 %{_builddir}/agama/share/agama-scripts.service %{buildroot}%{_unitdir}/agama-scripts.service
+install -D -m 0644 %{_builddir}/agama/share/agama-scripts.pre %{buildroot}%{_prefix}/lib/systemd/system-preset/85-agama-scripts.pre
 
 # install manpages
 mkdir -p %{buildroot}%{_mandir}/man1
@@ -238,5 +239,6 @@ echo $PATH
 %files -n agama-scripts
 %{_unitdir}/agama-scripts.service
 %{_libexecdir}/agama-scripts.sh
+%{_prefix}/lib/systemd/system-preset/85-agama-scripts.pre
 
 %changelog
