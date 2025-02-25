@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 24 14:42:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Keep the encoding when storing the locale (gh#agama-project/agama#2062).
+
+-------------------------------------------------------------------
 Fri Feb 21 14:00:47 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Extend storage model schema to support global encryption

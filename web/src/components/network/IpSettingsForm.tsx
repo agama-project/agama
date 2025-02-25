@@ -23,6 +23,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  Alert,
   Content,
   Form,
   FormGroup,
@@ -62,9 +63,10 @@ export default function IpSettingsForm() {
   );
   const [method, setMethod] = useState<ConnectionMethod>(connection.method4);
   const [gateway, setGateway] = useState<string>(connection.gateway4);
-  const [errors, setErrors] = useState<object>({});
+  const [fieldErrors, setFieldErrors] = useState<object>({});
+  const [requestError, setRequestError] = useState<string | undefined>();
 
-  const isSetAsInvalid = (field: string) => Object.keys(errors).includes(field);
+  const isSetAsInvalid = (field: string) => Object.keys(fieldErrors).includes(field);
   const isGatewayDisabled = addresses.length === 0;
 
   const validatedAttrValue = (field: string) => {
@@ -75,9 +77,9 @@ export default function IpSettingsForm() {
 
   const cleanError = (field: string) => {
     if (isSetAsInvalid(field)) {
-      const nextErrors = { ...errors };
+      const nextErrors = { ...fieldErrors };
       delete nextErrors[field];
-      setErrors(nextErrors);
+      setFieldErrors(nextErrors);
     }
   };
 
@@ -96,7 +98,7 @@ export default function IpSettingsForm() {
   };
 
   const validate = (sanitizedAddresses: IPAddress[]) => {
-    setErrors({});
+    setFieldErrors({});
 
     const nextErrors: { method?: string } = {};
     if (!usingDHCP(method) && sanitizedAddresses.length === 0) {
@@ -104,7 +106,7 @@ export default function IpSettingsForm() {
       nextErrors.method = _("At least one address must be provided for selected mode");
     }
 
-    setErrors(nextErrors);
+    setFieldErrors(nextErrors);
 
     return Object.keys(nextErrors).length === 0;
   };
@@ -125,9 +127,12 @@ export default function IpSettingsForm() {
       gateway4: gateway,
       nameservers: sanitizedNameservers.map((s) => s.address),
     });
+
     updateConnection(updatedConnection)
-      .catch((error) => setErrors(error))
-      .then(() => navigate(-1));
+      .then(() => navigate(-1))
+      .catch((error) => {
+        setRequestError(error.message);
+      });
   };
 
   const renderError = (field: string) => {
@@ -135,7 +140,7 @@ export default function IpSettingsForm() {
 
     return (
       <HelperText>
-        <HelperTextItem variant="error">{errors[field]}</HelperTextItem>
+        <HelperTextItem variant="error">{fieldErrors[field]}</HelperTextItem>
       </HelperText>
     );
   };
@@ -149,7 +154,12 @@ export default function IpSettingsForm() {
       </Page.Header>
 
       <Page.Content>
-        {renderError("object")}
+        {requestError && (
+          <Alert variant="warning" isInline title={_("Something went wrong")}>
+            <Content component="p">{requestError}</Content>
+          </Alert>
+        )}
+
         <Form id="editConnectionForm" onSubmit={onSubmitForm}>
           <Grid hasGutter>
             <GridItem sm={12} xl={6} rowSpan={2}>
