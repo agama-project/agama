@@ -155,10 +155,10 @@ async fn set_config(
     }
 
     if let Some(ui_locale) = &value.ui_locale {
-        let locale: LocaleId = ui_locale
+        let locale = ui_locale
             .as_str()
             .try_into()
-            .map_err(|_e| LocaleError::UnknownLocale(ui_locale.to_string()))?;
+            .map_err(LocaleError::InvalidLocale)?;
         data.translate(&locale)?;
         let locale_string = locale.to_string();
         state.manager_proxy.set_locale(&locale_string).await?;
@@ -193,8 +193,9 @@ async fn set_config(
 )]
 async fn get_config(State(state): State<LocaleState<'_>>) -> Json<LocaleConfig> {
     let data = state.locale.read().await;
+    let locales = data.locales.iter().map(ToString::to_string).collect();
     Json(LocaleConfig {
-        locales: Some(data.locales.clone()),
+        locales: Some(locales),
         keymap: Some(data.keymap.to_string()),
         timezone: Some(data.timezone.to_string()),
         ui_locale: Some(data.ui_locale.to_string()),
