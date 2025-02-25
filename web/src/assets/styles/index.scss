@@ -191,6 +191,10 @@
 .pf-v6-c-masthead {
   --pf-v6-c-masthead__logo--Width: fit-content;
   --pf-v6-c-masthead--PaddingBlock: var(--pf-t--global--spacer--sm);
+
+  h1 {
+    font-size: clamp(1.1rem, 0rem + 1.6vw, 1.75rem);
+  }
 }
 
 .pf-v6-c-page__main-section {
