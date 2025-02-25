@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -120,37 +120,6 @@ describe("InstallerL10nProvider", () => {
       });
     });
 
-    describe("when the language is set to an unsupported language", () => {
-      beforeEach(() => {
-        document.cookie = "agamaLang=de-DE; path=/;";
-        mockFetchConfigFn.mockResolvedValue({ uiLocale: "de_DE.UTF-8" });
-      });
-
-      it("uses the first supported language from the browser", async () => {
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-
-        await waitFor(() => expect(utils.locationReload).toHaveBeenCalled());
-
-        // renders again after reloading
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-
-        await waitFor(() => screen.getByText("hola"));
-        expect(mockUpdateConfigFn).toHaveBeenCalledWith({ uiLocale: "es_ES.UTF-8" });
-      });
-    });
-
     describe("when the language is not set", () => {
       beforeEach(() => {
         // Ensure both, UI and backend mock languages, are in sync since
@@ -159,7 +128,7 @@ describe("InstallerL10nProvider", () => {
         mockFetchConfigFn.mockResolvedValue({ uiLocale: "es_ES.UTF-8" });
       });
 
-      it("sets the preferred language from browser and reloads", async () => {
+      it("sets the language from backend", async () => {
         render(
           <InstallerClientProvider client={client}>
             <InstallerL10nProvider>
@@ -179,34 +148,6 @@ describe("InstallerL10nProvider", () => {
           </InstallerClientProvider>,
         );
         await waitFor(() => screen.getByText("hola"));
-      });
-
-      describe("when the browser language does not contain the full locale", () => {
-        beforeEach(() => {
-          jest.spyOn(window.navigator, "languages", "get").mockReturnValue(["es", "cs-CZ"]);
-        });
-
-        it("sets the first which language matches", async () => {
-          render(
-            <InstallerClientProvider client={client}>
-              <InstallerL10nProvider>
-                <TranslatedContent />
-              </InstallerL10nProvider>
-            </InstallerClientProvider>,
-          );
-
-          await waitFor(() => expect(utils.locationReload).toHaveBeenCalled());
-
-          // renders again after reloading
-          render(
-            <InstallerClientProvider client={client}>
-              <InstallerL10nProvider>
-                <TranslatedContent />
-              </InstallerL10nProvider>
-            </InstallerClientProvider>,
-          );
-          await waitFor(() => screen.getByText("hola!"));
-        });
       });
     });
   });
