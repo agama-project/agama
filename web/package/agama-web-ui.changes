@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Feb 25 12:02:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the backend's language as fallback, ignoring the browser's one
+  It reduces the chances to produce unwanted side-effects when connecting
+  to the web user interface (gh#agama-project/agama#2071).
+- Do not block when connecting during system installation.
+- Make some small fixes/improvements to the overview, localization
+  and software pages markup.
+
+-------------------------------------------------------------------
 Thu Feb 20 12:46:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Include the migration to PatternFly 6 made by dgonzalez@suse.com
