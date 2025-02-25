@@ -54,15 +54,9 @@ export default function LocaleSelection() {
         onChange={() => setSelected(id)}
         label={
           <Flex gap={{ default: "gapSm" }}>
-            <span className={textStyles.fontSizeLg}>
-              <b>{name}</b>
-            </span>
-            <span className={[textStyles.fontSizeMd, textStyles.textColorPlaceholder].join(" ")}>
-              {territory}
-            </span>
-            <span className={[textStyles.fontSizeXs, textStyles.textColorSubtle].join(" ")}>
-              {id}
-            </span>
+            <Content isEditorial>{name}</Content>
+            <Content className={`${textStyles.textColorPlaceholder}`}>{territory}</Content>
+            <Content className={`${textStyles.textColorSubtle}`}>{id}</Content>
           </Flex>
         }
         value={id}
@@ -83,11 +77,9 @@ export default function LocaleSelection() {
       </Page.Header>
 
       <Page.Content>
-        <Page.Section>
-          <Form id="localeSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>{localesList}</FormGroup>
-          </Form>
-        </Page.Section>
+        <Form id="localeSelection" onSubmit={onSubmit}>
+          <FormGroup isStack>{localesList}</FormGroup>
+        </Form>
       </Page.Content>
 
       <Page.Actions>
