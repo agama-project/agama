@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 25 23:48:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Enable agama-scripts service if installed (gh#agama-project/agama#2077).
+
+-------------------------------------------------------------------
 Mon Feb 24 12:03:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Temporarily hide the abort installation option in the package
