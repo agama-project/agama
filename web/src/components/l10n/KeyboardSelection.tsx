@@ -21,12 +21,11 @@
  */
 
 import React, { useState } from "react";
-import { Content, Form, FormGroup, Radio } from "@patternfly/react-core";
+import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
@@ -55,12 +54,10 @@ export default function KeyboardSelection() {
         name="keymap"
         onChange={() => setSelected(id)}
         label={
-          <>
-            <span className={`${textStyles.fontSizeLg}`}>
-              <b>{name}</b>
-            </span>{" "}
+          <Flex columnGap={{ default: "columnGapSm" }}>
+            <Content isEditorial>{name}</Content>
             <Content component="small">{id}</Content>
-          </>
+          </Flex>
         }
         value={id}
         isChecked={id === selected}
@@ -80,11 +77,9 @@ export default function KeyboardSelection() {
       </Page.Header>
 
       <Page.Content>
-        <Page.Section>
-          <Form id="keymapSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>{keymapsList}</FormGroup>
-          </Form>
-        </Page.Section>
+        <Form id="keymapSelection" onSubmit={onSubmit}>
+          <FormGroup isStack>{keymapsList}</FormGroup>
+        </Form>
       </Page.Content>
 
       <Page.Actions>

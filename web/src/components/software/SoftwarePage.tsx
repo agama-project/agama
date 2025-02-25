@@ -173,7 +173,7 @@ function SoftwarePage(): React.ReactNode {
           </GridItem>
           {proposal.size && (
             <GridItem sm={12} xl={6}>
-              <Page.Section>
+              <Page.Section aria-label={_("Used space")}>
                 <UsedSize size={proposal.size} />
               </Page.Section>
             </GridItem>

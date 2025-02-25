@@ -21,13 +21,13 @@
  */
 
 import React, { useState } from "react";
-import { Content, Divider, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
+import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { timezoneTime } from "~/utils";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
 import { Timezone } from "~/types/l10n";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { _ } from "~/i18n";
 
 type TimezoneWithDetails = Timezone & { details: string };
@@ -89,18 +89,17 @@ export default function TimezoneSelection() {
           name="timezone"
           onChange={() => setSelected(id)}
           label={
-            <>
-              <span className={`${textStyles.fontSizeLg}`}>
-                <b>{parts.join("-")}</b>
-              </span>{" "}
+            <Flex columnGap={{ default: "columnGapSm" }}>
+              <Content isEditorial className={`${spacingStyles.m_0}`}>
+                {parts.join("-")}
+              </Content>
               <Content component="small">{country}</Content>
-            </>
+            </Flex>
           }
           description={
-            <Flex columnGap={{ default: "columnGapXs" }}>
+            <Flex columnGap={{ default: "columnGapSm" }}>
               <Content component="small">{timezoneTime(id, date) || ""}</Content>
-              <Divider orientation={{ default: "vertical" }} />
-              <div>{details}</div>
+              <Content>{details}</Content>
             </Flex>
           }
           value={id}
@@ -126,11 +125,9 @@ export default function TimezoneSelection() {
       </Page.Header>
 
       <Page.Content>
-        <Page.Section>
-          <Form id="timezoneSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>{timezonesList}</FormGroup>
-          </Form>
-        </Page.Section>
+        <Form id="timezoneSelection" onSubmit={onSubmit}>
+          <FormGroup isStack>{timezonesList}</FormGroup>
+        </Form>
       </Page.Content>
 
       <Page.Actions>

@@ -114,7 +114,7 @@ const Providers = ({ children, withL10n }) => {
   if (withL10n) {
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider>{children}</InstallerL10nProvider>
+        <InstallerL10nProvider initialLanguage="en-US">{children}</InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }
