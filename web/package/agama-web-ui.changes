@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 25 15:57:49 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Display the file system labels in most selectors for disks and
+  partitions (gh#agama-project/agama#2070).
+
+-------------------------------------------------------------------
 Tue Feb 25 13:08:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the backend's language as fallback, ignoring the browser's one

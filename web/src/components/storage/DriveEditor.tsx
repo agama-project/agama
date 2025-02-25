@@ -32,7 +32,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import * as partitionUtils from "~/components/storage/utils/partition";
-import { typeDescription, contentDescription } from "~/components/storage/utils/device";
+import { contentDescription } from "~/components/storage/utils/device";
 import { Icon } from "../layout";
 import { MenuHeader } from "~/components/core";
 import MenuDeviceDescription from "./MenuDeviceDescription";
@@ -273,6 +273,26 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
   return <MenuHeader title={mainText()} description={extraText()} />;
 };
 
+const DiskSelectorTitle = ({ device, isSelected = false }) => {
+  const Name = () => (isSelected ? <b>{deviceLabel(device)}</b> : deviceLabel(device));
+  const Systems = () => (
+    <Flex columnGap={{ default: "columnGapXs" }}>
+      {device.systems.map((s, i) => (
+        <Label key={i} isCompact>
+          {s}
+        </Label>
+      ))}
+    </Flex>
+  );
+
+  return (
+    <Split hasGutter>
+      <Name />
+      <Systems />
+    </Split>
+  );
+};
+
 const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }) => {
   const navigate = useNavigate();
   const devices = useAvailableDevices();
@@ -296,9 +316,7 @@ const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }
   return (
     <>
       {devices.map((device) => {
-        const isSelected = device === selected;
-        // FIXME: use PF/Content with #component prop instead when migrating to PF6
-        const Name = () => (isSelected ? <b>{deviceLabel(device)}</b> : deviceLabel(device));
+        const isSelected = device.sid === selected.sid;
 
         return (
           <MenuItem
@@ -308,7 +326,7 @@ const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }
             description={<MenuDeviceDescription device={device} />}
             onClick={() => onChange(device.name)}
           >
-            <Name />
+            <DiskSelectorTitle device={device} isSelected={isSelected} />
           </MenuItem>
         );
       })}
@@ -323,9 +341,9 @@ const SearchSelectorSingleOption = ({ selected }) => {
       isSelected
       key={selected.sid}
       itemId={selected.sid}
-      description={<>{typeDescription(selected)}</>}
+      description={<MenuDeviceDescription device={selected} />}
     >
-      <b>{deviceLabel(selected)}</b>
+      <DiskSelectorTitle device={selected} isSelected />
     </MenuItem>
   );
 };

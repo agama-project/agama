@@ -25,6 +25,7 @@
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { StorageDevice } from "~/types/storage";
+import { compact } from "~/utils";
 
 /*
  * Description of the device type.
@@ -91,4 +92,16 @@ const contentDescription = (device: StorageDevice): string => {
   return device.description;
 };
 
-export { typeDescription, contentDescription };
+/*
+ * Labels of the filesystems included at the device
+ */
+const filesystemLabels = (device: StorageDevice): string[] => {
+  if (device.partitionTable) {
+    return compact(device.partitionTable.partitions.map((p) => p.filesystem?.label));
+  }
+
+  const label = device.filesystem?.label;
+  return label ? [label] : [];
+};
+
+export { typeDescription, contentDescription, filesystemLabels };
