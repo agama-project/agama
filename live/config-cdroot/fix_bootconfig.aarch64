@@ -27,7 +27,7 @@ if [ -d "$dst/boot/grub2/themes/SLE" ]; then
   theme="SLE"
 else
   theme="openSUSE"
-end
+fi
 
 #
 # Create grub.cfg
