@@ -60,7 +60,6 @@ import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { compact, uniq } from "~/utils";
-import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -647,7 +646,6 @@ function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.R
       aria-label={_("File system label")}
       value={value}
       onChange={(_, v) => change(v)}
-      className={sizingStyles.w_100OnLg}
     />
   );
 }
