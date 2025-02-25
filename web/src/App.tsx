@@ -41,7 +41,9 @@ function App() {
   const location = useLocation();
   const { isBusy, phase } = useInstallerStatus({ suspense: true });
   const { connected, error } = useInstallerClientStatus();
-  const { selectedProduct, products } = useProduct({ suspense: true });
+  const { selectedProduct, products } = useProduct({
+    suspense: phase !== InstallationPhase.Install,
+  });
   const { language } = useInstallerL10n();
   useL10nConfigChanges();
   useProductChanges();
