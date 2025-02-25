@@ -56,7 +56,13 @@ import {
   editPartition,
 } from "~/queries/storage/config-model";
 import { StorageDevice } from "~/types/storage";
-import { baseName, deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
+import {
+  baseName,
+  deviceSize,
+  deviceLabel,
+  filesystemLabel,
+  parseToBytes,
+} from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
@@ -497,11 +503,12 @@ function PartitionDescription({ partition }: PartitionDescriptionProps): React.R
 
   return (
     <Split hasGutter>
-      <SplitItem>{deviceSize(partition.size)}</SplitItem>
       <SplitItem>{partition.description}</SplitItem>
       {label && (
         <SplitItem>
-          <Label isCompact>{label}</Label>
+          <Label isCompact variant="outline">
+            {label}
+          </Label>
         </SplitItem>
       )}
     </Split>
@@ -524,7 +531,7 @@ function TargetOptions(): React.ReactNode {
             value={partition.name}
             description={<PartitionDescription partition={partition} />}
           >
-            {partition.name}
+            {deviceLabel(partition)}
           </SelectOption>
         ))}
         {partitions.length === 0 && (
