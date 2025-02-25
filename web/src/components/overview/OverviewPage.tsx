@@ -38,18 +38,16 @@ export default function OverviewPage() {
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <Page.Section
-              aria-label={_("Overview")}
-              description={_(
-                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
-              )}
-            >
-              <Stack hasGutter>
-                <L10nSection />
-                <StorageSection />
-                <SoftwareSection />
-              </Stack>
-            </Page.Section>
+            <Stack hasGutter>
+              <Content>
+                {_(
+                  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
+                )}
+              </Content>
+              <L10nSection />
+              <StorageSection />
+              <SoftwareSection />
+            </Stack>
           </GridItem>
         </Grid>
       </Page.Content>
