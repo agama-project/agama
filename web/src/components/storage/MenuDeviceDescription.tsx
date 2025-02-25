@@ -21,8 +21,12 @@
  */
 
 import React from "react";
-import { Stack, Split, Label } from "@patternfly/react-core";
-import { typeDescription, contentDescription } from "~/components/storage/utils/device";
+import { Stack, Flex, Split, Label } from "@patternfly/react-core";
+import {
+  typeDescription,
+  contentDescription,
+  filesystemLabels,
+} from "~/components/storage/utils/device";
 import { StorageDevice } from "~/types/storage";
 
 /**
@@ -38,13 +42,13 @@ export default function MenuDeviceDescription({ device }: { device: StorageDevic
         <span>{typeDescription(device)}</span>
         <span>{contentDescription(device)}</span>
       </Split>
-      <Split hasGutter>
-        {device.systems.map((s, i) => (
-          <Label key={i} isCompact>
+      <Flex columnGap={{ default: "columnGapXs" }}>
+        {filesystemLabels(device).map((s, i) => (
+          <Label key={i} variant="outline" isCompact>
             {s}
           </Label>
         ))}
-      </Split>
+      </Flex>
     </Stack>
   );
 }

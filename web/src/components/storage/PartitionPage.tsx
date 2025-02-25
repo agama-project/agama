@@ -33,11 +33,13 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  Label,
   SelectGroup,
   SelectList,
   SelectOption,
   SelectOptionProps,
   Split,
+  SplitItem,
   Stack,
   TextInput,
 } from "@patternfly/react-core";
@@ -54,7 +56,13 @@ import {
   editPartition,
 } from "~/queries/storage/config-model";
 import { StorageDevice } from "~/types/storage";
-import { baseName, deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
+import {
+  baseName,
+  deviceSize,
+  deviceLabel,
+  filesystemLabel,
+  parseToBytes,
+} from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
@@ -491,10 +499,18 @@ type PartitionDescriptionProps = {
 };
 
 function PartitionDescription({ partition }: PartitionDescriptionProps): React.ReactNode {
+  const label = partition.filesystem?.label;
+
   return (
     <Split hasGutter>
-      <span>{partition.description}</span>
-      <span>{deviceSize(partition.size)}</span>
+      <SplitItem>{partition.description}</SplitItem>
+      {label && (
+        <SplitItem>
+          <Label isCompact variant="outline">
+            {label}
+          </Label>
+        </SplitItem>
+      )}
     </Split>
   );
 }
@@ -515,7 +531,7 @@ function TargetOptions(): React.ReactNode {
             value={partition.name}
             description={<PartitionDescription partition={partition} />}
           >
-            {partition.name}
+            {deviceLabel(partition)}
           </SelectOption>
         ))}
         {partitions.length === 0 && (
