@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 26 11:50:17 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add IPMI drivers to the initrd (bsc#1237354)
+
+-------------------------------------------------------------------
 Wed Feb 26 08:08:25 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Install additional kernel drivers from the kernel-default-extra

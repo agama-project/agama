@@ -97,7 +97,17 @@ for file in /lib/modules/*/kernel/drivers/usb/host/xhci-pci-renesas.ko*
 do
   if [ -f "$file" ]; then
     echo "Adding xhci-pci-renesas driver to initrd..."
-    echo 'add_drivers+=" xhci-pci-renesas "' > /etc/dracut.conf.d/10-extra-drivers.conf
+    echo 'add_drivers+=" xhci-pci-renesas "' >> /etc/dracut.conf.d/10-extra-drivers.conf
+    break
+  fi
+done
+
+# add ipmi drivers (bsc#1237354)
+for dir in /lib/modules/*/kernel/drivers/char/ipmi
+do
+  if [ -d "$dir" ]; then
+    echo "Adding ipmi drivers to initrd..."
+    echo 'add_drivers+=" acpi_ipmi ipmi_devintf ipmi_poweroff ipmi_si ipmi_ssif ipmi_watchdog "' >> /etc/dracut.conf.d/10-extra-drivers.conf
     break
   fi
 done
