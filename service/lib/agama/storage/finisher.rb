@@ -260,8 +260,8 @@ module Agama
         # So this method just tries to enable the service.
         def enable_init_scripts
           # systemctl will return 1 if the service does not exist.
-          Yast::Execute.locally!(
-            "systemctl", "--root", "/mnt", "enable", "agama-scripts",
+          Yast::Execute.on_target!(
+            "systemctl", "enable", "agama-scripts",
             allowed_exitstatus: [0, 1]
           )
         end
