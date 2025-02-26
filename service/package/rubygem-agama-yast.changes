@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 26 06:51:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 12
+
+-------------------------------------------------------------------
 Tue Feb 25 23:48:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Enable agama-scripts service if installed (gh#agama-project/agama#2077).

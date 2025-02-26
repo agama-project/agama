@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 26 06:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 12
+
+-------------------------------------------------------------------
 Tue Feb 25 22:36:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the missing shebang line to the agama-scripts.sh shell script
