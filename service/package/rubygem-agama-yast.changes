@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 26 06:52:45 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add file system label to the config model (needed for jsc#AGM-122
+  and bsc#1237165).
+
+-------------------------------------------------------------------
 Wed Feb 26 06:51:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 12
