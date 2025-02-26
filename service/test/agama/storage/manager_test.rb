@@ -360,6 +360,7 @@ describe Agama::Storage::Manager do
       allow(File).to receive(:directory?).and_call_original
       allow(File).to receive(:directory?).with("/iguana").and_return iguana
       allow(copy_files_class).to receive(:new).and_return(copy_files)
+      allow(Yast::Execute).to receive(:on_target!)
     end
     let(:copy_files_class) { Agama::Storage::Finisher::CopyFilesStep }
     let(:copy_files) { instance_double(copy_files_class, run?: true, run: true, label: "Copy") }
@@ -375,6 +376,8 @@ describe Agama::Storage::Manager do
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
       expect(scripts_client).to receive(:run).with("post")
+      expect(Yast::Execute).to receive(:on_target!)
+        .with("systemctl", "enable", "agama-scripts", allowed_exitstatus: [0, 1])
       expect(Yast::WFM).to receive(:CallFunction).with("copy_logs_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       storage.finish

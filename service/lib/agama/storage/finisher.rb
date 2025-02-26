@@ -241,9 +241,29 @@ module Agama
         end
 
         def run
+          run_post_scripts
+          enable_init_scripts
+        end
+
+      private
+
+        # Run the post scripts
+        def run_post_scripts
           require "agama/http"
           client = Agama::HTTP::Clients::Scripts.new
           client.run("post")
+        end
+
+        # Enables the agama-scripts service to run init scripts
+        #
+        # The package agama-scripts is only installed when needed.
+        # So this method just tries to enable the service.
+        def enable_init_scripts
+          # systemctl will return 1 if the service does not exist.
+          Yast::Execute.on_target!(
+            "systemctl", "enable", "agama-scripts",
+            allowed_exitstatus: [0, 1]
+          )
         end
       end
 
