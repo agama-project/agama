@@ -103,7 +103,8 @@ shared_examples "with filesystem" do |result_scope|
       {
         reuse:   true,
         default: false,
-        type:    "xfs"
+        type:    "xfs",
+        label:   "test"
       }
     )
   end

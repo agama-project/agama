@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 26 06:52:51 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Allow setting the file system label (related to jsc#AGM-122
+  and bsc#1237165).
+
+-------------------------------------------------------------------
 Wed Feb 26 06:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 12

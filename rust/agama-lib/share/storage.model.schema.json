@@ -100,7 +100,8 @@
         "reuse": { "type": "boolean" },
         "default": { "type": "boolean" },
         "type": { "$ref": "#/$defs/filesystemType" },
-        "snapshots": { "type": "boolean" }
+        "snapshots": { "type": "boolean" },
+        "label": { "type": "string" }
       }
     },
     "filesystemType": {
