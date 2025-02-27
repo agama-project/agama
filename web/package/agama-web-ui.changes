@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 27 16:10:51 UTC 2025 - Vaishnavi Nawghare <nawgharevaishnavi@gmail.com>
+
+- Add alpha-label-less leap16.svg
+ (gh#agama-project/agama#2091).
+
+-------------------------------------------------------------------
 Thu Feb 27 10:21:45 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Do not fail to build the storage devices when the RAID members
