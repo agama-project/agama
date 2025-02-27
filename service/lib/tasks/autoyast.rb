@@ -39,12 +39,16 @@ module Agama
         lines = ["# AutoYaST compatibility reference"]
 
         top_level = description.elements.select(&:top_level?)
+          .sort_by(&:short_key)
+        unsupported, rest = top_level.partition { |e| e.support == :no }
 
-        top_level.each do |e|
+        rest.each do |e|
           lines.concat(section(e))
         end
 
         lines.join("\n")
+
+        lines.concat(unsupported_elements(unsupported))
       end
 
     private
@@ -84,6 +88,20 @@ module Agama
         end
         lines << ""
         lines
+      end
+
+      def unsupported_elements(elements)
+        lines = []
+        lines << "## Unsupported sections"
+        lines << ""
+        lines << "The following sections are not supported and we do not plan to " \
+                 "support them  in the future."
+        lines << ""
+        elements.each_with_object(lines) do |e, all|
+          line = "* `#{e.short_key}`"
+          line << ": #{e.notes}" if e.notes
+          all << line
+        end
       end
 
       # Generates the notes for a given element.
