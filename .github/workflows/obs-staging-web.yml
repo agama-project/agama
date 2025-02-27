@@ -1,11 +1,7 @@
 name: Submit agama-web-ui
 
 on:
-  # runs on pushes targeting the default branch
   push:
-    branches:
-      - master
-      - release
     paths:
       # run only when a web frontend source is changed
       - web/**
