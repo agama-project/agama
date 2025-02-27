@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -43,7 +43,8 @@ module Agama
             {
               reuse: model_json.dig(:filesystem, :reuse),
               path:  model_json[:mountPath],
-              type:  convert_type
+              type:  convert_type,
+              label: model_json.dig(:filesystem, :label)
             }
           end
 

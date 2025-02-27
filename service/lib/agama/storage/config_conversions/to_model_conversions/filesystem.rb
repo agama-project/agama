@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -41,7 +41,8 @@ module Agama
               reuse:     config.reuse?,
               default:   convert_default,
               type:      convert_type,
-              snapshots: convert_snapshots
+              snapshots: convert_snapshots,
+              label:     config.label
             }
           end
 
