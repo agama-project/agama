@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 27 10:21:45 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Do not fail to build the storage devices when the RAID members
+  are not exported (bsc#1237803).
+
+-------------------------------------------------------------------
 Wed Feb 26 06:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 12

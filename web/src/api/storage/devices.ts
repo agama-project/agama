@@ -61,12 +61,12 @@ const fetchDevices = async (scope: "result" | "system") => {
     const buildCollection = (sids: number[], jsonDevices: Device[]): StorageDevice[] => {
       if (sids === null || sids === undefined) return [];
 
-      return sids.map((sid) =>
-        buildDevice(
-          jsonDevices.find((dev) => dev.deviceInfo?.sid === sid),
-          jsonDevices,
-        ),
-      );
+      // Some devices might not be found because they are not exported, for example, the members of
+      // a BIOS RAID, see bsc#1237803.
+      return sids
+        .map((sid) => jsonDevices.find((dev) => dev.deviceInfo?.sid === sid))
+        .filter((jsonDevice) => jsonDevice)
+        .map((jsonDevice) => buildDevice(jsonDevice, jsonDevices));
     };
 
     const addDriveInfo = (device: StorageDevice, info: Drive) => {
