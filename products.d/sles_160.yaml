@@ -66,11 +66,11 @@ software:
 
   mandatory_patterns:
     - base_traditional
+    - sles_enhanced_base
   optional_patterns: null # no optional pattern shared
   user_patterns:
     - kvm_host
     - cockpit
-    - sles_enhanced_base
     - sles_minimal_sap
   mandatory_packages:
     - NetworkManager
