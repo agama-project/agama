@@ -45,6 +45,17 @@ impl Transfer {
     ///
     /// * `url`: URL to get the data from.
     /// * `out_fd`: where to write the data.
+    pub fn get(url: &str, out_fd: impl Write) -> TransferResult<()> {
+        GenericHandler::get(url, out_fd)
+    }
+}
+
+/// Generic handler to retrieve any URL.
+///
+/// It uses curl under the hood.
+pub struct GenericHandler {}
+
+impl GenericHandler {
     pub fn get(url: &str, mut out_fd: impl Write) -> TransferResult<()> {
         let mut handle = Easy::new();
         handle.follow_location(true)?;
