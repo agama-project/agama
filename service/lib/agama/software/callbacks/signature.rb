@@ -59,7 +59,7 @@ module Agama
 
           # Temporarily disable signature checking for local repositories.
           # https://github.com/agama-project/agama/issues/2092
-          return true if repo && repo["url"].start_with?("dir://")
+          return true if repo && repo["url"].start_with?("dir:")
 
           message = if repo
             format(
