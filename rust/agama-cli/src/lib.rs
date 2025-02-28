@@ -238,7 +238,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         }
         Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,
         Commands::Logs(subcommand) => run_logs_cmd(client, subcommand).await?,
-        Commands::Download { url } => Transfer::get(&url, std::io::stdout())?,
+        Commands::Download { url } => Transfer::get(&url, &mut std::io::stdout())?,
         Commands::Auth(subcommand) => {
             run_auth_cmd(client, subcommand).await?;
         }
