@@ -217,6 +217,13 @@ module Agama
       data.dig("storage", "lvm") || false
     end
 
+    # Boot strategy for the product
+    #
+    # @return [String, nil]
+    def boot_strategy
+      data.dig("storage", "boot_strategy") || nil
+    end
+
   private
 
     def mandatory_path?(path)
