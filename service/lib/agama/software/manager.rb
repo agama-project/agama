@@ -125,6 +125,8 @@ module Agama
 
         @product = new_product
 
+        ENV["ENV_NO_BLS_BOOT"] = "yes" if use_bls?(id)
+
         update_issues
         true
       end
@@ -152,6 +154,8 @@ module Agama
       def initialize_target
         # create the zypp lock also in the target directory
         ENV["ZYPP_LOCKFILE_ROOT"] = TARGET_DIR
+        # controls if grub-bls should be used. We enable it only for some products.
+        ENV["ENV_NO_BLS_BOOT"] = "no"
         # cleanup the previous content (after service restart or crash)
         FileUtils.rm_rf(TARGET_DIR)
         FileUtils.mkdir_p(TARGET_DIR)
@@ -442,6 +446,14 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
+
+      # Decides whether grub-bls should be used for given product
+      def use_bls?(id)
+        return true if id =~ /Tumbleweed/
+        return true if id =~ /Slowroll/
+
+        return false
+      end
 
       # Generates a list of products according to the information of the config file.
       #
