@@ -119,6 +119,7 @@ module Agama
       def probe(keep_config: false)
         start_progress_with_size(4)
         product_config.pick_product(software.selected_product)
+        ENV["YAST_NO_BLS_BOOT"] = "yes" if !product_config.boot_strategy&.casecmp("BLS")
         check_multipath
         progress.step(_("Activating storage devices")) { activate_devices }
         progress.step(_("Probing storage devices")) { probe_devices }
