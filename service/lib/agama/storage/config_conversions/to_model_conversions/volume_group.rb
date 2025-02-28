@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,23 +20,40 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_model_conversions/base"
-require "agama/storage/config_conversions/to_model_conversions/boot"
-require "agama/storage/config_conversions/to_model_conversions/boot_device"
-require "agama/storage/config_conversions/to_model_conversions/config"
-require "agama/storage/config_conversions/to_model_conversions/drive"
-require "agama/storage/config_conversions/to_model_conversions/encryption"
-require "agama/storage/config_conversions/to_model_conversions/filesystem"
 require "agama/storage/config_conversions/to_model_conversions/logical_volume"
-require "agama/storage/config_conversions/to_model_conversions/partition"
-require "agama/storage/config_conversions/to_model_conversions/size"
-require "agama/storage/config_conversions/to_model_conversions/space_policy"
-require "agama/storage/config_conversions/to_model_conversions/volume_group"
 
 module Agama
   module Storage
     module ConfigConversions
-      # Conversions to model according to the JSON schema.
       module ToModelConversions
+        # LVM volume group conversion to model according to the JSON schema.
+        class VolumeGroup < Base
+          include WithFilesystem
+
+          # @param config [Configs::VolumeGroup]
+          def initialize(config)
+            super()
+            @config = config
+          end
+
+        private
+
+          # @see Base#conversions
+          def conversions
+            {
+              name:           config.name,
+              extentSize:     config.extent_size&.to_i,
+              targetDevices:  config.physical_volumes_devices,
+              logicalVolumes: convert_logical_volumes
+            }
+          end
+
+          def convert_logical_volumes
+            config.logical_volumes.map do |logical_volume|
+              ToModelConversions::LogicalVolume.new(logical_volume).convert
+            end
+          end
+        end
       end
     end
   end

@@ -23,6 +23,7 @@ require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/boot"
 require "agama/storage/config_conversions/to_model_conversions/encryption"
 require "agama/storage/config_conversions/to_model_conversions/drive"
+require "agama/storage/config_conversions/to_model_conversions/volume_group"
 
 module Agama
   module Storage
@@ -41,9 +42,10 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              boot:       convert_boot,
-              encryption: convert_encryption,
-              drives:     convert_drives
+              boot:         convert_boot,
+              encryption:   convert_encryption,
+              drives:       convert_drives,
+              volumeGroups: convert_volume_groups
             }
           end
 
@@ -63,6 +65,11 @@ module Agama
           # @return [Array<Hash>]
           def convert_drives
             valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
+          end
+
+          # @return [Array<Hash>]
+          def convert_volume_groups
+            config.volume_groups.map { |v| ToModelConversions::VolumeGroup.new(v).convert }
           end
 
           # @return [Array<Configs::Drive>]
