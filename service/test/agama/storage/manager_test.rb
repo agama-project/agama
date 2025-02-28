@@ -218,6 +218,14 @@ describe Agama::Storage::Manager do
 
     let(:callback) { proc {} }
 
+    it "sets env YAST_NO_BLS_BOOT to yes if product doesn't requires bls boot explicitly" do
+      expect(config).to receive(:pick_product)
+      expect(config).to receive(:boot_strategy).and_return(nil)
+      expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "yes")
+
+      storage.probe
+    end
+
     it "probes the storage devices and calculates a proposal" do
       expect(config).to receive(:pick_product).with("ALP")
       expect(iscsi).to receive(:activate)
