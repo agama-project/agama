@@ -56,6 +56,11 @@ module Agama
         # @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
         def accept_unsigned_file(filename, repo_id)
           repo = Yast::Pkg.SourceGeneralData(repo_id)
+
+          # Temporarily disable signature checking for local repositories.
+          # https://github.com/agama-project/agama/issues/2092
+          return true if repo && repo["url"].start_with?("dir://")
+
           message = if repo
             format(
               _("The file %{filename} from %{repo_url} is not digitally signed. The origin " \
