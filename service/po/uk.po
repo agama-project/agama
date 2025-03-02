@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2025-02-23 18:50+0000\n"
-"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
-"Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ka/>\n"
-"Language: ka\n"
+"PO-Revision-Date: 2025-02-25 16:50+0000\n"
+"Last-Translator: Eugene Krater <lachend@gmail.com>\n"
+"Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/uk/>\n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.10.1\n"
 
 #. Reports the problems and decide whether to continue or not.
@@ -25,54 +26,54 @@ msgstr ""
 #: service/lib/agama/autoyast/profile_reporter.rb:51
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr ""
+msgstr "Знайдено непідтримувані елементи у профілі AutoYaST: %{keys}."
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:94
 msgid "Analyze disks"
-msgstr "დისკების ანალიზი"
+msgstr "Аналіз дисків"
 
 #: service/lib/agama/manager.rb:94
 msgid "Configure software"
-msgstr "პროგრამების მორგება"
+msgstr "Налаштування програмного забезпечення"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
-msgstr "დისკების მომზადება"
+msgstr "Підготовка дисків"
 
 #: service/lib/agama/manager.rb:118
 msgid "Install software"
-msgstr "პროგრამების დაყენება"
+msgstr "Встановлення програмного забезпечення"
 
 #: service/lib/agama/manager.rb:119
 msgid "Configure the system"
-msgstr "სისტემის მორგება"
+msgstr "Налаштування системи"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:159
 msgid "Load software translations"
-msgstr "პროგრამის თარგმანების ჩატვირთვა"
+msgstr "Завантаження перекладів програмного забезпечення"
 
 #: service/lib/agama/manager.rb:160
 msgid "Load storage translations"
-msgstr "საცავის თარგმანების ჩატვირთვა"
+msgstr "Завантаження перекладів зі сховища"
 
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:39
 msgid "Try again"
-msgstr "თავიდან სცადეთ"
+msgstr "Спробуйте ще раз"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:45
 msgid "Continue anyway"
-msgstr ""
+msgstr "Все одно продовжити"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:51
 msgid "Abort installation"
-msgstr ""
+msgstr "Перервати встановлення"
 
 #. DoneProvide callback
 #.
@@ -95,13 +96,13 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:67
 #, perl-brace-format
 msgid "The file %{filename}"
-msgstr "ფაილი %{filename}"
+msgstr ""
 
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file "
-"cannot be verified. Use it anyway?"
+"%{source} is not digitally signed. The origin and integrity of the file cannot"
+" be verified. Use it anyway?"
 msgstr ""
 
 #. Callback to handle signature verification failures
@@ -111,14 +112,14 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
-"want to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
+"t to trust this key?"
 msgstr ""
 
 #. Should an error be raised?
 #: service/lib/agama/software/manager.rb:141
 msgid "Initializing sources"
-msgstr "წყაროების ინიციალიზაცია"
+msgstr ""
 
 #: service/lib/agama/software/manager.rb:146
 msgid "Refreshing repositories metadata"
@@ -189,8 +190,7 @@ msgstr ""
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checker.rb:178
 #, perl-brace-format
-msgid ""
-"No passphrase provided (required for using the method '%{crypt_method}')."
+msgid "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
@@ -210,8 +210,7 @@ msgstr ""
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checker.rb:276
 #, c-format
-msgid ""
-"The device '%s' is used several times as target device for physical volumes"
+msgid "The device '%s' is used several times as target device for physical volumes"
 msgstr ""
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
@@ -236,8 +235,7 @@ msgstr ""
 #. (e.g., 'luks1').
 #: service/lib/agama/storage/config_checker.rb:434
 #, perl-brace-format
-msgid ""
-"'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
+msgid "'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
 msgstr ""
 
 #. Text of the reason preventing to shrink because there is no content.
@@ -245,9 +243,9 @@ msgstr ""
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In "
-"case the device does contain a file system or a storage system that is not "
-"supported, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In case"
+" the device does contain a file system or a storage system that is not support"
+"ed, resizing will most likely cause data loss."
 msgstr ""
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
@@ -297,7 +295,7 @@ msgstr ""
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:287
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "დაყენებისთვის საჭირო ფაილური სისტემების შეგროვება შეუძლებელია"
+msgstr ""
 
 #. Issue to communicate a generic Y2Storage error.
 #.
@@ -319,13 +317,11 @@ msgstr ""
 #: service/lib/agama/storage/proposal_strategies/guided.rb:143
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural ""
-"The following selected devices are not found in the system: %{devices}"
+msgid_plural "The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:165
-msgid ""
-"Defining a user, setting the root password or a SSH public key is required"
+msgid "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
