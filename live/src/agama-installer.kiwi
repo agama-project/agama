@@ -149,6 +149,8 @@
         <package name="agama-cli-bash-completion"/>
         <package name="agama-auto"/>
         <package name="agama-integration-tests"/>
+        <!-- needed for the NVMF (NVMe over Fabrics) autoconnect service -->
+        <package name="nvme-cli"/>
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
         <package name="microos-tools"/>

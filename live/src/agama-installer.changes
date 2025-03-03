@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  3 14:19:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Include the "nvme-cli" package, needed to activate the NVMF
+  (NVMe over Fabrics) devices (bsc#1238038)
+
+-------------------------------------------------------------------
 Wed Feb 26 11:50:17 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Add IPMI drivers to the initrd (bsc#1237354)
