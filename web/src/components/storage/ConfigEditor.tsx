@@ -24,6 +24,7 @@ import React from "react";
 import { useDevices } from "~/queries/storage";
 import { useConfigModel } from "~/queries/storage/config-model";
 import DriveEditor from "~/components/storage/DriveEditor";
+import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import { List, ListItem } from "@patternfly/react-core";
 
 export default function ConfigEditor() {
@@ -32,6 +33,13 @@ export default function ConfigEditor() {
 
   return (
     <List isPlain>
+      {model.volumeGroups.map((vg, i) => {
+        return (
+          <ListItem key={`vg-${i}`}>
+            <VolumeGroupEditor vg={vg} />
+          </ListItem>
+        );
+      })}
       {model.drives.map((drive, i) => {
         const device = devices.find((d) => d.name === drive.name);
 
@@ -42,7 +50,7 @@ export default function ConfigEditor() {
         if (device === undefined) return null;
 
         return (
-          <ListItem key={i}>
+          <ListItem key={`drive-${i}`}>
             <DriveEditor drive={drive} driveDevice={device} />
           </ListItem>
         );

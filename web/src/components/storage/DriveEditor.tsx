@@ -33,7 +33,7 @@ import { useDrive } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { contentDescription } from "~/components/storage/utils/device";
-import { DeviceMenu } from "~/components/storage/utils/configEditor";
+import { DeviceHeader, DeviceMenu } from "~/components/storage/utils/configEditor";
 import { Icon } from "../layout";
 import { MenuHeader } from "~/components/core";
 import MenuDeviceDescription from "./MenuDeviceDescription";
@@ -445,17 +445,13 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
     // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
     return _("Use %s");
   };
-
-  const [txt1, txt2] = text(drive).split("%s");
   // TRANSLATORS: a disk drive
   const toggleAriaLabel = _("Drive");
 
   return (
-    <h4>
-      <span>{txt1}</span>
+    <DeviceHeader title={text(drive)}>
       <DriveSelector drive={drive} selected={driveDevice} toggleAriaLabel={toggleAriaLabel} />
-      <span>{txt2}</span>
-    </h4>
+    </DeviceHeader>
   );
 };
 

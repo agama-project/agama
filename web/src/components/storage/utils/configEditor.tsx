@@ -86,4 +86,16 @@ const DeviceMenu = ({ title, ariaLabel = undefined, activeItemId = undefined, ch
   );
 };
 
-export { DeviceMenu };
+const DeviceHeader = ({ title, children }) => {
+  const [txt1, txt2] = title.split("%s");
+
+  return (
+    <h4>
+      <span>{txt1}</span>
+      {children}
+      <span>{txt2}</span>
+    </h4>
+  );
+};
+
+export { DeviceHeader, DeviceMenu };
