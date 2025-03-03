@@ -37,6 +37,7 @@ export interface Config {
   boot?: Boot;
   encryption?: Encryption;
   drives?: Drive[];
+  volumeGroups?: VolumeGroup[];
 }
 export interface Boot {
   configure: boolean;
@@ -82,4 +83,18 @@ export interface Size {
   default: boolean;
   min: number;
   max?: number;
+}
+export interface VolumeGroup {
+  name: string;
+  extentSize?: number;
+  targetDevices?: Alias[];
+  logicalVolumes?: LogicalVolume[];
+}
+export interface LogicalVolume {
+  name?: string;
+  mountPath?: string;
+  filesystem?: Filesystem;
+  size?: Size;
+  stripes?: number;
+  stripeSize?: number;
 }
