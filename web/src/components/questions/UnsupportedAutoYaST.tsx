@@ -21,12 +21,20 @@
  */
 
 import React from "react";
-import { Flex, Grid, GridItem, Content } from "@patternfly/react-core";
+import {
+  Content,
+  Grid,
+  GridItem,
+  List,
+  ListItem,
+  ListVariant,
+  Stack,
+} from "@patternfly/react-core";
 import { AnswerCallback, Question } from "~/types/questions";
 import { Page, Popup } from "~/components/core";
-import { _ } from "~/i18n";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 const UnsupportedElements = ({
   elements,
@@ -43,14 +51,12 @@ const UnsupportedElements = ({
 
   return (
     <GridItem sm={12} lg={6}>
-      <Page.Section title={title} description={description}>
-        <Flex gap={{ default: "gapSm" }} aria-role="list">
+      <Page.Section title={title} description={description} hasHeaderDivider>
+        <List variant={ListVariant.inline}>
           {elements.map((e: string, i: number) => (
-            <span key={i} aria-role="listitem">
-              {e}
-            </span>
+            <ListItem key={i}>{e}</ListItem>
           ))}
-        </Flex>
+        </List>
       </Page.Section>
     </GridItem>
   );
@@ -73,30 +79,32 @@ export default function UnsupportedAutoYaST({
 
   return (
     <Popup isOpen title={_("Unsupported AutoYaST elements")}>
-      <Content>{_("Some of the elements in your AutoYaST profile are not supported.")}</Content>
-      <Grid hasGutter>
-        <UnsupportedElements
-          elements={planned}
-          title={
-            /** TRANSLATORS: %s is replaced by the quantity of not implemented elements */
-            sprintf(_("Not implemented yet (%s)"), planned.length)
-          }
-          description={_("Will be supported in a future version.")}
-        />
-        <UnsupportedElements
-          elements={unsupported}
-          title={
-            /** TRANSLATORS: %s is replaced by the quantity of not supported elements */
-            sprintf(_("Not supported (%s)"), unsupported.length)
-          }
-          description={_("No support is planned.")}
-        />
-      </Grid>
-      <Content>
-        {_(
-          'If you want to disable this check, please specify "agama.ay_check=0" at kernel\'s command-line',
-        )}
-      </Content>
+      <Stack hasGutter>
+        <Content>{_("Some of the elements in your AutoYaST profile are not supported.")}</Content>
+        <Grid hasGutter>
+          <UnsupportedElements
+            elements={planned}
+            title={
+              /** TRANSLATORS: %s is replaced by the quantity of not implemented elements */
+              sprintf(_("Not implemented yet (%s)"), planned.length)
+            }
+            description={_("Will be supported in a future version.")}
+          />
+          <UnsupportedElements
+            elements={unsupported}
+            title={
+              /** TRANSLATORS: %s is replaced by the quantity of not supported elements */
+              sprintf(_("Not supported (%s)"), unsupported.length)
+            }
+            description={_("No support is planned.")}
+          />
+        </Grid>
+        <Content component="small">
+          {_(
+            'If you want to disable this check, please specify "agama.ay_check=0" at kernel\'s command-line',
+          )}
+        </Content>
+      </Stack>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}
