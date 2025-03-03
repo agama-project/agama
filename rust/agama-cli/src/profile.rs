@@ -81,23 +81,22 @@ pub enum ProfileCommands {
     },
 }
 
+// TODO: ProfileValidator takes a local path, use that in the back end
+// then we use ValidationResult and format it for CLI, that's our front end
+// but put an HTTP API call in the middle
 fn validate(path: &PathBuf) -> anyhow::Result<()> {
+    // let result = profile_client.validate_file(path);
+
     let validator = ProfileValidator::default_schema()?;
     let result = validator
         .validate_file(path)
         .context(format!("Could not validate the profile {:?}", path))?;
     match result {
         ValidationResult::Valid => {
-            println!("{} The profile is valid.", style("\u{2713}").bold().green(),);
+            println!("{} {}", style("\u{2713}").bold().green(), result);
         }
-        ValidationResult::NotValid(errors) => {
-            eprintln!(
-                "{} The profile is not valid. Please, check the following errors:\n",
-                style("\u{2717}").bold().red(),
-            );
-            for error in errors {
-                println!("\t* {error}")
-            }
+        ValidationResult::NotValid(_) => {
+            eprintln!("{} {}", style("\u{2717}").bold().red(), result);
         }
     }
     Ok(())
