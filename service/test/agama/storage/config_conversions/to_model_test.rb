@@ -841,9 +841,31 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
           expect(drives_model).to eq(
             [
+              { name: "/dev/vdd", spacePolicy: "keep", partitions: [] },
               { name: "/dev/vda", spacePolicy: "keep", partitions: [] }
             ]
           )
+        end
+
+        context "and the drive is set to be skipped" do
+          let(:drive) do
+            {
+              search: {
+                condition: { name: "/dev/vdd" },
+                ifNotFound: "skip"
+              }
+            }
+          end
+
+          it "generates the expected JSON for 'drives'" do
+            drives_model = subject.convert[:drives]
+
+            expect(drives_model).to eq(
+              [
+                { name: "/dev/vda", spacePolicy: "keep", partitions: [] }
+              ]
+            )
+          end
         end
       end
 
