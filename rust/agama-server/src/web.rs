@@ -30,6 +30,7 @@ use crate::{
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
+    profile::web::profile_service,
     questions::web::{questions_service, questions_stream},
     scripts::web::scripts_service,
     software::web::{software_service, software_streams},
@@ -85,6 +86,7 @@ where
         .add_service("/questions", questions_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
         .add_service("/scripts", scripts_service().await?)
+        .add_service("/profile", profile_service().await?)
         .with_config(config)
         .build();
     Ok(router)
