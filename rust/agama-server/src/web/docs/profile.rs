@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,19 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod profile;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
+
+use super::ApiDocBuilder;
+
+pub struct ProfileApiDocBuilder;
+
+impl ApiDocBuilder for ProfileApiDocBuilder {
+    fn title(&self) -> String {
+        "Profile HTTP API".to_string()
+    }
+    fn paths(&self) -> Paths {
+        PathsBuilder::new()
+            .path_from::<crate::profile::web::__path_validate>()
+            .build()
+    }
+
+    fn components(&self) -> Components {
+        ComponentsBuilder::new()
+            //            .schema_from::<agama_lib::profile::model::ValidationResult>()
+            .build()
+    }
+}
