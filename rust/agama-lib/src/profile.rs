@@ -70,10 +70,32 @@ impl AutoyastProfileImporter {
     }
 }
 
-#[derive(Debug)]
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
 pub enum ValidationResult {
     Valid,
     NotValid(Vec<String>),
+}
+
+impl std::fmt::Display for ValidationResult {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ValidationResult::Valid => {
+                writeln!(f, "The profile is valid.")
+            }
+            ValidationResult::NotValid(errors) => {
+                writeln!(
+                    f,
+                    "The profile is not valid. Please, check the following errors:\n",
+                )?;
+                for error in errors {
+                    writeln!(f, "\t* {error}")?;
+                }
+                Ok(())
+            }
+        }
+    }
 }
 
 /// Checks whether an autoinstallation profile is valid
