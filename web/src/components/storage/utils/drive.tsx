@@ -157,14 +157,7 @@ const hasReuse = (drive: configModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath && p.name);
 };
 
-// TODO: maybe it should be moved to Drive hook from config-model.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const hasPv = (drive: configModel.Drive): boolean => {
-  return false;
-};
-
 export {
-  hasPv,
   hasReuse,
   hasFilesystem,
   hasRoot,

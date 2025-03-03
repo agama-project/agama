@@ -85,6 +85,12 @@ function isExplicitBoot(model: configModel.Config, driveName: string): boolean {
   return !model.boot?.device?.default && driveName === model.boot?.device?.name;
 }
 
+function driveHasPv(model: configModel.Config, driveAlias: string): boolean {
+  if (!driveAlias) return false;
+
+  return model.volumeGroups.flatMap((g) => g.targetDevices).includes(driveAlias);
+}
+
 function allMountPaths(drive: configModel.Drive): string[] {
   if (drive.mountPath) return [drive.mountPath];
 
@@ -411,6 +417,7 @@ export function useEncryption(): EncryptionHook {
 export type DriveHook = {
   isBoot: boolean;
   isExplicitBoot: boolean;
+  hasPv: boolean;
   allMountPaths: string[];
   configuredExistingPartitions: configModel.Partition[];
   switch: (newName: string) => void;
@@ -432,6 +439,7 @@ export function useDrive(name: string): DriveHook | null {
   return {
     isBoot: isBoot(model, name),
     isExplicitBoot: isExplicitBoot(model, name),
+    hasPv: driveHasPv(model, drive.alias),
     allMountPaths: allMountPaths(drive),
     configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),

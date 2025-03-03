@@ -130,7 +130,7 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
   const driveModel = useDrive(drive.name);
   if (!driveModel) return;
 
-  const { isBoot, isExplicitBoot } = driveModel;
+  const { isBoot, isExplicitBoot, hasPv } = driveModel;
   // TODO: Get volume groups associated to the drive.
   const volumeGroups = [];
 
@@ -142,7 +142,7 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
 
     if (!driveUtils.hasFilesystem(drive)) {
       // The current device will be the only option to choose from
-      if (driveUtils.hasPv(drive)) {
+      if (hasPv) {
         if (volumeGroups.length > 1) {
           if (isExplicitBoot) {
             return _(
@@ -195,7 +195,7 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
 
     const name = baseName(drive.name);
 
-    if (driveUtils.hasPv(drive)) {
+    if (hasPv) {
       if (volumeGroups.length > 1) {
         if (isExplicitBoot) {
           return sprintf(
@@ -318,13 +318,13 @@ const SearchSelectorOptions = ({ drive, selected, onChange }) => {
   const driveModel = useDrive(drive.name);
   if (!driveModel) return;
 
-  const { isExplicitBoot } = driveModel;
+  const { isExplicitBoot, hasPv } = driveModel;
   // const boot = isExplicitBoot(drive.name);
 
   if (driveUtils.hasReuse(drive)) return <SearchSelectorSingleOption selected={selected} />;
 
   if (!driveUtils.hasFilesystem(drive)) {
-    if (driveUtils.hasPv(drive) || isExplicitBoot) {
+    if (hasPv || isExplicitBoot) {
       return <SearchSelectorSingleOption selected={selected} />;
     }
 
@@ -349,10 +349,10 @@ const RemoveDriveOption = ({ drive }) => {
 
   if (!driveModel) return;
 
-  const { isExplicitBoot, delete: deleteDrive } = driveModel;
+  const { isExplicitBoot, hasPv, delete: deleteDrive } = driveModel;
 
   if (isExplicitBoot) return;
-  if (driveUtils.hasPv(drive)) return;
+  if (hasPv) return;
   if (driveUtils.hasRoot(drive)) return;
 
   return (
@@ -390,11 +390,11 @@ const DriveSelector = ({ drive, selected, toggleAriaLabel }) => {
 };
 
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  const { isBoot } = useDrive(drive.name);
+  const { isBoot, hasPv } = useDrive(drive.name);
 
   const text = (drive: configModel.Drive): string => {
     if (driveUtils.hasRoot(drive)) {
-      if (driveUtils.hasPv(drive)) {
+      if (hasPv) {
         if (isBoot) {
           // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
           return _("Use %s to install, host LVM and boot");
@@ -412,7 +412,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
     }
 
     if (driveUtils.hasFilesystem(drive)) {
-      if (driveUtils.hasPv(drive)) {
+      if (hasPv) {
         if (isBoot) {
           // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
           return _("Use %s for LVM, additional partitions and booting");
@@ -429,7 +429,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
       return _("Use %s for additional partitions");
     }
 
-    if (driveUtils.hasPv(drive)) {
+    if (hasPv) {
       if (isBoot) {
         // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
         return _("Use %s to host LVM and boot");
