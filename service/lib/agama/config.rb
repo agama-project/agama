@@ -221,7 +221,7 @@ module Agama
     #
     # @return [String, nil]
     def boot_strategy
-      data.dig("storage", "boot_strategy") || nil
+      data.dig("storage", "boot_strategy")
     end
 
   private
