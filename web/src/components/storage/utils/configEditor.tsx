@@ -23,11 +23,16 @@
 // @ts-check
 
 import React, { useId, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useVolume } from "~/queries/storage";
+import * as partitionUtils from "~/components/storage/utils/partition";
 import { Icon } from "../../layout";
 import {
   Menu,
   MenuContainer,
   MenuContent,
+  MenuItem,
+  MenuItemAction,
   MenuToggle,
   MenuToggleProps,
   MenuToggleElement,
@@ -98,4 +103,42 @@ const DeviceHeader = ({ title, children }) => {
   );
 };
 
-export { DeviceHeader, DeviceMenu };
+const MountPathMenuItem = ({ device, editPath = undefined, deleteFn = undefined }) => {
+  const navigate = useNavigate();
+  const mountPath = device.mountPath;
+  const volume = useVolume(mountPath);
+  const isRequired = volume.outline?.required || false;
+  const description = device ? partitionUtils.typeWithSize(device) : null;
+
+  return (
+    <MenuItem
+      itemId={mountPath}
+      description={description}
+      role="menuitem"
+      actions={
+        <>
+          <MenuItemAction
+            style={{ alignSelf: "center" }}
+            icon={<Icon name="edit_square" aria-label={"Edit"} />}
+            actionId={`edit-${mountPath}`}
+            aria-label={`Edit ${mountPath}`}
+            onClick={() => editPath && navigate(editPath)}
+          />
+          {!isRequired && (
+            <MenuItemAction
+              style={{ alignSelf: "center" }}
+              icon={<Icon name="delete" aria-label={"Delete"} />}
+              actionId={`delete-${mountPath}`}
+              aria-label={`Delete ${mountPath}`}
+              onClick={() => deleteFn && deleteFn(mountPath)}
+            />
+          )}
+        </>
+      }
+    >
+      {mountPath}
+    </MenuItem>
+  );
+};
+
+export { DeviceHeader, DeviceMenu, MountPathMenuItem };

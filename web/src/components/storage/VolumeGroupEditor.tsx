@@ -24,8 +24,13 @@ import React from "react";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
+import { contentDescription } from "~/components/storage/utils/volumeGroup";
 import { useVolumeGroup } from "~/queries/storage/config-model";
-import { DeviceHeader, DeviceMenu } from "~/components/storage/utils/configEditor";
+import {
+  DeviceHeader,
+  DeviceMenu,
+  MountPathMenuItem,
+} from "~/components/storage/utils/configEditor";
 import {
   Card,
   CardBody,
@@ -72,10 +77,29 @@ const VgMenu = ({ vg }) => {
 };
 
 const VgHeader = ({ vg }: VolumeGroupEditorProps) => {
+  const title = vg.logicalVolumes.length
+    ? _("Create LVM volume group %s")
+    : _("Empty LVM volume group %s");
+
   return (
-    <DeviceHeader title={_("Create LVM volume group %s")}>
+    <DeviceHeader title={title}>
       <VgMenu vg={vg} />
     </DeviceHeader>
+  );
+};
+
+const LogicalVolumes = ({ vg }) => {
+  return (
+    <DeviceMenu
+      title={<span aria-hidden>{contentDescription(vg)}</span>}
+      ariaLabel={_("Logical volumes")}
+    >
+      <MenuList>
+        {vg.logicalVolumes.map((lv) => {
+          return <MountPathMenuItem key={lv.mountPath} device={lv} />;
+        })}
+      </MenuList>
+    </DeviceMenu>
   );
 };
 
@@ -88,7 +112,9 @@ export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
         </CardTitle>
       </CardHeader>
       <CardBody className={spacingStyles.plLg}>
-        <Flex direction={{ default: "column" }} />
+        <Flex direction={{ default: "column" }}>
+          <LogicalVolumes vg={vg} />
+        </Flex>
       </CardBody>
     </Card>
   );

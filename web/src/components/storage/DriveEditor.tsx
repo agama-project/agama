@@ -25,16 +25,18 @@ import { useNavigate, generatePath } from "react-router-dom";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
-import { useAvailableDevices, useVolume } from "~/queries/storage";
+import { useAvailableDevices } from "~/queries/storage";
 import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
-import * as partitionUtils from "~/components/storage/utils/partition";
 import { contentDescription } from "~/components/storage/utils/device";
-import { DeviceHeader, DeviceMenu } from "~/components/storage/utils/configEditor";
-import { Icon } from "../layout";
+import {
+  DeviceHeader,
+  DeviceMenu,
+  MountPathMenuItem,
+} from "~/components/storage/utils/configEditor";
 import { MenuHeader } from "~/components/core";
 import MenuDeviceDescription from "./MenuDeviceDescription";
 import {
@@ -47,7 +49,6 @@ import {
   Label,
   Split,
   MenuItem,
-  MenuItemAction,
   MenuList,
   MenuGroup,
 } from "@patternfly/react-core";
@@ -481,48 +482,15 @@ const PartitionsNoContentSelector = ({ drive, toggleAriaLabel }) => {
 };
 
 const PartitionMenuItem = ({ driveName, mountPath }) => {
-  const navigate = useNavigate();
   const drive = useDrive(driveName);
   const partition = drive.getPartition(mountPath);
-  const volume = useVolume(mountPath);
-  const isRequired = volume.outline?.required || false;
-  const description = partition ? partitionUtils.typeWithSize(partition) : null;
+  const editPath = generatePath(PATHS.editPartition, {
+    id: baseName(driveName),
+    partitionId: encodeURIComponent(mountPath),
+  });
 
   return (
-    <MenuItem
-      itemId={mountPath}
-      description={description}
-      role="menuitem"
-      actions={
-        <>
-          <MenuItemAction
-            style={{ alignSelf: "center" }}
-            icon={<Icon name="edit_square" aria-label={"Edit"} />}
-            actionId={`edit-${mountPath}`}
-            aria-label={`Edit ${mountPath}`}
-            onClick={() =>
-              navigate(
-                generatePath(PATHS.editPartition, {
-                  id: baseName(driveName),
-                  partitionId: encodeURIComponent(mountPath),
-                }),
-              )
-            }
-          />
-          {!isRequired && (
-            <MenuItemAction
-              style={{ alignSelf: "center" }}
-              icon={<Icon name="delete" aria-label={"Delete"} />}
-              actionId={`delete-${mountPath}`}
-              aria-label={`Delete ${mountPath}`}
-              onClick={() => drive.deletePartition(mountPath)}
-            />
-          )}
-        </>
-      }
-    >
-      {mountPath}
-    </MenuItem>
+    <MountPathMenuItem device={partition} editPath={editPath} deleteFn={drive.deletePartition} />
   );
 };
 

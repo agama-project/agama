@@ -161,7 +161,6 @@ const drive2: ConfigModel.Drive = {
 };
 
 const mockDeleteDrive = jest.fn();
-const mockGetPartition = jest.fn();
 const mockDeletePartition = jest.fn();
 
 jest.mock("~/queries/storage", () => ({
@@ -176,7 +175,7 @@ jest.mock("~/queries/storage/config-model", () => ({
   useConfigModel: () => ({ drives: [drive1, drive2] }),
   useDrive: () => ({
     delete: mockDeleteDrive,
-    getPartition: mockGetPartition,
+    getPartition: (path) => drive1.partitions.find((p) => p.mountPath === path),
     deletePartition: mockDeletePartition,
   }),
 }));
