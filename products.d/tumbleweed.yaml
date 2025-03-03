@@ -130,6 +130,7 @@ security:
       patterns: null
 
 storage:
+  boot_strategy: BLS
   space_policy: delete
   volumes:
     - "/"
