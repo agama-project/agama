@@ -16,8 +16,7 @@
       "description": "LVM volume groups.",
       "type": "array",
       "items": { "$ref": "#/$defs/volumeGroup" }
-    },
-    "guided": { "$ref": "#/$defs/guided" }
+    }
   },
   "$defs": {
     "boot": {
@@ -160,6 +159,7 @@
       "description": "LVM volume group.",
       "type": "object",
       "additionalProperties": false,
+      "required": ["name"],
       "properties": {
         "name": {
           "description": "Volume group name.",
