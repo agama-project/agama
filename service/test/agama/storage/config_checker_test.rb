@@ -515,12 +515,27 @@ describe Agama::Storage::ConfigChecker do
       end
     end
 
+    context "if a volume group has no name" do
+      let(:config_json) do
+        {
+          volumeGroups: [{ name: "test" }, { name: "" }, {}]
+        }
+      end
+
+      it "includes the expected issue" do
+        issues = subject.issues.select { |i| i.description.match?(/without name/) }
+        expect(issues.size).to eq(2)
+        expect(issues.map(&:error?)).to all(eq(true))
+      end
+    end
+
     context "if a volume group has logical volumes" do
       let(:config_json) do
         {
           boot:         { configure: false },
           volumeGroups: [
             {
+              name:           "test",
               logicalVolumes: [
                 logical_volume,
                 {
@@ -591,6 +606,7 @@ describe Agama::Storage::ConfigChecker do
           ],
           volumeGroups: [
             {
+              name:            "test",
               physicalVolumes: ["first-disk", "pv1"]
             }
           ]
@@ -618,6 +634,7 @@ describe Agama::Storage::ConfigChecker do
           ],
           volumeGroups: [
             {
+              name:            "test",
               physicalVolumes: [
                 {
                   generate: {
@@ -652,6 +669,7 @@ describe Agama::Storage::ConfigChecker do
           ],
           volumeGroups: [
             {
+              name:            "test",
               physicalVolumes: [
                 {
                   generate: {
@@ -745,6 +763,7 @@ describe Agama::Storage::ConfigChecker do
           ],
           volumeGroups: [
             {
+              name:            "test1",
               physicalVolumes: [
                 {
                   generate: {
@@ -754,6 +773,7 @@ describe Agama::Storage::ConfigChecker do
               ]
             },
             {
+              name:            "test2",
               physicalVolumes: [
                 {
                   generate: {
@@ -763,6 +783,7 @@ describe Agama::Storage::ConfigChecker do
               ]
             },
             {
+              name:            "test3",
               physicalVolumes: [
                 {
                   generate: {
@@ -797,6 +818,7 @@ describe Agama::Storage::ConfigChecker do
           ],
           volumeGroups: [
             {
+              name:            "test",
               physicalVolumes: ["pv1"]
             }
           ]
