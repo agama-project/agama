@@ -221,7 +221,7 @@ describe Agama::Storage::Manager do
     it "sets env YAST_NO_BLS_BOOT to yes if product doesn't requires bls boot explicitly" do
       expect(config).to receive(:pick_product)
       expect(config).to receive(:boot_strategy).and_return(nil)
-      expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "yes")
+      expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
 
       storage.probe
     end

@@ -22,6 +22,7 @@
 require "yast"
 require "bootloader/proposal_client"
 require "y2storage/storage_manager"
+require "y2storage/storage_env"
 require "y2storage/clients/inst_prepdisk"
 require "agama/storage/actions_generator"
 require "agama/storage/bootloader"
@@ -123,7 +124,7 @@ module Agama
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
         # However, we don't always want to use BLS when it proposes so. Currently
         # we want to use BLS only for Tumbleweed / Slowroll
-        ENV["YAST_NO_BLS_BOOT"] = "yes" if !product_config.boot_strategy&.casecmp("BLS")
+        prohibit_bls_boot if !product_config.boot_strategy&.casecmp("BLS")
 
         check_multipath
         progress.step(_("Activating storage devices")) { activate_devices }
@@ -219,6 +220,12 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
+
+      def prohibit_bls_boot
+        ENV["YAST_NO_BLS_BOOT"] = "1"
+        # avoiding problems with cached values
+        Y2Storage::StorageEnv.instance.reset_cache
+      end
 
       # Issues are updated when the proposal is calculated
       def register_proposal_callbacks
