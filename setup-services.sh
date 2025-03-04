@@ -218,7 +218,7 @@ fi
 (
   $SUDO systemctl daemon-reload
   # Start the separate dbus-daemon for Agama
-  $SUDO systemctl start agama.service
+  $SUDO systemctl restart agama.service
   # Start the web server
-  $SUDO systemctl start agama-web-server.service
+  $SUDO systemctl restart agama-web-server.service
 )
