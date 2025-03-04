@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar  4 13:34:13 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- install and package also storage.schema.json (bsc#1238367)
+
+-------------------------------------------------------------------
 Wed Feb 26 06:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 12
