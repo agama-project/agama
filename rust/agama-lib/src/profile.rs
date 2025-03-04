@@ -70,9 +70,9 @@ impl AutoyastProfileImporter {
     }
 }
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum ValidationResult {
     Valid,
     NotValid(Vec<String>),
