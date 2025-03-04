@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar  4 09:06:46 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
+
+- Update patterns list for SLES / SLES_SAP 16.
+
+-------------------------------------------------------------------
 Thu Feb 20 13:13:18 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - drop sles_sap for aarch64 (bsc#1236370#c8)
