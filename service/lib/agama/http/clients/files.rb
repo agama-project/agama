@@ -24,11 +24,11 @@ require "agama/http/clients/base"
 module Agama
   module HTTP
     module Clients
-      # HTTP client to interact with the scripts API.
+      # HTTP client to interact with the files API.
       class Scripts < Base
-        # Runs the scripts
-        def run(group)
-          post("scripts/run", group)
+        # writes additional files
+        def write
+          post("files/write", nil)
         end
       end
     end
