@@ -245,7 +245,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             wait_for_services(&manager).await?;
             probe().await?
         }
-        Commands::Profile(subcommand) => run_profile_cmd(subcommand).await?,
+        Commands::Profile(subcommand) => run_profile_cmd(client, subcommand).await?,
         Commands::Install => {
             let manager = build_manager().await?;
             install(&manager, 3).await?

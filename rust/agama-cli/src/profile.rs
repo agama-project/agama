@@ -22,7 +22,7 @@ use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
-    profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationResult},
+    profile::{AutoyastProfileImporter, ProfileEvaluator, ValidationResult},
     utils::FileFormat,
     utils::Transfer,
     Store as SettingsStore,
@@ -81,16 +81,9 @@ pub enum ProfileCommands {
     },
 }
 
-// TODO: ProfileValidator takes a local path, use that in the back end
-// then we use ValidationResult and format it for CLI, that's our front end
-// but put an HTTP API call in the middle
-fn validate(path: &PathBuf) -> anyhow::Result<()> {
-    // let result = profile_client.validate_file(path);
-
-    let validator = ProfileValidator::default_schema()?;
-    let result = validator
-        .validate_file(path)
-        .context(format!("Could not validate the profile {:?}", path))?;
+async fn validate(client: BaseHTTPClient, path: &PathBuf) -> anyhow::Result<()> {
+    let url_path = format!("/profile/validate?path={}", path.to_string_lossy());
+    let result = client.get(&url_path).await?;
     match result {
         ValidationResult::Valid => {
             println!("{} {}", style("\u{2713}").bold().green(), result);
@@ -110,7 +103,11 @@ fn evaluate(path: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
+async fn import(
+    client: BaseHTTPClient,
+    url_string: String,
+    dir: Option<PathBuf>,
+) -> anyhow::Result<()> {
     tokio::spawn(async move {
         show_progress().await.unwrap();
     });
@@ -129,7 +126,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
         pre_process_profile(&url_string, &profile_path)?;
     }
 
-    validate(&profile_path)?;
+    validate(client, &profile_path).await?;
     store_settings(&profile_path).await?;
 
     Ok(())
@@ -187,11 +184,11 @@ fn autoyast(url_string: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub async fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
+pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(url),
-        ProfileCommands::Validate { path } => validate(&path),
+        ProfileCommands::Validate { path } => validate(client, &path).await,
         ProfileCommands::Evaluate { path } => evaluate(&path),
-        ProfileCommands::Import { url, dir } => import(url, dir).await,
+        ProfileCommands::Import { url, dir } => import(client, url, dir).await,
     }
 }

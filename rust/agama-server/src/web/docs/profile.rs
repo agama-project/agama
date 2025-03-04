@@ -36,7 +36,7 @@ impl ApiDocBuilder for ProfileApiDocBuilder {
 
     fn components(&self) -> Components {
         ComponentsBuilder::new()
-            //            .schema_from::<agama_lib::profile::model::ValidationResult>()
+            .schema_from::<agama_lib::profile::ValidationResult>()
             .build()
     }
 }
