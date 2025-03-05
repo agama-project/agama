@@ -22,7 +22,7 @@ use anyhow::Context;
 
 use agama_lib::{
     error::{ProfileError, ServiceError},
-    profile::{ProfileValidator, ValidationResult},
+    profile::{ProfileEvaluator, ProfileValidator, ValidationResult},
     //profile::{validate},
 };
 use axum::{
@@ -69,6 +69,7 @@ impl IntoResponse for ProfileServiceError {
 pub async fn profile_service() -> Result<Router, ServiceError> {
     let state = ProfileState::default();
     let router = Router::new()
+        .route("/evaluate", get(evaluate))
         .route("/validate", get(validate))
         .with_state(state);
     Ok(router)
@@ -106,31 +107,24 @@ async fn validate(
     Ok(Json(result))
 }
 
-// TODO: ProfileValidator takes a local path, use that in the back end
-// then we use ValidationResult and format it for CLI, that's our front end
-// but put an HTTP API call in the middle
-/*
-fn xvalidate(path: &PathBuf) -> anyhow::Result<()> {
-    // let result = profile_client.validate_file(path);
-
-
-    let validator = ProfileValidator::default_schema()?;
-    let result = validator
-        .validate_file(path)
-        .context(format!("Could not validate the profile {:?}", path))?;
-    match result {
-        ValidationResult::Valid => {
-            println!("The profile is valid.");
-        }
-        ValidationResult::NotValid(errors) => {
-            eprintln!(
-                "The profile is not valid. Please, check the following errors:\n"
-            );
-            for error in errors {
-                println!("\t* {error}")
-            }
-        }
-    }
-    Ok(())
+#[utoipa::path(
+    get,
+    path = "/evaluate",
+    context_path = "/api/profile",
+    params(ValidateQuery),
+    responses(
+        (status = 200, description = "Evaluated profile"),
+        (status = 400, description = "FIXME some error has happened")
+    )
+)]
+async fn evaluate(
+    _state: State<ProfileState>,
+    query: Query<ValidateQuery>,
+) -> Result<String, ProfileServiceError> {
+    let path = std::path::Path::new(query.path.as_str());
+    let evaluator = ProfileEvaluator {};
+    let output = evaluator
+        .evaluate(path)
+        .context("Could not evaluate the profile".to_string())?;
+    Ok(output)
 }
-    */

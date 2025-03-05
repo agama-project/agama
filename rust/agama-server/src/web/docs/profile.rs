@@ -30,6 +30,7 @@ impl ApiDocBuilder for ProfileApiDocBuilder {
     }
     fn paths(&self) -> Paths {
         PathsBuilder::new()
+            .path_from::<crate::profile::web::__path_evaluate>()
             .path_from::<crate::profile::web::__path_validate>()
             .build()
     }

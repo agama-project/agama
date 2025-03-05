@@ -33,7 +33,7 @@ use console::style;
 use std::os::unix::{fs::PermissionsExt, process::CommandExt};
 use std::{
     fs::File,
-    io::stdout,
+    io::Write,
     path::{Path, PathBuf},
     process::Command,
 };
@@ -95,11 +95,10 @@ async fn validate(client: BaseHTTPClient, path: &PathBuf) -> anyhow::Result<()> 
     Ok(())
 }
 
-fn evaluate(path: &Path) -> anyhow::Result<()> {
-    let evaluator = ProfileEvaluator {};
-    evaluator
-        .evaluate(path, stdout())
-        .context("Could not evaluate the profile".to_string())?;
+async fn evaluate(client: BaseHTTPClient, path: &Path) -> anyhow::Result<()> {
+    let url_path = format!("/profile/evaluate?path={}", path.to_string_lossy());
+    let output: String = client.get(&url_path).await?;
+    println!("{}", output);
     Ok(())
 }
 
@@ -147,11 +146,12 @@ fn pre_process_profile<P: AsRef<Path>>(url_string: &str, path: P) -> anyhow::Res
 
     match FileFormat::from_file(&tmp_profile_path)? {
         FileFormat::Jsonnet => {
-            let file = File::create(path)?;
+            let mut file = File::create(path)?;
             let evaluator = ProfileEvaluator {};
-            evaluator
-                .evaluate(&tmp_profile_path, file)
+            let ouptut = evaluator
+                .evaluate(&tmp_profile_path)
                 .context("Could not evaluate the profile".to_string())?;
+            write!(file, "{}", ouptut)?;
         }
         FileFormat::Script => {
             let mut perms = std::fs::metadata(&tmp_profile_path)?.permissions();
@@ -188,7 +188,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow:
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(url),
         ProfileCommands::Validate { path } => validate(client, &path).await,
-        ProfileCommands::Evaluate { path } => evaluate(&path),
+        ProfileCommands::Evaluate { path } => evaluate(client, &path).await,
         ProfileCommands::Import { url, dir } => import(client, url, dir).await,
     }
 }
