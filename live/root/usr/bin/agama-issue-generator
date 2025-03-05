@@ -24,8 +24,9 @@ CERT_ISSUE=/run/issue.d/50-agama-ssl-certificate.issue
 # a helper function which generates the Agama welcome message displayed at the
 # console
 generate_welcome() {
-  # get the latest version of any Agama package
-  AGAMA_VERSION=$(rpm -qa | grep agama | xargs rpm -q --queryformat \
+  # get the latest version of any Agama package (except the integration tests, it lives in a
+  # separate git repository and has different number of commits than the rest)
+  AGAMA_VERSION=$(rpm -qa | grep agama | grep -v agama-integration-tests | xargs rpm -q --queryformat \
     "%{VERSION}\n" | sed -e "s/\\.devel/+/" -e 's/+0$//' | sort -V | tail -n 1)
 
   ISSUE=/run/issue.d/10-agama-welcome.issue
