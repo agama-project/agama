@@ -74,7 +74,7 @@ module Agama
 
           # @return [Array<Configs::Drive>]
           def valid_drives
-            config.drives.select(&:found_device)
+            config.drives.reject { |d| d.search&.skip_device? }
           end
 
           # TODO: proper support for a base encryption.

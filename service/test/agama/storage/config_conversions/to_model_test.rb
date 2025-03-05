@@ -173,6 +173,13 @@ shared_examples "with partitions" do |result_scope, device_scope|
       model_json = result_scope.call(subject.convert)
       expect(model_json[:partitions]).to eq(
         [
+          {
+            delete:         true,
+            deleteIfNeeded: false,
+            resize:         false,
+            resizeIfNeeded: false,
+            size:           { default: true, min: 100.MiB.to_i }
+          },
           default_partition_json
         ]
       )
@@ -186,6 +193,13 @@ shared_examples "with partitions" do |result_scope, device_scope|
       model_json = result_scope.call(subject.convert)
       expect(model_json[:partitions]).to eq(
         [
+          {
+            delete:         false,
+            deleteIfNeeded: true,
+            resize:         false,
+            resizeIfNeeded: false,
+            size:           { default: true, min: 100.MiB.to_i }
+          },
           default_partition_json
         ]
       )
@@ -845,6 +859,27 @@ describe Agama::Storage::ConfigConversions::ToModel do
               { name: "/dev/vda", spacePolicy: "keep", partitions: [] }
             ]
           )
+        end
+
+        context "and the drive is set to be skipped" do
+          let(:drive) do
+            {
+              search: {
+                condition:  { name: "/dev/vdd" },
+                ifNotFound: "skip"
+              }
+            }
+          end
+
+          it "generates the expected JSON for 'drives'" do
+            drives_model = subject.convert[:drives]
+
+            expect(drives_model).to eq(
+              [
+                { name: "/dev/vda", spacePolicy: "keep", partitions: [] }
+              ]
+            )
+          end
         end
       end
 
