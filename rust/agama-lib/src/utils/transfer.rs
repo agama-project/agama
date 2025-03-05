@@ -25,7 +25,25 @@
 //! installer](https://github.com/yast/yast-installation/blob/master/doc/url.md) for further
 //! information.
 //!
-//! At this point, it only supports those schemes supported by CURL.
+//! This API supports the following URLs from YaST: `device:`, `usb:`, `label:`, ! `hd:`, `dvd:` and
+//! `cd:`. The support for well-known URLs (e.g., `file:`, `http:`, `https:`, ! `ftp:`, `nfs:`,
+//!  etc.) is implemented using CURL.
+//!
+//! Support for `relurl:` and `repo:` are still missing.
+//!
+//! ## SSL
+//!
+//! YaST support for HTTPS used a custom certificate which was located in
+//! `/etc/sssl/clientcerts/client-cert.pem`. Agama does not use such a certificate and it only
+//! relies on those that are installed in the installation media.
+//!
+//! ## Examples
+//! Requires working localectl.
+//!
+//! ```no_run
+//! use agama_lib::utils::Transfer;
+//! Transfer::get("label://OEMDRV/autoinst.xml", &mut std::io::stdout()).unwrap();
+//! ````
 
 use std::{
     io::Write,
