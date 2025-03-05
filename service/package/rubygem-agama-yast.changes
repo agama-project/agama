@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  5 09:21:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Enable again the signature checking for dir:/// repositories
+  (gh#agama-project/agama#2092).
+
+-------------------------------------------------------------------
 Fri Feb 28 13:03:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Temporarily disable signature checking for dir:// repositories
