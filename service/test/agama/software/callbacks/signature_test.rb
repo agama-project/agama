@@ -74,7 +74,7 @@ describe Agama::Software::Callbacks::Signature do
       context "and the repository is included in the media" do
         before do
           allow(Yast::Pkg).to receive(:SourceGeneralData).with(1)
-            .and_return("name" => "OSS", "url" => "dir:/run/initramfs/live/install")
+            .and_return("name" => "OSS", "url" => "dir:///run/initramfs/live/install")
         end
 
         it "returns true without asking" do
