@@ -152,11 +152,20 @@ $SUDO $ZYPPER install \
   cargo build
 
   $SUDO ln -sft /usr/bin $MYDIR/rust/target/debug/agama{,*server}
+
+  # FIXME also duplicates
+  cargo run --package xtask -- manpages
+  gzip -f out/man/*.?
+  cargo run --package xtask -- completions
+  cargo run --package xtask -- openapi
 )
 
-# - D-Bus configuration
-$SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
+(
+  cd $MYDIR/service
+  $SUDO bash -x ./install.sh --system
+)
 
+# This repeats parts of service/install.sh but patches the program paths
 # - D-Bus activation configuration
 #   (this could be left out but then we would rely
 #    on the manual startup via bin/agamactl)
@@ -172,11 +181,18 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
   for SVC in org.opensuse.Agama*.service; do
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
   done
-  sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
-    agama.service /usr/lib/systemd/system/agama.service
+
+  for SVC in agama*.service; do
+    sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
+      $SVC /usr/lib/systemd/system/$SVC
+  done
 )
 
 # and same for rust service
+(
+  cd $MYDIR/rust
+  $SUDO bash -x ./install.sh --system
+)
 (
   cd $MYDIR/rust/share
   DBUSDIR=/usr/share/dbus-1/agama-services
@@ -185,19 +201,17 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" $SVC $DBUSDIR/$SVC
   done
 
-  sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" \
-    agama-web-server.service /usr/lib/systemd/system/agama-web-server.service
-
-  $SUDO cp -f agama.pam /usr/lib/pam.d/agama
+  for SVC in agama*.service; do
+    sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" \
+      $SVC /usr/lib/systemd/system/$SVC
+  done
 )
 
-# copy D-Bus monitor service
-$SUDO cp -vf $MYDIR/service/share/agama-dbus-monitor.service /usr/lib/systemd/system/agama-dbus-monitor.service
-$SUDO chmod 0600 /usr/lib/systemd/system/agama-dbus-monitor.service
-
 # copy the product files
-$SUDO mkdir -p /usr/share/agama/products.d
-$SUDO cp -f $MYDIR/products.d/*.yaml /usr/share/agama/products.d
+(
+  cd $MYDIR/products.d
+  $SUDO bash -x ./install.sh --system
+)
 
 # - Make sure NetworkManager is running
 if [ -n "${DISTROBOX_ENTER_PATH:-}" ]; then

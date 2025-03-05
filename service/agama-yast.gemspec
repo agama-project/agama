@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
   spec.email = "yast-devel@opensuse.org"
   spec.homepage = "https://github.com/openSUSE/agama"
   spec.license = "GPL-2.0-only"
-  spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "conf.d/*"]
+  spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "conf.d/*", "install.sh"]
   spec.executables = ["agamactl", "agama-proxy-setup", "agama-autoyast"]
   spec.metadata = { "rubygems_mfa_required" => "true" }
 
