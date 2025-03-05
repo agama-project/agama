@@ -140,7 +140,7 @@ describe Agama::Manager do
       expect(software).to receive(:finish)
       expect(locale).to receive(:finish)
       expect(storage).to receive(:install)
-      expect(scripts).to receive(:run).with("post_partitioning")
+      expect(scripts).to receive(:run).with("postPartitioning")
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
       subject.install_phase
