@@ -211,7 +211,10 @@ pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
         .open(path)
         .context(format!("Cannot write the file '{}'", path.display()))?;
 
-    Transfer::get(&url, &mut file)?;
+    match Transfer::get(&url, &mut file) {
+        Ok(()) => println!("File saved to {}", path.display()),
+        Err(e) => eprintln!("Could not retrieve the file: {e}"),
+    }
     Ok(())
 }
 

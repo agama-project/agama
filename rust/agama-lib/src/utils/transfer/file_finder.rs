@@ -71,6 +71,8 @@ impl FileFinder {
             .clone()
             .unwrap_or(default_mount_point);
 
+        println!("Searching {} in {}", &file_name, &file_system.block_device);
+
         if !file_system.is_mounted() {
             Self::mount_file_system(&file_system, &mount_point)?;
         }
