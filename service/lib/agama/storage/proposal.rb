@@ -24,6 +24,7 @@ require "agama/storage/actions_generator"
 require "agama/storage/config_checker"
 require "agama/storage/config_conversions"
 require "agama/storage/config_solver"
+require "agama/storage/model_support_checker"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
 require "json"
@@ -285,25 +286,12 @@ module Agama
         solved ? strategy.config : source_config
       end
 
-      # TODO: extract to a separate class (e.g., ModelSupportChecker) and add more checks, for
-      #   example: the presence of thin pools, partitions without mount path, lvs without mount
-      #   path, etc.
-      #
       # Whether the config model supports all features of the given config.
       #
       # @param config [Storage::Config]
       # @return [Boolean]
       def model_supported?(config)
-        unsupported_devices = [
-          config.md_raids,
-          config.btrfs_raids,
-          config.nfs_mounts
-        ].flatten
-
-        # Only volume groups with automatically generated pvs are supported
-        volume_groups_with_pvs = config.volume_groups.select { |v| v.physical_volumes.any? }
-
-        unsupported_devices.empty? && volume_groups_with_pvs.empty?
+        ModelSupportChecker.new(config).supported?
       end
 
       # Calculates a proposal from guided JSON settings.
