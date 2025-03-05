@@ -841,6 +841,7 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
           expect(drives_model).to eq(
             [
+              { name: "/dev/vdd", spacePolicy: "keep", partitions: [] },
               { name: "/dev/vda", spacePolicy: "keep", partitions: [] }
             ]
           )
