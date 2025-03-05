@@ -31,11 +31,28 @@ module Agama
     #
     # @see RepositoriesManager
     class Repository < Y2Packager::Repository
+      # delay before retrying (in seconds)
+      RETRY_DELAY = 5
+      # number of automatic retries
+      RETRY_COUNT = 3
+
       # Probes a repository
       #
       # @return [Boolean] true if the repository can be read; false otherwise
       def probe
-        type = Yast::Pkg.RepositoryProbe(url.to_s, product_dir)
+        attempt = 1
+        type = nil
+
+        loop do
+          # on a timeout error the result is nil, retry automatically in that case,
+          # note: callbacks are disabled during repo probing call
+          type = Yast::Pkg.RepositoryProbe(url.to_s, product_dir)
+          break if !type.nil? || attempt == RETRY_COUNT
+
+          sleep(RETRY_DELAY)
+          attempt += 1
+        end
+
         !!type && type != "NONE"
       end
 
@@ -44,7 +61,17 @@ module Agama
       end
 
       def refresh
-        @loaded = !!super
+        attempt = 1
+
+        loop do
+          @loaded = !!super
+          break if @loaded || attempt == RETRY_COUNT
+
+          sleep(RETRY_DELAY)
+          attempt += 1
+        end
+
+        @loaded
       end
     end
   end
