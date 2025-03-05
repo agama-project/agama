@@ -213,6 +213,13 @@ shared_examples "with partitions" do |result_scope, device_scope|
       model_json = result_scope.call(subject.convert)
       expect(model_json[:partitions]).to eq(
         [
+          {
+            delete:         false,
+            deleteIfNeeded: false,
+            resize:         false,
+            resizeIfNeeded: false,
+            size:           { default: true, min: 0 }
+          },
           default_partition_json
         ]
       )
