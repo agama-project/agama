@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar  5 12:17:51 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
+
+- Ensure enhanced_base is installed by default for SLES 16.
+
+-------------------------------------------------------------------
 Tue Mar  4 09:06:46 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
 
 - Update patterns list for SLES / SLES_SAP 16.
