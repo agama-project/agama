@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  5 11:33:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the correcty script type allows postPartitioning scripts to run
+  (gh#agama-project/agama#2114).
+
+-------------------------------------------------------------------
 Wed Mar  5 09:21:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Enable again the signature checking for dir:/// repositories
