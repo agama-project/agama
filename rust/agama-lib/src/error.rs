@@ -41,7 +41,7 @@ pub enum ServiceError {
     HTTPError(#[from] reqwest::Error),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
-    #[error("Error: {0}")]
+    #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
     // FIXME: It is too generic and starting to looks like an Anyhow error
     #[error("Network client error: '{0}'")]
@@ -84,6 +84,6 @@ pub enum ProfileError {
     InputOutputError(#[from] io::Error),
     #[error("The profile is not a valid JSON file")]
     FormatError(#[from] serde_json::Error),
-    #[error("Error: {0}")]
+    #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
 }
