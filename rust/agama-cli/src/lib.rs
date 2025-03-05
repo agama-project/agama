@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::manager::FinishMethod;
+use anyhow::Context;
 use clap::{Args, Parser};
 
 mod auth;
@@ -43,6 +44,9 @@ use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
+use std::fs;
+use std::os::unix::fs::OpenOptionsExt;
+use std::path::PathBuf;
 use std::{
     collections::HashMap,
     process::{ExitCode, Termination},
@@ -198,6 +202,19 @@ async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<boo
     }
 }
 
+pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
+    let mut file = fs::OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .mode(0o400)
+        .open(path)
+        .context(format!("Cannot write the file '{}'", path.display()))?;
+
+    Transfer::get(&url, &mut file)?;
+    Ok(())
+}
+
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // somehow check whether we need to ask user for self-signed certificate acceptance
     let api_url = cli.opts.api.trim_end_matches('/').to_string();
@@ -238,7 +255,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         }
         Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,
         Commands::Logs(subcommand) => run_logs_cmd(client, subcommand).await?,
-        Commands::Download { url } => Transfer::get(&url, &mut std::io::stdout())?,
+        Commands::Download { url, destination } => download_file(&url, &destination)?,
         Commands::Auth(subcommand) => {
             run_auth_cmd(client, subcommand).await?;
         }
