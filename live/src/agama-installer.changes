@@ -3,6 +3,7 @@ Wed Mar  5 14:54:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Decrease the libzypp timeout from the default 60 seconds to
   20 seconds (Agama now does automatic retry)
+  (gh#agama-project/agama#2117)
 - Display proper Agama version in the console
 
 -------------------------------------------------------------------
