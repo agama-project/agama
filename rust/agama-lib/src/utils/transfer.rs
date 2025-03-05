@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -20,21 +20,61 @@
 
 //! File transfer API for Agama.
 //!
-//! Implement a file transfer API which, in the future, will support Agama specific URLs. Check the
+//! Implement a file transfer API which, at this point, partially supports Agama specific URLs. Check the
 //! YaST document about [URL handling in the
 //! installer](https://github.com/yast/yast-installation/blob/master/doc/url.md) for further
 //! information.
 //!
-//! At this point, it only supports those schemes supported by CURL.
+//! This API supports the following URLs from YaST: `device:`, `usb:`, `label:`, ! `hd:`, `dvd:` and
+//! `cd:`. The support for well-known URLs (e.g., `file:`, `http:`, `https:`, ! `ftp:`, `nfs:`,
+//!  etc.) is implemented using CURL.
+//!
+//! Support for `relurl:` and `repo:` are still missing.
+//!
+//! ## SSL
+//!
+//! YaST support for HTTPS used a custom certificate which was located in
+//! `/etc/sssl/clientcerts/client-cert.pem`. Agama does not use such a certificate and it only
+//! relies on those that are installed in the installation media.
+//!
+//! ## Examples
+//! Requires working localectl.
+//!
+//! ```no_run
+//! use agama_lib::utils::Transfer;
+//! Transfer::get("label://OEMDRV/autoinst.xml", &mut std::io::stdout()).unwrap();
+//! ````
 
 use std::io::Write;
 
-use curl::easy::Easy;
 use thiserror::Error;
+use url::Url;
+
+mod file_finder;
+mod file_systems;
+mod handlers;
+
+use handlers::{DeviceHandler, GenericHandler, HdHandler, LabelHandler};
 
 #[derive(Error, Debug)]
-#[error(transparent)]
-pub struct TransferError(#[from] curl::Error);
+pub enum TransferError {
+    #[error("Could not retrieve the file: {0}")]
+    CurlError(#[from] curl::Error),
+    #[error("Could not parse the URL: {0}")]
+    ParseError(#[from] url::ParseError),
+    #[error("File not found: {0}")]
+    FileNotFound(String),
+    #[error("IO error: {0}")]
+    IO(#[from] std::io::Error),
+    #[error("Could not mount the file system {0}")]
+    FileSystemMount(String),
+    #[error("Missing file path: {0}")]
+    MissingPath(Url),
+    #[error("Missing device: {0}")]
+    MissingDevice(Url),
+    #[error("Missing file system label: {0}")]
+    MissingLabel(Url),
+}
 pub type TransferResult<T> = Result<T, TransferError>;
 
 /// File transfer API
@@ -45,15 +85,13 @@ impl Transfer {
     ///
     /// * `url`: URL to get the data from.
     /// * `out_fd`: where to write the data.
-    pub fn get(url: &str, mut out_fd: impl Write) -> TransferResult<()> {
-        let mut handle = Easy::new();
-        handle.follow_location(true)?;
-        handle.fail_on_error(true)?;
-        handle.url(url)?;
-
-        let mut transfer = handle.transfer();
-        transfer.write_function(|buf| Ok(out_fd.write(buf).unwrap()))?;
-        transfer.perform()?;
-        Ok(())
+    pub fn get(url: &str, out_fd: &mut impl Write) -> TransferResult<()> {
+        let url = Url::parse(url)?;
+        match url.scheme() {
+            "device" | "usb" => DeviceHandler::default().get(url, out_fd),
+            "label" => LabelHandler::default().get(url, out_fd),
+            "cd" | "dvd" | "hd" => HdHandler::default().get(url, out_fd),
+            _ => GenericHandler::default().get(url, out_fd),
+        }
     }
 }
