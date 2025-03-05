@@ -75,6 +75,8 @@ pub enum TransferError {
     MissingPath(Url),
     #[error("Missing device: {0}")]
     MissingDevice(Url),
+    #[error("Missing file system label: {0}")]
+    MissingLabel(Url),
 }
 pub type TransferResult<T> = Result<T, TransferError>;
 
@@ -89,7 +91,8 @@ impl Transfer {
     pub fn get(url: &str, out_fd: &mut impl Write) -> TransferResult<()> {
         let url = Url::parse(url)?;
         match url.scheme() {
-            "device" | "label" | "usb" => DeviceHandler::default().get(url, out_fd),
+            "device" | "usb" => DeviceHandler::default().get(url, out_fd),
+            "label" => LabelHandler::default().get(url, out_fd),
             "cd" | "dvd" | "hd" => HdHandler::default().get(url, out_fd),
             _ => GenericHandler::default().get(url, out_fd),
         }
@@ -137,6 +140,26 @@ impl HdHandler {
     }
 }
 
+/// Handler for the label: scheme
+#[derive(Default)]
+pub struct LabelHandler {}
+
+impl LabelHandler {
+    pub fn get(&self, url: Url, out_fd: &mut impl Write) -> TransferResult<()> {
+        let file_name = url.path();
+        if file_name.is_empty() {
+            return Err(TransferError::MissingPath(url));
+        }
+
+        let Some(label) = url.host_str() else {
+            return Err(TransferError::MissingLabel(url));
+        };
+
+        let file_systems = FileSystemsList::from_system().by_label(label);
+        FileFinder::default().copy_from_file_systems(&file_systems, &file_name, out_fd)
+    }
+}
+
 /// Handler to process AutoYaST-like URLs of type "device" and "usb".
 ///
 /// * If the URL contains a "host", it is used as the device name.
@@ -157,35 +180,15 @@ impl DeviceHandler {
             file_systems = file_systems.by_transport("usb");
         }
 
-        let Some(host) = url.host_str() else {
-            return self.get_from_any_device(&mut file_systems, url.path(), out_fd);
-        };
-
-        if url.scheme() == "label" {
-            self.get_by_label(&mut file_systems, host, url.path(), out_fd)
-        } else {
+        if let Some(host) = url.host_str() {
             self.get_by_partial_names(
                 &mut file_systems,
                 &format!("{}{}", host, url.path()),
                 out_fd,
             )
+        } else {
+            self.get_from_any_device(&mut file_systems, url.path(), out_fd)
         }
-    }
-
-    /// Gets a file from the file system using the given label.
-    ///
-    /// * `file_systems`: list of file systems to search.
-    /// * `label`: file system label.
-    /// * `out_fd`: file to write to
-    fn get_by_label(
-        &self,
-        file_systems: &mut FileSystemsList,
-        label: &str,
-        file_name: &str,
-        out_fd: &mut impl Write,
-    ) -> TransferResult<()> {
-        let candidates = file_systems.by_label(label);
-        FileFinder::default().copy_from_file_systems(&candidates, &file_name, out_fd)
     }
 
     /// Gets a file trying to guess the name from the device and the file itself.
