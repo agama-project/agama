@@ -177,7 +177,7 @@ impl ProfileValidator {
 pub struct ProfileEvaluator {}
 
 impl ProfileEvaluator {
-    pub fn evaluate(&self, profile_path: &Path, mut out_fd: impl Write) -> anyhow::Result<()> {
+    pub fn evaluate(&self, profile_path: &Path) -> anyhow::Result<String> {
         let dir = tempdir()?;
 
         let working_path = dir.path().join("profile.jsonnet");
@@ -197,8 +197,9 @@ impl ProfileEvaluator {
                 String::from_utf8(result.stderr).context("Invalid UTF-8 sequence from jsonnet")?;
             return Err(ProfileError::EvaluationError(message).into());
         }
-        out_fd.write_all(&result.stdout)?;
-        Ok(())
+        let output = String::from_utf8(result.stdout)
+            .context("Invalid UTF-8 sequence from jsonnet stdout")?;
+        Ok(output)
     }
 
     // Write the hardware information in JSON format to a given path and also helpers to help with it
