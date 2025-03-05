@@ -69,6 +69,9 @@ pub enum ServiceError {
     InternalError(String),
     #[error("Could not read the file: '{0}'")]
     CouldNotTransferFile(#[from] TransferError),
+    // FIXME reroute the error to a better place
+    #[error("Profile error: {0}")]
+    Profile(#[from] ProfileError),
 }
 
 #[derive(Error, Debug)]

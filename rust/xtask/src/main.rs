@@ -6,8 +6,8 @@ mod tasks {
     use agama_cli::Cli;
     use agama_server::web::docs::{
         ApiDocBuilder, L10nApiDocBuilder, ManagerApiDocBuilder, MiscApiDocBuilder,
-        NetworkApiDocBuilder, QuestionsApiDocBuilder, ScriptsApiDocBuilder, SoftwareApiDocBuilder,
-        StorageApiDocBuilder, UsersApiDocBuilder,
+        NetworkApiDocBuilder, ProfileApiDocBuilder, QuestionsApiDocBuilder, ScriptsApiDocBuilder,
+        SoftwareApiDocBuilder, StorageApiDocBuilder, UsersApiDocBuilder,
     };
     use clap::CommandFactory;
     use clap_complete::aot;
@@ -64,6 +64,7 @@ mod tasks {
         write_openapi(ManagerApiDocBuilder {}, out_dir.join("manager.json"))?;
         write_openapi(MiscApiDocBuilder {}, out_dir.join("misc.json"))?;
         write_openapi(NetworkApiDocBuilder {}, out_dir.join("network.json"))?;
+        write_openapi(ProfileApiDocBuilder {}, out_dir.join("profile.json"))?;
         write_openapi(QuestionsApiDocBuilder {}, out_dir.join("questions.json"))?;
         write_openapi(ScriptsApiDocBuilder {}, out_dir.join("scripts.json"))?;
         write_openapi(SoftwareApiDocBuilder {}, out_dir.join("software.json"))?;

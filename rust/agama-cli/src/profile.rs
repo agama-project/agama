@@ -22,7 +22,7 @@ use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
-    profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationResult},
+    profile::{AutoyastProfileImporter, ProfileEvaluator, ValidationResult},
     utils::FileFormat,
     utils::Transfer,
     Store as SettingsStore,
@@ -81,23 +81,15 @@ pub enum ProfileCommands {
     },
 }
 
-fn validate(path: &PathBuf) -> anyhow::Result<()> {
-    let validator = ProfileValidator::default_schema()?;
-    let result = validator
-        .validate_file(path)
-        .context(format!("Could not validate the profile {:?}", path))?;
+async fn validate(client: BaseHTTPClient, path: &PathBuf) -> anyhow::Result<()> {
+    let url_path = format!("/profile/validate?path={}", path.to_string_lossy());
+    let result = client.get(&url_path).await?;
     match result {
         ValidationResult::Valid => {
-            println!("{} The profile is valid.", style("\u{2713}").bold().green(),);
+            println!("{} {}", style("\u{2713}").bold().green(), result);
         }
-        ValidationResult::NotValid(errors) => {
-            eprintln!(
-                "{} The profile is not valid. Please, check the following errors:\n",
-                style("\u{2717}").bold().red(),
-            );
-            for error in errors {
-                println!("\t* {error}")
-            }
+        ValidationResult::NotValid(_) => {
+            eprintln!("{} {}", style("\u{2717}").bold().red(), result);
         }
     }
     Ok(())
@@ -111,7 +103,11 @@ fn evaluate(path: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
+async fn import(
+    client: BaseHTTPClient,
+    url_string: String,
+    dir: Option<PathBuf>,
+) -> anyhow::Result<()> {
     tokio::spawn(async move {
         show_progress().await.unwrap();
     });
@@ -130,7 +126,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
         pre_process_profile(&url_string, &profile_path)?;
     }
 
-    validate(&profile_path)?;
+    validate(client, &profile_path).await?;
     store_settings(&profile_path).await?;
 
     Ok(())
@@ -188,11 +184,11 @@ fn autoyast(url_string: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub async fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
+pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(url),
-        ProfileCommands::Validate { path } => validate(&path),
+        ProfileCommands::Validate { path } => validate(client, &path).await,
         ProfileCommands::Evaluate { path } => evaluate(&path),
-        ProfileCommands::Import { url, dir } => import(url, dir).await,
+        ProfileCommands::Import { url, dir } => import(client, url, dir).await,
     }
 }
