@@ -53,6 +53,14 @@ function findDrive(model: configModel.Config, driveName: string): configModel.Dr
   return drives.find((d) => d.name === driveName);
 }
 
+function findVolumeGroup(
+  model: configModel.Config,
+  vgName: string,
+): configModel.VolumeGroup | undefined {
+  const vgs = model?.volumeGroups || [];
+  return vgs.find((g) => g.name === vgName);
+}
+
 function removeDrive(model: configModel.Config, driveName: string): configModel.Config {
   model.drives = model.drives.filter((d) => d.name !== driveName);
   return model;
@@ -83,6 +91,21 @@ function isBoot(model: configModel.Config, driveName: string): boolean {
 
 function isExplicitBoot(model: configModel.Config, driveName: string): boolean {
   return !model.boot?.device?.default && driveName === model.boot?.device?.name;
+}
+
+function driveHasPv(model: configModel.Config, driveAlias: string): boolean {
+  if (!driveAlias) return false;
+
+  return model.volumeGroups.flatMap((g) => g.targetDevices).includes(driveAlias);
+}
+
+function volumeGroupTargetDrives(
+  model: configModel.Config,
+  vg: configModel.VolumeGroup,
+): configModel.Drive[] {
+  const aliases = vg.targetDevices;
+
+  return aliases.map((a) => model.drives.find((d) => d.alias === a)).filter((d) => d);
 }
 
 function allMountPaths(drive: configModel.Drive): string[] {
@@ -411,6 +434,7 @@ export function useEncryption(): EncryptionHook {
 export type DriveHook = {
   isBoot: boolean;
   isExplicitBoot: boolean;
+  hasPv: boolean;
   allMountPaths: string[];
   configuredExistingPartitions: configModel.Partition[];
   switch: (newName: string) => void;
@@ -432,6 +456,7 @@ export function useDrive(name: string): DriveHook | null {
   return {
     isBoot: isBoot(model, name),
     isExplicitBoot: isExplicitBoot(model, name),
+    hasPv: driveHasPv(model, drive.alias),
     allMountPaths: allMountPaths(drive),
     configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
@@ -444,6 +469,21 @@ export function useDrive(name: string): DriveHook | null {
     deletePartition: (mountPath: string) => mutate(deletePartition(model, name, mountPath)),
     setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) =>
       mutate(setSpacePolicy(model, name, policy, actions)),
+  };
+}
+
+export type VolumeGroupHook = {
+  targetDrives: configModel.Drive[];
+};
+
+export function useVolumeGroup(name: string): VolumeGroupHook | null {
+  const model = useConfigModel();
+  const vg = findVolumeGroup(model, name);
+
+  if (vg === undefined) return null;
+
+  return {
+    targetDrives: volumeGroupTargetDrives(model, vg),
   };
 }
 

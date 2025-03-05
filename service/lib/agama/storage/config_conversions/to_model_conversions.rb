@@ -26,9 +26,11 @@ require "agama/storage/config_conversions/to_model_conversions/config"
 require "agama/storage/config_conversions/to_model_conversions/drive"
 require "agama/storage/config_conversions/to_model_conversions/encryption"
 require "agama/storage/config_conversions/to_model_conversions/filesystem"
+require "agama/storage/config_conversions/to_model_conversions/logical_volume"
 require "agama/storage/config_conversions/to_model_conversions/partition"
 require "agama/storage/config_conversions/to_model_conversions/size"
 require "agama/storage/config_conversions/to_model_conversions/space_policy"
+require "agama/storage/config_conversions/to_model_conversions/volume_group"
 
 module Agama
   module Storage

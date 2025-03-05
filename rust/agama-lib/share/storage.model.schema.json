@@ -3,12 +3,17 @@
   "description": "Config model",
   "type": "object",
   "additionalProperties": false,
+  "required": ["boot", "drives", "volumeGroups"],
   "properties": {
     "boot": { "$ref": "#/$defs/boot" },
     "encryption": { "$ref": "#/$defs/encryption" },
     "drives": {
       "type": "array",
       "items": { "$ref": "#/$defs/drive" }
+    },
+    "volumeGroups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/volumeGroup" }
     }
   },
   "$defs": {
@@ -77,6 +82,35 @@
         "deleteIfNeeded": { "type": "boolean" },
         "resize": { "type": "boolean" },
         "resizeIfNeeded": { "type": "boolean" }
+      }
+    },
+    "volumeGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "extentSize": { "type": "integer" },
+        "targetDevices": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/alias" }
+        },
+        "logicalVolumes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicalVolume" }
+        }
+      }
+    },
+    "logicalVolume": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "mountPath": { "type": "string" },
+        "filesystem": { "$ref": "#/$defs/filesystem" },
+        "size": { "$ref": "#/$defs/size" },
+        "stripes": { "type": "integer" },
+        "stripeSize": { "type": "integer" }
       }
     },
     "alias": {

@@ -160,6 +160,7 @@
       "description": "LVM volume group.",
       "type": "object",
       "additionalProperties": false,
+      "required": ["name"],
       "properties": {
         "name": {
           "description": "Volume group name.",
