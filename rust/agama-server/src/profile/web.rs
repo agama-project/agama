@@ -52,7 +52,7 @@ pub enum ProfileServiceError {
     Profile(#[from] ProfileError),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
-    #[error("Error: {0}")]
+    #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
 }
 
