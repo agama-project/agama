@@ -64,7 +64,7 @@ pub struct FileSystemsList {
 }
 
 impl FileSystemsList {
-    /// Creates a finde for the given set of file systems.
+    /// Creates a list of file systems.
     pub fn new(file_systems: Vec<FileSystem>) -> Self {
         Self { file_systems }
     }
