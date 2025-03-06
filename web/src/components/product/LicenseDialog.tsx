@@ -23,7 +23,14 @@
 import React, { useEffect, useState } from "react";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
-import { MenuToggle, ModalProps, Select, SelectOption, Stack } from "@patternfly/react-core";
+import {
+  MenuToggle,
+  ModalProps,
+  Select,
+  SelectList,
+  SelectOption,
+  Stack,
+} from "@patternfly/react-core";
 import { Product } from "~/types/software";
 import { fetchLicense } from "~/api/software";
 import { useInstallerL10n } from "~/context/installerL10n";
@@ -66,12 +73,15 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
           onSelect={onLocaleSelection}
           onOpenChange={(isOpen) => setLanguageSelectorOpen(!isOpen)}
           toggle={localesToggler}
+          isScrollable
         >
-          {Object.entries(supportedLanguages).map(([id, name]) => (
-            <SelectOption key={id} value={id}>
-              {name}
-            </SelectOption>
-          ))}
+          <SelectList>
+            {Object.entries(supportedLanguages).map(([id, name]) => (
+              <SelectOption key={id} value={id}>
+                {name}
+              </SelectOption>
+            ))}
+          </SelectList>
         </Select>
       }
     >
