@@ -145,14 +145,14 @@ impl FileSystemsList {
     /// Returns the file system with the given block device name.
     ///
     /// * `name`: block device name.
-    pub fn by_name(&self, name: &str) -> Option<&FileSystem> {
+    pub fn find_by_name(&self, name: &str) -> Option<&FileSystem> {
         self.file_systems.iter().find(|fs| name == &fs.block_device)
     }
 
     /// Returns the file systems with the given label name.
     ///
     /// * `label`: device label.
-    pub fn by_label(&mut self, label: &str) -> Self {
+    pub fn with_label(&mut self, label: &str) -> Self {
         let label = Some(label.to_string());
         let file_systems = self
             .file_systems
@@ -167,7 +167,7 @@ impl FileSystemsList {
     /// Returns the file systems using the given transport.
     ///
     /// * `transport`: transport of the device (e.g., "usb").
-    pub fn by_transport(&mut self, transport: &str) -> Self {
+    pub fn with_transport(&mut self, transport: &str) -> Self {
         let transport = Some(transport.to_string());
         let file_systems = self
             .file_systems
@@ -287,7 +287,7 @@ mod tests {
     fn test_find_file_system_by_name() {
         let file_systems = build_file_systems();
         let list = FileSystemsList::new(file_systems);
-        let vdb1 = list.by_name("vdb1").unwrap();
+        let vdb1 = list.find_by_name("vdb1").unwrap();
         assert_eq!(&vdb1.block_device, "vdb1");
     }
 
@@ -295,7 +295,7 @@ mod tests {
     fn test_find_file_system_by_label() {
         let file_systems = build_file_systems();
         let mut list = FileSystemsList::new(file_systems);
-        let found = list.by_label("OEMDRV").to_vec();
+        let found = list.with_label("OEMDRV").to_vec();
         let usb = found.first().unwrap();
         assert_eq!(&usb.block_device, "sr0");
     }
@@ -304,7 +304,7 @@ mod tests {
     fn test_find_file_system_by_transport() {
         let file_systems = build_file_systems();
         let mut list = FileSystemsList::new(file_systems);
-        let found = list.by_transport("usb").to_vec();
+        let found = list.with_transport("usb").to_vec();
         let usb = found.first().unwrap();
         assert_eq!(&usb.block_device, "sr0");
     }

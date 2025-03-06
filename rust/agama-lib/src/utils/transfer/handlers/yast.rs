@@ -63,7 +63,7 @@ impl LabelHandler {
             return Err(TransferError::MissingLabel(url));
         };
 
-        let file_systems = FileSystemsList::from_system().by_label(label);
+        let file_systems = FileSystemsList::from_system().with_label(label);
         FileFinder::default().copy_from_file_systems(&file_systems, &file_name, out_fd)
     }
 }
@@ -85,7 +85,7 @@ impl DeviceHandler {
         let mut file_systems = FileSystemsList::from_system();
 
         if url.scheme() == "usb" {
-            file_systems = file_systems.by_transport("usb");
+            file_systems = file_systems.with_transport("usb");
         }
 
         if let Some(host) = url.host_str() {
@@ -126,7 +126,7 @@ impl DeviceHandler {
             dev = format!("{}/{}", dev, device_name)
                 .trim_start_matches('/')
                 .to_string();
-            if let Some(file_system) = file_systems.by_name(&dev) {
+            if let Some(file_system) = file_systems.find_by_name(&dev) {
                 if finder
                     .copy_from_file_system(&file_system, file_name, out_fd)
                     .is_ok()
