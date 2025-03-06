@@ -172,14 +172,23 @@ shared_examples "with mountPath" do |config_proc|
 end
 
 shared_examples "with filesystem" do |config_proc|
+  let(:filesystem) do
+    {
+      reuse:     reuse,
+      default:   default,
+      type:      type,
+      snapshots: true,
+      label:     label
+    }
+  end
+
+  let(:reuse) { false }
+  let(:default) { false }
+  let(:type) { nil }
+  let(:label) { "test" }
+
   context "if the filesystem is default" do
-    let(:filesystem) do
-      {
-        default:   true,
-        type:      type,
-        snapshots: true
-      }
-    end
+    let(:default) { true }
 
     context "and the type is 'btrfs'" do
       let(:type) { "btrfs" }
@@ -193,7 +202,7 @@ shared_examples "with filesystem" do |config_proc|
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
         expect(filesystem.type.btrfs.snapshots?).to eq(true)
-        expect(filesystem.label).to be_nil
+        expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
         expect(filesystem.mkfs_options).to be_empty
@@ -212,7 +221,7 @@ shared_examples "with filesystem" do |config_proc|
         expect(filesystem.type.default?).to eq(true)
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::XFS)
         expect(filesystem.type.btrfs).to be_nil
-        expect(filesystem.label).to be_nil
+        expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
         expect(filesystem.mkfs_options).to be_empty
@@ -222,13 +231,7 @@ shared_examples "with filesystem" do |config_proc|
   end
 
   context "if the filesystem is not default" do
-    let(:filesystem) do
-      {
-        default:   false,
-        type:      type,
-        snapshots: true
-      }
-    end
+    let(:default) { false }
 
     context "and the type is 'btrfs'" do
       let(:type) { "btrfs" }
@@ -242,7 +245,7 @@ shared_examples "with filesystem" do |config_proc|
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
         expect(filesystem.type.btrfs.snapshots?).to eq(true)
-        expect(filesystem.label).to be_nil
+        expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
         expect(filesystem.mkfs_options).to be_empty
@@ -261,7 +264,7 @@ shared_examples "with filesystem" do |config_proc|
         expect(filesystem.type.default?).to eq(false)
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::XFS)
         expect(filesystem.type.btrfs).to be_nil
-        expect(filesystem.label).to be_nil
+        expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
         expect(filesystem.mkfs_options).to be_empty
@@ -270,8 +273,46 @@ shared_examples "with filesystem" do |config_proc|
     end
   end
 
+  context "if the filesystem specifies 'reuse'" do
+    let(:reuse) { true }
+
+    it "sets #filesystem to the expected value" do
+      config = config_proc.call(subject.convert)
+      filesystem = config.filesystem
+      expect(filesystem).to be_a(Agama::Storage::Configs::Filesystem)
+      expect(filesystem.reuse?).to eq(true)
+      expect(filesystem.type.default?).to eq(false)
+      expect(filesystem.type.fs_type).to be_nil
+      expect(filesystem.type.btrfs).to be_nil
+      expect(filesystem.label).to eq("test")
+      expect(filesystem.path).to be_nil
+      expect(filesystem.mount_by).to be_nil
+      expect(filesystem.mkfs_options).to be_empty
+      expect(filesystem.mount_options).to be_empty
+    end
+  end
+
   context "if the filesystem does not specify 'type'" do
-    let(:filesystem) { { default: false } }
+    let(:type) { nil }
+
+    it "sets #filesystem to the expected value" do
+      config = config_proc.call(subject.convert)
+      filesystem = config.filesystem
+      expect(filesystem).to be_a(Agama::Storage::Configs::Filesystem)
+      expect(filesystem.reuse?).to eq(false)
+      expect(filesystem.type.default?).to eq(false)
+      expect(filesystem.type.fs_type).to be_nil
+      expect(filesystem.type.btrfs).to be_nil
+      expect(filesystem.label).to eq("test")
+      expect(filesystem.path).to be_nil
+      expect(filesystem.mount_by).to be_nil
+      expect(filesystem.mkfs_options).to eq([])
+      expect(filesystem.mount_options).to eq([])
+    end
+  end
+
+  context "if the filesystem does not specify 'label'" do
+    let(:label) { nil }
 
     it "sets #filesystem to the expected value" do
       config = config_proc.call(subject.convert)
@@ -288,25 +329,6 @@ shared_examples "with filesystem" do |config_proc|
       expect(filesystem.mount_options).to eq([])
     end
   end
-
-  context "if the filesystem specifies 'reuse'" do
-    let(:filesystem) { { reuse: true } }
-
-    it "sets #filesystem to the expected value" do
-      config = config_proc.call(subject.convert)
-      filesystem = config.filesystem
-      expect(filesystem).to be_a(Agama::Storage::Configs::Filesystem)
-      expect(filesystem.reuse?).to eq(true)
-      expect(filesystem.type.default?).to eq(true)
-      expect(filesystem.type.fs_type).to be_nil
-      expect(filesystem.type.btrfs).to be_nil
-      expect(filesystem.label).to be_nil
-      expect(filesystem.path).to be_nil
-      expect(filesystem.mount_by).to be_nil
-      expect(filesystem.mkfs_options).to be_empty
-      expect(filesystem.mount_options).to be_empty
-    end
-  end
 end
 
 shared_examples "with mountPath and filesystem" do |config_proc|
@@ -316,7 +338,8 @@ shared_examples "with mountPath and filesystem" do |config_proc|
     {
       default:   false,
       type:      "btrfs",
-      snapshots: true
+      snapshots: true,
+      label:     "test"
     }
   end
 
@@ -329,7 +352,7 @@ shared_examples "with mountPath and filesystem" do |config_proc|
     expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
     expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
     expect(filesystem.type.btrfs.snapshots?).to eq(true)
-    expect(filesystem.label).to be_nil
+    expect(filesystem.label).to eq("test")
     expect(filesystem.path).to eq("/test")
     expect(filesystem.mount_by).to be_nil
     expect(filesystem.mkfs_options).to be_empty
