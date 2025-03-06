@@ -22,11 +22,11 @@
 
 import React, { useEffect, useState } from "react";
 import {
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   MenuToggle,
   ModalProps,
-  Select,
-  SelectList,
-  SelectOption,
   Stack,
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
@@ -66,7 +66,7 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
       isOpen
       title={product.name}
       titleAddon={
-        <Select
+        <Dropdown
           isOpen={languageSelectorOpen}
           selected={language}
           onSelect={onLocaleSelection}
@@ -75,14 +75,14 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
           isScrollable
           popperProps={{ position: "right" }}
         >
-          <SelectList>
+          <DropdownList>
             {Object.entries(supportedLanguages).map(([id, name]) => (
-              <SelectOption key={id} value={id}>
+              <DropdownItem key={id} value={id}>
                 {name}
-              </SelectOption>
+              </DropdownItem>
             ))}
-          </SelectList>
-        </Select>
+          </DropdownList>
+        </Dropdown>
       }
       width="auto"
     >
