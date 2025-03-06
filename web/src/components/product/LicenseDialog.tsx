@@ -21,8 +21,6 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Popup } from "~/components/core";
-import { _ } from "~/i18n";
 import {
   MenuToggle,
   ModalProps,
@@ -31,10 +29,12 @@ import {
   SelectOption,
   Stack,
 } from "@patternfly/react-core";
+import { Popup } from "~/components/core";
 import { Product } from "~/types/software";
 import { fetchLicense } from "~/api/software";
 import { useInstallerL10n } from "~/context/installerL10n";
 import supportedLanguages from "~/languages.json";
+import { _ } from "~/i18n";
 
 function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; product: Product }) {
   const { language: uiLanguage } = useInstallerL10n();
@@ -63,7 +63,6 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
 
   return (
     <Popup
-      inlineSize="auto"
       isOpen
       title={product.name}
       titleAddon={
@@ -85,6 +84,7 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
           </SelectList>
         </Select>
       }
+      width="auto"
     >
       <Stack hasGutter>
         <pre>{license}</pre>
