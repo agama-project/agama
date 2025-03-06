@@ -158,13 +158,16 @@ describe("PartitionPage", () => {
     const size = screen.getByRole("button", { name: "Size" });
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
+    expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
     expect(size).toBeDisabled();
+
     await user.click(mountPoint);
     const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
     const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
     await user.click(homeMountPoint);
     // Valid mount point selected, enable file system and size fields
     expect(filesystem).toBeEnabled();
+    expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
     expect(size).toBeEnabled();
     // Display mount point options
     await user.click(mountPointMode);
@@ -206,6 +209,7 @@ describe("PartitionPage", () => {
     await user.click(homeMountPoint);
     expect(mountPoint).toHaveValue("/home");
     expect(filesystem).toBeEnabled();
+    expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
     expect(size).toBeEnabled();
     const clearMountPointButton = screen.getByRole("button", {
       name: "Clear selected mount point",
@@ -214,6 +218,7 @@ describe("PartitionPage", () => {
     expect(mountPoint).toHaveValue("");
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
+    expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
     expect(size).toBeDisabled();
   });
 
@@ -227,7 +232,11 @@ describe("PartitionPage", () => {
           min: gib(5),
           max: gib(15),
         },
-        filesystem: { default: false, type: "xfs" },
+        filesystem: {
+          default: false,
+          type: "xfs",
+          label: "HOME",
+        },
       });
     });
 
@@ -239,6 +248,8 @@ describe("PartitionPage", () => {
       within(targetButton).getByText(/As a new partition/);
       const filesystemButton = screen.getByRole("button", { name: "File system" });
       within(filesystemButton).getByText("XFS");
+      const label = screen.getByRole("textbox", { name: "File system label" });
+      expect(label).toHaveValue("HOME");
       const sizeOptionButton = screen.getByRole("button", { name: "Size" });
       within(sizeOptionButton).getByText("Custom");
       const minSizeInput = screen.getByRole("textbox", { name: "Minimum size value" });
