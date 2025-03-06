@@ -30,6 +30,7 @@ import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import PartitionPage from "~/components/storage/PartitionPage";
+import LvmPage from "~/components/storage/LvmPage";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
@@ -48,6 +49,10 @@ const routes = (): Route => ({
     {
       path: PATHS.bootDevice,
       element: <BootSelection />,
+    },
+    {
+      path: PATHS.lvm.create,
+      element: <LvmPage />,
     },
     {
       path: PATHS.encryption,
