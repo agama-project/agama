@@ -54,7 +54,8 @@ module Agama
                 # TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
                 _("The device '%s' is used several times as target device for physical volumes"),
                 device
-              )
+              ),
+              kind: :vg_target_devices
             )
           end
         end
