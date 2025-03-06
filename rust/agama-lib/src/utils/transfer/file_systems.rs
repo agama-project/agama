@@ -133,7 +133,12 @@ impl FileSystemsReader {
     /// Returns the file systems from the underlying system.
     pub fn read_from_system() -> Vec<FileSystem> {
         let lsblk = Command::new("lsblk")
-            .args(["--output", "KNAME,FSTYPE,MOUNTPOINTS,TRAN,LABEL", "--pairs"])
+            .args([
+                "--output",
+                "KNAME,FSTYPE,MOUNTPOINTS,TRAN,LABEL",
+                "--pairs",
+                "--path",
+            ])
             .output()
             .unwrap();
         let output = String::from_utf8_lossy(&lsblk.stdout);
@@ -156,7 +161,10 @@ impl FileSystemsReader {
             mounts.sort_by(|a, b| a.len().cmp(&b.len()));
 
             let mut file_system = FileSystem {
-                block_device: block_device.to_string(),
+                block_device: block_device
+                    .strip_prefix("/dev/")
+                    .unwrap_or(block_device)
+                    .to_string(),
                 fstype: if fstype.is_empty() {
                     None
                 } else {
@@ -255,14 +263,14 @@ mod tests {
     #[test]
     fn test_parse_file_systems() {
         let lsblk = r#"KNAME="sda" FSTYPE="" MOUNTPOINT="" TRAN="usb" LABEL=""
-KNAME="sda1" FSTYPE="iso9660" MOUNTPOINTS="/run/media/user/agama-installer" TRAN="" LABEL="agama-installer"
-KNAME="sda2" FSTYPE="vfat" MOUNTPOINTS="" TRAN="" LABEL="BOOT"
-KNAME="nvme0n1" FSTYPE="" MOUNTPOINTS="" TRAN="nvme" LABEL=""
-KNAME="nvme0n1p1" FSTYPE="vfat" MOUNTPOINTS="/boot/efi" TRAN="nvme" LABEL=""
-KNAME="nvme0n1p2" FSTYPE="crypto_LUKS" MOUNTPOINT="" TRAN="nvme" LABEL=""
-KNAME="dm-0" FSTYPE="btrfs" MOUNTPOINTS="/home\x0a/\x0a/var" TRAN="" LABEL=""
-KNAME="nvme0n1p3" FSTYPE="crypto_LUKS" MOUNTPOINTS="" TRAN="nvme" LABEL=""
-KNAME="dm-1" FSTYPE="swap" MOUNTPOINTS="[SWAP]" TRAN="" LABEL=""
+KNAME="/dev/sda1" FSTYPE="iso9660" MOUNTPOINTS="/run/media/user/agama-installer" TRAN="" LABEL="agama-installer"
+KNAME="/dev/sda2" FSTYPE="vfat" MOUNTPOINTS="" TRAN="" LABEL="BOOT"
+KNAME="/dev/nvme0n1" FSTYPE="" MOUNTPOINTS="" TRAN="nvme" LABEL=""
+KNAME="/dev/nvme0n1p1" FSTYPE="vfat" MOUNTPOINTS="/boot/efi" TRAN="nvme" LABEL=""
+KNAME="/dev/nvme0n1p2" FSTYPE="crypto_LUKS" MOUNTPOINT="" TRAN="nvme" LABEL=""
+KNAME="/dev/dm-0" FSTYPE="btrfs" MOUNTPOINTS="/home\x0a/\x0a/var" TRAN="" LABEL=""
+KNAME="/dev/nvme0n1p3" FSTYPE="crypto_LUKS" MOUNTPOINTS="" TRAN="nvme" LABEL=""
+KNAME="/dev/dm-1" FSTYPE="swap" MOUNTPOINTS="[SWAP]" TRAN="" LABEL=""
 "#;
         let file_systems = FileSystemsReader::read_from_string(&lsblk);
         assert_eq!(file_systems.len(), 4);
