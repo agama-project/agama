@@ -365,6 +365,14 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   justify-self: flex-start;
 }
 
+.pf-v6-c-check {
+  row-gap: var(--pf-t--global--spacer--xs);
+
+  input[type="checkbox"] {
+    align-self: center;
+  }
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
