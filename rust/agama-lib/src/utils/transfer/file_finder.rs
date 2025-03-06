@@ -69,7 +69,7 @@ impl FileFinder {
         let mount_point = file_system
             .mount_point
             .clone()
-            .unwrap_or(default_mount_point);
+            .unwrap_or_else(|| default_mount_point);
 
         println!("Searching {} in {}", &file_name, &file_system.block_device);
 

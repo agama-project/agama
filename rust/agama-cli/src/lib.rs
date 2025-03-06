@@ -205,7 +205,6 @@ async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<boo
 pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
     let mut file = fs::OpenOptions::new()
         .create(true)
-        .truncate(true)
         .write(true)
         .mode(0o400)
         .open(path)
