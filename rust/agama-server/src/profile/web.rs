@@ -22,7 +22,7 @@ use anyhow::Context;
 
 use agama_lib::{
     error::{ProfileError, ServiceError},
-    profile::{ProfileEvaluator, ProfileValidator, ValidationResult},
+    profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, Url, ValidationResult},
     //profile::{validate},
 };
 use axum::{
@@ -71,6 +71,7 @@ pub async fn profile_service() -> Result<Router, ServiceError> {
     let router = Router::new()
         .route("/evaluate", get(evaluate))
         .route("/validate", get(validate))
+        .route("/autoyast", get(autoyast))
         .with_state(state);
     Ok(router)
 }
@@ -127,4 +128,31 @@ async fn evaluate(
         .evaluate(path)
         .context("Could not evaluate the profile".to_string())?;
     Ok(output)
+}
+
+#[derive(Deserialize, utoipa::IntoParams)]
+struct AutoyastQuery {
+    /// URL of profile to process
+    url: String,
+}
+
+#[utoipa::path(
+    get,
+    path = "/autoyast",
+    context_path = "/api/profile",
+    params(AutoyastQuery),
+    responses(
+        (status = 200, description = "JSON result of Autoyast profile conversion"),
+        // TODO: "failed to run agama-autoyast" should be a 500 instead, see software/web.rs
+        (status = 400, description = "FIXME some error has happened")
+    )
+)]
+async fn autoyast(
+    _state: State<ProfileState>,
+    query: Query<AutoyastQuery>,
+) -> Result<String, ProfileServiceError> {
+    let url = Url::parse(query.url.as_str()).map_err(|e| anyhow::Error::new(e))?;
+    let importer = AutoyastProfileImporter::read(&url)?;
+    // TODO try error cases and add .context if needed
+    Ok(importer.content)
 }
