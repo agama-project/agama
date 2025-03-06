@@ -97,6 +97,8 @@ impl FileSystem {
         std::fs::create_dir_all(mount_point)?;
         let output = Command::new("mount")
             .args([
+                "-o",
+                "ro",
                 &self.device(),
                 &mount_point.display().to_string(),
             ])
