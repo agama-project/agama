@@ -23,9 +23,10 @@
 import React from "react";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { configModel } from "~/api/storage/types";
+import * as apiModel from "~/api/storage/types/config-model";
+import * as model from "~/types/storage/model";
 import { contentDescription } from "~/components/storage/utils/volumeGroup";
-import { useVolumeGroup } from "~/queries/storage/config-model";
+import { useVolumeGroup } from "~/hooks/storage/model";
 import {
   DeviceHeader,
   DeviceMenu,
@@ -43,12 +44,9 @@ import {
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-export type VolumeGroupEditorProps = { vg: configModel.VolumeGroup };
-
-const RemoveVgOption = ({ vg }) => {
-  const volumeGroup = useVolumeGroup(vg.name);
-  const drive = volumeGroup.targetDrives[0];
-  const desc = sprintf(_("The logical volumes will become partitions at %s"), drive.name);
+const RemoveVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+  const device = vg.targetDevices[0];
+  const desc = sprintf(_("The logical volumes will become partitions at %s"), device.name);
 
   return (
     <MenuItem isDanger description={desc}>
@@ -65,7 +63,7 @@ const EditVgOption = () => {
   );
 };
 
-const VgMenu = ({ vg }) => {
+const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
     <DeviceMenu title={<b aria-hidden>{vg.name}</b>}>
       <MenuList>
@@ -76,7 +74,7 @@ const VgMenu = ({ vg }) => {
   );
 };
 
-const VgHeader = ({ vg }: VolumeGroupEditorProps) => {
+const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
   const title = vg.logicalVolumes.length
     ? _("Create LVM volume group %s")
     : _("Empty LVM volume group %s");
@@ -88,7 +86,7 @@ const VgHeader = ({ vg }: VolumeGroupEditorProps) => {
   );
 };
 
-const LogicalVolumes = ({ vg }) => {
+const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
     <DeviceMenu
       title={<span aria-hidden>{contentDescription(vg)}</span>}
@@ -103,17 +101,21 @@ const LogicalVolumes = ({ vg }) => {
   );
 };
 
+export type VolumeGroupEditorProps = { vg: apiModel.VolumeGroup };
+
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
+  const volumeGroup = useVolumeGroup(vg.name);
+
   return (
     <Card isCompact>
       <CardHeader>
         <CardTitle>
-          <VgHeader vg={vg} />
+          <VgHeader vg={volumeGroup} />
         </CardTitle>
       </CardHeader>
       <CardBody className={spacingStyles.plLg}>
         <Flex direction={{ default: "column" }}>
-          <LogicalVolumes vg={vg} />
+          <LogicalVolumes vg={volumeGroup} />
         </Flex>
       </CardBody>
     </Card>
