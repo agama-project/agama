@@ -21,13 +21,15 @@
 /// Module to search for file systems.
 use std::{path::PathBuf, process::Command};
 
+use regex::Regex;
+
 /// Represents a file system from the underlying system.
 ///
 /// It only includes the elements that are relevant for the transfer API.
 #[derive(Clone, Debug, Default)]
 pub struct FileSystem {
     pub block_device: String,
-    pub fstype: String,
+    pub fstype: Option<String>,
     pub mount_point: Option<PathBuf>,
     pub transport: Option<String>,
     pub label: Option<String>,
@@ -48,7 +50,11 @@ impl FileSystem {
     ///
     /// File systems that cannot be mounted are ignored.
     fn can_be_mounted(&self) -> bool {
-        match self.fstype.as_str() {
+        let Some(fstype) = &self.fstype else {
+            return false;
+        };
+
+        match fstype.as_str() {
             "" | "crypto_LUKS" | "swap" => false,
             _ => true,
         }
@@ -127,12 +133,7 @@ impl FileSystemsReader {
     /// Returns the file systems from the underlying system.
     pub fn read_from_system() -> Vec<FileSystem> {
         let lsblk = Command::new("lsblk")
-            .args([
-                "--output",
-                "KNAME,FSTYPE,MOUNTPOINT,TRAN,LABEL",
-                "--noheading",
-                "--raw",
-            ])
+            .args(["--output", "KNAME,FSTYPE,MOUNTPOINT,TRAN,LABEL", "--pairs"])
             .output()
             .unwrap();
         let output = String::from_utf8_lossy(&lsblk.stdout);
@@ -142,46 +143,50 @@ impl FileSystemsReader {
     /// Turns the output of lsblk into a list of file systems.
     pub fn read_from_string(lsblk_string: &str) -> Vec<FileSystem> {
         let mut file_systems = vec![];
-        let mut transport = None;
-        for line in lsblk_string.lines() {
-            if let Some(mut file_system) = Self::build_file_system(&line) {
-                if file_system.transport.is_none() {
-                    file_system.transport = transport.clone();
+        let mut parent_transport: Option<String> = None;
+        let re =
+            Regex::new(r#"KNAME="(.+)" FSTYPE="(.*)" MOUNTPOINT="(.*)" TRAN="(.*)" LABEL="(.*)""#)
+                .unwrap();
+
+        for (_, [block_device, fstype, mount_point, transport, label]) in
+            re.captures_iter(lsblk_string).map(|c| c.extract())
+        {
+            let mut file_system = FileSystem {
+                block_device: block_device.to_string(),
+                fstype: if fstype.is_empty() {
+                    None
                 } else {
-                    transport = file_system.transport.clone();
-                }
-                if file_system.can_be_mounted() {
-                    file_systems.push(file_system);
-                }
+                    Some(fstype.to_string())
+                },
+                mount_point: if mount_point.is_empty() {
+                    None
+                } else {
+                    Some(PathBuf::from(mount_point))
+                },
+                transport: if transport.is_empty() {
+                    None
+                } else {
+                    Some(transport.to_string())
+                },
+                label: if label.is_empty() {
+                    None
+                } else {
+                    Some(label.to_string())
+                },
+            };
+            if file_system.transport.is_none() {
+                file_system.transport = parent_transport.clone();
+            } else {
+                parent_transport = file_system.transport.clone();
+            }
+            if file_system.can_be_mounted() {
+                file_systems.push(file_system);
+            } else {
+                dbg!(&file_system);
             }
         }
+
         file_systems
-    }
-
-    /// Ancillary function to build a file system from a lsblk entry.
-    fn build_file_system(line: &str) -> Option<FileSystem> {
-        let mut parts = line.split(' ');
-        let block_device = parts.next()?.to_string();
-        let fstype = parts.next()?.to_string();
-        let mount_point = parts.next()?.to_string();
-        let transport = parts.next()?.to_string();
-        let label = parts.next()?.to_string();
-
-        Some(FileSystem {
-            block_device: block_device.to_string(),
-            fstype: fstype.to_string(),
-            mount_point: if mount_point.is_empty() {
-                None
-            } else {
-                Some(PathBuf::from(mount_point))
-            },
-            transport: if transport.is_empty() {
-                None
-            } else {
-                Some(transport)
-            },
-            label: if label.is_empty() { None } else { Some(label) },
-        })
     }
 }
 
@@ -194,19 +199,19 @@ mod tests {
     fn build_file_systems() -> Vec<FileSystem> {
         let vda1 = FileSystem {
             block_device: "vda1".to_string(),
-            fstype: "ext4".to_string(),
+            fstype: Some("ext4".to_string()),
             mount_point: Some(PathBuf::from("/")),
             ..Default::default()
         };
         let vdb1 = FileSystem {
             block_device: "vdb1".to_string(),
-            fstype: "xfs".to_string(),
+            fstype: Some("xfs".to_string()),
             mount_point: Some(PathBuf::from("/home")),
             ..Default::default()
         };
         let usb = FileSystem {
             block_device: "sr0".to_string(),
-            fstype: "vfat".to_string(),
+            fstype: Some("vfat".to_string()),
             mount_point: None,
             transport: Some("usb".to_string()),
             label: Some("OEMDRV".to_string()),
@@ -251,16 +256,16 @@ mod tests {
 
     #[test]
     fn test_parse_file_systems() {
-        let lsblk = r#"sda iso9660  usb agama-installer
-sda1 iso9660 /run/media/imobach/agama-installer  agama-installer
-sda2 vfat   BOOT
-nvme0n1   nvme 
-nvme0n1p1 vfat /boot/efi nvme 
-nvme0n1p2 crypto_LUKS  nvme 
-dm-0 btrfs /usr/local 
-nvme0n1p3 crypto_LUKS  nvme 
-dm-1 swap [SWAP] 
-            "#;
+        let lsblk = r#"KNAME="sda" FSTYPE="" MOUNTPOINT="" TRAN="usb" LABEL=""
+KNAME="sda1" FSTYPE="iso9660" MOUNTPOINT="/run/media/user/agama-installer" TRAN="" LABEL="agama-installer"
+KNAME="sda2" FSTYPE="vfat" MOUNTPOINT="" TRAN="" LABEL="BOOT"
+KNAME="nvme0n1" FSTYPE="" MOUNTPOINT="" TRAN="nvme" LABEL=""
+KNAME="nvme0n1p1" FSTYPE="vfat" MOUNTPOINT="/boot/efi" TRAN="nvme" LABEL=""
+KNAME="nvme0n1p2" FSTYPE="crypto_LUKS" MOUNTPOINT="" TRAN="nvme" LABEL=""
+KNAME="dm-0" FSTYPE="btrfs" MOUNTPOINT="/home" TRAN="" LABEL=""
+KNAME="nvme0n1p3" FSTYPE="crypto_LUKS" MOUNTPOINT="" TRAN="nvme" LABEL=""
+KNAME="dm-1" FSTYPE="swap" MOUNTPOINT="[SWAP]" TRAN="" LABEL=""
+"#;
         let file_systems = FileSystemsReader::read_from_string(&lsblk);
         assert_eq!(file_systems.len(), 4)
     }
