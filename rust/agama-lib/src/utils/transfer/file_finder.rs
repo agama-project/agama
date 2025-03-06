@@ -21,7 +21,6 @@
 use std::{
     io::Write,
     path::{Path, PathBuf},
-    process::Command,
 };
 
 use super::{
@@ -64,58 +63,19 @@ impl FileFinder {
         file_name: &str,
         writer: &mut impl Write,
     ) -> TransferResult<()> {
-        const DEFAULT_MOUNT_PATH: &str = "/run/agama/mount";
-        let default_mount_point = PathBuf::from(DEFAULT_MOUNT_PATH);
-        let mount_point = file_system
-            .mount_point
-            .clone()
-            .unwrap_or_else(|| default_mount_point);
-
         println!("Searching {} in {}", &file_name, &file_system.block_device);
 
-        if !file_system.is_mounted() {
-            Self::mount_file_system(&file_system, &mount_point)?;
-        }
-
-        let file_name = file_name.strip_prefix("/").unwrap_or(file_name);
-        let source = mount_point.join(&file_name);
-        let result = Self::copy_file(source, writer);
-
-        if !file_system.is_mounted() {
-            Self::umount_file_system(&mount_point)?;
-        }
-
-        result
-    }
-
-    /// Mounts the file system on a given point.
-    ///
-    /// TODO: move this logic to the FileSystem struct.
-    fn mount_file_system(file_system: &FileSystem, mount_point: &PathBuf) -> TransferResult<()> {
-        std::fs::create_dir_all(mount_point)?;
-        let output = Command::new("mount")
-            .args([file_system.device(), mount_point.display().to_string()])
-            .output()?;
-        if !output.status.success() {
-            return Err(TransferError::FileSystemMount(file_system.device()));
-        }
-        Ok(())
+        file_system.ensure_mounted(|mount_point: &PathBuf| {
+            let file_name = file_name.strip_prefix("/").unwrap_or(file_name);
+            let source = mount_point.join(&file_name);
+            Self::copy_file(source, writer)
+        })
     }
 
     /// Reads and write the file content to the given writer.
     fn copy_file<P: AsRef<Path>>(source: P, out_fd: &mut impl Write) -> TransferResult<()> {
         let mut reader = std::fs::File::open(source)?;
         std::io::copy(&mut reader, out_fd)?;
-        Ok(())
-    }
-
-    /// Umounts file system from the given mount point.
-    ///
-    /// TODO: move this logic to the FileSystem struct.
-    fn umount_file_system(mount_point: &PathBuf) -> TransferResult<()> {
-        Command::new("umount")
-            .arg(mount_point.display().to_string())
-            .output()?;
         Ok(())
     }
 }

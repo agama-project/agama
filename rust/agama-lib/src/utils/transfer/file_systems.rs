@@ -23,6 +23,8 @@ use std::{path::PathBuf, process::Command};
 
 use regex::Regex;
 
+use super::{TransferError, TransferResult};
+
 /// Represents a file system from the underlying system.
 ///
 /// It only includes the elements that are relevant for the transfer API.
@@ -46,6 +48,36 @@ impl FileSystem {
         format!("/dev/{}", &self.block_device)
     }
 
+    /// Mounts the file system and runs the given function.
+    ///
+    /// It does not try to mount the file system if it is already mounted.
+    ///
+    /// * `func`: function to run. It receives the mount point.
+    ///
+    /// TODO: TransferResult and TransferError should not be visible from this
+    /// struct.
+    pub fn ensure_mounted<F>(&self, func: F) -> TransferResult<()>
+    where
+        F: FnOnce(&PathBuf) -> TransferResult<()>,
+    {
+        const DEFAULT_MOUNT_PATH: &str = "/run/agama/mount";
+        let default_mount_point = PathBuf::from(DEFAULT_MOUNT_PATH);
+        let mount_point = self
+            .mount_point
+            .clone()
+            .unwrap_or_else(|| default_mount_point);
+
+        if !self.is_mounted() {
+            self.mount(&mount_point).unwrap();
+        }
+        let result = func(&mount_point);
+        if !self.is_mounted() {
+            self.umount(&mount_point).unwrap();
+        }
+
+        result
+    }
+
     /// Whether the file system can be mounted.
     ///
     /// File systems that cannot be mounted are ignored.
@@ -58,6 +90,29 @@ impl FileSystem {
             "" | "crypto_LUKS" | "swap" => false,
             _ => true,
         }
+    }
+
+    /// Mounts file system from the given mount point.
+    fn mount(&self, mount_point: &PathBuf) -> TransferResult<()> {
+        std::fs::create_dir_all(mount_point)?;
+        let output = Command::new("mount")
+            .args([
+                &self.device(),
+                &mount_point.display().to_string(),
+            ])
+            .output()?;
+        if !output.status.success() {
+            return Err(TransferError::FileSystemMount(self.device()));
+        }
+        Ok(())
+    }
+
+    /// Umounts file system from the given mount point.
+    fn umount(&self, mount_point: &PathBuf) -> TransferResult<()> {
+        Command::new("umount")
+            .arg(mount_point.display().to_string())
+            .output()?;
+        Ok(())
     }
 }
 
