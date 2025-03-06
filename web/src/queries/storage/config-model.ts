@@ -509,3 +509,5 @@ export function useModel(): ModelHook {
     unusedMountPaths: model ? unusedMountPaths(model, volumes) : [],
   };
 }
+
+export { configModelQuery };
