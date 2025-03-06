@@ -29,12 +29,33 @@
 use std::sync::Arc;
 
 use agama_lib::{
-    error::ServiceError, files::{model::FileSettings, settings::FilesConfig},
+    error::ServiceError,
+    files::{error::FileError, model::FileSettings, settings::FilesConfig},
 };
-use axum::{extract::State, routing::{post, put}, Json, Router};
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    routing::{post, put},
+    Json, Router,
+};
+use serde_json::json;
 use tokio::sync::RwLock;
 
-use crate::error;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+#[error("Files error: {0}")]
+struct FilesServiceError(#[from] FileError);
+
+impl IntoResponse for FilesServiceError {
+    fn into_response(self) -> Response {
+        let body = json!({
+            "error": self.to_string()
+        });
+        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+    }
+}
 
 #[derive(Clone, Default, Debug)]
 struct FilesState {
@@ -65,7 +86,7 @@ pub async fn files_service() -> Result<Router, ServiceError> {
 )]
 async fn get_config(
     State(state): State<FilesState>,
-) -> Result<Json<Vec<FileSettings>>, error::Error> {
+) -> Result<Json<Vec<FileSettings>>, FilesServiceError> {
     // StorageSettings is just a wrapper over serde_json::value::RawValue
     let settings = state.files.read().await;
     Ok(Json(settings.files.to_vec()))
@@ -87,7 +108,7 @@ async fn get_config(
 async fn set_config(
     State(state): State<FilesState>,
     Json(settings): Json<Vec<FileSettings>>,
-) -> Result<Json<()>, error::Error> {
+) -> Result<Json<()>, FilesServiceError> {
     let mut files = state.files.write().await;
     files.files = settings;
     Ok(Json(()))
@@ -105,9 +126,7 @@ async fn set_config(
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
-async fn write_config(
-    State(state): State<FilesState>,
-) -> Result<Json<()>, error::Error> {
+async fn write_config(State(state): State<FilesState>) -> Result<Json<()>, FilesServiceError> {
     let files = state.files.read().await;
     for file in files.files.iter() {
         file.write().await?;

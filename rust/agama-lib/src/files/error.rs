@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,10 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements support for handling the bootloader settings
+use std::io;
+use thiserror::Error;
 
-pub mod client;
-pub mod error;
-pub mod model;
-pub mod settings;
-pub mod store;
+use crate::utils::TransferError;
+
+#[derive(Error, Debug)]
+pub enum FileError {
+    #[error("Could not fetch the file: '{0}'")]
+    Unreachable(#[from] TransferError),
+    #[error("I/O error: '{0}'")]
+    InputOutputError(#[from] io::Error),
+    #[error("Wrong script type")]
+    WrongScriptType,
+}

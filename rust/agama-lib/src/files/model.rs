@@ -21,11 +21,14 @@
 //! Implements a data model for Files configuration.
 
 use serde::{Deserialize, Serialize};
+use std::process;
 use std::fs::OpenOptions;
 use std::os::unix::fs::OpenOptionsExt;
 use std::io::Write;
 
-use crate::{error::ServiceError, utils::Transfer};
+use crate::utils::Transfer;
+
+use super::error::FileError;
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
@@ -62,7 +65,7 @@ impl Default for FileSettings {
 }
 
 impl FileSettings {
-    pub async fn write(&self) -> Result<(), ServiceError> {
+    pub async fn write(&self) -> Result<(), FileError> {
         let int_mode = u32::from_str_radix(&self.permissions, 8).unwrap(); // TODO: proper report for wrong value
         let path = "/mnt".to_string() + &self.destination;
         // cannot set owner here as user and group can exist only on target destination
@@ -72,7 +75,8 @@ impl FileSettings {
             FileSource::Text { content } => { target.write(content.as_bytes()).unwrap(); } // TODO: error handling
         }
         
-        // TODO: implement
+        // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
+        process::Command::new("chroot").args(["/mnt", "chown", format!("{}:{}", self.owner.0, self.owner.1).as_str()]).output().unwrap(); // TODO: proper error
         Ok(())
     }
 }
