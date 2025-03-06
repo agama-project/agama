@@ -23,15 +23,7 @@
 import React, { useEffect, useState } from "react";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
-import {
-  MenuToggle,
-  ModalProps,
-  Select,
-  SelectOption,
-  Split,
-  SplitItem,
-  Stack,
-} from "@patternfly/react-core";
+import { MenuToggle, ModalProps, Select, SelectOption, Stack } from "@patternfly/react-core";
 import { Product } from "~/types/software";
 import { fetchLicense } from "~/api/software";
 import { useInstallerL10n } from "~/context/installerL10n";
@@ -66,27 +58,21 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
     <Popup
       inlineSize="auto"
       isOpen
-      title={
-        <>
-          <Split hasGutter>
-            <SplitItem isFilled>
-              <h1>{product.name}</h1>
-            </SplitItem>
-            <Select
-              isOpen={languageSelectorOpen}
-              selected={language}
-              onSelect={onLocaleSelection}
-              onOpenChange={(isOpen) => setLanguageSelectorOpen(!isOpen)}
-              toggle={localesToggler}
-            >
-              {Object.entries(supportedLanguages).map(([id, name]) => (
-                <SelectOption key={id} value={id}>
-                  {name}
-                </SelectOption>
-              ))}
-            </Select>
-          </Split>
-        </>
+      title={product.name}
+      titleAddon={
+        <Select
+          isOpen={languageSelectorOpen}
+          selected={language}
+          onSelect={onLocaleSelection}
+          onOpenChange={(isOpen) => setLanguageSelectorOpen(!isOpen)}
+          toggle={localesToggler}
+        >
+          {Object.entries(supportedLanguages).map(([id, name]) => (
+            <SelectOption key={id} value={id}>
+              {name}
+            </SelectOption>
+          ))}
+        </Select>
       }
     >
       <Stack hasGutter>

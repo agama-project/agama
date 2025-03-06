@@ -66,6 +66,14 @@ describe("LicenseDialog", () => {
     });
   });
 
+  it("renders change language button in the header but not as part of the h1 heading", async () => {
+    installerRender(<LicenseDialog product={product} onClose={onCloseFn} />);
+    const header = await screen.findByRole("banner");
+    const heading = await within(header).findByRole("heading", { level: 1 });
+    expect(heading).toHaveTextContent(sle.name);
+    within(header).getByRole("button", { name: "License language" });
+  });
+
   it("requests license in the language selected by user", async () => {
     const { user } = installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, {
       withL10n: true,
