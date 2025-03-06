@@ -33,14 +33,14 @@ export default function ConfigEditor() {
 
   return (
     <List isPlain>
-      {model.volumeGroups.map((vg, i) => {
+      {model.volumeGroups?.map((vg, i) => {
         return (
           <ListItem key={`vg-${i}`}>
             <VolumeGroupEditor vg={vg} />
           </ListItem>
         );
       })}
-      {model.drives.map((drive, i) => {
+      {model.drives?.map((drive, i) => {
         const device = devices.find((d) => d.name === drive.name);
 
         /**
