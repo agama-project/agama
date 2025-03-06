@@ -356,6 +356,18 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-form__group--m-action--MarginBlockStart: var(--pf-t--global--spacer--md);
 }
 
+.pf-v6-c-form__group {
+  justify-self: flex-start;
+}
+
+.pf-v6-c-check {
+  row-gap: var(--pf-t--global--spacer--xs);
+
+  input[type="checkbox"] {
+    align-self: center;
+  }
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
@@ -363,4 +375,9 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 div[aria-live]:empty {
   display: none;
+}
+
+input[type="checkbox"] {
+  inline-size: var(--pf-t--global--font--size--md);
+  block-size: var(--pf-t--global--font--size--md);
 }
