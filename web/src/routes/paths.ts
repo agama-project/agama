@@ -77,6 +77,9 @@ const STORAGE = {
   editPartition: "/storage/:id/edit-partition/:partitionId",
   findSpace: "/storage/:id/find-space",
   iscsi: "/storage/iscsi",
+  lvm: {
+    create: "/storage/lvm/new",
+  },
   dasd: "/storage/dasd",
   zfcp: {
     root: "/storage/zfcp",
