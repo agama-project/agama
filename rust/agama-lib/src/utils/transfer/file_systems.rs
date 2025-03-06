@@ -133,7 +133,7 @@ impl FileSystemsReader {
     /// Returns the file systems from the underlying system.
     pub fn read_from_system() -> Vec<FileSystem> {
         let lsblk = Command::new("lsblk")
-            .args(["--output", "KNAME,FSTYPE,MOUNTPOINT,TRAN,LABEL", "--pairs"])
+            .args(["--output", "KNAME,FSTYPE,MOUNTPOINTS,TRAN,LABEL", "--pairs"])
             .output()
             .unwrap();
         let output = String::from_utf8_lossy(&lsblk.stdout);
@@ -145,12 +145,16 @@ impl FileSystemsReader {
         let mut file_systems = vec![];
         let mut parent_transport: Option<String> = None;
         let re =
-            Regex::new(r#"KNAME="(.+)" FSTYPE="(.*)" MOUNTPOINT="(.*)" TRAN="(.*)" LABEL="(.*)""#)
+            Regex::new(r#"KNAME="(.+)" FSTYPE="(.*)" MOUNTPOINTS="(.*)" TRAN="(.*)" LABEL="(.*)""#)
                 .unwrap();
 
-        for (_, [block_device, fstype, mount_point, transport, label]) in
+        for (_, [block_device, fstype, mount_points, transport, label]) in
             re.captures_iter(lsblk_string).map(|c| c.extract())
         {
+            // Use the shorter path as the canonical mount point.
+            let mut mounts = mount_points.split("\\x0a").collect::<Vec<_>>();
+            mounts.sort_by(|a, b| a.len().cmp(&b.len()));
+
             let mut file_system = FileSystem {
                 block_device: block_device.to_string(),
                 fstype: if fstype.is_empty() {
@@ -158,11 +162,7 @@ impl FileSystemsReader {
                 } else {
                     Some(fstype.to_string())
                 },
-                mount_point: if mount_point.is_empty() {
-                    None
-                } else {
-                    Some(PathBuf::from(mount_point))
-                },
+                mount_point: mounts.first().map(|m| PathBuf::from(m)),
                 transport: if transport.is_empty() {
                     None
                 } else {
@@ -181,8 +181,6 @@ impl FileSystemsReader {
             }
             if file_system.can_be_mounted() {
                 file_systems.push(file_system);
-            } else {
-                dbg!(&file_system);
             }
         }
 
@@ -257,16 +255,22 @@ mod tests {
     #[test]
     fn test_parse_file_systems() {
         let lsblk = r#"KNAME="sda" FSTYPE="" MOUNTPOINT="" TRAN="usb" LABEL=""
-KNAME="sda1" FSTYPE="iso9660" MOUNTPOINT="/run/media/user/agama-installer" TRAN="" LABEL="agama-installer"
-KNAME="sda2" FSTYPE="vfat" MOUNTPOINT="" TRAN="" LABEL="BOOT"
-KNAME="nvme0n1" FSTYPE="" MOUNTPOINT="" TRAN="nvme" LABEL=""
-KNAME="nvme0n1p1" FSTYPE="vfat" MOUNTPOINT="/boot/efi" TRAN="nvme" LABEL=""
+KNAME="sda1" FSTYPE="iso9660" MOUNTPOINTS="/run/media/user/agama-installer" TRAN="" LABEL="agama-installer"
+KNAME="sda2" FSTYPE="vfat" MOUNTPOINTS="" TRAN="" LABEL="BOOT"
+KNAME="nvme0n1" FSTYPE="" MOUNTPOINTS="" TRAN="nvme" LABEL=""
+KNAME="nvme0n1p1" FSTYPE="vfat" MOUNTPOINTS="/boot/efi" TRAN="nvme" LABEL=""
 KNAME="nvme0n1p2" FSTYPE="crypto_LUKS" MOUNTPOINT="" TRAN="nvme" LABEL=""
-KNAME="dm-0" FSTYPE="btrfs" MOUNTPOINT="/home" TRAN="" LABEL=""
-KNAME="nvme0n1p3" FSTYPE="crypto_LUKS" MOUNTPOINT="" TRAN="nvme" LABEL=""
-KNAME="dm-1" FSTYPE="swap" MOUNTPOINT="[SWAP]" TRAN="" LABEL=""
+KNAME="dm-0" FSTYPE="btrfs" MOUNTPOINTS="/home\x0a/\x0a/var" TRAN="" LABEL=""
+KNAME="nvme0n1p3" FSTYPE="crypto_LUKS" MOUNTPOINTS="" TRAN="nvme" LABEL=""
+KNAME="dm-1" FSTYPE="swap" MOUNTPOINTS="[SWAP]" TRAN="" LABEL=""
 "#;
         let file_systems = FileSystemsReader::read_from_string(&lsblk);
-        assert_eq!(file_systems.len(), 4)
+        assert_eq!(file_systems.len(), 4);
+
+        let dm0 = file_systems
+            .into_iter()
+            .find(|fs| &fs.block_device == "dm-0")
+            .unwrap();
+        assert_eq!(dm0.mount_point.unwrap(), PathBuf::from("/"));
     }
 }
