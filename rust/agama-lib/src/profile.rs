@@ -30,11 +30,11 @@ use std::{
     process::Command,
 };
 use tempfile::{tempdir, TempDir};
-use url::Url;
+pub use url::Url;
 
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
-    content: String,
+    pub content: String,
 }
 
 impl AutoyastProfileImporter {
@@ -55,7 +55,10 @@ impl AutoyastProfileImporter {
             .context("Failed to run agama-autoyast")?;
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
-        let content = fs::read_to_string(autoinst_json)?;
+        let content = fs::read_to_string(&autoinst_json).context(format!(
+            "agama-autoyast did not produce {:?}",
+            autoinst_json
+        ))?;
         Ok(Self { content })
     }
 

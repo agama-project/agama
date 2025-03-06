@@ -177,16 +177,17 @@ async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn autoyast(url_string: String) -> anyhow::Result<()> {
-    let url = Url::parse(&url_string)?;
-    let importer = AutoyastProfileImporter::read(&url)?;
-    importer.write(std::io::stdout())?;
+async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
+    // FIXME: how to escape it?
+    let api_url = format!("/profile/autoyast?url={}", url_string);
+    let output: Box<serde_json::value::RawValue> = client.get(&api_url).await?;
+    println!("{}", output);
     Ok(())
 }
 
 pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
-        ProfileCommands::Autoyast { url } => autoyast(url),
+        ProfileCommands::Autoyast { url } => autoyast(client, url).await,
         ProfileCommands::Validate { path } => validate(client, &path).await,
         ProfileCommands::Evaluate { path } => evaluate(client, &path).await,
         ProfileCommands::Import { url, dir } => import(client, url, dir).await,
