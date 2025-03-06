@@ -96,7 +96,7 @@ describe("Popup", () => {
         </TestingPopup>,
       );
 
-      const dialog = await screen.findByRole("dialog");
+      await screen.findByRole("dialog");
       expect(screen.queryByRole("banner")).toBeNull();
     });
 
