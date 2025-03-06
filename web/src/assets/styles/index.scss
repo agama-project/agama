@@ -356,6 +356,11 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-form__group--m-action--MarginBlockStart: var(--pf-t--global--spacer--md);
 }
 
+.pf-v6-c-list.pf-m-inline {
+  --pf-v6-c-list--m-inline--RowGap: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
