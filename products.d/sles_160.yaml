@@ -65,13 +65,26 @@ software:
       archs: ppc
 
   mandatory_patterns:
-    - base_traditional
+    - base
   optional_patterns: null # no optional pattern shared
   user_patterns:
-    - kvm_host
     - cockpit
-    - sles_enhanced_base
+    - enhanced_base
     - sles_minimal_sap
+    - fips
+    - selinux
+    - documentation
+    - sw_management
+    - container_runtime_podman
+    - dhcp_dns_server
+    - directory_server
+    - file_server
+    - gateway_server
+    - kvm_server
+    - kvm_tools
+    - lamp_server
+    - mail_server
+    - printing
   mandatory_packages:
     - NetworkManager
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model

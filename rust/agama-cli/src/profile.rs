@@ -146,8 +146,8 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
 fn pre_process_profile<P: AsRef<Path>>(url_string: &str, path: P) -> anyhow::Result<()> {
     let work_dir = path.as_ref().parent().unwrap();
     let tmp_profile_path = work_dir.join("profile.temp");
-    let tmp_file = File::create(&tmp_profile_path)?;
-    Transfer::get(url_string, tmp_file)?;
+    let mut tmp_file = File::create(&tmp_profile_path)?;
+    Transfer::get(url_string, &mut tmp_file)?;
 
     match FileFormat::from_file(&tmp_profile_path)? {
         FileFormat::Jsonnet => {

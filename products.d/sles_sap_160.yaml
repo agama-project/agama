@@ -26,7 +26,7 @@ software:
       archs: ppc
 
   mandatory_patterns:
-    - base_traditional
+    - base
     - sles_sap_enhanced_base
     - sles_sap_base_sap_server
   optional_patterns: null # no optional pattern shared
