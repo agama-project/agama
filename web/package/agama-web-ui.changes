@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar  6 08:06:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix a language selector overflow issue in the product license dialog
+  (gh#agama-project/agama#2105)
+
+-------------------------------------------------------------------
 Thu Feb 27 16:10:51 UTC 2025 - Vaishnavi Nawghare <nawgharevaishnavi@gmail.com>
 
 - Add alpha-label-less leap16.svg
