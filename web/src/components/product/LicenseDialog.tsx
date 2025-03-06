@@ -74,6 +74,7 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
           onOpenChange={(isOpen) => setLanguageSelectorOpen(!isOpen)}
           toggle={localesToggler}
           isScrollable
+          popperProps={{ position: "right" }}
         >
           <SelectList>
             {Object.entries(supportedLanguages).map(([id, name]) => (
