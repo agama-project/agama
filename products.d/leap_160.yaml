@@ -52,9 +52,25 @@ software:
     - kde
     - multimedia
     - office
+    - cockpit
+    - fips
+    - selinux
+    - documentation
+    - sw_management
+    - container_runtime_podman
+    - dhcp_dns_server
+    - directory_server
+    - file_server
+    - gateway_server
+    - kvm_server
+    - kvm_tools
+    - lamp_server
+    - mail_server
+    - printing
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Leap
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
   base_product: openSUSE
 
