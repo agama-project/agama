@@ -72,14 +72,23 @@ module Agama
         boot_drive&.found_device&.name
       end
 
-      # return [Array<Configs::Partition>]
+      # @return [Array<Configs::Partition>]
       def partitions
         drives.flat_map(&:partitions)
       end
 
-      # return [Array<Configs::LogicalVolume>]
+      # @return [Array<Configs::LogicalVolume>]
       def logical_volumes
         volume_groups.flat_map(&:logical_volumes)
+      end
+
+      # @return [Array<Configs::Filesystem>]
+      def filesystems
+        (
+          drives.map(&:filesystem) +
+          partitions.map(&:filesystem) +
+          logical_volumes.map(&:filesystem)
+        ).compact
       end
     end
   end
