@@ -48,7 +48,7 @@ pub struct FileSettings {
     /// Permissions for file
     pub permissions: String, // TODO: better type?
     /// pair with owner user and group
-    pub owner: (String,String), // in format of user,group
+    pub owner: String, // in format of "user:group"
     /// destination for file like "/etc/config.d/my.conf"
     pub destination: String
 }
@@ -58,7 +58,7 @@ impl Default for FileSettings {
         Self { 
             source: FileSource::Text { content: "".to_string() },
             permissions: "0644".to_string(),
-            owner: ("root".to_string(), "root".to_string()),
+            owner: ("root:root".to_string()),
             destination: "/dev/null".to_string() // should be always defined
         }
     }
@@ -76,7 +76,7 @@ impl FileSettings {
         }
         
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
-        process::Command::new("chroot").args(["/mnt", "chown", format!("{}:{}", self.owner.0, self.owner.1).as_str()]).output().unwrap(); // TODO: proper error
+        process::Command::new("chroot").args(["/mnt", "chown", &self.owner]).output().unwrap(); // TODO: proper error
         Ok(())
     }
 }

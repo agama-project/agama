@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::io;
+use std::{io, num::ParseIntError};
 use thiserror::Error;
 
 use crate::utils::TransferError;
@@ -29,6 +29,6 @@ pub enum FileError {
     Unreachable(#[from] TransferError),
     #[error("I/O error: '{0}'")]
     InputOutputError(#[from] io::Error),
-    #[error("Wrong script type")]
-    WrongScriptType,
+    #[error("Invalid permissions: '{0}'")]
+    PermissionsError(#[from] ParseIntError),
 }
