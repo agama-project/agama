@@ -214,8 +214,13 @@ impl FileSystemsReader {
             re.captures_iter(lsblk_string).map(|c| c.extract())
         {
             // Use the shorter path as the canonical mount point.
-            let mut mounts = mount_points.split("\\x0a").collect::<Vec<_>>();
-            mounts.sort_by(|a, b| a.len().cmp(&b.len()));
+            let mount_point = if mount_points.is_empty() {
+                None
+            } else {
+                let mut mounts = mount_points.split("\\x0a").collect::<Vec<_>>();
+                mounts.sort_by(|a, b| a.len().cmp(&b.len()));
+                mounts.first().map(|m| PathBuf::from(m))
+            };
 
             let mut file_system = FileSystem {
                 block_device: block_device
@@ -227,7 +232,7 @@ impl FileSystemsReader {
                 } else {
                     Some(fstype.to_string())
                 },
-                mount_point: mounts.first().map(|m| PathBuf::from(m)),
+                mount_point,
                 transport: if transport.is_empty() {
                     None
                 } else {
