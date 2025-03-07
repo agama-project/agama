@@ -745,87 +745,204 @@ describe Agama::Storage::ConfigConversions::ToModel do
       end
     end
 
-    context "if the root partition is encrypted" do
-      let(:config_json) do
-        {
-          drives: [
+    context "for the global encryption" do
+      context "if the root partition is encrypted" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                alias:      "vda",
+                partitions: [
+                  {
+                    filesystem: { path: "/" },
+                    encryption: {
+                      luks1: { password: "12345" }
+                    }
+                  }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                name:            "test",
+                physicalVolumes: [
+                  {
+                    generate: {
+                      targetDevices: ["vda"],
+                      encryption:    {
+                        luks2: { password: "54321" }
+                      }
+                    }
+                  }
+                ],
+                logicalVolumes:  [
+                  { filesystem: { path: "/home" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "generates the expected JSON for 'encryption'" do
+          encryption_model = subject.convert[:encryption]
+
+          expect(encryption_model).to eq(
             {
-              partitions: [
+              method:   "luks1",
+              password: "12345"
+            }
+          )
+        end
+      end
+
+      context "if there is a root logical volume" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                alias:      "vda",
+                partitions: [
+                  {
+                    filesystem: { path: "/home" },
+                    encryption: {
+                      luks1: { password: "12345" }
+                    }
+                  }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                name:            "test",
+                physicalVolumes: physicalVolumes,
+                logicalVolumes:  [
+                  { filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        context "and the volume group has automatically generated and encrypted physical volumes" do
+          let(:physicalVolumes) do
+            [
+              {
+                generate: {
+                  targetDevices: ["vda"],
+                  encryption:    {
+                    luks2: { password: "54321" }
+                  }
+                }
+              }
+            ]
+          end
+
+          it "generates the expected JSON for 'encryption'" do
+            encryption_model = subject.convert[:encryption]
+
+            expect(encryption_model).to eq(
+              {
+                method:   "luks2",
+                password: "54321"
+              }
+            )
+          end
+        end
+      end
+
+      context "if there is no encryption for root" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                alias:      "vda",
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  },
+                  {
+                    filesystem: { path: "/home" },
+                    encryption: encryption
+                  }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                name:            "test",
+                physicalVolumes: physicalVolumes,
+                logicalVolumes:  [
+                  { filesystem: { path: "swap" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:physicalVolumes) do
+          [
+            {
+              generate: {
+                targetDevices: ["vda"],
+                encryption:    {
+                  luks2: { password: "54321" }
+                }
+              }
+            }
+          ]
+        end
+
+        context "and there is an encrypted partition" do
+          let(:encryption) do
+            {
+              luks1: { password: "12345" }
+            }
+          end
+
+          it "generates the expected JSON for 'encryption'" do
+            encryption_model = subject.convert[:encryption]
+
+            expect(encryption_model).to eq(
+              {
+                method:   "luks1",
+                password: "12345"
+              }
+            )
+          end
+        end
+
+        context "and there is no encrypted partition" do
+          let(:encryption) { nil }
+
+          it "generates the expected JSON for 'encryption'" do
+            encryption_model = subject.convert[:encryption]
+
+            expect(encryption_model).to eq(
+              {
+                method:   "luks2",
+                password: "54321"
+              }
+            )
+          end
+
+          context "if there is no automatically generated and encrypted physical volumes" do
+            let(:physicalVolumes) do
+              [
                 {
-                  filesystem: { path: "/" },
-                  encryption: {
-                    luks1: { password: "12345" }
+                  generate: {
+                    targetDevices: ["vda"]
                   }
                 }
               ]
-            }
-          ]
-        }
-      end
+            end
 
-      it "generates the expected JSON for 'encryption'" do
-        encryption_model = subject.convert[:encryption]
+            it "generates the expected JSON for 'encryption'" do
+              encryption_model = subject.convert[:encryption]
 
-        expect(encryption_model).to eq(
-          {
-            method:   "luks1",
-            password: "12345"
-          }
-        )
-      end
-    end
-
-    context "if the root partition is not encrypted but other partition is encrypted" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  filesystem: { path: "/" }
-                },
-                {
-                  encryption: {
-                    luks1: { password: "12345" }
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      it "generates the expected JSON for 'encryption'" do
-        encryption_model = subject.convert[:encryption]
-
-        expect(encryption_model).to eq(
-          {
-            method:   "luks1",
-            password: "12345"
-          }
-        )
-      end
-    end
-
-    context "if there is not an encrypted partition" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  filesystem: { path: "/" }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      it "generates the expected JSON for 'encryption'" do
-        encryption_model = subject.convert[:encryption]
-
-        expect(encryption_model).to be_nil
+              expect(encryption_model).to be_nil
+            end
+          end
+        end
       end
     end
 
