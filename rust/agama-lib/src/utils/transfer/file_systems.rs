@@ -338,9 +338,15 @@ KNAME="/dev/dm-1" FSTYPE="swap" MOUNTPOINTS="[SWAP]" TRAN="" LABEL=""
         assert_eq!(file_systems.len(), 4);
 
         let dm0 = file_systems
-            .into_iter()
+            .iter()
             .find(|fs| &fs.block_device == "dm-0")
             .unwrap();
-        assert_eq!(dm0.mount_point.unwrap(), PathBuf::from("/"));
+        assert_eq!(dm0.mount_point.as_ref().unwrap(), &PathBuf::from("/"));
+
+        let sda2 = file_systems
+            .iter()
+            .find(|fs| &fs.block_device == "sda2")
+            .unwrap();
+        assert_eq!(sda2.mount_point, None);
     }
 }
