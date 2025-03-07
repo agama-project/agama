@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar  7 11:42:33 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Show LVM config in the storage UI (gh#agama-project/agama#2089).
+
+-------------------------------------------------------------------
 Thu Mar  6 08:06:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Fix a language selector overflow issue in the product license dialog
