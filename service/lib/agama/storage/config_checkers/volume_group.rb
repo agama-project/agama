@@ -84,8 +84,11 @@ module Agama
           configs = storage_config.drives + storage_config.drives.flat_map(&:partitions)
           return if configs.any? { |c| c.alias == pv_alias }
 
-          # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-          error(format(_("There is no LVM physical volume with alias '%s'"), pv_alias))
+          error(
+            # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+            format(_("There is no LVM physical volume with alias '%s'"), pv_alias),
+            kind: :no_such_alias
+          )
         end
 
         # Issues from physical volumes devices (target devices).
@@ -109,7 +112,8 @@ module Agama
               # TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
               _("There is no target device for LVM physical volumes with alias '%s'"),
               device_alias
-            )
+            ),
+            kind: :no_such_alias
           )
         end
 
