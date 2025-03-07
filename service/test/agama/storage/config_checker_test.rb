@@ -231,15 +231,19 @@ describe Agama::Storage::ConfigChecker do
   let(:product_data) do
     {
       "storage" => {
-        "volume_templates" => [
-          {
-            "mount_path" => "/",
-            "filesystem" => "btrfs",
-            "outline"    => { "filesystems" => ["btrfs", "xfs"] }
-          }
-        ]
+        "volume_templates" => volume_templates
       }
     }
+  end
+
+  let(:volume_templates) do
+    [
+      {
+        "mount_path" => "/",
+        "filesystem" => "btrfs",
+        "outline"    => { "filesystems" => ["btrfs", "xfs"] }
+      }
+    ]
   end
 
   before do
@@ -782,6 +786,54 @@ describe Agama::Storage::ConfigChecker do
         issue = issues.first
         expect(issue.error?).to eq(true)
         expect(issue.description).to(match("The device 'disk1' is used several times"))
+      end
+    end
+
+    context "if some volumes are required" do
+      let(:volume_templates) do
+        [
+          {
+            "mount_path" => "/",
+            "filesystem" => "btrfs",
+            "outline"    => { "required" => true }
+          },
+          {
+            "mount_path" => "swap",
+            "filesystem" => "swap",
+            "outline"    => { "required" => true }
+          }
+        ]
+      end
+
+      context "and one of them is omitted at the configuration" do
+        let(:config_json) do
+          {
+            drives: [
+              {
+                partitions: [
+                  { filesystem: { path: "swap" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "includes an issue for the missing mount path" do
+          issues = subject.issues
+          expect(issues).to include an_object_having_attributes(
+            error?:      true,
+            kind:        :required_filesystems,
+            description: /file system for \/ is/
+          )
+        end
+
+        it "does not include an issue for the present mount path" do
+          issues = subject.issues
+          expect(issues).to_not include an_object_having_attributes(
+            kind:        :required_filesystems,
+            description: /file system for swap/
+          )
+        end
       end
     end
 
