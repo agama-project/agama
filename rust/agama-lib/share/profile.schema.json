@@ -489,7 +489,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
@@ -498,7 +504,7 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
     },
     "postPartitioning": {
       "title": "User-defined installation script that runs after the partitioning finishes",
@@ -511,7 +517,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
@@ -520,7 +532,7 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
     },
     "postScript": {
       "title": "User-defined installation script that runs after the installation finishes",
@@ -533,7 +545,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
@@ -547,7 +565,7 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
     },
     "initScript": {
       "title": "User-defined installation script that runs during the first boot of the target system, once the installation is finished",
@@ -560,7 +578,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
@@ -569,7 +593,7 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
     }
   }
 }
