@@ -214,8 +214,13 @@ impl FileSystemsReader {
             re.captures_iter(lsblk_string).map(|c| c.extract())
         {
             // Use the shorter path as the canonical mount point.
-            let mut mounts = mount_points.split("\\x0a").collect::<Vec<_>>();
-            mounts.sort_by(|a, b| a.len().cmp(&b.len()));
+            let mount_point = if mount_points.is_empty() {
+                None
+            } else {
+                let mut mounts = mount_points.split("\\x0a").collect::<Vec<_>>();
+                mounts.sort_by(|a, b| a.len().cmp(&b.len()));
+                mounts.first().map(|m| PathBuf::from(m))
+            };
 
             let mut file_system = FileSystem {
                 block_device: block_device
@@ -227,7 +232,7 @@ impl FileSystemsReader {
                 } else {
                     Some(fstype.to_string())
                 },
-                mount_point: mounts.first().map(|m| PathBuf::from(m)),
+                mount_point,
                 transport: if transport.is_empty() {
                     None
                 } else {
@@ -333,9 +338,15 @@ KNAME="/dev/dm-1" FSTYPE="swap" MOUNTPOINTS="[SWAP]" TRAN="" LABEL=""
         assert_eq!(file_systems.len(), 4);
 
         let dm0 = file_systems
-            .into_iter()
+            .iter()
             .find(|fs| &fs.block_device == "dm-0")
             .unwrap();
-        assert_eq!(dm0.mount_point.unwrap(), PathBuf::from("/"));
+        assert_eq!(dm0.mount_point.as_ref().unwrap(), &PathBuf::from("/"));
+
+        let sda2 = file_systems
+            .iter()
+            .find(|fs| &fs.block_device == "sda2")
+            .unwrap();
+        assert_eq!(sda2.mount_point, None);
     }
 }
