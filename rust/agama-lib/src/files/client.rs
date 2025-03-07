@@ -18,19 +18,31 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod files;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+//! Implements a client to access Agama's HTTP API related to Bootloader management.
+
+use crate::base_http_client::BaseHTTPClient;
+use crate::ServiceError;
+
+use super::model::FileSettings;
+
+pub struct FilesClient {
+    client: BaseHTTPClient,
+}
+
+impl FilesClient {
+    pub fn new(base: BaseHTTPClient) -> Self {
+        Self { client: base }
+    }
+
+    pub async fn get_files(&self) -> Result<Vec<FileSettings>, ServiceError> {
+        self.client.get("/files").await
+    }
+
+    pub async fn set_files(&self, config: &Vec<FileSettings>) -> Result<(), ServiceError> {
+        self.client.put_void("/files", config).await
+    }
+
+    pub async fn write_files(&self) -> Result<(), ServiceError> {
+        self.client.post_void("/files/write", &()).await
+    }
+}
