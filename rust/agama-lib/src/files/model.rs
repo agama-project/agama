@@ -47,8 +47,10 @@ pub struct FileSettings {
     pub source: FileSource,
     /// Permissions for file
     pub permissions: String, // TODO: better type?
-    /// pair with owner user and group
-    pub owner: String, // in format of "user:group"
+    /// User owning the file
+    pub user: String,
+    /// Group owning the file
+    pub group: String,
     /// destination for file like "/etc/config.d/my.conf"
     pub destination: String
 }
@@ -58,7 +60,8 @@ impl Default for FileSettings {
         Self { 
             source: FileSource::Text { content: "".to_string() },
             permissions: "0644".to_string(),
-            owner: ("root:root".to_string()),
+            user: "root".to_string(),
+            group: "root".to_string(),
             destination: "/dev/null".to_string() // should be always defined
         }
     }
@@ -66,17 +69,17 @@ impl Default for FileSettings {
 
 impl FileSettings {
     pub async fn write(&self) -> Result<(), FileError> {
-        let int_mode = u32::from_str_radix(&self.permissions, 8).unwrap(); // TODO: proper report for wrong value
+        let int_mode = u32::from_str_radix(&self.permissions, 8)?;
         let path = "/mnt".to_string() + &self.destination;
         // cannot set owner here as user and group can exist only on target destination
-        let mut target = OpenOptions::new().mode(int_mode).write(true).create(true).open(path).unwrap(); // TODO error handling
+        let mut target = OpenOptions::new().mode(int_mode).write(true).create(true).open(path)?;
         match &self.source {
             FileSource::Remote {url} => { Transfer::get(url, target)?; }
-            FileSource::Text { content } => { target.write(content.as_bytes()).unwrap(); } // TODO: error handling
+            FileSource::Text { content } => { target.write(content.as_bytes())?; }
         }
         
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
-        process::Command::new("chroot").args(["/mnt", "chown", &self.owner]).output().unwrap(); // TODO: proper error
+        process::Command::new("chroot").args(["/mnt", "chown", format!("{}:{}", &self.user, &self.group).as_str()]).output()?;
         Ok(())
     }
 }
