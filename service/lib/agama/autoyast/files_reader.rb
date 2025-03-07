@@ -55,10 +55,10 @@ module Agama
 
         files_json = files.reduce([]) do |res, f|
           file = file_source(f)
+          file = file.merge(file_owner(f))
 
           file["destination"] = f["file_path"] if f["file_path"]
           file["permissions"] = f["file_permissions"] if f["file_permissions"]
-          file["owner"] = f["file_owner"] if f["file_owner"]
 
           res.push(file)
         end
@@ -80,6 +80,15 @@ module Agama
         else
           {}
         end
+      end
+
+      def file_owner(file)
+        return {} if file.nil? || file.empty? || !file["file_owner"]
+
+        {
+          "user": file["file_owner"].split(/\./).first,
+          "group": file["file_owner"].split(/\./).last,
+        }
       end
     end
   end
