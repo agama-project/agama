@@ -489,7 +489,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
