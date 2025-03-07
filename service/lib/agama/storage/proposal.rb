@@ -24,6 +24,7 @@ require "agama/storage/actions_generator"
 require "agama/storage/config_checker"
 require "agama/storage/config_conversions"
 require "agama/storage/config_solver"
+require "agama/storage/model_support_checker"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
 require "json"
@@ -290,18 +291,7 @@ module Agama
       # @param config [Storage::Config]
       # @return [Boolean]
       def model_supported?(config)
-        unsupported_configs = [
-          config.volume_groups,
-          config.md_raids,
-          config.btrfs_raids,
-          config.nfs_mounts
-        ].flatten
-
-        encryptable_configs = [
-          config.drives
-        ].flatten
-
-        unsupported_configs.empty? && encryptable_configs.none?(&:encryption)
+        ModelSupportChecker.new(config).supported?
       end
 
       # Calculates a proposal from guided JSON settings.

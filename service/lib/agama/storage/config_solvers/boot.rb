@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -82,7 +82,7 @@ module Agama
         # @param config [Configs::Drive]
         # @return [Boolean]
         def root_drive_config?(config)
-          config.partitions.any? { |p| root_config?(p) }
+          config.partitions.any?(&:root?)
         end
 
         # Whether the given volume group config contains a root logical volume config.
@@ -90,15 +90,7 @@ module Agama
         # @param config [Configs::VolumeGroup]
         # @return [Boolean]
         def root_volume_group_config?(config)
-          config.logical_volumes.any? { |l| root_config?(l) }
-        end
-
-        # Whether the given config if for the root filesystem.
-        #
-        # @param config [#filesystem]
-        # @return [Boolean]
-        def root_config?(config)
-          config.filesystem&.root?
+          config.logical_volumes.any?(&:root?)
         end
 
         # Whether the given drive config can be used to allocate physcial volumes.

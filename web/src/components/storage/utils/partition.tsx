@@ -30,7 +30,7 @@ import { configModel } from "~/api/storage/types";
 /**
  * String to identify the drive.
  */
-const pathWithSize = (partition: configModel.Partition): string => {
+const pathWithSize = (partition: configModel.Partition | configModel.LogicalVolume): string => {
   return sprintf(
     // TRANSLATORS: %1$s is an already formatted mount path (eg. "/"),
     // %2$s is a size description (eg. at least 10 GiB)
@@ -43,7 +43,7 @@ const pathWithSize = (partition: configModel.Partition): string => {
 /**
  * String to identify the type of partition to be created (or used).
  */
-const typeDescription = (partition: configModel.Partition): string => {
+const typeDescription = (partition: configModel.Partition | configModel.LogicalVolume): string => {
   const fs = filesystemType(partition.filesystem);
 
   if (partition.name) {
@@ -64,7 +64,7 @@ const typeDescription = (partition: configModel.Partition): string => {
 /**
  * Combination of {@link typeDescription} and the size of the target partition.
  */
-const typeWithSize = (partition: configModel.Partition): string => {
+const typeWithSize = (partition: configModel.Partition | configModel.LogicalVolume): string => {
   return sprintf(
     // TRANSLATORS: %1$s is a filesystem type description (eg. "Btrfs with snapshots"),
     // %2$s is a description of the size or the size limits (eg. "at least 10 GiB")

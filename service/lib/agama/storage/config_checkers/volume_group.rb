@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -41,22 +41,32 @@ module Agama
           @config = config
         end
 
-        # Volume group config issues.
+        # Issues from a volume group config.
         #
         # @return [Array<Issue>]
         def issues
           [
+            name_issue,
             logical_volumes_issues,
             physical_volumes_issues,
             physical_volumes_devices_issues,
             physical_volumes_encryption_issues
-          ].flatten
+          ].compact.flatten
         end
 
       private
 
         # @return [Configs::VolumeGroup]
         attr_reader :config
+
+        # Issue if the volume group name is missing.
+        #
+        # @return [Issue, nil]
+        def name_issue
+          return if config.name && !config.name.empty?
+
+          error(_("There is a volume group without name"))
+        end
 
         # Issues from logical volumes.
         #

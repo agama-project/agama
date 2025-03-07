@@ -23,6 +23,7 @@ require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/boot"
 require "agama/storage/config_conversions/to_model_conversions/encryption"
 require "agama/storage/config_conversions/to_model_conversions/drive"
+require "agama/storage/config_conversions/to_model_conversions/volume_group"
 
 module Agama
   module Storage
@@ -41,9 +42,10 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              boot:       convert_boot,
-              encryption: convert_encryption,
-              drives:     convert_drives
+              boot:         convert_boot,
+              encryption:   convert_encryption,
+              drives:       convert_drives,
+              volumeGroups: convert_volume_groups
             }
           end
 
@@ -65,9 +67,14 @@ module Agama
             valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
           end
 
+          # @return [Array<Hash>]
+          def convert_volume_groups
+            config.volume_groups.map { |v| ToModelConversions::VolumeGroup.new(v).convert }
+          end
+
           # @return [Array<Configs::Drive>]
           def valid_drives
-            config.drives.select(&:found_device)
+            config.drives.reject { |d| d.search&.skip_device? }
           end
 
           # TODO: proper support for a base encryption.
@@ -81,19 +88,37 @@ module Agama
             root_encryption || first_encryption
           end
 
-          # Encryption from root partition.
+          # Encryption for root.
           #
-          # @return [Configs::Encryption, nil] nil if there is no encryption for root partition.
+          # @note If root is a logical volume, then the encryption of the automatically generated
+          #   physical volumes is considered. Encryption from logical volumes is ignored.
+          #
+          # @return [Configs::Encryption, nil] nil if there is no encryption for root.
           def root_encryption
-            root_partition = config.partitions.find { |p| p.filesystem&.root? }
-            root_partition&.encryption
+            root_partition&.encryption || root_volume_group&.physical_volumes_encryption
           end
 
-          # Encryption from the first encrypted partition.
+          # Partition config for root.
           #
-          # @return [Configs::Encryption, nil] nil if there is no encrypted partition.
+          # @return [Configs::Partition, nil]
+          def root_partition
+            config.partitions.find(&:root?)
+          end
+
+          # Volume group config containing a logical volume for root.
+          #
+          # @return [Configs::LogicalVolume, nil]
+          def root_volume_group
+            config.volume_groups.find { |v| v.logical_volumes.any?(&:root?) }
+          end
+
+          # Encryption from the first encrypted partition or from the first volume group with
+          # automatically generated and encrypted physical volumes.
+          #
+          # @return [Configs::Encryption, nil]
           def first_encryption
-            config.partitions.find(&:encryption)&.encryption
+            config.partitions.find(&:encryption)&.encryption ||
+              config.volume_groups.find(&:physical_volumes_encryption)&.physical_volumes_encryption
           end
         end
       end
