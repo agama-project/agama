@@ -69,7 +69,6 @@ module Agama
     private
 
       attr_reader :profile
-
     end
   end
 end
