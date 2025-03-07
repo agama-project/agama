@@ -41,16 +41,29 @@ module Agama
 
         # files section contains list of file nodes.
         # supported file sub-elements:
-        # - file_location (a file source)
+        # - file_location (a file source) (-> source)
         # - file_path (this one seems to be the only mandatory,
         #             a file destination or directory to be created if ends with '/')
-        # - file_owner
-        # - file_permissions
+        #             (-> destination)
+        # - file_owner (-> owner)
+        # - file_permissions (permissions)
         #
         # unsupported for now:
         # - file_content
         # - file_script
-        return {}
+        files = profile.fetch_as_array("files")
+
+        files_json = files.reduce([]) do |res, file|
+          # Currently we support only url to file source
+          file["source"] = file.delete("file_location")
+          file["destination"] = file.delete("file_path")
+          file["permissions"] = file.delete("file_permissions")
+          file["owner"] = file.delete("file_owner")
+
+          res.push(file)
+        end
+
+        { "files" => files_json }
       end
 
     private
