@@ -22,7 +22,7 @@ use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
-    profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationResult},
+    profile::{AutoyastProfileImporter, ProfileEvaluator, ValidationResult},
     utils::FileFormat,
     utils::Transfer,
     Store as SettingsStore,
@@ -33,7 +33,7 @@ use console::style;
 use std::os::unix::{fs::PermissionsExt, process::CommandExt};
 use std::{
     fs::File,
-    io::stdout,
+    io::Write,
     path::{Path, PathBuf},
     process::Command,
 };
@@ -81,37 +81,32 @@ pub enum ProfileCommands {
     },
 }
 
-fn validate(path: &PathBuf) -> anyhow::Result<()> {
-    let validator = ProfileValidator::default_schema()?;
-    let result = validator
-        .validate_file(path)
-        .context(format!("Could not validate the profile {:?}", path))?;
+async fn validate(client: BaseHTTPClient, path: &PathBuf) -> anyhow::Result<()> {
+    let url_path = format!("/profile/validate?path={}", path.to_string_lossy());
+    let result = client.get(&url_path).await?;
     match result {
         ValidationResult::Valid => {
-            println!("{} The profile is valid.", style("\u{2713}").bold().green(),);
+            println!("{} {}", style("\u{2713}").bold().green(), result);
         }
-        ValidationResult::NotValid(errors) => {
-            eprintln!(
-                "{} The profile is not valid. Please, check the following errors:\n",
-                style("\u{2717}").bold().red(),
-            );
-            for error in errors {
-                println!("\t* {error}")
-            }
+        ValidationResult::NotValid(_) => {
+            eprintln!("{} {}", style("\u{2717}").bold().red(), result);
         }
     }
     Ok(())
 }
 
-fn evaluate(path: &Path) -> anyhow::Result<()> {
-    let evaluator = ProfileEvaluator {};
-    evaluator
-        .evaluate(path, stdout())
-        .context("Could not evaluate the profile".to_string())?;
+async fn evaluate(client: BaseHTTPClient, path: &Path) -> anyhow::Result<()> {
+    let url_path = format!("/profile/evaluate?path={}", path.to_string_lossy());
+    let output: String = client.get(&url_path).await?;
+    println!("{}", output);
     Ok(())
 }
 
-async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
+async fn import(
+    client: BaseHTTPClient,
+    url_string: String,
+    dir: Option<PathBuf>,
+) -> anyhow::Result<()> {
     tokio::spawn(async move {
         show_progress().await.unwrap();
     });
@@ -130,7 +125,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
         pre_process_profile(&url_string, &profile_path)?;
     }
 
-    validate(&profile_path)?;
+    validate(client, &profile_path).await?;
     store_settings(&profile_path).await?;
 
     Ok(())
@@ -151,11 +146,12 @@ fn pre_process_profile<P: AsRef<Path>>(url_string: &str, path: P) -> anyhow::Res
 
     match FileFormat::from_file(&tmp_profile_path)? {
         FileFormat::Jsonnet => {
-            let file = File::create(path)?;
+            let mut file = File::create(path)?;
             let evaluator = ProfileEvaluator {};
-            evaluator
-                .evaluate(&tmp_profile_path, file)
+            let ouptut = evaluator
+                .evaluate(&tmp_profile_path)
                 .context("Could not evaluate the profile".to_string())?;
+            write!(file, "{}", ouptut)?;
         }
         FileFormat::Script => {
             let mut perms = std::fs::metadata(&tmp_profile_path)?.permissions();
@@ -181,18 +177,19 @@ async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn autoyast(url_string: String) -> anyhow::Result<()> {
-    let url = Url::parse(&url_string)?;
-    let importer = AutoyastProfileImporter::read(&url)?;
-    importer.write(std::io::stdout())?;
+async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
+    // FIXME: how to escape it?
+    let api_url = format!("/profile/autoyast?url={}", url_string);
+    let output: Box<serde_json::value::RawValue> = client.get(&api_url).await?;
+    println!("{}", output);
     Ok(())
 }
 
-pub async fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
+pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
-        ProfileCommands::Autoyast { url } => autoyast(url),
-        ProfileCommands::Validate { path } => validate(&path),
-        ProfileCommands::Evaluate { path } => evaluate(&path),
-        ProfileCommands::Import { url, dir } => import(url, dir).await,
+        ProfileCommands::Autoyast { url } => autoyast(client, url).await,
+        ProfileCommands::Validate { path } => validate(client, &path).await,
+        ProfileCommands::Evaluate { path } => evaluate(client, &path).await,
+        ProfileCommands::Import { url, dir } => import(client, url, dir).await,
     }
 }
