@@ -73,9 +73,9 @@ const STORAGE = {
   root: "/storage",
   bootDevice: "/storage/select-boot-device",
   encryption: "/storage/encryption",
-  addPartition: "/storage/:id/add-partition",
-  editPartition: "/storage/:id/edit-partition/:partitionId",
-  findSpace: "/storage/:id/find-space",
+  addPartition: "/storage/devices/:id/partitions/new",
+  editPartition: "/storage/devices/:id/partitions/:partitionId/edit",
+  findSpace: "/storage/devices/:id/space/edit",
   iscsi: "/storage/iscsi",
   lvm: {
     create: "/storage/lvm/new",
