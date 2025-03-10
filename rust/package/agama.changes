@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 10 12:13:19 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Package and install the storage model schema
+  (gh#agama-project/agama#2135).
+
+-------------------------------------------------------------------
 Thu Mar  6 12:51:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Extend agama download to support most of YaST-like URLs
