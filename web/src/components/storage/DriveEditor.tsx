@@ -32,11 +32,9 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { contentDescription } from "~/components/storage/utils/device";
-import {
-  DeviceHeader,
-  DeviceMenu,
-  MountPathMenuItem,
-} from "~/components/storage/utils/configEditor";
+import DeviceMenu from "~/components/storage/DeviceMenu";
+import DeviceHeader from "~/components/storage/DeviceHeader";
+import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { MenuHeader } from "~/components/core";
 import MenuDeviceDescription from "./MenuDeviceDescription";
 import {

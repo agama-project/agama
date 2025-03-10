@@ -20,25 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useId, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useVolume } from "~/queries/storage";
-import * as partitionUtils from "~/components/storage/utils/partition";
-import { Icon } from "../../layout";
+import { Icon } from "~/components/layout";
 import {
   Menu,
+  MenuProps,
   MenuContainer,
   MenuContent,
-  MenuItem,
-  MenuItemAction,
   MenuToggle,
   MenuToggleProps,
   MenuToggleElement,
 } from "@patternfly/react-core";
 
-export const InlineMenuToggle = React.forwardRef(
+const InlineMenuToggle = React.forwardRef(
   (props: MenuToggleProps, ref: React.Ref<MenuToggleElement>) => (
     <MenuToggle
       icon={<Icon name="keyboard_arrow_down" />}
@@ -50,7 +44,19 @@ export const InlineMenuToggle = React.forwardRef(
   ),
 );
 
-const DeviceMenu = ({ title, ariaLabel = undefined, activeItemId = undefined, children }) => {
+export type DeviceMenuProps = {
+  title: string | React.ReactNode;
+  ariaLabel?: string;
+  activeItemId?: MenuProps["activeItemId"];
+  children: React.ReactNode;
+};
+
+export default function DeviceMenu({
+  title,
+  ariaLabel = undefined,
+  activeItemId = undefined,
+  children,
+}: DeviceMenuProps) {
   const menuId = useId();
   const menuRef = useRef();
   const toggleMenuRef = useRef();
@@ -89,56 +95,4 @@ const DeviceMenu = ({ title, ariaLabel = undefined, activeItemId = undefined, ch
       popperProps={{ appendTo: document.body }}
     />
   );
-};
-
-const DeviceHeader = ({ title, children }) => {
-  const [txt1, txt2] = title.split("%s");
-
-  return (
-    <h4>
-      <span>{txt1}</span>
-      {children}
-      <span>{txt2}</span>
-    </h4>
-  );
-};
-
-const MountPathMenuItem = ({ device, editPath = undefined, deleteFn = undefined }) => {
-  const navigate = useNavigate();
-  const mountPath = device.mountPath;
-  const volume = useVolume(mountPath);
-  const isRequired = volume.outline?.required || false;
-  const description = device ? partitionUtils.typeWithSize(device) : null;
-
-  return (
-    <MenuItem
-      itemId={mountPath}
-      description={description}
-      role="menuitem"
-      actions={
-        <>
-          <MenuItemAction
-            style={{ alignSelf: "center" }}
-            icon={<Icon name="edit_square" aria-label={"Edit"} />}
-            actionId={`edit-${mountPath}`}
-            aria-label={`Edit ${mountPath}`}
-            onClick={() => editPath && navigate(editPath)}
-          />
-          {!isRequired && (
-            <MenuItemAction
-              style={{ alignSelf: "center" }}
-              icon={<Icon name="delete" aria-label={"Delete"} />}
-              actionId={`delete-${mountPath}`}
-              aria-label={`Delete ${mountPath}`}
-              onClick={() => deleteFn && deleteFn(mountPath)}
-            />
-          )}
-        </>
-      }
-    >
-      {mountPath}
-    </MenuItem>
-  );
-};
-
-export { DeviceHeader, DeviceMenu, MountPathMenuItem };
+}

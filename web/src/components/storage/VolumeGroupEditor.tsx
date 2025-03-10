@@ -27,11 +27,9 @@ import * as apiModel from "~/api/storage/types/config-model";
 import * as model from "~/types/storage/model";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useVolumeGroup } from "~/hooks/storage/model";
-import {
-  DeviceHeader,
-  DeviceMenu,
-  MountPathMenuItem,
-} from "~/components/storage/utils/configEditor";
+import DeviceMenu from "~/components/storage/DeviceMenu";
+import DeviceHeader from "~/components/storage/DeviceHeader";
+import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import {
   Card,
   CardBody,
