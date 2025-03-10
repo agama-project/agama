@@ -75,6 +75,34 @@
           }
         }
       ]
+    },
+    {
+      "name": "/dev/vdc",
+      "alias": "lvm",
+      "spacePolicy": "delete"
+    }
+  ],
+  "volumeGroups": [
+    {
+      "name": "vg0",
+      "extentSize": 1024,
+      "targetDevices": ["lvm"],
+      "logicalVolumes": [
+        {
+          "name": "lv0",
+          "mountPath": "/data",
+          "filesystem": {
+            "default": false,
+            "type": "ext4"
+          },
+          "size": {
+            "default": true,
+            "min": 1111
+          },
+          "stripes": 8,
+          "stripeSize": 1204
+        }
+      ]
     }
   ]
 }

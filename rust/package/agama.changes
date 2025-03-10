@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar  7 11:40:56 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend storage model schema with LVM (gh#agama-project/agama#2089).
+
+-------------------------------------------------------------------
 Thu Mar  6 12:51:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Extend agama download to support most of YaST-like URLs

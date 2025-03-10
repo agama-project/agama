@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,20 +21,18 @@
 
 require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/with_filesystem"
-require "agama/storage/config_conversions/to_model_conversions/with_partitions"
-require "agama/storage/config_conversions/to_model_conversions/with_space_policy"
+require "agama/storage/config_conversions/to_model_conversions/with_size"
 
 module Agama
   module Storage
     module ConfigConversions
       module ToModelConversions
-        # Drive conversion to model according to the JSON schema.
-        class Drive < Base
+        # LVM logical volume conversion to model according to the JSON schema.
+        class LogicalVolume < Base
           include WithFilesystem
-          include WithPartitions
-          include WithSpacePolicy
+          include WithSize
 
-          # @param config [Configs::Drive]
+          # @param config [Configs::LogicalVolume]
           def initialize(config)
             super()
             @config = config
@@ -45,19 +43,14 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              name:        convert_name,
-              alias:       config.alias,
-              mountPath:   config.filesystem&.path,
-              filesystem:  convert_filesystem,
-              spacePolicy: convert_space_policy,
-              ptableType:  config.ptable_type&.to_s,
-              partitions:  convert_partitions
+              name:       config.name,
+              alias:      config.alias,
+              mountPath:  config.filesystem&.path,
+              filesystem: convert_filesystem,
+              size:       convert_size,
+              stripes:    config.stripes,
+              stripeSize: config.stripe_size&.to_i
             }
-          end
-
-          # @return [String, nil]
-          def convert_name
-            config.found_device&.name || config.search&.name
           end
         end
       end
