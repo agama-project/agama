@@ -195,7 +195,7 @@ describe("PartitionMenuItem", () => {
     expect(mockDeletePartition).toHaveBeenCalled();
   });
 
-  it("does not allow users to delete a required partition", async () => {
+  it("allows users to delete a required partition", async () => {
     const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
     const partitionsButton = screen.getByRole("button", { name: "Partitions" });
@@ -204,7 +204,8 @@ describe("PartitionMenuItem", () => {
     const deleteRootButton = within(partitionsMenu).queryByRole("menuitem", {
       name: "Delete /",
     });
-    expect(deleteRootButton).not.toBeInTheDocument();
+    await user.click(deleteRootButton);
+    expect(mockDeletePartition).toHaveBeenCalled();
   });
 
   it("allows users to edit a partition", async () => {
