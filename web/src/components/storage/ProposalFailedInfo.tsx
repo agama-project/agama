@@ -23,7 +23,7 @@
 import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
 import { _, n_, formatList } from "~/i18n";
-import { useIssues } from "~/queries/issues";
+import { useIssues, useConfigErrors } from "~/queries/issues";
 import { useConfigModel } from "~/queries/storage/config-model";
 import { IssueSeverity } from "~/types/issues";
 import * as partitionUtils from "~/components/storage/utils/partition";
@@ -70,9 +70,11 @@ function Description({ partitions }) {
  *
  */
 export default function ProposalFailedInfo() {
+  const configErrors = useConfigErrors("storage");
   const errors = useIssues("storage").filter((s) => s.severity === IssueSeverity.Error);
   const model = useConfigModel({ suspense: true });
 
+  if (configErrors.length) return;
   if (!errors.length) return;
 
   const modelPartitions = model.drives.flatMap((d) => d.partitions || []);
