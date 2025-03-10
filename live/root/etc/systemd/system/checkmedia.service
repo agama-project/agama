@@ -40,7 +40,7 @@ ExecStartPost=kill -SIGRTMIN+20 1
 
 StandardInput=tty
 RemainAfterExit=true
-TimeoutSec=0
+TimeoutStartSec=infinity
 
 [Install]
 WantedBy=default.target
