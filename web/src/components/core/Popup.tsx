@@ -42,10 +42,6 @@ export type PopupProps = {
   title?: ModalHeaderProps["title"];
   /** Extra content to be placed in the header after the title */
   titleAddon?: React.ReactNode;
-  /** The block/height size for the dialog. Default is "auto". */
-  blockSize?: "auto" | "small" | "medium" | "large";
-  /** The inline/width size for the dialog. Default is "medium". */
-  inlineSize?: "auto" | "small" | "medium" | "large";
   /** Whether it should display a loading indicator instead of the requested content. */
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
@@ -213,10 +209,6 @@ const Popup = ({
   isLoading = false,
   // TRANSLATORS: progress message
   loadingText = _("Loading data..."),
-  inlineSize = "medium",
-  blockSize = "auto",
-  variant = "medium",
-  className = "",
   children,
   ...props
 }: PopupProps) => {
@@ -230,10 +222,9 @@ const Popup = ({
   return (
     /** @ts-ignore */
     <Modal
-      variant={variant}
       {...props}
+      width={!props.variant && "auto"}
       isOpen={isOpen}
-      className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
       aria-labelledby={titleId}
       aria-describedby={contentId}
     >
