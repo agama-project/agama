@@ -34,7 +34,7 @@ module Agama
       # delay before retrying (in seconds)
       RETRY_DELAY = 5
       # number of automatic retries
-      RETRY_COUNT = 3
+      RETRY_COUNT = 1
 
       # Probes a repository
       #
@@ -47,7 +47,7 @@ module Agama
           # on a timeout error the result is nil, retry automatically in that case,
           # note: callbacks are disabled during repo probing call
           type = Yast::Pkg.RepositoryProbe(url.to_s, product_dir)
-          break if !type.nil? || attempt == RETRY_COUNT
+          break if !type.nil? || attempt > RETRY_COUNT
 
           sleep(RETRY_DELAY)
           attempt += 1
@@ -65,7 +65,7 @@ module Agama
 
         loop do
           @loaded = !!super
-          break if @loaded || attempt == RETRY_COUNT
+          break if @loaded || attempt > RETRY_COUNT
 
           sleep(RETRY_DELAY)
           attempt += 1
