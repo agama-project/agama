@@ -23,16 +23,19 @@
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 import {
+  ActionGroup,
+  Alert,
   Bullseye,
   Button,
   Content,
-  Divider,
   Flex,
   Form,
   FormGroup,
-  Stack,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
 } from "@patternfly/react-core";
-import { FormValidationError, Page, PasswordInput } from "~/components/core";
+import { Page, PasswordInput } from "~/components/core";
 import { AuthErrors, useAuth } from "~/context/auth";
 import { _ } from "~/i18n";
 import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
@@ -82,13 +85,8 @@ user privileges.",
     <Page.Content>
       <Bullseye>
         <Page.Section
-          pfCardProps={{
-            isCompact: false,
-            isFullHeight: false,
-            className: shadowUtils.boxShadowMd,
-          }}
-        >
-          <Stack hasGutter>
+          hasHeaderDivider
+          title={
             <Content component="h1" className={alignmentUtils.textAlignCenter}>
               <Flex
                 alignItems={{ default: "alignItemsCenter" }}
@@ -99,33 +97,42 @@ user privileges.",
                 {sectionTitle}
               </Flex>
             </Content>
-            <div>
-              <Content component="p">
-                {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
-              </Content>
-              <Content component="p">
-                {_("Please, provide its password to log in to the system.")}
-              </Content>
-            </div>
-            <Divider />
-            <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-              <FormGroup fieldId="password" label={_("Password")}>
-                <PasswordInput
-                  id="password"
-                  name="password"
-                  value={password}
-                  aria-label={_("Password input")}
-                  onChange={(_, v) => setPassword(v)}
-                />
-              </FormGroup>
+          }
+          pfCardProps={{
+            isCompact: false,
+            isFullHeight: false,
+            className: shadowUtils.boxShadowMd,
+          }}
+        >
+          <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+            {error && <Alert variant="danger" title={errorMessage(loginError)} />}
 
-              {error && <FormValidationError message={errorMessage(loginError)} />}
+            <FormGroup fieldId="password" label={_("Password")}>
+              <PasswordInput
+                id="password"
+                name="password"
+                value={password}
+                aria-label={_("Password input")}
+                onChange={(_, v) => setPassword(v)}
+              />
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>
+                    {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
+                  </HelperTextItem>
+                  <HelperTextItem>
+                    {_("Please, provide its password to log in to the system.")}
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            </FormGroup>
 
+            <ActionGroup>
               <Button type="submit" variant="primary">
                 {_("Log in")}
               </Button>
-            </Form>
-          </Stack>
+            </ActionGroup>
+          </Form>
         </Page.Section>
       </Bullseye>
     </Page.Content>

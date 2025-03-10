@@ -54,7 +54,7 @@ import { _ } from "~/i18n";
  */
 type SectionProps = {
   /** The section title */
-  title?: string;
+  title?: React.ReactNode;
   /** The value used for accessible label */
   "aria-label"?: string;
   /** Elements to be rendered in the section footer */
