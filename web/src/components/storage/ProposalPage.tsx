@@ -39,6 +39,7 @@ import { Icon, Loading } from "~/components/layout";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ProposalFailedInfo from "./ProposalFailedInfo";
+import FixableConfigInfo from "./FixableConfigInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
@@ -184,6 +185,7 @@ function ProposalSections(): React.ReactNode {
     <Grid hasGutter>
       <ProposalTransactionalInfo />
       <ProposalFailedInfo />
+      <FixableConfigInfo />
       <UnsupportedModelInfo />
       {model && (
         <>
@@ -235,13 +237,9 @@ export default function ProposalPage(): React.ReactNode {
     if (isDeprecated) reprobe().catch(console.log);
   }, [isDeprecated, reprobe]);
 
-  /**
-   * @fixme For now, a config model is only considered as editable if there is no config error. The
-   *  UI for handling a model is not prepared yet to properly work with a model generated from a
-   *  config with errors. Components like ConfigEditor should be adapted in order to properly manage
-   *  those scenarios.
-   */
-  const isModelEditable = model && !configErrors.length;
+  const fixable = ["no_root", "required_filesystems"];
+  const unfixableErrors = configErrors.filter((e) => !fixable.includes(e.kind));
+  const isModelEditable = model && !unfixableErrors.length;
   const hasDevices = !!availableDevices.length;
   const hasResult = !systemErrors.length;
   const showSections = hasDevices && (isModelEditable || hasResult);
