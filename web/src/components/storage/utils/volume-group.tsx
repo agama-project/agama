@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import { _, n_, formatList } from "~/i18n";
 import * as model from "~/types/storage/model";
 import { formattedPath } from "~/components/storage/utils";

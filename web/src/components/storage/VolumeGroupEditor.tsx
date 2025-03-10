@@ -25,7 +25,7 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import * as apiModel from "~/api/storage/types/config-model";
 import * as model from "~/types/storage/model";
-import { contentDescription } from "~/components/storage/utils/volumeGroup";
+import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useVolumeGroup } from "~/hooks/storage/model";
 import {
   DeviceHeader,
