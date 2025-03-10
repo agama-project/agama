@@ -45,7 +45,16 @@ local memory = agama.findByID(agama.lshw, 'memory').size;
     keyboard: 'us',
   },
   storage: {
-    bootDevice: findBiggestDisk(agama.selectByClass(agama.lshw, 'disk')),
+    boot: {
+      configure: true,
+      device: "boot"
+    },
+    drives: [
+      {
+        search: findBiggestDisk(agama.selectByClass(agama.lshw, 'disk')),
+        alias: "boot"
+      }
+    ]
   },
   network: {
     connections: [

@@ -23,7 +23,7 @@ ExecStartPost=dmesg --console-on
 TTYReset=yes
 TTYVHangup=yes
 StandardInput=tty
-TimeoutSec=0
+TimeoutStartSec=infinity
 
 [Install]
 WantedBy=default.target
