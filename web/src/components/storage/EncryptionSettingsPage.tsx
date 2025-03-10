@@ -22,12 +22,11 @@
 
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ActionGroup, Alert, Checkbox, Content, Form, Stack, Switch } from "@patternfly/react-core";
+import { ActionGroup, Alert, Checkbox, Content, Form, Switch } from "@patternfly/react-core";
 import { Page, PasswordAndConfirmationInput } from "~/components/core";
 import { useEncryptionMethods } from "~/queries/storage";
 import { useEncryption } from "~/queries/storage/config-model";
 import { EncryptionMethod } from "~/api/storage/types/config-model";
-import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -113,7 +112,7 @@ at the new file systems, including data, programs, and system files.",
       </Page.Header>
 
       <Page.Content>
-        <Form id={formId} onSubmit={onSubmit} isWidthLimited maxWidth="fit-content">
+        <Form id={formId} onSubmit={onSubmit}>
           {errors.length > 0 && (
             <Alert variant="warning" isInline title={_("Something went wrong")}>
               {errors.map((e, i) => (
@@ -126,19 +125,16 @@ at the new file systems, including data, programs, and system files.",
             isChecked={isEnabled}
             onChange={() => setIsEnabled(!isEnabled)}
           />
-          <Stack className={isTpmAvailable && sizingStyles.w_50OnLg} hasGutter>
-            <PasswordAndConfirmationInput
-              inputRef={passwordRef}
-              initialValue={encryptionConfig?.password}
-              value={password}
-              onChange={changePassword}
-              isDisabled={!isEnabled}
-              showErrors={false}
-            />
-          </Stack>
+          <PasswordAndConfirmationInput
+            inputRef={passwordRef}
+            initialValue={encryptionConfig?.password}
+            value={password}
+            onChange={changePassword}
+            isDisabled={!isEnabled}
+            showErrors={false}
+          />
           {isTpmAvailable && (
             <Checkbox
-              className={sizingStyles.w_50OnLg}
               id="tpm_encryption_method"
               label={tpm_label}
               description={tpm_explanation}
