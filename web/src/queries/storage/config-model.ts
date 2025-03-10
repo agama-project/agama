@@ -324,6 +324,27 @@ function unusedMountPaths(model: configModel.Config, volumes: Volume[]): string[
   return volPaths.filter((p) => !assigned.includes(p));
 }
 
+/*
+ * Pretty artificial logic used to decide whether the UI should display buttons to remove
+ * some drives. The logic is tricky and misplaced, but it is the lesser evil taking into
+ * account the current code organization.
+ *
+ * TODO: Revisit when LVM support is added to the UI.
+ */
+function hasAdditionalDrives(model: configModel.Config): boolean {
+  if (model.drives.length <= 1) return false;
+  if (model.drives.length > 2) return true;
+
+  // If there are only two drives, the following logic avoids the corner case in which first
+  // deleting one of them and then changing the boot settings can lead to zero disks. But it is far
+  // from being fully reasonable or understandable for the user.
+  const onlyToBoot = model.drives.find(
+    (d) => isExplicitBoot(model, d.name) && !isUsedDrive(model, d.name),
+  );
+
+  return !onlyToBoot;
+}
+
 const configModelQuery = {
   queryKey: ["storage", "configModel"],
   queryFn: fetchConfigModel,
@@ -451,6 +472,8 @@ export type ModelHook = {
   model: configModel.Config;
   usedMountPaths: string[];
   unusedMountPaths: string[];
+  // Hacky solution used to decide whether it makes sense to allow to remove drives
+  hasAdditionalDrives: boolean;
   addDrive: (driveName: string) => void;
 };
 
@@ -467,5 +490,6 @@ export function useModel(): ModelHook {
     addDrive: (driveName) => mutate(addDrive(model, driveName)),
     usedMountPaths: model ? usedMountPaths(model) : [],
     unusedMountPaths: model ? unusedMountPaths(model, volumes) : [],
+    hasAdditionalDrives: hasAdditionalDrives(model),
   };
 }
