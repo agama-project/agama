@@ -30,11 +30,11 @@ use std::{
     process::Command,
 };
 use tempfile::{tempdir, TempDir};
-use url::Url;
+pub use url::Url;
 
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
-    content: String,
+    pub content: String,
 }
 
 impl AutoyastProfileImporter {
@@ -55,7 +55,10 @@ impl AutoyastProfileImporter {
             .context("Failed to run agama-autoyast")?;
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
-        let content = fs::read_to_string(autoinst_json)?;
+        let content = fs::read_to_string(&autoinst_json).context(format!(
+            "agama-autoyast did not produce {:?}",
+            autoinst_json
+        ))?;
         Ok(Self { content })
     }
 
@@ -70,10 +73,32 @@ impl AutoyastProfileImporter {
     }
 }
 
-#[derive(Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub enum ValidationResult {
     Valid,
     NotValid(Vec<String>),
+}
+
+impl std::fmt::Display for ValidationResult {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ValidationResult::Valid => {
+                writeln!(f, "The profile is valid.")
+            }
+            ValidationResult::NotValid(errors) => {
+                writeln!(
+                    f,
+                    "The profile is not valid. Please, check the following errors:\n",
+                )?;
+                for error in errors {
+                    writeln!(f, "\t* {error}")?;
+                }
+                Ok(())
+            }
+        }
+    }
 }
 
 /// Checks whether an autoinstallation profile is valid
@@ -138,7 +163,9 @@ impl ProfileValidator {
         let contents = serde_json::from_str(profile)?;
         let result = self.schema.validate(&contents);
         if let Err(errors) = result {
-            let messages: Vec<String> = errors.map(|e| format!("{e}. {e:?}")).collect();
+            let messages: Vec<String> = errors
+                .map(|e| format!("{}. {}", e, e.instance_path))
+                .collect();
             return Ok(ValidationResult::NotValid(messages));
         }
         Ok(ValidationResult::Valid)
@@ -153,7 +180,7 @@ impl ProfileValidator {
 pub struct ProfileEvaluator {}
 
 impl ProfileEvaluator {
-    pub fn evaluate(&self, profile_path: &Path, mut out_fd: impl Write) -> anyhow::Result<()> {
+    pub fn evaluate(&self, profile_path: &Path) -> anyhow::Result<String> {
         let dir = tempdir()?;
 
         let working_path = dir.path().join("profile.jsonnet");
@@ -173,8 +200,9 @@ impl ProfileEvaluator {
                 String::from_utf8(result.stderr).context("Invalid UTF-8 sequence from jsonnet")?;
             return Err(ProfileError::EvaluationError(message).into());
         }
-        out_fd.write_all(&result.stdout)?;
-        Ok(())
+        let output = String::from_utf8(result.stdout)
+            .context("Invalid UTF-8 sequence from jsonnet stdout")?;
+        Ok(output)
     }
 
     // Write the hardware information in JSON format to a given path and also helpers to help with it
