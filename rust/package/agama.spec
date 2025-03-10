@@ -149,6 +149,7 @@ install -m 0755 %{_builddir}/agama/target/release/agama-web-server %{buildroot}%
 install -D -p -m 644 %{_builddir}/agama/share/agama.pam $RPM_BUILD_ROOT%{_pam_vendordir}/agama
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama-cli
 install -m 0644 %{_builddir}/agama/agama-lib/share/profile.schema.json %{buildroot}%{_datadir}/agama-cli
+install -m 0644 %{_builddir}/agama/agama-lib/share/storage.schema.json %{buildroot}%{_datadir}/agama-cli
 install -m 0644 %{_builddir}/agama/share/agama.libsonnet %{buildroot}%{_datadir}/agama-cli
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
 install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/org.opensuse.Agama1.service
@@ -217,6 +218,7 @@ echo $PATH
 %dir %{_datadir}/agama-cli
 %{_datadir}/agama-cli/agama.libsonnet
 %{_datadir}/agama-cli/profile.schema.json
+%{_datadir}/agama-cli/storage.schema.json
 %{_mandir}/man1/agama*1%{?ext_man}
 
 %files -n agama-cli-bash-completion

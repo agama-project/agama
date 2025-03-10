@@ -734,14 +734,14 @@ describe Agama::DBus::Storage::Manager do
       it "returns the serialized config model" do
         expect(subject.recover_model).to eq(
           serialize({
-            boot:   {
+            boot:         {
               configure: true,
               device:    {
                 default: true,
                 name:    "/dev/sda"
               }
             },
-            drives: [
+            drives:       [
               {
                 name:        "/dev/sda",
                 alias:       "root",
@@ -765,7 +765,8 @@ describe Agama::DBus::Storage::Manager do
                   }
                 ]
               }
-            ]
+            ],
+            volumeGroups: []
           })
         )
       end
@@ -810,14 +811,14 @@ describe Agama::DBus::Storage::Manager do
 
       expect(result).to eq(
         serialize({
-          boot:   {
+          boot:         {
             configure: true,
             device:    {
               default: true,
               name:    "/dev/sda"
             }
           },
-          drives: [
+          drives:       [
             {
               name:        "/dev/sda",
               alias:       "sda",
@@ -841,7 +842,8 @@ describe Agama::DBus::Storage::Manager do
                 }
               ]
             }
-          ]
+          ],
+          volumeGroups: []
         })
       )
     end

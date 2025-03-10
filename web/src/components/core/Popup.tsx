@@ -38,8 +38,10 @@ import { partition } from "~/utils";
 type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
 type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps>;
 export type PopupProps = {
-  /** The dialog header */
+  /** The dialog title */
   title?: ModalHeaderProps["title"];
+  /** Extra content to be placed in the header after the title */
+  titleAddon?: React.ReactNode;
   /** The block/height size for the dialog. Default is "auto". */
   blockSize?: "auto" | "small" | "medium" | "large";
   /** The inline/width size for the dialog. Default is "medium". */
@@ -204,6 +206,7 @@ const AncillaryAction = ({ children, ...actionsProps }: PredefinedAction) => (
  */
 const Popup = ({
   title,
+  titleAddon,
   titleIconVariant,
   description,
   isOpen = false,
@@ -240,6 +243,7 @@ const Popup = ({
           title={title}
           description={description}
           titleIconVariant={titleIconVariant}
+          help={titleAddon}
         />
       )}
       <ModalBody id={contentId}>{isLoading ? <Loading text={loadingText} /> : content}</ModalBody>

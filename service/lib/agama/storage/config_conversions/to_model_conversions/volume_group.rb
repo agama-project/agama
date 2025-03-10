@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,21 +20,17 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_model_conversions/base"
-require "agama/storage/config_conversions/to_model_conversions/with_filesystem"
-require "agama/storage/config_conversions/to_model_conversions/with_partitions"
-require "agama/storage/config_conversions/to_model_conversions/with_space_policy"
+require "agama/storage/config_conversions/to_model_conversions/logical_volume"
 
 module Agama
   module Storage
     module ConfigConversions
       module ToModelConversions
-        # Drive conversion to model according to the JSON schema.
-        class Drive < Base
+        # LVM volume group conversion to model according to the JSON schema.
+        class VolumeGroup < Base
           include WithFilesystem
-          include WithPartitions
-          include WithSpacePolicy
 
-          # @param config [Configs::Drive]
+          # @param config [Configs::VolumeGroup]
           def initialize(config)
             super()
             @config = config
@@ -45,19 +41,17 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              name:        convert_name,
-              alias:       config.alias,
-              mountPath:   config.filesystem&.path,
-              filesystem:  convert_filesystem,
-              spacePolicy: convert_space_policy,
-              ptableType:  config.ptable_type&.to_s,
-              partitions:  convert_partitions
+              name:           config.name,
+              extentSize:     config.extent_size&.to_i,
+              targetDevices:  config.physical_volumes_devices,
+              logicalVolumes: convert_logical_volumes
             }
           end
 
-          # @return [String, nil]
-          def convert_name
-            config.found_device&.name || config.search&.name
+          def convert_logical_volumes
+            config.logical_volumes.map do |logical_volume|
+              ToModelConversions::LogicalVolume.new(logical_volume).convert
+            end
           end
         end
       end
