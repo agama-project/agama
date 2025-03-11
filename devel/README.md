@@ -78,7 +78,7 @@ project for submitting.
   - `git checkout -b beta2`
   - `git push origin beta2`
 - Configure submission, use the systemsmanagement:Agama:Release project as the target
-  - `branch2obs.sh -t systemsmanagement:Agama:Release`
+  - `branch2obs.sh -p systemsmanagement:Agama:Release`
 - Bump the version in master branch for the next release
   - `git checkout master`
   - Update the ISO version in `live/src/agama-installer.kiwi`, use the `pre` suffix to distinguish

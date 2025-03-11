@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 11 16:29:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Bump the version to 13pre
+
+-------------------------------------------------------------------
 Wed Mar  5 14:54:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Decrease the libzypp timeout from the default 60 seconds to
