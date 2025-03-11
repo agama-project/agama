@@ -53,14 +53,14 @@ module Agama
         # - file_script
         files = profile.fetch_as_array("files")
 
-        files_json = files.reduce([]) do |res, f|
+        files_json = files.map do |f|
           file = file_source(f)
           file = file.merge(file_owner(f))
 
           file["destination"] = f["file_path"] if f["file_path"]
           file["permissions"] = f["file_permissions"] if f["file_permissions"]
 
-          res.push(file)
+          file
         end
 
         { "files" => files_json }
@@ -74,21 +74,24 @@ module Agama
         return {} if file.nil? || file.empty?
 
         if file.key?("file_location")
-          { "url": file["file_location"] }
+          { "url" => file["file_location"] }
         elsif file.key?("file_contents")
-          { "content": file["file_contents"] }
+          { "content" => file["file_contents"] }
         else
           {}
         end
       end
 
       def file_owner(file)
-        return {} if file.nil? || file.empty? || !file["file_owner"]
+        res = {}
+        return res if file.nil? || file.empty? || !file["file_owner"]
 
-        {
-          "user": file["file_owner"].split(/\./).first,
-          "group": file["file_owner"].split(/\./).last,
-        }
+        user, group = file["file_owner"].split(".", 2)
+
+        res["user"] = user if user
+        res["group"] = group if group
+
+        res
       end
     end
   end

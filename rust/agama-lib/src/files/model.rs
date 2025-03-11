@@ -91,7 +91,7 @@ impl FileSettings {
         // cannot set owner here as user and group can exist only on target destination
         let mut target = OpenOptions::new().mode(int_mode).write(true).create(true).open(path)?;
         match &self.source {
-            FileSource::Remote {url} => { Transfer::get(url, target)?; }
+            FileSource::Remote {url} => { Transfer::get(url, &mut target)?; }
             FileSource::Text { content } => { target.write(content.as_bytes())?; }
         }
         
