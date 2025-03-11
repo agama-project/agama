@@ -26,9 +26,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize, Default, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct HostnameSettings {
-    #[serde(rename = "transient", skip_serializing_if = "String::is_empty")]
+    #[serde(rename = "transient")]
     pub hostname: String,
-    #[serde(rename = "static")]
+    #[serde(rename = "static", skip_serializing_if = "String::is_empty")]
     pub static_hostname: String,
-    pub by_dhcp: bool,
 }

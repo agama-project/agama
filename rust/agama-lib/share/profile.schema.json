@@ -67,10 +67,6 @@
         "transient": {
           "title": "System transient hostname.",
           "type": "string"
-        },
-        "byDhcp": {
-          "title": "Whether the hostname should be set through DHCP or not.",
-          "type": "boolean"
         }
       }
     },
@@ -352,13 +348,30 @@
                     "items": {
                       "title": "List of EAP methods used",
                       "type": "string",
-                      "enum": ["leap", "md5", "tls", "peap", "ttls", "pwd", "fast"]
+                      "enum": [
+                        "leap",
+                        "md5",
+                        "tls",
+                        "peap",
+                        "ttls",
+                        "pwd",
+                        "fast"
+                      ]
                     }
                   },
                   "phase2Auth": {
                     "title": "Phase 2 inner auth method",
                     "type": "string",
-                    "enum": ["pap", "chap", "mschap", "mschapv2", "gtc", "otp", "md5", "tls"]
+                    "enum": [
+                      "pap",
+                      "chap",
+                      "mschap",
+                      "mschapv2",
+                      "gtc",
+                      "otp",
+                      "md5",
+                      "tls"
+                    ]
                   },
                   "identity": {
                     "title": "Identity string, often for example the user's login name",
