@@ -24,6 +24,7 @@ require "yast"
 require "agama/autoyast/converter"
 require "json"
 require "tmpdir"
+require "tempfile"
 require "autoinstall/xml_checks"
 require "y2storage"
 
@@ -84,6 +85,35 @@ describe Agama::AutoYaST::Converter do
         "timezone"  => "Atlantic/Canary",
         "keyboard"  => "us"
       )
+    end
+
+    context "for valid autoyast profile" do
+      let(:profile_name) { "cloned.xml" }
+
+      it "generates JSON according to schema" do
+        # sadly rubygem-json-schema cannot be used due to too old supported format
+        if !system("which jsonschema")
+          pending "can run only if python3-jsonschema is installed"
+          break
+        end
+
+        result = subject.to_agama(profile)
+
+        schema = File.expand_path(
+          "../../../../rust/agama-lib/share/profile.schema.json",
+          __dir__
+        )
+
+        result_path = Tempfile.new("agama-test.json")
+        result_path.write(JSON.pretty_generate(result))
+        result_path.close
+
+        # filter out deprecation warning as check-jsonschema is not packaged for TW yet
+        result = `jsonschema -i '#{result_path.path}' '#{schema}' 2>&1 | \
+          grep -v 'DeprecationWarning' | \
+          grep -v 'from jsonschema.cli import main'`
+        expect(result).to eq ""
+      end
     end
   end
 end
