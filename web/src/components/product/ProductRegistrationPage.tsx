@@ -33,13 +33,10 @@ import {
   Flex,
   Form,
   FormGroup,
-  Grid,
-  Stack,
   TextInput,
 } from "@patternfly/react-core";
 import { Page, PasswordInput } from "~/components/core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
 import { isEmpty, mask } from "~/utils";
 import { _ } from "~/i18n";
@@ -56,12 +53,11 @@ const RegisteredProductSection = () => {
   const toggleCodeVisibility = () => setShowCode(!showCode);
 
   return (
-    <Page.Section
-      title={_("Product registered")}
-      description={sprintf(_("%s has been registered with below information."), product.name)}
-      pfCardProps={{ isCompact: false }}
-    >
-      <DescriptionList className={spacingStyles.myMd}>
+    <>
+      <Content isEditorial>
+        {sprintf(_("%s has been registered with below information."), product.name)}
+      </Content>
+      <DescriptionList>
         <DescriptionListGroup>
           <DescriptionListTerm>{KEY_LABEL}</DescriptionListTerm>
           <DescriptionListDescription>
@@ -80,7 +76,7 @@ const RegisteredProductSection = () => {
           )}
         </DescriptionListGroup>
       </DescriptionList>
-    </Page.Section>
+    </>
   );
 };
 
@@ -109,36 +105,28 @@ const RegistrationFormSection = () => {
   // TODO: adjust texts based of registration "type", mandatory or optional
 
   return (
-    <Page.Section
-      aria-label={_("Product registration form")}
-      description={_(
-        "Enter a registration code and optionally a valid email address for registering the product.",
-      )}
-      pfCardProps={{ isCompact: false }}
-    >
-      <Form id={FORM_ID} onSubmit={submit}>
-        {error && <Alert variant="warning" isInline title={error} />}
-        <FormGroup fieldId="key" label={KEY_LABEL}>
-          <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
-        </FormGroup>
-        <FormGroup
-          fieldId="email"
-          label={
-            <>
-              {EMAIL_LABEL} <span className={textStyles.textColorSubtle}>{_("(optional)")}</span>
-            </>
-          }
-        >
-          <TextInput id="email" value={email} onChange={(_, v) => setEmail(v)} />
-        </FormGroup>
+    <Form id={FORM_ID} onSubmit={submit}>
+      {error && <Alert variant="warning" isInline title={error} />}
+      <FormGroup fieldId="key" label={KEY_LABEL}>
+        <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
+      </FormGroup>
+      <FormGroup
+        fieldId="email"
+        label={
+          <>
+            {EMAIL_LABEL} <span className={textStyles.textColorSubtle}>{_("(optional)")}</span>
+          </>
+        }
+      >
+        <TextInput id="email" value={email} onChange={(_, v) => setEmail(v)} />
+      </FormGroup>
 
-        <ActionGroup>
-          <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
-            {_("Register")}
-          </Button>
-        </ActionGroup>
-      </Form>
-    </Page.Section>
+      <ActionGroup>
+        <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
+          {_("Register")}
+        </Button>
+      </ActionGroup>
+    </Form>
   );
 };
 
@@ -156,11 +144,7 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
-        <Grid sm={12} md={6}>
-          <Stack hasGutter>
-            {isEmpty(registration.key) ? <RegistrationFormSection /> : <RegisteredProductSection />}
-          </Stack>
-        </Grid>
+        {isEmpty(registration.key) ? <RegistrationFormSection /> : <RegisteredProductSection />}
       </Page.Content>
     </Page>
   );
