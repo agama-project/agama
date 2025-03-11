@@ -95,6 +95,12 @@ parse_hostname() {
   if [[ -n $hostname ]]; then
     echo "${hostname}" >/etc/hostname
   fi
+
+  if ! getargbool 1 SetHostname=; then
+    echo '[main]' >/run/NetworkManager/conf.d/10-agama.conf
+    echo 'hostname-mode=none' >>/run/NetworkManager/conf.d/10-agama.conf
+  fi
+
   return 0
 }
 
