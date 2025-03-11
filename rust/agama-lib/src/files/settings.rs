@@ -26,6 +26,5 @@ use super::model::FileSettings;
 #[serde(rename_all = "camelCase")]
 pub struct FilesConfig {
     /// list of target files to deploy
-    #[serde(flatten)]
     pub files: Vec<FileSettings>,
 }

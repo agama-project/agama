@@ -109,6 +109,10 @@ impl Store {
             }
         }
 
+        if let Some(files) = &settings.files {
+            self.files.store(files).await?;
+        }
+
         // import the users (esp. the root password) before initializing software,
         // if software fails the Web UI would be stuck in the root password dialog
         if let Some(user) = &settings.user {

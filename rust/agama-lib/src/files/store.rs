@@ -24,7 +24,7 @@ use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 
 use super::client::FilesClient;
-use super::settings::FilesConfig;
+use super::model::FileSettings;
 /// Loads and stores the files settings from/to the HTTP service.
 pub struct FilesStore {
     files_client: FilesClient,
@@ -37,14 +37,12 @@ impl FilesStore {
         })
     }
 
-    pub async fn load(&self) -> Result<FilesConfig, ServiceError> {
-        Ok(FilesConfig {
-            files: self.files_client.get_files().await?
-        })
+    pub async fn load(&self) -> Result<Vec<FileSettings>, ServiceError> {
+        Ok(self.files_client.get_files().await?)
     }
 
-    pub async fn store(&self, settings: &FilesConfig) -> Result<(), ServiceError> {
-        self.files_client.set_files(&settings.files).await?;
+    pub async fn store(&self, files: &Vec<FileSettings>) -> Result<(), ServiceError> {
+        self.files_client.set_files(files).await?;
         Ok(())
     }
 }

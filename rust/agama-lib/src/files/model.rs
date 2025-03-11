@@ -46,22 +46,39 @@ pub struct FileSettings {
     #[serde(flatten)]
     pub source: FileSource,
     /// Permissions for file
+    #[serde(default = "FileSettings::default_permissions")]
     pub permissions: String, // TODO: better type?
     /// User owning the file
+    #[serde(default = "FileSettings::default_user")]
     pub user: String,
     /// Group owning the file
+    #[serde(default = "FileSettings::default_group")]
     pub group: String,
     /// destination for file like "/etc/config.d/my.conf"
     pub destination: String
+}
+
+impl FileSettings {
+    fn default_permissions() -> String {
+        "0644".to_string()
+    }
+
+    fn default_user() -> String {
+        "root".to_string()
+    }
+
+    fn default_group() -> String {
+        "root".to_string()
+    }
 }
 
 impl Default for FileSettings {
     fn default() -> Self {
         Self { 
             source: FileSource::Text { content: "".to_string() },
-            permissions: "0644".to_string(),
-            user: "root".to_string(),
-            group: "root".to_string(),
+            permissions: Self::default_permissions(),
+            user: Self::default_user(),
+            group: Self::default_group(),
             destination: "/dev/null".to_string() // should be always defined
         }
     }
