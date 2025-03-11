@@ -81,11 +81,18 @@ describe("ProductRegistrationPage", () => {
     it("renders a form to allow user registering the product", async () => {
       const { user } = installerRender(<ProductRegistrationPage />);
       const registrationCodeInput = screen.getByLabelText("Registration code");
-      const emailInput = screen.getByRole("textbox", { name: /Email/ });
       const submitButton = screen.getByRole("button", { name: "Register" });
 
       await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+
+      // email input is optional, user has to explicitely activate it
+      const provideEmailCheckbox = screen.getByRole("checkbox", { name: "Provide email address" });
+      expect(provideEmailCheckbox).not.toBeChecked();
+      await user.click(provideEmailCheckbox);
+      expect(provideEmailCheckbox).toBeChecked();
+      const emailInput = screen.getByRole("textbox", { name: /Email/ });
       await user.type(emailInput, "example@company.test");
+
       await user.click(submitButton);
 
       expect(registerMutationMock).toHaveBeenCalledWith(
@@ -97,6 +104,7 @@ describe("ProductRegistrationPage", () => {
       );
     });
 
+    it.todo("check client validations");
     it.todo("handles and renders errors from server, if any");
   });
 

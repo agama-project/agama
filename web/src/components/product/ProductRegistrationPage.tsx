@@ -25,6 +25,7 @@ import {
   ActionGroup,
   Alert,
   Button,
+  Checkbox,
   Content,
   DescriptionList,
   DescriptionListDescription,
@@ -36,7 +37,6 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Page, PasswordInput } from "~/components/core";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
 import { isEmpty, mask } from "~/utils";
 import { _ } from "~/i18n";
@@ -84,6 +84,7 @@ const RegistrationFormSection = () => {
   const { mutate: register } = useRegisterMutation();
   const [key, setKey] = useState("");
   const [email, setEmail] = useState("");
+  const [provideEmail, setProvideEmail] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -97,7 +98,17 @@ const RegistrationFormSection = () => {
   const submit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError(null);
+
+    // TODO: Replace with a more sophisticated mechanism to ensure all available
+    // fields are filled and validated. Ideally, this should be a reusable solution
+    // applicable to all Agama forms.
+    if (isEmpty(key) || (provideEmail && isEmpty(email))) {
+      setError("All fields are required");
+      return;
+    }
+
     setLoading(true);
+
     // @ts-ignore
     register({ key, email }, { onError: onRegisterError, onSettled: () => setLoading(false) });
   };
@@ -110,16 +121,21 @@ const RegistrationFormSection = () => {
       <FormGroup fieldId="key" label={KEY_LABEL}>
         <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
       </FormGroup>
-      <FormGroup
-        fieldId="email"
-        label={
-          <>
-            {EMAIL_LABEL} <span className={textStyles.textColorSubtle}>{_("(optional)")}</span>
-          </>
-        }
-      >
-        <TextInput id="email" value={email} onChange={(_, v) => setEmail(v)} />
+
+      <FormGroup fieldId="provideEmail">
+        <Checkbox
+          id="provideEmail"
+          label={_("Provide email address")}
+          isChecked={provideEmail}
+          onChange={() => setProvideEmail(!provideEmail)}
+        />
       </FormGroup>
+
+      {provideEmail && (
+        <FormGroup fieldId="email" label={EMAIL_LABEL}>
+          <TextInput id="email" value={email} onChange={(_, v) => setEmail(v)} />
+        </FormGroup>
+      )}
 
       <ActionGroup>
         <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
