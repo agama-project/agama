@@ -56,6 +56,24 @@
         }
       }
     },
+    "hostname": {
+      "title": "Hostname settings",
+      "type": "object",
+      "properties": {
+        "static": {
+          "title": "System static hostname.",
+          "type": "string"
+        },
+        "transient": {
+          "title": "System transient hostname.",
+          "type": "string"
+        },
+        "byDhcp": {
+          "title": "Whether the hostname should be set through DHCP or not.",
+          "type": "boolean"
+        }
+      }
+    },
     "software": {
       "title": "Software settings",
       "type": "object",

@@ -18,19 +18,26 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod hostname;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+//! Implements a client to access Agama's HTTP API related to Hostname management.
+
+use crate::base_http_client::BaseHTTPClient;
+use crate::hostname::model::HostnameSettings;
+use crate::ServiceError;
+
+pub struct HostnameHTTPClient {
+    client: BaseHTTPClient,
+}
+
+impl HostnameHTTPClient {
+    pub fn new(base: BaseHTTPClient) -> Self {
+        Self { client: base }
+    }
+
+    pub async fn get_config(&self) -> Result<HostnameSettings, ServiceError> {
+        self.client.get("/hostname/config").await
+    }
+
+    pub async fn set_config(&self, config: &HostnameSettings) -> Result<(), ServiceError> {
+        self.client.put_void("/hostname/config", config).await
+    }
+}
