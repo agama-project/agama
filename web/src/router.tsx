@@ -34,14 +34,19 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { ROOT as PATHS } from "./routes/paths";
+import { HOSTNAME, ROOT as PATHS } from "./routes/paths";
 import { N_ } from "~/i18n";
+import HostnamePage from "./components/system/HostnamePage";
 
 const rootRoutes = () => [
   {
     path: "/overview",
     element: <OverviewPage />,
     handle: { name: N_("Overview"), icon: "list_alt", alsoActiveOn: ["/"] },
+  },
+  {
+    path: HOSTNAME.root,
+    element: <HostnamePage />,
   },
   registrationRoutes(),
   l10nRoutes(),
