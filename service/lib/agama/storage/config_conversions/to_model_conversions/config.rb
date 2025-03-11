@@ -95,7 +95,7 @@ module Agama
           #
           # @return [Configs::Encryption, nil] nil if there is no encryption for root.
           def root_encryption
-            root_partition&.encryption || root_volume_group&.physical_volumes_encryption
+            root_partition&.encryption || config.root_volume_group&.physical_volumes_encryption
           end
 
           # Partition config for root.
@@ -103,13 +103,6 @@ module Agama
           # @return [Configs::Partition, nil]
           def root_partition
             config.partitions.find(&:root?)
-          end
-
-          # Volume group config containing a logical volume for root.
-          #
-          # @return [Configs::LogicalVolume, nil]
-          def root_volume_group
-            config.volume_groups.find { |v| v.logical_volumes.any?(&:root?) }
           end
 
           # Encryption from the first encrypted partition or from the first volume group with

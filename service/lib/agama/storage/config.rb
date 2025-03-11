@@ -67,6 +67,27 @@ module Agama
         drives.find { |d| d.alias?(boot.device.device_alias) }
       end
 
+      # Device config containing root.
+      #
+      # @return [Configs::Drive, Configs::VolumeGroup, nil]
+      def root_device
+        root_drive || root_volume_group
+      end
+
+      # Drive config containing root.
+      #
+      # @return [Configs::Drive, nil]
+      def root_drive
+        drives.find { |d| d.root? || d.partitions.any?(&:root?) }
+      end
+
+      # Volume group config containing a logical volume for root.
+      #
+      # @return [Configs::LogicalVolume, nil]
+      def root_volume_group
+        volume_groups.find { |v| v.logical_volumes.any?(&:root?) }
+      end
+
       # return [Array<Configs::Partition>]
       def partitions
         drives.flat_map(&:partitions)
