@@ -44,6 +44,7 @@ import { sprintf } from "sprintf-js";
 
 const FORM_ID = "productRegistration";
 const KEY_LABEL = _("Registration code");
+const HOSTNAME_LABEL = _("Hostname");
 const EMAIL_LABEL = "Email";
 
 const RegisteredProductSection = () => {
@@ -83,6 +84,8 @@ const RegisteredProductSection = () => {
 const RegistrationFormSection = () => {
   const { mutate: register } = useRegisterMutation();
   const [key, setKey] = useState("");
+  // TODO: retrieve current hostname to use it as initial state
+  const [hostname, setHostname] = useState("");
   const [email, setEmail] = useState("");
   const [provideEmail, setProvideEmail] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -102,12 +105,15 @@ const RegistrationFormSection = () => {
     // TODO: Replace with a more sophisticated mechanism to ensure all available
     // fields are filled and validated. Ideally, this should be a reusable solution
     // applicable to all Agama forms.
-    if (isEmpty(key) || (provideEmail && isEmpty(email))) {
+    if (isEmpty(hostname) || isEmpty(key) || (provideEmail && isEmpty(email))) {
       setError("All fields are required");
       return;
     }
 
     setLoading(true);
+
+    // TODO: Request the hostname change first
+    console.log("TODO: 'await' for a hostname change request, if needed");
 
     // @ts-ignore
     register({ key, email }, { onError: onRegisterError, onSettled: () => setLoading(false) });
@@ -118,6 +124,10 @@ const RegistrationFormSection = () => {
   return (
     <Form id={FORM_ID} onSubmit={submit}>
       {error && <Alert variant="warning" isInline title={error} />}
+      <FormGroup fieldId="hostname" label={HOSTNAME_LABEL}>
+        <TextInput id="hostname" value={hostname} onChange={(_, v) => setHostname(v)} />
+      </FormGroup>
+
       <FormGroup fieldId="key" label={KEY_LABEL}>
         <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
       </FormGroup>

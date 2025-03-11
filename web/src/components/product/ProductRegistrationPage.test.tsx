@@ -95,6 +95,12 @@ describe("ProductRegistrationPage", () => {
 
       await user.click(submitButton);
 
+      throw new Error(
+        "Please update the test once the logic is added to ensure \
+a hostname request is performed if needed before triggering \
+the registration mutation.",
+      );
+
       expect(registerMutationMock).toHaveBeenCalledWith(
         {
           email: "example@company.test",
