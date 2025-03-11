@@ -18,4 +18,5 @@ installkernel() {
 install() {
   inst_hook cmdline 99 "$moddir/agama-cmdline-conf.sh"
   inst_hook cmdline 99 "$moddir/agama-network-compat.sh"
+  inst_hook pre-pivot 99 "$moddir/save-agama-conf.sh"
 }
