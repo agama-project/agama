@@ -1143,5 +1143,29 @@ systemctl enable sshd &amp;&amp; systemctl start sshd
       </script>
     </init-scripts>
   </scripts>
+  <files config:type="list">
+    <file>
+      <file_path>/etc/apache2/httpd.conf</file_path>
+      <file_contents>
+
+  <![CDATA[
+  some content
+  ]]>
+
+      </file_contents>
+    </file>
+    <file>
+      <file_path>/etc/someconf.conf</file_path>
+      <file_contents>
+
+  <![CDATA[
+  some content
+  ]]>
+
+      </file_contents>
+      <file_owner>tux.users</file_owner>
+      <file_permissions>444</file_permissions>
+    </file>
+  </files>
 </profile>
 
