@@ -82,8 +82,9 @@ impl ProductHTTPClient {
 
         let message = match error {
             ServiceError::BackendError(_, details) => {
-                let details: RegistrationError = serde_json::from_str(&details).unwrap();
-                format!("{} (error code: {})", details.message, details.id)
+                serde_json::from_str::<RegistrationError>(&details)
+                    .map(|d| format!("{} (error code: {})", d.message, d.id))
+                    .unwrap_or(details)
             }
             _ => format!("Could not register the product: #{error:?}"),
         };
