@@ -23,13 +23,45 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { useProduct, useRegistration } from "~/queries/software";
+import { Product, RegistrationInfo } from "~/types/software";
 import HostnamePage from "./HostnamePage";
+
+const tw: Product = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  registration: false,
+};
+
+const sle: Product = {
+  id: "sle",
+  name: "SLE",
+  registration: true,
+};
+
+let selectedProduct: Product;
+let registrationInfoMock: RegistrationInfo;
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
+  useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
+  useProduct: (): ReturnType<typeof useProduct> => {
+    return {
+      products: [tw, sle],
+      selectedProduct,
+    };
+  },
+}));
+
 describe("HostnamePage", () => {
+  beforeEach(() => {
+    selectedProduct = tw;
+  });
+
   it("renders a form for setting hostname and its options", () => {
     installerRender(<HostnamePage />);
     screen.getByRole("textbox", { name: "Hostname" });
@@ -37,4 +69,39 @@ describe("HostnamePage", () => {
   });
 
   it.todo("allows updating hostname and its options");
+
+  describe("when selected product is not registrable", () => {
+    it("does not render an alert about registration", () => {
+      installerRender(<HostnamePage />);
+      expect(screen.queryByText("Custom alert:")).toBeNull();
+      expect(screen.queryByText("Product is already registered")).toBeNull();
+    });
+  });
+
+  describe("when selected product is registrable and registration code is not set", () => {
+    beforeEach(() => {
+      selectedProduct = sle;
+      registrationInfoMock = { key: "", email: "" };
+    });
+
+    it("does not render an alert about registration", () => {
+      installerRender(<HostnamePage />);
+      expect(screen.queryByText("Custom alert:")).toBeNull();
+      expect(screen.queryByText("Product is already registered")).toBeNull();
+    });
+  });
+
+  describe("when selected product is registrable and registration code is set", () => {
+    beforeEach(() => {
+      selectedProduct = sle;
+      registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
+    });
+
+    it("renders an alert to let user know that changes will not have effect in registration", () => {
+      installerRender(<HostnamePage />);
+      screen.getByText("Custom alert:");
+      screen.getByText("Product is already registered");
+      screen.getByText(/will not update the hostname used during registration/);
+    });
+  });
 });

@@ -32,10 +32,13 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
+import { useProduct, useRegistration } from "~/queries/software";
 import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 
 export default function HostnamePage() {
+  const { selectedProduct: product } = useProduct();
+  const registration = useRegistration();
   const [error, setError] = useState<string | null>(null);
   const [hostname, setHostname] = useState<string>("");
   const [enableDHCP, setEnableDHCP] = useState<boolean>(false);
@@ -61,6 +64,11 @@ export default function HostnamePage() {
       </Page.Header>
 
       <Page.Content>
+        {product.registration && !isEmpty(registration.key) && (
+          <Alert title={_("Product is already registered")}>
+            {_("Changing the hostname here will not update the hostname used during registration.")}
+          </Alert>
+        )}
         <Form id="hostnameForm" onSubmit={submit}>
           {error && <Alert variant="warning" isInline title={error} />}
 
