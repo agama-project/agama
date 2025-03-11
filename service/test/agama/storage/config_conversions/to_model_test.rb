@@ -214,6 +214,7 @@ shared_examples "with partitions" do |result_scope, device_scope|
       expect(model_json[:partitions]).to eq(
         [
           {
+            name:           "/not/found",
             delete:         false,
             deleteIfNeeded: false,
             resize:         false,
@@ -676,6 +677,10 @@ describe Agama::Storage::ConfigConversions::ToModel do
             {
               search: "/dev/vdb",
               alias:  "vdb"
+            },
+            {
+              search: "/not/found",
+              alias:  "not-found"
             }
           ]
         }
@@ -714,6 +719,24 @@ describe Agama::Storage::ConfigConversions::ToModel do
               }
             }
           )
+        end
+
+        context "and the boot device is not found" do
+          let(:device_alias) { "not-found" }
+
+          it "generates the expected JSON for 'boot'" do
+            boot_model = subject.convert[:boot]
+
+            expect(boot_model).to eq(
+              {
+                configure: true,
+                device:    {
+                  default: false,
+                  name:    "/not/found"
+                }
+              }
+            )
+          end
         end
       end
     end

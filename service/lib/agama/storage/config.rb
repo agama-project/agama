@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -60,16 +60,11 @@ module Agama
         @nfs_mounts = []
       end
 
-      # Name of the device that will be used to boot the target system, if any.
-      #
-      # @note The config has to be solved.
-      #
-      # @return [String, nil]
+      # @return [Configs::Drive, nil]
       def boot_device
         return unless boot.configure? && boot.device.device_alias
 
-        boot_drive = drives.find { |d| d.alias?(boot.device.device_alias) }
-        boot_drive&.found_device&.name
+        drives.find { |d| d.alias?(boot.device.device_alias) }
       end
 
       # return [Array<Configs::Partition>]
