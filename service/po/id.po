@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2025-02-17 07:50+0000\n"
+"PO-Revision-Date: 2025-03-01 09:56+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
-"Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/id/>\n"
+"Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10\n"
+"X-Generator: Weblate 5.10.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -62,17 +62,17 @@ msgstr "Memuat terjemahan penyimpanan"
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:39
 msgid "Try again"
-msgstr ""
+msgstr "Coba lagi"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:45
 msgid "Continue anyway"
-msgstr ""
+msgstr "Lanjutkan saja"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:51
 msgid "Abort installation"
-msgstr ""
+msgstr "Batalkan instalasi"
 
 #. DoneProvide callback
 #.

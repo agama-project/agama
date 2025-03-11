@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Mon Mar 10 12:13:19 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Package and install the storage model schema
+  (gh#agama-project/agama#2135).
+
+-------------------------------------------------------------------
+Thu Mar  6 12:51:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend agama download to support most of YaST-like URLs
+  (device:, usb:, label:, cd:, dvd: and hd:) (gh#agama-project/agama#2118).
+
+-------------------------------------------------------------------
+Tue Mar  4 13:34:13 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- install and package also storage.schema.json (bsc#1238367)
+
+-------------------------------------------------------------------
 Wed Feb 26 06:52:52 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Extend storage model schema to support file system label (needed

@@ -12,12 +12,11 @@
     "id": "Tumbleweed"
   },
   "storage": {
-    "guided": {
-      "boot": {
-        "configure": true,
-        "device": "/dev/dm-1"
+    "drives": [
+      {
+        "partitions": [{ "generate": "default" }]
       }
-    }
+    ]
   },
   "user": {
     "fullName": "Jane Doe",

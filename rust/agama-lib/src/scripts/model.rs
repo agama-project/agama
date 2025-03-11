@@ -65,7 +65,7 @@ impl BaseScript {
 
         match &self.source {
             ScriptSource::Text { content } => write!(file, "{}", &content)?,
-            ScriptSource::Remote { url } => Transfer::get(url, file)?,
+            ScriptSource::Remote { url } => Transfer::get(url, &mut file)?,
         };
 
         Ok(())

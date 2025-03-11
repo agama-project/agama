@@ -89,7 +89,7 @@ module Agama
           # "IO" = IO error (scratched DVD or HW failure)
           # "IO_SOFT" = network timeout
           # in other cases automatic retry usually does not make much sense
-          if ["IO", "IO_SOFT"].include?(error_code) && attempt < Repository::RETRY_COUNT
+          if ["IO", "IO_SOFT"].include?(error_code) && attempt <= Repository::RETRY_COUNT
             self.attempt += 1
             logger.info("Retry in #{Repository::RETRY_DELAY} seconds, attempt #{attempt}...")
             sleep(Repository::RETRY_DELAY)

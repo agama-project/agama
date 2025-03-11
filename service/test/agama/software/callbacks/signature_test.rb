@@ -70,18 +70,6 @@ describe Agama::Software::Callbacks::Signature do
 
         expect(subject.accept_unsigned_file("repomd.xml", 1))
       end
-
-      context "and the repository is included in the media" do
-        before do
-          allow(Yast::Pkg).to receive(:SourceGeneralData).with(1)
-            .and_return("name" => "OSS", "url" => "dir:/run/initramfs/live/install")
-        end
-
-        it "returns true without asking" do
-          expect(questions_client).to_not receive(:ask)
-          expect(subject.accept_unsigned_file("repomd.xml", 1)).to eq(true)
-        end
-      end
     end
 
     context "when the repo information is not available" do
