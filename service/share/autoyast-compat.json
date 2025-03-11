@@ -7,7 +7,7 @@
   { "key": "dhcp-server", "support": "no" },
   { "key": "dns-server", "support": "no" },
   { "key": "fcoe-client", "support": "no" },
-  { "key": "files", "support": "planned" },
+  { "key": "files", "support": "yes" },
   { "key": "firstboot", "support": "no" },
   { "key": "ftp-server", "support": "no" },
   { "key": "general", "support": "no" },
