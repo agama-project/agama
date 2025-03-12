@@ -21,6 +21,7 @@
 //! Implements a data model for Files configuration.
 
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 use std::process;
 use std::fs::OpenOptions;
 use std::os::unix::fs::OpenOptionsExt;
@@ -87,16 +88,31 @@ impl Default for FileSettings {
 impl FileSettings {
     pub async fn write(&self) -> Result<(), FileError> {
         let int_mode = u32::from_str_radix(&self.permissions, 8)?;
-        let path = "/mnt".to_string() + &self.destination;
+        let path_s = "/mnt".to_string() + &self.destination;
+        let path = Path::new(path_s.as_str());
+        // at first ensure that path to file exists
+        let fallback_root = Path::new("/");
+        let output = process::Command::new("chroot")
+            .args(["/mnt", "mkdir", "-p",
+                // second unwrap is ok as it fails only for non-utf paths which should not happen
+                path.parent().unwrap_or(fallback_root).to_str().unwrap()])
+                .output()?;
+        if !output.status.success() {
+            return Err(FileError::MkdirError(String::from_utf8(output.stderr).unwrap()));
+        }
         // cannot set owner here as user and group can exist only on target destination
         let mut target = OpenOptions::new().mode(int_mode).write(true).create(true).open(path)?;
         match &self.source {
             FileSource::Remote {url} => { Transfer::get(url, &mut target)?; }
             FileSource::Text { content } => { target.write(content.as_bytes())?; }
         }
+        target.flush()?;
         
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
-        process::Command::new("chroot").args(["/mnt", "chown", format!("{}:{}", &self.user, &self.group).as_str()]).output()?;
+        let output2 = process::Command::new("chroot").args(["/mnt", "chown", format!("{}:{}", &self.user, &self.group).as_str()]).output()?;
+        if !output2.status.success() {
+            return Err(FileError::OwnerChangeError(String::from_utf8(output2.stderr).unwrap()));
+        }
         Ok(())
     }
 }
