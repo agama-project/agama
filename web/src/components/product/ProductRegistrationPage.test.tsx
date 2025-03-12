@@ -90,7 +90,7 @@ describe("ProductRegistrationPage", () => {
       );
     });
 
-    it("renders a form to allow user registering the product", async () => {
+    it("allows registering the product with email address", async () => {
       const { user } = installerRender(<ProductRegistrationPage />);
       const registrationCodeInput = screen.getByLabelText("Registration code");
       const submitButton = screen.getByRole("button", { name: "Register" });
@@ -116,7 +116,62 @@ describe("ProductRegistrationPage", () => {
       );
     });
 
-    it.todo("check client validations");
+    it("allows registering the product without email address", async () => {
+      const { user } = installerRender(<ProductRegistrationPage />);
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+
+      await user.click(submitButton);
+
+      expect(registerMutationMock).toHaveBeenCalledWith(
+        {
+          key: "INTERNAL-USE-ONLY-1234-5678",
+        },
+        expect.anything(),
+      );
+    });
+
+    it("renders error when a field is missing", async () => {
+      const { user } = installerRender(<ProductRegistrationPage />);
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+      await user.click(submitButton);
+
+      screen.getByText("Warning alert:");
+      screen.getByText("All fields are required");
+      expect(registerMutationMock).not.toHaveBeenCalled();
+
+      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+
+      // email input is optional, user has to explicitely activate it
+      const provideEmailCheckbox = screen.getByRole("checkbox", { name: "Provide email address" });
+      expect(provideEmailCheckbox).not.toBeChecked();
+      await user.click(provideEmailCheckbox);
+      expect(provideEmailCheckbox).toBeChecked();
+      await user.click(submitButton);
+
+      screen.getByText("Warning alert:");
+      screen.getByText("All fields are required");
+      expect(registerMutationMock).not.toHaveBeenCalled();
+
+      const emailInput = screen.getByRole("textbox", { name: /Email/ });
+      await user.type(emailInput, "example@company.test");
+
+      await user.click(submitButton);
+
+      expect(screen.queryByText("Warning alert:")).toBeNull();
+      expect(screen.queryByText("All fields are required")).toBeNull();
+      expect(registerMutationMock).toHaveBeenCalledWith(
+        {
+          email: "example@company.test",
+          key: "INTERNAL-USE-ONLY-1234-5678",
+        },
+        expect.anything(),
+      );
+    });
+
     it.todo("handles and renders errors from server, if any");
   });
 

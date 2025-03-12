@@ -42,6 +42,7 @@ import { HOSTNAME } from "~/routes/paths";
 import { isEmpty, mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { RegistrationInfo } from "~/types/software";
 
 const FORM_ID = "productRegistration";
 const KEY_LABEL = _("Registration code");
@@ -100,10 +101,13 @@ const RegistrationFormSection = () => {
     e.preventDefault();
     setError(null);
 
+    const data: RegistrationInfo = { key };
+    if (provideEmail) data.email = email;
+
     // TODO: Replace with a more sophisticated mechanism to ensure all available
     // fields are filled and validated. Ideally, this should be a reusable solution
     // applicable to all Agama forms.
-    if (isEmpty(key) || (provideEmail && isEmpty(email))) {
+    if (Object.values(data).some(isEmpty)) {
       setError("All fields are required");
       return;
     }
@@ -111,7 +115,7 @@ const RegistrationFormSection = () => {
     setLoading(true);
 
     // @ts-expect-error
-    register({ key, email }, { onError: onRegisterError, onSettled: () => setLoading(false) });
+    register(data, { onError: onRegisterError, onSettled: () => setLoading(false) });
   };
 
   // TODO: adjust texts based of registration "type", mandatory or optional
