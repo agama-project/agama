@@ -97,8 +97,9 @@ parse_hostname() {
   fi
 
   if ! getargbool 1 SetHostname=; then
-    echo '[main]' >/run/NetworkManager/conf.d/10-agama.conf
-    echo 'hostname-mode=none' >>/run/NetworkManager/conf.d/10-agama.conf
+    mkdir -p /run/NetworkManager/conf.d
+    echo '[main]' >/run/NetworkManager/conf.d/10-agama-hostname.conf
+    echo 'hostname-mode=none' >>/run/NetworkManager/conf.d/10-agama-hostname.conf
   fi
 
   return 0
