@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_model_conversions/base"
 require "agama/storage/config_conversions/from_model_conversions/boot"
 require "agama/storage/config_conversions/from_model_conversions/drive"
+require "agama/storage/config_conversions/from_model_conversions/volume_group"
 require "agama/storage/config"
 
 module Agama
@@ -54,8 +55,9 @@ module Agama
             drives = convert_drives
 
             {
-              boot:   convert_boot(drives || []),
-              drives: drives
+              boot:          convert_boot(drives || []),
+              drives:        drives,
+              volume_groups: convert_volume_groups(drives || [])
             }
           end
 
@@ -83,6 +85,25 @@ module Agama
           def convert_drive(drive_model)
             FromModelConversions::Drive
               .new(drive_model, product_config, model_json[:encryption])
+              .convert
+          end
+
+          # @param drives [Array<Configs::Drive>]
+          # @return [Hash<Configs::VolumeGroup>]
+          def convert_volume_groups(drives)
+            volume_group_models = model_json[:volumeGroups]
+            return unless volume_group_models
+
+            volume_group_models.map { |v| convert_volume_group(v, drives) }
+          end
+
+          # @param volume_group_model [Hash]
+          # @param drives [Array<Configs::Drive>]
+          #
+          # @return [Configs::VolumeGroup]
+          def convert_volume_group(volume_group_model, drives)
+            FromModelConversions::VolumeGroup
+              .new(volume_group_model, drives, model_json[:encryption])
               .convert
           end
 
