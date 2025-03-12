@@ -41,8 +41,7 @@ struct HostnameState<'a> {
 
 /// Sets up and returns the axum service for the hostname module.
 pub async fn hostname_service() -> Result<Router, ServiceError> {
-    let dbus = zbus::Connection::system().await?;
-    let client = HostnameClient::new(dbus).await?;
+    let client = HostnameClient::new().await?;
     let state = HostnameState { client };
     let router = Router::new()
         .route("/config", put(set_config).get(get_config))

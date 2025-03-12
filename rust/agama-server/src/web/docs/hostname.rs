@@ -18,31 +18,26 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements the store for the hostname settings.
+use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
 
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
+use super::ApiDocBuilder;
+pub struct HostnameApiDocBuilder;
 
-use super::http_client::HostnameHTTPClient;
-use super::model::HostnameSettings;
-
-/// Loads and stores the hostname settings from/to the HTTP service.
-pub struct HostnameStore {
-    hostname_client: HostnameHTTPClient,
-}
-
-impl HostnameStore {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self {
-            hostname_client: HostnameHTTPClient::new(client),
-        })
+impl ApiDocBuilder for HostnameApiDocBuilder {
+    fn title(&self) -> String {
+        "Hostname HTTP API".to_string()
     }
 
-    pub async fn load(&self) -> Result<HostnameSettings, ServiceError> {
-        self.hostname_client.get_config().await
+    fn paths(&self) -> Paths {
+        PathsBuilder::new()
+            .path_from::<crate::hostname::web::__path_get_config>()
+            .path_from::<crate::hostname::web::__path_set_config>()
+            .build()
     }
 
-    pub async fn store(&self, settings: &HostnameSettings) -> Result<(), ServiceError> {
-        self.hostname_client.set_config(settings).await
+    fn components(&self) -> Components {
+        ComponentsBuilder::new()
+            .schema_from::<agama_lib::hostname::model::HostnameSettings>()
+            .build()
     }
 }

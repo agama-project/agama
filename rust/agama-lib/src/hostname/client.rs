@@ -20,18 +20,17 @@
 
 //! Implements a client to access Hostnamed D-Bus API related to hostname management.
 
-use zbus::Connection;
-
 use crate::{error::ServiceError, hostname::model::HostnameSettings, proxies::Hostname1Proxy};
 
-/// Client to connect to Agama's D-Bus API for Hostname management.
+/// Client to connect to org.freedesktop.hostname1 DBUS API on the system bus for Hostname management.
 #[derive(Clone)]
 pub struct HostnameClient<'a> {
     hostname_proxy: Hostname1Proxy<'a>,
 }
 
 impl<'a> HostnameClient<'a> {
-    pub async fn new(connection: Connection) -> Result<HostnameClient<'a>, ServiceError> {
+    pub async fn new() -> Result<HostnameClient<'a>, ServiceError> {
+        let connection = zbus::Connection::system().await?;
         let hostname_proxy = Hostname1Proxy::new(&connection).await?;
 
         Ok(Self { hostname_proxy })

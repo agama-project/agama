@@ -135,6 +135,9 @@ impl Store {
         if let Some(bootloader) = &settings.bootloader {
             self.bootloader.store(bootloader).await?;
         }
+        if let Some(hostname) = &settings.hostname {
+            self.hostname.store(hostname).await?;
+        }
 
         Ok(())
     }
