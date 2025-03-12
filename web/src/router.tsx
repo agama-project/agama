@@ -47,6 +47,7 @@ const rootRoutes = () => [
   {
     path: HOSTNAME.root,
     element: <HostnamePage />,
+    handle: { name: N_("Hostname"), icon: "fingerprint" },
   },
   registrationRoutes(),
   l10nRoutes(),
