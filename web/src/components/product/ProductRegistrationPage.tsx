@@ -110,7 +110,7 @@ const RegistrationFormSection = () => {
 
     setLoading(true);
 
-    // @ts-ignore
+    // @ts-expect-error
     register({ key, email }, { onError: onRegisterError, onSettled: () => setLoading(false) });
   };
 
