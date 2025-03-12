@@ -36,15 +36,15 @@ import {
   FormGroup,
   TextInput,
 } from "@patternfly/react-core";
-import { Page, PasswordInput } from "~/components/core";
+import { Link, Page, PasswordInput } from "~/components/core";
 import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
+import { HOSTNAME } from "~/routes/paths";
 import { isEmpty, mask } from "~/utils";
-import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 const FORM_ID = "productRegistration";
 const KEY_LABEL = _("Registration code");
-const HOSTNAME_LABEL = _("Hostname");
 const EMAIL_LABEL = "Email";
 
 const RegisteredProductSection = () => {
@@ -84,8 +84,6 @@ const RegisteredProductSection = () => {
 const RegistrationFormSection = () => {
   const { mutate: register } = useRegisterMutation();
   const [key, setKey] = useState("");
-  // TODO: retrieve current hostname to use it as initial state
-  const [hostname, setHostname] = useState("");
   const [email, setEmail] = useState("");
   const [provideEmail, setProvideEmail] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,15 +103,12 @@ const RegistrationFormSection = () => {
     // TODO: Replace with a more sophisticated mechanism to ensure all available
     // fields are filled and validated. Ideally, this should be a reusable solution
     // applicable to all Agama forms.
-    if (isEmpty(hostname) || isEmpty(key) || (provideEmail && isEmpty(email))) {
+    if (isEmpty(key) || (provideEmail && isEmpty(email))) {
       setError("All fields are required");
       return;
     }
 
     setLoading(true);
-
-    // TODO: Request the hostname change first
-    console.log("TODO: 'await' for a hostname change request, if needed");
 
     // @ts-ignore
     register({ key, email }, { onError: onRegisterError, onSettled: () => setLoading(false) });
@@ -124,9 +119,6 @@ const RegistrationFormSection = () => {
   return (
     <Form id={FORM_ID} onSubmit={submit}>
       {error && <Alert variant="warning" isInline title={error} />}
-      <FormGroup fieldId="hostname" label={HOSTNAME_LABEL}>
-        <TextInput id="hostname" value={hostname} onChange={(_, v) => setHostname(v)} />
-      </FormGroup>
 
       <FormGroup fieldId="key" label={KEY_LABEL}>
         <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
@@ -156,6 +148,34 @@ const RegistrationFormSection = () => {
   );
 };
 
+// FIXME: Replace with real hook
+const useHostname = () => "agama";
+
+const HostnameAlert = () => {
+  console.log("FIXME: replace with real hook");
+
+  const hostname = useHostname();
+  // TRANSLATORS: %s will be replaced with the hostname value
+  const title = sprintf(_('Product will be registered with "%s" hostname'), hostname);
+
+  // TRANSLATORS: %s will be replaced with the section name
+  const [descStart, descEnd] = _(
+    "It cannot be changed later. Go to %s section if you want to change it before proceeding with registration.",
+  ).split("%s");
+
+  const link = (
+    <Link variant="link" to={HOSTNAME.root} isInline>
+      {_("hostname")}
+    </Link>
+  );
+
+  return (
+    <Alert title={title} variant="custom" isPlain>
+      {descStart} {link} {descEnd}
+    </Alert>
+  );
+};
+
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
   const registration = useRegistration();
@@ -170,6 +190,7 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
+        <HostnameAlert />
         {isEmpty(registration.key) ? <RegistrationFormSection /> : <RegisteredProductSection />}
       </Page.Content>
     </Page>

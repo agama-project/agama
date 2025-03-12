@@ -78,6 +78,18 @@ describe("ProductRegistrationPage", () => {
       registrationInfoMock = { key: "", email: "" };
     });
 
+    it("renders a custom alert about hostname", () => {
+      installerRender(<ProductRegistrationPage />);
+
+      screen.getByText("Custom alert:");
+      screen.getByText(/Product will be registered with .* hostname/);
+      screen.getByRole("link", { name: "hostname" });
+
+      throw new Error(
+        "Please update the test once the real hook for retrieving hostname is implemented and used",
+      );
+    });
+
     it("renders a form to allow user registering the product", async () => {
       const { user } = installerRender(<ProductRegistrationPage />);
       const registrationCodeInput = screen.getByLabelText("Registration code");
@@ -94,12 +106,6 @@ describe("ProductRegistrationPage", () => {
       await user.type(emailInput, "example@company.test");
 
       await user.click(submitButton);
-
-      throw new Error(
-        "Please update the test once the logic is added to ensure \
-a hostname request is performed if needed before triggering \
-the registration mutation.",
-      );
 
       expect(registerMutationMock).toHaveBeenCalledWith(
         {
