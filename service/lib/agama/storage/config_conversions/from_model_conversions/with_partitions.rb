@@ -99,14 +99,12 @@ module Agama
             partition_model[:size] && !partition_model.dig(:size, :default)
           end
 
-          # TODO: improve check by ensuring the alias is referenced by other device.
+          # TODO: improve check by ensuring the partition is referenced by other device.
           #
           # @param partition_model [Hash]
           # @return [Boolean]
           def any_usage?(partition_model)
-            partition_model[:mountPath] ||
-              partition_model[:filesystem] ||
-              partition_model[:alias]
+            partition_model[:mountPath] || partition_model[:filesystem]
           end
 
           # @return [Configs::Partition]

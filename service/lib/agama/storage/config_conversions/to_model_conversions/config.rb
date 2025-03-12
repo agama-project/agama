@@ -69,7 +69,7 @@ module Agama
 
           # @return [Array<Hash>]
           def convert_volume_groups
-            config.volume_groups.map { |v| ToModelConversions::VolumeGroup.new(v).convert }
+            config.volume_groups.map { |v| ToModelConversions::VolumeGroup.new(v, config).convert }
           end
 
           # @return [Array<Configs::Drive>]

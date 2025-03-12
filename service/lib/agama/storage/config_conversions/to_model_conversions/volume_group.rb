@@ -31,23 +31,38 @@ module Agama
           include WithFilesystem
 
           # @param config [Configs::VolumeGroup]
-          def initialize(config)
+          # @param storage_config [Storage::Config]
+          def initialize(config, storage_config)
             super()
             @config = config
+            @storage_config = storage_config
           end
 
         private
+
+          # @return [Storage::Config]
+          attr_reader :storage_config
 
           # @see Base#conversions
           def conversions
             {
               name:           config.name,
               extentSize:     config.extent_size&.to_i,
-              targetDevices:  config.physical_volumes_devices,
+              targetDevices:  convert_target_devices,
               logicalVolumes: convert_logical_volumes
             }
           end
 
+          # Name of the target devices.
+          #
+          # @return [Array<String>]
+          def convert_target_devices
+            config.physical_volumes_devices
+              .map { |a| storage_config.drive(a)&.device_name }
+              .compact
+          end
+
+          # @return [Array<Hash>]
           def convert_logical_volumes
             config.logical_volumes.map do |logical_volume|
               ToModelConversions::LogicalVolume.new(logical_volume).convert

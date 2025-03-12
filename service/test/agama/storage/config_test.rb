@@ -297,4 +297,46 @@ describe Agama::Storage::Config do
       end
     end
   end
+
+  describe "#drive" do
+    let(:config_json) do
+      {
+        drives: [
+          {
+            alias:      "disk1",
+            partitions: [
+              { alias: "part1" }
+            ]
+          },
+          {
+            alias:      "disk2",
+            partitions: [
+              { alias: "disk1" }
+            ]
+          }
+        ]
+      }
+    end
+
+    context "if there is a drive with the given alias" do
+      let(:device_alias) { "disk1" }
+
+      it "returns the drive" do
+        drive = subject.drive(device_alias)
+
+        expect(drive).to be_a(Agama::Storage::Configs::Drive)
+        expect(drive.alias).to eq(device_alias)
+      end
+    end
+
+    context "if there is not a drive with the given alias" do
+      let(:device_alias) { "part1" }
+
+      it "returns nil" do
+        drive = subject.drive(device_alias)
+
+        expect(drive).to be_nil
+      end
+    end
+  end
 end

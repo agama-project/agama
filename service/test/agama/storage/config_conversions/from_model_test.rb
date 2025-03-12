@@ -32,13 +32,6 @@ require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
 
-shared_examples "without alias" do |config_proc|
-  it "does not set #alias" do
-    config = config_proc.call(subject.convert)
-    expect(config.alias).to be_nil
-  end
-end
-
 shared_examples "without filesystem" do |config_proc|
   it "does not set #filesystem" do
     config = config_proc.call(subject.convert)
@@ -142,15 +135,6 @@ shared_examples "with name" do |config_proc|
     expect(config.search.name).to eq("/dev/vda")
     expect(config.search.max).to be_nil
     expect(config.search.if_not_found).to eq(:error)
-  end
-end
-
-shared_examples "with alias" do |config_proc|
-  let(:device_alias) { "test" }
-
-  it "sets #alias to the expected value" do
-    config = config_proc.call(subject.convert)
-    expect(config.alias).to eq("test")
   end
 end
 
@@ -471,11 +455,6 @@ shared_examples "with partitions" do |config_proc|
     end
   end
 
-  context "if a partition does not spicify 'alias'" do
-    let(:partition) { {} }
-    include_examples "without alias", partition_proc
-  end
-
   context "if a partition does not spicify 'id'" do
     let(:partition) { {} }
 
@@ -508,11 +487,6 @@ shared_examples "with partitions" do |config_proc|
   context "if a partition specifies 'name'" do
     let(:partition) { { name: name } }
     include_examples "with name", partition_proc
-  end
-
-  context "if a partition specifies 'alias'" do
-    let(:partition) { { alias: device_alias } }
-    include_examples "with alias", partition_proc
   end
 
   context "if a partition spicifies 'id'" do
@@ -971,59 +945,36 @@ describe Agama::Storage::ConfigConversions::FromModel do
           context "and the boot device specifies a 'name'" do
             let(:name) { "/dev/vda" }
 
-            context "and there is a drive model for the given boot device name" do
+            context "and there is a drive config for the given boot device name" do
               let(:drives) do
                 [
-                  { name: "/dev/vda", alias: device_alias }
+                  { name: "/dev/vda" }
                 ]
               end
 
-              context "and the drive model specifies an alias" do
-                let(:device_alias) { "boot" }
-
-                it "does not add more drives" do
-                  config = subject.convert
-                  expect(config.drives.size).to eq(1)
-
-                  drive = config.drives.first
-                  expect(drive.alias).to eq("boot")
-                end
-
-                it "sets #boot to the expected value" do
-                  config = subject.convert
-                  boot = config.boot
-                  expect(boot.configure?).to eq(true)
-                  expect(boot.device.default?).to eq(false)
-                  expect(boot.device.device_alias).to eq("boot")
-                end
+              it "does not add more drives" do
+                config = subject.convert
+                expect(config.drives.size).to eq(1)
+                expect(config.drives.first.search.name).to eq("/dev/vda")
               end
 
-              context "and the drive model does not specify an alias" do
-                let(:device_alias) { nil }
+              it "sets an alias to the drive config" do
+                config = subject.convert
+                drive = config.drives.first
+                expect(drive.alias).to_not be_nil
+              end
 
-                it "does not add more drives" do
-                  config = subject.convert
-                  expect(config.drives.size).to eq(1)
-                end
-
-                it "sets an alias to the boot drive config" do
-                  config = subject.convert
-                  drive = config.drives.first
-                  expect(drive.alias).to_not be_nil
-                end
-
-                it "sets #boot to the expected value" do
-                  config = subject.convert
-                  boot = config.boot
-                  drive = config.drives.first
-                  expect(boot.configure?).to eq(true)
-                  expect(boot.device.default?).to eq(false)
-                  expect(boot.device.device_alias).to eq(drive.alias)
-                end
+              it "sets #boot to the expected value" do
+                config = subject.convert
+                boot = config.boot
+                drive = config.drives.first
+                expect(boot.configure?).to eq(true)
+                expect(boot.device.default?).to eq(false)
+                expect(boot.device.device_alias).to eq(drive.alias)
               end
             end
 
-            context "and there is no drive model for the given boot device name" do
+            context "and there is not a drive config for the given boot device name" do
               let(:drives) do
                 [
                   { name: "/dev/vdb" }
@@ -1150,11 +1101,6 @@ describe Agama::Storage::ConfigConversions::FromModel do
         end
       end
 
-      context "if a drive does not spicify 'alias'" do
-        let(:drive) { {} }
-        include_examples "without alias", drive_proc
-      end
-
       context "if a drive does not spicify neither 'mountPath' nor 'filesystem'" do
         let(:drive) { {} }
         include_examples "without filesystem", drive_proc
@@ -1173,11 +1119,6 @@ describe Agama::Storage::ConfigConversions::FromModel do
       context "if a drive specifies 'name'" do
         let(:drive) { { name: name } }
         include_examples "with name", drive_proc
-      end
-
-      context "if a drive specifies 'alias'" do
-        let(:drive) { { alias: device_alias } }
-        include_examples "with alias", drive_proc
       end
 
       context "if a drive specifies 'mountPath'" do

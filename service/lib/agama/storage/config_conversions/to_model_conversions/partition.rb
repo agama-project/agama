@@ -44,7 +44,6 @@ module Agama
           def conversions
             {
               name:           config.device_name,
-              alias:          config.alias,
               id:             config.id&.to_s,
               mountPath:      config.filesystem&.path,
               filesystem:     convert_filesystem,

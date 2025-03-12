@@ -88,6 +88,13 @@ module Agama
         volume_groups.find { |v| v.logical_volumes.any?(&:root?) }
       end
 
+      # Drive with the given alias.
+      #
+      # @return [Configs::Drive, nil]
+      def drive(device_alias)
+        drives.find { |d| d.alias?(device_alias) }
+      end
+
       # return [Array<Configs::Partition>]
       def partitions
         drives.flat_map(&:partitions)
