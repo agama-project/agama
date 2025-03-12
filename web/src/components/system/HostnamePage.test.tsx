@@ -62,13 +62,34 @@ describe("HostnamePage", () => {
     selectedProduct = tw;
   });
 
-  it("renders a form for setting hostname and its options", () => {
+  it("allows setting the hostname", () => {
     installerRender(<HostnamePage />);
     screen.getByRole("textbox", { name: "Hostname" });
-    screen.getByRole("checkbox", { name: /Enable DHCP/ });
+
+    throw new Error(
+      "Please complete the test once the reals hook for retrieving and mutation current data is implemented and used",
+    );
+
+    // expect(hostnameMutationMock).not.toHaveBeenCalledWith({
+    //   hostname: hostname
+    // });
   });
 
-  it.todo("allows updating hostname and its options");
+  it("renders error when hostname missing", async () => {
+    const { user } = installerRender(<HostnamePage />);
+    screen.getByRole("textbox", { name: "Hostname" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(acceptButton);
+
+    screen.getByText("Warning alert:");
+    screen.getByText("Please provide a hostname");
+
+    throw new Error(
+      "Please complete the test once the reals hook for mutation current data is implemented and used",
+    );
+
+    // expect(hostnameMutationMock).not.toHaveBeenCalled();
+  });
 
   describe("when selected product is not registrable", () => {
     it("does not render an alert about registration", () => {
@@ -101,7 +122,7 @@ describe("HostnamePage", () => {
       installerRender(<HostnamePage />);
       screen.getByText("Custom alert:");
       screen.getByText("Product is already registered");
-      screen.getByText(/will not update the hostname used during registration/);
+      screen.getByText(/will not take effect on registered value/);
     });
   });
 });

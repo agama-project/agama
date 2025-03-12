@@ -25,10 +25,11 @@ import {
   ActionGroup,
   Alert,
   Button,
-  Checkbox,
   Content,
   Form,
   FormGroup,
+  HelperText,
+  HelperTextItem,
   TextInput,
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
@@ -41,7 +42,6 @@ export default function HostnamePage() {
   const registration = useRegistration();
   const [error, setError] = useState<string | null>(null);
   const [hostname, setHostname] = useState<string>("");
-  const [enableDHCP, setEnableDHCP] = useState<boolean>(false);
 
   const submit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -52,7 +52,7 @@ export default function HostnamePage() {
       return;
     }
 
-    const data = { hostname, allowDHCP: enableDHCP };
+    const data = { hostname };
 
     console.log("TODO: perform the hostname update request with", data);
   };
@@ -65,8 +65,8 @@ export default function HostnamePage() {
 
       <Page.Content>
         {product.registration && !isEmpty(registration.key) && (
-          <Alert title={_("Product is already registered")}>
-            {_("Changing the hostname here will not update the hostname used during registration.")}
+          <Alert title={_("Product is already registered")} isPlain>
+            {_("Updating hostname now will not take effect on registered value.")}
           </Alert>
         )}
         <Form id="hostnameForm" onSubmit={submit}>
@@ -74,18 +74,9 @@ export default function HostnamePage() {
 
           <FormGroup fieldId="hostname" label={_("Hostname")}>
             <TextInput id="hostname" value={hostname} onChange={(_, v) => setHostname(v)} />
-          </FormGroup>
-
-          <FormGroup>
-            <Checkbox
-              id="enableDHCP"
-              label={_("Enable DHCP hostname assignment")}
-              description={_(
-                "Allows the system to use the hostname set manually, but DHCP may modify it if the network provides a different one.",
-              )}
-              isChecked={enableDHCP}
-              onChange={() => setEnableDHCP(!enableDHCP)}
-            />
+            <HelperText>
+              <HelperTextItem>{_("FIXME: a short help about hostname field")}</HelperTextItem>
+            </HelperText>
           </FormGroup>
 
           <ActionGroup>
