@@ -25,7 +25,7 @@ module Agama
   module HTTP
     module Clients
       # HTTP client to interact with the files API.
-      class Scripts < Base
+      class Files < Base
         # writes additional files
         def write
           post("files/write", nil)
