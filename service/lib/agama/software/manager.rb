@@ -268,27 +268,37 @@ module Agama
       end
 
       def assign_patterns(add, remove)
-        wrong_patterns = [add, remove].flatten.reject { |p| pattern_exist?(p) }
-        return wrong_patterns unless wrong_patterns.empty?
+        assign_resolvables(:pattern, add, remove)
+      end
 
-        user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
-        user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
-        logger.info "Adding patterns: #{add.join(", ")}. Removing patterns: #{remove.join(",")}."
+      def assign_packages(add, remove)
+        assign_resolvables(:package, add, remove)
+      end
 
-        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, add)
+      def assign_resolvables(kind, add, remove)
+        wrong_resolvables = [add, remove].flatten.reject { |p| resolvable_exist?(p) }
+        return wrong_resolvables unless wrong_resolvables.empty?
+
+        user_resolvables = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, kind)
+        user_resolvables.each { |p| Yast::Pkg.ResolvableNeutral(p, kind, force = false) }
+        logger.info "Adding resolvable(#{kind}): #{add.join(", ")}. " \
+          "Removing resolvable(#{kind}): #{remove.join(",")}."
+
+        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, kind, add)
         add.each do |id|
-          res = Yast::Pkg.ResolvableInstall(id, :pattern)
-          logger.info "Adding pattern #{id}: #{res.inspect}"
+          res = Yast::Pkg.ResolvableInstall(id, kind)
+          logger.info "Adding resolvable(#{kind}) #{id}: #{res.inspect}"
         end
 
         remove.each do |id|
-          res = Yast::Pkg.ResolvableNeutral(id, :pattern, force = false)
-          logger.info "Removing pattern #{id}: #{res.inspect}"
-          Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, :pattern, [id])
+          res = Yast::Pkg.ResolvableNeutral(id, kind, force = false)
+          logger.info "Removing resolvable(#{kind}) #{id}: #{res.inspect}"
+          Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, kind, [id])
         end
 
         proposal.solve_dependencies
 
+        # TODO: turn this into "software_proposal_changed"
         selected_patterns_changed
 
         []
@@ -636,7 +646,11 @@ module Agama
       end
 
       def pattern_exist?(pattern_name)
-        !Y2Packager::Resolvable.find(kind: :pattern, name: pattern_name).empty?
+        resolvable_exist?(:pattern, patter_name)
+      end
+
+      def resolvable_exist?(kind, name)
+        !Y2Packager::Resolvable.find(kind: kind, name: name).empty?
       end
 
       # this reimplements the Pkg.SourceCacheCopyTo call which works correctly

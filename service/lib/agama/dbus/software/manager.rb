@@ -112,6 +112,9 @@ module Agama
           dbus_method(:SetUserPatterns, "in add:as, in remove:as, out wrong:as") do |add, remove|
             [backend.assign_patterns(add, remove)]
           end
+          dbus_method(:SetUserPackages, "in add:as, in remove:as, out wrong:as") do |add, remove|
+            [backend.assign_packages(add, remove)]
+          end
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
             [provisions.map { |p| backend.provision_selected?(p) }]
