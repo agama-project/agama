@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 12 00:44:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Copy Agama logs to the installed system (gh#agama/agama-project#2148).
+- Set /var/log/agama-installation permissions to 0700
+  (gh#agama/agama-project#2140).
+
+-------------------------------------------------------------------
 Wed Mar  5 14:50:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Automatically retry package download or repository refresh
