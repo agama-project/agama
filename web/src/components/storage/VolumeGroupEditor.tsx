@@ -63,7 +63,7 @@ const EditVgOption = () => {
 
 const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
-    <DeviceMenu title={<b aria-hidden>{vg.name}</b>}>
+    <DeviceMenu title={<b aria-hidden>{vg.vgName}</b>}>
       <MenuList>
         <EditVgOption />
         <RemoveVgOption vg={vg} />
@@ -102,7 +102,7 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
 export type VolumeGroupEditorProps = { vg: apiModel.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
-  const volumeGroup = useVolumeGroup(vg.name);
+  const volumeGroup = useVolumeGroup(vg.vgName);
 
   return (
     <Card isCompact>

@@ -100,7 +100,7 @@ describe("if no volume group is used for installation", () => {
 describe("if a volume group is used for installation", () => {
   beforeEach(() => {
     const modelData: apiModel.Config = {
-      volumeGroups: [{ name: "/dev/system" }],
+      volumeGroups: [{ vgName: "/dev/system" }],
     };
     mockUseConfigModel.mockReturnValue(modelData);
   });
