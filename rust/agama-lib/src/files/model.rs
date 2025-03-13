@@ -133,7 +133,7 @@ impl FileSettings {
                 Transfer::get(url, &mut target)?;
             }
             FileSource::Text { content } => {
-                target.write(content.as_bytes())?;
+                target.write_all(content.as_bytes())?;
             }
         }
         target.flush()?;
