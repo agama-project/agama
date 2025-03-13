@@ -54,7 +54,7 @@ impl<'a> HostnameClient<'a> {
 
         // order is important as otherwise the transient hostname could not be set in case the
         // static one is not empty
-        if let Some(config_static_hostname) = config.static_hostname.clone() {
+        if let Some(config_static_hostname) = &config.static_hostname {
             if settings.static_hostname != config.static_hostname {
                 self.hostname_proxy
                     .set_static_hostname(config_static_hostname.as_str(), false)
@@ -62,7 +62,7 @@ impl<'a> HostnameClient<'a> {
             }
         }
 
-        if let Some(config_hostname) = config.hostname.clone() {
+        if let Some(config_hostname) = &config.hostname {
             if settings.hostname != config.hostname {
                 self.hostname_proxy
                     .set_hostname(config_hostname.as_str(), false)
