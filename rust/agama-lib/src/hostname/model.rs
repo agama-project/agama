@@ -27,7 +27,8 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct HostnameSettings {
     #[serde(rename = "transient")]
-    pub hostname: String,
-    #[serde(rename = "static", skip_serializing_if = "String::is_empty")]
-    pub static_hostname: String,
+    pub hostname: Option<String>,
+    // empty string means removing the static hostname
+    #[serde(rename = "static")]
+    pub static_hostname: Option<String>,
 }

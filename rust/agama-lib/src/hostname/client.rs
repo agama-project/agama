@@ -41,8 +41,8 @@ impl<'a> HostnameClient<'a> {
         let static_hostname = self.hostname_proxy.static_hostname().await?;
 
         let settings = HostnameSettings {
-            hostname,
-            static_hostname,
+            hostname: Some(hostname),
+            static_hostname: Some(static_hostname),
             ..Default::default()
         };
 
@@ -51,16 +51,23 @@ impl<'a> HostnameClient<'a> {
 
     pub async fn set_config(&self, config: &HostnameSettings) -> Result<(), ServiceError> {
         let settings = self.get_config().await?;
-        if settings.hostname != config.hostname {
-            self.hostname_proxy
-                .set_hostname(config.hostname.as_str(), false)
-                .await?;
+
+        // order is important as otherwise the transient hostname could not be set in case the
+        // static one is not empty
+        if let Some(config_static_hostname) = config.static_hostname.clone() {
+            if settings.static_hostname != config.static_hostname {
+                self.hostname_proxy
+                    .set_static_hostname(config_static_hostname.as_str(), false)
+                    .await?;
+            }
         }
 
-        if settings.static_hostname != config.static_hostname {
-            self.hostname_proxy
-                .set_static_hostname(config.static_hostname.as_str(), false)
-                .await?;
+        if let Some(config_hostname) = config.hostname.clone() {
+            if settings.hostname != config.hostname {
+                self.hostname_proxy
+                    .set_hostname(config_hostname.as_str(), false)
+                    .await?;
+            }
         }
 
         Ok(())
