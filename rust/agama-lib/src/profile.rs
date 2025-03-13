@@ -182,10 +182,19 @@ pub struct ProfileEvaluator {}
 impl ProfileEvaluator {
     pub fn evaluate(&self, profile_path: &Path) -> anyhow::Result<String> {
         let dir = tempdir()?;
-
         let working_path = dir.path().join("profile.jsonnet");
         fs::copy(profile_path, working_path)?;
+        self.evaluate_profile_jsonnet(&dir)
+    }
 
+    pub fn evaluate_string(&self, profile: &str) -> anyhow::Result<String> {
+        let dir = tempdir()?;
+        let working_path = dir.path().join("profile.jsonnet");
+        fs::write(working_path, dbg!(profile))?;
+        self.evaluate_profile_jsonnet(&dir)
+    }
+
+    fn evaluate_profile_jsonnet(&self, dir: &TempDir) -> anyhow::Result<String> {
         let hwinfo_path = dir.path().join("hw.libsonnet");
         self.write_hwinfo(&hwinfo_path)
             .context("Failed to read system's hardware information")?;

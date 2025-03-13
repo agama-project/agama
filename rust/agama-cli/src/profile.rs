@@ -83,7 +83,7 @@ pub enum ProfileCommands {
 
 async fn validate(client: BaseHTTPClient, path: &PathBuf) -> anyhow::Result<()> {
     let url_path = format!("/profile/validate?path={}", path.to_string_lossy());
-    let result = client.get(&url_path).await?;
+    let result = client.post(&url_path, &()).await?;
     match result {
         ValidationResult::Valid => {
             println!("{} {}", style("\u{2713}").bold().green(), result);
@@ -97,7 +97,7 @@ async fn validate(client: BaseHTTPClient, path: &PathBuf) -> anyhow::Result<()> 
 
 async fn evaluate(client: BaseHTTPClient, path: &Path) -> anyhow::Result<()> {
     let url_path = format!("/profile/evaluate?path={}", path.to_string_lossy());
-    let output: String = client.get(&url_path).await?;
+    let output: Box<serde_json::value::RawValue> = client.post(&url_path, &()).await?;
     println!("{}", output);
     Ok(())
 }
@@ -177,10 +177,18 @@ async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
+/// returns Agama JSON config as String
+async fn autoyast_client(client: &BaseHTTPClient, url: &Url) -> anyhow::Result<String> {
     // FIXME: how to escape it?
-    let api_url = format!("/profile/autoyast?url={}", url_string);
-    let output: Box<serde_json::value::RawValue> = client.get(&api_url).await?;
+    let api_url = format!("/profile/autoyast?url={}", url);
+    let output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
+    let config_string = format!("{}", output);
+    Ok(config_string)
+}
+
+async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
+    let url = Url::parse(&url_string)?;
+    let output = autoyast_client(&client, &url).await?;
     println!("{}", output);
     Ok(())
 }
