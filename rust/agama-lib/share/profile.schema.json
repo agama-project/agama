@@ -8,7 +8,7 @@
   "properties": {
     "files": {
       "title": "User-defined files to deploy",
-      "description": "User-defined scripts to deploy after installation just before post install scripts",
+      "description": "User-defined files to deploy after installation just before post install scripts",
       "type": "array",
       "items": {
         "$ref": "#/$defs/file"
