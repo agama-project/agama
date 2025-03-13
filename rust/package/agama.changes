@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 12 17:12:10 UTC 2025 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Introduced the hostname model in order to start managing it
+  (gh#agama-project/agama#2118).
+
+-------------------------------------------------------------------
 Wed Mar 12 13:09:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Set the extension in the disposition "filename" so Chrome uses

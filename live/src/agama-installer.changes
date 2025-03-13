@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Mar 12 17:17:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- (gh#agama-project/agama#2142)
+  - Allow to set the static hostname using the hostname kernel 
+    cmdline argument.
+  - Allow to disable the set of the hostname via DHCP using the 
+    SetHostname kernel cmdline argument.
+
+-------------------------------------------------------------------
 Tue Mar 11 16:29:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Bump the version to 13pre
