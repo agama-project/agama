@@ -20,17 +20,17 @@
 
 use anyhow::Context;
 
+use agama_lib::utils::Transfer;
 use agama_lib::{
     error::{ProfileError, ServiceError},
     profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, Url, ValidationResult},
-    //profile::{validate},
 };
 use axum::{
     debug_handler,
     extract::{Query, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::get,
+    routing::post,
     Json, Router,
 };
 use serde::Deserialize;
@@ -69,50 +69,91 @@ impl IntoResponse for ProfileServiceError {
 pub async fn profile_service() -> Result<Router, ServiceError> {
     let state = ProfileState::default();
     let router = Router::new()
-        .route("/evaluate", get(evaluate))
-        .route("/validate", get(validate))
-        .route("/autoyast", get(autoyast))
+        .route("/evaluate", post(evaluate))
+        .route("/validate", post(validate))
+        .route("/autoyast", post(autoyast))
         .with_state(state);
     Ok(router)
 }
 
-// FIXME: the path API is suited for local operation but not so much for a remote one?
-// think about passing a URI or a request body
-#[derive(Deserialize, utoipa::IntoParams)]
-struct ValidateQuery {
-    /// Path of profile to validate
-    path: String,
+/// For flexibility, the profile operations take the input as either of:
+/// 1. request body
+/// 2. pathname (server side)
+/// 3. URL
+#[derive(Deserialize, utoipa::IntoParams, Debug)]
+struct ProfileQuery {
+    path: Option<String>,
+    url: Option<String>,
 }
 
-#[debug_handler]
+impl ProfileQuery {
+    fn validate(&self, request_has_body: bool) -> Result<(), ProfileServiceError> {
+        // `^` is called Bitwise Xor but it does work correctly on bools
+        if request_has_body ^ self.path.is_some() ^ self.url.is_some() {
+            return Ok(());
+        }
+        Err(anyhow::anyhow!(
+            "Only one of (url=, path=, request body) is expected. Seen: url {}, path {}, body {}",
+            self.url.is_some(),
+            self.path.is_some(),
+            request_has_body
+        )
+        .into())
+    }
+
+    /// Retrieve a profile if specified by one of *url*, *path*
+    fn retrieve_profile(&self) -> Result<Option<String>, ProfileServiceError> {
+        if let Some(url_string) = &self.url {
+            let mut bytebuf = Vec::new();
+            Transfer::get(&url_string, &mut bytebuf)
+                .context(format!("Retrieving data from URL {}", &url_string))?;
+            let s = String::from_utf8(bytebuf)
+                .context(format!("Invalid UTF-8 data at URL {}", &url_string))?;
+            Ok(Some(s))
+        } else if let Some(path) = &self.path {
+            let s =
+                std::fs::read_to_string(&path).context(format!("Reading from file {}", &path))?;
+            Ok(Some(s))
+        } else {
+            Ok(None)
+        }
+    }
+}
+
 #[utoipa::path(
-    get,
+    post,
     path = "/validate",
     context_path = "/api/profile",
-    params(ValidateQuery),
+    params(ProfileQuery),
     responses(
-        (status = 200, description = "FIXME"),
+        (status = 200, description = "Validation result", body = ValidationResult),
         (status = 400, description = "FIXME some error has happened")
     )
 )]
 async fn validate(
     _state: State<ProfileState>,
-    query: Query<ValidateQuery>,
+    query: Query<ProfileQuery>,
+    profile: String, // json_or_empty
 ) -> Result<Json<ValidationResult>, ProfileServiceError> {
-    let path = std::path::Path::new(query.path.as_str());
+    let request_has_body = !profile.is_empty() && profile != "null";
+    query.validate(request_has_body)?;
+    let profile_string = match query.retrieve_profile()? {
+        Some(retrieved) => retrieved,
+        None => profile,
+    };
 
     let validator = ProfileValidator::default_schema()?;
     let result = validator
-        .validate_file(path)
-        .context(format!("Could not validate the profile {:?}", path))?;
+        .validate_str(&profile_string)
+        .context(format!("Could not validate the profile {:?}", *query))?;
     Ok(Json(result))
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/evaluate",
     context_path = "/api/profile",
-    params(ValidateQuery),
+    params(ProfileQuery),
     responses(
         (status = 200, description = "Evaluated profile"),
         (status = 400, description = "FIXME some error has happened")
@@ -120,27 +161,28 @@ async fn validate(
 )]
 async fn evaluate(
     _state: State<ProfileState>,
-    query: Query<ValidateQuery>,
+    query: Query<ProfileQuery>,
+    profile: String, // jsonnet_or_empty
 ) -> Result<String, ProfileServiceError> {
-    let path = std::path::Path::new(query.path.as_str());
+    let request_has_body = !profile.is_empty() && profile != "null";
+    query.validate(request_has_body)?;
+    let profile_string = match query.retrieve_profile()? {
+        Some(retrieved) => retrieved,
+        None => profile,
+    };
+
     let evaluator = ProfileEvaluator {};
     let output = evaluator
-        .evaluate(path)
+        .evaluate_string(&profile_string)
         .context("Could not evaluate the profile".to_string())?;
     Ok(output)
 }
 
-#[derive(Deserialize, utoipa::IntoParams)]
-struct AutoyastQuery {
-    /// URL of profile to process
-    url: String,
-}
-
 #[utoipa::path(
-    get,
+    post,
     path = "/autoyast",
     context_path = "/api/profile",
-    params(AutoyastQuery),
+    params(ProfileQuery),
     responses(
         (status = 200, description = "JSON result of Autoyast profile conversion"),
         // TODO: "failed to run agama-autoyast" should be a 500 instead, see software/web.rs
@@ -149,9 +191,30 @@ struct AutoyastQuery {
 )]
 async fn autoyast(
     _state: State<ProfileState>,
-    query: Query<AutoyastQuery>,
+    query: Query<ProfileQuery>,
+    profile: String, // xml_or_erb_or_empty
 ) -> Result<String, ProfileServiceError> {
-    let url = Url::parse(query.url.as_str()).map_err(|e| anyhow::Error::new(e))?;
+    let request_has_body = !profile.is_empty() && profile != "null";
+    /*
+    // TODO: full ProfileQuery processing not needed now
+    query.validate(request_has_body)?;
+    let profile_string = match query.retrieve_profile()? {
+        Some(retrieved) => retrieved,
+        None => profile
+    };
+    let importer = AutoyastProfileImporter::read_str(&profile_string)?;
+    */
+    if !query.url.is_some() || query.path.is_some() || request_has_body {
+        return Err(anyhow::anyhow!(
+            "Only url= is expected, no path= or request body. Seen: url {}, path {}, body {}",
+            query.url.is_some(),
+            query.path.is_some(),
+            request_has_body
+        )
+        .into());
+    }
+
+    let url = Url::parse(&query.url.as_ref().unwrap()).map_err(|e| anyhow::Error::new(e))?;
     let importer = AutoyastProfileImporter::read(&url)?;
     // TODO try error cases and add .context if needed
     Ok(importer.content)
