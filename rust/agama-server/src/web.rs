@@ -26,8 +26,8 @@
 
 use crate::{
     bootloader::web::bootloader_service,
-    files::web::files_service,
     error::Error,
+    files::web::files_service,
     hostname::web::hostname_service,
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},

@@ -325,7 +325,7 @@ impl ScriptsRepository {
             if let Err(error) = script.run(&self.workdir) {
                 log::error!(
                     "Failed to run user-defined script '{}': {:?}",
-                    &script.name(),// TODO: implement
+                    &script.name(), // TODO: implement
                     error
                 );
             }

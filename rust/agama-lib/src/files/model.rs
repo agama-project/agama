@@ -21,11 +21,11 @@
 //! Implements a data model for Files configuration.
 
 use serde::{Deserialize, Serialize};
+use std::fs::OpenOptions;
+use std::io::Write;
+use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::process;
-use std::fs::OpenOptions;
-use std::os::unix::fs::OpenOptionsExt;
-use std::io::Write;
 
 use crate::utils::Transfer;
 
@@ -56,7 +56,7 @@ pub struct FileSettings {
     #[serde(default = "FileSettings::default_group")]
     pub group: String,
     /// destination for file like "/etc/config.d/my.conf"
-    pub destination: String
+    pub destination: String,
 }
 
 impl FileSettings {
@@ -75,12 +75,14 @@ impl FileSettings {
 
 impl Default for FileSettings {
     fn default() -> Self {
-        Self { 
-            source: FileSource::Text { content: "".to_string() },
+        Self {
+            source: FileSource::Text {
+                content: "".to_string(),
+            },
             permissions: Self::default_permissions(),
             user: Self::default_user(),
             group: Self::default_group(),
-            destination: "/dev/null".to_string() // should be always defined
+            destination: "/dev/null".to_string(), // should be always defined
         }
     }
 }
@@ -94,27 +96,55 @@ impl FileSettings {
         // at first ensure that path to file exists
         let fallback_root = Path::new("/");
         let mut cmd = process::Command::new("chroot");
-        cmd.args(["/mnt", "install", "-d", "-o", &self.user, "-g", &self.group,
-                // second unwrap is ok as it fails only for non-utf paths which should not happen
-                target_path.parent().unwrap_or(fallback_root).to_str().unwrap()]);
+        cmd.args([
+            "/mnt",
+            "install",
+            "-d",
+            "-o",
+            &self.user,
+            "-g",
+            &self.group,
+            // second unwrap is ok as it fails only for non-utf paths which should not happen
+            target_path
+                .parent()
+                .unwrap_or(fallback_root)
+                .to_str()
+                .unwrap(),
+        ]);
         let output = cmd.output()?;
         if !output.status.success() {
             let mut command = cmd.get_program().to_string_lossy().to_string();
             for i in cmd.get_args() {
                 command = command + " " + &i.to_string_lossy().to_string();
             }
-            return Err(FileError::MkdirError(command, String::from_utf8(output.stderr).unwrap()));
+            return Err(FileError::MkdirError(
+                command,
+                String::from_utf8(output.stderr).unwrap(),
+            ));
         }
         // cannot set owner here as user and group can exist only on target destination
-        let mut target = OpenOptions::new().mode(int_mode).write(true).create(true).open(path)?;
+        let mut target = OpenOptions::new()
+            .mode(int_mode)
+            .write(true)
+            .create(true)
+            .open(path)?;
         match &self.source {
-            FileSource::Remote {url} => { Transfer::get(url, &mut target)?; }
-            FileSource::Text { content } => { target.write(content.as_bytes())?; }
+            FileSource::Remote { url } => {
+                Transfer::get(url, &mut target)?;
+            }
+            FileSource::Text { content } => {
+                target.write(content.as_bytes())?;
+            }
         }
         target.flush()?;
-        
+
         let mut cmd2 = process::Command::new("chroot");
-        cmd2.args(["/mnt", "chown", format!("{}:{}", &self.user, &self.group).as_str(), target_path.to_str().unwrap()]);
+        cmd2.args([
+            "/mnt",
+            "chown",
+            format!("{}:{}", &self.user, &self.group).as_str(),
+            target_path.to_str().unwrap(),
+        ]);
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
         let output2 = cmd2.output()?;
         if !output2.status.success() {
@@ -122,7 +152,10 @@ impl FileSettings {
             for i in cmd.get_args() {
                 command = command + " " + &i.to_string_lossy().to_string();
             }
-            return Err(FileError::OwnerChangeError(command, String::from_utf8(output2.stderr).unwrap()));
+            return Err(FileError::OwnerChangeError(
+                command,
+                String::from_utf8(output2.stderr).unwrap(),
+            ));
         }
         Ok(())
     }
