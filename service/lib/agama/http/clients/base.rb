@@ -28,16 +28,19 @@ module Agama
     module Clients
       # Base for HTTP clients.
       class Base
-        def initialize
+        def initialize(logger)
           @base_url = "http://localhost/api/"
+          @logger = logger
         end
 
         # send POST request with given data and path.
         # @param path[String] path relatived to `api`` endpoint.
         # @param data[#to_json] data to send in request
-        # @
         def post(path, data)
-          Net::HTTP.post(uri(path), data.to_json, headers)
+          response = Net::HTTP.post(uri(path), data.to_json, headers)
+          return unless response.is_a?(Net::HTTPClientError)
+
+          @logger.warn "server returned #{response.code} with body: #{response.body}"
         end
 
       protected

@@ -92,13 +92,17 @@ impl FileSettings {
         let path = Path::new(path_s.as_str());
         // at first ensure that path to file exists
         let fallback_root = Path::new("/");
-        let output = process::Command::new("chroot")
-            .args(["/mnt", "mkdir", "-p",
+        let mut cmd = process::Command::new("chroot");
+        cmd.args(["/mnt", "mkdir", "-p",
                 // second unwrap is ok as it fails only for non-utf paths which should not happen
-                path.parent().unwrap_or(fallback_root).to_str().unwrap()])
-                .output()?;
+                path.parent().unwrap_or(fallback_root).to_str().unwrap()]);
+        let output = cmd.output()?;
         if !output.status.success() {
-            return Err(FileError::MkdirError(String::from_utf8(output.stderr).unwrap()));
+            let mut command = cmd.get_program().to_string_lossy().to_string();
+            for i in cmd.get_args() {
+                command = command + " " + &i.to_string_lossy().to_string();
+            }
+            return Err(FileError::MkdirError(command, String::from_utf8(output.stderr).unwrap()));
         }
         // cannot set owner here as user and group can exist only on target destination
         let mut target = OpenOptions::new().mode(int_mode).write(true).create(true).open(path)?;
@@ -108,10 +112,16 @@ impl FileSettings {
         }
         target.flush()?;
         
+        let mut cmd2 = process::Command::new("chroot");
+        cmd2.args(["/mnt", "chown", format!("{}:{}", &self.user, &self.group).as_str()]);
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
-        let output2 = process::Command::new("chroot").args(["/mnt", "chown", format!("{}:{}", &self.user, &self.group).as_str()]).output()?;
+        let output2 = cmd2.output()?;
         if !output2.status.success() {
-            return Err(FileError::OwnerChangeError(String::from_utf8(output2.stderr).unwrap()));
+            let mut command = cmd.get_program().to_string_lossy().to_string();
+            for i in cmd.get_args() {
+                command = command + " " + &i.to_string_lossy().to_string();
+            }
+            return Err(FileError::OwnerChangeError(command, String::from_utf8(output2.stderr).unwrap()));
         }
         Ok(())
     }

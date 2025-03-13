@@ -31,8 +31,8 @@ pub enum FileError {
     InputOutputError(#[from] io::Error),
     #[error("Invalid permissions: '{0}'")]
     PermissionsError(#[from] ParseIntError),
-    #[error("Failed to change owner: '{0}'")]
-    OwnerChangeError(String),
-    #[error("Failed to create directories: '{0}'")]
-    MkdirError(String),
+    #[error("Failed to change owner: command '{0}' stderr '{1}'")]
+    OwnerChangeError(String, String),
+    #[error("Failed to create directories: command '{0}' stderr '{1}'")]
+    MkdirError(String, String),
 }

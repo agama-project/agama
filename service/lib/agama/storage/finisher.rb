@@ -250,7 +250,7 @@ module Agama
 
         # Run the post scripts
         def run_post_scripts
-          client = Agama::HTTP::Clients::Scripts.new
+          client = Agama::HTTP::Clients::Scripts.new(logger)
           client.run("post")
         end
 
@@ -281,7 +281,7 @@ module Agama
 
         def deploy_files
           require "agama/http"
-          client = Agama::HTTP::Clients::Files.new
+          client = Agama::HTTP::Clients::Files.new(logger)
           client.write
         end
       end
