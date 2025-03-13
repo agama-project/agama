@@ -22,6 +22,7 @@
 
 use std::collections::HashMap;
 
+use super::model::SoftwareConfig;
 use super::{SoftwareHTTPClient, SoftwareSettings};
 use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
@@ -40,7 +41,12 @@ impl SoftwareStore {
 
     pub async fn load(&self) -> Result<SoftwareSettings, ServiceError> {
         let patterns = self.software_client.user_selected_patterns().await?;
-        Ok(SoftwareSettings { patterns })
+        // FIXME: user_selected_patterns is calling get_config too.
+        let config = self.software_client.get_config().await?;
+        Ok(SoftwareSettings {
+            patterns,
+            packages: config.packages.unwrap_or_default(),
+        })
     }
 
     pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
@@ -49,7 +55,18 @@ impl SoftwareStore {
             .iter()
             .map(|name| (name.to_owned(), true))
             .collect();
-        self.software_client.select_patterns(patterns).await?;
+        let packages = if settings.packages.is_empty() {
+            None
+        } else {
+            Some(settings.packages.clone())
+        };
+        let config = SoftwareConfig {
+            // do not change the product
+            product: None,
+            patterns: Some(patterns),
+            packages,
+        };
+        self.software_client.set_config(&config).await?;
 
         Ok(())
     }
@@ -82,6 +99,7 @@ mod test {
                 .body(
                     r#"{
                     "patterns": {"xfce":true},
+                    "packages": ["vim"],
                     "product": "Tumbleweed"
                 }"#,
                 );
@@ -93,12 +111,14 @@ mod test {
 
         let expected = SoftwareSettings {
             patterns: vec!["xfce".to_owned()],
+            packages: vec!["vim".to_owned()],
         };
         // main assertion
         assert_eq!(settings, expected);
 
+        // FIXME: at this point it is calling the method twice
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
-        software_mock.assert();
+        software_mock.assert_hits(2);
         Ok(())
     }
 
@@ -109,7 +129,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"xfce":true},"product":null}"#);
+                .body(r#"{"patterns":{"xfce":true},"packages":["vim"],"product":null}"#);
             then.status(200);
         });
         let url = server.url("/api");
@@ -117,6 +137,7 @@ mod test {
         let store = software_store(url);
         let settings = SoftwareSettings {
             patterns: vec!["xfce".to_owned()],
+            packages: vec!["vim".to_owned()],
         };
 
         let result = store.store(&settings).await;
@@ -136,7 +157,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"no_such_pattern":true},"product":null}"#);
+                .body(r#"{"patterns":{"no_such_pattern":true},"packages":null,"product":null}"#);
             then.status(400)
                 .body(r#"'{"error":"Agama service error: Failed to find these patterns: [\"no_such_pattern\"]"}"#);
         });
@@ -145,6 +166,7 @@ mod test {
         let store = software_store(url);
         let settings = SoftwareSettings {
             patterns: vec!["no_such_pattern".to_owned()],
+            packages: vec![],
         };
 
         let result = store.store(&settings).await;

@@ -189,6 +189,23 @@ impl<'a> SoftwareClient<'a> {
         }
     }
 
+    /// Selects packages by user
+    ///
+    /// Adds the given packages to the proposal.
+    ///
+    /// * `names`: package names.
+    pub async fn select_packages(&self, names: Vec<String>) -> Result<(), ServiceError> {
+        let names: Vec<_> = names.iter().map(|n| n.as_ref()).collect();
+        self.set_resolvables("user", ResolvableType::Package, names.as_slice(), true)
+            .await?;
+        Ok(())
+    }
+
+    pub async fn user_selected_packages(&self) -> Result<Vec<String>, ServiceError> {
+        self.get_resolvables("user", ResolvableType::Package, true)
+            .await
+    }
+
     /// Returns the required space for installing the selected patterns.
     ///
     /// It returns a formatted string including the size and the unit.
@@ -218,5 +235,23 @@ impl<'a> SoftwareClient<'a> {
             .set_resolvables(id, r#type as u8, resolvables, optional)
             .await?;
         Ok(())
+    }
+
+    /// Gets a resolvables list.
+    ///
+    /// * `id`: resolvable list ID.
+    /// * `r#type`: type of the resolvables.
+    /// * `optional`: whether the resolvables are optional.
+    pub async fn get_resolvables(
+        &self,
+        id: &str,
+        r#type: ResolvableType,
+        optional: bool,
+    ) -> Result<Vec<String>, ServiceError> {
+        let packages = self
+            .proposal_proxy
+            .get_resolvables(id, r#type as u8, optional)
+            .await?;
+        Ok(packages)
     }
 }

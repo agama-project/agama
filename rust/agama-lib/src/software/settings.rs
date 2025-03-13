@@ -28,4 +28,6 @@ use serde::{Deserialize, Serialize};
 pub struct SoftwareSettings {
     /// List of patterns to install. If empty use default.
     pub patterns: Vec<String>,
+    /// List of packages to install. If empty use default.
+    pub packages: Vec<String>,
 }
