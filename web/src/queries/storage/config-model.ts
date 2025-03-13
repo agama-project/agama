@@ -41,11 +41,11 @@ function isSpacePartition(partition: configModel.Partition): boolean {
 }
 
 function isUsedPartition(partition: configModel.Partition): boolean {
-  return partition.filesystem !== undefined || partition.alias !== undefined;
+  return partition.filesystem !== undefined;
 }
 
 function isReusedPartition(partition: configModel.Partition): boolean {
-  return !isNewPartition(partition) && isUsedPartition(partition) && !isSpacePartition(partition);
+  return !isNewPartition(partition) && isUsedPartition(partition);
 }
 
 function findDrive(model: configModel.Config, driveName: string): configModel.Drive | undefined {
@@ -85,10 +85,10 @@ function isExplicitBoot(model: configModel.Config, driveName: string): boolean {
   return !model.boot?.device?.default && driveName === model.boot?.device?.name;
 }
 
-function driveHasPv(model: configModel.Config, driveAlias: string): boolean {
-  if (!driveAlias) return false;
+function driveHasPv(model: configModel.Config, name: string): boolean {
+  if (!name) return false;
 
-  return model.volumeGroups.flatMap((g) => g.targetDevices).includes(driveAlias);
+  return model.volumeGroups.flatMap((g) => g.targetDevices).includes(name);
 }
 
 function allMountPaths(drive: configModel.Drive): string[] {
@@ -439,7 +439,7 @@ export function useDrive(name: string): DriveHook | null {
   return {
     isBoot: isBoot(model, name),
     isExplicitBoot: isExplicitBoot(model, name),
-    hasPv: driveHasPv(model, drive.alias),
+    hasPv: driveHasPv(model, drive.name),
     allMountPaths: allMountPaths(drive),
     configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
