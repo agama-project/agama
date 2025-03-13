@@ -65,7 +65,7 @@ impl FileSystem {
         let mount_point = self
             .mount_point
             .clone()
-            .unwrap_or_else(|| default_mount_point);
+            .unwrap_or(default_mount_point);
 
         if !self.is_mounted() {
             self.mount(&mount_point).unwrap();
@@ -218,8 +218,8 @@ impl FileSystemsReader {
                 None
             } else {
                 let mut mounts = mount_points.split("\\x0a").collect::<Vec<_>>();
-                mounts.sort_by(|a, b| a.len().cmp(&b.len()));
-                mounts.first().map(|m| PathBuf::from(m))
+                mounts.sort_by_key(|a| a.len());
+                mounts.first().map(PathBuf::from)
             };
 
             let mut file_system = FileSystem {
@@ -334,7 +334,7 @@ KNAME="/dev/dm-0" FSTYPE="btrfs" MOUNTPOINTS="/home\x0a/\x0a/var" TRAN="" LABEL=
 KNAME="/dev/nvme0n1p3" FSTYPE="crypto_LUKS" MOUNTPOINTS="" TRAN="nvme" LABEL=""
 KNAME="/dev/dm-1" FSTYPE="swap" MOUNTPOINTS="[SWAP]" TRAN="" LABEL=""
 "#;
-        let file_systems = FileSystemsReader::read_from_string(&lsblk);
+        let file_systems = FileSystemsReader::read_from_string(lsblk);
         assert_eq!(file_systems.len(), 4);
 
         let dm0 = file_systems

@@ -45,7 +45,7 @@ impl FileFinder {
         writer: &mut impl Write,
     ) -> TransferResult<()> {
         for fs in file_systems.to_vec().iter() {
-            if self.copy_from_file_system(fs, &file_name, writer).is_ok() {
+            if self.copy_from_file_system(fs, file_name, writer).is_ok() {
                 return Ok(());
             }
         }
@@ -67,7 +67,7 @@ impl FileFinder {
 
         file_system.ensure_mounted(|mount_point: &PathBuf| {
             let file_name = file_name.strip_prefix("/").unwrap_or(file_name);
-            let source = mount_point.join(&file_name);
+            let source = mount_point.join(file_name);
             Self::copy_file(source, writer)
         })
     }

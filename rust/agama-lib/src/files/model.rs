@@ -115,7 +115,7 @@ impl FileSettings {
         if !output.status.success() {
             let mut command = cmd.get_program().to_string_lossy().to_string();
             for i in cmd.get_args() {
-                command = command + " " + &i.to_string_lossy().to_string();
+                command = command + " " + i.to_string_lossy().as_ref();
             }
             return Err(FileError::MkdirError(
                 command,
@@ -150,7 +150,7 @@ impl FileSettings {
         if !output2.status.success() {
             let mut command = cmd.get_program().to_string_lossy().to_string();
             for i in cmd.get_args() {
-                command = command + " " + &i.to_string_lossy().to_string();
+                command = command + " " + i.to_string_lossy().as_ref();
             }
             return Err(FileError::OwnerChangeError(
                 command,

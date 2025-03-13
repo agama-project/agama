@@ -46,7 +46,7 @@ impl<'a> NetworkManagerAdapter<'a> {
 }
 
 #[async_trait]
-impl<'a> Adapter for NetworkManagerAdapter<'a> {
+impl Adapter for NetworkManagerAdapter<'_> {
     async fn read(&self, config: StateConfig) -> Result<NetworkState, NetworkAdapterError> {
         let general_state = self
             .client

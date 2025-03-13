@@ -111,7 +111,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for DeviceSize {
     }
 }
 
-impl<'a> From<DeviceSize> for zbus::zvariant::Value<'a> {
+impl From<DeviceSize> for zbus::zvariant::Value<'_> {
     fn from(val: DeviceSize) -> Self {
         Value::new(val.0)
     }
@@ -205,7 +205,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for SpaceActionSettings {
     }
 }
 
-impl<'a> From<SpaceActionSettings> for zbus::zvariant::Value<'a> {
+impl From<SpaceActionSettings> for zbus::zvariant::Value<'_> {
     fn from(val: SpaceActionSettings) -> Self {
         let result: HashMap<&str, Value> = HashMap::from([
             ("Device", Value::new(val.device)),
@@ -235,7 +235,7 @@ pub struct ProposalSettingsPatch {
     pub volumes: Option<Vec<Volume>>,
 }
 
-impl<'a> From<ProposalSettingsPatch> for HashMap<&'static str, Value<'a>> {
+impl From<ProposalSettingsPatch> for HashMap<&'static str, Value<'_>> {
     fn from(val: ProposalSettingsPatch) -> Self {
         let mut result = HashMap::new();
         if let Some(target) = val.target {
@@ -359,7 +359,7 @@ pub enum VolumeTarget {
     Filesystem,
 }
 
-impl<'a> From<VolumeTarget> for zbus::zvariant::Value<'a> {
+impl From<VolumeTarget> for zbus::zvariant::Value<'_> {
     fn from(val: VolumeTarget) -> Self {
         let str = match val {
             VolumeTarget::Default => "default",
@@ -440,7 +440,7 @@ pub struct Volume {
     outline: Option<VolumeOutline>,
 }
 
-impl<'a> From<Volume> for zbus::zvariant::Value<'a> {
+impl From<Volume> for zbus::zvariant::Value<'_> {
     fn from(val: Volume) -> Self {
         let mut result: HashMap<&str, Value> = HashMap::from([
             ("MountPath", Value::new(val.mount_path)),

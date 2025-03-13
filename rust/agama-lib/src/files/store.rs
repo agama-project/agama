@@ -38,7 +38,7 @@ impl FilesStore {
     }
 
     pub async fn load(&self) -> Result<Vec<FileSettings>, ServiceError> {
-        Ok(self.files_client.get_files().await?)
+        self.files_client.get_files().await
     }
 
     pub async fn store(&self, files: &Vec<FileSettings>) -> Result<(), ServiceError> {
