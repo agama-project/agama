@@ -62,10 +62,7 @@ impl FileSystem {
     {
         const DEFAULT_MOUNT_PATH: &str = "/run/agama/mount";
         let default_mount_point = PathBuf::from(DEFAULT_MOUNT_PATH);
-        let mount_point = self
-            .mount_point
-            .clone()
-            .unwrap_or(default_mount_point);
+        let mount_point = self.mount_point.clone().unwrap_or(default_mount_point);
 
         if !self.is_mounted() {
             self.mount(&mount_point).unwrap();
