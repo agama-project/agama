@@ -84,9 +84,9 @@
     "volumeGroup": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name"],
+      "required": ["vgName"],
       "properties": {
-        "name": { "type": "string" },
+        "vgName": { "type": "string" },
         "extentSize": { "type": "integer" },
         "targetDevices": {
           "type": "array",
@@ -102,7 +102,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "name": { "type": "string" },
+        "lvName": { "type": "string" },
         "mountPath": { "type": "string" },
         "filesystem": { "$ref": "#/$defs/filesystem" },
         "size": { "$ref": "#/$defs/size" },

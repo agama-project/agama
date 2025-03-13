@@ -1099,7 +1099,11 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
       context "if #name is not configured for a volume group" do
         let(:volume_group) { {} }
-        include_examples "without name", vg_result_scope
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json.keys).to_not include(:vgName)
+        end
       end
 
       context "if #extent_size is not configured for a volume group" do
@@ -1134,7 +1138,7 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
         it "generates the expected JSON" do
           model_json = vg_result_scope.call(subject.convert)
-          expect(model_json[:name]).to eq("test")
+          expect(model_json[:vgName]).to eq("test")
         end
       end
 
@@ -1175,11 +1179,14 @@ describe Agama::Storage::ConfigConversions::ToModel do
         end
 
         lv_result_scope = proc { |c| vg_result_scope.call(c)[:logicalVolumes].first }
-        # partition_scope = proc { |c| device_scope.call(c).partitions.first }
 
         context "if #name is not configured for a logical volume" do
           let(:logical_volume) { {} }
-          include_examples "without name", lv_result_scope
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json.keys).to_not include(:lvName)
+          end
         end
 
         context "if #filesystem is not configured for a logical volume" do
@@ -1224,7 +1231,7 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
           it "generates the expected JSON" do
             model_json = lv_result_scope.call(subject.convert)
-            expect(model_json[:name]).to eq("test")
+            expect(model_json[:lvName]).to eq("test")
           end
         end
 

@@ -60,7 +60,7 @@ module Agama
           # @return [Hash]
           def conversions
             {
-              name:                        volume_group_model[:name],
+              name:                        volume_group_model[:vgName],
               extent_size:                 convert_extent_size,
               physical_volumes_devices:    convert_physical_volumes_devices,
               physical_volumes_encryption: convert_physical_volumes_encryption,

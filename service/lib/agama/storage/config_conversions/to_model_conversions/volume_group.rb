@@ -46,7 +46,7 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              name:           config.name,
+              vgName:         config.name,
               extentSize:     config.extent_size&.to_i,
               targetDevices:  convert_target_devices,
               logicalVolumes: convert_logical_volumes

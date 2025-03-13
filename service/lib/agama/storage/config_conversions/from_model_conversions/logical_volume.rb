@@ -48,7 +48,7 @@ module Agama
           # @return [Hash]
           def conversions
             {
-              name:        logical_volume_model[:name],
+              name:        logical_volume_model[:lvName],
               filesystem:  convert_filesystem,
               size:        convert_size,
               stripes:     logical_volume_model[:stripes],

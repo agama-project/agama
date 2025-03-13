@@ -13,7 +13,6 @@
   "drives": [
     {
       "name": "/dev/vda",
-      "alias": "root",
       "mountPath": "/",
       "filesystem": {
         "default": true,
@@ -78,18 +77,17 @@
     },
     {
       "name": "/dev/vdc",
-      "alias": "lvm",
       "spacePolicy": "delete"
     }
   ],
   "volumeGroups": [
     {
-      "name": "vg0",
+      "vgName": "vg0",
       "extentSize": 1024,
-      "targetDevices": ["lvm"],
+      "targetDevices": ["/dev/vdc"],
       "logicalVolumes": [
         {
-          "name": "lv0",
+          "lvName": "lv0",
           "mountPath": "/data",
           "filesystem": {
             "default": false,

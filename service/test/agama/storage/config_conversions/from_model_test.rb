@@ -1041,7 +1041,7 @@ describe Agama::Storage::ConfigConversions::FromModel do
           ],
           volumeGroups: [
             {
-              name:          "system",
+              vgName:        "system",
               targetDevices: ["/dev/vda"]
             }
           ]
@@ -1190,12 +1190,12 @@ describe Agama::Storage::ConfigConversions::FromModel do
       let(:volume_groups) do
         [
           volume_group,
-          { name: "vg2" }
+          { vgName: "vg2" }
         ]
       end
 
       let(:volume_group) do
-        { name: "vg1" }
+        { vgName: "vg1" }
       end
 
       context "with an empty list" do
@@ -1223,7 +1223,7 @@ describe Agama::Storage::ConfigConversions::FromModel do
 
       volume_group_proc = proc { |c| c.volume_groups.first }
 
-      context "if a volume group does not specify 'name'" do
+      context "if a volume group does not specify 'vgName'" do
         let(:volume_group) { {} }
 
         it "does not set #name" do
@@ -1259,8 +1259,8 @@ describe Agama::Storage::ConfigConversions::FromModel do
         end
       end
 
-      context "if a volume group specifies 'name'" do
-        let(:volume_group) { { name: "vg1" } }
+      context "if a volume group specifies 'vgName'" do
+        let(:volume_group) { { vgName: "vg1" } }
 
         it "sets #name to the expected value" do
           volume_group = volume_group_proc.call(subject.convert)
@@ -1319,11 +1319,11 @@ describe Agama::Storage::ConfigConversions::FromModel do
         let(:logical_volumes) do
           [
             logical_volume,
-            { name: "lv2" }
+            { lvName: "lv2" }
           ]
         end
 
-        let(:logical_volume) { { name: "lv1" } }
+        let(:logical_volume) { { lvName: "lv1" } }
 
         context "with an empty list" do
           let(:logical_volumes) { [] }
@@ -1349,7 +1349,7 @@ describe Agama::Storage::ConfigConversions::FromModel do
 
         logical_volume_proc = proc { |c| volume_group_proc.call(c).logical_volumes.first }
 
-        context "if a logical volume does not specify 'name'" do
+        context "if a logical volume does not specify 'lvName'" do
           let(:logical_volume) { {} }
 
           it "does not set #name" do
@@ -1386,8 +1386,8 @@ describe Agama::Storage::ConfigConversions::FromModel do
           end
         end
 
-        context "if a logical volume specifies 'name'" do
-          let(:logical_volume) { { name: "lv1" } }
+        context "if a logical volume specifies 'lvName'" do
+          let(:logical_volume) { { lvName: "lv1" } }
 
           it "sets #name to the expected value" do
             logical_volume = logical_volume_proc.call(subject.convert)

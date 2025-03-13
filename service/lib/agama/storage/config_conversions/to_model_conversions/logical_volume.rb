@@ -43,7 +43,7 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              name:       config.name,
+              lvName:     config.name,
               alias:      config.alias,
               mountPath:  config.filesystem&.path,
               filesystem: convert_filesystem,
