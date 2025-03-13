@@ -90,12 +90,13 @@ impl FileSettings {
         let int_mode = u32::from_str_radix(&self.permissions, 8)?;
         let path_s = "/mnt".to_string() + &self.destination;
         let path = Path::new(path_s.as_str());
+        let target_path = Path::new(&self.destination);
         // at first ensure that path to file exists
         let fallback_root = Path::new("/");
         let mut cmd = process::Command::new("chroot");
-        cmd.args(["/mnt", "mkdir", "-p",
+        cmd.args(["/mnt", "install", "-d", "-o", &self.user, "-g", &self.group,
                 // second unwrap is ok as it fails only for non-utf paths which should not happen
-                path.parent().unwrap_or(fallback_root).to_str().unwrap()]);
+                target_path.parent().unwrap_or(fallback_root).to_str().unwrap()]);
         let output = cmd.output()?;
         if !output.status.success() {
             let mut command = cmd.get_program().to_string_lossy().to_string();
@@ -113,7 +114,7 @@ impl FileSettings {
         target.flush()?;
         
         let mut cmd2 = process::Command::new("chroot");
-        cmd2.args(["/mnt", "chown", format!("{}:{}", &self.user, &self.group).as_str()]);
+        cmd2.args(["/mnt", "chown", format!("{}:{}", &self.user, &self.group).as_str(), target_path.to_str().unwrap()]);
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
         let output2 = cmd2.output()?;
         if !output2.status.success() {
