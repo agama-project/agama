@@ -69,7 +69,7 @@ software:
   optional_patterns: null # no optional pattern shared
   user_patterns:
     - cockpit
-    - sles_minimal_sap
+    - sles_sap_minimal_sap
     - fips
     - selinux
     - documentation
