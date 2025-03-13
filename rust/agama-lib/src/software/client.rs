@@ -189,6 +189,23 @@ impl<'a> SoftwareClient<'a> {
         }
     }
 
+    pub async fn select_packages(
+        &self,
+        packages: &[String],
+        // packages: HashMap<String, bool>,
+    ) -> Result<(), ServiceError> {
+        let add: Vec<_> = packages.into_iter().map(|n| n.as_ref()).collect();
+        let missing = self
+            .software_proxy
+            .set_user_packages(add.as_slice(), &[])
+            .await?;
+        if !missing.is_empty() {
+            Err(ServiceError::UnknownPatterns(missing))
+        } else {
+            Ok(())
+        }
+    }
+
     /// Returns the required space for installing the selected patterns.
     ///
     /// It returns a formatted string including the size and the unit.

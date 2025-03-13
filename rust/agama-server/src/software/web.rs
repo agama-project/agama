@@ -381,6 +381,10 @@ async fn set_config(
         state.software.select_patterns(patterns).await?;
     }
 
+    if let Some(patterns) = config.packages {
+        state.software.select_packages(packages).await?;
+    }
+
     Ok(())
 }
 

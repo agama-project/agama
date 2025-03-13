@@ -52,6 +52,8 @@ pub enum ServiceError {
     FailedRegistration(String),
     #[error("Failed to find these patterns: {0:?}")]
     UnknownPatterns(Vec<String>),
+    #[error("Failed to find these packages: {0:?}")]
+    UnknownPackages(Vec<String>),
     #[error("Passed json data is not correct: {0}")]
     InvalidJson(#[from] serde_json::Error),
     #[error("Could not perform action '{0}'")]
