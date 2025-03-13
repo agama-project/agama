@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,75 +18,75 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module implements the web API for the bootloader service.
+//! This module implements the web API for the hostname service.
 //!
 //! The module offers one public function:
 //!
-//! * `bootloader_service` which returns the Axum service.
+//! * `hostname_service` which returns the Axum service.
 //!
 //! stream is not needed, as we do not need to emit signals (for NOW).
 
 use agama_lib::{
-    bootloader::{client::BootloaderClient, model::BootloaderSettings},
     error::ServiceError,
+    hostname::{client::HostnameClient, model::HostnameSettings},
 };
 use axum::{extract::State, routing::put, Json, Router};
 
 use crate::error;
 
 #[derive(Clone)]
-struct BootloaderState<'a> {
-    client: BootloaderClient<'a>,
+struct HostnameState<'a> {
+    client: HostnameClient<'a>,
 }
 
-/// Sets up and returns the axum service for the bootloader module.
-pub async fn bootloader_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
-    let client = BootloaderClient::new(dbus).await?;
-    let state = BootloaderState { client };
+/// Sets up and returns the axum service for the hostname module.
+pub async fn hostname_service() -> Result<Router, ServiceError> {
+    let client = HostnameClient::new().await?;
+    let state = HostnameState { client };
     let router = Router::new()
         .route("/config", put(set_config).get(get_config))
         .with_state(state);
     Ok(router)
 }
 
-/// Returns the bootloader configuration.
+/// Returns the hostname configuration.
 ///
 /// * `state` : service state.
 #[utoipa::path(
     get,
     path = "/config",
-    context_path = "/api/bootloader",
-    operation_id = "get_bootloader_config",
+    context_path = "/api/hostname",
+    operation_id = "get_hostname_config",
     responses(
-        (status = 200, description = "bootloader configuration", body = BootloaderSettings),
+        (status = 200, description = "hostname configuration", body = HostnameSettings),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
 async fn get_config(
-    State(state): State<BootloaderState<'_>>,
-) -> Result<Json<BootloaderSettings>, error::Error> {
-    // BootloaderSettings is just a wrapper over serde_json::value::RawValue
+    State(state): State<HostnameState<'_>>,
+) -> Result<Json<HostnameSettings>, error::Error> {
+    // HostnameSettings is just a wrapper over serde_json::value::RawValue
     let settings = state.client.get_config().await?;
     Ok(Json(settings))
 }
 
-/// Sets the bootloader configuration.
+/// Sets the hostname configuration.
 ///
 /// * `state`: service state.
-/// * `config`: bootloader configuration.
+/// * `config`: hostname configuration.
 #[utoipa::path(
     put,
     path = "/config",
-    context_path = "/api/bootloader",
-    operation_id = "set_bootloader_config",
+    context_path = "/api/hostname",
+    operation_id = "set_hostname_config",
     responses(
-        (status = 200, description = "Set the bootloader configuration"),
+        (status = 200, description = "Set the hostname configuration"),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
 async fn set_config(
-    State(state): State<BootloaderState<'_>>,
-    Json(settings): Json<BootloaderSettings>,
+    State(state): State<HostnameState<'_>>,
+    Json(settings): Json<HostnameSettings>,
 ) -> Result<Json<()>, error::Error> {
     state.client.set_config(&settings).await?;
     Ok(Json(()))

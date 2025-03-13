@@ -25,6 +25,7 @@ use crate::base_http_client::BaseHTTPClient;
 use crate::bootloader::store::BootloaderStore;
 use crate::error::ServiceError;
 use crate::files::store::FilesStore;
+use crate::hostname::store::HostnameStore;
 use crate::install_settings::InstallSettings;
 use crate::manager::{InstallationPhase, ManagerHTTPClient};
 use crate::scripts::{ScriptsClient, ScriptsGroup};
@@ -42,6 +43,7 @@ use crate::{
 pub struct Store {
     bootloader: BootloaderStore,
     files: FilesStore,
+    hostname: HostnameStore,
     users: UsersStore,
     network: NetworkStore,
     product: ProductStore,
@@ -58,6 +60,7 @@ impl Store {
         Ok(Self {
             bootloader: BootloaderStore::new(http_client.clone())?,
             files: FilesStore::new(http_client.clone())?,
+            hostname: HostnameStore::new(http_client.clone())?,
             localization: LocalizationStore::new(http_client.clone())?,
             users: UsersStore::new(http_client.clone())?,
             network: NetworkStore::new(http_client.clone()).await?,
@@ -75,6 +78,7 @@ impl Store {
         let mut settings = InstallSettings {
             bootloader: Some(self.bootloader.load().await?),
             files: Some(self.files.load().await?),
+            hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
             software: Some(self.software.load().await?),
             user: Some(self.users.load().await?),
@@ -138,6 +142,9 @@ impl Store {
         }
         if let Some(bootloader) = &settings.bootloader {
             self.bootloader.store(bootloader).await?;
+        }
+        if let Some(hostname) = &settings.hostname {
+            self.hostname.store(hostname).await?;
         }
 
         Ok(())

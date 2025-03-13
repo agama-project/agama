@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,20 +18,4 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod files;
-pub mod hostname;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod questions;
-pub mod scripts;
-pub mod software;
-pub mod storage;
-pub mod users;
 pub mod web;
-pub use web::service;

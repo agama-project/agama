@@ -23,6 +23,7 @@
 //! This module implements the mechanisms to load and store the installation settings.
 use crate::bootloader::model::BootloaderSettings;
 use crate::files::model::FileSettings;
+use crate::hostname::model::HostnameSettings;
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
     scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings,
@@ -45,6 +46,8 @@ pub struct InstallSettings {
     pub bootloader: Option<BootloaderSettings>,
     #[serde(default)]
     pub files: Option<Vec<FileSettings>>,
+    #[serde(default)]
+    pub hostname: Option<HostnameSettings>,
     #[serde(default, flatten)]
     pub user: Option<UserSettings>,
     #[serde(default)]
