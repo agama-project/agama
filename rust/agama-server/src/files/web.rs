@@ -50,6 +50,8 @@ struct FilesServiceError(#[from] FileError);
 
 impl IntoResponse for FilesServiceError {
     fn into_response(self) -> Response {
+        // TODO: is there better way to hook any error response to be logged with body?
+        tracing::warn!("Server return error {}", self);
         let body = json!({
             "error": self.to_string()
         });
