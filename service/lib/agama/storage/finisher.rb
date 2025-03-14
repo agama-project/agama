@@ -28,8 +28,10 @@ require "agama/with_progress"
 require "agama/helpers"
 require "agama/http"
 require "abstract_method"
+require "fileutils"
 
 Yast.import "Arch"
+Yast.import "Installation"
 
 module Agama
   module Storage
@@ -217,20 +219,30 @@ module Agama
         end
 
         def run
-          wfm_write("copy_logs_finish")
-          copy_agama_scripts
+          FileUtils.mkdir_p(logs_dir, mode: 0o700)
+          collect_logs
+          copy_scripts
         end
 
       private
 
-        def copy_agama_scripts
+        def copy_scripts
           return unless Dir.exist?(SCRIPTS_DIR)
 
-          Yast.import "Installation"
-          require "fileutils"
-          logs_dir = File.join(Yast::Installation.destdir, "var", "log", "agama-installation")
-          FileUtils.mkdir_p(logs_dir)
           FileUtils.cp_r(SCRIPTS_DIR, logs_dir)
+        end
+
+        def collect_logs
+          path = File.join(logs_dir, "logs")
+          Yast::Execute.locally(
+            "agama", "logs", "store", "--destination", path
+          )
+        end
+
+        def logs_dir
+          @logs_dir ||= File.join(
+            Yast::Installation.destdir, "var", "log", "agama-installation"
+          )
         end
       end
 
