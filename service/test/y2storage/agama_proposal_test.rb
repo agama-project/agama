@@ -116,7 +116,7 @@ describe Y2Storage::AgamaProposal do
               "subvolumes"        => ["home", "opt", "root", "srv"]
             },
             "outline"    => {
-              "required"               => true,
+              "required"               => false,
               "snapshots_configurable" => true,
               "filesystems"            => ["btrfs", "xfs", "ext3", "ext4"],
               "auto_size"              => {

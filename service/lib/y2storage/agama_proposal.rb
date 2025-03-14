@@ -103,7 +103,6 @@ module Y2Storage
       issues_list.concat(issues)
 
       if fatal_error?
-        # This means some IfNotFound is set to "error" and we failed to find a match
         @devices = nil
         return @devices
       end
