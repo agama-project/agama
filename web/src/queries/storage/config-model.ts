@@ -111,7 +111,11 @@ function configuredExistingPartitions(drive: configModel.Drive): configModel.Par
 function setBoot(originalModel: configModel.Config, boot: configModel.Boot) {
   const model = copyModel(originalModel);
   const name = model.boot?.device?.name;
-  const remove = name !== undefined && isExplicitBoot(model, name) && !isUsedDrive(model, name);
+  const remove =
+    name !== undefined &&
+    isExplicitBoot(model, name) &&
+    !isUsedDrive(model, name) &&
+    !driveHasPv(model, name);
 
   if (remove) removeDrive(model, name);
 
