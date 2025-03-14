@@ -485,7 +485,9 @@ shared_examples "with partitions" do |config_proc|
   end
 
   context "if a partition specifies 'name'" do
-    let(:partition) { { name: name } }
+    # Add mount path in order to use the partition. Otherwise the partition is omitted because it
+    # is considered a keep action.
+    let(:partition) { { name: name, mountPath: "/test2" } }
     include_examples "with name", partition_proc
   end
 
@@ -579,49 +581,55 @@ end
 shared_examples "with spacePolicy and partitions" do |config_proc|
   let(:partitions) do
     [
-      # Partition exists and it is used.
+      # Reused partition with some usage.
       {
         name:      "/dev/vda1",
         mountPath: "/test1",
         size:      { default: true, min: 10.GiB.to_i }
       },
-      # Partition exists and it is used.
+      # Reused partition with some usage.
       {
         name:           "/dev/vda2",
         mountPath:      "/test2",
         resizeIfNeeded: true,
         size:           { default: false, min: 10.GiB.to_i }
       },
-      # Partition exists and it is used.
+      # Reused partition with some usage.
       {
         name:      "/dev/vda3",
         mountPath: "/test3",
         resize:    true,
         size:      { default: false, min: 10.GiB.to_i, max: 10.GiB.to_i }
       },
-      # Partition exists and it is not used (space action).
+      # Reused partition representing a space action (resize).
       {
         name:           "/dev/vda4",
         resizeIfNeeded: true,
         size:           { default: false, min: 10.GiB.to_i }
       },
-      # Partition exists and it is not used (space action).
+      # Reused partition representing a space action (resize).
       {
         name:   "/dev/vda5",
         resize: true,
         size:   { default: false, min: 10.GiB.to_i, max: 10.GiB.to_i }
       },
-      # Partition exists and it is not used (space action).
+      # Reused partition representing a space action (delete).
       {
         name:   "/dev/vda6",
         delete: true
       },
-      # Partition exists and it is not used (space action).
+      # Reused partition representing a space action (delete).
       {
         name:           "/dev/vda7",
         deleteIfNeeded: true
       },
-      # Partition does not exist.
+      # Reused partition representing a space action (keep).
+      {
+        name: "/dev/vda8"
+      },
+      # New partition.
+      {},
+      # New partition.
       {
         mountPath:      "/",
         resizeIfNeeded: true,
@@ -637,11 +645,12 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     it "sets #partitions to the expected value" do
       config = config_proc.call(subject.convert)
       partitions = config.partitions
-      expect(partitions.size).to eq(4)
+      expect(partitions.size).to eq(5)
       expect(partitions[0].search.name).to eq("/dev/vda1")
       expect(partitions[1].search.name).to eq("/dev/vda2")
       expect(partitions[2].search.name).to eq("/dev/vda3")
-      expect(partitions[3].filesystem.path).to eq("/")
+      expect(partitions[3].filesystem).to be_nil
+      expect(partitions[4].filesystem.path).to eq("/")
     end
   end
 
@@ -651,14 +660,15 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     it "sets #partitions to the expected value" do
       config = config_proc.call(subject.convert)
       partitions = config.partitions
-      expect(partitions.size).to eq(5)
+      expect(partitions.size).to eq(6)
       expect(partitions[0].search.name).to eq("/dev/vda1")
       expect(partitions[1].search.name).to eq("/dev/vda2")
       expect(partitions[2].search.name).to eq("/dev/vda3")
-      expect(partitions[3].filesystem.path).to eq("/")
-      expect(partitions[4].search.name).to be_nil
-      expect(partitions[4].search.max).to be_nil
-      expect(partitions[4].delete).to eq(true)
+      expect(partitions[3].filesystem).to be_nil
+      expect(partitions[4].filesystem.path).to eq("/")
+      expect(partitions[5].search.name).to be_nil
+      expect(partitions[5].search.max).to be_nil
+      expect(partitions[5].delete).to eq(true)
     end
   end
 
@@ -668,16 +678,17 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     it "sets #partitions to the expected value" do
       config = config_proc.call(subject.convert)
       partitions = config.partitions
-      expect(partitions.size).to eq(5)
+      expect(partitions.size).to eq(6)
       expect(partitions[0].search.name).to eq("/dev/vda1")
       expect(partitions[1].search.name).to eq("/dev/vda2")
       expect(partitions[2].search.name).to eq("/dev/vda3")
-      expect(partitions[3].filesystem.path).to eq("/")
-      expect(partitions[4].search.name).to be_nil
-      expect(partitions[4].search.max).to be_nil
-      expect(partitions[4].size.default?).to eq(false)
-      expect(partitions[4].size.min).to eq(Y2Storage::DiskSize.zero)
-      expect(partitions[4].size.max).to be_nil
+      expect(partitions[3].filesystem).to be_nil
+      expect(partitions[4].filesystem.path).to eq("/")
+      expect(partitions[5].search.name).to be_nil
+      expect(partitions[5].search.max).to be_nil
+      expect(partitions[5].size.default?).to eq(false)
+      expect(partitions[5].size.min).to eq(Y2Storage::DiskSize.zero)
+      expect(partitions[5].size.max).to be_nil
     end
   end
 
@@ -687,15 +698,16 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     it "sets #partitions to the expected value" do
       config = config_proc.call(subject.convert)
       partitions = config.partitions
-      expect(partitions.size).to eq(8)
+      expect(partitions.size).to eq(9)
       expect(partitions[0].search.name).to eq("/dev/vda1")
       expect(partitions[1].search.name).to eq("/dev/vda2")
       expect(partitions[2].search.name).to eq("/dev/vda3")
-      expect(partitions[3].search.name).to eq("/dev/vda4")
-      expect(partitions[4].search.name).to eq("/dev/vda5")
-      expect(partitions[5].search.name).to eq("/dev/vda6")
-      expect(partitions[6].search.name).to eq("/dev/vda7")
-      expect(partitions[7].filesystem.path).to eq("/")
+      expect(partitions[3].filesystem).to be_nil
+      expect(partitions[4].filesystem.path).to eq("/")
+      expect(partitions[5].search.name).to eq("/dev/vda4")
+      expect(partitions[6].search.name).to eq("/dev/vda5")
+      expect(partitions[7].search.name).to eq("/dev/vda6")
+      expect(partitions[8].search.name).to eq("/dev/vda7")
     end
 
     context "if a partition spicifies 'resizeIfNeeded'" do
@@ -1034,7 +1046,10 @@ describe Agama::Storage::ConfigConversions::FromModel do
             {
               name:       "/dev/vda",
               partitions: [
-                { name: "/dev/vda1" },
+                {
+                  name:      "/dev/vda1",
+                  mountPath: "/test"
+                },
                 {}
               ]
             }
