@@ -37,12 +37,13 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
-import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
+import { RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
+import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
+import { useHostname } from "~/queries/system";
 import { isEmpty, mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { RegistrationInfo } from "~/types/software";
 
 const FORM_ID = "productRegistration";
 const KEY_LABEL = _("Registration code");
@@ -152,13 +153,10 @@ const RegistrationFormSection = () => {
   );
 };
 
-// FIXME: Replace with real hook
-const useHostname = () => "agama";
-
 const HostnameAlert = () => {
-  console.log("FIXME: replace with real hook");
+  const { transient: transientHostname, static: staticHostname } = useHostname();
+  const hostname = isEmpty(staticHostname) ? transientHostname : staticHostname;
 
-  const hostname = useHostname();
   // TRANSLATORS: %s will be replaced with the hostname value
   const title = sprintf(_('The product will be registered with "%s" hostname'), hostname);
 

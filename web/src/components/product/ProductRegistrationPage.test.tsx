@@ -40,6 +40,7 @@ const sle: Product = {
 };
 
 let selectedProduct: Product;
+let staticHostnameMock: string;
 let registrationInfoMock: RegistrationInfo;
 const registerMutationMock = jest.fn();
 
@@ -57,6 +58,11 @@ jest.mock("~/queries/software", () => ({
       selectedProduct,
     };
   },
+}));
+
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useHostname: () => ({ transient: "testing-node", static: staticHostnameMock }),
 }));
 
 describe("ProductRegistrationPage", () => {
@@ -78,16 +84,28 @@ describe("ProductRegistrationPage", () => {
       registrationInfoMock = { key: "", email: "" };
     });
 
-    it("renders a custom alert about hostname", () => {
-      installerRender(<ProductRegistrationPage />);
+    describe("and the static hostname is not set", () => {
+      it("renders a custom alert using the transient hostname", () => {
+        installerRender(<ProductRegistrationPage />);
 
-      screen.getByText("Custom alert:");
-      screen.getByText(/Product will be registered with .* hostname/);
-      screen.getByRole("link", { name: "hostname" });
+        screen.getByText("Custom alert:");
+        screen.getByText('The product will be registered with "testing-node" hostname');
+        screen.getByRole("link", { name: "hostname" });
+      });
+    });
 
-      throw new Error(
-        "Please update the test once the real hook for retrieving hostname is implemented and used",
-      );
+    describe("and the static hostname is set", () => {
+      beforeEach(() => {
+        staticHostnameMock = "testing-server";
+      });
+
+      it("renders a custom alert using the static hostname", () => {
+        installerRender(<ProductRegistrationPage />);
+
+        screen.getByText("Custom alert:");
+        screen.getByText('The product will be registered with "testing-server" hostname');
+        screen.getByRole("link", { name: "hostname" });
+      });
     });
 
     it("allows registering the product with email address", async () => {
