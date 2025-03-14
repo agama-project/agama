@@ -42,6 +42,8 @@ const sle: Product = {
 let selectedProduct: Product;
 let registrationInfoMock: RegistrationInfo;
 
+const mockHostnameMutation = jest.fn().mockResolvedValue(true);
+
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
@@ -57,38 +59,63 @@ jest.mock("~/queries/software", () => ({
   },
 }));
 
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useHostname: () => ({ transient: "testing-node", static: "" }),
+  useHostnameMutation: () => ({ mutateAsync: mockHostnameMutation }),
+}));
+
 describe("HostnamePage", () => {
   beforeEach(() => {
     selectedProduct = tw;
   });
 
-  it("allows setting the hostname", () => {
-    installerRender(<HostnamePage />);
-    screen.getByRole("textbox", { name: "Hostname" });
+  it("allows setting the hostname", async () => {
+    const { user } = installerRender(<HostnamePage />);
+    const hostnameInput = screen.getByRole("textbox", { name: "Hostname" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-    throw new Error(
-      "Please complete the test once the reals hook for retrieving and mutation current data is implemented and used",
-    );
+    expect(hostnameInput).toHaveValue("testing-node");
 
-    // expect(hostnameMutationMock).not.toHaveBeenCalledWith({
-    //   hostname: hostname
-    // });
+    await user.clear(hostnameInput);
+    await user.type(hostnameInput, "testing-server");
+    await user.click(acceptButton);
+
+    expect(mockHostnameMutation).toHaveBeenCalledWith({
+      static: "testing-server",
+    });
+
+    screen.getByText("Success alert:");
+    screen.getByText("Hostname successfully updated.");
   });
 
-  it("renders error when hostname missing", async () => {
+  it("renders an error if update request fails", async () => {
+    mockHostnameMutation.mockRejectedValue("Not valid");
     const { user } = installerRender(<HostnamePage />);
-    screen.getByRole("textbox", { name: "Hostname" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
+
     await user.click(acceptButton);
+
+    expect(mockHostnameMutation).toHaveBeenCalledWith({
+      static: "testing-node",
+    });
+
+    screen.getByText("Warning alert:");
+    screen.getByText(/Something went wrong/);
+  });
+
+  it("renders an error when hostname missing", async () => {
+    const { user } = installerRender(<HostnamePage />);
+    const hostnameInput = screen.getByRole("textbox", { name: "Hostname" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+
+    await user.clear(hostnameInput);
+    await user.click(acceptButton);
+
+    expect(mockHostnameMutation).not.toHaveBeenCalled();
 
     screen.getByText("Warning alert:");
     screen.getByText("Please provide a hostname");
-
-    throw new Error(
-      "Please complete the test once the reals hook for mutation current data is implemented and used",
-    );
-
-    // expect(hostnameMutationMock).not.toHaveBeenCalled();
   });
 
   describe("when selected product is not registrable", () => {

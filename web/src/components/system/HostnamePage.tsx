@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useState, SyntheticEvent } from "react";
 import {
   ActionGroup,
   Alert,
@@ -34,16 +34,24 @@ import {
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { useProduct, useRegistration } from "~/queries/software";
+import { useHostname, useHostnameMutation } from "~/queries/system";
 import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 
 export default function HostnamePage() {
-  const { selectedProduct: product } = useProduct();
   const registration = useRegistration();
+  const { selectedProduct: product } = useProduct();
+  const { transient: transientHostname, static: staticHostname } = useHostname();
+  const { mutateAsync: updateHostname } = useHostnameMutation();
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [hostname, setHostname] = useState<string>("");
+  const [hostname, setHostname] = useState<string>(
+    isEmpty(staticHostname) ? transientHostname : staticHostname,
+  );
 
-  const submit = async (e: React.SyntheticEvent) => {
+  const onHostnameChange = (_: SyntheticEvent, v: string) => setHostname(v);
+
+  const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -52,9 +60,11 @@ export default function HostnamePage() {
       return;
     }
 
-    const data = { hostname };
-
-    console.log("TODO: perform the hostname update request with", data);
+    updateHostname({ static: hostname })
+      .then(() => setSuccess("Hostname successfully updated."))
+      .catch(() =>
+        setError("Something went wrong while updating the hostname. Please, try again."),
+      );
   };
 
   return (
@@ -70,10 +80,11 @@ export default function HostnamePage() {
           </Alert>
         )}
         <Form id="hostnameForm" onSubmit={submit}>
+          {success && <Alert variant="success" isInline title={success} />}
           {error && <Alert variant="warning" isInline title={error} />}
 
           <FormGroup fieldId="hostname" label={_("Hostname")}>
-            <TextInput id="hostname" value={hostname} onChange={(_, v) => setHostname(v)} />
+            <TextInput id="hostname" value={hostname} onChange={onHostnameChange} />
             <HelperText>
               <HelperTextItem>{_("FIXME: a short help about hostname field")}</HelperTextItem>
             </HelperText>
