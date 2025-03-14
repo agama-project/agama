@@ -655,6 +655,12 @@ type FilesystemLabelProps = {
   onChange: (v: string) => void;
 };
 
+// FIXME: This input silently restricts user input. Add a helpful message (e.g.,
+// "only letters and numbers allowed, no special characters or accents") to
+// guide users and explain why characters like "ñ" are not accepted.
+// FIXME: The wrapper component may not be necessary just to create the isValid
+// function. Consider refactoring the validation logic into a reusable utility
+// for other similar inputs.
 function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.ReactNode {
   const isValid = (v: string) => /^[\w-_.]*$/.test(v);
 
