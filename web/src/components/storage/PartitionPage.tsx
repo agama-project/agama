@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ActionGroup,
@@ -231,7 +231,7 @@ function useInitialPartitionConfig(): configModel.Partition | null {
 function useInitialFormValue(): FormValue | null {
   const partitionConfig = useInitialPartitionConfig();
 
-  const value = React.useMemo(
+  const value = useMemo(
     () => (partitionConfig ? toFormValue(partitionConfig) : null),
     [partitionConfig],
   );
@@ -262,7 +262,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
   const volume = useVolume(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
 
-  const usableFilesystems = React.useMemo(() => {
+  const usableFilesystems = useMemo(() => {
     const volumeFilesystems = (): string[] => {
       const allValues = volume.outline.fsTypes;
 
@@ -436,7 +436,7 @@ function useSolvedSizes(value: FormValue): SizeRange {
 
   const solvedPartitionConfig = useSolvedPartitionConfig(valueWithoutSizes);
 
-  const solvedSizes = React.useMemo(() => {
+  const solvedSizes = useMemo(() => {
     const min = solvedPartitionConfig?.size?.min;
     const max = solvedPartitionConfig?.size?.max;
 
@@ -455,7 +455,7 @@ function useAutoRefreshFilesystem(handler, value: FormValue) {
   const usableFilesystems = useUsableFilesystems(mountPoint);
   const partitionFilesystem = usePartitionFilesystem(target);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Reset filesystem if there is no mount point yet.
     if (mountPoint === NO_VALUE) handler(NO_VALUE);
     // Select default filesystem for the mount point.
@@ -476,7 +476,7 @@ function useAutoRefreshSize(handler, value: FormValue) {
   const target = value.target;
   const solvedSizes = useSolvedSizes(value);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const sizeOption = target === NEW_PARTITION ? "auto" : "";
     handler(sizeOption, solvedSizes.min, solvedSizes.max);
   }, [handler, target, solvedSizes]);
@@ -1055,7 +1055,7 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
     return "range";
   };
 
-  const [option, setOption] = React.useState<CustomSizeValue>(initialOption());
+  const [option, setOption] = useState<CustomSizeValue>(initialOption());
   const { max: solvedMaxSize } = useSolvedSizes(value);
   const { getVisibleError } = useErrors(value);
 
@@ -1146,18 +1146,18 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
 export default function PartitionPage() {
   const navigate = useNavigate();
   const headingId = useId();
-  const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
-  const [target, setTarget] = React.useState(NEW_PARTITION);
-  const [filesystem, setFilesystem] = React.useState(NO_VALUE);
-  const [filesystemLabel, setFilesystemLabel] = React.useState(NO_VALUE);
+  const [mountPoint, setMountPoint] = useState(NO_VALUE);
+  const [target, setTarget] = useState(NEW_PARTITION);
+  const [filesystem, setFilesystem] = useState(NO_VALUE);
+  const [filesystemLabel, setFilesystemLabel] = useState(NO_VALUE);
   const [settingFilesystemLabel, setSettingFilesystemLabel] = useState(false);
-  const [sizeOption, setSizeOption] = React.useState<SizeOptionValue>(NO_VALUE);
-  const [minSize, setMinSize] = React.useState(NO_VALUE);
-  const [maxSize, setMaxSize] = React.useState(NO_VALUE);
+  const [sizeOption, setSizeOption] = useState<SizeOptionValue>(NO_VALUE);
+  const [minSize, setMinSize] = useState(NO_VALUE);
+  const [maxSize, setMaxSize] = useState(NO_VALUE);
   // Filesystem and size selectors should not be auto refreshed before the user interacts with other
   // selectors like the mount point or the target selectors.
-  const [autoRefreshFilesystem, setAutoRefreshFilesystem] = React.useState(false);
-  const [autoRefreshSize, setAutoRefreshSize] = React.useState(false);
+  const [autoRefreshFilesystem, setAutoRefreshFilesystem] = useState(false);
+  const [autoRefreshSize, setAutoRefreshSize] = useState(false);
 
   const initialValue = useInitialFormValue();
   const value: FormValue = { mountPoint, target, filesystem, sizeOption, minSize, maxSize };
@@ -1171,7 +1171,7 @@ export default function PartitionPage() {
   const toggleSettingFilesystemLabel = () => setSettingFilesystemLabel(!settingFilesystemLabel);
 
   // Initializes the form values if there is an initial value (i.e., when editing a partition).
-  React.useEffect(() => {
+  useEffect(() => {
     if (initialValue) {
       setMountPoint(initialValue.mountPoint);
       setTarget(initialValue.target);
@@ -1193,14 +1193,14 @@ export default function PartitionPage() {
     setMaxSize,
   ]);
 
-  const refreshFilesystemHandler = React.useCallback(
+  const refreshFilesystemHandler = useCallback(
     (filesystem: string) => autoRefreshFilesystem && setFilesystem(filesystem),
     [autoRefreshFilesystem, setFilesystem],
   );
 
   useAutoRefreshFilesystem(refreshFilesystemHandler, value);
 
-  const refreshSizeHandler = React.useCallback(
+  const refreshSizeHandler = useCallback(
     (sizeOption: SizeOptionValue, minSize: string, maxSize: string) => {
       if (autoRefreshSize) {
         setSizeOption(sizeOption);
