@@ -32,13 +32,6 @@ require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
 
-shared_examples "without alias" do |config_proc|
-  it "does not set #alias" do
-    config = config_proc.call(subject.convert)
-    expect(config.alias).to be_nil
-  end
-end
-
 shared_examples "without filesystem" do |config_proc|
   it "does not set #filesystem" do
     config = config_proc.call(subject.convert)
@@ -142,15 +135,6 @@ shared_examples "with name" do |config_proc|
     expect(config.search.name).to eq("/dev/vda")
     expect(config.search.max).to be_nil
     expect(config.search.if_not_found).to eq(:error)
-  end
-end
-
-shared_examples "with alias" do |config_proc|
-  let(:device_alias) { "test" }
-
-  it "sets #alias to the expected value" do
-    config = config_proc.call(subject.convert)
-    expect(config.alias).to eq("test")
   end
 end
 
@@ -471,11 +455,6 @@ shared_examples "with partitions" do |config_proc|
     end
   end
 
-  context "if a partition does not spicify 'alias'" do
-    let(:partition) { {} }
-    include_examples "without alias", partition_proc
-  end
-
   context "if a partition does not spicify 'id'" do
     let(:partition) { {} }
 
@@ -506,13 +485,10 @@ shared_examples "with partitions" do |config_proc|
   end
 
   context "if a partition specifies 'name'" do
-    let(:partition) { { name: name } }
+    # Add mount path in order to use the partition. Otherwise the partition is omitted because it
+    # is considered a keep action.
+    let(:partition) { { name: name, mountPath: "/test2" } }
     include_examples "with name", partition_proc
-  end
-
-  context "if a partition specifies 'alias'" do
-    let(:partition) { { alias: device_alias } }
-    include_examples "with alias", partition_proc
   end
 
   context "if a partition spicifies 'id'" do
@@ -605,49 +581,55 @@ end
 shared_examples "with spacePolicy and partitions" do |config_proc|
   let(:partitions) do
     [
-      # Partition exists and it is used.
+      # Reused partition with some usage.
       {
         name:      "/dev/vda1",
         mountPath: "/test1",
         size:      { default: true, min: 10.GiB.to_i }
       },
-      # Partition exists and it is used.
+      # Reused partition with some usage.
       {
         name:           "/dev/vda2",
         mountPath:      "/test2",
         resizeIfNeeded: true,
         size:           { default: false, min: 10.GiB.to_i }
       },
-      # Partition exists and it is used.
+      # Reused partition with some usage.
       {
         name:      "/dev/vda3",
         mountPath: "/test3",
         resize:    true,
         size:      { default: false, min: 10.GiB.to_i, max: 10.GiB.to_i }
       },
-      # Partition exists and it is not used (space action).
+      # Reused partition representing a space action (resize).
       {
         name:           "/dev/vda4",
         resizeIfNeeded: true,
         size:           { default: false, min: 10.GiB.to_i }
       },
-      # Partition exists and it is not used (space action).
+      # Reused partition representing a space action (resize).
       {
         name:   "/dev/vda5",
         resize: true,
         size:   { default: false, min: 10.GiB.to_i, max: 10.GiB.to_i }
       },
-      # Partition exists and it is not used (space action).
+      # Reused partition representing a space action (delete).
       {
         name:   "/dev/vda6",
         delete: true
       },
-      # Partition exists and it is not used (space action).
+      # Reused partition representing a space action (delete).
       {
         name:           "/dev/vda7",
         deleteIfNeeded: true
       },
-      # Partition does not exist.
+      # Reused partition representing a space action (keep).
+      {
+        name: "/dev/vda8"
+      },
+      # New partition.
+      {},
+      # New partition.
       {
         mountPath:      "/",
         resizeIfNeeded: true,
@@ -663,11 +645,12 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     it "sets #partitions to the expected value" do
       config = config_proc.call(subject.convert)
       partitions = config.partitions
-      expect(partitions.size).to eq(4)
+      expect(partitions.size).to eq(5)
       expect(partitions[0].search.name).to eq("/dev/vda1")
       expect(partitions[1].search.name).to eq("/dev/vda2")
       expect(partitions[2].search.name).to eq("/dev/vda3")
-      expect(partitions[3].filesystem.path).to eq("/")
+      expect(partitions[3].filesystem).to be_nil
+      expect(partitions[4].filesystem.path).to eq("/")
     end
   end
 
@@ -677,14 +660,15 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     it "sets #partitions to the expected value" do
       config = config_proc.call(subject.convert)
       partitions = config.partitions
-      expect(partitions.size).to eq(5)
+      expect(partitions.size).to eq(6)
       expect(partitions[0].search.name).to eq("/dev/vda1")
       expect(partitions[1].search.name).to eq("/dev/vda2")
       expect(partitions[2].search.name).to eq("/dev/vda3")
-      expect(partitions[3].filesystem.path).to eq("/")
-      expect(partitions[4].search.name).to be_nil
-      expect(partitions[4].search.max).to be_nil
-      expect(partitions[4].delete).to eq(true)
+      expect(partitions[3].filesystem).to be_nil
+      expect(partitions[4].filesystem.path).to eq("/")
+      expect(partitions[5].search.name).to be_nil
+      expect(partitions[5].search.max).to be_nil
+      expect(partitions[5].delete).to eq(true)
     end
   end
 
@@ -694,16 +678,17 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     it "sets #partitions to the expected value" do
       config = config_proc.call(subject.convert)
       partitions = config.partitions
-      expect(partitions.size).to eq(5)
+      expect(partitions.size).to eq(6)
       expect(partitions[0].search.name).to eq("/dev/vda1")
       expect(partitions[1].search.name).to eq("/dev/vda2")
       expect(partitions[2].search.name).to eq("/dev/vda3")
-      expect(partitions[3].filesystem.path).to eq("/")
-      expect(partitions[4].search.name).to be_nil
-      expect(partitions[4].search.max).to be_nil
-      expect(partitions[4].size.default?).to eq(false)
-      expect(partitions[4].size.min).to eq(Y2Storage::DiskSize.zero)
-      expect(partitions[4].size.max).to be_nil
+      expect(partitions[3].filesystem).to be_nil
+      expect(partitions[4].filesystem.path).to eq("/")
+      expect(partitions[5].search.name).to be_nil
+      expect(partitions[5].search.max).to be_nil
+      expect(partitions[5].size.default?).to eq(false)
+      expect(partitions[5].size.min).to eq(Y2Storage::DiskSize.zero)
+      expect(partitions[5].size.max).to be_nil
     end
   end
 
@@ -713,15 +698,16 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
     it "sets #partitions to the expected value" do
       config = config_proc.call(subject.convert)
       partitions = config.partitions
-      expect(partitions.size).to eq(8)
+      expect(partitions.size).to eq(9)
       expect(partitions[0].search.name).to eq("/dev/vda1")
       expect(partitions[1].search.name).to eq("/dev/vda2")
       expect(partitions[2].search.name).to eq("/dev/vda3")
-      expect(partitions[3].search.name).to eq("/dev/vda4")
-      expect(partitions[4].search.name).to eq("/dev/vda5")
-      expect(partitions[5].search.name).to eq("/dev/vda6")
-      expect(partitions[6].search.name).to eq("/dev/vda7")
-      expect(partitions[7].filesystem.path).to eq("/")
+      expect(partitions[3].filesystem).to be_nil
+      expect(partitions[4].filesystem.path).to eq("/")
+      expect(partitions[5].search.name).to eq("/dev/vda4")
+      expect(partitions[6].search.name).to eq("/dev/vda5")
+      expect(partitions[7].search.name).to eq("/dev/vda6")
+      expect(partitions[8].search.name).to eq("/dev/vda7")
     end
 
     context "if a partition spicifies 'resizeIfNeeded'" do
@@ -917,6 +903,11 @@ describe Agama::Storage::ConfigConversions::FromModel do
         config = subject.convert
         expect(config.drives).to be_empty
       end
+
+      it "sets #volume_groups to the expected value" do
+        config = subject.convert
+        expect(config.volume_groups).to be_empty
+      end
     end
 
     context "with a JSON specifying 'boot'" do
@@ -971,59 +962,36 @@ describe Agama::Storage::ConfigConversions::FromModel do
           context "and the boot device specifies a 'name'" do
             let(:name) { "/dev/vda" }
 
-            context "and there is a drive model for the given boot device name" do
+            context "and there is a drive config for the given boot device name" do
               let(:drives) do
                 [
-                  { name: "/dev/vda", alias: device_alias }
+                  { name: "/dev/vda" }
                 ]
               end
 
-              context "and the drive model specifies an alias" do
-                let(:device_alias) { "boot" }
-
-                it "does not add more drives" do
-                  config = subject.convert
-                  expect(config.drives.size).to eq(1)
-
-                  drive = config.drives.first
-                  expect(drive.alias).to eq("boot")
-                end
-
-                it "sets #boot to the expected value" do
-                  config = subject.convert
-                  boot = config.boot
-                  expect(boot.configure?).to eq(true)
-                  expect(boot.device.default?).to eq(false)
-                  expect(boot.device.device_alias).to eq("boot")
-                end
+              it "does not add more drives" do
+                config = subject.convert
+                expect(config.drives.size).to eq(1)
+                expect(config.drives.first.search.name).to eq("/dev/vda")
               end
 
-              context "and the drive model does not specify an alias" do
-                let(:device_alias) { nil }
+              it "sets an alias to the drive config" do
+                config = subject.convert
+                drive = config.drives.first
+                expect(drive.alias).to_not be_nil
+              end
 
-                it "does not add more drives" do
-                  config = subject.convert
-                  expect(config.drives.size).to eq(1)
-                end
-
-                it "sets an alias to the boot drive config" do
-                  config = subject.convert
-                  drive = config.drives.first
-                  expect(drive.alias).to_not be_nil
-                end
-
-                it "sets #boot to the expected value" do
-                  config = subject.convert
-                  boot = config.boot
-                  drive = config.drives.first
-                  expect(boot.configure?).to eq(true)
-                  expect(boot.device.default?).to eq(false)
-                  expect(boot.device.device_alias).to eq(drive.alias)
-                end
+              it "sets #boot to the expected value" do
+                config = subject.convert
+                boot = config.boot
+                drive = config.drives.first
+                expect(boot.configure?).to eq(true)
+                expect(boot.device.default?).to eq(false)
+                expect(boot.device.device_alias).to eq(drive.alias)
               end
             end
 
-            context "and there is no drive model for the given boot device name" do
+            context "and there is not a drive config for the given boot device name" do
               let(:drives) do
                 [
                   { name: "/dev/vdb" }
@@ -1070,17 +1038,26 @@ describe Agama::Storage::ConfigConversions::FromModel do
     context "with a JSON specifying 'encryption'" do
       let(:model_json) do
         {
-          encryption: {
+          encryption:   {
             method:   "luks1",
             password: "12345"
           },
-          drives:     [
+          drives:       [
             {
               name:       "/dev/vda",
               partitions: [
-                { name: "/dev/vda1" },
+                {
+                  name:      "/dev/vda1",
+                  mountPath: "/test"
+                },
                 {}
               ]
+            }
+          ],
+          volumeGroups: [
+            {
+              vgName:        "system",
+              targetDevices: ["/dev/vda"]
             }
           ]
         }
@@ -1095,6 +1072,15 @@ describe Agama::Storage::ConfigConversions::FromModel do
         expect(new_partition.encryption.method.id).to eq(:luks1)
         expect(new_partition.encryption.password).to eq("12345")
         expect(reused_partition.encryption).to be_nil
+      end
+
+      it "sets #encryption for the automatically created physical volumes" do
+        config = subject.convert
+        volume_group = config.volume_groups.first
+        target_encryption = volume_group.physical_volumes_encryption
+
+        expect(target_encryption.method.id).to eq(:luks1)
+        expect(target_encryption.password).to eq("12345")
       end
     end
 
@@ -1150,11 +1136,6 @@ describe Agama::Storage::ConfigConversions::FromModel do
         end
       end
 
-      context "if a drive does not spicify 'alias'" do
-        let(:drive) { {} }
-        include_examples "without alias", drive_proc
-      end
-
       context "if a drive does not spicify neither 'mountPath' nor 'filesystem'" do
         let(:drive) { {} }
         include_examples "without filesystem", drive_proc
@@ -1173,11 +1154,6 @@ describe Agama::Storage::ConfigConversions::FromModel do
       context "if a drive specifies 'name'" do
         let(:drive) { { name: name } }
         include_examples "with name", drive_proc
-      end
-
-      context "if a drive specifies 'alias'" do
-        let(:drive) { { alias: device_alias } }
-        include_examples "with alias", drive_proc
       end
 
       context "if a drive specifies 'mountPath'" do
@@ -1213,6 +1189,264 @@ describe Agama::Storage::ConfigConversions::FromModel do
       context "if a drive specifies both 'spacePolicy' and 'partitions'" do
         let(:drive) { { spacePolicy: spacePolicy, partitions: partitions } }
         include_examples "with spacePolicy and partitions", drive_proc
+      end
+    end
+
+    context "with a JSON specifying 'volumeGroups'" do
+      let(:model_json) do
+        {
+          drives:       drives,
+          volumeGroups: volume_groups
+        }
+      end
+
+      let(:drives) { [] }
+
+      let(:volume_groups) do
+        [
+          volume_group,
+          { vgName: "vg2" }
+        ]
+      end
+
+      let(:volume_group) do
+        { vgName: "vg1" }
+      end
+
+      context "with an empty list" do
+        let(:volume_groups) { [] }
+
+        it "sets #volume_groups to the expected value" do
+          config = subject.convert
+          expect(config.volume_groups).to eq([])
+        end
+      end
+
+      context "with a list of volume groups" do
+        it "sets #volume_groups to the expected value" do
+          config = subject.convert
+          expect(config.volume_groups.size).to eq(2)
+          expect(config.volume_groups).to all(be_a(Agama::Storage::Configs::VolumeGroup))
+
+          vg1, vg2 = config.volume_groups
+          expect(vg1.name).to eq("vg1")
+          expect(vg1.logical_volumes).to eq([])
+          expect(vg2.name).to eq("vg2")
+          expect(vg2.logical_volumes).to eq([])
+        end
+      end
+
+      volume_group_proc = proc { |c| c.volume_groups.first }
+
+      context "if a volume group does not specify 'vgName'" do
+        let(:volume_group) { {} }
+
+        it "does not set #name" do
+          volume_group = volume_group_proc.call(subject.convert)
+          expect(volume_group.name).to be_nil
+        end
+      end
+
+      context "if a volume group does not specify 'extentSize'" do
+        let(:volume_group) { {} }
+
+        it "does not set #extent_size" do
+          volume_group = volume_group_proc.call(subject.convert)
+          expect(volume_group.extent_size).to be_nil
+        end
+      end
+
+      context "if a volume group does not specify 'targetDevices'" do
+        let(:volume_group) { {} }
+
+        it "sets #physical_volumes_devices to the expected value" do
+          volume_group = volume_group_proc.call(subject.convert)
+          expect(volume_group.physical_volumes_devices).to eq([])
+        end
+      end
+
+      context "if a volume group does not specify 'logicalVolumes'" do
+        let(:volume_group) { {} }
+
+        it "sets #logical_volumes to the expected value" do
+          volume_group = volume_group_proc.call(subject.convert)
+          expect(volume_group.logical_volumes).to eq([])
+        end
+      end
+
+      context "if a volume group specifies 'vgName'" do
+        let(:volume_group) { { vgName: "vg1" } }
+
+        it "sets #name to the expected value" do
+          volume_group = volume_group_proc.call(subject.convert)
+          expect(volume_group.name).to eq("vg1")
+        end
+      end
+
+      context "if a volume group specifies 'extentSize'" do
+        let(:volume_group) { { extentSize: 1.KiB.to_i } }
+
+        it "sets #extent_size to the expected value" do
+          volume_group = volume_group_proc.call(subject.convert)
+          expect(volume_group.extent_size).to eq(1.KiB)
+        end
+      end
+
+      context "if a volume group specifies 'targetDevices'" do
+        let(:volume_group) { { targetDevices: ["/dev/vda", "/dev/vdc"] } }
+
+        let(:drives) do
+          [
+            { name: "/dev/vda" },
+            { name: "/dev/vdb" }
+          ]
+        end
+
+        it "adds the missing drives" do
+          config = subject.convert
+          expect(config.drives.size).to eq(3)
+          expect(config.drives).to all(be_a(Agama::Storage::Configs::Drive))
+          expect(config.drives).to include(an_object_having_attributes({ device_name: "/dev/vdc" }))
+        end
+
+        it "sets an alias to the target drives" do
+          config = subject.convert
+          vda = config.drives.find { |d| d.device_name == "/dev/vda" }
+          vdb = config.drives.find { |d| d.device_name == "/dev/vdb" }
+          vdc = config.drives.find { |d| d.device_name == "/dev/vdc" }
+          expect(vda.alias).to_not be_nil
+          expect(vdb.alias).to be_nil
+          expect(vda.alias).to_not be_nil
+        end
+
+        it "sets #physical_volumes_devices to the expected value" do
+          config = subject.convert
+          volume_group = volume_group_proc.call(config)
+          vda = config.drives.find { |d| d.device_name == "/dev/vda" }
+          vdc = config.drives.find { |d| d.device_name == "/dev/vdc" }
+          expect(volume_group.physical_volumes_devices).to eq([vda.alias, vdc.alias])
+        end
+      end
+
+      context "if a volume group specifies 'logicalVolumes'" do
+        let(:volume_group) { { logicalVolumes: logical_volumes } }
+
+        let(:logical_volumes) do
+          [
+            logical_volume,
+            { lvName: "lv2" }
+          ]
+        end
+
+        let(:logical_volume) { { lvName: "lv1" } }
+
+        context "with an empty list" do
+          let(:logical_volumes) { [] }
+
+          it "sets #logical_volumes to empty" do
+            config = subject.convert
+            expect(config.logical_volumes).to eq([])
+          end
+        end
+
+        context "with a list of logical volumes" do
+          it "sets #logical_volumes to the expected value" do
+            volume_group = volume_group_proc.call(subject.convert)
+            expect(volume_group.logical_volumes)
+              .to all(be_a(Agama::Storage::Configs::LogicalVolume))
+            expect(volume_group.logical_volumes.size).to eq(2)
+
+            lv1, lv2 = volume_group.logical_volumes
+            expect(lv1.name).to eq("lv1")
+            expect(lv2.name).to eq("lv2")
+          end
+        end
+
+        logical_volume_proc = proc { |c| volume_group_proc.call(c).logical_volumes.first }
+
+        context "if a logical volume does not specify 'lvName'" do
+          let(:logical_volume) { {} }
+
+          it "does not set #name" do
+            logical_volume = logical_volume_proc.call(subject.convert)
+            expect(logical_volume.name).to be_nil
+          end
+        end
+
+        context "if a logical volume does not spicify neither 'mountPath' nor 'filesystem'" do
+          let(:logical_volume) { {} }
+          include_examples "without filesystem", logical_volume_proc
+        end
+
+        context "if a logical volume does not spicify 'size'" do
+          let(:logical_volume) { {} }
+          include_examples "without size", logical_volume_proc
+        end
+
+        context "if a logical volume does not spicify 'stripes'" do
+          let(:logical_volume) { {} }
+
+          it "does not set #stripes" do
+            logical_volume = logical_volume_proc.call(subject.convert)
+            expect(logical_volume.stripes).to be_nil
+          end
+        end
+
+        context "if a logical volume does not spicify 'stripeSize'" do
+          let(:logical_volume) { {} }
+
+          it "does not set #stripe_size" do
+            logical_volume = logical_volume_proc.call(subject.convert)
+            expect(logical_volume.stripe_size).to be_nil
+          end
+        end
+
+        context "if a logical volume specifies 'lvName'" do
+          let(:logical_volume) { { lvName: "lv1" } }
+
+          it "sets #name to the expected value" do
+            logical_volume = logical_volume_proc.call(subject.convert)
+            expect(logical_volume.name).to eq("lv1")
+          end
+        end
+
+        context "if a logical volume specifies 'mountPath'" do
+          let(:logical_volume) { { mountPath: mountPath } }
+          include_examples "with mountPath", logical_volume_proc
+        end
+
+        context "if a logical volume specifies 'filesystem'" do
+          let(:logical_volume) { { filesystem: filesystem } }
+          include_examples "with filesystem", logical_volume_proc
+        end
+
+        context "if a logical volume specifies both 'mountPath' and 'filesystem'" do
+          let(:logical_volume) { { mountPath: mountPath, filesystem: filesystem } }
+          include_examples "with mountPath and filesystem", logical_volume_proc
+        end
+
+        context "if a logical volume spicifies 'size'" do
+          let(:logical_volume) { { size: size } }
+          include_examples "with size", logical_volume_proc
+        end
+
+        context "if a logical volume specifies 'stripes'" do
+          let(:logical_volume) { { stripes: 4 } }
+
+          it "sets #stripes to the expected value" do
+            logical_volume = logical_volume_proc.call(subject.convert)
+            expect(logical_volume.stripes).to eq(4)
+          end
+        end
+
+        context "if a logical volume specifies 'stripeSize'" do
+          let(:logical_volume) { { stripeSize: 2.KiB.to_i } }
+
+          it "sets #stripeSize to the expected value" do
+            logical_volume = logical_volume_proc.call(subject.convert)
+            expect(logical_volume.stripe_size).to eq(2.KiB)
+          end
+        end
       end
     end
   end

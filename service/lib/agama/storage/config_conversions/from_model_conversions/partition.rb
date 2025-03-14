@@ -63,7 +63,6 @@ module Agama
           def conversions
             {
               search:           convert_search,
-              alias:            partition_model[:alias],
               encryption:       convert_encryption,
               filesystem:       convert_filesystem,
               size:             convert_size,

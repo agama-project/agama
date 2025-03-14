@@ -25,8 +25,8 @@ import { configModelQuery } from "~/queries/storage/config-model";
 import * as apiModel from "~/api/storage/types/config-model";
 import * as model from "~/types/storage/model";
 
-function findDrive(modelData: apiModel.Config, alias: string): apiModel.Drive | undefined {
-  return modelData.drives.find((d) => d.alias === alias);
+function findDrive(modelData: apiModel.Config, name: string): apiModel.Drive | undefined {
+  return modelData.drives.find((d) => d.name === name);
 }
 
 function buildDrive(driveData: apiModel.Drive): model.Drive {
@@ -42,9 +42,9 @@ function buildVolumeGroup(
   modelData: apiModel.Config,
 ): model.VolumeGroup {
   const buildTargetDevices = (): model.Drive[] => {
-    const aliases = volumeGroupData.targetDevices || [];
-    return aliases
-      .map((a) => findDrive(modelData, a))
+    const names = volumeGroupData.targetDevices || [];
+    return names
+      .map((n) => findDrive(modelData, n))
       .filter((d) => d)
       .map(buildDrive);
   };
@@ -77,9 +77,9 @@ function useModel(): model.Model | null {
   return data ? buildModel(data) : null;
 }
 
-function useVolumeGroup(name: string): model.VolumeGroup | null {
+function useVolumeGroup(vgName: string): model.VolumeGroup | null {
   const model = useModel();
-  const volumeGroup = model?.volumeGroups?.find((v) => v.name === name);
+  const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup || null;
 }
 

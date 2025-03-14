@@ -288,7 +288,7 @@ describe Agama::Storage::ConfigChecker do
 
           issue = issues.first
           expect(issue.error?).to eq(true)
-          expect(issue.description).to match(/there is no root \(\/\) file system/)
+          expect(issue.description).to match(/The boot device cannot be automatically selected/)
         end
       end
 

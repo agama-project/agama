@@ -744,7 +744,6 @@ describe Agama::DBus::Storage::Manager do
             drives:       [
               {
                 name:        "/dev/sda",
-                alias:       "root",
                 spacePolicy: "keep",
                 partitions:  [
                   {
@@ -797,7 +796,6 @@ describe Agama::DBus::Storage::Manager do
         drives: [
           {
             name:       "/dev/sda",
-            alias:      "sda",
             partitions: [
               { mountPath: "/" }
             ]
@@ -821,7 +819,6 @@ describe Agama::DBus::Storage::Manager do
           drives:       [
             {
               name:        "/dev/sda",
-              alias:       "sda",
               spacePolicy: "keep",
               partitions:  [
                 {

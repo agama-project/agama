@@ -56,7 +56,6 @@
       "required": ["name"],
       "properties": {
         "name": { "type": "string" },
-        "alias": { "$ref": "#/$defs/alias" },
         "mountPath": { "type": "string" },
         "filesystem": { "$ref": "#/$defs/filesystem" },
         "spacePolicy": { "$ref": "#/$defs/spacePolicy" },
@@ -72,7 +71,6 @@
       "additionalProperties": false,
       "properties": {
         "name": { "type": "string" },
-        "alias": { "$ref": "#/$defs/alias" },
         "id": { "$ref": "#/$defs/partitionId" },
         "mountPath": { "type": "string" },
         "filesystem": { "$ref": "#/$defs/filesystem" },
@@ -86,13 +84,13 @@
     "volumeGroup": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name"],
+      "required": ["vgName"],
       "properties": {
-        "name": { "type": "string" },
+        "vgName": { "type": "string" },
         "extentSize": { "type": "integer" },
         "targetDevices": {
           "type": "array",
-          "items": { "$ref": "#/$defs/alias" }
+          "items": { "type": "string" }
         },
         "logicalVolumes": {
           "type": "array",
@@ -104,17 +102,13 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "name": { "type": "string" },
+        "lvName": { "type": "string" },
         "mountPath": { "type": "string" },
         "filesystem": { "$ref": "#/$defs/filesystem" },
         "size": { "$ref": "#/$defs/size" },
         "stripes": { "type": "integer" },
         "stripeSize": { "type": "integer" }
       }
-    },
-    "alias": {
-      "description": "Alias used to reference a device.",
-      "type": "string"
     },
     "spacePolicy": {
       "enum": ["delete", "resize", "keep", "custom"]

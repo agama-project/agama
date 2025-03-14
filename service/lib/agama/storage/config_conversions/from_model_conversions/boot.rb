@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,7 +29,17 @@ module Agama
       module FromModelConversions
         # Boot conversion from model according to the JSON schema.
         class Boot < Base
+          # @param model_json [Hash] Boot model.
+          # @param drives [Array<Configs::Drive>]
+          def initialize(model_json, drives)
+            super(model_json)
+            @drives = drives
+          end
+
         private
+
+          # @return [Array<Configs::Drive>]
+          attr_reader :drives
 
           # @see Base
           # @return [Configs::Boot]
@@ -51,7 +61,7 @@ module Agama
             boot_device_model = model_json[:device]
             return if boot_device_model.nil?
 
-            FromModelConversions::BootDevice.new(boot_device_model).convert
+            FromModelConversions::BootDevice.new(boot_device_model, drives).convert
           end
         end
       end

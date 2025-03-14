@@ -49,7 +49,7 @@ import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useConfigModel } from "~/queries/storage/config-model";
 
 const isUsedPartition = (partition: configModel.Partition): boolean => {
-  return partition.filesystem !== undefined || partition.alias !== undefined;
+  return partition.filesystem !== undefined;
 };
 
 // FIXME: there is too much logic here. This is one of those cases that should be considered

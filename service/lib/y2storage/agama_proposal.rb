@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -179,7 +179,7 @@ module Y2Storage
       checker = BootRequirementsChecker.new(
         devicegraph,
         planned_devices: planned_devices.mountable_devices,
-        boot_disk_name:  config.boot_device
+        boot_disk_name:  boot_device_name
       )
       # NOTE: Should we try with :desired first?
       checker.needed_partitions(:min)
@@ -210,7 +210,7 @@ module Y2Storage
     #
     # @return [Array<String>] names of partitionable devices
     def disks_for_clean
-      (drives_names + [config.boot_device]).compact.uniq
+      (drives_names + [boot_device_name]).compact.uniq
     end
 
     # Creates the planned devices on a given devicegraph
@@ -219,6 +219,13 @@ module Y2Storage
     def create_devices(devicegraph)
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
       result = devices_creator.populated_devicegraph(planned_devices, drives_names, space_maker)
+    end
+
+    # Name of the boot device.
+    #
+    # @return [String, nil]
+    def boot_device_name
+      config.boot_device&.found_device&.name
     end
 
     # Names of all the devices that correspond to a drive from the config

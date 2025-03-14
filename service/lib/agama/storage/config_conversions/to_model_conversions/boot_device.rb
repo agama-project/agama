@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -39,7 +39,7 @@ module Agama
           def conversions
             {
               default: config.boot.device.default?,
-              name:    config.boot_device
+              name:    config.boot_device&.device_name
             }
           end
         end

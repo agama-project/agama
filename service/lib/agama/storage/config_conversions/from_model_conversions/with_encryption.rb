@@ -29,7 +29,7 @@ module Agama
         module WithEncryption
           # @return [Configs::Encryption, nil]
           def convert_encryption
-            # Do not encrypt reused partitions.
+            # Do not encrypt a reused device.
             return if model_json[:name]
 
             return if encryption_model.nil?

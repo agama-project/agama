@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -40,6 +40,21 @@ module Agama
         # @return [Y2Storage::Device, nil]
         def found_device
           search&.device
+        end
+
+        # Name of the device.
+        #
+        # If the config is not solved, then it returns the searched name (if any).
+        # If the config is solved, then it returns either the name of the found device or the
+        # searched name. But the searched name is returned only if the device is not going to be
+        # created.
+        #
+        # @return [String, nil]
+        def device_name
+          device = found_device
+          return device.name if device
+
+          search&.name unless search&.create_device?
         end
       end
     end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import { _, n_, formatList } from "~/i18n";
 import { configModel } from "~/api/storage/types";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
@@ -31,8 +29,6 @@ import { sprintf } from "sprintf-js";
  * String to identify the drive.
  */
 const label = (drive: configModel.Drive): string => {
-  if (drive.alias) return drive.alias;
-
   return baseName(drive.name);
 };
 

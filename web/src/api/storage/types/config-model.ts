@@ -5,10 +5,6 @@
  */
 
 export type EncryptionMethod = "luks1" | "luks2" | "tpmFde";
-/**
- * Alias used to reference a device.
- */
-export type Alias = string;
 export type FilesystemType =
   | "bcachefs"
   | "btrfs"
@@ -53,7 +49,6 @@ export interface Encryption {
 }
 export interface Drive {
   name: string;
-  alias?: Alias;
   mountPath?: string;
   filesystem?: Filesystem;
   spacePolicy?: SpacePolicy;
@@ -69,7 +64,6 @@ export interface Filesystem {
 }
 export interface Partition {
   name?: string;
-  alias?: Alias;
   id?: PartitionId;
   mountPath?: string;
   filesystem?: Filesystem;
@@ -85,13 +79,13 @@ export interface Size {
   max?: number;
 }
 export interface VolumeGroup {
-  name: string;
+  vgName: string;
   extentSize?: number;
-  targetDevices?: Alias[];
+  targetDevices?: string[];
   logicalVolumes?: LogicalVolume[];
 }
 export interface LogicalVolume {
-  name?: string;
+  lvName?: string;
   mountPath?: string;
   filesystem?: Filesystem;
   size?: Size;
