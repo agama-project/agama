@@ -30,7 +30,7 @@ use std::sync::Arc;
 
 use agama_lib::{
     error::ServiceError,
-    files::{error::FileError, model::FileSettings, settings::FilesConfig},
+    files::{error::FileError, model::UserFile, settings::FilesConfig},
 };
 use axum::{
     extract::State,
@@ -88,7 +88,7 @@ pub async fn files_service() -> Result<Router, ServiceError> {
 )]
 async fn get_config(
     State(state): State<FilesState>,
-) -> Result<Json<Vec<FileSettings>>, FilesServiceError> {
+) -> Result<Json<Vec<UserFile>>, FilesServiceError> {
     // StorageSettings is just a wrapper over serde_json::value::RawValue
     let settings = state.files.read().await;
     Ok(Json(settings.files.to_vec()))
@@ -109,7 +109,7 @@ async fn get_config(
 )]
 async fn set_config(
     State(state): State<FilesState>,
-    Json(settings): Json<Vec<FileSettings>>,
+    Json(settings): Json<Vec<UserFile>>,
 ) -> Result<Json<()>, FilesServiceError> {
     let mut files = state.files.write().await;
     files.files = settings;

@@ -20,11 +20,11 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::model::FileSettings;
+use super::model::UserFile;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FilesConfig {
     /// list of target files to deploy
-    pub files: Vec<FileSettings>,
+    pub files: Vec<UserFile>,
 }

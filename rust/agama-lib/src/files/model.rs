@@ -43,23 +43,23 @@ pub enum FileSource {
 /// Represents individual settings for single file deployment
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct FileSettings {
+pub struct UserFile {
     #[serde(flatten)]
     pub source: FileSource,
     /// Permissions for file
-    #[serde(default = "FileSettings::default_permissions")]
+    #[serde(default = "UserFile::default_permissions")]
     pub permissions: String, // TODO: better type?
     /// User owning the file
-    #[serde(default = "FileSettings::default_user")]
+    #[serde(default = "UserFile::default_user")]
     pub user: String,
     /// Group owning the file
-    #[serde(default = "FileSettings::default_group")]
+    #[serde(default = "UserFile::default_group")]
     pub group: String,
     /// destination for file like "/etc/config.d/my.conf"
     pub destination: String,
 }
 
-impl FileSettings {
+impl UserFile {
     fn default_permissions() -> String {
         "0644".to_string()
     }
@@ -73,7 +73,7 @@ impl FileSettings {
     }
 }
 
-impl Default for FileSettings {
+impl Default for UserFile {
     fn default() -> Self {
         Self {
             source: FileSource::Text {
@@ -87,7 +87,7 @@ impl Default for FileSettings {
     }
 }
 
-impl FileSettings {
+impl UserFile {
     pub async fn write(&self) -> Result<(), FileError> {
         let int_mode = u32::from_str_radix(&self.permissions, 8)?;
         let path_s = "/mnt".to_string() + &self.destination;
@@ -113,12 +113,8 @@ impl FileSettings {
         ]);
         let output = cmd.output()?;
         if !output.status.success() {
-            let mut command = cmd.get_program().to_string_lossy().to_string();
-            for i in cmd.get_args() {
-                command = command + " " + i.to_string_lossy().as_ref();
-            }
             return Err(FileError::MkdirError(
-                command,
+                format!("{:?}", cmd),
                 String::from_utf8(output.stderr).unwrap(),
             ));
         }
@@ -148,12 +144,8 @@ impl FileSettings {
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
         let output2 = cmd2.output()?;
         if !output2.status.success() {
-            let mut command = cmd.get_program().to_string_lossy().to_string();
-            for i in cmd.get_args() {
-                command = command + " " + i.to_string_lossy().as_ref();
-            }
             return Err(FileError::OwnerChangeError(
-                command,
+                format!("{:?}", cmd2),
                 String::from_utf8(output2.stderr).unwrap(),
             ));
         }

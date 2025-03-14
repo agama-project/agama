@@ -23,7 +23,7 @@
 use crate::base_http_client::BaseHTTPClient;
 use crate::ServiceError;
 
-use super::model::FileSettings;
+use super::model::UserFile;
 
 pub struct FilesClient {
     client: BaseHTTPClient,
@@ -34,14 +34,17 @@ impl FilesClient {
         Self { client: base }
     }
 
-    pub async fn get_files(&self) -> Result<Vec<FileSettings>, ServiceError> {
+    /// returns list of files that will be manually deployed
+    pub async fn get_files(&self) -> Result<Vec<UserFile>, ServiceError> {
         self.client.get("/files").await
     }
 
-    pub async fn set_files(&self, config: &Vec<FileSettings>) -> Result<(), ServiceError> {
+    /// Sets the list of files that will be manually deployed
+    pub async fn set_files(&self, config: &Vec<UserFile>) -> Result<(), ServiceError> {
         self.client.put_void("/files", config).await
     }
 
+    /// writes the files to target
     pub async fn write_files(&self) -> Result<(), ServiceError> {
         self.client.post_void("/files/write", &()).await
     }
