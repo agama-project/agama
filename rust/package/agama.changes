@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 14 12:32:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow selecting individual packages through a configuration file
+  (gh#agama-project/agama#2153).
+
+-------------------------------------------------------------------
 Wed Mar 12 13:09:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Set the extension in the disposition "filename" so Chrome uses
