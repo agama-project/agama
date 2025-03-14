@@ -41,5 +41,5 @@ fi
 for script in  `find $WORKDIR -type f |sort`; do
     echo -n "Executing Agama auto-installation script: $script"
     BASENAME=`basename $script`
-    . $script > $WORKDIR/$BASENAME.log 2>&1
+    ./"$script" > "$WORKDIR/$BASENAME.log" 2>&1
 done
