@@ -14,6 +14,7 @@
   { "key": "groups", "support": "no" },
   { "key": "host", "support": "no" },
   { "key": "http-server", "support": "no" },
+  { "key": "kdump", "support": "planned" },
   {
     "key": "keyboard",
     "children": [
