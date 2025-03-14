@@ -35,6 +35,9 @@ describe Agama::Software::Repository do
     before do
       allow(Yast::Pkg).to receive(:RepositoryProbe).with(/example.net/, "/")
         .and_return(repo_type)
+
+      # do not call real sleep to make the test faster
+      allow_any_instance_of(Agama::Software::Repository).to receive(:sleep)
     end
 
     context "if the repository can be read" do
@@ -58,6 +61,41 @@ describe Agama::Software::Repository do
 
       it "returns false" do
         expect(subject.probe).to eq(false)
+      end
+
+      it "retries probing automatically" do
+        expect(Yast::Pkg).to receive(:RepositoryProbe).at_least(2).times.and_return(nil)
+        subject.probe
+      end
+    end
+  end
+
+  describe "#refresh" do
+    before do
+      allow(Yast::Pkg).to receive(:SourceRefreshNow).and_return(refresh_result)
+
+      # do not call real sleep to make the test faster
+      allow(subject).to receive(:sleep)
+    end
+
+    context "if the repository can be refreshed" do
+      let(:refresh_result) { true }
+
+      it "returns true" do
+        expect(subject.refresh).to eq(true)
+      end
+    end
+
+    context "if the repository cannot be refreshed" do
+      let(:refresh_result) { nil }
+
+      it "returns false" do
+        expect(subject.refresh).to eq(false)
+      end
+
+      it "retries refresh automatically" do
+        expect(Yast::Pkg).to receive(:SourceRefreshNow).at_least(2).times
+        subject.refresh
       end
     end
   end

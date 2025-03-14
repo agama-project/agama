@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Fri Mar 14 12:34:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the packages list from an AutoYaST profile
+  (gh#agama-project/agama#2153).
+
+-------------------------------------------------------------------
+Wed Mar 12 00:44:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Copy Agama logs to the installed system (gh#agama/agama-project#2148).
+- Set /var/log/agama-installation permissions to 0700
+  (gh#agama/agama-project#2140).
+
+-------------------------------------------------------------------
+Wed Mar  5 14:50:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically retry package download or repository refresh
+  before reporting an error (gh#agama-project/agama#2117)
+
+-------------------------------------------------------------------
 Wed Mar  5 11:33:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the correcty script type allows postPartitioning scripts to run
@@ -11,10 +30,23 @@ Wed Mar  5 09:21:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   (gh#agama-project/agama#2092).
 
 -------------------------------------------------------------------
+Wed Mar  5 08:09:28 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- introduced boot_strategy into storage section of product
+  definition yaml file. It allows to control what boot strategy
+  will be proposed by storage. Currently works only for BLS. 
+
+-------------------------------------------------------------------
 Fri Feb 28 13:03:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Temporarily disable signature checking for dir:// repositories
   (gh#agama-project/agama#2092).
+
+-------------------------------------------------------------------
+Wed Feb 26 06:52:45 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add file system label to the config model (needed for jsc#AGM-122
+  and bsc#1237165).
 
 -------------------------------------------------------------------
 Wed Feb 26 06:51:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

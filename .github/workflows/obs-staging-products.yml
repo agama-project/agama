@@ -1,13 +1,9 @@
 name: Submit agama-products
 
 on:
-  # runs on pushes targeting the default branch
   push:
-    branches:
-      - master
-      - release
     paths:
-      # run only when a Rust source is changed
+      # run only when a product source is changed
       - products.d/**
 
   # allow running manually

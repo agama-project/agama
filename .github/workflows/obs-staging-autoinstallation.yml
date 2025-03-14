@@ -3,9 +3,6 @@ name: Submit agama-auto
 on:
   # runs on pushes targeting the default branch
   push:
-    branches:
-      - master
-      - release
     paths:
       # run only when an autoinstallation source is changed
       - autoinstallation/**

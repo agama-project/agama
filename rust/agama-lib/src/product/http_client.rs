@@ -56,6 +56,7 @@ impl ProductHTTPClient {
         let config = SoftwareConfig {
             product: Some(product_id.to_owned()),
             patterns: None,
+            packages: None,
         };
         self.set_software(&config).await
     }

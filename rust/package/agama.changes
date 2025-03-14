@@ -1,7 +1,43 @@
 -------------------------------------------------------------------
+Fri Mar 14 12:32:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow selecting individual packages through a configuration file
+  (gh#agama-project/agama#2153).
+
+-------------------------------------------------------------------
+Wed Mar 12 17:12:10 UTC 2025 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Introduced the hostname model in order to start managing it
+  (gh#agama-project/agama#2118).
+
+-------------------------------------------------------------------
+Wed Mar 12 13:09:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set the extension in the disposition "filename" so Chrome uses
+  the correct name (gh#agama-project/agama#2141).
+
+-------------------------------------------------------------------
+Mon Mar 10 12:13:19 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Package and install the storage model schema
+  (gh#agama-project/agama#2135).
+
+-------------------------------------------------------------------
+Thu Mar  6 12:51:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend agama download to support most of YaST-like URLs
+  (device:, usb:, label:, cd:, dvd: and hd:) (gh#agama-project/agama#2118).
+
+-------------------------------------------------------------------
 Tue Mar  4 13:34:13 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - install and package also storage.schema.json (bsc#1238367)
+
+-------------------------------------------------------------------
+Wed Feb 26 06:52:52 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend storage model schema to support file system label (needed
+  for jsc#AGM-122 and bsc#1237165).
 
 -------------------------------------------------------------------
 Wed Feb 26 06:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

@@ -23,6 +23,7 @@ require "logger"
 require "yast"
 require "agama/question"
 require "agama/software/callbacks/base"
+require "agama/software/repository"
 
 Yast.import "Pkg"
 Yast.import "URL"
@@ -32,6 +33,12 @@ module Agama
     module Callbacks
       # Callbacks related to media handling
       class Media < Base
+        def initialize(questions_client, logger)
+          super
+          # retry counter
+          self.attempt = 0
+        end
+
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackMediaChange(
@@ -41,13 +48,25 @@ module Agama
               "boolean, list <string>, integer)"
             )
           )
+          Yast::Pkg.CallbackStartProvide(
+            Yast::FunRef.new(method(:start_provide), "void (string, integer, boolean)")
+          )
+        end
+
+        # @param name [String] name of the package to download
+        # @param size [Integer] download size
+        # @param _remote [Boolean] true if the package is downloaded from a remote repository,
+        #   false for local packages
+        def start_provide(name, size, _remote)
+          self.attempt = 1
+          logger.info("Downloading #{name}, size: #{size}")
         end
 
         # Media change callback
         #
         # @return [String]
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-        # rubocop:disable Metrics/ParameterLists
+        # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
         def media_change(error_code, error, url, product, current, current_label, wanted,
           wanted_label, double_sided, devices, current_device)
           logger.debug(
@@ -67,6 +86,18 @@ module Agama
               current_device)
           )
 
+          # "IO" = IO error (scratched DVD or HW failure)
+          # "IO_SOFT" = network timeout
+          # in other cases automatic retry usually does not make much sense
+          if ["IO", "IO_SOFT"].include?(error_code) && attempt <= Repository::RETRY_COUNT
+            self.attempt += 1
+            logger.info("Retry in #{Repository::RETRY_DELAY} seconds, attempt #{attempt}...")
+            sleep(Repository::RETRY_DELAY)
+
+            # retry
+            return ""
+          end
+
           question = Agama::Question.new(
             qclass:         "software.package_error.medium_error",
             text:           error,
@@ -75,10 +106,19 @@ module Agama
             data:           { "url" => url }
           )
           questions_client.ask(question) do |question_client|
-            (question_client.answer == retry_label.to_sym) ? "" : "S"
+            if question_client.answer == retry_label.to_sym
+              self.attempt += 1
+              ""
+            else
+              "S"
+            end
           end
         end
-        # rubocop:enable Metrics/ParameterLists
+      # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
+
+      private
+
+        attr_accessor :attempt
       end
     end
   end

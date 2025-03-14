@@ -12,6 +12,11 @@
     "id": "Tumbleweed"
   },
   "storage": {
+    "drives": [
+      {
+        "partitions": [{ "generate": "default" }]
+      }
+    ]
   },
   "user": {
     "fullName": "Jane Doe",

@@ -41,7 +41,7 @@ const TestingPopup = (props: PopupProps) => {
 
   return (
     <Popup
-      title="Testing Popup component"
+      title="Testing Popup Title"
       isOpen={isOpen}
       isLoading={isLoading}
       loadingText={loadingText}
@@ -61,7 +61,6 @@ describe("Popup", () => {
   describe("when it is not open", () => {
     beforeEach(() => {
       isOpen = false;
-      isLoading = false;
     });
 
     it("renders nothing", async () => {
@@ -72,56 +71,84 @@ describe("Popup", () => {
     });
   });
 
-  describe("when it is open and not loading", () => {
+  describe("when it is open", () => {
     beforeEach(() => {
       isOpen = true;
-      isLoading = false;
     });
 
-    it("renders the popup content inside a PF/Modal", async () => {
-      installerRender(<TestingPopup>Testing</TestingPopup>);
+    it("renders given title and titleAddon inside PF/ModalHeader", async () => {
+      installerRender(
+        <TestingPopup title="Awesome Popup" titleAddon={<button>With action at title</button>}>
+          Testing
+        </TestingPopup>,
+      );
 
       const dialog = await screen.findByRole("dialog");
-      expect(dialog.classList.contains("pf-v6-c-modal-box")).toBe(true);
-
-      within(dialog).getByText("The Popup Content");
+      const header = within(dialog).getByRole("banner");
+      within(header).getByRole("heading", { name: "Awesome Popup" });
+      within(header).getByRole("button", { name: "With action at title" });
     });
 
-    it("does not display a progress message", async () => {
-      installerRender(<TestingPopup>Testing</TestingPopup>);
+    it("does not render header when none, title nor titleAddon, are giving", async () => {
+      installerRender(
+        <TestingPopup title={undefined} titleAddon={undefined}>
+          Testing
+        </TestingPopup>,
+      );
 
-      const dialog = await screen.findByRole("dialog");
-
-      expect(within(dialog).queryByText(loadingText)).toBeNull();
+      await screen.findByRole("dialog");
+      expect(screen.queryByRole("banner")).toBeNull();
     });
 
-    it("renders the popup actions inside a PF/Modal footer", async () => {
-      installerRender(<TestingPopup>Testing</TestingPopup>);
+    describe("and not loading", () => {
+      beforeEach(() => {
+        isLoading = false;
+      });
 
-      const dialog = await screen.findByRole("dialog");
-      // NOTE: Sadly, PF Modal/ModalFooter does not have a footer or navigation role.
-      // So, using https://developer.mozilla.org/es/docs/Web/API/Document/querySelector
-      // for getting the footer. See https://github.com/testing-library/react-testing-library/issues/417 too.
-      const footer = dialog.querySelector("footer");
+      it("renders the popup content inside a PF/Modal", async () => {
+        installerRender(<TestingPopup>Testing</TestingPopup>);
 
-      within(footer).getByText("Confirm");
-      within(footer).getByText("Cancel");
+        const dialog = await screen.findByRole("dialog");
+        expect(dialog.classList.contains("pf-v6-c-modal-box")).toBe(true);
+
+        within(dialog).getByText("The Popup Content");
+      });
+
+      it("does not display a progress message", async () => {
+        installerRender(<TestingPopup>Testing</TestingPopup>);
+
+        const dialog = await screen.findByRole("dialog");
+
+        expect(within(dialog).queryByText(loadingText)).toBeNull();
+      });
+
+      it("renders the popup actions inside a PF/Modal footer", async () => {
+        installerRender(<TestingPopup>Testing</TestingPopup>);
+
+        const dialog = await screen.findByRole("dialog");
+        // NOTE: Sadly, PF Modal/ModalFooter does not have a footer or navigation role.
+        // So, using https://developer.mozilla.org/es/docs/Web/API/Document/querySelector
+        // for getting the footer. See https://github.com/testing-library/react-testing-library/issues/417 too.
+        const footer = dialog.querySelector("footer");
+
+        within(footer).getByText("Confirm");
+        within(footer).getByText("Cancel");
+      });
     });
-  });
 
-  describe("when it is open and loading", () => {
-    beforeEach(() => {
-      isOpen = true;
-      isLoading = true;
-    });
+    describe("and loading", () => {
+      beforeEach(() => {
+        isLoading = true;
+      });
 
-    it("displays progress message instead of the content", async () => {
-      installerRender(<TestingPopup>Testing</TestingPopup>);
+      it("displays progress message instead of the content", async () => {
+        installerRender(<TestingPopup>Testing</TestingPopup>);
 
-      const dialog = await screen.findByRole("dialog");
+        const dialog = await screen.findByRole("dialog");
 
-      expect(within(dialog).queryByText("The Popup Content")).toBeNull();
-      within(dialog).getByText(loadingText);
+        expect(within(dialog).queryByText("The Popup Content")).toBeNull();
+        within(dialog).getByText(loadingText);
+      });
     });
   });
 });

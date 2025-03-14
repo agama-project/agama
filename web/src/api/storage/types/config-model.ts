@@ -64,6 +64,7 @@ export interface Filesystem {
   default: boolean;
   type?: FilesystemType;
   snapshots?: boolean;
+  label?: string;
 }
 export interface Partition {
   name?: string;
