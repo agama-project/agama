@@ -155,6 +155,7 @@ mod test {
                 .body(
                     r#"{
                     "patterns": {},
+                    "packages": [],
                     "product": ""
                 }"#,
                 );
@@ -163,7 +164,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":null,"product":"Tumbleweed"}"#);
+                .body(r#"{"patterns":null,"packages":null,"product":"Tumbleweed"}"#);
             then.status(200);
         });
         let manager_mock = server.mock(|when, then| {

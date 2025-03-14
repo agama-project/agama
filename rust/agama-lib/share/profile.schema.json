@@ -81,6 +81,14 @@
             "type": "string",
             "examples": ["minimal_base"]
           }
+        },
+        "packages": {
+          "title": "List of packages to install",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": ["vim"]
+          }
         }
       }
     },

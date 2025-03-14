@@ -39,10 +39,13 @@ module Agama
       def read
         return {} if profile["software"].nil?
 
-        patterns = profile["software"].fetch_as_array("patterns")
-        return {} if patterns.empty?
+        software = {}
 
-        { "software" => { "patterns" => patterns } }
+        software["patterns"] = profile["software"].fetch_as_array("patterns")
+        software["packages"] = profile["software"].fetch_as_array("packages")
+        return {} if software.empty?
+
+        { "software" => software }
       end
 
     private

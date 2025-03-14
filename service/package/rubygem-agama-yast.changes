@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 14 12:34:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the packages list from an AutoYaST profile
+  (gh#agama-project/agama#2153).
+
+-------------------------------------------------------------------
 Wed Mar 12 00:44:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Copy Agama logs to the installed system (gh#agama/agama-project#2148).
