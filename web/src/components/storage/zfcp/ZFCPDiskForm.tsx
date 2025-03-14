@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore wwpns
-
 import React, { FormEvent, useEffect, useState } from "react";
 import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { AxiosResponse } from "axios";
