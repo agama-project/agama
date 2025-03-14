@@ -86,6 +86,7 @@ jobs:
         yast2-proxy
         yast2-storage-ng
         yast2-users
+        python3-jsonschema
 
     - name: Install RubyGems dependencies
       run: bundle config set --local with 'development' && bundle install

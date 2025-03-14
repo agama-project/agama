@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,11 +24,11 @@ require "agama/http/clients/base"
 module Agama
   module HTTP
     module Clients
-      # HTTP client to interact with the scripts API.
-      class Scripts < Base
-        # Runs the scripts
-        def run(group)
-          post("scripts/run", group)
+      # HTTP client to interact with the files API.
+      class Files < Base
+        # writes additional files
+        def write
+          post("files/write", nil)
         end
       end
     end
