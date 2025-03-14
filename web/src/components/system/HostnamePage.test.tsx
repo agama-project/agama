@@ -89,7 +89,7 @@ describe("HostnamePage", () => {
     screen.getByText("Hostname successfully updated.");
   });
 
-  it("renders an error if update request fails", async () => {
+  it("renders an error if the update request fails", async () => {
     mockHostnameMutation.mockRejectedValue("Not valid");
     const { user } = installerRender(<HostnamePage />);
     const acceptButton = screen.getByRole("button", { name: "Accept" });
@@ -104,7 +104,7 @@ describe("HostnamePage", () => {
     screen.getByText(/Something went wrong/);
   });
 
-  it("renders an error when hostname missing", async () => {
+  it("renders an error when the hostname missing", async () => {
     const { user } = installerRender(<HostnamePage />);
     const hostnameInput = screen.getByRole("textbox", { name: "Hostname" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
@@ -126,7 +126,7 @@ describe("HostnamePage", () => {
     });
   });
 
-  describe("when selected product is registrable and registration code is not set", () => {
+  describe("when the selected product is registrable and registration code is not set", () => {
     beforeEach(() => {
       selectedProduct = sle;
       registrationInfoMock = { key: "", email: "" };
@@ -139,13 +139,13 @@ describe("HostnamePage", () => {
     });
   });
 
-  describe("when selected product is registrable and registration code is set", () => {
+  describe("when the selected product is registrable and registration code is set", () => {
     beforeEach(() => {
       selectedProduct = sle;
       registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
     });
 
-    it("renders an alert to let user know that changes will not have effect in registration", () => {
+    it("renders an alert to let user know that changes will not have effect in the registration", () => {
       installerRender(<HostnamePage />);
       screen.getByText("Custom alert:");
       screen.getByText("Product is already registered");

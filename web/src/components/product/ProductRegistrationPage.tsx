@@ -160,11 +160,11 @@ const HostnameAlert = () => {
 
   const hostname = useHostname();
   // TRANSLATORS: %s will be replaced with the hostname value
-  const title = sprintf(_('Product will be registered with "%s" hostname'), hostname);
+  const title = sprintf(_('The product will be registered with "%s" hostname'), hostname);
 
   // TRANSLATORS: %s will be replaced with the section name
   const [descStart, descEnd] = _(
-    "It cannot be changed later. Go to %s section if you want to change it before proceeding with registration.",
+    "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.",
   ).split("%s");
 
   const link = (
