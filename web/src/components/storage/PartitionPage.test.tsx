@@ -155,9 +155,11 @@ describe("PartitionPage", () => {
     const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
     const mountPointMode = screen.getByRole("button", { name: "Mount point mode" });
     const filesystem = screen.getByRole("button", { name: "File system" });
+    const filesystemLabelCheckbox = screen.getByRole("checkbox", { name: "File system label" });
     const size = screen.getByRole("button", { name: "Size" });
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
+    expect(filesystemLabelCheckbox).toBeDisabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
     expect(size).toBeDisabled();
 
@@ -167,7 +169,7 @@ describe("PartitionPage", () => {
     await user.click(homeMountPoint);
     // Valid mount point selected, enable file system and size fields
     expect(filesystem).toBeEnabled();
-    expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    expect(filesystemLabelCheckbox).toBeEnabled();
     expect(size).toBeEnabled();
     // Display mount point options
     await user.click(mountPointMode);
@@ -197,10 +199,12 @@ describe("PartitionPage", () => {
     // Note that the underline PF component gives the role combobox to the input
     const mountPoint = screen.getByRole("combobox", { name: "Mount point" });
     const filesystem = screen.getByRole("button", { name: "File system" });
+    const filesystemLabelCheckbox = screen.getByRole("checkbox", { name: "File system label" });
     const size = screen.getByRole("button", { name: "Size" });
     expect(mountPoint).toHaveValue("");
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
+    expect(filesystemLabelCheckbox).toBeDisabled();
     expect(size).toBeDisabled();
     const mountPointToggle = screen.getByRole("button", { name: "Mount point toggle" });
     await user.click(mountPointToggle);
@@ -209,7 +213,7 @@ describe("PartitionPage", () => {
     await user.click(homeMountPoint);
     expect(mountPoint).toHaveValue("/home");
     expect(filesystem).toBeEnabled();
-    expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    expect(filesystemLabelCheckbox).toBeEnabled();
     expect(size).toBeEnabled();
     const clearMountPointButton = screen.getByRole("button", {
       name: "Clear selected mount point",
@@ -221,6 +225,24 @@ describe("PartitionPage", () => {
     expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
     expect(size).toBeDisabled();
   });
+
+  describe("when not reusing a filesystem", () => {
+    it("allows setting the file system label on demand", async () => {
+      const { user } = installerRender(<PartitionPage />);
+      const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
+      const filesystemLabelCheckbox = screen.getByRole("checkbox", { name: "File system label" });
+      expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
+      await user.click(mountPoint);
+      const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
+      const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
+      await user.click(homeMountPoint);
+      await user.click(filesystemLabelCheckbox);
+      const filesystemLabel = screen.getByRole("textbox", { name: "File system label" });
+      await user.type(filesystemLabel, "something");
+    });
+  });
+
+  it.todo("does not allow setting the file system label when reusing a filesystem");
 
   describe("if editing a partition", () => {
     beforeEach(() => {

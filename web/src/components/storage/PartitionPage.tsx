@@ -20,10 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React, { useId, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ActionGroup,
+  Checkbox,
   Content,
   Divider,
   Flex,
@@ -67,7 +68,7 @@ import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { configModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { compact, uniq } from "~/utils";
+import { compact, isEmpty, uniq } from "~/utils";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -80,7 +81,7 @@ type FormValue = {
   mountPoint: string;
   target: string;
   filesystem: string;
-  filesystemLabel: string;
+  filesystemLabel?: string;
   sizeOption: SizeOptionValue;
   minSize: string;
   maxSize: string;
@@ -1143,6 +1144,7 @@ export default function PartitionPage() {
   const [target, setTarget] = React.useState(NEW_PARTITION);
   const [filesystem, setFilesystem] = React.useState(NO_VALUE);
   const [filesystemLabel, setFilesystemLabel] = React.useState(NO_VALUE);
+  const [settingFilesystemLabel, setSettingFilesystemLabel] = useState(false);
   const [sizeOption, setSizeOption] = React.useState<SizeOptionValue>(NO_VALUE);
   const [minSize, setMinSize] = React.useState(NO_VALUE);
   const [maxSize, setMaxSize] = React.useState(NO_VALUE);
@@ -1152,12 +1154,15 @@ export default function PartitionPage() {
   const [autoRefreshSize, setAutoRefreshSize] = React.useState(false);
 
   const initialValue = useInitialFormValue();
-  const value = { mountPoint, target, filesystem, filesystemLabel, sizeOption, minSize, maxSize };
+  const value: FormValue = { mountPoint, target, filesystem, sizeOption, minSize, maxSize };
+  if (settingFilesystemLabel) value.filesystemLabel = filesystemLabel;
+
   const { errors, getVisibleError } = useErrors(value);
 
   const device = useDevice();
   const drive = useDrive(device?.name);
   const unusedMountPoints = useUnusedMountPoints();
+  const toggleSettingFilesystemLabel = () => setSettingFilesystemLabel(!settingFilesystemLabel);
 
   // Initializes the form values if there is an initial value (i.e., when editing a partition).
   React.useEffect(() => {
@@ -1166,6 +1171,7 @@ export default function PartitionPage() {
       setTarget(initialValue.target);
       setFilesystem(initialValue.filesystem);
       setFilesystemLabel(initialValue.filesystemLabel);
+      setSettingFilesystemLabel(!isEmpty(initialValue.filesystemLabel));
       setSizeOption(initialValue.sizeOption);
       setMinSize(initialValue.minSize);
       setMaxSize(initialValue.maxSize);
@@ -1238,7 +1244,7 @@ export default function PartitionPage() {
   const isFormValid = errors.length === 0;
   const mountPointError = getVisibleError("mountPoint");
   const usedMountPt = mountPointError ? NO_VALUE : mountPoint;
-  const showLabel = filesystem !== NO_VALUE && filesystem !== REUSE_FILESYSTEM;
+  const settingFilesystemLabelDisable = filesystem === NO_VALUE || filesystem === REUSE_FILESYSTEM;
 
   return (
     <Page id="partitionPage">
@@ -1286,32 +1292,47 @@ export default function PartitionPage() {
                 </HelperText>
               </FormHelperText>
             </FormGroup>
-            <FormGroup>
-              <Flex>
-                <FlexItem>
-                  <FormGroup fieldId="fileSystem" label={_("File system")}>
-                    <FilesystemSelect
-                      id="fileSystem"
-                      value={filesystem}
-                      mountPoint={usedMountPt}
-                      target={target}
-                      onChange={changeFilesystem}
-                    />
-                  </FormGroup>
-                </FlexItem>
-                {showLabel && (
-                  <FlexItem>
-                    <FormGroup fieldId="fileSystemLabel" label={_("Label")}>
-                      <FilesystemLabel
-                        id="fileSystemLabel"
-                        value={filesystemLabel}
-                        onChange={setFilesystemLabel}
-                      />
-                    </FormGroup>
-                  </FlexItem>
-                )}
-              </Flex>
+            <FormGroup fieldId="fileSystem" label={_("File system")}>
+              <FilesystemSelect
+                id="fileSystem"
+                value={filesystem}
+                mountPoint={usedMountPt}
+                target={target}
+                onChange={changeFilesystem}
+              />
             </FormGroup>
+            <FormGroup fieldId="settingFilesystemLabel">
+              <Checkbox
+                id="settingFilesystemLabel"
+                label={_("File system label")}
+                description={
+                  filesystem === REUSE_FILESYSTEM
+                    ? _("Not available when reusing a filesystem")
+                    : _("Allows setting a label for the filesystem")
+                }
+                isChecked={settingFilesystemLabel}
+                isDisabled={settingFilesystemLabelDisable}
+                onChange={toggleSettingFilesystemLabel}
+              />
+            </FormGroup>
+            {!settingFilesystemLabelDisable && settingFilesystemLabel && (
+              <FormGroup fieldId="fileSystemLabel">
+                <NestedContent>
+                  <FilesystemLabel
+                    id="fileSystemLabel"
+                    value={filesystemLabel}
+                    onChange={setFilesystemLabel}
+                  />
+                  <HelperText>
+                    <HelperTextItem>
+                      {_(
+                        "Please, be aware that it's recommended to be unique, although the installer is not going to check it.",
+                      )}
+                    </HelperTextItem>
+                  </HelperText>
+                </NestedContent>
+              </FormGroup>
+            )}
             <FormGroup fieldId="size" label={_("Size")}>
               <Flex
                 direction={{ default: "column" }}
