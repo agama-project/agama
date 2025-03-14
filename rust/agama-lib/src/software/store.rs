@@ -44,27 +44,26 @@ impl SoftwareStore {
         // FIXME: user_selected_patterns is calling get_config too.
         let config = self.software_client.get_config().await?;
         Ok(SoftwareSettings {
-            patterns,
-            packages: config.packages.unwrap_or_default(),
+            patterns: if patterns.is_empty() {
+                None
+            } else {
+                Some(patterns)
+            },
+            packages: config.packages,
         })
     }
 
     pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
-        let patterns: HashMap<String, bool> = settings
+        let patterns: Option<HashMap<String, bool>> = settings
             .patterns
-            .iter()
-            .map(|name| (name.to_owned(), true))
-            .collect();
-        let packages = if settings.packages.is_empty() {
-            None
-        } else {
-            Some(settings.packages.clone())
-        };
+            .clone()
+            .map(|pat| pat.iter().map(|n| (n.to_owned(), true)).collect());
+
         let config = SoftwareConfig {
             // do not change the product
             product: None,
-            patterns: Some(patterns),
-            packages,
+            patterns,
+            packages: settings.packages.clone(),
         };
         self.software_client.set_config(&config).await?;
 
@@ -110,8 +109,8 @@ mod test {
         let settings = store.load().await?;
 
         let expected = SoftwareSettings {
-            patterns: vec!["xfce".to_owned()],
-            packages: vec!["vim".to_owned()],
+            patterns: Some(vec!["xfce".to_owned()]),
+            packages: Some(vec!["vim".to_owned()]),
         };
         // main assertion
         assert_eq!(settings, expected);
@@ -136,8 +135,8 @@ mod test {
 
         let store = software_store(url);
         let settings = SoftwareSettings {
-            patterns: vec!["xfce".to_owned()],
-            packages: vec!["vim".to_owned()],
+            patterns: Some(vec!["xfce".to_owned()]),
+            packages: Some(vec!["vim".to_owned()]),
         };
 
         let result = store.store(&settings).await;
@@ -157,7 +156,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"no_such_pattern":true},"packages":null,"product":null}"#);
+                .body(r#"{"patterns":{"no_such_pattern":true},"packages":["vim"],"product":null}"#);
             then.status(400)
                 .body(r#"'{"error":"Agama service error: Failed to find these patterns: [\"no_such_pattern\"]"}"#);
         });
@@ -165,8 +164,8 @@ mod test {
 
         let store = software_store(url);
         let settings = SoftwareSettings {
-            patterns: vec!["no_such_pattern".to_owned()],
-            packages: vec![],
+            patterns: Some(vec!["no_such_pattern".to_owned()]),
+            packages: Some(vec!["vim".to_owned()]),
         };
 
         let result = store.store(&settings).await;
