@@ -33,6 +33,7 @@ use console::style;
 use std::os::unix::{fs::PermissionsExt, process::CommandExt};
 use std::{
     fs::File,
+    io::Read,
     io::Write,
     path::{Path, PathBuf},
     process::Command,
@@ -62,8 +63,9 @@ pub enum ProfileCommands {
     /// For an example of Jsonnet-based profile, see
     /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
     Evaluate {
-        /// Path to jsonnet file.
-        path: PathBuf,
+        /// Jsonnet file, URL or path or `-` for standard input
+        // TODO can I declare CliInput here and have it shown nicely?
+        url_or_path: String,
     },
 
     /// Process autoinstallation profile and loads it into agama
@@ -81,8 +83,8 @@ pub enum ProfileCommands {
     },
 }
 
-async fn validate(client: BaseHTTPClient, path: &PathBuf) -> anyhow::Result<()> {
-    let url_path = format!("/profile/validate?path={}", path.to_string_lossy());
+async fn validate(client: &BaseHTTPClient, path: &str) -> anyhow::Result<()> {
+    let url_path = format!("/profile/validate?path={}", path);
     let result = client.post(&url_path, &()).await?;
     match result {
         ValidationResult::Valid => {
@@ -95,9 +97,83 @@ async fn validate(client: BaseHTTPClient, path: &PathBuf) -> anyhow::Result<()> 
     Ok(())
 }
 
-async fn evaluate(client: BaseHTTPClient, path: &Path) -> anyhow::Result<()> {
-    let url_path = format!("/profile/evaluate?path={}", path.to_string_lossy());
-    let output: Box<serde_json::value::RawValue> = client.post(&url_path, &()).await?;
+/// TODO better name
+// Represents the ways user can specify the input on the command line
+// and passes appropriate representations to the web API
+enum CliInput {
+    Url(String),
+    Path(String),
+    Stdin,
+    // the full text as string
+    Full(String),
+}
+
+impl CliInput {
+    fn new(url_or_path: String) -> Self {
+        if url_or_path == "-" {
+            Self::Stdin
+        } else {
+            // TODO test "http:" in Estonian
+            // unwrap OK: known good regex will compile
+            let url_like = regex::Regex::new("^[A-Za-z]+:").unwrap();
+            if url_like.is_match(&url_or_path) {
+                Self::Url(url_or_path)
+            } else {
+                Self::Path(url_or_path)
+            }
+        }
+    }
+
+    fn query_for_web(&self) -> String {
+        match self {
+            Self::Url(url) => format!("?url={}", url),
+            Self::Path(path) => format!("?path={}", path),
+            Self::Stdin => "".to_owned(),
+            Self::Full(_) => "".to_owned(),
+        }
+    }
+
+    /// NOTE that this will consume the standard input
+    /// if self is `Stdin`
+    fn body_for_web(self) -> std::io::Result<String> {
+        match self {
+            Self::Stdin => {
+                let mut slurp = String::new();
+                let stdin = std::io::stdin();
+                {
+                    let mut handle = stdin.lock();
+                    handle.read_to_string(&mut slurp)?;
+                }
+                Ok(slurp)
+            }
+            Self::Full(s) => Ok(s),
+            _ => Ok("".to_owned()),
+        }
+    }
+}
+
+async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
+    let api_url_and_query = format!("/profile/evaluate{}", url_or_path.query_for_web());
+
+    let body = url_or_path.body_for_web()?;
+    // we use plain text .body instead of .json
+    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
+        .client
+        .request(
+            reqwest::Method::POST,
+            client.base_url.clone() + &api_url_and_query,
+        )
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| e.into());
+
+    let output: Box<serde_json::value::RawValue> = client.deserialize_or_error(response?).await?;
+    Ok(output.to_string())
+}
+
+async fn evaluate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
+    let output = evaluate_client(client, url_or_path).await?;
     println!("{}", output);
     Ok(())
 }
@@ -107,26 +183,27 @@ async fn import(
     url_string: String,
     dir: Option<PathBuf>,
 ) -> anyhow::Result<()> {
+    // useful for store_settings
     tokio::spawn(async move {
         show_progress().await.unwrap();
     });
 
     let url = Url::parse(&url_string)?;
-    let tmpdir = TempDir::new()?; // TODO: create it only if dir is not passed
-    let work_dir = dir.unwrap_or_else(|| tmpdir.into_path());
-    let profile_path = work_dir.join("profile.json");
-
-    // Specific AutoYaST handling
     let path = url.path();
-    if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
+    let profile_json = if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
         // AutoYaST specific download and convert to JSON
-        AutoyastProfileImporter::read(&url)?.write_file(&profile_path)?;
+        let config_string = autoyast_client(&client, &url).await?;
+        /*
+        let mut file = File::create(&profile_path)?;
+        file.write_all(config_string.as_bytes())?;
+        */
+        config_string
     } else {
-        pre_process_profile(&url_string, &profile_path)?;
-    }
+        pre_process_profile(&client, &url_string).await?
+    };
 
-    validate(client, &profile_path).await?;
-    store_settings(&profile_path).await?;
+    validate(&client, &profile_json).await?;
+    store_settings(client, &profile_json).await?;
 
     Ok(())
 }
@@ -138,41 +215,40 @@ async fn import(
 // * If it is a JSON file, no preprocessing is needed.
 // * If it is a Jsonnet file, it is converted to JSON.
 // * If it is a script, it is executed.
-fn pre_process_profile<P: AsRef<Path>>(url_string: &str, path: P) -> anyhow::Result<()> {
-    let work_dir = path.as_ref().parent().unwrap();
-    let tmp_profile_path = work_dir.join("profile.temp");
-    let mut tmp_file = File::create(&tmp_profile_path)?;
-    Transfer::get(url_string, &mut tmp_file)?;
+async fn pre_process_profile(client: &BaseHTTPClient, url_string: &str) -> anyhow::Result<String> {
+    let mut bytebuf = Vec::new();
+    Transfer::get(&url_string, &mut bytebuf)
+        .context(format!("Retrieving data from URL {}", &url_string))?;
+    let any_profile =
+        String::from_utf8(bytebuf).context(format!("Invalid UTF-8 data at URL {}", &url_string))?;
 
-    match FileFormat::from_file(&tmp_profile_path)? {
+    match FileFormat::from_string(&any_profile) {
         FileFormat::Jsonnet => {
-            let mut file = File::create(path)?;
-            let evaluator = ProfileEvaluator {};
-            let ouptut = evaluator
-                .evaluate(&tmp_profile_path)
-                .context("Could not evaluate the profile".to_string())?;
-            write!(file, "{}", ouptut)?;
+            let json_string = evaluate_client(client, CliInput::Full(any_profile)).await?;
+            Ok(json_string)
         }
         FileFormat::Script => {
+            return Err(anyhow::Error::msg(
+                "TODO: executing scripts (via web API) not yet implemented",
+            ));
+            /*
             let mut perms = std::fs::metadata(&tmp_profile_path)?.permissions();
             perms.set_mode(0o750);
             std::fs::set_permissions(&tmp_profile_path, perms)?;
             let err = Command::new(&tmp_profile_path).exec();
             eprintln!("Exec failed: {}", err);
+            */
         }
-        FileFormat::Json => {
-            std::fs::rename(&tmp_profile_path, path.as_ref())?;
-        }
-        _ => {
-            return Err(anyhow::Error::msg("Unsupported file format"));
-        }
+        FileFormat::Json => Ok(any_profile),
+        _ => Err(anyhow::Error::msg(
+            "Unsupported file format. Expected json, jsonnet, script",
+        )),
     }
-    Ok(())
 }
 
-async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
-    let store = SettingsStore::new(BaseHTTPClient::default().authenticated()?).await?;
-    let settings = InstallSettings::from_file(&path)?;
+async fn store_settings(client: BaseHTTPClient, profile_json: &str) -> anyhow::Result<()> {
+    let store = SettingsStore::new(client).await?;
+    let settings: InstallSettings = serde_json::from_str(profile_json)?;
     store.store(&settings).await?;
     Ok(())
 }
@@ -196,8 +272,10 @@ async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<
 pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(client, url).await,
-        ProfileCommands::Validate { path } => validate(client, &path).await,
-        ProfileCommands::Evaluate { path } => evaluate(client, &path).await,
+        ProfileCommands::Validate { path } => validate(&client, &path.to_string_lossy()).await,
+        ProfileCommands::Evaluate { url_or_path } => {
+            evaluate(&client, CliInput::new(url_or_path)).await
+        }
         ProfileCommands::Import { url, dir } => import(client, url, dir).await,
     }
 }
