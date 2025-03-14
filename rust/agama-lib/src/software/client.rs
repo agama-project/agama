@@ -28,6 +28,8 @@ use serde_repr::Serialize_repr;
 use std::collections::HashMap;
 use zbus::Connection;
 
+const USER_RESOLVABLES_LIST: &str = "user";
+
 // TODO: move it to model?
 /// Represents a software product
 #[derive(Debug, Serialize, utoipa::ToSchema)]
@@ -196,13 +198,18 @@ impl<'a> SoftwareClient<'a> {
     /// * `names`: package names.
     pub async fn select_packages(&self, names: Vec<String>) -> Result<(), ServiceError> {
         let names: Vec<_> = names.iter().map(|n| n.as_ref()).collect();
-        self.set_resolvables("user", ResolvableType::Package, names.as_slice(), true)
-            .await?;
+        self.set_resolvables(
+            USER_RESOLVABLES_LIST,
+            ResolvableType::Package,
+            names.as_slice(),
+            true,
+        )
+        .await?;
         Ok(())
     }
 
     pub async fn user_selected_packages(&self) -> Result<Vec<String>, ServiceError> {
-        self.get_resolvables("user", ResolvableType::Package, true)
+        self.get_resolvables(USER_RESOLVABLES_LIST, ResolvableType::Package, true)
             .await
     }
 
