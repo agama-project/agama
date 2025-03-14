@@ -22,24 +22,26 @@
 
 # This script runs the user-defined Agama init scripts.
 
-WORKDIR="/var/log/agama-installation/scripts/init"
+: "${SCRIPTS_DIR:=/var/log/agama-installation/scripts/init}"
 
 systemctl disable agama-scripts.service
 
-if [ ! -d "$WORKDIR" ]; then
-    exit 1
-fi
-
-for script in  `find $WORKDIR -type f`; do
-    CONTINUE=1
-done
-
-if [ -z "$CONTINUE" ]; then
+if [ ! -d "$SCRIPTS_DIR" ]; then
     exit 0
 fi
 
-for script in  `find $WORKDIR -type f |sort`; do
-    echo -n "Executing Agama auto-installation script: $script"
-    BASENAME=`basename $script`
-    . $script > $WORKDIR/$BASENAME.log 2>&1
+SCRIPTS=$(find "$SCRIPTS_DIR" -maxdepth 1 -type f | sort)
+
+if [ -z "$SCRIPTS" ]; then
+    exit 0
+fi
+
+LOG_DIR="$SCRIPTS_DIR/log"
+mkdir -p "$LOG_DIR"
+
+IFS='
+'
+for script in $SCRIPTS; do
+    BASENAME=$(basename "$script")
+    ./"$script" > "$LOG_DIR/$BASENAME.log" 2>&1
 done
