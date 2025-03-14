@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 14 11:05:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Allow updating hostname from web user interface
+  (gh#agama-project/agama#2147)
+
+-------------------------------------------------------------------
 Thu Mar  6 08:06:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Fix a language selector overflow issue in the product license dialog

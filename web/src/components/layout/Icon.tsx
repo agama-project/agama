@@ -45,6 +45,7 @@ import Exclamation from "@icons/exclamation.svg?component";
 import ExpandAll from "@icons/expand_all.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
 import Feedback from "@icons/feedback.svg?component";
+import Fingerprint from "@icons/fingerprint.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
 import FrameInspect from "@icons/frame_inspect.svg?component";
@@ -114,6 +115,7 @@ const icons = {
   expand_all: ExpandAll,
   expand_circle_down: ExpandCircleDown,
   feedback: Feedback,
+  fingerprint: Fingerprint,
   folder: Folder,
   folder_off: FolderOff,
   frame_inspect: FrameInspect,
