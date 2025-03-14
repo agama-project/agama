@@ -655,9 +655,6 @@ type FilesystemLabelProps = {
   onChange: (v: string) => void;
 };
 
-// FIXME: This input silently restricts user input. Add a helpful message (e.g.,
-// "only letters and numbers allowed, no special characters or accents") to
-// guide users and explain why characters like "ñ" are not accepted.
 // FIXME: The wrapper component may not be necessary just to create the isValid
 // function. Consider refactoring the validation logic into a reusable utility
 // for other similar inputs.
@@ -1310,11 +1307,11 @@ export default function PartitionPage() {
             <FormGroup fieldId="settingFilesystemLabel">
               <Checkbox
                 id="settingFilesystemLabel"
-                label={_("File system label")}
+                label={_("Set file system label")}
                 description={
                   filesystem === REUSE_FILESYSTEM
-                    ? _("Not available when reusing a filesystem")
-                    : _("Allows setting a label for the filesystem")
+                    ? _("Not available when keeping the existing file system")
+                    : _("Use a label that is unique accross the system to identify the partition")
                 }
                 isChecked={settingFilesystemLabel}
                 isDisabled={settingFilesystemLabelDisable}
@@ -1332,7 +1329,7 @@ export default function PartitionPage() {
                   <HelperText>
                     <HelperTextItem>
                       {_(
-                        "Please, be aware that it's recommended to be unique, although the installer is not going to check it.",
+                        "Use only letters and numbers, no special characters or accents are allowed",
                       )}
                     </HelperTextItem>
                   </HelperText>
