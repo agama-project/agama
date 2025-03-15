@@ -1282,7 +1282,7 @@ export default function PartitionPage() {
               </FlexItem>
             </Flex>
             <FormHelperText>
-              <HelperText>
+              <HelperText isLiveRegion>
                 <HelperTextItem variant={mountPointError ? "error" : "default"}>
                   {!mountPointError && _("Select or enter a mount point")}
                   {mountPointError?.message}
