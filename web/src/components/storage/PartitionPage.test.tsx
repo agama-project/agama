@@ -155,7 +155,7 @@ describe("PartitionPage", () => {
     const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
     const mountPointMode = screen.getByRole("button", { name: "Mount point mode" });
     const filesystem = screen.getByRole("button", { name: "File system" });
-    const filesystemLabelCheckbox = screen.getByRole("checkbox", { name: "File system label" });
+    const filesystemLabelCheckbox = screen.getByRole("checkbox", { name: "Set file system label" });
     const size = screen.getByRole("button", { name: "Size" });
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
@@ -199,7 +199,7 @@ describe("PartitionPage", () => {
     // Note that the underline PF component gives the role combobox to the input
     const mountPoint = screen.getByRole("combobox", { name: "Mount point" });
     const filesystem = screen.getByRole("button", { name: "File system" });
-    const filesystemLabelCheckbox = screen.getByRole("checkbox", { name: "File system label" });
+    const filesystemLabelCheckbox = screen.getByRole("checkbox", { name: "Set file system label" });
     const size = screen.getByRole("button", { name: "Size" });
     expect(mountPoint).toHaveValue("");
     // File system and size fields disabled until valid mount point selected
@@ -230,7 +230,9 @@ describe("PartitionPage", () => {
     it("allows setting the file system label on demand", async () => {
       const { user } = installerRender(<PartitionPage />);
       const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
-      const filesystemLabelCheckbox = screen.getByRole("checkbox", { name: "File system label" });
+      const filesystemLabelCheckbox = screen.getByRole("checkbox", {
+        name: "Set file system label",
+      });
       expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
       await user.click(mountPoint);
       const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
