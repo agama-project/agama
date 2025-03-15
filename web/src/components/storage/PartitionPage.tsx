@@ -1259,119 +1259,117 @@ export default function PartitionPage() {
 
       <Page.Content>
         <Form id="partitionForm" aria-labelledby={headingId} onSubmit={onSubmit}>
-          <Stack hasGutter>
-            <FormGroup fieldId="mountPoint" label={_("Mount point")}>
-              <Flex>
-                <FlexItem>
-                  <SelectTypeaheadCreatable
-                    id="mountPoint"
-                    toggleName={_("Mount point toggle")}
-                    listName={_("Suggested mount points")}
-                    inputName={_("Mount point")}
-                    clearButtonName={_("Clear selected mount point")}
-                    value={mountPoint}
-                    options={mountPointSelectOptions(unusedMountPoints)}
-                    createText={_("Use")}
-                    onChange={changeMountPoint}
-                  />
-                </FlexItem>
-                <FlexItem>
-                  <Select
-                    toggleName={_("Mount point mode")}
-                    value={target}
-                    label={<TargetOptionLabel value={target} />}
-                    onChange={changeTarget}
-                  >
-                    <TargetOptions />
-                  </Select>
-                </FlexItem>
-              </Flex>
-              <FormHelperText>
-                <HelperText>
-                  <HelperTextItem variant={mountPointError ? "error" : "default"}>
-                    {!mountPointError && _("Select or enter a mount point")}
-                    {mountPointError?.message}
-                  </HelperTextItem>
-                </HelperText>
-              </FormHelperText>
-            </FormGroup>
-            <FormGroup fieldId="fileSystem" label={_("File system")}>
-              <FilesystemSelect
-                id="fileSystem"
-                value={filesystem}
-                mountPoint={usedMountPt}
-                target={target}
-                onChange={changeFilesystem}
-              />
-            </FormGroup>
-            <FormGroup fieldId="settingFilesystemLabel">
-              <Checkbox
-                id="settingFilesystemLabel"
-                label={_("Set file system label")}
-                description={
-                  filesystem === REUSE_FILESYSTEM
-                    ? _("Not available when keeping the existing file system")
-                    : _("Use a label that is unique accross the system to identify the partition")
-                }
-                isChecked={settingFilesystemLabel}
-                isDisabled={settingFilesystemLabelDisable}
-                onChange={toggleSettingFilesystemLabel}
-              />
-            </FormGroup>
-            {!settingFilesystemLabelDisable && settingFilesystemLabel && (
-              <FormGroup fieldId="fileSystemLabel">
-                <NestedContent>
-                  <FilesystemLabel
-                    id="fileSystemLabel"
-                    value={filesystemLabel}
-                    onChange={setFilesystemLabel}
-                  />
-                  <FormHelperText>
-                    <HelperText>
-                      <HelperTextItem>
-                        <SubtleContent>
-                          {_(
-                            "Use only letters and numbers, no special characters or accents are allowed",
-                          )}
-                        </SubtleContent>
-                      </HelperTextItem>
-                    </HelperText>
-                  </FormHelperText>
-                </NestedContent>
-              </FormGroup>
-            )}
-            <FormGroup fieldId="size" label={_("Size")}>
-              <Flex
-                direction={{ default: "column" }}
-                alignItems={{ default: "alignItemsFlexStart" }}
-                gap={{ default: "gapMd" }}
-              >
+          <FormGroup fieldId="mountPoint" label={_("Mount point")}>
+            <Flex>
+              <FlexItem>
+                <SelectTypeaheadCreatable
+                  id="mountPoint"
+                  toggleName={_("Mount point toggle")}
+                  listName={_("Suggested mount points")}
+                  inputName={_("Mount point")}
+                  clearButtonName={_("Clear selected mount point")}
+                  value={mountPoint}
+                  options={mountPointSelectOptions(unusedMountPoints)}
+                  createText={_("Use")}
+                  onChange={changeMountPoint}
+                />
+              </FlexItem>
+              <FlexItem>
                 <Select
-                  id="size"
-                  value={sizeOption}
-                  label={
-                    <SizeOptionLabel value={sizeOption} mountPoint={usedMountPt} target={target} />
-                  }
-                  onChange={(v: SizeOptionValue) => setSizeOption(v)}
-                  isDisabled={usedMountPt === NO_VALUE}
+                  toggleName={_("Mount point mode")}
+                  value={target}
+                  label={<TargetOptionLabel value={target} />}
+                  onChange={changeTarget}
                 >
-                  <SizeOptions mountPoint={usedMountPt} target={target} />
+                  <TargetOptions />
                 </Select>
-                <NestedContent margin="mxMd" aria-live="polite">
-                  {target === NEW_PARTITION && sizeOption === "auto" && (
-                    <AutoSizeInfo value={value} />
-                  )}
-                  {target === NEW_PARTITION && sizeOption === "custom" && (
-                    <CustomSize value={value} onChange={changeSize} />
-                  )}
-                </NestedContent>
-              </Flex>
+              </FlexItem>
+            </Flex>
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem variant={mountPointError ? "error" : "default"}>
+                  {!mountPointError && _("Select or enter a mount point")}
+                  {mountPointError?.message}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          </FormGroup>
+          <FormGroup fieldId="fileSystem" label={_("File system")}>
+            <FilesystemSelect
+              id="fileSystem"
+              value={filesystem}
+              mountPoint={usedMountPt}
+              target={target}
+              onChange={changeFilesystem}
+            />
+          </FormGroup>
+          <FormGroup fieldId="settingFilesystemLabel">
+            <Checkbox
+              id="settingFilesystemLabel"
+              label={_("Set file system label")}
+              description={
+                filesystem === REUSE_FILESYSTEM
+                  ? _("Not available when keeping the existing file system")
+                  : _("Use a label that is unique accross the system to identify the partition")
+              }
+              isChecked={settingFilesystemLabel}
+              isDisabled={settingFilesystemLabelDisable}
+              onChange={toggleSettingFilesystemLabel}
+            />
+          </FormGroup>
+          {!settingFilesystemLabelDisable && settingFilesystemLabel && (
+            <FormGroup fieldId="fileSystemLabel">
+              <NestedContent>
+                <FilesystemLabel
+                  id="fileSystemLabel"
+                  value={filesystemLabel}
+                  onChange={setFilesystemLabel}
+                />
+                <FormHelperText>
+                  <HelperText>
+                    <HelperTextItem>
+                      <SubtleContent>
+                        {_(
+                          "Use only letters and numbers, no special characters or accents are allowed",
+                        )}
+                      </SubtleContent>
+                    </HelperTextItem>
+                  </HelperText>
+                </FormHelperText>
+              </NestedContent>
             </FormGroup>
-            <ActionGroup>
-              <Page.Submit isDisabled={!isFormValid} form="partitionForm" />
-              <Page.Cancel />
-            </ActionGroup>
-          </Stack>
+          )}
+          <FormGroup fieldId="size" label={_("Size")}>
+            <Flex
+              direction={{ default: "column" }}
+              alignItems={{ default: "alignItemsFlexStart" }}
+              gap={{ default: "gapMd" }}
+            >
+              <Select
+                id="size"
+                value={sizeOption}
+                label={
+                  <SizeOptionLabel value={sizeOption} mountPoint={usedMountPt} target={target} />
+                }
+                onChange={(v: SizeOptionValue) => setSizeOption(v)}
+                isDisabled={usedMountPt === NO_VALUE}
+              >
+                <SizeOptions mountPoint={usedMountPt} target={target} />
+              </Select>
+              <NestedContent margin="mxMd" aria-live="polite">
+                {target === NEW_PARTITION && sizeOption === "auto" && (
+                  <AutoSizeInfo value={value} />
+                )}
+                {target === NEW_PARTITION && sizeOption === "custom" && (
+                  <CustomSize value={value} onChange={changeSize} />
+                )}
+              </NestedContent>
+            </Flex>
+          </FormGroup>
+          <ActionGroup>
+            <Page.Submit isDisabled={!isFormValid} form="partitionForm" />
+            <Page.Cancel />
+          </ActionGroup>
         </Form>
       </Page.Content>
     </Page>
