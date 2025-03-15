@@ -1326,13 +1326,17 @@ export default function PartitionPage() {
                     value={filesystemLabel}
                     onChange={setFilesystemLabel}
                   />
-                  <HelperText>
-                    <HelperTextItem>
-                      {_(
-                        "Use only letters and numbers, no special characters or accents are allowed",
-                      )}
-                    </HelperTextItem>
-                  </HelperText>
+                  <FormHelperText>
+                    <HelperText>
+                      <HelperTextItem>
+                        <SubtleContent>
+                          {_(
+                            "Use only letters and numbers, no special characters or accents are allowed",
+                          )}
+                        </SubtleContent>
+                      </HelperTextItem>
+                    </HelperText>
+                  </FormHelperText>
                 </NestedContent>
               </FormGroup>
             )}
