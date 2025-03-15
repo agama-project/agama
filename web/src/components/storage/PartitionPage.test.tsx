@@ -243,6 +243,8 @@ describe("PartitionPage", () => {
   });
 
   it.todo("does not allow setting the file system label when reusing a filesystem");
+  it.todo("resets file system label when user changes the mount point");
+  it.todo("resets file system label when user changes the target");
 
   describe("if editing a partition", () => {
     beforeEach(() => {

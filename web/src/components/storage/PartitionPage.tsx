@@ -1210,6 +1210,8 @@ export default function PartitionPage() {
     if (value !== mountPoint) {
       setAutoRefreshFilesystem(true);
       setAutoRefreshSize(true);
+      setSettingFilesystemLabel(!isEmpty(initialValue?.filesystemLabel));
+      setFilesystemLabel(initialValue?.filesystemLabel || "");
       setMountPoint(value);
     }
   };
@@ -1217,6 +1219,8 @@ export default function PartitionPage() {
   const changeTarget = (value: string) => {
     setAutoRefreshFilesystem(true);
     setAutoRefreshSize(true);
+    setSettingFilesystemLabel(value === "new" && !isEmpty(initialValue?.filesystemLabel));
+    setFilesystemLabel(initialValue?.filesystemLabel || "");
     setTarget(value);
   };
 
