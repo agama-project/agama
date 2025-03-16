@@ -150,7 +150,7 @@ const useRootUserChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "RootChanged") {
-        const { password, sshPublickKey } = event;
+        const { password, sshPublicKey } = event;
         queryClient.setQueryData(["users", "root"], (oldRoot: RootUser) => {
           const newRoot = { ...oldRoot };
           if (password !== undefined) {
@@ -158,8 +158,8 @@ const useRootUserChanges = () => {
             newRoot.hashedPassword = false;
           }
 
-          if (sshPublickKey) {
-            newRoot.sshPublicKey = sshPublickKey;
+          if (sshPublicKey) {
+            newRoot.sshPublicKey = sshPublicKey;
           }
 
           return newRoot;

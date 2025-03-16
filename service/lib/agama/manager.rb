@@ -322,7 +322,7 @@ module Agama
     # Runs post partitioning scripts
     def run_post_partitioning_scripts
       client = Agama::HTTP::Clients::Scripts.new(logger)
-      client.run("post_partitioning")
+      client.run("postPartitioning")
     end
   end
 end

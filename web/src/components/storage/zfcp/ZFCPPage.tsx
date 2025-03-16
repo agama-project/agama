@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore npiv
-
 import React from "react";
 import {
   Button,

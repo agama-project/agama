@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 14 12:32:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow selecting individual packages through a configuration file
+  (gh#agama-project/agama#2153).
+
+-------------------------------------------------------------------
 Wed Mar 12 17:12:10 UTC 2025 - Knut Alejandro Anderssen González <kanderssen@suse.com>
 
 - Introduced the hostname model in order to start managing it
