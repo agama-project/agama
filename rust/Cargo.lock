@@ -119,6 +119,7 @@ dependencies = [
  "serde_json",
  "serde_with",
  "subprocess",
+ "tempfile",
  "thiserror",
  "tokio",
  "tokio-openssl",

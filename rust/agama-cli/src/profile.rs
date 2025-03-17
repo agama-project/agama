@@ -20,20 +20,13 @@
 
 use crate::show_progress;
 use agama_lib::{
-    base_http_client::BaseHTTPClient,
-    install_settings::InstallSettings,
-    profile::ValidationResult,
-    utils::FileFormat,
-    utils::Transfer,
-    Store as SettingsStore,
+    base_http_client::BaseHTTPClient, install_settings::InstallSettings, profile::ValidationResult,
+    utils::FileFormat, utils::Transfer, Store as SettingsStore,
 };
 use anyhow::Context;
 use clap::Subcommand;
 use console::style;
-use std::{
-    io::Read,
-    path::PathBuf,
-};
+use std::{io::Read, path::PathBuf};
 use url::Url;
 
 #[derive(Subcommand, Debug)]
@@ -211,29 +204,30 @@ async fn import(
     let profile_json = if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
         // AutoYaST specific download and convert to JSON
         let config_string = autoyast_client(&client, &url).await?;
-        /*
-        let mut file = File::create(&profile_path)?;
-        file.write_all(config_string.as_bytes())?;
-        */
-        config_string
+        Some(config_string)
     } else {
         pre_process_profile(&client, &url_string).await?
     };
 
-    validate(&client, CliInput::Full(profile_json.clone())).await?;
-    store_settings(client, &profile_json).await?;
-
+    // None means the profile is a script and it has been executed
+    if let Some(profile_json) = profile_json {
+        validate(&client, CliInput::Full(profile_json.clone())).await?;
+        store_settings(client, &profile_json).await?;
+    }
     Ok(())
 }
 
-// Preprocess the profile.
+// Retrieve and preprocess the profile.
 //
 // The profile can be a JSON or a Jsonnet file or a script.
 //
 // * If it is a JSON file, no preprocessing is needed.
 // * If it is a Jsonnet file, it is converted to JSON.
-// * If it is a script, it is executed.
-async fn pre_process_profile(client: &BaseHTTPClient, url_string: &str) -> anyhow::Result<String> {
+// * If it is a script, it is executed, None is returned
+async fn pre_process_profile(
+    client: &BaseHTTPClient,
+    url_string: &str,
+) -> anyhow::Result<Option<String>> {
     let mut bytebuf = Vec::new();
     Transfer::get(&url_string, &mut bytebuf)
         .context(format!("Retrieving data from URL {}", &url_string))?;
@@ -241,23 +235,17 @@ async fn pre_process_profile(client: &BaseHTTPClient, url_string: &str) -> anyho
         String::from_utf8(bytebuf).context(format!("Invalid UTF-8 data at URL {}", &url_string))?;
 
     match FileFormat::from_string(&any_profile) {
+        FileFormat::Script => {
+            let api_url = format!("/profile/execute_script?url={}", url_string);
+            // FIXME: try out
+            let _output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
+            Ok(None)
+        }
         FileFormat::Jsonnet => {
             let json_string = evaluate_client(client, CliInput::Full(any_profile)).await?;
-            Ok(json_string)
+            Ok(Some(json_string))
         }
-        FileFormat::Script => {
-            return Err(anyhow::Error::msg(
-                "TODO: executing scripts (via web API) not yet implemented",
-            ));
-            /*
-            let mut perms = std::fs::metadata(&tmp_profile_path)?.permissions();
-            perms.set_mode(0o750);
-            std::fs::set_permissions(&tmp_profile_path, perms)?;
-            let err = Command::new(&tmp_profile_path).exec();
-            eprintln!("Exec failed: {}", err);
-            */
-        }
-        FileFormat::Json => Ok(any_profile),
+        FileFormat::Json => Ok(Some(any_profile)),
         _ => Err(anyhow::Error::msg(
             "Unsupported file format. Expected json, jsonnet, script",
         )),

@@ -18,6 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::io::Write;
+use std::os::unix::fs::PermissionsExt;
+
 use anyhow::Context;
 
 use agama_lib::utils::Transfer;
@@ -71,6 +74,7 @@ pub async fn profile_service() -> Result<Router, ServiceError> {
         .route("/evaluate", post(evaluate))
         .route("/validate", post(validate))
         .route("/autoyast", post(autoyast))
+        .route("/execute_script", post(execute_script))
         .with_state(state);
     Ok(router)
 }
@@ -217,4 +221,47 @@ async fn autoyast(
     let importer = AutoyastProfileImporter::read(&url)?;
     // TODO try error cases and add .context if needed
     Ok(importer.content)
+}
+
+#[utoipa::path(
+    post,
+    path = "/execute_script",
+    context_path = "/api/profile",
+    params(ProfileQuery),
+    responses(
+        (status = 200, description = "Script has started"),
+        (status = 400, description = "FIXME some error has happened")
+    )
+)]
+async fn execute_script(
+    _state: State<ProfileState>,
+    query: Query<ProfileQuery>,
+    script: String, // script_or_empty
+) -> Result<(), ProfileServiceError> {
+    let request_has_body = !script.is_empty() && script != "null";
+    query.validate(request_has_body)?;
+    let script_string = match query.retrieve_profile()? {
+        Some(retrieved) => retrieved,
+        None => script,
+    };
+
+    // write to a temporary path and spawn in background and return
+    // May be long running
+    // FIXME: can agama+axum wait for completion and return output?
+    let mut named_tempfile = tempfile::Builder::new()
+        .prefix("agama-script")
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempfile()
+        .context("Creating temporary file for script")?;
+    named_tempfile
+        .as_file_mut()
+        .write_all(script_string.as_bytes())
+        .context("Writing script text")?;
+
+    let path = named_tempfile.path();
+    let _child = std::process::Command::new(&path)
+        .spawn()
+        .context("Spawning script")?;
+    // we do not child.wait() or child.wait_with_output()
+    Ok(())
 }
