@@ -26,7 +26,6 @@ use agama_lib::{
     profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, Url, ValidationResult},
 };
 use axum::{
-    debug_handler,
     extract::{Query, State},
     http::StatusCode,
     response::{IntoResponse, Response},

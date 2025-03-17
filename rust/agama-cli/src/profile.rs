@@ -22,7 +22,7 @@ use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient,
     install_settings::InstallSettings,
-    profile::{AutoyastProfileImporter, ProfileEvaluator, ValidationResult},
+    profile::ValidationResult,
     utils::FileFormat,
     utils::Transfer,
     Store as SettingsStore,
@@ -30,15 +30,10 @@ use agama_lib::{
 use anyhow::Context;
 use clap::Subcommand;
 use console::style;
-use std::os::unix::{fs::PermissionsExt, process::CommandExt};
 use std::{
-    fs::File,
     io::Read,
-    io::Write,
-    path::{Path, PathBuf},
-    process::Command,
+    path::PathBuf,
 };
-use tempfile::TempDir;
 use url::Url;
 
 #[derive(Subcommand, Debug)]
