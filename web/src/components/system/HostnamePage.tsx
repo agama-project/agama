@@ -35,6 +35,7 @@ import { NestedContent, Page } from "~/components/core";
 import { useProduct, useRegistration } from "~/queries/software";
 import { useHostname, useHostnameMutation } from "~/queries/system";
 import { isEmpty } from "~/utils";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
 export default function HostnamePage() {
@@ -42,9 +43,10 @@ export default function HostnamePage() {
   const { selectedProduct: product } = useProduct();
   const { transient: transientHostname, static: staticHostname } = useHostname();
   const { mutateAsync: updateHostname } = useHostnameMutation();
+  const hasStaticHostname = !isEmpty(staticHostname);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [settingHostname, setSettingHostname] = useState(!isEmpty(staticHostname));
+  const [settingHostname, setSettingHostname] = useState(hasStaticHostname);
   const [hostname, setHostname] = useState(staticHostname);
 
   const toggleSettingHostname = () => setSettingHostname(!settingHostname);
@@ -53,6 +55,7 @@ export default function HostnamePage() {
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
     if (settingHostname && isEmpty(hostname)) {
       setError(_("Please provide a hostname"));
@@ -66,6 +69,16 @@ export default function HostnamePage() {
       );
   };
 
+  // TRANSLATORS: a title for an alert that displays both the mode (permanent or
+  // temporary) and the value of the current hostname. %1$s will be replaced
+  // with the mode (e.g., "permanent" or "temporary"), and %2$s will hold the
+  // current hostname value.
+  const hostnameAlertTitle = sprintf(
+    _("Using a %1$s hostname: %2$s"),
+    hasStaticHostname ? _("permanent") : _("temporary"),
+    hasStaticHostname ? staticHostname : transientHostname,
+  );
+
   return (
     <Page>
       <Page.Header>
@@ -74,20 +87,25 @@ export default function HostnamePage() {
 
       <Page.Content>
         {product.registration && !isEmpty(registration.key) && (
-          <Alert title={_("Product is already registered")} isPlain>
+          <Alert title={_("Product is already registered")} variant="info">
             {_("Updating the hostname now will not take effect on registered value.")}
           </Alert>
         )}
+
+        <Alert variant="custom" title={hostnameAlertTitle}>
+          {hasStaticHostname
+            ? _("This hostname is set permanently and will not change unless manually updated.")
+            : _("This hostname is temporary and may change after a reboot or network update.")}
+        </Alert>
         <Form id="hostnameForm" onSubmit={submit}>
           {success && <Alert variant="success" isInline title={success} />}
           {error && <Alert variant="warning" isInline title={error} />}
-
           <FormGroup fieldId="settingHostname">
             <Checkbox
               id="hostname"
               label={_("Use static hostname")}
               description={_(
-                "Allows setting a permanent hostname that won't change with DHCP responses.",
+                "Allows setting a permanent hostname that won’t change with network updates.",
               )}
               isChecked={settingHostname}
               onChange={toggleSettingHostname}

@@ -62,7 +62,7 @@ jest.mock("~/queries/software", () => ({
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useHostname: () => ({ transient: "testing-node", static: mockStaticHostname }),
+  useHostname: () => ({ transient: "agama-node", static: mockStaticHostname }),
   useHostnameMutation: () => ({ mutateAsync: mockHostnameMutation }),
 }));
 
@@ -74,6 +74,13 @@ describe("HostnamePage", () => {
   describe("when static hostname is set", () => {
     beforeEach(() => {
       mockStaticHostname = "agama-server";
+    });
+
+    it("renders a custom alert with current value and mode", () => {
+      installerRender(<HostnamePage />);
+      screen.getByText("Custom alert:");
+      screen.getByText(/agama-server/);
+      screen.getByText(/is set permanently/);
     });
 
     it("allows unsetting the static hostname", async () => {
@@ -101,6 +108,13 @@ describe("HostnamePage", () => {
   describe("when static hostname is not set", () => {
     beforeEach(() => {
       mockStaticHostname = "";
+    });
+
+    it("renders a custom alert with current value and mode", () => {
+      installerRender(<HostnamePage />);
+      screen.getByText("Custom alert:");
+      screen.getByText(/agama-node/);
+      screen.getByText(/is temporary/);
     });
 
     it("allows setting the static hostname", async () => {
@@ -157,7 +171,7 @@ describe("HostnamePage", () => {
   describe("when selected product is not registrable", () => {
     it("does not render an alert about registration", () => {
       installerRender(<HostnamePage />);
-      expect(screen.queryByText("Custom alert:")).toBeNull();
+      expect(screen.queryByText("Info alert:")).toBeNull();
       expect(screen.queryByText("Product is already registered")).toBeNull();
     });
   });
@@ -170,7 +184,7 @@ describe("HostnamePage", () => {
 
     it("does not render an alert about registration", () => {
       installerRender(<HostnamePage />);
-      expect(screen.queryByText("Custom alert:")).toBeNull();
+      expect(screen.queryByText("Info alert:")).toBeNull();
       expect(screen.queryByText("Product is already registered")).toBeNull();
     });
   });
@@ -183,7 +197,7 @@ describe("HostnamePage", () => {
 
     it("renders an alert to let user know that changes will not have effect in the registration", () => {
       installerRender(<HostnamePage />);
-      screen.getByText("Custom alert:");
+      screen.getByText("Info alert:");
       screen.getByText("Product is already registered");
       screen.getByText(/will not take effect on registered value/);
     });
