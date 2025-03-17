@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 17 12:12:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed broken media check service (bsc#1239155)
+
+-------------------------------------------------------------------
 Wed Mar 12 17:17:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - (gh#agama-project/agama#2142)
