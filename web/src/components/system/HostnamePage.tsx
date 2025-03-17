@@ -25,14 +25,13 @@ import {
   ActionGroup,
   Alert,
   Button,
+  Checkbox,
   Content,
   Form,
   FormGroup,
-  HelperText,
-  HelperTextItem,
   TextInput,
 } from "@patternfly/react-core";
-import { Page } from "~/components/core";
+import { NestedContent, Page } from "~/components/core";
 import { useProduct, useRegistration } from "~/queries/software";
 import { useHostname, useHostnameMutation } from "~/queries/system";
 import { isEmpty } from "~/utils";
@@ -45,22 +44,22 @@ export default function HostnamePage() {
   const { mutateAsync: updateHostname } = useHostnameMutation();
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [hostname, setHostname] = useState<string>(
-    isEmpty(staticHostname) ? transientHostname : staticHostname,
-  );
+  const [settingHostname, setSettingHostname] = useState(!isEmpty(staticHostname));
+  const [hostname, setHostname] = useState(staticHostname);
 
+  const toggleSettingHostname = () => setSettingHostname(!settingHostname);
   const onHostnameChange = (_: SyntheticEvent, v: string) => setHostname(v);
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (isEmpty(hostname)) {
+    if (settingHostname && isEmpty(hostname)) {
       setError(_("Please provide a hostname"));
       return;
     }
 
-    updateHostname({ static: hostname })
+    updateHostname({ static: settingHostname ? hostname : "" })
       .then(() => setSuccess("Hostname successfully updated."))
       .catch(() =>
         setError("Something went wrong while updating the hostname. Please, try again."),
@@ -83,12 +82,29 @@ export default function HostnamePage() {
           {success && <Alert variant="success" isInline title={success} />}
           {error && <Alert variant="warning" isInline title={error} />}
 
-          <FormGroup fieldId="hostname" label={_("Hostname")}>
-            <TextInput id="hostname" value={hostname} onChange={onHostnameChange} />
-            <HelperText>
-              <HelperTextItem>{_("FIXME: a short help about hostname field")}</HelperTextItem>
-            </HelperText>
+          <FormGroup fieldId="settingHostname">
+            <Checkbox
+              id="hostname"
+              label={_("Use static hostname")}
+              description={_(
+                "Allows setting a permanent hostname that won't change with DHCP responses.",
+              )}
+              isChecked={settingHostname}
+              onChange={toggleSettingHostname}
+            />
           </FormGroup>
+          {settingHostname && (
+            <FormGroup fieldId="hostname">
+              <NestedContent>
+                <TextInput
+                  id="hostname"
+                  aria-label={_("Static hostname")}
+                  value={hostname}
+                  onChange={onHostnameChange}
+                />
+              </NestedContent>
+            </FormGroup>
+          )}
 
           <ActionGroup>
             <Button variant="primary" type="submit">

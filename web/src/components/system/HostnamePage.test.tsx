@@ -41,6 +41,7 @@ const sle: Product = {
 
 let selectedProduct: Product;
 let registrationInfoMock: RegistrationInfo;
+let mockStaticHostname: string;
 
 const mockHostnameMutation = jest.fn().mockResolvedValue(true);
 
@@ -61,7 +62,7 @@ jest.mock("~/queries/software", () => ({
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useHostname: () => ({ transient: "testing-node", static: "" }),
+  useHostname: () => ({ transient: "testing-node", static: mockStaticHostname }),
   useHostnameMutation: () => ({ mutateAsync: mockHostnameMutation }),
 }));
 
@@ -70,23 +71,72 @@ describe("HostnamePage", () => {
     selectedProduct = tw;
   });
 
-  it("allows setting the hostname", async () => {
-    const { user } = installerRender(<HostnamePage />);
-    const hostnameInput = screen.getByRole("textbox", { name: "Hostname" });
-    const acceptButton = screen.getByRole("button", { name: "Accept" });
-
-    expect(hostnameInput).toHaveValue("testing-node");
-
-    await user.clear(hostnameInput);
-    await user.type(hostnameInput, "testing-server");
-    await user.click(acceptButton);
-
-    expect(mockHostnameMutation).toHaveBeenCalledWith({
-      static: "testing-server",
+  describe("when static hostname is set", () => {
+    beforeEach(() => {
+      mockStaticHostname = "agama-server";
     });
 
-    screen.getByText("Success alert:");
-    screen.getByText("Hostname successfully updated.");
+    it("allows unsetting the static hostname", async () => {
+      const { user } = installerRender(<HostnamePage />);
+      const setHostnameCheckbox = screen.getByRole("checkbox", { name: "Use static hostname" });
+      const hostnameInput = screen.getByRole("textbox", { name: "Static hostname" });
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+
+      expect(setHostnameCheckbox).toBeChecked();
+      expect(hostnameInput).toHaveValue("agama-server");
+
+      await user.click(setHostnameCheckbox);
+      expect(setHostnameCheckbox).not.toBeChecked();
+
+      await user.click(acceptButton);
+
+      expect(mockHostnameMutation).toHaveBeenCalledWith({
+        static: "",
+      });
+      screen.getByText("Success alert:");
+      screen.getByText("Hostname successfully updated.");
+    });
+  });
+
+  describe("when static hostname is not set", () => {
+    beforeEach(() => {
+      mockStaticHostname = "";
+    });
+
+    it("allows setting the static hostname", async () => {
+      const { user } = installerRender(<HostnamePage />);
+      const setHostnameCheckbox = screen.getByRole("checkbox", { name: "Use static hostname" });
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      expect(setHostnameCheckbox).not.toBeChecked();
+
+      await user.click(setHostnameCheckbox);
+
+      expect(setHostnameCheckbox).toBeChecked();
+      const hostnameInput = screen.getByRole("textbox", { name: "Static hostname" });
+      expect(hostnameInput).toHaveValue("");
+
+      await user.type(hostnameInput, "testing-server");
+      await user.click(acceptButton);
+
+      expect(mockHostnameMutation).toHaveBeenCalledWith({
+        static: "testing-server",
+      });
+      screen.getByText("Success alert:");
+      screen.getByText("Hostname successfully updated.");
+    });
+
+    it("renders an error when static hostname is selected but left empty", async () => {
+      const { user } = installerRender(<HostnamePage />);
+      const setHostnameCheckbox = screen.getByRole("checkbox", { name: "Use static hostname" });
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+
+      await user.click(setHostnameCheckbox);
+      await user.click(acceptButton);
+
+      expect(mockHostnameMutation).not.toHaveBeenCalled();
+      screen.getByText("Warning alert:");
+      screen.getByText("Please provide a hostname");
+    });
   });
 
   it("renders an error if the update request fails", async () => {
@@ -97,25 +147,11 @@ describe("HostnamePage", () => {
     await user.click(acceptButton);
 
     expect(mockHostnameMutation).toHaveBeenCalledWith({
-      static: "testing-node",
+      static: "",
     });
 
     screen.getByText("Warning alert:");
     screen.getByText(/Something went wrong/);
-  });
-
-  it("renders an error when the hostname missing", async () => {
-    const { user } = installerRender(<HostnamePage />);
-    const hostnameInput = screen.getByRole("textbox", { name: "Hostname" });
-    const acceptButton = screen.getByRole("button", { name: "Accept" });
-
-    await user.clear(hostnameInput);
-    await user.click(acceptButton);
-
-    expect(mockHostnameMutation).not.toHaveBeenCalled();
-
-    screen.getByText("Warning alert:");
-    screen.getByText("Please provide a hostname");
   });
 
   describe("when selected product is not registrable", () => {
