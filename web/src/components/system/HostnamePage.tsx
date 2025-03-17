@@ -88,7 +88,9 @@ export default function HostnamePage() {
       <Page.Content>
         {product.registration && !isEmpty(registration.key) && (
           <Alert title={_("Product is already registered")} variant="info">
-            {_("Updating the hostname now will not take effect on registered value.")}
+            {_(
+              "Updating the hostname now or later will not change the currently registered hostname.",
+            )}
           </Alert>
         )}
 

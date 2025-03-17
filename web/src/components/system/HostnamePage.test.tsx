@@ -199,7 +199,7 @@ describe("HostnamePage", () => {
       installerRender(<HostnamePage />);
       screen.getByText("Info alert:");
       screen.getByText("Product is already registered");
-      screen.getByText(/will not take effect on registered value/);
+      screen.getByText(/will not change the currently registered hostname/);
     });
   });
 });
