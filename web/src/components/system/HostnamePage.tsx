@@ -69,13 +69,12 @@ export default function HostnamePage() {
       );
   };
 
-  // TRANSLATORS: a title for an alert that displays both the mode (permanent or
-  // temporary) and the value of the current hostname. %1$s will be replaced
-  // with the mode (e.g., "permanent" or "temporary"), and %2$s will hold the
-  // current hostname value.
+  // TRANSLATORS: a title for an alert that displays both the mode and the value
+  // of the current hostname. %1$s will be replaced with the mode (e.g.,
+  // "static" or "transient"), and %2$s will hold the current hostname value.
   const hostnameAlertTitle = sprintf(
-    _("Using a %1$s hostname: %2$s"),
-    hasStaticHostname ? _("permanent") : _("temporary"),
+    _("Using %1$s hostname: %2$s"),
+    hasStaticHostname ? _("static") : _("transient"),
     hasStaticHostname ? staticHostname : transientHostname,
   );
 
@@ -96,8 +95,8 @@ export default function HostnamePage() {
 
         <Alert variant="custom" title={hostnameAlertTitle}>
           {hasStaticHostname
-            ? _("This hostname is set permanently and will not change unless manually updated.")
-            : _("This hostname is temporary and may change after a reboot or network update.")}
+            ? _("This hostname is permanent and will not change unless manually updated.")
+            : _("This hostname is dynamic and may change after a reboot or network update.")}
         </Alert>
         <Form id="hostnameForm" onSubmit={submit}>
           {success && <Alert variant="success" isInline title={success} />}

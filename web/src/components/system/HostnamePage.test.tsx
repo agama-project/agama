@@ -80,7 +80,7 @@ describe("HostnamePage", () => {
       installerRender(<HostnamePage />);
       screen.getByText("Custom alert:");
       screen.getByText(/agama-server/);
-      screen.getByText(/is set permanently/);
+      screen.getByText(/is permanent/);
     });
 
     it("allows unsetting the static hostname", async () => {
@@ -114,7 +114,7 @@ describe("HostnamePage", () => {
       installerRender(<HostnamePage />);
       screen.getByText("Custom alert:");
       screen.getByText(/agama-node/);
-      screen.getByText(/is temporary/);
+      screen.getByText(/is dynamic/);
     });
 
     it("allows setting the static hostname", async () => {
