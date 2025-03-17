@@ -46,11 +46,32 @@ module Agama
       ProxySetup.instance.install
     end
 
+    def link_resolv
+      return unless File.exist?(RESOLV)
+
+      target = File.join(Yast::Installation.destdir, RESOLV)
+      source = File.join(RUN_NM_DIR, File.basename(RESOLV))
+      return if File.exist?(target)
+
+      FileUtils.touch RESOLV_FLAG
+      FileUtils.ln_s source, target
+    end
+
+    def unlink_resolv
+      return unless File.exist?(RESOLV_FLAG)
+
+      target = File.join(Yast::Installation.destdir, RESOLV)
+      FileUtils.rm_f target
+      FileUtils.rm_f RESOLV_FLAG
+    end
+
   private
 
     # @return [Logger]
     attr_reader :logger
 
+    RESOLV = "/etc/resolv.conf"
+    RESOLV_FLAG = "/run/agama/manage_resolv"
     ETC_NM_DIR = "/etc/NetworkManager"
     RUN_NM_DIR = "/run/NetworkManager"
     private_constant :ETC_NM_DIR
