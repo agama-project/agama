@@ -54,8 +54,8 @@ pub enum ProfileCommands {
     ///
     /// Schema is available at /usr/share/agama-cli/profile.schema.json
     Validate {
-        /// Local path to the JSON file to validate
-        path: PathBuf,
+        /// Json file, URL or path or `-` for standard input
+        url_or_path: String,
     },
 
     /// Evaluate a profile, injecting the hardware information from D-Bus
@@ -81,20 +81,6 @@ pub enum ProfileCommands {
         /// Specific directory where all processing happens. By default it uses a temporary directory
         dir: Option<PathBuf>,
     },
-}
-
-async fn validate(client: &BaseHTTPClient, path: &str) -> anyhow::Result<()> {
-    let url_path = format!("/profile/validate?path={}", path);
-    let result = client.post(&url_path, &()).await?;
-    match result {
-        ValidationResult::Valid => {
-            println!("{} {}", style("\u{2713}").bold().green(), result);
-        }
-        ValidationResult::NotValid(_) => {
-            eprintln!("{} {}", style("\u{2717}").bold().red(), result);
-        }
-    }
-    Ok(())
 }
 
 /// TODO better name
@@ -152,6 +138,43 @@ impl CliInput {
     }
 }
 
+async fn validate_client(
+    client: &BaseHTTPClient,
+    url_or_path: CliInput,
+) -> anyhow::Result<ValidationResult> {
+    let api_url_and_query = format!("/profile/validate{}", url_or_path.query_for_web());
+
+    let body = url_or_path.body_for_web()?;
+    // we use plain text .body instead of .json
+    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
+        .client
+        .request(
+            reqwest::Method::POST,
+            client.base_url.clone() + &api_url_and_query,
+        )
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| e.into());
+
+    let result = client.deserialize_or_error(response?).await;
+    result.map_err(|e| e.into())
+}
+
+async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
+    let validity = validate_client(client, url_or_path).await?;
+    match validity {
+        // TODO: ValidationResult is not actually a Result<T>, maybe rename
+        ValidationResult::Valid => {
+            println!("{} {}", style("\u{2713}").bold().green(), validity);
+        }
+        ValidationResult::NotValid(_) => {
+            eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
+        }
+    }
+    Ok(())
+}
+
 async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
     let api_url_and_query = format!("/profile/evaluate{}", url_or_path.query_for_web());
 
@@ -202,7 +225,7 @@ async fn import(
         pre_process_profile(&client, &url_string).await?
     };
 
-    validate(&client, &profile_json).await?;
+    validate(&client, CliInput::Full(profile_json.clone())).await?;
     store_settings(client, &profile_json).await?;
 
     Ok(())
@@ -272,7 +295,9 @@ async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<
 pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(client, url).await,
-        ProfileCommands::Validate { path } => validate(&client, &path.to_string_lossy()).await,
+        ProfileCommands::Validate { url_or_path } => {
+            validate(&client, CliInput::new(url_or_path)).await
+        }
         ProfileCommands::Evaluate { url_or_path } => {
             evaluate(&client, CliInput::new(url_or_path)).await
         }
