@@ -361,6 +361,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
 }
 
+.pf-v6-c-form__group {
+  justify-self: flex-start;
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
@@ -368,4 +372,9 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 div[aria-live]:empty {
   display: none;
+}
+
+input[type="checkbox"] {
+  inline-size: var(--pf-t--global--font--size--md);
+  block-size: var(--pf-t--global--font--size--md);
 }
