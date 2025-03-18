@@ -66,7 +66,7 @@ pub enum ProfileCommands {
         /// AutoYaST specific ones. Supported files are json, jsonnet, sh for Agama profiles and ERB, XML, and rules/classes directories
         /// for AutoYaST support.
         url: String,
-        /// Specific directory where all processing happens. By default it uses a temporary directory
+        /// Ignored, formerly the directory for intermadiate files.
         dir: Option<PathBuf>,
     },
 }
@@ -192,7 +192,6 @@ async fn evaluate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
 async fn import(
     client: BaseHTTPClient,
     url_string: String,
-    dir: Option<PathBuf>,
 ) -> anyhow::Result<()> {
     // useful for store_settings
     tokio::spawn(async move {
@@ -284,6 +283,6 @@ pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow:
         ProfileCommands::Evaluate { url_or_path } => {
             evaluate(&client, CliInput::new(url_or_path)).await
         }
-        ProfileCommands::Import { url, dir } => import(client, url, dir).await,
+        ProfileCommands::Import { url, dir: _ } => import(client, url).await,
     }
 }
