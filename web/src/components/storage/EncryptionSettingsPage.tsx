@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
 import {
@@ -51,7 +51,7 @@ export default function EncryptionSettingsPage() {
   const passwordRef = useRef<HTMLInputElement>();
   const formId = "encryptionSettingsForm";
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (encryptionConfig) {
       setIsEnabled(true);
       setMethod(encryptionConfig.method);
@@ -91,10 +91,10 @@ export default function EncryptionSettingsPage() {
   };
 
   // TRANSLATORS: TPM is the abbreviation of "Trusted Platform Module" technology
-  const tpm_label = _("Use TPM to decrypt automatically on each boot");
+  const tpmLabel = _("Use TPM to decrypt automatically on each boot");
   // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
   // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-  const tpm_explanation = _(
+  const tpmExplanation = _(
     "The password will not be needed to boot and access the data if the \
 TPM can verify the integrity of the system. TPM sealing requires the new system to be booted \
 directly on its first run.",
@@ -150,8 +150,8 @@ Platform Module (TPM), if available on your system.",
               />
               <Checkbox
                 id="tpm_encryption_method"
-                label={tpm_label}
-                description={isTpmAvailable ? tpm_explanation : _("Not available on your system.")}
+                label={tpmLabel}
+                description={isTpmAvailable ? tpmExplanation : _("Not available on your system.")}
                 isChecked={method === "tpmFde"}
                 isDisabled={!isTpmAvailable}
                 onChange={changeMethod}
