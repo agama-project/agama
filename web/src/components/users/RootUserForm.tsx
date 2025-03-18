@@ -25,16 +25,14 @@ import {
   ActionGroup,
   Alert,
   Button,
-  Card,
-  CardBody,
+  Checkbox,
   Content,
   FileUpload,
   Form,
   FormGroup,
-  Switch,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
-import { Page, PasswordAndConfirmationInput } from "~/components/core";
+import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import { useRootUser, useRootUserMutation } from "~/queries/users";
 import { RootUser } from "~/types/users";
 import { isEmpty } from "~/utils";
@@ -148,53 +146,47 @@ const RootUserForm = () => {
               ))}
             </Alert>
           )}
-          <FormGroup
-            label={
-              <Switch
-                label={_("Use password")}
-                isChecked={activeMethods.password}
-                onChange={() => toggleMethod("password")}
-              />
-            }
-          >
-            {activeMethods.password && (
-              <Card isPlain isCompact>
-                <CardBody>
-                  {usingHashedPassword ? (
-                    <Content isEditorial>
-                      {_("Using a hashed password.")}{" "}
-                      <Button variant="link" isInline onClick={() => setUsingHashedPassword(false)}>
-                        {_("Change")}
-                      </Button>
-                    </Content>
-                  ) : (
-                    <PasswordAndConfirmationInput
-                      inputRef={passwordRef}
-                      value={password}
-                      onChange={onPasswordChange}
-                      showErrors={false}
-                    />
-                  )}
-                </CardBody>
-              </Card>
-            )}
+          <FormGroup>
+            <Checkbox
+              id="setPassword"
+              label={_("Use password")}
+              isChecked={activeMethods.password}
+              onChange={() => toggleMethod("password")}
+            />
           </FormGroup>
+          {activeMethods.password && (
+            <NestedContent margin="mxLg">
+              {usingHashedPassword ? (
+                <Content isEditorial>
+                  {_("Using a hashed password.")}{" "}
+                  <Button variant="link" isInline onClick={() => setUsingHashedPassword(false)}>
+                    {_("Change")}
+                  </Button>
+                </Content>
+              ) : (
+                <PasswordAndConfirmationInput
+                  inputRef={passwordRef}
+                  value={password}
+                  onChange={onPasswordChange}
+                  showErrors={false}
+                />
+              )}
+            </NestedContent>
+          )}
 
-          <FormGroup
-            label={
-              <Switch
-                label={_("Use public SSH Key")}
-                isChecked={activeMethods.sshPublicKey}
-                onChange={() => toggleMethod("sshPublicKey")}
-              />
-            }
-          >
+          <FormGroup>
+            <Checkbox
+              id="setSSHKey"
+              label={_("Use public SSH Key")}
+              isChecked={activeMethods.sshPublicKey}
+              onChange={() => toggleMethod("sshPublicKey")}
+            />
+          </FormGroup>
+          <FormGroup>
             {activeMethods.sshPublicKey && (
-              <Card isPlain isCompact>
-                <CardBody>
-                  <SSHKeyField value={sshkey} onChange={setSshKey} />
-                </CardBody>
-              </Card>
+              <NestedContent margin="mxLg">
+                <SSHKeyField value={sshkey} onChange={setSshKey} />
+              </NestedContent>
             )}
           </FormGroup>
 
