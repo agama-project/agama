@@ -19,9 +19,8 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
-
-import { useQuery } from "@tanstack/react-query";
-import { configModelQuery } from "~/queries/storage/config-model";
+import useApiModel from "~/hooks/storage/api-model";
+import { QueryHookOptions } from "~/types/queries";
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 
@@ -29,7 +28,7 @@ const findDrive = (model: model.Model, name: string): model.Drive | undefined =>
   return model.drives.find((d) => d.name === name);
 };
 
-function buildDrive(driveData: apiModel.Drive, model: model.Model): model.Drive {
+function buildDrive(apiDrive: apiModel.Drive, model: model.Model): model.Drive {
   const findVolumeGroups = (targetName: string): model.VolumeGroup[] => {
     return model.volumeGroups.filter((v) =>
       v.getTargetDevices().some((d) => d.name === targetName),
@@ -37,8 +36,8 @@ function buildDrive(driveData: apiModel.Drive, model: model.Model): model.Drive 
   };
 
   return {
-    ...driveData,
-    getVolumeGroups: () => findVolumeGroups(driveData.name),
+    ...apiDrive,
+    getVolumeGroups: () => findVolumeGroups(apiDrive.name),
   };
 }
 
@@ -47,36 +46,36 @@ function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): model.Lo
 }
 
 function buildVolumeGroup(
-  volumeGroupData: apiModel.VolumeGroup,
+  apiVolumeGroup: apiModel.VolumeGroup,
   model: model.Model,
 ): model.VolumeGroup {
   const buildLogicalVolumes = (): model.LogicalVolume[] => {
-    return (volumeGroupData.logicalVolumes || []).map(buildLogicalVolume);
+    return (apiVolumeGroup.logicalVolumes || []).map(buildLogicalVolume);
   };
 
   const findTargetDevices = (): model.Drive[] => {
-    return (volumeGroupData.targetDevices || []).map((d) => findDrive(model, d)).filter((d) => d);
+    return (apiVolumeGroup.targetDevices || []).map((d) => findDrive(model, d)).filter((d) => d);
   };
 
   return {
-    ...volumeGroupData,
+    ...apiVolumeGroup,
     logicalVolumes: buildLogicalVolumes(),
     getTargetDevices: findTargetDevices,
   };
 }
 
-function buildModel(modelData: apiModel.Config): model.Model {
+function buildModel(apiModel: apiModel.Config): model.Model {
   const model: model.Model = {
     drives: [],
     volumeGroups: [],
   };
 
   const buildDrives = (): model.Drive[] => {
-    return (modelData.drives || []).map((d) => buildDrive(d, model));
+    return (apiModel.drives || []).map((d) => buildDrive(d, model));
   };
 
   const buildVolumeGroups = (): model.VolumeGroup[] => {
-    return (modelData.volumeGroups || []).map((v) => buildVolumeGroup(v, model));
+    return (apiModel.volumeGroups || []).map((v) => buildVolumeGroup(v, model));
   };
 
   // Important! Modify the model object instead of assigning a new one.
@@ -85,19 +84,19 @@ function buildModel(modelData: apiModel.Config): model.Model {
   return model;
 }
 
-function useModel(): model.Model | null {
-  const { data } = useQuery(configModelQuery);
-  return data ? buildModel(data) : null;
+function useModel(options?: QueryHookOptions): model.Model | null {
+  const apiModel = useApiModel(options);
+  return apiModel ? buildModel(apiModel) : null;
 }
 
-function useDrive(name: string): model.Drive | null {
-  const model = useModel();
+function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {
+  const model = useModel(options);
   const drive = model?.drives?.find((d) => d.name === name);
   return drive || null;
 }
 
-function useVolumeGroup(vgName: string): model.VolumeGroup | null {
-  const model = useModel();
+function useVolumeGroup(vgName: string, options?: QueryHookOptions): model.VolumeGroup | null {
+  const model = useModel(options);
   const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup || null;
 }
