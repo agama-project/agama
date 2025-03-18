@@ -102,17 +102,15 @@ const RegistrationFormSection = () => {
     e.preventDefault();
     setError(null);
 
-    const data: RegistrationInfo = { key };
-    if (provideEmail) data.email = email;
+    const data: RegistrationInfo = { key, email: provideEmail ? email : "" };
 
     // TODO: Replace with a more sophisticated mechanism to ensure all available
     // fields are filled and validated. Ideally, this should be a reusable solution
     // applicable to all Agama forms.
-    if (Object.values(data).some(isEmpty)) {
-      setError("All fields are required");
+    if (isEmpty(key) || (provideEmail && isEmpty(email))) {
+      setError("Some fields are missing. Please check and fill them.");
       return;
     }
-
     setLoading(true);
 
     // @ts-expect-error
