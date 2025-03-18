@@ -43,8 +43,8 @@ import {
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 const RemoveVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
-  const device = vg.targetDevices[0];
-  const desc = sprintf(_("The logical volumes will become partitions at %s"), device.name);
+  const device = vg.getTargetDevices()[0];
+  const desc = sprintf(_("The logical volumes will become partitions at %s"), device?.name);
 
   return (
     <MenuItem isDanger description={desc}>
