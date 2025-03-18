@@ -25,12 +25,21 @@ import { configModelQuery } from "~/queries/storage/config-model";
 import * as apiModel from "~/api/storage/types/config-model";
 import * as model from "~/types/storage/model";
 
-function findDrive(modelData: apiModel.Config, name: string): apiModel.Drive | undefined {
-  return modelData.drives.find((d) => d.name === name);
-}
+const findDrive = (model: model.Model, name: string): model.Drive | undefined => {
+  return model.drives.find((d) => d.name === name);
+};
 
-function buildDrive(driveData: apiModel.Drive): model.Drive {
-  return { ...driveData };
+function buildDrive(driveData: apiModel.Drive, model: model.Model): model.Drive {
+  const findVolumeGroups = (targetName: string): model.VolumeGroup[] => {
+    return model.volumeGroups.filter((v) =>
+      v.getTargetDevices().some((d) => d.name === targetName),
+    );
+  };
+
+  return {
+    ...driveData,
+    getVolumeGroups: () => findVolumeGroups(driveData.name),
+  };
 }
 
 function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): model.LogicalVolume {
@@ -39,42 +48,52 @@ function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): model.Lo
 
 function buildVolumeGroup(
   volumeGroupData: apiModel.VolumeGroup,
-  modelData: apiModel.Config,
+  model: model.Model,
 ): model.VolumeGroup {
-  const buildTargetDevices = (): model.Drive[] => {
-    const names = volumeGroupData.targetDevices || [];
-    return names
-      .map((n) => findDrive(modelData, n))
-      .filter((d) => d)
-      .map(buildDrive);
+  const buildLogicalVolumes = (): model.LogicalVolume[] => {
+    return (volumeGroupData.logicalVolumes || []).map(buildLogicalVolume);
   };
 
-  const buildLogicalVolumes = (): model.LogicalVolume[] => {
-    const logicalVolumesData = volumeGroupData.logicalVolumes || [];
-    return logicalVolumesData.map(buildLogicalVolume);
+  const findTargetDevices = (): model.Drive[] => {
+    return (volumeGroupData.targetDevices || []).map((d) => findDrive(model, d)).filter((d) => d);
   };
 
   return {
     ...volumeGroupData,
-    targetDevices: buildTargetDevices(),
     logicalVolumes: buildLogicalVolumes(),
+    getTargetDevices: findTargetDevices,
   };
 }
 
 function buildModel(modelData: apiModel.Config): model.Model {
-  const buildVolumeGroups = (): model.VolumeGroup[] => {
-    const volumeGroupsData = modelData.volumeGroups || [];
-    return volumeGroupsData.map((v) => buildVolumeGroup(v, modelData));
+  const model: model.Model = {
+    drives: [],
+    volumeGroups: [],
   };
 
-  return {
-    volumeGroups: buildVolumeGroups(),
+  const buildDrives = (): model.Drive[] => {
+    return (modelData.drives || []).map((d) => buildDrive(d, model));
   };
+
+  const buildVolumeGroups = (): model.VolumeGroup[] => {
+    return (modelData.volumeGroups || []).map((v) => buildVolumeGroup(v, model));
+  };
+
+  // Important! Modify the model object instead of assigning a new one.
+  model.drives = buildDrives();
+  model.volumeGroups = buildVolumeGroups();
+  return model;
 }
 
 function useModel(): model.Model | null {
   const { data } = useQuery(configModelQuery);
   return data ? buildModel(data) : null;
+}
+
+function useDrive(name: string): model.Drive | null {
+  const model = useModel();
+  const drive = model?.drives?.find((d) => d.name === name);
+  return drive || null;
 }
 
 function useVolumeGroup(vgName: string): model.VolumeGroup | null {
@@ -85,4 +104,4 @@ function useVolumeGroup(vgName: string): model.VolumeGroup | null {
 
 export default useModel;
 
-export { useVolumeGroup };
+export { useDrive, useVolumeGroup };
