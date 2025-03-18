@@ -135,6 +135,20 @@ module Agama
           backend.registration.email || ""
         end
 
+        # list of already registered addons
+        #
+        # @return [Array<Array<String>>] each list contains three items: addon id, version and
+        # registration code
+        def registered_addons
+          backend.registration.registered_addons.map do |addon|
+            [
+              addon.name,
+              addon.version,
+              addon.reg_code
+            ]
+          end
+        end
+
         # Tries to register with the given registration code.
         #
         # @note Software is not automatically probed after registering the product. The reason is
@@ -161,12 +175,57 @@ module Agama
           if !backend.product
             [1, "Product not selected yet"]
           elsif backend.registration.reg_code
-            [2, "Product already registered"]
+            # report success and do nothing when already registered with the same code
+            if backend.registration.reg_code == reg_code
+              [0, ""]
+            else
+              [2, "Product already registered"]
+            end
           elsif !backend.product.registration
             [3, "Product does not require registration"]
           else
             connect_result(first_error_code: 4) do
               backend.registration.register(reg_code, email: email)
+            end
+          end
+        end
+
+        # Tries to register the given addon. The base product must be already registered and if the
+        # addon requires some other addon it must be already registered as well. (The code does not
+        # check any dependencies.)
+        #
+        # @note Software is not automatically probed after registering the product. The reason is
+        #   to avoid dealing with possible probing issues in the registration D-Bus API. Clients
+        #   have to explicitly call to #Probe after registering a product.
+        #
+        # @param name [String] name (id) of the addon, e.g. "sle-ha"
+        # @param version [String] version of the addon, e.g. "16.0"
+        # @param reg_code [String] registration code, if the code is not required for the addon use
+        # an empty string ("")
+        #
+        # @return [Array(Integer, String)] Result code and a description.
+        #   Possible result codes:
+        #   0: success
+        #   1: a base product was not selected yet
+        #   2: the base product does not require registration
+        #   3: the base product was not registered yet
+        #   4: network error
+        #   5: timeout error
+        #   6: api error
+        #   7: missing credentials
+        #   8: incorrect credentials
+        #   9: invalid certificate
+        #   10: internal error (e.g., parsing json data)
+        def register_addon(name, version, reg_code)
+          if !backend.product
+            [1, "Product not selected yet"]
+          elsif !backend.product.registration
+            [2, "Base product does not require registration"]
+          elsif !backend.registration.reg_code
+            [3, "Base product not registered yet"]
+          else
+            connect_result(first_error_code: 4) do
+              backend.registration.register_addon(name, version, reg_code)
             end
           end
         end
@@ -209,8 +268,14 @@ module Agama
 
           dbus_reader(:email, "s")
 
+          dbus_reader(:registered_addons, "a(sss)")
+
           dbus_method(:Register, "in reg_code:s, in options:a{sv}, out result:(us)") do |*args|
             [register(args[0], email: args[1]["Email"])]
+          end
+
+          dbus_method(:RegisterAddon, "in name:s, in version:s, in reg_code:s, out result:(us)") do |*args|
+            [register_addon(*args)]
           end
 
           dbus_method(:Deregister, "out result:(us)") { [deregister] }

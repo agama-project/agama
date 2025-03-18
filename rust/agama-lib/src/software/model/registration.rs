@@ -29,6 +29,15 @@ pub struct RegistrationParams {
     pub email: String,
 }
 
+/// Addon registration
+#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct AddonParams {
+    pub id: String,
+    pub version: String,
+    pub registration_code: Option<String>,
+}
+
 /// Information about registration configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]

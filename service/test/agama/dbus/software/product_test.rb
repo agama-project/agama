@@ -174,12 +174,14 @@ describe Agama::DBus::Software::Product do
       let(:repositories) { [] }
 
       context "if the product is already registered" do
-        before do
-          allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+        it "returns result code 2 and description if the code is different" do
+          allow(backend.registration).to receive(:reg_code).and_return("123XX432YY")
+          expect(subject.register("123XX432")).to contain_exactly(2, /product already registered/i)
         end
 
-        it "returns result code 2 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(2, /product already registered/i)
+        it "returns result code 0 and empty error if the code is the same" do
+          allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+          expect(subject.register("123XX432")).to contain_exactly(0, "")
         end
       end
 
@@ -225,7 +227,7 @@ describe Agama::DBus::Software::Product do
         end
       end
 
-      context "if there is a missing credials error" do
+      context "if there is a missing credentials error" do
         before do
           allow(backend.registration)
             .to receive(:register).and_raise(SUSE::Connect::MissingSccCredentialsFile)
@@ -236,7 +238,7 @@ describe Agama::DBus::Software::Product do
         end
       end
 
-      context "if there is an incorrect credials error" do
+      context "if there is an incorrect credentials error" do
         before do
           allow(backend.registration)
             .to receive(:register).and_raise(SUSE::Connect::MalformedSccCredentialsFile)
@@ -335,7 +337,7 @@ describe Agama::DBus::Software::Product do
         end
       end
 
-      context "if there is a missing credials error" do
+      context "if there is a missing credentials error" do
         before do
           allow(backend.registration)
             .to receive(:deregister).and_raise(SUSE::Connect::MissingSccCredentialsFile)
@@ -346,7 +348,7 @@ describe Agama::DBus::Software::Product do
         end
       end
 
-      context "if there is an incorrect credials error" do
+      context "if there is an incorrect credentials error" do
         before do
           allow(backend.registration)
             .to receive(:deregister).and_raise(SUSE::Connect::MalformedSccCredentialsFile)

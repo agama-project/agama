@@ -38,8 +38,8 @@ use agama_lib::{
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
-            License, LicenseContent, LicensesRepo, RegistrationError, RegistrationInfo,
-            RegistrationParams, Repository, ResolvableParams, SoftwareConfig,
+            AddonParams, License, LicenseContent, LicensesRepo, RegistrationError,
+            RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig,
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -213,6 +213,11 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
             "/registration",
             get(get_registration).post(register).delete(deregister),
         )
+        .route("/registration/addons", post(register_addon))
+        .route(
+            "/registration/addons/registered",
+            get(get_registered_addons),
+        )
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
@@ -291,7 +296,7 @@ async fn get_registration(
     path = "/registration",
     context_path = "/api/software",
     responses(
-        (status = 204, description = "registration successfull"),
+        (status = 204, description = "registration successful"),
         (status = 422, description = "Registration failed. Details are in body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
@@ -312,6 +317,55 @@ async fn register(
     }
 }
 
+/// returns list of registered addons
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/registration/addons/registered",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of registered addons, used by Agama CLI", body = Vec<AddonParams>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_registered_addons(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<Vec<AddonParams>>, Error> {
+    let result = state.product.registered_addons().await?;
+
+    Ok(Json(result))
+}
+
+/// Register an addon
+///
+/// * `state`: service state.
+#[utoipa::path(
+    post,
+    path = "/registration/addons",
+    context_path = "/api/software",
+    responses(
+        (status = 204, description = "registration successful"),
+        (status = 422, description = "Registration failed. Details are in body", body = RegistrationError),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn register_addon(
+    State(state): State<SoftwareState<'_>>,
+    Json(addon): Json<AddonParams>,
+) -> Result<impl IntoResponse, Error> {
+    let (id, message) = state.product.register_addon(&addon).await?;
+    if id == 0 {
+        Ok((StatusCode::NO_CONTENT, ().into_response()))
+    } else {
+        let details = RegistrationError { id, message };
+        Ok((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(details).into_response(),
+        ))
+    }
+}
+
 /// Deregister product
 ///
 /// * `state`: service state.
@@ -320,7 +374,7 @@ async fn register(
     path = "/registration",
     context_path = "/api/software",
     responses(
-        (status = 200, description = "deregistration successfull"),
+        (status = 200, description = "deregistration successful"),
         (status = 422, description = "De-registration failed. Details are in body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
