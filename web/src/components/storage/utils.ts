@@ -33,7 +33,7 @@
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { PartitionSlot, StorageDevice } from "~/types/storage";
-import { configModel, Volume } from "~/api/storage/types";
+import { apiModel, Volume } from "~/api/storage/types";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -296,7 +296,7 @@ const filesystemLabel = (fstype: string): string => {
  *
  * @returns undefined if there is not enough information
  */
-const filesystemType = (filesystem: configModel.Filesystem): string | undefined => {
+const filesystemType = (filesystem: apiModel.Filesystem): string | undefined => {
   if (filesystem.type) {
     if (filesystem.snapshots) return _("Btrfs with snapshots");
 
@@ -324,7 +324,7 @@ const formattedPath = (path: string): string => {
 /**
  * Representation of the given size limits.
  */
-const sizeDescription = (size: configModel.Size): string => {
+const sizeDescription = (size: apiModel.Size): string => {
   const minSize = deviceSize(size.min);
   const maxSize = size.max ? deviceSize(size.max) : undefined;
 

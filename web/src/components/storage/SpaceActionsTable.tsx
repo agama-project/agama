@@ -43,18 +43,18 @@ import {
 } from "~/components/storage/device-utils";
 import { Icon } from "~/components/layout";
 import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useConfigModel } from "~/queries/storage/config-model";
 
-const isUsedPartition = (partition: configModel.Partition): boolean => {
+const isUsedPartition = (partition: apiModel.Partition): boolean => {
   return partition.filesystem !== undefined;
 };
 
 // FIXME: there is too much logic here. This is one of those cases that should be considered
 // when restructuring the hooks and queries.
-const useReusedPartition = (name: string): configModel.Partition | undefined => {
+const useReusedPartition = (name: string): apiModel.Partition | undefined => {
   const model = useConfigModel();
 
   if (!model || !name) return;

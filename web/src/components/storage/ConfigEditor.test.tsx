@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import ConfigEditor from "~/components/storage/ConfigEditor";
 import { StorageDevice } from "~/types/storage";
-import * as apiModel from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 
 const disk: StorageDevice = {
   sid: 60,

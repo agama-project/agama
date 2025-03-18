@@ -25,7 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import PartitionPage from "./PartitionPage";
 import { StorageDevice } from "~/types/storage";
-import { configModel, Volume } from "~/api/storage/types";
+import { apiModel, Volume } from "~/api/storage/types";
 import { gib } from "./utils";
 
 jest.mock("~/queries/issues", () => ({
@@ -76,7 +76,7 @@ const sda: StorageDevice = {
   description: "",
 };
 
-const mockDrive: configModel.Drive = {
+const mockDrive: apiModel.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: [
@@ -99,7 +99,7 @@ const mockDrive: configModel.Drive = {
   ],
 };
 
-const mockSolvedConfigModel: configModel.Config = {
+const mockSolvedConfigModel: apiModel.Config = {
   drives: [mockDrive],
 };
 

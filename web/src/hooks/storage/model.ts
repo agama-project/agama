@@ -22,7 +22,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { configModelQuery } from "~/queries/storage/config-model";
-import * as apiModel from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 import * as model from "~/types/storage/model";
 
 const findDrive = (model: model.Model, name: string): model.Drive | undefined => {

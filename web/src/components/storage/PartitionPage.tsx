@@ -65,7 +65,7 @@ import {
 } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { compact, uniq } from "~/utils";
 
@@ -101,14 +101,14 @@ type ErrorsHandler = {
   getVisibleError: (id: string) => Error | undefined;
 };
 
-function toPartitionConfig(value: FormValue): configModel.Partition {
+function toPartitionConfig(value: FormValue): apiModel.Partition {
   const name = (): string | undefined => {
     if (value.target === NO_VALUE || value.target === NEW_PARTITION) return undefined;
 
     return value.target;
   };
 
-  const filesystemType = (): configModel.FilesystemType | undefined => {
+  const filesystemType = (): apiModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
@@ -119,10 +119,10 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
      *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
      *  config model. The schema for the volumes will define the explicit list of filesystem types.
      */
-    return value.filesystem as configModel.FilesystemType;
+    return value.filesystem as apiModel.FilesystemType;
   };
 
-  const filesystem = (): configModel.Filesystem | undefined => {
+  const filesystem = (): apiModel.Filesystem | undefined => {
     if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true, default: true };
 
     const type = filesystemType();
@@ -136,7 +136,7 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
     };
   };
 
-  const size = (): configModel.Size | undefined => {
+  const size = (): apiModel.Size | undefined => {
     if (value.sizeOption === "auto") return undefined;
     if (value.minSize === NO_VALUE) return undefined;
 
@@ -155,7 +155,7 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
   };
 }
 
-function toFormValue(partitionConfig: configModel.Partition): FormValue {
+function toFormValue(partitionConfig: apiModel.Partition): FormValue {
   const mountPoint = (): string => partitionConfig.mountPath || NO_VALUE;
 
   const target = (): string => partitionConfig.name || NEW_PARTITION;
@@ -219,7 +219,7 @@ function useDefaultFilesystem(mountPoint: string): string {
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
-function useInitialPartitionConfig(): configModel.Partition | null {
+function useInitialPartitionConfig(): apiModel.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useDevice();
   const drive = useDrive(device?.name);
@@ -383,7 +383,7 @@ function useErrors(value: FormValue): ErrorsHandler {
   return { errors, getError, getVisibleError };
 }
 
-function useSolvedModel(value: FormValue): configModel.Config | null {
+function useSolvedModel(value: FormValue): apiModel.Config | null {
   const device = useDevice();
   const model = useConfigModel();
   const { errors } = useErrors(value);
@@ -392,7 +392,7 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
   partitionConfig.size = undefined;
   if (partitionConfig.filesystem) partitionConfig.filesystem.label = undefined;
 
-  let sparseModel: configModel.Config | undefined;
+  let sparseModel: apiModel.Config | undefined;
 
   if (device && !errors.length && value.target === NEW_PARTITION && value.filesystem !== NO_VALUE) {
     /**
@@ -417,7 +417,7 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
   return solvedModel;
 }
 
-function useSolvedPartitionConfig(value: FormValue): configModel.Partition | undefined {
+function useSolvedPartitionConfig(value: FormValue): apiModel.Partition | undefined {
   const model = useSolvedModel(value);
   const device = useDevice();
   const drive = model?.drives?.find((d) => d.name === device.name);

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import * as apiModel from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 
 type Model = {
   drives: Drive[];

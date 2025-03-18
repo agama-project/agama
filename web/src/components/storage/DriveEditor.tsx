@@ -26,7 +26,7 @@ import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
 import { useAvailableDevices } from "~/queries/storage";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive } from "~/queries/storage/config-model";
@@ -54,7 +54,7 @@ import {
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-export type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
+export type DriveEditorProps = { drive: apiModel.Drive; driveDevice: StorageDevice };
 
 // FIXME: Presentation is quite poor
 const SpacePolicySelectorIntro = ({ device }) => {
@@ -82,7 +82,7 @@ const SpacePolicySelectorIntro = ({ device }) => {
 const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   const navigate = useNavigate();
   const { setSpacePolicy } = useDrive(drive.name);
-  const onSpacePolicyChange = (spacePolicy: configModel.SpacePolicy) => {
+  const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
       return navigate(generatePath(PATHS.findSpace, { id: baseName(drive.name) }));
     } else {
@@ -126,7 +126,7 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
+const SearchSelectorIntro = ({ drive }: { drive: apiModel.Drive }) => {
   /** @todo Replace the useDrive hook from /queries by the hook from /hooks. */
   const volumeGroups = useDriveModel(drive.name)?.getVolumeGroups() || [];
   const driveModel = useDrive(drive.name);
@@ -393,7 +393,7 @@ const DriveSelector = ({ drive, selected, toggleAriaLabel }) => {
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   const { isBoot, hasPv } = useDrive(drive.name);
 
-  const text = (drive: configModel.Drive): string => {
+  const text = (drive: apiModel.Drive): string => {
     if (driveUtils.hasRoot(drive)) {
       if (hasPv) {
         if (isBoot) {

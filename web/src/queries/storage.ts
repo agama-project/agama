@@ -34,8 +34,7 @@ import {
 } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
 import { useInstallerClient } from "~/context/installer";
-import { config, ProductParams, Volume } from "~/api/storage/types";
-import { EncryptionMethod } from "~/api/storage/types/config-model";
+import { config, apiModel, ProductParams, Volume } from "~/api/storage/types";
 import { Action, StorageDevice } from "~/types/storage";
 import { QueryHookOptions } from "~/types/queries";
 
@@ -154,10 +153,10 @@ const useProductParams = (options?: QueryHookOptions): ProductParams => {
  * @note The ids of the encryption methods reported by product params are different to the
  * EncryptionMethod values. This should be fixed at the bakcend size.
  */
-const useEncryptionMethods = (options?: QueryHookOptions): EncryptionMethod[] => {
+const useEncryptionMethods = (options?: QueryHookOptions): apiModel.EncryptionMethod[] => {
   const productParams = useProductParams(options);
 
-  const encryptionMethods = React.useMemo((): EncryptionMethod[] => {
+  const encryptionMethods = React.useMemo((): apiModel.EncryptionMethod[] => {
     const conversions = {
       luks1: "luks1",
       luks2: "luks2",
