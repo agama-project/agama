@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 18 10:59:20 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix registration form issue when email is not provided
+  (gh#agama-project/agama#2172)
+
+-------------------------------------------------------------------
 Fri Mar 14 11:05:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Allow updating hostname from web user interface
