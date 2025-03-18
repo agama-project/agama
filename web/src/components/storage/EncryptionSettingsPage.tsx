@@ -22,8 +22,8 @@
 
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ActionGroup, Alert, Checkbox, Content, Form, Switch } from "@patternfly/react-core";
-import { Page, PasswordAndConfirmationInput } from "~/components/core";
+import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
+import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import { useEncryptionMethods } from "~/queries/storage";
 import { useEncryption } from "~/queries/storage/config-model";
 import { EncryptionMethod } from "~/api/storage/types/config-model";
@@ -103,12 +103,6 @@ directly on its first run.",
     <Page>
       <Page.Header>
         <Content component="h2">{_("Encryption settings")}</Content>
-        <Content component="small">
-          {_(
-            "Full Disk Encryption (FDE) allows to protect the information stored \
-at the new file systems, including data, programs, and system files.",
-          )}
-        </Content>
       </Page.Header>
 
       <Page.Content>
@@ -120,28 +114,36 @@ at the new file systems, including data, programs, and system files.",
               ))}
             </Alert>
           )}
-          <Switch
+          <Checkbox
+            id="encryption"
             label={_("Encrypt the system")}
+            description={_(
+              "Full Disk Encryption (FDE) allows to protect the information stored \
+at the new file systems, including data, programs, and system files.",
+            )}
             isChecked={isEnabled}
             onChange={() => setIsEnabled(!isEnabled)}
           />
-          <PasswordAndConfirmationInput
-            inputRef={passwordRef}
-            initialValue={encryptionConfig?.password}
-            value={password}
-            onChange={changePassword}
-            isDisabled={!isEnabled}
-            showErrors={false}
-          />
-          {isTpmAvailable && (
-            <Checkbox
-              id="tpm_encryption_method"
-              label={tpm_label}
-              description={tpm_explanation}
-              isChecked={method === "tpmFde"}
-              isDisabled={!isEnabled}
-              onChange={changeMethod}
-            />
+          {isEnabled && (
+            <NestedContent margin="mxLg">
+              <PasswordAndConfirmationInput
+                inputRef={passwordRef}
+                initialValue={encryptionConfig?.password}
+                value={password}
+                onChange={changePassword}
+                isDisabled={!isEnabled}
+                showErrors={false}
+              />
+              {isTpmAvailable && (
+                <Checkbox
+                  id="tpm_encryption_method"
+                  label={tpm_label}
+                  description={tpm_explanation}
+                  isChecked={method === "tpmFde"}
+                  onChange={changeMethod}
+                />
+              )}
+            </NestedContent>
           )}
           <ActionGroup>
             <Page.Submit form={formId} />

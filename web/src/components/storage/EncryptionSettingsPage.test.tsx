@@ -78,9 +78,9 @@ describe("EncryptionSettingsPage", () => {
 
     it("allows enabling the encryption", async () => {
       const { user } = installerRender(<EncryptionSettingsPage />);
-      const toggle = screen.getByRole("switch", { name: "Encrypt the system" });
-      expect(toggle).not.toBeChecked();
-      await user.click(toggle);
+      const encryptionCheckbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
+      expect(encryptionCheckbox).not.toBeChecked();
+      await user.click(encryptionCheckbox);
       const passwordInput = screen.getByLabelText("Password");
       const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
       fireEvent.change(passwordInput, { target: { value: "12345" } });
@@ -96,25 +96,15 @@ describe("EncryptionSettingsPage", () => {
       mockUseEncryption.mockReturnValue(mockLuks2Encryption);
     });
 
-    describe("and user chooses to not use encryption", () => {
-      it("allows disabling the encryption", async () => {
-        const { user } = installerRender(<EncryptionSettingsPage />);
-        const toggle = screen.getByRole("switch", { name: "Encrypt the system" });
-        expect(toggle).toBeChecked();
-        await user.click(toggle);
-        const passwordInput = screen.getByLabelText("Password");
-        const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
-        const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
+    it("allows disabling the encryption", async () => {
+      const { user } = installerRender(<EncryptionSettingsPage />);
+      const encryptionCheckbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
+      expect(encryptionCheckbox).toBeChecked();
+      await user.click(encryptionCheckbox);
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      await user.click(acceptButton);
 
-        expect(passwordInput).toBeDisabled();
-        expect(passwordConfirmationInput).toBeDisabled();
-        expect(tpmCheckbox).toBeDisabled();
-
-        const acceptButton = screen.getByRole("button", { name: "Accept" });
-        await user.click(acceptButton);
-
-        expect(mockLuks2Encryption.disable).toHaveBeenCalled();
-      });
+      expect(mockLuks2Encryption.disable).toHaveBeenCalled();
     });
   });
 
@@ -142,7 +132,7 @@ describe("EncryptionSettingsPage", () => {
 
     it("does not offer TPM", () => {
       installerRender(<EncryptionSettingsPage />);
-      expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).toBeNull();
     });
   });
 });
