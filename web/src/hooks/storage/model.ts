@@ -23,7 +23,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { configModelQuery } from "~/queries/storage/config-model";
 import { apiModel } from "~/api/storage/types";
-import * as model from "~/types/storage/model";
+import { model } from "~/types/storage";
 
 const findDrive = (model: model.Model, name: string): model.Drive | undefined => {
   return model.drives.find((d) => d.name === name);
@@ -102,6 +102,4 @@ function useVolumeGroup(vgName: string): model.VolumeGroup | null {
   return volumeGroup || null;
 }
 
-export default useModel;
-
-export { useDrive, useVolumeGroup };
+export { useModel as default, useDrive, useVolumeGroup };

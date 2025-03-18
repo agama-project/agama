@@ -24,7 +24,7 @@ import React from "react";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { apiModel } from "~/api/storage/types";
-import * as model from "~/types/storage/model";
+import { model } from "~/types/storage";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useVolumeGroup } from "~/hooks/storage/model";
 import DeviceMenu from "~/components/storage/DeviceMenu";
