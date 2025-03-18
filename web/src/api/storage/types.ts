@@ -22,4 +22,4 @@
 
 export * from "./types/openapi";
 export * as config from "./types/config";
-export * as apiModel from "./types/config-model";
+export * as apiModel from "./types/model";
