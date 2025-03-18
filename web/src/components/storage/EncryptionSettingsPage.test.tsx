@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, fireEvent } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import EncryptionSettingsPage from "./EncryptionSettingsPage";
 import { EncryptionHook } from "~/queries/storage/config-model";
@@ -83,8 +83,8 @@ describe("EncryptionSettingsPage", () => {
       await user.click(encryptionCheckbox);
       const passwordInput = screen.getByLabelText("Password");
       const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
-      fireEvent.change(passwordInput, { target: { value: "12345" } });
-      fireEvent.change(passwordConfirmationInput, { target: { value: "12345" } });
+      await user.type(passwordInput, "12345");
+      await user.type(passwordConfirmationInput, "12345");
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
       expect(mockNoEncryption.enable).toHaveBeenCalledWith("luks2", "12345");

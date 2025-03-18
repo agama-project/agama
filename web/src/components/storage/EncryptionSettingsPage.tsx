@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
@@ -46,7 +46,7 @@ export default function EncryptionSettingsPage() {
   const passwordRef = useRef<HTMLInputElement>();
   const formId = "encryptionSettingsForm";
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (encryptionConfig) {
       setIsEnabled(true);
       setMethod(encryptionConfig.method);
@@ -86,12 +86,10 @@ export default function EncryptionSettingsPage() {
   };
 
   // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-  const tpm_label = _(
-    "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot",
-  );
+  const tpmLabel = _("Use the Trusted Platform Module (TPM) to decrypt automatically on each boot");
   // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
   // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-  const tpm_explanation = _(
+  const tpmExplanation = _(
     "The password will not be needed to boot and access the data if the \
 TPM can verify the integrity of the system. TPM sealing requires the new system to be booted \
 directly on its first run.",
@@ -136,9 +134,9 @@ at the new file systems, including data, programs, and system files.",
               />
               {isTpmAvailable && (
                 <Checkbox
-                  id="tpm_encryption_method"
-                  label={tpm_label}
-                  description={tpm_explanation}
+                  id="tpmEncryptionMethod"
+                  label={tpmLabel}
+                  description={tpmExplanation}
                   isChecked={method === "tpmFde"}
                   onChange={changeMethod}
                 />
