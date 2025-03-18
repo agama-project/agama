@@ -22,8 +22,13 @@
 
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ActionGroup, Alert, Checkbox, Content, Form, Switch } from "@patternfly/react-core";
-import { Page, PasswordAndConfirmationInput } from "~/components/core";
+import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
+import {
+  NestedContent,
+  Page,
+  PasswordAndConfirmationInput,
+  SubtleContent,
+} from "~/components/core";
 import { useEncryptionMethods } from "~/queries/storage";
 import { useEncryption } from "~/queries/storage/config-model";
 import { EncryptionMethod } from "~/api/storage/types/config-model";
@@ -85,10 +90,8 @@ export default function EncryptionSettingsPage() {
     navigate("..");
   };
 
-  // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-  const tpm_label = _(
-    "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot",
-  );
+  // TRANSLATORS: TPM is the abbreviation of "Trusted Platform Module" technology
+  const tpm_label = _("Use TPM to decrypt automatically on each boot");
   // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
   // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
   const tpm_explanation = _(
@@ -103,12 +106,6 @@ directly on its first run.",
     <Page>
       <Page.Header>
         <Content component="h2">{_("Encryption settings")}</Content>
-        <Content component="small">
-          {_(
-            "Full Disk Encryption (FDE) allows to protect the information stored \
-at the new file systems, including data, programs, and system files.",
-          )}
-        </Content>
       </Page.Header>
 
       <Page.Content>
@@ -120,28 +117,46 @@ at the new file systems, including data, programs, and system files.",
               ))}
             </Alert>
           )}
-          <Switch
+          <Checkbox
+            id="encryption"
             label={_("Encrypt the system")}
+            description={_(
+              "Allows to protect the information stored \
+at the new file systems, including data, programs, and system files.",
+            )}
+            body={
+              <SubtleContent>
+                {
+                  // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
+                  _(
+                    "Enabling encryption may allow you to use Trusted \
+Platform Module (TPM), if available on your system.",
+                  )
+                }
+              </SubtleContent>
+            }
             isChecked={isEnabled}
             onChange={() => setIsEnabled(!isEnabled)}
           />
-          <PasswordAndConfirmationInput
-            inputRef={passwordRef}
-            initialValue={encryptionConfig?.password}
-            value={password}
-            onChange={changePassword}
-            isDisabled={!isEnabled}
-            showErrors={false}
-          />
-          {isTpmAvailable && (
-            <Checkbox
-              id="tpm_encryption_method"
-              label={tpm_label}
-              description={tpm_explanation}
-              isChecked={method === "tpmFde"}
-              isDisabled={!isEnabled}
-              onChange={changeMethod}
-            />
+          {isEnabled && (
+            <NestedContent margin="mxLg">
+              <PasswordAndConfirmationInput
+                inputRef={passwordRef}
+                initialValue={encryptionConfig?.password}
+                value={password}
+                onChange={changePassword}
+                isDisabled={!isEnabled}
+                showErrors={false}
+              />
+              <Checkbox
+                id="tpm_encryption_method"
+                label={tpm_label}
+                description={isTpmAvailable ? tpm_explanation : _("Not available on your system.")}
+                isChecked={method === "tpmFde"}
+                isDisabled={!isTpmAvailable}
+                onChange={changeMethod}
+              />
+            </NestedContent>
           )}
           <ActionGroup>
             <Page.Submit form={formId} />
