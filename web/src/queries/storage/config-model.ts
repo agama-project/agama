@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+/** @deprecated These hooks will be replaced by new hooks at ~/hooks/storage/ */
+
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
 import { configModel, Volume } from "~/api/storage/types";
