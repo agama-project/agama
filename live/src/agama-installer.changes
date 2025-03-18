@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 18 16:32:07 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove /etc/nvme/host* files from the image (bsc#1238038)
+
+-------------------------------------------------------------------
 Mon Mar 17 12:12:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed broken media check service (bsc#1239155)
