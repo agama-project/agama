@@ -325,9 +325,11 @@ function setSpacePolicy(
 }
 
 function usedMountPaths(model: configModel.Config): string[] {
-  if (!model.drives) return [];
+  const drives = model.drives || [];
+  const volumeGroups = model.volumeGroups || [];
+  const logicalVolumes = volumeGroups.flatMap((v) => v.logicalVolumes || []);
 
-  return model.drives.flatMap(allMountPaths);
+  return [...drives, ...logicalVolumes].flatMap(allMountPaths);
 }
 
 function unusedMountPaths(model: configModel.Config, volumes: Volume[]): string[] {
