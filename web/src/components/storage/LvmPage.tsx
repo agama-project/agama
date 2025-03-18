@@ -21,6 +21,7 @@
  */
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ActionGroup,
   Checkbox,
@@ -34,19 +35,22 @@ import {
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/queries/storage";
+import { StorageDevice } from "~/types/storage";
+import useAddVolumeGroup from "~/hooks/storage/add-volume-group";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
+import { STORAGE as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
  * Form for creating a LVM volume group
  */
 export default function LvmPage() {
+  const navigate = useNavigate();
+  const addVolumeGroup = useAddVolumeGroup();
   const allDevices = useAvailableDevices();
   const [name, setName] = useState("system");
-  // FIXME: decide what to store, if the device object or just its sid and type
-  // the state accordingly
-  const [selectedDevices, setSelectedDevices] = useState([]);
+  const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
 
   const updateName = (_, value) => setName(value);
@@ -59,7 +63,12 @@ export default function LvmPage() {
   };
 
   const onSubmit = () => {
-    console.log("TODO: implement the logic to be triggered when LVM form is submitted");
+    addVolumeGroup(
+      name,
+      selectedDevices.map((d) => d.name),
+      moveMountPoints,
+    );
+    navigate(PATHS.root);
   };
 
   return (
@@ -120,7 +129,7 @@ export default function LvmPage() {
             />
           </FormGroup>
           <ActionGroup>
-            <Page.Submit form="lvmCreationForm" />
+            <Page.Submit form="lvmForm" />
             <Page.Cancel />
           </ActionGroup>
         </Form>
