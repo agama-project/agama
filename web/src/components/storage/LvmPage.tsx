@@ -24,6 +24,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ActionGroup,
+  Alert,
   Checkbox,
   Content,
   Flex,
@@ -35,23 +36,42 @@ import {
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/queries/storage";
-import { StorageDevice } from "~/types/storage";
+import { StorageDevice, model } from "~/types/storage";
+import useModel from "~/hooks/storage/model";
 import useAddVolumeGroup from "~/hooks/storage/add-volume-group";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
 import { STORAGE as PATHS } from "~/routes/paths";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+
+function checkErrors(model: model.Model, vgName: string, targetDevices: StorageDevice[]): string[] {
+  const vgNameError = (): string | undefined => {
+    if (!vgName.length) return sprintf(_("Name is empty"), vgName);
+
+    const exist = model.volumeGroups.some((v) => v.vgName === vgName);
+    if (exist) return sprintf(_("'%s' already exists"), vgName);
+  };
+
+  const targetDevicesError = (): string | undefined => {
+    if (!targetDevices.length) return _("No disk is selected");
+  };
+
+  return [vgNameError(), targetDevicesError()].filter((d) => d);
+}
 
 /**
  * Form for creating a LVM volume group
  */
 export default function LvmPage() {
   const navigate = useNavigate();
+  const model = useModel();
   const addVolumeGroup = useAddVolumeGroup();
   const allDevices = useAvailableDevices();
-  const [name, setName] = useState("system");
+  const [name, setName] = useState(model.volumeGroups.length ? "" : "system");
   const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
+  const [errors, setErrors] = useState<string[]>([]);
 
   const updateName = (_, value) => setName(value);
   const updateSelectedDevices = (value) => {
@@ -62,7 +82,14 @@ export default function LvmPage() {
     );
   };
 
-  const onSubmit = () => {
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    const errors = checkErrors(model, name, selectedDevices);
+    setErrors(errors);
+
+    if (errors.length) return;
+
     addVolumeGroup(
       name,
       selectedDevices.map((d) => d.name),
@@ -80,6 +107,13 @@ export default function LvmPage() {
 
       <Page.Content>
         <Form id="lvmForm" onSubmit={onSubmit}>
+          {errors.length > 0 && (
+            <Alert variant="warning" isInline title={_("Something went wrong")}>
+              {errors.map((e, i) => (
+                <p key={`error_${i}`}>{e}</p>
+              ))}
+            </Alert>
+          )}
           <FormGroup fieldId="lvmName" label={_("Name")} isStack>
             <TextInput id="lvmName" value={name} onChange={updateName} />
           </FormGroup>
