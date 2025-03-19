@@ -28,6 +28,7 @@ type Model = {
 };
 
 interface Drive extends apiModel.Drive {
+  isUsed: boolean;
   getVolumeGroups: () => VolumeGroup[];
 }
 
