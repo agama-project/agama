@@ -20,21 +20,24 @@
  * find current contact information at www.suse.com.
  */
 
-import useApiModel from "~/hooks/storage/api-model";
-import useUpdateApiModel from "~/hooks/storage/update-api-model";
-import { addVolumeGroup } from "~/hooks/storage/helpers/volume-group";
-import { QueryHookOptions } from "~/types/queries";
+import { apiModel } from "~/api/storage/types";
+import { model } from "~/types/storage";
+import buildModel from "~/hooks/storage/helpers/build-model";
 
-export type AddVolumeGroupFn = (
-  vgName: string,
-  targetDevices: string[],
-  moveContent: boolean,
-) => void;
-
-export default function useAddVolumeGroup(options?: QueryHookOptions): AddVolumeGroupFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
-  return (vgName: string, targetDevices: string[], moveContent: boolean) => {
-    updateApiModel(addVolumeGroup(apiModel, vgName, targetDevices, moveContent));
-  };
+function buildDrive(apiModel: apiModel.Config, name: string): model.Drive | undefined {
+  const model = buildModel(apiModel);
+  return model.drives.find((d) => d.name === name);
 }
+
+function deleteIfUnused(apiModel: apiModel.Config, name: string) {
+  const index = (apiModel.drives || []).findIndex((d) => d.name === name);
+  if (index === -1) return;
+
+  const drive = buildDrive(apiModel, name);
+  if (!drive || drive.isUsed) return;
+
+  apiModel.drives.splice(index, 1);
+  return apiModel;
+}
+
+export { deleteIfUnused };

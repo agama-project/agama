@@ -23,18 +23,37 @@
 import useApiModel from "~/hooks/storage/api-model";
 import useUpdateApiModel from "~/hooks/storage/update-api-model";
 import { addVolumeGroup } from "~/hooks/storage/helpers/volume-group";
+import { deleteIfUnused } from "~/hooks/storage/helpers/drive";
 import { QueryHookOptions } from "~/types/queries";
+import { apiModel } from "~/api/storage/types";
 
-export type AddVolumeGroupFn = (
+function editVolumeGroup(
+  apiModel: apiModel.Config,
+  oldVgName: string,
   vgName: string,
   targetDevices: string[],
-  moveContent: boolean,
+): apiModel.Config {
+  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === oldVgName);
+  if (index === -1) return;
+
+  const oldTargetDevices = apiModel.volumeGroups[index].targetDevices || [];
+
+  addVolumeGroup(apiModel, vgName, targetDevices, false, index);
+  oldTargetDevices.forEach((d) => deleteIfUnused(apiModel, d));
+
+  return apiModel;
+}
+
+export type EditVolumeGroupFn = (
+  odlVgName: string,
+  VgName: string,
+  targetDevices: string[],
 ) => void;
 
-export default function useAddVolumeGroup(options?: QueryHookOptions): AddVolumeGroupFn {
+export default function useEditVolumeGroup(options?: QueryHookOptions): EditVolumeGroupFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (vgName: string, targetDevices: string[], moveContent: boolean) => {
-    updateApiModel(addVolumeGroup(apiModel, vgName, targetDevices, moveContent));
+  return (oldVgName: string, vgName: string, targetDevices: string[]) => {
+    updateApiModel(editVolumeGroup(apiModel, oldVgName, vgName, targetDevices));
   };
 }
