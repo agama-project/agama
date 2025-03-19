@@ -26,7 +26,11 @@ use agama_lib::{
 use anyhow::Context;
 use clap::Subcommand;
 use console::style;
-use std::{io::Read, path::PathBuf};
+use std::{
+    io,
+    io::Read,
+    path::{Path, PathBuf},
+};
 use url::Url;
 
 #[derive(Subcommand, Debug)]
@@ -98,12 +102,31 @@ impl CliInput {
         }
     }
 
-    fn query_for_web(&self) -> String {
-        match self {
+    fn query_for_web(&self) -> io::Result<String> {
+        let s = match self {
             Self::Url(url) => format!("?url={}", url),
-            Self::Path(path) => format!("?path={}", path),
+            Self::Path(path) => {
+                let pathbuf = Self::absolute(Path::new(path))?;
+                let pathstr = pathbuf.to_str().ok_or(std::io::Error::new(
+                    io::ErrorKind::Other,
+                    "Stringifying current directory",
+                ))?;
+                format!("?path={}", pathstr)
+            }
             Self::Stdin => "".to_owned(),
             Self::Full(_) => "".to_owned(),
+        };
+        Ok(s)
+    }
+
+    fn absolute(path: &Path) -> std::io::Result<PathBuf> {
+        // we avoid Path.canonicalize because it would resolve away symlinks
+        // that we need for testing
+        if path.is_absolute() {
+            Ok(path.to_path_buf())
+        } else {
+            let current_dir = std::env::current_dir()?;
+            Ok(current_dir.join(path))
         }
     }
 
@@ -130,7 +153,7 @@ async fn validate_client(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
 ) -> anyhow::Result<ValidationResult> {
-    let api_url_and_query = format!("/profile/validate{}", url_or_path.query_for_web());
+    let api_url_and_query = format!("/profile/validate{}", url_or_path.query_for_web()?);
 
     let body = url_or_path.body_for_web()?;
     // we use plain text .body instead of .json
@@ -164,7 +187,7 @@ async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
 }
 
 async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
-    let api_url_and_query = format!("/profile/evaluate{}", url_or_path.query_for_web());
+    let api_url_and_query = format!("/profile/evaluate{}", url_or_path.query_for_web()?);
 
     let body = url_or_path.body_for_web()?;
     // we use plain text .body instead of .json
@@ -189,10 +212,7 @@ async fn evaluate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
     Ok(())
 }
 
-async fn import(
-    client: BaseHTTPClient,
-    url_string: String,
-) -> anyhow::Result<()> {
+async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
     // useful for store_settings
     tokio::spawn(async move {
         show_progress().await.unwrap();
