@@ -386,7 +386,12 @@ const RemoveDriveOption = ({ drive }) => {
 
   const { isExplicitBoot, delete: deleteDrive } = driveModel;
 
+  // When no additional drives has been added, the "Do not use" button can be confusing so it is
+  // omitted for all drives.
   if (!hasAdditionalDrives) return;
+
+  // FIXME: in these two cases the button should likely be present, but disabled and with an
+  // explanation of why those particular drive definitions cannot be removed.
   if (isExplicitBoot) return;
   if (driveUtils.hasPv(drive)) return;
 

@@ -207,7 +207,7 @@ describe("PartitionMenuItem", () => {
     const partitionsButton = screen.getByRole("button", { name: "Partitions" });
     await user.click(partitionsButton);
     const partitionsMenu = screen.getByRole("menu");
-    const deleteRootButton = within(partitionsMenu).queryByRole("menuitem", {
+    const deleteRootButton = within(partitionsMenu).getByRole("menuitem", {
       name: "Delete /",
     });
     await user.click(deleteRootButton);
