@@ -64,7 +64,7 @@ impl LabelHandler {
         };
 
         let file_systems = FileSystemsList::from_system().with_label(label);
-        FileFinder::default().copy_from_file_systems(&file_systems, &file_name, out_fd)
+        FileFinder::default().copy_from_file_systems(&file_systems, file_name, out_fd)
     }
 }
 
@@ -128,7 +128,7 @@ impl DeviceHandler {
                 .to_string();
             if let Some(file_system) = file_systems.find_by_name(&dev) {
                 if finder
-                    .copy_from_file_system(&file_system, file_name, out_fd)
+                    .copy_from_file_system(file_system, file_name, out_fd)
                     .is_ok()
                 {
                     return Ok(());
@@ -150,6 +150,6 @@ impl DeviceHandler {
         file_name: &str,
         out_fd: &mut impl Write,
     ) -> TransferResult<()> {
-        FileFinder::default().copy_from_file_systems(&file_systems, &file_name, out_fd)
+        FileFinder::default().copy_from_file_systems(file_systems, file_name, out_fd)
     }
 }
