@@ -102,21 +102,23 @@ impl CliInput {
         }
     }
 
-    fn query_for_web(&self) -> io::Result<String> {
-        let s = match self {
-            Self::Url(url) => format!("?url={}", url),
+    fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
+        match self {
+            Self::Url(url) => {
+                base_url.query_pairs_mut().append_pair("url", url);
+            }
             Self::Path(path) => {
                 let pathbuf = Self::absolute(Path::new(path))?;
                 let pathstr = pathbuf.to_str().ok_or(std::io::Error::new(
                     io::ErrorKind::Other,
                     "Stringifying current directory",
                 ))?;
-                format!("?path={}", pathstr)
+                base_url.query_pairs_mut().append_pair("path", pathstr);
             }
-            Self::Stdin => "".to_owned(),
-            Self::Full(_) => "".to_owned(),
+            Self::Stdin => (),
+            Self::Full(_) => (),
         };
-        Ok(s)
+        Ok(())
     }
 
     fn absolute(path: &Path) -> std::io::Result<PathBuf> {
@@ -153,16 +155,20 @@ async fn validate_client(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
 ) -> anyhow::Result<ValidationResult> {
-    let api_url_and_query = format!("/profile/validate{}", url_or_path.query_for_web()?);
+    let mut url = Url::parse(&client.base_url)?;
+    // unwrap OK: only fails for cannot_be_a_base URLs like data: and mailto:
+    // TODO: check for it when parsing user supplied --api
+    url.path_segments_mut()
+        .unwrap()
+        .push("profile")
+        .push("validate");
+    url_or_path.add_query(&mut url)?;
 
     let body = url_or_path.body_for_web()?;
     // we use plain text .body instead of .json
     let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
         .client
-        .request(
-            reqwest::Method::POST,
-            client.base_url.clone() + &api_url_and_query,
-        )
+        .request(reqwest::Method::POST, url)
         .body(body)
         .send()
         .await
@@ -187,16 +193,20 @@ async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
 }
 
 async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
-    let api_url_and_query = format!("/profile/evaluate{}", url_or_path.query_for_web()?);
+    let mut url = Url::parse(&client.base_url)?;
+    // unwrap OK: only fails for cannot_be_a_base URLs like data: and mailto:
+    // TODO: check for it when parsing user supplied --api
+    url.path_segments_mut()
+        .unwrap()
+        .push("profile")
+        .push("evaluate");
+    url_or_path.add_query(&mut url)?;
 
     let body = url_or_path.body_for_web()?;
     // we use plain text .body instead of .json
     let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
         .client
-        .request(
-            reqwest::Method::POST,
-            client.base_url.clone() + &api_url_and_query,
-        )
+        .request(reqwest::Method::POST, url)
         .body(body)
         .send()
         .await
