@@ -26,11 +26,11 @@ require "yast/i18n"
 module Agama
   module Storage
     module ConfigCheckers
-      # Class for checking the boot config.
+      # Class for checking the overal configuration of filesystems.
       class Filesystems < Base
         include Yast::I18n
 
-        # Boot config issues.
+        # Issues related to the configured set of filesystems.
         #
         # @return [Array<Issue>]
         def issues
@@ -41,7 +41,7 @@ module Agama
 
         # @return [Issue, nil]
         def missing_paths_issue
-          missing_paths = required_paths.reject { |p| configured_path?(p) }
+          missing_paths = mandatory_paths.reject { |p| configured_path?(p) }
           return if missing_paths.empty?
 
           error(
@@ -68,14 +68,9 @@ module Agama
           @filesystems ||= storage_config.filesystems
         end
 
-        # return [Array<String>]
-        def required_paths
-          volumes.select { |v| v.outline.required }.map(&:mount_path)
-        end
-
-        # @return [Array<Agama::Storage::Volume>]
-        def volumes
-          @volumes ||= VolumeTemplatesBuilder.new_from_config(product_config).all
+        # @return [Array<String>]
+        def mandatory_paths
+          product_config.mandatory_paths
         end
       end
     end

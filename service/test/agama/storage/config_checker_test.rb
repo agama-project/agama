@@ -231,10 +231,13 @@ describe Agama::Storage::ConfigChecker do
   let(:product_data) do
     {
       "storage" => {
+        "volumes"          => volumes,
         "volume_templates" => volume_templates
       }
     }
   end
+
+  let(:volumes) { ["/"] }
 
   let(:volume_templates) do
     [
@@ -790,6 +793,8 @@ describe Agama::Storage::ConfigChecker do
     end
 
     context "if some volumes are required" do
+      let(:volumes) { ["/", "swap"] }
+
       let(:volume_templates) do
         [
           {
