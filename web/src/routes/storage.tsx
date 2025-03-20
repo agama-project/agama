@@ -47,28 +47,28 @@ const routes = (): Route => ({
       element: <ProposalPage />,
     },
     {
-      path: PATHS.bootDevice,
+      path: PATHS.editBootDevice,
       element: <BootSelection />,
     },
     {
-      path: PATHS.lvm.create,
-      element: <LvmPage />,
-    },
-    {
-      path: PATHS.encryption,
+      path: PATHS.editEncryption,
       element: <EncryptionSettingsPage />,
     },
     {
-      path: PATHS.findSpace,
+      path: PATHS.drive.editSpacePolicy,
       element: <SpacePolicySelection />,
     },
     {
-      path: PATHS.addPartition,
+      path: PATHS.drive.partition.add,
       element: <PartitionPage />,
     },
     {
-      path: PATHS.editPartition,
+      path: PATHS.drive.partition.edit,
       element: <PartitionPage />,
+    },
+    {
+      path: PATHS.volumeGroup.add,
+      element: <LvmPage />,
     },
     {
       path: PATHS.iscsi,

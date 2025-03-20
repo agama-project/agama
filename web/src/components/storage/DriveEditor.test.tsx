@@ -215,7 +215,7 @@ describe("PartitionMenuItem", () => {
       name: "Edit swap",
     });
     await user.click(editSwapButton);
-    expect(mockNavigateFn).toHaveBeenCalledWith("/storage/devices/sda/partitions/swap/edit");
+    expect(mockNavigateFn).toHaveBeenCalledWith("/storage/drives/sda/partitions/swap/edit");
   });
 });
 
