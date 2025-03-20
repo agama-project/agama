@@ -204,9 +204,6 @@ if [ -n "$python" ]; then
   fi
 fi
 
-# remove OpenGL support
-rpm -qa | grep ^Mesa | xargs rpm -e --nodeps
-
 # uninstall libyui-qt and libqt (pulled in by the YaST dependencies),
 # not present in SLES, do not fail if not installed
 if rpm -q --whatprovides libyui-qt libyui-qt-pkg > /dev/null; then
@@ -272,8 +269,6 @@ for s in purge-kernels; do
   systemctl -f disable $s || true
 done
 
-# Only used for OpenCL and X11 acceleration on vmwgfx (?), saves ~50MiB
-rpm -e --nodeps Mesa-gallium || true
 # Too big and will have to be dropped anyway (unmaintained, known security issues)
 rm -rf /usr/lib*/libmfxhw*.so.* /usr/lib*/mfx/
 
