@@ -381,7 +381,7 @@ describe Agama::Storage::Manager do
 
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
        "copy logs, symlink resolv.conf, runs the post-installation scripts, " \
-       "unlink resolv.conf and umounts the file systems" do
+       "unlink resolv.conf, and umounts the file systems" do
       expect(security).to receive(:write)
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
