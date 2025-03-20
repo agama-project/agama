@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 20 06:56:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "agama download" to fetch the info file (gh#agama-project/agama#2176).
+
+-------------------------------------------------------------------
 Tue Mar 18 16:32:07 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove /etc/nvme/host* files from the image (bsc#1238038)
