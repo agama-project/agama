@@ -51,8 +51,8 @@ jobs:
       # disable unused repositories to have faster refresh
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
-    - name: Install Ruby development files
-      run: zypper --non-interactive install ShellCheck make
+    - name: Install development files
+      run: zypper --non-interactive install ShellCheck make agama-cli
 
     - name: Run shellcheck
       run: make shellcheck
