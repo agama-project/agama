@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Mar 20 09:05:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve init scripts execution (gh#agama-project/agama#2161):
+  * Properly run the scripts (gh#agama-project/agama#2144).
+  * Allow setting the scripts path with the SCRIPTS_DIR
+    environment variable.
+  * Do not exit with an error if there are not scripts.
+  * Make agama-scripts.sh idempotent.
+
+-------------------------------------------------------------------
 Fri Mar 14 12:32:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Allow selecting individual packages through a configuration file
