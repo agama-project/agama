@@ -18,16 +18,10 @@ if ! grep -q "\b\(inst\|agama\)\.dud=.\+\b" /run/agama/cmdline.d/agama.conf; the
   exit 0
 fi
 
-# Make sure that it does not refresh
-zypper modifyrepo --disable --all
-
 for URI in `sed -n 's/\(.*[[:space:]]\|^\)\(inst\|agama\)\.dud=\([^[:space:]]\+\).*/\3/p' /run/agama/cmdline.d/agama.conf`; do
   echo "Downloading DUD from" $URI
   TMPDUD=`mktemp /tmp/agama-XXXXXXXXXX.rpm`
   agama download $URI $TMPDUD;
   rpm --upgrade --force --verbose --hash --noverify --nodeps --excludedocs $TMPDUD
-  zypper --non-interactive install $TMPDUD
   rm $TMPDUD
 done
-
-zypper modifyrepo --enable --all
