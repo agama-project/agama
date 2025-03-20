@@ -19,6 +19,8 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
+
+import { useMemo } from "react";
 import useApiModel from "~/hooks/storage/api-model";
 import { QueryHookOptions } from "~/types/queries";
 import { apiModel } from "~/api/storage/types";
@@ -86,7 +88,12 @@ function buildModel(apiModel: apiModel.Config): model.Model {
 
 function useModel(options?: QueryHookOptions): model.Model | null {
   const apiModel = useApiModel(options);
-  return apiModel ? buildModel(apiModel) : null;
+
+  const model = useMemo((): model.Model | null => {
+    return apiModel ? buildModel(apiModel) : null;
+  }, [apiModel]);
+
+  return model;
 }
 
 function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {

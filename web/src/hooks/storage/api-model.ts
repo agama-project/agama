@@ -20,6 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
+import { useMemo } from "react";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { configModelQuery } from "~/queries/storage/config-model";
 import { apiModel } from "~/api/storage/types";
@@ -30,8 +31,12 @@ function useApiModel(options?: QueryHookOptions): apiModel.Config | null {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
 
-  // Returns a copy.
-  return data ? JSON.parse(JSON.stringify(data)) : null;
+  const apiModel = useMemo((): apiModel.Config | null => {
+    // Returns a copy.
+    return data ? JSON.parse(JSON.stringify(data)) : null;
+  }, [data]);
+
+  return apiModel;
 }
 
 export { useApiModel as default };

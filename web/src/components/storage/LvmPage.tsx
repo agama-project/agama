@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ActionGroup,
@@ -68,10 +68,14 @@ export default function LvmPage() {
   const model = useModel();
   const addVolumeGroup = useAddVolumeGroup();
   const allDevices = useAvailableDevices();
-  const [name, setName] = useState(model.volumeGroups.length ? "" : "system");
+  const [name, setName] = useState("");
   const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (model && !model.volumeGroups.length) setName("system");
+  }, [model]);
 
   const updateName = (_, value) => setName(value);
   const updateSelectedDevices = (value) => {
