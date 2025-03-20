@@ -35,10 +35,10 @@ finish() {
 
   case "$method" in
   "stop" | "halt" | "poweroff")
-    /usr/bin/agama finish "$method"
+    agama finish "$method"
     ;;
   *)
-    /usr/bin/agama finish
+    agama finish
     ;;
   esac
 }
@@ -50,8 +50,9 @@ url=$(find_user_url "$1")
 import_profile $url
 
 if [ 1 -eq $? ]; then
+# Exit if a profile was not found.
   exit 0
 fi
 
-/usr/bin/agama install
+install
 finish
