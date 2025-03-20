@@ -27,6 +27,7 @@ require "y2storage/storage_manager"
 require "agama/with_progress"
 require "agama/helpers"
 require "agama/http"
+require "agama/network"
 require "abstract_method"
 require "fileutils"
 
@@ -261,9 +262,15 @@ module Agama
 
         # Run the post scripts
         def run_post_scripts
-          require "agama/http"
+          network.link_resolv
           client = Agama::HTTP::Clients::Scripts.new
           client.run("post")
+        ensure
+          network.unlink_resolv
+        end
+
+        def network
+          @network ||= Agama::Network.new(logger)
         end
 
         # Enables the agama-scripts service to run init scripts
