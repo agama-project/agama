@@ -51,13 +51,16 @@ module Agama
         # Creates an error issue.
         #
         # @param message [String]
+        # @param kind [Symbol, nil] if nil or ommited, default value defined by Agama::Issue
         # @return [Issue]
-        def error(message)
-          Agama::Issue.new(
-            message,
+        def error(message, kind: nil)
+          issue_args = {
             source:   Agama::Issue::Source::CONFIG,
             severity: Agama::Issue::Severity::ERROR
-          )
+          }
+          issue_args[:kind] = kind if kind
+
+          Agama::Issue.new(message, **issue_args)
         end
       end
     end
