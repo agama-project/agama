@@ -265,6 +265,7 @@ module Agama
           network.link_resolv
           client = Agama::HTTP::Clients::Scripts.new
           client.run("post")
+        ensure
           network.unlink_resolv
         end
 
