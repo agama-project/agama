@@ -7,7 +7,6 @@ After=network-online.target
 # before starting the Agama servers so they read configuration parsed
 Before=agama-web-server.service
 Before=agama.service
-Before=x11-autologin.service
 
 [Service]
 Type=oneshot

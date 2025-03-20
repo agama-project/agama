@@ -248,9 +248,6 @@ if [ -n "$python" ]; then
   fi
 fi
 
-# remove OpenGL support
-rpm -qa | grep ^Mesa | xargs --no-run-if-empty rpm -e --nodeps
-
 # remove unused SUSEConnect libzypp plugins
 rm -f /usr/lib/zypper/commands/zypper-migration
 rm -f /usr/lib/zypper/commands/zypper-search-packages
@@ -323,8 +320,6 @@ for s in purge-kernels; do
   systemctl -f disable $s || true
 done
 
-# Only used for OpenCL and X11 acceleration on vmwgfx (?), saves ~50MiB
-rpm -e --nodeps Mesa-gallium || true
 # Too big and will have to be dropped anyway (unmaintained, known security issues)
 rm -rf /usr/lib*/libmfxhw*.so.* /usr/lib*/mfx/
 
