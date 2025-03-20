@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 20 18:26:27 UTC 2025 - Lukas Ocilka <locilka@suse.com>
+
+- Added the initial functionality for inst.dud
+  (jsc#3670 and jsc#AGM-65)
+
+-------------------------------------------------------------------
 Thu Mar 20 15:52:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Fixed broken "inst.self_update" boot option
