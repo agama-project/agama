@@ -186,7 +186,7 @@ async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
             println!("{} {}", style("\u{2713}").bold().green(), validity);
         }
         ValidationResult::NotValid(_) => {
-            eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
+            println!("{} {}", style("\u{2717}").bold().red(), validity);
         }
     }
     Ok(())
