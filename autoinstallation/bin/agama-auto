@@ -1,28 +1,38 @@
-#!/usr/bin/sh
-set -ex
+#!/usr/bin/bash
+set -x
 
-# Temporarily skip the AutoYaST XML validation
-export YAST_SKIP_XML_VALIDATION=1
+# Find the URL given by the user.
+find_user_url() {
+  local url=$1
+  if [ -z "$1" ]; then
+    url=$(grep '\(agama\|inst\).auto=' </run/agama/cmdline.d/agama.conf | awk -F ':?(inst|agama).auto=' '{sub(/ .*$/, "", $2); print $2}')
+    echo $url
+  else
+    echo $1
+  fi
+}
 
-if [ -z "$1" ]; then
-  url=$(grep '\(agama\|inst\).auto=' < /run/agama/cmdline.d/agama.conf | awk -F ':?(inst|agama).auto=' '{sub(/ .*$/, "", $2); print $2}')
-else
-  url="$1"
-fi
+# Try to import a profile from a list of URLs
+import_profile() {
+  local url=$1
 
-if [ -z "$url" ]; then
-  echo "no autoinstallation profile"
-  exit 0
-fi
+  if [ -n "$url" ]; then
+    echo "Using the profile located at $url"
+    agama profile import "$url" && return 0
+  else
+    urls=("label://OEMDRV/autoinst.xml" "label://OEMDRV/autoinst.jsonnet" "label://OEMDRV/autoinst.json" "file:///autoinst.xml" "file:///autoinst.jsonnet" "file:///autoinst.json")
+    for url in "${urls[@]}"; do
+      YAST_SKIP_PROFILE_FETCH_ERROR=1 agama profile import "$url" && return 0
+    done
+  fi
 
-method=$(grep '\(agama\|inst\).finish=' </run/agama/cmdline.d/agama.conf | awk -F ':?(inst|agama).finish=' '{sub(/ .*$/, "", $2); print $2}')
+  return 1
+}
 
-echo "Using the profile at $url"
+# Finish the process depending on the method selected by the user.
+finish() {
+  method=$(grep '\(agama\|inst\).finish=' </run/agama/cmdline.d/agama.conf | awk -F ':?(inst|agama).finish=' '{sub(/ .*$/, "", $2); print $2}')
 
-case "$url" in
-*)
-  /usr/bin/agama profile import "$url"
-  /usr/bin/agama install
   case "$method" in
   "stop" | "halt" | "poweroff")
     /usr/bin/agama finish "$method"
@@ -31,5 +41,17 @@ case "$url" in
     /usr/bin/agama finish
     ;;
   esac
-  ;;
-esac
+}
+
+# Temporarily skip the AutoYaST XML validation
+export YAST_SKIP_XML_VALIDATION=1
+
+url=$(find_user_url "$1")
+import_profile $url
+
+if [ 1 -eq $? ]; then
+  exit 0
+fi
+
+/usr/bin/agama install
+finish
