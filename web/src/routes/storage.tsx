@@ -71,6 +71,10 @@ const routes = (): Route => ({
       element: <LvmPage />,
     },
     {
+      path: PATHS.volumeGroup.edit,
+      element: <LvmPage />,
+    },
+    {
       path: PATHS.iscsi,
       element: <ISCSIPage />,
       handle: { name: N_("iSCSI") },

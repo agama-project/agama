@@ -82,6 +82,7 @@ const STORAGE = {
   },
   volumeGroup: {
     add: "/storage/volume-groups/add",
+    edit: "/storage/volume-groups/:id/edit",
   },
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
