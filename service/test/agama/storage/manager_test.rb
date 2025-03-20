@@ -22,7 +22,7 @@
 require_relative "../../test_helper"
 require_relative "../with_progress_examples"
 require_relative "../with_issues_examples"
-require_relative "./storage_helpers"
+require_relative "storage_helpers"
 require "agama/dbus/clients/questions"
 require "agama/config"
 require "agama/http"

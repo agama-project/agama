@@ -49,19 +49,20 @@ module Agama
     def link_resolv
       return unless File.exist?(RESOLV)
 
-      target = File.join(Yast::Installation.destdir, RESOLV)
-      source = File.join(RUN_NM_DIR, File.basename(RESOLV))
-      return if File.exist?(target)
+      link = File.join(Yast::Installation.destdir, RESOLV)
+      target = File.join(RUN_NM_DIR, File.basename(RESOLV))
+
+      return if File.exist?(link)
 
       FileUtils.touch RESOLV_FLAG
-      FileUtils.ln_s source, target
+      FileUtils.ln_s target, link
     end
 
     def unlink_resolv
       return unless File.exist?(RESOLV_FLAG)
 
-      target = File.join(Yast::Installation.destdir, RESOLV)
-      FileUtils.rm_f target
+      link = File.join(Yast::Installation.destdir, RESOLV)
+      FileUtils.rm_f link
       FileUtils.rm_f RESOLV_FLAG
     end
 
