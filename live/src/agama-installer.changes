@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 20 15:52:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fixed broken "inst.self_update" boot option
+  (gh#agama-project/agama#2175)
+
+-------------------------------------------------------------------
 Tue Mar 18 16:32:07 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove /etc/nvme/host* files from the image (bsc#1238038)
