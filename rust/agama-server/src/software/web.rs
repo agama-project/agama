@@ -346,7 +346,7 @@ async fn get_registered_addons(
     context_path = "/api/software",
     responses(
         (status = 204, description = "registration successful"),
-        (status = 422, description = "Registration failed. Details are in body", body = RegistrationError),
+        (status = 422, description = "Registration failed. Details are in the body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
