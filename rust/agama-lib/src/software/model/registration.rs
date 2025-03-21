@@ -33,8 +33,11 @@ pub struct RegistrationParams {
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AddonParams {
+    // Addon identifier
     pub id: String,
+    // Addon version, the same addon might be available in multiple versions
     pub version: String,
+    // Optional registration code, not required for free extensions
     pub registration_code: Option<String>,
 }
 

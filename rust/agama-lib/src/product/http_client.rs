@@ -111,7 +111,7 @@ impl ProductHTTPClient {
         };
         let result = self
             .client
-            .post_void("/software/registration/addons", &addon_params)
+            .post_void("/software/registration/addons/register", &addon_params)
             .await;
 
         let Err(error) = result else {

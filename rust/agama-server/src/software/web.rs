@@ -213,7 +213,7 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
             "/registration",
             get(get_registration).post(register).delete(deregister),
         )
-        .route("/registration/addons", post(register_addon))
+        .route("/registration/addons/register", post(register_addon))
         .route(
             "/registration/addons/registered",
             get(get_registered_addons),
@@ -342,7 +342,7 @@ async fn get_registered_addons(
 /// * `state`: service state.
 #[utoipa::path(
     post,
-    path = "/registration/addons",
+    path = "/registration/addons/register",
     context_path = "/api/software",
     responses(
         (status = 204, description = "registration successful"),
