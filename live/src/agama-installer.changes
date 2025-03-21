@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 21 07:31:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add aaa_base-extras which includes setup-systemd-proxy-env.path
+  (gh#agama-project/agama#2184).
+
+-------------------------------------------------------------------
 Thu Mar 20 15:52:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Fixed broken "inst.self_update" boot option
