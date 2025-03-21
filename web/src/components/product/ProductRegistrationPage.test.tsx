@@ -200,6 +200,14 @@ describe("ProductRegistrationPage", () => {
       registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
     });
 
+    it("does not render a custom alert about hostname", () => {
+      installerRender(<ProductRegistrationPage />);
+
+      expect(screen.queryByText("Custom alert:")).toBeNull();
+      expect(screen.queryByText(/hostname/)).toBeNull();
+      expect(screen.queryByRole("link", { name: "hostname" })).toBeNull();
+    });
+
     it("renders registration information with code partially hidden", async () => {
       const { user } = installerRender(<ProductRegistrationPage />);
       const visibilityCodeToggler = screen.getByRole("button", { name: "Show" });
