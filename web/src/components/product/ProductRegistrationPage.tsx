@@ -178,7 +178,8 @@ const HostnameAlert = () => {
 
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
-  const registration = useRegistration();
+  const { key } = useRegistration();
+  const isUnregistered = isEmpty(key);
 
   // TODO: render something meaningful instead? "Product not registrable"?
   if (!product.registration) return;
@@ -190,8 +191,8 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
-        <HostnameAlert />
-        {isEmpty(registration.key) ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {isUnregistered && <HostnameAlert />}
+        {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
       </Page.Content>
     </Page>
   );
