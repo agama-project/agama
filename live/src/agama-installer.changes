@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr 23 07:37:09 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Switched live iso to use wayland (gh#agama-project/agama#1781)
+
+-------------------------------------------------------------------
 Tue Apr 22 14:14:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 14
