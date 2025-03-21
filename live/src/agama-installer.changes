@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 21 10:02:14 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Switched live iso to use wayland (gh#agama-project/agama#1781)
+
+-------------------------------------------------------------------
 Fri Mar 21 09:58:52 AM UTC 2025 - Lukas Ocilka <locilka@suse.com>
 
 - Added the initial functionality for inst.dud
