@@ -6,29 +6,23 @@ export default {
   " Timezone selection": [
     " タイムゾーンの選択"
   ],
-  " and ": [
-    " および "
+  "%1$s (%2$s)": [
+    "%1$s (%2$s)"
   ],
-  "%1$s %2$s at %3$s (%4$s)": [
-    "%3$s (%4$s) に %1$s %2$s を配置"
+  "%1$s - %2$s": [
+    "%1$s - %2$s"
   ],
-  "%1$s %2$s partition (%3$s)": [
-    "%1$s %2$s パーティション (%3$s)"
+  "%1$s at %2$s": [
+    "%2$s にある %1$s"
   ],
-  "%1$s %2$s volume (%3$s)": [
-    "%1$s %2$s ボリューム (%3$s)"
+  "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
+    "%1$s には起動に必要な設定済み LVM グループ '%2$s' とパーティションが含まれています"
   ],
-  "%1$s root at %2$s (%3$s)": [
-    "%2$s (%3$s) に %1$s ルートを配置"
+  "%s - %s": [
+    "%s - %s"
   ],
-  "%1$s root partition (%2$s)": [
-    "%1$s ルートパーティション (%2$s)"
-  ],
-  "%1$s root volume (%2$s)": [
-    "%1$s ルートボリューム (%2$s)"
-  ],
-  "%d partition will be shrunk": [
-    "%d 個のパーティションを縮小します"
+  "%s [must be registered].": [
+    "%s [登録しなければなりません] 。"
   ],
   "%s disk": [
     "%s ディスク"
@@ -42,8 +36,8 @@ export default {
   "%s logo": [
     "%s ロゴ"
   ],
-  "%s must be registered.": [
-    "%s を登録しなければなりません。"
+  "%s will still contain the configured LVM groups and any partition needed to boot": [
+    "%s には起動に必要な LVM グループとパーティションが含まれています"
   ],
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
@@ -51,20 +45,32 @@ export default {
   "(optional)": [
     "(任意)"
   ],
-  ", ": [
-    ", "
+  "A generic minimum size of %s will be used for the new partition": [
+    "新しいパーティションに対しては少なくとも %s を使用します"
   ],
-  "A mount point is required": [
-    "マウントポイントを指定する必要があります"
+  "A generic size of %s will be used for the new partition": [
+    "新しいパーティションに対しては汎用サイズ %s を使用します"
   ],
-  "A new LVM Volume Group": [
-    "新規 LVM ボリュームグループ"
+  "A generic size range between %1$s and %2$s will be used for the new partition": [
+    "新しいパーティションに対しては汎用サイズ %1$s から %2$s の範囲を使用します"
   ],
-  "A new volume group will be allocated in the selected disk and the   file system will be created as a logical volume.": [
-    "選択したディスク内に新しいボリュームグループを作成し、論理ボリュームとしてファイルシステムを作成します。"
+  "A partition may be deleted": [
+    "パーティションを削除するかもしれません"
   ],
-  "A size value is required": [
-    "サイズを指定する必要があります"
+  "A partition may be shrunk": [
+    "パーティションを縮小するかもしれません"
+  ],
+  "A partition of %1$s will be created for %2$s": [
+    "%1$s のパーティションを %2$s 向けに作成します"
+  ],
+  "A partition of at least %1$s will be created for %2$s": [
+    "少なくとも %1$s のパーティションを %2$s 向けに作成します"
+  ],
+  "A partition will be deleted": [
+    "パーティションを削除します"
+  ],
+  "A partition with a size between %1$s and %2$s will be created for %3$s": [
+    "%1$s から %2$s までの範囲でパーティションを %3$s 向けに作成します"
   ],
   "Accept": [
     "受け入れる"
@@ -78,14 +84,11 @@ export default {
   "Actions for connection %s": [
     "接続 %s に対する処理"
   ],
-  "Actions to find space": [
-    "領域の検出処理"
-  ],
   "Activate": [
     "有効化"
   ],
-  "Activate disks": [
-    "ディスクの有効化"
+  "Activate and format DASD devices": [
+    "DASD デバイスの有効化とフォーマット"
   ],
   "Activate new disk": [
     "新しいディスクの有効化"
@@ -93,17 +96,17 @@ export default {
   "Activate zFCP disk": [
     "zFCP ディスクの有効化"
   ],
+  "Activate zFCP disks": [
+    "zFCP ディスクの有効化"
+  ],
   "Activated": [
     "有効"
   ],
-  "Add %s file system": [
-    "%s ファイルシステムの追加"
+  "Add": [
+    "追加"
   ],
   "Add DNS": [
     "DNS の追加"
-  ],
-  "Add a SSH Public Key for root": [
-    "root に対する SSH 公開鍵の追加"
   ],
   "Add an address": [
     "アドレスの追加"
@@ -114,8 +117,11 @@ export default {
   "Add another address": [
     "その他のアドレスの追加"
   ],
-  "Add file system": [
-    "ファイルシステムの追加"
+  "Add another partition or mount an existing one": [
+    "他のパーティションの追加または既存のパーティションのマウント"
+  ],
+  "Add or use partition": [
+    "パーティションの追加または使用"
   ],
   "Address": [
     "アドレス"
@@ -126,29 +132,38 @@ export default {
   "Addresses data list": [
     "アドレスデータの一覧"
   ],
+  "Adjust the settings below to make the new system fit into the available space.": [
+    "新しいシステムが利用可能な領域内に収まるよう、下記の設定を調整してください。"
+  ],
+  "All content will be deleted": [
+    "全ての内容を削除する"
+  ],
   "All fields are required": [
     "全ての項目に入力する必要があります"
   ],
-  "All partitions will be removed and any data in the disks will be lost.": [
-    "ディスク内の全てのパーティションを削除します。これにより、ディスク内に存在するデータは全て失われます。"
+  "Alongside defining the first user, authentication methods for the root user can be configured.": [
+    "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
   ],
-  "Allows to boot to a previous version of the system after configuration changes or software upgrades.": [
-    "設定の変更やソフトウエアのアップグレードを行った際、必要に応じて以前の状態に戻して起動することができます。"
+  "Any existing partition will be removed and all data in the disk will be lost.": [
+    "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
   ],
-  "Already set": [
-    "設定済み"
-  ],
-  "An existing disk": [
-    "既存のディスク"
+  "As a new partition on %1$s (%2$s)": [
+    "%1$s に新しいパーティションとして (%2$s)"
   ],
   "At least one address must be provided for selected mode": [
     "選択しているモードの場合、 1 つ以上のアドレスを設定しなければなりません"
+  ],
+  "At least one partition will be deleted": [
+    "少なくとも 1 つのパーティションを削除します"
   ],
   "At this point you can power off the machine.": [
     "マシンの電源を切って問題ありません。"
   ],
   "At this point you can reboot the machine to log in to the new system.": [
     "あとはマシンを再起動して新しいシステムにログインするだけです。"
+  ],
+  "Authentication": [
+    "認証"
   ],
   "Authentication by initiator": [
     "イニシエータによる認証"
@@ -159,14 +174,8 @@ export default {
   "Authentication failed, please try again": [
     "認証が失敗しました、やり直してください"
   ],
-  "Auto": [
-    "自動"
-  ],
   "Auto LUNs Scan": [
     "自動 LUN 検出"
-  ],
-  "Auto-login": [
-    "自動ログイン"
   ],
   "Automatic": [
     "自動"
@@ -180,17 +189,23 @@ export default {
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "自動 LUN スキャンが [有効化] されています。 NPIV モードで動作しているコントローラを有効化した場合、その LUN は全て自動的に設定されます。"
   ],
-  "Automatically calculated size according to the selected product.": [
-    "選択した製品に合わせてサイズを自動計算します。"
-  ],
   "Available products": [
     "利用可能な製品"
   ],
   "Back": [
     "戻る"
   ],
-  "Back to device selection": [
-    "デバイス選択に戻る"
+  "Based on the amount of RAM in the system a partition of at least %1$s will be created for %2$s": [
+    "システムのメモリサイズに応じて、少なくとも %1$s のパーティションを %2$s 向けに作成します"
+  ],
+  "Based on the amount of RAM in the system, a partition of %1$s will be created for %2$s": [
+    "システムのメモリサイズに応じて、 %1$s のパーティションを %2$s 向けに作成します"
+  ],
+  "Based on the amount of RAM in the system, a partition with a size between %1$s and %2$s will be created for %3$s": [
+    "システムのメモリサイズに応じて、 %1$s から %2$s までの範囲でパーティションを %3$s 向けに作成します"
+  ],
+  "Bcachefs": [
+    "bcachefs"
   ],
   "Before %s": [
     "変更前: %s"
@@ -201,26 +216,23 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "インストールを開始する前に、下記の問題に対応する必要があります:"
   ],
-  "Boot partitions at %s": [
-    "%s に起動用のパーティションを設定する"
+  "BitLocker": [
+    "BitLocker"
   ],
-  "Boot partitions at installation disk": [
-    "インストール先のディスクに起動用のパーティションを設定する"
+  "Boot options": [
+    "起動オプション"
   ],
-  "Btrfs root partition with snapshots (%s)": [
-    "スナップショット有りの btrfs ルートパーティション (%s)"
-  ],
-  "Btrfs root volume with snapshots (%s)": [
-    "スナップショット有りの btrfs ルートボリューム (%s)"
+  "Btrfs": [
+    "btrfs"
   ],
   "Btrfs with snapshots": [
     "スナップショット有りの btrfs"
   ],
+  "Calculated automatically": [
+    "自動計算"
+  ],
   "Cancel": [
     "キャンセル"
-  ],
-  "Cannot accommodate the required file systems for installation": [
-    "インストールに必要なファイルシステムを調整できません"
   ],
   "Cannot be changed in remote installation": [
     "リモートインストールの場合は変更できません"
@@ -237,32 +249,44 @@ export default {
   "Change boot options": [
     "起動オプションの変更"
   ],
-  "Change location": [
-    "場所の変更"
-  ],
   "Change product": [
     "製品の変更"
   ],
   "Change selection": [
     "選択の変更"
   ],
-  "Change the root password": [
-    "root のパスワードを変更"
-  ],
   "Channel ID": [
     "チャネル ID"
   ],
-  "Check the planned action": [
+  "Check the %d planned actions": [
     "%d 個の処理計画を確認する"
   ],
   "Choose a disk for placing the boot loader": [
     "ブートローダを配置するディスクを選択してください"
   ],
+  "Choose what to with current content": [
+    "現在の内容の扱い方を選択"
+  ],
   "Clear": [
     "消去"
   ],
+  "Clear selected mount point": [
+    "マウントポイントの選択を解除"
+  ],
   "Close": [
     "閉じる"
+  ],
+  "Collapse the list of planned actions": [
+    "処理計画の一覧を巻き取る"
+  ],
+  "Configure DASD": [
+    "DASD の設定"
+  ],
+  "Configure iSCSI": [
+    "iSCSI の設定"
+  ],
+  "Configure zFCP": [
+    "zFCP の設定"
   ],
   "Configuring the product, please wait ...": [
     "製品を設定しています。しばらくお待ちください..."
@@ -303,8 +327,14 @@ export default {
   "Connection actions": [
     "接続処理"
   ],
+  "Content will be kept": [
+    "内容を維持する"
+  ],
   "Continue": [
     "続行"
+  ],
+  "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
+    "このパッケージをインストールせずに続行してしまうと、システムは正しく動作しない可能性があるほか、場合によっては全く起動しなくなることもあり得ます。"
   ],
   "Controllers": [
     "コントローラ"
@@ -315,14 +345,14 @@ export default {
   "Could not log in. Please, make sure that the password is correct.": [
     "ログインできませんでした。入力したパスワードが正しいかどうか、もう一度ご確認ください。"
   ],
-  "Create a dedicated LVM volume group": [
-    "専用の LVM ボリュームグループの作成"
-  ],
-  "Create a new partition": [
-    "新しいパーティションの作成"
-  ],
   "Create user": [
     "ユーザの作成"
+  ],
+  "Current %1$s at %2$s": [
+    "%2$s にある現在の %1$s"
+  ],
+  "Current %s": [
+    "現在の %s"
   ],
   "Custom": [
     "独自設定"
@@ -351,35 +381,41 @@ export default {
   "Deactivated": [
     "無効"
   ],
+  "Default file system for %s": [
+    "%s に対する既定のファイルシステム"
+  ],
+  "Default file system for generic partitions": [
+    "汎用パーティションに対する既定のファイルシステム"
+  ],
+  "Define a custom size or a range": [
+    "独自にサイズや範囲を指定する"
+  ],
   "Define a user now": [
     "今すぐユーザを設定する"
+  ],
+  "Define partition at %s": [
+    "%s でのパーティションの設定"
+  ],
+  "Define the first user with admin (sudo) privileges for system management.": [
+    "システム管理時に使用する管理者 (sudo) 権限を持つ最初のユーザを設定します。"
+  ],
+  "Defined (hidden)": [
+    "設定済み (非表示)"
   ],
   "Delete": [
     "削除"
   ],
   "Delete current content": [
-    "現在の内容を全て削除"
+    "現在の内容を全て削除する"
   ],
-  "Destructive actions are allowed": [
-    "破壊的な処理を許可します"
-  ],
-  "Destructive actions are not allowed": [
-    "破壊的な処理は許可しません"
+  "Destroy current data and format partition as": [
+    "現在のデータを消去して下記の形式でパーティションをフォーマット:"
   ],
   "Details": [
     "詳細"
   ],
   "Device": [
     "デバイス"
-  ],
-  "Device selector for new LVM volume group": [
-    "新規 LVM ボリュームグループのデバイス選択"
-  ],
-  "Device selector for target disk": [
-    "宛先のディスクデバイス選択"
-  ],
-  "Devices: %s": [
-    "デバイス: %s"
   ],
   "Discard": [
     "破棄"
@@ -392,6 +428,9 @@ export default {
   ],
   "Discover": [
     "検索"
+  ],
+  "Discover and connect to iSCSI targets": [
+    "iSCSI ターゲットの検出と接続"
   ],
   "Discover iSCSI Targets": [
     "iSCSI ターゲットの検出"
@@ -408,17 +447,20 @@ export default {
   "Do not configure": [
     "設定しない"
   ],
-  "Do not configure partitions for booting": [
-    "起動用のパーティションを設定しない"
+  "Do not format %s and keep the data": [
+    "%s をフォーマットせず既存のデータを維持"
   ],
-  "Do you want to add it?": [
-    "追加してよろしいですか？"
-  ],
-  "Do you want to edit it?": [
-    "編集してよろしいですか？"
+  "Do not use": [
+    "使用しない"
   ],
   "Download logs": [
     "ログのダウンロード"
+  ],
+  "Drive": [
+    "ドライブ"
+  ],
+  "During installation, several actions will be performed to setup the layout shown at the table below.": [
+    "インストールの際、下記の表に示した配置を設定するためにいくつかの処理が行われます。"
   ],
   "Edit": [
     "編集"
@@ -426,29 +468,14 @@ export default {
   "Edit %s": [
     "%s の編集"
   ],
-  "Edit %s file system": [
-    "%s ファイルシステムの編集"
-  ],
   "Edit connection %s": [
     "接続 %s の編集"
-  ],
-  "Edit file system": [
-    "ファイルシステムの編集"
   ],
   "Edit iSCSI Initiator": [
     "iSCSI イニシエータの編集"
   ],
-  "Edit password too": [
-    "パスワードも編集する"
-  ],
-  "Edit the SSH Public Key for root": [
-    "root に対する SSH 公開鍵の編集"
-  ],
   "Edit user": [
     "ユーザの編集"
-  ],
-  "Enable": [
-    "有効"
   ],
   "Encrypt the system": [
     "システムの暗号化"
@@ -462,26 +489,44 @@ export default {
   "Encryption Password": [
     "暗号化パスワード"
   ],
+  "Encryption is disabled": [
+    "暗号化は無効化されています"
+  ],
+  "Encryption is enabled": [
+    "暗号化は有効化されています"
+  ],
+  "Encryption is enabled using TPM unlocking": [
+    "暗号化は TPM 解錠を利用して有効化されています"
+  ],
+  "Encryption settings": [
+    "暗号化の設定"
+  ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
     "製品を登録するのに必要な登録コードと、任意でメールアドレスを入力してください。"
   ],
-  "Exact size": [
-    "正確なサイズ"
+  "ExFAT": [
+    "ExFAT"
   ],
-  "Exact size for the file system.": [
-    "ファイルシステムに対して正確なサイズを設定します。"
+  "Ext2": [
+    "ext2"
   ],
-  "File system type": [
-    "ファイルシステムの種類"
+  "Ext3": [
+    "ext3"
   ],
-  "File systems created as new partitions at %s": [
-    "%s に新規のパーティションを作成し、そこにファイルシステムを作成"
+  "Ext4": [
+    "ext4"
   ],
-  "File systems created at a new LVM volume group": [
-    "新規 LVM ボリュームグループにファイルシステムを作成"
+  "F2FS": [
+    "f2fs"
   ],
-  "File systems created at a new LVM volume group on %s": [
-    "%s 内の新規 LVM ボリュームグループにファイルシステムを作成"
+  "FAT": [
+    "FAT"
+  ],
+  "Failed to calculate a storage layout": [
+    "ストレージ配置の算出に失敗しました"
+  ],
+  "File system": [
+    "ファイルシステム"
   ],
   "Filter by description or keymap code": [
     "説明またはキーマップコードでフィルタ"
@@ -501,8 +546,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "地域／タイムゾーンコード／UTC オフセット値でフィルタ"
   ],
-  "Final layout": [
-    "最終形態"
+  "Find space in %s": [
+    "%s 内での領域検出"
   ],
   "Finish": [
     "完了"
@@ -513,9 +558,6 @@ export default {
   "First user": [
     "最初のユーザ"
   ],
-  "Fixed": [
-    "固定値"
-  ],
   "Forget": [
     "削除"
   ],
@@ -525,11 +567,11 @@ export default {
   "Format": [
     "フォーマット"
   ],
+  "Format partition as": [
+    "下記の形式でフォーマット:"
+  ],
   "Format selected devices?": [
     "選択したデバイスをフォーマットしますか？"
-  ],
-  "Format the device": [
-    "デバイスのフォーマット"
   ],
   "Formatted": [
     "フォーマット済み"
@@ -537,8 +579,8 @@ export default {
   "Formatting DASD devices": [
     "DASD デバイスをフォーマットしています"
   ],
-  "Full Disk Encryption (FDE) allows to protect the information stored at the device, including data, programs, and system files.": [
-    "完全ディスク暗号化 (Full Disk Encryption; FDE) を使用することで、データやプログラム、システムファイルを含むデバイス内の情報保護を行うことができます。"
+  "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
+    "完全ディスク暗号化 (Full Disk Encryption; FDE) を使用することで、データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
   "Full name": [
     "フルネーム"
@@ -576,6 +618,9 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再起動までの間にメディアを取り出しておいてください。"
   ],
+  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
+    "単位を省略した場合はバイト (B) 単位であるものとみなされます。なお、単位は GiB のように 2 のべき乗のほか、 GB のように 10 のべき乗でも指定することができます。"
+  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "続行すると、お使いのコンピュータのハードディスクにあるパーティションは、ここまでのダイアログで設定したとおりに変更されます。"
   ],
@@ -603,59 +648,35 @@ export default {
   "Install": [
     "インストール"
   ],
-  "Install in a new Logical Volume Manager (LVM) volume group deleting all the content of the underlying devices": [
-    "既存のデバイス内の内容を全て削除し、新しく論理ボリュームマネージャ (LVM) のボリュームグループを作成してインストールします"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s deleting all its content": [
-    "%s 内の内容を全て削除し、新しく論理ボリュームマネージャ (LVM) のボリュームグループを作成してインストールします"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking existing partitions as needed": [
-    "必要に応じて %s 内の既存パーティションを縮小し、新しく論理ボリュームマネージャ (LVM) のボリュームグループを作成してインストールします"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s using a custom strategy to find the needed space": [
-    "%s 内での必要な領域検出に際して独自の方式を利用し、新しく論理ボリュームマネージャのボリュームグループを作成してインストールします"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s without modifying existing partitions": [
-    "%s 内の既存パーティションを変更せず、新しく論理ボリュームマネージャのボリュームグループを作成してインストールします"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group shrinking existing partitions at the underlying devices as needed": [
-    "必要に応じて既存のパーティションを縮小し、新しく論理ボリュームマネージャ (LVM) のボリュームグループを作成してインストールします"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group using a custom strategy to find the needed space at the underlying devices": [
-    "必要な領域検出に際して独自の方式を利用し、新しく論理ボリュームマネージャ (LVM) のボリュームグループを作成してインストールします"
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group without modifying the partitions at the underlying devices": [
-    "既存のパーティションを変更せず、新しく論理ボリュームマネージャ (LVM) のボリュームグループを作成してインストールします"
-  ],
-  "Install new system on": [
-    "新しいシステムのインストール先"
-  ],
   "Install using an advanced configuration.": [
     "高度な設定項目を利用してインストールします。"
   ],
-  "Install using device %s and deleting all its content": [
-    "デバイス %s の内容を全て削除してインストールします"
+  "Install using device %s and deleting all its content.": [
+    "デバイス %s の内容を全て削除してインストールします。"
   ],
-  "Install using device %s shrinking existing partitions as needed": [
-    "デバイス %s の既存パーティションを必要に応じて縮小してインストールします"
+  "Install using device %s shrinking existing partitions as needed.": [
+    "デバイス %s の既存パーティションを必要に応じて縮小してインストールします。"
   ],
-  "Install using device %s with a custom strategy to find the needed space": [
-    "必要な領域検出に際して独自の方式を利用し、デバイス %s にインストールします"
+  "Install using device %s with a custom strategy to find the needed space.": [
+    "必要な領域検出に際して独自の方式を利用してデバイス %s にインストールします。"
   ],
-  "Install using device %s without modifying existing partitions": [
-    "デバイス %s の既存パーティションを変更せずにインストールします"
+  "Install using device %s without modifying existing partitions.": [
+    "デバイス %s の既存パーティションを変更せずにインストールします。"
   ],
-  "Installation device": [
+  "Install using several devices and deleting all its content.": [
+    "複数のデバイスの内容を全て削除してインストールします。"
+  ],
+  "Install using several devices shrinking existing partitions as needed.": [
+    "複数のデバイスの既存パーティションを必要に応じて縮小してインストールします。"
+  ],
+  "Install using several devices with a custom strategy to find the needed space.": [
+    "必要な領域検出に際して独自の方式を利用して複数のデバイスにインストールします。"
+  ],
+  "Install using several devices without modifying existing partitions.": [
+    "複数のデバイスの既存パーティションを変更せずにインストールします。"
+  ],
+  "Installation Devices": [
     "インストール先のデバイス"
-  ],
-  "Installation will configure partitions for booting at %s.": [
-    "インストール作業で %s に起動用のパーティションを設定します。"
-  ],
-  "Installation will configure partitions for booting at the installation disk.": [
-    "インストール作業でインストール先のディスクに起動用のパーティションを設定します。"
-  ],
-  "Installation will not configure partitions for booting.": [
-    "インストール作業では起動用のパーティションを設定しません。"
   ],
   "Installation will take %s.": [
     "インストールするには %s が必要です。"
@@ -666,14 +687,29 @@ export default {
   "Installer options": [
     "インストーラのオプション"
   ],
+  "Installing a broken package affects system stability and is a big security risk!": [
+    "壊れたパッケージをインストールしてしまうと、システムの安定性が損なわれるほか、セキュリティ上のリスクにもなります！"
+  ],
   "Installing the system, please wait...": [
     "システムをインストールしています。しばらくお待ちください..."
   ],
   "Interface": [
     "インターフェイス"
   ],
+  "Invalid storage settings": [
+    "正しくないストレージ設定です"
+  ],
   "Ip prefix or netmask": [
     "IP プレフィクスもしくはネットマスク"
+  ],
+  "It is not possible to install the system with the current configuration. Adjust the settings below.": [
+    "現在の設定ではシステムをインストールすることができません。下記の設定を調整してください。"
+  ],
+  "JFS": [
+    "JFS"
+  ],
+  "Keep size of %s": [
+    "%s のサイズを維持"
   ],
   "Keyboard": [
     "キーボード"
@@ -690,14 +726,20 @@ export default {
   "LUN": [
     "LUN"
   ],
+  "Label": [
+    ""
+  ],
   "Language": [
     "言語"
+  ],
+  "Let the installer propose a sensible range of sizes": [
+    "インストーラでのサイズ範囲の提案"
   ],
   "License language": [
     "ライセンスの言語"
   ],
-  "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
-    "ファイルシステムに対するサイズ制限を範囲指定します。最終的なサイズは最小値と最大値の間になります。最大値を指定しない場合、ファイルシステムはできる限り大きくなるように設定されます。"
+  "Limited": [
+    "制限"
   ],
   "Loading data...": [
     "データを読み込んでいます..."
@@ -714,20 +756,11 @@ export default {
   "Localization": [
     "ローカライゼーション"
   ],
-  "Location": [
-    "場所"
-  ],
-  "Location for %s file system": [
-    "%s ファイルシステムの場所"
-  ],
   "Log in": [
     "ログイン"
   ],
   "Log in as %s": [
     "%s としてログイン"
-  ],
-  "Logical volume at system LVM": [
-    "システム LVM 内の論理ボリューム"
   ],
   "Login": [
     "ログイン"
@@ -741,17 +774,14 @@ export default {
   "Logout": [
     "ログアウト"
   ],
-  "Main disk or LVM Volume Group for installation.": [
-    "インストール先のメインディスクもしくは LVM ボリュームグループを選択してください。"
-  ],
   "Main navigation": [
     "メインナビゲーション"
   ],
   "Make sure you provide the correct values": [
     "正しい値を設定しているかどうかご確認ください"
   ],
-  "Manage and format": [
-    "管理とフォーマット"
+  "Manage DASD devices": [
+    "DASD デバイスの管理"
   ],
   "Manual": [
     "手動"
@@ -759,17 +789,14 @@ export default {
   "Maximum": [
     "最大"
   ],
-  "Maximum desired size": [
-    "最大要求サイズ"
+  "Maximum size mode": [
+    "最大サイズのモード"
   ],
-  "Maximum must be greater than minimum": [
-    "最大サイズは最小サイズより大きくなければなりません"
+  "Maximum size options": [
+    "最大サイズのオプション"
   ],
-  "Members: %s": [
-    "メンバー: %s"
-  ],
-  "Method": [
-    "方式"
+  "Maximum size value": [
+    "最大サイズの値"
   ],
   "MiB": [
     "MiB"
@@ -777,23 +804,20 @@ export default {
   "Minimum": [
     "最小"
   ],
-  "Minimum desired size": [
-    "最小必須サイズ"
-  ],
-  "Minimum size is required": [
-    "最小サイズを指定する必要があります"
+  "Minimum size value": [
+    "最小サイズの値"
   ],
   "Mode": [
     "モード"
   ],
-  "Modify": [
-    "修正"
+  "More actions": [
+    "さらなる処理"
   ],
-  "More info for file system types": [
-    "ファイルシステムの種類に関する詳細"
+  "More options": [
+    "さらなるオプション"
   ],
-  "Mount %1$s at %2$s (%3$s)": [
-    "%1$s を %2$s にマウント (%3$s)"
+  "More options toggle": [
+    "さらなるオプションの切り替え"
   ],
   "Mount Point": [
     "マウントポイント"
@@ -801,11 +825,26 @@ export default {
   "Mount point": [
     "マウントポイント"
   ],
-  "Mount the file system": [
-    "ファイルシステムのマウント"
+  "Mount point mode": [
+    "マウントポイントのモード"
+  ],
+  "Mount point options": [
+    "マウントポイントのオプション"
+  ],
+  "Mount point toggle": [
+    "マウントポイントの切り替え"
   ],
   "Multipath": [
     "マルチパス"
+  ],
+  "NFS": [
+    "NFS"
+  ],
+  "NILFS2": [
+    "NILFS2"
+  ],
+  "NTFS": [
+    "NTFS"
   ],
   "Name": [
     "名前"
@@ -816,11 +855,17 @@ export default {
   "New": [
     "新規"
   ],
+  "New LVM volume group": [
+    "新規 LVM ボリュームグループ"
+  ],
   "No": [
     "いいえ"
   ],
   "No Wi-Fi supported": [
     "Wi-Fi サポートがありません"
+  ],
+  "No additional partitions will be created": [
+    "追加パーティションは作成しません"
   ],
   "No additional software was selected.": [
     "追加のソフトウエアは何も選択していません。"
@@ -834,14 +879,14 @@ export default {
   "No device selected yet": [
     "まだ何もデバイスを選択していません"
   ],
+  "No devices found": [
+    "デバイスが見つかりませんでした"
+  ],
   "No iSCSI targets found.": [
     "iSCSI ターゲットが見つかりませんでした。"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "起動用のパーティションを自動設定しません。注意してお使いください。"
-  ],
-  "No root authentication method defined yet.": [
-    "まだ root 認証方式を設定していません。"
   ],
   "No support is planned.": [
     "サポートを提供する計画はありません。"
@@ -876,6 +921,9 @@ export default {
   "None of the time zones match the filter.": [
     "フィルタに該当するタイムゾーンがありません。"
   ],
+  "Not defined": [
+    "未設定"
+  ],
   "Not implemented yet (%s)": [
     "実装されていません (%s)"
   ],
@@ -884,9 +932,6 @@ export default {
   ],
   "Not selected yet": [
     "まだ何も選択していません"
-  ],
-  "Not set": [
-    "未設定"
   ],
   "Not supported (%s)": [
     "サポート対象外です (%s)"
@@ -906,23 +951,23 @@ export default {
   "Options toggle": [
     "オプションの切り替え"
   ],
-  "Other": [
-    "その他"
-  ],
   "Overview": [
     "概要"
+  ],
+  "Package installation failed": [
+    "インストールのインストール失敗"
   ],
   "Partition Info": [
     "パーティション情報"
   ],
-  "Partition at %s": [
-    "%s に存在するパーティション"
+  "Partitions": [
+    "パーティション"
   ],
-  "Partition at installation disk": [
-    "インストール先のディスクのパーティション"
+  "Partitions needed for booting will also be adapted": [
+    "起動に必要なパーティションについても調整を行います"
   ],
-  "Partitions and file systems": [
-    "パーティションとファイルシステム"
+  "Partitions needed for booting will remain at %s": [
+    "起動に必要なパーティションが %s に残されます"
   ],
   "Partitions to boot will be allocated at the following device.": [
     "下記のデバイス内に起動用パーティションを割り当てます。"
@@ -933,6 +978,9 @@ export default {
   "Partitions to boot will be allocated at the installation disk.": [
     "インストール先のディスク内に起動用のパーティションを割り当てます。"
   ],
+  "Partitions will be used and created for %s": [
+    "パーティションを使用し、 %s 向けに作成します"
+  ],
   "Password": [
     "パスワード"
   ],
@@ -942,11 +990,11 @@ export default {
   "Password confirmation": [
     "パスワードの確認"
   ],
-  "Password for root user": [
-    "root ユーザのパスワード"
-  ],
   "Password input": [
     "パスワード入力"
+  ],
+  "Password is empty.": [
+    "パスワードが指定されていません。"
   ],
   "Password visibility button": [
     "パスワード表示ボタン"
@@ -963,20 +1011,11 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Planned Actions": [
-    "処理の計画"
-  ],
-  "Please, be aware that a user must be defined before installing the system to be able to log into it.": [
-    "なお、システムにログインできるようにするには、インストールの前にユーザを設定しておかなければならないことに注意してください。"
-  ],
   "Please, cancel and check the settings if you are unsure.": [
     "何か不安な点があれば、キャンセルして設定を確認しておくことをお勧めします。"
   ],
   "Please, check whether it is running.": [
     "問題なく動作しているかどうかご確認ください。"
-  ],
-  "Please, define at least one authentication method for logging into the system as root.": [
-    "少なくとも 1 つ以上の root ログイン時の認証方式を設定してください。"
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "利用可能な iSCSI ターゲットを検出するため、 iSCSI 検索を実施してください。"
@@ -1005,29 +1044,23 @@ export default {
   "Prefix length or netmask": [
     "プレフィクス長またはサブネットマスク"
   ],
-  "Prepare more devices by configuring advanced": [
-    "高度な設定でさらにデバイスを検出"
-  ],
-  "Presence of other volumes (%s)": [
-    "その他のボリューム (%s) の存在"
-  ],
   "Product registered": [
     "製品を登録しました"
   ],
   "Product registration form": [
     "製品登録フォーム"
   ],
-  "Protection for the information stored at the device, including data, programs, and system files.": [
-    "データやプログラム、システムファイルを含むデバイス内の情報を保護する仕組みです。"
+  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
+    "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
-  "Provide a password to ensure administrative access to the system.": [
-    "システムの管理者権限にアクセスするためのパスワードを入力してください。"
+  "Public SSH Key": [
+    "公開 SSH 鍵"
+  ],
+  "Public SSH Key is empty.": [
+    "公開 SSH 鍵が設定されていません。"
   ],
   "Question": [
     "質問"
-  ],
-  "Range": [
-    "範囲"
   ],
   "Read zFCP devices": [
     "zFCP デバイスの読み込み"
@@ -1038,17 +1071,20 @@ export default {
   "Register": [
     "登録"
   ],
-  "Register it now": [
-    "今すぐ登録"
-  ],
   "Registration": [
     "登録"
   ],
   "Registration code": [
     "登録コード"
   ],
+  "ReiserFS": [
+    "ReiserFS"
+  ],
   "Reload": [
     "再読み込み"
+  ],
+  "Reloading data, please wait...": [
+    "データを再読み込みしています。しばらくお待ちください..."
   ],
   "Remove": [
     "削除"
@@ -1059,35 +1095,35 @@ export default {
   "Remove min channel filter": [
     "最小チャネルのフィルタを削除"
   ],
+  "Remove the configuration for this device": [
+    "このデバイス向けの設定を削除"
+  ],
   "Repository load failed": [
     "リポジトリ読み込み失敗"
-  ],
-  "Reset location": [
-    "場所のリセット"
   ],
   "Reset to defaults": [
     "既定値に戻す"
   ],
-  "Reused %s": [
-    "%s の再利用"
+  "Reset to the default configuration": [
+    "既定の設定に戻す"
   ],
-  "Root SSH public key": [
-    "root の SSH 公開鍵"
+  "Result": [
+    "結果"
   ],
-  "Root authentication": [
-    "root の認証"
+  "Root authentication methods": [
+    "root の認証方式"
   ],
-  "Root password": [
-    "root のパスワード"
+  "Root user": [
+    "root ユーザ"
   ],
   "SD Card": [
     "SD カード"
   ],
-  "SSH Key": [
-    "SSH 鍵"
-  ],
   "SSID": [
     "SSID"
+  ],
+  "Same as minimum": [
+    "最小値と同じ"
   ],
   "Search": [
     "検索"
@@ -1101,26 +1137,38 @@ export default {
   "Select": [
     "選択"
   ],
+  "Select a device to configure": [
+    "設定するデバイスの選択"
+  ],
+  "Select a device to create %s": [
+    "%s を作成するデバイスの選択"
+  ],
+  "Select a device to install the system": [
+    "システムのインストール先となるデバイスの選択"
+  ],
   "Select a disk": [
     "ディスクの選択"
-  ],
-  "Select a location": [
-    "場所の選択"
   ],
   "Select a product": [
     "製品の選択"
   ],
-  "Select booting partition": [
-    "起動パーティションの選択"
+  "Select another disk to define partitions": [
+    "パーティションの設定作業を行う他のディスクを選択"
   ],
-  "Select how to allocate the file system": [
-    "ファイルシステムの割り当て方法を選択してください"
+  "Select or enter a mount point": [
+    "マウントポイントの選択または入力"
   ],
-  "Select in which device to allocate the file system": [
-    "ファイルシステムの割り当てを実施するデバイスを選択してください"
+  "Select or enter a mount point that is not already assigned to another device": [
+    "他のデバイスには割り当てられていないマウントポイントを選択または入力してください"
   ],
-  "Select installation device": [
-    "インストール先デバイスの選択"
+  "Select or enter a valid mount point": [
+    "正しいマウントポイントを選択または入力してください"
+  ],
+  "Select the disk to configure partitions for booting": [
+    "起動用のパーティションを設定するディスクの選択"
+  ],
+  "Select what to do with each partition in order to find space for allocating the new system.": [
+    "新しいシステムを配置するための領域を検出するため、各パーティションに対してやるべきことを選択します。"
   ],
   "Select what to do with each partition.": [
     "パーティションの設定作業を独自に実施します。"
@@ -1128,14 +1176,8 @@ export default {
   "Selected patterns": [
     "パターンの選択"
   ],
-  "Separate LVM at %s": [
-    "%s に存在する個別の LVM"
-  ],
   "Server IP": [
     "サーバ IP"
-  ],
-  "Set": [
-    "設定"
   ],
   "Set DIAG Off": [
     "診断を無効化"
@@ -1143,17 +1185,8 @@ export default {
   "Set DIAG On": [
     "診断を有効化"
   ],
-  "Set a password": [
-    "パスワードの設定"
-  ],
-  "Set a root password": [
-    "root のパスワードを設定"
-  ],
-  "Set root SSH public key": [
-    "root の SSH 公開鍵の設定"
-  ],
-  "Setup root user authentication": [
-    "root の認証方式の設定"
+  "Several partitions will be deleted": [
+    "いくつかのパーティションを削除します"
   ],
   "Show": [
     "表示"
@@ -1164,26 +1197,20 @@ export default {
   "Show information about %s": [
     "%s に関する情報を表示"
   ],
-  "Show partitions and file-systems actions": [
-    "パーティションとファイルシステムの処理を表示"
-  ],
   "Shrink existing partitions": [
-    "既存のパーティションの縮小"
-  ],
-  "Shrinking partitions is allowed": [
-    "パーティションの縮小を許可します"
-  ],
-  "Shrinking partitions is not allowed": [
-    "パーティションの縮小を許可しません"
-  ],
-  "Shrinking some partitions is allowed but not needed": [
-    "パーティションの縮小を許可していますが不要です"
+    "既存のパーティションを縮小する"
   ],
   "Size": [
     "サイズ"
   ],
-  "Size unit": [
-    "サイズの単位"
+  "Size limits must be numbers optionally followed by a unit like GiB or GB": [
+    "サイズ制限は数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
+  ],
+  "Size options": [
+    "サイズのオプション"
+  ],
+  "Sizes must be entered as a numbers optionally followed by a unit.": [
+    "サイズには単位付きもしくは単位無しの数値を入力しなければなりません。"
   ],
   "Software": [
     "ソフトウエア"
@@ -1194,17 +1221,26 @@ export default {
   "Software selection": [
     "ソフトウエア選択"
   ],
+  "Some existing partitions may be shrunk": [
+    "いくつかの既存パーティションを縮小する"
+  ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     "インストール用リポジトリのうち、読み込めなかったものがあります。これらのリポジトリ無しにはシステムをインストールできません。"
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
     "お使いの AutoYaST プロファイルのうち、いくつかの要素がサポート対象外となっています。"
   ],
+  "Some partitions may be deleted": [
+    "いくつかのパーティションを削除するかもしれません"
+  ],
+  "Some partitions may be shrunk": [
+    "いくつかのパーティションを縮小するかもしれません"
+  ],
   "Something went wrong": [
     "何らかの問題が発生しました"
   ],
-  "Space policy": [
-    "領域ポリシー"
+  "Start from scratch with the default configuration": [
+    "既定の設定で最初から実施する"
   ],
   "Startup": [
     "起動"
@@ -1215,26 +1251,17 @@ export default {
   "Storage": [
     "ストレージ"
   ],
-  "Storage proposal not possible": [
-    "ストレージの提案が実施できません"
+  "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
+    "使用するディスクのほか、 LVM ボリュームグループなどの追加デバイス設定を含む新しいシステムの構造です。"
   ],
-  "Structure of the new system, including any additional partition needed for booting": [
-    "起動時に必要な追加パーティションを含む、新しいシステムの構造設定です"
+  "Suggested mount points": [
+    "提案されたマウントポイント"
   ],
-  "Swap at %1$s (%2$s)": [
-    "%1$s にスワップを配置 (%2$s)"
-  ],
-  "Swap partition (%s)": [
-    "スワップパーティション (%s)"
-  ],
-  "Swap volume (%s)": [
-    "スワップボリューム (%s)"
+  "Swap": [
+    "スワップ"
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM シーリングを使用するには、新しいシステムを直接起動する必要があります。"
-  ],
-  "Table with mount points": [
-    "マウントポイントの一覧"
   ],
   "Target Password": [
     "ターゲットのパスワード"
@@ -1242,50 +1269,44 @@ export default {
   "Targets": [
     "ターゲット"
   ],
-  "The amount of RAM in the system": [
-    "システムに搭載された RAM の量"
+  "The LVM group '%1$s' will remain at %2$s": [
+    "LVM グループ '%1$s' が %2$s に残されます"
   ],
-  "The configuration of snapshots": [
-    "スナップショットの設定"
+  "The configured LVM groups will remain at %s": [
+    "設定済みの LVM グループが %s に残されます"
+  ],
+  "The configured partitions will be created as logical volumes": [
+    "設定したパーティションは論理ボリュームとして作成します"
   ],
   "The content may be deleted": [
     "内容が削除されるかもしれません"
   ],
-  "The current file system on %s is selected to be mounted at %s.": [
-    "%s 内にある現在のファイルシステムを %s にマウントするよう選択しています。"
+  "The current configuration will result in a partition of %s.": [
+    "現在の設定では %s のパーティションになります。"
   ],
-  "The current file system on the selected device will be mounted   without formatting the device.": [
-    "選択したデバイス内にあるファイルシステムを、フォーマットせずにそのままマウントします。"
+  "The current configuration will result in a partition of at least %s.": [
+    "現在の設定では少なくとも %s のパーティションになります。"
+  ],
+  "The current configuration will result in a partition with a size between %1$s and %2$s.": [
+    "現在の設定では %1$s から %2$s までのパーティションになります。"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "既存のデータは保持しますが、十分な領域を確保するために既存のパーティションのサイズ変更を行います。"
+    "既存のデータは保持しますが、必要に応じて既存のパーティションのサイズ変更を行います。"
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "既存のデータを全て保持します。パーティションに割り当てられていない空き領域のみを使用します。"
+    "既存のデータを保持します。パーティションに割り当てられていない空き領域のみを使用します。"
   ],
   "The device cannot be shrunk:": [
     "デバイスは縮小できません:"
   ],
+  "The device will be mounted at %s.": [
+    "デバイスは %s にマウントされます。"
+  ],
+  "The device will be used by the new system.": [
+    "デバイスは新しいシステムで使用されます。"
+  ],
   "The encryption password did not work": [
     "暗号化パスワードが正しくありません"
-  ],
-  "The file system is allocated at the device %s.": [
-    "ファイルシステムはデバイス %s 内から割り当てます。"
-  ],
-  "The file system will be allocated as a new partition at the selected   disk.": [
-    "ファイルシステムは選択したディスク内の新規パーティションとして割り当てます。"
-  ],
-  "The file systems are allocated at the installation device by default. Indicate a custom location to create the file system at a specific device.": [
-    "既定では、インストール先のデバイス内にファイルシステムを割り当てます。ここでは、特定のデバイス内にファイルシステムを作成する際の場所を設定します。"
-  ],
-  "The file systems will be allocated by default as [logical volumes of a new LVM Volume Group]. The corresponding physical volumes will be created on demand as new partitions at the selected devices.": [
-    "既定では、ファイルシステムは [新規 LVM ボリュームグループの論理ボリューム] として割り当てます。対応する物理ボリュームは、必要に応じて選択したデバイス内の新規パーティションとして作成します。"
-  ],
-  "The file systems will be allocated by default as [new partitions in the selected device].": [
-    "既定では、ファイルシステムは [選択したデバイス内の新規パーティション] として割り当てます。"
-  ],
-  "The final size depends on %s.": [
-    "最終的なサイズは %s に依存します。"
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Trusted Platform Module (TPM) の設定の最後では、新しいシステムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを動作させるためには、マシンが新しいブートローダを直接起動するように設定しておく必要があります。"
@@ -1305,20 +1326,62 @@ export default {
   "The installer requires [root] user privileges.": [
     "インストーラを使用するには [root] 権限が必要です。"
   ],
-  "The mount point is invalid": [
-    "マウントポイントが正しくありません"
+  "The maximum must be a number optionally followed by a unit like GiB or GB": [
+    "最大サイズは数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
   ],
-  "The options for the file system type depends on the product and the mount point.": [
-    "ファイルシステムに対する選択肢は、製品とマウントポイントごとに異なります。"
+  "The minimum cannot be greater than the maximum": [
+    "最小サイズは最大サイズより小さくなければいけません"
+  ],
+  "The minimum must be a number optionally followed by a unit like GiB or GB": [
+    "最小サイズは数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
+  ],
+  "The partition can grow to use all the contiguous free space": [
+    "連続した空き領域の範囲までパーティションを拡大できます"
+  ],
+  "The partition can grow until a given limit size": [
+    "指定した上限サイズまでパーティションを拡大できます"
+  ],
+  "The partition is created exactly with the given size": [
+    "指定したサイズでパーティションを作成します"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM 側でシステムの一貫性検証が成功すると、起動とデータへのアクセス処理に際してパスワードが不要になります。 TPM シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があります。"
   ],
-  "The selected device will be formatted as %s file system.": [
-    "選択したデバイスを %s ファイルシステムでフォーマットします。"
+  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
   ],
-  "The size of the file system cannot be edited": [
-    "ファイルシステムのサイズは編集できません"
+  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "システムのメモリサイズと btrfs スナップショットの使用方法、そして %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "システムのメモリサイズと btrfs スナップショットの使用方法、そして %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "%2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "%2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "btrfs スナップショットの使用方法と %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "btrfs スナップショットの使用方法と %2$s 向けに個別のファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "システムのメモリサイズと btrfs スナップショットの使用方法に応じて %s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "btrfs スナップショットの使用方法に応じて %s 向けのサイズ範囲を動的に調整します。"
+  ],
+  "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
+    "ストレージ設定は下記の結果の通り有効ではありますが、このインターフェイスではいくつかの要素がサポートされていません。"
+  ],
+  "The storage configuration uses elements not supported by this interface.": [
+    "現在のインターフェイスでは未サポートの要素がストレージ設定で使用されています。"
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していないか、無効化されているものと思われます。"
@@ -1326,35 +1389,41 @@ export default {
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
   ],
-  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    "現在のバージョンのビジュアルインターフェイスでは編集できない高度な設定を利用して、システム配置を行っています。この制限は将来バージョンの Agama でなくなる予定です。"
-  ],
   "The system will use %s as its default language.": [
     "システムは %s を既定の言語として使用します。"
-  ],
-  "The systems will be configured as displayed below.": [
-    "システムは下記に表示されているとおりに設定されます。"
-  ],
-  "The type and size of the file system cannot be edited.": [
-    "ファイルシステムの種類とサイズは編集できません。"
   ],
   "The zFCP disk was not activated.": [
     "zFCP ディスクは有効化されませんでした。"
   ],
-  "There is a predefined file system for %s.": [
-    "%s に対して事前設定されたファイルシステムが既に存在しています。"
+  "There are no disks available for the installation.": [
+    "インストール可能なディスクが見つかりません。"
   ],
-  "There is already a file system for %s.": [
-    "%s に対するファイルシステムが既に存在しています。"
+  "There are not disks available for the installation. You may need to configure some device.": [
+    "インストールに利用できるディスクがありません。デバイスの設定を行う必要があるかもしれません。"
+  ],
+  "There are not usable partitions": [
+    "利用可能なパーティションがありません"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を確認したい場合は、それぞれのセクションを開いてください。"
   ],
-  "These limits are affected by:": [
-    "これらの制限は下記による影響を受けます:"
-  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "この処理により、下記に示したデバイス内のデータが全て消去されます。続行して問題ないかどうか、ご確認ください。"
+  ],
+  "This device will contain any partition needed for booting": [
+    "このデバイスには起動に必要なパーティションが含まれています"
+  ],
+  "This device will contain the LVM group '%s'": [
+    "このデバイスには設定済みの LVM グループ '%s' が含まれています"
+  ],
+  "This device will contain the LVM group '%s' and any partition needed to boot": [
+    "このデバイスには起動に必要な設定済み LVM グループ '%s' とパーティションが含まれています"
+  ],
+  "This device will contain the configured LVM groups": [
+    "このデバイスには設定済みの LVM グループが含まれています"
+  ],
+  "This device will contain the configured LVM groups and any partition needed to boot": [
+    "このデバイスには起動に必要な設定済み LVM グループとパーティションが含まれています"
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "この製品はインストール時のパターン選択を許可していません。なお、インストール完了後に必要なソフトウエアを追加できます。"
@@ -1362,23 +1431,20 @@ export default {
   "This space includes the base system and the selected software patterns, if any.": [
     "この容量にはシステムの基本部分のほか、選択したソフトウエアパターンが含まれます。"
   ],
+  "This uses existing partitions at the device": [
+    "デバイス内の既存パーティションを使用する"
+  ],
   "TiB": [
     "TiB"
   ],
   "Time zone": [
     "タイムゾーン"
   ],
+  "Tmpfs": [
+    "tmpfs"
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "システムを起動できるようにするため、インストーラはディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
-  ],
-  "Transactional Btrfs": [
-    "トランザクション型 btrfs"
-  ],
-  "Transactional Btrfs root partition (%s)": [
-    "トランザクション型の btrfs ルートパーティション (%s)"
-  ],
-  "Transactional Btrfs root volume (%s)": [
-    "トランザクション型の btrfs ルートボリューム (%s)"
   ],
   "Transactional root file system": [
     "トランザクション型のルートファイルシステム"
@@ -1389,11 +1455,8 @@ export default {
   "Type": [
     "種類"
   ],
-  "Unit for the maximum size": [
-    "最大サイズの単位"
-  ],
-  "Unit for the minimum size": [
-    "最小サイズの単位"
+  "Unable to modify the settings": [
+    "設定を変更できませんでした"
   ],
   "Unselect": [
     "未選択"
@@ -1410,20 +1473,62 @@ export default {
   "Upload": [
     "アップロード"
   ],
-  "Upload a SSH Public Key": [
-    "SSH 公開鍵のアップロード"
-  ],
   "Upload, paste, or drop an SSH public key": [
     "SSH 公開鍵のアップロード／貼り付け／ドロップ"
   ],
-  "Usage": [
-    "用途"
+  "Use": [
+    "使用"
   ],
-  "Use Btrfs snapshots for the root file system": [
-    "ルートファイルシステムで btrfs スナップショットを使用する"
+  "Use %s": [
+    "%s を使用する"
+  ],
+  "Use %s for LVM and additional partitions": [
+    "LVM と追加パーティション用に %s を使用する"
+  ],
+  "Use %s for LVM, additional partitions and booting": [
+    "LVM ／追加パーティション／起動用に %s を使用する"
+  ],
+  "Use %s for additional partitions": [
+    "追加パーティション用に %s を使用する"
+  ],
+  "Use %s for additional partitions and booting": [
+    "追加パーティションと起動用に %s を使用する"
+  ],
+  "Use %s to boot": [
+    "起動用に %s を使用する"
+  ],
+  "Use %s to host LVM": [
+    "LVM の配置用に %s を使用する"
+  ],
+  "Use %s to host LVM and boot": [
+    "LVM の配置と起動用に %s を使用する"
+  ],
+  "Use %s to install": [
+    "インストールに %s を使用する"
+  ],
+  "Use %s to install and boot": [
+    "インストールと起動用に %s を使用する"
+  ],
+  "Use %s to install and host LVM": [
+    "インストールと LVM の配置用に %s を使用する"
+  ],
+  "Use %s to install, host LVM and boot": [
+    "インストール／ LVM の配置／起動用に %s を使用する"
+  ],
+  "Use additional disk": [
+    "追加のディスクを使用"
+  ],
+  "Use additional disk toggle": [
+    "追加ディスクの使用切り替え"
   ],
   "Use available space": [
     "利用可能な領域を使用する"
+  ],
+  "Use password": [
+    "パスワードの使用"
+  ],
+  "Use public SSH Key": [
+    "公開 SSH 鍵の使用"
   ],
   "Use suggested username": [
     "提案されたユーザ名を使用する"
@@ -1431,8 +1536,8 @@ export default {
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "毎回の起動時に Trusted Platform Module (TPM) を利用して自動的に暗号化解除します"
   ],
-  "User full name": [
-    "ユーザのフルネーム"
+  "Used space": [
+    "使用済み領域"
   ],
   "User name": [
     "ユーザ名"
@@ -1443,8 +1548,14 @@ export default {
   "Username suggestion dropdown": [
     "ユーザ名の提案ドロップダウン"
   ],
-  "Users": [
-    "ユーザ"
+  "Using a hashed password.": [
+    "ハッシュ化されたパスワードを使用します。"
+  ],
+  "Using an existing partition": [
+    "既存パーティションの使用"
+  ],
+  "Using partition %s": [
+    "パーティション %s の使用"
   ],
   "Visible Wi-Fi networks": [
     "検出された Wi-Fi ネットワーク"
@@ -1458,8 +1569,8 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting for actions information...": [
-    "処理に関する情報を待機しています..."
+  "Waiting for a mount point": [
+    "マウントポイントを待機しています"
   ],
   "Waiting for information about storage configuration": [
     "ストレージ設定に関する情報を待機しています"
@@ -1476,26 +1587,26 @@ export default {
   "Wired": [
     "有線"
   ],
-  "Wires: %s": [
-    "接続: %s"
+  "XFS": [
+    "XFS"
   ],
   "Yes": [
     "はい"
   ],
-  "You can change it or select another authentication method in the 'Users' section before installing.": [
-    "インストールの前にも、 'ユーザ' セクション内で認証方式を追加／変更することができます。"
+  "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
+    "現在の設定のまま進めることもできますし、設定を破棄してシンプルな設定で最初からやり直すこともできます。"
+  ],
+  "You may want to discard the current settings and start from scratch with a simple configuration.": [
+    "現在の設定を破棄してシンプルな設定からやり直すこともできます。"
+  ],
+  "You may want to discard those settings and start from scratch with a simple configuration.": [
+    "これらの設定を破棄してシンプルな設定からやり直すこともできます。"
   ],
   "ZFCP": [
     "ZFCP"
   ],
-  "affecting": [
-    "下記に影響があります"
-  ],
   "at least %s": [
     "少なくとも %s"
-  ],
-  "auto": [
-    "自動"
   ],
   "auto selected": [
     "自動選択済み"
@@ -1503,47 +1614,11 @@ export default {
   "configured": [
     "設定済み"
   ],
-  "deleting current content": [
-    "現在の内容を削除"
-  ],
-  "disabled": [
-    "無効"
-  ],
-  "enabled": [
-    "有効"
-  ],
   "iBFT": [
     "iBFT"
   ],
   "iSCSI": [
     "iSCSI"
-  ],
-  "shrinking partitions": [
-    "パーティションの縮小"
-  ],
-  "storage techs": [
-    "ストレージ技術"
-  ],
-  "the amount of RAM in the system": [
-    "システムに搭載された RAM の量"
-  ],
-  "the configuration of snapshots": [
-    "スナップショットの設定"
-  ],
-  "the presence of the file system for %s": [
-    "%s に対するファイルシステムの存在"
-  ],
-  "user autologin": [
-    "ユーザの自動ログイン"
-  ],
-  "using TPM unlocking": [
-    "TPM 解錠を使用"
-  ],
-  "with custom actions": [
-    "独自の処理"
-  ],
-  "without modifying any partition": [
-    "パーティションの変更を行いません"
   ],
   "zFCP": [
     "zFCP"
