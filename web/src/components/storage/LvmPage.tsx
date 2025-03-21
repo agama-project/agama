@@ -105,8 +105,7 @@ export default function LvmPage() {
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{_("New Volume Group")}</Content>
-        <SubtleContent>{_("Create a new LVM volume group")}</SubtleContent>
+        <Content component="h2">{_("Configure LVM Volume Group")}</Content>
       </Page.Header>
 
       <Page.Content>
@@ -124,7 +123,9 @@ export default function LvmPage() {
           <FormGroup label={_("Disks")} role="group" style={{ justifySelf: "stretch" }} isStack>
             <Content component="small">
               {_(
-                "The needed LVM physical volumes will be created as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.",
+                "The needed LVM physical volumes will be added as partitions on the chosen disks, \
+                based on the sizes of the logical volumes. If you select more than one disk, the \
+                physical volumes may be distributed along several disks.",
               )}
             </Content>
             <Gallery hasGutter>
@@ -160,7 +161,8 @@ export default function LvmPage() {
             <Checkbox
               id="moveMountPoints"
               label={_(
-                "Create logical volumes for the mount points currently configured at the selected disks",
+                "Move the mount points currently configured at the selected disks to logical \
+                volumes of this volume group.",
               )}
               isChecked={moveMountPoints}
               onChange={() => setMoveMountPoints(!moveMountPoints)}

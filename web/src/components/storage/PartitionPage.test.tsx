@@ -151,7 +151,7 @@ beforeEach(() => {
 describe("PartitionPage", () => {
   it("renders a form for defining a partition", async () => {
     const { user } = installerRender(<PartitionPage />);
-    screen.getByRole("form", { name: "Define partition at /dev/sda" });
+    screen.getByRole("form", { name: "Configure partition at /dev/sda" });
     const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
     const mountPointMode = screen.getByRole("button", { name: "Mount point mode" });
     const filesystem = screen.getByRole("button", { name: "File system" });

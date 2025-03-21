@@ -1248,7 +1248,7 @@ export default function PartitionPage() {
     <Page id="partitionPage">
       <Page.Header>
         <Content component="h2" id={headingId}>
-          {sprintf(_("Define partition at %s"), device.name)}
+          {sprintf(_("Configure partition at %s"), device.name)}
         </Content>
       </Page.Header>
 
