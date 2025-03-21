@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 21 16:36:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add extensions from the registration server (automatic
+  installation only) (jsc#AGM-100)
+
+-------------------------------------------------------------------
 Fri Mar 14 12:34:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Import the packages list from an AutoYaST profile
