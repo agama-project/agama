@@ -1,7 +1,26 @@
 -------------------------------------------------------------------
-Fri Mar  7 11:42:33 UTC 2025 - José Iván López González <jlopez@suse.com>
+Thu Mar 20 20:58:44 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
-- Show LVM config in the storage UI (gh#agama-project/agama#2089).
+- Stop displaying the hostname alert once the system is registered
+  (gh#agama-project/agama#2183).
+
+-------------------------------------------------------------------
+Wed Mar 19 19:04:09 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow temporary removal of the root file system
+ (gh#agama-project/agama#2160).
+
+-------------------------------------------------------------------
+Tue Mar 18 10:59:20 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix registration form issue when email is not provided
+  (gh#agama-project/agama#2172)
+
+-------------------------------------------------------------------
+Fri Mar 14 11:05:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Allow updating hostname from web user interface
+  (gh#agama-project/agama#2147)
 
 -------------------------------------------------------------------
 Thu Mar  6 08:06:17 UTC 2025 - David Diaz <dgonzalez@suse.com>

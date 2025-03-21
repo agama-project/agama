@@ -64,6 +64,11 @@ module Agama
           config.encryption
         end
 
+        # @see Base
+        def error(message)
+          super(message, kind: :encryption)
+        end
+
         # @return [Issue, nil]
         def missing_password_issue
           return unless encryption.missing_password?

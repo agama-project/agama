@@ -26,6 +26,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareSettings {
-    /// List of patterns to install. If empty use default.
-    pub patterns: Vec<String>,
+    /// List of user selected patterns to install.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub patterns: Option<Vec<String>>,
+    /// List of user selected packages to install.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub packages: Option<Vec<String>>,
 }

@@ -36,3 +36,6 @@ mod locale;
 pub use locale::LocaleMixinProxy;
 
 pub mod jobs;
+
+mod hostname1;
+pub use hostname1::Hostname1Proxy;

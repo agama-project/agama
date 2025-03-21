@@ -120,6 +120,9 @@ if [ "${arch}" = "s390x" ]; then
   touch /config.bootoptions
 fi
 
+# Remove nvme hostid and hostnqn (bsc#1238038)
+rm -f /etc/nvme/host*
+
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/checkmedia-service

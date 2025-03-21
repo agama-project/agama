@@ -75,6 +75,8 @@ type SoftwareConfig = {
   product?: string;
   /** An object where the keys are the pattern names and the values whether to install them or not */
   patterns?: { [key: string]: boolean };
+  /** A list of user selected packages */
+  packages?: string[];
 };
 
 type Pattern = {

@@ -904,7 +904,7 @@ describe Agama::Storage::Proposal do
         subject.calculate_agama(config)
 
         expect(subject.issues).to include(
-          an_object_having_attributes(description: /Cannot accommodate/)
+          an_object_having_attributes(description: /Cannot calculate/)
         )
       end
     end

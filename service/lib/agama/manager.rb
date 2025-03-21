@@ -258,10 +258,6 @@ module Agama
     # @param method [HALT, POWEROFF, STOP, REBOOT]
     # @return [Boolean]
     def finish_installation(method)
-      logs = collect_logs(path: "/tmp/var/logs/")
-
-      logger.info("Installation logs stored in #{logs}")
-
       unless installation_phase.finish?
         logger.error "The installer has not finished correctly. Please check logs"
         return false
@@ -326,7 +322,7 @@ module Agama
     # Runs post partitioning scripts
     def run_post_partitioning_scripts
       client = Agama::HTTP::Clients::Scripts.new
-      client.run("post_partitioning")
+      client.run("postPartitioning")
     end
   end
 end

@@ -29,7 +29,7 @@ import { useAvailableDevices } from "~/queries/storage";
 import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useDrive } from "~/queries/storage/config-model";
+import { useDrive, useModel } from "~/queries/storage/config-model";
 import { useDrive as useDriveModel } from "~/hooks/storage/model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { contentDescription } from "~/components/storage/utils/device";
@@ -347,14 +347,20 @@ const SearchSelector = ({ drive, selected, onChange }) => {
 
 const RemoveDriveOption = ({ drive }) => {
   const driveModel = useDrive(drive.name);
+  const { hasAdditionalDrives } = useModel();
 
   if (!driveModel) return;
 
   const { isExplicitBoot, hasPv, delete: deleteDrive } = driveModel;
 
+  // When no additional drives has been added, the "Do not use" button can be confusing so it is
+  // omitted for all drives.
+  if (!hasAdditionalDrives) return;
+
+  // FIXME: in these two cases the button should likely be present, but disabled and with an
+  // explanation of why those particular drive definitions cannot be removed.
   if (isExplicitBoot) return;
   if (hasPv) return;
-  if (driveUtils.hasRoot(drive)) return;
 
   return (
     <>

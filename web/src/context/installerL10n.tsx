@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore localectl setxkbmap xorg
-
 import React, { useCallback, useEffect, useState } from "react";
 import { locationReload, setLocationSearch } from "~/utils";
 import { useInstallerClientStatus } from "./installer";

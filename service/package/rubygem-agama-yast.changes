@@ -1,14 +1,34 @@
 -------------------------------------------------------------------
-Fri Mar  7 11:37:47 UTC 2025 - José Iván López González <jlopez@suse.com>
+Thu Mar 20 08:41:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Export LVM config to the storage model and add more checks for
-  the model supported features (gh#agama-project/agama#2089).
+- Symlink the /mnt/etc/resolv.conf to the NetworkManager running
+  one in order to have DNS resolution in the chroot post scripts
+  (bsc#1235617, gh#agama-project/agama#2179).
+
+-------------------------------------------------------------------
+Fri Mar 14 12:34:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the packages list from an AutoYaST profile
+  (gh#agama-project/agama#2153).
+
+-------------------------------------------------------------------
+Wed Mar 12 00:44:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Copy Agama logs to the installed system (gh#agama/agama-project#2148).
+- Set /var/log/agama-installation permissions to 0700
+  (gh#agama/agama-project#2140).
 
 -------------------------------------------------------------------
 Wed Mar  5 14:50:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Automatically retry package download or repository refresh
   before reporting an error (gh#agama-project/agama#2117)
+
+-------------------------------------------------------------------
+Wed Mar  5 11:33:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the correcty script type allows postPartitioning scripts to run
+  (gh#agama-project/agama#2114).
 
 -------------------------------------------------------------------
 Wed Mar  5 09:21:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

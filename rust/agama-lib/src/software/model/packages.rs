@@ -26,6 +26,8 @@ use std::collections::HashMap;
 pub struct SoftwareConfig {
     /// A map where the keys are the pattern names and the values whether to install them or not.
     pub patterns: Option<HashMap<String, bool>>,
+    /// Packages to install.
+    pub packages: Option<Vec<String>>,
     /// Name of the product to install.
     pub product: Option<String>,
 }

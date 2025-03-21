@@ -397,7 +397,7 @@
       { "key": "install_recommended", "support": "no" },
       { "key": "instsource", "support": "no" },
       { "key": "kernel", "support": "no" },
-      { "key": "packages[]", "support": "planned" },
+      { "key": "packages[]", "support": "yes", "agama": "software.packages[]" },
       { "key": "post-packages[]", "support": "no" },
       { "key": "patterns[]", "support": "yes", "agama": "software.patterns[]" },
       { "key": "products[]", "support": "yes", "agama": "software.id" },

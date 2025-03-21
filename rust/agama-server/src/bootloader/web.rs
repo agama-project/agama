@@ -18,11 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module implements the web API for the storage service.
+//! This module implements the web API for the bootloader service.
 //!
 //! The module offers one public function:
 //!
-//! * `storage_service` which returns the Axum service.
+//! * `bootloader_service` which returns the Axum service.
 //!
 //! stream is not needed, as we do not need to emit signals (for NOW).
 
@@ -39,7 +39,7 @@ struct BootloaderState<'a> {
     client: BootloaderClient<'a>,
 }
 
-/// Sets up and returns the axum service for the storage module.
+/// Sets up and returns the axum service for the bootloader module.
 pub async fn bootloader_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     let client = BootloaderClient::new(dbus).await?;
     let state = BootloaderState { client };
@@ -65,7 +65,7 @@ pub async fn bootloader_service(dbus: zbus::Connection) -> Result<Router, Servic
 async fn get_config(
     State(state): State<BootloaderState<'_>>,
 ) -> Result<Json<BootloaderSettings>, error::Error> {
-    // StorageSettings is just a wrapper over serde_json::value::RawValue
+    // BootloaderSettings is just a wrapper over serde_json::value::RawValue
     let settings = state.client.get_config().await?;
     Ok(Json(settings))
 }
