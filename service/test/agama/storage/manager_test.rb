@@ -22,7 +22,7 @@
 require_relative "../../test_helper"
 require_relative "../with_progress_examples"
 require_relative "../with_issues_examples"
-require_relative "./storage_helpers"
+require_relative "storage_helpers"
 require "agama/dbus/clients/questions"
 require "agama/config"
 require "agama/http"
@@ -59,6 +59,7 @@ describe Agama::Storage::Manager do
     # mock writting config as proposal call can do storage probing, which fails in CI
     allow_any_instance_of(Agama::Storage::Bootloader).to receive(:write_config)
     allow(Agama::HTTP::Clients::Scripts).to receive(:new).and_return(scripts_client)
+    allow(Agama::Network).to receive(:new).and_return(network)
     allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
     stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
       File.join(tmp_dir, "run", "agama", "scripts"))
@@ -73,6 +74,7 @@ describe Agama::Storage::Manager do
   let(:software) do
     instance_double(Agama::DBus::Clients::Software, selected_product: "ALP")
   end
+  let(:network) { instance_double(Agama::Network, link_resolv: nil, unlink_resolv: nil) }
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
   let(:security) { instance_double(Agama::Security, probe: nil, write: nil) }
 
@@ -378,13 +380,16 @@ describe Agama::Storage::Manager do
     let(:devicegraph) { "staging-plain-partitions.yaml" }
 
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
-       "copy logs, runs the post-installation scripts, and umounts the file systems" do
+       "copy logs, symlink resolv.conf, runs the post-installation scripts, " \
+       "unlink resolv.conf, and umounts the file systems" do
       expect(security).to receive(:write)
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
+      expect(network).to receive(:link_resolv)
       expect(scripts_client).to receive(:run).with("post")
+      expect(network).to receive(:unlink_resolv)
       expect(Yast::Execute).to receive(:on_target!)
         .with("systemctl", "enable", "agama-scripts", allowed_exitstatus: [0, 1])
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
