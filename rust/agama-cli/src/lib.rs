@@ -153,14 +153,15 @@ async fn finish(manager: &ManagerClient<'_>, method: FinishMethod) -> anyhow::Re
     Ok(())
 }
 
+/// What does this do??
 async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
     tokio::time::sleep(Duration::from_secs(1)).await;
     let conn = agama_lib::connection().await?;
     let mut monitor = ProgressMonitor::new(conn).await?;
-    let presenter = InstallerProgress::new();
+    let terminal_presenter = InstallerProgress::new();
     monitor
-        .run(presenter)
+        .run(terminal_presenter)
         .await
         .expect("failed to monitor the progress");
     Ok(())
@@ -245,7 +246,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             wait_for_services(&manager).await?;
             probe().await?
         }
-        Commands::Profile(subcommand) => run_profile_cmd(subcommand).await?,
+        Commands::Profile(subcommand) => run_profile_cmd(client, subcommand).await?,
         Commands::Install => {
             let manager = build_manager().await?;
             install(&manager, 3).await?
