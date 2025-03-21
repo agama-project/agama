@@ -43,7 +43,6 @@ function addVolumeGroup(
   vgName: string,
   targetDevices: string[],
   moveContent: boolean,
-  index?: number,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
@@ -56,12 +55,7 @@ function addVolumeGroup(
   }
 
   apiModel.volumeGroups ||= [];
-
-  if (index === undefined || index >= apiModel.volumeGroups.length) {
-    apiModel.volumeGroups.push(volumeGroup);
-  } else {
-    apiModel.volumeGroups.splice(index, 1, volumeGroup);
-  }
+  apiModel.volumeGroups.push(volumeGroup);
 
   return apiModel;
 }
@@ -77,10 +71,11 @@ function editVolumeGroup(
   const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === oldVgName);
   if (index === -1) return apiModel;
 
-  const oldTargetDevices = apiModel.volumeGroups[index].targetDevices || [];
+  const oldVolumeGroup = apiModel.volumeGroups[index];
+  const newVolumeGroup = { ...oldVolumeGroup, vgName, targetDevices };
 
-  apiModel = addVolumeGroup(apiModel, vgName, targetDevices, false, index);
-  oldTargetDevices.forEach((d) => {
+  apiModel.volumeGroups.splice(index, 1, newVolumeGroup);
+  (oldVolumeGroup.targetDevices || []).forEach((d) => {
     apiModel = deleteIfUnused(apiModel, d);
   });
 
