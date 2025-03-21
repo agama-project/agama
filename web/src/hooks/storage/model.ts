@@ -22,69 +22,9 @@
 
 import { useMemo } from "react";
 import useApiModel from "~/hooks/storage/api-model";
+import buildModel from "~/hooks/storage/helpers/build-model";
 import { QueryHookOptions } from "~/types/queries";
-import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
-
-const findDrive = (model: model.Model, name: string): model.Drive | undefined => {
-  return model.drives.find((d) => d.name === name);
-};
-
-function buildDrive(apiDrive: apiModel.Drive, model: model.Model): model.Drive {
-  const findVolumeGroups = (targetName: string): model.VolumeGroup[] => {
-    return model.volumeGroups.filter((v) =>
-      v.getTargetDevices().some((d) => d.name === targetName),
-    );
-  };
-
-  return {
-    ...apiDrive,
-    getVolumeGroups: () => findVolumeGroups(apiDrive.name),
-  };
-}
-
-function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): model.LogicalVolume {
-  return { ...logicalVolumeData };
-}
-
-function buildVolumeGroup(
-  apiVolumeGroup: apiModel.VolumeGroup,
-  model: model.Model,
-): model.VolumeGroup {
-  const buildLogicalVolumes = (): model.LogicalVolume[] => {
-    return (apiVolumeGroup.logicalVolumes || []).map(buildLogicalVolume);
-  };
-
-  const findTargetDevices = (): model.Drive[] => {
-    return (apiVolumeGroup.targetDevices || []).map((d) => findDrive(model, d)).filter((d) => d);
-  };
-
-  return {
-    ...apiVolumeGroup,
-    logicalVolumes: buildLogicalVolumes(),
-    getTargetDevices: findTargetDevices,
-  };
-}
-
-function buildModel(apiModel: apiModel.Config): model.Model {
-  const model: model.Model = {
-    drives: [],
-    volumeGroups: [],
-  };
-
-  const buildDrives = (): model.Drive[] => {
-    return (apiModel.drives || []).map((d) => buildDrive(d, model));
-  };
-
-  const buildVolumeGroups = (): model.VolumeGroup[] => {
-    return (apiModel.volumeGroups || []).map((v) => buildVolumeGroup(v, model));
-  };
-
-  // Important! Modify the model object instead of assigning a new one.
-  model.drives = buildDrives();
-  model.volumeGroups = buildVolumeGroups();
-  return model;
-}
 
 function useModel(options?: QueryHookOptions): model.Model | null {
   const apiModel = useApiModel(options);

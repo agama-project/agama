@@ -68,7 +68,7 @@ it("allows users to change the boot options", async () => {
   const { user, menu } = await openMenu();
   const bootItem = within(menu).getByRole("menuitem", { name: /boot options/ });
   await user.click(bootItem);
-  expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.bootDevice);
+  expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.editBootDevice);
 });
 
 it("allows users to reset the config", async () => {

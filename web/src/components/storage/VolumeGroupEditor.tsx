@@ -21,12 +21,14 @@
  */
 
 import React from "react";
+import { useNavigate, generatePath } from "react-router-dom";
 import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
+import { STORAGE as PATHS } from "~/routes/paths";
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useVolumeGroup } from "~/hooks/storage/model";
+import useDeleteVolumeGroup from "~/hooks/storage/delete-volume-group";
 import DeviceMenu from "~/components/storage/DeviceMenu";
 import DeviceHeader from "~/components/storage/DeviceHeader";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
@@ -42,21 +44,35 @@ import {
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-const RemoveVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
-  const device = vg.getTargetDevices()[0];
-  const desc = sprintf(_("The logical volumes will become partitions at %s"), device?.name);
+const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+  const deleteVolumeGroup = useDeleteVolumeGroup();
 
   return (
-    <MenuItem isDanger description={desc}>
-      {_("Do not create")}
+    <MenuItem
+      key="delete-volume-group"
+      itemId="delete-volume-group"
+      isDanger
+      description={_("Delete the volume group and its logical volumes")}
+      role="menuitem"
+      onClick={() => deleteVolumeGroup(vg.vgName)}
+    >
+      <span>{_("Delete volume group")}</span>
     </MenuItem>
   );
 };
 
-const EditVgOption = () => {
+const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+  const navigate = useNavigate();
+
   return (
-    <MenuItem description={_("Modify settings and physical volumes")}>
-      {_("Edit volume group")}
+    <MenuItem
+      key="edit-volume-group"
+      itemId="edit-volume-group"
+      description={_("Modify settings and physical volumes")}
+      role="menuitem"
+      onClick={() => navigate(generatePath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
+    >
+      <span>{_("Edit volume group")}</span>
     </MenuItem>
   );
 };
@@ -65,8 +81,8 @@ const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
     <DeviceMenu title={<b aria-hidden>{vg.vgName}</b>}>
       <MenuList>
-        <EditVgOption />
-        <RemoveVgOption vg={vg} />
+        <EditVgOption vg={vg} />
+        <DeleteVgOption vg={vg} />
       </MenuList>
     </DeviceMenu>
   );

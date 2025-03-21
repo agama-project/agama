@@ -84,7 +84,7 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   const { setSpacePolicy } = useDrive(drive.name);
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generatePath(PATHS.findSpace, { id: baseName(drive.name) }));
+      return navigate(generatePath(PATHS.drive.editSpacePolicy, { id: baseName(drive.name) }));
     } else {
       setSpacePolicy(spacePolicy);
     }
@@ -476,7 +476,9 @@ const PartitionsNoContentSelector = ({ drive, toggleAriaLabel }) => {
           itemId="add-partition"
           description={_("Add another partition or mount an existing one")}
           role="menuitem"
-          onClick={() => navigate(generatePath(PATHS.addPartition, { id: baseName(drive.name) }))}
+          onClick={() =>
+            navigate(generatePath(PATHS.drive.partition.add, { id: baseName(drive.name) }))
+          }
         >
           <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
             <span>{_("Add or use partition")}</span>
@@ -490,7 +492,7 @@ const PartitionsNoContentSelector = ({ drive, toggleAriaLabel }) => {
 const PartitionMenuItem = ({ driveName, mountPath }) => {
   const drive = useDrive(driveName);
   const partition = drive.getPartition(mountPath);
-  const editPath = generatePath(PATHS.editPartition, {
+  const editPath = generatePath(PATHS.drive.partition.edit, {
     id: baseName(driveName),
     partitionId: encodeURIComponent(mountPath),
   });
@@ -525,7 +527,9 @@ const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
           key="add-partition"
           itemId="add-partition"
           description={_("Add another partition or mount an existing one")}
-          onClick={() => navigate(generatePath(PATHS.addPartition, { id: baseName(drive.name) }))}
+          onClick={() =>
+            navigate(generatePath(PATHS.drive.partition.add, { id: baseName(drive.name) }))
+          }
         >
           <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
             <span>{_("Add or use partition")}</span>

@@ -79,6 +79,6 @@ describe("EncryptionSection", () => {
   it("renders a link for navigating to encryption settings", () => {
     plainRender(<EncryptionSection />);
     const editLink = screen.getByRole("link", { name: "Edit" });
-    expect(editLink).toHaveAttribute("href", STORAGE.encryption);
+    expect(editLink).toHaveAttribute("href", STORAGE.editEncryption);
   });
 });
