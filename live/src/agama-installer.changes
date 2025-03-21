@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun  3 07:35:56 UTC 2025 - Michal Filka <mfilka@suse.cz>
+
+- Switched live iso to use wayland (gh#agama-project/agama#1781)
+
+-------------------------------------------------------------------
 Thu May 29 07:16:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Keep the nvmem kernel drivers (bsc#1243350)
