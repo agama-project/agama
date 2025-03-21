@@ -25,7 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import AddExistingDeviceMenu from "~/components/storage/AddExistingDeviceMenu";
 import { StorageDevice } from "~/types/storage";
-import * as ConfigModel from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 
 const vda: StorageDevice = {
   sid: 59,
@@ -55,13 +55,13 @@ const vdb: StorageDevice = {
   systems: [],
 };
 
-const vdaDrive: ConfigModel.Drive = {
+const vdaDrive: apiModel.Drive = {
   name: "/dev/vda",
   spacePolicy: "delete",
   partitions: [],
 };
 
-const vdbDrive: ConfigModel.Drive = {
+const vdbDrive: apiModel.Drive = {
   name: "/dev/vdb",
   spacePolicy: "delete",
   partitions: [],

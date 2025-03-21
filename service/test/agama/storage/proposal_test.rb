@@ -449,7 +449,6 @@ describe Agama::Storage::Proposal do
               drives:       [
                 {
                   name:        "/dev/sda",
-                  alias:       "root",
                   spacePolicy: "keep",
                   partitions:  [
                     {
@@ -508,7 +507,6 @@ describe Agama::Storage::Proposal do
         drives:       [
           {
             name:        "/dev/sda",
-            alias:       "sda",
             spacePolicy: "keep",
             partitions:  [
               {

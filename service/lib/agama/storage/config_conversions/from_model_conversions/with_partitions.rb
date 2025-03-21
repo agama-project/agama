@@ -43,30 +43,42 @@ module Agama
             when "resize"
               [used_partition_configs(encryption_model), resize_all_partition_config].flatten
             else
-              partition_configs(encryption_model)
+              [used_partition_configs(encryption_model), action_partition_configs].flatten
             end
           end
 
-          # @param partition_model [Hash]
           # @param encryption_model [Hash, nil]
-          #
-          # @return [Configs::Partition]
-          def convert_partition(partition_model, encryption_model = nil)
-            FromModelConversions::Partition.new(partition_model, encryption_model).convert
-          end
-
-          # @return [Array<Configs::Partition>]
-          # @param encryption_model [Hash, nil]
-          def partition_configs(encryption_model = nil)
-            partitions.map { |p| convert_partition(p, encryption_model) }
-          end
-
-          # Partitions with any usage (format, mount, etc).
-          # @param encryption_model [Hash, nil]
-          #
           # @return [Array<Configs::Partition>]
           def used_partition_configs(encryption_model = nil)
             used_partitions.map { |p| convert_partition(p, encryption_model) }
+          end
+
+          # @return [Array<Configs::Partition>]
+          def action_partition_configs
+            action_partitions.map { |p| convert_partition(p) }
+          end
+
+          # Partitions with any usage (format, mount, etc).
+          #
+          # @return [Array<Hash>]
+          def used_partitions
+            partitions.reject { |p| space_policy_partition?(p) }
+          end
+
+          # Partitions representing a space policy action (delete, resize if needed), excluding
+          # the keep actions.
+          #
+          # Omitting the partitions that only represent a keep action is important. Otherwise, the
+          # resulting config would contain a partition without any usage (delete, resize, format,
+          # etc) and without a mount path. Such a partition is not supported by the model yet (see
+          # {ModelSupportChecker}) and would make impossible to build a model again from the
+          # resulting config.
+          #
+          # @return [Array<Hash>]
+          def action_partitions
+            partitions
+              .select { |p| space_policy_partition?(p) }
+              .reject { |p| keep_action_partition?(p)  }
           end
 
           # @return [Array<Hash>]
@@ -74,39 +86,53 @@ module Agama
             model_json[:partitions] || []
           end
 
-          # @return [Array<Hash>]
-          def used_partitions
-            partitions.reject { |p| space_policy_partition?(p) }
-          end
-
           # Whether the partition only represents a space policy action.
           #
           # @param partition_model [Hash]
           # @return [Boolean]
           def space_policy_partition?(partition_model)
-            partition_model[:delete] ||
-              partition_model[:deleteIfNeeded] ||
-              resize_action_partition?(partition_model)
+            delete_action_partition?(partition_model) ||
+              resize_action_partition?(partition_model) ||
+              keep_action_partition?(partition_model)
+          end
+
+          # @param partition_model [Hash]
+          # @return [Boolean]
+          def delete_action_partition?(partition_model)
+            partition_model[:delete] || partition_model[:deleteIfNeeded]
           end
 
           # @param partition_model [Hash]
           # @return [Boolean]
           def resize_action_partition?(partition_model)
-            return false if partition_model[:name].nil? || any_usage?(partition_model)
+            return false if delete_action_partition?(partition_model)
 
-            return true if partition_model[:resizeIfNeeded]
+            return false if any_usage?(partition_model)
 
-            partition_model[:size] && !partition_model.dig(:size, :default)
+            partition_model[:name] && (
+              partition_model[:resizeIfNeeded] ||
+                (partition_model[:size] && !partition_model.dig(:size, :default))
+            )
           end
 
-          # TODO: improve check by ensuring the alias is referenced by other device.
+          # @param partition_model [Hash]
+          # @return [Boolean]
+          def keep_action_partition?(partition_model)
+            return false if delete_action_partition?(partition_model)
+
+            return false if resize_action_partition?(partition_model)
+
+            return false if any_usage?(partition_model)
+
+            !partition_model[:name].nil?
+          end
+
+          # TODO: improve check by ensuring the partition is referenced by other device.
           #
           # @param partition_model [Hash]
           # @return [Boolean]
           def any_usage?(partition_model)
-            partition_model[:mountPath] ||
-              partition_model[:filesystem] ||
-              partition_model[:alias]
+            partition_model[:mountPath] || partition_model[:filesystem]
           end
 
           # @return [Configs::Partition]
@@ -117,6 +143,14 @@ module Agama
           # @return [Configs::Partition]
           def resize_all_partition_config
             Configs::Partition.new_for_shrink_any_if_needed
+          end
+
+          # @param partition_model [Hash]
+          # @param encryption_model [Hash, nil]
+          #
+          # @return [Configs::Partition]
+          def convert_partition(partition_model, encryption_model = nil)
+            FromModelConversions::Partition.new(partition_model, encryption_model).convert
           end
         end
       end

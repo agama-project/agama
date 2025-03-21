@@ -20,19 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
-import * as apiModel from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 
-type Drive = apiModel.Drive;
+type Model = {
+  drives: Drive[];
+  volumeGroups: VolumeGroup[];
+};
 
-type LogicalVolume = apiModel.LogicalVolume;
+interface Drive extends apiModel.Drive {
+  getVolumeGroups: () => VolumeGroup[];
+}
 
 interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
-  targetDevices: Drive[];
+  getTargetDevices: () => Drive[];
   logicalVolumes: LogicalVolume[];
 }
 
-type Model = {
-  volumeGroups: VolumeGroup[];
-};
+type LogicalVolume = apiModel.LogicalVolume;
 
 export type { Model, Drive, VolumeGroup, LogicalVolume };

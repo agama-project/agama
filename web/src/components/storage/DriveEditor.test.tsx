@@ -24,9 +24,8 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, mockNavigateFn } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
-import * as ConfigModel from "~/api/storage/types/config-model";
 import { StorageDevice } from "~/types/storage";
-import { Volume } from "~/api/storage/types";
+import { apiModel, Volume } from "~/api/storage/types";
 
 const volume1: Volume = {
   mountPath: "/",
@@ -122,7 +121,7 @@ const sdb: StorageDevice = {
   description: "",
 };
 
-const drive1: ConfigModel.Drive = {
+const drive1: apiModel.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: [
@@ -145,7 +144,7 @@ const drive1: ConfigModel.Drive = {
   ],
 };
 
-const drive2: ConfigModel.Drive = {
+const drive2: apiModel.Drive = {
   name: "/dev/sdb",
   spacePolicy: "delete",
   partitions: [
@@ -216,7 +215,7 @@ describe("PartitionMenuItem", () => {
       name: "Edit swap",
     });
     await user.click(editSwapButton);
-    expect(mockNavigateFn).toHaveBeenCalledWith("/storage/sda/edit-partition/swap");
+    expect(mockNavigateFn).toHaveBeenCalledWith("/storage/devices/sda/partitions/swap/edit");
   });
 });
 

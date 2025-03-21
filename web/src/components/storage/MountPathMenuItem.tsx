@@ -26,7 +26,7 @@ import { useVolume } from "~/queries/storage";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { Icon } from "~/components/layout";
 import { MenuItem, MenuItemAction } from "@patternfly/react-core";
-import * as apiModel from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 
 export type MountPathMenuItemProps = {
   device: apiModel.Partition | apiModel.LogicalVolume;

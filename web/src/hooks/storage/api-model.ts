@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,6 +20,23 @@
  * find current contact information at www.suse.com.
  */
 
-export * from "./types/openapi";
-export * as config from "./types/config";
-export * as apiModel from "./types/model";
+import { useMemo } from "react";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { configModelQuery } from "~/queries/storage/config-model";
+import { apiModel } from "~/api/storage/types";
+import { QueryHookOptions } from "~/types/queries";
+
+function useApiModel(options?: QueryHookOptions): apiModel.Config | null {
+  const query = configModelQuery;
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func(query);
+
+  const apiModel = useMemo((): apiModel.Config | null => {
+    // Returns a copy.
+    return data ? JSON.parse(JSON.stringify(data)) : null;
+  }, [data]);
+
+  return apiModel;
+}
+
+export { useApiModel as default };

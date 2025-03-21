@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,6 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
-export * from "./types/openapi";
-export * as config from "./types/config";
-export * as apiModel from "./types/model";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { setConfigModel } from "~/api/storage";
+import { apiModel } from "~/api/storage/types";
+
+type UpdateApiModelFn = (apiModel: apiModel.Config) => void;
+
+function useUpdateApiModel(): UpdateApiModelFn {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (apiModel: apiModel.Config) => setConfigModel(apiModel),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
+
+  const { mutate } = useMutation(query);
+  return mutate;
+}
+
+export { useUpdateApiModel as default };
+export type { UpdateApiModelFn };

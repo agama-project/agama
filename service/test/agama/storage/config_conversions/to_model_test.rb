@@ -34,13 +34,6 @@ shared_examples "without name" do |result_scope|
   end
 end
 
-shared_examples "without alias" do |result_scope|
-  it "generates the expected JSON" do
-    model_json = result_scope.call(subject.convert)
-    expect(model_json.keys).to_not include(:alias)
-  end
-end
-
 shared_examples "without filesystem" do |result_scope|
   it "generates the expected JSON" do
     model_json = result_scope.call(subject.convert)
@@ -71,15 +64,6 @@ shared_examples "with name" do |result_scope, device_scope|
   it "generates the expected JSON" do
     model_json = result_scope.call(subject.convert)
     expect(model_json[:name]).to eq(device.name)
-  end
-end
-
-shared_examples "with alias" do |result_scope|
-  let(:device_alias) { "test" }
-
-  it "generates the expected JSON" do
-    model_json = result_scope.call(subject.convert)
-    expect(model_json[:alias]).to eq("test")
   end
 end
 
@@ -214,6 +198,7 @@ shared_examples "with partitions" do |result_scope, device_scope|
       expect(model_json[:partitions]).to eq(
         [
           {
+            name:           "/not/found",
             delete:         false,
             deleteIfNeeded: false,
             resize:         false,
@@ -283,11 +268,6 @@ shared_examples "with partitions" do |result_scope, device_scope|
     include_examples "without name", partition_result_scope
   end
 
-  context "if #alias is not configured for a partition" do
-    let(:partition) { {} }
-    include_examples "without alias", partition_result_scope
-  end
-
   context "if #id is not configured for a partition" do
     let(:partition) { {} }
 
@@ -305,11 +285,6 @@ shared_examples "with partitions" do |result_scope, device_scope|
   context "if a device is assigned to a partition" do
     let(:partition) { { search: search } }
     include_examples "with name", partition_result_scope, partition_scope
-  end
-
-  context "if #alias is configured for a partition" do
-    let(:partition) { { alias: device_alias } }
-    include_examples "with alias", partition_result_scope
   end
 
   context "if #id is configured for a partition" do
@@ -676,6 +651,10 @@ describe Agama::Storage::ConfigConversions::ToModel do
             {
               search: "/dev/vdb",
               alias:  "vdb"
+            },
+            {
+              search: "/not/found",
+              alias:  "not-found"
             }
           ]
         }
@@ -714,6 +693,24 @@ describe Agama::Storage::ConfigConversions::ToModel do
               }
             }
           )
+        end
+
+        context "and the boot device is not found" do
+          let(:device_alias) { "not-found" }
+
+          it "generates the expected JSON for 'boot'" do
+            boot_model = subject.convert[:boot]
+
+            expect(boot_model).to eq(
+              {
+                configure: true,
+                device:    {
+                  default: false,
+                  name:    "/not/found"
+                }
+              }
+            )
+          end
         end
       end
     end
@@ -1025,11 +1022,6 @@ describe Agama::Storage::ConfigConversions::ToModel do
       drive_result_scope = proc { |c| c[:drives].first }
       drive_scope = proc { |d| d.find_by_name("/dev/vda") }
 
-      context "if #alias is not configured for a drive" do
-        let(:drive) { {} }
-        include_examples "without alias", drive_result_scope
-      end
-
       context "if #filesystem is not configured for a drive" do
         let(:drive) { {} }
         include_examples "without filesystem", drive_result_scope
@@ -1043,11 +1035,6 @@ describe Agama::Storage::ConfigConversions::ToModel do
       context "if #partitions is not configured for a drive" do
         let(:drive) { {} }
         include_examples "without partitions", drive_result_scope
-      end
-
-      context "if #alias is configured for a drive" do
-        let(:drive) { { alias: device_alias } }
-        include_examples "with alias", drive_result_scope
       end
 
       context "if #filesystem is configured for a drive" do
@@ -1073,7 +1060,19 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
     context "if #volume_groups is configured" do
       let(:config_json) do
-        { volumeGroups: volume_groups }
+        {
+          drives:       [
+            {
+              search: "/dev/vda",
+              alias:  "disk1"
+            },
+            {
+              search: "/dev/vdb",
+              alias:  "disk2"
+            }
+          ],
+          volumeGroups: volume_groups
+        }
       end
 
       let(:volume_groups) do
@@ -1100,7 +1099,11 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
       context "if #name is not configured for a volume group" do
         let(:volume_group) { {} }
-        include_examples "without name", vg_result_scope
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json.keys).to_not include(:vgName)
+        end
       end
 
       context "if #extent_size is not configured for a volume group" do
@@ -1135,7 +1138,7 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
         it "generates the expected JSON" do
           model_json = vg_result_scope.call(subject.convert)
-          expect(model_json[:name]).to eq("test")
+          expect(model_json[:vgName]).to eq("test")
         end
       end
 
@@ -1157,7 +1160,7 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
         it "generates the expected JSON" do
           model_json = vg_result_scope.call(subject.convert)
-          expect(model_json[:targetDevices]).to eq(["disk1", "disk2"])
+          expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
         end
       end
 
@@ -1176,16 +1179,14 @@ describe Agama::Storage::ConfigConversions::ToModel do
         end
 
         lv_result_scope = proc { |c| vg_result_scope.call(c)[:logicalVolumes].first }
-        # partition_scope = proc { |c| device_scope.call(c).partitions.first }
 
         context "if #name is not configured for a logical volume" do
           let(:logical_volume) { {} }
-          include_examples "without name", lv_result_scope
-        end
 
-        context "if #alias is not configured for a logical volume" do
-          let(:logical_volume) { {} }
-          include_examples "without alias", lv_result_scope
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json.keys).to_not include(:lvName)
+          end
         end
 
         context "if #filesystem is not configured for a logical volume" do
@@ -1230,13 +1231,8 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
           it "generates the expected JSON" do
             model_json = lv_result_scope.call(subject.convert)
-            expect(model_json[:name]).to eq("test")
+            expect(model_json[:lvName]).to eq("test")
           end
-        end
-
-        context "if #alias is configured for a logical volume" do
-          let(:logical_volume) { { alias: device_alias } }
-          include_examples "with alias", lv_result_scope
         end
 
         context "if #filesystem is configured for a logical volume" do

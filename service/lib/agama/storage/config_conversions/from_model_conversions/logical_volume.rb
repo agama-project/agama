@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,56 +21,47 @@
 
 require "agama/storage/config_conversions/from_model_conversions/base"
 require "agama/storage/config_conversions/from_model_conversions/with_filesystem"
-require "agama/storage/config_conversions/from_model_conversions/with_partitions"
-require "agama/storage/config_conversions/from_model_conversions/with_ptable_type"
-require "agama/storage/config_conversions/from_model_conversions/with_search"
-require "agama/storage/configs/drive"
+require "agama/storage/config_conversions/from_model_conversions/with_size"
+require "agama/storage/configs/logical_volume"
+require "y2storage/disk_size"
 
 module Agama
   module Storage
     module ConfigConversions
       module FromModelConversions
-        # Drive conversion from model according to the JSON schema.
-        class Drive < Base
+        # Logical volume conversion from model according to the JSON schema.
+        class LogicalVolume < Base
           include WithFilesystem
-          include WithPtableType
-          include WithPartitions
-          include WithSearch
-
-          # @param model_json [Hash]
-          # @param product_config [Agama::Config]
-          # @param encryption_model [Hash, nil]
-          def initialize(model_json, product_config, encryption_model = nil)
-            super(model_json)
-            @product_config = product_config
-            @encryption_model = encryption_model
-          end
+          include WithSize
 
         private
 
-          alias_method :drive_model, :model_json
-
-          # @return [Agama::Config]
-          attr_reader :product_config
-
-          # @return [Hash, nil]
-          attr_reader :encryption_model
+          alias_method :logical_volume_model, :model_json
 
           # @see Base
-          # @return [Configs::Drive]
+          # @return [Configs::LogicalVolume]
           def default_config
-            Configs::Drive.new
+            Configs::LogicalVolume.new
           end
 
           # @see Base#conversions
           # @return [Hash]
           def conversions
             {
-              search:      convert_search,
+              name:        logical_volume_model[:lvName],
               filesystem:  convert_filesystem,
-              ptable_type: convert_ptable_type,
-              partitions:  convert_partitions(encryption_model)
+              size:        convert_size,
+              stripes:     logical_volume_model[:stripes],
+              stripe_size: convert_stripe_size
             }
+          end
+
+          # @return [Y2Storage::DiskSize, nil]
+          def convert_stripe_size
+            value = logical_volume_model[:stripeSize]
+            return unless value
+
+            Y2Storage::DiskSize.new(value)
           end
         end
       end

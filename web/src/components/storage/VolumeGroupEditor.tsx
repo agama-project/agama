@@ -23,8 +23,8 @@
 import React from "react";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import * as apiModel from "~/api/storage/types/config-model";
-import * as model from "~/types/storage/model";
+import { apiModel } from "~/api/storage/types";
+import { model } from "~/types/storage";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useVolumeGroup } from "~/hooks/storage/model";
 import DeviceMenu from "~/components/storage/DeviceMenu";
@@ -43,8 +43,8 @@ import {
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 const RemoveVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
-  const device = vg.targetDevices[0];
-  const desc = sprintf(_("The logical volumes will become partitions at %s"), device.name);
+  const device = vg.getTargetDevices()[0];
+  const desc = sprintf(_("The logical volumes will become partitions at %s"), device?.name);
 
   return (
     <MenuItem isDanger description={desc}>
@@ -63,7 +63,7 @@ const EditVgOption = () => {
 
 const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
-    <DeviceMenu title={<b aria-hidden>{vg.name}</b>}>
+    <DeviceMenu title={<b aria-hidden>{vg.vgName}</b>}>
       <MenuList>
         <EditVgOption />
         <RemoveVgOption vg={vg} />
@@ -102,7 +102,7 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
 export type VolumeGroupEditorProps = { vg: apiModel.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
-  const volumeGroup = useVolumeGroup(vg.name);
+  const volumeGroup = useVolumeGroup(vg.vgName);
 
   return (
     <Card isCompact>

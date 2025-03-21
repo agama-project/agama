@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,17 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
+/**
+ * @fixme This utils file smells. It accepts both partition and logical volume, but the file is
+ *  called partition.tsx. Moreover, some logic (e.g., checking whether a file system is reused) can
+ *  be moved to the model hook.
+ */
 
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { filesystemType, formattedPath, sizeDescription } from "~/components/storage/utils";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 
 /**
- * String to identify the drive.
+ * String to identify the partition.
  */
-const pathWithSize = (partition: configModel.Partition | configModel.LogicalVolume): string => {
+const pathWithSize = (partition: apiModel.Partition): string => {
   return sprintf(
     // TRANSLATORS: %1$s is an already formatted mount path (eg. "/"),
     // %2$s is a size description (eg. at least 10 GiB)
@@ -41,12 +45,22 @@ const pathWithSize = (partition: configModel.Partition | configModel.LogicalVolu
 };
 
 /**
- * String to identify the type of partition to be created (or used).
+ * @fixme Workaround to make possible to distinguish between partition and logical volume. Note that
+ *  a logical volume has not the property 'name' yet, see {@link typeDescription}.
  */
-const typeDescription = (partition: configModel.Partition | configModel.LogicalVolume): string => {
+function isPartition(
+  device: apiModel.Partition | apiModel.LogicalVolume,
+): device is apiModel.Partition {
+  return Object.hasOwn(device, "name");
+}
+
+/**
+ * String to identify the type of device to be created (or used).
+ */
+const typeDescription = (partition: apiModel.Partition | apiModel.LogicalVolume): string => {
   const fs = filesystemType(partition.filesystem);
 
-  if (partition.name) {
+  if (isPartition(partition) && partition.name) {
     if (partition.filesystem.reuse) {
       // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a device name (eg. /dev/sda3).
       if (fs) return sprintf(_("Current %1$s at %2$s"), fs, partition.name);
@@ -64,7 +78,7 @@ const typeDescription = (partition: configModel.Partition | configModel.LogicalV
 /**
  * Combination of {@link typeDescription} and the size of the target partition.
  */
-const typeWithSize = (partition: configModel.Partition | configModel.LogicalVolume): string => {
+const typeWithSize = (partition: apiModel.Partition | apiModel.LogicalVolume): string => {
   return sprintf(
     // TRANSLATORS: %1$s is a filesystem type description (eg. "Btrfs with snapshots"),
     // %2$s is a description of the size or the size limits (eg. "at least 10 GiB")
@@ -74,4 +88,4 @@ const typeWithSize = (partition: configModel.Partition | configModel.LogicalVolu
   );
 };
 
-export { pathWithSize, typeDescription, typeWithSize };
+export { pathWithSize, typeWithSize };

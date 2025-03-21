@@ -45,19 +45,13 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              name:        convert_name,
-              alias:       config.alias,
+              name:        config.device_name,
               mountPath:   config.filesystem&.path,
               filesystem:  convert_filesystem,
               spacePolicy: convert_space_policy,
               ptableType:  config.ptable_type&.to_s,
               partitions:  convert_partitions
             }
-          end
-
-          # @return [String, nil]
-          def convert_name
-            config.found_device&.name || config.search&.name
           end
         end
       end

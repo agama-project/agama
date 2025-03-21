@@ -26,10 +26,11 @@ import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
 import { useAvailableDevices } from "~/queries/storage";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive } from "~/queries/storage/config-model";
+import { useDrive as useDriveModel } from "~/hooks/storage/model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { contentDescription } from "~/components/storage/utils/device";
 import DeviceMenu from "~/components/storage/DeviceMenu";
@@ -53,7 +54,7 @@ import {
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-export type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
+export type DriveEditorProps = { drive: apiModel.Drive; driveDevice: StorageDevice };
 
 // FIXME: Presentation is quite poor
 const SpacePolicySelectorIntro = ({ device }) => {
@@ -81,7 +82,7 @@ const SpacePolicySelectorIntro = ({ device }) => {
 const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   const navigate = useNavigate();
   const { setSpacePolicy } = useDrive(drive.name);
-  const onSpacePolicyChange = (spacePolicy: configModel.SpacePolicy) => {
+  const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
       return navigate(generatePath(PATHS.findSpace, { id: baseName(drive.name) }));
     } else {
@@ -125,13 +126,14 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
+const SearchSelectorIntro = ({ drive }: { drive: apiModel.Drive }) => {
+  /** @todo Replace the useDrive hook from /queries by the hook from /hooks. */
+  const volumeGroups = useDriveModel(drive.name)?.getVolumeGroups() || [];
   const driveModel = useDrive(drive.name);
   if (!driveModel) return;
 
   const { isBoot, isExplicitBoot, hasPv } = driveModel;
-  // TODO: Get volume groups associated to the drive.
-  const volumeGroups = [];
+  const vgName = volumeGroups[0]?.vgName;
 
   const mainText = (): string => {
     if (driveUtils.hasReuse(drive)) {
@@ -154,12 +156,12 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
           return sprintf(
             // TRANSLATORS: %s is the name of the LVM
             _("This device will contain the LVM group '%s' and any partition needed to boot"),
-            volumeGroups[0],
+            vgName,
           );
         }
 
         // TRANSLATORS: %s is the name of the LVM
-        return sprintf(_("This device will contain the LVM group '%s'"), volumeGroups[0]);
+        return sprintf(_("This device will contain the LVM group '%s'"), vgName);
       }
 
       // The current device will be the only option to choose from
@@ -213,15 +215,15 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
           // TRANSLATORS: %1$s is the name of the disk (eg. sda) and %2$s the name of the LVM
           _("%1$s will still contain the LVM group '%2$s' and any partition needed to boot"),
           name,
-          volumeGroups[0],
+          vgName,
         );
       }
 
       return sprintf(
         // TRANSLATORS: %1$s is the name of the LVM and %2$s the name of the disk (eg. sda)
         _("The LVM group '%1$s' will remain at %2$s"),
+        vgName,
         name,
-        volumeGroups[0],
       );
     }
 
@@ -391,7 +393,7 @@ const DriveSelector = ({ drive, selected, toggleAriaLabel }) => {
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   const { isBoot, hasPv } = useDrive(drive.name);
 
-  const text = (drive: configModel.Drive): string => {
+  const text = (drive: apiModel.Drive): string => {
     if (driveUtils.hasRoot(drive)) {
       if (hasPv) {
         if (isBoot) {

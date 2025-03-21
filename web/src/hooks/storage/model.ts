@@ -20,17 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-import { useQuery } from "@tanstack/react-query";
-import { configModelQuery } from "~/queries/storage/config-model";
-import * as apiModel from "~/api/storage/types/config-model";
-import * as model from "~/types/storage/model";
+import { useMemo } from "react";
+import useApiModel from "~/hooks/storage/api-model";
+import { QueryHookOptions } from "~/types/queries";
+import { apiModel } from "~/api/storage/types";
+import { model } from "~/types/storage";
 
-function findDrive(modelData: apiModel.Config, alias: string): apiModel.Drive | undefined {
-  return modelData.drives.find((d) => d.alias === alias);
-}
+const findDrive = (model: model.Model, name: string): model.Drive | undefined => {
+  return model.drives.find((d) => d.name === name);
+};
 
-function buildDrive(driveData: apiModel.Drive): model.Drive {
-  return { ...driveData };
+function buildDrive(apiDrive: apiModel.Drive, model: model.Model): model.Drive {
+  const findVolumeGroups = (targetName: string): model.VolumeGroup[] => {
+    return model.volumeGroups.filter((v) =>
+      v.getTargetDevices().some((d) => d.name === targetName),
+    );
+  };
+
+  return {
+    ...apiDrive,
+    getVolumeGroups: () => findVolumeGroups(apiDrive.name),
+  };
 }
 
 function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): model.LogicalVolume {
@@ -38,51 +48,64 @@ function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): model.Lo
 }
 
 function buildVolumeGroup(
-  volumeGroupData: apiModel.VolumeGroup,
-  modelData: apiModel.Config,
+  apiVolumeGroup: apiModel.VolumeGroup,
+  model: model.Model,
 ): model.VolumeGroup {
-  const buildTargetDevices = (): model.Drive[] => {
-    const aliases = volumeGroupData.targetDevices || [];
-    return aliases
-      .map((a) => findDrive(modelData, a))
-      .filter((d) => d)
-      .map(buildDrive);
-  };
-
   const buildLogicalVolumes = (): model.LogicalVolume[] => {
-    const logicalVolumesData = volumeGroupData.logicalVolumes || [];
-    return logicalVolumesData.map(buildLogicalVolume);
+    return (apiVolumeGroup.logicalVolumes || []).map(buildLogicalVolume);
+  };
+
+  const findTargetDevices = (): model.Drive[] => {
+    return (apiVolumeGroup.targetDevices || []).map((d) => findDrive(model, d)).filter((d) => d);
   };
 
   return {
-    ...volumeGroupData,
-    targetDevices: buildTargetDevices(),
+    ...apiVolumeGroup,
     logicalVolumes: buildLogicalVolumes(),
+    getTargetDevices: findTargetDevices,
   };
 }
 
-function buildModel(modelData: apiModel.Config): model.Model {
+function buildModel(apiModel: apiModel.Config): model.Model {
+  const model: model.Model = {
+    drives: [],
+    volumeGroups: [],
+  };
+
+  const buildDrives = (): model.Drive[] => {
+    return (apiModel.drives || []).map((d) => buildDrive(d, model));
+  };
+
   const buildVolumeGroups = (): model.VolumeGroup[] => {
-    const volumeGroupsData = modelData.volumeGroups || [];
-    return volumeGroupsData.map((v) => buildVolumeGroup(v, modelData));
+    return (apiModel.volumeGroups || []).map((v) => buildVolumeGroup(v, model));
   };
 
-  return {
-    volumeGroups: buildVolumeGroups(),
-  };
+  // Important! Modify the model object instead of assigning a new one.
+  model.drives = buildDrives();
+  model.volumeGroups = buildVolumeGroups();
+  return model;
 }
 
-function useModel(): model.Model | null {
-  const { data } = useQuery(configModelQuery);
-  return data ? buildModel(data) : null;
+function useModel(options?: QueryHookOptions): model.Model | null {
+  const apiModel = useApiModel(options);
+
+  const model = useMemo((): model.Model | null => {
+    return apiModel ? buildModel(apiModel) : null;
+  }, [apiModel]);
+
+  return model;
 }
 
-function useVolumeGroup(name: string): model.VolumeGroup | null {
-  const model = useModel();
-  const volumeGroup = model?.volumeGroups?.find((v) => v.name === name);
+function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {
+  const model = useModel(options);
+  const drive = model?.drives?.find((d) => d.name === name);
+  return drive || null;
+}
+
+function useVolumeGroup(vgName: string, options?: QueryHookOptions): model.VolumeGroup | null {
+  const model = useModel(options);
+  const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup || null;
 }
 
-export default useModel;
-
-export { useVolumeGroup };
+export { useModel as default, useDrive, useVolumeGroup };
