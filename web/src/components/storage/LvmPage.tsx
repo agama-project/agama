@@ -163,7 +163,7 @@ export default function LvmPage() {
                 "Create logical volumes for the mount points currently configured at the selected disks",
               )}
               isChecked={moveMountPoints}
-              onChange={(_, v) => setMoveMountPoints(v)}
+              onChange={() => setMoveMountPoints(!moveMountPoints)}
             />
           </FormGroup>
           <ActionGroup>
