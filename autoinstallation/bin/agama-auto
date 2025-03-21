@@ -20,7 +20,7 @@ import_profile() {
     echo "Using the profile located at $url"
     agama profile import "$url" && return 0
   else
-    urls=("label://OEMDRV/autoinst.xml" "label://OEMDRV/autoinst.jsonnet" "label://OEMDRV/autoinst.json" "file:///autoinst.xml" "file:///autoinst.jsonnet" "file:///autoinst.json")
+    urls=("label://OEMDRV/autoinst.jsonnet" "label://OEMDRV/autoinst.json" "label://OEMDRV/autoinst.xml" "file:///autoinst.jsonnet" "file:///autoinst.json" "file:///autoinst.xml")
     for url in "${urls[@]}"; do
       YAST_SKIP_PROFILE_FETCH_ERROR=1 agama profile import "$url" && return 0
     done
