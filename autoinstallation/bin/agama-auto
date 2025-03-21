@@ -54,5 +54,5 @@ if [ 1 -eq $? ]; then
   exit 0
 fi
 
-install
+agama install
 finish
