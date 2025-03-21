@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 21 16:37:32 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add extensions from the registration server (automatic
+  installation only) (jsc#AGM-100)
+
+-------------------------------------------------------------------
 Thu Mar 20 09:05:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve init scripts execution (gh#agama-project/agama#2161):
