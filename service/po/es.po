@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2024-12-11 16:48+0000\n"
+"PO-Revision-Date: 2025-03-07 13:56+0000\n"
 "Last-Translator: \"Marina J. Donis\" <marinajdonis@gmail.com>\n"
-"Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/es/>\n"
+"Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.4\n"
+"X-Generator: Weblate 5.10.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -26,6 +26,7 @@ msgstr ""
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr ""
+"Se encontraron elementos no soportados en el perfil de AutoYaST: %{keys}."
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:94
@@ -62,17 +63,17 @@ msgstr "Cargar traducciones de almacenamiento"
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:39
 msgid "Try again"
-msgstr ""
+msgstr "Probar otra vez"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:45
 msgid "Continue anyway"
-msgstr ""
+msgstr "Continuar de todos modos"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:51
 msgid "Abort installation"
-msgstr ""
+msgstr "Abortar instalación"
 
 #. DoneProvide callback
 #.
@@ -81,7 +82,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:59
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "Hubo un problema al correr un script de paquete."
 
 #. Callback to handle unsigned files
 #.

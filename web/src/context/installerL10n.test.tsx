@@ -20,9 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore hola
-// cspell:ignore ahoj
-
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 

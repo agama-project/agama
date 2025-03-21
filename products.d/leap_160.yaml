@@ -33,7 +33,7 @@ translations:
     zh_Hans: Leap 16.0 是基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
 software:
   installation_repositories:
-    - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss
+    - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss/$basearch
   installation_labels:
     - label: Leap-DVD-x86_64
       archs: x86_64
@@ -52,9 +52,25 @@ software:
     - kde
     - multimedia
     - office
+    - cockpit
+    - fips
+    - selinux
+    - documentation
+    - sw_management
+    - container_runtime_podman
+    - dhcp_dns_server
+    - directory_server
+    - file_server
+    - gateway_server
+    - kvm_server
+    - kvm_tools
+    - lamp_server
+    - mail_server
+    - printing
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Leap
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
   base_product: openSUSE
 

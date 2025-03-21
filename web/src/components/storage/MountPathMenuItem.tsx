@@ -22,7 +22,6 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useVolume } from "~/queries/storage";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { Icon } from "~/components/layout";
 import { MenuItem, MenuItemAction } from "@patternfly/react-core";
@@ -41,8 +40,6 @@ export default function MountPathMenuItem({
 }: MountPathMenuItemProps) {
   const navigate = useNavigate();
   const mountPath = device.mountPath;
-  const volume = useVolume(mountPath);
-  const isRequired = volume.outline?.required || false;
   const description = device ? partitionUtils.typeWithSize(device) : null;
 
   return (
@@ -59,15 +56,13 @@ export default function MountPathMenuItem({
             aria-label={`Edit ${mountPath}`}
             onClick={() => editPath && navigate(editPath)}
           />
-          {!isRequired && (
-            <MenuItemAction
-              style={{ alignSelf: "center" }}
-              icon={<Icon name="delete" aria-label={"Delete"} />}
-              actionId={`delete-${mountPath}`}
-              aria-label={`Delete ${mountPath}`}
-              onClick={() => deleteFn && deleteFn(mountPath)}
-            />
-          )}
+          <MenuItemAction
+            style={{ alignSelf: "center" }}
+            icon={<Icon name="delete" aria-label={"Delete"} />}
+            actionId={`delete-${mountPath}`}
+            aria-label={`Delete ${mountPath}`}
+            onClick={() => deleteFn && deleteFn(mountPath)}
+          />
         </>
       }
     >

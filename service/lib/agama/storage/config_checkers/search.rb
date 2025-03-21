@@ -61,6 +61,11 @@ module Agama
           config.search
         end
 
+        # @see Base
+        def error(message)
+          super(message, kind: :search)
+        end
+
         # @return [Issue, nil]
         def not_found_issue
           return if search.device || search.skip_device?

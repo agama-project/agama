@@ -65,11 +65,10 @@ software:
       archs: ppc
 
   mandatory_patterns:
-    - base
+    - enhanced_base
   optional_patterns: null # no optional pattern shared
   user_patterns:
     - cockpit
-    - enhanced_base
     - sles_minimal_sap
     - fips
     - selinux

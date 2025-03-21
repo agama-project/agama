@@ -30,7 +30,8 @@ describe Agama::AutoYaST::SoftwareReader do
     {
       "software" => {
         "products" => ["SLE"],
-        "patterns" => ["base", "gnome"]
+        "patterns" => ["base", "gnome"],
+        "packages" => ["vim"]
       }
     }
   end
@@ -52,6 +53,13 @@ describe Agama::AutoYaST::SoftwareReader do
       it "includes the list of patterns under 'software.patterns'" do
         patterns = subject.read.dig("software", "patterns")
         expect(patterns).to eq(["base", "gnome"])
+      end
+    end
+
+    context "when a list of packages is included" do
+      it "includes the list of patterns under 'software.packages'" do
+        patterns = subject.read.dig("software", "packages")
+        expect(patterns).to eq(["vim"])
       end
     end
   end

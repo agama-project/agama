@@ -247,7 +247,7 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
-              description: /Cannot accommodate/, severity: Agama::Issue::Severity::ERROR
+              description: /Cannot calculate/, severity: Agama::Issue::Severity::ERROR
             )
           )
         end
@@ -375,7 +375,7 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
-              description: /Cannot accommodate/, severity: Agama::Issue::Severity::ERROR
+              description: /Cannot calculate/, severity: Agama::Issue::Severity::ERROR
             )
           )
         end

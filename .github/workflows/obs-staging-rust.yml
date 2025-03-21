@@ -1,11 +1,7 @@
 name: Submit agama
 
 on:
-  # runs on pushes targeting the default branch
   push:
-    branches:
-      - master
-      - release
     paths:
       # run only when a Rust source is changed
       - rust/**
