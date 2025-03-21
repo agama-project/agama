@@ -325,7 +325,7 @@ async fn register(
     path = "/registration/addons/registered",
     context_path = "/api/software",
     responses(
-        (status = 200, description = "List of registered addons, used by Agama CLI", body = Vec<AddonParams>),
+        (status = 200, description = "List of registered addons", body = Vec<AddonParams>),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
