@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Fri Mar  7 11:27:35 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Use $basearch for newly split repodata of Leap 16.0
+  code-o-o#leap/features#193
+
+-------------------------------------------------------------------
+Thu Mar  6 13:24:10 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Sync Leap 16.0 pattern selection with SLES 16.0
+  Skip SAP, add sudo-policy-wheel-auth-self to mandatory
+
+-------------------------------------------------------------------
+Wed Mar  5 12:17:51 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
+
+- Ensure enhanced_base is installed by default for SLES 16.
+
+-------------------------------------------------------------------
 Tue Mar  4 09:06:46 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
 
 - Update patterns list for SLES / SLES_SAP 16.

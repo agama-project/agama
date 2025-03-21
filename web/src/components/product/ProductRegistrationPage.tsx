@@ -25,6 +25,7 @@ import {
   ActionGroup,
   Alert,
   Button,
+  Checkbox,
   Content,
   DescriptionList,
   DescriptionListDescription,
@@ -33,17 +34,16 @@ import {
   Flex,
   Form,
   FormGroup,
-  Grid,
-  Stack,
   TextInput,
 } from "@patternfly/react-core";
-import { Page, PasswordInput } from "~/components/core";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { Link, Page, PasswordInput } from "~/components/core";
+import { RegistrationInfo } from "~/types/software";
+import { HOSTNAME } from "~/routes/paths";
 import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
+import { useHostname } from "~/queries/system";
 import { isEmpty, mask } from "~/utils";
-import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 const FORM_ID = "productRegistration";
 const KEY_LABEL = _("Registration code");
@@ -56,12 +56,11 @@ const RegisteredProductSection = () => {
   const toggleCodeVisibility = () => setShowCode(!showCode);
 
   return (
-    <Page.Section
-      title={_("Product registered")}
-      description={sprintf(_("%s has been registered with below information."), product.name)}
-      pfCardProps={{ isCompact: false }}
-    >
-      <DescriptionList className={spacingStyles.myMd}>
+    <>
+      <Content isEditorial>
+        {sprintf(_("%s has been registered with below information."), product.name)}
+      </Content>
+      <DescriptionList>
         <DescriptionListGroup>
           <DescriptionListTerm>{KEY_LABEL}</DescriptionListTerm>
           <DescriptionListDescription>
@@ -80,7 +79,7 @@ const RegisteredProductSection = () => {
           )}
         </DescriptionListGroup>
       </DescriptionList>
-    </Page.Section>
+    </>
   );
 };
 
@@ -88,6 +87,7 @@ const RegistrationFormSection = () => {
   const { mutate: register } = useRegisterMutation();
   const [key, setKey] = useState("");
   const [email, setEmail] = useState("");
+  const [provideEmail, setProvideEmail] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -101,50 +101,85 @@ const RegistrationFormSection = () => {
   const submit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError(null);
+
+    const data: RegistrationInfo = { key, email: provideEmail ? email : "" };
+
+    // TODO: Replace with a more sophisticated mechanism to ensure all available
+    // fields are filled and validated. Ideally, this should be a reusable solution
+    // applicable to all Agama forms.
+    if (isEmpty(key) || (provideEmail && isEmpty(email))) {
+      setError("Some fields are missing. Please check and fill them.");
+      return;
+    }
     setLoading(true);
-    // @ts-ignore
-    register({ key, email }, { onError: onRegisterError, onSettled: () => setLoading(false) });
+
+    // @ts-expect-error
+    register(data, { onError: onRegisterError, onSettled: () => setLoading(false) });
   };
 
   // TODO: adjust texts based of registration "type", mandatory or optional
 
   return (
-    <Page.Section
-      aria-label={_("Product registration form")}
-      description={_(
-        "Enter a registration code and optionally a valid email address for registering the product.",
-      )}
-      pfCardProps={{ isCompact: false }}
-    >
-      <Form id={FORM_ID} onSubmit={submit}>
-        {error && <Alert variant="warning" isInline title={error} />}
-        <FormGroup fieldId="key" label={KEY_LABEL}>
-          <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
-        </FormGroup>
-        <FormGroup
-          fieldId="email"
-          label={
-            <>
-              {EMAIL_LABEL} <span className={textStyles.textColorSubtle}>{_("(optional)")}</span>
-            </>
-          }
-        >
+    <Form id={FORM_ID} onSubmit={submit}>
+      {error && <Alert variant="warning" isInline title={error} />}
+
+      <FormGroup fieldId="key" label={KEY_LABEL}>
+        <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
+      </FormGroup>
+
+      <FormGroup fieldId="provideEmail">
+        <Checkbox
+          id="provideEmail"
+          label={_("Provide email address")}
+          isChecked={provideEmail}
+          onChange={() => setProvideEmail(!provideEmail)}
+        />
+      </FormGroup>
+
+      {provideEmail && (
+        <FormGroup fieldId="email" label={EMAIL_LABEL}>
           <TextInput id="email" value={email} onChange={(_, v) => setEmail(v)} />
         </FormGroup>
+      )}
 
-        <ActionGroup>
-          <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
-            {_("Register")}
-          </Button>
-        </ActionGroup>
-      </Form>
-    </Page.Section>
+      <ActionGroup>
+        <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
+          {_("Register")}
+        </Button>
+      </ActionGroup>
+    </Form>
+  );
+};
+
+const HostnameAlert = () => {
+  const { transient: transientHostname, static: staticHostname } = useHostname();
+  const hostname = isEmpty(staticHostname) ? transientHostname : staticHostname;
+
+  // TRANSLATORS: %s will be replaced with the hostname value
+  const title = sprintf(_('The product will be registered with "%s" hostname'), hostname);
+
+  // TRANSLATORS: %s will be replaced with the section name
+  const [descStart, descEnd] = _(
+    "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.",
+  ).split("%s");
+
+  const link = (
+    <Link variant="link" to={HOSTNAME.root} isInline>
+      {_("hostname")}
+    </Link>
+  );
+
+  return (
+    <Alert title={title} variant="custom" isPlain>
+      {descStart} {link} {descEnd}
+    </Alert>
   );
 };
 
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
-  const registration = useRegistration();
+  const { key } = useRegistration();
+  const isUnregistered = isEmpty(key);
 
   // TODO: render something meaningful instead? "Product not registrable"?
   if (!product.registration) return;
@@ -156,11 +191,8 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
-        <Grid sm={12} md={6}>
-          <Stack hasGutter>
-            {isEmpty(registration.key) ? <RegistrationFormSection /> : <RegisteredProductSection />}
-          </Stack>
-        </Grid>
+        {isUnregistered && <HostnameAlert />}
+        {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
       </Page.Content>
     </Page>
   );

@@ -20,9 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-// cspell:ignore xbytes
-
 /**
  * @fixme This file implements utils for the storage components and it also offers several functions
  * to get information from a Volume (e.g., #hasSnapshots, #isTransactionalRoot, etc). It would be

@@ -251,10 +251,15 @@ async fn download_logs() -> impl IntoResponse {
                     header::CONTENT_TYPE,
                     HeaderValue::from_static("application/x-compressed-tar"),
                 );
-                headers.insert(
-                    header::CONTENT_DISPOSITION,
-                    HeaderValue::from_static("attachment; filename=\"agama-logs\""),
-                );
+                if let Some(file_name) = path.file_name() {
+                    let disposition =
+                        format!("attachment; filename=\"{}\"", &file_name.to_string_lossy());
+                    headers.insert(
+                        header::CONTENT_DISPOSITION,
+                        HeaderValue::from_str(&disposition)
+                            .unwrap_or_else(|_| HeaderValue::from_static("attachment")),
+                    );
+                }
                 headers.insert(
                     header::CONTENT_ENCODING,
                     HeaderValue::from_static(logs::DEFAULT_COMPRESSION.1),

@@ -140,7 +140,7 @@ describe Agama::Manager do
       expect(software).to receive(:finish)
       expect(locale).to receive(:finish)
       expect(storage).to receive(:install)
-      expect(scripts).to receive(:run).with("post_partitioning")
+      expect(scripts).to receive(:run).with("postPartitioning")
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
       subject.install_phase
@@ -228,15 +228,9 @@ describe Agama::Manager do
     let(:method) { "reboot" }
 
     before do
-      allow(subject).to receive(:collect_logs)
       allow(subject).to receive(:iguana?).and_return(iguana)
       allow(subject.installation_phase).to receive(:finish?).and_return(finished)
       allow(logger).to receive(:error)
-    end
-
-    it "collects the logs" do
-      expect(subject).to receive(:collect_logs)
-      subject.finish_installation(method)
     end
 
     context "when it is not in finish the phase" do

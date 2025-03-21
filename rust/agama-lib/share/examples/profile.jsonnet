@@ -56,6 +56,9 @@ local memory = agama.findByID(agama.lshw, 'memory').size;
       }
     ]
   },
+  hostname: {
+    static: 'agama',
+  },
   network: {
     connections: [
       {

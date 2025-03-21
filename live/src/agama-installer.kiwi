@@ -20,7 +20,7 @@
         <profile name="Leap_16.0_PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
     <preferences>
-        <version>12.0.0</version>
+        <version>13pre.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
@@ -167,6 +167,7 @@
         <package name="yast2-schema"/>
         <package name="qrencode"/>
         <package name="qemu-guest-agent" />
+        <package name="aaa_base-extras"/>
         <archive name="root.tar.xz"/>
     </packages>
     <!-- additional packages for the Leap distributions -->

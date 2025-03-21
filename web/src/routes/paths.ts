@@ -92,6 +92,10 @@ const STORAGE = {
   },
 };
 
+const HOSTNAME = {
+  root: "/hostname",
+};
+
 /**
  * A set of routes that do not directly allow fine-tuning the installation
  * settings for the selected product,  but rather serve special purposes, such
@@ -110,4 +114,15 @@ const SIDE_PATHS = [
   ROOT.installationFinished,
 ];
 
-export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER, SIDE_PATHS };
+export {
+  HOSTNAME,
+  L10N,
+  NETWORK,
+  PRODUCT,
+  REGISTRATION,
+  ROOT,
+  SIDE_PATHS,
+  SOFTWARE,
+  STORAGE,
+  USER,
+};

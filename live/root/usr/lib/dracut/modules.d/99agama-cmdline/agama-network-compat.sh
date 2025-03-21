@@ -7,14 +7,18 @@
 
 ifcfg_to_ip() {
   local ip
-  local v="${2}",
-  local interface="$1"
   local conf_path="/etc/cmdline.d/40-agama-network.conf"
-  set --
-  while [ -n "$v" ]; do
-    set -- "$@" "${v%%,*}"
-    v=${v#*,}
-  done
+  if [ -n "$2" ]; then
+    local v="${2}",
+    local interface="$1"
+    set --
+    while [ -n "$v" ]; do
+      set -- "$@" "${v%%,*}"
+      v=${v#*,}
+    done
+  else
+    local interface="*"
+  fi
 
   ### See https://en.opensuse.org/SDB:Linuxrc#Network_Config
   # ifcfg=<interface_spec>=[try,]dhcp*,[rfc2132,]OPTION1=value1,OPTION2=value2...
@@ -83,6 +87,24 @@ ifcfg_to_ip() {
   return 0
 }
 
+parse_hostname() {
+  local hostname
+
+  hostname=$(getarg hostname=)
+
+  if [[ -n $hostname ]]; then
+    echo "${hostname}" >/etc/hostname
+  fi
+
+  if ! getargbool 1 SetHostname=; then
+    mkdir -p /run/NetworkManager/conf.d
+    echo '[main]' >/run/NetworkManager/conf.d/10-agama-hostname.conf
+    echo 'hostname-mode=none' >>/run/NetworkManager/conf.d/10-agama-hostname.conf
+  fi
+
+  return 0
+}
+
 translate_ifcfg() {
   local i
   local vlan
@@ -121,3 +143,4 @@ translate_ifcfg() {
 }
 
 translate_ifcfg
+parse_hostname

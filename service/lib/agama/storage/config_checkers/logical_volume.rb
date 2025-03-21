@@ -74,8 +74,11 @@ module Agama
 
           return if pool
 
-          # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-          error(format(_("There is no LVM thin pool volume with alias '%s'"), config.used_pool))
+          error(
+            # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+            format(_("There is no LVM thin pool volume with alias '%s'"), config.used_pool),
+            kind: :no_such_alias
+          )
         end
       end
     end

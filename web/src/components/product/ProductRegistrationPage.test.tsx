@@ -40,6 +40,7 @@ const sle: Product = {
 };
 
 let selectedProduct: Product;
+let staticHostnameMock: string;
 let registrationInfoMock: RegistrationInfo;
 const registerMutationMock = jest.fn();
 
@@ -57,6 +58,11 @@ jest.mock("~/queries/software", () => ({
       selectedProduct,
     };
   },
+}));
+
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useHostname: () => ({ transient: "testing-node", static: staticHostnameMock }),
 }));
 
 describe("ProductRegistrationPage", () => {
@@ -78,16 +84,104 @@ describe("ProductRegistrationPage", () => {
       registrationInfoMock = { key: "", email: "" };
     });
 
-    it("renders a form to allow user registering the product", async () => {
+    describe("and the static hostname is not set", () => {
+      it("renders a custom alert using the transient hostname", () => {
+        installerRender(<ProductRegistrationPage />);
+
+        screen.getByText("Custom alert:");
+        screen.getByText('The product will be registered with "testing-node" hostname');
+        screen.getByRole("link", { name: "hostname" });
+      });
+    });
+
+    describe("and the static hostname is set", () => {
+      beforeEach(() => {
+        staticHostnameMock = "testing-server";
+      });
+
+      it("renders a custom alert using the static hostname", () => {
+        installerRender(<ProductRegistrationPage />);
+
+        screen.getByText("Custom alert:");
+        screen.getByText('The product will be registered with "testing-server" hostname');
+        screen.getByRole("link", { name: "hostname" });
+      });
+    });
+
+    it("allows registering the product with email address", async () => {
       const { user } = installerRender(<ProductRegistrationPage />);
       const registrationCodeInput = screen.getByLabelText("Registration code");
-      const emailInput = screen.getByRole("textbox", { name: /Email/ });
       const submitButton = screen.getByRole("button", { name: "Register" });
 
       await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+
+      // email input is optional, user has to explicitely activate it
+      const provideEmailCheckbox = screen.getByRole("checkbox", { name: "Provide email address" });
+      expect(provideEmailCheckbox).not.toBeChecked();
+      await user.click(provideEmailCheckbox);
+      expect(provideEmailCheckbox).toBeChecked();
+      const emailInput = screen.getByRole("textbox", { name: /Email/ });
       await user.type(emailInput, "example@company.test");
+
       await user.click(submitButton);
 
+      expect(registerMutationMock).toHaveBeenCalledWith(
+        {
+          email: "example@company.test",
+          key: "INTERNAL-USE-ONLY-1234-5678",
+        },
+        expect.anything(),
+      );
+    });
+
+    it("allows registering the product without email address", async () => {
+      const { user } = installerRender(<ProductRegistrationPage />);
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+
+      await user.click(submitButton);
+
+      expect(registerMutationMock).toHaveBeenCalledWith(
+        {
+          key: "INTERNAL-USE-ONLY-1234-5678",
+          email: "",
+        },
+        expect.anything(),
+      );
+    });
+
+    it("renders error when a field is missing", async () => {
+      const { user } = installerRender(<ProductRegistrationPage />);
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+      await user.click(submitButton);
+
+      screen.getByText("Warning alert:");
+      screen.getByText("Some fields are missing. Please check and fill them.");
+      expect(registerMutationMock).not.toHaveBeenCalled();
+
+      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+
+      // email input is optional, user has to explicitely activate it
+      const provideEmailCheckbox = screen.getByRole("checkbox", { name: "Provide email address" });
+      expect(provideEmailCheckbox).not.toBeChecked();
+      await user.click(provideEmailCheckbox);
+      expect(provideEmailCheckbox).toBeChecked();
+      await user.click(submitButton);
+
+      screen.getByText("Warning alert:");
+      screen.getByText("Some fields are missing. Please check and fill them.");
+      expect(registerMutationMock).not.toHaveBeenCalled();
+
+      const emailInput = screen.getByRole("textbox", { name: /Email/ });
+      await user.type(emailInput, "example@company.test");
+
+      await user.click(submitButton);
+
+      expect(screen.queryByText("Warning alert:")).toBeNull();
+      expect(screen.queryByText("All fields are required")).toBeNull();
       expect(registerMutationMock).toHaveBeenCalledWith(
         {
           email: "example@company.test",
@@ -104,6 +198,14 @@ describe("ProductRegistrationPage", () => {
     beforeEach(() => {
       selectedProduct = sle;
       registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
+    });
+
+    it("does not render a custom alert about hostname", () => {
+      installerRender(<ProductRegistrationPage />);
+
+      expect(screen.queryByText("Custom alert:")).toBeNull();
+      expect(screen.queryByText(/hostname/)).toBeNull();
+      expect(screen.queryByRole("link", { name: "hostname" })).toBeNull();
     });
 
     it("renders registration information with code partially hidden", async () => {

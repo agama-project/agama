@@ -381,6 +381,10 @@ async fn set_config(
         state.software.select_patterns(patterns).await?;
     }
 
+    if let Some(packages) = config.packages {
+        state.software.select_packages(packages).await?;
+    }
+
     Ok(())
 }
 
@@ -411,8 +415,10 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
         .into_iter()
         .map(|p| (p, true))
         .collect();
+    let packages = state.software.user_selected_packages().await?;
     let config = SoftwareConfig {
         patterns: Some(patterns),
+        packages: Some(packages),
         product,
     };
     Ok(Json(config))
