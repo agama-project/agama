@@ -82,4 +82,20 @@ function editVolumeGroup(
   return apiModel;
 }
 
-export { addVolumeGroup, editVolumeGroup };
+function deleteVolumeGroup(apiModel: apiModel.Config, vgName: string): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+
+  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
+  if (index === -1) return apiModel;
+
+  const targetDevices = apiModel.volumeGroups[index].targetDevices || [];
+
+  apiModel.volumeGroups.splice(index, 1);
+  targetDevices.forEach((d) => {
+    apiModel = deleteIfUnused(apiModel, d);
+  });
+
+  return apiModel;
+}
+
+export { addVolumeGroup, editVolumeGroup, deleteVolumeGroup };
