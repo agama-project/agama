@@ -76,8 +76,6 @@ export default function LvmPage() {
   const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
-  const { id } = useParams();
-  const volumeGroup = useVolumeGroup(id);
 
   useEffect(() => {
     if (volumeGroup) {
