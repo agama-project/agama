@@ -6,30 +6,23 @@ export default {
   " Timezone selection": [
     " Selecció de la zona horària"
   ],
-  " and ": [
-    " i "
+  "%1$s (%2$s)": [
+    "%1$s (%2$s)"
   ],
-  "%1$s %2$s at %3$s (%4$s)": [
-    "%1$s %2$s a %3$s (%4$s)"
+  "%1$s - %2$s": [
+    "%1$s - %2$s"
   ],
-  "%1$s %2$s partition (%3$s)": [
-    "Partició %1$s per a %2$s (%3$s)"
+  "%1$s at %2$s": [
+    "%1$s a %2$s"
   ],
-  "%1$s %2$s volume (%3$s)": [
-    "Volum %1$s per a %2$s (%3$s)"
+  "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
+    "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
   ],
-  "%1$s root at %2$s (%3$s)": [
-    "Arrel %1$s a %2$s (%3$s)"
+  "%s - %s": [
+    "%s - %s"
   ],
-  "%1$s root partition (%2$s)": [
-    "Partició d'arrel %1$s (%2$s)"
-  ],
-  "%1$s root volume (%2$s)": [
-    "Volum d'arrel de %1$s (%2$s)"
-  ],
-  "%d partition will be shrunk": [
-    "S'encongirà %d partició.",
-    "S'encongiran %d particions."
+  "%s [must be registered].": [
+    "%s [ha d'estar registrat]."
   ],
   "%s disk": [
     "Disc %s"
@@ -43,8 +36,8 @@ export default {
   "%s logo": [
     "Logotip per a %s"
   ],
-  "%s must be registered.": [
-    "%s ha d'estar registrat."
+  "%s will still contain the configured LVM groups and any partition needed to boot": [
+    "%s encara contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
   ],
   "%s with %d partitions": [
     "%s amb %d particions"
@@ -52,20 +45,32 @@ export default {
   "(optional)": [
     "(opcional)"
   ],
-  ", ": [
-    ", "
+  "A generic minimum size of %s will be used for the new partition": [
+    "S'usarà una mida mínima genèrica de %s per a la partició nova"
   ],
-  "A mount point is required": [
-    "Cal un punt de muntatge."
+  "A generic size of %s will be used for the new partition": [
+    "S'usarà una mida genèrica de %s per a la partició nova"
   ],
-  "A new LVM Volume Group": [
-    "un grup de volums d'LVM nou"
+  "A generic size range between %1$s and %2$s will be used for the new partition": [
+    "S'usarà una gamma de mida genèrica entre %1$s i %2$s per a la partició nova"
   ],
-  "A new volume group will be allocated in the selected disk and the   file system will be created as a logical volume.": [
-    "S'assignarà un grup de volums nou al disc seleccionat i el sistema de fitxers es crearà com a volum lògic."
+  "A partition may be deleted": [
+    "Es pot suprimir una partició"
   ],
-  "A size value is required": [
-    "Cal un valor de mida"
+  "A partition may be shrunk": [
+    "Una partició es pot encongir"
+  ],
+  "A partition of %1$s will be created for %2$s": [
+    "Es crearà una partició de %1$s per a %2$s"
+  ],
+  "A partition of at least %1$s will be created for %2$s": [
+    "Es crearà una partició d'almenys %1$s per a %2$s"
+  ],
+  "A partition will be deleted": [
+    "Se suprimirà una partició"
+  ],
+  "A partition with a size between %1$s and %2$s will be created for %3$s": [
+    "Es crearà una partició amb una mida d'entre %1$s i %2$s per a %3$s"
   ],
   "Accept": [
     "Accepta-ho"
@@ -79,14 +84,11 @@ export default {
   "Actions for connection %s": [
     "Accions per a la connexió %s"
   ],
-  "Actions to find space": [
-    "Accions per aconseguir espai"
-  ],
   "Activate": [
     "Activa"
   ],
-  "Activate disks": [
-    "Activa els discs"
+  "Activate and format DASD devices": [
+    "Activa i formata dispositius DASD"
   ],
   "Activate new disk": [
     "Activa el disc nou"
@@ -94,17 +96,17 @@ export default {
   "Activate zFCP disk": [
     "Activa el disc zFCP"
   ],
+  "Activate zFCP disks": [
+    "Activa els discs zFCP"
+  ],
   "Activated": [
     "Activat"
   ],
-  "Add %s file system": [
-    "Afegeix-hi un sistema de fitxers %s"
+  "Add": [
+    "Afegeix"
   ],
   "Add DNS": [
     "Afegeix-hi un DNS"
-  ],
-  "Add a SSH Public Key for root": [
-    "Afegiu una clau pública SSH per a l'arrel"
   ],
   "Add an address": [
     "Afegeix-hi una adreça"
@@ -115,8 +117,11 @@ export default {
   "Add another address": [
     "Afegeix-hi una altra adreça"
   ],
-  "Add file system": [
-    "Afegeix-hi un sistema de fitxers"
+  "Add another partition or mount an existing one": [
+    "Afegiu-hi una altra partició o munteu-ne una d'existent"
+  ],
+  "Add or use partition": [
+    "Afegiu o useu una partició"
   ],
   "Address": [
     "Adreça"
@@ -127,29 +132,38 @@ export default {
   "Addresses data list": [
     "Llista de dades d'adreces"
   ],
+  "Adjust the settings below to make the new system fit into the available space.": [
+    "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
+  ],
+  "All content will be deleted": [
+    "Se'n suprimirà tot el contingut"
+  ],
   "All fields are required": [
     "Tots els camps són obligatoris."
   ],
-  "All partitions will be removed and any data in the disks will be lost.": [
-    "Totes les particions se suprimiran i es perdran les dades dels discs."
+  "Alongside defining the first user, authentication methods for the root user can be configured.": [
+    "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
   ],
-  "Allows to boot to a previous version of the system after configuration changes or software upgrades.": [
-    "Permet arrencar amb una versió anterior del sistema després de canvis de configuració o actualitzacions de programari."
+  "Any existing partition will be removed and all data in the disk will be lost.": [
+    "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
   ],
-  "Already set": [
-    "Ja s'ha establert"
-  ],
-  "An existing disk": [
-    "un disc existent"
+  "As a new partition on %1$s (%2$s)": [
+    "Com a partició nova a %1$s (%2$s)"
   ],
   "At least one address must be provided for selected mode": [
     "S'ha de proporcionar almenys una adreça per al mode seleccionat."
+  ],
+  "At least one partition will be deleted": [
+    "Se suprimirà almenys una partició"
   ],
   "At this point you can power off the machine.": [
     "En aquest punt, podeu aturar la màquina."
   ],
   "At this point you can reboot the machine to log in to the new system.": [
     "En aquest punt, podeu reiniciar la màquina per iniciar sessió al sistema nou."
+  ],
+  "Authentication": [
+    "Autenticació"
   ],
   "Authentication by initiator": [
     "Autenticació per iniciador"
@@ -160,14 +174,8 @@ export default {
   "Authentication failed, please try again": [
     "Hi ha hagut un error d'autenticació. Torneu-ho a provar."
   ],
-  "Auto": [
-    "Automàtica"
-  ],
   "Auto LUNs Scan": [
     "Escaneig automàtic de LUN"
-  ],
-  "Auto-login": [
-    "Entrada automàtica"
   ],
   "Automatic": [
     "Automàtica"
@@ -181,17 +189,23 @@ export default {
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "L'exploració automàtica de LUN està [activada]. L'activació d'un controlador       que s'executa en mode NPIV configurarà automàticament tots els seus LUN."
   ],
-  "Automatically calculated size according to the selected product.": [
-    "Mida calculada automàticament segons el producte seleccionat."
-  ],
   "Available products": [
     "Productes disponibles"
   ],
   "Back": [
     "Enrere"
   ],
-  "Back to device selection": [
-    "Torna a la selecció del dispositiu"
+  "Based on the amount of RAM in the system a partition of at least %1$s will be created for %2$s": [
+    "Segons la quantitat de memòria RAM del sistema, es crearà una partició d'almenys %1$s per a %2$s"
+  ],
+  "Based on the amount of RAM in the system, a partition of %1$s will be created for %2$s": [
+    "Segons la quantitat de memòria RAM del sistema, es crearà una partició de %1$s per a %2$s"
+  ],
+  "Based on the amount of RAM in the system, a partition with a size between %1$s and %2$s will be created for %3$s": [
+    "Segons la quantitat de memòria RAM del sistema, es crearà una partició amb una mida d'entre %1$s i %2$s per a %3$s"
+  ],
+  "Bcachefs": [
+    "Bcachefs"
   ],
   "Before %s": [
     "Abans: %s"
@@ -202,26 +216,23 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
   ],
-  "Boot partitions at %s": [
-    "Particions per l'arrencada a %s"
+  "BitLocker": [
+    "BitLocker"
   ],
-  "Boot partitions at installation disk": [
-    "Particions per a l'arrencada al disc d'instal·lació"
+  "Boot options": [
+    "Opcions d'arrencada"
   ],
-  "Btrfs root partition with snapshots (%s)": [
-    "Partició d'arrel Btrfs amb instantànies (%s)"
-  ],
-  "Btrfs root volume with snapshots (%s)": [
-    "Volum d'arrel Btrfs amb instantànies (%s)"
+  "Btrfs": [
+    "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs amb instantànies"
   ],
+  "Calculated automatically": [
+    "Calculat automàticament"
+  ],
   "Cancel": [
     "Cancel·la"
-  ],
-  "Cannot accommodate the required file systems for installation": [
-    "No es poden acomodar els sistemes de fitxers necessaris per a la instal·lació."
   ],
   "Cannot be changed in remote installation": [
     "No es pot canviar a la instal·lació remota."
@@ -238,33 +249,44 @@ export default {
   "Change boot options": [
     "Canvia les opcions d'arrencada"
   ],
-  "Change location": [
-    "Canvia la ubicació"
-  ],
   "Change product": [
     "Canvia el producte"
   ],
   "Change selection": [
     "Canvia la selecció"
   ],
-  "Change the root password": [
-    "Canvia la contrasenya d'arrel"
-  ],
   "Channel ID": [
     "Identificador del canal"
   ],
-  "Check the planned action": [
-    "Marca l'acció planificada",
-    "Marca les %d accions planificades"
+  "Check the %d planned actions": [
+    "Comproveu les %d accions planificades"
   ],
   "Choose a disk for placing the boot loader": [
     "Trieu un disc per posar-hi el carregador d'arrencada"
   ],
+  "Choose what to with current content": [
+    "Trieu què voleu fer del contingut actual"
+  ],
   "Clear": [
     "Neteja"
   ],
+  "Clear selected mount point": [
+    "Suprimeix el punt de muntatge seleccionat"
+  ],
   "Close": [
     "Tanca"
+  ],
+  "Collapse the list of planned actions": [
+    "Replega la llista d'accions previstes"
+  ],
+  "Configure DASD": [
+    "Configuració de DASD"
+  ],
+  "Configure iSCSI": [
+    "Configuració d'iSCSI"
+  ],
+  "Configure zFCP": [
+    "Configuració de zFCP"
   ],
   "Configuring the product, please wait ...": [
     "Configurant el producte. Espereu, si us plau..."
@@ -305,8 +327,14 @@ export default {
   "Connection actions": [
     "Accions de connexió"
   ],
+  "Content will be kept": [
+    "El contingut es mantindrà"
+  ],
   "Continue": [
     "Continua"
+  ],
+  "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
+    "Continuar sense instal·lar el paquet pot resultar en un sistema trencat. En alguns casos, és possible que el sistema ni tan sols arrenqui."
   ],
   "Controllers": [
     "Controladors"
@@ -317,14 +345,14 @@ export default {
   "Could not log in. Please, make sure that the password is correct.": [
     "No s'ha pogut iniciar la sessió. Si us plau, assegureu-vos que la contrasenya sigui correcta."
   ],
-  "Create a dedicated LVM volume group": [
-    "Crea un grup de volums LVM dedicat"
-  ],
-  "Create a new partition": [
-    "Crea una partició nova"
-  ],
   "Create user": [
     "Crea un usuari"
+  ],
+  "Current %1$s at %2$s": [
+    "%1$s actual a %2$s"
+  ],
+  "Current %s": [
+    "Actual: %s"
   ],
   "Custom": [
     "Personalitzat"
@@ -353,8 +381,26 @@ export default {
   "Deactivated": [
     "Desactivat"
   ],
+  "Default file system for %s": [
+    "Sistema de fitxers per defecte per a %s"
+  ],
+  "Default file system for generic partitions": [
+    "Sistema de fitxers per defecte per a particions genèriques"
+  ],
+  "Define a custom size or a range": [
+    "Definiu una mida personalitzada o un interval"
+  ],
   "Define a user now": [
     "Definiu un usuari ara"
+  ],
+  "Define partition at %s": [
+    "Definiu la partició a %s"
+  ],
+  "Define the first user with admin (sudo) privileges for system management.": [
+    "Definiu el primer usuari amb privilegis d'administrador (sudo) per a la gestió del sistema."
+  ],
+  "Defined (hidden)": [
+    "Definit (ocult)"
   ],
   "Delete": [
     "Suprimeix"
@@ -362,26 +408,14 @@ export default {
   "Delete current content": [
     "Suprimeix el contingut actual"
   ],
-  "Destructive actions are allowed": [
-    "Es permeten accions destructives."
-  ],
-  "Destructive actions are not allowed": [
-    "No es permeten accions destructives."
+  "Destroy current data and format partition as": [
+    "Destrueix les dades actuals i formata la partició com a"
   ],
   "Details": [
     "Detalls"
   ],
   "Device": [
     "Dispositiu"
-  ],
-  "Device selector for new LVM volume group": [
-    "Selector de dispositius per al grup de volums LVM nou"
-  ],
-  "Device selector for target disk": [
-    "Selector de dispositiu per al disc de destinació"
-  ],
-  "Devices: %s": [
-    "Dispositius: %s"
   ],
   "Discard": [
     "Descarta'l"
@@ -394,6 +428,9 @@ export default {
   ],
   "Discover": [
     "Descobreix"
+  ],
+  "Discover and connect to iSCSI targets": [
+    "Descobriu objectius iSCSI i connecteu-vos-hi"
   ],
   "Discover iSCSI Targets": [
     "Descobreix les destinacions iSCSI"
@@ -410,17 +447,20 @@ export default {
   "Do not configure": [
     "No ho configuris"
   ],
-  "Do not configure partitions for booting": [
-    "No configuris particions per a l'arrencada."
+  "Do not format %s and keep the data": [
+    "No formatis %s i conserva'n les dades"
   ],
-  "Do you want to add it?": [
-    "L'hi voleu afegir?"
-  ],
-  "Do you want to edit it?": [
-    "El voleu editar?"
+  "Do not use": [
+    "No l'usis"
   ],
   "Download logs": [
     "Baixa els registres"
+  ],
+  "Drive": [
+    "Unitat"
+  ],
+  "During installation, several actions will be performed to setup the layout shown at the table below.": [
+    "Durant la instal·lació, es fan diverses accions per configurar el disseny que es mostra a la taula següent."
   ],
   "Edit": [
     "Edita"
@@ -428,29 +468,14 @@ export default {
   "Edit %s": [
     "Edita %s"
   ],
-  "Edit %s file system": [
-    "Edita el sistema de fitxers %s"
-  ],
   "Edit connection %s": [
     "Edita la connexió %s"
-  ],
-  "Edit file system": [
-    "Edita el sistema de fitxers"
   ],
   "Edit iSCSI Initiator": [
     "Edita l'iniciador iSCSI"
   ],
-  "Edit password too": [
-    "Edita també la contrasenya"
-  ],
-  "Edit the SSH Public Key for root": [
-    "Edita la clau pública SSH per a l'arrel"
-  ],
   "Edit user": [
     "Edita l'usuari"
-  ],
-  "Enable": [
-    "Habilita"
   ],
   "Encrypt the system": [
     "Encripta el sistema"
@@ -464,26 +489,44 @@ export default {
   "Encryption Password": [
     "Contrasenya d'encriptació"
   ],
+  "Encryption is disabled": [
+    "L'encriptació està inhabilitada"
+  ],
+  "Encryption is enabled": [
+    "L'encriptació està habilitada"
+  ],
+  "Encryption is enabled using TPM unlocking": [
+    "L'encriptació s'habilita amb el desblocatge de TPM"
+  ],
+  "Encryption settings": [
+    "Configuració de l'encriptació"
+  ],
   "Enter a registration code and optionally a valid email address for registering the product.": [
     "Introduïu un codi de registre i, opcionalment, una adreça de correu electrònic vàlida per a registrar el producte."
   ],
-  "Exact size": [
-    "Mida exacta"
+  "ExFAT": [
+    "ExFAT"
   ],
-  "Exact size for the file system.": [
-    "Mida exacta per al sistema de fitxers."
+  "Ext2": [
+    "Ext2"
   ],
-  "File system type": [
-    "Tipus de sistema de fitxers"
+  "Ext3": [
+    "Ext3"
   ],
-  "File systems created as new partitions at %s": [
-    "Sistemes de fitxers creats com a particions noves a %s"
+  "Ext4": [
+    "Ext4"
   ],
-  "File systems created at a new LVM volume group": [
-    "Sistemes de fitxers creats en un nou grup de volums d'LVM"
+  "F2FS": [
+    "F2FS"
   ],
-  "File systems created at a new LVM volume group on %s": [
-    "Sistemes de fitxers creats en un nou grup de volums d'LVM a %s"
+  "FAT": [
+    "FAT"
+  ],
+  "Failed to calculate a storage layout": [
+    "No s'ha pogut calcular un disseny d'emmagatzematge"
+  ],
+  "File system": [
+    "Sistema de fitxers"
   ],
   "Filter by description or keymap code": [
     "Filtra per descripció o codi de mapa de tecles"
@@ -503,8 +546,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Filtra per territori, codi de zona horària o desplaçament d'UTC"
   ],
-  "Final layout": [
-    "Disposició final"
+  "Find space in %s": [
+    "Cerca espai a %s"
   ],
   "Finish": [
     "Acaba"
@@ -515,9 +558,6 @@ export default {
   "First user": [
     "Usuari primer"
   ],
-  "Fixed": [
-    "Fixa"
-  ],
   "Forget": [
     "Oblida-la"
   ],
@@ -527,11 +567,11 @@ export default {
   "Format": [
     "Formata"
   ],
+  "Format partition as": [
+    "Formata la partició com a"
+  ],
   "Format selected devices?": [
     "Voleu formatar els dispositius seleccionats?"
-  ],
-  "Format the device": [
-    "Formata el dispositiu"
   ],
   "Formatted": [
     "Formatat"
@@ -539,8 +579,8 @@ export default {
   "Formatting DASD devices": [
     "Formatatge de dispositius DASD"
   ],
-  "Full Disk Encryption (FDE) allows to protect the information stored at the device, including data, programs, and system files.": [
-    "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada al dispositiu, incloses dades, programes i fitxers del sistema."
+  "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
+    "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
   "Full name": [
     "Nom complet"
@@ -579,6 +619,9 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
   ],
+  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
+    "Si s'omet la unitat, s'usaran els bytes (B). Les unitats més grosses poden tenir la forma de GiB (potència de 2) o GB (potència de 10)."
+  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Si continueu, les particions del disc dur es modificaran segons la configuració d'instal·lació proporcionada."
   ],
@@ -606,59 +649,35 @@ export default {
   "Install": [
     "Instal·la"
   ],
-  "Install in a new Logical Volume Manager (LVM) volume group deleting all the content of the underlying devices": [
-    "Instal·la en un grup de volums nou del Gestor de Volums Lògics (LVM) suprimint tot el contingut dels dispositius subjacents."
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s deleting all its content": [
-    "Instal·la en un grup de volums nou del Gestor de Volums Lògics (LVM) a %s suprimint-ne tot el contingut."
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking existing partitions as needed": [
-    "Instal·la en un grup de volums nou del Gestor de Volums Lògics (LVM) a %s reduint les particions existents segons calgui."
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s using a custom strategy to find the needed space": [
-    "Instal·la en un grup de volums nou del Gestor de Volums Lògics (LVM) a %s amb una estratègia personalitzada per trobar l'espai necessari."
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group on %s without modifying existing partitions": [
-    "Instal·la en un grup de volums nou del Gestor de Volums Lògics (LVM) a %s sense modificar les particions existents."
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group shrinking existing partitions at the underlying devices as needed": [
-    "Instal·la en un grup de volums nou del Gestor de Volums Lògics (LVM) encongint les particions existents als dispositius subjacents segons calgui."
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group using a custom strategy to find the needed space at the underlying devices": [
-    "Instal·la en un grup de volums nou del Gestor de Volums Lògics (LVM) amb una estratègia personalitzada per trobar l'espai necessari als dispositius subjacents."
-  ],
-  "Install in a new Logical Volume Manager (LVM) volume group without modifying the partitions at the underlying devices": [
-    "Instal·la en un grup de volums nou del Gestor de Volums Lògics (LVM) sense modificar les particions dels dispositius subjacents."
-  ],
-  "Install new system on": [
-    "Instal·la el sistema nou"
-  ],
   "Install using an advanced configuration.": [
     "Instal·la mitjançant una configuració avançada."
   ],
-  "Install using device %s and deleting all its content": [
-    "Instal·la al dispositiu %s suprimint-ne tot el contingut"
+  "Install using device %s and deleting all its content.": [
+    "Instal·la al dispositiu %s suprimint-ne tot el contingut."
   ],
-  "Install using device %s shrinking existing partitions as needed": [
-    "Instal·la al dispositiu %s encongint-ne les particions existents segons calgui"
+  "Install using device %s shrinking existing partitions as needed.": [
+    "Instal·la al dispositiu %s encongint-ne les particions existents segons calgui."
   ],
-  "Install using device %s with a custom strategy to find the needed space": [
-    "Instal·la usant el dispositiu %s amb una estratègia personalitzada per trobar l'espai necessari."
+  "Install using device %s with a custom strategy to find the needed space.": [
+    "Instal·la al dispositiu %s amb una estratègia personalitzada per trobar l'espai necessari."
   ],
-  "Install using device %s without modifying existing partitions": [
-    "Instal·la al dispositiu %s sense modificar-ne les particions existents"
+  "Install using device %s without modifying existing partitions.": [
+    "Instal·la al dispositiu %s sense modificar-ne les particions existents."
   ],
-  "Installation device": [
-    "Dispositiu d'instal·lació"
+  "Install using several devices and deleting all its content.": [
+    "Instal·la a dispositius diversos suprimint-ne tot el contingut."
   ],
-  "Installation will configure partitions for booting at %s.": [
-    "La instal·lació configurarà les particions per arrencar a %s."
+  "Install using several devices shrinking existing partitions as needed.": [
+    "Instal·la a dispositius diversos encongint-ne les particions existents segons calgui."
   ],
-  "Installation will configure partitions for booting at the installation disk.": [
-    "La instal·lació configurarà les particions per arrencar al disc d'instal·lació."
+  "Install using several devices with a custom strategy to find the needed space.": [
+    "Instal·la a dispositius diversos amb una estratègia personalitzada per trobar l'espai necessari."
   ],
-  "Installation will not configure partitions for booting.": [
-    "La instal·lació no configurarà les particions per a l'arrencada."
+  "Install using several devices without modifying existing partitions.": [
+    "Instal·la a dispositius diversos sense modificar-ne les particions existents."
+  ],
+  "Installation Devices": [
+    "Dispositius d'instal·lació"
   ],
   "Installation will take %s.": [
     "La instal·lació necessitarà %s."
@@ -669,14 +688,29 @@ export default {
   "Installer options": [
     "Opcions de l'instal·lador"
   ],
+  "Installing a broken package affects system stability and is a big security risk!": [
+    "Instal·lar un paquet trencat afecta l'estabilitat del sistema i és un risc important de seguretat!"
+  ],
   "Installing the system, please wait...": [
     "Instal·lant el sistema. Espereu, si us plau..."
   ],
   "Interface": [
     "Interfície"
   ],
+  "Invalid storage settings": [
+    "Configuració d'emmagatzematge no vàlida"
+  ],
   "Ip prefix or netmask": [
     "Prefix IP o màscara de xarxa"
+  ],
+  "It is not possible to install the system with the current configuration. Adjust the settings below.": [
+    "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
+  ],
+  "JFS": [
+    "JFS"
+  ],
+  "Keep size of %s": [
+    "Mantén la mida de %s"
   ],
   "Keyboard": [
     "Teclat"
@@ -696,11 +730,14 @@ export default {
   "Language": [
     "Llengua"
   ],
+  "Let the installer propose a sensible range of sizes": [
+    "Permeteu que l'instal·lador proposi una gamma raonable de mides"
+  ],
   "License language": [
     "Llengua de la llicència"
   ],
-  "Limits for the file system size. The final size will be a value between the given minimum and maximum. If no maximum is given then the file system will be as big as possible.": [
-    "Límits per a la mida del sistema de fitxers. La mida final serà un valor entre el mínim i el màxim proporcionats. Si no hi ha cap màxim, el sistema de fitxers serà el més gros possible."
+  "Limited": [
+    "Limitada"
   ],
   "Loading data...": [
     "Carregant dades..."
@@ -717,20 +754,11 @@ export default {
   "Localization": [
     "Localització"
   ],
-  "Location": [
-    "Ubicació"
-  ],
-  "Location for %s file system": [
-    "Ubicació per al sistema de fitxers %s"
-  ],
   "Log in": [
     "Inicia la sessió"
   ],
   "Log in as %s": [
     "Inicieu sessió com a %s"
-  ],
-  "Logical volume at system LVM": [
-    "Volum lògic al sistema LVM"
   ],
   "Login": [
     "Entrada"
@@ -744,17 +772,14 @@ export default {
   "Logout": [
     "Sortida"
   ],
-  "Main disk or LVM Volume Group for installation.": [
-    "Disc principal o grup de volums d'LVM per a la instal·lació."
-  ],
   "Main navigation": [
     "Navegació principal"
   ],
   "Make sure you provide the correct values": [
     "Assegureu-vos que proporcioneu els valors correctes"
   ],
-  "Manage and format": [
-    "Gestió i formatatge"
+  "Manage DASD devices": [
+    "Gestioneu els dispositius DASD"
   ],
   "Manual": [
     "Manual"
@@ -762,17 +787,14 @@ export default {
   "Maximum": [
     "Màxim"
   ],
-  "Maximum desired size": [
-    "Mida màxima desitjada"
+  "Maximum size mode": [
+    "Mode de mida màxima"
   ],
-  "Maximum must be greater than minimum": [
-    "El màxim ha de ser superior al mínim."
+  "Maximum size options": [
+    "Opcions de mida màxima"
   ],
-  "Members: %s": [
-    "Membres: %s"
-  ],
-  "Method": [
-    "Mètode"
+  "Maximum size value": [
+    "Valor de mida màxima"
   ],
   "MiB": [
     "MiB"
@@ -780,23 +802,20 @@ export default {
   "Minimum": [
     "Mínim"
   ],
-  "Minimum desired size": [
-    "Mida mínima desitjada"
-  ],
-  "Minimum size is required": [
-    "Cal una mida mínima"
+  "Minimum size value": [
+    "Valor de mida mínima"
   ],
   "Mode": [
     "Mode"
   ],
-  "Modify": [
-    "Modifica"
+  "More actions": [
+    "Més accions"
   ],
-  "More info for file system types": [
-    "Més informació sobre els tipus de sistemes de fitxers"
+  "More options": [
+    "Més opcions"
   ],
-  "Mount %1$s at %2$s (%3$s)": [
-    "Munta %1$s a %2$s (%3$s)"
+  "More options toggle": [
+    "Commutació de més opcions"
   ],
   "Mount Point": [
     "Punt de muntatge"
@@ -804,11 +823,26 @@ export default {
   "Mount point": [
     "Punt de muntatge"
   ],
-  "Mount the file system": [
-    "Munta el sistema de fitxers"
+  "Mount point mode": [
+    "Mode de punt de muntatge"
+  ],
+  "Mount point options": [
+    "Opcions de punt de muntatge"
+  ],
+  "Mount point toggle": [
+    "Commutació de punt de muntatge"
   ],
   "Multipath": [
     "Multicamí"
+  ],
+  "NFS": [
+    "NFS"
+  ],
+  "NILFS2": [
+    "NILFS2"
+  ],
+  "NTFS": [
+    "NTFS"
   ],
   "Name": [
     "Nom"
@@ -819,11 +853,17 @@ export default {
   "New": [
     "Nova"
   ],
+  "New LVM volume group": [
+    "Grup de volums nou d'LVM"
+  ],
   "No": [
     "No"
   ],
   "No Wi-Fi supported": [
     "No és compatible amb Wi-Fi."
+  ],
+  "No additional partitions will be created": [
+    "No es crearan particions addicionals"
   ],
   "No additional software was selected.": [
     "No s'ha seleccionat cap programari addicional."
@@ -837,14 +877,14 @@ export default {
   "No device selected yet": [
     "Encara no s'ha seleccionat cap dispositiu."
   ],
+  "No devices found": [
+    "No s'ha trobat cap dispositiu"
+  ],
   "No iSCSI targets found.": [
     "No s'ha trobat cap destinació iSCSI."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "No es configurarà automàticament cap partició per a l'arrencada. Useu-ho amb precaució."
-  ],
-  "No root authentication method defined yet.": [
-    "Encara no s'ha definit cap mètode d'autenticació d'arrel."
   ],
   "No support is planned.": [
     "No té compatibilitat prevista."
@@ -879,6 +919,9 @@ export default {
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
   ],
+  "Not defined": [
+    "No definit"
+  ],
   "Not implemented yet (%s)": [
     "Encara no s'ha implementat (%s)"
   ],
@@ -887,9 +930,6 @@ export default {
   ],
   "Not selected yet": [
     "Encara no s'ha seleccionat."
-  ],
-  "Not set": [
-    "No s'ha establert"
   ],
   "Not supported (%s)": [
     "No compatible (%s)"
@@ -909,23 +949,23 @@ export default {
   "Options toggle": [
     "Canvi d'opcions"
   ],
-  "Other": [
-    "Una altra"
-  ],
   "Overview": [
     "Resum"
+  ],
+  "Package installation failed": [
+    "Ha fallat instal·lació del paquet."
   ],
   "Partition Info": [
     "Informació de la partició"
   ],
-  "Partition at %s": [
-    "Partició a %s"
+  "Partitions": [
+    "Particions"
   ],
-  "Partition at installation disk": [
-    "Partició al disc d'instal·lació"
+  "Partitions needed for booting will also be adapted": [
+    "També s'adaptaran les particions necessàries per a l'arrencada"
   ],
-  "Partitions and file systems": [
-    "Particions i sistemes de fitxers"
+  "Partitions needed for booting will remain at %s": [
+    "Les particions necessàries per a arrencar es mantindran a %s"
   ],
   "Partitions to boot will be allocated at the following device.": [
     "Les particions per a l'arrencada s'assignaran al dispositiu següent."
@@ -936,6 +976,9 @@ export default {
   "Partitions to boot will be allocated at the installation disk.": [
     "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
   ],
+  "Partitions will be used and created for %s": [
+    "Les particions s'usaran i es crearan per a %s"
+  ],
   "Password": [
     "Contrasenya"
   ],
@@ -945,11 +988,11 @@ export default {
   "Password confirmation": [
     "Confirmació de la contrasenya"
   ],
-  "Password for root user": [
-    "Contrasenya per a l'usuari d'arrel"
-  ],
   "Password input": [
     "Introducció de contrasenya"
+  ],
+  "Password is empty.": [
+    "La contrasenya està buida."
   ],
   "Password visibility button": [
     "Botó de visibilitat de la contrasenya"
@@ -966,20 +1009,11 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Planned Actions": [
-    "Accions planificades"
-  ],
-  "Please, be aware that a user must be defined before installing the system to be able to log into it.": [
-    "Si us plau, tingueu en compte que cal definir un usuari abans d'instal·lar el sistema per poder-hi iniciar sessió."
-  ],
   "Please, cancel and check the settings if you are unsure.": [
     "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
   ],
   "Please, check whether it is running.": [
     "Si us plau, comproveu si s'executa."
-  ],
-  "Please, define at least one authentication method for logging into the system as root.": [
-    "Si us plau, definiu almenys un mètode d'autenticació per iniciar sessió al sistema com a arrel."
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "Si us plau, executeu un descobriment d'iSCSI per trobar destinacions iSCSI disponibles."
@@ -1008,29 +1042,23 @@ export default {
   "Prefix length or netmask": [
     "Longitud del prefix o màscara de xarxa"
   ],
-  "Prepare more devices by configuring advanced": [
-    "Prepareu més dispositius mitjançant la configuració avançada"
-  ],
-  "Presence of other volumes (%s)": [
-    "La presència d'altres volums (%s)"
-  ],
   "Product registered": [
     "Producte registrat"
   ],
   "Product registration form": [
     "Formulari de registre del producte"
   ],
-  "Protection for the information stored at the device, including data, programs, and system files.": [
-    "Protecció per a la informació emmagatzemada al dispositiu, incloses les dades, els programes i els fitxers del sistema."
+  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
+    "Protecció de la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
-  "Provide a password to ensure administrative access to the system.": [
-    "Proporcioneu una contrasenya per assegurar l'accés d'administració al sistema."
+  "Public SSH Key": [
+    "Clau pública SSH"
+  ],
+  "Public SSH Key is empty.": [
+    "La clau SSH pública és buida."
   ],
   "Question": [
     "Pregunta"
-  ],
-  "Range": [
-    "Interval"
   ],
   "Read zFCP devices": [
     "Llegeix els dispositius zFCP"
@@ -1041,17 +1069,20 @@ export default {
   "Register": [
     "Registra"
   ],
-  "Register it now": [
-    "Registra'l ara"
-  ],
   "Registration": [
     "Registre"
   ],
   "Registration code": [
     "Codi de registre"
   ],
+  "ReiserFS": [
+    "ReiserFS"
+  ],
   "Reload": [
     "Torna a carregar"
+  ],
+  "Reloading data, please wait...": [
+    "Tornant a carregar les dades; espereu, si us plau..."
   ],
   "Remove": [
     "Suprimeix"
@@ -1062,35 +1093,35 @@ export default {
   "Remove min channel filter": [
     "Suprimeix el filtre del canal mínim"
   ],
+  "Remove the configuration for this device": [
+    "Suprimeix la configuració d'aquest dispositiu"
+  ],
   "Repository load failed": [
     "Ha fallat carregar el repositori."
-  ],
-  "Reset location": [
-    "Restableix la ubicació"
   ],
   "Reset to defaults": [
     "Restableix els valors predeterminats"
   ],
-  "Reused %s": [
-    "%s reutilitzat"
+  "Reset to the default configuration": [
+    "Restableix la configuració predeterminada"
   ],
-  "Root SSH public key": [
-    "Clau pública SSH per a l'arrel"
+  "Result": [
+    "Resultat"
   ],
-  "Root authentication": [
-    "Autenticació d'arrel"
+  "Root authentication methods": [
+    "Mètodes d'autenticació d'arrel"
   ],
-  "Root password": [
-    "Contrasenya d'arrel"
+  "Root user": [
+    "Usuari d'arrel"
   ],
   "SD Card": [
     "Targeta SD"
   ],
-  "SSH Key": [
-    "Clau SSH"
-  ],
   "SSID": [
     "SSID"
+  ],
+  "Same as minimum": [
+    "Igual que el mínim"
   ],
   "Search": [
     "Cerca"
@@ -1104,26 +1135,38 @@ export default {
   "Select": [
     "Selecciona"
   ],
+  "Select a device to configure": [
+    "Seleccioneu un dispositiu per configurar-lo"
+  ],
+  "Select a device to create %s": [
+    "Seleccioneu un dispositiu per crear-hi %s"
+  ],
+  "Select a device to install the system": [
+    "Seleccioneu un dispositiu on instal·lar el sistema"
+  ],
   "Select a disk": [
     "Seleccioneu un disc"
-  ],
-  "Select a location": [
-    "Seleccioneu una ubicació."
   ],
   "Select a product": [
     "Seleccioneu un producte"
   ],
-  "Select booting partition": [
-    "Seleccioneu la partició d'arrencada"
+  "Select another disk to define partitions": [
+    "Seleccioneu un altre disc per definir-ne les particions"
   ],
-  "Select how to allocate the file system": [
-    "Seleccioneu com assignar el sistema de fitxers."
+  "Select or enter a mount point": [
+    "Seleccioneu o introduïu un punt de muntatge"
   ],
-  "Select in which device to allocate the file system": [
-    "Seleccioneu en quin dispositiu assignar el sistema de fitxers."
+  "Select or enter a mount point that is not already assigned to another device": [
+    "Seleccioneu o introduïu un punt de muntatge que no estigui assignat a un altre dispositiu"
   ],
-  "Select installation device": [
-    "Seleccioneu el dispositiu d'instal·lació"
+  "Select or enter a valid mount point": [
+    "Seleccioneu o introduïu un punt de muntatge vàlid"
+  ],
+  "Select the disk to configure partitions for booting": [
+    "Seleccioneu el disc per configurar-hi les particions per a arrencar"
+  ],
+  "Select what to do with each partition in order to find space for allocating the new system.": [
+    "Seleccioneu què fer de cada partició per trobar espai per assignar-hi el sistema nou."
   ],
   "Select what to do with each partition.": [
     "Seleccioneu què voleu fer amb cada partició."
@@ -1131,14 +1174,8 @@ export default {
   "Selected patterns": [
     "Patrons seleccionats"
   ],
-  "Separate LVM at %s": [
-    "LVM separat a %s"
-  ],
   "Server IP": [
     "IP del servidor"
-  ],
-  "Set": [
-    "Estableix"
   ],
   "Set DIAG Off": [
     "Desactiva la diagnosi"
@@ -1146,17 +1183,8 @@ export default {
   "Set DIAG On": [
     "Activa la diagnosi"
   ],
-  "Set a password": [
-    "Establiu una contrasenya"
-  ],
-  "Set a root password": [
-    "Establiu una contrasenya d'arrel"
-  ],
-  "Set root SSH public key": [
-    "Estableix la clau pública SSH per a l'arrel"
-  ],
-  "Setup root user authentication": [
-    "Configura l'autenticació d'usuari d'arrel"
+  "Several partitions will be deleted": [
+    "Se suprimiran diverses particions"
   ],
   "Show": [
     "Mostra"
@@ -1168,26 +1196,20 @@ export default {
   "Show information about %s": [
     "Mostra informació quant a %s"
   ],
-  "Show partitions and file-systems actions": [
-    "Mostra les particions i les accions dels sistemes de fitxers"
-  ],
   "Shrink existing partitions": [
     "Encongeix les particions existents"
-  ],
-  "Shrinking partitions is allowed": [
-    "Es permet encongir particions."
-  ],
-  "Shrinking partitions is not allowed": [
-    "No es permet encongir particions."
-  ],
-  "Shrinking some partitions is allowed but not needed": [
-    "Es permet encongir algunes particions, però no cal."
   ],
   "Size": [
     "Mida"
   ],
-  "Size unit": [
-    "Unitat de mida"
+  "Size limits must be numbers optionally followed by a unit like GiB or GB": [
+    "Els límits de mida han de ser números seguits opcionalment d'una unitat com ara GiB o GB"
+  ],
+  "Size options": [
+    "Opcions de mida"
+  ],
+  "Sizes must be entered as a numbers optionally followed by a unit.": [
+    "Les mides s'han d'introduir com a números opcionalment seguits d'una unitat."
   ],
   "Software": [
     "Programari"
@@ -1198,17 +1220,26 @@ export default {
   "Software selection": [
     "Selecció de programari"
   ],
+  "Some existing partitions may be shrunk": [
+    "Algunes particions existents es poden encongir"
+  ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
     "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
   ],
+  "Some partitions may be deleted": [
+    "Algunes particions es poden suprimir"
+  ],
+  "Some partitions may be shrunk": [
+    "Algunes particions es poden encongir"
+  ],
   "Something went wrong": [
     "Alguna cosa ha anat malament."
   ],
-  "Space policy": [
-    "Política espacial"
+  "Start from scratch with the default configuration": [
+    "Comença des de zero amb la configuració predeterminada"
   ],
   "Startup": [
     "Inici"
@@ -1219,26 +1250,17 @@ export default {
   "Storage": [
     "Emmagatzematge"
   ],
-  "Storage proposal not possible": [
-    "La proposta d'emmagatzematge no és possible."
+  "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
+    "Estructura del nou sistema, inclosos els discos per usar i els dispositius addicionals com ara els grups de volums d'LVM."
   ],
-  "Structure of the new system, including any additional partition needed for booting": [
-    "Estructura del sistema nou, inclosa qualsevol partició addicional necessària per a arrencar"
+  "Suggested mount points": [
+    "Punts de muntatge suggerits"
   ],
-  "Swap at %1$s (%2$s)": [
-    "Intercanvi a %1$s (%2$s)"
-  ],
-  "Swap partition (%s)": [
-    "Partició d'intercanvi (%s)"
-  ],
-  "Swap volume (%s)": [
-    "Volum d'intercanvi (%s)"
+  "Swap": [
+    "Intercanvi"
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "El segellament TPM requereix que el sistema nou s'iniciï directament."
-  ],
-  "Table with mount points": [
-    "Taula amb punts de muntatge"
   ],
   "Target Password": [
     "Contrasenya de destinació"
@@ -1246,20 +1268,26 @@ export default {
   "Targets": [
     "Destinacions"
   ],
-  "The amount of RAM in the system": [
-    "La quantitat de RAM del sistema"
+  "The LVM group '%1$s' will remain at %2$s": [
+    "El grup d'LVM %1$s es mantindrà a %2$s"
   ],
-  "The configuration of snapshots": [
-    "La configuració de les instantànies"
+  "The configured LVM groups will remain at %s": [
+    "Els grups d'LVM configurats es mantindran a %s"
+  ],
+  "The configured partitions will be created as logical volumes": [
+    "Les particions configurades es crearan com a volums lògics"
   ],
   "The content may be deleted": [
     "El contingut pot suprimir-se"
   ],
-  "The current file system on %s is selected to be mounted at %s.": [
-    "El sistema de fitxers actual a %s està seleccionat per muntar-lo a %s."
+  "The current configuration will result in a partition of %s.": [
+    "La configuració actual tindrà com a resultat una partició de %s."
   ],
-  "The current file system on the selected device will be mounted   without formatting the device.": [
-    "El sistema de fitxers actual del dispositiu seleccionat es muntarà sense formatar el dispositiu."
+  "The current configuration will result in a partition of at least %s.": [
+    "La configuració actual tindrà com a resultat una partició d'almenys %s."
+  ],
+  "The current configuration will result in a partition with a size between %1$s and %2$s.": [
+    "La configuració actual tindrà com a resultat una partició amb una mida d'entre %1$s i %2$s."
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
@@ -1270,26 +1298,14 @@ export default {
   "The device cannot be shrunk:": [
     "El dispositiu no es pot encongir:"
   ],
+  "The device will be mounted at %s.": [
+    "El dispositiu es muntarà a %s."
+  ],
+  "The device will be used by the new system.": [
+    "El sistema nou usarà el dispositiu."
+  ],
   "The encryption password did not work": [
     "La contrasenya d'encriptació no ha funcionat."
-  ],
-  "The file system is allocated at the device %s.": [
-    "El sistema de fitxers s'assigna al dispositiu %s."
-  ],
-  "The file system will be allocated as a new partition at the selected   disk.": [
-    "El sistema de fitxers s'assignarà com a partició nova al disc seleccionat."
-  ],
-  "The file systems are allocated at the installation device by default. Indicate a custom location to create the file system at a specific device.": [
-    "Els sistemes de fitxers s'assignen al dispositiu d'instal·lació de manera predeterminada. Indiqueu una ubicació personalitzada per crear el sistema de fitxers en un dispositiu específic."
-  ],
-  "The file systems will be allocated by default as [logical volumes of a new LVM Volume Group]. The corresponding physical volumes will be created on demand as new partitions at the selected devices.": [
-    "Els sistemes de fitxers s'assignaran per defecte com a [volums lògics d'un nou grup de volums d'LVM]. Els volums físics corresponents es crearan segons demanda com a particions noves als dispositius seleccionats."
-  ],
-  "The file systems will be allocated by default as [new partitions in the selected device].": [
-    "Els sistemes de fitxers s'assignaran per defecte com a [particions noves al dispositiu seleccionat]."
-  ],
-  "The final size depends on %s.": [
-    "La mida final depèn de %s."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
@@ -1309,20 +1325,62 @@ export default {
   "The installer requires [root] user privileges.": [
     "L'instal·lador requereix privilegis de l'usuari [root]."
   ],
-  "The mount point is invalid": [
-    "El punt de muntatge no és vàlid."
+  "The maximum must be a number optionally followed by a unit like GiB or GB": [
+    "El màxim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
   ],
-  "The options for the file system type depends on the product and the mount point.": [
-    "Les opcions per al tipus de sistema de fitxers depenen del producte i del punt de muntatge."
+  "The minimum cannot be greater than the maximum": [
+    "El mínim no pot ser superior al màxim"
+  ],
+  "The minimum must be a number optionally followed by a unit like GiB or GB": [
+    "El mínim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+  ],
+  "The partition can grow to use all the contiguous free space": [
+    "La partició pot créixer per a usar tot l'espai lliure contigu"
+  ],
+  "The partition can grow until a given limit size": [
+    "La partició pot créixer fins a una mida límit introduïda"
+  ],
+  "The partition is created exactly with the given size": [
+    "La partició es crea exactament amb la mida introduïda"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
   ],
-  "The selected device will be formatted as %s file system.": [
-    "El dispositiu seleccionat es formatarà com a sistema de fitxers %s."
+  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
   ],
-  "The size of the file system cannot be edited": [
-    "La mida del sistema de fitxers no es pot editar."
+  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema i de la presència de sistemes de fitxers separats per a %2$s."
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema, l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema, l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la presència d'un sistema de fitxers independent per a %2$s."
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la presència de sistemes de fitxers separats per a %2$s."
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "L'interval de mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i de la presència d'un sistema de fitxers separat per a %2$s."
+  ],
+  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "L'interval de mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i de la presència de sistemes de fitxers separats per a %2$s."
+  ],
+  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "L'interval de mida de %s s'ajustarà dinàmicament segons a quantitat de memòria RAM del sistema i de l'ús de les instantànies de Btrfs."
+  ],
+  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "L'interval de mida de %s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs."
+  ],
+  "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
+    "La configuració d'emmagatzematge és vàlida (vegeu-ne el resultat a continuació) però usa elements no compatibles amb aquesta interfície."
+  ],
+  "The storage configuration uses elements not supported by this interface.": [
+    "La configuració d'emmagatzematge usa elements no compatibles amb aquesta interfície."
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
@@ -1330,35 +1388,41 @@ export default {
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
     "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
   ],
-  "The system layout was set up using a advanced configuration that cannot be modified with the current version of this visual interface. This limitation will be removed in a future version of Agama.": [
-    "El disseny del sistema s'ha establert mitjançant una configuració avançada que no es pot modificar amb la versió actual d'aquesta interfície visual. Aquesta limitació se suprimirà en una versió futura d'Agama."
-  ],
   "The system will use %s as its default language.": [
     "El sistema usarà el %s com a llengua per defecte."
-  ],
-  "The systems will be configured as displayed below.": [
-    "Els sistemes es configuraran tal com es mostra a continuació."
-  ],
-  "The type and size of the file system cannot be edited.": [
-    "El tipus i la mida del sistema de fitxers no es poden editar."
   ],
   "The zFCP disk was not activated.": [
     "El disc zFCP no s'ha activat."
   ],
-  "There is a predefined file system for %s.": [
-    "Hi ha un sistema de fitxers predefinit per a %s."
+  "There are no disks available for the installation.": [
+    "No hi ha discs disponibles per a la instal·lació."
   ],
-  "There is already a file system for %s.": [
-    "Ja hi ha un sistema de fitxers per a %s."
+  "There are not disks available for the installation. You may need to configure some device.": [
+    "No hi ha discs disponibles per a la instal·lació. És possible que hàgiu de configurar algun dispositiu."
+  ],
+  "There are not usable partitions": [
+    "No hi ha particions usables"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."
   ],
-  "These limits are affected by:": [
-    "Aquests límits estan afectats pel següent:"
-  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
+  ],
+  "This device will contain any partition needed for booting": [
+    "Aquest dispositiu contindrà qualsevol partició necessària per a arrencar"
+  ],
+  "This device will contain the LVM group '%s'": [
+    "Aquest dispositiu contindrà el grup d'LVM %s"
+  ],
+  "This device will contain the LVM group '%s' and any partition needed to boot": [
+    "Aquest dispositiu contindrà el grup d'LVM %s i qualsevol partició necessària per a arrencar"
+  ],
+  "This device will contain the configured LVM groups": [
+    "Aquest dispositiu contindrà els grups d'LVM configurats"
+  ],
+  "This device will contain the configured LVM groups and any partition needed to boot": [
+    "Aquest dispositiu contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Aquest producte no permet seleccionar patrons de programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
@@ -1366,23 +1430,20 @@ export default {
   "This space includes the base system and the selected software patterns, if any.": [
     "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
   ],
+  "This uses existing partitions at the device": [
+    "Això usa les particions existents al dispositiu"
+  ],
   "TiB": [
     "TiB"
   ],
   "Time zone": [
     "Zona horària"
   ],
+  "Tmpfs": [
+    "Tmpfs"
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
-  ],
-  "Transactional Btrfs": [
-    "Btrfs transaccional"
-  ],
-  "Transactional Btrfs root partition (%s)": [
-    "Partició d'arrel Btrfs transaccional (%s)"
-  ],
-  "Transactional Btrfs root volume (%s)": [
-    "Volum d'arrel de Btrfs transaccional (%s)"
   ],
   "Transactional root file system": [
     "Sistema de fitxers d'arrel transaccional"
@@ -1393,11 +1454,8 @@ export default {
   "Type": [
     "Tipus"
   ],
-  "Unit for the maximum size": [
-    "Unitat per a la mida màxima"
-  ],
-  "Unit for the minimum size": [
-    "Unitat per a la mida mínima"
+  "Unable to modify the settings": [
+    "No es pot modificar la configuració"
   ],
   "Unselect": [
     "Desmarca"
@@ -1414,20 +1472,62 @@ export default {
   "Upload": [
     "Carrega"
   ],
-  "Upload a SSH Public Key": [
-    "Carrega una clau pública SSH"
-  ],
   "Upload, paste, or drop an SSH public key": [
     "Carregueu, enganxeu o deixeu-hi anar una clau pública SSH"
   ],
-  "Usage": [
-    "Ús"
+  "Use": [
+    "Usa'l"
   ],
-  "Use Btrfs snapshots for the root file system": [
-    "Usa instantànies de Btrfs per al sistema de fitxers d'arrel."
+  "Use %s": [
+    "Usa %s"
+  ],
+  "Use %s for LVM and additional partitions": [
+    "Usa %s per a l'LVM i les particions addicionals"
+  ],
+  "Use %s for LVM, additional partitions and booting": [
+    "Usa %s per a l'LVM, les particions addicionals i l'arrencada"
+  ],
+  "Use %s for additional partitions": [
+    "Usa %s per a les particions addicionals"
+  ],
+  "Use %s for additional partitions and booting": [
+    "Usa %s per a les particions addicionals i l'arrencada"
+  ],
+  "Use %s to boot": [
+    "Usa %s per a l'arrencada"
+  ],
+  "Use %s to host LVM": [
+    "Usa %s per allotjar-hi l'LVM"
+  ],
+  "Use %s to host LVM and boot": [
+    "Usa %s per allotjar-hi l'LVM i per a l'arrencada"
+  ],
+  "Use %s to install": [
+    "Usa %s per a la instal·lació"
+  ],
+  "Use %s to install and boot": [
+    "Usa %s per a la instal·lació i l'arrencada"
+  ],
+  "Use %s to install and host LVM": [
+    "Usa %s per a la instal·lació i allotjar-hi l'LVM"
+  ],
+  "Use %s to install, host LVM and boot": [
+    "Usa %s per a la instal·lació, allotjar-hi l'LVM i per a l'arrencada"
+  ],
+  "Use additional disk": [
+    "Usa un disc addicional"
+  ],
+  "Use additional disk toggle": [
+    "Usa un commutador de disc addicional"
   ],
   "Use available space": [
     "Usa l'espai disponible"
+  ],
+  "Use password": [
+    "Usa contrasenya"
+  ],
+  "Use public SSH Key": [
+    "Usa una clau pública SSH"
   ],
   "Use suggested username": [
     "Usa el nom d'usuari suggerit"
@@ -1435,8 +1535,8 @@ export default {
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Useu el mòdul de plataforma de confiança (TPM) per fer-ne la desencriptació automàticament a cada arrencada."
   ],
-  "User full name": [
-    "Nom complet de l'usuari"
+  "Used space": [
+    "Espai usat"
   ],
   "User name": [
     "Nom d'usuari"
@@ -1447,8 +1547,14 @@ export default {
   "Username suggestion dropdown": [
     "Menú desplegable de suggeriments de nom d'usuari"
   ],
-  "Users": [
-    "Usuaris"
+  "Using a hashed password.": [
+    "S'usa una contrasenya amb funció resum."
+  ],
+  "Using an existing partition": [
+    "S'usa una partició existent"
+  ],
+  "Using partition %s": [
+    "S'usa la partició %s"
   ],
   "Visible Wi-Fi networks": [
     "Xarxes Wi-Fi visibles"
@@ -1462,8 +1568,8 @@ export default {
   "WWPN": [
     "WWPN"
   ],
-  "Waiting for actions information...": [
-    "Esperant la informació de les accions..."
+  "Waiting for a mount point": [
+    "S'espera un punt de muntatge"
   ],
   "Waiting for information about storage configuration": [
     "Esperant informació sobre la configuració de l'emmagatzematge"
@@ -1480,26 +1586,26 @@ export default {
   "Wired": [
     "Amb fil"
   ],
-  "Wires: %s": [
-    "Cables: %s"
+  "XFS": [
+    "XFS"
   ],
   "Yes": [
     "Sí"
   ],
-  "You can change it or select another authentication method in the 'Users' section before installing.": [
-    "Podeu canviar-la o seleccionar un altre mètode d'autenticació a la secció d'usuaris abans de la instal·lació."
+  "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
+    "Podeu procedir a la instal·lació amb la configuració actual o potser voleu descartar-la i començar des de zero amb una de simple."
+  ],
+  "You may want to discard the current settings and start from scratch with a simple configuration.": [
+    "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."
+  ],
+  "You may want to discard those settings and start from scratch with a simple configuration.": [
+    "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
   ],
   "ZFCP": [
     "ZFCP"
   ],
-  "affecting": [
-    "Això afecta"
-  ],
   "at least %s": [
     "almenys %s"
-  ],
-  "auto": [
-    "automàtica"
   ],
   "auto selected": [
     "seleccionat automàticament"
@@ -1507,47 +1613,11 @@ export default {
   "configured": [
     "configurat"
   ],
-  "deleting current content": [
-    "suprimint contingut actual."
-  ],
-  "disabled": [
-    "inhabilitada"
-  ],
-  "enabled": [
-    "habilitada"
-  ],
   "iBFT": [
     "iBFT"
   ],
   "iSCSI": [
     "iSCSI"
-  ],
-  "shrinking partitions": [
-    "encongint particions existents."
-  ],
-  "storage techs": [
-    "tecnologies d'emmagatzematge"
-  ],
-  "the amount of RAM in the system": [
-    "la quantitat de RAM del sistema"
-  ],
-  "the configuration of snapshots": [
-    "la configuració de les instantànies"
-  ],
-  "the presence of the file system for %s": [
-    "la presència del sistema de fitxers per a %s"
-  ],
-  "user autologin": [
-    "entrada de sessió automàtica de l'usuari"
-  ],
-  "using TPM unlocking": [
-    "usant el desblocatge de TPM"
-  ],
-  "with custom actions": [
-    "amb accions personalitzades."
-  ],
-  "without modifying any partition": [
-    "sense modificar cap partició existent."
   ],
   "zFCP": [
     "zFCP"
