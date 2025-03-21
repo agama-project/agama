@@ -65,7 +65,7 @@ module Agama
             partitions.reject { |p| space_policy_partition?(p) }
           end
 
-          # Partitions representing a spece policy action (delete, resize if needed), excluding
+          # Partitions representing a space policy action (delete, resize if needed), excluding
           # the keep actions.
           #
           # Omitting the partitions that only represent a keep action is important. Otherwise, the
