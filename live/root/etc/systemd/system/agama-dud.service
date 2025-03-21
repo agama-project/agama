@@ -11,7 +11,6 @@ After=agama-self-update.service
 # before starting the Agama servers so they use the new packages
 Before=agama-web-server.service
 Before=agama.service
-Before=x11-autologin.service
 # before interactive password services
 Before=live-password-dialog.service
 Before=live-password-systemd.service
@@ -19,9 +18,7 @@ Before=live-password-systemd.service
 [Service]
 Type=oneshot
 Environment=TERM=linux
-ExecStartPre=dmesg --console-off
 ExecStart=agama-dud
-ExecStartPost=dmesg --console-on
 TTYReset=yes
 TTYVHangup=yes
 StandardInput=tty
