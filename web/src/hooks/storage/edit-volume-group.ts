@@ -22,27 +22,8 @@
 
 import useApiModel from "~/hooks/storage/api-model";
 import useUpdateApiModel from "~/hooks/storage/update-api-model";
-import { addVolumeGroup } from "~/hooks/storage/helpers/volume-group";
-import { deleteIfUnused } from "~/hooks/storage/helpers/drive";
+import { editVolumeGroup } from "~/hooks/storage/helpers/volume-group";
 import { QueryHookOptions } from "~/types/queries";
-import { apiModel } from "~/api/storage/types";
-
-function editVolumeGroup(
-  apiModel: apiModel.Config,
-  oldVgName: string,
-  vgName: string,
-  targetDevices: string[],
-): apiModel.Config {
-  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === oldVgName);
-  if (index === -1) return;
-
-  const oldTargetDevices = apiModel.volumeGroups[index].targetDevices || [];
-
-  addVolumeGroup(apiModel, vgName, targetDevices, false, index);
-  oldTargetDevices.forEach((d) => deleteIfUnused(apiModel, d));
-
-  return apiModel;
-}
 
 export type EditVolumeGroupFn = (
   odlVgName: string,

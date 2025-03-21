@@ -21,6 +21,8 @@
  */
 
 import { apiModel } from "~/api/storage/types";
+import copyApiModel from "~/hooks/storage/helpers/copy-api-model";
+import { deleteIfUnused } from "~/hooks/storage/helpers/drive";
 
 function toLogicalVolume(partition: apiModel.Partition) {
   return { ...partition };
@@ -43,6 +45,8 @@ function addVolumeGroup(
   moveContent: boolean,
   index?: number,
 ): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+
   const volumeGroup = { vgName, targetDevices };
 
   if (moveContent) {
@@ -62,4 +66,25 @@ function addVolumeGroup(
   return apiModel;
 }
 
-export { addVolumeGroup };
+function editVolumeGroup(
+  apiModel: apiModel.Config,
+  oldVgName: string,
+  vgName: string,
+  targetDevices: string[],
+): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+
+  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === oldVgName);
+  if (index === -1) return apiModel;
+
+  const oldTargetDevices = apiModel.volumeGroups[index].targetDevices || [];
+
+  apiModel = addVolumeGroup(apiModel, vgName, targetDevices, false, index);
+  oldTargetDevices.forEach((d) => {
+    apiModel = deleteIfUnused(apiModel, d);
+  });
+
+  return apiModel;
+}
+
+export { addVolumeGroup, editVolumeGroup };

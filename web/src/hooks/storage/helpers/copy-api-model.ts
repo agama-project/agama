@@ -21,26 +21,7 @@
  */
 
 import { apiModel } from "~/api/storage/types";
-import { model } from "~/types/storage";
-import copyApiModel from "~/hooks/storage/helpers/copy-api-model";
-import buildModel from "~/hooks/storage/helpers/build-model";
 
-function buildDrive(apiModel: apiModel.Config, name: string): model.Drive | undefined {
-  const model = buildModel(apiModel);
-  return model.drives.find((d) => d.name === name);
+export default function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
+  return JSON.parse(JSON.stringify(apiModel));
 }
-
-function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Config {
-  apiModel = copyApiModel(apiModel);
-
-  const index = (apiModel.drives || []).findIndex((d) => d.name === name);
-  if (index === -1) return apiModel;
-
-  const drive = buildDrive(apiModel, name);
-  if (!drive || drive.isUsed) return apiModel;
-
-  apiModel.drives.splice(index, 1);
-  return apiModel;
-}
-
-export { deleteIfUnused };
