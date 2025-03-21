@@ -4,14 +4,14 @@ These tests need the Agama services running, both the Ruby part (`service/`) and
 
 They are written with RSpec because it was convenient.
 
-To not get run together with the `*_test.rb` unit tests, these are named `*_integration-test.rb`
+To not get run together with the `*_test.rb` unit tests, these are named `*_itest.rb`
 
 ### Running
 
 We run this via `.github/wotkflows/ci-integration-tests.yml`, or like this
 
 ```sh
-(cd service; bundle exec rspec --pattern 'test/integration/**_integration-test.rb')
+(cd service; bundle exec rspec --pattern 'test/integration/**_itest.rb')
 ```
 
 Safety and security: will this delete data and/or unset root password on your machine?

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 # TODO: remember to set up and test the --api option after all
 
@@ -45,7 +46,7 @@ describe "agama profile" do
   end
 
   describe "validate:" do
-    let (:command) { ["agama", "profile", "validate"] }
+    let(:command) { ["agama", "profile", "validate"] }
     context "valid profile" do
       include_examples \
         "accepts input in 3 ways", \
@@ -77,17 +78,18 @@ describe "agama profile" do
 
   describe "evaluate:" do
     context "jsonnet, by stdin" do
-      let (:profile_body) { '{product: {uh: "oh"}}' }
+      let(:profile_body) { '{product: {uh: "oh"}}' }
 
       it "is evaluated" do
-        output = Cheetah.run("agama", "profile", "evaluate", "-", stdout: :capture, stdin: profile_body)
-        expected = <<~EOS
-        {
-           "product": {
-              "uh": "oh"
-           }
-        }
-        EOS
+        output = Cheetah.run("agama", "profile", "evaluate", "-",
+          stdout: :capture, stdin: profile_body)
+        expected = <<~JSON
+          {
+             "product": {
+                "uh": "oh"
+             }
+          }
+        JSON
         expect(output).to eq(expected)
       end
     end

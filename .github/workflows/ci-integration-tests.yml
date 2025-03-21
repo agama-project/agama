@@ -83,7 +83,7 @@ jobs:
       run:  podman exec agama curl http://localhost
 
     - name: Run the Service Integration Tests
-      run:  podman exec agama bash -c "cd /checkout; (cd service; bundle exec rspec --pattern 'test/integration/**_integration-test.rb')"
+      run:  podman exec agama bash -c "cd /checkout; (cd service; bundle exec rspec --pattern 'test/integration/**_itest.rb')"
 
     - name: Run the Puppeteer tests
       # run the test
