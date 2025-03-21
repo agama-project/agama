@@ -51,7 +51,7 @@ function vgNameError(
   model: model.Model,
   volumeGroup?: model.VolumeGroup,
 ): string | undefined {
-  if (!vgName.length) return sprintf(_("Name is empty"), vgName);
+  if (!vgName.length) return _("Name is empty");
 
   const exist = model.volumeGroups.some((v) => v.vgName === vgName);
   if (exist && vgName !== volumeGroup?.vgName) return sprintf(_("'%s' already exists"), vgName);
@@ -65,8 +65,10 @@ function targetDevicesError(targetDevices: StorageDevice[]): string | undefined 
  * Form for configuring a LVM volume group.
  */
 export default function LvmPage() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const model = useModel();
+  const volumeGroup = useVolumeGroup(id);
   const addVolumeGroup = useAddVolumeGroup();
   const editVolumeGroup = useEditVolumeGroup();
   const allDevices = useAvailableDevices();
