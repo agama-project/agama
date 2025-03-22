@@ -9,11 +9,6 @@ PREFS=$HOME/.mozilla/firefox/profile/user.js
 
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN/" $PREFS.template > $PREFS
 firefox --kiosk --profile $HOME/.mozilla/firefox/profile
-# Here, we would like to see
-#
-# firefox --kiosk --profile $HOME/.mozilla/firefox/profile
-#
-# But sadly firefox currently ends with black screen on wayland when run with --kiosk
 
 sleep 1.0
 exec "$0" "$@"
