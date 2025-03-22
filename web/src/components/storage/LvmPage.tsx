@@ -51,14 +51,15 @@ function vgNameError(
   model: model.Model,
   volumeGroup?: model.VolumeGroup,
 ): string | undefined {
-  if (!vgName.length) return _("Name is empty");
+  if (!vgName.length) return _("Enter a name for the volume group.");
 
   const exist = model.volumeGroups.some((v) => v.vgName === vgName);
-  if (exist && vgName !== volumeGroup?.vgName) return sprintf(_("'%s' already exists"), vgName);
+  if (exist && vgName !== volumeGroup?.vgName)
+    return sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName);
 }
 
 function targetDevicesError(targetDevices: StorageDevice[]): string | undefined {
-  if (!targetDevices.length) return _("No disk is selected");
+  if (!targetDevices.length) return _("Select at least one disk.");
 }
 
 /**
@@ -132,7 +133,7 @@ export default function LvmPage() {
       <Page.Content>
         <Form id="lvmForm" onSubmit={onSubmit}>
           {errors.length > 0 && (
-            <Alert variant="warning" isInline title={_("Something went wrong")}>
+            <Alert variant="warning" isInline title={_("Check the following before continuing")}>
               {errors.map((e, i) => (
                 <p key={`error_${i}`}>{e}</p>
               ))}

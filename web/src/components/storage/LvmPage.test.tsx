@@ -24,7 +24,6 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import { model, StorageDevice } from "~/types/storage";
-import { apiModel } from "~/api/storage/types";
 import { gib } from "./utils";
 import { Drive } from "~/types/storage/model";
 import LvmPage from "./LvmPage";
@@ -99,13 +98,18 @@ const mockRootVolumeGroup: model.VolumeGroup = {
   logicalVolumes: [],
 };
 
+const mockHomeVolumeGroup: model.VolumeGroup = {
+  vgName: "fakeHomeVg",
+  getTargetDevices: () => [mockSdaDrive],
+  logicalVolumes: [],
+};
+
 const mockAddVolumeGroup = jest.fn();
 const mockEditVolumeGroup = jest.fn();
-let mockVolumeGroups: apiModel.VolumeGroup[] = [];
 
 let mockUseModel = {
   drives: [mockSdaDrive],
-  volumeGroups: mockVolumeGroups,
+  volumeGroups: [],
 };
 
 const mockUseAllDevices = [sda];
@@ -143,10 +147,6 @@ jest.mock("~/hooks/storage/edit-volume-group", () => ({
 
 describe("LvmPage", () => {
   describe("when creating a new volume group", () => {
-    beforeEach(() => {
-      mockVolumeGroups = [];
-    });
-
     it("allows configuring a new LVM volume group (without moving mount points)", async () => {
       const { user } = installerRender(<LvmPage />);
       const name = screen.getByRole("textbox", { name: "Name" });
@@ -195,24 +195,24 @@ describe("LvmPage", () => {
       await user.clear(name);
       await user.click(acceptButton);
       screen.getByText("Warning alert:");
-      screen.getByText("Name is empty");
-      screen.getByText("No disk is selected");
+      screen.getByText(/Enter a name/);
+      screen.getByText(/Select at least one disk/);
 
       // Type a name
       await user.type(name, "root-vg");
       await user.click(acceptButton);
-      expect(screen.queryByText("Name is empty")).toBeNull();
       screen.getByText("Warning alert:");
-      screen.getByText("No disk is selected");
+      expect(screen.queryByText(/Enter a name/)).toBeNull();
+      screen.getByText(/Select at least one disk/);
 
       // Select a disk
       expect(sdaCheckbox).not.toBeChecked();
       await user.click(sdaCheckbox);
       expect(sdaCheckbox).toBeChecked();
       await user.click(acceptButton);
-      expect(screen.queryByText("Name is empty")).toBeNull();
       expect(screen.queryByText("Warning alert:")).toBeNull();
-      expect(screen.queryByText("No disk is selected")).toBeNull();
+      expect(screen.queryByText(/Enter a name/)).toBeNull();
+      expect(screen.queryByText(/Select at least one disk/)).toBeNull();
     });
 
     describe("when there are LVM volume groups", () => {
@@ -249,7 +249,10 @@ describe("LvmPage", () => {
   describe("when editing", () => {
     beforeEach(() => {
       mockParams({ id: "fakeRootVg" });
-      mockVolumeGroups = [mockRootVolumeGroup];
+      mockUseModel = {
+        drives: [mockSdaDrive],
+        volumeGroups: [mockRootVolumeGroup, mockHomeVolumeGroup],
+      };
     });
 
     it("performs basic validations", async () => {
@@ -266,8 +269,13 @@ describe("LvmPage", () => {
       expect(sdaCheckbox).not.toBeChecked();
       await user.click(acceptButton);
       screen.getByText("Warning alert:");
-      screen.getByText("Name is empty");
-      screen.getByText("No disk is selected");
+      screen.getByText(/Enter a name/);
+      screen.getByText(/Select at least one disk/);
+      // Enter a name already in use
+      await user.type(name, "fakeHomeVg");
+      await user.click(acceptButton);
+      expect(screen.queryByText(/Enter a name/)).toBeNull();
+      screen.getByText(/Enter a different name/);
     });
 
     it("pre-fills form with the current volume group configuration", async () => {
