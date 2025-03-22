@@ -9,5 +9,5 @@ and kind of dependency happens only due to that check, we trick it by creating
 the directory.
 
 This is status at time of initial Wayland / GNOME Shell deployment in Agama's
-live iso. If the check is removed in the future feel free to drop whole
+live ISO. If the check is removed in the future feel free to drop whole
 /usr/bin/X from the image.
