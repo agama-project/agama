@@ -59,7 +59,6 @@ systemctl enable live-root-shell.service
 systemctl enable checkmedia.service
 systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
-systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
@@ -205,9 +204,6 @@ if [ -n "$python" ]; then
   fi
 fi
 
-# remove OpenGL support
-rpm -qa | grep ^Mesa | xargs rpm -e --nodeps
-
 # uninstall libyui-qt and libqt (pulled in by the YaST dependencies),
 # not present in SLES, do not fail if not installed
 if rpm -q --whatprovides libyui-qt libyui-qt-pkg > /dev/null; then
@@ -273,8 +269,6 @@ for s in purge-kernels; do
   systemctl -f disable $s || true
 done
 
-# Only used for OpenCL and X11 acceleration on vmwgfx (?), saves ~50MiB
-rpm -e --nodeps Mesa-gallium || true
 # Too big and will have to be dropped anyway (unmaintained, known security issues)
 rm -rf /usr/lib*/libmfxhw*.so.* /usr/lib*/mfx/
 
@@ -292,3 +286,6 @@ rm -f /lib/modules/*/vmlinux*.[gx]z
 
 # Remove generated files (boo#1098535)
 rm -rf /var/cache/zypp/* /var/lib/zypp/AnonymousUniqueId /var/lib/systemd/random-seed
+
+# gnome-kiosk startup script, executable rights not preserved during copying
+chmod +x /root/.local/bin/gnome-kiosk-script
