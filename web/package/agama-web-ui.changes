@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Mar 23 02:13:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Stop parsing errors from SCC at frontend side and simply render
+  them as returned by the backend (gh#agama-project/agama#2193).
+
+-------------------------------------------------------------------
 Thu Mar 20 20:58:44 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Stop displaying the hostname alert once the system is registered
