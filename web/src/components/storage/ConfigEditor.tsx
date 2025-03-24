@@ -21,15 +21,23 @@
  */
 
 import React from "react";
+import { _ } from "~/i18n";
 import { useDevices } from "~/queries/storage";
 import { useConfigModel } from "~/queries/storage/config-model";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
-import { List, ListItem } from "@patternfly/react-core";
+import { List, ListItem, EmptyState } from "@patternfly/react-core";
 
 export default function ConfigEditor() {
   const model = useConfigModel({ suspense: true });
   const devices = useDevices("system", { suspense: true });
+
+  const drives = model.drives || [];
+  const volumeGroups = model.volumeGroups || [];
+
+  if (!drives.length && !volumeGroups.length) {
+    return <EmptyState titleText={_("Select a device for installing the system")} status="info" />;
+  }
 
   return (
     <List isPlain>
