@@ -23,8 +23,10 @@
 import { apiModel } from "~/api/storage/types";
 import { copyApiModel } from "~/helpers/storage";
 import { deleteIfUnused } from "~/helpers/storage/drive";
+import { buildVolumeGroup } from "~/helpers/storage/build-api-model";
+import { data } from "~/types/storage";
 
-function toLogicalVolume(partition: apiModel.Partition) {
+function toLogicalVolume(partition: apiModel.Partition): apiModel.LogicalVolume {
   return { ...partition };
 }
 
@@ -40,17 +42,16 @@ function movePartitions(drive: apiModel.Drive, volumeGroup: apiModel.VolumeGroup
 
 function addVolumeGroup(
   apiModel: apiModel.Config,
-  vgName: string,
-  targetDevices: string[],
+  data: data.VolumeGroup,
   moveContent: boolean,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
-  const volumeGroup = { vgName, targetDevices };
+  const volumeGroup = buildVolumeGroup(data);
 
   if (moveContent) {
     (apiModel.drives || [])
-      .filter((d) => targetDevices.includes(d.name))
+      .filter((d) => data.targetDevices.includes(d.name))
       .forEach((d) => movePartitions(d, volumeGroup));
   }
 
@@ -62,17 +63,16 @@ function addVolumeGroup(
 
 function editVolumeGroup(
   apiModel: apiModel.Config,
-  oldVgName: string,
   vgName: string,
-  targetDevices: string[],
+  data: data.VolumeGroup,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
-  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === oldVgName);
+  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
   if (index === -1) return apiModel;
 
   const oldVolumeGroup = apiModel.volumeGroups[index];
-  const newVolumeGroup = { ...oldVolumeGroup, vgName, targetDevices };
+  const newVolumeGroup = { ...oldVolumeGroup, ...buildVolumeGroup(data) };
 
   apiModel.volumeGroups.splice(index, 1, newVolumeGroup);
   (oldVolumeGroup.targetDevices || []).forEach((d) => {

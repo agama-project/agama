@@ -23,7 +23,7 @@
 import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
 import { addVolumeGroup, editVolumeGroup, deleteVolumeGroup } from "~/helpers/storage/volume-group";
 import { QueryHookOptions } from "~/types/queries";
-import { model } from "~/types/storage";
+import { model, data } from "~/types/storage";
 import { useModel } from "~/hooks/storage/model";
 
 function useVolumeGroup(vgName: string, options?: QueryHookOptions): model.VolumeGroup | null {
@@ -32,23 +32,23 @@ function useVolumeGroup(vgName: string, options?: QueryHookOptions): model.Volum
   return volumeGroup || null;
 }
 
-type AddVolumeGroupFn = (vgName: string, targetDevices: string[], moveContent: boolean) => void;
+type AddVolumeGroupFn = (data: data.VolumeGroup, moveContent: boolean) => void;
 
 function useAddVolumeGroup(options?: QueryHookOptions): AddVolumeGroupFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (vgName: string, targetDevices: string[], moveContent: boolean) => {
-    updateApiModel(addVolumeGroup(apiModel, vgName, targetDevices, moveContent));
+  return (data: data.VolumeGroup, moveContent: boolean) => {
+    updateApiModel(addVolumeGroup(apiModel, data, moveContent));
   };
 }
 
-type EditVolumeGroupFn = (odlVgName: string, VgName: string, targetDevices: string[]) => void;
+type EditVolumeGroupFn = (vgName: string, data: data.VolumeGroup) => void;
 
 function useEditVolumeGroup(options?: QueryHookOptions): EditVolumeGroupFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (oldVgName: string, vgName: string, targetDevices: string[]) => {
-    updateApiModel(editVolumeGroup(apiModel, oldVgName, vgName, targetDevices));
+  return (vgName: string, data: data.VolumeGroup) => {
+    updateApiModel(editVolumeGroup(apiModel, vgName, data));
   };
 }
 

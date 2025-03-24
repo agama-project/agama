@@ -21,28 +21,14 @@
  */
 
 /**
- * Model types.
+ * Data types.
  *
- * Types that extend the apiModel by adding calculated properties and methods.
+ * Types that represent the data used for managing (add, edit) config devices. These types are
+ * typically used by forms and mutation hooks.
  */
 
 import { apiModel } from "~/api/storage/types";
 
-type Model = {
-  drives: Drive[];
-  volumeGroups: VolumeGroup[];
-};
+type VolumeGroup = Partial<Omit<apiModel.VolumeGroup, "logicalVolumes">>;
 
-interface Drive extends apiModel.Drive {
-  isUsed: boolean;
-  getVolumeGroups: () => VolumeGroup[];
-}
-
-interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
-  getTargetDevices: () => Drive[];
-  logicalVolumes: LogicalVolume[];
-}
-
-type LogicalVolume = apiModel.LogicalVolume;
-
-export type { Model, Drive, VolumeGroup, LogicalVolume };
+export type { VolumeGroup };
