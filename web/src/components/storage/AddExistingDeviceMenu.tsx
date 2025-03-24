@@ -41,6 +41,28 @@ import { useAvailableDevices } from "~/queries/storage";
 import { useConfigModel, useModel } from "~/queries/storage/config-model";
 import { deviceLabel } from "~/components/storage/utils";
 
+const Header = ({ drivesCount }) => {
+  const desc = sprintf(
+    n_(
+      "Extends the installation beyond the currently selected disk",
+      "Extends the installation beyond the current %d disks",
+      drivesCount,
+    ),
+    drivesCount,
+  );
+
+  return (
+    <MenuHeader
+      title={n_(
+        "Select another disk to define partitions",
+        "Select a disk to define partitions",
+        drivesCount,
+      )}
+      description={drivesCount ? desc : null}
+    />
+  );
+};
+
 export default function AddExistingDeviceMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -49,22 +71,12 @@ export default function AddExistingDeviceMenu() {
   const modelHook = useModel();
 
   const drivesNames = model.drives.map((d) => d.name);
+  const drivesCount = drivesNames.length;
   const devices = allDevices.filter((d) => !drivesNames.includes(d.name));
 
-  const Header = ({ drives }) => {
-    const desc = sprintf(
-      n_(
-        "Extends the installation beyond the currently selected disk",
-        "Extends the installation beyond the current %d disks",
-        drives.length,
-      ),
-      drives.length,
-    );
+  const isDisabled = !devices.length;
 
-    return <MenuHeader title={_("Select another disk to define partitions")} description={desc} />;
-  };
-
-  if (!devices.length) return null;
+  const enabledToggleText = drivesCount ? _("Use additional disk") : _("Use a disk");
 
   return (
     <Dropdown
@@ -73,19 +85,14 @@ export default function AddExistingDeviceMenu() {
       onSelect={toggle}
       onActionClick={toggle}
       toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          ref={toggleRef}
-          onClick={toggle}
-          aria-label={_("Use additional disk toggle")}
-          isExpanded={isOpen}
-        >
-          {_("Use additional disk")}
+        <MenuToggle ref={toggleRef} onClick={toggle} isExpanded={isOpen} isDisabled={isDisabled}>
+          {isDisabled ? _("All disks configured") : enabledToggleText}
         </MenuToggle>
       )}
     >
       <DropdownList>
         {/* @ts-expect-error See https://github.com/patternfly/patternfly/issues/7327 */}
-        <DropdownGroup label={<Header drives={model.drives} />}>
+        <DropdownGroup label={<Header drivesCount={drivesCount} />}>
           <Divider />
           {devices.map((device) => (
             <DropdownItem
