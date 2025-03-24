@@ -160,7 +160,7 @@ describe("LvmPage", () => {
       await user.clear(name);
       await user.type(name, "root-vg");
       await user.click(sdaCheckbox);
-      // By default move move mount points should be checked
+      // By default move mount points should be checked
       expect(moveMountPointsCheckbox).toBeChecked();
       await user.click(moveMountPointsCheckbox);
       expect(moveMountPointsCheckbox).not.toBeChecked();
