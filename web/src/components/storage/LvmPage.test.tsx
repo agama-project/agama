@@ -25,7 +25,6 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import { model, StorageDevice } from "~/types/storage";
 import { gib } from "./utils";
-import { Drive } from "~/types/storage/model";
 import LvmPage from "./LvmPage";
 
 const sda1: StorageDevice = {
@@ -67,7 +66,7 @@ const sda: StorageDevice = {
   description: "",
 };
 
-const mockSdaDrive: Drive = {
+const mockSdaDrive: model.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: [
@@ -161,7 +160,7 @@ describe("LvmPage", () => {
       await user.clear(name);
       await user.type(name, "root-vg");
       await user.click(sdaCheckbox);
-      // By default move move mount points should be checked
+      // By default move mount points should be checked
       expect(moveMountPointsCheckbox).toBeChecked();
       await user.click(moveMountPointsCheckbox);
       expect(moveMountPointsCheckbox).not.toBeChecked();
