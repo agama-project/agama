@@ -43,10 +43,10 @@ export default function HostnamePage() {
   const { selectedProduct: product } = useProduct();
   const { transient: transientHostname, static: staticHostname } = useHostname();
   const { mutateAsync: updateHostname } = useHostnameMutation();
-  const hasStaticHostname = !isEmpty(staticHostname);
+  const hasTransientHostname = isEmpty(staticHostname);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [settingHostname, setSettingHostname] = useState(hasStaticHostname);
+  const [settingHostname, setSettingHostname] = useState(!hasTransientHostname);
   const [hostname, setHostname] = useState(staticHostname);
 
   const toggleSettingHostname = () => setSettingHostname(!settingHostname);
@@ -69,14 +69,10 @@ export default function HostnamePage() {
       );
   };
 
-  // TRANSLATORS: a title for an alert that displays both the mode and the value
-  // of the current hostname. %1$s will be replaced with the mode (e.g.,
-  // "static" or "transient"), and %2$s will hold the current hostname value.
-  const hostnameAlertTitle = sprintf(
-    _("Using %1$s hostname: %2$s"),
-    hasStaticHostname ? _("static") : _("transient"),
-    hasStaticHostname ? staticHostname : transientHostname,
-  );
+  // TRANSLATORS: The title for a notification shown when the static hostname
+  // has not been set. "transient" refers to the hostname mode, and %s will be
+  // replaced with the current hostname value.
+  const transientHostnameAlertTitle = sprintf(_("Using transient hostname: %s"), transientHostname);
 
   return (
     <Page>
@@ -93,11 +89,12 @@ export default function HostnamePage() {
           </Alert>
         )}
 
-        <Alert variant="custom" title={hostnameAlertTitle}>
-          {hasStaticHostname
-            ? _("This hostname is permanent and will not change unless manually updated.")
-            : _("This hostname is dynamic and may change after a reboot or network update.")}
-        </Alert>
+        {hasTransientHostname && (
+          <Alert variant="custom" title={transientHostnameAlertTitle}>
+            {_("This hostname is dynamic and may change after a reboot or network update.")}
+          </Alert>
+        )}
+
         <Form id="hostnameForm" onSubmit={submit}>
           {success && <Alert variant="success" isInline title={success} />}
           {error && <Alert variant="warning" isInline title={error} />}
@@ -106,7 +103,7 @@ export default function HostnamePage() {
               id="hostname"
               label={_("Use static hostname")}
               description={_(
-                "Allows setting a permanent hostname that won’t change with network updates.",
+                "For setting a permanent hostname that won’t change with network updates.",
               )}
               isChecked={settingHostname}
               onChange={toggleSettingHostname}
