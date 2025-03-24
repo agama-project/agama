@@ -63,7 +63,7 @@ describe("UnsupportedAutoYaST", () => {
 
   describe("when there are no unsupported (but planned) elements", () => {
     beforeEach(() => {
-      mockQuestion = { ...question, data: {} };
+      mockQuestion = { ...question, data: { planned: "" } };
     });
 
     it('does not render the "Not implemented yet" list', () => {
@@ -75,7 +75,7 @@ describe("UnsupportedAutoYaST", () => {
 
   describe("when there are no unsupported (but planned) elements", () => {
     beforeEach(() => {
-      mockQuestion = { ...question, data: {} };
+      mockQuestion = { ...question, data: { unsupported: "" } };
     });
 
     it('does not render the "Not supported" list', () => {
