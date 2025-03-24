@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon Mar 24 10:57:22 UTC 2025 - Lukas Ocilka <locilka@suse.com>
 
-- Fixed DUD issues
+- Fixed DUD issues (gh#agama-project/agama#2199):
   - Enabling the agama-dud service in the live media
   - Making the agama-dud script executable
   - Disabling dmesg on the console while DUD runs
