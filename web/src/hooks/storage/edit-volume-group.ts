@@ -27,7 +27,7 @@ import { QueryHookOptions } from "~/types/queries";
 
 export type EditVolumeGroupFn = (
   odlVgName: string,
-  VgName: string,
+  vgName: string,
   targetDevices: string[],
 ) => void;
 
