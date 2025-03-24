@@ -183,10 +183,10 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 
 /// True if use of the remote API is allowed (yes by default when the API is secure, the user is
 /// asked if the API is insecure - e.g. when it uses self-signed certificate)
-async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<bool, ServiceError> {
+async fn allowed_insecure_api(use_insecure: bool, api_url: &str) -> Result<bool, ServiceError> {
     // fake client used for remote site detection
     let mut ping_client = BaseHTTPClient::default();
-    ping_client.base_url = api_url;
+    ping_client.base_url = api_url.to_string();
 
     // decide whether access to remote site has to be insecure (self-signed certificate or not)
     match ping_client.get::<HashMap<String, String>>("/ping").await {
@@ -223,10 +223,9 @@ async fn build_http_client(
     authenticated: bool,
 ) -> Result<BaseHTTPClient, ServiceError> {
     let mut client = BaseHTTPClient::default();
-
     client.base_url = api_url.to_string();
 
-    if allowed_insecure_api(insecure, api_url.to_string()).await? {
+    if allowed_insecure_api(insecure, &client.base_url).await? {
         client = client.insecure();
     }
 
