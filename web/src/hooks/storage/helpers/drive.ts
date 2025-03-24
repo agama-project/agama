@@ -21,22 +21,26 @@
  */
 
 import { apiModel } from "~/api/storage/types";
+import { model } from "~/types/storage";
+import copyApiModel from "~/hooks/storage/helpers/copy-api-model";
+import buildModel from "~/hooks/storage/helpers/build-model";
 
-type Model = {
-  drives: Drive[];
-  volumeGroups: VolumeGroup[];
-};
-
-interface Drive extends apiModel.Drive {
-  isUsed: boolean;
-  getVolumeGroups: () => VolumeGroup[];
+function buildDrive(apiModel: apiModel.Config, name: string): model.Drive | undefined {
+  const model = buildModel(apiModel);
+  return model.drives.find((d) => d.name === name);
 }
 
-interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
-  getTargetDevices: () => Drive[];
-  logicalVolumes: LogicalVolume[];
+function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+
+  const index = (apiModel.drives || []).findIndex((d) => d.name === name);
+  if (index === -1) return apiModel;
+
+  const drive = buildDrive(apiModel, name);
+  if (!drive || drive.isUsed) return apiModel;
+
+  apiModel.drives.splice(index, 1);
+  return apiModel;
 }
 
-type LogicalVolume = apiModel.LogicalVolume;
-
-export type { Model, Drive, VolumeGroup, LogicalVolume };
+export { deleteIfUnused };

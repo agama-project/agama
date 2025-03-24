@@ -21,8 +21,10 @@
  */
 
 import React from "react";
+import { useNavigate, generatePath } from "react-router-dom";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { STORAGE as PATHS } from "~/routes/paths";
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 import { contentDescription } from "~/components/storage/utils/volume-group";
@@ -53,10 +55,18 @@ const RemoveVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const EditVgOption = () => {
+const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+  const navigate = useNavigate();
+
   return (
-    <MenuItem description={_("Modify settings and physical volumes")}>
-      {_("Edit volume group")}
+    <MenuItem
+      key="edit-volume-group"
+      itemId="edit-volume-group"
+      description={_("Modify settings and physical volumes")}
+      role="menuitem"
+      onClick={() => navigate(generatePath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
+    >
+      <span>{_("Edit volume group")}</span>
     </MenuItem>
   );
 };
@@ -65,7 +75,7 @@ const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
     <DeviceMenu title={<b aria-hidden>{vg.vgName}</b>}>
       <MenuList>
-        <EditVgOption />
+        <EditVgOption vg={vg} />
         <RemoveVgOption vg={vg} />
       </MenuList>
     </DeviceMenu>

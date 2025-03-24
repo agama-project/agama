@@ -20,23 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage/types";
+import useApiModel from "~/hooks/storage/api-model";
+import useUpdateApiModel from "~/hooks/storage/update-api-model";
+import { editVolumeGroup } from "~/hooks/storage/helpers/volume-group";
+import { QueryHookOptions } from "~/types/queries";
 
-type Model = {
-  drives: Drive[];
-  volumeGroups: VolumeGroup[];
-};
+export type EditVolumeGroupFn = (
+  odlVgName: string,
+  VgName: string,
+  targetDevices: string[],
+) => void;
 
-interface Drive extends apiModel.Drive {
-  isUsed: boolean;
-  getVolumeGroups: () => VolumeGroup[];
+export default function useEditVolumeGroup(options?: QueryHookOptions): EditVolumeGroupFn {
+  const apiModel = useApiModel(options);
+  const updateApiModel = useUpdateApiModel();
+  return (oldVgName: string, vgName: string, targetDevices: string[]) => {
+    updateApiModel(editVolumeGroup(apiModel, oldVgName, vgName, targetDevices));
+  };
 }
-
-interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
-  getTargetDevices: () => Drive[];
-  logicalVolumes: LogicalVolume[];
-}
-
-type LogicalVolume = apiModel.LogicalVolume;
-
-export type { Model, Drive, VolumeGroup, LogicalVolume };

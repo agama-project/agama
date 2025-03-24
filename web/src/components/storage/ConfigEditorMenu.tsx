@@ -64,7 +64,7 @@ export default function ConfigEditorMenu() {
       <DropdownList>
         <DropdownItem
           key="lvm-link"
-          onClick={() => navigate(PATHS.lvm.create)}
+          onClick={() => navigate(PATHS.volumeGroup.add)}
           description={_("Extend the installation using LVM")}
         >
           {_("Add LVM volume group")}
@@ -72,7 +72,7 @@ export default function ConfigEditorMenu() {
         <Divider />
         <DropdownItem
           key="boot-link"
-          onClick={() => navigate(PATHS.bootDevice)}
+          onClick={() => navigate(PATHS.editBootDevice)}
           description={_("Select the disk to configure partitions for booting")}
         >
           {_("Change boot options")}

@@ -22,21 +22,6 @@
 
 import { apiModel } from "~/api/storage/types";
 
-type Model = {
-  drives: Drive[];
-  volumeGroups: VolumeGroup[];
-};
-
-interface Drive extends apiModel.Drive {
-  isUsed: boolean;
-  getVolumeGroups: () => VolumeGroup[];
+export default function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
+  return JSON.parse(JSON.stringify(apiModel));
 }
-
-interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
-  getTargetDevices: () => Drive[];
-  logicalVolumes: LogicalVolume[];
-}
-
-type LogicalVolume = apiModel.LogicalVolume;
-
-export type { Model, Drive, VolumeGroup, LogicalVolume };
