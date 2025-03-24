@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Mar 22 22:58:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not try to connect to the HTTP server when it is not needed
+  (gh#agama-project/agama#2192).
+
+-------------------------------------------------------------------
 Fri Mar 21 16:37:32 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Add extensions from the registration server (automatic
