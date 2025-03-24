@@ -18,7 +18,9 @@ Before=live-password-systemd.service
 [Service]
 Type=oneshot
 Environment=TERM=linux
+ExecStartPre=dmesg --console-off
 ExecStart=agama-dud
+ExecStartPost=dmesg --console-on
 TTYReset=yes
 TTYVHangup=yes
 StandardInput=tty
