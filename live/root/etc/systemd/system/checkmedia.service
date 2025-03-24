@@ -2,7 +2,6 @@
 Description=Installation medium integrity check
 
 # before X11 because it switches the terminal to VT7
-Before=x11-autologin.service
 Before=agama.service
 
 # copied from YaST2-Second-Stage.service
