@@ -128,20 +128,15 @@ jest.mock("~/queries/storage", () => ({
 jest.mock("~/hooks/storage/model", () => ({
   ...jest.requireActual("~/hooks/storage/model"),
   __esModule: true,
+  useModel: () => mockUseModel,
+}));
+
+jest.mock("~/hooks/storage/volume-group", () => ({
+  ...jest.requireActual("~/hooks/storage/volume-group"),
+  __esModule: true,
   useVolumeGroup: (id: string) => (id ? mockRootVolumeGroup : null),
-  default: () => mockUseModel,
-}));
-
-jest.mock("~/hooks/storage/add-volume-group", () => ({
-  ...jest.requireActual("~/hooks/storage/add-volume-group"),
-  __esModule: true,
-  default: () => mockAddVolumeGroup,
-}));
-
-jest.mock("~/hooks/storage/edit-volume-group", () => ({
-  ...jest.requireActual("~/hooks/storage/edit-volume-group"),
-  __esModule: true,
-  default: () => mockEditVolumeGroup,
+  useAddVolumeGroup: () => mockAddVolumeGroup,
+  useEditVolumeGroup: () => mockEditVolumeGroup,
 }));
 
 describe("LvmPage", () => {

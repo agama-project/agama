@@ -89,7 +89,7 @@ function buildVolumeGroup(
   };
 }
 
-export default function buildModel(apiModel: apiModel.Config): model.Model {
+function buildModel(apiModel: apiModel.Config): model.Model {
   const model: model.Model = {
     drives: [],
     volumeGroups: [],
@@ -108,3 +108,5 @@ export default function buildModel(apiModel: apiModel.Config): model.Model {
   model.volumeGroups = buildVolumeGroups();
   return model;
 }
+
+export { buildModel };

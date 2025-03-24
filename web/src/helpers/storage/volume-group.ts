@@ -21,8 +21,8 @@
  */
 
 import { apiModel } from "~/api/storage/types";
-import copyApiModel from "~/hooks/storage/helpers/copy-api-model";
-import { deleteIfUnused } from "~/hooks/storage/helpers/drive";
+import { copyApiModel } from "~/helpers/storage";
+import { deleteIfUnused } from "~/helpers/storage/drive";
 
 function toLogicalVolume(partition: apiModel.Partition) {
   return { ...partition };

@@ -22,6 +22,8 @@
 
 import { apiModel } from "~/api/storage/types";
 
-export default function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
+function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(apiModel));
 }
+
+export { copyApiModel };

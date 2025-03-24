@@ -37,9 +37,12 @@ import {
 import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/queries/storage";
 import { StorageDevice, model } from "~/types/storage";
-import useModel, { useVolumeGroup } from "~/hooks/storage/model";
-import useAddVolumeGroup from "~/hooks/storage/add-volume-group";
-import useEditVolumeGroup from "~/hooks/storage/edit-volume-group";
+import { useModel } from "~/hooks/storage/model";
+import {
+  useVolumeGroup,
+  useAddVolumeGroup,
+  useEditVolumeGroup,
+} from "~/hooks/storage/volume-group";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
 import { STORAGE as PATHS } from "~/routes/paths";

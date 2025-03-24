@@ -30,7 +30,7 @@ import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive, useModel } from "~/queries/storage/config-model";
-import { useDrive as useDriveModel } from "~/hooks/storage/model";
+import { useDrive as useDriveModel } from "~/hooks/storage/drive";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { contentDescription } from "~/components/storage/utils/device";
 import DeviceMenu from "~/components/storage/DeviceMenu";

@@ -20,14 +20,31 @@
  * find current contact information at www.suse.com.
  */
 
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { configModelQuery } from "~/queries/storage/config-model";
+import { useQuery, useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiModel } from "~/api/storage/types";
+import { configModelQuery } from "~/queries/storage/config-model";
 import { QueryHookOptions } from "~/types/queries";
+import { setConfigModel } from "~/api/storage";
 
-export default function useApiModel(options?: QueryHookOptions): apiModel.Config | null {
+function useApiModel(options?: QueryHookOptions): apiModel.Config | null {
   const query = configModelQuery;
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data || null;
 }
+
+type UpdateApiModelFn = (apiModel: apiModel.Config) => void;
+
+function useUpdateApiModel(): UpdateApiModelFn {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (apiModel: apiModel.Config) => setConfigModel(apiModel),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
+
+  const { mutate } = useMutation(query);
+  return mutate;
+}
+
+export { useApiModel, useUpdateApiModel };
+export type { UpdateApiModelFn };
