@@ -47,7 +47,6 @@ software:
     - enhanced_base # only pattern that is shared among all roles on Leap
   optional_patterns: null # no optional pattern shared
   user_patterns:
-    - basic_desktop
     - gnome
     - kde
     - multimedia
