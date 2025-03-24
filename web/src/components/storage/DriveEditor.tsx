@@ -25,11 +25,11 @@ import { useNavigate, generatePath } from "react-router-dom";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
-import { useAvailableDevices, useVolume } from "~/queries/storage";
+import { useAvailableDevices } from "~/queries/storage";
 import { configModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useDrive } from "~/queries/storage/config-model";
+import { useDrive, useModel } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { contentDescription } from "~/components/storage/utils/device";
@@ -380,14 +380,20 @@ const SearchSelector = ({ drive, selected, onChange }) => {
 
 const RemoveDriveOption = ({ drive }) => {
   const driveModel = useDrive(drive.name);
+  const { hasAdditionalDrives } = useModel();
 
   if (!driveModel) return;
 
   const { isExplicitBoot, delete: deleteDrive } = driveModel;
 
+  // When no additional drives has been added, the "Do not use" button can be confusing so it is
+  // omitted for all drives.
+  if (!hasAdditionalDrives) return;
+
+  // FIXME: in these two cases the button should likely be present, but disabled and with an
+  // explanation of why those particular drive definitions cannot be removed.
   if (isExplicitBoot) return;
   if (driveUtils.hasPv(drive)) return;
-  if (driveUtils.hasRoot(drive)) return;
 
   return (
     <>
@@ -572,8 +578,6 @@ const PartitionMenuItem = ({ driveName, mountPath }) => {
   const navigate = useNavigate();
   const drive = useDrive(driveName);
   const partition = drive.getPartition(mountPath);
-  const volume = useVolume(mountPath);
-  const isRequired = volume.outline?.required || false;
   const description = partition ? partitionUtils.typeWithSize(partition) : null;
 
   return (
@@ -597,15 +601,13 @@ const PartitionMenuItem = ({ driveName, mountPath }) => {
               )
             }
           />
-          {!isRequired && (
-            <MenuItemAction
-              style={{ alignSelf: "center" }}
-              icon={<Icon name="delete" aria-label={"Delete"} />}
-              actionId={`delete-${mountPath}`}
-              aria-label={`Delete ${mountPath}`}
-              onClick={() => drive.deletePartition(mountPath)}
-            />
-          )}
+          <MenuItemAction
+            style={{ alignSelf: "center" }}
+            icon={<Icon name="delete" aria-label={"Delete"} />}
+            actionId={`delete-${mountPath}`}
+            aria-label={`Delete ${mountPath}`}
+            onClick={() => drive.deletePartition(mountPath)}
+          />
         </>
       }
     >

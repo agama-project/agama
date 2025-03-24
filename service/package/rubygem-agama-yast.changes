@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Fri Mar 21 16:36:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add extensions from the registration server (automatic
+  installation only) (jsc#AGM-100)
+
+-------------------------------------------------------------------
+Thu Mar 20 08:41:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Symlink the /mnt/etc/resolv.conf to the NetworkManager running
+  one in order to have DNS resolution in the chroot post scripts
+  (bsc#1235617, gh#agama-project/agama#2179).
+
+-------------------------------------------------------------------
 Fri Mar 14 12:34:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Import the packages list from an AutoYaST profile

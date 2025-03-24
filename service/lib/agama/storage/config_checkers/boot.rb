@@ -60,7 +60,8 @@ module Agama
           # solver logic changes.
           error(
             _("The boot device cannot be automatically selected because there is no root (/) " \
-              "file system")
+              "file system"),
+            kind: :no_root
           )
         end
 
@@ -69,7 +70,10 @@ module Agama
           return unless configure? && device_alias && !valid_alias?
 
           # TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
-          error(format(_("There is no boot device with alias '%s'"), device_alias))
+          error(
+            format(_("There is no boot device with alias '%s'"), device_alias),
+            kind: :no_such_alias
+          )
         end
 
         # @return [Boolean]
