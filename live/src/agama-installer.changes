@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Mar 24 10:57:22 UTC 2025 - Lukas Ocilka <locilka@suse.com>
+
+- Fixed DUD issues
+  - Enabling the agama-dud service in the live media
+  - Making the agama-dud script executable
+  - Disabling dmesg on the console while DUD runs
+
+-------------------------------------------------------------------
 Fri Mar 21 09:58:52 AM UTC 2025 - Lukas Ocilka <locilka@suse.com>
 
 - Added the initial functionality for inst.dud
