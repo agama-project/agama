@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 24 10:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly handle empty lists of unsupported AutoYaST elements
+  (gh#agama-project/agama#2196).
+
+-------------------------------------------------------------------
 Sun Mar 23 02:13:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Stop parsing errors from SCC at frontend side and simply render
