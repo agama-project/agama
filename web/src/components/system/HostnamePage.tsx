@@ -58,7 +58,7 @@ export default function HostnamePage() {
     setSuccess(null);
 
     if (settingHostname && isEmpty(hostname)) {
-      setError(_("Please provide a hostname"));
+      setError(_("Enter a hostname."));
       return;
     }
 
@@ -97,7 +97,11 @@ export default function HostnamePage() {
 
         <Form id="hostnameForm" onSubmit={submit}>
           {success && <Alert variant="success" isInline title={success} />}
-          {error && <Alert variant="warning" isInline title={error} />}
+          {error && (
+            <Alert variant="warning" isInline title={_("Check the following before continuing")}>
+              {error}
+            </Alert>
+          )}
           <FormGroup fieldId="settingHostname">
             <Checkbox
               id="hostname"

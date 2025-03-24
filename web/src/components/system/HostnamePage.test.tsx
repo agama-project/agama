@@ -148,7 +148,7 @@ describe("HostnamePage", () => {
 
       expect(mockHostnameMutation).not.toHaveBeenCalled();
       screen.getByText("Warning alert:");
-      screen.getByText("Please provide a hostname");
+      screen.getByText("Enter a hostname.");
     });
 
     it("renders an error if the update request fails", async () => {
