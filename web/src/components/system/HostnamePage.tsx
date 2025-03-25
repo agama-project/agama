@@ -91,7 +91,9 @@ export default function HostnamePage() {
 
         {hasTransientHostname && (
           <Alert variant="custom" title={transientHostnameAlertTitle}>
-            {_("This hostname is dynamic and may change after a reboot or network update.")}
+            {_(
+              "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.",
+            )}
           </Alert>
         )}
 
