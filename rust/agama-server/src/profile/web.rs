@@ -31,7 +31,7 @@ use agama_lib::{
     },
 };
 use axum::{
-    extract::{Query, State},
+    extract::Query,
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::post,
@@ -40,11 +40,6 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 use thiserror::Error;
-
-#[derive(Clone, Default)]
-struct ProfileState {
-    //profile: Arc<RwLock<ProfileRepository>>,
-}
 
 #[derive(Error, Debug)]
 pub enum ProfileServiceError {
@@ -71,13 +66,11 @@ impl IntoResponse for ProfileServiceError {
 
 /// Sets up and returns the axum service for the auto-installation profile.
 pub async fn profile_service() -> Result<Router, ServiceError> {
-    let state = ProfileState::default();
     let router = Router::new()
         .route("/evaluate", post(evaluate))
         .route("/validate", post(validate))
         .route("/autoyast", post(autoyast))
-        .route("/execute_script", post(execute_script))
-        .with_state(state);
+        .route("/execute_script", post(execute_script));
     Ok(router)
 }
 
@@ -136,7 +129,6 @@ impl ProfileQuery {
     )
 )]
 async fn validate(
-    _state: State<ProfileState>,
     query: Query<ProfileQuery>,
     profile: String, // json_or_empty
 ) -> Result<Json<ValidationOutcome>, ProfileServiceError> {
@@ -165,7 +157,6 @@ async fn validate(
     )
 )]
 async fn evaluate(
-    _state: State<ProfileState>,
     query: Query<ProfileQuery>,
     profile: String, // jsonnet_or_empty
 ) -> Result<String, ProfileServiceError> {
@@ -195,7 +186,6 @@ async fn evaluate(
     )
 )]
 async fn autoyast(
-    _state: State<ProfileState>,
     query: Query<ProfileQuery>,
     profile: String, // xml_or_erb_or_empty
 ) -> Result<String, ProfileServiceError> {
@@ -236,7 +226,6 @@ async fn autoyast(
     )
 )]
 async fn execute_script(
-    _state: State<ProfileState>,
     query: Query<ProfileQuery>,
     script: String, // script_or_empty
 ) -> Result<(), ProfileServiceError> {
