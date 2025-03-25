@@ -73,7 +73,8 @@ software:
       archs: ppc
     - url: https://download.opensuse.org/tumbleweed/repo/non-oss/
       archs: x86_64
-    # aarch64 does not have non-oss ports. Keep eye if it change
+    - url: https://download.opensuse.org/ports/aarch64/tumbleweed/repo/non-oss/
+      archs: aarch64
     - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/non-oss/
       archs: s390
     - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/non-oss/
