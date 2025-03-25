@@ -91,7 +91,6 @@ impl CliInput {
         if url_or_path == "-" {
             Self::Stdin
         } else {
-            // TODO test "http:" in Estonian
             // unwrap OK: known good regex will compile
             let url_like = regex::Regex::new("^[A-Za-z]+:").unwrap();
             if url_like.is_match(&url_or_path) {
@@ -157,7 +156,6 @@ async fn validate_client(
 ) -> anyhow::Result<ValidationResult> {
     let mut url = Url::parse(&client.base_url)?;
     // unwrap OK: only fails for cannot_be_a_base URLs like data: and mailto:
-    // TODO: check for it when parsing user supplied --api
     url.path_segments_mut()
         .unwrap()
         .push("profile")
@@ -195,7 +193,6 @@ async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
 async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
     let mut url = Url::parse(&client.base_url)?;
     // unwrap OK: only fails for cannot_be_a_base URLs like data: and mailto:
-    // TODO: check for it when parsing user supplied --api
     url.path_segments_mut()
         .unwrap()
         .push("profile")

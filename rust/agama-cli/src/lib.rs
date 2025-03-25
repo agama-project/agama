@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::manager::FinishMethod;
-use anyhow::Context;
+use anyhow::{anyhow, Context};
 use clap::{Args, Parser};
 
 mod auth;
@@ -53,6 +53,7 @@ use std::{
     thread::sleep,
     time::Duration,
 };
+use url::Url;
 
 /// Agama's CLI global options
 #[derive(Args)]
@@ -221,6 +222,13 @@ pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // somehow check whether we need to ask user for self-signed certificate acceptance
     let api_url = cli.opts.api.trim_end_matches('/').to_string();
+
+    let parsed = Url::parse(&api_url).context("Parsing API URL")?;
+    if parsed.cannot_be_a_base() {
+        return Err(ServiceError::Anyhow(anyhow!(
+            "Do not try data: or mailto: as the API URL"
+        )));
+    }
 
     let mut client = BaseHTTPClient::default();
 
