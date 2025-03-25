@@ -134,7 +134,6 @@ jest.mock("~/hooks/storage/model", () => ({
 jest.mock("~/hooks/storage/volume-group", () => ({
   ...jest.requireActual("~/hooks/storage/volume-group"),
   __esModule: true,
-  useVolumeGroup: (id: string) => (id ? mockRootVolumeGroup : null),
   useAddVolumeGroup: () => mockAddVolumeGroup,
   useEditVolumeGroup: () => mockEditVolumeGroup,
 }));
@@ -160,7 +159,10 @@ describe("LvmPage", () => {
       await user.click(moveMountPointsCheckbox);
       expect(moveMountPointsCheckbox).not.toBeChecked();
       await user.click(acceptButton);
-      expect(mockAddVolumeGroup).toHaveBeenCalledWith("root-vg", ["/dev/sda"], false);
+      expect(mockAddVolumeGroup).toHaveBeenCalledWith(
+        { vgName: "root-vg", targetDevices: ["/dev/sda"] },
+        false,
+      );
     });
 
     it("allows configuring a new LVM volume group (moving mount points)", async () => {
@@ -175,7 +177,10 @@ describe("LvmPage", () => {
       await user.click(sdaCheckbox);
       expect(moveMountPointsCheckbox).toBeChecked();
       await user.click(acceptButton);
-      expect(mockAddVolumeGroup).toHaveBeenCalledWith("system", ["/dev/sda"], true);
+      expect(mockAddVolumeGroup).toHaveBeenCalledWith(
+        { vgName: "system", targetDevices: ["/dev/sda"] },
+        true,
+      );
     });
 
     it("performs basic validations", async () => {
@@ -296,7 +301,10 @@ describe("LvmPage", () => {
       await user.clear(name);
       await user.type(name, "updatedRootVg");
       await user.click(acceptButton);
-      expect(mockEditVolumeGroup).toHaveBeenCalledWith("fakeRootVg", "updatedRootVg", ["/dev/sda"]);
+      expect(mockEditVolumeGroup).toHaveBeenCalledWith("fakeRootVg", {
+        vgName: "updatedRootVg",
+        targetDevices: ["/dev/sda"],
+      });
     });
   });
 });
