@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 25 11:42:36 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Add gnome pattern to the SLES 16.0 product (gh#agama-project/agama#2204)
+
+-------------------------------------------------------------------
 Tue Mar 25 11:33:11 UTC 2025 - Dominique Leuenberger <dleuenberger@suse.com>
 
 - Enable non-oss repositories for aarch64 (gh#agama-project/agama#2106).

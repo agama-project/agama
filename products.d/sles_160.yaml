@@ -84,6 +84,7 @@ software:
     - lamp_server
     - mail_server
     - printing
+    - gnome
     # displayed only after registering the HA extension
     - ha_sles
   mandatory_packages:
