@@ -26,7 +26,9 @@ use anyhow::Context;
 use agama_lib::utils::Transfer;
 use agama_lib::{
     error::{ProfileError, ServiceError},
-    profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, Url, ValidationResult},
+    profile::{
+        AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, Url, ValidationOutcome,
+    },
 };
 use axum::{
     extract::{Query, State},
@@ -48,7 +50,7 @@ struct ProfileState {
 pub enum ProfileServiceError {
     /*
     #[error("Validation error: {0}")]
-    Validation(#[from] ValidationResult),
+    Validation(#[from] ValidationOutcome),
     */
     #[error("Profile error: {0}")]
     Profile(#[from] ProfileError),
@@ -129,7 +131,7 @@ impl ProfileQuery {
     context_path = "/api/profile",
     params(ProfileQuery),
     responses(
-        (status = 200, description = "Validation result", body = ValidationResult),
+        (status = 200, description = "Validation result", body = ValidationOutcome),
         (status = 400, description = "FIXME some error has happened")
     )
 )]
@@ -137,7 +139,7 @@ async fn validate(
     _state: State<ProfileState>,
     query: Query<ProfileQuery>,
     profile: String, // json_or_empty
-) -> Result<Json<ValidationResult>, ProfileServiceError> {
+) -> Result<Json<ValidationOutcome>, ProfileServiceError> {
     let request_has_body = !profile.is_empty() && profile != "null";
     query.validate(request_has_body)?;
     let profile_string = match query.retrieve_profile()? {

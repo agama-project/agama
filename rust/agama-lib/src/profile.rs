@@ -76,18 +76,18 @@ impl AutoyastProfileImporter {
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
-pub enum ValidationResult {
+pub enum ValidationOutcome {
     Valid,
     NotValid(Vec<String>),
 }
 
-impl std::fmt::Display for ValidationResult {
+impl std::fmt::Display for ValidationOutcome {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ValidationResult::Valid => {
+            ValidationOutcome::Valid => {
                 writeln!(f, "The profile is valid.")
             }
-            ValidationResult::NotValid(errors) => {
+            ValidationOutcome::NotValid(errors) => {
                 writeln!(
                     f,
                     "The profile is not valid. Please, check the following errors:\n",
@@ -104,7 +104,7 @@ impl std::fmt::Display for ValidationResult {
 /// Checks whether an autoinstallation profile is valid
 ///
 /// ```
-/// # use agama_lib::profile::{ProfileValidator, ValidationResult};
+/// # use agama_lib::profile::{ProfileValidator, ValidationOutcome};
 /// # use std::path::Path;
 /// let validator = ProfileValidator::new(
 ///   Path::new("share/profile.schema.json")
@@ -115,11 +115,11 @@ impl std::fmt::Display for ValidationResult {
 ///   { "product": { "name": "Tumbleweed" } }
 /// "#;
 /// let result = validator.validate_str(&wrong_profile).unwrap();
-/// assert!(matches!(ValidationResult::NotValid, result));
+/// assert!(matches!(ValidationOutcome::NotValid, result));
 ///
 /// // or a file
 /// validator.validate_file(Path::new("share/examples/profile.json"));
-/// assert!(matches!(ValidationResult::Valid, result));
+/// assert!(matches!(ValidationOutcome::Valid, result));
 /// ```
 pub struct ProfileValidator {
     schema: JSONSchema,
@@ -154,21 +154,21 @@ impl ProfileValidator {
         Ok(Self { schema })
     }
 
-    pub fn validate_file(&self, profile_path: &Path) -> Result<ValidationResult, ProfileError> {
+    pub fn validate_file(&self, profile_path: &Path) -> Result<ValidationOutcome, ProfileError> {
         let contents = fs::read_to_string(profile_path)?;
         self.validate_str(&contents)
     }
 
-    pub fn validate_str(&self, profile: &str) -> Result<ValidationResult, ProfileError> {
+    pub fn validate_str(&self, profile: &str) -> Result<ValidationOutcome, ProfileError> {
         let contents = serde_json::from_str(profile)?;
         let result = self.schema.validate(&contents);
         if let Err(errors) = result {
             let messages: Vec<String> = errors
                 .map(|e| format!("{}. {}", e, e.instance_path))
                 .collect();
-            return Ok(ValidationResult::NotValid(messages));
+            return Ok(ValidationOutcome::NotValid(messages));
         }
-        Ok(ValidationResult::Valid)
+        Ok(ValidationOutcome::Valid)
     }
 }
 

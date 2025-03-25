@@ -20,8 +20,8 @@
 
 use crate::show_progress;
 use agama_lib::{
-    base_http_client::BaseHTTPClient, install_settings::InstallSettings, profile::ValidationResult,
-    utils::FileFormat, utils::Transfer, Store as SettingsStore,
+    base_http_client::BaseHTTPClient, install_settings::InstallSettings,
+    profile::ValidationOutcome, utils::FileFormat, utils::Transfer, Store as SettingsStore,
 };
 use anyhow::Context;
 use clap::Subcommand;
@@ -153,7 +153,7 @@ impl CliInput {
 async fn validate_client(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
-) -> anyhow::Result<ValidationResult> {
+) -> anyhow::Result<ValidationOutcome> {
     let mut url = Url::parse(&client.base_url)?;
     // unwrap OK: only fails for cannot_be_a_base URLs like data: and mailto:
     url.path_segments_mut()
@@ -179,11 +179,10 @@ async fn validate_client(
 async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
     let validity = validate_client(client, url_or_path).await?;
     match validity {
-        // TODO: ValidationResult is not actually a Result<T>, maybe rename
-        ValidationResult::Valid => {
+        ValidationOutcome::Valid => {
             println!("{} {}", style("\u{2713}").bold().green(), validity);
         }
-        ValidationResult::NotValid(_) => {
+        ValidationOutcome::NotValid(_) => {
             println!("{} {}", style("\u{2717}").bold().red(), validity);
         }
     }
