@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 25 12:11:35 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Support for autoyast manual files deployment with exception
+  of deploying directories and files_script
+  (gh#agama-project/agama#2121)
+
+-------------------------------------------------------------------
 Fri Mar 21 16:36:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Add extensions from the registration server (automatic
