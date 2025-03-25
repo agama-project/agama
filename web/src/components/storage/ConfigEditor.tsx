@@ -22,11 +22,36 @@
 
 import React from "react";
 import { _ } from "~/i18n";
-import { useDevices } from "~/queries/storage";
+import { useDevices, useResetConfigMutation } from "~/queries/storage";
 import { useConfigModel } from "~/queries/storage/config-model";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
-import { Alert, List, ListItem } from "@patternfly/react-core";
+import { Alert, Button, List, ListItem } from "@patternfly/react-core";
+
+const NoDevicesConfiguredAlert = () => {
+  const { mutate: reset } = useResetConfigMutation();
+  const title = _("No devices configured yet");
+  // TRANSLATORS: %s will be replaced by a "resets to default" button
+  const body = _(
+    "Use actions below to set up your devices or click %s to start from scratch with the default configuration.",
+  );
+  const [bodyStart, bodyEnd] = body.split("%s");
+
+  return (
+    <Alert title={title} variant="custom" isInline>
+      {bodyStart}{" "}
+      <Button variant="link" onClick={() => reset()} isInline>
+        <b>
+          {
+            // TRANSLATORS: label for a link
+            _("resets to default")
+          }
+        </b>
+      </Button>{" "}
+      {bodyEnd}
+    </Alert>
+  );
+};
 
 export default function ConfigEditor() {
   const model = useConfigModel({ suspense: true });
@@ -35,11 +60,7 @@ export default function ConfigEditor() {
   const volumeGroups = model.volumeGroups || [];
 
   if (!drives.length && !volumeGroups.length) {
-    return (
-      <Alert title={_("No configuration set")} variant="custom" isInline>
-        {_("Use the actions below to get started.")}
-      </Alert>
-    );
+    return <NoDevicesConfiguredAlert />;
   }
 
   return (
