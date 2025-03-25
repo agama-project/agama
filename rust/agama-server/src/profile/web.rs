@@ -85,7 +85,8 @@ struct ProfileQuery {
 }
 
 impl ProfileQuery {
-    fn validate(&self, request_has_body: bool) -> Result<(), ProfileServiceError> {
+    /// Check that exactly one of url=, path=, request body, has been provided.
+    fn check(&self, request_has_body: bool) -> Result<(), ProfileServiceError> {
         // `^` is called Bitwise Xor but it does work correctly on bools
         if request_has_body ^ self.path.is_some() ^ self.url.is_some() {
             return Ok(());
@@ -133,7 +134,7 @@ async fn validate(
     profile: String, // json_or_empty
 ) -> Result<Json<ValidationOutcome>, ProfileServiceError> {
     let request_has_body = !profile.is_empty() && profile != "null";
-    query.validate(request_has_body)?;
+    query.check(request_has_body)?;
     let profile_string = match query.retrieve_profile()? {
         Some(retrieved) => retrieved,
         None => profile,
@@ -161,7 +162,7 @@ async fn evaluate(
     profile: String, // jsonnet_or_empty
 ) -> Result<String, ProfileServiceError> {
     let request_has_body = !profile.is_empty() && profile != "null";
-    query.validate(request_has_body)?;
+    query.check(request_has_body)?;
     let profile_string = match query.retrieve_profile()? {
         Some(retrieved) => retrieved,
         None => profile,
@@ -190,15 +191,6 @@ async fn autoyast(
     profile: String, // xml_or_erb_or_empty
 ) -> Result<String, ProfileServiceError> {
     let request_has_body = !profile.is_empty() && profile != "null";
-    /*
-    // TODO: full ProfileQuery processing not needed now
-    query.validate(request_has_body)?;
-    let profile_string = match query.retrieve_profile()? {
-        Some(retrieved) => retrieved,
-        None => profile
-    };
-    let importer = AutoyastProfileImporter::read_str(&profile_string)?;
-    */
     if !query.url.is_some() || query.path.is_some() || request_has_body {
         return Err(anyhow::anyhow!(
             "Only url= is expected, no path= or request body. Seen: url {}, path {}, body {}",
@@ -230,7 +222,7 @@ async fn execute_script(
     script: String, // script_or_empty
 ) -> Result<(), ProfileServiceError> {
     let request_has_body = !script.is_empty() && script != "null";
-    query.validate(request_has_body)?;
+    query.check(request_has_body)?;
     let script_string = match query.retrieve_profile()? {
         Some(retrieved) => retrieved,
         None => script,
