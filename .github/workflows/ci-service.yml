@@ -75,7 +75,6 @@ jobs:
     - name: Install required packages
       run: zypper --non-interactive install
         suseconnect-ruby-bindings
-        autoyast2-installation
         yast2
         yast2-bootloader
         yast2-country

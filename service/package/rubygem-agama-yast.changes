@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 25 18:08:11 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Drop autoyast2-installation requirement (SR#367417, gh#agama-project/agama#2208)
+
+-------------------------------------------------------------------
 Tue Mar 25 18:03:57 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - Drop yast2-schema requirement (SR#367433, gh#agama-project/agama#2208)

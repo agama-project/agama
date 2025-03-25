@@ -13,7 +13,6 @@
     Requires:       dbus-1-daemon
     Requires:       suseconnect-ruby-bindings
     # YaST dependencies
-    Requires:       autoyast2-installation
     # ArchFilter
     Requires:       yast2 >= 4.5.20
     Requires:       yast2-bootloader
