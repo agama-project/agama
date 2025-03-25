@@ -164,7 +164,6 @@
         <package name="spice-vdagent"/>
         <package name="libtss2-tcti-device0"/>
         <package name="jq"/>
-        <package name="yast2-schema"/>
         <package name="qrencode"/>
         <package name="qemu-guest-agent" />
         <package name="aaa_base-extras"/>

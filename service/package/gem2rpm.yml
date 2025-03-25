@@ -56,6 +56,5 @@
     Requires:       snapper
     Requires:       udftools
     Requires:       xfsprogs
-    Requires:       yast2-schema
     # lsblk
     Requires:       util-linux-systemd
