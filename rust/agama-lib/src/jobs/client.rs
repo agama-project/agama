@@ -31,7 +31,7 @@ pub struct JobsClient<'a> {
     object_manager_proxy: ObjectManagerProxy<'a>,
 }
 
-impl<'a> JobsClient<'a> {
+impl JobsClient<'_> {
     pub async fn new(
         connection: Connection,
         destination: &'static str,

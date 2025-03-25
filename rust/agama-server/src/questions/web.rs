@@ -58,7 +58,7 @@ struct QuestionsClient<'a> {
     with_password_interface: OwnedInterfaceName,
 }
 
-impl<'a> QuestionsClient<'a> {
+impl QuestionsClient<'_> {
     pub async fn new(dbus: zbus::Connection) -> Result<Self, zbus::Error> {
         let question_path =
             OwnedObjectPath::from(ObjectPath::try_from("/org/opensuse/Agama1/Questions")?);

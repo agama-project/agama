@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 25 12:12:50 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Support for manual files deployment in unattended mode
+  (gh#agama-project/agama#2121)
+
+-------------------------------------------------------------------
 Sat Mar 22 22:58:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not try to connect to the HTTP server when it is not needed

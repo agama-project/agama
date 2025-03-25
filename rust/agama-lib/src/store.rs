@@ -24,6 +24,7 @@
 use crate::base_http_client::BaseHTTPClient;
 use crate::bootloader::store::BootloaderStore;
 use crate::error::ServiceError;
+use crate::files::store::FilesStore;
 use crate::hostname::store::HostnameStore;
 use crate::install_settings::InstallSettings;
 use crate::manager::{InstallationPhase, ManagerHTTPClient};
@@ -41,6 +42,7 @@ use crate::{
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store {
     bootloader: BootloaderStore,
+    files: FilesStore,
     hostname: HostnameStore,
     users: UsersStore,
     network: NetworkStore,
@@ -57,6 +59,7 @@ impl Store {
     pub async fn new(http_client: BaseHTTPClient) -> Result<Store, ServiceError> {
         Ok(Self {
             bootloader: BootloaderStore::new(http_client.clone())?,
+            files: FilesStore::new(http_client.clone())?,
             hostname: HostnameStore::new(http_client.clone())?,
             localization: LocalizationStore::new(http_client.clone())?,
             users: UsersStore::new(http_client.clone())?,
@@ -74,6 +77,7 @@ impl Store {
     pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
         let mut settings = InstallSettings {
             bootloader: Some(self.bootloader.load().await?),
+            files: Some(self.files.load().await?),
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
             software: Some(self.software.load().await?),
@@ -107,6 +111,10 @@ impl Store {
             if scripts.pre.as_ref().is_some_and(|s| !s.is_empty()) {
                 self.run_pre_scripts().await?;
             }
+        }
+
+        if let Some(files) = &settings.files {
+            self.files.store(files).await?;
         }
 
         // import the users (esp. the root password) before initializing software,

@@ -153,7 +153,7 @@ impl<'a> ManagerClient<'a> {
     pub async fn finish(&self, method: FinishMethod) -> Result<bool, ServiceError> {
         Ok(self
             .manager_proxy
-            .finish(&method.to_string().as_str())
+            .finish(method.to_string().as_str())
             .await?)
     }
 
