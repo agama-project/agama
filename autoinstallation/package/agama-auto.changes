@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 21 16:10:56 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Start the autoinstallation if a profile is found in a predefined
+  location (gh#agama-project/agama#2180).
+
+-------------------------------------------------------------------
 Thu Feb 13 12:10:11 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - gh#agama-project/agama#1970

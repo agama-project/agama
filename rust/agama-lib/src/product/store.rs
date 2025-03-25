@@ -49,11 +49,18 @@ impl ProductStore {
     pub async fn load(&self) -> Result<ProductSettings, ServiceError> {
         let product = self.product_client.product().await?;
         let registration_info = self.product_client.get_registration().await?;
+        let registered_addons = self.product_client.get_registered_addons().await?;
 
+        let addons = if registered_addons.is_empty() {
+            None
+        } else {
+            Some(registered_addons)
+        };
         Ok(ProductSettings {
             id: Some(product),
             registration_code: Self::non_empty_string(registration_info.key),
             registration_email: Self::non_empty_string(registration_info.email),
+            addons,
         })
     }
 
@@ -70,7 +77,14 @@ impl ProductStore {
         if let Some(reg_code) = &settings.registration_code {
             let email = settings.registration_email.as_deref().unwrap_or("");
             self.product_client.register(reg_code, email).await?;
+            // TODO: avoid reprobing if the system has been already registered with the same code?
             probe = true;
+        }
+        // register the addons in the order specified in the profile
+        if let Some(addons) = &settings.addons {
+            for addon in addons.iter() {
+                self.product_client.register_addon(addon).await?;
+            }
         }
 
         if probe {
@@ -125,6 +139,13 @@ mod test {
                 }"#,
                 );
         });
+        let addons_mock = server.mock(|when, then| {
+            when.method(GET)
+                .path("/api/software/registration/addons/registered");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body("[]");
+        });
         let url = server.url("/api");
 
         let store = product_store(url);
@@ -134,6 +155,7 @@ mod test {
             id: Some("Tumbleweed".to_owned()),
             registration_code: None,
             registration_email: None,
+            addons: None,
         };
         // main assertion
         assert_eq!(settings, expected);
@@ -141,6 +163,7 @@ mod test {
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
         software_mock.assert();
         registration_mock.assert();
+        addons_mock.assert();
         Ok(())
     }
 
@@ -181,6 +204,7 @@ mod test {
             id: Some("Tumbleweed".to_owned()),
             registration_code: None,
             registration_email: None,
+            addons: None,
         };
 
         let result = store.store(&settings).await;

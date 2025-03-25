@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Mon Mar 24 14:08:29 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Drop basic-desktop pulling IceWM from Leap 16.0
+  installation profiles jsc#PED-1721 code-o-o#leap/features#183
+   
+
+-------------------------------------------------------------------
+Fri Mar 21 16:58:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Display the HA pattern after registering the HA extension
+  (jsc#AGM-100)
+
+-------------------------------------------------------------------
 Fri Mar  7 11:27:35 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Use $basearch for newly split repodata of Leap 16.0

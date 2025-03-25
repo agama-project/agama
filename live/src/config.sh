@@ -42,6 +42,7 @@ systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
 systemctl enable agama-dbus-monitor.service
+systemctl enable agama-dud.service
 systemctl enable agama-auto.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
@@ -119,6 +120,9 @@ if [ "${arch}" = "s390x" ]; then
   # workaround for custom bootloader setting
   touch /config.bootoptions
 fi
+
+# Remove nvme hostid and hostnqn (bsc#1238038)
+rm -f /etc/nvme/host*
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password

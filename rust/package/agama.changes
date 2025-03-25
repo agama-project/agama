@@ -1,4 +1,26 @@
 -------------------------------------------------------------------
+Sat Mar 22 22:58:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not try to connect to the HTTP server when it is not needed
+  (gh#agama-project/agama#2192).
+
+-------------------------------------------------------------------
+Fri Mar 21 16:37:32 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add extensions from the registration server (automatic
+  installation only) (jsc#AGM-100)
+
+-------------------------------------------------------------------
+Thu Mar 20 09:05:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve init scripts execution (gh#agama-project/agama#2161):
+  * Properly run the scripts (gh#agama-project/agama#2144).
+  * Allow setting the scripts path with the SCRIPTS_DIR
+    environment variable.
+  * Do not exit with an error if there are not scripts.
+  * Make agama-scripts.sh idempotent.
+
+-------------------------------------------------------------------
 Fri Mar 14 12:32:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Allow selecting individual packages through a configuration file

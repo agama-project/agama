@@ -146,6 +146,7 @@ describe("ProductRegistrationPage", () => {
       expect(registerMutationMock).toHaveBeenCalledWith(
         {
           key: "INTERNAL-USE-ONLY-1234-5678",
+          email: "",
         },
         expect.anything(),
       );
@@ -158,7 +159,7 @@ describe("ProductRegistrationPage", () => {
       await user.click(submitButton);
 
       screen.getByText("Warning alert:");
-      screen.getByText("All fields are required");
+      screen.getByText("Some fields are missing. Please check and fill them.");
       expect(registerMutationMock).not.toHaveBeenCalled();
 
       await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
@@ -171,7 +172,7 @@ describe("ProductRegistrationPage", () => {
       await user.click(submitButton);
 
       screen.getByText("Warning alert:");
-      screen.getByText("All fields are required");
+      screen.getByText("Some fields are missing. Please check and fill them.");
       expect(registerMutationMock).not.toHaveBeenCalled();
 
       const emailInput = screen.getByRole("textbox", { name: /Email/ });
@@ -197,6 +198,14 @@ describe("ProductRegistrationPage", () => {
     beforeEach(() => {
       selectedProduct = sle;
       registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
+    });
+
+    it("does not render a custom alert about hostname", () => {
+      installerRender(<ProductRegistrationPage />);
+
+      expect(screen.queryByText("Custom alert:")).toBeNull();
+      expect(screen.queryByText(/hostname/)).toBeNull();
+      expect(screen.queryByRole("link", { name: "hostname" })).toBeNull();
     });
 
     it("renders registration information with code partially hidden", async () => {

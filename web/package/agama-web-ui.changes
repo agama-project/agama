@@ -1,8 +1,38 @@
 -------------------------------------------------------------------
-Wed Mar 19 12:35:34 UTC 2025 - David Diaz <dgonzalez@suse.com>
+Tue Mar 25 09:43:43 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Change switches by checkboxes (gh#agama-project/agama#2168).
 - Restructure the encryption form (gh#agama-project/agama#2168).
+
+-------------------------------------------------------------------
+Mon Mar 24 10:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly handle empty lists of unsupported AutoYaST elements
+  (gh#agama-project/agama#2196).
+
+-------------------------------------------------------------------
+Sun Mar 23 02:13:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Stop parsing errors from SCC at frontend side and simply render
+  them as returned by the backend (gh#agama-project/agama#2193).
+
+-------------------------------------------------------------------
+Thu Mar 20 20:58:44 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Stop displaying the hostname alert once the system is registered
+  (gh#agama-project/agama#2183).
+
+-------------------------------------------------------------------
+Wed Mar 19 19:04:09 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow temporary removal of the root file system
+ (gh#agama-project/agama#2160).
+
+-------------------------------------------------------------------
+Tue Mar 18 10:59:20 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix registration form issue when email is not provided
+  (gh#agama-project/agama#2172)
 
 -------------------------------------------------------------------
 Fri Mar 14 11:05:49 UTC 2025 - David Diaz <dgonzalez@suse.com>

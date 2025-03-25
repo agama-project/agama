@@ -164,6 +164,8 @@ const mockDeleteDrive = jest.fn();
 const mockGetPartition = jest.fn();
 const mockDeletePartition = jest.fn();
 
+let additionalDrives = true;
+
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => [sda],
@@ -174,10 +176,14 @@ jest.mock("~/queries/storage", () => ({
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
   useConfigModel: () => ({ drives: [drive1, drive2] }),
-  useDrive: () => ({
+  useDrive: (name) => ({
+    isExplicitBoot: name === "/dev/sda",
     delete: mockDeleteDrive,
     getPartition: mockGetPartition,
     deletePartition: mockDeletePartition,
+  }),
+  useModel: () => ({
+    hasAdditionalDrives: additionalDrives,
   }),
 }));
 
@@ -195,16 +201,17 @@ describe("PartitionMenuItem", () => {
     expect(mockDeletePartition).toHaveBeenCalled();
   });
 
-  it("does not allow users to delete a required partition", async () => {
+  it("allows users to delete a required partition", async () => {
     const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
     const partitionsButton = screen.getByRole("button", { name: "Partitions" });
     await user.click(partitionsButton);
     const partitionsMenu = screen.getByRole("menu");
-    const deleteRootButton = within(partitionsMenu).queryByRole("menuitem", {
+    const deleteRootButton = within(partitionsMenu).getByRole("menuitem", {
       name: "Delete /",
     });
-    expect(deleteRootButton).not.toBeInTheDocument();
+    await user.click(deleteRootButton);
+    expect(mockDeletePartition).toHaveBeenCalled();
   });
 
   it("allows users to edit a partition", async () => {
@@ -222,28 +229,64 @@ describe("PartitionMenuItem", () => {
 });
 
 describe("RemoveDriveOption", () => {
-  it("allows users to delete a drive which does not contain root", async () => {
-    const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
-
-    const driveButton = screen.getByRole("button", { name: "Drive" });
-    await user.click(driveButton);
-    const drivesMenu = screen.getByRole("menu");
-    const deleteDriveButton = within(drivesMenu).getByRole("menuitem", {
-      name: /Do not use/,
+  describe("if there are additional drives", () => {
+    beforeEach(() => {
+      additionalDrives = true;
     });
-    await user.click(deleteDriveButton);
-    expect(mockDeleteDrive).toHaveBeenCalled();
+
+    it("allows users to delete regular drives", async () => {
+      const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
+
+      const driveButton = screen.getByRole("button", { name: "Drive" });
+      await user.click(driveButton);
+      const drivesMenu = screen.getByRole("menu");
+      const deleteDriveButton = within(drivesMenu).getByRole("menuitem", {
+        name: /Do not use/,
+      });
+      await user.click(deleteDriveButton);
+      expect(mockDeleteDrive).toHaveBeenCalled();
+    });
+
+    it("does not allow users to delete drives explicitly used to boot", async () => {
+      const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
+
+      const driveButton = screen.getByRole("button", { name: "Drive" });
+      await user.click(driveButton);
+      const drivesMenu = screen.getByRole("menu");
+      const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
+        name: /Do not use/,
+      });
+      expect(deleteDriveButton).not.toBeInTheDocument();
+    });
   });
 
-  it("does not allow users to delete a drive which contains root", async () => {
-    const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
-
-    const driveButton = screen.getByRole("button", { name: "Drive" });
-    await user.click(driveButton);
-    const drivesMenu = screen.getByRole("menu");
-    const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
-      name: /Do not use/,
+  describe("if there are no additional drives", () => {
+    beforeEach(() => {
+      additionalDrives = false;
     });
-    expect(deleteDriveButton).not.toBeInTheDocument();
+
+    it("does not allow users to delete regular drives", async () => {
+      const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
+
+      const driveButton = screen.getByRole("button", { name: "Drive" });
+      await user.click(driveButton);
+      const drivesMenu = screen.getByRole("menu");
+      const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
+        name: /Do not use/,
+      });
+      expect(deleteDriveButton).not.toBeInTheDocument();
+    });
+
+    it("does not allow users to delete drives explicitly used to boot", async () => {
+      const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
+
+      const driveButton = screen.getByRole("button", { name: "Drive" });
+      await user.click(driveButton);
+      const drivesMenu = screen.getByRole("menu");
+      const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
+        name: /Do not use/,
+      });
+      expect(deleteDriveButton).not.toBeInTheDocument();
+    });
   });
 });

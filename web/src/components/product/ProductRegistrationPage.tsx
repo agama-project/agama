@@ -93,26 +93,22 @@ const RegistrationFormSection = () => {
 
   // FIXME: use the right type for AxiosResponse
   const onRegisterError = ({ response }) => {
-    const originalMessage = response.data.message;
-    const from = originalMessage.indexOf(":") + 1;
-    setError(originalMessage.slice(from).trim());
+    setError(response.data.message);
   };
 
   const submit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError(null);
 
-    const data: RegistrationInfo = { key };
-    if (provideEmail) data.email = email;
+    const data: RegistrationInfo = { key, email: provideEmail ? email : "" };
 
     // TODO: Replace with a more sophisticated mechanism to ensure all available
     // fields are filled and validated. Ideally, this should be a reusable solution
     // applicable to all Agama forms.
-    if (Object.values(data).some(isEmpty)) {
-      setError("All fields are required");
+    if (isEmpty(key) || (provideEmail && isEmpty(email))) {
+      setError("Some fields are missing. Please check and fill them.");
       return;
     }
-
     setLoading(true);
 
     // @ts-expect-error
@@ -180,7 +176,8 @@ const HostnameAlert = () => {
 
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
-  const registration = useRegistration();
+  const { key } = useRegistration();
+  const isUnregistered = isEmpty(key);
 
   // TODO: render something meaningful instead? "Product not registrable"?
   if (!product.registration) return;
@@ -192,8 +189,8 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
-        <HostnameAlert />
-        {isEmpty(registration.key) ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {isUnregistered && <HostnameAlert />}
+        {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
       </Page.Content>
     </Page>
   );
