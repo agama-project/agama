@@ -77,7 +77,7 @@ export default function HostnamePage() {
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{_("Hostname settings")}</Content>
+        <Content component="h2">{_("Hostname")}</Content>
       </Page.Header>
 
       <Page.Content>
