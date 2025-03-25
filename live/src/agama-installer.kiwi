@@ -195,7 +195,7 @@
     <packages type="image" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE">
         <package name="agama-products-sle"/>
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
-        <package name="patterns-sles-base"/>
+        <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
         <package name="MozillaFirefox-branding-SLE"/>
         <package name="kernel-default-extra"/>
