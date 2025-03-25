@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 25 11:33:11 UTC 2025 - Dominique Leuenberger <dleuenberger@suse.com>
+
+- Enable non-oss repositories for aarch64 (gh#agama-project/agama#2106).
+
+-------------------------------------------------------------------
 Mon Mar 24 14:08:29 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Drop basic-desktop pulling IceWM from Leap 16.0
