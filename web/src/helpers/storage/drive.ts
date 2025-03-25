@@ -22,8 +22,8 @@
 
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
-import { copyApiModel } from "~/helpers/storage";
-import { buildModel } from "~/helpers/storage/build-model";
+import { copyApiModel } from "~/helpers/storage/api-model";
+import { buildModel } from "~/helpers/storage/model";
 
 function buildDrive(apiModel: apiModel.Config, name: string): model.Drive | undefined {
   const model = buildModel(apiModel);

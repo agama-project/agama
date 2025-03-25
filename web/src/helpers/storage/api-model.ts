@@ -21,9 +21,15 @@
  */
 
 import { apiModel } from "~/api/storage/types";
+import { data } from "~/types/storage";
 
 function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(apiModel));
 }
 
-export { copyApiModel };
+function buildVolumeGroup(data: data.VolumeGroup): apiModel.VolumeGroup {
+  const defaultVolumeGroup = { vgName: "system", targetDevices: [] };
+  return { ...defaultVolumeGroup, ...data };
+}
+
+export { copyApiModel, buildVolumeGroup };

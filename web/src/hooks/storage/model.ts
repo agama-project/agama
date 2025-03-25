@@ -22,7 +22,7 @@
 
 import { useMemo } from "react";
 import { useApiModel } from "~/hooks/storage/api-model";
-import { buildModel } from "~/helpers/storage/build-model";
+import { buildModel } from "~/helpers/storage/model";
 import { QueryHookOptions } from "~/types/queries";
 import { model } from "~/types/storage";
 
