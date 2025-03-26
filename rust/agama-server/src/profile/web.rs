@@ -112,14 +112,13 @@ impl ProfileQuery {
     fn retrieve_profile(&self) -> Result<Option<String>, ProfileServiceError> {
         if let Some(url_string) = &self.url {
             let mut bytebuf = Vec::new();
-            Transfer::get(&url_string, &mut bytebuf)
-                .context(format!("Retrieving data from URL {}", &url_string))?;
+            Transfer::get(url_string, &mut bytebuf)
+                .context(format!("Retrieving data from URL {}", url_string))?;
             let s = String::from_utf8(bytebuf)
-                .context(format!("Invalid UTF-8 data at URL {}", &url_string))?;
+                .context(format!("Invalid UTF-8 data at URL {}", url_string))?;
             Ok(Some(s))
         } else if let Some(path) = &self.path {
-            let s =
-                std::fs::read_to_string(&path).context(format!("Reading from file {}", &path))?;
+            let s = std::fs::read_to_string(path).context(format!("Reading from file {}", path))?;
             Ok(Some(s))
         } else {
             Ok(None)
@@ -199,7 +198,7 @@ async fn autoyast(
     profile: String, // xml_or_erb_or_empty
 ) -> Result<String, ProfileServiceError> {
     let request_has_body = !profile.is_empty() && profile != "null";
-    if !query.url.is_some() || query.path.is_some() || request_has_body {
+    if query.url.is_none() || query.path.is_some() || request_has_body {
         return Err(anyhow::anyhow!(
             "Only url= is expected, no path= or request body. Seen: url {}, path {}, body {}",
             query.url.is_some(),
@@ -209,7 +208,7 @@ async fn autoyast(
         .into());
     }
 
-    let url = Url::parse(&query.url.as_ref().unwrap()).map_err(|e| anyhow::Error::new(e))?;
+    let url = Url::parse(query.url.as_ref().unwrap()).map_err(anyhow::Error::new)?;
     let importer_res = AutoyastProfileImporter::read(&url);
     match importer_res {
         Ok(importer) => Ok(importer.content),
@@ -261,7 +260,7 @@ async fn execute_script(
         .context("Writing script text")?;
 
     let path = named_tempfile.path();
-    let _child = std::process::Command::new(&path)
+    let _child = std::process::Command::new(path)
         .spawn()
         .context("Spawning script")?;
     // we do not child.wait() or child.wait_with_output()

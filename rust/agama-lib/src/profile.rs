@@ -201,7 +201,7 @@ impl ProfileEvaluator {
 
         let result = Command::new("/usr/bin/jsonnet")
             .arg("profile.jsonnet")
-            .current_dir(&dir)
+            .current_dir(dir)
             .output()
             .context("Failed to run jsonnet")?;
         if !result.status.success() {
