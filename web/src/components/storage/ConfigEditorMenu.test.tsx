@@ -53,7 +53,7 @@ beforeEach(() => {
 
 async function openMenu() {
   const { user } = plainRender(<ConfigEditorMenu />);
-  const button = screen.getByRole("button", { name: "More options toggle" });
+  const button = screen.getByRole("button", { name: "Other options toggle" });
   await user.click(button);
   const menu = screen.getByRole("menu");
   return { user, menu };
@@ -61,7 +61,7 @@ async function openMenu() {
 
 it("renders the menu", () => {
   plainRender(<ConfigEditorMenu />);
-  expect(screen.queryByText("More options")).toBeInTheDocument();
+  expect(screen.queryByText("Other options")).toBeInTheDocument();
 });
 
 it("allows users to change the boot options", async () => {

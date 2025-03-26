@@ -54,10 +54,10 @@ export default function ConfigEditorMenu() {
         <MenuToggle
           ref={toggleRef}
           onClick={toggle}
-          aria-label={_("More options toggle")}
+          aria-label={_("Other options toggle")}
           isExpanded={isOpen}
         >
-          {_("More options")}
+          {_("Other options")}
         </MenuToggle>
       )}
     >
