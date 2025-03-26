@@ -49,67 +49,20 @@ abusctl call \
   New "ssassa{ss}" "org.bands.Clash" "should I stay or should I go" 2 yes no yes 0
 abusctl introspect --xml-interface \
   ${DD}1 \
-  ${SS}1/Questions/0 \
-  | cleanup \
-  > ${DD}1.Questions.Generic.bus.xml
-
-abusctl call \
-   ${DD}1 \
-   ${SS}1/Questions \
-   ${DD}1.Questions \
-   NewWithPassword "ssassa{ss}" "world.MiddleEarth.Moria.gate1" "Speak friend and enter" 2 enter giveup giveup 0
-abusctl introspect --xml-interface \
-  ${DD}1 \
-  ${SS}1/Questions/1 \
-  | cleanup \
-  > ${DD}1.Questions.WithPassword.bus.xml
-
-# Network interfaces
-abusctl call \
-  ${DD}1 \
-  ${SS}1/Network/connections \
-  ${DD}1.Network.Connections \
-  AddConnection "sy" "wireless0" 2
-
-OBJ=$(abusctl call \
-  ${DD}1 \
-  ${SS}1/Network/connections \
-  ${DD}1.Network.Connections \
-  GetConnection "s" "wireless0" | cut -f2 -d\")
-
-abusctl introspect --xml-interface \
-  ${DD}1 \
-  ${OBJ} \
-  ${DD}1.Network.Connection \
-  | cleanup \
-  >${DD}1.Network.Connection.bus.xml
+  ${SS}1/Questions/0 |
+  cleanup \
+    >${DD}1.Questions.Generic.bus.xml
 
 abusctl call \
   ${DD}1 \
-  ${SS}1/Network/connections \
-  ${DD}1.Network.Connections \
-  RemoveConnection "s" "wireless0"
-
+  ${SS}1/Questions \
+  ${DD}1.Questions \
+  NewWithPassword "ssassa{ss}" "world.MiddleEarth.Moria.gate1" "Speak friend and enter" 2 enter giveup giveup 0
 abusctl introspect --xml-interface \
   ${DD}1 \
-  ${SS}1/Network/connections \
-  ${DD}1.Network.Connections \
-  | cleanup \
-  >${DD}1.Network.Connections.bus.xml
-
-abusctl introspect --xml-interface \
-  ${DD}1 \
-  ${SS}1/Network/devices \
-  ${DD}1.Network.Devices \
-  | cleanup \
-  >${DD}1.Network.Devices.bus.xml
-
-abusctl introspect --xml-interface \
-  ${DD}1 \
-  ${SS}1/Network/devices/0 \
-  ${DD}1.Network.Device \
-  | cleanup \
-  >${DD}1.Network.Device.bus.xml
+  ${SS}1/Questions/1 |
+  cleanup \
+    >${DD}1.Questions.WithPassword.bus.xml
 
 abusctl introspect --xml-interface \
   ${DD}.Manager1 \
