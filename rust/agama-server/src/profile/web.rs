@@ -25,7 +25,7 @@ use anyhow::Context;
 
 use agama_lib::utils::Transfer;
 use agama_lib::{
-    error::{ProfileError, ServiceError},
+    error::ServiceError,
     profile::{
         AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, Url, ValidationOutcome,
     },
@@ -42,17 +42,25 @@ use serde_json::json;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum ProfileServiceError {
-    /*
-    #[error("Validation error: {0}")]
-    Validation(#[from] ValidationOutcome),
-    */
-    #[error("Profile error: {0}")]
-    Profile(#[from] ProfileError),
-    // it's fine to say only "Error" because the original
-    // specific error will be printed too
-    #[error("Error: {0:#}")]
-    Anyhow(#[from] anyhow::Error),
+pub struct ProfileServiceError {
+    //#[error("Error: {0:#}")]
+    source: anyhow::Error,
+    http_status: StatusCode,
+}
+
+impl std::fmt::Display for ProfileServiceError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:#}", &self.source)
+    }
+}
+
+impl From<anyhow::Error> for ProfileServiceError {
+    fn from(e: anyhow::Error) -> Self {
+        Self {
+            source: e,
+            http_status: StatusCode::BAD_REQUEST,
+        }
+    }
 }
 
 impl IntoResponse for ProfileServiceError {
@@ -60,7 +68,7 @@ impl IntoResponse for ProfileServiceError {
         let body = json!({
             "error": self.to_string()
         });
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+        (self.http_status, Json(body)).into_response()
     }
 }
 
@@ -140,7 +148,7 @@ async fn validate(
         None => profile,
     };
 
-    let validator = ProfileValidator::default_schema()?;
+    let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
     let result = validator
         .validate_str(&profile_string)
         .context(format!("Could not validate the profile {:?}", *query))?;
@@ -202,9 +210,20 @@ async fn autoyast(
     }
 
     let url = Url::parse(&query.url.as_ref().unwrap()).map_err(|e| anyhow::Error::new(e))?;
-    let importer = AutoyastProfileImporter::read(&url)?;
-    // TODO try error cases and add .context if needed
-    Ok(importer.content)
+    let importer_res = AutoyastProfileImporter::read(&url);
+    match importer_res {
+        Ok(importer) => Ok(importer.content),
+        Err(error) => {
+            // anyhow can be only displayed, not so nice
+            if format!("{}", error).contains("Failed to run") {
+                return Err(ProfileServiceError {
+                    http_status: StatusCode::INTERNAL_SERVER_ERROR,
+                    source: error,
+                });
+            }
+            Err(error.into())
+        }
+    }
 }
 
 #[utoipa::path(
