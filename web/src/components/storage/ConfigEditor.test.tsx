@@ -55,14 +55,28 @@ jest.mock("~/queries/storage/config-model", () => ({
 jest.mock("./DriveEditor", () => () => <div>drive editor</div>);
 jest.mock("./VolumeGroupEditor", () => () => <div>volume group editor</div>);
 
+const hasDrives: apiModel.Config = {
+  drives: [{ name: "/dev/vda" }],
+};
+
+const hasVolumeGroups: apiModel.Config = {
+  volumeGroups: [{ vgName: "/dev/system" }],
+};
+
+const hasBoth: apiModel.Config = {
+  drives: [{ name: "/dev/vda" }],
+  volumeGroups: [{ vgName: "/dev/system" }],
+};
+
+const hasNothing: apiModel.Config = {};
+
 beforeEach(() => {
   mockUseDevices.mockReturnValue([disk]);
 });
 
-describe("if no drive is used for installation", () => {
+describe("when no drive is used for installation", () => {
   beforeEach(() => {
-    const modelData: apiModel.Config = {};
-    mockUseConfigModel.mockReturnValue(modelData);
+    mockUseConfigModel.mockReturnValue(hasVolumeGroups);
   });
 
   it("does not render the drive editor", () => {
@@ -71,12 +85,9 @@ describe("if no drive is used for installation", () => {
   });
 });
 
-describe("if a drive is used for installation", () => {
+describe("when a drive is used for installation", () => {
   beforeEach(() => {
-    const modelData: apiModel.Config = {
-      drives: [{ name: "/dev/vda" }],
-    };
-    mockUseConfigModel.mockReturnValue(modelData);
+    mockUseConfigModel.mockReturnValue(hasDrives);
   });
 
   it("renders the drive editor", () => {
@@ -85,10 +96,9 @@ describe("if a drive is used for installation", () => {
   });
 });
 
-describe("if no volume group is used for installation", () => {
+describe("when no volume group is used for installation", () => {
   beforeEach(() => {
-    const modelData: apiModel.Config = {};
-    mockUseConfigModel.mockReturnValue(modelData);
+    mockUseConfigModel.mockReturnValue(hasDrives);
   });
 
   it("does not render the volume group editor", () => {
@@ -97,16 +107,42 @@ describe("if no volume group is used for installation", () => {
   });
 });
 
-describe("if a volume group is used for installation", () => {
+describe("when a volume group is used for installation", () => {
   beforeEach(() => {
-    const modelData: apiModel.Config = {
-      volumeGroups: [{ vgName: "/dev/system" }],
-    };
-    mockUseConfigModel.mockReturnValue(modelData);
+    mockUseConfigModel.mockReturnValue(hasVolumeGroups);
   });
 
-  it("renders the drive editor", () => {
+  it("renders the volume group editor", () => {
     plainRender(<ConfigEditor />);
     expect(screen.queryByText("volume group editor")).toBeInTheDocument();
+  });
+});
+
+describe("when both a drive and volume group are used for installation", () => {
+  beforeEach(() => {
+    mockUseConfigModel.mockReturnValue(hasBoth);
+  });
+
+  it("renders a volume group editor followed by drive editor", () => {
+    plainRender(<ConfigEditor />);
+    const volumeGroupEditor = screen.getByText("volume group editor");
+    const driveEditor = screen.getByText("drive editor");
+
+    expect(volumeGroupEditor.compareDocumentPosition(driveEditor)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  });
+});
+
+describe("when neither a drive nor volume group are used for installation", () => {
+  beforeEach(() => {
+    mockUseConfigModel.mockReturnValue(hasNothing);
+  });
+
+  it("renders a no configuration alert with a button for resetting to default", () => {
+    plainRender(<ConfigEditor />);
+    screen.getByText("Custom alert:");
+    screen.getByText("No devices configured yet");
+    screen.getByRole("button", { name: "reset to defaults" });
   });
 });

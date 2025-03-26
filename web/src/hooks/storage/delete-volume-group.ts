@@ -22,19 +22,13 @@
 
 import useApiModel from "~/hooks/storage/api-model";
 import useUpdateApiModel from "~/hooks/storage/update-api-model";
-import { editVolumeGroup } from "~/hooks/storage/helpers/volume-group";
 import { QueryHookOptions } from "~/types/queries";
+import { deleteVolumeGroup } from "~/hooks/storage/helpers/volume-group";
 
-export type EditVolumeGroupFn = (
-  odlVgName: string,
-  vgName: string,
-  targetDevices: string[],
-) => void;
+export type DeleteVolumeGroupFn = (vgName: string) => void;
 
-export default function useEditVolumeGroup(options?: QueryHookOptions): EditVolumeGroupFn {
+export default function useDeleteVolumeGroup(options?: QueryHookOptions): DeleteVolumeGroupFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (oldVgName: string, vgName: string, targetDevices: string[]) => {
-    updateApiModel(editVolumeGroup(apiModel, oldVgName, vgName, targetDevices));
-  };
+  return (vgName: string) => updateApiModel(deleteVolumeGroup(apiModel, vgName));
 }

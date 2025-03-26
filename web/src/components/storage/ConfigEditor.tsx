@@ -21,15 +21,47 @@
  */
 
 import React from "react";
-import { useDevices } from "~/queries/storage";
+import { _ } from "~/i18n";
+import { useDevices, useResetConfigMutation } from "~/queries/storage";
 import { useConfigModel } from "~/queries/storage/config-model";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
-import { List, ListItem } from "@patternfly/react-core";
+import { Alert, Button, List, ListItem } from "@patternfly/react-core";
+
+const NoDevicesConfiguredAlert = () => {
+  const { mutate: reset } = useResetConfigMutation();
+  const title = _("No devices configured yet");
+  // TRANSLATORS: %s will be replaced by a "reset to default" button
+  const body = _(
+    "Use actions below to set up your devices or click %s to start from scratch with the default configuration.",
+  );
+  const [bodyStart, bodyEnd] = body.split("%s");
+
+  return (
+    <Alert title={title} variant="custom" isInline>
+      {bodyStart}{" "}
+      <Button variant="link" onClick={() => reset()} isInline>
+        <b>
+          {
+            // TRANSLATORS: label for a button
+            _("reset to defaults")
+          }
+        </b>
+      </Button>{" "}
+      {bodyEnd}
+    </Alert>
+  );
+};
 
 export default function ConfigEditor() {
   const model = useConfigModel({ suspense: true });
   const devices = useDevices("system", { suspense: true });
+  const drives = model.drives || [];
+  const volumeGroups = model.volumeGroups || [];
+
+  if (!drives.length && !volumeGroups.length) {
+    return <NoDevicesConfiguredAlert />;
+  }
 
   return (
     <List isPlain>

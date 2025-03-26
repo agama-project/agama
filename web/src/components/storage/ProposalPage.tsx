@@ -36,14 +36,15 @@ import {
 } from "@patternfly/react-core";
 import { Page, Link } from "~/components/core/";
 import { Icon, Loading } from "~/components/layout";
-import ProposalResultSection from "./ProposalResultSection";
-import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
-import ProposalFailedInfo from "./ProposalFailedInfo";
-import FixableConfigInfo from "./FixableConfigInfo";
-import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
-import AddExistingDeviceMenu from "./AddExistingDeviceMenu";
+import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
+import EncryptionSection from "./EncryptionSection";
+import FixableConfigInfo from "./FixableConfigInfo";
+import ProposalFailedInfo from "./ProposalFailedInfo";
+import ProposalResultSection from "./ProposalResultSection";
+import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
+import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import {
   useAvailableDevices,
   useResetConfigMutation,
@@ -57,7 +58,6 @@ import { useDASDSupported } from "~/queries/storage/dasd";
 import { useSystemErrors, useConfigErrors } from "~/queries/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
-import EncryptionSection from "./EncryptionSection";
 
 function InvalidConfigEmptyState(): React.ReactNode {
   const errors = useConfigErrors("storage");
@@ -198,10 +198,10 @@ function ProposalSections(): React.ReactNode {
               actions={
                 <>
                   <SplitItem>
-                    <ConfigEditorMenu />
+                    <ConfigureDeviceMenu />
                   </SplitItem>
                   <SplitItem>
-                    <AddExistingDeviceMenu />
+                    <ConfigEditorMenu />
                   </SplitItem>
                 </>
               }
