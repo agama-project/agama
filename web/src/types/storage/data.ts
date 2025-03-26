@@ -31,4 +31,13 @@ import { apiModel } from "~/api/storage/types";
 
 type VolumeGroup = Partial<Omit<apiModel.VolumeGroup, "logicalVolumes">>;
 
-export type { VolumeGroup };
+interface LogicalVolume extends Partial<Omit<apiModel.LogicalVolume, "filesystem" | "size">> {
+  filesystem?: Filesystem;
+  size?: Size;
+}
+
+type Filesystem = Partial<Omit<apiModel.Filesystem, "default">>;
+
+type Size = Partial<Omit<apiModel.Size, "default">>;
+
+export type { VolumeGroup, LogicalVolume, Filesystem, Size };

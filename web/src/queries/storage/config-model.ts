@@ -23,11 +23,11 @@
 /** @deprecated These hooks will be replaced by new hooks at ~/hooks/storage/ */
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
+import { setConfigModel, solveConfigModel } from "~/api/storage";
 import { apiModel, Volume } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
 import { SpacePolicyAction } from "~/types/storage";
-import { useVolumes } from "~/queries/storage";
+import { apiModelQuery, useVolumes } from "~/queries/storage";
 
 function copyModel(model: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(model));
@@ -331,6 +331,7 @@ function usedMountPaths(model: apiModel.Config): string[] {
   return [...drives, ...logicalVolumes].flatMap(allMountPaths);
 }
 
+/** @depreacted Use useMissingMountPaths from ~/hooks/storage/product. */
 function unusedMountPaths(model: apiModel.Config, volumes: Volume[]): string[] {
   const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
   const assigned = usedMountPaths(model);
@@ -358,17 +359,9 @@ function hasAdditionalDrives(model: apiModel.Config): boolean {
   return !onlyToBoot;
 }
 
-const configModelQuery = {
-  queryKey: ["storage", "configModel"],
-  queryFn: fetchConfigModel,
-  staleTime: Infinity,
-};
-
-/**
- * Hook that returns the config model.
- */
+/** @deprecated Use useApiModel from ~/hooks/storage/api-model. */
 export function useConfigModel(options?: QueryHookOptions): apiModel.Config {
-  const query = configModelQuery;
+  const query = apiModelQuery;
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data;
@@ -387,10 +380,7 @@ export function useConfigModelMutation() {
   return useMutation(query);
 }
 
-/**
- * @todo Use a hash key from the model object as id for the query.
- * Hook that returns the config model.
- */
+/** @deprecated Use useSolvedApiModel from ~/hooks/storage/api-model. */
 export function useSolvedConfigModel(model?: apiModel.Config): apiModel.Config | null {
   const query = useSuspenseQuery({
     queryKey: ["storage", "solvedConfigModel", JSON.stringify(model)],
@@ -507,5 +497,3 @@ export function useModel(): ModelHook {
     hasAdditionalDrives: hasAdditionalDrives(model),
   };
 }
-
-export { configModelQuery };

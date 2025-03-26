@@ -22,15 +22,26 @@
 
 import { useQuery, useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiModel } from "~/api/storage/types";
-import { configModelQuery } from "~/queries/storage/config-model";
+import { apiModelQuery, solveApiModelQuery } from "~/queries/storage";
 import { QueryHookOptions } from "~/types/queries";
 import { setConfigModel } from "~/api/storage";
 
 function useApiModel(options?: QueryHookOptions): apiModel.Config | null {
-  const query = configModelQuery;
+  const query = apiModelQuery;
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data || null;
+}
+
+/** @todo Use a hash key from the model object as id for the query. */
+function useSolvedApiModel(
+  model?: apiModel.Config,
+  options?: QueryHookOptions,
+): apiModel.Config | null {
+  const query = solveApiModelQuery(model);
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func(query);
+  return data;
 }
 
 type UpdateApiModelFn = (apiModel: apiModel.Config) => void;
@@ -46,5 +57,5 @@ function useUpdateApiModel(): UpdateApiModelFn {
   return mutate;
 }
 
-export { useApiModel, useUpdateApiModel };
+export { useApiModel, useSolvedApiModel, useUpdateApiModel };
 export type { UpdateApiModelFn };

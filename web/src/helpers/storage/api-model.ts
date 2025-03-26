@@ -27,9 +27,36 @@ function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(apiModel));
 }
 
+function buildFilesystem(data?: data.Filesystem): apiModel.Filesystem | undefined {
+  if (!data) return;
+
+  return {
+    ...data,
+    default: false,
+  };
+}
+
+function buildSize(data?: data.Size): apiModel.Size | undefined {
+  if (!data) return;
+
+  return {
+    ...data,
+    default: false,
+    min: data.min || 0,
+  };
+}
+
 function buildVolumeGroup(data: data.VolumeGroup): apiModel.VolumeGroup {
   const defaultVolumeGroup = { vgName: "system", targetDevices: [] };
   return { ...defaultVolumeGroup, ...data };
 }
 
-export { copyApiModel, buildVolumeGroup };
+function buildLogicalVolume(data: data.LogicalVolume): apiModel.LogicalVolume {
+  return {
+    ...data,
+    filesystem: buildFilesystem(data.filesystem),
+    size: buildSize(data.size),
+  };
+}
+
+export { copyApiModel, buildVolumeGroup, buildLogicalVolume };
