@@ -154,7 +154,7 @@ async fn finish(manager: &ManagerClient<'_>, method: FinishMethod) -> anyhow::Re
     Ok(())
 }
 
-/// What does this do??
+/// If D-Bus indicates that the backend is busy, show it on the terminal
 async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
     tokio::time::sleep(Duration::from_secs(1)).await;

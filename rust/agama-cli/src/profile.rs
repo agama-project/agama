@@ -86,8 +86,8 @@ enum CliInput {
     Full(String),
 }
 
-impl CliInput {
-    fn new(url_or_path: String) -> Self {
+impl From<String> for CliInput {
+    fn from(url_or_path: String) -> Self {
         if url_or_path == "-" {
             Self::Stdin
         } else {
@@ -100,7 +100,9 @@ impl CliInput {
             }
         }
     }
+}
 
+impl CliInput {
     fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
         match self {
             Self::Url(url) => {
@@ -304,10 +306,10 @@ pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow:
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(client, url).await,
         ProfileCommands::Validate { url_or_path } => {
-            validate(&client, CliInput::new(url_or_path)).await
+            validate(&client, CliInput::from(url_or_path)).await
         }
         ProfileCommands::Evaluate { url_or_path } => {
-            evaluate(&client, CliInput::new(url_or_path)).await
+            evaluate(&client, CliInput::from(url_or_path)).await
         }
         ProfileCommands::Import { url, dir: _ } => import(client, url).await,
     }
