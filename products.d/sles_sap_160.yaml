@@ -27,7 +27,7 @@ software:
 
   mandatory_patterns:
     - base
-    - sles_sap_enhanced_base
+    - enhanced_base
     - sles_sap_base_sap_server
   optional_patterns: null # no optional pattern shared
   user_patterns:

@@ -185,10 +185,10 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 
 /// True if use of the remote API is allowed (yes by default when the API is secure, the user is
 /// asked if the API is insecure - e.g. when it uses self-signed certificate)
-async fn allowed_insecure_api(use_insecure: bool, api_url: String) -> Result<bool, ServiceError> {
+async fn allowed_insecure_api(use_insecure: bool, api_url: &str) -> Result<bool, ServiceError> {
     // fake client used for remote site detection
     let mut ping_client = BaseHTTPClient::default();
-    ping_client.base_url = api_url;
+    ping_client.base_url = api_url.to_string();
 
     // decide whether access to remote site has to be insecure (self-signed certificate or not)
     match ping_client.get::<HashMap<String, String>>("/ping").await {
@@ -212,17 +212,18 @@ pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
         .open(path)
         .context(format!("Cannot write the file '{}'", path.display()))?;
 
-    match Transfer::get(&url, &mut file) {
+    match Transfer::get(url, &mut file) {
         Ok(()) => println!("File saved to {}", path.display()),
         Err(e) => eprintln!("Could not retrieve the file: {e}"),
     }
     Ok(())
 }
 
-pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
-    // somehow check whether we need to ask user for self-signed certificate acceptance
-    let api_url = cli.opts.api.trim_end_matches('/').to_string();
-
+async fn build_http_client(
+    api_url: &str,
+    insecure: bool,
+    authenticated: bool,
+) -> Result<BaseHTTPClient, ServiceError> {
     let parsed = Url::parse(&api_url).context("Parsing API URL")?;
     if parsed.cannot_be_a_base() {
         return Err(ServiceError::Anyhow(anyhow!(
@@ -231,30 +232,41 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     }
 
     let mut client = BaseHTTPClient::default();
+    client.base_url = api_url.to_string();
 
-    client.base_url = api_url.clone();
-
-    if allowed_insecure_api(cli.opts.insecure, api_url.clone()).await? {
+    if allowed_insecure_api(insecure, &client.base_url).await? {
         client = client.insecure();
     }
 
     // we need to distinguish commands on those which assume that authentication JWT is already
     // available and those which not (or don't need it)
-    client = if let Commands::Auth(_) = cli.command {
-        client.unauthenticated()?
-    } else {
+    if authenticated {
         // this deals with authentication need inside
-        client.authenticated()?
-    };
+        client.authenticated()
+    } else {
+        client.unauthenticated()
+    }
+}
+
+pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
+    // somehow check whether we need to ask user for self-signed certificate acceptance
+
+    let api_url = cli.opts.api.trim_end_matches('/').to_string();
 
     match cli.command {
-        Commands::Config(subcommand) => run_config_cmd(client, subcommand).await?,
+        Commands::Config(subcommand) => {
+            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            run_config_cmd(client, subcommand).await?
+        }
         Commands::Probe => {
             let manager = build_manager().await?;
             wait_for_services(&manager).await?;
             probe().await?
         }
-        Commands::Profile(subcommand) => run_profile_cmd(client, subcommand).await?,
+        Commands::Profile(subcommand) => {
+            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            run_profile_cmd(client, subcommand).await?;
+        }
         Commands::Install => {
             let manager = build_manager().await?;
             install(&manager, 3).await?
@@ -264,10 +276,17 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             let method = method.unwrap_or_default();
             finish(&manager, method).await?;
         }
-        Commands::Questions(subcommand) => run_questions_cmd(client, subcommand).await?,
-        Commands::Logs(subcommand) => run_logs_cmd(client, subcommand).await?,
+        Commands::Questions(subcommand) => {
+            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            run_questions_cmd(client, subcommand).await?
+        }
+        Commands::Logs(subcommand) => {
+            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            run_logs_cmd(client, subcommand).await?
+        }
         Commands::Download { url, destination } => download_file(&url, &destination)?,
         Commands::Auth(subcommand) => {
+            let client = build_http_client(&api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;
         }
     };

@@ -64,7 +64,7 @@ impl BaseScript {
             .open(&script_path)?;
 
         match &self.source {
-            ScriptSource::Text { body } => write!(file, "{}", &body)?,
+            ScriptSource::Text { content } => write!(file, "{}", &content)?,
             ScriptSource::Remote { url } => Transfer::get(url, &mut file)?,
         };
 
@@ -75,8 +75,9 @@ impl BaseScript {
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum ScriptSource {
-    /// Script's body.
-    Text { body: String },
+    /// Script's content. Deprecated name was body which is still accepted.
+    #[serde(alias = "body")]
+    Text { content: String },
     /// URL to get the script from.
     Remote { url: String },
 }
@@ -324,7 +325,7 @@ impl ScriptsRepository {
             if let Err(error) = script.run(&self.workdir) {
                 log::error!(
                     "Failed to run user-defined script '{}': {:?}",
-                    &script.name(),
+                    &script.name(), // TODO: implement
                     error
                 );
             }
@@ -396,7 +397,7 @@ mod test {
         let base = BaseScript {
             name: "test".to_string(),
             source: ScriptSource::Text {
-                body: "".to_string(),
+                content: "".to_string(),
             },
         };
         let script = Script::Pre(PreScript { base });
@@ -413,11 +414,11 @@ mod test {
     async fn test_run_scripts() {
         let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
         let mut repo = ScriptsRepository::new(&tmp_dir);
-        let body = "#!/bin/bash\necho hello\necho error >&2".to_string();
+        let content = "#!/bin/bash\necho hello\necho error >&2".to_string();
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text { body },
+            source: ScriptSource::Text { content },
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).unwrap();
@@ -440,11 +441,11 @@ mod test {
     async fn test_clear_scripts() {
         let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
         let mut repo = ScriptsRepository::new(&tmp_dir);
-        let body = "#!/bin/bash\necho hello\necho error >&2".to_string();
+        let content = "#!/bin/bash\necho hello\necho error >&2".to_string();
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text { body },
+            source: ScriptSource::Text { content },
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).expect("add the script to the repository");

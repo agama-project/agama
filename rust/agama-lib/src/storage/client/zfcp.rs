@@ -49,7 +49,7 @@ pub struct ZFCPClient<'a> {
     introspectable_proxy: IntrospectableProxy<'a>,
 }
 
-impl<'a> ZFCPClient<'a> {
+impl ZFCPClient<'_> {
     pub async fn new(connection: Connection) -> Result<Self, ServiceError> {
         let manager_proxy = ManagerProxy::new(&connection).await?;
         let object_manager_proxy = ObjectManagerProxy::builder(&connection)

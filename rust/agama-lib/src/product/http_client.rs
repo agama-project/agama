@@ -18,11 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::software::model::AddonParams;
 use crate::software::model::RegistrationError;
 use crate::software::model::RegistrationInfo;
 use crate::software::model::RegistrationParams;
 use crate::software::model::SoftwareConfig;
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+
+use super::settings::AddonSettings;
 
 pub struct ProductHTTPClient {
     client: BaseHTTPClient,
@@ -65,6 +68,13 @@ impl ProductHTTPClient {
         self.client.get("/software/registration").await
     }
 
+    // get list of registered addons
+    pub async fn get_registered_addons(&self) -> Result<Vec<AddonSettings>, ServiceError> {
+        self.client
+            .get("/software/registration/addons/registered")
+            .await
+    }
+
     /// register product
     pub async fn register(&self, key: &str, email: &str) -> Result<(), ServiceError> {
         // note RegistrationParams != RegistrationInfo, fun!
@@ -87,6 +97,34 @@ impl ProductHTTPClient {
                 format!("{} (error code: {})", details.message, details.id)
             }
             _ => format!("Could not register the product: #{error:?}"),
+        };
+
+        Err(ServiceError::FailedRegistration(message))
+    }
+
+    /// register addon
+    pub async fn register_addon(&self, addon: &AddonSettings) -> Result<(), ServiceError> {
+        let addon_params = AddonParams {
+            id: addon.id.to_owned(),
+            version: addon.version.to_owned(),
+            registration_code: addon.registration_code.to_owned(),
+        };
+        let result = self
+            .client
+            .post_void("/software/registration/addons/register", &addon_params)
+            .await;
+
+        let Err(error) = result else {
+            return Ok(());
+        };
+
+        let message = match error {
+            ServiceError::BackendError(_, details) => {
+                println!("Details: {:?}", details);
+                let details: RegistrationError = serde_json::from_str(&details).unwrap();
+                format!("{} (error code: {})", details.message, details.id)
+            }
+            _ => format!("Could not register the addon: #{error:?}"),
         };
 
         Err(ServiceError::FailedRegistration(message))

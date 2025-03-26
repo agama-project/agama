@@ -113,7 +113,7 @@ struct ActionDispatcher<'a> {
     actions_tx: UnboundedSender<Action>,
 }
 
-impl<'a> ActionDispatcher<'a> {
+impl ActionDispatcher<'_> {
     /// Returns a new dispatcher.
     ///
     /// * `connection`: D-Bus connection to NetworkManager.

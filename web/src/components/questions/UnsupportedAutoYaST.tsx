@@ -74,8 +74,8 @@ export default function UnsupportedAutoYaST({
     answerCallback(question);
   };
 
-  const planned = question.data.planned?.split(",") || [];
-  const unsupported = question.data.unsupported?.split(",") || [];
+  const planned = question.data.planned ? question.data.planned.split(",") : [];
+  const unsupported = question.data.unsupported ? question.data.unsupported.split(",") : [];
 
   return (
     <Popup isOpen title={_("Unsupported AutoYaST elements")}>

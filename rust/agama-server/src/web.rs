@@ -27,6 +27,7 @@
 use crate::{
     bootloader::web::bootloader_service,
     error::Error,
+    files::web::files_service,
     hostname::web::hostname_service,
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
@@ -87,6 +88,7 @@ where
         .add_service("/questions", questions_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
         .add_service("/scripts", scripts_service().await?)
+        .add_service("/files", files_service().await?)
         .add_service("/hostname", hostname_service().await?)
         .add_service("/profile", profile_service().await?)
         .with_config(config)
