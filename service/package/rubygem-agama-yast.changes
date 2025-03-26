@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 25 15:47:13 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install registred addon product (its *-release package)
+  (related to jsc#AGM-100)
+
+-------------------------------------------------------------------
 Tue Mar 25 12:11:35 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Support for autoyast manual files deployment with exception

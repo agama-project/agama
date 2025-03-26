@@ -24,10 +24,13 @@ require "yast"
 require "ostruct"
 require "suse/connect"
 require "y2packager/new_repository_setup"
+require "y2packager/resolvable"
+
 require "agama/cmdline_args"
 require "agama/registered_addon"
 
 Yast.import "Arch"
+Yast.import "Pkg"
 
 module Agama
   # Handles everything related to registration of system to SCC, RMT or similar.
@@ -121,6 +124,9 @@ module Agama
       process_service(service)
 
       @registered_addons << RegisteredAddon.new(name, version, code)
+      # select the products to install
+      @software.addon_products(find_addon_products)
+
       run_on_change_callbacks
     end
 
@@ -140,6 +146,9 @@ module Agama
         Y2Packager::NewRepositorySetup.instance.services.delete(service.name)
         @software.remove_service(service)
       end
+
+      # reset
+      @software.addon_products([])
       @services = []
 
       reg_params = connect_params(token: reg_code, email: email)
@@ -253,6 +262,57 @@ module Agama
       end
       Y2Packager::NewRepositorySetup.instance.add_service(service.name)
       @software.add_service(service)
+    end
+
+    # Find all addon products
+    #
+    # @return [Array<String>] names of the products
+    def find_addon_products
+      # find all repositories for registered addons (their services)
+      addon_repos = @services.reduce([]) do |acc, service|
+        # skip the first service, it belongs to the base product
+        next acc if service == @services.first
+
+        acc.concat(service_repos(service))
+      end
+
+      # find all products from those repositories
+      products = Y2Packager::Resolvable.find(kind: :product)
+      products.select! do |product|
+        addon_repos.any? { |addon_repo| product.source == addon_repo["SrcId"] }
+      end
+
+      products.map!(&:name)
+      @logger.info "Addon products to install: #{products}"
+
+      products
+    end
+
+    # Find all repositories belonging to a service.
+    #
+    # @param product_service [OpenStruct] repository service from suseconnect
+    #
+    # @return [Array<Hash>] repository data as returned by the Pkg.SourceGeneralData
+    #   call, additionally with the "SrcId" key
+    def service_repos(product_service)
+      @logger.info "product_service: #{product_service.inspect}"
+      repo_data = Yast::Pkg.SourceGetCurrent(false).map { |repo| repository_data(repo) }
+
+      service_name = product_service.name
+      # select only repositories belonging to the product services
+      repos = repo_data.select { |repo| service_name == repo["service"] }
+      @logger.info "Service #{service_name.inspect} repositories: #{repos}"
+
+      repos
+    end
+
+    # Get repository data
+    # @param [Fixnum] repo repository ID
+    # @return [Hash] repository properties, including the repository ID ("SrcId" key)
+    def repository_data(repo)
+      data = Yast::Pkg.SourceGeneralData(repo)
+      data["SrcId"] = repo
+      data
     end
   end
 end

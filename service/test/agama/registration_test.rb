@@ -43,6 +43,7 @@ describe Agama::Registration do
     allow(manager).to receive(:product).and_return(product)
     allow(manager).to receive(:add_service)
     allow(manager).to receive(:remove_service)
+    allow(manager).to receive(:addon_products)
 
     allow(SUSE::Connect::YaST).to receive(:announce_system).and_return(["test-user", "12345"])
     allow(SUSE::Connect::YaST).to receive(:deactivate_system)
