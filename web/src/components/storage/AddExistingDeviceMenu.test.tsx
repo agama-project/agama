@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { screen } from "@testing-library/react";
+import { mockNavigateFn, plainRender } from "~/test-utils";
 import AddExistingDeviceMenu from "~/components/storage/AddExistingDeviceMenu";
 import { StorageDevice } from "~/types/storage";
 import { apiModel } from "~/api/storage/types";
@@ -80,61 +80,73 @@ jest.mock("~/queries/storage/config-model", () => ({
   useConfigModel: () => mockUseConfigModelFn(),
 }));
 
-describe("when there are unused disks", () => {
-  describe("and no disks have been configured yet", () => {
-    beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [] });
-    });
-
-    it("renders the menu with correct label", async () => {
-      plainRender(<AddExistingDeviceMenu />);
-      expect(screen.queryByText(/Use a disk/)).toBeInTheDocument();
-    });
-
-    it("allows users to add a new drive", async () => {
-      const { user } = plainRender(<AddExistingDeviceMenu />);
-
-      const button = screen.getByRole("button", { name: /Use a disk/ });
-      await user.click(button);
-      const devicesMenu = screen.getByRole("menu");
-      const vdaItem = within(devicesMenu).getByRole("menuitem", { name: /vda/ });
-      await user.click(vdaItem);
-      expect(mockAddDriveFn).toHaveBeenCalled();
-    });
-  });
-
-  describe("but some disks are already configured", () => {
-    beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [vdaDrive] });
-    });
-
-    it("renders the menu with correct label", async () => {
-      plainRender(<AddExistingDeviceMenu />);
-      expect(screen.queryByText(/Use additional disk/)).toBeInTheDocument();
-    });
-
-    it("allows users to add a new drive to an unused disk", async () => {
-      const { user } = plainRender(<AddExistingDeviceMenu />);
-
-      const button = screen.getByRole("button", { name: /Use additional disk/ });
-      await user.click(button);
-      const devicesMenu = screen.getByRole("menu");
-      expect(within(devicesMenu).queryByRole("menuitem", { name: /vda/ })).toBeNull();
-      const vdbItem = within(devicesMenu).getByRole("menuitem", { name: /vdb/ });
-      await user.click(vdbItem);
-      expect(mockAddDriveFn).toHaveBeenCalled();
-    });
-  });
-});
-
-describe("when there are no more unused disks", () => {
+describe("AddExistingDeviceMenu", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue({ drives: [vdaDrive, vdbDrive] });
+    mockUseConfigModelFn.mockReturnValue({ drives: [] });
   });
 
-  it("renders the menu as disabled with an informative label", async () => {
-    plainRender(<AddExistingDeviceMenu />);
-    const button = screen.getByRole("button", { name: /All disks configured/ });
-    expect(button).toBeDisabled();
+  it("renders an initially closed menu ", async () => {
+    const { user } = plainRender(<AddExistingDeviceMenu />);
+    const toggler = screen.getByRole("button", { name: "Configure a device", expanded: false });
+    expect(screen.queryAllByRole("menu").length).toBe(0);
+    await user.click(toggler);
+    expect(toggler).toHaveAttribute("aria-expanded", "true");
+    expect(screen.queryAllByRole("menu").length).not.toBe(0);
+  });
+
+  it("allows users to add a new LVM volume group", async () => {
+    const { user } = plainRender(<AddExistingDeviceMenu />);
+    const toggler = screen.getByRole("button", { name: "Configure a device", expanded: false });
+    await user.click(toggler);
+    const lvmMenuItem = screen.getByRole("menuitem", { name: /LVM/ });
+    await user.click(lvmMenuItem);
+    expect(mockNavigateFn).toHaveBeenCalledWith("/storage/volume-groups/add");
+  });
+
+  describe("when there are unused disks", () => {
+    describe("and no disks have been configured yet", () => {
+      it("allows users to add a new drive", async () => {
+        const { user } = plainRender(<AddExistingDeviceMenu />);
+        const toggler = screen.getByRole("button", { name: /Configure a device/ });
+        await user.click(toggler);
+        const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
+        await user.click(disksMenuItem);
+        const vdaItem = screen.getByRole("menuitem", { name: /vda/ });
+        await user.click(vdaItem);
+        expect(mockAddDriveFn).toHaveBeenCalled();
+      });
+    });
+
+    describe("but some disks are already configured", () => {
+      beforeEach(() => {
+        mockUseConfigModelFn.mockReturnValue({ drives: [vdaDrive] });
+      });
+
+      it("allows users to add a new drive to an unused disk", async () => {
+        const { user } = plainRender(<AddExistingDeviceMenu />);
+        const toggler = screen.getByRole("button", { name: /Configure a device/ });
+        await user.click(toggler);
+        const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
+        await user.click(disksMenuItem);
+        expect(screen.queryByRole("menuitem", { name: /vda/ })).toBeNull();
+        const vdbItem = screen.getByRole("menuitem", { name: /vdb/ });
+        await user.click(vdbItem);
+        expect(mockAddDriveFn).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe("when there are no more unused disks", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({ drives: [vdaDrive, vdbDrive] });
+    });
+
+    it("renders the disks menu as disabled with an informative label", async () => {
+      const { user } = plainRender(<AddExistingDeviceMenu />);
+      const toggler = screen.getByRole("button", { name: /Configure a device/ });
+      await user.click(toggler);
+      const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
+      expect(disksMenuItem).toBeDisabled();
+    });
   });
 });
