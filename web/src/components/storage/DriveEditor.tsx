@@ -496,10 +496,9 @@ const PartitionMenuItem = ({ driveName, mountPath }) => {
     id: baseName(driveName),
     partitionId: encodeURIComponent(mountPath),
   });
+  const deletePartition = () => drive.deletePartition(mountPath);
 
-  return (
-    <MountPathMenuItem device={partition} editPath={editPath} deleteFn={drive.deletePartition} />
-  );
+  return <MountPathMenuItem device={partition} editPath={editPath} deleteFn={deletePartition} />;
 };
 
 const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {

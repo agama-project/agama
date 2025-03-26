@@ -89,18 +89,21 @@ const mockSdaDrive: model.Drive = {
   ],
   isUsed: true,
   getVolumeGroups: () => [],
+  getMountPaths: () => ["/home", "swap"],
 };
 
 const mockRootVolumeGroup: model.VolumeGroup = {
   vgName: "fakeRootVg",
-  getTargetDevices: () => [mockSdaDrive],
   logicalVolumes: [],
+  getTargetDevices: () => [mockSdaDrive],
+  getMountPaths: () => [],
 };
 
 const mockHomeVolumeGroup: model.VolumeGroup = {
   vgName: "fakeHomeVg",
-  getTargetDevices: () => [mockSdaDrive],
   logicalVolumes: [],
+  getTargetDevices: () => [mockSdaDrive],
+  getMountPaths: () => [],
 };
 
 const mockAddVolumeGroup = jest.fn();

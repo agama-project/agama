@@ -1137,7 +1137,7 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
 }
 
 /**
- * @fixme This component has to be adapted to use the new hooks from ~/hooks/storage/instead of the
+ * @fixme This component has to be adapted to use the new hooks from ~/hooks/storage/ instead of the
  * deprecated hooks from ~/queries/storage/config-model.
  */
 export default function PartitionPage() {

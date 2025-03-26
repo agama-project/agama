@@ -30,7 +30,7 @@ import { apiModel } from "~/api/storage/types";
 export type MountPathMenuItemProps = {
   device: apiModel.Partition | apiModel.LogicalVolume;
   editPath?: string;
-  deleteFn?: (mountPath: string) => void;
+  deleteFn?: () => void;
 };
 
 export default function MountPathMenuItem({
@@ -61,7 +61,7 @@ export default function MountPathMenuItem({
             icon={<Icon name="delete" aria-label={"Delete"} />}
             actionId={`delete-${mountPath}`}
             aria-label={`Delete ${mountPath}`}
-            onClick={() => deleteFn && deleteFn(mountPath)}
+            onClick={deleteFn}
           />
         </>
       }
