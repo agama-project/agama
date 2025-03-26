@@ -47,7 +47,7 @@ pub enum ProfileCommands {
     /// Schema is available at /usr/share/agama-cli/profile.schema.json
     Validate {
         /// Json file, URL or path or `-` for standard input
-        url_or_path: String,
+        url_or_path: CliInput,
     },
 
     /// Evaluate a profile, injecting the hardware information from D-Bus
@@ -56,8 +56,7 @@ pub enum ProfileCommands {
     /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
     Evaluate {
         /// Jsonnet file, URL or path or `-` for standard input
-        // TODO can I declare CliInput here and have it shown nicely?
-        url_or_path: String,
+        url_or_path: CliInput,
     },
 
     /// Process autoinstallation profile and loads it into agama
@@ -78,7 +77,8 @@ pub enum ProfileCommands {
 /// TODO better name
 // Represents the ways user can specify the input on the command line
 // and passes appropriate representations to the web API
-enum CliInput {
+#[derive(Clone, Debug)]
+pub enum CliInput {
     Url(String),
     Path(String),
     Stdin,
@@ -305,12 +305,8 @@ async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<
 pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(client, url).await,
-        ProfileCommands::Validate { url_or_path } => {
-            validate(&client, CliInput::from(url_or_path)).await
-        }
-        ProfileCommands::Evaluate { url_or_path } => {
-            evaluate(&client, CliInput::from(url_or_path)).await
-        }
+        ProfileCommands::Validate { url_or_path } => validate(&client, url_or_path).await,
+        ProfileCommands::Evaluate { url_or_path } => evaluate(&client, url_or_path).await,
         ProfileCommands::Import { url, dir: _ } => import(client, url).await,
     }
 }
