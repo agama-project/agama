@@ -143,6 +143,6 @@ describe("when neither a drive nor volume group are used for installation", () =
     plainRender(<ConfigEditor />);
     screen.getByText("Custom alert:");
     screen.getByText("No devices configured yet");
-    screen.getByRole("button", { name: "resets to default" });
+    screen.getByRole("button", { name: "reset to defaults" });
   });
 });

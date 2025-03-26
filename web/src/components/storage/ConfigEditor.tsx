@@ -44,7 +44,7 @@ const NoDevicesConfiguredAlert = () => {
         <b>
           {
             // TRANSLATORS: label for a button
-            _("reset to default")
+            _("reset to defaults")
           }
         </b>
       </Button>{" "}
