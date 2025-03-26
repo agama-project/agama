@@ -31,7 +31,7 @@ import { Alert, Button, List, ListItem } from "@patternfly/react-core";
 const NoDevicesConfiguredAlert = () => {
   const { mutate: reset } = useResetConfigMutation();
   const title = _("No devices configured yet");
-  // TRANSLATORS: %s will be replaced by a "resets to default" button
+  // TRANSLATORS: %s will be replaced by a "reset to default" button
   const body = _(
     "Use actions below to set up your devices or click %s to start from scratch with the default configuration.",
   );
@@ -43,8 +43,8 @@ const NoDevicesConfiguredAlert = () => {
       <Button variant="link" onClick={() => reset()} isInline>
         <b>
           {
-            // TRANSLATORS: label for a link
-            _("resets to default")
+            // TRANSLATORS: label for a button
+            _("reset to default")
           }
         </b>
       </Button>{" "}
