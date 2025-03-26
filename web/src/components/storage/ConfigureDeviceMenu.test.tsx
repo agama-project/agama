@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, plainRender } from "~/test-utils";
-import AddExistingDeviceMenu from "~/components/storage/AddExistingDeviceMenu";
+import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 import { StorageDevice } from "~/types/storage";
 import { apiModel } from "~/api/storage/types";
 
@@ -80,13 +80,13 @@ jest.mock("~/queries/storage/config-model", () => ({
   useConfigModel: () => mockUseConfigModelFn(),
 }));
 
-describe("AddExistingDeviceMenu", () => {
+describe("ConfigureDeviceMenu", () => {
   beforeEach(() => {
     mockUseConfigModelFn.mockReturnValue({ drives: [] });
   });
 
   it("renders an initially closed menu ", async () => {
-    const { user } = plainRender(<AddExistingDeviceMenu />);
+    const { user } = plainRender(<ConfigureDeviceMenu />);
     const toggler = screen.getByRole("button", { name: "Configure a device", expanded: false });
     expect(screen.queryAllByRole("menu").length).toBe(0);
     await user.click(toggler);
@@ -95,7 +95,7 @@ describe("AddExistingDeviceMenu", () => {
   });
 
   it("allows users to add a new LVM volume group", async () => {
-    const { user } = plainRender(<AddExistingDeviceMenu />);
+    const { user } = plainRender(<ConfigureDeviceMenu />);
     const toggler = screen.getByRole("button", { name: "Configure a device", expanded: false });
     await user.click(toggler);
     const lvmMenuItem = screen.getByRole("menuitem", { name: /LVM/ });
@@ -106,7 +106,7 @@ describe("AddExistingDeviceMenu", () => {
   describe("when there are unused disks", () => {
     describe("and no disks have been configured yet", () => {
       it("allows users to add a new drive", async () => {
-        const { user } = plainRender(<AddExistingDeviceMenu />);
+        const { user } = plainRender(<ConfigureDeviceMenu />);
         const toggler = screen.getByRole("button", { name: /Configure a device/ });
         await user.click(toggler);
         const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
@@ -123,7 +123,7 @@ describe("AddExistingDeviceMenu", () => {
       });
 
       it("allows users to add a new drive to an unused disk", async () => {
-        const { user } = plainRender(<AddExistingDeviceMenu />);
+        const { user } = plainRender(<ConfigureDeviceMenu />);
         const toggler = screen.getByRole("button", { name: /Configure a device/ });
         await user.click(toggler);
         const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
@@ -142,7 +142,7 @@ describe("AddExistingDeviceMenu", () => {
     });
 
     it("renders the disks menu as disabled with an informative label", async () => {
-      const { user } = plainRender(<AddExistingDeviceMenu />);
+      const { user } = plainRender(<ConfigureDeviceMenu />);
       const toggler = screen.getByRole("button", { name: /Configure a device/ });
       await user.click(toggler);
       const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
