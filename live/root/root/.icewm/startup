@@ -22,4 +22,4 @@ fi
 
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" $PREFS.template > $PREFS
 
-firefox --kiosk --profile $HOME/.mozilla/firefox/profile
+firefox --profile $HOME/.mozilla/firefox/profile
