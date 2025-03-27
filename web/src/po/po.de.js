@@ -138,9 +138,6 @@ export default {
   "All fields are required": [
     "Alle Felder sind erforderlich"
   ],
-  "Allows setting a permanent hostname that won’t change with network updates.": [
-    "Ermöglicht das Festlegen eines permanenten Hostnamens, der sich bei Netzwerkaktualisierungen nicht ändert."
-  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Neben der Definition des ersten Benutzers können auch die Authentifizierungsmethoden für den Root-Benutzer konfiguriert werden."
   ],
@@ -260,6 +257,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "%d geplante Aktionen prüfen"
+  ],
+  "Check the following before continuing": [
+    ""
   ],
   "Choose a disk for placing the boot loader": [
     "Wählen Sie eine Festplatte für den Bootloader aus"
@@ -1006,9 +1006,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please provide a hostname": [
-    "Bitte einen Hostnamen angeben"
-  ],
   "Please, cancel and check the settings if you are unsure.": [
     "Falls Sie unsicher sind, brechen Sie den Vorgang ab und überprüfen Sie die Einstellungen."
   ],
@@ -1418,12 +1415,6 @@ export default {
   "This device will contain the configured LVM groups and any partition needed to boot": [
     "Dieses Gerät wird die konfigurierten LVM-Gruppen und alle zum Booten benötigten Partitionen enthalten"
   ],
-  "This hostname is dynamic and may change after a reboot or network update.": [
-    "Dieser Hostname ist dynamisch und kann sich nach einem Neustart oder einer Netzwerkaktualisierung ändern."
-  ],
-  "This hostname is permanent and will not change unless manually updated.": [
-    "Dieser Hostname ist dauerhaft und wird nicht geändert, es sei denn, er wird manuell aktualisiert."
-  ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Bei diesem Produkt ist es nicht möglich, während der Installation Softwaremuster auszuwählen. Sie können jedoch zusätzliche Software hinzufügen, sobald die Installation abgeschlossen ist."
   ],
@@ -1553,9 +1544,6 @@ export default {
   "Username suggestion dropdown": [
     "Dropdown-Liste mit Vorschlägen für Benutzernamen"
   ],
-  "Using %1$s hostname: %2$s": [
-    ""
-  ],
   "Using a hashed password.": [
     "Verwendung eines gehashten Passworts."
   ],
@@ -1624,12 +1612,6 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
-  ],
-  "static": [
-    "statisch"
-  ],
-  "transient": [
-    "transient"
   ],
   "zFCP": [
     "zFCP"
