@@ -73,7 +73,21 @@ module Agama
         email = section["email"].to_s
         result["registrationEmail"] = email unless email.empty?
 
+        # addons from the registration server
+        converted_addons = convert_addons(section["addons"] || [])
+        result["addons"] = converted_addons unless converted_addons.empty?
+
         result
+      end
+
+      # convert addons according to the new schema
+      def convert_addons(addons)
+        addons.map do |a|
+          addon = { "id" => a["name"], "version" => a["version"] }
+          code = a["reg_code"].to_s
+          addon["registrationCode"] = code unless code.empty?
+          addon
+        end
       end
     end
   end

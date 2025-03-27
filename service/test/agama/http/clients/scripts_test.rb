@@ -23,7 +23,7 @@ require_relative "../../../test_helper"
 require "agama/http/clients/scripts"
 
 describe Agama::HTTP::Clients::Scripts do
-  subject(:scripts) { described_class.new }
+  subject(:scripts) { described_class.new(Logger.new($stdout)) }
 
   before do
     allow(File).to receive(:read).with("/run/agama/token")

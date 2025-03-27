@@ -47,6 +47,7 @@ describe Agama::Storage::Manager do
     File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
   let(:config) { Agama::Config.from_file(config_path) }
+  let(:files_client) { instance_double(Agama::HTTP::Clients::Files, write: nil) }
   let(:scripts_client) { instance_double(Agama::HTTP::Clients::Scripts, run: nil) }
   let(:scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts") }
   let(:tmp_dir) { Dir.mktmpdir }
@@ -58,6 +59,7 @@ describe Agama::Storage::Manager do
     allow(Agama::Security).to receive(:new).and_return(security)
     # mock writting config as proposal call can do storage probing, which fails in CI
     allow_any_instance_of(Agama::Storage::Bootloader).to receive(:write_config)
+    allow(Agama::HTTP::Clients::Files).to receive(:new).and_return(files_client)
     allow(Agama::HTTP::Clients::Scripts).to receive(:new).and_return(scripts_client)
     allow(Agama::Network).to receive(:new).and_return(network)
     allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
@@ -389,6 +391,7 @@ describe Agama::Storage::Manager do
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
       expect(network).to receive(:link_resolv)
       expect(scripts_client).to receive(:run).with("post")
+      expect(files_client).to receive(:write)
       expect(network).to receive(:unlink_resolv)
       expect(Yast::Execute).to receive(:on_target!)
         .with("systemctl", "enable", "agama-scripts", allowed_exitstatus: [0, 1])

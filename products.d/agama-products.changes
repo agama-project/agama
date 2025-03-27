@@ -1,4 +1,32 @@
 -------------------------------------------------------------------
+Tue Mar 25 11:42:36 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Add gnome pattern to the SLES 16.0 product (gh#agama-project/agama#2204)
+
+-------------------------------------------------------------------
+Tue Mar 25 11:33:11 UTC 2025 - Dominique Leuenberger <dleuenberger@suse.com>
+
+- Enable non-oss repositories for aarch64 (gh#agama-project/agama#2106).
+
+-------------------------------------------------------------------
+Mon Mar 24 14:08:29 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Drop basic-desktop pulling IceWM from Leap 16.0
+  installation profiles jsc#PED-1721 code-o-o#leap/features#183
+   
+
+-------------------------------------------------------------------
+Fri Mar 21 16:58:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Display the HA pattern after registering the HA extension
+  (jsc#AGM-100)
+
+-------------------------------------------------------------------
+Thu Mar 13 15:50:52 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
+
+- Adapt to SAP patterns new names.
+
+-------------------------------------------------------------------
 Fri Mar  7 11:27:35 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Use $basearch for newly split repodata of Leap 16.0

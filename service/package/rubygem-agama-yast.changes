@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Tue Mar 25 15:47:13 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install registred addon product (its *-release package)
+  (related to jsc#AGM-100)
+
+-------------------------------------------------------------------
+Tue Mar 25 12:11:35 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Support for autoyast manual files deployment with exception
+  of deploying directories and files_script
+  (gh#agama-project/agama#2121)
+
+-------------------------------------------------------------------
+Fri Mar 21 16:36:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add extensions from the registration server (automatic
+  installation only) (jsc#AGM-100)
+
+-------------------------------------------------------------------
 Thu Mar 20 08:41:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Symlink the /mnt/etc/resolv.conf to the NetworkManager running

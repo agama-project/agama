@@ -232,7 +232,7 @@ impl<'a> ProgressStream<'a> {
     }
 }
 
-impl<'a> Stream for ProgressStream<'a> {
+impl Stream for ProgressStream<'_> {
     type Item = Event;
 
     fn poll_next(

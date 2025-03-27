@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Tue Mar 25 13:28:15 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
+
+- live/src/agama-installer.kiwi: Adapt to latest patterns (SR#364982)
+
+-------------------------------------------------------------------
+Mon Mar 24 10:57:22 UTC 2025 - Lukas Ocilka <locilka@suse.com>
+
+- Fixed DUD issues (gh#agama-project/agama#2199):
+  - Enabling the agama-dud service in the live media
+  - Making the agama-dud script executable
+  - Disabling dmesg on the console while DUD runs
+
+-------------------------------------------------------------------
 Fri Mar 21 09:58:52 AM UTC 2025 - Lukas Ocilka <locilka@suse.com>
 
 - Added the initial functionality for inst.dud

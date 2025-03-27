@@ -396,6 +396,12 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
 }
 
+// Nested content inside forms should respect parent grid gap
+.pf-v6-c-form [class*="pf-v6-u-mx"] {
+  display: grid;
+  gap: inherit;
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;

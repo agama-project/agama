@@ -69,7 +69,7 @@ impl LocalesDatabase {
 
     /// Determines whether a locale exists in the database.
     pub fn exists(&self, locale: &LocaleId) -> bool {
-        self.known_locales.contains(&locale)
+        self.known_locales.contains(locale)
     }
 
     /// Returns the list of locales.

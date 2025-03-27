@@ -83,6 +83,7 @@ module Agama
           BootloaderStep.new(logger),
           IguanaStep.new(logger),
           SnapshotsStep.new(logger),
+          FilesStep.new(logger),
           PostScripts.new(logger),
           CopyLogsStep.new(logger),
           UnmountStep.new(logger)
@@ -263,7 +264,7 @@ module Agama
         # Run the post scripts
         def run_post_scripts
           network.link_resolv
-          client = Agama::HTTP::Clients::Scripts.new
+          client = Agama::HTTP::Clients::Scripts.new(logger)
           client.run("post")
         ensure
           network.unlink_resolv
@@ -283,6 +284,25 @@ module Agama
             "systemctl", "enable", "agama-scripts",
             allowed_exitstatus: [0, 1]
           )
+        end
+      end
+
+      # Executes post-installation scripts
+      class FilesStep < Step
+        def label
+          "Deploying user-defined files"
+        end
+
+        def run
+          deploy_files
+        end
+
+      private
+
+        def deploy_files
+          require "agama/http"
+          client = Agama::HTTP::Clients::Files.new(logger)
+          client.write
         end
       end
 

@@ -36,7 +36,7 @@ impl GenericHandler {
         let mut handle = Easy::new();
         handle.follow_location(true)?;
         handle.fail_on_error(true)?;
-        handle.url(&url.to_string())?;
+        handle.url(url.as_ref())?;
 
         let mut transfer = handle.transfer();
         transfer.write_function(|buf| Ok(out_fd.write(buf).unwrap()))?;

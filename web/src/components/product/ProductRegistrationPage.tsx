@@ -93,9 +93,7 @@ const RegistrationFormSection = () => {
 
   // FIXME: use the right type for AxiosResponse
   const onRegisterError = ({ response }) => {
-    const originalMessage = response.data.message;
-    const from = originalMessage.indexOf(":") + 1;
-    setError(originalMessage.slice(from).trim());
+    setError(response.data.message);
   };
 
   const submit = async (e: React.SyntheticEvent) => {

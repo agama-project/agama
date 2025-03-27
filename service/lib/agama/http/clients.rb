@@ -27,4 +27,6 @@ module Agama
   end
 end
 
+require "agama/http/clients/base"
+require "agama/http/clients/files"
 require "agama/http/clients/scripts"

@@ -47,6 +47,7 @@ struct ScriptServiceError(#[from] ScriptError);
 
 impl IntoResponse for ScriptServiceError {
     fn into_response(self) -> Response {
+        tracing::warn!("Server return error {}", self);
         let body = json!({
             "error": self.to_string()
         });

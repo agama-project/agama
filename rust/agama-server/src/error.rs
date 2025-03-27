@@ -62,6 +62,7 @@ impl From<Error> for zbus::fdo::Error {
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
+        tracing::warn!("Server return error {}", self);
         let body = json!({
             "error": self.to_string()
         });

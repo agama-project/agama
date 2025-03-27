@@ -24,9 +24,13 @@ require "yast"
 require "ostruct"
 require "suse/connect"
 require "y2packager/new_repository_setup"
+require "y2packager/resolvable"
+
 require "agama/cmdline_args"
+require "agama/registered_addon"
 
 Yast.import "Arch"
+Yast.import "Pkg"
 
 module Agama
   # Handles everything related to registration of system to SCC, RMT or similar.
@@ -51,11 +55,19 @@ module Agama
     # @return [String, nil]
     attr_reader :email
 
+    # List of already registered addons
+    #
+    # @return [Array<RegisteredAddon>]
+    attr_reader :registered_addons
+
     # @param software_manager [Agama::Software::Manager]
     # @param logger [Logger]
     def initialize(software_manager, logger)
       @software = software_manager
       @logger = logger
+      @services = []
+      @credentials_files = []
+      @registered_addons = []
     end
 
     # Registers the selected product.
@@ -73,10 +85,10 @@ module Agama
 
       reg_params = connect_params(token: code, email: email)
 
-      login, password = SUSE::Connect::YaST.announce_system(reg_params, target_distro)
+      @login, @password = SUSE::Connect::YaST.announce_system(reg_params, target_distro)
       # write the global credentials
       # TODO: check if we can do it in memory for libzypp
-      SUSE::Connect::YaST.create_credentials_file(login, password, GLOBAL_CREDENTIALS_PATH)
+      SUSE::Connect::YaST.create_credentials_file(@login, @password, GLOBAL_CREDENTIALS_PATH)
 
       target_product = OpenStruct.new(
         arch:       Yast::Arch.rpm_arch,
@@ -84,18 +96,37 @@ module Agama
         version:    product.version || "1.0"
       )
       activate_params = {}
-      @service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
-      # if service require specific credentials file, store it
-      @credentials_file = credentials_from_url(@service.url)
-      if @credentials_file
-        SUSE::Connect::YaST.create_credentials_file(login, password,
-          File.join(TARGET_DIR, credentials_path(@credentials_file)))
-      end
-      Y2Packager::NewRepositorySetup.instance.add_service(@service.name)
-      @software.add_service(@service)
+      service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
+      process_service(service)
 
       @reg_code = code
       @email = email
+      run_on_change_callbacks
+    end
+
+    def register_addon(name, version, code)
+      if @registered_addons.any? { |a| a.name == name && a.version == version }
+        @logger.info "Addon #{name}-#{version} already registered, skipping registration"
+        return
+      end
+
+      @logger.info "Registering addon #{name}-#{version}"
+      # do not log the code, but at least log if it is empty
+      @logger.info "Using empty registration code" if code.empty?
+
+      target_product = OpenStruct.new(
+        arch:       Yast::Arch.rpm_arch,
+        identifier: name,
+        version:    version
+      )
+      activate_params = { token: code }
+      service = SUSE::Connect::YaST.activate_product(target_product, activate_params, @email)
+      process_service(service)
+
+      @registered_addons << RegisteredAddon.new(name, version, code)
+      # select the products to install
+      @software.addon_products(find_addon_products)
+
       run_on_change_callbacks
     end
 
@@ -111,19 +142,27 @@ module Agama
     def deregister
       return unless reg_code
 
-      Y2Packager::NewRepositorySetup.instance.services.delete(@service.name)
-      @software.remove_service(@service)
+      @services.each do |service|
+        Y2Packager::NewRepositorySetup.instance.services.delete(service.name)
+        @software.remove_service(service)
+      end
+
+      # reset
+      @software.addon_products([])
+      @services = []
 
       reg_params = connect_params(token: reg_code, email: email)
       SUSE::Connect::YaST.deactivate_system(reg_params)
       FileUtils.rm(GLOBAL_CREDENTIALS_PATH) # connect does not remove it itself
-      if @credentials_file
-        FileUtils.rm(File.join(TARGET_DIR, credentials_path(@credentials_file)))
-        @credentials_file = nil
+      @credentials_files.each do |credentials_file|
+        FileUtils.rm(File.join(TARGET_DIR, credentials_path(credentials_file)))
       end
+      @credentials_files = []
 
       @reg_code = nil
       @email = nil
+      @registered_addons = []
+
       run_on_change_callbacks
     end
 
@@ -134,10 +173,10 @@ module Agama
       files = [[
         GLOBAL_CREDENTIALS_PATH, File.join(Yast::Installation.destdir, GLOBAL_CREDENTIALS_PATH)
       ]]
-      if @credentials_file
+      @credentials_files.each do |credentials_file|
         files << [
-          File.join(TARGET_DIR, credentials_path(@credentials_file)),
-          File.join(Yast::Installation.destdir, credentials_path(@credentials_file))
+          File.join(TARGET_DIR, credentials_path(credentials_file)),
+          File.join(Yast::Installation.destdir, credentials_path(credentials_file))
         ]
       end
 
@@ -209,6 +248,71 @@ module Agama
     def registration_url
       cmdline_args = CmdlineArgs.read
       cmdline_args.data["register_url"]
+    end
+
+    # process a newly added service, create the credentials file and add the service to libzypp
+    def process_service(service)
+      @services << service
+      credentials_file = credentials_from_url(service.url)
+      if credentials_file
+        @credentials_files << credentials_file
+        # addons use the same SCC credentials as the base product
+        SUSE::Connect::YaST.create_credentials_file(@login, @password,
+          File.join(TARGET_DIR, credentials_path(credentials_file)))
+      end
+      Y2Packager::NewRepositorySetup.instance.add_service(service.name)
+      @software.add_service(service)
+    end
+
+    # Find all addon products
+    #
+    # @return [Array<String>] names of the products
+    def find_addon_products
+      # find all repositories for registered addons (their services)
+      addon_repos = @services.reduce([]) do |acc, service|
+        # skip the first service, it belongs to the base product
+        next acc if service == @services.first
+
+        acc.concat(service_repos(service))
+      end
+
+      # find all products from those repositories
+      products = Y2Packager::Resolvable.find(kind: :product)
+      products.select! do |product|
+        addon_repos.any? { |addon_repo| product.source == addon_repo["SrcId"] }
+      end
+
+      products.map!(&:name)
+      @logger.info "Addon products to install: #{products}"
+
+      products
+    end
+
+    # Find all repositories belonging to a service.
+    #
+    # @param product_service [OpenStruct] repository service from suseconnect
+    #
+    # @return [Array<Hash>] repository data as returned by the Pkg.SourceGeneralData
+    #   call, additionally with the "SrcId" key
+    def service_repos(product_service)
+      @logger.info "product_service: #{product_service.inspect}"
+      repo_data = Yast::Pkg.SourceGetCurrent(false).map { |repo| repository_data(repo) }
+
+      service_name = product_service.name
+      # select only repositories belonging to the product services
+      repos = repo_data.select { |repo| service_name == repo["service"] }
+      @logger.info "Service #{service_name.inspect} repositories: #{repos}"
+
+      repos
+    end
+
+    # Get repository data
+    # @param [Fixnum] repo repository ID
+    # @return [Hash] repository properties, including the repository ID ("SrcId" key)
+    def repository_data(repo)
+      data = Yast::Pkg.SourceGeneralData(repo)
+      data["SrcId"] = repo
+      data
     end
   end
 end
