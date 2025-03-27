@@ -20,6 +20,7 @@
 
 use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
+use crate::software::model::AddonParams;
 use crate::software::proxies::SoftwareProductProxy;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -125,6 +126,22 @@ impl<'a> ProductClient<'a> {
         Ok(self.registration_proxy.email().await?)
     }
 
+    /// list of already registered addons
+    pub async fn registered_addons(&self) -> Result<Vec<AddonParams>, ServiceError> {
+        let addons: Vec<AddonParams> = self
+            .registration_proxy
+            .registered_addons()
+            .await?
+            .into_iter()
+            .map(|(id, version, code)| AddonParams {
+                id,
+                version,
+                registration_code: if code.is_empty() { None } else { Some(code) },
+            })
+            .collect();
+        Ok(addons)
+    }
+
     /// register product
     pub async fn register(&self, code: &str, email: &str) -> Result<(u32, String), ServiceError> {
         let mut options: HashMap<&str, &zbus::zvariant::Value> = HashMap::new();
@@ -133,6 +150,18 @@ impl<'a> ProductClient<'a> {
             options.insert("Email", &value);
         }
         Ok(self.registration_proxy.register(code, options).await?)
+    }
+
+    /// register addon
+    pub async fn register_addon(&self, addon: &AddonParams) -> Result<(u32, String), ServiceError> {
+        Ok(self
+            .registration_proxy
+            .register_addon(
+                &addon.id,
+                &addon.version,
+                &addon.registration_code.clone().unwrap_or_default(),
+            )
+            .await?)
     }
 
     /// de-register product

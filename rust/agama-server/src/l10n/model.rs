@@ -135,7 +135,7 @@ impl L10n {
         locales_db.read(&locale)?;
 
         let mut default_locale = ui_locale.clone();
-        if !locales_db.exists(&ui_locale) {
+        if !locales_db.exists(ui_locale) {
             // TODO: handle the case where the database is empty (not expected!)
             default_locale = locales_db.entries().first().unwrap().id.clone();
         };

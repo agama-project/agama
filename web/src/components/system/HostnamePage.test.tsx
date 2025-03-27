@@ -76,11 +76,10 @@ describe("HostnamePage", () => {
       mockStaticHostname = "agama-server";
     });
 
-    it("renders a custom alert with current value and mode", () => {
+    it("does not render a custom alert with current value and mode", () => {
       installerRender(<HostnamePage />);
-      screen.getByText("Custom alert:");
-      screen.getByText(/agama-server/);
-      screen.getByText(/is permanent/);
+      expect(screen.queryByText("Custom alert:")).toBeNull();
+      expect(screen.queryByText(/agama-server/)).toBeNull();
     });
 
     it("allows unsetting the static hostname", async () => {
@@ -149,23 +148,23 @@ describe("HostnamePage", () => {
 
       expect(mockHostnameMutation).not.toHaveBeenCalled();
       screen.getByText("Warning alert:");
-      screen.getByText("Please provide a hostname");
-    });
-  });
-
-  it("renders an error if the update request fails", async () => {
-    mockHostnameMutation.mockRejectedValue("Not valid");
-    const { user } = installerRender(<HostnamePage />);
-    const acceptButton = screen.getByRole("button", { name: "Accept" });
-
-    await user.click(acceptButton);
-
-    expect(mockHostnameMutation).toHaveBeenCalledWith({
-      static: "",
+      screen.getByText("Enter a hostname.");
     });
 
-    screen.getByText("Warning alert:");
-    screen.getByText(/Something went wrong/);
+    it("renders an error if the update request fails", async () => {
+      mockHostnameMutation.mockRejectedValue("Not valid");
+      const { user } = installerRender(<HostnamePage />);
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+
+      await user.click(acceptButton);
+
+      expect(mockHostnameMutation).toHaveBeenCalledWith({
+        static: "",
+      });
+
+      screen.getByText("Warning alert:");
+      screen.getByText(/Something went wrong/);
+    });
   });
 
   describe("when selected product is not registrable", () => {

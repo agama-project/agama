@@ -21,6 +21,7 @@
 
 require "agama/config"
 require "agama/storage/config_checkers/boot"
+require "agama/storage/config_checkers/filesystems"
 require "agama/storage/config_checkers/drive"
 require "agama/storage/config_checkers/volume_group"
 require "agama/storage/config_checkers/volume_groups"
@@ -41,6 +42,7 @@ module Agama
       # @return [Array<Issue>]
       def issues
         [
+          filesystems_issues,
           boot_issues,
           drives_issues,
           volume_groups_issues
@@ -60,6 +62,13 @@ module Agama
       # @return [Array<Issue>]
       def boot_issues
         ConfigCheckers::Boot.new(storage_config, product_config).issues
+      end
+
+      # Issues related to the list of filesystems (mount paths)
+      #
+      # @return [Array<Issue>]
+      def filesystems_issues
+        ConfigCheckers::Filesystems.new(storage_config, product_config).issues
       end
 
       # Issues from drives.

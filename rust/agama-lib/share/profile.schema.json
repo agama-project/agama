@@ -6,6 +6,14 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "files": {
+      "title": "User-defined files to deploy",
+      "description": "User-defined files to deploy after installation just before post install scripts",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/file"
+      }
+    },
     "scripts": {
       "title": "User-defined installation scripts",
       "description": "User-defined scripts to run at different points of the installation",
@@ -528,7 +536,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
@@ -537,7 +551,7 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
     },
     "postPartitioning": {
       "title": "User-defined installation script that runs after the partitioning finishes",
@@ -550,7 +564,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
@@ -559,7 +579,7 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
     },
     "postScript": {
       "title": "User-defined installation script that runs after the installation finishes",
@@ -572,7 +592,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
@@ -586,7 +612,7 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
     },
     "initScript": {
       "title": "User-defined installation script that runs during the first boot of the target system, once the installation is finished",
@@ -599,7 +625,13 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
@@ -608,7 +640,44 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
+    },
+    "file": {
+      "title": "User-defined file to deploy",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destination": {
+          "description": "path where file should be deployed",
+          "type": "string"
+        },
+        "content": {
+          "title": "File content",
+          "description": "File content",
+          "type": "string"
+        },
+        "url": {
+          "title": "File URL",
+          "description": "URL to fetch the file from"
+        },
+        "permissions": {
+          "title": "File permissions",
+          "description": "file permissions on installed system",
+          "type": "string"
+        },
+        "user": {
+          "title": "File owner user",
+          "description": "User owning the file on installed system. User has to already exist",
+          "type": "string"
+        },
+        "group": {
+          "title": "File owner group",
+          "description": "Group owning the file on installed system. User has to already exist",
+          "type": "string"
+        }
+      },
+      "required": ["destination"],
+      "oneOf": [{ "required": ["url"] }, { "required": ["content"]}]
     }
   }
 }

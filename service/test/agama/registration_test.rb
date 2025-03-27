@@ -43,6 +43,7 @@ describe Agama::Registration do
     allow(manager).to receive(:product).and_return(product)
     allow(manager).to receive(:add_service)
     allow(manager).to receive(:remove_service)
+    allow(manager).to receive(:addon_products)
 
     allow(SUSE::Connect::YaST).to receive(:announce_system).and_return(["test-user", "12345"])
     allow(SUSE::Connect::YaST).to receive(:deactivate_system)
@@ -226,6 +227,37 @@ describe Agama::Registration do
     end
   end
 
+  describe "#register_addon" do
+    context "if there is no product selected yet" do
+      let(:addon) do
+        OpenStruct.new(
+          arch:       Yast::Arch.rpm_arch,
+          identifier: "sle-ha",
+          version:    "16.0"
+        )
+      end
+
+      let(:code) { "867136984314" }
+
+      it "registers addon" do
+        expect(SUSE::Connect::YaST).to receive(:activate_product).with(
+          addon, { token: code }, anything
+        )
+
+        subject.register_addon(addon.identifier, addon.version, code)
+      end
+
+      it "registers addon only once" do
+        expect(SUSE::Connect::YaST).to receive(:activate_product).with(
+          addon, { token: code }, anything
+        ).once
+
+        subject.register_addon(addon.identifier, addon.version, code)
+        subject.register_addon(addon.identifier, addon.version, code)
+      end
+    end
+  end
+
   describe "#deregister" do
     before do
       allow(FileUtils).to receive(:rm)
@@ -378,7 +410,7 @@ describe Agama::Registration do
     context "system is registered" do
       before do
         subject.instance_variable_set(:@reg_code, "test")
-        subject.instance_variable_set(:@credentials_file, "test")
+        subject.instance_variable_set(:@credentials_files, ["test"])
         Yast::Installation.destdir = "/mnt"
         allow(::FileUtils).to receive(:cp)
       end

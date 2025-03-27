@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2024-11-13 18:48+0000\n"
-"Last-Translator: Jan Papež <honyczek@centrum.cz>\n"
-"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
-"master/cs/>\n"
+"PO-Revision-Date: 2025-03-13 13:15+0000\n"
+"Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
+"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.8.3\n"
+"X-Generator: Weblate 5.10.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -62,12 +62,12 @@ msgstr "Načíst překlady paměti"
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:39
 msgid "Try again"
-msgstr ""
+msgstr "Zkusit znovu"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:45
 msgid "Continue anyway"
-msgstr ""
+msgstr "Přesto pokračovat"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:51

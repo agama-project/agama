@@ -22,6 +22,15 @@
 
 use serde::{Deserialize, Serialize};
 
+/// Addon settings for registration
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct AddonSettings {
+    pub id: String,
+    pub version: String,
+    pub registration_code: Option<String>,
+}
+
 /// Software settings for installation
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -32,4 +41,6 @@ pub struct ProductSettings {
     pub registration_code: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_email: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub addons: Option<Vec<AddonSettings>>,
 }

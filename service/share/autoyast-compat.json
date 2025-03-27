@@ -7,7 +7,17 @@
   { "key": "dhcp-server", "support": "no" },
   { "key": "dns-server", "support": "no" },
   { "key": "fcoe-client", "support": "no" },
-  { "key": "files", "support": "planned" },
+  { 
+    "key": "files",
+    "children": [
+      { "key": "file_path", "support": "yes", "agama": "files.destination", "notes": "Creating directories by using trailing slash is not yet supported."},
+      { "key": "file_contents", "support": "yes", "agama": "files.content" },
+      { "key": "file_location", "support": "yes", "agama": "files.url" },
+      { "key": "file_owner", "support": "yes", "notes": "In agama it is split to files.user and files.group" },
+      { "key": "file_permissions", "support": "yes" },
+      { "key": "file_script", "support": "planned" }
+    ]
+  },
   { "key": "firstboot", "support": "no" },
   { "key": "ftp-server", "support": "no" },
   { "key": "general", "support": "no" },
@@ -432,7 +442,12 @@
       { "key": "reg_server_cert", "support": "planned" },
       { "key": "reg_server_cert_fingerprint", "support": "planned" },
       { "key": "reg_server_cert_fingerprint_type", "support": "planned" },
-      { "key": "addons", "support": "planned" },
+      {
+        "key": "addons[]",
+        "support": "yes",
+        "agama": "product.addons[]",
+        "notes": "Does not check the dependencies, it registers addons in the given order."
+      },
       { "key": "slp_discovery", "support": "planned" }
     ]
   },
