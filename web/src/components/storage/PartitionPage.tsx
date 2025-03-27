@@ -299,7 +299,7 @@ function useMountPointError(value: FormValue): Error | undefined {
     };
   }
 
-  const regex = /^swap$|^\/$|^(\/[^/\s]+([^/]*[^/\s])*)+$/;
+  const regex = /^swap$|^\/$|^(\/[^/\s]+)+$/;
   if (!regex.test(mountPoint)) {
     return {
       id: "mountPoint",
