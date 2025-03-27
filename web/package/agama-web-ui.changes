@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 26 08:25:34 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Change switches by checkboxes (gh#agama-project/agama#2168).
+- Restructure the encryption form (gh#agama-project/agama#2168).
+
+-------------------------------------------------------------------
 Mon Mar 24 10:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Properly handle empty lists of unsupported AutoYaST elements

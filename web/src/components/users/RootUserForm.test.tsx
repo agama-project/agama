@@ -98,7 +98,7 @@ describe("RootUserForm", () => {
 
   it("allows clearing the password", async () => {
     const { user } = installerRender(<RootUserForm />);
-    const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+    const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     expect(passwordToggle).toBeChecked();
     await user.click(passwordToggle);
@@ -111,7 +111,7 @@ describe("RootUserForm", () => {
 
   it("allows setting a public SSH Key ", async () => {
     const { user } = installerRender(<RootUserForm />);
-    const sshPublicKeyToggle = screen.getByRole("switch", { name: "Use public SSH Key" });
+    const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     await user.click(sshPublicKeyToggle);
     const sshPublicKeyInput = screen.getByRole("textbox", { name: "File upload" });
@@ -126,7 +126,7 @@ describe("RootUserForm", () => {
 
   it("does not allow setting an empty public SSH Key", async () => {
     const { user } = installerRender(<RootUserForm />);
-    const sshPublicKeyToggle = screen.getByRole("switch", { name: "Use public SSH Key" });
+    const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     await user.click(sshPublicKeyToggle);
     expect(sshPublicKeyToggle).toBeChecked();
@@ -139,7 +139,7 @@ describe("RootUserForm", () => {
   it("allows clearing the public SSH Key", async () => {
     mockPublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
     const { user } = installerRender(<RootUserForm />);
-    const sshPublicKeyToggle = screen.getByRole("switch", { name: "Use public SSH Key" });
+    const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     expect(sshPublicKeyToggle).toBeChecked();
     await user.click(sshPublicKeyToggle);
@@ -158,7 +158,7 @@ describe("RootUserForm", () => {
 
     it("allows preserving it", async () => {
       const { user } = installerRender(<RootUserForm />);
-      const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+      const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(passwordToggle).toBeChecked();
       screen.getByText("Using a hashed password.");
@@ -170,7 +170,7 @@ describe("RootUserForm", () => {
 
     it("allows discarding it", async () => {
       const { user } = installerRender(<RootUserForm />);
-      const passwordToggle = screen.getByRole("switch", { name: "Use password" });
+      const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(passwordToggle).toBeChecked();
       await user.click(passwordToggle);
