@@ -61,6 +61,7 @@ import { useMissingMountPaths, useVolume } from "~/hooks/storage/product";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/helpers/storage/logical-volume";
+import { buildLogicalVolumeName } from "~/helpers/storage/api-model";
 import { apiModel } from "~/api/storage/types";
 import { data } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -172,10 +173,6 @@ function toFormValue(logicalVolume: apiModel.LogicalVolume): FormValue {
     maxSize: size(logicalVolume.size?.max),
   };
 }
-
-const logicalVolumeName = (mountPath: string): string => {
-  return mountPath === "/" ? "root" : mountPath.split("/").pop();
-};
 
 function useDefaultFilesystem(mountPoint: string): string {
   const volume = useVolume(mountPoint, { suspense: true });
@@ -826,7 +823,7 @@ export default function LogicalVolumePage() {
       setAutoRefreshFilesystem(true);
       setAutoRefreshSize(true);
       setMountPoint(value);
-      setName(logicalVolumeName(value));
+      setName(buildLogicalVolumeName(value));
     }
   };
 

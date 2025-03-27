@@ -22,12 +22,12 @@
 
 import { apiModel } from "~/api/storage/types";
 import { deleteIfUnused } from "~/helpers/storage/drive";
-import { copyApiModel, buildVolumeGroup } from "~/helpers/storage/api-model";
+import {
+  copyApiModel,
+  buildVolumeGroup,
+  buildLogicalVolumeFromPartition,
+} from "~/helpers/storage/api-model";
 import { data } from "~/types/storage";
-
-function toLogicalVolume(partition: apiModel.Partition): apiModel.LogicalVolume {
-  return { ...partition };
-}
 
 function movePartitions(drive: apiModel.Drive, volumeGroup: apiModel.VolumeGroup) {
   if (!drive.partitions) return;
@@ -36,7 +36,10 @@ function movePartitions(drive: apiModel.Drive, volumeGroup: apiModel.VolumeGroup
   const reusedPartitions = drive.partitions.filter((p) => p.name);
   drive.partitions = [...reusedPartitions];
   const logicalVolumes = volumeGroup.logicalVolumes || [];
-  volumeGroup.logicalVolumes = [...logicalVolumes, ...newPartitions.map(toLogicalVolume)];
+  volumeGroup.logicalVolumes = [
+    ...logicalVolumes,
+    ...newPartitions.map(buildLogicalVolumeFromPartition),
+  ];
 }
 
 function addVolumeGroup(

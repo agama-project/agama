@@ -59,4 +59,23 @@ function buildLogicalVolume(data: data.LogicalVolume): apiModel.LogicalVolume {
   };
 }
 
-export { copyApiModel, buildVolumeGroup, buildLogicalVolume };
+function buildLogicalVolumeName(mountPath?: string): string | undefined {
+  if (!mountPath) return;
+
+  return mountPath === "/" ? "root" : mountPath.split("/").pop();
+}
+
+function buildLogicalVolumeFromPartition(partition: apiModel.Partition): apiModel.LogicalVolume {
+  return {
+    ...partition,
+    lvName: buildLogicalVolumeName(partition.mountPath),
+  };
+}
+
+export {
+  copyApiModel,
+  buildVolumeGroup,
+  buildLogicalVolume,
+  buildLogicalVolumeName,
+  buildLogicalVolumeFromPartition,
+};
