@@ -99,7 +99,6 @@
   },
   "dependencies": {
     "@date-fns/tz": "^1.1.2",
-    "@icons-pack/react-simple-icons": "^10.0.0",
     "@material-symbols/svg-400": "^0.27.2",
     "@patternfly/patternfly": "^6.1.0",
     "@patternfly/react-core": "^6.1.0",
