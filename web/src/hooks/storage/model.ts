@@ -21,8 +21,8 @@
  */
 
 import { useMemo } from "react";
-import useApiModel from "~/hooks/storage/api-model";
-import buildModel from "~/hooks/storage/helpers/build-model";
+import { useApiModel } from "~/hooks/storage/api-model";
+import { buildModel } from "~/helpers/storage/model";
 import { QueryHookOptions } from "~/types/queries";
 import { model } from "~/types/storage";
 
@@ -36,16 +36,4 @@ function useModel(options?: QueryHookOptions): model.Model | null {
   return model;
 }
 
-function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {
-  const model = useModel(options);
-  const drive = model?.drives?.find((d) => d.name === name);
-  return drive || null;
-}
-
-function useVolumeGroup(vgName: string, options?: QueryHookOptions): model.VolumeGroup | null {
-  const model = useModel(options);
-  const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
-  return volumeGroup || null;
-}
-
-export { useModel as default, useDrive, useVolumeGroup };
+export { useModel };

@@ -20,21 +20,31 @@
  * find current contact information at www.suse.com.
  */
 
+/**
+ * Model types.
+ *
+ * Types that extend the apiModel by adding calculated properties and methods.
+ */
+
 import { apiModel } from "~/api/storage/types";
 
 type Model = {
   drives: Drive[];
   volumeGroups: VolumeGroup[];
+  getMountPaths: () => string[];
 };
 
 interface Drive extends apiModel.Drive {
   isUsed: boolean;
+  isAddingPartitions: boolean;
+  getMountPaths: () => string[];
   getVolumeGroups: () => VolumeGroup[];
 }
 
 interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
-  getTargetDevices: () => Drive[];
   logicalVolumes: LogicalVolume[];
+  getTargetDevices: () => Drive[];
+  getMountPaths: () => string[];
 }
 
 type LogicalVolume = apiModel.LogicalVolume;

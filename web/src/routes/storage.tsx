@@ -31,6 +31,7 @@ import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import PartitionPage from "~/components/storage/PartitionPage";
 import LvmPage from "~/components/storage/LvmPage";
+import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
@@ -73,6 +74,14 @@ const routes = (): Route => ({
     {
       path: PATHS.volumeGroup.edit,
       element: <LvmPage />,
+    },
+    {
+      path: PATHS.volumeGroup.logicalVolume.add,
+      element: <LogicalVolumePage />,
+    },
+    {
+      path: PATHS.volumeGroup.logicalVolume.edit,
+      element: <LogicalVolumePage />,
     },
     {
       path: PATHS.iscsi,

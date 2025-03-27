@@ -20,21 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-import useApiModel from "~/hooks/storage/api-model";
-import useUpdateApiModel from "~/hooks/storage/update-api-model";
-import { editVolumeGroup } from "~/hooks/storage/helpers/volume-group";
-import { QueryHookOptions } from "~/types/queries";
+import { apiModel } from "~/api/storage/types";
+import { model } from "~/types/storage";
+import { copyApiModel } from "~/helpers/storage/api-model";
+import { buildModel } from "~/helpers/storage/model";
 
-export type EditVolumeGroupFn = (
-  odlVgName: string,
-  vgName: string,
-  targetDevices: string[],
-) => void;
-
-export default function useEditVolumeGroup(options?: QueryHookOptions): EditVolumeGroupFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
-  return (oldVgName: string, vgName: string, targetDevices: string[]) => {
-    updateApiModel(editVolumeGroup(apiModel, oldVgName, vgName, targetDevices));
-  };
+function buildDrive(apiModel: apiModel.Config, name: string): model.Drive | undefined {
+  const model = buildModel(apiModel);
+  return model.drives.find((d) => d.name === name);
 }
+
+function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+
+  const index = (apiModel.drives || []).findIndex((d) => d.name === name);
+  if (index === -1) return apiModel;
+
+  const drive = buildDrive(apiModel, name);
+  if (!drive || drive.isUsed) return apiModel;
+
+  apiModel.drives.splice(index, 1);
+  return apiModel;
+}
+
+export { deleteIfUnused };

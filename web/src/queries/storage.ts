@@ -26,7 +26,10 @@ import {
   fetchConfig,
   setConfig,
   resetConfig,
+  fetchConfigModel,
+  solveConfigModel,
   fetchActions,
+  fetchVolume,
   fetchVolumes,
   fetchProductParams,
   fetchUsableDevices,
@@ -42,6 +45,52 @@ const configQuery = {
   queryKey: ["storage", "config"],
   queryFn: fetchConfig,
   staleTime: Infinity,
+};
+
+const apiModelQuery = {
+  queryKey: ["storage", "apiModel"],
+  queryFn: fetchConfigModel,
+  staleTime: Infinity,
+};
+
+const solveApiModelQuery = (apiModel?: apiModel.Config) => ({
+  queryKey: ["storage", "solveApiModel", JSON.stringify(apiModel)],
+  queryFn: () => (apiModel ? solveConfigModel(apiModel) : Promise.resolve(null)),
+  staleTime: Infinity,
+});
+
+const devicesQuery = (scope: "result" | "system") => ({
+  queryKey: ["storage", "devices", scope],
+  queryFn: () => fetchDevices(scope),
+  staleTime: Infinity,
+});
+
+const productParamsQuery = {
+  queryKey: ["storage", "productParams"],
+  queryFn: fetchProductParams,
+  staleTime: Infinity,
+};
+
+const volumeQuery = (mountPath: string) => ({
+  queryKey: ["storage", "volume", mountPath],
+  queryFn: () => fetchVolume(mountPath),
+  staleTime: Infinity,
+});
+
+const volumesQuery = (mountPaths: string[]) => ({
+  queryKey: ["storage", "volumes"],
+  queryFn: () => fetchVolumes(mountPaths),
+  staleTime: Infinity,
+});
+
+const actionsQuery = {
+  queryKey: ["storage", "devices", "actions"],
+  queryFn: fetchActions,
+};
+
+const deprecatedQuery = {
+  queryKey: ["storage", "dirty"],
+  queryFn: fetchDevicesDirty,
 };
 
 /**
@@ -79,12 +128,6 @@ const useResetConfigMutation = () => {
 
   return useMutation(query);
 };
-
-const devicesQuery = (scope: "result" | "system") => ({
-  queryKey: ["storage", "devices", scope],
-  queryFn: () => fetchDevices(scope),
-  staleTime: Infinity,
-});
 
 /**
  * Hook that returns the list of storage devices for the given scope.
@@ -132,13 +175,8 @@ const useAvailableDevices = (): StorageDevice[] => {
   return data;
 };
 
-const productParamsQuery = {
-  queryKey: ["storage", "productParams"],
-  queryFn: fetchProductParams,
-  staleTime: Infinity,
-};
-
 /**
+ * @deprecated Use useProductParams from ~/hooks/storage/product.
  * Hook that returns the product parameters (e.g., mount points).
  */
 const useProductParams = (options?: QueryHookOptions): ProductParams => {
@@ -174,12 +212,6 @@ const useEncryptionMethods = (options?: QueryHookOptions): apiModel.EncryptionMe
   return encryptionMethods;
 };
 
-const volumesQuery = (mountPaths: string[]) => ({
-  queryKey: ["storage", "volumes"],
-  queryFn: () => fetchVolumes(mountPaths),
-  staleTime: Infinity,
-});
-
 /**
  * Hook that returns the volumes for the current product.
  */
@@ -190,6 +222,7 @@ const useVolumes = (): Volume[] => {
   return data;
 };
 
+/** @deprecated Use useVolume from ~/hooks/storage/product. */
 function useVolume(mountPoint: string): Volume {
   const volumes = useVolumes();
   const volume = volumes.find((v) => v.mountPath === mountPoint);
@@ -226,22 +259,12 @@ const useVolumeDevices = (): StorageDevice[] => {
   return [...availableDevices, ...mds, ...vgs];
 };
 
-const actionsQuery = {
-  queryKey: ["storage", "devices", "actions"],
-  queryFn: fetchActions,
-};
-
 /**
  * Hook that returns the actions to perform in the storage devices.
  */
 const useActions = (): Action[] => {
   const { data } = useSuspenseQuery(actionsQuery);
   return data;
-};
-
-const deprecatedQuery = {
-  queryKey: ["storage", "dirty"],
-  queryFn: fetchDevicesDirty,
 };
 
 /**
@@ -286,6 +309,10 @@ const useReprobeMutation = () => {
 };
 
 export {
+  productParamsQuery,
+  apiModelQuery,
+  solveApiModelQuery,
+  volumeQuery,
   useConfig,
   useConfigMutation,
   useResetConfigMutation,

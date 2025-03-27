@@ -30,7 +30,7 @@ import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive, useModel } from "~/queries/storage/config-model";
-import { useDrive as useDriveModel } from "~/hooks/storage/model";
+import { useDrive as useDriveModel } from "~/hooks/storage/drive";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { contentDescription } from "~/components/storage/utils/device";
 import DeviceMenu from "~/components/storage/DeviceMenu";
@@ -447,7 +447,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
 
     if (isBoot) {
       // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to boot");
+      return _("Use %s to configure boot partitions");
     }
     // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
     return _("Use %s");
@@ -496,10 +496,9 @@ const PartitionMenuItem = ({ driveName, mountPath }) => {
     id: baseName(driveName),
     partitionId: encodeURIComponent(mountPath),
   });
+  const deletePartition = () => drive.deletePartition(mountPath);
 
-  return (
-    <MountPathMenuItem device={partition} editPath={editPath} deleteFn={drive.deletePartition} />
-  );
+  return <MountPathMenuItem device={partition} editPath={editPath} deleteFn={deletePartition} />;
 };
 
 const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {

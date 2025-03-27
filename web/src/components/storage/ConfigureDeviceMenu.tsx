@@ -63,17 +63,20 @@ const DisksDrillDownMenuItem = ({
 }: DisksDrillDownMenuItemProps) => {
   const isDisabled = !devices.length;
 
-  const disabledDescription = _("Already using all availalbe disks.");
+  const disabledDescription = _("Already using all available disks");
   const enabledDescription = drivesCount
     ? sprintf(
         n_(
-          "Extends the installation beyond the currently selected disk",
-          "Extends the installation beyond the current %d disks",
+          "Extend the installation beyond the currently selected disk",
+          "Extend the installation beyond the current %d disks",
           drivesCount,
         ),
         drivesCount,
       )
-    : _("Extends the installation using a disk");
+    : _("Start configuring a basic installation");
+  const title = drivesCount
+    ? _("Select another disk to define partitions")
+    : _("Select a disk to define partitions");
 
   return (
     <MenuItem
@@ -109,11 +112,7 @@ const DisksDrillDownMenuItem = ({
         </DrilldownMenu>
       }
     >
-      {n_(
-        "Select another disk to define partitions",
-        "Select a disk to define partitions",
-        drivesCount,
-      )}
+      {title}
     </MenuItem>
   );
 };
@@ -194,6 +193,10 @@ export default function ConfigureDeviceMenu() {
     }
   };
 
+  const lvmDescription = allDevices.length
+    ? _("Define a new LVM on top of one or several disks")
+    : _("Define a new LVM on the disk");
+
   return (
     <MenuContainer
       isOpen={isOpen}
@@ -201,7 +204,7 @@ export default function ConfigureDeviceMenu() {
       toggleRef={toggleRef}
       toggle={
         <MenuToggle ref={toggleRef} onClick={toggle} isExpanded={isOpen}>
-          {_("Configure a device")}
+          {_("More devices")}
         </MenuToggle>
       }
       menuRef={menuRef}
@@ -228,7 +231,7 @@ export default function ConfigureDeviceMenu() {
               <MenuItem
                 key="lvm-link"
                 onClick={() => navigate(PATHS.volumeGroup.add)}
-                description={_("Extend the installation using LVM")}
+                description={lvmDescription}
               >
                 {_("Add LVM volume group")}
               </MenuItem>

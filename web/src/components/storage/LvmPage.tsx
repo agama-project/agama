@@ -36,10 +36,13 @@ import {
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/queries/storage";
-import { StorageDevice, model } from "~/types/storage";
-import useModel, { useVolumeGroup } from "~/hooks/storage/model";
-import useAddVolumeGroup from "~/hooks/storage/add-volume-group";
-import useEditVolumeGroup from "~/hooks/storage/edit-volume-group";
+import { StorageDevice, model, data } from "~/types/storage";
+import { useModel } from "~/hooks/storage/model";
+import {
+  useVolumeGroup,
+  useAddVolumeGroup,
+  useEditVolumeGroup,
+} from "~/hooks/storage/volume-group";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -64,6 +67,9 @@ function targetDevicesError(targetDevices: StorageDevice[]): string | undefined 
 
 /**
  * Form for configuring a LVM volume group.
+ *
+ * @todo Adapt states to use a data.VolumeGroup type and initializes its value from a
+ * model.VolumeGroup (build data.VolumeGroup from model.VolumeGroup).
  */
 export default function LvmPage() {
   const { id } = useParams();
@@ -86,6 +92,9 @@ export default function LvmPage() {
       setSelectedDevices(targetDevices);
     } else if (model && !model.volumeGroups.length) {
       setName("system");
+      const targetNames = model.drives.filter((d) => d.isAddingPartitions).map((d) => d.name);
+      const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
+      setSelectedDevices(targetDevices);
     }
   }, [model, volumeGroup, allDevices]);
 
@@ -113,12 +122,15 @@ export default function LvmPage() {
 
     if (errors.length) return;
 
-    const selectedDeviceNames = selectedDevices.map((d) => d.name);
+    const data: data.VolumeGroup = {
+      vgName: name,
+      targetDevices: selectedDevices.map((d) => d.name),
+    };
 
     if (!volumeGroup) {
-      addVolumeGroup(name, selectedDeviceNames, moveMountPoints);
+      addVolumeGroup(data, moveMountPoints);
     } else {
-      editVolumeGroup(volumeGroup.vgName, name, selectedDeviceNames);
+      editVolumeGroup(volumeGroup.vgName, data);
     }
 
     navigate(PATHS.root);

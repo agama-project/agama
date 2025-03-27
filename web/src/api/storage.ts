@@ -86,6 +86,7 @@ export {
   solveConfigModel,
   fetchUsableDevices,
   fetchProductParams,
+  fetchVolume,
   fetchVolumes,
   fetchActions,
   fetchStorageJobs,

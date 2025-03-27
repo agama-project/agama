@@ -128,3 +128,4 @@ export type {
 };
 
 export * as model from "~/types/storage/model";
+export * as data from "~/types/storage/data";

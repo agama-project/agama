@@ -20,14 +20,42 @@
  * find current contact information at www.suse.com.
  */
 
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { configModelQuery } from "~/queries/storage/config-model";
+import { useQuery, useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiModel } from "~/api/storage/types";
+import { apiModelQuery, solveApiModelQuery } from "~/queries/storage";
 import { QueryHookOptions } from "~/types/queries";
+import { setConfigModel } from "~/api/storage";
 
-export default function useApiModel(options?: QueryHookOptions): apiModel.Config | null {
-  const query = configModelQuery;
+function useApiModel(options?: QueryHookOptions): apiModel.Config | null {
+  const query = apiModelQuery;
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data || null;
 }
+
+/** @todo Use a hash key from the model object as id for the query. */
+function useSolvedApiModel(
+  model?: apiModel.Config,
+  options?: QueryHookOptions,
+): apiModel.Config | null {
+  const query = solveApiModelQuery(model);
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func(query);
+  return data;
+}
+
+type UpdateApiModelFn = (apiModel: apiModel.Config) => void;
+
+function useUpdateApiModel(): UpdateApiModelFn {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (apiModel: apiModel.Config) => setConfigModel(apiModel),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
+
+  const { mutate } = useMutation(query);
+  return mutate;
+}
+
+export { useApiModel, useSolvedApiModel, useUpdateApiModel };
+export type { UpdateApiModelFn };

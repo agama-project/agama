@@ -384,6 +384,7 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 .pf-v6-c-check {
   row-gap: var(--pf-t--global--spacer--xs);
+  align-content: baseline;
 
   input[type="checkbox"] {
     align-self: center;

@@ -27,8 +27,8 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 import { contentDescription } from "~/components/storage/utils/volume-group";
-import { useVolumeGroup } from "~/hooks/storage/model";
-import useDeleteVolumeGroup from "~/hooks/storage/delete-volume-group";
+import { useVolumeGroup, useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
+import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
 import DeviceMenu from "~/components/storage/DeviceMenu";
 import DeviceHeader from "~/components/storage/DeviceHeader";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
@@ -37,6 +37,7 @@ import {
   CardBody,
   CardHeader,
   CardTitle,
+  Divider,
   Flex,
   MenuItem,
   MenuList,
@@ -101,6 +102,17 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
 };
 
 const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
+  const navigate = useNavigate();
+  const deleteLogicalVolume = useDeleteLogicalVolume();
+
+  const editPath = (lv: model.LogicalVolume): string => {
+    return generatePath(PATHS.volumeGroup.logicalVolume.edit, {
+      id: vg.vgName,
+      logicalVolumeId: encodeURIComponent(lv.mountPath),
+    });
+  };
+  const deleteLv = (lv: model.LogicalVolume) => deleteLogicalVolume(vg.vgName, lv.mountPath);
+
   return (
     <DeviceMenu
       title={<span aria-hidden>{contentDescription(vg)}</span>}
@@ -108,8 +120,25 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
     >
       <MenuList>
         {vg.logicalVolumes.map((lv) => {
-          return <MountPathMenuItem key={lv.mountPath} device={lv} />;
+          return (
+            <MountPathMenuItem
+              key={lv.mountPath}
+              device={lv}
+              editPath={editPath(lv)}
+              deleteFn={() => deleteLv(lv)}
+            />
+          );
         })}
+        {vg.logicalVolumes.length > 0 && <Divider component="li" />}
+        <MenuItem
+          key="add-logical-volume"
+          itemId="add-logical-volume"
+          onClick={() =>
+            navigate(generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName }))
+          }
+        >
+          <span>{_("Add logical volume")}</span>
+        </MenuItem>
       </MenuList>
     </DeviceMenu>
   );

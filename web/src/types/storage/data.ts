@@ -20,8 +20,24 @@
  * find current contact information at www.suse.com.
  */
 
+/**
+ * Data types.
+ *
+ * Types that represent the data used for managing (add, edit) config devices. These types are
+ * typically used by forms and mutation hooks.
+ */
+
 import { apiModel } from "~/api/storage/types";
 
-export default function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
-  return JSON.parse(JSON.stringify(apiModel));
+type VolumeGroup = Partial<Omit<apiModel.VolumeGroup, "logicalVolumes">>;
+
+interface LogicalVolume extends Partial<Omit<apiModel.LogicalVolume, "filesystem" | "size">> {
+  filesystem?: Filesystem;
+  size?: Size;
 }
+
+type Filesystem = Partial<Omit<apiModel.Filesystem, "default">>;
+
+type Size = Partial<Omit<apiModel.Size, "default">>;
+
+export type { VolumeGroup, LogicalVolume, Filesystem, Size };

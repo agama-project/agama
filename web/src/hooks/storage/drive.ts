@@ -20,15 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-import useApiModel from "~/hooks/storage/api-model";
-import useUpdateApiModel from "~/hooks/storage/update-api-model";
 import { QueryHookOptions } from "~/types/queries";
-import { deleteVolumeGroup } from "~/hooks/storage/helpers/volume-group";
+import { model } from "~/types/storage";
+import { useModel } from "~/hooks/storage/model";
 
-export type DeleteVolumeGroupFn = (vgName: string) => void;
-
-export default function useDeleteVolumeGroup(options?: QueryHookOptions): DeleteVolumeGroupFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
-  return (vgName: string) => updateApiModel(deleteVolumeGroup(apiModel, vgName));
+function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {
+  const model = useModel(options);
+  const drive = model?.drives?.find((d) => d.name === name);
+  return drive || null;
 }
+
+export { useDrive };

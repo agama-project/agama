@@ -21,12 +21,13 @@
  */
 
 import { apiModel } from "~/api/storage/types";
-import copyApiModel from "~/hooks/storage/helpers/copy-api-model";
-import { deleteIfUnused } from "~/hooks/storage/helpers/drive";
-
-function toLogicalVolume(partition: apiModel.Partition) {
-  return { ...partition };
-}
+import { deleteIfUnused } from "~/helpers/storage/drive";
+import {
+  copyApiModel,
+  buildVolumeGroup,
+  buildLogicalVolumeFromPartition,
+} from "~/helpers/storage/api-model";
+import { data } from "~/types/storage";
 
 function movePartitions(drive: apiModel.Drive, volumeGroup: apiModel.VolumeGroup) {
   if (!drive.partitions) return;
@@ -35,22 +36,24 @@ function movePartitions(drive: apiModel.Drive, volumeGroup: apiModel.VolumeGroup
   const reusedPartitions = drive.partitions.filter((p) => p.name);
   drive.partitions = [...reusedPartitions];
   const logicalVolumes = volumeGroup.logicalVolumes || [];
-  volumeGroup.logicalVolumes = [...logicalVolumes, ...newPartitions.map(toLogicalVolume)];
+  volumeGroup.logicalVolumes = [
+    ...logicalVolumes,
+    ...newPartitions.map(buildLogicalVolumeFromPartition),
+  ];
 }
 
 function addVolumeGroup(
   apiModel: apiModel.Config,
-  vgName: string,
-  targetDevices: string[],
+  data: data.VolumeGroup,
   moveContent: boolean,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
-  const volumeGroup = { vgName, targetDevices };
+  const volumeGroup = buildVolumeGroup(data);
 
   if (moveContent) {
     (apiModel.drives || [])
-      .filter((d) => targetDevices.includes(d.name))
+      .filter((d) => data.targetDevices.includes(d.name))
       .forEach((d) => movePartitions(d, volumeGroup));
   }
 
@@ -62,17 +65,16 @@ function addVolumeGroup(
 
 function editVolumeGroup(
   apiModel: apiModel.Config,
-  oldVgName: string,
   vgName: string,
-  targetDevices: string[],
+  data: data.VolumeGroup,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
-  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === oldVgName);
+  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
   if (index === -1) return apiModel;
 
   const oldVolumeGroup = apiModel.volumeGroups[index];
-  const newVolumeGroup = { ...oldVolumeGroup, vgName, targetDevices };
+  const newVolumeGroup = { ...oldVolumeGroup, ...buildVolumeGroup(data) };
 
   apiModel.volumeGroups.splice(index, 1, newVolumeGroup);
   (oldVolumeGroup.targetDevices || []).forEach((d) => {
