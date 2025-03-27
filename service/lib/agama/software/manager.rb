@@ -239,13 +239,18 @@ module Agama
       def patterns(filtered)
         # huge speed up, preload the used attributes to avoid querying libzypp again,
         # see "ListPatterns" method in service/lib/agama/dbus/software/manager.rb
-        preload = [:category, :description, :icon, :summary, :order, :user_visible]
+        preload = [:category, :description, :icon, :summary, :order, :source, :user_visible]
         patterns = Y2Packager::Resolvable.find({ kind: :pattern }, preload)
         patterns = patterns.select(&:user_visible) if filtered
 
-        # only display the configured patterns
+        # only display the configured patterns from the base product, from addons display everything
         if product.user_patterns && filtered
-          patterns.select! { |p| product.user_patterns.include?(p.name) }
+          base_repos = base_repositories
+
+          patterns.select! do |p|
+            # the pattern is not from a base repository or is included in the display list
+            !base_repos.include?(p.source) || product.user_patterns.include?(p.name)
+          end
         end
 
         patterns
@@ -718,6 +723,30 @@ module Agama
       # remove all local repositories
       def remove_local_repos
         Agama::Software::Repository.all.select(&:local?).each(&:delete!)
+      end
+
+      # Return all repositories belonging to the base product
+      #
+      # @return [Array<Integer>] List of repository IDs, returns empty list if
+      # no repository is defined yet
+      def base_repositories
+        # the base product repo is the first added repository (the lowest number)
+        base_src_id = Yast::Pkg.SourceGetCurrent(true).min
+        # a repository might not be defined yet
+        return [] unless base_src_id
+
+        # if the base repository comes from a service consider all repositories from that service
+        # (SCC uses Pool + Updates, use both of them just in case a pattern is updated)
+        service = Yast::Pkg.SourceGeneralData(base_src_id)["service"]
+
+        if service.empty?
+          [base_src_id]
+        else
+          logger.info "The base product is from a service"
+          Yast::Pkg.SourceGetCurrent(true).select do |r|
+            Yast::Pkg.SourceGeneralData(r)["service"] == service
+          end
+        end
       end
     end
   end
