@@ -317,6 +317,11 @@
       );
     }
   }
+
+  &.pf-m-plain {
+    border: 0;
+    background: none;
+  }
 }
 
 .pf-v6-c-alert__title {
