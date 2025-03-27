@@ -36,7 +36,7 @@ const sle: Product = {
   license: "license.sle",
 };
 
-const mockUILanguage = "es-ES";
+const mockUILanguage = "de-DE";
 const product: Product = sle;
 const onCloseFn = jest.fn();
 let mockFetchLicense: jest.SpyInstance;
@@ -79,14 +79,14 @@ describe("LicenseDialog", () => {
       withL10n: true,
     });
     const languageButton = screen.getByRole("button", { name: "License language" });
-    within(languageButton).getByText("Español");
+    within(languageButton).getByText("Deutsch");
     await user.click(languageButton);
     expect(languageButton).toHaveAttribute("aria-expanded", "true");
     // FIXME: the selector should not be hidden for the Accessiblity API
-    const languageFrenchOption = screen.getByRole("menuitem", { name: "Français", hidden: true });
+    const languageFrenchOption = screen.getByRole("menuitem", { name: "Svenska", hidden: true });
     await user.click(languageFrenchOption);
-    expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, "fr-FR");
-    within(languageButton).getByText("Français");
+    expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, "sv-SE");
+    within(languageButton).getByText("Svenska");
     expect(languageButton).toHaveAttribute("aria-expanded", "false");
   });
 
