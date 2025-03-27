@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 27 12:40:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 13
+
+-------------------------------------------------------------------
 Thu Mar 27 11:40:23 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Extend storage model for basic LVM support
