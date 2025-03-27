@@ -71,11 +71,23 @@ const SOFTWARE = {
 
 const STORAGE = {
   root: "/storage",
-  bootDevice: "/storage/select-boot-device",
-  encryption: "/storage/encryption",
-  addPartition: "/storage/:id/add-partition",
-  editPartition: "/storage/:id/edit-partition/:partitionId",
-  findSpace: "/storage/:id/find-space",
+  editBootDevice: "/storage/boot-device/edit",
+  editEncryption: "/storage/encryption/edit",
+  drive: {
+    editSpacePolicy: "/storage/drives/:id/space-policy/edit",
+    partition: {
+      add: "/storage/drives/:id/partitions/add",
+      edit: "/storage/drives/:id/partitions/:partitionId/edit",
+    },
+  },
+  volumeGroup: {
+    add: "/storage/volume-groups/add",
+    edit: "/storage/volume-groups/:id/edit",
+    logicalVolume: {
+      add: "/storage/volume-groups/:id/logical-volumes/add",
+      edit: "/storage/volume-groups/:id/logical-volumes/:logicalVolumeId/edit",
+    },
+  },
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
   zfcp: {

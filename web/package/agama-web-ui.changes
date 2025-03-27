@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 27 11:42:51 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add basic support for creating LVM volume groups and logical
+  volumes (gh#agama-project/agama#2216).
+
+-------------------------------------------------------------------
 Wed Mar 26 08:25:34 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Change switches by checkboxes (gh#agama-project/agama#2168).

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -43,8 +43,7 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              name:           config.found_device&.name,
-              alias:          config.alias,
+              name:           config.device_name,
               id:             config.id&.to_s,
               mountPath:      config.filesystem&.path,
               filesystem:     convert_filesystem,

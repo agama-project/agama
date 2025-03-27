@@ -28,14 +28,14 @@ import { SpaceActionsTable } from "~/components/storage";
 import { baseName, deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 import { useDevices } from "~/queries/storage";
 import { useConfigModel, useDrive } from "~/queries/storage/config-model";
 import { toStorageDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 
-const partitionAction = (partition: configModel.Partition) => {
+const partitionAction = (partition: apiModel.Partition) => {
   if (partition.delete) return "delete";
   if (partition.resizeIfNeeded) return "resizeIfNeeded";
 

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 27 11:40:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend storage model for basic LVM support
+  (gh#agama-project/agama#2216).
+
+-------------------------------------------------------------------
 Tue Mar 25 15:47:13 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Install registred addon product (its *-release package)
@@ -35,7 +41,7 @@ Wed Mar 12 00:44:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Copy Agama logs to the installed system (gh#agama/agama-project#2148).
 - Set /var/log/agama-installation permissions to 0700
-  (gh#agama/agama-project#2140).
+  (gh#agama-project/agama#2140).
 
 -------------------------------------------------------------------
 Wed Mar  5 14:50:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
@@ -60,7 +66,7 @@ Wed Mar  5 08:09:28 UTC 2025 - Michal Filka <mfilka@suse.com>
 
 - introduced boot_strategy into storage section of product
   definition yaml file. It allows to control what boot strategy
-  will be proposed by storage. Currently works only for BLS. 
+  will be proposed by storage. Currently works only for BLS.
 
 -------------------------------------------------------------------
 Fri Feb 28 13:03:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,23 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import { _, n_, formatList } from "~/i18n";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 
 /**
  * String to identify the drive.
  */
-const label = (drive: configModel.Drive): string => {
-  if (drive.alias) return drive.alias;
-
+const label = (drive: apiModel.Drive): string => {
   return baseName(drive.name);
 };
 
-const spacePolicyEntry = (drive: configModel.Drive): SpacePolicy => {
+const spacePolicyEntry = (drive: apiModel.Drive): SpacePolicy => {
   return SPACE_POLICIES.find((p) => p.id === drive.spacePolicy);
 };
 
@@ -74,7 +70,7 @@ const resizeTextFor = (partitions) => {
  * FIXME: the case with two sentences looks a bit weird. But trying to summarize everything in one
  * sentence was too hard.
  */
-const contentActionsDescription = (drive: configModel.Drive): string => {
+const contentActionsDescription = (drive: apiModel.Drive): string => {
   const policyLabel = spacePolicyEntry(drive).summaryLabel;
 
   // eslint-disable-next-line agama-i18n/string-literals
@@ -102,7 +98,7 @@ const contentActionsDescription = (drive: configModel.Drive): string => {
  * FIXME: right now, this considers only the case in which the drive is going to host some formatted
  * partitions.
  */
-const contentDescription = (drive: configModel.Drive): string => {
+const contentDescription = (drive: apiModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
 
@@ -145,26 +141,19 @@ const contentDescription = (drive: configModel.Drive): string => {
   return sprintf(_("Partitions will be used and created for %s"), formatList(mountPaths));
 };
 
-const hasFilesystem = (drive: configModel.Drive): boolean => {
+const hasFilesystem = (drive: apiModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath);
 };
 
-const hasRoot = (drive: configModel.Drive): boolean => {
+const hasRoot = (drive: apiModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath && p.mountPath === "/");
 };
 
-const hasReuse = (drive: configModel.Drive): boolean => {
+const hasReuse = (drive: apiModel.Drive): boolean => {
   return drive.partitions && drive.partitions.some((p) => p.mountPath && p.name);
 };
 
-// TODO: maybe it should be moved to Drive hook from config-model.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const hasPv = (drive: configModel.Drive): boolean => {
-  return false;
-};
-
 export {
-  hasPv,
   hasReuse,
   hasFilesystem,
   hasRoot,

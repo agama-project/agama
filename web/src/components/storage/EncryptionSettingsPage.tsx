@@ -26,7 +26,7 @@ import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-c
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import { useEncryptionMethods } from "~/queries/storage";
 import { useEncryption } from "~/queries/storage/config-model";
-import { EncryptionMethod } from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 import { isEmpty } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -41,7 +41,7 @@ export default function EncryptionSettingsPage() {
   const [errors, setErrors] = useState([]);
   const [isEnabled, setIsEnabled] = useState(false);
   const [password, setPassword] = useState("");
-  const [method, setMethod] = useState<EncryptionMethod>("luks2");
+  const [method, setMethod] = useState<apiModel.EncryptionMethod>("luks2");
 
   const passwordRef = useRef<HTMLInputElement>();
   const formId = "encryptionSettingsForm";

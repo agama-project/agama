@@ -67,7 +67,6 @@ module Agama
           def conversions
             {
               search:      convert_search,
-              alias:       drive_model[:alias],
               filesystem:  convert_filesystem,
               ptable_type: convert_ptable_type,
               partitions:  convert_partitions(encryption_model)

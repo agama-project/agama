@@ -118,133 +118,202 @@ describe Agama::Storage::ConfigSolver do
     context "if a config does not specify the boot device alias" do
       let(:config_json) do
         {
-          boot:   { configure: true },
-          drives: [
-            {
-              alias:      device_alias,
-              partitions: [
-                { filesystem: { path: "/" } }
-              ]
-            }
-          ]
+          boot:         { configure: configure_boot },
+          drives:       drives,
+          volumeGroups: volume_groups
         }
       end
 
-      let(:device_alias) { "root" }
+      let(:drives) { [] }
+      let(:volume_groups) { [] }
 
-      context "and the boot device is set to be the default" do
-        before do
-          config.boot.device.default = true
-        end
+      context "and boot is not set to be configured" do
+        let(:configure_boot) { false }
 
-        it "sets the alias of the root drive as boot device alias" do
+        it "does not set a boot device alias" do
           subject.solve(config)
-          boot = config.boot
-          expect(boot.device.device_alias).to eq("root")
+          expect(config.boot.device.device_alias).to be_nil
+        end
+      end
+
+      context "and boot is set to be configured" do
+        let(:configure_boot) { true }
+
+        context "and the boot device is not set to default" do
+          before do
+            config.boot.device.default = false
+          end
+
+          it "does not set a boot device alias" do
+            subject.solve(config)
+            expect(config.boot.device.device_alias).to be_nil
+          end
         end
 
-        context "and the root drive has no alias" do
-          let(:device_alias) { nil }
-
-          it "sets an alias to the root drive" do
-            subject.solve(config)
-            drive = config.drives.first
-            expect(drive.alias).to_not be_nil
+        context "and the boot device is set to default" do
+          before do
+            config.boot.device.default = true
           end
 
-          it "sets the alias of root drive as boot device alias" do
-            subject.solve(config)
-            boot = config.boot
-            drive = config.drives.first
-            expect(boot.device.device_alias).to eq(drive.alias)
-          end
-
-          context "and root is over a logical volume" do
-            let(:scenario) { "disks.yaml" }
-
-            let(:config_json) do
-              {
-                boot:         { configure: true },
-                drives:       [
-                  {
-                    search:     "/dev/vda",
-                    alias:      device_alias,
-                    partitions: [
-                      { search: "/dev/vda2", alias: "pv" }
-                    ]
-                  },
-                  { search: "/dev/vdb", alias: "disk2" }
-                ],
-                volumeGroups: [
-                  {
-                    physicalVolumes: ["disk2", "pv"],
-                    logicalVolumes:  [
-                      { filesystem: { path: "/" } }
-                    ]
-                  }
-                ]
-              }
+          context "and there is a root partition" do
+            let(:drives) do
+              [
+                {
+                  alias:      device_alias,
+                  partitions: [
+                    {
+                      filesystem: { path: "/" }
+                    }
+                  ]
+                }
+              ]
             end
 
-            let(:device_alias) { "disk1" }
+            let(:device_alias) { "root" }
 
-            it "sets the alias of first partitioned pv drive as boot device alias" do
+            it "sets the alias of the root device as boot device alias" do
               subject.solve(config)
-              boot = config.boot
-              expect(boot.device.device_alias).to eq("disk1")
+              expect(config.boot.device.device_alias).to eq("root")
             end
 
-            context "and the drive has no alias" do
+            context "and the root device has no alias" do
               let(:device_alias) { nil }
 
-              it "sets an alias to the drive" do
+              it "sets an alias to the root device" do
                 subject.solve(config)
-                drive = config.drives.find { |d| d.search.name == "/dev/vda" }
+                drive = config.drives.first
                 expect(drive.alias).to_not be_nil
               end
 
-              it "sets the alias of the drive as boot device alias" do
+              it "sets the alias of the root device as boot device alias" do
                 subject.solve(config)
-                boot = config.boot
-                drive = config.drives.find { |d| d.search.name == "/dev/vda" }
-                expect(boot.device.device_alias).to eq(drive.alias)
+                drive = config.drives.first
+                expect(config.boot.device.device_alias).to eq(drive.alias)
               end
             end
           end
-        end
-      end
 
-      context "and the boot device is not set to be the default" do
-        before do
-          config.boot.device.default = false
-        end
+          context "and there is a root logical volume" do
+            let(:volume_groups) do
+              [
+                {
+                  name:            "system",
+                  physicalVolumes: physical_volumes,
+                  logicalVolumes:  [
+                    {
+                      filesystem: { path: "/" }
+                    }
+                  ]
+                }
+              ]
+            end
 
-        it "does not set a boot device alias" do
-          subject.solve(config)
-          boot = config.boot
-          expect(boot.device.device_alias).to be_nil
-        end
-      end
-
-      context "and boot is not set to be configured" do
-        let(:config_json) do
-          {
-            boot:   { configure: false },
-            drives: [
-              {
-                alias:      "disk1",
-                partitions: [
-                  { filesystem: { path: "/" } }
+            context "and there are target devices for physical volumes" do
+              let(:drives) do
+                [
+                  { alias: "disk1" },
+                  { alias: "disk2" }
                 ]
-              }
-            ]
-          }
-        end
+              end
 
-        it "does not set a boot device alias" do
-          subject.solve(config)
-          boot = config.boot
-          expect(boot.device.device_alias).to be_nil
+              let(:physical_volumes) { [{ generate: ["disk2", "disk1"] }] }
+
+              it "sets the alias of the first target device as boot device alias" do
+                subject.solve(config)
+                expect(config.boot.device.device_alias).to eq("disk2")
+              end
+            end
+
+            context "and there is no target device for physical volumes" do
+              let(:drives) do
+                [
+                  {
+                    alias:      "disk1",
+                    partitions: [
+                      { alias: "p1" }
+                    ]
+                  },
+                  {
+                    alias:      device_alias,
+                    partitions: [
+                      { alias: "p2" }
+                    ]
+                  },
+                  { alias: "disk3" }
+                ]
+              end
+
+              let(:device_alias) { "disk2" }
+
+              context "and there is any partition as physical volume" do
+                let(:physical_volumes) { ["disk3", "p2", "p1"] }
+
+                it "sets the alias of the device of the first partition as boot device alias" do
+                  subject.solve(config)
+                  expect(config.boot.device.device_alias).to eq("disk2")
+                end
+
+                context "and the device of the first partition has no alias" do
+                  let(:device_alias) { nil }
+
+                  it "sets an alias to the device" do
+                    subject.solve(config)
+                    drive = config.drives[1]
+                    expect(drive.alias).to_not be_nil
+                  end
+
+                  it "sets the alias of the device as boot device alias" do
+                    subject.solve(config)
+                    drive = config.drives[1]
+                    expect(config.boot.device.device_alias).to eq(drive.alias)
+                  end
+                end
+              end
+
+              context "and there is no partition as physical volume" do
+                let(:physical_volumes) { ["disk1", "disk2"] }
+
+                it "does not set a boot device alias" do
+                  subject.solve(config)
+                  expect(config.boot.device.device_alias).to be_nil
+                end
+              end
+            end
+          end
+
+          context "and there is neither a partition nor a logical volume for root" do
+            let(:drives) do
+              [
+                {
+                  alias:      "disk1",
+                  partitions: [
+                    {
+                      filesystem: { path: "/test1" }
+                    }
+                  ]
+                }
+              ]
+            end
+
+            let(:volume_groups) do
+              [
+                {
+                  name:            "system",
+                  physicalVolumes: [{ generate: ["disk1"] }],
+                  logicalVolumes:  [
+                    {
+                      filesystem: { path: "/test2" }
+                    }
+                  ]
+                }
+              ]
+            end
+
+            it "does not set a boot device alias" do
+              subject.solve(config)
+              expect(config.boot.device.device_alias).to be_nil
+            end
+          end
         end
       end
     end

@@ -126,3 +126,6 @@ export type {
   SpacePolicyAction,
   StorageDevice,
 };
+
+export * as model from "~/types/storage/model";
+export * as data from "~/types/storage/data";
