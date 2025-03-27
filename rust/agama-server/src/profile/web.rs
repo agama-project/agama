@@ -238,7 +238,7 @@ async fn autoyast(
 async fn execute_script(
     query: Query<ProfileQuery>,
     script: String, // script_or_empty
-) -> Result<(), ProfileServiceError> {
+) -> Result<Json<()>, ProfileServiceError> {
     let request_has_body = !script.is_empty() && script != "null";
     query.check(request_has_body)?;
     let script_string = match query.retrieve_profile()? {
@@ -258,11 +258,13 @@ async fn execute_script(
         .as_file_mut()
         .write_all(script_string.as_bytes())
         .context("Writing script text")?;
-
-    let path = named_tempfile.path();
-    let _child = std::process::Command::new(path)
+    // close the file otherwise exec fails with ETXTBSY
+    let path = named_tempfile.into_temp_path();
+    let mut child = std::process::Command::new(&path)
         .spawn()
-        .context("Spawning script")?;
-    // we do not child.wait() or child.wait_with_output()
-    Ok(())
+        .context(format!("Spawning script {:?}", path))?;
+    // FIXME: we don't want to tie up the web service
+    // but if we don't wait, use a more persistent file name
+    child.wait().context("Result of running script")?;
+    Ok(Json(()))
 }
