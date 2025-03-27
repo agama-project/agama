@@ -27,8 +27,11 @@ describe Agama::Storage::Bootloader::Config do
   subject(:config) { described_class.new }
 
   describe "#to_json" do
+    before do
+      config.load_json({ "stopOnBootMenu" => true }.to_json)
+    end
+
     it "serializes its content with keys as camelCase" do
-      config.stop_on_boot_menu = true
       expect(config.to_json).to eq "{\"stopOnBootMenu\":true}"
     end
 
@@ -39,6 +42,12 @@ describe Agama::Storage::Bootloader::Config do
       config.load_json(json)
       expect(config.stop_on_boot_menu).to eq false
     end
+
+    it "exports only what was previously set" do
+      expect(config.to_json).to eq "{\"stopOnBootMenu\":true}"
+      config.load_json({ "timeout" => 10 }.to_json)
+      expect(config.to_json).to eq "{\"timeout\":10}"
+    end
   end
 
   describe "#load_json" do
@@ -46,6 +55,12 @@ describe Agama::Storage::Bootloader::Config do
       content = "{\"stopOnBootMenu\":true}"
       config.load_json(content)
       expect(config.stop_on_boot_menu).to eq true
+    end
+
+    it "remembers which keys are set" do
+      content = "{\"timeout\":10}"
+      config.load_json(content)
+      expect(config.keys_to_export).to eq([:timeout])
     end
   end
 end
