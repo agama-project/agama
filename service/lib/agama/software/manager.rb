@@ -129,6 +129,14 @@ module Agama
         true
       end
 
+      # select additional products to install
+      # @param addon_products [Array<String>] list of product names
+      def addon_products(addon_products)
+        # The PackagesProposal module can handle only packages and patterns,
+        # so products need to be handled differently.
+        proposal.addon_products = addon_products
+      end
+
       def probe
         # Should an error be raised?
         return unless product

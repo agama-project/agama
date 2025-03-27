@@ -138,9 +138,6 @@ export default {
   "All fields are required": [
     "Tots els camps són obligatoris."
   ],
-  "Allows setting a permanent hostname that won’t change with network updates.": [
-    "Permet establir un nom d'amfitrió permanent que no canviarà amb les actualitzacions de xarxa."
-  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
   ],
@@ -260,6 +257,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "Comproveu les %d accions planificades"
+  ],
+  "Check the following before continuing": [
+    ""
   ],
   "Choose a disk for placing the boot loader": [
     "Trieu un disc per posar-hi el carregador d'arrencada"
@@ -1018,9 +1018,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please provide a hostname": [
-    "Si us plau, proporcioneu un nom d'amfitrió."
-  ],
   "Please, cancel and check the settings if you are unsure.": [
     "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
   ],
@@ -1439,12 +1436,6 @@ export default {
   "This device will contain the configured LVM groups and any partition needed to boot": [
     "Aquest dispositiu contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
   ],
-  "This hostname is dynamic and may change after a reboot or network update.": [
-    "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització de xarxa."
-  ],
-  "This hostname is permanent and will not change unless manually updated.": [
-    "Aquest nom d'amfitrió és permanent i no canviarà tret que s'actualitzi manualment."
-  ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Aquest producte no permet seleccionar patrons de programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
   ],
@@ -1574,9 +1565,6 @@ export default {
   "Username suggestion dropdown": [
     "Menú desplegable de suggeriments de nom d'usuari"
   ],
-  "Using %1$s hostname: %2$s": [
-    "S'usa el nom d'amfitrió de %1$s: %2$s"
-  ],
   "Using a hashed password.": [
     "S'usa una contrasenya amb funció resum."
   ],
@@ -1654,12 +1642,6 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
-  ],
-  "static": [
-    "estàtic"
-  ],
-  "transient": [
-    "transitori"
   ],
   "zFCP": [
     "zFCP"
