@@ -92,6 +92,9 @@ export default function LvmPage() {
       setSelectedDevices(targetDevices);
     } else if (model && !model.volumeGroups.length) {
       setName("system");
+      const targetNames = model.drives.filter((d) => d.isAddingPartitions).map((d) => d.name);
+      const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
+      setSelectedDevices(targetDevices);
     }
   }, [model, volumeGroup, allDevices]);
 

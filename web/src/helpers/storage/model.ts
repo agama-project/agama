@@ -65,9 +65,14 @@ function buildDrive(
     );
   };
 
+  const isAddingPartitions = (): boolean => {
+    return (apiDrive.partitions || []).some((p) => p.mountPath && !p.name);
+  };
+
   return {
     ...apiDrive,
     isUsed: isUsed(),
+    isAddingPartitions: isAddingPartitions(),
     getMountPaths,
     getVolumeGroups,
   };

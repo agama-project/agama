@@ -88,6 +88,7 @@ const mockSdaDrive: model.Drive = {
     },
   ],
   isUsed: true,
+  isAddingPartitions: true,
   getVolumeGroups: () => [],
   getMountPaths: () => ["/home", "swap"],
 };

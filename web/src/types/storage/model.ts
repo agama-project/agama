@@ -36,6 +36,7 @@ type Model = {
 
 interface Drive extends apiModel.Drive {
   isUsed: boolean;
+  isAddingPartitions: boolean;
   getMountPaths: () => string[];
   getVolumeGroups: () => VolumeGroup[];
 }
