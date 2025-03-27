@@ -108,9 +108,7 @@ export default function HostnamePage() {
             <Checkbox
               id="hostname"
               label={_("Use static hostname")}
-              description={_(
-                "For setting a permanent hostname that won’t change with network updates.",
-              )}
+              description={_("Set a permanent hostname that won’t change with network updates.")}
               isChecked={settingHostname}
               onChange={toggleSettingHostname}
             />
