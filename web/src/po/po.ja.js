@@ -138,9 +138,6 @@ export default {
   "All fields are required": [
     "全ての項目に入力する必要があります"
   ],
-  "Allows setting a permanent hostname that won’t change with network updates.": [
-    "ネットワーク側の設定が変更された場合でも変化しない、固定のホスト名を設定します。"
-  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
   ],
@@ -260,6 +257,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "%d 個の処理計画を確認する"
+  ],
+  "Check the following before continuing": [
+    "続行する前に下記をご確認ください"
   ],
   "Choose a disk for placing the boot loader": [
     "ブートローダを配置するディスクを選択してください"
@@ -501,6 +501,9 @@ export default {
   "Encryption settings": [
     "暗号化の設定"
   ],
+  "Enter a hostname.": [
+    "ホスト名を入力してください。"
+  ],
   "ExFAT": [
     "ExFAT"
   ],
@@ -557,6 +560,9 @@ export default {
   ],
   "First user": [
     "最初のユーザ"
+  ],
+  "For setting a permanent hostname that won’t change with network updates.": [
+    "ネットワーク側の設定が変更された場合でも変化しない、固定のホスト名を設定します。"
   ],
   "Forget": [
     "削除"
@@ -1017,9 +1023,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please provide a hostname": [
-    "ホスト名を設定してください"
-  ],
   "Please, cancel and check the settings if you are unsure.": [
     "何か不安な点があれば、キャンセルして設定を確認しておくことをお勧めします。"
   ],
@@ -1437,11 +1440,8 @@ export default {
   "This device will contain the configured LVM groups and any partition needed to boot": [
     "このデバイスには起動に必要な設定済み LVM グループとパーティションが含まれています"
   ],
-  "This hostname is dynamic and may change after a reboot or network update.": [
-    "ホスト名は動的なものとなります。再起動やネットワーク側の変更によって変化する場合があります。"
-  ],
-  "This hostname is permanent and will not change unless manually updated.": [
-    "ホスト名は恒久的な設定となります。そのため、手作業で変更しない限り変化することはありません。"
+  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
+    "ホスト名は動的なものとなります。ご利用のネットワークの設定に依存しますが、再起動やネットワーク側の変更によって変わってしまう場合があります。"
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "この製品はインストール時のパターン選択を許可していません。なお、インストール完了後に必要なソフトウエアを追加できます。"
@@ -1572,9 +1572,6 @@ export default {
   "Username suggestion dropdown": [
     "ユーザ名の提案ドロップダウン"
   ],
-  "Using %1$s hostname: %2$s": [
-    "%1$s ホスト名の使用: %2$s"
-  ],
   "Using a hashed password.": [
     "ハッシュ化されたパスワードを使用します。"
   ],
@@ -1583,6 +1580,9 @@ export default {
   ],
   "Using partition %s": [
     "パーティション %s の使用"
+  ],
+  "Using transient hostname: %s": [
+    "暫定的なホスト名を使用しています: %s"
   ],
   "Visible Wi-Fi networks": [
     "検出された Wi-Fi ネットワーク"
@@ -1652,12 +1652,6 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
-  ],
-  "static": [
-    "固定の"
-  ],
-  "transient": [
-    "暫定の"
   ],
   "zFCP": [
     "zFCP"

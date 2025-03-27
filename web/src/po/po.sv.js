@@ -138,9 +138,6 @@ export default {
   "All fields are required": [
     "Alla fält krävs"
   ],
-  "Allows setting a permanent hostname that won’t change with network updates.": [
-    "Tillåter inställning av ett permanent värdnamn som inte ändras med nätverksuppdateringar."
-  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Förutom att definiera den första användaren kan autentiseringsmetoder för rootanvändaren konfigureras."
   ],
@@ -260,6 +257,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "Kontrollera det %d planerade åtgärderna"
+  ],
+  "Check the following before continuing": [
+    "Kontrollera följande innan du fortsätter"
   ],
   "Choose a disk for placing the boot loader": [
     "Välj en disk för att placera uppstartsladdaren"
@@ -501,6 +501,9 @@ export default {
   "Encryption settings": [
     "Krypteringsinställningar"
   ],
+  "Enter a hostname.": [
+    "Ange ett värdnamn."
+  ],
   "ExFAT": [
     "ExFAT"
   ],
@@ -557,6 +560,9 @@ export default {
   ],
   "First user": [
     "Första användare"
+  ],
+  "For setting a permanent hostname that won’t change with network updates.": [
+    "För att ställa in ett permanent värdnamn som inte kommer att ändras med nätverksuppdateringar."
   ],
   "Forget": [
     "Glöm"
@@ -1018,9 +1024,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please provide a hostname": [
-    "Vänligen ange ett värdnamn"
-  ],
   "Please, cancel and check the settings if you are unsure.": [
     "Vänligen, avbryt och kontrollera inställningarna om du är osäker."
   ],
@@ -1439,11 +1442,8 @@ export default {
   "This device will contain the configured LVM groups and any partition needed to boot": [
     "Den här enheten kommer att innehålla de konfigurerade LVM-grupperna och alla partitioner som behövs för att starta systemet"
   ],
-  "This hostname is dynamic and may change after a reboot or network update.": [
-    "Detta värdnamn är dynamiskt och kan ändras efter en omstart eller nätverksuppdatering."
-  ],
-  "This hostname is permanent and will not change unless manually updated.": [
-    "Detta värdnamn är permanent och kommer inte att ändras om det inte uppdateras manuellt."
+  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
+    "Detta värdnamn är dynamiskt och kan ändras efter en omstart eller nätverksuppdatering, som konfigurerats av den lokala nätverksadministratören."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Denna produkten tillåter inte att välja programvarumönster under installationen. Du kan dock lägga till ytterligare programvara när installationen är klar."
@@ -1574,9 +1574,6 @@ export default {
   "Username suggestion dropdown": [
     "Rullgardinsmeny för användarnamnsförslag"
   ],
-  "Using %1$s hostname: %2$s": [
-    "Använder %1$s värdnamn: %2$s"
-  ],
   "Using a hashed password.": [
     "Använder ett hashat lösenord."
   ],
@@ -1585,6 +1582,9 @@ export default {
   ],
   "Using partition %s": [
     "Använder partition %s"
+  ],
+  "Using transient hostname: %s": [
+    "Använder transient värdnamn: %s"
   ],
   "Visible Wi-Fi networks": [
     "Synliga WiFi nätverk"
@@ -1654,12 +1654,6 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
-  ],
-  "static": [
-    "statisk"
-  ],
-  "transient": [
-    "transient"
   ],
   "zFCP": [
     "zFCP"

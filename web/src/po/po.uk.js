@@ -138,9 +138,6 @@ export default {
   "All fields are required": [
     "Всі поля обов'язкові"
   ],
-  "Allows setting a permanent hostname that won’t change with network updates.": [
-    "Дозволяє встановити постійне ім'я хоста, яке не змінюватиметься при оновленні мережі."
-  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Крім зазначення першого користувача, можна налаштувати методи автентифікації для root-користувача."
   ],
@@ -260,6 +257,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "Перевірити %d заплановані дії"
+  ],
+  "Check the following before continuing": [
+    "Перш ніж продовжити, перевірте наступне"
   ],
   "Choose a disk for placing the boot loader": [
     "Оберіть диск для розміщення завантажувача"
@@ -501,6 +501,9 @@ export default {
   "Encryption settings": [
     "Налаштування шифрування"
   ],
+  "Enter a hostname.": [
+    "Введіть ім'я хоста."
+  ],
   "ExFAT": [
     "ExFAT"
   ],
@@ -557,6 +560,9 @@ export default {
   ],
   "First user": [
     "Перший користувач"
+  ],
+  "For setting a permanent hostname that won’t change with network updates.": [
+    "Для встановлення постійного імені хоста, яке не змінюватиметься з оновленнями мережі."
   ],
   "Forget": [
     "Забути"
@@ -1019,9 +1025,6 @@ export default {
   "PiB": [
     "ПіБ"
   ],
-  "Please provide a hostname": [
-    "Будь ласка, вкажіть ім'я хоста"
-  ],
   "Please, cancel and check the settings if you are unsure.": [
     "Будь ласка, скасуйте і перевірте налаштування, якщо Ви не впевнені."
   ],
@@ -1441,11 +1444,8 @@ export default {
   "This device will contain the configured LVM groups and any partition needed to boot": [
     "Цей пристрій міститиме налаштовані групи LVM і будь-який розділ, необхідний для завантаження"
   ],
-  "This hostname is dynamic and may change after a reboot or network update.": [
-    "Це ім'я хоста є динамічним і може змінитися після перезавантаження або оновлення мережі."
-  ],
-  "This hostname is permanent and will not change unless manually updated.": [
-    "Це ім'я хоста є постійним і не зміниться, якщо його не буде оновлено вручну."
+  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
+    "Це ім'я хоста є динамічним і може змінитися після перезавантаження або оновлення мережі, як це налаштовано адміністратором локальної мережі."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Цей продукт не дозволяє вибирати шаблони програмного забезпечення під час інсталяції. Однак Ви можете додати додаткове програмне забезпечення після завершення інсталяції."
@@ -1576,9 +1576,6 @@ export default {
   "Username suggestion dropdown": [
     "Спадний список із пропозицією імені користувача"
   ],
-  "Using %1$s hostname: %2$s": [
-    "Використати в %1$s назву хосту: %2$s"
-  ],
   "Using a hashed password.": [
     "Використовуючи хешований пароль."
   ],
@@ -1587,6 +1584,9 @@ export default {
   ],
   "Using partition %s": [
     "Використовуючи розділ %s"
+  ],
+  "Using transient hostname: %s": [
+    "Використання перехідного імені хоста: %s"
   ],
   "Visible Wi-Fi networks": [
     "Видимі мережі WiFi"
@@ -1656,12 +1656,6 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
-  ],
-  "static": [
-    "статичне"
-  ],
-  "transient": [
-    "перехідний"
   ],
   "zFCP": [
     "zFCP"
