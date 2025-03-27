@@ -80,7 +80,7 @@ pub enum ProfileCommands {
 #[derive(Clone, Debug)]
 pub enum CliInput {
     Url(String),
-    Path(String),
+    Path(PathBuf),
     Stdin,
     // the full text as string
     Full(String),
@@ -96,7 +96,7 @@ impl From<String> for CliInput {
             if url_like.is_match(&url_or_path) {
                 Self::Url(url_or_path)
             } else {
-                Self::Path(url_or_path)
+                Self::Path(url_or_path.into())
             }
         }
     }
