@@ -296,9 +296,26 @@
   --pf-v6-c-alert--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
   --pf-v6-c-alert--PaddingInlineStart: var(--pf-t--global--spacer--md);
   --pf-v6-c-alert--PaddingInlineEnd: var(--pf-t--global--spacer--md);
+  border-width: 0;
+  border-radius: 0;
+  border-inline-start-width: var(--pf-t--global--border--width--box--status--default);
 
   &:has(.pf-v6-c-alert__description) {
     row-gap: var(--pf-t--global--spacer--xs);
+  }
+
+  $pf-alert-modifiers: "custom", "info", "success", "warning", "danger";
+
+  @each $modifier in $pf-alert-modifiers {
+    &.pf-m-#{$modifier} {
+      background: linear-gradient(
+        to right in srgb,
+        color-mix(in srgb, var(--pf-v6-c-alert--m-#{$modifier}--BorderColor), transparent 94%),
+        color-mix(in srgb, var(--pf-v6-c-alert--m-#{$modifier}--BorderColor), transparent 96%),
+        color-mix(in srgb, var(--pf-v6-c-alert--m-#{$modifier}--BorderColor), transparent 98%),
+        transparent
+      );
+    }
   }
 }
 
