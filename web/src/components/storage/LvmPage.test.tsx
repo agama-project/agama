@@ -66,6 +66,16 @@ const sda: StorageDevice = {
   description: "",
 };
 
+const sdb: StorageDevice = {
+  sid: 60,
+  isDrive: true,
+  type: "disk",
+  name: "/dev/sdb",
+  size: 1024,
+  systems: [],
+  description: "",
+};
+
 const mockSdaDrive: model.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
@@ -115,7 +125,7 @@ let mockUseModel = {
   volumeGroups: [],
 };
 
-const mockUseAllDevices = [sda];
+const mockUseAllDevices = [sda, sdb];
 
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
@@ -126,7 +136,7 @@ jest.mock("~/queries/issues", () => ({
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => mockUseAllDevices,
-  useDevices: () => [sda],
+  useDevices: () => [sda, sdb],
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
@@ -149,6 +159,7 @@ describe("LvmPage", () => {
       const name = screen.getByRole("textbox", { name: "Name" });
       const disks = screen.getByRole("group", { name: "Disks" });
       const sdaCheckbox = within(disks).getByRole("checkbox", { name: "/dev/sda, 1 KiB" });
+      const sdbCheckbox = within(disks).getByRole("checkbox", { name: "/dev/sdb, 1 KiB" });
       const moveMountPointsCheckbox = screen.getByRole("checkbox", {
         name: /Move the mount points currently configured at the selected disks to logical volumes/,
       });
@@ -157,14 +168,17 @@ describe("LvmPage", () => {
       // Clear default value for name
       await user.clear(name);
       await user.type(name, "root-vg");
-      await user.click(sdaCheckbox);
+      await user.click(sdbCheckbox);
+
+      // sda is selected by default because it is adding partitions.
+      expect(sdaCheckbox).toBeChecked();
       // By default move mount points should be checked
       expect(moveMountPointsCheckbox).toBeChecked();
       await user.click(moveMountPointsCheckbox);
       expect(moveMountPointsCheckbox).not.toBeChecked();
       await user.click(acceptButton);
       expect(mockAddVolumeGroup).toHaveBeenCalledWith(
-        { vgName: "root-vg", targetDevices: ["/dev/sda"] },
+        { vgName: "root-vg", targetDevices: ["/dev/sda", "/dev/sdb"] },
         false,
       );
     });
@@ -172,17 +186,17 @@ describe("LvmPage", () => {
     it("allows configuring a new LVM volume group (moving mount points)", async () => {
       const { user } = installerRender(<LvmPage />);
       const disks = screen.getByRole("group", { name: "Disks" });
-      const sdaCheckbox = within(disks).getByRole("checkbox", { name: "/dev/sda, 1 KiB" });
+      const sdbCheckbox = within(disks).getByRole("checkbox", { name: "/dev/sdb, 1 KiB" });
       const moveMountPointsCheckbox = screen.getByRole("checkbox", {
         name: /Move the mount points currently configured at the selected disks to logical volumes/,
       });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-      await user.click(sdaCheckbox);
+      await user.click(sdbCheckbox);
       expect(moveMountPointsCheckbox).toBeChecked();
       await user.click(acceptButton);
       expect(mockAddVolumeGroup).toHaveBeenCalledWith(
-        { vgName: "system", targetDevices: ["/dev/sda"] },
+        { vgName: "system", targetDevices: ["/dev/sda", "/dev/sdb"] },
         true,
       );
     });
@@ -193,6 +207,9 @@ describe("LvmPage", () => {
       const disks = screen.getByRole("group", { name: "Disks" });
       const sdaCheckbox = within(disks).getByRole("checkbox", { name: "/dev/sda, 1 KiB" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
+
+      // Unselect sda
+      await user.click(sdaCheckbox);
 
       // Let's clean the default given name
       await user.clear(name);
@@ -208,7 +225,7 @@ describe("LvmPage", () => {
       expect(screen.queryByText(/Enter a name/)).toBeNull();
       screen.getByText(/Select at least one disk/);
 
-      // Select a disk
+      // Select sda again
       expect(sdaCheckbox).not.toBeChecked();
       await user.click(sdaCheckbox);
       expect(sdaCheckbox).toBeChecked();
