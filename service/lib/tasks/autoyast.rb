@@ -94,7 +94,7 @@ module Agama
         lines = []
         lines << "## Unsupported sections"
         lines << ""
-        lines << "The following sections are not supported and we do not plan to " \
+        lines << "The following sections are not supported and there are no plans to " \
                  "support them  in the future."
         lines << ""
         elements.each_with_object(lines) do |e, all|
