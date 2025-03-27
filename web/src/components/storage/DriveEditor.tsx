@@ -447,7 +447,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
 
     if (isBoot) {
       // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to boot");
+      return _("Use %s to configure boot partitions");
     }
     // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
     return _("Use %s");
