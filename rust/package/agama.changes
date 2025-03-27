@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 27 12:40:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 13
+
+-------------------------------------------------------------------
 Tue Mar 25 12:12:50 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Support for manual files deployment in unattended mode

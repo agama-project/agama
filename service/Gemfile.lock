@@ -1,17 +1,16 @@
 PATH
   remote: .
   specs:
-    agama-yast (12)
+    agama-yast (13)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
-      csv (~> 3.3)
+      csv (~> 3.2)
       eventmachine (~> 1.2.7)
       fast_gettext (~> 2.3.0)
-      logger (~> 1.6)
+      logger (~> 1.5)
       nokogiri (~> 1.15)
-      ostruct (~> 0.6.1)
-      prime (~> 0.1.3)
+      prime (~> 0.1)
       rexml (~> 3.2)
       ruby-dbus (>= 0.23.1, < 1.0)
 
@@ -37,7 +36,6 @@ GEM
     nokogiri (1.16.7)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    ostruct (0.6.1)
     packaging_rake_tasks (1.5.4)
       rake
     prime (0.1.3)
