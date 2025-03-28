@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 28 11:13:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly map AutoYaST scripts "source" to "content"
+  (gh#agama-project/agama#2224).
+
+-------------------------------------------------------------------
 Thu Mar 27 12:35:32 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Always display the patterns from extensions (related to

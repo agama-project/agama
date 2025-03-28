@@ -72,9 +72,9 @@ RSpec.shared_examples "a script reader" do |ay_section, section|
       }
     end
 
-    it "sets the \"body\" to the \"sources\"" do
+    it "uses the \"sources\" as \"content\"" do
       scripts = subject.read["scripts"][section]
-      expect(scripts.first).to include("body" => "#!/bin/bash\necho 'Hello World!'")
+      expect(scripts.first).to include("content" => "#!/bin/bash\necho 'Hello World!'")
     end
 
     context "and the script filename is not specified" do
@@ -133,7 +133,9 @@ describe Agama::AutoYaST::ScriptsReader do
           expect(subject.read["scripts"]).to include(
             "post" => [
               {
-                "name" => "test.sh", "chroot" => false, "body" => "#!/bin/bash\necho 'Hello World!'"
+                "name"    => "test.sh",
+                "chroot"  => false,
+                "content" => "#!/bin/bash\necho 'Hello World!'"
               }
             ]
           )
