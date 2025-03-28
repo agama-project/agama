@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Mar 28 11:13:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Properly map AutoYaST scripts "sources" to "content"
+- Properly map AutoYaST scripts "source" to "content"
   (gh#agama-project/agama#2224).
 
 -------------------------------------------------------------------
