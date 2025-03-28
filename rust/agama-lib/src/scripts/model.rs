@@ -75,8 +75,7 @@ impl BaseScript {
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum ScriptSource {
-    /// Script's content. Deprecated name was body which is still accepted.
-    #[serde(alias = "body")]
+    /// Script's content.
     Text { content: String },
     /// URL to get the script from.
     Remote { url: String },
