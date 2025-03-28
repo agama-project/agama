@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar 27 12:35:32 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Patterns from extensions are always displayed, the HA extension
+  pattern can be removed from the display list
+  (related to jsc#AGM-100)
+
+-------------------------------------------------------------------
 Tue Mar 25 11:42:36 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - Add gnome pattern to the SLES 16.0 product (gh#agama-project/agama#2204)

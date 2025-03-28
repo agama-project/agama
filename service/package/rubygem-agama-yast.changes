@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 27 12:35:32 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Always display the patterns from extensions (related to
+  jsc#AGM-100)
+
+-------------------------------------------------------------------
 Thu Mar 27 12:40:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 13
