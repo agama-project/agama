@@ -31,22 +31,41 @@ module Agama
       class Config
         # If bootloader should stop on boot menu
         attr_accessor :stop_on_boot_menu
+        # bootloader timeout. Only positive numbers are supported and stop_on_boot_menu has
+        # precedence
+        attr_accessor :timeout
+        # as both previous keys are conflicting, remember which one to set or none. It can be empty
+        # and it means export nothing
+        attr_accessor :keys_to_export
 
         def initialize
+          @keys_to_export = []
           @stop_on_boot_menu = false # false means use proposal, which has timeout
+          @timeout = 10 # just some reasonable timeout, we do not send it anywhere
         end
 
         def to_json(*_args)
           result = {}
 
           # our json use camel case
-          result[:stopOnBootMenu] = stop_on_boot_menu
+          result[:stopOnBootMenu] = stop_on_boot_menu if keys_to_export.include?(:stop_on_boot_menu)
+          result[:timeout] = timeout if keys_to_export.include?(:timeout)
+
           result.to_json
         end
 
         def load_json(serialized_config)
           hsh = JSON.parse(serialized_config, symbolize_names: true)
-          self.stop_on_boot_menu = hsh[:stopOnBootMenu] if hsh.include?(:stopOnBootMenu)
+          if hsh.include?(:timeout)
+            self.timeout = hsh[:timeout]
+            self.keys_to_export = [:timeout]
+          end
+          if hsh.include?(:stopOnBootMenu)
+            self.stop_on_boot_menu = hsh[:stopOnBootMenu]
+            self.keys_to_export = [:stop_on_boot_menu]
+          end
+
+          self
         end
       end
 
@@ -59,6 +78,28 @@ module Agama
 
       def write_config
         bootloader = ::Bootloader::BootloaderFactory.current
+        write_stop_on_boot(bootloader) if @config.keys_to_export.include?(:stop_on_boot_menu)
+        write_timeout(bootloader) if @config.keys_to_export.include?(:timeout)
+      end
+
+    private
+
+      def write_timeout(bootloader)
+        # grub2 based bootloaders
+        if bootloader.respond_to?(:grub_default)
+          # it is really string as timeout as we write directly to CFA,
+          # so it is string values from parser
+          bootloader.grub_default.timeout = @config.timeout.to_s
+        # systemd bootloader
+        elsif bootloader.respond_to?(:menu_timeout)
+          # here it is correct to have integer
+          bootloader.menu_timeout = @config.timeout.to_i
+        else
+          @logger.info "bootloader #{bootloader.name} does not support timeout"
+        end
+      end
+
+      def write_stop_on_boot(bootloader)
         case @config.stop_on_boot_menu
         when true
           # grub2 based bootloaders
