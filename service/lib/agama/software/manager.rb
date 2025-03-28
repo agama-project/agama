@@ -725,13 +725,15 @@ module Agama
         Agama::Software::Repository.all.select(&:local?).each(&:delete!)
       end
 
-      # Return all repositories belonging to the base product
+      # Return all enabled repositories belonging to the base product.
       #
       # @return [Array<Integer>] List of repository IDs, returns empty list if
       # no repository is defined yet
       def base_repositories
+        # process only the enabled repositories
+        only_enabled_repos = true
         # the base product repo is the first added repository (the lowest number)
-        base_src_id = Yast::Pkg.SourceGetCurrent(true).min
+        base_src_id = Yast::Pkg.SourceGetCurrent(only_enabled_repos).min
         # a repository might not be defined yet
         return [] unless base_src_id
 
@@ -743,7 +745,7 @@ module Agama
           [base_src_id]
         else
           logger.info "The base product is from a service"
-          Yast::Pkg.SourceGetCurrent(true).select do |r|
+          Yast::Pkg.SourceGetCurrent(only_enabled_repos).select do |r|
             Yast::Pkg.SourceGeneralData(r)["service"] == service
           end
         end
