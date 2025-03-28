@@ -29,9 +29,12 @@ describe Agama::Network do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:targetdir) { File.join(rootdir, "mnt") }
+  let(:fixtures) { File.join(FIXTURES_PATH, "root_dir") }
+  let(:hostname_path) { File.join(fixtures, "etc", "hostname") }
 
   before do
     allow(Yast::Installation).to receive(:destdir).and_return(targetdir)
+    stub_const("Agama::Network::HOSTNAME", hostname_path)
   end
 
   after do
@@ -49,6 +52,7 @@ describe Agama::Network do
     before do
       allow(Yast2::Systemd::Service).to receive(:find).with("NetworkManager").and_return(service)
       stub_const("Agama::Network::ETC_NM_DIR", etcdir)
+      stub_const("Agama::Network::RUN_NM_DIR", File.join(rootdir, "run", "NetworkManager"))
     end
 
     context "when NetworkManager configuration files are present" do
@@ -84,6 +88,20 @@ describe Agama::Network do
         )
       end
     end
+    context "when an static hostname is present" do
+      let(:test_path) { File.join(fixtures, "etc", "hostname.test") }
+
+      around do |block|
+        FileUtils.mv test_path, hostname_path
+        block.call
+        FileUtils.mv hostname_path, test_path
+      end
+
+      it "copies it to the target system" do
+        network.install
+        expect(File.exist?(File.join(targetdir, Agama::Network::HOSTNAME))).to eql(true)
+      end
+    end
 
     it "enables the NetworkManager service" do
       expect(service).to receive(:enable)
@@ -103,14 +121,12 @@ describe Agama::Network do
   describe "#link_resolv" do
     let(:rootdir) { Dir.mktmpdir }
 
-    let(:fixtures) { File.join(FIXTURES_PATH, "root_dir") }
     let(:resolv_fixture) { File.join(FIXTURES_PATH, "etc", "resolv.conf") }
     let(:resolv_flag) { File.join(rootdir, "run", "agama", "manage_resolv") }
     let(:resolv) { File.join(targetdir, "etc", "resolv.conf") }
 
     before do
       stub_const("Agama::Network::RESOLV_FLAG", resolv_flag)
-      stub_const("Agama::Network::RUN_NM_DIR", File.join(rootdir, "run", "NetworkManager"))
       FileUtils.mkdir_p targetdir
       FileUtils.cp_r(Dir["#{fixtures}/*"], rootdir)
       FileUtils.cp_r(Dir["#{fixtures}/*"], targetdir)
