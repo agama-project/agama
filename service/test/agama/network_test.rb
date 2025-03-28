@@ -35,6 +35,7 @@ describe Agama::Network do
   before do
     allow(Yast::Installation).to receive(:destdir).and_return(targetdir)
     stub_const("Agama::Network::HOSTNAME", hostname_path)
+    stub_const("Agama::Network::RUN_NM_DIR", File.join(rootdir, "run", "NetworkManager"))
   end
 
   after do
@@ -52,7 +53,6 @@ describe Agama::Network do
     before do
       allow(Yast2::Systemd::Service).to receive(:find).with("NetworkManager").and_return(service)
       stub_const("Agama::Network::ETC_NM_DIR", etcdir)
-      stub_const("Agama::Network::RUN_NM_DIR", File.join(rootdir, "run", "NetworkManager"))
     end
 
     context "when NetworkManager configuration files are present" do
