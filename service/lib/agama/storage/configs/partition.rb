@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,8 +20,9 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/configs/size"
-require "agama/storage/configs/with_search"
 require "agama/storage/configs/with_alias"
+require "agama/storage/configs/with_filesystem"
+require "agama/storage/configs/with_search"
 
 module Agama
   module Storage
@@ -49,6 +50,7 @@ module Agama
         end
 
         include WithAlias
+        include WithFilesystem
         include WithSearch
 
         # @return [Boolean]
@@ -67,9 +69,6 @@ module Agama
 
         # @return [Encryption, nil]
         attr_accessor :encryption
-
-        # @return [Filesystem, nil]
-        attr_accessor :filesystem
 
         def initialize
           @size = Size.new

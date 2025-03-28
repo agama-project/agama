@@ -34,13 +34,6 @@ shared_examples "without name" do |result_scope|
   end
 end
 
-shared_examples "without alias" do |result_scope|
-  it "generates the expected JSON" do
-    model_json = result_scope.call(subject.convert)
-    expect(model_json.keys).to_not include(:alias)
-  end
-end
-
 shared_examples "without filesystem" do |result_scope|
   it "generates the expected JSON" do
     model_json = result_scope.call(subject.convert)
@@ -71,15 +64,6 @@ shared_examples "with name" do |result_scope, device_scope|
   it "generates the expected JSON" do
     model_json = result_scope.call(subject.convert)
     expect(model_json[:name]).to eq(device.name)
-  end
-end
-
-shared_examples "with alias" do |result_scope|
-  let(:device_alias) { "test" }
-
-  it "generates the expected JSON" do
-    model_json = result_scope.call(subject.convert)
-    expect(model_json[:alias]).to eq("test")
   end
 end
 
@@ -173,6 +157,13 @@ shared_examples "with partitions" do |result_scope, device_scope|
       model_json = result_scope.call(subject.convert)
       expect(model_json[:partitions]).to eq(
         [
+          {
+            delete:         true,
+            deleteIfNeeded: false,
+            resize:         false,
+            resizeIfNeeded: false,
+            size:           { default: true, min: 100.MiB.to_i }
+          },
           default_partition_json
         ]
       )
@@ -186,6 +177,13 @@ shared_examples "with partitions" do |result_scope, device_scope|
       model_json = result_scope.call(subject.convert)
       expect(model_json[:partitions]).to eq(
         [
+          {
+            delete:         false,
+            deleteIfNeeded: true,
+            resize:         false,
+            resizeIfNeeded: false,
+            size:           { default: true, min: 100.MiB.to_i }
+          },
           default_partition_json
         ]
       )
@@ -199,6 +197,14 @@ shared_examples "with partitions" do |result_scope, device_scope|
       model_json = result_scope.call(subject.convert)
       expect(model_json[:partitions]).to eq(
         [
+          {
+            name:           "/not/found",
+            delete:         false,
+            deleteIfNeeded: false,
+            resize:         false,
+            resizeIfNeeded: false,
+            size:           { default: true, min: 0 }
+          },
           default_partition_json
         ]
       )
@@ -262,11 +268,6 @@ shared_examples "with partitions" do |result_scope, device_scope|
     include_examples "without name", partition_result_scope
   end
 
-  context "if #alias is not configured for a partition" do
-    let(:partition) { {} }
-    include_examples "without alias", partition_result_scope
-  end
-
   context "if #id is not configured for a partition" do
     let(:partition) { {} }
 
@@ -284,11 +285,6 @@ shared_examples "with partitions" do |result_scope, device_scope|
   context "if a device is assigned to a partition" do
     let(:partition) { { search: search } }
     include_examples "with name", partition_result_scope, partition_scope
-  end
-
-  context "if #alias is configured for a partition" do
-    let(:partition) { { alias: device_alias } }
-    include_examples "with alias", partition_result_scope
   end
 
   context "if #id is configured for a partition" do
@@ -627,11 +623,12 @@ describe Agama::Storage::ConfigConversions::ToModel do
       it "generates the expected JSON" do
         expect(subject.convert).to eq(
           {
-            boot:   {
+            boot:         {
               configure: true,
               device:    { default: true }
             },
-            drives: []
+            drives:       [],
+            volumeGroups: []
           }
         )
       end
@@ -654,6 +651,10 @@ describe Agama::Storage::ConfigConversions::ToModel do
             {
               search: "/dev/vdb",
               alias:  "vdb"
+            },
+            {
+              search: "/not/found",
+              alias:  "not-found"
             }
           ]
         }
@@ -693,6 +694,24 @@ describe Agama::Storage::ConfigConversions::ToModel do
             }
           )
         end
+
+        context "and the boot device is not found" do
+          let(:device_alias) { "not-found" }
+
+          it "generates the expected JSON for 'boot'" do
+            boot_model = subject.convert[:boot]
+
+            expect(boot_model).to eq(
+              {
+                configure: true,
+                device:    {
+                  default: false,
+                  name:    "/not/found"
+                }
+              }
+            )
+          end
+        end
       end
     end
 
@@ -723,87 +742,204 @@ describe Agama::Storage::ConfigConversions::ToModel do
       end
     end
 
-    context "if the root partition is encrypted" do
-      let(:config_json) do
-        {
-          drives: [
+    context "for the global encryption" do
+      context "if the root partition is encrypted" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                alias:      "vda",
+                partitions: [
+                  {
+                    filesystem: { path: "/" },
+                    encryption: {
+                      luks1: { password: "12345" }
+                    }
+                  }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                name:            "test",
+                physicalVolumes: [
+                  {
+                    generate: {
+                      targetDevices: ["vda"],
+                      encryption:    {
+                        luks2: { password: "54321" }
+                      }
+                    }
+                  }
+                ],
+                logicalVolumes:  [
+                  { filesystem: { path: "/home" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        it "generates the expected JSON for 'encryption'" do
+          encryption_model = subject.convert[:encryption]
+
+          expect(encryption_model).to eq(
             {
-              partitions: [
+              method:   "luks1",
+              password: "12345"
+            }
+          )
+        end
+      end
+
+      context "if there is a root logical volume" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                alias:      "vda",
+                partitions: [
+                  {
+                    filesystem: { path: "/home" },
+                    encryption: {
+                      luks1: { password: "12345" }
+                    }
+                  }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                name:            "test",
+                physicalVolumes: physicalVolumes,
+                logicalVolumes:  [
+                  { filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        context "and the volume group has automatically generated and encrypted physical volumes" do
+          let(:physicalVolumes) do
+            [
+              {
+                generate: {
+                  targetDevices: ["vda"],
+                  encryption:    {
+                    luks2: { password: "54321" }
+                  }
+                }
+              }
+            ]
+          end
+
+          it "generates the expected JSON for 'encryption'" do
+            encryption_model = subject.convert[:encryption]
+
+            expect(encryption_model).to eq(
+              {
+                method:   "luks2",
+                password: "54321"
+              }
+            )
+          end
+        end
+      end
+
+      context "if there is no encryption for root" do
+        let(:config_json) do
+          {
+            drives:       [
+              {
+                alias:      "vda",
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  },
+                  {
+                    filesystem: { path: "/home" },
+                    encryption: encryption
+                  }
+                ]
+              }
+            ],
+            volumeGroups: [
+              {
+                name:            "test",
+                physicalVolumes: physicalVolumes,
+                logicalVolumes:  [
+                  { filesystem: { path: "swap" } }
+                ]
+              }
+            ]
+          }
+        end
+
+        let(:physicalVolumes) do
+          [
+            {
+              generate: {
+                targetDevices: ["vda"],
+                encryption:    {
+                  luks2: { password: "54321" }
+                }
+              }
+            }
+          ]
+        end
+
+        context "and there is an encrypted partition" do
+          let(:encryption) do
+            {
+              luks1: { password: "12345" }
+            }
+          end
+
+          it "generates the expected JSON for 'encryption'" do
+            encryption_model = subject.convert[:encryption]
+
+            expect(encryption_model).to eq(
+              {
+                method:   "luks1",
+                password: "12345"
+              }
+            )
+          end
+        end
+
+        context "and there is no encrypted partition" do
+          let(:encryption) { nil }
+
+          it "generates the expected JSON for 'encryption'" do
+            encryption_model = subject.convert[:encryption]
+
+            expect(encryption_model).to eq(
+              {
+                method:   "luks2",
+                password: "54321"
+              }
+            )
+          end
+
+          context "if there is no automatically generated and encrypted physical volumes" do
+            let(:physicalVolumes) do
+              [
                 {
-                  filesystem: { path: "/" },
-                  encryption: {
-                    luks1: { password: "12345" }
+                  generate: {
+                    targetDevices: ["vda"]
                   }
                 }
               ]
-            }
-          ]
-        }
-      end
+            end
 
-      it "generates the expected JSON for 'encryption'" do
-        encryption_model = subject.convert[:encryption]
+            it "generates the expected JSON for 'encryption'" do
+              encryption_model = subject.convert[:encryption]
 
-        expect(encryption_model).to eq(
-          {
-            method:   "luks1",
-            password: "12345"
-          }
-        )
-      end
-    end
-
-    context "if the root partition is not encrypted but other partition is encrypted" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  filesystem: { path: "/" }
-                },
-                {
-                  encryption: {
-                    luks1: { password: "12345" }
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      it "generates the expected JSON for 'encryption'" do
-        encryption_model = subject.convert[:encryption]
-
-        expect(encryption_model).to eq(
-          {
-            method:   "luks1",
-            password: "12345"
-          }
-        )
-      end
-    end
-
-    context "if there is not an encrypted partition" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  filesystem: { path: "/" }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      it "generates the expected JSON for 'encryption'" do
-        encryption_model = subject.convert[:encryption]
-
-        expect(encryption_model).to be_nil
+              expect(encryption_model).to be_nil
+            end
+          end
+        end
       end
     end
 
@@ -840,9 +976,31 @@ describe Agama::Storage::ConfigConversions::ToModel do
 
           expect(drives_model).to eq(
             [
+              { name: "/dev/vdd", spacePolicy: "keep", partitions: [] },
               { name: "/dev/vda", spacePolicy: "keep", partitions: [] }
             ]
           )
+        end
+
+        context "and the drive is set to be skipped" do
+          let(:drive) do
+            {
+              search: {
+                condition:  { name: "/dev/vdd" },
+                ifNotFound: "skip"
+              }
+            }
+          end
+
+          it "generates the expected JSON for 'drives'" do
+            drives_model = subject.convert[:drives]
+
+            expect(drives_model).to eq(
+              [
+                { name: "/dev/vda", spacePolicy: "keep", partitions: [] }
+              ]
+            )
+          end
         end
       end
 
@@ -864,11 +1022,6 @@ describe Agama::Storage::ConfigConversions::ToModel do
       drive_result_scope = proc { |c| c[:drives].first }
       drive_scope = proc { |d| d.find_by_name("/dev/vda") }
 
-      context "if #alias is not configured for a drive" do
-        let(:drive) { {} }
-        include_examples "without alias", drive_result_scope
-      end
-
       context "if #filesystem is not configured for a drive" do
         let(:drive) { {} }
         include_examples "without filesystem", drive_result_scope
@@ -882,11 +1035,6 @@ describe Agama::Storage::ConfigConversions::ToModel do
       context "if #partitions is not configured for a drive" do
         let(:drive) { {} }
         include_examples "without partitions", drive_result_scope
-      end
-
-      context "if #alias is configured for a drive" do
-        let(:drive) { { alias: device_alias } }
-        include_examples "with alias", drive_result_scope
       end
 
       context "if #filesystem is configured for a drive" do
@@ -907,6 +1055,230 @@ describe Agama::Storage::ConfigConversions::ToModel do
       context "for the #spacePolicy property" do
         let(:drive) { { partitions: partitions } }
         include_examples "#spacePolicy property", drive_result_scope
+      end
+    end
+
+    context "if #volume_groups is configured" do
+      let(:config_json) do
+        {
+          drives:       [
+            {
+              search: "/dev/vda",
+              alias:  "disk1"
+            },
+            {
+              search: "/dev/vdb",
+              alias:  "disk2"
+            }
+          ],
+          volumeGroups: volume_groups
+        }
+      end
+
+      let(:volume_groups) do
+        [
+          volume_group,
+          {}
+        ]
+      end
+
+      let(:volume_group) { {} }
+
+      it "generates the expected JSON for 'VolumeGroups'" do
+        volume_groups_model = subject.convert[:volumeGroups]
+
+        expect(volume_groups_model).to eq(
+          [
+            { targetDevices: [], logicalVolumes: [] },
+            { targetDevices: [], logicalVolumes: [] }
+          ]
+        )
+      end
+
+      vg_result_scope = proc { |c| c[:volumeGroups].first }
+
+      context "if #name is not configured for a volume group" do
+        let(:volume_group) { {} }
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json.keys).to_not include(:vgName)
+        end
+      end
+
+      context "if #extent_size is not configured for a volume group" do
+        let(:volume_group) { {} }
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json.keys).to_not include(:extentSize)
+        end
+      end
+
+      context "if #physical_volumes_devices is not configured for a volume group" do
+        let(:volume_group) { {} }
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json[:targetDevices]).to eq([])
+        end
+      end
+
+      context "if #logical_volumes is not configured for a volume group" do
+        let(:volume_group) { {} }
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json[:logicalVolumes]).to eq([])
+        end
+      end
+
+      context "if #name is configured for a volume group" do
+        let(:volume_group) { { name: "test" } }
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json[:vgName]).to eq("test")
+        end
+      end
+
+      context "if #extent_size is configured for a volume group" do
+        let(:volume_group) { { extentSize: "1 KiB" } }
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json[:extentSize]).to eq(1.KiB.to_i)
+        end
+      end
+
+      context "if #physical_volumes_devices is configured for a volume group" do
+        let(:volume_group) do
+          {
+            physicalVolumes: [{ generate: ["disk1", "disk2"] }]
+          }
+        end
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+        end
+      end
+
+      context "if #logical_volumes is configured for a volume group" do
+        let(:volume_group) do
+          {
+            logicalVolumes: [logical_volume, {}]
+          }
+        end
+
+        let(:logical_volume) { {} }
+
+        it "generates the expected JSON" do
+          model_json = vg_result_scope.call(subject.convert)
+          expect(model_json[:logicalVolumes].size).to eq(2)
+        end
+
+        lv_result_scope = proc { |c| vg_result_scope.call(c)[:logicalVolumes].first }
+
+        context "if #name is not configured for a logical volume" do
+          let(:logical_volume) { {} }
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json.keys).to_not include(:lvName)
+          end
+        end
+
+        context "if #filesystem is not configured for a logical volume" do
+          let(:logical_volume) { {} }
+          include_examples "without filesystem", lv_result_scope
+        end
+
+        context "if #size is not configured for a logical volume" do
+          let(:logical_volume) { {} }
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json[:size]).to eq(
+              {
+                default: true,
+                min:     100.MiB.to_i
+              }
+            )
+          end
+        end
+
+        context "if #stripes is not configured for a logical volume" do
+          let(:logical_volume) { {} }
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json.keys).to_not include(:stripes)
+          end
+        end
+
+        context "if #stripe_size is not configured for a logical volume" do
+          let(:logical_volume) { {} }
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json.keys).to_not include(:stripeSize)
+          end
+        end
+
+        context "if #name is configured for a logical volume" do
+          let(:logical_volume) { { name: "test" } }
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json[:lvName]).to eq("test")
+          end
+        end
+
+        context "if #filesystem is configured for a logical volume" do
+          let(:logical_volume) { { filesystem: filesystem } }
+          include_examples "with filesystem", lv_result_scope
+        end
+
+        context "if #size is not configured for a logical volume" do
+          let(:logical_volume) do
+            {
+              size: {
+                min: "1 GiB",
+                max: "5 GiB"
+              }
+            }
+          end
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json[:size]).to eq(
+              {
+                default: false,
+                min:     1.GiB.to_i,
+                max:     5.GiB.to_i
+              }
+            )
+          end
+        end
+
+        context "if #stripes is configured for a logical volume" do
+          let(:logical_volume) { { stripes: 8 } }
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json[:stripes]).to eq(8)
+          end
+        end
+
+        context "if #stripe_size is configured for a logical volume" do
+          let(:logical_volume) { { stripeSize: "4 KiB" } }
+
+          it "generates the expected JSON" do
+            model_json = lv_result_scope.call(subject.convert)
+            expect(model_json[:stripeSize]).to eq(4.KiB.to_i)
+          end
+        end
       end
     end
   end

@@ -29,7 +29,7 @@ import { IssueSeverity } from "~/types/issues";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { sprintf } from "sprintf-js";
 
-function Description({ partitions }) {
+function Description({ partitions, booting }) {
   const newPartitions = partitions.filter((p) => !p.name);
 
   if (!newPartitions.length) {
@@ -43,17 +43,29 @@ function Description({ partitions }) {
   }
 
   const mountPaths = newPartitions.map((p) => partitionUtils.pathWithSize(p));
-  const msg1 = sprintf(
-    // TRANSLATORS: %s is a list of formatted mount points with a partition size like
-    // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
-    // (or a single mount point in the singular case).
-    n_(
-      "It is not possible to allocate the requested partition for %s.",
-      "It is not possible to allocate the requested partitions for %s.",
-      mountPaths.length,
-    ),
-    formatList(mountPaths),
-  );
+  const msg1 = booting
+    ? sprintf(
+        // TRANSLATORS: %s is a list of formatted mount points with a partition size like
+        // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
+        // (or a single mount point in the singular case).
+        n_(
+          "It is not possible to allocate the requested partitions for booting and for %s.",
+          "It is not possible to allocate the requested partitions for booting, %s.",
+          mountPaths.length,
+        ),
+        formatList(mountPaths),
+      )
+    : sprintf(
+        // TRANSLATORS: %s is a list of formatted mount points with a partition size like
+        // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
+        // (or a single mount point in the singular case).
+        n_(
+          "It is not possible to allocate the requested partition for %s.",
+          "It is not possible to allocate the requested partitions for %s.",
+          mountPaths.length,
+        ),
+        formatList(mountPaths),
+      );
 
   return (
     <>
@@ -78,10 +90,11 @@ export default function ProposalFailedInfo() {
   if (!errors.length) return;
 
   const modelPartitions = model.drives.flatMap((d) => d.partitions || []);
+  const booting = !!model.boot?.configure;
 
   return (
     <Alert variant="warning" title={_("Failed to calculate a storage layout")}>
-      <Description partitions={modelPartitions} />
+      <Description partitions={modelPartitions} booting={booting} />
     </Alert>
   );
 }

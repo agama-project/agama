@@ -296,9 +296,31 @@
   --pf-v6-c-alert--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
   --pf-v6-c-alert--PaddingInlineStart: var(--pf-t--global--spacer--md);
   --pf-v6-c-alert--PaddingInlineEnd: var(--pf-t--global--spacer--md);
+  border-width: 0;
+  border-radius: 0;
+  border-inline-start-width: var(--pf-t--global--border--width--box--status--default);
 
   &:has(.pf-v6-c-alert__description) {
     row-gap: var(--pf-t--global--spacer--xs);
+  }
+
+  $pf-alert-modifiers: "custom", "info", "success", "warning", "danger";
+
+  @each $modifier in $pf-alert-modifiers {
+    &.pf-m-#{$modifier} {
+      background: linear-gradient(
+        to right in srgb,
+        color-mix(in srgb, var(--pf-v6-c-alert--m-#{$modifier}--BorderColor), transparent 94%),
+        color-mix(in srgb, var(--pf-v6-c-alert--m-#{$modifier}--BorderColor), transparent 96%),
+        color-mix(in srgb, var(--pf-v6-c-alert--m-#{$modifier}--BorderColor), transparent 98%),
+        transparent
+      );
+    }
+  }
+
+  &.pf-m-plain {
+    border: 0;
+    background: none;
   }
 }
 
@@ -363,6 +385,20 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 .pf-v6-c-form__group {
   justify-self: flex-start;
+}
+
+.pf-v6-c-check {
+  row-gap: var(--pf-t--global--spacer--xs);
+  align-content: baseline;
+
+  input[type="checkbox"] {
+    align-self: center;
+  }
+}
+
+.pf-v6-c-list.pf-m-inline {
+  --pf-v6-c-list--m-inline--RowGap: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
 }
 
 // Nested content inside forms should respect parent grid gap

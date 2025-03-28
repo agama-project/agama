@@ -28,7 +28,7 @@ import { deviceChildren, gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
 import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
 import { StorageDevice } from "~/types/storage";
-import * as configModel from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 
 const sda: StorageDevice = {
   sid: 59,
@@ -81,7 +81,7 @@ sda.partitionTable = {
   unusedSlots: [{ start: 3, size: gib(2) }],
 };
 
-const mockDrive: configModel.Drive = {
+const mockDrive: apiModel.Drive = {
   name: "/dev/sda",
   partitions: [
     {

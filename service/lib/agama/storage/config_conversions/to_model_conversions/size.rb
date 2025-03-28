@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -39,9 +39,14 @@ module Agama
           def conversions
             {
               default: config.default?,
-              min:     config.min&.to_i,
+              min:     convert_min_size,
               max:     convert_max_size
             }
+          end
+
+          # @return [Integer]
+          def convert_min_size
+            config.min&.to_i || 0
           end
 
           # @return [Integer, nil]

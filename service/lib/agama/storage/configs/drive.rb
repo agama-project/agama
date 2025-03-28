@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require "agama/storage/configs/search"
 require "agama/storage/configs/with_alias"
+require "agama/storage/configs/with_filesystem"
 require "agama/storage/configs/with_search"
 
 module Agama
@@ -30,13 +31,11 @@ module Agama
       # system and that can be used as a regular disk.
       class Drive
         include WithAlias
+        include WithFilesystem
         include WithSearch
 
         # @return [Encryption, nil]
         attr_accessor :encryption
-
-        # @return [Filesystem, nil]
-        attr_accessor :filesystem
 
         # @return [Y2Storage::PartitionTables::Type, nil]
         attr_accessor :ptable_type

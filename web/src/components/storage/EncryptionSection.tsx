@@ -24,11 +24,11 @@ import React from "react";
 import { Card, CardBody, Content } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import { useEncryption } from "~/queries/storage/config-model";
-import { EncryptionMethod } from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-function encryptionLabel(method?: EncryptionMethod) {
+function encryptionLabel(method?: apiModel.EncryptionMethod) {
   if (!method) return _("Encryption is disabled");
   if (method === "tpmFde") return _("Encryption is enabled using TPM unlocking");
 
@@ -47,7 +47,7 @@ export default function EncryptionSection() {
 the new file systems, including data, programs, and system files.",
       )}
       pfCardBodyProps={{ isFilled: true }}
-      actions={<Link to={STORAGE.encryption}>{_("Edit")}</Link>}
+      actions={<Link to={STORAGE.editEncryption}>{_("Edit")}</Link>}
     >
       <Card isCompact isPlain>
         <CardBody>

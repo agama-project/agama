@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Mar 27 15:56:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Version 14pre
+
+-------------------------------------------------------------------
+Thu Mar 27 12:40:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 13
+
+-------------------------------------------------------------------
 Tue Mar 25 13:28:15 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
 
 - live/src/agama-installer.kiwi: Adapt to latest patterns (SR#364982)

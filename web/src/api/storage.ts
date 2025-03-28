@@ -22,7 +22,7 @@
 
 import { get, post, put } from "~/api/http";
 import { Job } from "~/types/job";
-import { Action, config, configModel, ProductParams, Volume } from "~/api/storage/types";
+import { Action, config, apiModel, ProductParams, Volume } from "~/api/storage/types";
 
 /**
  * Starts the storage probing process.
@@ -36,16 +36,16 @@ const reprobe = (): Promise<any> => post("/api/storage/reprobe");
 const fetchConfig = (): Promise<config.Config | null> =>
   get("/api/storage/config").then((config) => config.storage ?? null);
 
-const fetchConfigModel = (): Promise<configModel.Config | undefined> =>
+const fetchConfigModel = (): Promise<apiModel.Config | undefined> =>
   get("/api/storage/config_model");
 
 const setConfig = (config: config.Config) => put("/api/storage/config", { storage: config });
 
 const resetConfig = () => put("/api/storage/config/reset", {});
 
-const setConfigModel = (model: configModel.Config) => put("/api/storage/config_model", model);
+const setConfigModel = (model: apiModel.Config) => put("/api/storage/config_model", model);
 
-const solveConfigModel = (model: configModel.Config): Promise<configModel.Config> => {
+const solveConfigModel = (model: apiModel.Config): Promise<apiModel.Config> => {
   const serializedModel = encodeURIComponent(JSON.stringify(model));
   return get(`/api/storage/config_model/solve?model=${serializedModel}`);
 };
@@ -86,6 +86,7 @@ export {
   solveConfigModel,
   fetchUsableDevices,
   fetchProductParams,
+  fetchVolume,
   fetchVolumes,
   fetchActions,
   fetchStorageJobs,

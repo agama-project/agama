@@ -51,16 +51,17 @@ module Agama
           storage_config.boot.device.device_alias
         end
 
+        # Error if a boot device is required and unknown.
+        #
+        # This happens when the config solver is not able to infer a boot device, see
+        # {ConfigSolvers::Boot}.
+        #
         # @return [Issue, nil]
         def missing_alias_issue
           return unless configure? && device_alias.nil?
 
-          # Currently this situation only happens because the config solver was not able to find
-          # a device config containing a root volume. The message could become inaccurate if the
-          # solver logic changes.
           error(
-            _("The boot device cannot be automatically selected because there is no root (/) " \
-              "file system"),
+            _("The boot device cannot be automatically selected"),
             kind: :no_root
           )
         end

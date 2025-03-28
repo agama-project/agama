@@ -258,6 +258,8 @@ describe Agama::Software::Manager do
 
   describe "#patterns" do
     it "returns only the specified patterns" do
+      allow(Yast::Pkg).to receive(:SourceGetCurrent).and_return([0])
+      allow(Yast::Pkg).to receive(:SourceGeneralData).and_return({ "service" => "" })
       expect(Y2Packager::Resolvable).to receive(:find).and_return(
         [
           double(

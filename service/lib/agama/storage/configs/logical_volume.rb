@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require "agama/storage/configs/size"
 require "agama/storage/configs/with_alias"
+require "agama/storage/configs/with_filesystem"
 
 module Agama
   module Storage
@@ -28,6 +29,7 @@ module Agama
       # Section of the configuration representing a LVM logical volume.
       class LogicalVolume
         include WithAlias
+        include WithFilesystem
 
         # @return [String, nil]
         attr_accessor :name
@@ -50,9 +52,6 @@ module Agama
 
         # @return [Encryption, nil]
         attr_accessor :encryption
-
-        # @return [Filesystem, nil]
-        attr_accessor :filesystem
 
         def initialize
           @size = Size.new

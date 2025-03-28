@@ -120,7 +120,7 @@ module Agama
         if section["location"] && !section["location"].empty?
           script["url"] = section["location"]
         elsif section["source"]
-          script["body"] = section["source"]
+          script["content"] = section["source"]
         end
 
         script
