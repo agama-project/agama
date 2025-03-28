@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 28 21:45:05 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify bootloader timeout in profile (jsc#PED-10810)
+
+-------------------------------------------------------------------
 Mon Mar 27 13:27:19 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add NM dhcp settings to network model (gh#agama-project/agama#2189).

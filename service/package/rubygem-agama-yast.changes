@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 28 21:45:56 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify bootloader timeout in profile (jsc#PED-10810)
+
+-------------------------------------------------------------------
 Fri Mar 28 11:13:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Properly map AutoYaST scripts "source" to "content"
