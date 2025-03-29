@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 28 19:22:51 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy the hostname to the installed system if it exists
+  (gh#agama-project/agama#2226).
+
+-------------------------------------------------------------------
 Fri Mar 28 11:13:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Properly map AutoYaST scripts "source" to "content"
