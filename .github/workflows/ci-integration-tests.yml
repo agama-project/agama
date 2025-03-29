@@ -43,7 +43,12 @@ jobs:
       run: mkdir -p /tmp/log/YaST2 /tmp/log/puppeteer
 
     - name: Start container
-      run: podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS -v /dev:/dev -v .:/checkout -v /tmp/log/puppeteer:/var/log/puppeteer -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/systemsmanagement/agama/devel/containers/opensuse/agama-testing:latest
+      # yaml syntax: > means fold newlines into a space, - means strip trailing newline
+      # see also https://yaml-multiline.info/
+      run: >-
+        podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS
+        -v /dev:/dev -v .:/checkout -v /tmp/log/puppeteer:/var/log/puppeteer -v /tmp/log/YaST2:/var/log/YaST2
+        registry.opensuse.org/systemsmanagement/agama/devel/containers/opensuse/agama-testing:latest
 
     - name: Environment
       run:  podman exec agama bash -c "env | sort"
@@ -81,6 +86,9 @@ jobs:
 
     - name: Run the Agama smoke test
       run:  podman exec agama curl http://localhost
+
+    - name: Run the Service Integration Tests
+      run:  podman exec agama bash -c "cd /checkout; (cd service; bundle exec rspec --pattern 'test/integration/**_itest.rb')"
 
     - name: Run the Puppeteer tests
       # run the test
