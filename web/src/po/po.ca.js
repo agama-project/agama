@@ -42,32 +42,14 @@ export default {
   "%s with %d partitions": [
     "%s amb %d particions"
   ],
-  "A generic minimum size of %s will be used for the new partition": [
-    "S'usarà una mida mínima genèrica de %s per a la partició nova"
-  ],
-  "A generic size of %s will be used for the new partition": [
-    "S'usarà una mida genèrica de %s per a la partició nova"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new partition": [
-    "S'usarà una gamma de mida genèrica entre %1$s i %2$s per a la partició nova"
-  ],
   "A partition may be deleted": [
     "Es pot suprimir una partició"
   ],
   "A partition may be shrunk": [
     "Una partició es pot encongir"
   ],
-  "A partition of %1$s will be created for %2$s": [
-    "Es crearà una partició de %1$s per a %2$s"
-  ],
-  "A partition of at least %1$s will be created for %2$s": [
-    "Es crearà una partició d'almenys %1$s per a %2$s"
-  ],
   "A partition will be deleted": [
     "Se suprimirà una partició"
-  ],
-  "A partition with a size between %1$s and %2$s will be created for %3$s": [
-    "Es crearà una partició amb una mida d'entre %1$s i %2$s per a %3$s"
   ],
   "Accept": [
     "Accepta-ho"
@@ -141,6 +123,9 @@ export default {
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
   ],
+  "Already using all available disks": [
+    ""
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
   ],
@@ -191,15 +176,6 @@ export default {
   ],
   "Back": [
     "Enrere"
-  ],
-  "Based on the amount of RAM in the system a partition of at least %1$s will be created for %2$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una partició d'almenys %1$s per a %2$s"
-  ],
-  "Based on the amount of RAM in the system, a partition of %1$s will be created for %2$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una partició de %1$s per a %2$s"
-  ],
-  "Based on the amount of RAM in the system, a partition with a size between %1$s and %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una partició amb una mida d'entre %1$s i %2$s per a %3$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -259,7 +235,7 @@ export default {
     "Comproveu les %d accions planificades"
   ],
   "Check the following before continuing": [
-    ""
+    "Comproveu el següent abans de continuar:"
   ],
   "Choose a disk for placing the boot loader": [
     "Trieu un disc per posar-hi el carregador d'arrencada"
@@ -390,11 +366,14 @@ export default {
   "Define a custom size or a range": [
     "Definiu una mida personalitzada o un interval"
   ],
+  "Define a new LVM on the disk": [
+    ""
+  ],
+  "Define a new LVM on top of one or several disks": [
+    ""
+  ],
   "Define a user now": [
     "Definiu un usuari ara"
-  ],
-  "Define partition at %s": [
-    "Definiu la partició a %s"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
     "Definiu el primer usuari amb privilegis d'administrador (sudo) per a la gestió del sistema."
@@ -407,6 +386,9 @@ export default {
   ],
   "Delete current content": [
     "Suprimeix el contingut actual"
+  ],
+  "Delete the volume group and its logical volumes": [
+    ""
   ],
   "Destroy current data and format partition as": [
     "Destrueix les dades actuals i formata la partició com a"
@@ -500,6 +482,9 @@ export default {
   ],
   "Encryption settings": [
     "Configuració de l'encriptació"
+  ],
+  "Enter a hostname.": [
+    "Introduïu un nom d'amfitrió."
   ],
   "ExFAT": [
     "ExFAT"
@@ -606,9 +591,6 @@ export default {
   ],
   "Hostname": [
     "Nom d'amfitrió"
-  ],
-  "Hostname settings": [
-    "Paràmetres del nom d'amfitrió"
   ],
   "I have read and accept the [license] for %s": [
     "He llegit i accepto la [llicència] de %s"
@@ -817,14 +799,11 @@ export default {
   "Mode": [
     "Mode"
   ],
+  "Modify settings and physical volumes": [
+    ""
+  ],
   "More actions": [
     "Més accions"
-  ],
-  "More options": [
-    "Més opcions"
-  ],
-  "More options toggle": [
-    "Commutació de més opcions"
   ],
   "Mount Point": [
     "Punt de muntatge"
@@ -840,6 +819,9 @@ export default {
   ],
   "Mount point toggle": [
     "Commutació de punt de muntatge"
+  ],
+  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+    ""
   ],
   "Multipath": [
     "Multicamí"
@@ -1292,15 +1274,6 @@ export default {
   "The content may be deleted": [
     "El contingut pot suprimir-se"
   ],
-  "The current configuration will result in a partition of %s.": [
-    "La configuració actual tindrà com a resultat una partició de %s."
-  ],
-  "The current configuration will result in a partition of at least %s.": [
-    "La configuració actual tindrà com a resultat una partició d'almenys %s."
-  ],
-  "The current configuration will result in a partition with a size between %1$s and %2$s.": [
-    "La configuració actual tindrà com a resultat una partició amb una mida d'entre %1$s i %2$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
   ],
@@ -1345,6 +1318,9 @@ export default {
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "El mínim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+  ],
+  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
+    ""
   ],
   "The partition can grow to use all the contiguous free space": [
     "La partició pot créixer per a usar tot l'espai lliure contigu"
@@ -1436,6 +1412,9 @@ export default {
   "This device will contain the configured LVM groups and any partition needed to boot": [
     "Aquest dispositiu contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
   ],
+  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
+    "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització per xarxa, tal com el configura l'administrador de la xarxa local."
+  ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Aquest producte no permet seleccionar patrons de programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
   ],
@@ -1508,9 +1487,6 @@ export default {
   "Use %s for additional partitions and booting": [
     "Usa %s per a les particions addicionals i l'arrencada"
   ],
-  "Use %s to boot": [
-    "Usa %s per a l'arrencada"
-  ],
   "Use %s to host LVM": [
     "Usa %s per allotjar-hi l'LVM"
   ],
@@ -1528,12 +1504,6 @@ export default {
   ],
   "Use %s to install, host LVM and boot": [
     "Usa %s per a la instal·lació, allotjar-hi l'LVM i per a l'arrencada"
-  ],
-  "Use additional disk": [
-    "Usa un disc addicional"
-  ],
-  "Use additional disk toggle": [
-    "Usa un commutador de disc addicional"
   ],
   "Use available space": [
     "Usa l'espai disponible"
@@ -1574,8 +1544,14 @@ export default {
   "Using partition %s": [
     "S'usa la partició %s"
   ],
+  "Using transient hostname: %s": [
+    "S'usa un nom d'amfitrió transitori: %s"
+  ],
   "Visible Wi-Fi networks": [
     "Xarxes Wi-Fi visibles"
+  ],
+  "Volume group '%s' already exists. Enter a different name.": [
+    ""
   ],
   "WPA & WPA2 Personal": [
     "WPA i WPA2 personal"
@@ -1642,6 +1618,9 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
+  ],
+  "logical volume": [
+    "volum lògic"
   ],
   "zFCP": [
     "zFCP"

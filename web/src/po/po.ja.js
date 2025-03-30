@@ -42,32 +42,14 @@ export default {
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
   ],
-  "A generic minimum size of %s will be used for the new partition": [
-    "新しいパーティションに対しては少なくとも %s を使用します"
-  ],
-  "A generic size of %s will be used for the new partition": [
-    "新しいパーティションに対しては汎用サイズ %s を使用します"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new partition": [
-    "新しいパーティションに対しては汎用サイズ %1$s から %2$s の範囲を使用します"
-  ],
   "A partition may be deleted": [
     "パーティションを削除するかもしれません"
   ],
   "A partition may be shrunk": [
     "パーティションを縮小するかもしれません"
   ],
-  "A partition of %1$s will be created for %2$s": [
-    "%1$s のパーティションを %2$s 向けに作成します"
-  ],
-  "A partition of at least %1$s will be created for %2$s": [
-    "少なくとも %1$s のパーティションを %2$s 向けに作成します"
-  ],
   "A partition will be deleted": [
     "パーティションを削除します"
-  ],
-  "A partition with a size between %1$s and %2$s will be created for %3$s": [
-    "%1$s から %2$s までの範囲でパーティションを %3$s 向けに作成します"
   ],
   "Accept": [
     "受け入れる"
@@ -141,6 +123,9 @@ export default {
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
   ],
+  "Already using all available disks": [
+    ""
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
   ],
@@ -191,15 +176,6 @@ export default {
   ],
   "Back": [
     "戻る"
-  ],
-  "Based on the amount of RAM in the system a partition of at least %1$s will be created for %2$s": [
-    "システムのメモリサイズに応じて、少なくとも %1$s のパーティションを %2$s 向けに作成します"
-  ],
-  "Based on the amount of RAM in the system, a partition of %1$s will be created for %2$s": [
-    "システムのメモリサイズに応じて、 %1$s のパーティションを %2$s 向けに作成します"
-  ],
-  "Based on the amount of RAM in the system, a partition with a size between %1$s and %2$s will be created for %3$s": [
-    "システムのメモリサイズに応じて、 %1$s から %2$s までの範囲でパーティションを %3$s 向けに作成します"
   ],
   "Bcachefs": [
     "bcachefs"
@@ -265,7 +241,7 @@ export default {
     "ブートローダを配置するディスクを選択してください"
   ],
   "Choose what to with current content": [
-    "現在の内容の扱い方を選択"
+    "既にストレージに記録されている情報の取り扱い"
   ],
   "Clear": [
     "消去"
@@ -390,11 +366,14 @@ export default {
   "Define a custom size or a range": [
     "独自にサイズや範囲を指定する"
   ],
+  "Define a new LVM on the disk": [
+    ""
+  ],
+  "Define a new LVM on top of one or several disks": [
+    ""
+  ],
   "Define a user now": [
     "今すぐユーザを設定する"
-  ],
-  "Define partition at %s": [
-    "%s でのパーティションの設定"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
     "システム管理時に使用する管理者 (sudo) 権限を持つ最初のユーザを設定します。"
@@ -407,6 +386,9 @@ export default {
   ],
   "Delete current content": [
     "現在の内容を全て削除する"
+  ],
+  "Delete the volume group and its logical volumes": [
+    ""
   ],
   "Destroy current data and format partition as": [
     "現在のデータを消去して下記の形式でパーティションをフォーマット:"
@@ -561,9 +543,6 @@ export default {
   "First user": [
     "最初のユーザ"
   ],
-  "For setting a permanent hostname that won’t change with network updates.": [
-    "ネットワーク側の設定が変更された場合でも変化しない、固定のホスト名を設定します。"
-  ],
   "Forget": [
     "削除"
   ],
@@ -611,9 +590,6 @@ export default {
   ],
   "Hostname": [
     "ホスト名"
-  ],
-  "Hostname settings": [
-    "ホスト名の設定"
   ],
   "I have read and accept the [license] for %s": [
     "%s に対する [ライセンス] を受け入れます"
@@ -822,14 +798,11 @@ export default {
   "Mode": [
     "モード"
   ],
+  "Modify settings and physical volumes": [
+    ""
+  ],
   "More actions": [
     "さらなる処理"
-  ],
-  "More options": [
-    "さらなるオプション"
-  ],
-  "More options toggle": [
-    "さらなるオプションの切り替え"
   ],
   "Mount Point": [
     "マウントポイント"
@@ -845,6 +818,9 @@ export default {
   ],
   "Mount point toggle": [
     "マウントポイントの切り替え"
+  ],
+  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+    ""
   ],
   "Multipath": [
     "マルチパス"
@@ -886,7 +862,7 @@ export default {
     "まだ接続していません"
   ],
   "No content found": [
-    "内容が見つかりませんでした"
+    "ストレージには何も記録されていないようです"
   ],
   "No device selected yet": [
     "まだ何もデバイスを選択していません"
@@ -1296,15 +1272,6 @@ export default {
   "The content may be deleted": [
     "内容が削除されるかもしれません"
   ],
-  "The current configuration will result in a partition of %s.": [
-    "現在の設定では %s のパーティションになります。"
-  ],
-  "The current configuration will result in a partition of at least %s.": [
-    "現在の設定では少なくとも %s のパーティションになります。"
-  ],
-  "The current configuration will result in a partition with a size between %1$s and %2$s.": [
-    "現在の設定では %1$s から %2$s までのパーティションになります。"
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "既存のデータは保持しますが、必要に応じて既存のパーティションのサイズ変更を行います。"
   ],
@@ -1349,6 +1316,9 @@ export default {
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "最小サイズは数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
+  ],
+  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
+    ""
   ],
   "The partition can grow to use all the contiguous free space": [
     "連続した空き領域の範囲までパーティションを拡大できます"
@@ -1515,9 +1485,6 @@ export default {
   "Use %s for additional partitions and booting": [
     "追加パーティションと起動用に %s を使用する"
   ],
-  "Use %s to boot": [
-    "起動用に %s を使用する"
-  ],
   "Use %s to host LVM": [
     "LVM の配置用に %s を使用する"
   ],
@@ -1535,12 +1502,6 @@ export default {
   ],
   "Use %s to install, host LVM and boot": [
     "インストール／ LVM の配置／起動用に %s を使用する"
-  ],
-  "Use additional disk": [
-    "追加のディスクを使用"
-  ],
-  "Use additional disk toggle": [
-    "追加ディスクの使用切り替え"
   ],
   "Use available space": [
     "利用可能な領域を使用する"
@@ -1586,6 +1547,9 @@ export default {
   ],
   "Visible Wi-Fi networks": [
     "検出された Wi-Fi ネットワーク"
+  ],
+  "Volume group '%s' already exists. Enter a different name.": [
+    ""
   ],
   "WPA & WPA2 Personal": [
     "WPA および WPA2 Personal"
@@ -1652,6 +1616,9 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
+  ],
+  "logical volume": [
+    "論理ボリューム"
   ],
   "zFCP": [
     "zFCP"
