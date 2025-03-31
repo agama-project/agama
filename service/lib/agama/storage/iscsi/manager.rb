@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "yast"
 require "agama/storage/iscsi/node"
 require "agama/storage/iscsi/initiator"
+require "agama/with_progress"
 
 Yast.import "IscsiClientLib"
 
@@ -30,6 +31,8 @@ module Agama
     module ISCSI
       # Manager for iSCSI
       class Manager
+        include WithProgress
+
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
 
         # iSCSI initiator
@@ -45,7 +48,8 @@ module Agama
         # Constructor
         #
         # @param logger [Logger, nil]
-        def initialize(logger: nil)
+        def initialize(progress_manager: nil, logger: nil)
+          @progress_manager = progress_manager
           @logger = logger || ::Logger.new($stdout)
           @initiator = ISCSI::Initiator.new
 
@@ -69,6 +73,12 @@ module Agama
           Yast::IscsiClientLib.autoLogOn
 
           @on_activate_callbacks.each(&:call)
+        end
+
+        # @todo
+        def apply_config(_config_json)
+          logger.info("Not implemented yet")
+          false
         end
 
         # Probes iSCSI

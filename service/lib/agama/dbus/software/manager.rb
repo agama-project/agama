@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,6 +27,7 @@ require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/locale"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
+require "agama/dbus/with_progress"
 require "agama/dbus/with_service_status"
 
 module Agama
@@ -34,6 +35,7 @@ module Agama
     module Software
       # D-Bus object to manage software installation
       class Manager < BaseObject
+        include WithProgress
         include WithServiceStatus
         include Interfaces::Progress
         include Interfaces::ServiceStatus
