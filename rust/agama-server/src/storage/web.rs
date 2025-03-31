@@ -38,6 +38,7 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
+use iscsi::storage_iscsi_service;
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use tokio_stream::{Stream, StreamExt};
@@ -51,7 +52,7 @@ use crate::{
     error::Error,
     storage::web::{
         dasd::{dasd_service, dasd_stream},
-        iscsi::{iscsi_service, iscsi_stream},
+        iscsi::iscsi_stream,
     },
     web::{
         common::{
@@ -105,7 +106,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let issues_router = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let iscsi_router = iscsi_service(&dbus).await?;
+    let iscsi_router = storage_iscsi_service(&dbus).await?;
     let dasd_router = dasd_service(&dbus).await?;
     let zfcp_router = zfcp_service(&dbus).await?;
     let jobs_router = jobs_service(&dbus, DBUS_DESTINATION, DBUS_PATH).await?;

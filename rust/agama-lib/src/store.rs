@@ -29,6 +29,7 @@ use crate::hostname::store::HostnameStore;
 use crate::install_settings::InstallSettings;
 use crate::manager::{InstallationPhase, ManagerHTTPClient};
 use crate::scripts::{ScriptsClient, ScriptsGroup};
+use crate::storage::http_client::ISCSIHTTPClient;
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
     scripts::ScriptsStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
@@ -51,6 +52,7 @@ pub struct Store {
     storage: StorageStore,
     localization: LocalizationStore,
     scripts: ScriptsStore,
+    iscsi_client: ISCSIHTTPClient,
     manager_client: ManagerHTTPClient,
     http_client: BaseHTTPClient,
 }
@@ -69,6 +71,7 @@ impl Store {
             storage: StorageStore::new(http_client.clone())?,
             scripts: ScriptsStore::new(http_client.clone()),
             manager_client: ManagerHTTPClient::new(http_client.clone()),
+            iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
             http_client,
         })
     }
@@ -136,6 +139,10 @@ impl Store {
         }
         if let Some(software) = &settings.software {
             self.software.store(software).await?;
+        }
+        // iscsi has to be done before storage
+        if let Some(iscsi) = &settings.iscsi {
+            self.iscsi_client.set_config(iscsi).await?
         }
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?

@@ -59,6 +59,7 @@ impl ApiDocBuilder for StorageApiDocBuilder {
             .path_from::<crate::storage::web::iscsi::__path_nodes>()
             .path_from::<crate::storage::web::iscsi::__path_update_initiator>()
             .path_from::<crate::storage::web::iscsi::__path_update_node>()
+            .path_from::<crate::storage::web::iscsi::__path_set_config>()
             .path_from::<crate::storage::web::zfcp::__path_activate_controller>()
             .path_from::<crate::storage::web::zfcp::__path_activate_controller>()
             .path_from::<crate::storage::web::zfcp::__path_activate_disk>()
