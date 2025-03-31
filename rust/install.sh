@@ -3,6 +3,19 @@ set -eu
 # After building this part of Agama, install it so that it is ready for run time
 # This is used by agama.spec and testing-in-container.sh
 
+# The caller (RPM .spec) is expected to set these environment variables:
+# NAME=%{name}
+# SRCDIR=.
+# DESTDIR=%{buildroot}
+# bindir=%{_bindir}
+# datadir=%{_datadir}
+# pamvendordir=%{_pam_vendordir}
+# unitdir=%{_unitdir}
+# libexecdir=%{_libexecdir}
+# mandir=%{_mandir}
+# pamvendordir=%{_pam_vendordir}
+: ${RUST_TARGET:=release}
+
 if [ "${1-}" = --system ]; then
     SRCDIR=.
     DESTDIR=""
@@ -15,16 +28,6 @@ if [ "${1-}" = --system ]; then
     unitdir=/usr/lib/systemd/system
     pamvendordir=/etc/pam.d
 fi
-# DESTDIR=%{buildroot}
-# SRCDIR=%{_builddir}/agama
-# NAME=%{name}
-# bindir=%{_bindir}
-# datadir=%{_datadir}
-# unitdir=%{_unitdir}
-# libexecdir=%{_libexecdir}
-# mandir=%{_mandir}
-# pamvendordir=%{_pam_vendordir}
-: ${RUST_TARGET:=release}
 
 # install regular file, with mode 644 (not an executable with mode 755)
 install6() {
