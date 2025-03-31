@@ -27,7 +27,10 @@
 
 use crate::{
     error::Error,
-    web::{common::EventStreams, Event},
+    web::{
+        common::{issues_router, EventStreams},
+        Event,
+    },
 };
 use agama_lib::{
     dbus::{get_optional_property, to_owned_hash},
@@ -47,6 +50,7 @@ use axum::{
 use serde::Deserialize;
 
 mod stream;
+use serde_json::value::RawValue;
 use stream::ISCSINodeStream;
 use tokio_stream::{Stream, StreamExt};
 use zbus::{
@@ -113,10 +117,13 @@ struct ISCSIState<'a> {
 ///
 /// It acts as a proxy to Agama D-Bus service.
 ///
+/// note: its paths will be moved to iscsi_service when dbus is adapted to new API
+///
 /// * `dbus`: D-Bus connection to use.
-pub async fn iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, ServiceError> {
+pub async fn storage_iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, ServiceError> {
     let client = ISCSIClient::new(dbus.clone()).await?;
     let state = ISCSIState { client };
+
     let router = Router::new()
         .route("/initiator", get(initiator).patch(update_initiator))
         .route("/nodes", get(nodes))
@@ -126,6 +133,45 @@ pub async fn iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Serv
         .route("/discover", post(discover))
         .with_state(state);
     Ok(router)
+}
+
+/// Sets up and returns the Axum service for the iSCSI module.
+///
+/// It acts as a proxy to Agama D-Bus service.
+///
+/// * `dbus`: D-Bus connection to use.
+pub async fn iscsi_service<T>(dbus: zbus::Connection) -> Result<Router<T>, ServiceError> {
+    const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
+    const DBUS_PATH: &str = "/org/opensuse/Agama/Storage1/ISCSI";
+
+    let client = ISCSIClient::new(dbus.clone()).await?;
+    let state = ISCSIState { client };
+    let issues_router = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    let router = Router::new()
+        .route("/config", post(set_config))
+        .nest("/issues", issues_router)
+        .with_state(state);
+    Ok(router)
+}
+
+/// Sets iSCSI configuration
+///
+/// the json is identical to what iscsu node in profile use.
+#[utoipa::path(
+    post,
+    path="/config",
+    context_path="/api/iscsi",
+    request_body=String, // FIXME: workaround to avoid defining schema here. Identical happens for storage set_config
+    responses(
+        (status = OK, description = "Set config succeed."),
+        (status = BAD_REQUEST, description = "It could not set the config."),
+    )
+)]
+async fn set_config(
+    State(state): State<ISCSIState<'_>>,
+    Json(config): Json<Box<RawValue>>,
+) -> Result<(), Error> {
+    Ok(state.client.set_config(&config).await?)
 }
 
 /// Returns the iSCSI initiator properties.
