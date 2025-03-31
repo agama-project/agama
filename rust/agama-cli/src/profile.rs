@@ -69,8 +69,6 @@ pub enum ProfileCommands {
         /// AutoYaST specific ones. Supported files are json, jsonnet, sh for Agama profiles and ERB, XML, and rules/classes directories
         /// for AutoYaST support.
         url: String,
-        /// Ignored, formerly the directory for intermadiate files.
-        dir: Option<PathBuf>,
     },
 }
 
@@ -307,6 +305,6 @@ pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow:
         ProfileCommands::Autoyast { url } => autoyast(client, url).await,
         ProfileCommands::Validate { url_or_path } => validate(&client, url_or_path).await,
         ProfileCommands::Evaluate { url_or_path } => evaluate(&client, url_or_path).await,
-        ProfileCommands::Import { url, dir: _ } => import(client, url).await,
+        ProfileCommands::Import { url } => import(client, url).await,
     }
 }
