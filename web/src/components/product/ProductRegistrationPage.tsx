@@ -27,6 +27,11 @@ import {
   Button,
   Checkbox,
   Content,
+  DataList,
+  DataListCell,
+  DataListItem,
+  DataListItemCells,
+  DataListItemRow,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -34,6 +39,8 @@ import {
   Flex,
   Form,
   FormGroup,
+  Label,
+  Stack,
   TextInput,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
@@ -174,6 +181,81 @@ const HostnameAlert = () => {
   );
 };
 
+const Extensions = () => {
+  // just some testing data
+  // TODO: read from backend
+  const extensions = [
+    // the current HA extension data
+    {
+      identifier: "sle-ha",
+      version: "16.0",
+      arch: "x86_64",
+      isBase: false,
+      friendlyName: "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
+      productLine: "",
+      available: true,
+      free: false,
+      recommended: false,
+      description:
+        "SUSE Linux High Availability Extension provides mature, industry-leading open-source high-availability clustering technologies that are easy to set up and use. It can be deployed in physical and/or virtual environments, and can cluster physical servers, virtual servers, or any combination of the two to suit the needs of your business.",
+      productType: "extension",
+      shortName: "SLEHA16",
+      name: "SUSE Linux Enterprise High Availability Extension",
+      releaseStage: "beta",
+    },
+  ];
+
+  const extensionComponents = extensions.map((ext) => (
+    <DataListItem key={`${ext.identifier}-${ext.version}`}>
+      <DataListItemRow>
+        <DataListItemCells
+          dataListCells={[
+            <DataListCell key="summary">
+              <Stack hasGutter>
+                <div>
+                  {/* remove the "(BETA)" suffix, we display a Beta label instead */}
+                  <b>{ext.friendlyName.replace(/\s*\(beta\)$/i, "")}</b>{" "}
+                  {ext.releaseStage === "beta" && (
+                    <Label color="blue" isCompact>
+                      {_("Beta")}
+                    </Label>
+                  )}
+                  {ext.free && (
+                    <Label color="green" isCompact>
+                      {_("Free")}
+                    </Label>
+                  )}
+                </div>
+                <div>{ext.description}</div>
+                <Form>
+                  {!ext.free && (
+                    <FormGroup label={KEY_LABEL}>
+                      <PasswordInput />
+                    </FormGroup>
+                  )}
+
+                  <ActionGroup>
+                    <Button variant="primary" type="submit" isInline>
+                      {_("Register")}
+                    </Button>
+                  </ActionGroup>
+                </Form>
+              </Stack>
+            </DataListCell>,
+          ]}
+        />
+      </DataListItemRow>
+    </DataListItem>
+  ));
+
+  return (
+    <>
+      <Content component="h3">{_("Extensions")}</Content>
+      <DataList isCompact>{extensionComponents}</DataList>
+    </>
+  );
+};
+
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
   const { key } = useRegistration();
@@ -191,6 +273,8 @@ export default function ProductRegistrationPage() {
       <Page.Content>
         {isUnregistered && <HostnameAlert />}
         {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {/* TODO: display only when registered */}
+        <Extensions />
       </Page.Content>
     </Page>
   );
