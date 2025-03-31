@@ -43,26 +43,14 @@ end
 describe Agama::DBus::Storage::Manager do
   include Agama::RSpec::StorageHelpers
 
-  subject(:manager) { described_class.new(backend, logger) }
+  subject(:manager) { described_class.new(backend, logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) do
-    instance_double(Agama::Storage::Manager,
-      actions:                     [],
-      proposal:                    proposal,
-      iscsi:                       iscsi,
-      software:                    software,
-      product_config:              product_config,
-      calculate_proposal:          nil,
-      on_probe:                    nil,
-      on_progress_change:          nil,
-      on_progress_finish:          nil,
-      on_issues_change:            nil,
-      on_deprecated_system_change: nil)
-  end
+  let(:backend) { Agama::Storage::Manager.new(product_config) }
 
   let(:product_config) { Agama::Config.new(config_data) }
+
   let(:config_data) { {} }
 
   let(:proposal) { Agama::Storage::Proposal.new(product_config) }
@@ -83,6 +71,11 @@ describe Agama::DBus::Storage::Manager do
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
     allow(Yast::Arch).to receive(:s390).and_return false
     allow(proposal).to receive(:on_calculate)
+    allow(backend).to receive(:actions).and_return([])
+    allow(backend).to receive(:iscsi).and_return(iscsi)
+    allow(backend).to receive(:software).and_return(software)
+    allow(backend).to receive(:proposal).and_return(proposal)
+    allow(backend).to receive(:calculate_proposal)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 

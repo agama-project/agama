@@ -40,7 +40,7 @@ Yast.import "Installation"
 describe Agama::Storage::Manager do
   include Agama::RSpec::StorageHelpers
 
-  subject(:storage) { described_class.new(config, logger) }
+  subject(:storage) { described_class.new(config, logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config_path) do
@@ -406,6 +406,7 @@ describe Agama::Storage::Manager do
       before do
         FileUtils.mkdir_p(scripts_dir)
         FileUtils.touch(File.join(scripts_dir, "test.sh"))
+        allow(Yast::Execute).to receive("locally").with("agama", "logs", "store", any_args)
       end
 
       it "copies the artifacts to the installed system" do

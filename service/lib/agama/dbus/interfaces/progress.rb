@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,25 +26,17 @@ module Agama
     module Interfaces
       # Mixin to define the Progress D-Bus interface
       #
-      # @note This mixin is expected to be included in a class inherited from {DBus::BaseObject}
-      #   class and it requires a #backend method that returns an instance of a class including the
-      #   {Agama::WithProgress} mixin.
+      # @note This mixin is expected to be included by a class which inherits from
+      #   {DBus::BaseObject} and includes the {Agama::DBus::WithProgress} mixin.
       #
       # @example
-      #   class Backend
-      #     include Agama::WithProgress
-      #   end
-      #
       #   class Demo < Agama::DBus::BaseObject
+      #     include Agama::DBus::WithProgress
       #     include Agama::DBus::Interfaces::Progress
       #
       #     def initialize
       #       super("org.test.Demo")
       #       register_progress_callbacks
-      #     end
-      #
-      #     def backend
-      #       @backend ||= Backend.new
       #     end
       #   end
       module Progress
@@ -54,16 +46,16 @@ module Agama
         #
         # @return [Integer] 0 if no progress defined
         def progress_total_steps
-          return 0 unless backend.progress
+          return 0 unless progress
 
-          backend.progress.total_steps
+          progress.total_steps
         end
 
         # Current step data
         #
         # @return [Array(Number,String)] Step id and description
         def progress_current_step
-          current_step = backend.progress&.current_step
+          current_step = progress&.current_step
           return [0, ""] unless current_step
 
           [current_step.id, current_step.description]
@@ -73,18 +65,18 @@ module Agama
         #
         # @return [Boolean]
         def progress_finished
-          return true unless backend.progress
+          return true unless progress
 
-          backend.progress.finished?
+          progress.finished?
         end
 
         # Returns the known step descriptions
         #
         # @return [Array<String>]
         def progress_steps
-          return [] unless backend.progress
+          return [] unless progress
 
-          backend.progress.descriptions
+          progress.descriptions
         end
 
         # D-Bus properties of the Progress interface
@@ -98,11 +90,11 @@ module Agama
         #
         # @note This method is expected to be called in the constructor.
         def register_progress_callbacks
-          backend.on_progress_change do
+          progress_manager.on_change do
             dbus_properties_changed(PROGRESS_INTERFACE, progress_properties, [])
           end
 
-          backend.on_progress_finish do
+          progress_manager.on_finish do
             dbus_properties_changed(PROGRESS_INTERFACE, progress_properties, [])
           end
         end
