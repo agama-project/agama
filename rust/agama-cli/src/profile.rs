@@ -72,15 +72,17 @@ pub enum ProfileCommands {
     },
 }
 
-/// TODO better name
 // Represents the ways user can specify the input on the command line
 // and passes appropriate representations to the web API
 #[derive(Clone, Debug)]
 pub enum CliInput {
+    // TODO: Url(Url) would be nice here
+    // but telling clap to deal with parse errors is harder than expected
     Url(String),
     Path(PathBuf),
     Stdin,
-    // the full text as string
+    /// The full text as String.
+    // Not parsed from CLI but used when implementing import.
     Full(String),
 }
 
@@ -101,6 +103,10 @@ impl From<String> for CliInput {
 }
 
 impl CliInput {
+    /// If *self* has a path or url value, append a `path=...` or `url=...`
+    /// query parameter to *url*, properly escaped. The path is made absolute
+    /// so that it works (on localhost) even if server's working directory is different.
+    /// See also: `body_for_web`
     fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
         match self {
             Self::Url(url) => {
@@ -131,6 +137,9 @@ impl CliInput {
         }
     }
 
+    /// If *self* is stdin or the full text, provide it as String.
+    /// See also: `add_query`
+    ///
     /// NOTE that this will consume the standard input
     /// if self is `Stdin`
     fn body_for_web(self) -> std::io::Result<String> {
@@ -150,6 +159,7 @@ impl CliInput {
     }
 }
 
+/// Validate a JSON profile, by doing a HTTP client request.
 async fn validate_client(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
@@ -189,6 +199,8 @@ async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
     Ok(())
 }
 
+/// Evaluate a Jsonnet profile, by doing a HTTP client request.
+/// Return well-formed Agama JSON on success.
 async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
     let mut url = Url::parse(&client.base_url)?;
     // unwrap OK: only fails for cannot_be_a_base URLs like data: and mailto:
@@ -284,7 +296,10 @@ async fn store_settings(client: BaseHTTPClient, profile_json: &str) -> anyhow::R
     Ok(())
 }
 
-/// returns Agama JSON config as String
+/// Process AutoYaST profile (*url* ending with .xml, .erb, or dir/) by doing a HTTP client request.
+/// Note that this client does not act on this *url*, it passes it as a parameter
+/// to our web backend.
+/// Return well-formed Agama JSON on success.
 async fn autoyast_client(client: &BaseHTTPClient, url: &Url) -> anyhow::Result<String> {
     // FIXME: how to escape it?
     let api_url = format!("/profile/autoyast?url={}", url);
