@@ -42,32 +42,14 @@ export default {
   "%s with %d partitions": [
     "%s mit %d Partitionen"
   ],
-  "A generic minimum size of %s will be used for the new partition": [
-    "Für die neue Partition wird eine generische Mindestgröße von %s verwendet"
-  ],
-  "A generic size of %s will be used for the new partition": [
-    "Für die neue Partition wird eine generische Größe von %s verwendet"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new partition": [
-    "Für die neue Partition wird ein generischer Größenbereich zwischen %1$s und %2$s verwendet"
-  ],
   "A partition may be deleted": [
     "Eine Partition kann gelöscht werden"
   ],
   "A partition may be shrunk": [
     "Eine Partition kann verkleinert werden"
   ],
-  "A partition of %1$s will be created for %2$s": [
-    "Es wird eine Partition von %1$s für %2$s erstellt"
-  ],
-  "A partition of at least %1$s will be created for %2$s": [
-    "Es wird eine Partition mit einer Mindestgröße von %1$s für %2$s erstellt"
-  ],
   "A partition will be deleted": [
     "Eine Partition wird gelöscht"
-  ],
-  "A partition with a size between %1$s and %2$s will be created for %3$s": [
-    "Es wird eine Partition mit einer Größe zwischen %1$s und %2$s für %3$s erstellt"
   ],
   "Accept": [
     "Annehmen"
@@ -117,6 +99,9 @@ export default {
   "Add another partition or mount an existing one": [
     "Eine weitere Partition hinzufügen oder eine vorhandene Partition einhängen"
   ],
+  "Add logical volume": [
+    ""
+  ],
   "Add or use partition": [
     "Partition hinzufügen oder verwenden"
   ],
@@ -140,6 +125,9 @@ export default {
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Neben der Definition des ersten Benutzers können auch die Authentifizierungsmethoden für den Root-Benutzer konfiguriert werden."
+  ],
+  "Already using all available disks": [
+    ""
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alle vorhandenen Partitionen werden entfernt und alle Daten auf der Festplatte gehen verloren."
@@ -191,15 +179,6 @@ export default {
   ],
   "Back": [
     "Zurück"
-  ],
-  "Based on the amount of RAM in the system a partition of at least %1$s will be created for %2$s": [
-    "Basierend auf der Größe des RAM im System wird eine Partition von mindestens %1$s für %2$s erstellt"
-  ],
-  "Based on the amount of RAM in the system, a partition of %1$s will be created for %2$s": [
-    "Basierend auf der Größe des RAM im System wird eine Partition von %1$s für %2$s erstellt"
-  ],
-  "Based on the amount of RAM in the system, a partition with a size between %1$s and %2$s will be created for %3$s": [
-    "Basierend auf der Größe des RAM im System wird eine Partition mit einer Größe zwischen %1$s und %2$s für %3$s erstellt"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -259,7 +238,7 @@ export default {
     "%d geplante Aktionen prüfen"
   ],
   "Check the following before continuing": [
-    ""
+    "Überprüfen Sie Folgendes, bevor Sie fortfahren"
   ],
   "Choose a disk for placing the boot loader": [
     "Wählen Sie eine Festplatte für den Bootloader aus"
@@ -281,6 +260,9 @@ export default {
   ],
   "Configure DASD": [
     "DASD konfigurieren"
+  ],
+  "Configure LVM logical volume at %s volume group": [
+    ""
   ],
   "Configure iSCSI": [
     "iSCSI konfigurieren"
@@ -384,11 +366,14 @@ export default {
   "Define a custom size or a range": [
     "Benutzerdefinierte Größe oder einen Bereich definieren"
   ],
+  "Define a new LVM on the disk": [
+    ""
+  ],
+  "Define a new LVM on top of one or several disks": [
+    ""
+  ],
   "Define a user now": [
     "Definieren Sie jetzt einen Benutzer"
-  ],
-  "Define partition at %s": [
-    "Partition bei %s definieren"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
     "Den ersten Benutzer mit Admin-Rechten (sudo) für die Systemverwaltung definieren."
@@ -401,6 +386,9 @@ export default {
   ],
   "Delete current content": [
     "Aktuellen Inhalt löschen"
+  ],
+  "Delete the volume group and its logical volumes": [
+    ""
   ],
   "Destroy current data and format partition as": [
     "Aktuelle Daten zerstören und Partition formatieren als"
@@ -494,6 +482,9 @@ export default {
   ],
   "Encryption settings": [
     "Verschlüsselungseinstellungen"
+  ],
+  "Enter a hostname.": [
+    "Geben Sie einen Hostnamen ein."
   ],
   "ExFAT": [
     "ExFAT"
@@ -600,9 +591,6 @@ export default {
   ],
   "Hostname": [
     "Hostname"
-  ],
-  "Hostname settings": [
-    "Hostnamen-Einstellungen"
   ],
   "I have read and accept the [license] for %s": [
     "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie."
@@ -811,14 +799,11 @@ export default {
   "Mode": [
     "Modus"
   ],
+  "Modify settings and physical volumes": [
+    ""
+  ],
   "More actions": [
     "Weitere Aktionen"
-  ],
-  "More options": [
-    "Weitere Optionen"
-  ],
-  "More options toggle": [
-    "Umschalter für weitere Optionen"
   ],
   "Mount Point": [
     "Einhängepunkt"
@@ -834,6 +819,9 @@ export default {
   ],
   "Mount point toggle": [
     "Einhängepunktumschalter"
+  ],
+  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+    ""
   ],
   "Multipath": [
     "Multipfad"
@@ -1277,15 +1265,6 @@ export default {
   "The content may be deleted": [
     "Der Inhalt kann gelöscht werden"
   ],
-  "The current configuration will result in a partition of %s.": [
-    "Die aktuelle Konfiguration führt zu einer Partition von %s."
-  ],
-  "The current configuration will result in a partition of at least %s.": [
-    "Die aktuelle Konfiguration führt zu einer Partition mit mindestens %s."
-  ],
-  "The current configuration will result in a partition with a size between %1$s and %2$s.": [
-    "Die aktuelle Konfiguration führt zu einer Partition mit einer Größe zwischen %1$s und %2$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Die Daten bleiben erhalten, aber die Größe der aktuellen Partitionen wird nach Bedarf geändert."
   ],
@@ -1330,6 +1309,9 @@ export default {
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Das Minimum muss eine Zahl sein, optional gefolgt von einer Einheit wie GiB oder GB"
+  ],
+  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
+    ""
   ],
   "The partition can grow to use all the contiguous free space": [
     "Die Partition kann so lange wachsen, bis sie den gesamten zusammenhängenden freien Speicherplatz belegt"
@@ -1487,9 +1469,6 @@ export default {
   "Use %s for additional partitions and booting": [
     "%s für zusätzliche Partitionen und zum Booten verwenden"
   ],
-  "Use %s to boot": [
-    "%s zum Booten verwenden"
-  ],
   "Use %s to host LVM": [
     "%s zum Hosten des LVM verwenden"
   ],
@@ -1507,12 +1486,6 @@ export default {
   ],
   "Use %s to install, host LVM and boot": [
     "%s zum Installieren, Hosten des LVM und Booten verwenden"
-  ],
-  "Use additional disk": [
-    "Zusätzliche Festplatte verwenden"
-  ],
-  "Use additional disk toggle": [
-    "Umschalter für zusätzliche Festplatte verwenden"
   ],
   "Use available space": [
     "Verfügbaren Speicherplatz verwenden"
@@ -1552,6 +1525,12 @@ export default {
   ],
   "Using partition %s": [
     "Partition %s wird verwendet"
+  ],
+  "Using transient hostname: %s": [
+    "Transienter Hostname wird verwendet: %s"
+  ],
+  "Volume group '%s' already exists. Enter a different name.": [
+    ""
   ],
   "WPA & WPA2 Personal": [
     "WPA & WPA2 Personal"
