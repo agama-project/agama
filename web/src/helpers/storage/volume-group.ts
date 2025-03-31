@@ -26,6 +26,7 @@ import {
   copyApiModel,
   buildVolumeGroup,
   buildLogicalVolumeFromPartition,
+  buildPartitionFromLogicalVolume,
 } from "~/helpers/storage/api-model";
 import { data } from "~/types/storage";
 
@@ -84,6 +85,26 @@ function editVolumeGroup(
   return apiModel;
 }
 
+function volumeGroupToDrive(apiModel: apiModel.Config, vgName: string): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+
+  const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
+  if (index === -1) return apiModel;
+
+  const targetDevice = apiModel.volumeGroups[index].targetDevices[0];
+  if (!targetDevice) return apiModel;
+
+  const drive = (apiModel.drives || []).find((d) => d.name === targetDevice);
+  if (!drive) return apiModel;
+
+  const logicalVolumes = apiModel.volumeGroups[index].logicalVolumes || [];
+  apiModel.volumeGroups.splice(index, 1);
+  const partitions = drive.partitions || [];
+  drive.partitions = [...partitions, ...logicalVolumes.map(buildPartitionFromLogicalVolume)];
+
+  return apiModel;
+}
+
 function deleteVolumeGroup(apiModel: apiModel.Config, vgName: string): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
@@ -93,11 +114,15 @@ function deleteVolumeGroup(apiModel: apiModel.Config, vgName: string): apiModel.
   const targetDevices = apiModel.volumeGroups[index].targetDevices || [];
 
   apiModel.volumeGroups.splice(index, 1);
+  if (!targetDevices.length) return apiModel;
+
+  let deletedApiModel = copyApiModel(apiModel);
   targetDevices.forEach((d) => {
-    apiModel = deleteIfUnused(apiModel, d);
+    deletedApiModel = deleteIfUnused(deletedApiModel, d);
   });
 
-  return apiModel;
+  // Do not delete the underlying drives if that results in an empty configuration
+  return deletedApiModel.drives.length ? deletedApiModel : apiModel;
 }
 
-export { addVolumeGroup, editVolumeGroup, deleteVolumeGroup };
+export { addVolumeGroup, editVolumeGroup, deleteVolumeGroup, volumeGroupToDrive };

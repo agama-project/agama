@@ -22,10 +22,12 @@
 
 import React from "react";
 import { useNavigate, generatePath } from "react-router-dom";
-import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { _, n_, formatList } from "~/i18n";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
+import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useVolumeGroup, useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
 import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
@@ -47,15 +49,41 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 
 const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const deleteVolumeGroup = useDeleteVolumeGroup();
+  const lvs = vg.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
+  const convert = vg.targetDevices.length === 1 && !!lvs.length;
+  let description;
+
+  if (lvs.length) {
+    if (convert) {
+      const diskName = baseName(vg.targetDevices[0]);
+      description = sprintf(
+        n_(
+          // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+          // single mount point in the singular case). %2$s is a disk name like sda.
+          "%1$s will be created as a partition at %2$s",
+          "%1$s will be created as partitions at %2$s",
+          lvs.length,
+        ),
+        formatList(lvs),
+        diskName,
+      );
+    } else {
+      description = n_(
+        "The logical volume will also be deleted",
+        "The logical volumes will also be deleted",
+        lvs.length,
+      );
+    }
+  }
 
   return (
     <MenuItem
       key="delete-volume-group"
       itemId="delete-volume-group"
       isDanger
-      description={_("Delete the volume group and its logical volumes")}
+      description={description}
       role="menuitem"
-      onClick={() => deleteVolumeGroup(vg.vgName)}
+      onClick={() => deleteVolumeGroup(vg.vgName, convert)}
     >
       <span>{_("Delete volume group")}</span>
     </MenuItem>

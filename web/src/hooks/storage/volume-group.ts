@@ -21,7 +21,12 @@
  */
 
 import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
-import { addVolumeGroup, editVolumeGroup, deleteVolumeGroup } from "~/helpers/storage/volume-group";
+import {
+  addVolumeGroup,
+  editVolumeGroup,
+  deleteVolumeGroup,
+  volumeGroupToDrive,
+} from "~/helpers/storage/volume-group";
 import { QueryHookOptions } from "~/types/queries";
 import { model, data } from "~/types/storage";
 import { useModel } from "~/hooks/storage/model";
@@ -52,12 +57,16 @@ function useEditVolumeGroup(options?: QueryHookOptions): EditVolumeGroupFn {
   };
 }
 
-type DeleteVolumeGroupFn = (vgName: string) => void;
+type DeleteVolumeGroupFn = (vgName: string, moveToDrive: boolean) => void;
 
 function useDeleteVolumeGroup(options?: QueryHookOptions): DeleteVolumeGroupFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (vgName: string) => updateApiModel(deleteVolumeGroup(apiModel, vgName));
+  return (vgName: string, moveToDrive: boolean) => {
+    updateApiModel(
+      moveToDrive ? volumeGroupToDrive(apiModel, vgName) : deleteVolumeGroup(apiModel, vgName),
+    );
+  };
 }
 
 export { useVolumeGroup, useAddVolumeGroup, useEditVolumeGroup, useDeleteVolumeGroup };
