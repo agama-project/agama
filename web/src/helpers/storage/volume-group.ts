@@ -64,6 +64,29 @@ function addVolumeGroup(
   return apiModel;
 }
 
+function newVgName(apiModel: apiModel.Config): string {
+  const vgs = (apiModel.volumeGroups || []).filter((vg) => vg.vgName.match(/^system\d*$/));
+
+  if (!vgs.length) return "system";
+
+  const numbers = vgs.map((vg) => parseInt(vg.vgName.substring(6)) || 0);
+  return `system${Math.max(...numbers) + 1}`;
+}
+
+function driveToVolumeGroup(apiModel: apiModel.Config, driveName: string): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+
+  const drive = (apiModel.drives || []).find((d) => d.name === driveName);
+  if (!drive) return apiModel;
+
+  const volumeGroup = buildVolumeGroup({ vgName: newVgName(apiModel), targetDevices: [driveName] });
+  movePartitions(drive, volumeGroup);
+  apiModel.volumeGroups ||= [];
+  apiModel.volumeGroups.push(volumeGroup);
+
+  return apiModel;
+}
+
 function editVolumeGroup(
   apiModel: apiModel.Config,
   vgName: string,
@@ -125,4 +148,10 @@ function deleteVolumeGroup(apiModel: apiModel.Config, vgName: string): apiModel.
   return deletedApiModel.drives.length ? deletedApiModel : apiModel;
 }
 
-export { addVolumeGroup, editVolumeGroup, deleteVolumeGroup, volumeGroupToDrive };
+export {
+  addVolumeGroup,
+  editVolumeGroup,
+  deleteVolumeGroup,
+  volumeGroupToDrive,
+  driveToVolumeGroup,
+};
