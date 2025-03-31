@@ -43,13 +43,13 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub struct ProfileServiceError {
-    //#[error("Error: {0:#}")]
     source: anyhow::Error,
     http_status: StatusCode,
 }
 
 impl std::fmt::Display for ProfileServiceError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
         write!(f, "{:#}", &self.source)
     }
 }
