@@ -522,6 +522,9 @@
       "items": {
         "type": "object"
       }
+    },
+    "iscsi": {
+      "$ref": "iscsi.schema.json"
     }
   },
   "$defs": {
