@@ -46,7 +46,7 @@ pub enum ProfileCommands {
     ///
     /// Schema is available at /usr/share/agama-cli/profile.schema.json
     Validate {
-        /// Json file, URL or path or `-` for standard input
+        /// JSON file, URL or path or `-` for standard input
         url_or_path: CliInput,
     },
 
@@ -274,7 +274,7 @@ async fn pre_process_profile(
         }
         FileFormat::Json => Ok(Some(any_profile)),
         _ => Err(anyhow::Error::msg(
-            "Unsupported file format. Expected json, jsonnet, script",
+            "Unsupported file format. Expected JSON, Jsonnet, or a script",
         )),
     }
 }
