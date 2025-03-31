@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 28 21:45:56 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify bootloader timeout in profile (jsc#PED-10810)
+
+-------------------------------------------------------------------
 Fri Mar 28 19:22:51 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Copy the hostname to the installed system if it exists
