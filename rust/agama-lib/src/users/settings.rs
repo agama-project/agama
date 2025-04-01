@@ -38,12 +38,16 @@ pub struct UserSettings {
 #[serde(rename_all = "camelCase")]
 pub struct FirstUserSettings {
     /// First user's full name
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub full_name: Option<String>,
     /// First user's username
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub user_name: Option<String>,
     /// First user's password (in clear text)
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     /// Whether the password is hashed or is plain text
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hashed_password: Option<bool>,
 }
 

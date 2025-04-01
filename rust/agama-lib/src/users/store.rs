@@ -40,12 +40,22 @@ impl UsersStore {
         })
     }
 
+    // small helper to convert dbus empty string to None
+    fn optional_string(value: String) -> Option<String> {
+        if value.is_empty() {
+            None
+        } else {
+            Some(value)
+        }
+    }
+
     pub async fn load(&self) -> Result<UserSettings, ServiceError> {
         let first_user = self.users_client.first_user().await?;
         let first_user = FirstUserSettings {
-            user_name: Some(first_user.user_name),
-            full_name: Some(first_user.full_name),
-            password: Some(first_user.password),
+            user_name: Self::optional_string(first_user.user_name),
+            full_name: Self::optional_string(first_user.full_name),
+            password: Self::optional_string(first_user.password),
+            // sadly for boolean we do not have on dbus way to set it to not_set
             hashed_password: Some(first_user.hashed_password),
         };
         let root_user = self.users_client.root_user().await?;
