@@ -278,6 +278,7 @@ const useWifiNetworks = () => {
   });
 
   return accessPoints
+    .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
     .filter((ap: AccessPoint) => {
       // Do not include "duplicates"
       if (knownSsids.includes(ap.ssid)) return false;
@@ -287,7 +288,6 @@ const useWifiNetworks = () => {
       knownSsids.push(ap.ssid);
       return true;
     })
-    .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
     .map((ap: AccessPoint): WifiNetwork => {
       const settings = connections.find((c: Connection) => c.wireless?.ssid === ap.ssid);
       const device = devices.find((d: Device) => d.connection === ap.ssid);
