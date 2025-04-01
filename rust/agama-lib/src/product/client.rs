@@ -135,7 +135,11 @@ impl<'a> ProductClient<'a> {
             .into_iter()
             .map(|(id, version, code)| AddonParams {
                 id,
-                version,
+                version: if version.is_empty() {
+                    None
+                } else {
+                    Some(version)
+                },
                 registration_code: if code.is_empty() { None } else { Some(code) },
             })
             .collect();
@@ -158,7 +162,7 @@ impl<'a> ProductClient<'a> {
             .registration_proxy
             .register_addon(
                 &addon.id,
-                &addon.version,
+                &addon.version.clone().unwrap_or_default(),
                 &addon.registration_code.clone().unwrap_or_default(),
             )
             .await?)

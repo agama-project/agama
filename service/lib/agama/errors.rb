@@ -24,5 +24,22 @@ module Agama
   module Errors
     # Invalid value given by the user
     class InvalidValue < StandardError; end
+
+    # Registration specific errors
+    module Registration
+      # The requested extension was not found
+      class ExtensionNotFound < StandardError
+        def initialize(name)
+          super("#{name.inspect} is not available")
+        end
+      end
+
+      # The requested extension exists in multiple versions
+      class MultipleExtensionsFound < StandardError
+        def initialize(name, versions)
+          super("#{name.inspect} is available in multiple versions: #{versions.join(", ")}")
+        end
+      end
+    end
   end
 end

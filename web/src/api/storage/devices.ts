@@ -37,6 +37,9 @@ import {
 import { StorageDevice } from "~/types/storage";
 
 /**
+ * @fixme Use a transformation instead of building the devices as part of the fetch function, see
+ * https://tkdodo.eu/blog/react-query-data-transformations.
+ *
  * Returns the list of devices in the given scope
  *
  * @param scope - "system": devices in the current state of the system; "result":
