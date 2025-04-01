@@ -21,7 +21,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   fetchConfig,
   setConfig,
@@ -62,6 +62,12 @@ const solveApiModelQuery = (apiModel?: apiModel.Config) => ({
 const devicesQuery = (scope: "result" | "system") => ({
   queryKey: ["storage", "devices", scope],
   queryFn: () => fetchDevices(scope),
+  staleTime: Infinity,
+});
+
+const usableDevicesQuery = () => ({
+  queryKey: ["storage", "usableDevices"],
+  queryFn: fetchUsableDevices,
   staleTime: Infinity,
 });
 
@@ -145,34 +151,25 @@ const useDevices = (
   return data;
 };
 
-const availableDevices = async (devices: StorageDevice[]): Promise<StorageDevice[]> => {
-  const findDevice = (devices: StorageDevice[], sid: number): StorageDevice | undefined => {
-    const device = devices.find((d) => d.sid === sid);
-    if (device === undefined) console.warn("Device not found:", sid);
-
-    return device;
-  };
-
-  const availableDevices = await fetchUsableDevices();
-
-  return availableDevices
-    .map((sid: number) => findDevice(devices, sid))
-    .filter((d: StorageDevice | undefined) => d);
-};
-
-const availableDevicesQuery = (devices: StorageDevice[]) => ({
-  queryKey: ["storage", "availableDevices"],
-  queryFn: () => availableDevices(devices),
-  staleTime: Infinity,
-});
-
 /**
  * Hook that returns the list of available devices for installation.
  */
 const useAvailableDevices = (): StorageDevice[] => {
   const devices = useDevices("system", { suspense: true });
-  const { data } = useSuspenseQuery(availableDevicesQuery(devices));
-  return data;
+  const { data: usableDevices } = useSuspenseQuery(usableDevicesQuery());
+
+  const availableDevices = useMemo(() => {
+    /** @todo Extract this function to some shared place. */
+    const findDevice = (devices: StorageDevice[], sid: number): StorageDevice | undefined => {
+      const device = devices.find((d) => d.sid === sid);
+      if (device === undefined) console.warn("Device not found:", sid);
+
+      return device;
+    };
+    return usableDevices.map((sid: number) => findDevice(devices, sid)).filter((d) => d);
+  }, [devices, usableDevices]);
+
+  return availableDevices;
 };
 
 /**
