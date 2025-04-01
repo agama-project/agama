@@ -479,7 +479,7 @@ pub struct AccessPoint {
 /// Network device
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
     pub name: String,

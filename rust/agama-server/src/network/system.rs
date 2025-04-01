@@ -327,6 +327,11 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 return Ok(Some(NetworkChange::DeviceAdded(*device)));
             }
             Action::UpdateDevice(name, device) => {
+                if let Some(old_device) = self.state.get_device(&name) {
+                    if old_device == device.as_ref() {
+                        return Ok(None);
+                    }
+                }
                 self.state.update_device(&name, *device.clone())?;
                 return Ok(Some(NetworkChange::DeviceUpdated(name, *device)));
             }
