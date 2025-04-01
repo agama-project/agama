@@ -35,8 +35,8 @@ pub struct RegistrationParams {
 pub struct AddonParams {
     // Addon identifier
     pub id: String,
-    // Addon version, the same addon might be available in multiple versions
-    pub version: String,
+    // Addon version, if not specified the version is found from the available addons
+    pub version: Option<String>,
     // Optional registration code, not required for free extensions
     pub registration_code: Option<String>,
 }

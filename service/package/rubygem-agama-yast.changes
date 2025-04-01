@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr  1 12:44:57 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Make the extension version attribute optional, search the version
+  automatically if it is missing (related to jsc#AGM-100)
+
+-------------------------------------------------------------------
 Fri Mar 28 21:45:56 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow to specify bootloader timeout in profile (jsc#PED-10810)

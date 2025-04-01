@@ -239,6 +239,27 @@ describe Agama::Registration do
 
       let(:code) { "867136984314" }
 
+      let(:ha_extension) do
+        OpenStruct.new(
+          id:                2937,
+          identifier:        "sle-ha",
+          version:           "16.0",
+          arch:              "x86_64",
+          isbase:            false,
+          friendly_name:     "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
+          ProductLine:       "",
+          available:         true,
+          free:              false,
+          recommended:       false,
+          description:       "SUSE Linux High Availability Extension provides...",
+          former_identifier: "sle-ha",
+          product_type:      "extension",
+          shortname:         "SLEHA16",
+          name:              "SUSE Linux Enterprise High Availability Extension",
+          release_stage:     "beta"
+        )
+      end
+
       it "registers addon" do
         expect(SUSE::Connect::YaST).to receive(:activate_product).with(
           addon, { token: code }, anything
@@ -254,6 +275,46 @@ describe Agama::Registration do
 
         subject.register_addon(addon.identifier, addon.version, code)
         subject.register_addon(addon.identifier, addon.version, code)
+      end
+
+      context "the requested addon version is not specified" do
+        it "finds the version automatically" do
+          expect(SUSE::Connect::YaST).to receive(:activate_product).with(
+            addon, { token: code }, anything
+          )
+
+          expect(SUSE::Connect::YaST).to receive(:show_product).and_return(
+            OpenStruct.new(
+              extensions: [ha_extension]
+            )
+          )
+
+          subject.register_addon(addon.identifier, "", code)
+        end
+
+        it "raises exception when the requested addon is not found" do
+          expect(SUSE::Connect::YaST).to receive(:show_product).and_return(
+            OpenStruct.new(extensions: [])
+          )
+
+          expect do
+            subject.register_addon(addon.identifier, "", code)
+          end.to raise_error(Agama::Errors::Registration::ExtensionNotFound)
+        end
+
+        it "raises exception when multiple addon versions are found" do
+          ha1 = ha_extension
+          ha2 = ha1.dup
+          ha2.version = "42"
+
+          expect(SUSE::Connect::YaST).to receive(:show_product).and_return(
+            OpenStruct.new(extensions: [ha1, ha2])
+          )
+
+          expect do
+            subject.register_addon(addon.identifier, "", code)
+          end.to raise_error(Agama::Errors::Registration::MultipleExtensionsFound)
+        end
       end
     end
   end
