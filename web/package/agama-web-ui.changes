@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr  1 15:52:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fixed sorting of wireless networks based on signal strength and 
+  the forget wireless network action (gh#agama-project/agama#2236).
+
+-------------------------------------------------------------------
 Thu Mar 27 12:40:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 13
