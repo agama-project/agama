@@ -58,16 +58,26 @@ impl UsersStore {
             // sadly for boolean we do not have on dbus way to set it to not_set
             hashed_password: Some(first_user.hashed_password),
         };
+        let first_user = if first_user.skip_export() {
+            None
+            } else {
+                Some(first_user)
+            };
         let root_user = self.users_client.root_user().await?;
         let root_user = RootUserSettings {
             password: root_user.password,
             hashed_password: root_user.hashed_password,
             ssh_public_key: root_user.ssh_public_key,
         };
+        let root_user = if root_user.skip_export() {
+            None
+            } else {
+                Some(root_user)
+            };
 
         Ok(UserSettings {
-            first_user: Some(first_user),
-            root: Some(root_user),
+            first_user: first_user,
+            root: root_user,
         })
     }
 

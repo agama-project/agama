@@ -26,8 +26,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct UserSettings {
-    #[serde(rename = "user")]
+    #[serde(rename = "user", skip_serializing_if = "Option::is_none")]
     pub first_user: Option<FirstUserSettings>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub root: Option<RootUserSettings>,
 }
 
@@ -47,8 +48,23 @@ pub struct FirstUserSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     /// Whether the password is hashed or is plain text
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Self::skip_hashed")]
     pub hashed_password: Option<bool>,
+}
+
+impl FirstUserSettings {
+    // as dbus provides only boolean it is hard to distinguish
+    // false and not set. So act for false like not set as it is default.
+    fn skip_hashed(value: &Option<bool>) -> bool {
+        *value == Some(false)
+    }
+
+    pub fn skip_export(&self) -> bool {
+        self.full_name.is_none()
+            && self.user_name.is_none()
+            && self.password.is_none()
+            && Self::skip_hashed(&self.hashed_password)
+    }
 }
 
 /// Root user settings
@@ -66,4 +82,13 @@ pub struct RootUserSettings {
     /// Root SSH public key
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ssh_public_key: Option<String>,
+}
+
+
+impl RootUserSettings {
+    pub fn skip_export(&self) -> bool {
+        self.password.is_none()
+            && self.hashed_password.is_none()
+            && self.ssh_public_key.is_none()
+    }
 }
