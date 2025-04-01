@@ -163,6 +163,18 @@ $SUDO $ZYPPER install \
 (
   cd $MYDIR/service
   $SUDO bash -x ./install.sh --system
+
+  # need stubs for the binaries
+  for f in $MYDIR/service/bin/agama*; do
+    base=${f##*/}
+    stub="/usr/bin/$base"
+    $SUDO tee "$stub" >/dev/null <<EOS
+#!/bin/bash
+cd "$MYDIR/service"
+bundle exec "bin/$base" "\$@"
+EOS
+    $SUDO chmod +x "$stub"
+  done
 )
 
 # This repeats parts of service/install.sh but patches the program paths

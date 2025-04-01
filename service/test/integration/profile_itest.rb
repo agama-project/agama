@@ -94,4 +94,58 @@ describe "agama profile" do
       end
     end
   end
+
+  describe "autoyast:" do
+    let(:command) { ["agama", "profile", "autoyast"] }
+
+    let(:output_match) do
+      json = <<~JSON
+        {
+          "product": {
+            "id": "Tumbleweed"
+          },
+          "software": {
+            "patterns": [
+              "base"
+            ],
+            "packages": []
+          }
+        }
+      JSON
+      json
+    end
+
+    context "XML, with file:/// URL" do
+      let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml" }
+
+      it "output matches" do
+        url = "file://" + Dir.pwd + "/" + fixture(filename)
+        output = Cheetah.run(*command, url, stdout: :capture)
+        expect(output).to include(output_match)
+      end
+    end
+
+    context "ERB, with file:/// URL" do
+      let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml.erb" }
+
+      it "output matches" do
+        url = "file://" + Dir.pwd + "/" + fixture(filename)
+        output = Cheetah.run(*command, url, stdout: :capture)
+        expect(output).to include(output_match)
+      end
+    end
+
+    # I get a deadlock because two processes want the libstorage lock. why?
+    xcontext ".../, with file:/// URL" do
+      let(:filename) { "service/test/fixtures/profiles/profile/" }
+
+      it "output matches" do
+        url = "file://" + Dir.pwd + "/" + fixture(filename)
+        output = Cheetah.run(*command, url, stdout: :capture)
+        # this claim is too weak but the test needs to be fixed first
+        expect(output).to include("Tumbleweed")
+      end
+    end
+
+  end
 end
