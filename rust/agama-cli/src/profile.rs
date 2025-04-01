@@ -274,7 +274,6 @@ async fn pre_process_profile(
     match FileFormat::from_string(&any_profile) {
         FileFormat::Script => {
             let api_url = format!("/profile/execute_script?url={}", url_string);
-            // FIXME: try out
             let _output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
             Ok(None)
         }

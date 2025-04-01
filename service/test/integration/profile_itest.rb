@@ -4,10 +4,18 @@
 
 require "cheetah"
 
+# @param filename relative to git repo root
+# @return usable for this suite
 def fixture(filename)
   # the tests specify the paths relative to repo root
   # but we run in service/
   "../" + filename
+end
+
+# @param filename relative to git repo root
+# @return usable for this suite, absolute
+def abs_fixture(filename)
+  File.absolute_path(fixture(filename))
 end
 
 # needs declarations:
@@ -22,7 +30,7 @@ shared_examples "accepts input in 3 ways" do |filename, output_match|
 
   context "with #{filename} as URL" do
     it "output matches" do
-      url = "file://" + Dir.pwd + "/" + fixture(filename)
+      url = "file://" + abs_fixture(filename)
       output = Cheetah.run(*command, url, stdout: :capture)
       expect(output).to include(output_match)
     end
@@ -115,11 +123,18 @@ describe "agama profile" do
       json
     end
 
+    # I want to test that YaST special schemes like label:
+    # are handled, but unable to make them work in my testing environment
+    xcontext "XML, with a YaST special URL" do
+      let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml" }
+      let(:label_url) { "label://mylabel#{abs_fixture(filename)}" }
+    end
+
     context "XML, with file:/// URL" do
       let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml" }
 
       it "output matches" do
-        url = "file://" + Dir.pwd + "/" + fixture(filename)
+        url = "file://" + abs_fixture(filename)
         output = Cheetah.run(*command, url, stdout: :capture)
         expect(output).to include(output_match)
       end
@@ -129,7 +144,7 @@ describe "agama profile" do
       let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml.erb" }
 
       it "output matches" do
-        url = "file://" + Dir.pwd + "/" + fixture(filename)
+        url = "file://" + abs_fixture(filename)
         output = Cheetah.run(*command, url, stdout: :capture)
         expect(output).to include(output_match)
       end
@@ -140,12 +155,25 @@ describe "agama profile" do
       let(:filename) { "service/test/fixtures/profiles/profile/" }
 
       it "output matches" do
-        url = "file://" + Dir.pwd + "/" + fixture(filename)
+        url = "file://" + abs_fixture(filename)
         output = Cheetah.run(*command, url, stdout: :capture)
         # this claim is too weak but the test needs to be fixed first
         expect(output).to include("Tumbleweed")
       end
     end
+  end
 
+  describe "import:" do
+    let(:command) { ["agama", "profile", "import"] }
+
+    context "script, with file:/// URL" do
+      let(:filename) { "service/test/fixtures/profiles/smoke-test.sh" }
+
+      it "is executed without error" do
+        url = "file://" + abs_fixture(filename)
+        _output, err_output = Cheetah.run(*command, url, stdout: :capture, stderr: :capture)
+        expect(err_output).to be_empty
+      end
+    end
   end
 end
