@@ -107,8 +107,11 @@ const WifiDrawerPanelBody = ({
 }) => {
   const { mutate: removeConnection } = useRemoveConnectionMutation();
   const selectedWifi = useSelectedWifi();
+  const { mutate: changeSelection } = useSelectedWifiChange();
 
   const forgetNetwork = async () => {
+    changeSelection({ ssid: null, needsAuth: null });
+    await disconnect(network.settings.id);
     removeConnection(network.settings.id);
   };
 

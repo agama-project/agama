@@ -96,13 +96,14 @@ const connectionsQuery = () => ({
 });
 
 /**
- * Returns a query for retrieving the list of known access points
+ * Returns a query for retrieving the list of known access points sorted by
+ * the signal strength.
  */
 const accessPointsQuery = () => ({
   queryKey: ["network", "accessPoints"],
   queryFn: async (): Promise<AccessPoint[]> => {
     const accessPoints = await fetchAccessPoints();
-    return accessPoints.map(AccessPoint.fromApi).sort((a, b) => (a.strength < b.strength ? -1 : 1));
+    return accessPoints.map(AccessPoint.fromApi).sort((a, b) => b.strength - a.strength);
   },
   // FIXME: Infinity vs 1second
   staleTime: 1000,
@@ -287,7 +288,6 @@ const useWifiNetworks = () => {
       knownSsids.push(ap.ssid);
       return true;
     })
-    .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
     .map((ap: AccessPoint): WifiNetwork => {
       const settings = connections.find((c: Connection) => c.wireless?.ssid === ap.ssid);
       const device = devices.find((d: Device) => d.connection === ap.ssid);
