@@ -96,7 +96,7 @@ const connectionsQuery = () => ({
 });
 
 /**
- * Returns a query for retrieving the list of known access points sortered by
+ * Returns a query for retrieving the list of known access points sorted by
  * the signal strength.
  */
 const accessPointsQuery = () => ({
