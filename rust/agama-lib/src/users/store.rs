@@ -20,6 +20,7 @@
 
 use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersHTTPClient};
 use crate::base_http_client::BaseHTTPClient;
+use crate::dbus::optional_string;
 use crate::error::ServiceError;
 
 /// Loads and stores the users settings from/to the D-Bus service.
@@ -40,29 +41,20 @@ impl UsersStore {
         })
     }
 
-    // small helper to convert dbus empty string to None
-    fn optional_string(value: String) -> Option<String> {
-        if value.is_empty() {
-            None
-        } else {
-            Some(value)
-        }
-    }
-
     pub async fn load(&self) -> Result<UserSettings, ServiceError> {
         let first_user = self.users_client.first_user().await?;
         let first_user = FirstUserSettings {
-            user_name: Self::optional_string(first_user.user_name),
-            full_name: Self::optional_string(first_user.full_name),
-            password: Self::optional_string(first_user.password),
+            user_name: optional_string(first_user.user_name),
+            full_name: optional_string(first_user.full_name),
+            password: optional_string(first_user.password),
             // sadly for boolean we do not have on dbus way to set it to not_set
             hashed_password: Some(first_user.hashed_password),
         };
         let first_user = if first_user.skip_export() {
             None
-            } else {
-                Some(first_user)
-            };
+        } else {
+            Some(first_user)
+        };
         let root_user = self.users_client.root_user().await?;
         let root_user = RootUserSettings {
             password: root_user.password,
@@ -71,9 +63,9 @@ impl UsersStore {
         };
         let root_user = if root_user.skip_export() {
             None
-            } else {
-                Some(root_user)
-            };
+        } else {
+            Some(root_user)
+        };
 
         Ok(UserSettings {
             first_user: first_user,

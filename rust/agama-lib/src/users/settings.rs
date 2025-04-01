@@ -84,11 +84,8 @@ pub struct RootUserSettings {
     pub ssh_public_key: Option<String>,
 }
 
-
 impl RootUserSettings {
     pub fn skip_export(&self) -> bool {
-        self.password.is_none()
-            && self.hashed_password.is_none()
-            && self.ssh_public_key.is_none()
+        self.password.is_none() && self.hashed_password.is_none() && self.ssh_public_key.is_none()
     }
 }
