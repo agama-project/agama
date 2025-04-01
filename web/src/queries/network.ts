@@ -98,7 +98,7 @@ const accessPointsQuery = () => ({
   queryKey: ["network", "accessPoints"],
   queryFn: async (): Promise<AccessPoint[]> => {
     const accessPoints = await fetchAccessPoints();
-    return accessPoints.map(AccessPoint.fromApi).sort((a, b) => (a.strength < b.strength ? -1 : 1));
+    return accessPoints.map(AccessPoint.fromApi).sort((a, b) => b.strength - a.strength);
   },
   // FIXME: Infinity vs 1second
   staleTime: 1000,
