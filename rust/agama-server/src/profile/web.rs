@@ -20,8 +20,9 @@
 
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
+use std::time::Duration;
 
-use anyhow::Context;
+use anyhow::{anyhow, Context};
 
 use agama_lib::utils::Transfer;
 use agama_lib::{
@@ -247,7 +248,7 @@ async fn execute_script(
 
     // write to a temporary path and spawn in background and return
     // May be long running
-    // FIXME: can agama+axum wait for completion and return output?
+    // TODO: can agama+axum wait for completion and return output?
     let mut named_tempfile = tempfile::Builder::new()
         .prefix("agama-script")
         .permissions(std::fs::Permissions::from_mode(0o700))
@@ -259,11 +260,18 @@ async fn execute_script(
         .context("Writing script text")?;
     // close the file otherwise exec fails with ETXTBSY
     let path = named_tempfile.into_temp_path();
+    let path = path.keep().context("Persisting script file")?;
+
     let mut child = std::process::Command::new(&path)
         .spawn()
         .context(format!("Spawning script {:?}", path))?;
-    // FIXME: we don't want to tie up the web service
-    // but if we don't wait, use a more persistent file name
-    child.wait().context("Result of running script")?;
+
+    // Do not child.wait() for the script to finish,
+    // but do wait 50ms to report if it failed soon enough.
+    tokio::time::sleep(Duration::from_millis(50)).await;
+    if let Ok(Some(exit_status)) = child.try_wait() {
+        return Err(anyhow!("Script failed quickly with {}", exit_status).into());
+    }
+
     Ok(Json(()))
 }
