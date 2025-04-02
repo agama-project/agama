@@ -26,9 +26,7 @@ use anyhow::Context;
 use agama_lib::utils::Transfer;
 use agama_lib::{
     error::ServiceError,
-    profile::{
-        AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, Url, ValidationOutcome,
-    },
+    profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationOutcome},
 };
 use axum::{
     extract::Query,
@@ -40,6 +38,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 use thiserror::Error;
+use url::Url;
 
 #[derive(Error, Debug)]
 pub struct ProfileServiceError {

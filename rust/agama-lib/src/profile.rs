@@ -30,7 +30,7 @@ use std::{
     process::Command,
 };
 use tempfile::{tempdir, TempDir};
-pub use url::Url;
+use url::Url;
 
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
