@@ -54,12 +54,29 @@ impl std::fmt::Display for ProfileServiceError {
     }
 }
 
+// Make a 400 response
+// ```
+// let r: Result<T, anyhow::Error> = foo();
+// r?
+// ```
 impl From<anyhow::Error> for ProfileServiceError {
     fn from(e: anyhow::Error) -> Self {
         Self {
             source: e,
             http_status: StatusCode::BAD_REQUEST,
         }
+    }
+}
+
+// Make a 500 response
+// ```
+// let r: Result<T, anyhow::Error> = foo();
+// r.map_err(make_internal)?
+// ```
+fn make_internal(anyhow: anyhow::Error) -> ProfileServiceError {
+    ProfileServiceError {
+        http_status: StatusCode::INTERNAL_SERVER_ERROR,
+        source: anyhow,
     }
 }
 
@@ -133,7 +150,7 @@ impl ProfileQuery {
     params(ProfileQuery),
     responses(
         (status = 200, description = "Validation result", body = ValidationOutcome),
-        (status = 400, description = "FIXME some error has happened")
+        (status = 400, description = "Some error has occurred")
     )
 )]
 async fn validate(
@@ -150,7 +167,8 @@ async fn validate(
     let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
     let result = validator
         .validate_str(&profile_string)
-        .context(format!("Could not validate the profile {:?}", *query))?;
+        .context(format!("Could not validate the profile {:?}", *query))
+        .map_err(make_internal)?;
     Ok(Json(result))
 }
 
@@ -160,8 +178,8 @@ async fn validate(
     context_path = "/api/profile",
     params(ProfileQuery),
     responses(
-        (status = 200, description = "Evaluated profile"),
-        (status = 400, description = "FIXME some error has happened")
+        (status = 200, description = "Evaluated profile", body = String, content_type = "application/json"),
+        (status = 400, description = "Some error has occurred")
     )
 )]
 async fn evaluate(
@@ -188,9 +206,8 @@ async fn evaluate(
     context_path = "/api/profile",
     params(ProfileQuery),
     responses(
-        (status = 200, description = "JSON result of Autoyast profile conversion"),
-        // TODO: "failed to run agama-autoyast" should be a 500 instead, see software/web.rs
-        (status = 400, description = "FIXME some error has happened")
+        (status = 200, description = "AutoYaST profile conversion", body = String, content_type = "application/json"),
+        (status = 400, description = "Some error has occurred")
     )
 )]
 async fn autoyast(
@@ -215,10 +232,7 @@ async fn autoyast(
         Err(error) => {
             // anyhow can be only displayed, not so nice
             if format!("{}", error).contains("Failed to run") {
-                return Err(ProfileServiceError {
-                    http_status: StatusCode::INTERNAL_SERVER_ERROR,
-                    source: error,
-                });
+                return Err(make_internal(error));
             }
             Err(error.into())
         }
@@ -232,7 +246,7 @@ async fn autoyast(
     params(ProfileQuery),
     responses(
         (status = 200, description = "Script has started"),
-        (status = 400, description = "FIXME some error has happened")
+        (status = 400, description = "Some error has occurred")
     )
 )]
 async fn execute_script(

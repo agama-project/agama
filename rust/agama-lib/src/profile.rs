@@ -180,6 +180,8 @@ impl ProfileValidator {
 pub struct ProfileEvaluator {}
 
 impl ProfileEvaluator {
+    // TODO: if we want the web API to distinguish 400 from 500
+    // we should use a structured error here
     pub fn evaluate(&self, profile_path: &Path) -> anyhow::Result<String> {
         let dir = tempdir()?;
         let working_path = dir.path().join("profile.jsonnet");
