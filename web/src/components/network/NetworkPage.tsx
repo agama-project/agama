@@ -22,15 +22,11 @@
 
 import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
-import { Link, EmptyState, Page } from "~/components/core";
+import { EmptyState, Page } from "~/components/core";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { _ } from "~/i18n";
-import { connectionAddresses } from "~/utils/network";
-import { sprintf } from "sprintf-js";
 import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
-import { NETWORK as PATHS } from "~/routes/paths";
-import { partition } from "~/utils";
-import { Connection, Device } from "~/types/network";
+import WifiNetworksList from "./WifiNetworksList";
 
 const WiredConnections = ({ connections, devices }) => {
   const wiredConnections = connections.length;
@@ -48,43 +44,9 @@ const WiredConnections = ({ connections, devices }) => {
   );
 };
 
-const WifiConnections = ({ connections, devices }) => {
-  const activeWifiDevice = devices.find(
-    (d: Device) => d.type === "wireless" && d.state === "activated",
-  );
-  const activeConnection = connections.find(
-    (c: Connection) => c.id === activeWifiDevice?.connection,
-  );
-
-  return (
-    <Page.Section
-      title={_("Wi-Fi")}
-      actions={
-        <Link isPrimary={!activeConnection} to={PATHS.wifis}>
-          {activeConnection ? _("Change") : _("Connect")}
-        </Link>
-      }
-    >
-      {activeConnection ? (
-        <EmptyState
-          title={sprintf(_("Connected to %s"), activeConnection.id)}
-          icon="wifi"
-          color="success-color-100"
-        >
-          {connectionAddresses(activeConnection, devices)}
-        </EmptyState>
-      ) : (
-        <EmptyState title={_("No connected yet")} icon="wifi_off" color="color-300">
-          {_("The system has not been configured for connecting to a Wi-Fi network yet.")}
-        </EmptyState>
-      )}
-    </Page.Section>
-  );
-};
-
 const NoWifiAvailable = () => (
   <Page.Section>
-    <EmptyState title={_("No Wi-Fi supported")} icon="error">
+    <EmptyState title={_("Wi-Fi not supported")} icon="error">
       {_(
         "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.",
       )}
@@ -98,7 +60,7 @@ const NoWifiAvailable = () => (
 export default function NetworkPage() {
   useNetworkConfigChanges();
   const { connections, devices, settings } = useNetwork();
-  const [wifiConnections, wiredConnections] = partition(connections, (c) => !!c.wireless);
+  const wiredConnections = connections.filter((c) => !c.wireless);
 
   return (
     <Page>
@@ -113,7 +75,9 @@ export default function NetworkPage() {
           </GridItem>
           <GridItem sm={12} xl={6}>
             {settings.wireless_enabled ? (
-              <WifiConnections connections={wifiConnections} devices={devices} />
+              <Page.Section title={_("Wi-Fi")}>
+                <WifiNetworksList />
+              </Page.Section>
             ) : (
               <NoWifiAvailable />
             )}

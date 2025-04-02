@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,29 +21,23 @@
  */
 
 import React from "react";
-import { NetworkPage, IpSettingsForm, WifiNetworkPage } from "~/components/network";
-import { Route } from "~/types/routes";
-import { NETWORK as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
+import { useParams } from "react-router-dom";
+import { useNetworkConfigChanges, useWifiNetworks } from "~/queries/network";
+import WifiConnectionForm from "./WifiConnectionForm";
+import WifiConnectionDetails from "./WifiConnectionDetails";
+import { DeviceState } from "~/types/network";
 
-const routes = (): Route => ({
-  path: PATHS.root,
-  handle: {
-    name: N_("Network"),
-    icon: "settings_ethernet",
-  },
-  children: [
-    { index: true, element: <NetworkPage /> },
-    {
-      path: PATHS.editConnection,
-      element: <IpSettingsForm />,
-    },
-    {
-      path: PATHS.wifiNetwork,
-      element: <WifiNetworkPage />,
-    },
-  ],
-});
+export default function WifiNetworkPage() {
+  useNetworkConfigChanges();
+  const { ssid } = useParams();
+  const networks = useWifiNetworks();
+  const network = networks.find((c) => c.ssid === ssid);
+  const connected = network.device?.state === DeviceState.ACTIVATED;
 
-export default routes;
-export { PATHS };
+  return (
+    <>
+      {!connected && <WifiConnectionForm network={network} />}
+      {connected && <WifiConnectionDetails network={network} />}
+    </>
+  );
+}

@@ -23,45 +23,27 @@
 import React from "react";
 import {
   Button,
-  Card,
-  CardBody,
-  Content,
   DataList,
   DataListCell,
   DataListItem,
   DataListItemCells,
   DataListItemRow,
-  Drawer,
-  DrawerActions,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerContentBody,
-  DrawerHead,
-  DrawerPanelBody,
-  DrawerPanelContent,
   Flex,
   Label,
-  Spinner,
-  Split,
-  Stack,
 } from "@patternfly/react-core";
-import { generatePath } from "react-router-dom";
 import { Icon } from "~/components/layout";
-import { Link, EmptyState } from "~/components/core";
-import WifiConnectionForm from "~/components/network/WifiConnectionForm";
+import { EmptyState } from "~/components/core";
 import { DeviceState, WifiNetwork } from "~/types/network";
-import { NETWORK as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { formatIp } from "~/utils/network";
 import {
-  useRemoveConnectionMutation,
   useSelectedWifi,
   useSelectedWifiChange,
   useNetworkConfigChanges,
   useWifiNetworks,
 } from "~/queries/network";
+import { NETWORK as PATHS } from "~/routes/paths";
 import { slugify } from "~/utils";
-import { connect, disconnect } from "~/api/network";
+import { generatePath, useNavigate } from "react-router-dom";
 
 type HiddenNetwork = { hidden: boolean };
 const HIDDEN_NETWORK: HiddenNetwork = Object.freeze({ hidden: true });
@@ -84,94 +66,6 @@ const networkState = (state: DeviceState): string => {
     default:
       return "";
   }
-};
-
-// FIXME: too similar to utils/network#connectionAddresses method. Try to join them.
-const connectionAddresses = (network: WifiNetwork) => {
-  const { device, settings } = network;
-  const addresses = device ? device.addresses : settings?.addresses;
-
-  return addresses?.map(formatIp).join(", ");
-};
-
-const ConnectionData = ({ network }: { network: WifiNetwork }) => {
-  return <Stack hasGutter>{connectionAddresses(network)}</Stack>;
-};
-
-const WifiDrawerPanelBody = ({
-  network,
-  onCancel,
-}: {
-  network: WifiNetwork;
-  onCancel: () => void;
-}) => {
-  const { mutate: removeConnection } = useRemoveConnectionMutation();
-  const selectedWifi = useSelectedWifi();
-
-  const forgetNetwork = async () => {
-    removeConnection(network.settings.id);
-  };
-
-  if (!network) return;
-
-  const Form = ({ errors = {} }) => (
-    <WifiConnectionForm network={network} errors={errors} onCancel={onCancel} />
-  );
-
-  if (network === HIDDEN_NETWORK) return <Form />;
-
-  if (selectedWifi?.needsAuth) return <Form errors={{ needsAuth: true }} />;
-
-  if (network.settings && !network.device) {
-    return (
-      <Split hasGutter>
-        <Button onClick={async () => await connect(network.settings.id)}>{_("Connect")}</Button>
-        <Link to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
-          {_("Edit")}
-        </Link>
-        <Button variant="secondary" isDanger onClick={forgetNetwork}>
-          {_("Forget")}
-        </Button>
-      </Split>
-    );
-  }
-
-  // FIXME: stop using translations
-  switch (networkState(network.device?.state)) {
-    case _("Connecting"):
-      return <Spinner />;
-    case _("Disconnected"):
-      return !network?.settings && <Form />;
-    case _("Connected"):
-      return (
-        <Stack>
-          <ConnectionData network={network} />
-          <Split hasGutter>
-            <Button onClick={async () => await disconnect(network.settings.id)}>
-              {_("Disconnect")}
-            </Button>
-            <Link to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
-              {_("Edit")}
-            </Link>
-            <Button variant="secondary" isDanger onClick={forgetNetwork}>
-              {_("Forget")}
-            </Button>
-          </Split>
-        </Stack>
-      );
-    default:
-      return <Form />;
-  }
-};
-
-const NetworkFormName = ({ network }) => {
-  if (!network) return;
-
-  return (
-    <Content component="h3">
-      {network === HIDDEN_NETWORK ? _("Connect to hidden network") : network.ssid}
-    </Content>
-  );
 };
 
 const NetworkListName = ({ network, ...props }) => {
@@ -228,6 +122,7 @@ const NetworkListItem = ({ network }) => {
  * Component for displaying a list of available Wi-Fi networks
  */
 function WifiNetworksList() {
+  const navigate = useNavigate();
   useNetworkConfigChanges();
   const networks: WifiNetwork[] = useWifiNetworks();
   const { ssid: selectedSsid, hidden } = useSelectedWifi();
@@ -241,63 +136,26 @@ function WifiNetworksList() {
     changeSelection(HIDDEN_NETWORK);
   };
 
-  const selectNetwork = (ssid: string) => {
-    changeSelection({ ssid, needsAuth: null });
-  };
-
-  const unselectNetwork = () => {
-    changeSelection({ ssid: null, needsAuth: null });
-  };
+  if (networks.length === 0)
+    return <EmptyState title={_("No visible Wi-Fi networks found")} icon="error" />;
 
   return (
-    <Card isCompact>
-      <CardBody>
-        <Drawer isExpanded={!!selected}>
-          <DrawerContent
-            panelContent={
-              <DrawerPanelContent>
-                <DrawerHead>
-                  <NetworkFormName network={selected} />
-                  <DrawerActions>
-                    <DrawerCloseButton onClick={unselectNetwork} />
-                  </DrawerActions>
-                </DrawerHead>
-                <DrawerPanelBody>
-                  <WifiDrawerPanelBody network={selected} onCancel={unselectNetwork} />
-                </DrawerPanelBody>
-              </DrawerPanelContent>
-            }
-          >
-            <DrawerContentBody>
-              <Stack hasGutter>
-                {networks.length === 0 ? (
-                  <EmptyState title={_("No visible Wi-Fi networks found")} icon="error" />
-                ) : (
-                  // @ts-expect-error: related to https://github.com/patternfly/patternfly-react/issues/9823
-                  <DataList
-                    title={_("Visible Wi-Fi networks")}
-                    isCompact
-                    selectedDataListItemId={selected?.ssid}
-                    onSelectDataListItem={(_, ssid) => selectNetwork(ssid)}
-                  >
-                    {networks.map((n) => (
-                      <NetworkListItem key={n.ssid} network={n} />
-                    ))}
-                  </DataList>
-                )}
-                <Button
-                  variant="link"
-                  isDisabled={selected === HIDDEN_NETWORK}
-                  onClick={selectHiddneNetwork}
-                >
-                  {_("Connect to hidden network")}
-                </Button>
-              </Stack>
-            </DrawerContentBody>
-          </DrawerContent>
-        </Drawer>
-      </CardBody>
-    </Card>
+    <>
+      <DataList
+        aria-label={_("Visible Wi-Fi networks")}
+        isCompact
+        selectedDataListItemId={selected?.ssid}
+        onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiNetwork, { ssid }))}
+      >
+        {networks.map((n) => (
+          <NetworkListItem key={n.ssid} network={n} />
+        ))}
+      </DataList>
+
+      <Button variant="link" isDisabled={selected === HIDDEN_NETWORK} onClick={selectHiddneNetwork}>
+        {_("Connect to hidden network")}
+      </Button>
+    </>
   );
 }
 

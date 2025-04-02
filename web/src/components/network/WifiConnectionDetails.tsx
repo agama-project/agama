@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,30 +20,23 @@
  * find current contact information at www.suse.com.
  */
 
+import { Button } from "@patternfly/react-core";
 import React from "react";
-import { NetworkPage, IpSettingsForm, WifiNetworkPage } from "~/components/network";
-import { Route } from "~/types/routes";
-import { NETWORK as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
+import { disconnect } from "~/api/network";
+import { _ } from "~/i18n";
+import { WifiNetwork } from "~/types/network";
 
-const routes = (): Route => ({
-  path: PATHS.root,
-  handle: {
-    name: N_("Network"),
-    icon: "settings_ethernet",
-  },
-  children: [
-    { index: true, element: <NetworkPage /> },
-    {
-      path: PATHS.editConnection,
-      element: <IpSettingsForm />,
-    },
-    {
-      path: PATHS.wifiNetwork,
-      element: <WifiNetworkPage />,
-    },
-  ],
-});
-
-export default routes;
-export { PATHS };
+export default function WifiConnectionDetails({ network }: { network: WifiNetwork }) {
+  // TODO: display connection details (wireless and IP settings)
+  // TODO: remove, at least, the forget button
+  return (
+    <>
+      <p>{_("Connections details go here")}</p>
+      <p>{network.status}</p>
+      <Button type="submit" variant="link" onClick={() => disconnect(network.settings.id)}>
+        {/* TRANSLATORS: button label, disconnect from a Wi-Fi network */}
+        {_("Disconnect")}
+      </Button>
+    </>
+  );
+}

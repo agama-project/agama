@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -32,13 +32,11 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
-import {
-  useAddConnectionMutation,
-  useConnectionMutation,
-  useSelectedWifiChange,
-} from "~/queries/network";
-import { Connection, WifiNetwork, Wireless } from "~/types/network";
+import { useAddConnectionMutation, useConnectionMutation } from "~/queries/network";
+import { Connection, DeviceState, WifiNetwork, Wireless } from "~/types/network";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { useNavigate } from "react-router-dom";
 
 /*
  * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
@@ -55,64 +53,61 @@ const selectorOptions = security_options.map((security) => (
   <FormSelectOption key={security.value} value={security.value} label={security.label} />
 ));
 
-const securityFrom = (supported) => {
+const securityFrom = (supported: string[]) => {
   if (supported.includes("WPA2")) return "wpa-psk";
   if (supported.includes("WPA1")) return "wpa-psk";
   return "";
 };
 
+const ConnectionError = ({ ssid }) => (
+  <Alert variant="warning" isInline title={sprintf(_("Could not connect to %s"), ssid)}>
+    {<p>{_("Check the authentication parameters.")}</p>}
+  </Alert>
+);
+
 // FIXME: improve error handling. The errors props should have a key/value error
 //  and the component should show all of them, if any
-export default function WifiConnectionForm({
-  network,
-  errors = {},
-  onCancel,
-}: {
-  network: WifiNetwork;
-  errors?: { [key: string]: boolean | string };
-  onCancel: () => void;
-}) {
+export default function WifiConnectionForm({ network }: { network: WifiNetwork }) {
+  const navigate = useNavigate();
   const settings = network.settings?.wireless || new Wireless();
+  const [error, setError] = useState(false);
   const { mutate: addConnection } = useAddConnectionMutation();
   const { mutate: updateConnection } = useConnectionMutation();
-  const { mutate: updateSelectedNetwork } = useSelectedWifiChange();
   const [ssid, setSsid] = useState<string>(network.ssid);
   const [security, setSecurity] = useState<string>(
     settings?.security || securityFrom(network?.security || []),
   );
   const [password, setPassword] = useState<string>(settings.password);
-  const [showErrors, setShowErrors] = useState<boolean>(Object.keys(errors).length > 0);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const hidden = network?.hidden || false;
 
   const accept = async (e) => {
     e.preventDefault();
-    setShowErrors(false);
-    setIsConnecting(true);
-    updateSelectedNetwork({ ssid, needsAuth: null });
     const connection = network.settings || new Connection(ssid);
     connection.wireless = new Wireless({ ssid, security, password, hidden });
     const action = network.settings ? updateConnection : addConnection;
     action(connection);
   };
 
+  useEffect(() => {
+    if (network.device?.state === DeviceState.CONFIG) {
+      setIsConnecting(true);
+    }
+  }, [network.device]);
+
+  useEffect(() => {
+    if (!isConnecting) return;
+
+    if (!network.device) {
+      setIsConnecting(false);
+      setError(true);
+    }
+  }, [network.device, isConnecting, navigate]);
+
   return (
     /** TRANSLATORS: accessible name for the WiFi connection form */
     <Form onSubmit={accept} aria-label={_("WiFi connection form")}>
-      {showErrors && (
-        <Alert
-          variant="warning"
-          isInline
-          title={
-            errors.needsAuth
-              ? _("Authentication failed, please try again")
-              : _("Something went wrong")
-          }
-        >
-          {!errors.needsAuth && <p>{_("Please, review provided settings and try again.")}</p>}
-        </Alert>
-      )}
-
+      {error && <ConnectionError ssid={network.ssid} />}
       {hidden && (
         // TRANSLATORS: SSID (Wifi network name) configuration
         <FormGroup fieldId="ssid" label={_("SSID")}>
@@ -145,11 +140,11 @@ export default function WifiConnectionForm({
       )}
       <ActionGroup>
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
-          {/* TRANSLATORS: button label, connect to a WiFi network */}
+          {/* TRANSLATORS: button label, connect to a Wi-Fi network */}
           {_("Connect")}
         </Button>
         {/* TRANSLATORS: button label */}
-        <Button variant="link" isDisabled={isConnecting} onClick={onCancel}>
+        <Button variant="link" isDisabled={isConnecting} onClick={() => navigate(-1)}>
           {_("Cancel")}
         </Button>
       </ActionGroup>

@@ -387,6 +387,13 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   justify-self: flex-start;
 }
 
+// Fix select toggle icon visibility by creating more space at the end :/
+.pf-v6-c-form-control > select {
+  --pf-v6-c-form-control--PaddingInlineEnd: calc(
+    var(--pf-v6-c-form-control__select--PaddingInlineEnd) * 3
+  );
+}
+
 .pf-v6-c-check {
   row-gap: var(--pf-t--global--spacer--xs);
   align-content: baseline;
