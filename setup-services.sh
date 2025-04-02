@@ -195,7 +195,7 @@ EOS
   done
 
   for SVC in agama*.service; do
-    sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
+    sudosed "s@\(ExecStart\)=/usr/bin/agama@\1=$MYDIR/service/bin/agama@" \
       $SVC /usr/lib/systemd/system/$SVC
   done
 )
