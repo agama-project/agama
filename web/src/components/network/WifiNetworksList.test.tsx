@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import WifiNetworksListPage from "~/components/network/WifiNetworksListPage";
+import WifiNetworksList from "~/components/network/WifiNetworksList";
 import {
   Connection,
   ConnectionMethod,
@@ -105,14 +105,14 @@ describe("WifiNetworksListPage", () => {
     });
 
     it("renders a list of available wifi networks", () => {
-      installerRender(<WifiNetworksListPage />);
+      installerRender(<WifiNetworksList />);
       screen.getByRole("listitem", { name: "Network 1" });
       screen.getByRole("listitem", { name: "Network 2" });
       screen.getByRole("listitem", { name: "Network 3" });
     });
 
     it("allows opening the connection form for a hidden network", async () => {
-      const { user } = installerRender(<WifiNetworksListPage />);
+      const { user } = installerRender(<WifiNetworksList />);
       const button = screen.getByRole("button", { name: "Connect to hidden network" });
       await user.click(button);
       screen.getByRole("heading", { name: "Connect to hidden network" });
@@ -121,7 +121,7 @@ describe("WifiNetworksListPage", () => {
 
     describe("and user selects a connected network", () => {
       it("renders basic network information and actions instead of the connection form", async () => {
-        const { user } = installerRender(<WifiNetworksListPage />);
+        const { user } = installerRender(<WifiNetworksList />);
         const network1 = screen.getByRole("listitem", { name: "Network 1" });
         await user.click(network1);
         screen.getByRole("heading", { name: "Network 1" });
@@ -135,7 +135,7 @@ describe("WifiNetworksListPage", () => {
 
     describe("and user selects a configured network", () => {
       it("renders actions instead of the connection form", async () => {
-        const { user } = installerRender(<WifiNetworksListPage />);
+        const { user } = installerRender(<WifiNetworksList />);
         const network2 = screen.getByRole("listitem", { name: "Network 2" });
         await user.click(network2);
         screen.getByRole("heading", { name: "Network 2" });
@@ -148,7 +148,7 @@ describe("WifiNetworksListPage", () => {
 
     describe("and user selects a not configured network", () => {
       it("renders the connection form", async () => {
-        const { user } = installerRender(<WifiNetworksListPage />);
+        const { user } = installerRender(<WifiNetworksList />);
         const network3 = screen.getByRole("listitem", { name: "Network 3" });
         await user.click(network3);
         screen.getByRole("heading", { name: "Network 3" });
@@ -163,12 +163,12 @@ describe("WifiNetworksListPage", () => {
     });
 
     it("renders information about it", () => {
-      installerRender(<WifiNetworksListPage />);
+      installerRender(<WifiNetworksList />);
       screen.getByText("No visible Wi-Fi networks found");
     });
 
     it("allows opening the connection form for a hidden network", async () => {
-      const { user } = installerRender(<WifiNetworksListPage />);
+      const { user } = installerRender(<WifiNetworksList />);
       const button = screen.getByRole("button", { name: "Connect to hidden network" });
       await user.click(button);
       screen.getByRole("heading", { name: "Connect to hidden network" });

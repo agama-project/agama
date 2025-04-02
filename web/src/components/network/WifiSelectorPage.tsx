@@ -23,7 +23,7 @@
 import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import WifiNetworksListPage from "~/components/network/WifiNetworksListPage";
+import WifiNetworksList from "~/components/network/WifiNetworksList";
 import { useNetworkConfigChanges } from "~/queries/network";
 import { _ } from "~/i18n";
 
@@ -39,7 +39,7 @@ function WifiSelectorPage() {
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <WifiNetworksListPage />
+            <WifiNetworksList />
           </GridItem>
         </Grid>
       </Page.Content>

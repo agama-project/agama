@@ -227,7 +227,7 @@ const NetworkListItem = ({ network }) => {
 /**
  * Component for displaying a list of available Wi-Fi networks
  */
-function WifiNetworksListPage() {
+function WifiNetworksList() {
   useNetworkConfigChanges();
   const networks: WifiNetwork[] = useWifiNetworks();
   const { ssid: selectedSsid, hidden } = useSelectedWifi();
@@ -301,4 +301,4 @@ function WifiNetworksListPage() {
   );
 }
 
-export default WifiNetworksListPage;
+export default WifiNetworksList;
