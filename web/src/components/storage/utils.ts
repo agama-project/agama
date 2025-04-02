@@ -195,7 +195,7 @@ const deviceBaseName = (device: StorageDevice): string => {
  * Generates the label for the given device
  */
 const deviceLabel = (device: StorageDevice): string => {
-  const name = device.name;
+  const name = deviceBaseName(device);
   const size = device.size;
 
   return size ? `${name}, ${deviceSize(size)}` : name;
