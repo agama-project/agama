@@ -65,14 +65,17 @@ describe "agama profile" do
     context "valid profile with space in path" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/self space/examples/profile_tw_minimal.json", \
+        "rust/agama-lib/share/examples space/profile_tw_minimal.json", \
         "is valid"
     end
 
+    # Rust Url library will see the percent
+    # and wrongly think that the path does not need escaping.
+    # This is a bug but its impact is low.
     xcontext "valid profile with percent in path" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/self%20percent/examples/profile_tw_minimal.json", \
+        "rust/agama-lib/share/examples%20percent/profile_tw_minimal.json", \
         "is valid"
     end
 
