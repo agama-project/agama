@@ -14,9 +14,8 @@ expand_info_arg() {
     return 0
   fi
 
-  # TODO: should we use also --location-trusted if info file url contain user and password?
-  # if so check with security team
-  curl --location --silent "${INFO_URL}" > "${INFO_CONTENT}"
+  # download the info file
+  agama download "$INFO_URL" "$INFO_CONTENT"
   # remove info param
   sed -in 's/\([[:space:]]\|^\)\(inst\|agama\)\.info=[^[:space:]]\+//' "${TARGET}"
   # and add content of info file
