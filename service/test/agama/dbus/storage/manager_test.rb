@@ -852,57 +852,57 @@ describe Agama::DBus::Storage::Manager do
 
   describe "#iscsi_discover" do
     it "performs an iSCSI discovery" do
-      expect(iscsi).to receive(:discover_send_targets) do |address, port, auth|
-        expect(address).to eq("192.168.100.90")
-        expect(port).to eq(3260)
-        expect(auth).to be_a(Y2IscsiClient::Authentication)
-      end
+      expect(iscsi).to receive(:discover).with("192.168.100.90", 3260, anything)
 
-      subject.iscsi_discover("192.168.100.90", 3260, {})
+      subject.iscsi_discover("192.168.100.90", 3260)
     end
 
     context "when no authentication options are given" do
-      let(:auth_options) { {} }
-
-      it "uses an empty authentication" do
-        expect(iscsi).to receive(:discover_send_targets) do |_, _, auth|
-          expect(auth.by_target?).to eq(false)
-          expect(auth.by_initiator?).to eq(false)
+      it "uses empty credentials" do
+        expect(iscsi).to receive(:discover) do |_, _, discover_options|
+          expect(discover_options[:credentials]).to eq({
+            username:           nil,
+            password:           nil,
+            initiator_username: nil,
+            initiator_password: nil
+          })
         end
 
-        subject.iscsi_discover("192.168.100.90", 3260, auth_options)
+        subject.iscsi_discover("192.168.100.90", 3260)
       end
     end
 
     context "when authentication options are given" do
-      let(:auth_options) do
+      let(:options) do
         {
-          "Username"        => "testi",
-          "Password"        => "testi",
-          "ReverseUsername" => "testt",
-          "ReversePassword" => "testt"
+          "Username"        => "target",
+          "Password"        => "12345",
+          "ReverseUsername" => "initiator",
+          "ReversePassword" => "54321"
         }
       end
 
-      it "uses the expected authentication" do
-        expect(iscsi).to receive(:discover_send_targets) do |_, _, auth|
-          expect(auth.username).to eq("testi")
-          expect(auth.password).to eq("testi")
-          expect(auth.username_in).to eq("testt")
-          expect(auth.password_in).to eq("testt")
+      it "uses the expected crendentials" do
+        expect(iscsi).to receive(:discover) do |_, _, discover_options|
+          expect(discover_options[:credentials]).to eq({
+            username:           "target",
+            password:           "12345",
+            initiator_username: "initiator",
+            initiator_password: "54321"
+          })
         end
 
-        subject.iscsi_discover("192.168.100.90", 3260, auth_options)
+        subject.iscsi_discover("192.168.100.90", 3260, options)
       end
     end
 
     context "when the action successes" do
       before do
-        allow(iscsi).to receive(:discover_send_targets).and_return(true)
+        allow(iscsi).to receive(:discover).and_return(true)
       end
 
       it "returns 0" do
-        result = subject.iscsi_discover("192.168.100.90", 3260, {})
+        result = subject.iscsi_discover("192.168.100.90", 3260)
 
         expect(result).to eq(0)
       end
@@ -910,11 +910,11 @@ describe Agama::DBus::Storage::Manager do
 
     context "when the action fails" do
       before do
-        allow(iscsi).to receive(:discover_send_targets).and_return(false)
+        allow(iscsi).to receive(:discover).and_return(false)
       end
 
       it "returns 1" do
-        result = subject.iscsi_discover("192.168.100.90", 3260, {})
+        result = subject.iscsi_discover("192.168.100.90", 3260)
 
         expect(result).to eq(1)
       end

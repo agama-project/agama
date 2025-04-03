@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -78,10 +78,19 @@ describe Agama::DBus::Storage::ISCSINode do
   end
 
   describe "#login" do
+    let(:empty_credentials) do
+      {
+        username:           nil,
+        password:           nil,
+        initiator_username: nil,
+        initiator_password: nil
+      }
+    end
+
     it "creates an iSCSI session" do
-      expect(iscsi_manager).to receive(:login) do |node, auth, startup:|
+      expect(iscsi_manager).to receive(:login) do |node, credentials:, startup:|
         expect(node).to eq(iscsi_node)
-        expect(auth).to be_a(Y2IscsiClient::Authentication)
+        expect(credentials).to eq(empty_credentials)
         expect(startup).to be_nil
       end
 
@@ -89,41 +98,34 @@ describe Agama::DBus::Storage::ISCSINode do
     end
 
     it "uses the given startup status" do
-      expect(iscsi_manager).to receive(:login).with(anything, anything, startup: "automatic")
+      expect(iscsi_manager).to receive(:login)
+        .with(anything, credentials: anything, startup: "automatic")
 
       subject.login({ "Startup" => "automatic" })
     end
 
-    context "when no authentication options are given" do
-      it "uses an empty authentication" do
-        expect(iscsi_manager).to receive(:login) do |_, auth|
-          expect(auth.by_target?).to eq(false)
-          expect(auth.by_initiator?).to eq(false)
-        end
-
-        subject.login
-      end
-    end
-
-    context "when authentication options are given" do
-      let(:auth_options) do
+    context "when credentials are given" do
+      let(:options) do
         {
-          "Username"        => "testi",
-          "Password"        => "testi",
-          "ReverseUsername" => "testt",
-          "ReversePassword" => "testt"
+          "Username"        => "target",
+          "Password"        => "12345",
+          "ReverseUsername" => "initiator",
+          "ReversePassword" => "54321"
         }
       end
 
-      it "uses the expected authentication" do
-        expect(iscsi_manager).to receive(:login) do |_, auth|
-          expect(auth.username).to eq("testi")
-          expect(auth.password).to eq("testi")
-          expect(auth.username_in).to eq("testt")
-          expect(auth.password_in).to eq("testt")
+      it "login with the expected credendials" do
+        expect(iscsi_manager).to receive(:login) do |_, credentials:, startup:|
+          expect(credentials).to eq({
+            username:           "target",
+            password:           "12345",
+            initiator_username: "initiator",
+            initiator_password: "54321"
+          })
+          expect(startup).to be_nil
         end
 
-        subject.login(auth_options)
+        subject.login(options)
       end
     end
 

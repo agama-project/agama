@@ -33,7 +33,6 @@ require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/storage/volume_conversion"
-require "agama/dbus/storage/with_iscsi_auth"
 require "agama/dbus/with_progress"
 require "agama/dbus/with_service_status"
 require "agama/storage/encryption_settings"
@@ -47,7 +46,6 @@ module Agama
     module Storage
       # D-Bus object to manage storage installation
       class Manager < BaseObject # rubocop:disable Metrics/ClassLength
-        include WithISCSIAuth
         include WithProgress
         include WithServiceStatus
         include ::DBus::ObjectManager
@@ -374,7 +372,7 @@ module Agama
         #
         # @param value [String]
         def initiator_name=(value)
-          backend.iscsi.initiator.name = value
+          backend.iscsi.update_initiator(name: value)
         end
 
         # Whether the initiator name was set via iBFT
@@ -396,7 +394,14 @@ module Agama
         #
         # @return [Integer] 0 on success, 1 on failure
         def iscsi_discover(address, port, options = {})
-          success = backend.iscsi.discover_send_targets(address, port, iscsi_auth(options))
+          credentials = {
+            username:           options["Username"],
+            password:           options["Password"],
+            initiator_username: options["ReverseUsername"],
+            initiator_password: options["ReversePassword"]
+          }
+
+          success = backend.iscsi.discover(address, port, credentials: credentials)
           success ? 0 : 1
         end
 
