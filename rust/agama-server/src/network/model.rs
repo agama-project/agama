@@ -455,6 +455,7 @@ mod tests {
 /// Network state
 #[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct GeneralState {
     pub hostname: String,
     pub connectivity: bool,

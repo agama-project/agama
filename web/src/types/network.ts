@@ -348,8 +348,8 @@ type WifiNetwork = AccessPoint & {
 type NetworkGeneralState = {
   connectivity: boolean;
   hostname: string;
-  networking_enabled: boolean;
-  wireless_enabled: boolean;
+  networkingEnabled: boolean;
+  wirelessEnabled: boolean;
 };
 
 export {

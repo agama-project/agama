@@ -74,7 +74,7 @@ export default function NetworkPage() {
             <WiredConnections connections={wiredConnections} devices={devices} />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            {settings.wireless_enabled ? (
+            {settings.wirelessEnabled ? (
               <Page.Section title={_("Wi-Fi")}>
                 <WifiNetworksList />
               </Page.Section>
