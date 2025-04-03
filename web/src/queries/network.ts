@@ -219,34 +219,32 @@ const useNetworkConfigChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "NetworkChange") {
-        if (event.deviceRemoved || event.deviceAdded) {
-          queryClient.invalidateQueries({ queryKey: ["network"] });
+        const devices: Device[] = queryClient.getQueryData(["network", "devices"]);
+        if (!devices) return;
+
+        let updatedDevices = [];
+        if (event.deviceAdded) {
+          const device = Device.fromApi(event.deviceAdded);
+          updatedDevices = [...devices, device];
         }
 
         if (event.deviceUpdated) {
-          const [name, data] = event.deviceUpdated;
-          const devices: Device[] = queryClient.getQueryData(["network", "devices"]);
-          if (!devices) return;
-
-          if (name !== data.name) {
-            return queryClient.invalidateQueries({ queryKey: ["network"] });
-          }
-
-          const current_device = devices.find((d) => d.name === name);
-          if (
-            [DeviceState.DISCONNECTED, DeviceState.ACTIVATED, DeviceState.UNAVAILABLE].includes(
-              data.state,
-            )
-          ) {
-            if (current_device.state !== data.state) {
-              queryClient.invalidateQueries({ queryKey: ["network"] });
-              return changeSelected.mutate({ needsAuth: false });
+          const [name, apiDevice] = event.deviceUpdated;
+          const device = Device.fromApi(apiDevice);
+          updatedDevices = devices.map((d) => {
+            if (d.name === name) {
+              return device;
             }
-          }
-          if ([DeviceState.NEEDAUTH, DeviceState.FAILED].includes(data.state)) {
-            return changeSelected.mutate({ needsAuth: true });
-          }
+
+            return d;
+          });
         }
+
+        if (event.deviceRemoved) {
+          updatedDevices = devices.filter((d) => d === event.deviceRemoved);
+        }
+
+        queryClient.setQueryData(["network", "devices"], updatedDevices);
       }
     });
   }, [client, queryClient, changeSelected]);
