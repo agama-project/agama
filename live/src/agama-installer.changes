@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr  3 08:28:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Workaround for a not working file picker in local installation
+  (gh#agama-project/agama#2243)
+
+-------------------------------------------------------------------
 Wed Apr  2 05:47:01 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use "agama download" to fetch the info file (gh#agama-project/agama#2176).

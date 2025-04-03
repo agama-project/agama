@@ -16,6 +16,10 @@ user_pref("browser.startup.couldRestoreSession.count", 0);
 // disable homepage override on updates
 user_pref("browser.startup.homepage_override.mstone", "ignore");
 
+// workaround for non working file picker, disable XDG portal, use the FF native popup
+// TODO: make the XDG portal working again, it has more features (mounting USB flash)
+user_pref("widget.use-xdg-desktop-portal.file-picker", 0);
+
 // start always in the custom homepage
 user_pref("browser.startup.page", 1);
 // custom homepage: the value is expected to be replaced with the login URL by the startup script
