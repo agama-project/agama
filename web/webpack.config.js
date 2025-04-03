@@ -165,7 +165,7 @@ module.exports = {
             loader: require.resolve("ts-loader"),
             options: {
               getCustomTransformers: () => ({
-                before: [development && ReactRefreshTypeScript()].filter(Boolean),
+                before: [development && ReactRefreshTypeScript.default()].filter(Boolean),
               }),
               transpileOnly: development,
             },
