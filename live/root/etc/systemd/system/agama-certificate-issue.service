@@ -6,4 +6,4 @@ Type=oneshot
 ExecStart=agama-issue-generator --ssl
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
