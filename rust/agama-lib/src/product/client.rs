@@ -20,7 +20,7 @@
 
 use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
-use crate::software::model::AddonParams;
+use crate::software::model::{AddonParams, AddonProperties};
 use crate::software::proxies::SoftwareProductProxy;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -141,6 +141,27 @@ impl<'a> ProductClient<'a> {
                     Some(version)
                 },
                 registration_code: if code.is_empty() { None } else { Some(code) },
+            })
+            .collect();
+        Ok(addons)
+    }
+
+    pub async fn available_addons(&self) -> Result<Vec<AddonProperties>, ServiceError> {
+        let addons: Vec<AddonProperties> = self
+            .registration_proxy
+            .available_addons()
+            .await?
+            .into_iter()
+            .map(|hash| AddonProperties {
+                id: hash.get("name").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
+                version: hash.get("version").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
+                label: hash.get("label").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
+                available: hash.get("available").unwrap_or(&zbus::zvariant::Value::new(true)).try_into().unwrap_or(true),
+                free: hash.get("free").unwrap_or(&zbus::zvariant::Value::new(false)).try_into().unwrap_or(false),
+                recommended: hash.get("recommended").unwrap_or(&zbus::zvariant::Value::new(false)).try_into().unwrap_or(false),
+                description: hash.get("description").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
+                release: hash.get("release").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
+                r#type: hash.get("type").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
             })
             .collect();
         Ok(addons)

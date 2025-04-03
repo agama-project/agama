@@ -12,6 +12,12 @@ echo "Configure image: [$kiwi_iname]..."
 # setup baseproduct link
 suseSetupProduct
 
+# save the build data
+mkdir -p /var/log/build
+cat << EOF > /var/log/build/info
+Build date: $(LC_ALL=C date -u "+%F %T %Z")
+EOF
+
 # enable the corresponding repository
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
 REPO="/etc/zypp/repos.d/agama-${DISTRO}.repo"
@@ -163,7 +169,7 @@ mkdir -p /etc/agama.d
 # insists on running systemd as PID 1 :-/
 ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
 
-# delete translations and unusupported languages (makes ISO about 22MiB smaller)
+# delete translations and unsupported languages (makes ISO about 22MiB smaller)
 # build list of ignore options for "ls" with supported languages like "-I cs* -I de* -I es* ..."
 readarray -t IGNORE_OPTS < <(ls /usr/share/agama/web_ui/po.*.js.gz | sed -e "s#/usr/share/agama/web_ui/po\.\(.*\)\.js\.gz#-I\n\\1*#")
 # additionally keep the en_US translations
