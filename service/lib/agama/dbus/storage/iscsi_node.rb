@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,15 +21,12 @@
 
 require "dbus"
 require "agama/dbus/base_object"
-require "agama/dbus/storage/with_iscsi_auth"
 
 module Agama
   module DBus
     module Storage
       # Class representing an iSCSI node
       class ISCSINode < BaseObject
-        include WithISCSIAuth
-
         # @return [Agama::Storage::ISCSI::Manager]
         attr_reader :iscsi_manager
 
@@ -128,12 +125,17 @@ module Agama
         #   @option Password [String] Password for authentication by target
         #   @option ReverseUsername [String] Username for authentication by initiator
         #   @option ReversePassword [String] Password for authentication by inititator
-        #   @option Startup [String] Valid values are "onboot", "manual", "automatic"
         #
         # @return [Integer] 0 on success, 1 on failure if the given startup value is not valid, and
         #   2 on failure because any other reason.
         def login(options = {})
-          auth = iscsi_auth(options)
+          credentials = {
+            username:           options["Username"],
+            password:           options["Password"],
+            initiator_username: options["ReverseUsername"],
+            initiator_password: options["ReversePassword"]
+          }
+
           startup = options["Startup"]
 
           if startup && !valid_startup?(startup)
@@ -141,7 +143,7 @@ module Agama
             return 1
           end
 
-          success = iscsi_manager.login(iscsi_node, auth, startup: startup)
+          success = iscsi_manager.login(iscsi_node, credentials: credentials, startup: startup)
           return 0 if success
 
           logger.info("iSCSI login error: fail to login iSCSI node #{path}")
