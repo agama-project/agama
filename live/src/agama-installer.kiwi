@@ -148,9 +148,10 @@
         <package name="rubygem(byebug)"/>
         <package name="microos-tools"/>
         <package name="patterns-base-basesystem"/>
-        <package name="patterns-gnome-gnome"/>
-        <package name="gnome-kiosk"/>
+        <package name="gdm"/>
+        <package name="gnome-shell"/>
         <package name="gnome-session-wayland"/>
+        <package name="gnome-kiosk"/>
         <package name="psmisc"/>
         <package name="joe"/>
         <package name="checkmedia"/>
