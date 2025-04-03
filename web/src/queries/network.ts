@@ -21,19 +21,14 @@
  */
 
 import React from "react";
-import {
-  useQueryClient,
-  useMutation,
-  useSuspenseQuery,
-  useSuspenseQueries,
-  useQuery,
-} from "@tanstack/react-query";
+import { useQueryClient, useMutation, useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
   AccessPoint,
   Connection,
   Device,
   DeviceState,
+  NetworkGeneralState,
   WifiNetwork,
   WifiNetworkStatus,
 } from "~/types/network";
@@ -50,7 +45,7 @@ import {
 } from "~/api/network";
 
 /**
- * Returns a query for retrieving the network configuration
+ * Returns a query for retrieving the general network configuration
  */
 const stateQuery = () => {
   return {
@@ -257,25 +252,44 @@ const useNetworkConfigChanges = () => {
   }, [client, queryClient, changeSelected]);
 };
 
-const useConnection = (name) => {
+const useConnection = (name: string) => {
   const { data } = useSuspenseQuery(connectionQuery(name));
   return data;
 };
 
-const useNetwork = () => {
-  const [{ data: state }, { data: devices }, { data: connections }, { data: accessPoints }] =
-    useSuspenseQueries({
-      queries: [stateQuery(), devicesQuery(), connectionsQuery(), accessPointsQuery()],
-    });
-
-  return { connections, settings: state, devices, accessPoints };
+/**
+ * Returns the general state of the network.
+ */
+const useNetworkState = (): NetworkGeneralState => {
+  const { data } = useSuspenseQuery(stateQuery());
+  return data;
 };
 
+/**
+ * Returns the network devices.
+ */
+const useNetworkDevices = (): Device[] => {
+  const { data } = useSuspenseQuery(devicesQuery());
+  return data;
+};
+
+/**
+ * Returns the network connections.
+ */
+const useConnections = (): Connection[] => {
+  const { data } = useSuspenseQuery(connectionsQuery());
+  return data;
+};
+
+/**
+ * Return the list of Wi-Fi networks.
+ */
 const useWifiNetworks = () => {
   const knownSsids: string[] = [];
-  const [{ data: devices }, { data: connections }, { data: accessPoints }] = useSuspenseQueries({
-    queries: [devicesQuery(), connectionsQuery(), accessPointsQuery()],
-  });
+
+  const devices = useNetworkDevices();
+  const connections = useConnections();
+  const { data: accessPoints } = useSuspenseQuery(accessPointsQuery());
 
   return accessPoints
     .filter((ap: AccessPoint) => {
@@ -291,11 +305,13 @@ const useWifiNetworks = () => {
     .map((ap: AccessPoint): WifiNetwork => {
       const settings = connections.find((c: Connection) => c.wireless?.ssid === ap.ssid);
       const device = devices.find((d: Device) => d.connection === ap.ssid);
-      const status = device
-        ? WifiNetworkStatus.CONNECTED
-        : settings
-          ? WifiNetworkStatus.CONFIGURED
-          : WifiNetworkStatus.NOT_CONFIGURED;
+
+      let status: WifiNetworkStatus;
+      if (device?.state === DeviceState.ACTIVATED) {
+        status = WifiNetworkStatus.CONNECTED;
+      } else {
+        status = settings ? WifiNetworkStatus.CONFIGURED : WifiNetworkStatus.NOT_CONFIGURED;
+      }
 
       return {
         ...ap,
@@ -314,10 +330,12 @@ export {
   accessPointsQuery,
   selectedWiFiNetworkQuery,
   useAddConnectionMutation,
+  useConnections,
   useConnectionMutation,
   useRemoveConnectionMutation,
   useConnection,
-  useNetwork,
+  useNetworkDevices,
+  useNetworkState,
   useSelectedWifi,
   useSelectedWifiChange,
   useNetworkConfigChanges,

@@ -25,7 +25,12 @@ import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { EmptyState, Page } from "~/components/core";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { _ } from "~/i18n";
-import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
+import {
+  useConnections,
+  useNetworkConfigChanges,
+  useNetworkDevices,
+  useNetworkState,
+} from "~/queries/network";
 import WifiNetworksList from "./WifiNetworksList";
 
 const WiredConnections = ({ connections, devices }) => {
@@ -59,7 +64,9 @@ const NoWifiAvailable = () => (
  */
 export default function NetworkPage() {
   useNetworkConfigChanges();
-  const { connections, devices, settings } = useNetwork();
+  const connections = useConnections();
+  const devices = useNetworkDevices();
+  const networkState = useNetworkState();
   const wiredConnections = connections.filter((c) => !c.wireless);
 
   return (
@@ -74,7 +81,7 @@ export default function NetworkPage() {
             <WiredConnections connections={wiredConnections} devices={devices} />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            {settings.wirelessEnabled ? (
+            {networkState.wirelessEnabled ? (
               <Page.Section title={_("Wi-Fi")}>
                 <WifiNetworksList />
               </Page.Section>
