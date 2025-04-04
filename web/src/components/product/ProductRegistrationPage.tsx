@@ -56,6 +56,8 @@ const FORM_ID = "productRegistration";
 const KEY_LABEL = _("Registration code");
 const EMAIL_LABEL = "Email";
 
+const RegistrationCodeInput = ({ ...props }) => <PasswordInput size={30} {...props} />;
+
 const RegisteredProductSection = () => {
   const { selectedProduct: product } = useProduct();
   const registration = useRegistration();
@@ -129,7 +131,7 @@ const RegistrationFormSection = () => {
       {error && <Alert variant="warning" isInline title={error} />}
 
       <FormGroup fieldId="key" label={KEY_LABEL}>
-        <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} size={30} />
+        <RegistrationCodeInput id="key" value={key} onChange={(_, v) => setKey(v)} />
       </FormGroup>
 
       <FormGroup fieldId="provideEmail">
@@ -199,26 +201,34 @@ const Extensions = () => {
                       {_("Beta")}
                     </Label>
                   )}
-                  {ext.free && (
-                    <Label color="green" isCompact>
-                      {_("Free")}
+                  {ext.recommended && (
+                    <Label color="orange" isCompact>
+                      {_("Recommended")}
                     </Label>
                   )}
                 </div>
                 <div>{ext.description}</div>
-                <Form>
-                  {!ext.free && (
-                    <FormGroup label={KEY_LABEL}>
-                      <PasswordInput id={`reg-code-${ext.id}-${ext.version}`} />
-                    </FormGroup>
-                  )}
+                {ext.available ? (
+                  <Form>
+                    {!ext.free && (
+                      <FormGroup label={KEY_LABEL}>
+                        <RegistrationCodeInput id={`reg-code-${ext.id}-${ext.version}`} />
+                      </FormGroup>
+                    )}
 
-                  <ActionGroup>
-                    <Button variant="primary" type="submit" isInline>
-                      {_("Register")}
-                    </Button>
-                  </ActionGroup>
-                </Form>
+                    <ActionGroup>
+                      <Button variant="primary" type="submit" isInline>
+                        {_("Register")}
+                      </Button>
+                    </ActionGroup>
+                  </Form>
+                ) : (
+                  <Alert title={_("Not available")} variant="warning">
+                    {_(
+                      "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
+                    )}
+                  </Alert>
+                )}
               </Stack>
             </DataListCell>,
           ]}
