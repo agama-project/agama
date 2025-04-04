@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { useQueryClient, useMutation, useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
   AccessPoint,
@@ -164,46 +164,6 @@ const useRemoveConnectionMutation = () => {
 };
 
 /**
- * Returns selected Wi-Fi network
- */
-const selectedWiFiNetworkQuery = () => ({
-  // TODO: use right key, once we stop invalidating everything under network
-  // queryKey: ["network", "wifi", "selected"],
-  queryKey: ["wifi", "selected"],
-  queryFn: async () => {
-    return Promise.resolve({ ssid: null, needsAuth: null });
-  },
-  staleTime: Infinity,
-});
-
-const useSelectedWifi = (): { ssid?: string; needsAuth?: boolean; hidden?: boolean } => {
-  const { data } = useQuery(selectedWiFiNetworkQuery());
-  return data || {};
-};
-
-const useSelectedWifiChange = () => {
-  type SelectedWifi = {
-    ssid?: string;
-    hidden?: boolean;
-    needsAuth?: boolean;
-  };
-
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: async (data: SelectedWifi): Promise<SelectedWifi> => Promise.resolve(data),
-    onSuccess: (data: SelectedWifi) => {
-      queryClient.setQueryData(["wifi", "selected"], (prev: SelectedWifi) => ({
-        ssid: prev.ssid,
-        ...data,
-      }));
-    },
-  });
-
-  return mutation;
-};
-
-/**
  * Hook that returns a useEffect to listen for NetworkChanged events
  *
  * When the configuration changes, it invalidates the config query and forces the router to
@@ -212,7 +172,6 @@ const useSelectedWifiChange = () => {
 const useNetworkConfigChanges = () => {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
-  const changeSelected = useSelectedWifiChange();
 
   React.useEffect(() => {
     if (!client) return;
@@ -247,7 +206,7 @@ const useNetworkConfigChanges = () => {
         queryClient.setQueryData(["network", "devices"], updatedDevices);
       }
     });
-  }, [client, queryClient, changeSelected]);
+  }, [client, queryClient]);
 };
 
 const useConnection = (name: string) => {
@@ -326,7 +285,6 @@ export {
   connectionQuery,
   connectionsQuery,
   accessPointsQuery,
-  selectedWiFiNetworkQuery,
   useAddConnectionMutation,
   useConnections,
   useConnectionMutation,
@@ -334,8 +292,6 @@ export {
   useConnection,
   useNetworkDevices,
   useNetworkState,
-  useSelectedWifi,
-  useSelectedWifiChange,
   useNetworkConfigChanges,
   useWifiNetworks,
 };
