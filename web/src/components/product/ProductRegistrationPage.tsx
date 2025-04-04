@@ -46,7 +46,7 @@ import {
 import { Link, Page, PasswordInput } from "~/components/core";
 import { RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
-import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
+import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
 import { useHostname } from "~/queries/system";
 import { isEmpty, mask } from "~/utils";
 import { sprintf } from "sprintf-js";
@@ -129,7 +129,7 @@ const RegistrationFormSection = () => {
       {error && <Alert variant="warning" isInline title={error} />}
 
       <FormGroup fieldId="key" label={KEY_LABEL}>
-        <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
+        <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} size={30} />
       </FormGroup>
 
       <FormGroup fieldId="provideEmail">
@@ -182,6 +182,10 @@ const HostnameAlert = () => {
 };
 
 const Extensions = () => {
+  const addons = useAddons();
+
+  console.log("addons: ", addons);
+
   // just some testing data
   // TODO: read from backend
   const extensions = [
@@ -259,6 +263,7 @@ const Extensions = () => {
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
   const { key } = useRegistration();
+  // FIXME: this needs to be fixed for RMT which allows registering with empty key
   const isUnregistered = isEmpty(key);
 
   // TODO: render something meaningful instead? "Product not registrable"?
@@ -274,7 +279,7 @@ export default function ProductRegistrationPage() {
         {isUnregistered && <HostnameAlert />}
         {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
         {/* TODO: display only when registered */}
-        <Extensions />
+        {!isUnregistered && <Extensions />}
       </Page.Content>
     </Page>
   );

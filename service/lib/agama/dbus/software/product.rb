@@ -157,7 +157,7 @@ module Agama
         def available_addons
           addons = backend.registration.available_addons || []
 
-          addons.map do |_addon|
+          addons.map do |a|
             {
               "name"        => a.identifier,
               "version"     => a.version,
