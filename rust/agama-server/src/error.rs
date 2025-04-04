@@ -49,7 +49,7 @@ pub enum Error {
 
 impl From<anyhow::Error> for Error {
     fn from(e: anyhow::Error) -> Self {
-        // {:#} includes causes
+        // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
         Self::Anyhow(format!("{:#}", e))
     }
 }
