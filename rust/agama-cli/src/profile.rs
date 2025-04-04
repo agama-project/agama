@@ -233,7 +233,9 @@ async fn evaluate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
 async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
     // useful for store_settings
     tokio::spawn(async move {
-        show_progress().await.unwrap();
+        if let Err(error) = show_progress().await {
+            eprintln!("Cannot monitor progress: {}", error);
+        }
     });
 
     let url = Url::parse(&url_string)?;
