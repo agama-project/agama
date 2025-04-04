@@ -21,6 +21,7 @@
  */
 
 import {
+  AddonInfo,
   Pattern,
   Product,
   SoftwareConfig,
@@ -64,6 +65,11 @@ const fetchLicense = (id: string, lang: string = "en"): Promise<LicenseContent> 
 const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/registration");
 
 /**
+ * Returns an object with the registration info
+ */
+const fetchAddons = (): Promise<AddonInfo[]> => get("/api/software/registration/addons/available");
+
+/**
  * Returns the list of patterns for the selected product
  */
 const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
@@ -92,6 +98,7 @@ const register = ({ key, email }: { key: string; email?: string }) =>
   post("/api/software/registration", { key, email });
 
 export {
+  fetchAddons,
   fetchConfig,
   fetchPatterns,
   fetchProposal,

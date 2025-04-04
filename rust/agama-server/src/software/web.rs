@@ -38,8 +38,8 @@ use agama_lib::{
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
-            AddonParams, License, LicenseContent, LicensesRepo, RegistrationError,
-            RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig,
+            AddonParams, AddonProperties, License, LicenseContent, LicensesRepo, RegistrationError,
+            RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -218,6 +218,10 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
             "/registration/addons/registered",
             get(get_registered_addons),
         )
+        .route(
+            "/registration/addons/available",
+            get(get_available_addons),
+        )
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
@@ -333,6 +337,26 @@ async fn get_registered_addons(
     State(state): State<SoftwareState<'_>>,
 ) -> Result<Json<Vec<AddonParams>>, Error> {
     let result = state.product.registered_addons().await?;
+
+    Ok(Json(result))
+}
+
+/// returns list of available addons
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/registration/addons/available",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of available addons", body = Vec<AddonProperties>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_available_addons(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<Vec<AddonProperties>>, Error> {
+    let result = state.product.available_addons().await?;
 
     Ok(Json(result))
 }
@@ -484,7 +508,7 @@ pub struct SoftwareProposal {
     /// Space required for installation. It is returned as a formatted string which includes
     /// a number and a unit (e.g., "GiB").
     size: String,
-    /// Patterns selection. It is respresented as a hash map where the key is the pattern's name
+    /// Patterns selection. It is represented as a hash map where the key is the pattern's name
     /// and the value why the pattern is selected.
     patterns: HashMap<String, SelectedBy>,
 }

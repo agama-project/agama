@@ -27,6 +27,11 @@ import {
   Button,
   Checkbox,
   Content,
+  DataList,
+  DataListCell,
+  DataListItem,
+  DataListItemCells,
+  DataListItemRow,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -34,12 +39,14 @@ import {
   Flex,
   Form,
   FormGroup,
+  Label,
+  Stack,
   TextInput,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
 import { RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
-import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
+import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
 import { useHostname } from "~/queries/system";
 import { isEmpty, mask } from "~/utils";
 import { sprintf } from "sprintf-js";
@@ -48,6 +55,8 @@ import { _ } from "~/i18n";
 const FORM_ID = "productRegistration";
 const KEY_LABEL = _("Registration code");
 const EMAIL_LABEL = "Email";
+
+const RegistrationCodeInput = ({ ...props }) => <PasswordInput size={30} {...props} />;
 
 const RegisteredProductSection = () => {
   const { selectedProduct: product } = useProduct();
@@ -122,7 +131,7 @@ const RegistrationFormSection = () => {
       {error && <Alert variant="warning" isInline title={error} />}
 
       <FormGroup fieldId="key" label={KEY_LABEL}>
-        <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
+        <RegistrationCodeInput id="key" value={key} onChange={(_, v) => setKey(v)} />
       </FormGroup>
 
       <FormGroup fieldId="provideEmail">
@@ -174,9 +183,72 @@ const HostnameAlert = () => {
   );
 };
 
+const Extensions = () => {
+  const extensions = useAddons();
+
+  const extensionComponents = extensions.map((ext) => (
+    <DataListItem key={`${ext.id}-${ext.version}`}>
+      <DataListItemRow>
+        <DataListItemCells
+          dataListCells={[
+            <DataListCell key="summary">
+              <Stack hasGutter>
+                <div>
+                  {/* remove the "(BETA)" suffix, we display a Beta label instead */}
+                  <b>{ext.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
+                  {ext.release === "beta" && (
+                    <Label color="blue" isCompact>
+                      {_("Beta")}
+                    </Label>
+                  )}
+                  {ext.recommended && (
+                    <Label color="orange" isCompact>
+                      {_("Recommended")}
+                    </Label>
+                  )}
+                </div>
+                <div>{ext.description}</div>
+                {ext.available ? (
+                  <Form>
+                    {!ext.free && (
+                      <FormGroup label={KEY_LABEL}>
+                        <RegistrationCodeInput id={`reg-code-${ext.id}-${ext.version}`} />
+                      </FormGroup>
+                    )}
+
+                    <ActionGroup>
+                      <Button variant="primary" type="submit" isInline>
+                        {_("Register")}
+                      </Button>
+                    </ActionGroup>
+                  </Form>
+                ) : (
+                  <Alert title={_("Not available")} variant="warning">
+                    {_(
+                      "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
+                    )}
+                  </Alert>
+                )}
+              </Stack>
+            </DataListCell>,
+          ]}
+        />
+      </DataListItemRow>
+    </DataListItem>
+  ));
+
+  return (
+    <>
+      <Content component="h3">{_("Extensions")}</Content>
+      <DataList aria-label={_("Available extensions")}>{extensionComponents}</DataList>
+    </>
+  );
+};
+
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
   const { key } = useRegistration();
+  // FIXME: this needs to be fixed for RMT which allows registering with empty key
   const isUnregistered = isEmpty(key);
 
   // TODO: render something meaningful instead? "Product not registrable"?
@@ -191,6 +263,7 @@ export default function ProductRegistrationPage() {
       <Page.Content>
         {isUnregistered && <HostnameAlert />}
         {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {!isUnregistered && <Extensions />}
       </Page.Content>
     </Page>
   );

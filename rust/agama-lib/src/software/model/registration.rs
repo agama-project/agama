@@ -41,6 +41,23 @@ pub struct AddonParams {
     pub registration_code: Option<String>,
 }
 
+/// Addon registration
+#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct AddonProperties {
+    // Addon identifier
+    pub id: String,
+    pub version: String,
+    pub label: String,
+    pub available: bool,
+    pub free: bool,
+    pub recommended: bool,
+    pub description: String,
+    // "type" is a keyword, use a raw identifier for that
+    pub r#type: String,
+    pub release: String
+}
+
 /// Information about registration configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]

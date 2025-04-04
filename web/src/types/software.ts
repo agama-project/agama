@@ -111,8 +111,21 @@ type RegistrationInfo = {
   email?: string;
 };
 
+type AddonInfo = {
+  id: string;
+  version: string;
+  label: string;
+  available: boolean;
+  free: boolean;
+  recommended: boolean;
+  description: string;
+  type: string;
+  release: string;
+};
+
 export { SelectedBy };
 export type {
+  AddonInfo,
   Pattern,
   PatternsSelection,
   Product,

@@ -31,6 +31,7 @@ import {
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
+  AddonInfo,
   License,
   Pattern,
   PatternsSelection,
@@ -42,6 +43,7 @@ import {
   SoftwareProposal,
 } from "~/types/software";
 import {
+  fetchAddons,
   fetchConfig,
   fetchLicenses,
   fetchPatterns,
@@ -104,6 +106,14 @@ const selectedProductQuery = () => ({
 const registrationQuery = () => ({
   queryKey: ["software/registration"],
   queryFn: fetchRegistration,
+});
+
+/**
+ * Query to retrieve registration info
+ */
+const addonsQuery = () => ({
+  queryKey: ["software/registration/addons"],
+  queryFn: fetchAddons,
 });
 
 /**
@@ -263,6 +273,14 @@ const useRegistration = (): RegistrationInfo => {
 };
 
 /**
+ * Returns registration info
+ */
+const useAddons = (): AddonInfo[] => {
+  const { data: addons } = useSuspenseQuery(addonsQuery());
+  return addons;
+};
+
+/**
  * Returns repository info
  */
 const useRepositories = (): Repository[] => {
@@ -318,6 +336,7 @@ export {
   configQuery,
   productsQuery,
   selectedProductQuery,
+  useAddons,
   useConfigMutation,
   usePatterns,
   useProduct,
