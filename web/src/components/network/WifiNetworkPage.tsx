@@ -22,22 +22,37 @@
 
 import React from "react";
 import { useParams } from "react-router-dom";
+import { Content } from "@patternfly/react-core";
+import { Page } from "~/components/core";
 import { useNetworkConfigChanges, useWifiNetworks } from "~/queries/network";
 import WifiConnectionForm from "./WifiConnectionForm";
 import WifiConnectionDetails from "./WifiConnectionDetails";
 import { DeviceState } from "~/types/network";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 export default function WifiNetworkPage() {
   useNetworkConfigChanges();
   const { ssid } = useParams();
   const networks = useWifiNetworks();
   const network = networks.find((c) => c.ssid === ssid);
+
+  if (!network) return "FIXME";
+
   const connected = network.device?.state === DeviceState.ACTIVATED;
+  const title = connected
+    ? _("Connection details")
+    : sprintf(_("Connect to %s network"), network.ssid);
 
   return (
-    <>
-      {!connected && <WifiConnectionForm network={network} />}
-      {connected && <WifiConnectionDetails network={network} />}
-    </>
+    <Page>
+      <Page.Header>
+        <Content component="h2">{title}</Content>
+      </Page.Header>
+      <Page.Content>
+        {!connected && <WifiConnectionForm network={network} />}
+        {connected && <WifiConnectionDetails network={network} />}
+      </Page.Content>
+    </Page>
   );
 }
