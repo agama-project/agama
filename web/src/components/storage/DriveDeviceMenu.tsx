@@ -41,7 +41,7 @@ import { useDrive as useDriveModel } from "~/hooks/storage/drive";
 import { useModel as useModelHook } from "~/hooks/storage/model";
 import { useConvertToVolumeGroup } from "~/hooks/storage/volume-group";
 import * as driveUtils from "~/components/storage/utils/drive";
-import { baseName, deviceLabel, formattedPath } from "~/components/storage/utils";
+import { deviceBaseName, deviceLabel, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 
@@ -159,7 +159,7 @@ const DisksDrillDownMenuItem = ({ drive, selected, onDeviceClick }) => {
   };
 
   const extraText = (): string => {
-    const name = baseName(drive.name);
+    const name = deviceBaseName(drive, 20);
 
     if (driveUtils.hasReuse(drive)) {
       // The current device will be the only option to choose from
@@ -307,11 +307,11 @@ const NewVgOption = ({ drive }) => {
   const titleText = () => {
     if (vgs.length) {
       // TRANSLATORS: %s is the short name of a disk, like 'sda'
-      return sprintf(_("Create another LVM volume group on %s"), baseName(drive.name));
+      return sprintf(_("Create another LVM volume group on %s"), deviceBaseName(drive, 20));
     }
 
     // TRANSLATORS: %s is the short name of a disk, like 'sda'
-    return sprintf(_("Create LVM volume group on %s"), baseName(drive.name));
+    return sprintf(_("Create LVM volume group on %s"), deviceBaseName(drive, 20));
   };
 
   const descriptionText = () => {
@@ -414,7 +414,7 @@ export default function DriveDeviceMenu({ drive, selected }) {
       toggleRef={toggleRef}
       toggle={
         <MenuToggle ref={toggleRef} onClick={toggle} isExpanded={isOpen}>
-          <b aria-hidden>{deviceLabel(selected)}</b>
+          <b aria-hidden>{deviceLabel(selected, 20)}</b>
         </MenuToggle>
       }
       menuRef={menuRef}
