@@ -15,4 +15,4 @@ Environment=TERM=linux
 KillSignal=SIGHUP
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

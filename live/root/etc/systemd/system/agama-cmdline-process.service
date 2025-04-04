@@ -2,7 +2,6 @@
 Description=Agama kernel cmdline processing
 
 # have to be after network to be able to download info files
-# TODO: what to do in air gap scenario where we still need process cmdline?
 After=network-online.target
 
 # before starting the Agama servers so they read configuration parsed
@@ -16,4 +15,4 @@ ExecStart=agama-kernel-cmdline.sh
 StandardOutput=journal
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
