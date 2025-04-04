@@ -382,9 +382,15 @@ impl<'a> NetworkManagerClient<'a> {
         };
 
         if wireless.security == SecurityProtocol::WPA2 {
-            let secrets = proxy.get_secrets("802-11-wireless-security").await?;
-            if let Some(secret) = secrets.get("802-11-wireless-security") {
-                wireless.password = get_optional_property(&secret, "psk")?;
+            match proxy.get_secrets("802-11-wireless-security").await {
+                Ok(secrets) => {
+                    if let Some(secret) = secrets.get("802-11-wireless-security") {
+                        wireless.password = get_optional_property(&secret, "psk")?;
+                    }
+                }
+                Err(error) => {
+                    tracing::error!("Could not read connection secrets: {:?}", error);
+                }
             }
         }
         Ok(())
