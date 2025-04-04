@@ -72,7 +72,7 @@
         { "required": [ "stopOnBootMenu" ]},
         { "required": [ "timeout" ]},
         { "not": {
-          "allOf": [
+          "anyOf": [
             { "required": [ "stopOnBootMenu" ]},
             { "required": [ "timeout" ]}
           ]
