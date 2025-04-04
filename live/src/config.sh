@@ -17,13 +17,15 @@ suseSetupProduct
 mkdir -p /var/log/build
 
 cat << EOF > /var/log/build/info
-Build date:   $(LC_ALL=C date -u "+%F %T %Z")
-Kiwi profile: $kiwi_profiles
-Build number: %RELEASE%
-OBS instance:
-OBS project:
-DISTURL:      %DISTURL%
-SOURCEURL:    %SOURCEURL%
+Build date:    $(LC_ALL=C date -u "+%F %T %Z")
+Build number:  %RELEASE%
+Image profile: $kiwi_profiles
+Image version: $kiwi_iversion
+Image type:    $kiwi_type
+OBS instance:  $(echo "%DISTURL%" | cut -d/ -f3)
+OBS project:   $(echo "%DISTURL%" | cut -d/ -f4)
+OBS package:   $(echo "%DISTURL%" | cut -d/ -f6 | cut -d- -f2- | cut -d: -f1)
+Source URL:    %SOURCEURL%
 EOF
 
 # enable the corresponding repository
