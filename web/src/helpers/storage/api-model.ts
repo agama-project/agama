@@ -72,10 +72,19 @@ function buildLogicalVolumeFromPartition(partition: apiModel.Partition): apiMode
   };
 }
 
+function buildPartitionFromLogicalVolume(lv: apiModel.LogicalVolume): apiModel.Partition {
+  return {
+    mountPath: lv.mountPath,
+    filesystem: lv.filesystem,
+    size: lv.size,
+  };
+}
+
 export {
   copyApiModel,
   buildVolumeGroup,
   buildLogicalVolume,
   buildLogicalVolumeName,
   buildLogicalVolumeFromPartition,
+  buildPartitionFromLogicalVolume,
 };

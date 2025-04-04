@@ -172,15 +172,15 @@ describe("deviceBaseName", () => {
 });
 
 describe("deviceLabel", () => {
-  it("returns the device name and size", () => {
+  it("returns the device basename and size", () => {
     const result = deviceLabel(sda);
-    expect(result).toEqual("/dev/sda, 1 KiB");
+    expect(result).toEqual("sda, 1 KiB");
   });
 
-  it("returns only the device name if the device has no size", () => {
+  it("returns only the device basename if the device has no size", () => {
     const device = { ...sda, size: 0 };
     const result = deviceLabel(device);
-    expect(result).toEqual("/dev/sda");
+    expect(result).toEqual("sda");
   });
 });
 
