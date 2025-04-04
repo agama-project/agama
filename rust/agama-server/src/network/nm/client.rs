@@ -31,7 +31,10 @@ use super::proxies::{
     AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
     SettingsProxy, WirelessProxy,
 };
-use crate::network::model::{AccessPoint, Connection, Device, GeneralState};
+use crate::network::model::{
+    AccessPoint, Connection, ConnectionConfig, Device, GeneralState, SecurityProtocol,
+};
+use agama_lib::dbus::get_optional_property;
 use agama_lib::error::ServiceError;
 use agama_lib::network::types::{DeviceType, SSID};
 use log;
@@ -200,11 +203,11 @@ impl<'a> NetworkManagerClient<'a> {
             }
 
             let settings = proxy.get_settings().await?;
-
             let controller = controller_from_dbus(&settings)?;
 
             match connection_from_dbus(settings) {
                 Ok(mut connection) => {
+                    Self::add_secrets(&mut connection.config, &proxy).await?;
                     if let Some(controller) = controller {
                         controlled_by.insert(connection.uuid, controller.to_string());
                     }
@@ -365,5 +368,25 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         Ok(None)
+    }
+
+    /// Ancillary function to add secrets to a connection.
+    ///
+    /// TODO: add support for more security protocols.
+    pub async fn add_secrets(
+        config: &mut ConnectionConfig,
+        proxy: &ConnectionProxy<'_>,
+    ) -> Result<(), ServiceError> {
+        let ConnectionConfig::Wireless(ref mut wireless) = config else {
+            return Ok(());
+        };
+
+        if wireless.security == SecurityProtocol::WPA2 {
+            let secrets = proxy.get_secrets("802-11-wireless-security").await?;
+            if let Some(secret) = secrets.get("802-11-wireless-security") {
+                wireless.password = get_optional_property(&secret, "psk")?;
+            }
+        }
+        Ok(())
     }
 }
