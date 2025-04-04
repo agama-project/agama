@@ -111,14 +111,6 @@ describe("WifiNetworksListPage", () => {
       screen.getByRole("listitem", { name: "Network 3" });
     });
 
-    it("allows opening the connection form for a hidden network", async () => {
-      const { user } = installerRender(<WifiNetworksList />);
-      const button = screen.getByRole("button", { name: "Connect to hidden network" });
-      await user.click(button);
-      screen.getByRole("heading", { name: "Connect to hidden network" });
-      screen.getByRole("form", { name: "WiFi connection form" });
-    });
-
     describe("and user selects a connected network", () => {
       it("renders basic network information and actions instead of the connection form", async () => {
         const { user } = installerRender(<WifiNetworksList />);
@@ -165,14 +157,6 @@ describe("WifiNetworksListPage", () => {
     it("renders information about it", () => {
       installerRender(<WifiNetworksList />);
       screen.getByText("No visible Wi-Fi networks found");
-    });
-
-    it("allows opening the connection form for a hidden network", async () => {
-      const { user } = installerRender(<WifiNetworksList />);
-      const button = screen.getByRole("button", { name: "Connect to hidden network" });
-      await user.click(button);
-      screen.getByRole("heading", { name: "Connect to hidden network" });
-      screen.getByRole("form", { name: "WiFi connection form" });
     });
   });
 });

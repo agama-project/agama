@@ -22,7 +22,6 @@
 
 import React from "react";
 import {
-  Button,
   DataList,
   DataListCell,
   DataListItem,
@@ -44,9 +43,6 @@ import {
 import { NETWORK as PATHS } from "~/routes/paths";
 import { slugify } from "~/utils";
 import { generatePath, useNavigate } from "react-router-dom";
-
-type HiddenNetwork = { hidden: boolean };
-const HIDDEN_NETWORK: HiddenNetwork = Object.freeze({ hidden: true });
 
 // FIXME: Move to the model and stop using translations for checking the state
 const networkState = (state: DeviceState): string => {
@@ -125,16 +121,7 @@ function WifiNetworksList() {
   const navigate = useNavigate();
   useNetworkConfigChanges();
   const networks: WifiNetwork[] = useWifiNetworks();
-  const { ssid: selectedSsid, hidden } = useSelectedWifi();
   // FIXME: improve below type casting, if possible
-  const selected = hidden
-    ? (HIDDEN_NETWORK as unknown as WifiNetwork)
-    : networks.find((n) => n.ssid === selectedSsid);
-  const { mutate: changeSelection } = useSelectedWifiChange();
-
-  const selectHiddneNetwork = () => {
-    changeSelection(HIDDEN_NETWORK);
-  };
 
   if (networks.length === 0)
     return <EmptyState title={_("No visible Wi-Fi networks found")} icon="error" />;
@@ -144,17 +131,12 @@ function WifiNetworksList() {
       <DataList
         aria-label={_("Visible Wi-Fi networks")}
         isCompact
-        selectedDataListItemId={selected?.ssid}
         onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiNetwork, { ssid }))}
       >
         {networks.map((n) => (
           <NetworkListItem key={n.ssid} network={n} />
         ))}
       </DataList>
-
-      <Button variant="link" isDisabled={selected === HIDDEN_NETWORK} onClick={selectHiddneNetwork}>
-        {_("Connect to hidden network")}
-      </Button>
     </>
   );
 }

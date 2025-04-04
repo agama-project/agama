@@ -29,7 +29,6 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
-  TextInput,
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
 import { useAddConnectionMutation, useConnectionMutation } from "~/queries/network";
@@ -73,18 +72,17 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
   const [error, setError] = useState(false);
   const { mutate: addConnection } = useAddConnectionMutation();
   const { mutate: updateConnection } = useConnectionMutation();
-  const [ssid, setSsid] = useState<string>(network.ssid);
   const [security, setSecurity] = useState<string>(
     settings?.security || securityFrom(network?.security || []),
   );
   const [password, setPassword] = useState<string>(settings.password);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const hidden = network?.hidden || false;
 
   const accept = async (e) => {
     e.preventDefault();
-    const connection = network.settings || new Connection(ssid);
-    connection.wireless = new Wireless({ ssid, security, password, hidden });
+    // FIXME: do not mutate the original object!
+    const connection = network.settings || new Connection(network.ssid);
+    connection.wireless = new Wireless({ ssid: network.ssid, security, password, hidden: false });
     const action = network.settings ? updateConnection : addConnection;
     action(connection);
   };
@@ -108,12 +106,6 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
     /** TRANSLATORS: accessible name for the WiFi connection form */
     <Form onSubmit={accept} aria-label={_("WiFi connection form")}>
       {error && <ConnectionError ssid={network.ssid} />}
-      {hidden && (
-        // TRANSLATORS: SSID (Wifi network name) configuration
-        <FormGroup fieldId="ssid" label={_("SSID")}>
-          <TextInput id="ssid" name="ssid" value={ssid} onChange={(_, v) => setSsid(v)} />
-        </FormGroup>
-      )}
 
       {/* TRANSLATORS: Wifi security configuration (password protected or not) */}
       <FormGroup fieldId="security" label={_("Security")}>
