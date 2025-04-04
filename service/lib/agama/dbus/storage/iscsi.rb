@@ -61,17 +61,17 @@ module Agama
         #
         # @param serialized_config [String] Serialized iSCSI config.
         # @return [Integer] 0 success; 1 error
-        def apply_iscsi_config(serialized_config)
+        def apply_config(serialized_config)
           logger.info("Setting iSCSI config from D-Bus: #{serialized_config}")
 
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          success = backend.apply_config(config_json)
+          success = backend.apply_config_json(config_json)
           success ? 0 : 1
         end
 
         dbus_interface ISCSI_INTERFACE do
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            busy_while { apply_iscsi_config(serialized_config) }
+            busy_while { apply_config(serialized_config) }
           end
         end
 

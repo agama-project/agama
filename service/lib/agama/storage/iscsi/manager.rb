@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/iscsi/adapter"
+require "agama/storage/iscsi/config_importer"
 require "agama/with_progress"
 
 module Agama
@@ -30,6 +31,11 @@ module Agama
         include WithProgress
 
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
+
+        # Config according to JSON schema.
+        #
+        # @return [Hash, nil]
+        attr_reader :config_json
 
         # iSCSI initiator.
         #
@@ -89,10 +95,12 @@ module Agama
           @on_probe_callbacks.each(&:call)
         end
 
-        # @todo
-        def apply_config(_config_json)
-          logger.info("Not implemented yet")
-          false
+        # @param config_json [Hash{Symbol=>Object}]
+        # @return [Boolean]
+        def apply_config_json(config_json)
+          @config_json = config_json
+          config = ConfigImporter.new(config_json).import
+          apply_config(config)
         end
 
         # Updates the initiator info.
@@ -205,6 +213,15 @@ module Agama
 
         def probe_nodes
           @nodes = adapter.read_nodes
+        end
+
+        # Applies the given config.
+        #
+        # @param config [ISCSI::Config]
+        # @return [Boolean]
+        def apply_config(config)
+          # @todo Validate config
+          # @todo Apply changes
         end
 
         # Calls the given block and performs iSCSI probing afterwards
