@@ -182,35 +182,10 @@ const HostnameAlert = () => {
 };
 
 const Extensions = () => {
-  const addons = useAddons();
-
-  console.log("addons: ", addons);
-
-  // just some testing data
-  // TODO: read from backend
-  const extensions = [
-    // the current HA extension data
-    {
-      identifier: "sle-ha",
-      version: "16.0",
-      arch: "x86_64",
-      isBase: false,
-      friendlyName: "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
-      productLine: "",
-      available: true,
-      free: false,
-      recommended: false,
-      description:
-        "SUSE Linux High Availability Extension provides mature, industry-leading open-source high-availability clustering technologies that are easy to set up and use. It can be deployed in physical and/or virtual environments, and can cluster physical servers, virtual servers, or any combination of the two to suit the needs of your business.",
-      productType: "extension",
-      shortName: "SLEHA16",
-      name: "SUSE Linux Enterprise High Availability Extension",
-      releaseStage: "beta",
-    },
-  ];
+  const extensions = useAddons();
 
   const extensionComponents = extensions.map((ext) => (
-    <DataListItem key={`${ext.identifier}-${ext.version}`}>
+    <DataListItem key={`${ext.id}-${ext.version}`}>
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
@@ -218,8 +193,8 @@ const Extensions = () => {
               <Stack hasGutter>
                 <div>
                   {/* remove the "(BETA)" suffix, we display a Beta label instead */}
-                  <b>{ext.friendlyName.replace(/\s*\(beta\)$/i, "")}</b>{" "}
-                  {ext.releaseStage === "beta" && (
+                  <b>{ext.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
+                  {ext.release === "beta" && (
                     <Label color="blue" isCompact>
                       {_("Beta")}
                     </Label>
@@ -234,7 +209,7 @@ const Extensions = () => {
                 <Form>
                   {!ext.free && (
                     <FormGroup label={KEY_LABEL}>
-                      <PasswordInput />
+                      <PasswordInput id={`reg-code-${ext.id}-${ext.version}`} />
                     </FormGroup>
                   )}
 
@@ -255,7 +230,7 @@ const Extensions = () => {
   return (
     <>
       <Content component="h3">{_("Extensions")}</Content>
-      <DataList isCompact>{extensionComponents}</DataList>
+      <DataList aria-label={_("Available extensions")}>{extensionComponents}</DataList>
     </>
   );
 };
@@ -278,7 +253,6 @@ export default function ProductRegistrationPage() {
       <Page.Content>
         {isUnregistered && <HostnameAlert />}
         {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
-        {/* TODO: display only when registered */}
         {!isUnregistered && <Extensions />}
       </Page.Content>
     </Page>
