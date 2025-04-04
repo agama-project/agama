@@ -296,7 +296,7 @@ module Agama
 
           dbus_reader(:registered_addons, "a(sss)")
 
-          dbus_reader(:available_addons, "a{sv}")
+          dbus_reader(:available_addons, "aa{sv}")
 
           dbus_method(:Register, "in reg_code:s, in options:a{sv}, out result:(us)") do |*args|
             [register(args[0], email: args[1]["Email"])]
