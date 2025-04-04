@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,159 +19,149 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-require "agama/storage/iscsi/node"
-require "agama/storage/iscsi/initiator"
-
-Yast.import "IscsiClientLib"
+require "agama/storage/iscsi/adapter"
+require "agama/storage/iscsi/config_importer"
+require "agama/with_progress"
 
 module Agama
   module Storage
     module ISCSI
-      # Manager for iSCSI
+      # Manager for iSCSI.
       class Manager
+        include WithProgress
+
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
 
-        # iSCSI initiator
+        # Config according to JSON schema.
         #
-        # @return [Initiator]
+        # @return [Hash, nil]
+        attr_reader :config_json
+
+        # iSCSI initiator.
+        #
+        # @return [Initiator, nil]
         attr_reader :initiator
 
-        # Discovered iSCSI nodes
+        # Discovered iSCSI nodes.
         #
         # @return [Array<Node>]
         attr_reader :nodes
 
-        # Constructor
-        #
+        # @param progress_manager [ProgressManager, nil]
         # @param logger [Logger, nil]
-        def initialize(logger: nil)
+        def initialize(progress_manager: nil, logger: nil)
+          @progress_manager = progress_manager
           @logger = logger || ::Logger.new($stdout)
-          @initiator = ISCSI::Initiator.new
-
+          @nodes = []
           @on_activate_callbacks = []
           @on_probe_callbacks = []
           @on_sessions_change_callbacks = []
         end
 
-        # Performs actions for activating iSCSI
+        # Performs actions for activating iSCSI.
+        #
+        # Callbacks are called at the end, see {#on_probe}.
         def activate
           logger.info "Activating iSCSI"
           @activated = true
-
-          Yast::IscsiClientLib.getiBFT
-          # Check initiator name, creating one if missing
-          return false unless Yast::IscsiClientLib.checkInitiatorName(silent: true)
-
-          # Why we need to sleep here? This was copied from yast2-iscsi-client.
-          sleep(0.5)
-          Yast::IscsiClientLib.getConfig
-          Yast::IscsiClientLib.autoLogOn
-
+          adapter.activate
           @on_activate_callbacks.each(&:call)
         end
 
-        # Probes iSCSI
-        #
-        # Callbacks are called at the end, see {#on_probe}.
-        def probe
-          logger.info "Probing iSCSI"
-
-          Yast::IscsiClientLib.readSessions
-          @nodes = Yast::IscsiClientLib.getDiscovered.map { |t| node_from(t.split) }
-
-          @on_probe_callbacks.each(&:call)
-        end
-
-        # Performs an iSCSI discovery
-        #
-        # Based on provided address and port, ie. assuming ISNS is not used. Since YaST do not offer
-        # UI to configure ISNS during installation, we are assuming it's not supported.
-        #
+        # Performs an iSCSI discovery.
         # @note iSCSI nodes are probed again, see {#probe_after}.
         #
         # @param host [String] IP address
         # @param port [Integer]
-        # @param authentication [Y2IscsiClient::Authentication]
+        # @param credentials [Hash<Symbol, String>]
+        #   @option username [String]
+        #   @option password [String]
+        #   @option initiator_username [String]
+        #   @option initiator_password [String]
         #
         # @return [Boolean] Whether the action successes
-        def discover_send_targets(host, port, authentication)
+        def discover(host, port, credentials: {})
           ensure_activated
-
-          probe_after do
-            Yast::IscsiClientLib.discover(host, port, authentication, silent: true)
-          end
+          probe_after { adapter.discover(host, port, credentials: credentials) }
         end
 
-        # Creates a new iSCSI session
+        # Probes iSCSI.
         #
+        # Callbacks are called at the end, see {#on_probe}.
+        def probe
+          logger.info "Probing iSCSI"
+          probe_initiator
+          probe_nodes
+          @on_probe_callbacks.each(&:call)
+        end
+
+        # @param config_json [Hash{Symbol=>Object}]
+        # @return [Boolean]
+        def apply_config_json(config_json)
+          @config_json = config_json
+          config = ConfigImporter.new(config_json).import
+          apply_config(config)
+        end
+
+        # Updates the initiator info.
+        #
+        # @param name [String, nil]
+        # @param offload_card [String, nil]
+        def update_initiator(name: nil, offload_card: nil)
+          return unless initiator
+
+          adapter.update_initiator(initiator, name: name, offload_card: offload_card)
+          probe_initiator
+        end
+
+        # Creates a new iSCSI session.
         # @note iSCSI nodes are probed again, see {#probe_after}.
         #
         # @param node [Node]
-        # @param authentication [Y2IscsiClient::Authentication]
+        # @param credentials [Hash<Symbol, String>]
+        #   @option username [String]
+        #   @option password [String]
+        #   @option initiator_username [String]
+        #   @option initiator_password [String]
         # @param startup [String, nil] Startup status
         #
         # @return [Boolean] Whether the action successes
-        def login(node, authentication, startup: nil)
-          startup ||= Yast::IscsiClientLib.default_startup_status
-
+        def login(node, credentials: {}, startup: nil)
           ensure_activated
-
-          result = probe_after do
-            Yast::IscsiClientLib.currentRecord = record_from(node)
-            Yast::IscsiClientLib.login_into_current(authentication, silent: true) &&
-              Yast::IscsiClientLib.setStartupStatus(startup)
-          end
-
+          result = probe_after { adapter.login(node, credentials: credentials, startup: startup) }
           run_on_sessions_change_callbacks
           result
         end
 
-        # Closes an iSCSI session
-        #
+        # Closes an iSCSI session.
         # @note iSCSI nodes are probed again, see {#probe_after}.
         #
         # @param node [Node]
         # @return [Boolean] Whether the action successes
         def logout(node)
           ensure_activated
-
-          result = probe_after do
-            Yast::IscsiClientLib.currentRecord = record_from(node)
-            # Yes, this is the correct method name for logging out
-            Yast::IscsiClientLib.deleteRecord
-          end
-
+          result = probe_after { adapter.logout(node) }
           run_on_sessions_change_callbacks
           result
         end
 
-        # Deletes an iSCSI node from the database
-        #
+        # Deletes an iSCSI node from the database.
         # @note iSCSI nodes are probed again, see {#probe_after}.
         #
         # @param node [Node]
         # @return [Boolean] Whether the action successes
         def delete(node)
-          probe_after do
-            Yast::IscsiClientLib.currentRecord = record_from(node)
-            Yast::IscsiClientLib.removeRecord
-          end
+          probe_after { adapter.delete_node(node) }
         end
 
-        # Updates an iSCSI node
-        #
-        # @note iSCSI nodes are probed again, see {#probe_after}.
+        # Updates an iSCSI node.
         #
         # @param node [Node]
         # @param startup [String] New startup mode value
         #
         # @return [Boolean] Whether the action successes
         def update(node, startup:)
-          probe_after do
-            Yast::IscsiClientLib.currentRecord = record_from(node)
-            Yast::IscsiClientLib.setStartupStatus(startup)
-          end
+          probe_after { adapter.update_node(node, startup: startup) }
         end
 
         # Registers a callback to be called after performing iSCSI activation
@@ -200,6 +190,11 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
+        # @return [Adapter]
+        def adapter
+          @adapter ||= Adapter.new
+        end
+
         # Calls activation if needed
         def ensure_activated
           activate unless activated?
@@ -212,47 +207,21 @@ module Agama
           !!@activated
         end
 
-        # Creates a node from the record provided by YaST
-        #
-        # @param record [Array] Contains portal, target and interface of the iSCSI node.
-        # @return [Node]
-        def node_from(record)
-          ISCSI::Node.new.tap do |node|
-            node.portal = record[0]
-            node.target = record[1]
-            node.interface = record[2] || "default"
-            node.connected = false
-
-            Yast::IscsiClientLib.currentRecord = record
-            node.ibtf = Yast::IscsiClientLib.iBFT?(Yast::IscsiClientLib.getCurrentNodeValues)
-
-            session_record = find_session_for(record)
-
-            if session_record
-              node.connected = true
-              # FIXME: the calculation of both startup and ibft imply executing getCurrentNodeValues
-              # (ie. calling iscsiadm)
-              Yast::IscsiClientLib.currentRecord = session_record
-              node.startup = Yast::IscsiClientLib.getStartupStatus
-            end
-          end
+        def probe_initiator
+          @initiator = adapter.read_initiator
         end
 
-        # Generates a YaST record from a node
-        #
-        # @param node [Node]
-        # @return [Array]
-        def record_from(node)
-          [node.portal, node.target, node.interface]
+        def probe_nodes
+          @nodes = adapter.read_nodes
         end
 
-        # Finds a session for the given iSCSI record
+        # Applies the given config.
         #
-        # @param record [Array] Contains portal, target and interface of the iSCSI node.
-        # @return [Array, nil] Record for the iSCSI session
-        def find_session_for(record)
-          Yast::IscsiClientLib.currentRecord = record
-          Yast::IscsiClientLib.find_session(true)&.split
+        # @param config [ISCSI::Config]
+        # @return [Boolean]
+        def apply_config(config)
+          # @todo Validate config
+          # @todo Apply changes
         end
 
         # Calls the given block and performs iSCSI probing afterwards

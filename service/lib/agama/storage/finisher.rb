@@ -53,6 +53,8 @@ module Agama
 
       # Execute the final storage actions, reporting the progress
       def run
+        # FIXME: This progress is not emitting changes in D-Bus because its callbacks are not
+        #   configured. Is that expected? If so, why a progress?
         steps = possible_steps.select(&:run?)
         start_progress_with_size(steps.size)
 

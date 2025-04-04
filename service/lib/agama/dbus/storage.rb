@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,5 +27,6 @@ module Agama
   end
 end
 
+require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
 require "agama/dbus/storage/proposal"

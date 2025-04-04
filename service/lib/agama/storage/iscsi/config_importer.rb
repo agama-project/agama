@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,25 +19,34 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/dbus/service_status"
+require "agama/json_importer"
+require "agama/storage/iscsi/config"
+require "agama/storage/iscsi/config_importers/target"
 
 module Agama
-  module DBus
-    # Mixin to be included by D-Bus objects that needs to register a service status.
-    module WithServiceStatus
-      # Service status
-      #
-      # @return [ServiceStatus]
-      def service_status
-        @service_status ||= ServiceStatus.new.idle
-      end
+  module Storage
+    module ISCSI
+      # Class for generating an iSCSI config object from a JSON.
+      class ConfigImporter < JSONImporter
+        # @return [Config]
+        def target
+          Config.new
+        end
 
-      # Sets the service status to busy meanwhile the given block is running
-      #
-      # @param block [Proc]
-      # @return [Object] the result of the given block
-      def busy_while(&block)
-        service_status.busy_while(&block)
+        # @see Agama::JSONImporter#imports
+        def imports
+          {
+            initiator: json[:initiator],
+            targets:   import_iscsi_targets
+          }
+        end
+
+        def import_iscsi_targets
+          targets_json = json[:targets]
+          return unless targets_json
+
+          targets_json.map { |t| ConfigImporters::Target.new(t).import }
+        end
       end
     end
   end
