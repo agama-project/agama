@@ -30,6 +30,7 @@ import {
   localConnection,
   isObject,
   slugify,
+  isEmpty,
 } from "./utils";
 
 describe("noop", () => {
@@ -161,6 +162,48 @@ describe("isObject", () => {
   it("returns false when called with a map", () => {
     const map = new Map([["dummy", "map"]]);
     expect(isObject(map)).toBe(false);
+  });
+});
+
+describe("isEmpty", () => {
+  it("returns true when called with null", () => {
+    expect(isEmpty(null)).toBe(true);
+  });
+
+  it("returns true when called with undefined", () => {
+    expect(isEmpty(undefined)).toBe(true);
+  });
+
+  it("returns false when called with a function", () => {
+    expect(isEmpty(() => {})).toBe(false);
+  });
+
+  it("returns false when called with a number", () => {
+    expect(isEmpty(1)).toBe(false);
+  });
+
+  it("returns true when called with an empty string", () => {
+    expect(isEmpty("")).toBe(true);
+  });
+
+  it("returns false when called with a not empty string", () => {
+    expect(isEmpty("not empty")).toBe(false);
+  });
+
+  it("returns true when called with an empty array", () => {
+    expect(isEmpty([])).toBe(true);
+  });
+
+  it("returns false when called with a not empty array", () => {
+    expect(isEmpty([""])).toBe(false);
+  });
+
+  it("returns true when called with an empty object", () => {
+    expect(isEmpty({})).toBe(true);
+  });
+
+  it("returns false when called with a not empty object", () => {
+    expect(isEmpty({ not: "empty" })).toBe(false);
   });
 });
 
