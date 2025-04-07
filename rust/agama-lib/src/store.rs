@@ -77,7 +77,7 @@ impl Store {
     pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
         let mut settings = InstallSettings {
             bootloader: self.bootloader.load().await?,
-            files: Some(self.files.load().await?),
+            files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
             software: Some(self.software.load().await?),
