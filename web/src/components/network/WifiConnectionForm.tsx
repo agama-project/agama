@@ -70,8 +70,8 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
   const navigate = useNavigate();
   const settings = network.settings?.wireless || new Wireless();
   const [error, setError] = useState(false);
-  const { mutate: addConnection } = useAddConnectionMutation();
-  const { mutate: updateConnection } = useConnectionMutation();
+  const { mutateAsync: addConnection } = useAddConnectionMutation();
+  const { mutateAsync: updateConnection } = useConnectionMutation();
   const [security, setSecurity] = useState<string>(
     settings?.security || securityFrom(network?.security || []),
   );
@@ -80,11 +80,12 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
 
   const accept = async (e) => {
     e.preventDefault();
+    setError(false);
     // FIXME: do not mutate the original object!
     const connection = network.settings || new Connection(network.ssid);
     connection.wireless = new Wireless({ ssid: network.ssid, security, password, hidden: false });
     const action = network.settings ? updateConnection : addConnection;
-    action(connection);
+    action(connection).catch(() => setError(true));
   };
 
   useEffect(() => {
