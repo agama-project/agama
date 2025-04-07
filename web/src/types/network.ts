@@ -89,12 +89,10 @@ enum DeviceState {
   UNKNOWN = "unknown",
   UNMANAGED = "unmanaged",
   UNAVAILABLE = "unavailable",
+  CONNECTING = "connecting",
+  CONNECTED = "connected",
+  DISCONNECTING = "disconnecting",
   DISCONNECTED = "disconnected",
-  CONFIG = "config",
-  IPCHECK = "ipCheck",
-  NEEDAUTH = "needAuth",
-  ACTIVATED = "activated",
-  DEACTIVATING = "deactivating",
   FAILED = "failed",
 }
 

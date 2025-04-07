@@ -39,7 +39,7 @@ export default function WifiNetworkPage() {
 
   if (!network) return "FIXME";
 
-  const connected = network.device?.state === DeviceState.ACTIVATED;
+  const connected = network.device?.state === DeviceState.CONNECTED;
   const title = connected
     ? _("Connection details")
     : sprintf(_("Connect to %s network"), network.ssid);

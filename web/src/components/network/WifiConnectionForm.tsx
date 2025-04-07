@@ -89,7 +89,7 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
   };
 
   useEffect(() => {
-    if (network.device?.state === DeviceState.CONFIG) {
+    if (network.device?.state === DeviceState.CONNECTING) {
       setIsConnecting(true);
     }
   }, [network.device]);
