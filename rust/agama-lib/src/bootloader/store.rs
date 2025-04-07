@@ -40,7 +40,6 @@ impl BootloaderStore {
 
     pub async fn load(&self) -> Result<Option<BootloaderSettings>, ServiceError> {
         Ok(self.bootloader_client.get_config().await?.to_option())
-
     }
 
     pub async fn store(&self, settings: &BootloaderSettings) -> Result<(), ServiceError> {

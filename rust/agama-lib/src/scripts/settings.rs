@@ -41,7 +41,11 @@ pub struct ScriptsConfig {
 
 impl ScriptsConfig {
     pub fn to_option(self) -> Option<Self> {
-        if self.pre.is_none() && self.post_partitioning.is_none() && self.post.is_none() && self.init.is_none() {
+        if self.pre.is_none()
+            && self.post_partitioning.is_none()
+            && self.post.is_none()
+            && self.init.is_none()
+        {
             None
         } else {
             Some(self)
