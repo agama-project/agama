@@ -57,7 +57,7 @@ let mockWifiNetworks: WifiNetwork[];
 // to test them along with user interactions
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
-  useNetworkConfigChanges: jest.fn(),
+  useNetworkChanges: jest.fn(),
   useRemoveConnectionMutation: () => ({
     mutate: mockConnectionRemoval,
   }),

@@ -34,7 +34,7 @@ import { Icon } from "~/components/layout";
 import { EmptyState } from "~/components/core";
 import { DeviceState, WifiNetwork } from "~/types/network";
 import { _ } from "~/i18n";
-import { useNetworkConfigChanges, useWifiNetworks } from "~/queries/network";
+import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { slugify } from "~/utils";
 import { generatePath, useNavigate } from "react-router-dom";
@@ -114,7 +114,7 @@ const NetworkListItem = ({ network }) => {
  */
 function WifiNetworksList() {
   const navigate = useNavigate();
-  useNetworkConfigChanges();
+  useNetworkChanges();
   const networks: WifiNetwork[] = useWifiNetworks();
   // FIXME: improve below type casting, if possible
 

@@ -169,7 +169,7 @@ const useRemoveConnectionMutation = () => {
  * When the configuration changes, it invalidates the config query and forces the router to
  * revalidate its data (executing the loaders again).
  */
-const useNetworkConfigChanges = () => {
+const useNetworkChanges = () => {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
 
@@ -200,7 +200,7 @@ const useNetworkConfigChanges = () => {
         }
 
         if (event.deviceRemoved) {
-          updatedDevices = devices.filter((d) => d === event.deviceRemoved);
+          updatedDevices = devices.filter((d) => d !== event.deviceRemoved);
         }
 
         queryClient.setQueryData(["network", "devices"], updatedDevices);
@@ -292,6 +292,6 @@ export {
   useConnection,
   useNetworkDevices,
   useNetworkState,
-  useNetworkConfigChanges,
+  useNetworkChanges,
   useWifiNetworks,
 };

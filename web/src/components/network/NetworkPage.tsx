@@ -27,7 +27,7 @@ import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { _ } from "~/i18n";
 import {
   useConnections,
-  useNetworkConfigChanges,
+  useNetworkChanges,
   useNetworkDevices,
   useNetworkState,
 } from "~/queries/network";
@@ -63,7 +63,7 @@ const NoWifiAvailable = () => (
  * Page component holding Network settings
  */
 export default function NetworkPage() {
-  useNetworkConfigChanges();
+  useNetworkChanges();
   const connections = useConnections();
   const devices = useNetworkDevices();
   const networkState = useNetworkState();

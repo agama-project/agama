@@ -81,7 +81,7 @@ let mockNetworkSettings = {
 const mockAccessPoints = [];
 
 jest.mock("~/queries/network", () => ({
-  useNetworkConfigChanges: jest.fn(),
+  useNetworkChanges: jest.fn(),
   useNetwork: () => ({
     connections: mockActiveConnections,
     devices: mockDevices,

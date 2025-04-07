@@ -24,7 +24,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { Content } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import { useNetworkConfigChanges, useWifiNetworks } from "~/queries/network";
+import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import WifiConnectionForm from "./WifiConnectionForm";
 import WifiConnectionDetails from "./WifiConnectionDetails";
 import { DeviceState } from "~/types/network";
@@ -32,7 +32,7 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
 export default function WifiNetworkPage() {
-  useNetworkConfigChanges();
+  useNetworkChanges();
   const { ssid } = useParams();
   const networks = useWifiNetworks();
   const network = networks.find((c) => c.ssid === ssid);

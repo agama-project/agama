@@ -38,7 +38,7 @@ const mockUpdateSelectedWifi = jest.fn();
 
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
-  useNetworkConfigChanges: jest.fn(),
+  useNetworkChanges: jest.fn(),
   useAddConnectionMutation: () => ({
     mutate: mockAddConnection,
   }),

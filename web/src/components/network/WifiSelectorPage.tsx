@@ -24,11 +24,11 @@ import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import WifiNetworksList from "~/components/network/WifiNetworksList";
-import { useNetworkConfigChanges } from "~/queries/network";
+import { useNetworkChanges } from "~/queries/network";
 import { _ } from "~/i18n";
 
 function WifiSelectorPage() {
-  useNetworkConfigChanges();
+  useNetworkChanges();
 
   return (
     <Page isFilled>
