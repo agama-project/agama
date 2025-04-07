@@ -477,16 +477,18 @@ module Agama
         end
 
         def register_iscsi_callbacks
-          backend.iscsi.on_activate do
-            properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
-            dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
-          end
-
           backend.iscsi.on_probe do
+            iscsi_initiator_properties_changed
             refresh_iscsi_nodes
           end
 
           backend.iscsi.on_sessions_change do
+            # Currently, the system is set as deprecated instead of reprobing automatically. This
+            # is done so to avoid a reprobing after each single session change performed by the UI.
+            # Clients are expected to request a reprobing if they detect a deprecated system.
+            #
+            # If the UI is adapted to use the new iSCSI API (i.e., #SetConfig), then this behaviour
+            # should be reevaluated. Ideally, the system would be reprobed if the sessions change.
             deprecate_system
           end
         end
@@ -506,6 +508,11 @@ module Agama
         def proposal_properties_changed
           properties = interfaces_and_properties[PROPOSAL_CALCULATOR_INTERFACE]
           dbus_properties_changed(PROPOSAL_CALCULATOR_INTERFACE, properties, [])
+        end
+
+        def iscsi_initiator_properties_changed
+          properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
+          dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
         end
 
         def deprecate_system

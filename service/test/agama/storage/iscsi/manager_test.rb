@@ -450,4 +450,269 @@ describe Agama::Storage::ISCSI::Manager do
       subject.update(node, startup: "manual")
     end
   end
+
+  describe "#apply_config_json" do
+    context "if iSCSI activation is not performed yet" do
+      it "activates iSCSI" do
+        expect(subject).to receive(:activate)
+
+        subject.apply_config_json({})
+      end
+    end
+
+    context "if iSCSI activation was already performed" do
+      before do
+        subject.activate
+      end
+
+      it "does not activate iSCSI again" do
+        expect(subject).to_not receive(:activate)
+
+        subject.apply_config_json({})
+      end
+    end
+
+    context "if the config does not specify the initiator name" do
+      it "does not update the initiator" do
+        expect(adapter).to_not receive(:update_initiator)
+
+        subject.apply_config_json({})
+      end
+
+      it "returns true" do
+        result = subject.apply_config_json({})
+
+        expect(result).to eq(true)
+      end
+    end
+
+    context "if the config specifies the initiator name" do
+      let(:config_json) { { initiator: initiator } }
+
+      context "and the name is equal to the current inititator name" do
+        let(:initiator_name) { "iqn.1996-04.de.suse:01:351e6d6249" }
+
+        let(:initiator) { initiator_name }
+
+        it "does not update the initiator" do
+          expect(adapter).to_not receive(:update_initiator)
+
+          subject.apply_config_json(config_json)
+        end
+
+        it "returns true" do
+          result = subject.apply_config_json(config_json)
+
+          expect(result).to eq(true)
+        end
+      end
+
+      context "and the name is not equal to the current inititator name" do
+        let(:initiator_name) { "iqn.1996-04.de.suse:01:351e6d6249" }
+
+        let(:initiator) { "iqn.1996-04.de.suse:01:351e6d6250" }
+
+        it "updates the initiator" do
+          expect(adapter).to receive(:update_initiator).with(anything, name: initiator)
+
+          subject.apply_config_json(config_json)
+        end
+
+        it "returns true" do
+          result = subject.apply_config_json(config_json)
+
+          expect(result).to eq(true)
+        end
+      end
+    end
+
+    context "if the config does not specify targets" do
+      let(:config_json) { {} }
+
+      it "does not modify the sessions" do
+        expect(adapter).to_not receive(:logout)
+        expect(adapter).to_not receive(:login)
+
+        subject.apply_config_json(config_json)
+      end
+
+      it "does not run the callbacks" do
+        callback = proc {}
+        subject.on_sessions_change(&callback)
+
+        expect(callback).to_not receive(:call)
+
+        subject.apply_config_json(config_json)
+      end
+
+      it "returns true" do
+        result = subject.apply_config_json(config_json)
+
+        expect(result).to eq(true)
+      end
+    end
+
+    context "if the config specifies targets" do
+      let(:config_json) { { targets: targets } }
+
+      let(:yast_nodes) do
+        [
+          "192.168.100.101:3264 iqn.2023-01.com.example:12ac588 default",
+          "192.168.100.102:3264 iqn.2023-01.com.example:12ac589"
+        ]
+      end
+
+      before do
+        allow(adapter).to receive(:find_session_for).and_call_original
+        # Mock session (connected target).
+        allow(adapter).to receive(:find_session_for).with([
+                                                            "192.168.100.101:3264",
+                                                            "iqn.2023-01.com.example:12ac588",
+                                                            "default"
+                                                          ]).and_return([])
+      end
+
+      shared_examples "callbacks" do
+        it "runs the callbacks" do
+          callback = proc {}
+          subject.on_sessions_change(&callback)
+
+          expect(callback).to receive(:call)
+
+          subject.apply_config_json(config_json)
+        end
+      end
+
+      context "and the list is empty" do
+        let(:targets) { [] }
+
+        it "performs logout of all connected targets" do
+          expect(adapter).to receive(:logout)
+            .with(an_object_having_attributes(target: "iqn.2023-01.com.example:12ac588"))
+
+          expect(adapter).to_not receive(:logout)
+            .with(an_object_having_attributes(target: "iqn.2023-01.com.example:12ac589"))
+
+          subject.apply_config_json(config_json)
+        end
+
+        it "does not login to any target" do
+          expect(adapter).to_not receive(:login)
+
+          subject.apply_config_json(config_json)
+        end
+
+        include_examples "callbacks"
+
+        it "returns true" do
+          result = subject.apply_config_json(config_json)
+
+          expect(result).to eq(true)
+        end
+      end
+
+      context "and the list is not empty" do
+        let(:targets) do
+          [
+            {
+              address:         "192.168.100.151",
+              port:            3260,
+              name:            "iqn.2025-01.com.example:becda24e8804c6580bd0",
+              interface:       "default",
+              startup:         "onboot",
+              authByTarget:    {
+                username: "test1",
+                password: "12345"
+              },
+              authByInitiator: {
+                username: "test2",
+                password: "54321"
+              }
+            },
+            {
+              address:   "192.168.100.152",
+              port:      3260,
+              name:      "iqn.2025-01.com.example:becda24e8804c6580bd1",
+              interface: "default"
+            }
+          ]
+        end
+
+        before do
+          allow(adapter).to receive(:login).and_return(true)
+        end
+
+        it "tries to login to each target" do
+          expect(adapter).to receive(:login) do |node, options|
+            expect(node.address).to eq("192.168.100.151")
+            expect(node.port).to eq(3260)
+            expect(node.target).to eq("iqn.2025-01.com.example:becda24e8804c6580bd0")
+            expect(node.interface).to eq("default")
+
+            startup = options[:startup]
+            expect(startup).to eq("onboot")
+
+            credentials = options[:credentials]
+            expect(credentials[:username]).to eq("test1")
+            expect(credentials[:password]).to eq("12345")
+            expect(credentials[:initiator_username]).to eq("test2")
+            expect(credentials[:initiator_password]).to eq("54321")
+          end
+
+          expect(adapter).to receive(:login) do |node, options|
+            expect(node.address).to eq("192.168.100.152")
+            expect(node.port).to eq(3260)
+            expect(node.target).to eq("iqn.2025-01.com.example:becda24e8804c6580bd1")
+            expect(node.interface).to eq("default")
+
+            startup = options[:startup]
+            expect(startup).to be_nil
+
+            credentials = options[:credentials]
+            expect(credentials[:username]).to be_nil
+            expect(credentials[:password]).to be_nil
+            expect(credentials[:initiator_username]).to be_nil
+            expect(credentials[:initiator_password]).to be_nil
+          end
+
+          subject.apply_config_json(config_json)
+        end
+
+        include_examples "callbacks"
+
+        it "returns true" do
+          result = subject.apply_config_json(config_json)
+
+          expect(result).to eq(true)
+        end
+
+        context "and fails to login" do
+          before do
+            allow(adapter).to receive(:login).and_return(false)
+          end
+
+          it "does not try to login the rest of targets" do
+            expect(adapter).to receive(:login).once
+
+            subject.apply_config_json(config_json)
+          end
+
+          it "reports an issue" do
+            subject.apply_config_json(config_json)
+
+            expect(subject.issues.size).to eq(1)
+            expect(subject.issues.first.description).to match(/Cannot login .*0bd0/)
+          end
+
+          include_examples "callbacks"
+
+          it "returns false" do
+            result = subject.apply_config_json(config_json)
+
+            expect(result).to eq(false)
+          end
+        end
+      end
+    end
+  end
 end

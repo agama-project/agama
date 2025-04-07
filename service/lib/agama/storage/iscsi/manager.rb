@@ -19,17 +19,29 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/issue"
 require "agama/storage/iscsi/adapter"
+require "agama/storage/iscsi/config_importer"
+require "agama/storage/iscsi/node"
+require "agama/with_issues"
 require "agama/with_progress"
+require "yast/i18n"
 
 module Agama
   module Storage
     module ISCSI
       # Manager for iSCSI.
       class Manager
+        include WithIssues
         include WithProgress
+        include Yast::I18n
 
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
+
+        # Config according to the JSON schema.
+        #
+        # @return [Hash, nil]
+        attr_reader :config_json
 
         # iSCSI initiator.
         #
@@ -84,15 +96,24 @@ module Agama
         # Callbacks are called at the end, see {#on_probe}.
         def probe
           logger.info "Probing iSCSI"
+          @probed = true
           probe_initiator
           probe_nodes
           @on_probe_callbacks.each(&:call)
         end
 
-        # @todo
-        def apply_config(_config_json)
-          logger.info("Not implemented yet")
-          false
+        # Applies the given iSCSI config.
+        #
+        # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
+        # @return [Boolean] Whether the config was correctly applied.
+        def apply_config_json(config_json)
+          @config_json = config_json
+          config = ConfigImporter.new(config_json).import
+
+          success = probe_after { apply_config(config) }
+          run_on_sessions_change_callbacks if config.targets
+
+          success
         end
 
         # Updates the initiator info.
@@ -187,11 +208,6 @@ module Agama
           @adapter ||= Adapter.new
         end
 
-        # Calls activation if needed
-        def ensure_activated
-          activate unless activated?
-        end
-
         # Whether activation has been already performed
         #
         # @return [Boolean]
@@ -199,10 +215,34 @@ module Agama
           !!@activated
         end
 
+        # Whether probing has been already performed.
+        #
+        # @return [Boolean]
+        def probed?
+          !!@probed
+        end
+
+        # Calls activation if needed
+        def ensure_activated
+          activate unless activated?
+        end
+
+        # Calls probing (and activation) if needed.
+        def ensure_probed
+          activate unless activated?
+          probe unless probed?
+        end
+
+        # Probes the initiator.
+        #
+        # @return [ISCSI::Initiator]
         def probe_initiator
           @initiator = adapter.read_initiator
         end
 
+        # Probes the iSCSI nodes (a.k.a., targets).
+        #
+        # @return [Array<ISCSI::Node>]
         def probe_nodes
           @nodes = adapter.read_nodes
         end
@@ -218,6 +258,95 @@ module Agama
         # Runs callbacks when a session changes
         def run_on_sessions_change_callbacks
           @on_sessions_change_callbacks.each(&:call)
+        end
+
+        # Applies the given iSCSI config.
+        #
+        # @param config [ISCSI::Config]
+        # @return [Boolean] Whether the config was correctly applied.
+        def apply_config(config)
+          ensure_probed
+          apply_initiator_config(config)
+          apply_targets_config(config)
+
+          issues.none?
+        end
+
+        # Applies the inititator config.
+        #
+        # @param config [ISCSI::Config]
+        def apply_initiator_config(config)
+          return unless initiator && config.initiator
+          return if initiator.name == config.initiator
+
+          adapter.update_initiator(initiator, name: config.initiator)
+        end
+
+        # Applies the target configs.
+        #
+        # @param config [ISCSI::Config]
+        def apply_targets_config(config)
+          return unless config.targets
+
+          start_progress_with_size(2)
+          progress.step(_("Logout iSCSI targets")) { logout_targets }
+          progress.step(_("Login iSCSI targets")) { login_targets(config.targets) }
+        end
+
+        # Tries to logout from all targets (nodes).
+        def logout_targets
+          nodes.select(&:connected?).each { |n| adapter.logout(n) }
+        end
+
+        # Tries to login to all given targets.
+        #
+        # @note If the login of a target fails, then an issue is generated. The process stops on
+        #   the first failing login.
+        #
+        # @param targets [Array<ISCSI::Config::Target>]
+        def login_targets(targets)
+          issues = []
+
+          targets.each do |target|
+            success = apply_target_config(target)
+            if !success
+              issues << login_issue(target)
+              break
+            end
+          end
+
+          self.issues = issues
+        end
+
+        # Applies the given target config.
+        #
+        # @param target [ISCSI::Configs::Target]
+        # @return [Boolean] Whether the config was correctly applied.
+        def apply_target_config(target)
+          node = ISCSI::Node.new
+          node.address = target.address
+          node.port = target.port
+          node.target = target.name
+          node.interface = target.interface
+
+          credentials = {
+            username:           target.username,
+            password:           target.password,
+            initiator_username: target.initiator_username,
+            initiator_password: target.initiator_password
+          }
+
+          adapter.login(node, credentials: credentials, startup: target.startup)
+        end
+
+        # Login issue.
+        #
+        # @param target [ISCSI::Configs::Target]
+        # @return [Issue]
+        def login_issue(target)
+          Issue.new(format(_("Cannot login to iSCSI target %s"), target.name),
+            source:   Issue::Source::CONFIG,
+            severity: Issue::Severity::ERROR)
         end
       end
     end
