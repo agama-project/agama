@@ -53,6 +53,10 @@ const NetworkDetails = ({ network }: { network: WifiNetwork }) => {
           <DescriptionListDescription>{network.strength}</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
+          <DescriptionListTerm>{_("Status")}</DescriptionListTerm>
+          <DescriptionListDescription>{network.status}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
           <DescriptionListTerm>{_("Security")}</DescriptionListTerm>
           <DescriptionListDescription>{network.security}</DescriptionListDescription>
         </DescriptionListGroup>
@@ -79,13 +83,15 @@ const DeviceDetails = ({ device }: { device: Device }) => {
         <DescriptionList aria-label={_("Connection details")} isHorizontal>
           <DescriptionListGroup>
             <DescriptionListTerm>{_("Interface")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              {device.name} ({device.macAddress})
-            </DescriptionListDescription>
+            <DescriptionListDescription>{device.name}</DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
             <DescriptionListTerm>{_("Status")}</DescriptionListTerm>
             <DescriptionListDescription>{device.state}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{_("MAC")}</DescriptionListTerm>
+            <DescriptionListDescription>{device.macAddress}</DescriptionListDescription>
           </DescriptionListGroup>
         </DescriptionList>
       </Page.Section>
@@ -109,17 +115,12 @@ const IpDetails = ({ device }: { device: Device }) => {
       >
         <DescriptionList isHorizontal>
           <DescriptionListGroup>
-            <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                <FlexItem>
-                  {_("IPv4")}: {device.method4}
-                </FlexItem>
-                <FlexItem>
-                  {_("IPv6")}: {device.method6}
-                </FlexItem>
-              </Flex>
-            </DescriptionListDescription>
+            <DescriptionListTerm>{_("IPv4 Mode")}</DescriptionListTerm>
+            <DescriptionListDescription>{device.method4}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{_("IPv6 Mode")}</DescriptionListTerm>
+            <DescriptionListDescription>{device.method6}</DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
             <DescriptionListTerm>{_("IPv4 Gateway")}</DescriptionListTerm>
