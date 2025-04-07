@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useId } from "react";
+import { generatePath, useNavigate } from "react-router-dom";
 import {
   Content,
   DataList,
@@ -31,16 +32,15 @@ import {
   Flex,
   Label,
 } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
+import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { EmptyState } from "~/components/core";
+import Icon, { IconProps } from "~/components/layout/Icon";
 import { DeviceState, WifiNetwork } from "~/types/network";
-import { _ } from "~/i18n";
 import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
-import { isEmpty, slugify } from "~/utils";
-import { generatePath, useNavigate } from "react-router-dom";
-import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
-import { IconProps } from "../layout/Icon";
+import { isEmpty } from "~/utils";
+import { formatIp } from "~/utils/network";
+import { _ } from "~/i18n";
 
 // FIXME: Move to the model and stop using translations for checking the state
 const networkState = (state: DeviceState): string => {
@@ -62,73 +62,93 @@ const networkState = (state: DeviceState): string => {
   }
 };
 
-const NetworkListName = ({ id, network }) => {
-  const state = networkState(network.device?.state);
-
-  return (
-    <Flex id={id} columnGap={{ default: "columnGapXs" }}>
-      <Content isEditorial>{network.ssid}</Content>
-      {state === "Connected" && (
-        <Label isCompact color="green">
-          {state}
-        </Label>
-      )}
-    </Flex>
-  );
-};
-
-const NetworkSignal = ({ signal }) => {
+const NetworkSignal = ({ id, signal }) => {
   let label: string;
   let icon: IconProps["name"];
 
   if (signal > 70) {
-    label = _("Excellent");
+    label = _("Excellent signal");
     icon = "network_wifi";
   } else if (signal > 30) {
-    label = _("Good");
+    label = _("Good signal");
     icon = "network_wifi_3_bar";
   } else {
-    label = _("Weak");
+    label = _("Weak signal");
     icon = "network_wifi_1_bar";
   }
 
   return (
     <>
       <Icon name={icon} />
-      <Content className={a11yStyles.screenReader}>
-        {_("Signal strength")} {label}
+      <Content id={id} className={a11yStyles.screenReader}>
+        {label}
       </Content>
     </>
   );
 };
 
-const NetworkSecurity = ({ security }) => {
+const NetworkSecurity = ({ id, security }) => {
   if (!isEmpty(security)) {
     return (
       <>
         <Icon name="lock" />
-        <Content className={a11yStyles.screenReader}>{_("Secured")}</Content>
+        <Content id={id} className={a11yStyles.screenReader}>
+          {_("Secured network")}
+        </Content>
       </>
     );
   }
 
-  return <Content className={a11yStyles.screenReader}>{_("Public")}</Content>;
+  return (
+    <Content id={id} className={a11yStyles.screenReader}>
+      {_("Public network")}
+    </Content>
+  );
 };
 
 const NetworkListItem = ({ network }) => {
-  const headerId = slugify(`network-${network.ssid}`);
+  const nameId = useId();
+  const securityId = useId();
+  const statusId = useId();
+  const signalId = useId();
+  const ipId = useId();
+
+  const state = networkState(network.device?.state);
+
   return (
-    <DataListItem id={network.ssid} aria-labelledby={headerId}>
+    <DataListItem
+      id={network.ssid}
+      aria-labelledby={`${securityId} ${nameId} ${signalId}`}
+      aria-describedby={ipId}
+    >
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
-            <DataListCell key="ssid" isFilled={false}>
-              <NetworkListName id={headerId} network={network} />
+            <DataListCell key="ssid-status-and-ip">
+              <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>
+                <Flex columnGap={{ default: "columnGapXs" }}>
+                  <Content id={nameId} isEditorial>
+                    {network.ssid}
+                  </Content>
+                  {state === "Connected" && (
+                    <Label id={statusId} isCompact color="green">
+                      {state}
+                    </Label>
+                  )}
+                </Flex>
+
+                {network.device && (
+                  <Content id={ipId} component="small">
+                    <Content className={a11yStyles.screenReader}>{_("IP addresses")}</Content>
+                    {network.device?.addresses.map(formatIp).join(", ")}
+                  </Content>
+                )}
+              </Flex>
             </DataListCell>,
-            <DataListCell key="security" isFilled={false} alignRight>
-              <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-                <NetworkSecurity security={network.security} />
-                <NetworkSignal signal={network.strength} />
+            <DataListCell key="security-and-signal" isFilled={false} alignRight>
+              <Flex gap={{ default: "gapSm" }}>
+                <NetworkSecurity security={network.security} id={securityId} />
+                <NetworkSignal signal={network.strength} id={signalId} />
               </Flex>
             </DataListCell>,
           ]}
@@ -145,7 +165,6 @@ function WifiNetworksList() {
   const navigate = useNavigate();
   useNetworkChanges();
   const networks: WifiNetwork[] = useWifiNetworks();
-  // FIXME: improve below type casting, if possible
 
   if (networks.length === 0)
     return <EmptyState title={_("No visible Wi-Fi networks found")} icon="error" />;
