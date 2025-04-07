@@ -42,6 +42,24 @@ export default {
   "%s with %d partitions": [
     "%s med %d partitioner"
   ],
+  "A %1$s of %2$s will be created for %3$s": [
+    "En %1$s av %2$s kommer att skapas för %3$s"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s": [
+    "En %1$s på minst %2$s kommer att skapas för %3$s"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
+    "En %1$s med en storlek mellan %2$s och %3$s kommer att skapas för %4$s"
+  ],
+  "A generic minimum size of %1$s will be used for the new %2$s": [
+    "En generisk minimistorlek av%1$s kommer att användas för den nya %2$s"
+  ],
+  "A generic size of %s will be used for the new %2$s": [
+    "En generisk storlek av %s kommer att användas för den nya %2$s"
+  ],
+  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
+    "Ett generiskt storleksintervall mellan %1$s och %2$s kommer att användas för den nya %3$s"
+  ],
   "A partition may be deleted": [
     "En partition kan tas bort"
   ],
@@ -87,6 +105,9 @@ export default {
   "Add DNS": [
     "Lägg till DNS"
   ],
+  "Add LVM volume group": [
+    "Lägg till LVM volymgrupp"
+  ],
   "Add an address": [
     "Lägg till en adress"
   ],
@@ -98,6 +119,9 @@ export default {
   ],
   "Add another partition or mount an existing one": [
     "Lägg till ytterligare en partition eller montera en befintlig"
+  ],
+  "Add logical volume": [
+    "Lägg till logisk volym"
   ],
   "Add or use partition": [
     "Lägg till eller använd en partition"
@@ -124,7 +148,7 @@ export default {
     "Förutom att definiera den första användaren kan autentiseringsmetoder för rootanvändaren konfigureras."
   ],
   "Already using all available disks": [
-    ""
+    "Använder redan alla tillgängliga diskar"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
@@ -176,6 +200,15 @@ export default {
   ],
   "Back": [
     "Bakåt"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
+    "Baserat på mängden RAM i systemet kommer en $1s$ av %2$s att skapas för %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
+    "Baserat på mängden RAM i systemet kommer en %1s$ på minst %2$s att skapas för %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
+    "Baserat på mängden RAM i systemet kommer en %1s$ med en storlek mellan %2$s och %3$s att skapas för %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -258,8 +291,17 @@ export default {
   "Configure DASD": [
     "Konfigurera DASD"
   ],
+  "Configure LVM Volume Group": [
+    "Konfigurera LVM volymgrupp"
+  ],
+  "Configure LVM logical volume at %s volume group": [
+    "Konfigurera LVM logisk volym på %s volymgrupp"
+  ],
   "Configure iSCSI": [
     "Konfigurera iSCSI"
+  ],
+  "Configure partition at %s": [
+    "Konfigurera partition på %s"
   ],
   "Configure zFCP": [
     "Konfigurera zFCP"
@@ -321,6 +363,9 @@ export default {
   "Could not log in. Please, make sure that the password is correct.": [
     "Kunde inte logga in. Kontrollera att lösenordet är korrekt."
   ],
+  "Create LVM volume group %s": [
+    "Skapa LVM volymgrupp %s"
+  ],
   "Create user": [
     "Skapa användare"
   ],
@@ -360,6 +405,9 @@ export default {
   "Default file system for %s": [
     "Standard filsystem för %s"
   ],
+  "Default file system for generic logical volumes": [
+    "Standardfilsystem för generiska logiska volymer"
+  ],
   "Default file system for generic partitions": [
     "Standardfilsystem för generiska partitioner"
   ],
@@ -367,10 +415,10 @@ export default {
     "Definiera en anpassad storlek eller ett intervall"
   ],
   "Define a new LVM on the disk": [
-    ""
+    "Definiera en ny LVM på disken"
   ],
   "Define a new LVM on top of one or several disks": [
-    ""
+    "Definiera en ny LVM ovanpå en eller flera diskar"
   ],
   "Define a user now": [
     "Definera en användare nu"
@@ -388,7 +436,10 @@ export default {
     "Radera nuvarande innehåll"
   ],
   "Delete the volume group and its logical volumes": [
-    ""
+    "Ta bort volymgruppen och dess logiska volymer"
+  ],
+  "Delete volume group": [
+    "Ta bort volymgrupp"
   ],
   "Destroy current data and format partition as": [
     "Förstör nuvarande data och formatera partition som"
@@ -459,6 +510,12 @@ export default {
   "Edit user": [
     "Redigera användare"
   ],
+  "Edit volume group": [
+    "Redigera volymgrupp"
+  ],
+  "Empty LVM volume group %s": [
+    "Tom LVM volymgrupp %s"
+  ],
   "Encrypt the system": [
     "Kryptera systemet"
   ],
@@ -485,6 +542,12 @@ export default {
   ],
   "Enter a hostname.": [
     "Ange ett värdnamn."
+  ],
+  "Enter a name": [
+    "Ange ett namn"
+  ],
+  "Enter a name for the volume group.": [
+    "Ange ett namn för volymgrupp."
   ],
   "ExFAT": [
     "ExFAT"
@@ -551,6 +614,9 @@ export default {
   ],
   "Format": [
     "Formatera"
+  ],
+  "Format logical volume as": [
+    "Formatera logisk volym som"
   ],
   "Format partition as": [
     "Formatera partition som"
@@ -751,6 +817,12 @@ export default {
   "Log in as %s": [
     "Logga in som %s"
   ],
+  "Logical volume name": [
+    "Logisk volym namn"
+  ],
+  "Logical volumes": [
+    "Logiska volymer"
+  ],
   "Login": [
     "Logga in"
   ],
@@ -800,10 +872,13 @@ export default {
     "Läge"
   ],
   "Modify settings and physical volumes": [
-    ""
+    "Modifiera inställningar och fysiska volymer"
   ],
   "More actions": [
     "Mer åtgärder"
+  ],
+  "More devices": [
+    "Mer enheter"
   ],
   "Mount Point": [
     "Monteringspunkt"
@@ -820,8 +895,11 @@ export default {
   "Mount point toggle": [
     "Monteringspunkt växel"
   ],
+  "Move mount points": [
+    "Flytta monteringspunkter"
+  ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    ""
+    "Flytta monteringspunkterna som för närvarande är konfigurerade på de valda diskarna till logiska                   volymer på denna volymgrupp."
   ],
   "Multipath": [
     "Flervägs"
@@ -868,11 +946,17 @@ export default {
   "No device selected yet": [
     "Ingen enhet vald ännu"
   ],
+  "No devices configured yet": [
+    "Inga enheter har konfigurerats ännu"
+  ],
   "No devices found": [
     "Inga enheter hittades"
   ],
   "No iSCSI targets found.": [
     "Inga iSCSI mål hittades."
+  ],
+  "No logical volumes are defined yet": [
+    "Inga logiska volymer är definierade ännu"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Inga partitioner kommer att konfigureras automatiskt för uppstart. Använd med försiktighet."
@@ -939,6 +1023,12 @@ export default {
   ],
   "Options toggle": [
     "Växla mellan alternativ"
+  ],
+  "Other options": [
+    "Andra alternativ"
+  ],
+  "Other options toggle": [
+    "Andra alternativ växel"
   ],
   "Overview": [
     "Översikt"
@@ -1138,11 +1228,17 @@ export default {
   "Select a disk": [
     "Välj en disk"
   ],
+  "Select a disk to define partitions": [
+    "Välj en disk för att definiera partitioner"
+  ],
   "Select a product": [
     "Välj en produkt"
   ],
   "Select another disk to define partitions": [
     "Välj en annan disk för att definiera partitioner"
+  ],
+  "Select at least one disk.": [
+    "Välj åtminstone en disk."
   ],
   "Select or enter a mount point": [
     "Välj eller ange en monteringspunkt"
@@ -1173,6 +1269,9 @@ export default {
   ],
   "Set DIAG On": [
     "Sätt DIAGNOS till på"
+  ],
+  "Set a permanent hostname that won’t change with network updates.": [
+    "Ställ in ett permanent värdnamn som inte ändras med nätverksuppdateringar."
   ],
   "Several partitions will be deleted": [
     "Flera partitioner kommer att tas bort"
@@ -1229,6 +1328,9 @@ export default {
   "Something went wrong": [
     "Något gick fel"
   ],
+  "Start configuring a basic installation": [
+    "Börja konfigurera en grundläggande installation"
+  ],
   "Start from scratch with the default configuration": [
     "Börja från början med standardkonfigurationen"
   ],
@@ -1274,6 +1376,15 @@ export default {
   "The content may be deleted": [
     "Innehållet kan komma att raderas"
   ],
+  "The current configuration will result in a %1$s of %2$s.": [
+    "Den aktuella konfigurationen kommer att resultera i en %1$s på %2$s."
+  ],
+  "The current configuration will result in a %1$s of at least %2$s.": [
+    "Den aktuella konfigurationen kommer att resultera i en %1$s på minst %2$s."
+  ],
+  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
+    "Den aktuella konfigurationen kommer att resultera i en %1$s med en storlek mellan %2$s och %3$s."
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Data bevaras, men storleken på de aktuella partitionerna kommer att ändras efter behov."
   ],
@@ -1310,6 +1421,15 @@ export default {
   "The installer requires [root] user privileges.": [
     "Installationsprogrammet kräver [root] användarrättigheter."
   ],
+  "The logical volume can grow to use all the contiguous free space": [
+    "Den logiska volymen kan växa för att använda allt angränsande ledigt utrymme"
+  ],
+  "The logical volume can grow until a given limit size": [
+    "Den logiska volymen kan växa tills en given gränsstorlek"
+  ],
+  "The logical volume is created exactly with the given size": [
+    "Den logiska volymen skapas exakt med den givna storleken"
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "Det maximala måste vara ett tal, eventuellt följt av en enhet som GiB eller GB"
   ],
@@ -1320,7 +1440,7 @@ export default {
     "Det minsta måste vara ett nummer, eventuellt följt av en enhet som GiB eller GB"
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    ""
+    "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna,                 baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan,                 fysiska volymer vara fördelade på flera diskar."
   ],
   "The partition can grow to use all the contiguous free space": [
     "Partitionen kan växa för att använda allt angränsande ledigt utrymme"
@@ -1487,6 +1607,9 @@ export default {
   "Use %s for additional partitions and booting": [
     "Används %s för ytterligare partitioner och uppstart"
   ],
+  "Use %s to configure boot partitions": [
+    "Använd %s för att konfigurera uppstartspartitioner"
+  ],
   "Use %s to host LVM": [
     "Använd %s för att vara värd för LVM"
   ],
@@ -1504,6 +1627,9 @@ export default {
   ],
   "Use %s to install, host LVM and boot": [
     "Använd %s för att installera, värd LVM och uppstart"
+  ],
+  "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
+    "Använd åtgärderna nedan för att ställa in dina enheter eller klicka på %s för att börja från början med standardkonfigurationen."
   ],
   "Use available space": [
     "Använd tillgängligt utrymme"
@@ -1551,7 +1677,7 @@ export default {
     "Synliga WiFi nätverk"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    ""
+    "Volymgrupp '%s' existerar redan. Ange ett annat namn."
   ],
   "WPA & WPA2 Personal": [
     "WPA & WPA2 Personal"
@@ -1621,6 +1747,12 @@ export default {
   ],
   "logical volume": [
     "logisk volym"
+  ],
+  "partition": [
+    "partition"
+  ],
+  "reset to defaults": [
+    "återställ till standard"
   ],
   "zFCP": [
     "zFCP"
