@@ -76,7 +76,7 @@ impl Store {
     /// Loads the installation settings from the HTTP interface.
     pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
         let mut settings = InstallSettings {
-            bootloader: Some(self.bootloader.load().await?),
+            bootloader: self.bootloader.load().await?,
             files: Some(self.files.load().await?),
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),

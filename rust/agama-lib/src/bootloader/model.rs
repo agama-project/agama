@@ -31,3 +31,13 @@ pub struct BootloaderSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timeout: Option<u32>,
 }
+
+impl BootloaderSettings {
+    pub fn to_option(self) -> Option<Self> {
+        if self.stop_on_boot_menu.is_none() && self.timeout.is_none() {
+            None
+        } else {
+            Some(self)
+        }
+    }
+}
