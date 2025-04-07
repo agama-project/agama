@@ -22,6 +22,7 @@
 
 import React from "react";
 import {
+  Content,
   DataList,
   DataListCell,
   DataListItem,
@@ -36,8 +37,10 @@ import { DeviceState, WifiNetwork } from "~/types/network";
 import { _ } from "~/i18n";
 import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
-import { slugify } from "~/utils";
+import { isEmpty, slugify } from "~/utils";
 import { generatePath, useNavigate } from "react-router-dom";
+import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+import { IconProps } from "../layout/Icon";
 
 // FIXME: Move to the model and stop using translations for checking the state
 const networkState = (state: DeviceState): string => {
@@ -59,24 +62,57 @@ const networkState = (state: DeviceState): string => {
   }
 };
 
-const NetworkListName = ({ network, ...props }) => {
+const NetworkListName = ({ id, network }) => {
   const state = networkState(network.device?.state);
 
   return (
-    <Flex columnGap={{ default: "columnGapXs" }}>
-      <b {...props}>{network.ssid}</b>
-      {network.settings && (
-        <Label isCompact color="teal" variant="outline">
-          {_("configured")}
-        </Label>
-      )}
-      {state === _("Connected") && (
+    <Flex id={id} columnGap={{ default: "columnGapXs" }}>
+      <Content isEditorial>{network.ssid}</Content>
+      {state === "Connected" && (
         <Label isCompact color="green">
           {state}
         </Label>
       )}
     </Flex>
   );
+};
+
+const NetworkSignal = ({ signal }) => {
+  let label: string;
+  let icon: IconProps["name"];
+
+  if (signal > 70) {
+    label = _("Excellent");
+    icon = "network_wifi";
+  } else if (signal > 30) {
+    label = _("Good");
+    icon = "network_wifi_3_bar";
+  } else {
+    label = _("Weak");
+    icon = "network_wifi_1_bar";
+  }
+
+  return (
+    <>
+      <Icon name={icon} />
+      <Content className={a11yStyles.screenReader}>
+        {_("Signal strength")} {label}
+      </Content>
+    </>
+  );
+};
+
+const NetworkSecurity = ({ security }) => {
+  if (!isEmpty(security)) {
+    return (
+      <>
+        <Icon name="lock" />
+        <Content className={a11yStyles.screenReader}>{_("Secured")}</Content>
+      </>
+    );
+  }
+
+  return <Content className={a11yStyles.screenReader}>{_("Public")}</Content>;
 };
 
 const NetworkListItem = ({ network }) => {
@@ -86,20 +122,13 @@ const NetworkListItem = ({ network }) => {
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
-            <DataListCell key="ssid">
-              <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapSm" }}>
-                <NetworkListName id={headerId} network={network} />
-                <Flex
-                  alignItems={{ default: "alignItemsCenter" }}
-                  columnGap={{ default: "columnGapSm" }}
-                >
-                  <div>
-                    <Icon name="lock" /> {network.security.join(", ")}
-                  </div>
-                  <div>
-                    <Icon name="signal_cellular_alt" /> {network.strength}
-                  </div>
-                </Flex>
+            <DataListCell key="ssid" isFilled={false}>
+              <NetworkListName id={headerId} network={network} />
+            </DataListCell>,
+            <DataListCell key="security" isFilled={false} alignRight>
+              <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+                <NetworkSecurity security={network.security} />
+                <NetworkSignal signal={network.strength} />
               </Flex>
             </DataListCell>,
           ]}
@@ -125,7 +154,6 @@ function WifiNetworksList() {
     <>
       <DataList
         aria-label={_("Visible Wi-Fi networks")}
-        isCompact
         onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiNetwork, { ssid }))}
       >
         {networks.map((n) => (
