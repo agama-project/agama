@@ -33,3 +33,14 @@ pub struct SoftwareSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub packages: Option<Vec<String>>,
 }
+
+
+impl SoftwareSettings {
+    pub fn to_option(self) -> Option<Self> {
+        if self.patterns.is_none() && self.packages.is_none() {
+            None
+        } else {
+            Some(self)
+        }
+    }
+}

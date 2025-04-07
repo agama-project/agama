@@ -80,7 +80,7 @@ impl Store {
             files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
-            software: Some(self.software.load().await?),
+            software: self.software.load().await?.to_option(),
             user: Some(self.users.load().await?),
             product: Some(self.product.load().await?),
             localization: Some(self.localization.load().await?),
