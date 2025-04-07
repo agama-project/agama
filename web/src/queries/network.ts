@@ -112,9 +112,7 @@ const useAddConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (newConnection: Connection) =>
-      addConnection(newConnection.toApi())
-        .then(() => applyChanges())
-        .catch((e) => console.log(e)),
+      addConnection(newConnection.toApi()).then(() => applyChanges()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
       queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
