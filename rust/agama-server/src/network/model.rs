@@ -492,7 +492,6 @@ pub struct Device {
     // Connection.id
     pub connection: Option<String>,
     pub state: DeviceState,
-    pub state_reason: u8,
 }
 
 /// Represents a known network connection.

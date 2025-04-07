@@ -78,71 +78,40 @@ pub enum DeviceType {
     Bridge = 6,
 }
 
-// For now this mirrors NetworkManager, because it was less mental work than coming up with
-// what exactly Agama needs. Expected to be adapted.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
+/// Network device state.
+#[derive(
+    Default,
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum DeviceState {
     #[default]
-    Unknown = 0,
-    Unmanaged = 10,
-    Unavailable = 20,
-    Disconnected = 30,
-    Prepare = 40,
-    Config = 50,
-    NeedAuth = 60,
-    IpConfig = 70,
-    IpCheck = 80,
-    Secondaries = 90,
-    Activated = 100,
-    Deactivating = 110,
-    Failed = 120,
-}
-#[derive(Debug, Error, PartialEq)]
-#[error("Invalid state: {0}")]
-pub struct InvalidDeviceState(String);
-
-impl TryFrom<u8> for DeviceState {
-    type Error = InvalidDeviceState;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(DeviceState::Unknown),
-            10 => Ok(DeviceState::Unmanaged),
-            20 => Ok(DeviceState::Unavailable),
-            30 => Ok(DeviceState::Disconnected),
-            40 => Ok(DeviceState::Prepare),
-            50 => Ok(DeviceState::Config),
-            60 => Ok(DeviceState::NeedAuth),
-            70 => Ok(DeviceState::IpConfig),
-            80 => Ok(DeviceState::IpCheck),
-            90 => Ok(DeviceState::Secondaries),
-            100 => Ok(DeviceState::Activated),
-            110 => Ok(DeviceState::Deactivating),
-            120 => Ok(DeviceState::Failed),
-            _ => Err(InvalidDeviceState(value.to_string())),
-        }
-    }
-}
-impl fmt::Display for DeviceState {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            DeviceState::Unknown => "unknown",
-            DeviceState::Unmanaged => "unmanaged",
-            DeviceState::Unavailable => "unavailable",
-            DeviceState::Disconnected => "disconnected",
-            DeviceState::Prepare => "prepare",
-            DeviceState::Config => "config",
-            DeviceState::NeedAuth => "need_auth",
-            DeviceState::IpConfig => "ip_config",
-            DeviceState::IpCheck => "ip_check",
-            DeviceState::Secondaries => "secondaries",
-            DeviceState::Activated => "activated",
-            DeviceState::Deactivating => "deactivating",
-            DeviceState::Failed => "failed",
-        };
-        write!(f, "{}", name)
-    }
+    /// The device's state is unknown.
+    Unknown,
+    /// The device is recognized but not managed by Agama.
+    Unmanaged,
+    /// The device is detected but it cannot be used (wireless switched off, missing firmware, etc.).
+    Unavailable,
+    /// The device is connecting to the network.
+    Connecting,
+    /// The device is successfully connected to the network.
+    Connected,
+    /// The device is disconnecting from the network.
+    Disconnecting,
+    /// The device is disconnected from the network.
+    Disconnected,
+    /// The device failed to connect to a network.
+    Failed,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]

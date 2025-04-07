@@ -111,6 +111,52 @@ impl TryFrom<NmDeviceType> for DeviceType {
     }
 }
 
+/// Device state
+#[derive(Default, Debug, PartialEq, Copy, Clone)]
+pub enum NmDeviceState {
+    #[default]
+    Unknown = 0,
+    Unmanaged = 10,
+    Unavailable = 20,
+    Disconnected = 30,
+    Prepare = 40,
+    Config = 50,
+    NeedAuth = 60,
+    IpConfig = 70,
+    IpCheck = 80,
+    Secondaries = 90,
+    Activated = 100,
+    Deactivating = 110,
+    Failed = 120,
+}
+
+#[derive(Debug, thiserror::Error, PartialEq)]
+#[error("Invalid state: {0}")]
+pub struct InvalidNmDeviceState(String);
+
+impl TryFrom<u8> for NmDeviceState {
+    type Error = InvalidNmDeviceState;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(NmDeviceState::Unknown),
+            10 => Ok(NmDeviceState::Unmanaged),
+            20 => Ok(NmDeviceState::Unavailable),
+            30 => Ok(NmDeviceState::Disconnected),
+            40 => Ok(NmDeviceState::Prepare),
+            50 => Ok(NmDeviceState::Config),
+            60 => Ok(NmDeviceState::NeedAuth),
+            70 => Ok(NmDeviceState::IpConfig),
+            80 => Ok(NmDeviceState::IpCheck),
+            90 => Ok(NmDeviceState::Secondaries),
+            100 => Ok(NmDeviceState::Activated),
+            110 => Ok(NmDeviceState::Deactivating),
+            120 => Ok(NmDeviceState::Failed),
+            _ => Err(InvalidNmDeviceState(value.to_string())),
+        }
+    }
+}
+
 /// Key management
 ///
 /// Using the newtype pattern around an String is enough. For proper support, we might replace this
