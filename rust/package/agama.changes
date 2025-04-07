@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr  7 14:02:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Skip exporting scripts, files, bootloader and softare section
+  in profile if they are empty (gh#agama-project/agama#2250)
+
+-------------------------------------------------------------------
 Tue Apr  1 12:44:57 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Make the extension version attribute optional, search the version
