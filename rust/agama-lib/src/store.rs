@@ -84,7 +84,7 @@ impl Store {
             user: Some(self.users.load().await?),
             product: Some(self.product.load().await?),
             localization: Some(self.localization.load().await?),
-            scripts: Some(self.scripts.load().await?),
+            scripts: self.scripts.load().await?.to_option(),
             ..Default::default()
         };
 

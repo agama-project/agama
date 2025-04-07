@@ -38,3 +38,13 @@ pub struct ScriptsConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub init: Option<Vec<InitScript>>,
 }
+
+impl ScriptsConfig {
+    pub fn to_option(self) -> Option<Self> {
+        if self.pre.is_none() && self.post_partitioning.is_none() && self.post.is_none() && self.init.is_none() {
+            None
+        } else {
+            Some(self)
+        }
+    }
+}

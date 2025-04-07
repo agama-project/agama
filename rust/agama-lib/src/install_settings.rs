@@ -68,6 +68,7 @@ pub struct InstallSettings {
     #[serde(default)]
     pub localization: Option<LocalizationSettings>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
 }
 
