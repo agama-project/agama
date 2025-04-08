@@ -22,6 +22,5 @@
 
 export { default as NetworkPage } from "./NetworkPage";
 export { default as IpSettingsForm } from "./IpSettingsForm";
-export { default as WifiSelectorPage } from "./WifiSelectorPage";
 export { default as WifiNetworkPage } from "./WifiNetworkPage";
 export { default as WiredConnectionPage } from "./WiredConnectionPage";
