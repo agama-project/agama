@@ -44,9 +44,15 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
-import { RegistrationInfo } from "~/types/software";
+import { RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
-import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
+import {
+  useProduct,
+  useRegistration,
+  useRegisterMutation,
+  useAddons,
+  useRegisteredAddons,
+} from "~/queries/software";
 import { useHostname } from "~/queries/system";
 import { isEmpty, mask } from "~/utils";
 import { sprintf } from "sprintf-js";
@@ -56,6 +62,7 @@ const FORM_ID = "productRegistration";
 const KEY_LABEL = _("Registration code");
 const EMAIL_LABEL = "Email";
 
+// the registration code might be quite long, make the password field wider
 const RegistrationCodeInput = ({ ...props }) => <PasswordInput size={30} {...props} />;
 
 const RegisteredProductSection = () => {
@@ -89,6 +96,20 @@ const RegisteredProductSection = () => {
         </DescriptionListGroup>
       </DescriptionList>
     </>
+  );
+};
+
+const RegisteredExtensionSection = (info: RegisteredAddonInfo) => {
+  const [showCode, setShowCode] = useState(false);
+
+  return (
+    <span>
+      {_("The extension was registered with key ")}
+      {showCode ? info.registrationCode : mask(info.registrationCode)}{" "}
+      <Button variant="link" isInline onClick={() => setShowCode(!showCode)}>
+        {showCode ? _("Hide") : _("Show")}
+      </Button>
+    </span>
   );
 };
 
@@ -185,57 +206,66 @@ const HostnameAlert = () => {
 
 const Extensions = () => {
   const extensions = useAddons();
+  const registeredExtensions = useRegisteredAddons();
 
-  const extensionComponents = extensions.map((ext) => (
-    <DataListItem key={`${ext.id}-${ext.version}`}>
-      <DataListItemRow>
-        <DataListItemCells
-          dataListCells={[
-            <DataListCell key="summary">
-              <Stack hasGutter>
-                <div>
-                  {/* remove the "(BETA)" suffix, we display a Beta label instead */}
-                  <b>{ext.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
-                  {ext.release === "beta" && (
-                    <Label color="blue" isCompact>
-                      {_("Beta")}
-                    </Label>
-                  )}
-                  {ext.recommended && (
-                    <Label color="orange" isCompact>
-                      {_("Recommended")}
-                    </Label>
-                  )}
-                </div>
-                <div>{ext.description}</div>
-                {ext.available ? (
-                  <Form>
-                    {!ext.free && (
-                      <FormGroup label={KEY_LABEL}>
-                        <RegistrationCodeInput id={`reg-code-${ext.id}-${ext.version}`} />
-                      </FormGroup>
-                    )}
+  const extensionComponents = extensions.map((ext) => {
+    const registeredExtension = registeredExtensions.find(
+      (e) => e.id === ext.id && (e.version === ext.version || e.version === null),
+    );
 
-                    <ActionGroup>
-                      <Button variant="primary" type="submit" isInline>
-                        {_("Register")}
-                      </Button>
-                    </ActionGroup>
-                  </Form>
-                ) : (
-                  <Alert title={_("Not available")} variant="warning">
-                    {_(
-                      "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
+    return (
+      <DataListItem key={`${ext.id}-${ext.version}`}>
+        <DataListItemRow>
+          <DataListItemCells
+            dataListCells={[
+              <DataListCell key="summary">
+                <Stack hasGutter>
+                  <div>
+                    {/* remove the "(BETA)" suffix, we display a Beta label instead */}
+                    <b>{ext.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
+                    {ext.release === "beta" && (
+                      <Label color="blue" isCompact>
+                        {_("Beta")}
+                      </Label>
                     )}
-                  </Alert>
-                )}
-              </Stack>
-            </DataListCell>,
-          ]}
-        />
-      </DataListItemRow>
-    </DataListItem>
-  ));
+                    {ext.recommended && (
+                      <Label color="orange" isCompact>
+                        {_("Recommended")}
+                      </Label>
+                    )}
+                  </div>
+                  <div>{ext.description}</div>
+                  {registeredExtension ? (
+                    RegisteredExtensionSection(registeredExtension)
+                  ) : ext.available ? (
+                    <Form>
+                      {!ext.free && (
+                        <FormGroup label={KEY_LABEL}>
+                          <RegistrationCodeInput id={`reg-code-${ext.id}-${ext.version}`} />
+                        </FormGroup>
+                      )}
+
+                      <ActionGroup>
+                        <Button variant="primary" type="submit" isInline>
+                          {_("Register")}
+                        </Button>
+                      </ActionGroup>
+                    </Form>
+                  ) : (
+                    <Alert title={_("Not available")} variant="warning">
+                      {_(
+                        "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
+                      )}
+                    </Alert>
+                  )}
+                </Stack>
+              </DataListCell>,
+            ]}
+          />
+        </DataListItemRow>
+      </DataListItem>
+    );
+  });
 
   return (
     <>

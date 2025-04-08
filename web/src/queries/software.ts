@@ -36,6 +36,7 @@ import {
   Pattern,
   PatternsSelection,
   Product,
+  RegisteredAddonInfo,
   RegistrationInfo,
   Repository,
   SelectedBy,
@@ -49,6 +50,7 @@ import {
   fetchPatterns,
   fetchProducts,
   fetchProposal,
+  fetchRegisteredAddons,
   fetchRegistration,
   fetchRepositories,
   probe,
@@ -114,6 +116,14 @@ const registrationQuery = () => ({
 const addonsQuery = () => ({
   queryKey: ["software/registration/addons"],
   queryFn: fetchAddons,
+});
+
+/**
+ * Query to retrieve registration info
+ */
+const registeredAddonsQuery = () => ({
+  queryKey: ["software/registration/addons/registered"],
+  queryFn: fetchRegisteredAddons,
 });
 
 /**
@@ -281,6 +291,14 @@ const useAddons = (): AddonInfo[] => {
 };
 
 /**
+ * Returns registration info
+ */
+const useRegisteredAddons = (): RegisteredAddonInfo[] => {
+  const { data: addons } = useSuspenseQuery(registeredAddonsQuery());
+  return addons;
+};
+
+/**
  * Returns repository info
  */
 const useRepositories = (): Repository[] => {
@@ -338,14 +356,15 @@ export {
   selectedProductQuery,
   useAddons,
   useConfigMutation,
+  useLicenses,
   usePatterns,
   useProduct,
-  useLicenses,
   useProductChanges,
   useProposal,
   useProposalChanges,
-  useRegistration,
   useRegisterMutation,
+  useRegisteredAddons,
+  useRegistration,
   useRepositories,
   useRepositoryMutation,
 };

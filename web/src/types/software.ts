@@ -123,16 +123,23 @@ type AddonInfo = {
   release: string;
 };
 
+type RegisteredAddonInfo = {
+  id: string;
+  version: string;
+  registrationCode: string;
+};
+
 export { SelectedBy };
 export type {
   AddonInfo,
+  License,
+  LicenseContent,
   Pattern,
   PatternsSelection,
   Product,
-  License,
-  LicenseContent,
-  SoftwareConfig,
+  RegisteredAddonInfo,
   RegistrationInfo,
   Repository,
+  SoftwareConfig,
   SoftwareProposal,
 };
