@@ -21,7 +21,12 @@
  */
 
 import React from "react";
-import { NetworkPage, IpSettingsForm, WifiNetworkPage } from "~/components/network";
+import {
+  NetworkPage,
+  IpSettingsForm,
+  WifiNetworkPage,
+  WiredConnectionPage,
+} from "~/components/network";
 import { Route } from "~/types/routes";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
@@ -41,6 +46,10 @@ const routes = (): Route => ({
     {
       path: PATHS.wifiNetwork,
       element: <WifiNetworkPage />,
+    },
+    {
+      path: PATHS.wiredConnection,
+      element: <WiredConnectionPage />,
     },
   ],
 });
