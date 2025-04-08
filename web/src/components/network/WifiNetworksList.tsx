@@ -46,15 +46,18 @@ import { _ } from "~/i18n";
 // FIXME: Move to the model and stop using translations for checking the state
 const networkState = (state: DeviceState): string => {
   switch (state) {
-    case DeviceState.CONFIG:
-    case DeviceState.IPCHECK:
+    case DeviceState.CONNECTING:
       // TRANSLATORS: Wifi network status
       return _("Connecting");
-    case DeviceState.ACTIVATED:
+    case DeviceState.CONNECTED:
       // TRANSLATORS: Wifi network status
       return _("Connected");
-    case DeviceState.DEACTIVATING:
+    case DeviceState.DISCONNECTING:
+      // TRANSLATORS: Wifi network status
+      return _("Disconnecting");
     case DeviceState.FAILED:
+      // TRANSLATORS: Wifi network status
+      return _("Failed");
     case DeviceState.DISCONNECTED:
       // TRANSLATORS: Wifi network status
       return _("Disconnected");

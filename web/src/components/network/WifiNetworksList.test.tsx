@@ -38,7 +38,7 @@ const wlan0: Device = {
   name: "wlan0",
   connection: "Network 1",
   type: ConnectionType.WIFI,
-  state: DeviceState.ACTIVATED,
+  state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   nameservers: ["192.168.69.1"],
   method4: ConnectionMethod.MANUAL,

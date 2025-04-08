@@ -260,7 +260,7 @@ const useWifiNetworks = () => {
       const device = devices.find((d: Device) => d.connection === ap.ssid);
 
       let status: WifiNetworkStatus;
-      if (device?.state === DeviceState.ACTIVATED) {
+      if (device?.state === DeviceState.CONNECTED) {
         status = WifiNetworkStatus.CONNECTED;
       } else {
         status = settings ? WifiNetworkStatus.CONFIGURED : WifiNetworkStatus.NOT_CONFIGURED;
