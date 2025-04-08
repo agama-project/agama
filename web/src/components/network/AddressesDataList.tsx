@@ -36,10 +36,9 @@ import {
   DataListCell,
   DataListAction,
   Flex,
-  Stack,
+  FormGroup,
 } from "@patternfly/react-core";
 
-import { FormLabel } from "~/components/core";
 import IpAddressInput from "~/components/network/IpAddressInput";
 import IpPrefixInput from "~/components/network/IpPrefixInput";
 import { _ } from "~/i18n";
@@ -139,19 +138,20 @@ export default function AddressesDataList({
   const newAddressButtonText = addresses.length ? _("Add another address") : _("Add an address");
 
   return (
-    <Stack hasGutter>
-      <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
-        <FormLabel isRequired={!allowEmpty}>{_("Addresses")}</FormLabel>
-      </Flex>
-      {/** FIXME: try to use an aria-labelledby instead when PatternFly permits it (or open a bug report) */}
-      <DataList isCompact gridBreakpoint="none" aria-label={_("Addresses data list")}>
-        {addresses.map((address) => renderAddress(address))}
-      </DataList>
-      <Flex>
+    <FormGroup isRequired={!allowEmpty} label={_("Addresses")}>
+      <Flex
+        direction={{ default: "column" }}
+        alignItems={{ default: "alignItemsFlexStart" }}
+        gap={{ default: "gapMd" }}
+      >
+        {/** FIXME: try to use an aria-labelledby instead when PatternFly permits it (or open a bug report) */}
+        <DataList isCompact aria-label={_("Addresses data list")}>
+          {addresses.map((address) => renderAddress(address))}
+        </DataList>
         <Button size="sm" variant="secondary" onClick={addAddress}>
           {newAddressButtonText}
         </Button>
       </Flex>
-    </Stack>
+    </FormGroup>
   );
 }
