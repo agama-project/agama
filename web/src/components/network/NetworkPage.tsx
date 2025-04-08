@@ -23,31 +23,10 @@
 import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { EmptyState, Page } from "~/components/core";
-import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { _ } from "~/i18n";
-import {
-  useConnections,
-  useNetworkChanges,
-  useNetworkDevices,
-  useNetworkState,
-} from "~/queries/network";
+import { useNetworkChanges, useNetworkState } from "~/queries/network";
 import WifiNetworksList from "./WifiNetworksList";
-
-const WiredConnections = ({ connections, devices }) => {
-  const wiredConnections = connections.length;
-
-  const sectionProps = wiredConnections > 0 ? { title: _("Wired") } : {};
-
-  return (
-    <Page.Section {...sectionProps}>
-      {wiredConnections > 0 ? (
-        <ConnectionsTable connections={connections} devices={devices} />
-      ) : (
-        <EmptyState title={_("No wired connections found")} icon="warning" />
-      )}
-    </Page.Section>
-  );
-};
+import WiredConnectionsList from "./WiredConnectionsList";
 
 const NoWifiAvailable = () => (
   <Page.Section>
@@ -64,10 +43,7 @@ const NoWifiAvailable = () => (
  */
 export default function NetworkPage() {
   useNetworkChanges();
-  const connections = useConnections();
-  const devices = useNetworkDevices();
   const networkState = useNetworkState();
-  const wiredConnections = connections.filter((c) => !c.wireless);
 
   return (
     <Page>
@@ -78,12 +54,14 @@ export default function NetworkPage() {
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
-            <WiredConnections connections={wiredConnections} devices={devices} />
+            <Page.Section title={_("Wired connections")}>
+              <WiredConnectionsList aria-label={_("Wired connections")} />
+            </Page.Section>
           </GridItem>
           <GridItem sm={12} xl={6}>
             {networkState.wirelessEnabled ? (
-              <Page.Section title={_("Wi-Fi")}>
-                <WifiNetworksList />
+              <Page.Section title={_("Wi-Fi networks")}>
+                <WifiNetworksList aria-label={_("Wi-Fi networks")} />
               </Page.Section>
             ) : (
               <NoWifiAvailable />
