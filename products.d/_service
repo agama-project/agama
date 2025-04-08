@@ -3,7 +3,7 @@
     <!-- the URL is modified by the .github/workflows/obs-staging-shared.yml
     action when submitting to OBS -->
     <param name="url">https://github.com/agama-project/agama.git</param>
-    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@</param>
+    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@.%h</param>
     <param name="versionrewrite-pattern">v(.*)</param>
     <param name="scm">git</param>
     <!-- the revision might be changed to "release" branch or a git tag by the
