@@ -55,6 +55,7 @@ import {
   fetchRepositories,
   probe,
   register,
+  registerAddon,
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
@@ -181,6 +182,22 @@ const useRegisterMutation = () => {
       await systemProbe();
       queryClient.invalidateQueries({ queryKey: ["software/registration"] });
       queryClient.invalidateQueries({ queryKey: ["storage"] });
+    },
+  };
+  return useMutation(query);
+};
+
+/**
+ * Hook that builds a mutation for registering an addon
+ *
+ */
+const useRegisterAddonMutation = () => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: registerAddon,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["software/registration/addons/registered"] });
     },
   };
   return useMutation(query);
@@ -362,6 +379,7 @@ export {
   useProductChanges,
   useProposal,
   useProposalChanges,
+  useRegisterAddonMutation,
   useRegisterMutation,
   useRegisteredAddons,
   useRegistration,

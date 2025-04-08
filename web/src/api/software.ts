@@ -104,6 +104,12 @@ const probe = () => post("/api/software/probe");
 const register = ({ key, email }: { key: string; email?: string }) =>
   post("/api/software/registration", { key, email });
 
+/**
+ * Request registration of selected product with given key
+ */
+const registerAddon = (addon: RegisteredAddonInfo) =>
+  post("/api/software/registration/addons/register", addon);
+
 export {
   fetchAddons,
   fetchConfig,
@@ -117,5 +123,6 @@ export {
   fetchRepositories,
   probe,
   register,
+  registerAddon,
   updateConfig,
 };

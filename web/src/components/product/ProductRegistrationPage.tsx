@@ -44,7 +44,7 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
-import { RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
+import { AddonInfo, RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
 import {
   useProduct,
@@ -52,6 +52,7 @@ import {
   useRegisterMutation,
   useAddons,
   useRegisteredAddons,
+  useRegisterAddonMutation,
 } from "~/queries/software";
 import { useHostname } from "~/queries/system";
 import { isEmpty, mask } from "~/utils";
@@ -102,10 +103,14 @@ const RegisteredProductSection = () => {
 const RegisteredExtensionSection = (info: RegisteredAddonInfo) => {
   const [showCode, setShowCode] = useState(false);
 
+  // TRANSLATORS: %s will be replaced by the registration key.
+  const [msg1, msg2] = _("The extension has been registered with key %s.").split("%s");
+
   return (
     <span>
-      {_("The extension was registered with key ")}
-      {showCode ? info.registrationCode : mask(info.registrationCode)}{" "}
+      {msg1}
+      {showCode ? info.registrationCode : mask(info.registrationCode)}
+      {msg2}{" "}
       <Button variant="link" isInline onClick={() => setShowCode(!showCode)}>
         {showCode ? _("Hide") : _("Show")}
       </Button>
@@ -204,68 +209,98 @@ const HostnameAlert = () => {
   );
 };
 
+const Extension = (ext: AddonInfo) => {
+  const { mutate: registerAddon } = useRegisterAddonMutation();
+  const registeredExtensions = useRegisteredAddons();
+  const [regCode, setRegCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const onRegisterError = ({ response }) => {
+    setError(response.data.message);
+  };
+
+  const registered = registeredExtensions.find(
+    (e) => e.id === ext.id && (e.version === ext.version || e.version === null),
+  );
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const data: RegisteredAddonInfo = {
+      id: ext.id,
+      // TODO: make version optional
+      version: ext.version,
+      registrationCode: regCode,
+    };
+
+    // @ts-expect-error
+    registerAddon(data, { onError: onRegisterError, onSettled: () => setLoading(false) });
+  };
+
+  return (
+    <DataListItem key={`${ext.id}-${ext.version}`}>
+      <DataListItemRow>
+        <DataListItemCells
+          dataListCells={[
+            <DataListCell key="summary">
+              <Stack hasGutter>
+                <div>
+                  {/* remove the "(BETA)" suffix, we display a Beta label instead */}
+                  <b>{ext.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
+                  {ext.release === "beta" && (
+                    <Label color="blue" isCompact>
+                      {_("Beta")}
+                    </Label>
+                  )}
+                  {ext.recommended && (
+                    <Label color="orange" isCompact>
+                      {_("Recommended")}
+                    </Label>
+                  )}
+                </div>
+                <div>{ext.description}</div>
+                {registered ? (
+                  RegisteredExtensionSection(registered)
+                ) : ext.available ? (
+                  <Form id={`register-form-${ext.id}-${ext.version}`} onSubmit={submit}>
+                    {error && <Alert variant="warning" isInline title={error} />}
+                    {!ext.free && (
+                      <FormGroup label={KEY_LABEL}>
+                        <RegistrationCodeInput
+                          id={`reg-code-${ext.id}-${ext.version}`}
+                          value={regCode}
+                          onChange={(_, v) => setRegCode(v)}
+                        />
+                      </FormGroup>
+                    )}
+
+                    <ActionGroup>
+                      <Button variant="primary" type="submit" isInline isLoading={loading}>
+                        {_("Register")}
+                      </Button>
+                    </ActionGroup>
+                  </Form>
+                ) : (
+                  <Alert title={_("Not available")} variant="warning">
+                    {_(
+                      "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
+                    )}
+                  </Alert>
+                )}
+              </Stack>
+            </DataListCell>,
+          ]}
+        />
+      </DataListItemRow>
+    </DataListItem>
+  );
+};
+
 const Extensions = () => {
   const extensions = useAddons();
-  const registeredExtensions = useRegisteredAddons();
-
-  const extensionComponents = extensions.map((ext) => {
-    const registeredExtension = registeredExtensions.find(
-      (e) => e.id === ext.id && (e.version === ext.version || e.version === null),
-    );
-
-    return (
-      <DataListItem key={`${ext.id}-${ext.version}`}>
-        <DataListItemRow>
-          <DataListItemCells
-            dataListCells={[
-              <DataListCell key="summary">
-                <Stack hasGutter>
-                  <div>
-                    {/* remove the "(BETA)" suffix, we display a Beta label instead */}
-                    <b>{ext.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
-                    {ext.release === "beta" && (
-                      <Label color="blue" isCompact>
-                        {_("Beta")}
-                      </Label>
-                    )}
-                    {ext.recommended && (
-                      <Label color="orange" isCompact>
-                        {_("Recommended")}
-                      </Label>
-                    )}
-                  </div>
-                  <div>{ext.description}</div>
-                  {registeredExtension ? (
-                    RegisteredExtensionSection(registeredExtension)
-                  ) : ext.available ? (
-                    <Form>
-                      {!ext.free && (
-                        <FormGroup label={KEY_LABEL}>
-                          <RegistrationCodeInput id={`reg-code-${ext.id}-${ext.version}`} />
-                        </FormGroup>
-                      )}
-
-                      <ActionGroup>
-                        <Button variant="primary" type="submit" isInline>
-                          {_("Register")}
-                        </Button>
-                      </ActionGroup>
-                    </Form>
-                  ) : (
-                    <Alert title={_("Not available")} variant="warning">
-                      {_(
-                        "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
-                      )}
-                    </Alert>
-                  )}
-                </Stack>
-              </DataListCell>,
-            ]}
-          />
-        </DataListItemRow>
-      </DataListItem>
-    );
-  });
+  const extensionComponents = extensions.map((ext) => Extension(ext));
 
   return (
     <>

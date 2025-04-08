@@ -125,7 +125,7 @@ type AddonInfo = {
 
 type RegisteredAddonInfo = {
   id: string;
-  version: string;
+  version: string | null;
   registrationCode: string;
 };
 
