@@ -33,6 +33,7 @@ impl ApiDocBuilder for ProfileApiDocBuilder {
             .path_from::<crate::profile::web::__path_autoyast>()
             .path_from::<crate::profile::web::__path_evaluate>()
             .path_from::<crate::profile::web::__path_validate>()
+            .path_from::<crate::profile::web::__path_execute_script>()
             .build()
     }
 
