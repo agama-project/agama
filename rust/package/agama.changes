@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr  8 22:04:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- "agama download" do not crash if it cannot mount a file system
+  (gh#agama-project/agama#2253).
+
+-------------------------------------------------------------------
 Mon Apr  7 14:02:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Skip exporting scripts, files, bootloader and softare section
