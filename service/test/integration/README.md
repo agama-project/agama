@@ -8,7 +8,7 @@ To not get run together with the `*_test.rb` unit tests, these are named `*_ites
 
 ### Running
 
-We run this via `.github/wotkflows/ci-integration-tests.yml`, or like this
+We run this via `.github/workflows/ci-integration-tests.yml`, or like this
 
 ```sh
 (cd service; bundle exec rspec --pattern 'test/integration/**_itest.rb')
