@@ -214,7 +214,7 @@ export default function IpSettingsForm() {
 
           <ActionGroup>
             <Page.Submit form="editConnectionForm" />
-            <Page.Cancel />
+            <Page.Back>{_("Cancel")}</Page.Back>
           </ActionGroup>
         </Form>
       </Page.Content>
