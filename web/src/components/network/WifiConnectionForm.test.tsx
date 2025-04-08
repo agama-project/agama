@@ -50,11 +50,6 @@ jest.mock("~/queries/network", () => ({
   }),
 }));
 
-const hiddenNetworkMock = {
-  hidden: true,
-  status: WifiNetworkStatus.NOT_CONFIGURED,
-} as WifiNetwork;
-
 const networkMock = {
   ssid: "Visible Network",
   hidden: false,
