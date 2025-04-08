@@ -70,21 +70,6 @@ enum ConnectionType {
   UNKNOWN = "unknown",
 }
 
-/**
- * Enum for the active connection state values
- *
- * @readonly
- * @enum { number }
- * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMActiveConnectionState
- */
-enum ConnectionState {
-  UNKNOWN = 0,
-  ACTIVATING = 1,
-  ACTIVATED = 2,
-  DEACTIVATING = 3,
-  DEACTIVATED = 4,
-}
-
 enum DeviceState {
   UNKNOWN = "unknown",
   UNMANAGED = "unmanaged",
@@ -355,7 +340,6 @@ export {
   ApFlags,
   ApSecurityFlags,
   Connection,
-  ConnectionState,
   ConnectionStatus,
   ConnectionMethod,
   ConnectionType,
