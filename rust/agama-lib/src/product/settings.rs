@@ -27,7 +27,12 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct AddonSettings {
     pub id: String,
-    pub version: String,
+    /// Optional version of the addon, if not specified the version is found
+    /// from the available addons
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+    /// Free extensions do not require a registration code
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_code: Option<String>,
 }
 

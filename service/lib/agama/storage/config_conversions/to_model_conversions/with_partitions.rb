@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -36,28 +36,7 @@ module Agama
 
           # @return [Array<Configs::Partition>]
           def valid_partitions
-            config.partitions.select { |p| valid_partition?(p) }
-          end
-
-          # @param partition_config [Configs::Partition]
-          # @return [Boolean]
-          def valid_partition?(partition_config)
-            valid_new_partition(partition_config) || valid_existing_partition(partition_config)
-          end
-
-          # @param partition_config [Configs::Partition]
-          # @return [Boolean]
-          def valid_new_partition(partition_config)
-            delete = partition_config.delete? || partition_config.delete_if_needed?
-            return false if delete
-
-            partition_config.search.nil? || partition_config.search.create_device?
-          end
-
-          # @param partition_config [Configs::Partition]
-          # @return [Boolean]
-          def valid_existing_partition(partition_config)
-            !partition_config.found_device.nil?
+            config.partitions.reject { |p| p.search&.skip_device? }
           end
         end
       end

@@ -24,16 +24,16 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
-import * as ConfigModel from "~/api/storage/types/config-model";
+import { apiModel } from "~/api/storage/types";
 import { Issue } from "~/types/issues";
 
-const sdaDrive: ConfigModel.Drive = {
+const sdaDrive: apiModel.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: [],
 };
 
-const sdbDrive: ConfigModel.Drive = {
+const sdbDrive: apiModel.Drive = {
   name: "/dev/sdb",
   spacePolicy: "delete",
   partitions: [],

@@ -46,6 +46,7 @@ import {
 import { NestedContent, Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
+import AutoSizeText from "~/components/storage/AutoSizeText";
 import { useDevices, useVolume } from "~/queries/storage";
 import {
   useModel,
@@ -63,9 +64,9 @@ import {
   filesystemLabel,
   parseToBytes,
 } from "~/components/storage/utils";
-import { _, formatList } from "~/i18n";
+import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { compact, uniq } from "~/utils";
 
@@ -101,14 +102,14 @@ type ErrorsHandler = {
   getVisibleError: (id: string) => Error | undefined;
 };
 
-function toPartitionConfig(value: FormValue): configModel.Partition {
+function toPartitionConfig(value: FormValue): apiModel.Partition {
   const name = (): string | undefined => {
     if (value.target === NO_VALUE || value.target === NEW_PARTITION) return undefined;
 
     return value.target;
   };
 
-  const filesystemType = (): configModel.FilesystemType | undefined => {
+  const filesystemType = (): apiModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
@@ -119,10 +120,10 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
      *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
      *  config model. The schema for the volumes will define the explicit list of filesystem types.
      */
-    return value.filesystem as configModel.FilesystemType;
+    return value.filesystem as apiModel.FilesystemType;
   };
 
-  const filesystem = (): configModel.Filesystem | undefined => {
+  const filesystem = (): apiModel.Filesystem | undefined => {
     if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true, default: true };
 
     const type = filesystemType();
@@ -136,7 +137,7 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
     };
   };
 
-  const size = (): configModel.Size | undefined => {
+  const size = (): apiModel.Size | undefined => {
     if (value.sizeOption === "auto") return undefined;
     if (value.minSize === NO_VALUE) return undefined;
 
@@ -155,7 +156,7 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
   };
 }
 
-function toFormValue(partitionConfig: configModel.Partition): FormValue {
+function toFormValue(partitionConfig: apiModel.Partition): FormValue {
   const mountPoint = (): string => partitionConfig.mountPath || NO_VALUE;
 
   const target = (): string => partitionConfig.name || NEW_PARTITION;
@@ -219,7 +220,7 @@ function useDefaultFilesystem(mountPoint: string): string {
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
-function useInitialPartitionConfig(): configModel.Partition | null {
+function useInitialPartitionConfig(): apiModel.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useDevice();
   const drive = useDrive(device?.name);
@@ -298,7 +299,7 @@ function useMountPointError(value: FormValue): Error | undefined {
     };
   }
 
-  const regex = /^swap$|^\/$|^(\/[^/\s]+([^/]*[^/\s])*)+$/;
+  const regex = /^swap$|^\/$|^(\/[^/\s]+)+$/;
   if (!regex.test(mountPoint)) {
     return {
       id: "mountPoint",
@@ -383,7 +384,7 @@ function useErrors(value: FormValue): ErrorsHandler {
   return { errors, getError, getVisibleError };
 }
 
-function useSolvedModel(value: FormValue): configModel.Config | null {
+function useSolvedModel(value: FormValue): apiModel.Config | null {
   const device = useDevice();
   const model = useConfigModel();
   const { errors } = useErrors(value);
@@ -392,7 +393,7 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
   partitionConfig.size = undefined;
   if (partitionConfig.filesystem) partitionConfig.filesystem.label = undefined;
 
-  let sparseModel: configModel.Config | undefined;
+  let sparseModel: apiModel.Config | undefined;
 
   if (device && !errors.length && value.target === NEW_PARTITION && value.filesystem !== NO_VALUE) {
     /**
@@ -417,7 +418,7 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
   return solvedModel;
 }
 
-function useSolvedPartitionConfig(value: FormValue): configModel.Partition | undefined {
+function useSolvedPartitionConfig(value: FormValue): apiModel.Partition | undefined {
   const model = useSolvedModel(value);
   const device = useDevice();
   const drive = model?.drives?.find((d) => d.name === device.name);
@@ -719,265 +720,6 @@ function SizeOptions({ mountPoint, target }: SizeOptionsProps): React.ReactNode 
   );
 }
 
-function AutoSizeTextFallback({ size }) {
-  if (size.max) {
-    if (size.max === size.min) {
-      return sprintf(
-        // TRANSLATORS: %s is a size with units, like "3 GiB"
-        _("A generic size of %s will be used for the new partition"),
-        deviceSize(size.min),
-      );
-    }
-
-    return sprintf(
-      // TRANSLATORS: %1$s is a min size and %2$s is the max, both with units like "3 GiB"
-      _("A generic size range between %1$s and %2$s will be used for the new partition"),
-      deviceSize(size.min),
-      deviceSize(size.max),
-    );
-  }
-
-  return sprintf(
-    // TRANSLATORS: %s is a size with units, like "3 GiB"
-    _("A generic minimum size of %s will be used for the new partition"),
-    deviceSize(size.min),
-  );
-}
-
-function AutoSizeTextFixed({ path, size }) {
-  if (size.max) {
-    if (size.max === size.min) {
-      return sprintf(
-        // TRANSLATORS: %1$s is a size with units (10 GiB) and %2$s is a mount path (/home)
-        _("A partition of %1$s will be created for %2$s"),
-        deviceSize(size.min),
-        path,
-      );
-    }
-
-    return sprintf(
-      // TRANSLATORS: %1$s is a min size, %2$s is the max size and %3$s is a mount path
-      _("A partition with a size between %1$s and %2$s will be created for %3$s"),
-      deviceSize(size.min),
-      deviceSize(size.max),
-      path,
-    );
-  }
-
-  return sprintf(
-    // TRANSLATORS: %1$s is a size with units (10 GiB) and %2$s is a mount path (/home)
-    _("A partition of at least %1$s will be created for %2$s"),
-    deviceSize(size.min),
-    path,
-  );
-}
-
-function AutoSizeTextRam({ path, size }) {
-  if (size.max) {
-    if (size.max === size.min) {
-      return sprintf(
-        // TRANSLATORS: %1$s is a size with units (10 GiB) and %2$s is a mount path (/home)
-        _("Based on the amount of RAM in the system, a partition of %1$s will be created for %2$s"),
-        deviceSize(size.min),
-        path,
-      );
-    }
-
-    return sprintf(
-      // TRANSLATORS: %1$s is a min size, %2$s is the max size and %3$s is a mount path
-      _(
-        "Based on the amount of RAM in the system, a partition with a size between %1$s and %2$s will be created for %3$s",
-      ),
-      deviceSize(size.min),
-      deviceSize(size.max),
-      path,
-    );
-  }
-
-  return sprintf(
-    // TRANSLATORS: %1$s is a size with units (10 GiB) and %2$s is a mount path (/home)
-    _(
-      "Based on the amount of RAM in the system a partition of at least %1$s will be created for %2$s",
-    ),
-    deviceSize(size.min),
-    path,
-  );
-}
-
-function AutoSizeTextDynamic({ volume, size }) {
-  const introText = (volume) => {
-    const path = volume.mountPath;
-    const otherPaths = volume.outline.sizeRelevantVolumes || [];
-    const snapshots = !!volume.outline.snapshotsAffectSizes;
-    const ram = !!volume.outline.adjustByRam;
-
-    if (ram && snapshots) {
-      if (otherPaths.length === 1) {
-        return sprintf(
-          // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
-          _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
-          ),
-          path,
-          otherPaths[0],
-        );
-      }
-
-      if (otherPaths.length > 1) {
-        // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
-        return sprintf(
-          _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
-          ),
-          path,
-          formatList(otherPaths),
-        );
-      }
-
-      return sprintf(
-        // TRANSLATORS: %s is a mount point (eg. /)
-        _(
-          "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.",
-        ),
-        path,
-      );
-    }
-
-    if (ram) {
-      if (otherPaths.length === 1) {
-        return sprintf(
-          // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
-          _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.",
-          ),
-          path,
-          otherPaths[0],
-        );
-      }
-
-      return sprintf(
-        // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
-        _(
-          "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.",
-        ),
-        path,
-        formatList(otherPaths),
-      );
-    }
-
-    if (snapshots) {
-      if (otherPaths.length === 1) {
-        return sprintf(
-          // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
-          _(
-            "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
-          ),
-          path,
-          otherPaths[0],
-        );
-      }
-
-      if (otherPaths.length > 1) {
-        // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
-        return sprintf(
-          _(
-            "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
-          ),
-          path,
-          formatList(otherPaths),
-        );
-      }
-
-      return sprintf(
-        // TRANSLATORS: %s is a mount point (eg. /)
-        _(
-          "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.",
-        ),
-        path,
-      );
-    }
-
-    if (otherPaths.length === 1) {
-      return sprintf(
-        // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
-        _(
-          "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.",
-        ),
-        path,
-        otherPaths[0],
-      );
-    }
-
-    return sprintf(
-      // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
-      _(
-        "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.",
-      ),
-      path,
-      formatList(otherPaths),
-    );
-  };
-
-  const limitsText = (size) => {
-    if (size.max) {
-      if (size.max === size.min) {
-        return sprintf(
-          // TRANSLATORS: %s is a size with units (eg. 10 GiB)
-          _("The current configuration will result in a partition of %s."),
-          deviceSize(size.min),
-        );
-      }
-
-      return sprintf(
-        // TRANSLATORS: %1$s is a min size, %2$s is the max size
-        _(
-          "The current configuration will result in a partition with a size between %1$s and %2$s.",
-        ),
-        deviceSize(size.min),
-        deviceSize(size.max),
-      );
-    }
-
-    return sprintf(
-      // TRANSLATORS: %s is a size with units (eg. 10 GiB)
-      _("The current configuration will result in a partition of at least %s."),
-      deviceSize(size.min),
-    );
-  };
-
-  return (
-    <>
-      <SubtleContent component="p">{introText(volume)}</SubtleContent>
-      <SubtleContent component="p">{limitsText(size)}</SubtleContent>
-    </>
-  );
-}
-
-function AutoSizeText({ volume, size }) {
-  const path = volume.mountPath;
-
-  if (path) {
-    if (volume.autoSize) {
-      const otherPaths = volume.outline.sizeRelevantVolumes || [];
-
-      if (otherPaths.length || volume.outline.snapshotsAffectSizes) {
-        return <AutoSizeTextDynamic volume={volume} size={size} />;
-      }
-
-      // This assumes volume.autoSize is correctly set. Ie. if it is set to true then at least one
-      // of the relevant outline fields (snapshots, RAM and sizeRelevantVolumes) is used.
-      return <AutoSizeTextRam path={path} size={size} />;
-    }
-
-    return <AutoSizeTextFixed path={path} size={size} />;
-  }
-
-  // Fallback volume
-  // This assumes the fallback volume never uses automatic sizes (ie. re-calculated based on
-  // other aspects of the configuration). It would be VERY surprising if that's the case.
-  return <AutoSizeTextFallback size={size} />;
-}
-
 type AutoSizeInfoProps = {
   value: FormValue;
 };
@@ -991,7 +733,7 @@ function AutoSizeInfo({ value }: AutoSizeInfoProps): React.ReactNode {
 
   return (
     <SubtleContent>
-      <AutoSizeText volume={volume} size={size} />
+      <AutoSizeText volume={volume} size={size} deviceType={"partition"} />
     </SubtleContent>
   );
 }
@@ -1136,6 +878,10 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
   );
 }
 
+/**
+ * @fixme This component has to be adapted to use the new hooks from ~/hooks/storage/ instead of the
+ * deprecated hooks from ~/queries/storage/config-model.
+ */
 export default function PartitionPage() {
   const navigate = useNavigate();
   const headingId = useId();
@@ -1244,7 +990,7 @@ export default function PartitionPage() {
     <Page id="partitionPage">
       <Page.Header>
         <Content component="h2" id={headingId}>
-          {sprintf(_("Define partition at %s"), device.name)}
+          {sprintf(_("Configure partition at %s"), device.name)}
         </Content>
       </Page.Header>
 

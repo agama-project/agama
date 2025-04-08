@@ -24,4 +24,4 @@ Type=oneshot
 ExecStart=agama-issue-generator --wait-for-ssl 15
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

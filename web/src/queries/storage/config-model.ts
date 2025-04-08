@@ -20,45 +20,46 @@
  * find current contact information at www.suse.com.
  */
 
+/** @deprecated These hooks will be replaced by new hooks at ~/hooks/storage/ */
+
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchConfigModel, setConfigModel, solveConfigModel } from "~/api/storage";
-import { configModel, Volume } from "~/api/storage/types";
-import { EncryptionMethod } from "~/api/storage/types/config-model";
+import { setConfigModel, solveConfigModel } from "~/api/storage";
+import { apiModel, Volume } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
 import { SpacePolicyAction } from "~/types/storage";
-import { useVolumes } from "~/queries/storage";
+import { apiModelQuery, useVolumes } from "~/queries/storage";
 
-function copyModel(model: configModel.Config): configModel.Config {
+function copyModel(model: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(model));
 }
 
-function isNewPartition(partition: configModel.Partition): boolean {
+function isNewPartition(partition: apiModel.Partition): boolean {
   return partition.name === undefined;
 }
 
-function isSpacePartition(partition: configModel.Partition): boolean {
+function isSpacePartition(partition: apiModel.Partition): boolean {
   return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
 }
 
-function isUsedPartition(partition: configModel.Partition): boolean {
-  return partition.filesystem !== undefined || partition.alias !== undefined;
+function isUsedPartition(partition: apiModel.Partition): boolean {
+  return partition.filesystem !== undefined;
 }
 
-function isReusedPartition(partition: configModel.Partition): boolean {
-  return !isNewPartition(partition) && isUsedPartition(partition) && !isSpacePartition(partition);
+function isReusedPartition(partition: apiModel.Partition): boolean {
+  return !isNewPartition(partition) && isUsedPartition(partition);
 }
 
-function findDrive(model: configModel.Config, driveName: string): configModel.Drive | undefined {
+function findDrive(model: apiModel.Config, driveName: string): apiModel.Drive | undefined {
   const drives = model?.drives || [];
   return drives.find((d) => d.name === driveName);
 }
 
-function removeDrive(model: configModel.Config, driveName: string): configModel.Config {
+function removeDrive(model: apiModel.Config, driveName: string): apiModel.Config {
   model.drives = model.drives.filter((d) => d.name !== driveName);
   return model;
 }
 
-function isUsedDrive(model: configModel.Config, driveName: string) {
+function isUsedDrive(model: apiModel.Config, driveName: string) {
   const drive = findDrive(model, driveName);
   if (drive === undefined) return false;
 
@@ -66,10 +67,10 @@ function isUsedDrive(model: configModel.Config, driveName: string) {
 }
 
 function findPartition(
-  model: configModel.Config,
+  model: apiModel.Config,
   driveName: string,
   mountPath: string,
-): configModel.Partition | undefined {
+): apiModel.Partition | undefined {
   const drive = findDrive(model, driveName);
   if (drive === undefined) return undefined;
 
@@ -77,21 +78,27 @@ function findPartition(
   return partitions.find((p) => p.mountPath === mountPath);
 }
 
-function isBoot(model: configModel.Config, driveName: string): boolean {
+function isBoot(model: apiModel.Config, driveName: string): boolean {
   return model.boot?.configure && driveName === model.boot?.device?.name;
 }
 
-function isExplicitBoot(model: configModel.Config, driveName: string): boolean {
+function isExplicitBoot(model: apiModel.Config, driveName: string): boolean {
   return !model.boot?.device?.default && driveName === model.boot?.device?.name;
 }
 
-function allMountPaths(drive: configModel.Drive): string[] {
+function driveHasPv(model: apiModel.Config, name: string): boolean {
+  if (!name) return false;
+
+  return model.volumeGroups.flatMap((g) => g.targetDevices).includes(name);
+}
+
+function allMountPaths(drive: apiModel.Drive): string[] {
   if (drive.mountPath) return [drive.mountPath];
 
   return drive.partitions.map((p) => p.mountPath).filter((m) => m);
 }
 
-function configuredExistingPartitions(drive: configModel.Drive): configModel.Partition[] {
+function configuredExistingPartitions(drive: apiModel.Drive): apiModel.Partition[] {
   const allPartitions = drive.partitions || [];
 
   if (drive.spacePolicy === "custom")
@@ -102,10 +109,14 @@ function configuredExistingPartitions(drive: configModel.Drive): configModel.Par
   return allPartitions.filter((p) => isReusedPartition(p));
 }
 
-function setBoot(originalModel: configModel.Config, boot: configModel.Boot) {
+function setBoot(originalModel: apiModel.Config, boot: apiModel.Boot) {
   const model = copyModel(originalModel);
   const name = model.boot?.device?.name;
-  const remove = name !== undefined && isExplicitBoot(model, name) && !isUsedDrive(model, name);
+  const remove =
+    name !== undefined &&
+    isExplicitBoot(model, name) &&
+    !isUsedDrive(model, name) &&
+    !driveHasPv(model, name);
 
   if (remove) removeDrive(model, name);
 
@@ -113,7 +124,7 @@ function setBoot(originalModel: configModel.Config, boot: configModel.Boot) {
   return model;
 }
 
-function setBootDevice(originalModel: configModel.Config, deviceName: string): configModel.Config {
+function setBootDevice(originalModel: apiModel.Config, deviceName: string): apiModel.Config {
   return setBoot(originalModel, {
     configure: true,
     device: {
@@ -123,7 +134,7 @@ function setBootDevice(originalModel: configModel.Config, deviceName: string): c
   });
 }
 
-function setDefaultBootDevice(originalModel: configModel.Config): configModel.Config {
+function setDefaultBootDevice(originalModel: apiModel.Config): apiModel.Config {
   return setBoot(originalModel, {
     configure: true,
     device: {
@@ -132,31 +143,31 @@ function setDefaultBootDevice(originalModel: configModel.Config): configModel.Co
   });
 }
 
-function disableBoot(originalModel: configModel.Config): configModel.Config {
+function disableBoot(originalModel: apiModel.Config): apiModel.Config {
   return setBoot(originalModel, { configure: false });
 }
 
 function setEncryption(
-  originalModel: configModel.Config,
-  method: EncryptionMethod,
+  originalModel: apiModel.Config,
+  method: apiModel.EncryptionMethod,
   password: string,
-): configModel.Config {
+): apiModel.Config {
   const model = copyModel(originalModel);
   model.encryption = { method, password };
   return model;
 }
 
-function disableEncryption(originalModel: configModel.Config): configModel.Config {
+function disableEncryption(originalModel: apiModel.Config): apiModel.Config {
   const model = copyModel(originalModel);
   model.encryption = null;
   return model;
 }
 
 function deletePartition(
-  originalModel: configModel.Config,
+  originalModel: apiModel.Config,
   driveName: string,
   mountPath: string,
-): configModel.Config {
+): apiModel.Config {
   const model = copyModel(originalModel);
   const drive = findDrive(model, driveName);
   if (drive === undefined) return;
@@ -173,10 +184,10 @@ function deletePartition(
  * the partition is replaced.
  * */
 export function addPartition(
-  originalModel: configModel.Config,
+  originalModel: apiModel.Config,
   driveName: string,
-  partition: configModel.Partition,
-): configModel.Config {
+  partition: apiModel.Partition,
+): apiModel.Config {
   const model = copyModel(originalModel);
   const drive = findDrive(model, driveName);
   if (drive === undefined) return;
@@ -191,11 +202,11 @@ export function addPartition(
 }
 
 export function editPartition(
-  originalModel: configModel.Config,
+  originalModel: apiModel.Config,
   driveName: string,
   mountPath: string,
-  partition: configModel.Partition,
-): configModel.Config {
+  partition: apiModel.Partition,
+): apiModel.Config {
   const model = copyModel(originalModel);
   const drive = findDrive(model, driveName);
   const partitions = drive?.partitions || [];
@@ -208,10 +219,10 @@ export function editPartition(
 }
 
 function switchDrive(
-  originalModel: configModel.Config,
+  originalModel: apiModel.Config,
   driveName: string,
   newDriveName: string,
-): configModel.Config {
+): apiModel.Config {
   if (driveName === newDriveName) return;
 
   const model = copyModel(originalModel);
@@ -244,7 +255,7 @@ function switchDrive(
   return model;
 }
 
-function addDrive(originalModel: configModel.Config, driveName: string): configModel.Config {
+function addDrive(originalModel: apiModel.Config, driveName: string): apiModel.Config {
   if (findDrive(originalModel, driveName)) return;
 
   const model = copyModel(originalModel);
@@ -254,10 +265,10 @@ function addDrive(originalModel: configModel.Config, driveName: string): configM
 }
 
 function setCustomSpacePolicy(
-  originalModel: configModel.Config,
+  originalModel: apiModel.Config,
   driveName: string,
   actions: SpacePolicyAction[],
-): configModel.Config {
+): apiModel.Config {
   const model = copyModel(originalModel);
   const drive = findDrive(model, driveName);
   if (drive === undefined) return model;
@@ -297,11 +308,11 @@ function setCustomSpacePolicy(
 }
 
 function setSpacePolicy(
-  originalModel: configModel.Config,
+  originalModel: apiModel.Config,
   driveName: string,
-  spacePolicy: configModel.SpacePolicy,
+  spacePolicy: apiModel.SpacePolicy,
   actions?: SpacePolicyAction[],
-): configModel.Config {
+): apiModel.Config {
   if (spacePolicy === "custom")
     return setCustomSpacePolicy(originalModel, driveName, actions || []);
 
@@ -312,13 +323,16 @@ function setSpacePolicy(
   return model;
 }
 
-function usedMountPaths(model: configModel.Config): string[] {
-  if (!model.drives) return [];
+function usedMountPaths(model: apiModel.Config): string[] {
+  const drives = model.drives || [];
+  const volumeGroups = model.volumeGroups || [];
+  const logicalVolumes = volumeGroups.flatMap((v) => v.logicalVolumes || []);
 
-  return model.drives.flatMap(allMountPaths);
+  return [...drives, ...logicalVolumes].flatMap(allMountPaths);
 }
 
-function unusedMountPaths(model: configModel.Config, volumes: Volume[]): string[] {
+/** @depreacted Use useMissingMountPaths from ~/hooks/storage/product. */
+function unusedMountPaths(model: apiModel.Config, volumes: Volume[]): string[] {
   const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
   const assigned = usedMountPaths(model);
   return volPaths.filter((p) => !assigned.includes(p));
@@ -331,7 +345,7 @@ function unusedMountPaths(model: configModel.Config, volumes: Volume[]): string[
  *
  * TODO: Revisit when LVM support is added to the UI.
  */
-function hasAdditionalDrives(model: configModel.Config): boolean {
+function hasAdditionalDrives(model: apiModel.Config): boolean {
   if (model.drives.length <= 1) return false;
   if (model.drives.length > 2) return true;
 
@@ -345,17 +359,9 @@ function hasAdditionalDrives(model: configModel.Config): boolean {
   return !onlyToBoot;
 }
 
-const configModelQuery = {
-  queryKey: ["storage", "configModel"],
-  queryFn: fetchConfigModel,
-  staleTime: Infinity,
-};
-
-/**
- * Hook that returns the config model.
- */
-export function useConfigModel(options?: QueryHookOptions): configModel.Config {
-  const query = configModelQuery;
+/** @deprecated Use useApiModel from ~/hooks/storage/api-model. */
+export function useConfigModel(options?: QueryHookOptions): apiModel.Config {
+  const query = apiModelQuery;
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data;
@@ -367,18 +373,15 @@ export function useConfigModel(options?: QueryHookOptions): configModel.Config {
 export function useConfigModelMutation() {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (model: configModel.Config) => setConfigModel(model),
+    mutationFn: (model: apiModel.Config) => setConfigModel(model),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
   };
 
   return useMutation(query);
 }
 
-/**
- * @todo Use a hash key from the model object as id for the query.
- * Hook that returns the config model.
- */
-export function useSolvedConfigModel(model?: configModel.Config): configModel.Config | null {
+/** @deprecated Use useSolvedApiModel from ~/hooks/storage/api-model. */
+export function useSolvedConfigModel(model?: apiModel.Config): apiModel.Config | null {
   const query = useSuspenseQuery({
     queryKey: ["storage", "solvedConfigModel", JSON.stringify(model)],
     queryFn: () => (model ? solveConfigModel(model) : Promise.resolve(null)),
@@ -412,8 +415,8 @@ export function useBoot(): BootHook {
 }
 
 export type EncryptionHook = {
-  encryption?: configModel.Encryption;
-  enable: (method: EncryptionMethod, password: string) => void;
+  encryption?: apiModel.Encryption;
+  enable: (method: apiModel.EncryptionMethod, password: string) => void;
   disable: () => void;
 };
 
@@ -423,7 +426,7 @@ export function useEncryption(): EncryptionHook {
 
   return {
     encryption: model?.encryption,
-    enable: (method: EncryptionMethod, password: string) =>
+    enable: (method: apiModel.EncryptionMethod, password: string) =>
       mutate(setEncryption(model, method, password)),
     disable: () => mutate(disableEncryption(model)),
   };
@@ -432,14 +435,15 @@ export function useEncryption(): EncryptionHook {
 export type DriveHook = {
   isBoot: boolean;
   isExplicitBoot: boolean;
+  hasPv: boolean;
   allMountPaths: string[];
-  configuredExistingPartitions: configModel.Partition[];
+  configuredExistingPartitions: apiModel.Partition[];
   switch: (newName: string) => void;
-  getPartition: (mountPath: string) => configModel.Partition | undefined;
-  addPartition: (partition: configModel.Partition) => void;
-  editPartition: (mountPath: string, partition: configModel.Partition) => void;
+  getPartition: (mountPath: string) => apiModel.Partition | undefined;
+  addPartition: (partition: apiModel.Partition) => void;
+  editPartition: (mountPath: string, partition: apiModel.Partition) => void;
   deletePartition: (mountPath: string) => void;
-  setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
+  setSpacePolicy: (policy: apiModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
   delete: () => void;
 };
 
@@ -453,23 +457,23 @@ export function useDrive(name: string): DriveHook | null {
   return {
     isBoot: isBoot(model, name),
     isExplicitBoot: isExplicitBoot(model, name),
+    hasPv: driveHasPv(model, drive.name),
     allMountPaths: allMountPaths(drive),
     configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
     delete: () => mutate(removeDrive(model, name)),
     getPartition: (mountPath: string) => findPartition(model, name, mountPath),
-    addPartition: (partition: configModel.Partition) =>
-      mutate(addPartition(model, name, partition)),
-    editPartition: (mountPath: string, partition: configModel.Partition) =>
+    addPartition: (partition: apiModel.Partition) => mutate(addPartition(model, name, partition)),
+    editPartition: (mountPath: string, partition: apiModel.Partition) =>
       mutate(editPartition(model, name, mountPath, partition)),
     deletePartition: (mountPath: string) => mutate(deletePartition(model, name, mountPath)),
-    setSpacePolicy: (policy: configModel.SpacePolicy, actions?: SpacePolicyAction[]) =>
+    setSpacePolicy: (policy: apiModel.SpacePolicy, actions?: SpacePolicyAction[]) =>
       mutate(setSpacePolicy(model, name, policy, actions)),
   };
 }
 
 export type ModelHook = {
-  model: configModel.Config;
+  model: apiModel.Config;
   usedMountPaths: string[];
   unusedMountPaths: string[];
   // Hacky solution used to decide whether it makes sense to allow to remove drives

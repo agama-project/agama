@@ -56,6 +56,9 @@ module Agama
       # @return [String,nil] Base product
       attr_accessor :base_product
 
+      # @return [Array<String>] Addon products
+      attr_accessor :addon_products
+
       # @return [Array<String>] List of languages to install
       attr_reader :languages
 
@@ -67,6 +70,7 @@ module Agama
 
         @logger = logger || Logger.new($stdout)
         @base_product = nil
+        @addon_products = []
       end
 
       # Adds the given list of resolvables to the proposal
@@ -90,6 +94,7 @@ module Agama
         # select the base product after running the Packages.Proposal, the force_reset = true
         # option would reset the selection and a random product would be selected by the solver
         select_base_product
+        select_addon_products
         solve_dependencies
 
         valid?
@@ -176,6 +181,11 @@ module Agama
           logger.info "Selecting the base product '#{base_product.name}'"
           base_product&.select
         end
+      end
+
+      # select the addon products to install
+      def select_addon_products
+        addon_products.each { |a| Yast::Pkg.ResolvableInstall(a, :product) }
       end
 
       # Updates the issues from the attempt to create a proposal.

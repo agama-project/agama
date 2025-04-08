@@ -32,14 +32,20 @@ module Agama
     # @return [String]
     attr_reader :version
 
+    # The addon version was explicitly specified by the user or it was autodetected.
+    #
+    # @return [Boolean] true if explicitly specified by user, false when autodetected
+    attr_reader :required_version
+
     # Code used for registering the addon.
     #
     # @return [String] empty string if the registration code is not required
     attr_reader :reg_code
 
-    def initialize(name, version, reg_code = "")
+    def initialize(name, version, required_version, reg_code = "")
       @name = name
       @version = version
+      @required_version = required_version
       @reg_code = reg_code
     end
   end

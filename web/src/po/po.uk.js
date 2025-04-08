@@ -42,32 +42,14 @@ export default {
   "%s with %d partitions": [
     "%s з %d розділами"
   ],
-  "A generic minimum size of %s will be used for the new partition": [
-    "Для нового розділу буде використано типовий мінімальний розмір %s"
-  ],
-  "A generic size of %s will be used for the new partition": [
-    "Для нового розділу буде використано типовий розмір %s"
-  ],
-  "A generic size range between %1$s and %2$s will be used for the new partition": [
-    "Для нового розділу буде використано типовий діапазон розмірів між %1$s і %2$s"
-  ],
   "A partition may be deleted": [
     "Розділ може бути видалений"
   ],
   "A partition may be shrunk": [
     "Розділ може бути зменшений"
   ],
-  "A partition of %1$s will be created for %2$s": [
-    "Буде створено розділ %1$s для %2$s"
-  ],
-  "A partition of at least %1$s will be created for %2$s": [
-    "Для %2$s буде створено розділ розміром щонайменше %1$s"
-  ],
   "A partition will be deleted": [
     "Розділ буде видалений"
-  ],
-  "A partition with a size between %1$s and %2$s will be created for %3$s": [
-    "Для %3$s буде створено розділ розміром від %1$s до %2$s"
   ],
   "Accept": [
     "Прийняти"
@@ -117,6 +99,9 @@ export default {
   "Add another partition or mount an existing one": [
     "Додати новий розділ або змонтувати наявний"
   ],
+  "Add logical volume": [
+    ""
+  ],
   "Add or use partition": [
     "Створити або використати розділ"
   ],
@@ -138,11 +123,11 @@ export default {
   "All fields are required": [
     "Всі поля обов'язкові"
   ],
-  "Allows setting a permanent hostname that won’t change with network updates.": [
-    "Дозволяє встановити постійне ім'я хоста, яке не змінюватиметься при оновленні мережі."
-  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Крім зазначення першого користувача, можна налаштувати методи автентифікації для root-користувача."
+  ],
+  "Already using all available disks": [
+    ""
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Всі розділи буде видалено, а всі дані на диску буде втрачено."
@@ -194,15 +179,6 @@ export default {
   ],
   "Back": [
     "Назад"
-  ],
-  "Based on the amount of RAM in the system a partition of at least %1$s will be created for %2$s": [
-    "На основі обсягу оперативної пам'яті в системі буде створено розділ розміром не менше %1$s для %2$s"
-  ],
-  "Based on the amount of RAM in the system, a partition of %1$s will be created for %2$s": [
-    "На основі обсягу оперативної пам'яті в системі буде створено розділ %1$s для %2$s"
-  ],
-  "Based on the amount of RAM in the system, a partition with a size between %1$s and %2$s will be created for %3$s": [
-    "Виходячи з обсягу оперативної пам'яті в системі, для %3$s буде створено розділ розміром від %1$s до %2$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -261,6 +237,9 @@ export default {
   "Check the %d planned actions": [
     "Перевірити %d заплановані дії"
   ],
+  "Check the following before continuing": [
+    "Перш ніж продовжити, перевірте наступне"
+  ],
   "Choose a disk for placing the boot loader": [
     "Оберіть диск для розміщення завантажувача"
   ],
@@ -281,6 +260,9 @@ export default {
   ],
   "Configure DASD": [
     "Налаштувати DASD"
+  ],
+  "Configure LVM logical volume at %s volume group": [
+    ""
   ],
   "Configure iSCSI": [
     "Налаштувати iSCSI"
@@ -390,11 +372,14 @@ export default {
   "Define a custom size or a range": [
     "Вказати власний розмір або діапазон"
   ],
+  "Define a new LVM on the disk": [
+    ""
+  ],
+  "Define a new LVM on top of one or several disks": [
+    ""
+  ],
   "Define a user now": [
     "Вкажіть користувача"
-  ],
-  "Define partition at %s": [
-    "Вказати розділ на %s"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
     "Визначте першого користувача з правами адміністратора (sudo) для керування системою."
@@ -407,6 +392,9 @@ export default {
   ],
   "Delete current content": [
     "Видалити поточний вміст"
+  ],
+  "Delete the volume group and its logical volumes": [
+    ""
   ],
   "Destroy current data and format partition as": [
     "Знищити поточні дані і відформатувати розділ як"
@@ -500,6 +488,9 @@ export default {
   ],
   "Encryption settings": [
     "Налаштування шифрування"
+  ],
+  "Enter a hostname.": [
+    "Введіть ім'я хоста."
   ],
   "ExFAT": [
     "ExFAT"
@@ -607,9 +598,6 @@ export default {
   ],
   "Hostname": [
     "Ім'я хоста"
-  ],
-  "Hostname settings": [
-    "Налаштування імені хосту"
   ],
   "I have read and accept the [license] for %s": [
     "Я прочитав і приймаю [license] на %s"
@@ -818,14 +806,11 @@ export default {
   "Mode": [
     "Режим"
   ],
+  "Modify settings and physical volumes": [
+    ""
+  ],
   "More actions": [
     "Більше дій"
-  ],
-  "More options": [
-    "Більше налаштувань"
-  ],
-  "More options toggle": [
-    "Показати більше налаштувань"
   ],
   "Mount Point": [
     "Точка монтування"
@@ -841,6 +826,9 @@ export default {
   ],
   "Mount point toggle": [
     "Показати точку монтування"
+  ],
+  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+    ""
   ],
   "Multipath": [
     "Багатошляхове"
@@ -1018,9 +1006,6 @@ export default {
   ],
   "PiB": [
     "ПіБ"
-  ],
-  "Please provide a hostname": [
-    "Будь ласка, вкажіть ім'я хоста"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Будь ласка, скасуйте і перевірте налаштування, якщо Ви не впевнені."
@@ -1297,15 +1282,6 @@ export default {
   "The content may be deleted": [
     "Вміст може бути видалений"
   ],
-  "The current configuration will result in a partition of %s.": [
-    "Поточна конфігурація призведе до розділення %s."
-  ],
-  "The current configuration will result in a partition of at least %s.": [
-    "Поточна конфігурація призведе до створення розділу розміром щонайменше %s."
-  ],
-  "The current configuration will result in a partition with a size between %1$s and %2$s.": [
-    "Поточна конфігурація призведе до створення розділу розміром від %1$s до %2$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Дані зберігаються, але розмір поточних розділів буде змінено в міру необхідності."
   ],
@@ -1350,6 +1326,9 @@ export default {
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Мінімальне значення повинно бути числом, за яким може слідувати одиниця виміру, наприклад, GiB або GB"
+  ],
+  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
+    ""
   ],
   "The partition can grow to use all the contiguous free space": [
     "Розділ може розростатися, щоб використовувати весь суміжний вільний простір"
@@ -1441,11 +1420,8 @@ export default {
   "This device will contain the configured LVM groups and any partition needed to boot": [
     "Цей пристрій міститиме налаштовані групи LVM і будь-який розділ, необхідний для завантаження"
   ],
-  "This hostname is dynamic and may change after a reboot or network update.": [
-    "Це ім'я хоста є динамічним і може змінитися після перезавантаження або оновлення мережі."
-  ],
-  "This hostname is permanent and will not change unless manually updated.": [
-    "Це ім'я хоста є постійним і не зміниться, якщо його не буде оновлено вручну."
+  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
+    "Це ім'я хоста є динамічним і може змінитися після перезавантаження або оновлення мережі, як це налаштовано адміністратором локальної мережі."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Цей продукт не дозволяє вибирати шаблони програмного забезпечення під час інсталяції. Однак Ви можете додати додаткове програмне забезпечення після завершення інсталяції."
@@ -1519,9 +1495,6 @@ export default {
   "Use %s for additional partitions and booting": [
     "Використовувати %s для додаткових розділів і завантаження"
   ],
-  "Use %s to boot": [
-    "Використати %s для завантаження"
-  ],
   "Use %s to host LVM": [
     "Використати %s для розміщення LVM"
   ],
@@ -1539,12 +1512,6 @@ export default {
   ],
   "Use %s to install, host LVM and boot": [
     "Використати %s для встановлення, розміщення LVM та завантаження"
-  ],
-  "Use additional disk": [
-    "Використати додатковий диск"
-  ],
-  "Use additional disk toggle": [
-    "Використати додатковий перемикач дисків"
   ],
   "Use available space": [
     "Використати вільний простір"
@@ -1576,9 +1543,6 @@ export default {
   "Username suggestion dropdown": [
     "Спадний список із пропозицією імені користувача"
   ],
-  "Using %1$s hostname: %2$s": [
-    "Використати в %1$s назву хосту: %2$s"
-  ],
   "Using a hashed password.": [
     "Використовуючи хешований пароль."
   ],
@@ -1588,8 +1552,14 @@ export default {
   "Using partition %s": [
     "Використовуючи розділ %s"
   ],
+  "Using transient hostname: %s": [
+    "Використання перехідного імені хоста: %s"
+  ],
   "Visible Wi-Fi networks": [
     "Видимі мережі WiFi"
+  ],
+  "Volume group '%s' already exists. Enter a different name.": [
+    ""
   ],
   "WPA & WPA2 Personal": [
     "WPA і WPA2 Personal"
@@ -1656,12 +1626,6 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
-  ],
-  "static": [
-    "статичне"
-  ],
-  "transient": [
-    "перехідний"
   ],
   "zFCP": [
     "zFCP"

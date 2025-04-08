@@ -43,14 +43,17 @@ use std::path::Path;
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bootloader: Option<BootloaderSettings>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<UserFile>>,
     #[serde(default)]
     pub hostname: Option<HostnameSettings>,
     #[serde(default, flatten)]
     pub user: Option<UserSettings>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub software: Option<SoftwareSettings>,
     #[serde(default)]
     pub product: Option<ProductSettings>,
@@ -65,6 +68,7 @@ pub struct InstallSettings {
     #[serde(default)]
     pub localization: Option<LocalizationSettings>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
 }
 

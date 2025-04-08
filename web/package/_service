@@ -1,6 +1,6 @@
 <services>
   <service name="obs_scm" mode="manual">
-    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@</param>
+    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@.%h</param>
     <param name="versionrewrite-pattern">v(.*)</param>
     <!-- the URL is modified by the .github/workflows/obs-staging-shared.yml
     action when submitting to OBS -->

@@ -24,142 +24,60 @@ import React from "react";
 
 // NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
 // icons location. Check the tsconfig.json file to see its value.
-import AddAPhoto from "@icons/add_a_photo.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
-import ArrowRightAlt from "@icons/arrow_right_alt.svg?component";
-import Badge from "@icons/badge.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
-import ChevronRight from "@icons/chevron_right.svg?component";
-import CollapseAll from "@icons/collapse_all.svg?component";
 import Delete from "@icons/delete.svg?component";
-import Description from "@icons/description.svg?component";
-import Download from "@icons/download.svg?component";
-import Downloading from "@icons/downloading.svg?component";
-import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
-import Exclamation from "@icons/exclamation.svg?component";
-import ExpandAll from "@icons/expand_all.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
-import Feedback from "@icons/feedback.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
-import Folder from "@icons/folder.svg?component";
-import FolderOff from "@icons/folder_off.svg?component";
-import FrameInspect from "@icons/frame_inspect.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
-import Help from "@icons/help.svg?component";
-import HomeStorage from "@icons/home_storage.svg?component";
 import Info from "@icons/info.svg?component";
-import Inventory from "@icons/inventory_2.svg?component";
-import Keyboard from "@icons/keyboard.svg?component";
-import Lan from "@icons/lan.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
-import MenuOpen from "@icons/menu_open.svg?component";
 import MoreVert from "@icons/more_vert.svg?component";
-import Person from "@icons/person.svg?component";
-import Problem from "@icons/problem.svg?component";
-import Refresh from "@icons/refresh.svg?component";
-import Schedule from "@icons/schedule.svg?component";
-import SettingsApplications from "@icons/settings_applications.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
-import SettingsFill from "@icons/settings-fill.svg?component";
-import Shadow from "@icons/shadow.svg?component";
-import ShieldLock from "@icons/shield_lock.svg?component";
 import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
-import Storage from "@icons/storage.svg?component";
-import Sync from "@icons/sync.svg?component";
-import TaskAlt from "@icons/task_alt.svg?component";
-import Terminal from "@icons/terminal.svg?component";
-import ToggleOff from "@icons/toggle_off.svg?component";
-import ToggleOn from "@icons/toggle_on.svg?component";
-import Translate from "@icons/translate.svg?component";
-import Tune from "@icons/tune.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
 import Wifi from "@icons/wifi.svg?component";
-import WifiFind from "@icons/wifi_find.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
 
-// Icons from react-simple-icons
-
-import { SiLinux } from "@icons-pack/react-simple-icons";
-
 const icons = {
-  add_a_photo: AddAPhoto,
   apps: Apps,
   app_registration: AppRegistration,
-  arrow_right_alt: ArrowRightAlt,
-  badge: Badge,
   backspace: Backspace,
   check_circle: CheckCircle,
-  chevron_right: ChevronRight,
-  collapse_all: CollapseAll,
   delete: Delete,
-  description: Description,
-  download: Download,
-  downloading: Downloading,
-  edit: Edit,
   edit_square: EditSquare,
   error: Error,
   error_fill: ErrorFill,
-  exclamation: Exclamation,
-  expand_all: ExpandAll,
   expand_circle_down: ExpandCircleDown,
-  feedback: Feedback,
   fingerprint: Fingerprint,
-  folder: Folder,
-  folder_off: FolderOff,
-  frame_inspect: FrameInspect,
   globe: Globe,
   hard_drive: HardDrive,
-  help: Help,
-  home_storage: HomeStorage,
   info: Info,
-  inventory_2: Inventory,
-  keyboard: Keyboard,
   keyboard_arrow_down: KeyboardArrowDown,
-  lan: Lan,
   list_alt: ListAlt,
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,
-  menu_open: MenuOpen,
   more_vert: MoreVert,
-  person: Person,
-  problem: Problem,
-  refresh: Refresh,
-  schedule: Schedule,
-  settings: SettingsFill,
-  settings_applications: SettingsApplications,
   settings_ethernet: SettingsEthernet,
-  shadow: Shadow,
-  shield_lock: ShieldLock,
   signal_cellular_alt: SignalCellularAlt,
-  storage: Storage,
-  sync: Sync,
-  task_alt: TaskAlt,
-  terminal: Terminal,
-  toggle_off: ToggleOff,
-  toggle_on: ToggleOn,
-  translate: Translate,
-  tune: Tune,
   visibility: Visibility,
   visibility_off: VisibilityOff,
   warning: Warning,
   wifi: Wifi,
-  wifi_find: WifiFind,
   wifi_off: WifiOff,
-  // brand icons
-  linux_logo: SiLinux,
 };
 
 export type IconProps = React.SVGAttributes<SVGElement> & {

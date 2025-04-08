@@ -1,4 +1,30 @@
 -------------------------------------------------------------------
+Thu Apr  3 08:28:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Workaround for a not working file picker in local installation
+  (gh#agama-project/agama#2243)
+
+-------------------------------------------------------------------
+Wed Apr  2 05:47:01 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "agama download" to fetch the info file (gh#agama-project/agama#2176).
+
+-------------------------------------------------------------------
+Mon Mar 31 13:06:53 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Print also the IPv6 installer URLs in the console (bsc#1240197)
+
+-------------------------------------------------------------------
+Thu Mar 27 15:56:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Version 14pre
+
+-------------------------------------------------------------------
+Thu Mar 27 12:40:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 13
+
+-------------------------------------------------------------------
 Tue Mar 25 13:28:15 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
 
 - live/src/agama-installer.kiwi: Adapt to latest patterns (SR#364982)

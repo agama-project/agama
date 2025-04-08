@@ -61,8 +61,24 @@
         "stopOnBootMenu": {
           "title": "Specify if bootloader should stop on menu during boot.",
           "type": "boolean"
+        },
+        "timeout": {
+          "title": "Specify how long bootloader should wait on menu before going with default entry.",
+          "type": "integer",
+          "minimum": 0
         }
-      }
+      },
+      "oneOf": [
+        { "required": [ "stopOnBootMenu" ]},
+        { "required": [ "timeout" ]},
+        { "not": {
+          "anyOf": [
+            { "required": [ "stopOnBootMenu" ]},
+            { "required": [ "timeout" ]}
+          ]
+        }}
+
+      ]
     },
     "hostname": {
       "title": "Hostname settings",

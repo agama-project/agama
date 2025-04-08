@@ -24,6 +24,7 @@
   { "key": "groups", "support": "no" },
   { "key": "host", "support": "no" },
   { "key": "http-server", "support": "no" },
+  { "key": "kdump", "support": "planned" },
   {
     "key": "keyboard",
     "children": [
@@ -261,7 +262,7 @@
             "agama": "scripts.pre[].name"
           },
           { "key": "location", "support": "yes", "agama": "scripts.pre[].url" },
-          { "key": "source", "support": "yes", "agama": "scripts.pre[].body" },
+          { "key": "source", "support": "yes", "agama": "scripts.pre[].content" },
           {
             "key": "interpreter",
             "support": "no",
@@ -291,7 +292,7 @@
           {
             "key": "source",
             "support": "yes",
-            "agama": "scripts.postPartitioning[].body"
+            "agama": "scripts.postPartitioning[].content"
           },
           {
             "key": "interpreter",
@@ -323,7 +324,7 @@
           {
             "key": "source",
             "support": "yes",
-            "agama": "scripts.chroot[].body"
+            "agama": "scripts.chroot[].content"
           },
           {
             "key": "interpreter",
@@ -352,7 +353,7 @@
             "support": "yes",
             "agama": "scripts.init[].url"
           },
-          { "key": "source", "support": "yes", "agama": "scripts.init[].body" },
+          { "key": "source", "support": "yes", "agama": "scripts.init[].content" },
           {
             "key": "interpreter",
             "support": "no",
@@ -380,7 +381,7 @@
             "support": "yes",
             "agama": "scripts.init[].url"
           },
-          { "key": "source", "support": "yes", "agama": "scripts.init[].body" },
+          { "key": "source", "support": "yes", "agama": "scripts.init[].content" },
           { "key": "rerun", "support": "no" }
         ]
       }

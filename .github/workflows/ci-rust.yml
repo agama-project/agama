@@ -113,6 +113,8 @@ jobs:
       # ignore errors in this step
       continue-on-error: true
       uses: coverallsapp/github-action@v2
+      # ignore errors in this step
+      continue-on-error: true
       with:
         base-path: ./rust
         format: cobertura
@@ -126,6 +128,8 @@ jobs:
       # ignore errors in this step
       continue-on-error: true
       uses: coverallsapp/github-action@v2
+      # ignore errors in this step
+      continue-on-error: true
       with:
         parallel-finished: true
         carryforward: "service,web"

@@ -347,6 +347,34 @@ fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
     if let Some(gateway) = &ip_config.gateway4 {
         ipv4_dbus.insert("gateway", gateway.to_string().into());
     }
+
+    if let Some(dhcp4_settings) = &ip_config.dhcp4_settings {
+        ipv4_dbus.insert("dhcp-send-hostname", dhcp4_settings.send_hostname.into());
+        let dhcp_send_release = match dhcp4_settings.send_release {
+            Some(send_release) => {
+                if send_release {
+                    1
+                } else {
+                    0
+                }
+            }
+            None => -1,
+        };
+        ipv4_dbus.insert("dhcp-send-release", dhcp_send_release.into());
+        if let Some(hostname) = &dhcp4_settings.hostname {
+            ipv4_dbus.insert("dhcp-hostname", hostname.into());
+        }
+        if dhcp4_settings.client_id != DhcpClientId::Unset {
+            ipv4_dbus.insert(
+                "dhcp-client-id",
+                dhcp4_settings.client_id.to_string().into(),
+            );
+        }
+        if dhcp4_settings.iaid != DhcpIaid::Unset {
+            ipv4_dbus.insert("dhcp-iaid", dhcp4_settings.iaid.to_string().into());
+        }
+    }
+
     ipv4_dbus
 }
 
@@ -395,6 +423,35 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
     if let Some(gateway) = &ip_config.gateway6 {
         ipv6_dbus.insert("gateway", gateway.to_string().into());
     }
+
+    if let Some(ip6_privacy) = &ip_config.ip6_privacy {
+        ipv6_dbus.insert("ip6-privacy", ip6_privacy.into());
+    }
+
+    if let Some(dhcp6_settings) = &ip_config.dhcp6_settings {
+        ipv6_dbus.insert("dhcp-send-hostname", dhcp6_settings.send_hostname.into());
+        let dhcp_send_release = match dhcp6_settings.send_release {
+            Some(send_release) => {
+                if send_release {
+                    1
+                } else {
+                    0
+                }
+            }
+            None => -1,
+        };
+        ipv6_dbus.insert("dhcp-send-release", dhcp_send_release.into());
+        if let Some(hostname) = &dhcp6_settings.hostname {
+            ipv6_dbus.insert("dhcp-hostname", hostname.into());
+        }
+        if dhcp6_settings.duid != DhcpDuid::Unset {
+            ipv6_dbus.insert("dhcp-duid", dhcp6_settings.duid.to_string().into());
+        }
+        if dhcp6_settings.iaid != DhcpIaid::Unset {
+            ipv6_dbus.insert("dhcp-iaid", dhcp6_settings.iaid.to_string().into());
+        }
+    }
+
     ipv6_dbus
 }
 
@@ -762,6 +819,26 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
         if let Ok(gateway) = get_property::<String>(ipv4, "gateway") {
             ip_config.gateway4 = gateway.parse().ok();
         }
+
+        let mut dhcp4_settings = Dhcp4Settings::default();
+        if let Some(dhcp_send_hostname) = get_optional_property(ipv4, "dhcp-send-hostname")? {
+            dhcp4_settings.send_hostname = dhcp_send_hostname;
+        }
+        if let Some(dhcp_send_release) = get_optional_property::<i32>(ipv4, "dhcp-send-release")? {
+            dhcp4_settings.send_release = match dhcp_send_release {
+                -1 => None,
+                0 => Some(false),
+                _ => Some(true),
+            };
+        }
+        if let Some(dhcp_hostname) = get_optional_property(ipv4, "dhcp-hostname")? {
+            dhcp4_settings.hostname = Some(dhcp_hostname);
+        }
+        dhcp4_settings.client_id = get_optional_property::<String>(ipv4, "dhcp-client-id")?.into();
+        dhcp4_settings.iaid = get_optional_property::<String>(ipv4, "dhcp-iaid")?.into();
+        if dhcp4_settings != Dhcp4Settings::default() {
+            ip_config.dhcp4_settings = Some(dhcp4_settings);
+        }
     }
 
     if let Some(ipv6) = conn.get("ipv6") {
@@ -800,6 +877,30 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
 
         if let Ok(gateway) = get_property::<String>(ipv6, "gateway") {
             ip_config.gateway6 = gateway.parse().ok();
+        }
+
+        if let Some(ip6_privacy) = get_optional_property(ipv6, "ip6-privacy")? {
+            ip_config.ip6_privacy = Some(ip6_privacy);
+        }
+
+        let mut dhcp6_settings = Dhcp6Settings::default();
+        if let Some(dhcp_send_hostname) = get_optional_property(ipv6, "dhcp-send-hostname")? {
+            dhcp6_settings.send_hostname = dhcp_send_hostname;
+        }
+        if let Some(dhcp_send_release) = get_optional_property::<i32>(ipv6, "dhcp-send-release")? {
+            dhcp6_settings.send_release = match dhcp_send_release {
+                -1 => None,
+                0 => Some(false),
+                _ => Some(true),
+            };
+        }
+        if let Some(dhcp_hostname) = get_optional_property(ipv6, "dhcp-hostname")? {
+            dhcp6_settings.hostname = Some(dhcp_hostname);
+        }
+        dhcp6_settings.duid = get_optional_property::<String>(ipv6, "dhcp-duid")?.into();
+        dhcp6_settings.iaid = get_optional_property::<String>(ipv6, "dhcp-iaid")?.into();
+        if dhcp6_settings != Dhcp6Settings::default() {
+            ip_config.dhcp6_settings = Some(dhcp6_settings);
         }
     }
 
@@ -1243,6 +1344,11 @@ mod test {
             hi("dns-search", vec!["suse.com", "example.com"])?,
             hi("ignore-auto-dns", true)?,
             hi("route-data", route_v4_data)?,
+            hi("dhcp-send-hostname", true)?,
+            hi("dhcp-hostname", "workstation.example.com")?,
+            hi("dhcp-send-release", -1)?,
+            hi("dhcp-client-id", "ipv6-duid")?,
+            hi("dhcp-iaid", "ifname")?,
         ]);
 
         let address_v6_data = vec![HashMap::from([
@@ -1264,6 +1370,10 @@ mod test {
             hi("dns-data", vec!["::ffff:c0a8:102"])?,
             hi("dns-search", vec!["suse.com", "suse.de"])?,
             hi("route-data", route_v6_data)?,
+            hi("dhcp-send-hostname", false)?,
+            hi("dhcp-send-release", 1)?,
+            hi("dhcp-duid", "llt")?,
+            hi("dhcp-iaid", "12:34:56:78")?,
         ]);
 
         let match_section = HashMap::from([hi("kernel-command-line", vec!["pci-0000:00:19.0"])?]);
@@ -1327,6 +1437,25 @@ mod test {
             }]
         );
         assert!(!connection.autoconnect);
+
+        assert!(ip_config.dhcp4_settings.is_some());
+        let dhcp4_settings = ip_config.dhcp4_settings.unwrap();
+        assert!(dhcp4_settings.send_hostname);
+        assert_eq!(
+            dhcp4_settings.hostname,
+            Some("workstation.example.com".to_string())
+        );
+        assert_eq!(dhcp4_settings.send_release, None);
+        assert_eq!(dhcp4_settings.client_id, DhcpClientId::Ipv6Duid);
+        assert_eq!(dhcp4_settings.iaid, DhcpIaid::Ifname);
+
+        assert!(ip_config.dhcp6_settings.is_some());
+        let dhcp6_settings = ip_config.dhcp6_settings.unwrap();
+        assert!(!dhcp6_settings.send_hostname);
+        assert_eq!(dhcp6_settings.hostname, None);
+        assert_eq!(dhcp6_settings.send_release, Some(true));
+        assert_eq!(dhcp6_settings.duid, DhcpDuid::Llt);
+        assert_eq!(dhcp6_settings.iaid, DhcpIaid::Id("12:34:56:78".to_string()));
 
         Ok(())
     }
@@ -1906,6 +2035,18 @@ mod test {
                 metric: Some(100),
             }],
             dns_searchlist: vec!["suse.com".to_string(), "suse.de".to_string()],
+            dhcp4_settings: Some(Dhcp4Settings {
+                send_hostname: true,
+                hostname: Some("workstation.suse.com".to_string()),
+                send_release: Some(false),
+                client_id: DhcpClientId::Duid,
+                iaid: DhcpIaid::Stable,
+            }),
+            dhcp6_settings: Some(Dhcp6Settings {
+                send_release: None,
+                duid: DhcpDuid::StableLl,
+                ..Default::default()
+            }),
             ..Default::default()
         };
         let mac_address = MacAddress::from_str("FD:CB:A9:87:65:43").unwrap();
@@ -1989,6 +2130,32 @@ mod test {
             .unwrap()
             .downcast_ref::<bool>()
             .unwrap());
+        let send_hostname: bool = ipv4_dbus
+            .get("dhcp-send-hostname")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert!(send_hostname);
+        let hostname: String = ipv4_dbus
+            .get("dhcp-hostname")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(hostname, "workstation.suse.com".to_string());
+        let send_release: i32 = ipv4_dbus
+            .get("dhcp-send-release")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(send_release, 0);
+        let client_id: String = ipv4_dbus
+            .get("dhcp-client-id")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(client_id, "duid".to_string());
+        let iaid: String = ipv4_dbus.get("dhcp-iaid").unwrap().downcast_ref().unwrap();
+        assert_eq!(iaid, "stable".to_string());
 
         let ipv6_dbus = conn_dbus.get("ipv6").unwrap();
         let gateway6: &str = ipv6_dbus.get("gateway").unwrap().downcast_ref().unwrap();
@@ -2031,5 +2198,21 @@ mod test {
             .unwrap()
             .downcast_ref::<bool>()
             .unwrap());
+        let send_hostname: bool = ipv6_dbus
+            .get("dhcp-send-hostname")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert!(send_hostname);
+        assert!(ipv6_dbus.get("dhcp-hostname").is_none());
+        let send_release: i32 = ipv6_dbus
+            .get("dhcp-send-release")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(send_release, -1);
+        let client_id: String = ipv6_dbus.get("dhcp-duid").unwrap().downcast_ref().unwrap();
+        assert_eq!(client_id, "stable-ll".to_string());
+        assert!(ipv6_dbus.get("dhcp-iaid").is_none());
     }
 }

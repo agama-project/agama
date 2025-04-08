@@ -54,17 +54,17 @@ export default function ConfigEditorMenu() {
         <MenuToggle
           ref={toggleRef}
           onClick={toggle}
-          aria-label={_("More options toggle")}
+          aria-label={_("Other options toggle")}
           isExpanded={isOpen}
         >
-          {_("More options")}
+          {_("Other options")}
         </MenuToggle>
       )}
     >
       <DropdownList>
         <DropdownItem
           key="boot-link"
-          onClick={() => navigate(PATHS.bootDevice)}
+          onClick={() => navigate(PATHS.editBootDevice)}
           description={_("Select the disk to configure partitions for booting")}
         >
           {_("Change boot options")}

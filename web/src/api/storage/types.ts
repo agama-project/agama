@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import * as config from "./types/config";
-import * as configModel from "./types/config-model";
-
 export * from "./types/openapi";
-export { config, configModel };
+export * as config from "./types/config";
+export * as apiModel from "./types/model";

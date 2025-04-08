@@ -30,6 +30,8 @@ import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import PartitionPage from "~/components/storage/PartitionPage";
+import LvmPage from "~/components/storage/LvmPage";
+import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
@@ -46,24 +48,40 @@ const routes = (): Route => ({
       element: <ProposalPage />,
     },
     {
-      path: PATHS.bootDevice,
+      path: PATHS.editBootDevice,
       element: <BootSelection />,
     },
     {
-      path: PATHS.encryption,
+      path: PATHS.editEncryption,
       element: <EncryptionSettingsPage />,
     },
     {
-      path: PATHS.findSpace,
+      path: PATHS.drive.editSpacePolicy,
       element: <SpacePolicySelection />,
     },
     {
-      path: PATHS.addPartition,
+      path: PATHS.drive.partition.add,
       element: <PartitionPage />,
     },
     {
-      path: PATHS.editPartition,
+      path: PATHS.drive.partition.edit,
       element: <PartitionPage />,
+    },
+    {
+      path: PATHS.volumeGroup.add,
+      element: <LvmPage />,
+    },
+    {
+      path: PATHS.volumeGroup.edit,
+      element: <LvmPage />,
+    },
+    {
+      path: PATHS.volumeGroup.logicalVolume.add,
+      element: <LogicalVolumePage />,
+    },
+    {
+      path: PATHS.volumeGroup.logicalVolume.edit,
+      element: <LogicalVolumePage />,
     },
     {
       path: PATHS.iscsi,

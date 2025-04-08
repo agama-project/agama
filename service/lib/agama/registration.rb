@@ -24,10 +24,14 @@ require "yast"
 require "ostruct"
 require "suse/connect"
 require "y2packager/new_repository_setup"
+require "y2packager/resolvable"
+
 require "agama/cmdline_args"
+require "agama/errors"
 require "agama/registered_addon"
 
 Yast.import "Arch"
+Yast.import "Pkg"
 
 module Agama
   # Handles everything related to registration of system to SCC, RMT or similar.
@@ -87,13 +91,8 @@ module Agama
       # TODO: check if we can do it in memory for libzypp
       SUSE::Connect::YaST.create_credentials_file(@login, @password, GLOBAL_CREDENTIALS_PATH)
 
-      target_product = OpenStruct.new(
-        arch:       Yast::Arch.rpm_arch,
-        identifier: product.id,
-        version:    product.version || "1.0"
-      )
       activate_params = {}
-      service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
+      service = SUSE::Connect::YaST.activate_product(base_target_product, activate_params, email)
       process_service(service)
 
       @reg_code = code
@@ -102,25 +101,36 @@ module Agama
     end
 
     def register_addon(name, version, code)
-      if @registered_addons.any? { |a| a.name == name && a.version == version }
-        @logger.info "Addon #{name}-#{version} already registered, skipping registration"
+      register_version = if version.empty?
+        # version is not specified, find it automatically
+        find_addon_version(name)
+      else
+        # use the explicitly required version
+        version
+      end
+
+      if @registered_addons.any? { |a| a.name == name && a.version == register_version }
+        @logger.info "Addon #{name}-#{register_version} already registered, skipping registration"
         return
       end
 
-      @logger.info "Registering addon #{name}-#{version}"
+      @logger.info "Registering addon #{name}-#{register_version}"
       # do not log the code, but at least log if it is empty
       @logger.info "Using empty registration code" if code.empty?
 
       target_product = OpenStruct.new(
         arch:       Yast::Arch.rpm_arch,
         identifier: name,
-        version:    version
+        version:    register_version
       )
       activate_params = { token: code }
       service = SUSE::Connect::YaST.activate_product(target_product, activate_params, @email)
       process_service(service)
 
-      @registered_addons << RegisteredAddon.new(name, version, code)
+      @registered_addons << RegisteredAddon.new(name, register_version, !version.empty?, code)
+      # select the products to install
+      @software.addon_products(find_addon_products)
+
       run_on_change_callbacks
     end
 
@@ -140,7 +150,11 @@ module Agama
         Y2Packager::NewRepositorySetup.instance.services.delete(service.name)
         @software.remove_service(service)
       end
+
+      # reset
+      @software.addon_products([])
       @services = []
+      @available_addons = nil
 
       reg_params = connect_params(token: reg_code, email: email)
       SUSE::Connect::YaST.deactivate_system(reg_params)
@@ -253,6 +267,99 @@ module Agama
       end
       Y2Packager::NewRepositorySetup.instance.add_service(service.name)
       @software.add_service(service)
+    end
+
+    # Find all addon products
+    #
+    # @return [Array<String>] names of the products
+    def find_addon_products
+      # find all repositories for registered addons (their services)
+      addon_repos = @services.reduce([]) do |acc, service|
+        # skip the first service, it belongs to the base product
+        next acc if service == @services.first
+
+        acc.concat(service_repos(service))
+      end
+
+      # find all products from those repositories
+      products = Y2Packager::Resolvable.find(kind: :product)
+      products.select! do |product|
+        addon_repos.any? { |addon_repo| product.source == addon_repo["SrcId"] }
+      end
+
+      products.map!(&:name)
+      @logger.info "Addon products to install: #{products}"
+
+      products
+    end
+
+    # Find all repositories belonging to a service.
+    #
+    # @param product_service [OpenStruct] repository service from suseconnect
+    #
+    # @return [Array<Hash>] repository data as returned by the Pkg.SourceGeneralData
+    #   call, additionally with the "SrcId" key
+    def service_repos(product_service)
+      @logger.info "product_service: #{product_service.inspect}"
+      repo_data = Yast::Pkg.SourceGetCurrent(false).map { |repo| repository_data(repo) }
+
+      service_name = product_service.name
+      # select only repositories belonging to the product services
+      repos = repo_data.select { |repo| service_name == repo["service"] }
+      @logger.info "Service #{service_name.inspect} repositories: #{repos}"
+
+      repos
+    end
+
+    # Get repository data
+    # @param [Fixnum] repo repository ID
+    # @return [Hash] repository properties, including the repository ID ("SrcId" key)
+    def repository_data(repo)
+      data = Yast::Pkg.SourceGeneralData(repo)
+      data["SrcId"] = repo
+      data
+    end
+
+    # Get the available addons for the specified base product.
+    #
+    # @note The result is bound to the registration code used for the base product, the result
+    # might be different for different codes. E.g. the Alpha/Beta extensions might or might not
+    # be included in the list.
+    def available_addons
+      return @available_addons if @available_addons
+
+      @available_addons = SUSE::Connect::YaST.show_product(base_target_product,
+        connect_params).extensions
+      @logger.info "Available addons: #{available_addons.inspect}"
+      @available_addons
+    end
+
+    # Find the version for the specified addon, if none if multiple addons with the same name
+    # are found an exception is thrown.
+    #
+    # @return [String] the addon version, e.g. "16.0"
+    def find_addon_version(name)
+      raise Errors::Registration::ExtensionNotFound, name unless available_addons
+
+      requested_addons = available_addons.select { |a| a.identifier == name }
+      case requested_addons.size
+      when 0
+        raise Errors::Registration::ExtensionNotFound, name
+      when 1
+        requested_addons.first.version
+      else
+        raise Errors::Registration::MultipleExtensionsFound.new(name,
+          requested_addons.map(&:version))
+      end
+    end
+
+    # Construct the base product data for sending to the server
+    def base_target_product
+      OpenStruct.new(
+        arch:       Yast::Arch.rpm_arch,
+        identifier: product.id,
+        version:    product.version || "1.0"
+      )
     end
   end
 end

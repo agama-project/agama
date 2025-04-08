@@ -85,8 +85,6 @@ software:
     - mail_server
     - printing
     - gnome
-    # displayed only after registering the HA extension
-    - ha_sles
   mandatory_packages:
     - NetworkManager
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model

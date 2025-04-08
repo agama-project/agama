@@ -20,20 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useRef, useState } from "react";
+import React from "react";
 import { useNavigate, generatePath } from "react-router-dom";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
 import { useAvailableDevices } from "~/queries/storage";
-import { configModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive, useModel } from "~/queries/storage/config-model";
+import { useDrive as useDriveModel } from "~/hooks/storage/drive";
 import * as driveUtils from "~/components/storage/utils/drive";
-import * as partitionUtils from "~/components/storage/utils/partition";
 import { contentDescription } from "~/components/storage/utils/device";
-import { Icon } from "../layout";
+import DeviceMenu from "~/components/storage/DeviceMenu";
+import DeviceHeader from "~/components/storage/DeviceHeader";
+import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { MenuHeader } from "~/components/core";
 import MenuDeviceDescription from "./MenuDeviceDescription";
 import {
@@ -45,33 +47,14 @@ import {
   Flex,
   Label,
   Split,
-  Menu,
-  MenuContainer,
-  MenuContent,
   MenuItem,
-  MenuItemAction,
   MenuList,
-  MenuToggle,
-  MenuToggleProps,
-  MenuToggleElement,
   MenuGroup,
 } from "@patternfly/react-core";
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-export type DriveEditorProps = { drive: configModel.Drive; driveDevice: StorageDevice };
-
-export const InlineMenuToggle = React.forwardRef(
-  (props: MenuToggleProps, ref: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      icon={<Icon name="keyboard_arrow_down" />}
-      innerRef={ref}
-      variant="plain"
-      className="agm-inline-menu-toggle"
-      {...props}
-    />
-  ),
-);
+export type DriveEditorProps = { drive: apiModel.Drive; driveDevice: StorageDevice };
 
 // FIXME: Presentation is quite poor
 const SpacePolicySelectorIntro = ({ device }) => {
@@ -97,18 +80,13 @@ const SpacePolicySelectorIntro = ({ device }) => {
 };
 
 const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
-  const menuRef = useRef();
-  const toggleMenuRef = useRef();
-  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { setSpacePolicy } = useDrive(drive.name);
-  const onToggle = () => setIsOpen(!isOpen);
-  const onSpacePolicyChange = (spacePolicy: configModel.SpacePolicy) => {
+  const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generatePath(PATHS.findSpace, { id: baseName(drive.name) }));
+      return navigate(generatePath(PATHS.drive.editSpacePolicy, { id: baseName(drive.name) }));
     } else {
       setSpacePolicy(spacePolicy);
-      setIsOpen(false);
     }
   };
 
@@ -132,41 +110,30 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   };
 
   return (
-    <MenuContainer
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-      toggleRef={toggleMenuRef}
-      toggle={
-        <InlineMenuToggle ref={toggleMenuRef} onClick={onToggle} isExpanded={isOpen}>
-          <span>{driveUtils.contentActionsDescription(drive)}</span>
-        </InlineMenuToggle>
-      }
-      menuRef={menuRef}
-      menu={
-        <Menu ref={menuRef} activeItemId={currentPolicy.id}>
-          <MenuContent>
-            <MenuGroup label={<SpacePolicySelectorIntro device={driveDevice} />}>
-              <MenuList>
-                <Divider />
-                {SPACE_POLICIES.map((policy) => (
-                  <PolicyItem key={policy.id} policy={policy} />
-                ))}
-              </MenuList>
-            </MenuGroup>
-          </MenuContent>
-        </Menu>
-      }
-    />
+    <DeviceMenu
+      title={<span>{driveUtils.contentActionsDescription(drive)}</span>}
+      activeItemId={currentPolicy.id}
+    >
+      <MenuGroup label={<SpacePolicySelectorIntro device={driveDevice} />}>
+        <MenuList>
+          <Divider />
+          {SPACE_POLICIES.map((policy) => (
+            <PolicyItem key={policy.id} policy={policy} />
+          ))}
+        </MenuList>
+      </MenuGroup>
+    </DeviceMenu>
   );
 };
 
-const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
+const SearchSelectorIntro = ({ drive }: { drive: apiModel.Drive }) => {
+  /** @todo Replace the useDrive hook from /queries by the hook from /hooks. */
+  const volumeGroups = useDriveModel(drive.name)?.getVolumeGroups() || [];
   const driveModel = useDrive(drive.name);
   if (!driveModel) return;
 
-  const { isBoot, isExplicitBoot } = driveModel;
-  // TODO: Get volume groups associated to the drive.
-  const volumeGroups = [];
+  const { isBoot, isExplicitBoot, hasPv } = driveModel;
+  const vgName = volumeGroups[0]?.vgName;
 
   const mainText = (): string => {
     if (driveUtils.hasReuse(drive)) {
@@ -176,7 +143,7 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
 
     if (!driveUtils.hasFilesystem(drive)) {
       // The current device will be the only option to choose from
-      if (driveUtils.hasPv(drive)) {
+      if (hasPv) {
         if (volumeGroups.length > 1) {
           if (isExplicitBoot) {
             return _(
@@ -189,12 +156,12 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
           return sprintf(
             // TRANSLATORS: %s is the name of the LVM
             _("This device will contain the LVM group '%s' and any partition needed to boot"),
-            volumeGroups[0],
+            vgName,
           );
         }
 
         // TRANSLATORS: %s is the name of the LVM
-        return sprintf(_("This device will contain the LVM group '%s'"), volumeGroups[0]);
+        return sprintf(_("This device will contain the LVM group '%s'"), vgName);
       }
 
       // The current device will be the only option to choose from
@@ -229,7 +196,7 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
 
     const name = baseName(drive.name);
 
-    if (driveUtils.hasPv(drive)) {
+    if (hasPv) {
       if (volumeGroups.length > 1) {
         if (isExplicitBoot) {
           return sprintf(
@@ -248,15 +215,15 @@ const SearchSelectorIntro = ({ drive }: { drive: configModel.Drive }) => {
           // TRANSLATORS: %1$s is the name of the disk (eg. sda) and %2$s the name of the LVM
           _("%1$s will still contain the LVM group '%2$s' and any partition needed to boot"),
           name,
-          volumeGroups[0],
+          vgName,
         );
       }
 
       return sprintf(
         // TRANSLATORS: %1$s is the name of the LVM and %2$s the name of the disk (eg. sda)
         _("The LVM group '%1$s' will remain at %2$s"),
+        vgName,
         name,
-        volumeGroups[0],
       );
     }
 
@@ -352,13 +319,13 @@ const SearchSelectorOptions = ({ drive, selected, onChange }) => {
   const driveModel = useDrive(drive.name);
   if (!driveModel) return;
 
-  const { isExplicitBoot } = driveModel;
+  const { isExplicitBoot, hasPv } = driveModel;
   // const boot = isExplicitBoot(drive.name);
 
   if (driveUtils.hasReuse(drive)) return <SearchSelectorSingleOption selected={selected} />;
 
   if (!driveUtils.hasFilesystem(drive)) {
-    if (driveUtils.hasPv(drive) || isExplicitBoot) {
+    if (hasPv || isExplicitBoot) {
       return <SearchSelectorSingleOption selected={selected} />;
     }
 
@@ -384,7 +351,7 @@ const RemoveDriveOption = ({ drive }) => {
 
   if (!driveModel) return;
 
-  const { isExplicitBoot, delete: deleteDrive } = driveModel;
+  const { isExplicitBoot, hasPv, delete: deleteDrive } = driveModel;
 
   // When no additional drives has been added, the "Do not use" button can be confusing so it is
   // omitted for all drives.
@@ -393,7 +360,7 @@ const RemoveDriveOption = ({ drive }) => {
   // FIXME: in these two cases the button should likely be present, but disabled and with an
   // explanation of why those particular drive definitions cannot be removed.
   if (isExplicitBoot) return;
-  if (driveUtils.hasPv(drive)) return;
+  if (hasPv) return;
 
   return (
     <>
@@ -410,56 +377,31 @@ const RemoveDriveOption = ({ drive }) => {
 };
 
 const DriveSelector = ({ drive, selected, toggleAriaLabel }) => {
-  const menuId = useId();
-  const menuRef = useRef();
-  const toggleMenuRef = useRef();
-  const [isOpen, setIsOpen] = useState(false);
   const driveHandler = useDrive(drive.name);
   const onDriveChange = (newDriveName: string) => {
     driveHandler.switch(newDriveName);
-    setIsOpen(false);
   };
-  const onToggle = () => setIsOpen(!isOpen);
 
   return (
-    <MenuContainer
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-      toggleRef={toggleMenuRef}
-      toggle={
-        <InlineMenuToggle
-          ref={toggleMenuRef}
-          onClick={onToggle}
-          isExpanded={isOpen}
-          aria-label={toggleAriaLabel}
-          aria-controls={menuId}
-        >
-          <b aria-hidden>{deviceLabel(selected)}</b>
-        </InlineMenuToggle>
-      }
-      menuRef={menuRef}
-      menu={
-        <Menu ref={menuRef} activeItemId={selected.sid}>
-          <MenuContent>
-            <MenuList>
-              <SearchSelector drive={drive} selected={selected} onChange={onDriveChange} />
-              <RemoveDriveOption drive={drive} />
-            </MenuList>
-          </MenuContent>
-        </Menu>
-      }
-      // @ts-expect-error
-      popperProps={{ appendTo: document.body }}
-    />
+    <DeviceMenu
+      title={<b aria-hidden>{deviceLabel(selected)}</b>}
+      ariaLabel={toggleAriaLabel}
+      activeItemId={selected.sid}
+    >
+      <MenuList>
+        <SearchSelector drive={drive} selected={selected} onChange={onDriveChange} />
+        <RemoveDriveOption drive={drive} />
+      </MenuList>
+    </DeviceMenu>
   );
 };
 
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  const { isBoot } = useDrive(drive.name);
+  const { isBoot, hasPv } = useDrive(drive.name);
 
-  const text = (drive: configModel.Drive): string => {
+  const text = (drive: apiModel.Drive): string => {
     if (driveUtils.hasRoot(drive)) {
-      if (driveUtils.hasPv(drive)) {
+      if (hasPv) {
         if (isBoot) {
           // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
           return _("Use %s to install, host LVM and boot");
@@ -477,7 +419,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
     }
 
     if (driveUtils.hasFilesystem(drive)) {
-      if (driveUtils.hasPv(drive)) {
+      if (hasPv) {
         if (isBoot) {
           // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
           return _("Use %s for LVM, additional partitions and booting");
@@ -494,7 +436,7 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
       return _("Use %s for additional partitions");
     }
 
-    if (driveUtils.hasPv(drive)) {
+    if (hasPv) {
       if (isBoot) {
         // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
         return _("Use %s to host LVM and boot");
@@ -505,175 +447,95 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
 
     if (isBoot) {
       // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to boot");
+      return _("Use %s to configure boot partitions");
     }
     // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
     return _("Use %s");
   };
-
-  const [txt1, txt2] = text(drive).split("%s");
   // TRANSLATORS: a disk drive
   const toggleAriaLabel = _("Drive");
 
   return (
-    <h4>
-      <span>{txt1}</span>
+    <DeviceHeader title={text(drive)}>
       <DriveSelector drive={drive} selected={driveDevice} toggleAriaLabel={toggleAriaLabel} />
-      <span>{txt2}</span>
-    </h4>
+    </DeviceHeader>
   );
 };
 
 const PartitionsNoContentSelector = ({ drive, toggleAriaLabel }) => {
-  const menuId = useId();
-  const menuRef = useRef();
-  const toggleMenuRef = useRef();
-  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const onToggle = () => setIsOpen(!isOpen);
 
   return (
-    <MenuContainer
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-      toggleRef={toggleMenuRef}
-      toggle={
-        <InlineMenuToggle
-          ref={toggleMenuRef}
-          onClick={onToggle}
-          isExpanded={isOpen}
-          aria-label={toggleAriaLabel}
-          aria-controls={menuId}
+    <DeviceMenu
+      title={<span aria-hidden>{_("No additional partitions will be created")}</span>}
+      ariaLabel={toggleAriaLabel}
+    >
+      <MenuList>
+        <MenuItem
+          key="add-partition"
+          itemId="add-partition"
+          description={_("Add another partition or mount an existing one")}
+          role="menuitem"
+          onClick={() =>
+            navigate(generatePath(PATHS.drive.partition.add, { id: baseName(drive.name) }))
+          }
         >
-          <span aria-hidden>{_("No additional partitions will be created")}</span>
-        </InlineMenuToggle>
-      }
-      menuRef={menuRef}
-      menu={
-        <Menu ref={menuRef} role="menu" id={menuId}>
-          <MenuContent>
-            <MenuList>
-              <MenuItem
-                key="add-partition"
-                itemId="add-partition"
-                description={_("Add another partition or mount an existing one")}
-                role="menuitem"
-                onClick={() =>
-                  navigate(generatePath(PATHS.addPartition, { id: baseName(drive.name) }))
-                }
-              >
-                <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
-                  <span>{_("Add or use partition")}</span>
-                </Flex>
-              </MenuItem>
-            </MenuList>
-          </MenuContent>
-        </Menu>
-      }
-    />
+          <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
+            <span>{_("Add or use partition")}</span>
+          </Flex>
+        </MenuItem>
+      </MenuList>
+    </DeviceMenu>
   );
 };
 
 const PartitionMenuItem = ({ driveName, mountPath }) => {
-  const navigate = useNavigate();
   const drive = useDrive(driveName);
   const partition = drive.getPartition(mountPath);
-  const description = partition ? partitionUtils.typeWithSize(partition) : null;
+  const editPath = generatePath(PATHS.drive.partition.edit, {
+    id: baseName(driveName),
+    partitionId: encodeURIComponent(mountPath),
+  });
+  const deletePartition = () => drive.deletePartition(mountPath);
 
-  return (
-    <MenuItem
-      itemId={mountPath}
-      description={description}
-      role="menuitem"
-      actions={
-        <>
-          <MenuItemAction
-            style={{ alignSelf: "center" }}
-            icon={<Icon name="edit_square" aria-label={"Edit"} />}
-            actionId={`edit-${mountPath}`}
-            aria-label={`Edit ${mountPath}`}
-            onClick={() =>
-              navigate(
-                generatePath(PATHS.editPartition, {
-                  id: baseName(driveName),
-                  partitionId: encodeURIComponent(mountPath),
-                }),
-              )
-            }
-          />
-          <MenuItemAction
-            style={{ alignSelf: "center" }}
-            icon={<Icon name="delete" aria-label={"Delete"} />}
-            actionId={`delete-${mountPath}`}
-            aria-label={`Delete ${mountPath}`}
-            onClick={() => drive.deletePartition(mountPath)}
-          />
-        </>
-      }
-    >
-      {mountPath}
-    </MenuItem>
-  );
+  return <MountPathMenuItem device={partition} editPath={editPath} deleteFn={deletePartition} />;
 };
 
 const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
-  const menuId = useId();
-  const menuRef = useRef();
-  const toggleMenuRef = useRef();
-  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const onToggle = () => setIsOpen(!isOpen);
 
   return (
-    <MenuContainer
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-      toggleRef={toggleMenuRef}
-      toggle={
-        <InlineMenuToggle
-          ref={toggleMenuRef}
-          onClick={onToggle}
-          isExpanded={isOpen}
-          aria-label={toggleAriaLabel}
-          aria-controls={menuId}
+    <DeviceMenu
+      title={<span aria-hidden>{driveUtils.contentDescription(drive)}</span>}
+      ariaLabel={toggleAriaLabel}
+    >
+      <MenuList>
+        {drive.partitions
+          .filter((p) => p.mountPath)
+          .map((partition) => {
+            return (
+              <PartitionMenuItem
+                key={partition.mountPath}
+                driveName={drive.name}
+                mountPath={partition.mountPath}
+              />
+            );
+          })}
+        <Divider component="li" />
+        <MenuItem
+          key="add-partition"
+          itemId="add-partition"
+          description={_("Add another partition or mount an existing one")}
+          onClick={() =>
+            navigate(generatePath(PATHS.drive.partition.add, { id: baseName(drive.name) }))
+          }
         >
-          <span aria-hidden>{driveUtils.contentDescription(drive)}</span>
-        </InlineMenuToggle>
-      }
-      menuRef={menuRef}
-      menu={
-        <Menu ref={menuRef} id={menuId} role="menu">
-          <MenuContent>
-            <MenuList>
-              {drive.partitions
-                .filter((p) => p.mountPath)
-                .map((partition) => {
-                  return (
-                    <PartitionMenuItem
-                      key={partition.mountPath}
-                      driveName={drive.name}
-                      mountPath={partition.mountPath}
-                    />
-                  );
-                })}
-              <Divider component="li" />
-              <MenuItem
-                key="add-partition"
-                itemId="add-partition"
-                description={_("Add another partition or mount an existing one")}
-                onClick={() =>
-                  navigate(generatePath(PATHS.addPartition, { id: baseName(drive.name) }))
-                }
-              >
-                <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
-                  <span>{_("Add or use partition")}</span>
-                </Flex>
-              </MenuItem>
-            </MenuList>
-          </MenuContent>
-        </Menu>
-      }
-    />
+          <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
+            <span>{_("Add or use partition")}</span>
+          </Flex>
+        </MenuItem>
+      </MenuList>
+    </DeviceMenu>
   );
 };
 
