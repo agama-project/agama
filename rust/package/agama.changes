@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Apr  8 14:24:06 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Made `--api URL` work with `agama profile`
+  (gh#agama-project/agama#2103)
+  - Added /api/profile on the backend
+  - JSON validation error are more readable now
+  - Error messages do not start with "Anyhow(...)"
+  - Backend errors include causes
+
+-------------------------------------------------------------------
 Mon Apr  7 14:02:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Skip exporting scripts, files, bootloader and softare section
