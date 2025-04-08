@@ -29,13 +29,14 @@ import {
   DataListItem,
   DataListItemCells,
   DataListItemRow,
+  DataListProps,
   Flex,
   Label,
 } from "@patternfly/react-core";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { EmptyState } from "~/components/core";
 import Icon, { IconProps } from "~/components/layout/Icon";
-import { DeviceState, WifiNetwork } from "~/types/network";
+import { DeviceState, WifiNetwork, WifiNetworkStatus } from "~/types/network";
 import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { isEmpty } from "~/utils";
@@ -106,7 +107,9 @@ const NetworkSecurity = ({ id, security }) => {
   );
 };
 
-const NetworkListItem = ({ network }) => {
+type NetworkListItemProps = { network: WifiNetwork; showIp: boolean };
+
+const NetworkListItem = ({ network, showIp }: NetworkListItemProps) => {
   const nameId = useId();
   const securityId = useId();
   const statusId = useId();
@@ -137,7 +140,7 @@ const NetworkListItem = ({ network }) => {
                   )}
                 </Flex>
 
-                {network.device && (
+                {showIp && network.device && (
                   <Content id={ipId} component="small">
                     <Content className={a11yStyles.screenReader}>{_("IP addresses")}</Content>
                     {network.device?.addresses.map(formatIp).join(", ")}
@@ -158,28 +161,40 @@ const NetworkListItem = ({ network }) => {
   );
 };
 
+type WifiNetworksListProps = DataListProps & { showIp?: boolean };
+
 /**
  * Component for displaying a list of available Wi-Fi networks
  */
-function WifiNetworksList() {
-  const navigate = useNavigate();
+function WifiNetworksList({ showIp = true, ...props }: WifiNetworksListProps) {
   useNetworkChanges();
+  const navigate = useNavigate();
   const networks: WifiNetwork[] = useWifiNetworks();
 
   if (networks.length === 0)
-    return <EmptyState title={_("No visible Wi-Fi networks found")} icon="error" />;
+    return <EmptyState title={_("No Wi-Fi networks were found")} icon="error" />;
+
+  const statusOrder = [
+    WifiNetworkStatus.CONNECTED,
+    WifiNetworkStatus.CONFIGURED,
+    WifiNetworkStatus.NOT_CONFIGURED,
+  ];
+
+  // Sort networks by status and signal
+  networks.sort(
+    (a, b) =>
+      statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status) || b.strength - a.strength,
+  );
 
   return (
-    <>
-      <DataList
-        aria-label={_("Visible Wi-Fi networks")}
-        onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiNetwork, { ssid }))}
-      >
-        {networks.map((n) => (
-          <NetworkListItem key={n.ssid} network={n} />
-        ))}
-      </DataList>
-    </>
+    <DataList
+      onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiNetwork, { ssid }))}
+      {...props}
+    >
+      {networks.map((n) => (
+        <NetworkListItem key={n.ssid} network={n} showIp={showIp} />
+      ))}
+    </DataList>
   );
 }
 

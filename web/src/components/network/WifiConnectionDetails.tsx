@@ -75,7 +75,7 @@ const NetworkDetails = ({ network }: { network: WifiNetwork }) => {
 // - check the "Change configuration" link. device.connection is the
 // network.ssid while in wlan the connection id is the interface (?)
 const DeviceDetails = ({ device }: { device: Device }) => {
-  if (!device) return "FIXME";
+  if (!device) return;
 
   return (
     <>
@@ -100,7 +100,7 @@ const DeviceDetails = ({ device }: { device: Device }) => {
 };
 
 const IpDetails = ({ device }: { device: Device }) => {
-  if (!device) return "FIXME";
+  if (!device) return;
 
   return (
     <>
@@ -169,21 +169,17 @@ const IpDetails = ({ device }: { device: Device }) => {
 };
 
 export default function WifiConnectionDetails({ network }: { network: WifiNetwork }) {
-  // TODO: display connection details (wireless and IP settings)
-  // TODO: remove, at least, the forget button
-  //
-  if (!network) return "FIXME";
-  if (isEmpty(network.settings)) return;
+  if (!network) return;
 
   return (
     <Grid hasGutter>
-      <GridItem md={6}>
+      <GridItem md={6} order={{ default: "2", md: "1" }}>
         <IpDetails device={network.device} />
       </GridItem>
-      <GridItem md={6}>
+      <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
-          <NetworkDetails network={network} />
           <DeviceDetails device={network.device} />
+          <NetworkDetails network={network} />
         </Stack>
       </GridItem>
     </Grid>
