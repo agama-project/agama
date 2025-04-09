@@ -22,14 +22,43 @@
 
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Content } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
+import {
+  Content,
+  EmptyState,
+  EmptyStateActions,
+  EmptyStateBody,
+  EmptyStateFooter,
+} from "@patternfly/react-core";
+import { Link, Page } from "~/components/core";
+import { Icon } from "~/components/layout";
 import WifiConnectionForm from "./WifiConnectionForm";
 import WifiConnectionDetails from "./WifiConnectionDetails";
+import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { DeviceState } from "~/types/network";
-import { sprintf } from "sprintf-js";
+import { PATHS } from "~/routes/network";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+
+const NetworkNotFound = ({ ssid }) => {
+  // TRANSLATORS: %s will be replaced with the network ssid
+  const text = sprintf(_('"%s" does not exist or is no longer available.'), ssid);
+  return (
+    <EmptyState
+      titleText={_("Network not found or lost")}
+      headingLevel="h3"
+      icon={() => <Icon name="error" />}
+    >
+      <EmptyStateBody>{text}</EmptyStateBody>
+      <EmptyStateFooter>
+        <EmptyStateActions>
+          <Link to={PATHS.root} variant="link" isInline>
+            {_("Go to network page")}
+          </Link>
+        </EmptyStateActions>
+      </EmptyStateFooter>
+    </EmptyState>
+  );
+};
 
 export default function WifiNetworkPage() {
   useNetworkChanges();
@@ -37,12 +66,8 @@ export default function WifiNetworkPage() {
   const networks = useWifiNetworks();
   const network = networks.find((c) => c.ssid === ssid);
 
-  if (!network) return "FIXME";
-
-  const connected = network.device?.state === DeviceState.CONNECTED;
-  const title = connected
-    ? _("Connection details")
-    : sprintf(_("Connect to %s network"), network.ssid);
+  const connected = network?.device?.state === DeviceState.CONNECTED;
+  const title = connected ? _("Connection details") : sprintf(_("Connect to %s"), ssid);
 
   return (
     <Page>
@@ -50,8 +75,9 @@ export default function WifiNetworkPage() {
         <Content component="h2">{title}</Content>
       </Page.Header>
       <Page.Content>
-        {!connected && <WifiConnectionForm network={network} />}
-        {connected && <WifiConnectionDetails network={network} />}
+        {!network && <NetworkNotFound ssid={ssid} />}
+        {network && !connected && <WifiConnectionForm network={network} />}
+        {network && connected && <WifiConnectionDetails network={network} />}
       </Page.Content>
     </Page>
   );
