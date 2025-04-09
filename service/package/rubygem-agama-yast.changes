@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr  9 06:42:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Write the registration URL to the installed system (bsc#1239316).
+
+-------------------------------------------------------------------
 Tue Apr  1 12:44:57 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Make the extension version attribute optional, search the version
