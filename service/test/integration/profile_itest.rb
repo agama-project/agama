@@ -180,25 +180,22 @@ describe "agama profile" do
     context "script, with file:/// URL" do
       let(:filename) { "service/test/fixtures/profiles/smoke-test.sh" }
 
-      it "is executed without error, quickly" do
+      it "is executed without error" do
         url = "file://" + abs_fixture(filename)
         start_time = Time.now
         _output, err_output, _status = Cheetah.run(*command, url, **cheetah_kwargs)
         end_time = Time.now
         expect(err_output).to be_empty
-        # On its own, the script would run for 10s
-        expect(end_time - start_time).to be < 2,
-          "Service should not wait for a long running script"
       end
     end
 
     context "failing script, with file:/// URL" do
       let(:filename) { "service/test/fixtures/profiles/smoke-test-fail.sh" }
 
-      it "reports a quick failure" do
+      it "reports a failure" do
         url = "file://" + abs_fixture(filename)
         _output, err_output, _status = Cheetah.run(*command, url, **cheetah_kwargs)
-        expect(err_output).to include("failed quickly with exit status")
+        expect(err_output).to include("failed with exit status")
       end
     end
   end

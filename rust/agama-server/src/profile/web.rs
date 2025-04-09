@@ -18,11 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use anyhow::{anyhow, Context};
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
-use std::time::Duration;
-
-use anyhow::{anyhow, Context};
 
 use agama_lib::utils::Transfer;
 use agama_lib::{
@@ -260,9 +258,6 @@ async fn execute_script(
         None => script,
     };
 
-    // write to a temporary path and spawn in background and return
-    // May be long running
-    // TODO: can agama+axum wait for completion and return output?
     let mut named_tempfile = tempfile::Builder::new()
         .prefix("agama-script")
         .permissions(std::fs::Permissions::from_mode(0o700))
@@ -276,16 +271,13 @@ async fn execute_script(
     let path = named_tempfile.into_temp_path();
     let path = path.keep().context("Persisting script file")?;
 
-    let mut child = std::process::Command::new(&path)
+    let mut child = tokio::process::Command::new(&path)
         .spawn()
         .context(format!("Spawning script {:?}", path))?;
 
-    // Do not child.wait() for the script to finish,
-    // but do wait 50ms to report if it failed soon enough.
-    tokio::time::sleep(Duration::from_millis(50)).await;
-    if let Ok(Some(exit_status)) = child.try_wait() {
-        return Err(anyhow!("Script failed quickly with {}", exit_status).into());
+    let exit_status = child.wait().await.context("Script result")?;
+    if !exit_status.success() {
+        return Err(anyhow!("Script failed with {}", exit_status).into());
     }
-
     Ok(Json(()))
 }
