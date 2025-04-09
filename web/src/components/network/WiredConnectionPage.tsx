@@ -23,7 +23,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import {
-  Alert,
   Content,
   EmptyState,
   EmptyStateActions,
@@ -38,44 +37,25 @@ import WiredConnectionDetails from "./WiredConnectionDetails";
 import { Icon } from "../layout";
 import { NETWORK } from "~/routes/paths";
 
-// FIXME: Choose between EmptyState or Alert. Or work to make Empty State to
-// look better on big screens. Empty State puts the content too
-// far in big resolution.
-const ConnectionNotFound = ({
-  id,
-  variant = "alert",
-}: {
-  id: string;
-  variant: "emptystate" | "alert";
-}) => {
-  if (variant === "emptystate") {
-    return (
-      <EmptyState headingLevel="h3" titleText={_("Not found")} icon={() => <Icon name="error" />}>
-        <EmptyStateBody>{sprintf(_("There is not a connection with id `%s`"), id)}</EmptyStateBody>
-
-        <EmptyStateFooter>
-          <EmptyStateActions>
-            <Link to={NETWORK.root} variant="link" isInline>
-              {_("Go to network page")}
-            </Link>
-          </EmptyStateActions>
-        </EmptyStateFooter>
-      </EmptyState>
-    );
-  }
+const ConnectionNotFound = ({ id }) => {
+  // TRANSLATORS: %s will be replaced with connection id
+  const text = sprintf(_('"%s" does not exist or is no longer available.'), id);
 
   return (
-    <Alert
-      title={_("Not found")}
-      variant="danger"
-      actionLinks={
-        <Link to={NETWORK.root} variant="link" isInline>
-          {_("Go to network page")}
-        </Link>
-      }
+    <EmptyState
+      headingLevel="h3"
+      titleText={_("Connection not found or lost")}
+      icon={() => <Icon name="error" />}
     >
-      {sprintf(_("There is not a connection with id `%s`"), id)}
-    </Alert>
+      <EmptyStateBody>{text}</EmptyStateBody>
+      <EmptyStateFooter>
+        <EmptyStateActions>
+          <Link to={NETWORK.root} variant="link" isInline>
+            {_("Go to network page")}
+          </Link>
+        </EmptyStateActions>
+      </EmptyStateFooter>
+    </EmptyState>
   );
 };
 
