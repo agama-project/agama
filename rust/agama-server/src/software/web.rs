@@ -39,7 +39,7 @@ use agama_lib::{
     software::{
         model::{
             AddonParams, AddonProperties, License, LicenseContent, LicensesRepo, RegistrationError,
-            RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig
+            RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig,
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -218,10 +218,7 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
             "/registration/addons/registered",
             get(get_registered_addons),
         )
-        .route(
-            "/registration/addons/available",
-            get(get_available_addons),
-        )
+        .route("/registration/addons/available", get(get_available_addons))
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))

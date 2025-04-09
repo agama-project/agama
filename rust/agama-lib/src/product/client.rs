@@ -153,15 +153,51 @@ impl<'a> ProductClient<'a> {
             .await?
             .into_iter()
             .map(|hash| AddonProperties {
-                id: hash.get("name").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
-                version: hash.get("version").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
-                label: hash.get("label").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
-                available: hash.get("available").unwrap_or(&zbus::zvariant::Value::new(true)).try_into().unwrap_or(true),
-                free: hash.get("free").unwrap_or(&zbus::zvariant::Value::new(false)).try_into().unwrap_or(false),
-                recommended: hash.get("recommended").unwrap_or(&zbus::zvariant::Value::new(false)).try_into().unwrap_or(false),
-                description: hash.get("description").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
-                release: hash.get("release").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
-                r#type: hash.get("type").unwrap_or(&zbus::zvariant::Value::new("")).try_into().unwrap_or_default(),
+                id: hash
+                    .get("name")
+                    .unwrap_or(&zbus::zvariant::Value::new(""))
+                    .try_into()
+                    .unwrap_or_default(),
+                version: hash
+                    .get("version")
+                    .unwrap_or(&zbus::zvariant::Value::new(""))
+                    .try_into()
+                    .unwrap_or_default(),
+                label: hash
+                    .get("label")
+                    .unwrap_or(&zbus::zvariant::Value::new(""))
+                    .try_into()
+                    .unwrap_or_default(),
+                available: hash
+                    .get("available")
+                    .unwrap_or(&zbus::zvariant::Value::new(true))
+                    .try_into()
+                    .unwrap_or(true),
+                free: hash
+                    .get("free")
+                    .unwrap_or(&zbus::zvariant::Value::new(false))
+                    .try_into()
+                    .unwrap_or(false),
+                recommended: hash
+                    .get("recommended")
+                    .unwrap_or(&zbus::zvariant::Value::new(false))
+                    .try_into()
+                    .unwrap_or(false),
+                description: hash
+                    .get("description")
+                    .unwrap_or(&zbus::zvariant::Value::new(""))
+                    .try_into()
+                    .unwrap_or_default(),
+                release: hash
+                    .get("release")
+                    .unwrap_or(&zbus::zvariant::Value::new(""))
+                    .try_into()
+                    .unwrap_or_default(),
+                r#type: hash
+                    .get("type")
+                    .unwrap_or(&zbus::zvariant::Value::new(""))
+                    .try_into()
+                    .unwrap_or_default(),
             })
             .collect();
         Ok(addons)

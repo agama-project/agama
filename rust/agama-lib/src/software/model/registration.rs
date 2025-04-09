@@ -55,7 +55,7 @@ pub struct AddonProperties {
     pub description: String,
     // "type" is a keyword, use a raw identifier for that
     pub r#type: String,
-    pub release: String
+    pub release: String,
 }
 
 /// Information about registration configuration (product, patterns, etc.).

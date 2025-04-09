@@ -78,5 +78,7 @@ pub trait Registration {
 
     /// available addons property, a hash with string key
     #[zbus(property)]
-    fn available_addons(&self) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::Value>>>;
+    fn available_addons(
+        &self,
+    ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::Value>>>;
 }
