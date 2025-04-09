@@ -117,7 +117,10 @@ struct ISCSIState<'a> {
 ///
 /// It acts as a proxy to Agama D-Bus service.
 ///
-/// note: its paths will be moved to iscsi_service when dbus is adapted to new API
+/// note: storage_iscsi_service is used by the interactive installation (i.e., the web UI). And
+/// iscsi_server is used for the new iSCSI API, which allows to load the iscsi section of the
+/// configuration (at this moment, used by CLI or unattended installation). The preliminary plan is
+/// moving all user interfaces to use only iscsi_service.
 ///
 /// * `dbus`: D-Bus connection to use.
 pub async fn storage_iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, ServiceError> {
@@ -156,7 +159,7 @@ pub async fn iscsi_service<T>(dbus: zbus::Connection) -> Result<Router<T>, Servi
 
 /// Sets iSCSI configuration
 ///
-/// the json is identical to what iscsu node in profile use.
+/// the json is identical to what iscsi node in profile use.
 #[utoipa::path(
     post,
     path="/config",
