@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr  8 15:52:18 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix boot from Hard Disk for EFI x86_64 (bsc#1240646)
+
+-------------------------------------------------------------------
 Thu Apr  3 08:28:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Workaround for a not working file picker in local installation
