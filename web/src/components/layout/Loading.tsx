@@ -21,12 +21,17 @@
  */
 
 import React, { Fragment } from "react";
-import { EmptyState, Spinner } from "@patternfly/react-core";
+import { Flex, EmptyState, Spinner, SpinnerProps } from "@patternfly/react-core";
 import { PlainLayout } from "~/components/layout";
 import { LayoutProps } from "~/components/layout/Layout";
+import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { _ } from "~/i18n";
+import { isEmpty } from "~/utils";
 
-const LoadingIcon = () => <Spinner size="xl" />;
+/**
+ * Renders a plain layout without either, header nor mountSidebar
+ */
 const Layout = (props: LayoutProps) => (
   <PlainLayout mountHeader={false} mountSidebar={false} {...props} />
 );
@@ -34,6 +39,8 @@ const Layout = (props: LayoutProps) => (
 type LoadingProps = {
   /** Text to be rendered alongside the spinner */
   text?: string;
+  /** Accessible text, required when rendering only the spinner */
+  "aria-label"?: string;
   /**
    * Whether the loading screen should listen for and render any questions
    *
@@ -54,17 +61,78 @@ type LoadingProps = {
    * FIXME: Find and implement a solid alternative
    */
   listenQuestions?: boolean;
+  /** Loader style, full screen or inline */
+  variant?: "full-screen" | "inline";
+  /** Size for the spinner icon */
+  spinnerSize?: SpinnerProps["size"];
+};
+
+/**
+ * Renders a loader centered in the screen
+ */
+const FullScreenLoading = ({
+  text,
+  "aria-label": ariaLabel,
+  spinnerSize,
+}: Omit<LoadingProps, "listenQuestions" | "variant">) => {
+  return (
+    <Flex
+      className={sizingStyles.h_100vh}
+      alignContent={{ default: "alignContentCenter" }}
+      justifyContent={{ default: "justifyContentCenter" }}
+    >
+      {isEmpty(text) ? (
+        <Spinner size={spinnerSize} aria-label={ariaLabel} />
+      ) : (
+        <EmptyState
+          variant="xl"
+          titleText={text}
+          headingLevel="h1"
+          icon={() => <Spinner size={spinnerSize} />}
+        />
+      )}
+    </Flex>
+  );
+};
+
+/**
+ * Renders an inline loader
+ */
+const InlineLoading = ({
+  text,
+  "aria-label": ariaLabel,
+  spinnerSize,
+}: Omit<LoadingProps, "listenQuestions" | "variant">) => {
+  return (
+    <Flex gap={{ default: "gapMd" }} className={spacingStyles.pMd}>
+      <Spinner size={spinnerSize} aria-label={ariaLabel} />
+      {text}
+    </Flex>
+  );
 };
 
 function Loading({
   text = _("Loading installation environment, please wait."),
+  "aria-label": ariaLabel,
   listenQuestions = false,
+  variant = "full-screen",
+  spinnerSize,
 }: LoadingProps) {
   const Wrapper = listenQuestions ? Layout : Fragment;
+  const LoadingComponent = variant === "full-screen" ? FullScreenLoading : InlineLoading;
+  const defaultSpinnerSize = variant === "full-screen" ? "xl" : "sm";
+
+  if (isEmpty(text) && isEmpty(ariaLabel)) {
+    console.error("Loading component should receive at least one, text or aria-label");
+  }
 
   return (
     <Wrapper>
-      <EmptyState variant="xl" titleText={text} headingLevel="h1" icon={LoadingIcon} />
+      <LoadingComponent
+        text={text}
+        aria-label={ariaLabel}
+        spinnerSize={spinnerSize || defaultSpinnerSize}
+      />
     </Wrapper>
   );
 }
