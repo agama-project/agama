@@ -105,6 +105,7 @@ describe("WifiNetworksListPage", () => {
     });
 
     it("renders a list of available wifi networks", () => {
+      // @ts-expect-error: you need to specify the aria-label
       installerRender(<WifiNetworksList />);
       screen.getByRole("listitem", { name: "Network 1" });
       screen.getByRole("listitem", { name: "Network 2" });
@@ -113,6 +114,7 @@ describe("WifiNetworksListPage", () => {
 
     describe("and user selects a connected network", () => {
       it("renders basic network information and actions instead of the connection form", async () => {
+        // @ts-expect-error: you need to specify the aria-label
         const { user } = installerRender(<WifiNetworksList />);
         const network1 = screen.getByRole("listitem", { name: "Network 1" });
         await user.click(network1);
@@ -127,6 +129,7 @@ describe("WifiNetworksListPage", () => {
 
     describe("and user selects a configured network", () => {
       it("renders actions instead of the connection form", async () => {
+        // @ts-expect-error: you need to specify the aria-label
         const { user } = installerRender(<WifiNetworksList />);
         const network2 = screen.getByRole("listitem", { name: "Network 2" });
         await user.click(network2);
@@ -140,6 +143,7 @@ describe("WifiNetworksListPage", () => {
 
     describe("and user selects a not configured network", () => {
       it("renders the connection form", async () => {
+        // @ts-expect-error: you need to specify the aria-label
         const { user } = installerRender(<WifiNetworksList />);
         const network3 = screen.getByRole("listitem", { name: "Network 3" });
         await user.click(network3);
@@ -155,6 +159,7 @@ describe("WifiNetworksListPage", () => {
     });
 
     it("renders information about it", () => {
+      // @ts-expect-error: you need to specify the aria-label
       installerRender(<WifiNetworksList />);
       screen.getByText("No visible Wi-Fi networks found");
     });
