@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,17 +25,20 @@ import {
   ActionGroup,
   Alert,
   Button,
+  Content,
   Form,
   FormGroup,
   FormSelect,
   FormSelectOption,
+  Spinner,
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
 import { useAddConnectionMutation, useConnectionMutation } from "~/queries/network";
-import { Connection, DeviceState, WifiNetwork, Wireless } from "~/types/network";
+import { Connection, Device, DeviceState, WifiNetwork, Wireless } from "~/types/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useNavigate } from "react-router-dom";
+import { isEmpty } from "~/utils";
 
 /*
  * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
@@ -58,6 +61,31 @@ const securityFrom = (supported: string[]) => {
   return "";
 };
 
+const PublicNetworkAlert = () => {
+  return (
+    <Alert title={_("Not protected network")} variant="warning">
+      <Content component="p">
+        {_("You will connect to a public network without encryption. Your data may not be secure.")}
+      </Content>
+    </Alert>
+  );
+};
+
+const ConnectingAlert = () => {
+  return (
+    <Alert
+      isPlain
+      customIcon={<Spinner size="md" aria-hidden />}
+      title={_("Setting up connection")}
+    >
+      <Content component="p">{_("It may take some time.")}</Content>
+      <Content component="p">
+        {_("Details will appear after the connection is successfully established.")}
+      </Content>
+    </Alert>
+  );
+};
+
 const ConnectionError = ({ ssid }) => (
   <Alert variant="warning" isInline title={sprintf(_("Could not connect to %s"), ssid)}>
     {<p>{_("Check the authentication parameters.")}</p>}
@@ -70,6 +98,7 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
   const navigate = useNavigate();
   const settings = network.settings?.wireless || new Wireless();
   const [error, setError] = useState(false);
+  const [device, setDevice] = useState<Device>();
   const { mutateAsync: addConnection } = useAddConnectionMutation();
   const { mutateAsync: updateConnection } = useConnectionMutation();
   const [security, setSecurity] = useState<string>(
@@ -81,6 +110,8 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
   const accept = async (e) => {
     e.preventDefault();
     setError(false);
+    setIsConnecting(true);
+    setDevice(network.device);
     // FIXME: do not mutate the original object!
     const connection = network.settings || new Connection(network.ssid);
     connection.wireless = new Wireless({ ssid: network.ssid, security, password, hidden: false });
@@ -89,58 +120,75 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
   };
 
   useEffect(() => {
-    if (network.device?.state === DeviceState.CONNECTING) {
-      setIsConnecting(true);
-    }
+    setDevice(network.device);
   }, [network.device]);
 
   useEffect(() => {
-    if (!isConnecting) return;
+    if (!device) return;
 
-    if (!network.device) {
-      setIsConnecting(false);
-      setError(true);
+    if (device?.state === DeviceState.CONNECTING) {
+      setError(false);
+      setIsConnecting(true);
     }
-  }, [network.device, isConnecting, navigate]);
+
+    if (isConnecting && device && device.state === DeviceState.FAILED) {
+      setError(true);
+      setIsConnecting(false);
+    }
+  }, [isConnecting, device]);
+
+  const isPublicNetwork = isEmpty(network.security);
+
+  if (isConnecting) return <ConnectingAlert />;
 
   return (
-    /** TRANSLATORS: accessible name for the WiFi connection form */
-    <Form onSubmit={accept} aria-label={_("WiFi connection form")}>
-      {error && <ConnectionError ssid={network.ssid} />}
+    <>
+      {isPublicNetwork && <PublicNetworkAlert />}
+      {/** TRANSLATORS: accessible name for the WiFi connection form */}
+      <Form onSubmit={accept} aria-label={_("WiFi connection form")}>
+        {error && <ConnectionError ssid={network.ssid} />}
 
-      {/* TRANSLATORS: Wifi security configuration (password protected or not) */}
-      <FormGroup fieldId="security" label={_("Security")}>
-        <FormSelect
-          id="security"
-          aria-label={_("Security")}
-          value={security}
-          onChange={(_, v) => setSecurity(v)}
-        >
-          {selectorOptions}
-        </FormSelect>
-      </FormGroup>
-      {security === "wpa-psk" && (
-        // TRANSLATORS: WiFi password
-        <FormGroup fieldId="password" label={_("WPA Password")}>
-          <PasswordInput
-            id="password"
-            name="password"
-            aria-label={_("Password")}
-            value={password}
-            onChange={(_, v) => setPassword(v)}
-          />
-        </FormGroup>
-      )}
-      <ActionGroup>
-        <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
-          {/* TRANSLATORS: button label, connect to a Wi-Fi network */}
-          {_("Connect")}
-        </Button>
-        {/* TRANSLATORS: button label */}
-        <Button variant="link" isDisabled={isConnecting} onClick={() => navigate(-1)}>
-          {_("Cancel")}
-        </Button>
-      </ActionGroup>
-    </Form>
+        {/* TRANSLATORS: Wifi security configuration (password protected or not) */}
+        {!isEmpty(network.security) && (
+          <FormGroup fieldId="security" label={_("Security")}>
+            <FormSelect
+              id="security"
+              aria-label={_("Security")}
+              value={security}
+              onChange={(_, v) => setSecurity(v)}
+            >
+              {selectorOptions}
+            </FormSelect>
+          </FormGroup>
+        )}
+        {security === "wpa-psk" && (
+          // TRANSLATORS: WiFi password
+          <FormGroup fieldId="password" label={_("WPA Password")}>
+            <PasswordInput
+              id="password"
+              name="password"
+              aria-label={_("Password")}
+              value={password}
+              onChange={(_, v) => setPassword(v)}
+            />
+          </FormGroup>
+        )}
+        <ActionGroup>
+          <Button
+            type="submit"
+            variant="primary"
+            isLoading={isConnecting}
+            isDisabled={isConnecting}
+          >
+            {/* TRANSLATORS: button label, connect to a Wi-Fi network */}
+            {_("Connect")}
+          </Button>
+          {/* TRANSLATORS: button label */}
+          <Button variant="link" isDisabled={isConnecting} onClick={() => navigate(-1)}>
+            {_("Cancel")}
+          </Button>
+        </ActionGroup>
+      </Form>
+    </>
   );
 }
