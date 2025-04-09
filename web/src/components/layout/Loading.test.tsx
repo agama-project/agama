@@ -57,18 +57,18 @@ describe("Loading", () => {
     });
   });
 
-  describe("when not using the useLayout prop or its value is false", () => {
+  describe("when not using the listenQuestions prop or it's set to false", () => {
     it("does not wrap the content within a PlainLayout", () => {
       const { rerender } = plainRender(<Loading text="Making a test" />);
       expect(screen.queryByText("PlainLayout Mock")).toBeNull();
-      rerender(<Loading text="Making a test" useLayout={false} />);
+      rerender(<Loading text="Making a test" listenQuestions={false} />);
       expect(screen.queryByText("PlainLayout Mock")).toBeNull();
     });
   });
 
-  describe("when using the useLayout prop", () => {
+  describe("when using the listenQuestions prop", () => {
     it("wraps the content within a PlainLayout with neither, header nor sidebar", () => {
-      installerRender(<Loading text="Making a test" useLayout />);
+      installerRender(<Loading text="Making a test" listenQuestions />);
       expect(screen.queryByText("Header Mock")).toBeNull();
       expect(screen.queryByText("Sidebar Mock")).toBeNull();
       screen.getByText("PlainLayout Mock");
