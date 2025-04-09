@@ -65,11 +65,11 @@ impl FileSystem {
         let mount_point = self.mount_point.clone().unwrap_or(default_mount_point);
 
         if !self.is_mounted() {
-            self.mount(&mount_point).unwrap();
+            self.mount(&mount_point)?;
         }
         let result = func(&mount_point);
         if !self.is_mounted() {
-            self.umount(&mount_point).unwrap();
+            self.umount(&mount_point)?;
         }
 
         result

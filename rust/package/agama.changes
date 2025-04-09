@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Tue Apr  8 14:24:06 UTC 2025 - Martin Vidner <mvidner@suse.com>
+Wed Apr  9 09:06:18 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Made `--api URL` work with `agama profile`
   (gh#agama-project/agama#2103)
@@ -7,6 +7,12 @@ Tue Apr  8 14:24:06 UTC 2025 - Martin Vidner <mvidner@suse.com>
   - JSON validation error are more readable now
   - Error messages do not start with "Anyhow(...)"
   - Backend errors include causes
+
+-------------------------------------------------------------------
+Tue Apr  8 22:04:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- "agama download" do not crash if it cannot mount a file system
+  (gh#agama-project/agama#2253).
 
 -------------------------------------------------------------------
 Mon Apr  7 14:02:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
