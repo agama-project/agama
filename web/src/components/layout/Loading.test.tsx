@@ -45,16 +45,15 @@ jest.mock("~/components/layout/Layout", () => {
 });
 
 describe("Loading", () => {
-  it("renders given message", async () => {
+  it("renders given text", async () => {
     plainRender(<Loading text="Doing something" />);
     await screen.findByText("Doing something");
   });
 
-  describe("when not using a custom message", () => {
-    it("renders the default loading environment message", async () => {
-      plainRender(<Loading />);
-      await screen.findByText(/Loading installation environment/i);
-    });
+  it("renders icon with given aria-label", async () => {
+    plainRender(<Loading aria-label="Doing something" />);
+    const icon = await screen.findByLabelText("Doing something");
+    expect(icon).toHaveRole("progressbar");
   });
 
   describe("when not using the listenQuestions prop or it's set to false", () => {

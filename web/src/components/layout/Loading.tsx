@@ -26,7 +26,6 @@ import { PlainLayout } from "~/components/layout";
 import { LayoutProps } from "~/components/layout/Layout";
 import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-import { _ } from "~/i18n";
 import { isEmpty } from "~/utils";
 
 /**
@@ -112,7 +111,7 @@ const InlineLoading = ({
 };
 
 function Loading({
-  text = _("Loading installation environment, please wait."),
+  text,
   "aria-label": ariaLabel,
   listenQuestions = false,
   variant = "full-screen",
