@@ -27,11 +27,6 @@ import {
   Button,
   Checkbox,
   Content,
-  DataList,
-  DataListCell,
-  DataListItem,
-  DataListItemCells,
-  DataListItemRow,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -40,7 +35,7 @@ import {
   Form,
   FormGroup,
   Label,
-  Stack,
+  Title,
   TextInput,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
@@ -109,7 +104,7 @@ const RegisteredExtensionSection = ({ extension }) => {
   return (
     <span>
       {msg1}
-      {showCode ? extension.registrationCode : mask(extension.registrationCode)}
+      <b>{showCode ? extension.registrationCode : mask(extension.registrationCode)}</b>
       {msg2}{" "}
       <Button variant="link" isInline onClick={() => setShowCode(!showCode)}>
         {showCode ? _("Hide") : _("Show")}
@@ -209,7 +204,7 @@ const HostnameAlert = () => {
   );
 };
 
-const Extension = ({ extension }) => {
+const Extension = ({ extension, unique }) => {
   const { mutate: registerAddon } = useRegisterAddonMutation();
   const registeredExtensions = useRegisteredAddons();
   const [regCode, setRegCode] = useState("");
@@ -230,9 +225,9 @@ const Extension = ({ extension }) => {
 
     const data: RegisteredAddonInfo = {
       id: extension.id,
-      // TODO: make version optional
-      version: extension.version,
       registrationCode: regCode,
+      // omit the version if only one version of the extension exists
+      version: unique ? null : extension.version,
     };
 
     // @ts-expect-error
@@ -240,74 +235,73 @@ const Extension = ({ extension }) => {
   };
 
   return (
-    <DataListItem key={`${extension.id}-${extension.version}`}>
-      <DataListItemRow>
-        <DataListItemCells
-          dataListCells={[
-            <DataListCell key="summary">
-              <Stack hasGutter>
-                <div>
-                  {/* remove the "(BETA)" suffix, we display a Beta label instead */}
-                  <b>{extension.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
-                  {extension.release === "beta" && (
-                    <Label color="blue" isCompact>
-                      {_("Beta")}
-                    </Label>
-                  )}
-                  {extension.recommended && (
-                    <Label color="orange" isCompact>
-                      {_("Recommended")}
-                    </Label>
-                  )}
-                </div>
-                <div>{extension.description}</div>
-                {registered ? (
-                  <RegisteredExtensionSection extension={registered} />
-                ) : extension.available ? (
-                  <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
-                    {error && <Alert variant="warning" isInline title={error} />}
-                    {!extension.free && (
-                      <FormGroup label={KEY_LABEL}>
-                        <RegistrationCodeInput
-                          id={`reg-code-${extension.id}-${extension.version}`}
-                          value={regCode}
-                          onChange={(_, v) => setRegCode(v)}
-                        />
-                      </FormGroup>
-                    )}
+    <div>
+      {/* remove the "(BETA)" suffix, we display a Beta label instead */}
+      <Title headingLevel="h4">
+        {extension.label.replace(/\s*\(beta\)$/i, "")}{" "}
+        {extension.release === "beta" && (
+          <Label color="blue" isCompact>
+            {_("Beta")}
+          </Label>
+        )}
+        {extension.recommended && (
+          <Label color="orange" isCompact>
+            {_("Recommended")}
+          </Label>
+        )}
+      </Title>
+      <p>&nbsp;</p>
+      <p>{extension.description}</p>
+      <p>&nbsp;</p>
+      <p>
+        {registered ? (
+          <RegisteredExtensionSection extension={registered} />
+        ) : extension.available ? (
+          <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
+            {error && <Alert variant="warning" isInline title={error} />}
+            {!extension.free && (
+              <FormGroup label={KEY_LABEL}>
+                <RegistrationCodeInput
+                  id={`reg-code-${extension.id}-${extension.version}`}
+                  value={regCode}
+                  onChange={(_, v) => setRegCode(v)}
+                />
+              </FormGroup>
+            )}
 
-                    <ActionGroup>
-                      <Button variant="primary" type="submit" isInline isLoading={loading}>
-                        {_("Register")}
-                      </Button>
-                    </ActionGroup>
-                  </Form>
-                ) : (
-                  <Alert title={_("Not available")} variant="warning">
-                    {_(
-                      "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
-                    )}
-                  </Alert>
-                )}
-              </Stack>
-            </DataListCell>,
-          ]}
-        />
-      </DataListItemRow>
-    </DataListItem>
+            <ActionGroup>
+              <Button variant="primary" type="submit" isInline isLoading={loading}>
+                {_("Register")}
+              </Button>
+            </ActionGroup>
+          </Form>
+        ) : (
+          <Alert title={_("Not available")} variant="warning">
+            {_(
+              "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
+            )}
+          </Alert>
+        )}
+      </p>
+    </div>
   );
 };
 
 const Extensions = () => {
   const extensions = useAddons();
-  const extensionComponents = extensions.map((ext) => (
-    <Extension key={`extension-${ext.id}-${ext.version}`} extension={ext} />
+
+  // count the extension versions
+  const counts = {};
+  extensions.forEach((e) => (counts[e.id] = counts[e.id] ? counts[e.id] + 1 : 1));
+
+  const extensionComponents = extensions.map((ext, index) => (
+    <Extension key={`extension-${index}`} extension={ext} unique={counts[ext.id] === 1} />
   ));
 
   return (
     <>
-      <Content component="h3">{_("Extensions")}</Content>
-      <DataList aria-label={_("Available extensions")}>{extensionComponents}</DataList>
+      <Title headingLevel="h2">{_("Extensions")}</Title>
+      {extensionComponents}
     </>
   );
 };
