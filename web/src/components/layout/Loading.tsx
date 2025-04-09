@@ -27,6 +27,7 @@ import { LayoutProps } from "~/components/layout/Layout";
 import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { isEmpty } from "~/utils";
+import { _ } from "~/i18n";
 
 /**
  * Renders a plain layout without either, header nor mountSidebar
@@ -81,13 +82,17 @@ const FullScreenLoading = ({
       justifyContent={{ default: "justifyContentCenter" }}
     >
       {isEmpty(text) ? (
-        <Spinner size={spinnerSize} aria-label={ariaLabel} />
+        <Spinner
+          size={spinnerSize}
+          aria-label={ariaLabel}
+          aria-hidden={isEmpty(ariaLabel) || undefined}
+        />
       ) : (
         <EmptyState
           variant="xl"
           titleText={text}
           headingLevel="h1"
-          icon={() => <Spinner size={spinnerSize} />}
+          icon={() => <Spinner size={spinnerSize} aria-hidden />}
         />
       )}
     </Flex>
@@ -104,7 +109,11 @@ const InlineLoading = ({
 }: Omit<LoadingProps, "listenQuestions" | "variant">) => {
   return (
     <Flex gap={{ default: "gapMd" }} className={spacingStyles.pMd}>
-      <Spinner size={spinnerSize} aria-label={ariaLabel} />
+      <Spinner
+        size={spinnerSize}
+        aria-label={ariaLabel}
+        aria-hidden={(!isEmpty(text) && isEmpty(ariaLabel)) || undefined}
+      />
       {text}
     </Flex>
   );
@@ -120,16 +129,13 @@ function Loading({
   const Wrapper = listenQuestions ? Layout : Fragment;
   const LoadingComponent = variant === "full-screen" ? FullScreenLoading : InlineLoading;
   const defaultSpinnerSize = variant === "full-screen" ? "xl" : "sm";
-
-  if (isEmpty(text) && isEmpty(ariaLabel)) {
-    console.error("Loading component should receive at least one, text or aria-label");
-  }
+  const defaultAriaLabel = _("Loading");
 
   return (
     <Wrapper>
       <LoadingComponent
         text={text}
-        aria-label={ariaLabel}
+        aria-label={ariaLabel || (isEmpty(text) ? defaultAriaLabel : undefined)}
         spinnerSize={spinnerSize || defaultSpinnerSize}
       />
     </Wrapper>
