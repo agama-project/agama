@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr  9 12:38:21 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix flickering issue during loading and progress transitions
+  (gh#agama-project/agama#2240, gh#agama-project/agama#2255).
+
+-------------------------------------------------------------------
 Tue Apr  1 08:53:43 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Fix reloading data after reprobing devices
