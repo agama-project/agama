@@ -171,7 +171,9 @@ module Agama
       run_on_change_callbacks
     end
 
-    # Copies credentials files to the target system.
+    # Copies configuration and credentials files to the target system.
+    #
+    # The configuration file is copied only if a registration URL was given.
     def finish
       return unless reg_code
 
@@ -182,6 +184,14 @@ module Agama
         files << [
           File.join(TARGET_DIR, credentials_path(credentials_file)),
           File.join(Yast::Installation.destdir, credentials_path(credentials_file))
+        ]
+      end
+
+      if registration_url
+        SUSE::Connect::YaST.write_config("url" => registration_url)
+        files << [
+          SUSE::Connect::Config::DEFAULT_CONFIG_FILE,
+          File.join(Yast::Installation.destdir, SUSE::Connect::Config::DEFAULT_CONFIG_FILE)
         ]
       end
 
