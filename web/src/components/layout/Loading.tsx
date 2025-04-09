@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Bullseye, EmptyState, Spinner } from "@patternfly/react-core";
+import { EmptyState, Spinner } from "@patternfly/react-core";
 import { PlainLayout } from "~/components/layout";
 import { LayoutProps } from "~/components/layout/Layout";
 import { _ } from "~/i18n";
@@ -38,9 +38,7 @@ function Loading({
   const Wrapper = useLayout ? Layout : React.Fragment;
   return (
     <Wrapper>
-      <Bullseye>
-        <EmptyState variant="xl" titleText={text} headingLevel="h1" icon={LoadingIcon} />
-      </Bullseye>
+      <EmptyState variant="xl" titleText={text} headingLevel="h1" icon={LoadingIcon} />
     </Wrapper>
   );
 }
