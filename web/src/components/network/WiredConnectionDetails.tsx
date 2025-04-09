@@ -35,7 +35,6 @@ import {
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import { Connection, Device } from "~/types/network";
-import { isEmpty } from "~/utils";
 import { formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
 import { useNetworkDevices } from "~/queries/network";
@@ -79,21 +78,26 @@ const IpDetails = ({ connection, device }: { connection: Connection; device: Dev
     >
       <DescriptionList isHorizontal>
         <DescriptionListGroup>
-          <DescriptionListTerm>{_("IPv4 Mode")}</DescriptionListTerm>
-          <DescriptionListDescription>{connection.method4}</DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("IPv6 Mode")}</DescriptionListTerm>
-          <DescriptionListDescription>{connection.method6}</DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("IPv4 Gateway")}</DescriptionListTerm>
-          <DescriptionListDescription>{device.gateway4}</DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("IPv6 Gateway")}</DescriptionListTerm>
+          <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
           <DescriptionListDescription>
-            {isEmpty(device.gateway6) ? _("None") : device.gateway6}
+            <Flex direction={{ default: "column" }}>
+              <FlexItem>
+                {_("IPv4")} {connection.method4}
+              </FlexItem>
+              <FlexItem>
+                {_("IPv6")} {connection.method6}
+              </FlexItem>
+              <FlexItem>{device.gateway6}</FlexItem>
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              <FlexItem>{device.gateway4}</FlexItem>
+              <FlexItem>{device.gateway6}</FlexItem>
+            </Flex>
           </DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>

@@ -35,7 +35,6 @@ import {
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import { Device, WifiNetwork } from "~/types/network";
-import { isEmpty } from "~/utils";
 import { formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -65,106 +64,97 @@ const NetworkDetails = ({ network }: { network: WifiNetwork }) => {
   );
 };
 
-// FIXME:
-// - should we use utils/network#connectionAddresses here?
-// - should we present IPv4 and IPv6 separated as it is done with method and
-// gateway
-// - fix the device.method -> disabled bug
-// - Choose one style for rendering v4 and v6 stuff: the one used in method or
-// the other used in gateway
-// - check the "Change configuration" link. device.connection is the
-// network.ssid while in wlan the connection id is the interface (?)
 const DeviceDetails = ({ device }: { device: Device }) => {
   if (!device) return;
 
   return (
-    <>
-      <Page.Section title={_("Device")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
-        <DescriptionList aria-label={_("Connection details")} isHorizontal>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("Interface")}</DescriptionListTerm>
-            <DescriptionListDescription>{device.name}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("Status")}</DescriptionListTerm>
-            <DescriptionListDescription>{device.state}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("MAC")}</DescriptionListTerm>
-            <DescriptionListDescription>{device.macAddress}</DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
-      </Page.Section>
-    </>
+    <Page.Section title={_("Device")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+      <DescriptionList aria-label={_("Connection details")} isHorizontal>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Interface")}</DescriptionListTerm>
+          <DescriptionListDescription>{device.name}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Status")}</DescriptionListTerm>
+          <DescriptionListDescription>{device.state}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("MAC")}</DescriptionListTerm>
+          <DescriptionListDescription>{device.macAddress}</DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+    </Page.Section>
   );
 };
 
-const IpDetails = ({ device }: { device: Device }) => {
+const IpDetails = ({ device, settings }: { device: Device; settings: WifiNetwork["settings"] }) => {
   if (!device) return;
 
   return (
-    <>
-      <Page.Section
-        title={_("IP settings")}
-        pfCardProps={{ isPlain: false, isFullHeight: false }}
-        actions={
-          <Link to={generatePath(NETWORK.editConnection, { id: device.connection })}>
-            {_("Edit")}
-          </Link>
-        }
-      >
-        <DescriptionList isHorizontal>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("IPv4 Mode")}</DescriptionListTerm>
-            <DescriptionListDescription>{device.method4}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("IPv6 Mode")}</DescriptionListTerm>
-            <DescriptionListDescription>{device.method6}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("IPv4 Gateway")}</DescriptionListTerm>
-            <DescriptionListDescription>{device.gateway4}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("IPv6 Gateway")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              {isEmpty(device.gateway6) ? _("None") : device.gateway6}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                {device.addresses.map((ip, idx) => (
-                  <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
-                ))}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                {device.nameservers.map((dns, idx) => (
-                  <FlexItem key={idx}>{dns}</FlexItem>
-                ))}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_("Routes")}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex direction={{ default: "column" }}>
-                {device.routes4.map((route, idx) => (
-                  <FlexItem key={idx}>{formatIp(route.destination)}</FlexItem>
-                ))}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
-      </Page.Section>
-    </>
+    <Page.Section
+      title={_("IP settings")}
+      pfCardProps={{ isPlain: false, isFullHeight: false }}
+      actions={
+        <Link to={generatePath(NETWORK.editConnection, { id: device.connection })}>
+          {_("Edit")}
+        </Link>
+      }
+    >
+      <DescriptionList isHorizontal>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              <FlexItem>
+                {_("IPv4")} {settings.method4}
+              </FlexItem>
+              <FlexItem>
+                {_("IPv6")} {settings.method6}
+              </FlexItem>
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Addresses")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              {device.addresses.map((ip, idx) => (
+                <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
+              ))}
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              <FlexItem>{device.gateway4}</FlexItem>
+              <FlexItem>{device.gateway6}</FlexItem>
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              {device.nameservers.map((dns, idx) => (
+                <FlexItem key={idx}>{dns}</FlexItem>
+              ))}
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Routes")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              {device.routes4.map((route, idx) => (
+                <FlexItem key={idx}>{formatIp(route.destination)}</FlexItem>
+              ))}
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+    </Page.Section>
   );
 };
 
@@ -174,7 +164,7 @@ export default function WifiConnectionDetails({ network }: { network: WifiNetwor
   return (
     <Grid hasGutter>
       <GridItem md={6} order={{ default: "2", md: "1" }}>
-        <IpDetails device={network.device} />
+        <IpDetails device={network.device} settings={network.settings} />
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
