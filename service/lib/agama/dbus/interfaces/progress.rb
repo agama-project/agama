@@ -27,7 +27,7 @@ module Agama
       # Mixin to define the Progress D-Bus interface
       #
       # @note This mixin is expected to be included by a class which inherits from
-      #   {DBus::BaseObject} and includes the {Agama::DBus::WithProgress} mixin.
+      #   {DBus::BaseObject} and that includes the {Agama::DBus::WithProgress} mixin.
       #
       # @example
       #   class Demo < Agama::DBus::BaseObject

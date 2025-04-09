@@ -27,7 +27,7 @@ module Agama
       # Mixin to define the ServiceStatus D-Bus interface
       #
       # @note This mixin is expected to be included by a class which inherits from
-      #   {DBus::BaseObject} and includes the {Agama::DBus::WithServiceStatus} mixin.
+      #   {DBus::BaseObject} and that includes the {Agama::DBus::WithServiceStatus} mixin.
       #
       # @example
       #   class Demo < ::DBus::Object
