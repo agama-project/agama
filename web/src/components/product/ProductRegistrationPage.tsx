@@ -44,7 +44,7 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
-import { AddonInfo, RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
+import { RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
 import {
   useProduct,
@@ -100,7 +100,7 @@ const RegisteredProductSection = () => {
   );
 };
 
-const RegisteredExtensionSection = (info: RegisteredAddonInfo) => {
+const RegisteredExtensionSection = ({ extension }) => {
   const [showCode, setShowCode] = useState(false);
 
   // TRANSLATORS: %s will be replaced by the registration key.
@@ -109,7 +109,7 @@ const RegisteredExtensionSection = (info: RegisteredAddonInfo) => {
   return (
     <span>
       {msg1}
-      {showCode ? info.registrationCode : mask(info.registrationCode)}
+      {showCode ? extension.registrationCode : mask(extension.registrationCode)}
       {msg2}{" "}
       <Button variant="link" isInline onClick={() => setShowCode(!showCode)}>
         {showCode ? _("Hide") : _("Show")}
@@ -209,29 +209,29 @@ const HostnameAlert = () => {
   );
 };
 
-const Extension = (ext: AddonInfo) => {
+const Extension = ({ extension }) => {
   const { mutate: registerAddon } = useRegisterAddonMutation();
   const registeredExtensions = useRegisteredAddons();
   const [regCode, setRegCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const onRegisterError = ({ response }) => {
     setError(response.data.message);
   };
 
   const registered = registeredExtensions.find(
-    (e) => e.id === ext.id && (e.version === ext.version || e.version === null),
+    (e) => e.id === extension.id && (e.version === extension.version || e.version === null),
   );
-  const [loading, setLoading] = useState(false);
 
   const submit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setLoading(true);
 
     const data: RegisteredAddonInfo = {
-      id: ext.id,
+      id: extension.id,
       // TODO: make version optional
-      version: ext.version,
+      version: extension.version,
       registrationCode: regCode,
     };
 
@@ -240,7 +240,7 @@ const Extension = (ext: AddonInfo) => {
   };
 
   return (
-    <DataListItem key={`${ext.id}-${ext.version}`}>
+    <DataListItem key={`${extension.id}-${extension.version}`}>
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
@@ -248,28 +248,28 @@ const Extension = (ext: AddonInfo) => {
               <Stack hasGutter>
                 <div>
                   {/* remove the "(BETA)" suffix, we display a Beta label instead */}
-                  <b>{ext.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
-                  {ext.release === "beta" && (
+                  <b>{extension.label.replace(/\s*\(beta\)$/i, "")}</b>{" "}
+                  {extension.release === "beta" && (
                     <Label color="blue" isCompact>
                       {_("Beta")}
                     </Label>
                   )}
-                  {ext.recommended && (
+                  {extension.recommended && (
                     <Label color="orange" isCompact>
                       {_("Recommended")}
                     </Label>
                   )}
                 </div>
-                <div>{ext.description}</div>
+                <div>{extension.description}</div>
                 {registered ? (
-                  RegisteredExtensionSection(registered)
-                ) : ext.available ? (
-                  <Form id={`register-form-${ext.id}-${ext.version}`} onSubmit={submit}>
+                  <RegisteredExtensionSection extension={registered} />
+                ) : extension.available ? (
+                  <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
                     {error && <Alert variant="warning" isInline title={error} />}
-                    {!ext.free && (
+                    {!extension.free && (
                       <FormGroup label={KEY_LABEL}>
                         <RegistrationCodeInput
-                          id={`reg-code-${ext.id}-${ext.version}`}
+                          id={`reg-code-${extension.id}-${extension.version}`}
                           value={regCode}
                           onChange={(_, v) => setRegCode(v)}
                         />
@@ -300,7 +300,9 @@ const Extension = (ext: AddonInfo) => {
 
 const Extensions = () => {
   const extensions = useAddons();
-  const extensionComponents = extensions.map((ext) => Extension(ext));
+  const extensionComponents = extensions.map((ext) => (
+    <Extension key={`extension-${ext.id}-${ext.version}`} extension={ext} />
+  ));
 
   return (
     <>
