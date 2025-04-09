@@ -33,7 +33,7 @@ require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/storage/volume_conversion"
-require "agama/dbus/storage/with_iscsi_auth"
+require "agama/dbus/with_progress"
 require "agama/dbus/with_service_status"
 require "agama/storage/encryption_settings"
 require "agama/storage/proposal_settings"
@@ -46,7 +46,7 @@ module Agama
     module Storage
       # D-Bus object to manage storage installation
       class Manager < BaseObject # rubocop:disable Metrics/ClassLength
-        include WithISCSIAuth
+        include WithProgress
         include WithServiceStatus
         include ::DBus::ObjectManager
         include DBus::Interfaces::Issues
@@ -60,10 +60,12 @@ module Agama
         # Constructor
         #
         # @param backend [Agama::Storage::Manager]
-        # @param logger [Logger]
-        def initialize(backend, logger)
+        # @param service_status [Agama::DBus::ServiceStatus, nil]
+        # @param logger [Logger, nil]
+        def initialize(backend, service_status: nil, logger: nil)
           super(PATH, logger: logger)
           @backend = backend
+          @service_status = service_status
           @encryption_methods = read_encryption_methods
           @actions = read_actions
 
@@ -75,6 +77,10 @@ module Agama
           register_software_callbacks
 
           add_s390_interfaces if Yast::Arch.s390
+        end
+
+        def locale=(locale)
+          backend.locale = locale
         end
 
         # List of issues, see {DBus::Interfaces::Issues}
@@ -99,13 +105,12 @@ module Agama
           end
         end
 
+        # @todo Drop support for the guided settings.
+        #
         # Applies the given serialized config according to the JSON schema.
         #
         # The JSON schema supports two different variants:
         # { "storage": ... } or { "legacyAutoyastStorage": ... }.
-        #
-        # @note The guided settings ({ "storage": { "guided": ... } }) are supported too, but it
-        #   will be removed from the JSON schema.
         #
         # @raise If the config is not valid.
         #
@@ -345,7 +350,7 @@ module Agama
             [default_volume(mount_path)]
           end
 
-          # @todo Receive guided json settings.
+          # @deprecated Use #Storage1.SetConfig
           #
           # result: 0 success; 1 error
           dbus_method(:Calculate, "in settings_dbus:a{sv}, out result:u") do |settings_dbus|
@@ -367,7 +372,7 @@ module Agama
         #
         # @param value [String]
         def initiator_name=(value)
-          backend.iscsi.initiator.name = value
+          backend.iscsi.update_initiator(name: value)
         end
 
         # Whether the initiator name was set via iBFT
@@ -385,11 +390,18 @@ module Agama
         #   @option Username [String] Username for authentication by target
         #   @option Password [String] Password for authentication by target
         #   @option ReverseUsername [String] Username for authentication by initiator
-        #   @option ReversePassword [String] Username for authentication by inititator
+        #   @option ReversePassword [String] Password for authentication by inititator
         #
         # @return [Integer] 0 on success, 1 on failure
         def iscsi_discover(address, port, options = {})
-          success = backend.iscsi.discover_send_targets(address, port, iscsi_auth(options))
+          credentials = {
+            username:           options["Username"],
+            password:           options["Password"],
+            initiator_username: options["ReverseUsername"],
+            initiator_password: options["ReversePassword"]
+          }
+
+          success = backend.iscsi.discover(address, port, credentials: credentials)
           success ? 0 : 1
         end
 
@@ -423,10 +435,6 @@ module Agama
           end
 
           dbus_method(:Delete, "in node:o, out result:u") { |n| iscsi_delete(n) }
-        end
-
-        def locale=(locale)
-          backend.locale = locale
         end
 
       private
@@ -469,16 +477,18 @@ module Agama
         end
 
         def register_iscsi_callbacks
-          backend.iscsi.on_activate do
-            properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
-            dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
-          end
-
           backend.iscsi.on_probe do
+            iscsi_initiator_properties_changed
             refresh_iscsi_nodes
           end
 
           backend.iscsi.on_sessions_change do
+            # Currently, the system is set as deprecated instead of reprobing automatically. This
+            # is done so to avoid a reprobing after each single session change performed by the UI.
+            # Clients are expected to request a reprobing if they detect a deprecated system.
+            #
+            # If the UI is adapted to use the new iSCSI API (i.e., #SetConfig), then this behaviour
+            # should be reevaluated. Ideally, the system would be reprobed if the sessions change.
             deprecate_system
           end
         end
@@ -498,6 +508,11 @@ module Agama
         def proposal_properties_changed
           properties = interfaces_and_properties[PROPOSAL_CALCULATOR_INTERFACE]
           dbus_properties_changed(PROPOSAL_CALCULATOR_INTERFACE, properties, [])
+        end
+
+        def iscsi_initiator_properties_changed
+          properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
+          dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
         end
 
         def deprecate_system

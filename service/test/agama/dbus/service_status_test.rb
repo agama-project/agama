@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -56,8 +56,10 @@ describe Agama::DBus::ServiceStatus do
   describe "#busy" do
     before do
       subject.idle
-      subject.on_change { logger.info("change status") }
+      subject.on_change(&callback)
     end
+
+    let(:callback) { proc {} }
 
     it "sets the service status as busy" do
       subject.busy
@@ -65,7 +67,7 @@ describe Agama::DBus::ServiceStatus do
     end
 
     it "runs the 'on_change' callbacks" do
-      expect(logger).to receive(:info).with(/change status/)
+      expect(callback).to receive(:call)
       subject.busy
     end
   end
@@ -73,8 +75,10 @@ describe Agama::DBus::ServiceStatus do
   describe "#idle" do
     before do
       subject.busy
-      subject.on_change { logger.info("change status") }
+      subject.on_change(&callback)
     end
+
+    let(:callback) { proc {} }
 
     it "sets the service status as idle" do
       subject.idle
@@ -82,8 +86,20 @@ describe Agama::DBus::ServiceStatus do
     end
 
     it "runs the 'on_change' callbacks" do
-      expect(logger).to receive(:info).with(/change status/)
+      expect(callback).to receive(:call)
       subject.idle
+    end
+  end
+
+  describe "#busy_while" do
+    let(:action) { proc {} }
+
+    it "sets the service status as busy, calls the given block and sets the service to idle" do
+      expect(subject).to receive(:idle)
+      expect(action).to receive(:call)
+      expect(subject).to receive(:busy)
+
+      subject.busy_while(&action)
     end
   end
 end

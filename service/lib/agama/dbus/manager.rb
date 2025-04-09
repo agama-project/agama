@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,18 +20,20 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "agama/manager"
-require "agama/dbus/base_object"
-require "agama/dbus/with_service_status"
-require "agama/dbus/interfaces/progress"
-require "agama/dbus/interfaces/locale"
-require "agama/dbus/interfaces/service_status"
 require "agama/autoyast/converter"
+require "agama/dbus/base_object"
+require "agama/dbus/interfaces/locale"
+require "agama/dbus/interfaces/progress"
+require "agama/dbus/interfaces/service_status"
+require "agama/dbus/with_progress"
+require "agama/dbus/with_service_status"
+require "agama/manager"
 
 module Agama
   module DBus
     # D-Bus object to manage the installation process
     class Manager < BaseObject
+      include WithProgress
       include WithServiceStatus
       include Interfaces::Progress
       include Interfaces::ServiceStatus

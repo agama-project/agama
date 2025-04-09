@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr  9 06:52:58 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add auto-installation support for iSCSI
+ (gh#agama-project/agama#2231).
+
+-------------------------------------------------------------------
 Wed Apr  9 06:42:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Write the registration URL to the installed system (bsc#1239316).

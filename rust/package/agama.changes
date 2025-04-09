@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr  9 05:35:22 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add HTTP API for configuring iSCSI (gh#agama-project/agama#2231).
+
+-------------------------------------------------------------------
 Tue Apr  8 22:04:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - "agama download" do not crash if it cannot mount a file system

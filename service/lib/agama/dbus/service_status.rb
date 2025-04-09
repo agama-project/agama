@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -61,6 +61,17 @@ module Agama
       def busy
         change_to(BUSY)
         self
+      end
+
+      # Sets the service status to busy meanwhile the given block is running
+      #
+      # @param block [Proc]
+      # @return [Object] the result of the given block
+      def busy_while(&block)
+        busy
+        block.call
+      ensure
+        idle
       end
 
       # Registers a callback to be called when the service status changes
