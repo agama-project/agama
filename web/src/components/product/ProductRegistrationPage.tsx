@@ -262,7 +262,7 @@ const Extension = ({ extension, unique }) => {
             {!extension.free && (
               <FormGroup label={KEY_LABEL}>
                 <RegistrationCodeInput
-                  id={`reg-code-${extension.id}-${extension.version}`}
+                  id={`input-reg-code-${extension.id}-${extension.version}`}
                   value={regCode}
                   onChange={(_, v) => setRegCode(v)}
                 />
@@ -270,7 +270,13 @@ const Extension = ({ extension, unique }) => {
             )}
 
             <ActionGroup>
-              <Button variant="primary" type="submit" isInline isLoading={loading}>
+              <Button
+                id={`register-button-${extension.id}-${extension.version}`}
+                variant="primary"
+                type="submit"
+                isInline
+                isLoading={loading}
+              >
                 {_("Register")}
               </Button>
             </ActionGroup>
