@@ -145,6 +145,27 @@ dd bs=1 count=1 seek=2G if=/dev/zero of=/var/lib/live_free_space
 
 ################################################################################
 # Reducing the used space
+#
+# Profile specific cleanup
+#
+
+# Extra cleanup for the MINI images
+if [[ "$kiwi_profiles" == *MINI* ]]
+  # remove the GPU drivers, not needed when running in text mode only,
+  # the related firmware is deleted by the script below
+  rm -rf /usr/lib/modules/*/kernel/drivers/gpu
+fi
+
+# Remove the SUSEConnect CLI tool from the openSUSE images and the mini PXE image,
+# keep it in the SLE images, it might be useful for testing/debugging
+# (Agama uses libsuseconnect.so directly via the Ruby bindings and does not need the CLI,
+# registration in theory would be still possible even in the openSUSE images)
+if [[ "$kiwi_profiles" == *MINI* ]] || [[ "$kiwi_profiles" == *Leap* ]] || [[ "$kiwi_profiles" == *openSUSE* ]]; then
+  rm -f /usr/bin/suseconnect
+fi
+
+################################################################################
+# Generic cleanup in all images
 
 # Clean-up logs
 rm /var/log/zypper.log /var/log/zypp/history
@@ -217,14 +238,6 @@ rpm -qa | grep ^Mesa | xargs --no-run-if-empty rpm -e --nodeps
 # remove unused SUSEConnect libzypp plugins
 rm -f /usr/lib/zypper/commands/zypper-migration
 rm -f /usr/lib/zypper/commands/zypper-search-packages
-
-# remove the SUSEConnect CLI tool from the openSUSE images and the mini PXE image,
-# keep it in the SLE images, it might be useful for testing/debugging
-# (Agama uses libsuseconnect.so directly via the Ruby bindings and does not need the CLI,
-# registration in theory would be still possible even in the openSUSE images)
-if [[ "$kiwi_profiles" == *MINI* ]] || [[ "$kiwi_profiles" == *Leap* ]] || [[ "$kiwi_profiles" == *openSUSE* ]]; then
-  rm -f /usr/bin/suseconnect
-fi
 
 # delete some FireFox audio codec support
 rm -f /usr/lib64/firefox/libmozavcodec.so
