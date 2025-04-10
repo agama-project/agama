@@ -45,34 +45,41 @@ jest.mock("~/components/layout/Layout", () => {
 });
 
 describe("Loading", () => {
-  it("renders given message", async () => {
-    plainRender(<Loading text="Doing something" />);
-    await screen.findByText("Doing something");
+  it("renders provided text", async () => {
+    plainRender(<Loading text="Loading something" />);
+    await screen.findByText("Loading something");
   });
 
-  describe("when not using a custom message", () => {
-    it("renders the default loading environment message", async () => {
-      plainRender(<Loading />);
-      await screen.findByText(/Loading installation environment/i);
-    });
+  it("uses provided aria-label", async () => {
+    plainRender(<Loading aria-label="Loading something" />);
+    const icon = await screen.findByLabelText("Loading something");
+    expect(icon).toHaveRole("progressbar");
   });
 
-  describe("when not using the useLayout prop or its value is false", () => {
-    it("does not wrap the content within a PlainLayout", () => {
-      const { rerender } = plainRender(<Loading text="Making a test" />);
-      expect(screen.queryByText("PlainLayout Mock")).toBeNull();
-      rerender(<Loading text="Making a test" useLayout={false} />);
-      expect(screen.queryByText("PlainLayout Mock")).toBeNull();
-    });
+  it("uses 'Loading' as default aria-label when neither text nor aria-label is provided", async () => {
+    plainRender(<Loading />);
+    const icon = await screen.findByLabelText("Loading");
+    expect(icon).toHaveRole("progressbar");
   });
 
-  describe("when using the useLayout prop", () => {
-    it("wraps the content within a PlainLayout with neither, header nor sidebar", () => {
-      installerRender(<Loading text="Making a test" useLayout />);
-      expect(screen.queryByText("Header Mock")).toBeNull();
-      expect(screen.queryByText("Sidebar Mock")).toBeNull();
-      screen.getByText("PlainLayout Mock");
-      screen.getByText("Making a test");
-    });
+  it("hides the spinner icon from a11y tree when text is given", () => {
+    const { container } = plainRender(<Loading text="Loading something" />);
+    const icon = container.querySelector("svg");
+    expect(icon).toHaveAttribute("aria-hidden");
+  });
+
+  it("wraps itself within a PlainLayout without header and sideabar when listenQuestions is enabled", () => {
+    installerRender(<Loading text="Making a test" listenQuestions />);
+    expect(screen.queryByText("Header Mock")).toBeNull();
+    expect(screen.queryByText("Sidebar Mock")).toBeNull();
+    screen.getByText("PlainLayout Mock");
+    screen.getByText("Making a test");
+  });
+
+  it("does not wrap itself within a PlainLayout when listenQuestions is not used or set to false", () => {
+    const { rerender } = plainRender(<Loading text="Making a test" />);
+    expect(screen.queryByText("PlainLayout Mock")).toBeNull();
+    rerender(<Loading text="Making a test" listenQuestions={false} />);
+    expect(screen.queryByText("PlainLayout Mock")).toBeNull();
   });
 });
