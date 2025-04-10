@@ -209,6 +209,21 @@ fi
 # remove OpenGL support
 rpm -qa | grep ^Mesa | xargs --no-run-if-empty rpm -e --nodeps
 
+# remove unused SUSEConnect libzypp plugins
+rm -f /usr/lib/zypper/commands/zypper-migration
+rm -f /usr/lib/zypper/commands/zypper-search-packages
+
+# remove the SUSEConnect CLI tool from the openSUSE images and the mini PXE image,
+# keep it in the SLE images, it might be useful for testing/debugging
+# (Agama uses libsuseconnect.so directly via the Ruby bindings and does not need the CLI,
+# registration in theory would be still possible even in the openSUSE images)
+if [[ "$kiwi_profiles" == *MINI* ]] || [[ "$kiwi_profiles" == *Leap* ]] || [[ "$kiwi_profiles" == *openSUSE* ]]; then
+  rm -f /usr/bin/suseconnect
+fi
+
+# delete some FireFox audio codec support
+rm -f /usr/lib64/firefox/libmozavcodec.so
+
 # uninstall libyui-qt and libqt (pulled in by the YaST dependencies),
 # not present in SLES, do not fail if not installed
 if rpm -q --whatprovides libyui-qt libyui-qt-pkg > /dev/null; then
