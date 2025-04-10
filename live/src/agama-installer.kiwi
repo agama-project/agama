@@ -127,7 +127,6 @@
         <package name="kernel-firmware"/>
         <package name="adaptec-firmware"/>
         <package name="atmel-firmware"/>
-        <package name="bluez-firmware"/>
         <package name="ipw-firmware"/>
         <package name="mpt-firmware"/>
         <package name="zd1211-firmware"/>
@@ -162,6 +161,7 @@
 
     <!-- packages for local installation (desktop, browser, etc.) -->
     <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE,openSUSE,openSUSE_PXE,SUSE_SLE_16,SUSE_SLE_16_PXE">
+        <package name="bluez-firmware"/>
         <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
@@ -209,10 +209,10 @@
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
-        <package name="kernel-default-extra"/>
     </packages>
     <packages type="image" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE">
         <package name="MozillaFirefox-branding-SLE"/>
+        <package name="kernel-default-extra"/>
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>
