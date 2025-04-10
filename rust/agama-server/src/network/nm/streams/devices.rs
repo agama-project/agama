@@ -29,13 +29,15 @@ use std::{
 use tokio_stream::{Stream, StreamMap};
 use zbus::{
     fdo::{InterfacesAdded, InterfacesRemoved, PropertiesChanged},
-    message::Type as MessageType,
+    message::Type as essageType,
     names::InterfaceName,
     zvariant::OwnedObjectPath,
     MatchRule, Message, MessageStream,
 };
 
 use crate::network::nm::proxies::DeviceProxy;
+
+use super::common::{build_added_and_removed_stream, build_properties_changed_stream};
 
 /// Stream of device-related events.
 ///
@@ -176,33 +178,6 @@ impl Stream for DeviceChangedStream {
             }
         })
     }
-}
-
-async fn build_added_and_removed_stream(
-    connection: &zbus::Connection,
-) -> Result<MessageStream, ServiceError> {
-    let rule = MatchRule::builder()
-        .msg_type(MessageType::Signal)
-        .path("/org/freedesktop")?
-        .interface("org.freedesktop.DBus.ObjectManager")?
-        .build();
-    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
-    Ok(stream)
-}
-
-/// Returns a stream of properties changes to be used by DeviceChangedStream.
-///
-/// It listens for changes in several objects that are related to a network device.
-async fn build_properties_changed_stream(
-    connection: &zbus::Connection,
-) -> Result<MessageStream, ServiceError> {
-    let rule = MatchRule::builder()
-        .msg_type(MessageType::Signal)
-        .interface("org.freedesktop.DBus.Properties")?
-        .member("PropertiesChanged")?
-        .build();
-    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
-    Ok(stream)
 }
 
 #[derive(Debug, Clone)]
