@@ -36,7 +36,10 @@ pub struct BootloaderSettings {
 
 impl BootloaderSettings {
     pub fn to_option(self) -> Option<Self> {
-        if self.stop_on_boot_menu.is_none() && self.timeout.is_none() && self.extra_kernel_params.is_none() {
+        if self.stop_on_boot_menu.is_none()
+            && self.timeout.is_none()
+            && self.extra_kernel_params.is_none()
+        {
             None
         } else {
             Some(self)
