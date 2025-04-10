@@ -95,6 +95,7 @@
         <source path="obsrepositories:/"/>
     </repository>
     <packages type="image" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
+        <package name="NetworkManager-config-server"/>
         <package name="dracut-kiwi-oem-repart"/>
         <package name="dracut-kiwi-oem-dump"/>
         <archive name="root-PXE.tar.xz"/>
