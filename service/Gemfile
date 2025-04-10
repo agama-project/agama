@@ -25,5 +25,8 @@ source "https://rubygems.org"
 gemspec
 
 group :development do
+  # undeclared dependency of rubocop
+  gem "base64"
   gem "byebug"
+  gem "rubocop", "1.24.1"
 end

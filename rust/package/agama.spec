@@ -142,35 +142,17 @@ cargo run --package xtask -- completions
 cargo run --package xtask -- openapi
 
 %install
-install -D -d -m 0755 %{buildroot}%{_bindir}
-install -m 0755 %{_builddir}/agama/target/release/agama %{buildroot}%{_bindir}/agama
-install -m 0755 %{_builddir}/agama/target/release/agama-dbus-server %{buildroot}%{_bindir}/agama-dbus-server
-install -m 0755 %{_builddir}/agama/target/release/agama-web-server %{buildroot}%{_bindir}/agama-web-server
-install -D -p -m 644 %{_builddir}/agama/share/agama.pam $RPM_BUILD_ROOT%{_pam_vendordir}/agama
-install -D -d -m 0755 %{buildroot}%{_datadir}/agama-cli
-install -m 0644 %{_builddir}/agama/agama-lib/share/profile.schema.json %{buildroot}%{_datadir}/agama-cli
-install -m 0644 %{_builddir}/agama/agama-lib/share/storage.schema.json %{buildroot}%{_datadir}/agama-cli
-install -m 0644 %{_builddir}/agama/agama-lib/share/storage.model.schema.json %{buildroot}%{_datadir}/agama-cli
-install -m 0644 %{_builddir}/agama/share/agama.libsonnet %{buildroot}%{_datadir}/agama-cli
-install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
-install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/org.opensuse.Agama1.service
-install -D -m 0644 %{_builddir}/agama/share/agama-web-server.service %{buildroot}%{_unitdir}/agama-web-server.service
-install -D -d -m 0755 %{buildroot}%{_libexecdir}
-install -D -m 0755 %{_builddir}/agama/share/agama-scripts.sh %{buildroot}%{_libexecdir}/agama-scripts.sh
-install -D -m 0644 %{_builddir}/agama/share/agama-scripts.service %{buildroot}%{_unitdir}/agama-scripts.service
-
-# install manpages
-mkdir -p %{buildroot}%{_mandir}/man1
-install -m 0644 %{_builddir}/agama/out/man/* %{buildroot}%{_mandir}/man1/
-
-# install shell completion scripts
-install -Dm644 %{_builddir}/agama/out/shell/%{name}.bash %{buildroot}%{_datadir}/bash-completion/completions/%{name}
-install -Dm644 %{_builddir}/agama/out/shell/_%{name} %{buildroot}%{_datadir}/zsh/site-functions/_%{name}
-install -Dm644 %{_builddir}/agama/out/shell/%{name}.fish %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
-
-# install OpenAPI specification
-mkdir -p %{buildroot}%{_datadir}/agama/openapi
-install -m 0644 %{_builddir}/agama/out/openapi/* %{buildroot}%{_datadir}/agama/openapi
+env \
+  SRCDIR=%{_builddir}/agama \
+  DESTDIR=%{buildroot} \
+  NAME=%{name} \
+  bindir=%{_bindir} \
+  datadir=%{_datadir} \
+  pamvendordir=%{_pam_vendordir} \
+  unitdir=%{_unitdir} \
+  libexecdir=%{_libexecdir} \
+  mandir=%{_mandir} \
+  %{_builddir}/agama/install.sh
 
 %check
 PATH=$PWD/share/bin:$PATH

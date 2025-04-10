@@ -41,7 +41,8 @@ pub enum ServiceError {
     HTTPError(#[from] reqwest::Error),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
-    #[error("Error: {0}")]
+    // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
+    #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
     // FIXME: It is too generic and starting to looks like an Anyhow error
     #[error("Network client error: '{0}'")]
@@ -69,6 +70,9 @@ pub enum ServiceError {
     InternalError(String),
     #[error("Could not read the file: '{0}'")]
     CouldNotTransferFile(#[from] TransferError),
+    // FIXME reroute the error to a better place
+    #[error("Profile error: {0}")]
+    Profile(#[from] ProfileError),
 }
 
 #[derive(Error, Debug)]
@@ -81,6 +85,7 @@ pub enum ProfileError {
     InputOutputError(#[from] io::Error),
     #[error("The profile is not a valid JSON file")]
     FormatError(#[from] serde_json::Error),
-    #[error("Error: {0}")]
+    // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
+    #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
 }

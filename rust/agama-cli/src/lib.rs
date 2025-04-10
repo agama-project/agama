@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::manager::FinishMethod;
-use anyhow::Context;
+use anyhow::{anyhow, Context};
 use clap::{Args, Parser};
 
 mod auth;
@@ -53,6 +53,7 @@ use std::{
     thread::sleep,
     time::Duration,
 };
+use url::Url;
 
 /// Agama's CLI global options
 #[derive(Args)]
@@ -153,14 +154,15 @@ async fn finish(manager: &ManagerClient<'_>, method: FinishMethod) -> anyhow::Re
     Ok(())
 }
 
+/// If D-Bus indicates that the backend is busy, show it on the terminal
 async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
     tokio::time::sleep(Duration::from_secs(1)).await;
     let conn = agama_lib::connection().await?;
     let mut monitor = ProgressMonitor::new(conn).await?;
-    let presenter = InstallerProgress::new();
+    let terminal_presenter = InstallerProgress::new();
     monitor
-        .run(presenter)
+        .run(terminal_presenter)
         .await
         .expect("failed to monitor the progress");
     Ok(())
@@ -222,6 +224,13 @@ async fn build_http_client(
     insecure: bool,
     authenticated: bool,
 ) -> Result<BaseHTTPClient, ServiceError> {
+    let parsed = Url::parse(&api_url).context("Parsing API URL")?;
+    if parsed.cannot_be_a_base() {
+        return Err(ServiceError::Anyhow(anyhow!(
+            "Do not try data: or mailto: as the API URL"
+        )));
+    }
+
     let mut client = BaseHTTPClient::default();
     client.base_url = api_url.to_string();
 
@@ -254,7 +263,10 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             wait_for_services(&manager).await?;
             probe().await?
         }
-        Commands::Profile(subcommand) => run_profile_cmd(subcommand).await?,
+        Commands::Profile(subcommand) => {
+            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            run_profile_cmd(client, subcommand).await?;
+        }
         Commands::Install => {
             let manager = build_manager().await?;
             install(&manager, 3).await?

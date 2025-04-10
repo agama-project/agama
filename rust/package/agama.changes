@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Apr  9 09:06:18 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Made `--api URL` work with `agama profile`
+  (gh#agama-project/agama#2103)
+  - Added /api/profile on the backend
+  - JSON validation error are more readable now
+  - Error messages do not start with "Anyhow(...)"
+  - Backend errors include causes
+
+-------------------------------------------------------------------
 Wed Apr  9 05:35:22 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add HTTP API for configuring iSCSI (gh#agama-project/agama#2231).
