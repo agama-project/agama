@@ -38,7 +38,7 @@ pub struct AutoyastProfileImporter {
 }
 
 impl AutoyastProfileImporter {
-    pub fn read(url: &Url) -> anyhow::Result<Self> {
+    pub async fn read(url: &Url) -> anyhow::Result<Self> {
         let path = url.path();
         if !path.ends_with(".xml") && !path.ends_with(".erb") && !path.ends_with('/') {
             let msg = format!("Unsupported AutoYaST format at {}", url);
@@ -49,9 +49,10 @@ impl AutoyastProfileImporter {
         const AUTOINST_JSON: &str = "autoinst.json";
 
         let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
-        Command::new("agama-autoyast")
+        tokio::process::Command::new("agama-autoyast")
             .args([url.as_str(), &tmp_dir.path().to_string_lossy()])
             .status()
+            .await
             .context("Failed to run agama-autoyast")?;
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
