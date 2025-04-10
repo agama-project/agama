@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,22 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Support for interacting with [NetworkManager](https://networkmanager.dev/).
-//!
-//! This module defines [a NetworkManager client](client::NetworkManagerClient) and a set of
-//! structs and enums to work with NetworkManager configuration. It is intended to be used
-//! internally, so the API is focused on Agama's use cases.
+mod devices;
 
-mod adapter;
-mod builder;
-mod client;
-mod dbus;
-mod error;
-mod model;
-mod proxies;
-mod streams;
-mod watcher;
-
-pub use adapter::NetworkManagerAdapter;
-pub use client::NetworkManagerClient;
-pub use watcher::NetworkManagerWatcher;
+pub use devices::{DeviceChange, DeviceChangedStream, ProxiesRegistry};
