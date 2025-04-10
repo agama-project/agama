@@ -64,8 +64,13 @@ systemctl enable x11-autologin.service
 test -f  /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
-# default target
-systemctl set-default graphical.target
+# set the default target
+if [[ "$kiwi_profiles" == *MINI* ]]; then
+  # the MINI images do not include graphical environment
+  systemctl set-default multi-user.target
+else
+  systemctl set-default graphical.target
+fi
 
 # disable snapshot cleanup
 systemctl disable snapper-cleanup.timer
