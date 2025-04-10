@@ -295,9 +295,12 @@ rpm -e --nodeps Mesa-gallium || true
 rm -rf /usr/lib*/libmfxhw*.so.* /usr/lib*/mfx/
 
 # the new, optional nvidia gsp firmware blobs are huge - ~ 70MB
-du -h -s /lib/firmware/nvidia
-find /lib/firmware/nvidia -name gsp | xargs -r rm -rf
-du -h -s /lib/firmware/nvidia
+if [ -e /lib/firmware/nvidia ]; then
+  du -h -s /lib/firmware/nvidia
+  find /lib/firmware/nvidia -name gsp | xargs -r rm -rf
+  du -h -s /lib/firmware/nvidia
+fi
+
 # The gems are unpackaged already, no need to store them twice
 du -h -s /usr/lib*/ruby/gems/*/cache/
 rm -rf /usr/lib*/ruby/gems/*/cache/
