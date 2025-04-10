@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 set -ex
 
@@ -61,7 +61,7 @@ systemctl enable checkmedia.service
 systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
-systemctl enable spice-vdagentd.service
+test -f  /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # default target
@@ -207,7 +207,7 @@ if [ -n "$python" ]; then
 fi
 
 # remove OpenGL support
-rpm -qa | grep ^Mesa | xargs rpm -e --nodeps
+rpm -qa | grep ^Mesa | xargs --no-run-if-empty rpm -e --nodeps
 
 # uninstall libyui-qt and libqt (pulled in by the YaST dependencies),
 # not present in SLES, do not fail if not installed
