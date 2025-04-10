@@ -150,7 +150,7 @@ dd bs=1 count=1 seek=2G if=/dev/zero of=/var/lib/live_free_space
 #
 
 # Extra cleanup for the MINI images
-if [[ "$kiwi_profiles" == *MINI* ]]
+if [[ "$kiwi_profiles" == *MINI* ]]; then
   # remove the GPU drivers, not needed when running in text mode only,
   # the related firmware is deleted by the script below
   rm -rf /usr/lib/modules/*/kernel/drivers/gpu
