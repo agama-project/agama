@@ -83,9 +83,16 @@ module Agama
       # convert addons according to the new schema
       def convert_addons(addons)
         addons.map do |a|
-          addon = { "id" => a["name"], "version" => a["version"] }
+          addon = { "id" => a["name"] }
+
+          version = a["version"].to_s
+          # omit the version if it was 11.x, 12.x or 15.x, the version is now optional
+          version = "" if version.match(/^1[125]\.\d$/)
+          addon["version"] = version unless version.empty?
+
           code = a["reg_code"].to_s
           addon["registrationCode"] = code unless code.empty?
+
           addon
         end
       end

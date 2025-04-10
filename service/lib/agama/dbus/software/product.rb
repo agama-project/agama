@@ -24,6 +24,7 @@ require "suse/connect"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/clients/locale"
+require "agama/errors"
 require "agama/registration"
 
 module Agama
@@ -143,7 +144,8 @@ module Agama
           backend.registration.registered_addons.map do |addon|
             [
               addon.name,
-              addon.version,
+              # return empty string if the version was not explicitly specified (was autodetected)
+              addon.required_version ? addon.version : "",
               addon.reg_code
             ]
           end
@@ -199,7 +201,8 @@ module Agama
         #   have to explicitly call to #Probe after registering a product.
         #
         # @param name [String] name (id) of the addon, e.g. "sle-ha"
-        # @param version [String] version of the addon, e.g. "16.0"
+        # @param version [String] version of the addon, e.g. "16.0", if empty the version is found
+        #   automatically in the list of available addons
         # @param reg_code [String] registration code, if the code is not required for the addon use
         # an empty string ("")
         #
@@ -216,6 +219,8 @@ module Agama
         #   8: incorrect credentials
         #   9: invalid certificate
         #   10: internal error (e.g., parsing json data)
+        #   11: addon not found
+        #   12: addon found in multiple versions
         def register_addon(name, version, reg_code)
           if !backend.product
             [1, "Product not selected yet"]
@@ -335,6 +340,10 @@ module Agama
           connect_result_from_error(e, first_error_code + 5, "invalid certificate")
         rescue JSON::ParserError => e
           connect_result_from_error(e, first_error_code + 6)
+        rescue Errors::Registration::ExtensionNotFound => e
+          connect_result_from_error(e, first_error_code + 7)
+        rescue Errors::Registration::MultipleExtensionsFound => e
+          connect_result_from_error(e, first_error_code + 8)
         end
 
         # Generates a result from a given error.

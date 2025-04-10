@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Wed Apr  9 12:38:21 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix flickering issue during loading and progress transitions
+  (gh#agama-project/agama#2240, gh#agama-project/agama#2255).
+
+-------------------------------------------------------------------
+Wed Apr  9 05:36:35 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix layout of iSCSI page (gh#agama-project/agama#2231).
+
+-------------------------------------------------------------------
+Tue Apr  1 08:53:43 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix reloading data after reprobing devices
+  (gh#agama-project/agama#2235).
+
+-------------------------------------------------------------------
 Thu Mar 27 12:40:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 13

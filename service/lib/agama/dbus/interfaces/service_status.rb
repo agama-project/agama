@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,21 +26,18 @@ module Agama
     module Interfaces
       # Mixin to define the ServiceStatus D-Bus interface
       #
-      # @note This mixin is expected to be included in a class inherited from {::DBus::Object} and
-      #   it requires a #service_status method that returns a {Agama::DBus::ServiceStatus}
-      #   object.
+      # @note This mixin is expected to be included by a class which inherits from
+      #   {DBus::BaseObject} and that includes the {Agama::DBus::WithServiceStatus} mixin.
       #
       # @example
       #   class Demo < ::DBus::Object
+      #     include Agama::DBus::WithServiceStatus
       #     include Agama::DBus::Interfaces::ServiceStatus
       #
       #     def initialize
       #       super("org.test.Demo")
       #       register_service_status_callbacks
       #     end
-      #
-      #     def service_status
-      #       @service_status ||= Agama::DBus::ServiceStatus.new
       #   end
       module ServiceStatus
         SERVICE_STATUS_INTERFACE = "org.opensuse.Agama1.ServiceStatus"

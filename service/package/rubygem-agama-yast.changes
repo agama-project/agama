@@ -1,11 +1,39 @@
 -------------------------------------------------------------------
+Wed Apr  9 06:52:58 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add auto-installation support for iSCSI
+ (gh#agama-project/agama#2231).
+
+-------------------------------------------------------------------
+Wed Apr  9 06:42:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Write the registration URL to the installed system (bsc#1239316).
+
+-------------------------------------------------------------------
+Tue Apr  1 12:44:57 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Make the extension version attribute optional, search the version
+  automatically if it is missing (related to jsc#AGM-100)
+
+-------------------------------------------------------------------
+Fri Mar 28 21:45:56 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify bootloader timeout in profile (jsc#PED-10810)
+
+-------------------------------------------------------------------
+Fri Mar 28 19:22:51 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy the hostname to the installed system if it exists
+  (gh#agama-project/agama#2226).
+
+-------------------------------------------------------------------
 Fri Mar 28 11:13:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Properly map AutoYaST scripts "source" to "content"
   (gh#agama-project/agama#2224).
 
 -------------------------------------------------------------------
-Thu Mar 27 12:35:32 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+Thu Mar 28 09:30:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Always display the patterns from extensions (related to
   jsc#AGM-100)

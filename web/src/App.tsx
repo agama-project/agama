@@ -62,10 +62,10 @@ function App() {
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected) return <Loading useLayout />;
+    if (!products || !connected) return <Loading listenQuestions />;
 
     if (phase === InstallationPhase.Startup && isBusy) {
-      return <Loading useLayout />;
+      return <Loading listenQuestions />;
     }
 
     if (selectedProduct === undefined && location.pathname !== PRODUCT.root) {

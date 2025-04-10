@@ -71,6 +71,7 @@ module Agama
     # @return [Logger]
     attr_reader :logger
 
+    HOSTNAME = "/etc/hostname"
     RESOLV = "/etc/resolv.conf"
     RESOLV_FLAG = "/run/agama/manage_resolv"
     ETC_NM_DIR = "/etc/NetworkManager"
@@ -89,6 +90,8 @@ module Agama
 
     # Copies NetworkManager configuration files
     def copy_files
+      copy(HOSTNAME)
+
       return unless Dir.exist?(ETC_NM_DIR)
 
       # runtime configuration is copied first, so in case of later modification
@@ -116,6 +119,22 @@ module Agama
 
       FileUtils.mkdir_p(target)
       FileUtils.cp(Dir.glob(File.join(source, "*")), target)
+    end
+
+    # Copies a file
+    #
+    # This method checks whether the source file exists. It copies the file to the target system if
+    # it exists
+    #
+    # @param source [String] source file
+    # @param target [String,nil] target directory, only needed in case it is different to the
+    # original source path in the target system.
+    def copy(source, target = nil)
+      return unless File.exist?(source)
+
+      path = target || File.join(Yast::Installation.destdir, source)
+      FileUtils.mkdir_p(File.dirname(path))
+      FileUtils.copy_entry(source, path)
     end
   end
 end

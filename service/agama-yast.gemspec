@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   if File.exist?(File.join(__dir__, "../.git"))
     # the version is <version_tag>.devel<number_of_commits_since_the_tag>
     # or just <version_tag> if there are no additional commits
-    spec.version = `git describe --tags --match "v[0-9]*"`.chomp.sub(/^v/, "").sub(/-([0-9]+)-g\h+\Z/, ".devel\\1")
+    spec.version = `git describe --tags --match "v[0-9]*"`.chomp.sub(/^v/, "").sub(/-([0-9]+)-g(\h+)\Z/, ".devel\\1.\\2")
   else
     # running in yupdate script, use a fake version
     spec.version = "99.yupdate"
@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
   spec.email = "yast-devel@opensuse.org"
   spec.homepage = "https://github.com/openSUSE/agama"
   spec.license = "GPL-2.0-only"
-  spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "conf.d/*"]
+  spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "conf.d/*", "install.sh"]
   spec.executables = ["agamactl", "agama-proxy-setup", "agama-autoyast"]
   spec.metadata = { "rubygems_mfa_required" => "true" }
 

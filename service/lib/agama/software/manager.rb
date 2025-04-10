@@ -202,7 +202,7 @@ module Agama
         end
 
         logger.info "Commit result #{commit_result}"
-      rescue Agama::WithProgress::NotFinishedProgress => e
+      rescue Agama::NotFinishedProgress => e
         logger.error "There is an unfinished progress: #{e.inspect}"
         finish_progress
       end

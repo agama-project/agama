@@ -23,3 +23,15 @@ pub use initiator::InitiatorProxy;
 
 mod node;
 pub use node::NodeProxy;
+
+use zbus::proxy;
+#[proxy(
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1/ISCSI",
+    interface = "org.opensuse.Agama.Storage1.ISCSI",
+    assume_defaults = true
+)]
+pub trait ISCSI {
+    /// SetConfig method
+    fn set_config(&self, serialized_config: &str) -> zbus::Result<u32>;
+}

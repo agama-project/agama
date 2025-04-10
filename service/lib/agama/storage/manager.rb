@@ -60,15 +60,16 @@ module Agama
       # Constructor
       #
       # @param product_config [Agama::Config]
-      # @param logger [Logger]
-      def initialize(product_config, logger)
+      # @param logger [Logger, nil]
+      def initialize(product_config, logger: nil)
         textdomain "agama"
 
         @product_config = product_config
-        @logger = logger
+        @logger = logger || Logger.new($stdout)
         @bootloader = Bootloader.new(logger)
+
+        register_progress_callbacks
         register_proposal_callbacks
-        on_progress_change { logger.info progress.to_s }
       end
 
       # Whether the system is in a deprecated status
@@ -184,7 +185,9 @@ module Agama
       #
       # @return [Storage::ISCSI::Manager]
       def iscsi
-        @iscsi ||= ISCSI::Manager.new(logger: logger)
+        # Uses the same progress as manager. Note that the callbacks of the progess are configured
+        # by the D-Bus object in order to properly update the Progress D-Bus interface.
+        @iscsi ||= ISCSI::Manager.new(progress_manager: progress_manager, logger: logger)
       end
 
       # Returns the client to ask the software service
@@ -225,6 +228,10 @@ module Agama
         ENV["YAST_NO_BLS_BOOT"] = "1"
         # avoiding problems with cached values
         Y2Storage::StorageEnv.instance.reset_cache
+      end
+
+      def register_progress_callbacks
+        on_progress_change { logger.info(progress.to_s) }
       end
 
       # Issues are updated when the proposal is calculated

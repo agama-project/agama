@@ -54,6 +54,8 @@ libsystemd = "0.7.0"
 subprocess = "0.2.9"
 gethostname = "0.4.3"
 tokio-util = "0.7.12"
+tempfile = "3.13.0"
+url = "2.5.2"
 
 [[bin]]
 name = "agama-dbus-server"

@@ -34,7 +34,7 @@ use url::Url;
 
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
-    content: String,
+    pub content: String,
 }
 
 impl AutoyastProfileImporter {
@@ -55,7 +55,10 @@ impl AutoyastProfileImporter {
             .context("Failed to run agama-autoyast")?;
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
-        let content = fs::read_to_string(autoinst_json)?;
+        let content = fs::read_to_string(&autoinst_json).context(format!(
+            "agama-autoyast did not produce {:?}",
+            autoinst_json
+        ))?;
         Ok(Self { content })
     }
 
@@ -70,16 +73,38 @@ impl AutoyastProfileImporter {
     }
 }
 
-#[derive(Debug)]
-pub enum ValidationResult {
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
+pub enum ValidationOutcome {
     Valid,
     NotValid(Vec<String>),
+}
+
+impl std::fmt::Display for ValidationOutcome {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ValidationOutcome::Valid => {
+                writeln!(f, "The profile is valid.")
+            }
+            ValidationOutcome::NotValid(errors) => {
+                writeln!(
+                    f,
+                    "The profile is not valid. Please, check the following errors:\n",
+                )?;
+                for error in errors {
+                    writeln!(f, "\t* {error}")?;
+                }
+                Ok(())
+            }
+        }
+    }
 }
 
 /// Checks whether an autoinstallation profile is valid
 ///
 /// ```
-/// # use agama_lib::profile::{ProfileValidator, ValidationResult};
+/// # use agama_lib::profile::{ProfileValidator, ValidationOutcome};
 /// # use std::path::Path;
 /// let validator = ProfileValidator::new(
 ///   Path::new("share/profile.schema.json")
@@ -90,11 +115,11 @@ pub enum ValidationResult {
 ///   { "product": { "name": "Tumbleweed" } }
 /// "#;
 /// let result = validator.validate_str(&wrong_profile).unwrap();
-/// assert!(matches!(ValidationResult::NotValid, result));
+/// assert!(matches!(ValidationOutcome::NotValid, result));
 ///
 /// // or a file
 /// validator.validate_file(Path::new("share/examples/profile.json"));
-/// assert!(matches!(ValidationResult::Valid, result));
+/// assert!(matches!(ValidationOutcome::Valid, result));
 /// ```
 pub struct ProfileValidator {
     schema: JSONSchema,
@@ -129,19 +154,21 @@ impl ProfileValidator {
         Ok(Self { schema })
     }
 
-    pub fn validate_file(&self, profile_path: &Path) -> Result<ValidationResult, ProfileError> {
+    pub fn validate_file(&self, profile_path: &Path) -> Result<ValidationOutcome, ProfileError> {
         let contents = fs::read_to_string(profile_path)?;
         self.validate_str(&contents)
     }
 
-    pub fn validate_str(&self, profile: &str) -> Result<ValidationResult, ProfileError> {
+    pub fn validate_str(&self, profile: &str) -> Result<ValidationOutcome, ProfileError> {
         let contents = serde_json::from_str(profile)?;
         let result = self.schema.validate(&contents);
         if let Err(errors) = result {
-            let messages: Vec<String> = errors.map(|e| format!("{e}. {e:?}")).collect();
-            return Ok(ValidationResult::NotValid(messages));
+            let messages: Vec<String> = errors
+                .map(|e| format!("{}. {}", e, e.instance_path))
+                .collect();
+            return Ok(ValidationOutcome::NotValid(messages));
         }
-        Ok(ValidationResult::Valid)
+        Ok(ValidationOutcome::Valid)
     }
 }
 
@@ -153,19 +180,30 @@ impl ProfileValidator {
 pub struct ProfileEvaluator {}
 
 impl ProfileEvaluator {
-    pub fn evaluate(&self, profile_path: &Path, mut out_fd: impl Write) -> anyhow::Result<()> {
+    // TODO: if we want the web API to distinguish 400 from 500
+    // we should use a structured error here
+    pub fn evaluate(&self, profile_path: &Path) -> anyhow::Result<String> {
         let dir = tempdir()?;
-
         let working_path = dir.path().join("profile.jsonnet");
         fs::copy(profile_path, working_path)?;
+        self.evaluate_profile_jsonnet(&dir)
+    }
 
+    pub fn evaluate_string(&self, profile: &str) -> anyhow::Result<String> {
+        let dir = tempdir()?;
+        let working_path = dir.path().join("profile.jsonnet");
+        fs::write(working_path, dbg!(profile))?;
+        self.evaluate_profile_jsonnet(&dir)
+    }
+
+    fn evaluate_profile_jsonnet(&self, dir: &TempDir) -> anyhow::Result<String> {
         let hwinfo_path = dir.path().join("hw.libsonnet");
         self.write_hwinfo(&hwinfo_path)
             .context("Failed to read system's hardware information")?;
 
         let result = Command::new("/usr/bin/jsonnet")
             .arg("profile.jsonnet")
-            .current_dir(&dir)
+            .current_dir(dir)
             .output()
             .context("Failed to run jsonnet")?;
         if !result.status.success() {
@@ -173,8 +211,9 @@ impl ProfileEvaluator {
                 String::from_utf8(result.stderr).context("Invalid UTF-8 sequence from jsonnet")?;
             return Err(ProfileError::EvaluationError(message).into());
         }
-        out_fd.write_all(&result.stdout)?;
-        Ok(())
+        let output = String::from_utf8(result.stdout)
+            .context("Invalid UTF-8 sequence from jsonnet stdout")?;
+        Ok(output)
     }
 
     // Write the hardware information in JSON format to a given path and also helpers to help with it
