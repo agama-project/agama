@@ -130,7 +130,9 @@ module Agama
         FILES = [
           { dir: "/etc/udev/rules.d", file: "40-*" },
           { dir: "/etc/udev/rules.d", file: "41-*" },
-          { dir: "/etc/udev/rules.d", file: "70-persistent-net.rules" }
+          { dir: "/etc/udev/rules.d", file: "70-persistent-net.rules" },
+          { dir: "/etc/nvme", file: "hostnqn" },
+          { dir: "/etc/nvme", file: "hostid" }
         ].freeze
 
         def label
