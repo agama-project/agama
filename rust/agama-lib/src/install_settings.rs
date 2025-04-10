@@ -50,6 +50,9 @@ pub struct InstallSettings {
     pub files: Option<Vec<UserFile>>,
     #[serde(default)]
     pub hostname: Option<HostnameSettings>,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub iscsi: Option<Box<RawValue>>,
     #[serde(default, flatten)]
     pub user: Option<UserSettings>,
     #[serde(default)]
