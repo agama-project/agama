@@ -27,6 +27,8 @@ use std::{
 use thiserror::Error;
 use zbus;
 
+use super::settings::NetworkConnection;
+
 /// Network device
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -112,6 +114,33 @@ pub enum DeviceState {
     Disconnected,
     /// The device failed to connect to a network.
     Failed,
+}
+
+#[derive(
+    Default,
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum ConnectionState {
+    /// The connection is getting activated.
+    Activating,
+    /// The connection is activated.
+    Activated,
+    /// The connection is getting deactivated.
+    Deactivating,
+    #[default]
+    /// The connection is deactivated.
+    Deactivated,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
@@ -261,6 +290,17 @@ impl From<InvalidDeviceType> for zbus::fdo::Error {
     fn from(value: InvalidDeviceType) -> zbus::fdo::Error {
         zbus::fdo::Error::Failed(format!("Network error: {value}"))
     }
+}
+
+// FIXME: found a better place for the HTTP types.
+//
+// TODO: If the client ignores the additional "state" field, this struct
+// does not need to be here.
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct NetworkConnectionWithState {
+    #[serde(flatten)]
+    pub connection: NetworkConnection,
+    pub state: ConnectionState,
 }
 
 #[cfg(test)]

@@ -350,6 +350,12 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 let result = self.state.update_connection(*conn);
                 tx.send(result).unwrap();
             }
+            Action::ChangeConnectionState(id, state) => {
+                if let Some(conn) = self.state.get_connection_mut(&id) {
+                    conn.state = state;
+                    return Ok(Some(NetworkChange::ConnectionStateChanged { id, state }));
+                }
+            }
             Action::UpdateGeneralState(general_state) => {
                 self.state.general_state = general_state;
             }

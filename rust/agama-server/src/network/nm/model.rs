@@ -30,7 +30,7 @@ use crate::network::{
     model::{Ipv4Method, Ipv6Method, SecurityProtocol, WirelessMode},
     nm::error::NmError,
 };
-use agama_lib::network::types::DeviceType;
+use agama_lib::network::types::{ConnectionState, DeviceType};
 use std::fmt;
 use std::str::FromStr;
 
@@ -131,7 +131,7 @@ pub enum NmDeviceState {
 }
 
 #[derive(Debug, thiserror::Error, PartialEq)]
-#[error("Invalid state: {0}")]
+#[error("Unsupported device state: {0}")]
 pub struct InvalidNmDeviceState(String);
 
 impl TryFrom<u8> for NmDeviceState {
@@ -153,6 +153,40 @@ impl TryFrom<u8> for NmDeviceState {
             110 => Ok(NmDeviceState::Deactivating),
             120 => Ok(NmDeviceState::Failed),
             _ => Err(InvalidNmDeviceState(value.to_string())),
+        }
+    }
+}
+
+/// Connection type
+///
+/// As we are just converting the number to its high-level representation,
+/// a newtype might be enough.
+#[derive(Debug, Default, Clone, Copy)]
+pub struct NmConnectionState(pub u32);
+
+impl From<NmConnectionState> for u32 {
+    fn from(value: NmConnectionState) -> u32 {
+        value.0
+    }
+}
+
+impl fmt::Display for NmConnectionState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl TryFrom<NmConnectionState> for ConnectionState {
+    type Error = NmError;
+
+    fn try_from(value: NmConnectionState) -> Result<Self, Self::Error> {
+        match value {
+            NmConnectionState(0) => Ok(ConnectionState::Deactivated),
+            NmConnectionState(1) => Ok(ConnectionState::Activating),
+            NmConnectionState(2) => Ok(ConnectionState::Activated),
+            NmConnectionState(3) => Ok(ConnectionState::Deactivating),
+            NmConnectionState(4) => Ok(ConnectionState::Deactivated),
+            NmConnectionState(_) => Err(NmError::UnsupportedConnectionState(value.into())),
         }
     }
 }

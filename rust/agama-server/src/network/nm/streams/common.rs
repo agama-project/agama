@@ -19,7 +19,19 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::error::ServiceError;
-use zbus::{message::Type as MessageType, MatchRule, MessageStream};
+use zbus::{message::Type as MessageType, zvariant::OwnedObjectPath, MatchRule, MessageStream};
+
+#[derive(Debug, Clone)]
+pub enum NmChange {
+    DeviceAdded(OwnedObjectPath),
+    DeviceUpdated(OwnedObjectPath),
+    DeviceRemoved(OwnedObjectPath),
+    IP4ConfigChanged(OwnedObjectPath),
+    IP6ConfigChanged(OwnedObjectPath),
+    ActiveConnectionAdded(OwnedObjectPath),
+    ActiveConnectionUpdated(OwnedObjectPath),
+    ActiveConnectionRemoved(OwnedObjectPath),
+}
 
 pub async fn build_added_and_removed_stream(
     connection: &zbus::Connection,

@@ -22,22 +22,19 @@ use agama_lib::error::ServiceError;
 use futures_util::ready;
 use pin_project::pin_project;
 use std::{
-    collections::{hash_map::Entry, HashMap},
+    collections::HashMap,
     pin::Pin,
     task::{Context, Poll},
 };
 use tokio_stream::{Stream, StreamMap};
 use zbus::{
     fdo::{InterfacesAdded, InterfacesRemoved, PropertiesChanged},
-    message::Type as essageType,
     names::InterfaceName,
     zvariant::OwnedObjectPath,
-    MatchRule, Message, MessageStream,
+    Message, MessageStream,
 };
 
-use crate::network::nm::proxies::DeviceProxy;
-
-use super::common::{build_added_and_removed_stream, build_properties_changed_stream};
+use super::common::{build_added_and_removed_stream, build_properties_changed_stream, NmChange};
 
 /// Stream of device-related events.
 ///
@@ -70,7 +67,7 @@ impl DeviceChangedStream {
         Ok(Self { connection, inner })
     }
 
-    fn handle_added(message: InterfacesAdded) -> Option<DeviceChange> {
+    fn handle_added(message: InterfacesAdded) -> Option<NmChange> {
         let args = message.args().ok()?;
         let interfaces: Vec<String> = args
             .interfaces_and_properties()
@@ -80,25 +77,25 @@ impl DeviceChangedStream {
 
         if interfaces.contains(&"org.freedesktop.NetworkManager.Device".to_string()) {
             let path = OwnedObjectPath::from(args.object_path().clone());
-            return Some(DeviceChange::DeviceAdded(path));
+            return Some(NmChange::DeviceAdded(path));
         }
 
         None
     }
 
-    fn handle_removed(message: InterfacesRemoved) -> Option<DeviceChange> {
+    fn handle_removed(message: InterfacesRemoved) -> Option<NmChange> {
         let args = message.args().ok()?;
 
         let interface = InterfaceName::from_str_unchecked("org.freedesktop.NetworkManager.Device");
         if args.interfaces.contains(&interface) {
             let path = OwnedObjectPath::from(args.object_path().clone());
-            return Some(DeviceChange::DeviceRemoved(path));
+            return Some(NmChange::DeviceRemoved(path));
         }
 
         None
     }
 
-    fn handle_changed(message: PropertiesChanged) -> Option<DeviceChange> {
+    fn handle_changed(message: PropertiesChanged) -> Option<NmChange> {
         const IP_CONFIG_PROPS: &[&str] = &["AddressData", "Gateway", "NameserverData", "RouteData"];
         const DEVICE_PROPS: &[&str] = &[
             "DeviceType",
@@ -115,17 +112,17 @@ impl DeviceChangedStream {
         match args.interface_name.as_str() {
             "org.freedesktop.NetworkManager.IP4Config" => {
                 if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
-                    return Some(DeviceChange::IP4ConfigChanged(path));
+                    return Some(NmChange::IP4ConfigChanged(path));
                 }
             }
             "org.freedesktop.NetworkManager.IP6Config" => {
                 if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
-                    return Some(DeviceChange::IP6ConfigChanged(path));
+                    return Some(NmChange::IP6ConfigChanged(path));
                 }
             }
             "org.freedesktop.NetworkManager.Device" => {
                 if Self::include_properties(DEVICE_PROPS, &args.changed_properties) {
-                    return Some(DeviceChange::DeviceUpdated(path));
+                    return Some(NmChange::DeviceUpdated(path));
                 }
             }
             _ => {}
@@ -141,7 +138,7 @@ impl DeviceChangedStream {
         wanted.iter().any(|i| properties.contains(&i))
     }
 
-    fn handle_message(message: Result<Message, zbus::Error>) -> Option<DeviceChange> {
+    fn handle_message(message: Result<Message, zbus::Error>) -> Option<NmChange> {
         let Ok(message) = message else {
             return None;
         };
@@ -163,7 +160,7 @@ impl DeviceChangedStream {
 }
 
 impl Stream for DeviceChangedStream {
-    type Item = DeviceChange;
+    type Item = NmChange;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         let mut pinned = self.project();
@@ -177,103 +174,5 @@ impl Stream for DeviceChangedStream {
                 break next_value;
             }
         })
-    }
-}
-
-#[derive(Debug, Clone)]
-pub enum DeviceChange {
-    DeviceAdded(OwnedObjectPath),
-    DeviceUpdated(OwnedObjectPath),
-    DeviceRemoved(OwnedObjectPath),
-    IP4ConfigChanged(OwnedObjectPath),
-    IP6ConfigChanged(OwnedObjectPath),
-}
-
-/// Ancillary class to track the devices and their related D-Bus objects.
-pub struct ProxiesRegistry<'a> {
-    connection: zbus::Connection,
-    // the String is the device name like eth0
-    devices: HashMap<OwnedObjectPath, (String, DeviceProxy<'a>)>,
-}
-
-impl<'a> ProxiesRegistry<'a> {
-    pub fn new(connection: &zbus::Connection) -> Self {
-        Self {
-            connection: connection.clone(),
-            devices: HashMap::new(),
-        }
-    }
-
-    /// Finds or adds a device to the registry.
-    ///
-    /// * `path`: D-Bus object path.
-    pub async fn find_or_add_device(
-        &mut self,
-        path: &OwnedObjectPath,
-    ) -> Result<&(String, DeviceProxy<'a>), ServiceError> {
-        // Cannot use entry(...).or_insert_with(...) because of the async call.
-        match self.devices.entry(path.clone()) {
-            Entry::Vacant(entry) => {
-                let proxy = DeviceProxy::builder(&self.connection.clone())
-                    .path(path.clone())?
-                    .build()
-                    .await?;
-                let name = proxy.interface().await?;
-
-                Ok(entry.insert((name, proxy)))
-            }
-            Entry::Occupied(entry) => Ok(entry.into_mut()),
-        }
-    }
-
-    /// Removes a device from the registry.
-    ///
-    /// * `path`: D-Bus object path.
-    pub fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<(String, DeviceProxy)> {
-        self.devices.remove(path)
-    }
-
-    //// Updates a device name.
-    ///
-    /// * `path`: D-Bus object path.
-    /// * `new_name`: New device name.
-    pub fn update_device_name(&mut self, path: &OwnedObjectPath, new_name: &str) {
-        if let Some(value) = self.devices.get_mut(path) {
-            value.0 = new_name.to_string();
-        };
-    }
-
-    //// For the device corresponding to a given IPv4 configuration.
-    ///
-    /// * `ip4_config_path`: D-Bus object path of the IPv4 configuration.
-    pub async fn find_device_for_ip4(
-        &self,
-        ip4_config_path: &OwnedObjectPath,
-    ) -> Option<&(String, DeviceProxy<'_>)> {
-        for device in self.devices.values() {
-            if let Ok(path) = device.1.ip4_config().await {
-                if path == *ip4_config_path {
-                    return Some(device);
-                }
-            }
-        }
-        None
-    }
-
-    //// For the device corresponding to a given IPv6 configuration.
-    ///
-    /// * `ip6_config_path`: D-Bus object path of the IPv6 configuration.
-    pub async fn find_device_for_ip6(
-        &self,
-        ip4_config_path: &OwnedObjectPath,
-    ) -> Option<&(String, DeviceProxy<'_>)> {
-        for device in self.devices.values() {
-            if let Ok(path) = device.1.ip4_config().await {
-                if path == *ip4_config_path {
-                    return Some(device);
-                }
-            }
-        }
-        None
     }
 }

@@ -22,4 +22,6 @@ mod common;
 mod connections;
 mod devices;
 
-pub use devices::{DeviceChange, DeviceChangedStream, ProxiesRegistry};
+pub use common::NmChange;
+pub use connections::ActiveConnectionChangedStream;
+pub use devices::DeviceChangedStream;
