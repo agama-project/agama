@@ -76,7 +76,7 @@ export default function WiredConnectionPage() {
         {connection ? (
           <WiredConnectionDetails connection={connection} />
         ) : (
-          <ConnectionNotFound id={id} variant="emptystate" />
+          <ConnectionNotFound id={id} />
         )}
       </Page.Content>
     </Page>
