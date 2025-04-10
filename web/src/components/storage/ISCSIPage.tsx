@@ -35,10 +35,10 @@ export default function ISCSIPage() {
       </Page.Header>
       <Page.Content>
         <Grid hasGutter>
-          <GridItem sm={12} xl={6}>
+          <GridItem sm={12}>
             <InitiatorSection />
           </GridItem>
-          <GridItem sm={12} xl={6}>
+          <GridItem sm={12}>
             <TargetsSection />
           </GridItem>
         </Grid>

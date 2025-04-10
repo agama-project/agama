@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,25 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/dbus/service_status"
-
 module Agama
-  module DBus
-    # Mixin to be included by D-Bus objects that needs to register a service status.
-    module WithServiceStatus
-      # Service status
-      #
-      # @return [ServiceStatus]
-      def service_status
-        @service_status ||= ServiceStatus.new.idle
-      end
+  module Storage
+    module ISCSI
+      # iSCSI config.
+      class Config
+        # Initiator name.
+        #
+        # @return [String, nil]
+        attr_accessor :initiator
 
-      # Sets the service status to busy meanwhile the given block is running
-      #
-      # @param block [Proc]
-      # @return [Object] the result of the given block
-      def busy_while(&block)
-        service_status.busy_while(&block)
+        # List of targets.
+        #
+        # @return [Array<Configs::Target>, nil] If nil, then targets are not configured.
+        attr_accessor :targets
       end
     end
   end

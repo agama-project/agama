@@ -489,6 +489,19 @@ describe Agama::Registration do
 
         subject.finish
       end
+
+      context "and a registration URL was given" do
+        before do
+          allow(subject).to receive(:registration_url).and_return("http://reg-server.lan")
+        end
+
+        it "generates and copies the SUSEConnect configuration" do
+          expect(::FileUtils).to receive(:cp).with("/etc/SUSEConnect", "/mnt/etc/SUSEConnect")
+          expect(SUSE::Connect::YaST).to receive(:write_config).with("url" => "http://reg-server.lan")
+
+          subject.finish
+        end
+      end
     end
   end
 end
