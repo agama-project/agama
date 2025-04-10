@@ -154,6 +154,12 @@ if [[ "$kiwi_profiles" == *MINI* ]]
   # remove the GPU drivers, not needed when running in text mode only,
   # the related firmware is deleted by the script below
   rm -rf /usr/lib/modules/*/kernel/drivers/gpu
+
+  # remove WiFi drivers
+  rm -rf /usr/lib/modules/*/kernel/drivers/net/wireless
+  # remove Bluetooth drivers
+  rm -rf /usr/lib/modules/*/kernel/drivers/bluetooth
+  rm -rf /usr/lib/modules/*/kernel/net/bluetooth
 fi
 
 # Remove the SUSEConnect CLI tool from the openSUSE images and the mini PXE image,
