@@ -86,6 +86,14 @@ enum ConnectionStatus {
   DOWN = "down",
 }
 
+// Current state of the connection.
+enum ConnectionState {
+  activating = "activating",
+  activated = "activated",
+  deactivating = "deactivating",
+  deactivated = "deactivated",
+}
+
 enum ConnectionMethod {
   MANUAL = "manual",
   AUTO = "auto",
@@ -223,6 +231,7 @@ type APIConnection = {
   method6: string;
   wireless?: Wireless;
   status: ConnectionStatus;
+  state: ConnectionState;
 };
 
 type WirelessOptions = {

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { useQueryClient, useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
@@ -169,40 +169,68 @@ const useNetworkChanges = () => {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
 
+  const updateDevices = useCallback(
+    (func: (devices: Device[]) => Device[]) => {
+      const devices: Device[] = queryClient.getQueryData(["network", "devices"]);
+      if (!devices) return;
+
+      const updatedDevices = func(devices);
+      queryClient.setQueryData(["network", "devices"], updatedDevices);
+    },
+    [queryClient],
+  );
+
+  const updateConnectionState = useCallback(
+    (id: string, state: string) => {
+      const connections: Connection[] = queryClient.getQueryData(["network", "connections"]);
+      if (!connections) return;
+
+      const updatedConnections = connections.map((conn) => {
+        if (conn.id === id) {
+          return { ...conn, state };
+        }
+        return conn;
+      });
+      queryClient.setQueryData(["network", "connections"], updatedConnections);
+    },
+    [queryClient],
+  );
+
   React.useEffect(() => {
     if (!client) return;
 
     return client.onEvent((event) => {
       if (event.type === "NetworkChange") {
-        const devices: Device[] = queryClient.getQueryData(["network", "devices"]);
-        if (!devices) return;
-
-        let updatedDevices = [];
         if (event.deviceAdded) {
-          const device = Device.fromApi(event.deviceAdded);
-          updatedDevices = [...devices, device];
+          const newDevice = Device.fromApi(event.deviceAdded);
+          updateDevices((devices) => [...devices, newDevice]);
         }
 
         if (event.deviceUpdated) {
           const [name, apiDevice] = event.deviceUpdated;
           const device = Device.fromApi(apiDevice);
-          updatedDevices = devices.map((d) => {
-            if (d.name === name) {
-              return device;
-            }
+          updateDevices((devices) =>
+            devices.map((d) => {
+              if (d.name === name) {
+                return device;
+              }
 
-            return d;
-          });
+              return d;
+            }),
+          );
         }
 
         if (event.deviceRemoved) {
-          updatedDevices = devices.filter((d) => d !== event.deviceRemoved);
+          updateDevices((devices) => devices.filter((d) => d !== event.deviceRemoved));
         }
 
-        queryClient.setQueryData(["network", "devices"], updatedDevices);
+        if (event.connectionStateChanged) {
+          const { id, state } = event.connectionStateChanged;
+          updateConnectionState(id, state);
+        }
       }
     });
-  }, [client, queryClient]);
+  }, [client, queryClient, updateDevices, updateConnectionState]);
 };
 
 const useConnection = (name: string) => {
