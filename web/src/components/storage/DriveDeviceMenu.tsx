@@ -20,20 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef, useState } from "react";
-import {
-  MenuToggle,
-  Split,
-  Flex,
-  Label,
-  DrilldownMenu,
-  MenuContent,
-  Divider,
-  MenuContainer,
-  Menu,
-  MenuList,
-  MenuItem,
-} from "@patternfly/react-core";
+import React from "react";
+import { Split, Flex, Label } from "@patternfly/react-core";
+import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import MenuDeviceDescription from "./MenuDeviceDescription";
 import { useAvailableDevices } from "~/queries/storage";
 import { useDrive, useModel } from "~/queries/storage/config-model";
@@ -75,49 +64,43 @@ const DiskSelectorTitle = ({ device, isSelected = false }) => {
   );
 };
 
-const SearchSelectorMultipleOptions = ({ selected, onChange }) => {
-  const devices = useAvailableDevices();
+const searchSelectorMultipleOptions = (devices, selected, onChange) => {
+  return devices.map((device) => {
+    const isSelected = device.sid === selected.sid;
 
-  return (
-    <>
-      {devices.map((device) => {
-        const isSelected = device.sid === selected.sid;
-
-        return (
-          <MenuItem
-            key={device.sid}
-            itemId={device.sid}
-            isSelected={isSelected}
-            description={<MenuDeviceDescription device={device} />}
-            onClick={() => onChange(device.name)}
-          >
-            <DiskSelectorTitle device={device} isSelected={isSelected} />
-          </MenuItem>
-        );
-      })}
-    </>
-  );
+    return (
+      <MenuButtonItem
+        key={device.sid}
+        itemId={device.sid}
+        isSelected={isSelected}
+        description={<MenuDeviceDescription device={device} />}
+        onClick={() => onChange(device.name)}
+      >
+        <DiskSelectorTitle device={device} isSelected={isSelected} />
+      </MenuButtonItem>
+    );
+  });
 };
 
 const SearchSelectorSingleOption = ({ selected }) => {
   return (
-    <MenuItem
+    <MenuButtonItem
       isSelected
       key={selected.sid}
       itemId={selected.sid}
       description={<MenuDeviceDescription device={selected} />}
     >
       <DiskSelectorTitle device={selected} isSelected />
-    </MenuItem>
+    </MenuButtonItem>
   );
 };
 
-const SearchSelectorOptions = ({ drive, selected, onChange }) => {
+const searchSelectorOptions = (drive, devices, selected, onChange) => {
   const onlyOneOption = UseOnlyOneOption(drive);
 
-  if (onlyOneOption) return <SearchSelectorSingleOption selected={selected} />;
+  if (onlyOneOption) return [<SearchSelectorSingleOption key="disk-option" selected={selected} />];
 
-  return <SearchSelectorMultipleOptions selected={selected} onChange={onChange} />;
+  return searchSelectorMultipleOptions(devices, selected, onChange);
 };
 
 /**
@@ -127,6 +110,7 @@ const DisksDrillDownMenuItem = ({ drive, selected, onDeviceClick }) => {
   /** @todo Replace the useDrive hook from /queries by the hook from /hooks. */
   const volumeGroups = useDriveModel(drive.name)?.getVolumeGroups() || [];
   const onlyOneOption = UseOnlyOneOption(drive);
+  const devices = useAvailableDevices();
   const driveModel = useDrive(drive.name);
   if (!driveModel) return;
 
@@ -237,22 +221,12 @@ const DisksDrillDownMenuItem = ({ drive, selected, onDeviceClick }) => {
   };
 
   return (
-    <MenuItem
-      itemId="group:disks-menu"
-      direction="down"
+    <MenuButtonItem
       description={extraText()}
-      drilldownMenu={
-        <DrilldownMenu id="disks-menu">
-          <MenuItem itemId="group:disks-menu-back" direction="up">
-            {_("Back")}
-          </MenuItem>
-          <Divider />
-          <SearchSelectorOptions drive={drive} selected={selected} onChange={onDeviceClick} />
-        </DrilldownMenu>
-      }
+      items={[searchSelectorOptions(drive, devices, selected, onDeviceClick)]}
     >
       {mainText()}
-    </MenuItem>
+    </MenuButtonItem>
   );
 };
 
@@ -286,7 +260,7 @@ const RemoveDriveOption = ({ drive }) => {
   }
 
   return (
-    <MenuItem
+    <MenuButtonItem
       key="delete"
       isDanger
       isDisabled={isDisabled}
@@ -294,7 +268,7 @@ const RemoveDriveOption = ({ drive }) => {
       onClick={deleteDrive}
     >
       {_("Do not use")}
-    </MenuItem>
+    </MenuButtonItem>
   );
 };
 
@@ -330,7 +304,7 @@ const NewVgOption = ({ drive }) => {
   };
 
   return (
-    <MenuItem
+    <MenuButtonItem
       component="a"
       onClick={() => convertToVg(drive.name)}
       itemId="lvm"
@@ -339,7 +313,7 @@ const NewVgOption = ({ drive }) => {
       <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
         <span>{titleText()}</span>
       </Flex>
-    </MenuItem>
+    </MenuButtonItem>
   );
 };
 
@@ -350,102 +324,26 @@ const NewVgOption = ({ drive }) => {
  * overwhelming by presenting them in a more organized manner.
  */
 export default function DriveDeviceMenu({ drive, selected }) {
-  const menuRef = useRef();
-  const toggleRef = useRef();
-  const [isOpen, setIsOpen] = useState(false);
-  const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);
-  const [drilldownPath, setDrilldownPath] = React.useState<string[]>([]);
-  const [activeMenu, setActiveMenu] = React.useState<string>("root");
-  const [menuHeights, setMenuHeights] = React.useState({});
-
-  const resetState = () => {
-    setMenuDrilledIn([]);
-    setDrilldownPath([]);
-    setActiveMenu("root");
-  };
-
-  const toggle = () => {
-    setIsOpen(!isOpen);
-    resetState();
-  };
-
   const driveHandler = useDrive(drive.name);
   const changeDriveTarget = (newDriveName: string) => {
     driveHandler.switch(newDriveName);
-    setIsOpen(false);
-    resetState();
-  };
-
-  const drillIn = (
-    _: React.KeyboardEvent | React.MouseEvent,
-    fromMenuId: string,
-    toMenuId: string,
-    pathId: string,
-  ) => {
-    setMenuDrilledIn([...menuDrilledIn, fromMenuId]);
-    setDrilldownPath([...drilldownPath, pathId]);
-    setActiveMenu(toMenuId);
-  };
-
-  const drillOut = (_: React.KeyboardEvent | React.MouseEvent, toMenuId: string) => {
-    const menuDrilledInSansLast = menuDrilledIn.slice(0, menuDrilledIn.length - 1);
-    const pathSansLast = drilldownPath.slice(0, drilldownPath.length - 1);
-    setMenuDrilledIn(menuDrilledInSansLast);
-    setDrilldownPath(pathSansLast);
-    setActiveMenu(toMenuId);
-  };
-
-  const setHeight = (menuId: string, height: number) => {
-    // FIXME: look for a better way to avoid test crashing because of this method
-    if (process.env.NODE_ENV === "test") return;
-
-    if (
-      menuHeights[menuId] === undefined ||
-      (menuId !== "root" && menuHeights[menuId] !== height)
-    ) {
-      setMenuHeights({ ...menuHeights, [menuId]: height });
-    }
   };
 
   return (
-    <MenuContainer
-      isOpen={isOpen}
-      onOpenChange={toggle}
-      toggleRef={toggleRef}
-      toggle={
-        <MenuToggle ref={toggleRef} onClick={toggle} isExpanded={isOpen}>
-          <b aria-hidden>{deviceLabel(selected, 20)}</b>
-        </MenuToggle>
-      }
-      menuRef={menuRef}
-      menu={
-        <Menu
-          id="root"
-          containsDrilldown
-          onDrillIn={drillIn}
-          onDrillOut={drillOut}
-          onGetMenuHeight={setHeight}
-          activeMenu={activeMenu}
-          drilledInMenus={menuDrilledIn}
-          drilldownItemPath={drilldownPath}
-          ref={menuRef}
-          onSelect={(_e, id) => {
-            if (!String(id).startsWith("group:disks-menu")) setIsOpen(false);
-          }}
-        >
-          <MenuContent menuHeight={`${menuHeights[activeMenu]}px`}>
-            <MenuList>
-              <DisksDrillDownMenuItem
-                drive={drive}
-                selected={selected}
-                onDeviceClick={changeDriveTarget}
-              />
-              <NewVgOption drive={drive} />
-              <RemoveDriveOption drive={drive} />
-            </MenuList>
-          </MenuContent>
-        </Menu>
-      }
-    />
+    <MenuButton
+      popperProps={{ minWidth: "300px" }}
+      items={[
+        <DisksDrillDownMenuItem
+          key="change-disk-option"
+          drive={drive}
+          selected={selected}
+          onDeviceClick={changeDriveTarget}
+        />,
+        <NewVgOption key="add-vg-option" drive={drive} />,
+        <RemoveDriveOption key="delete-disk-option" drive={drive} />,
+      ]}
+    >
+      {<b aria-hidden>{deviceLabel(selected, 20)}</b>}
+    </MenuButton>
   );
 }
