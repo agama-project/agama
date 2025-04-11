@@ -34,33 +34,22 @@ import {
   Flex,
   Form,
   FormGroup,
-  Label,
   Title,
   TextInput,
-  Stack,
 } from "@patternfly/react-core";
-import { Link, Page, PasswordInput } from "~/components/core";
-import { AddonInfo, RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
+import { Link, Page } from "~/components/core";
+import { RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
-import {
-  useProduct,
-  useRegistration,
-  useRegisterMutation,
-  useAddons,
-  useRegisteredAddons,
-  useRegisterAddonMutation,
-} from "~/queries/software";
+import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
 import { useHostname } from "~/queries/system";
 import { isEmpty, mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import RegistrationExtension from "./RegistrationExtension";
+import { KEY_LABEL, RegistrationCodeInput } from "./RegistrationComponents";
 
 const FORM_ID = "productRegistration";
-const KEY_LABEL = _("Registration code");
 const EMAIL_LABEL = "Email";
-
-// the registration code might be quite long, make the password field wider
-const RegistrationCodeInput = ({ ...props }) => <PasswordInput size={30} {...props} />;
 
 const RegisteredProductSection = () => {
   const { selectedProduct: product } = useProduct();
@@ -93,24 +82,6 @@ const RegisteredProductSection = () => {
         </DescriptionListGroup>
       </DescriptionList>
     </>
-  );
-};
-
-const RegisteredExtensionSection = ({ extension }) => {
-  const [showCode, setShowCode] = useState(false);
-
-  // TRANSLATORS: %s will be replaced by the registration key.
-  const [msg1, msg2] = _("The extension has been registered with key %s.").split("%s");
-
-  return (
-    <Content>
-      {msg1}
-      <b>{showCode ? extension.registrationCode : mask(extension.registrationCode)}</b>
-      {msg2}{" "}
-      <Button variant="link" isInline onClick={() => setShowCode(!showCode)}>
-        {showCode ? _("Hide") : _("Show")}
-      </Button>
-    </Content>
   );
 };
 
@@ -205,99 +176,12 @@ const HostnameAlert = () => {
   );
 };
 
-const Extension = ({ extension, isUnique }: { extension: AddonInfo; isUnique: boolean }) => {
-  const { mutate: registerAddon } = useRegisterAddonMutation();
-  const registeredExtensions = useRegisteredAddons();
-  const [regCode, setRegCode] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const onRegisterError = ({ response }) => {
-    setError(response.data.message);
-  };
-
-  const registered = registeredExtensions.find(
-    (e) => e.id === extension.id && (e.version === extension.version || e.version === null),
-  );
-
-  const submit = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const data: RegisteredAddonInfo = {
-      id: extension.id,
-      registrationCode: regCode,
-      // omit the version if only one version of the extension exists
-      version: isUnique ? null : extension.version,
-    };
-
-    // @ts-expect-error
-    registerAddon(data, { onError: onRegisterError, onSettled: () => setLoading(false) });
-  };
-
-  return (
-    <Stack hasGutter>
-      {/* remove the "(BETA)" suffix, we display a Beta label instead */}
-      <Title headingLevel="h4">
-        {extension.label.replace(/\s*\(beta\)$/i, "")}{" "}
-        {extension.release === "beta" && (
-          <Label color="blue" isCompact>
-            {_("Beta")}
-          </Label>
-        )}
-        {extension.recommended && (
-          <Label color="orange" isCompact>
-            {_("Recommended")}
-          </Label>
-        )}
-      </Title>
-      <Content component="p">{extension.description}</Content>
-      {error && <Alert variant="warning" isInline title={error} />}
-      <Content component="p">
-        {registered ? (
-          <RegisteredExtensionSection extension={registered} />
-        ) : extension.available ? (
-          <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
-            {!extension.free && (
-              <FormGroup label={KEY_LABEL}>
-                <RegistrationCodeInput
-                  id={`input-reg-code-${extension.id}-${extension.version}`}
-                  value={regCode}
-                  onChange={(_, v) => setRegCode(v)}
-                />
-              </FormGroup>
-            )}
-
-            <ActionGroup>
-              <Button
-                id={`register-button-${extension.id}-${extension.version}`}
-                variant="primary"
-                type="submit"
-                isInline
-                isLoading={loading}
-              >
-                {_("Register")}
-              </Button>
-            </ActionGroup>
-          </Form>
-        ) : (
-          <Alert title={_("Not available")} variant="warning">
-            {_(
-              "This extension is not available on the server. Ask the server administrator to mirror the extension.",
-            )}
-          </Alert>
-        )}
-      </Content>
-    </Stack>
-  );
-};
-
 const Extensions = () => {
   const extensions = useAddons();
   if (extensions.length === 0) return null;
 
   const extensionComponents = extensions.map((ext) => (
-    <Extension
+    <RegistrationExtension
       key={`extension-${ext.id}-${ext.version}`}
       extension={ext}
       isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
