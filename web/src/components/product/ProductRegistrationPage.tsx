@@ -284,7 +284,7 @@ const Extension = ({ extension, unique }) => {
         ) : (
           <Alert title={_("Not available")} variant="warning">
             {_(
-              "This extension is not available on the server. Please ask the server administrator to mirror the extension.",
+              "This extension is not available on the server. Ask the server administrator to mirror the extension.",
             )}
           </Alert>
         )}
