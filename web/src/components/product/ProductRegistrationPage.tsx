@@ -37,6 +37,7 @@ import {
   Label,
   Title,
   TextInput,
+  Stack,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
 import { RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
@@ -235,7 +236,7 @@ const Extension = ({ extension, unique }) => {
   };
 
   return (
-    <div>
+    <Stack hasGutter>
       {/* remove the "(BETA)" suffix, we display a Beta label instead */}
       <Title headingLevel="h4">
         {extension.label.replace(/\s*\(beta\)$/i, "")}{" "}
@@ -250,10 +251,8 @@ const Extension = ({ extension, unique }) => {
           </Label>
         )}
       </Title>
-      <p>&nbsp;</p>
-      <p>{extension.description}</p>
-      <p>&nbsp;</p>
-      <p>
+      <Content component="p">{extension.description}</Content>
+      <Content component="p">
         {registered ? (
           <RegisteredExtensionSection extension={registered} />
         ) : extension.available ? (
@@ -288,8 +287,8 @@ const Extension = ({ extension, unique }) => {
             )}
           </Alert>
         )}
-      </p>
-    </div>
+      </Content>
+    </Stack>
   );
 };
 
@@ -300,8 +299,12 @@ const Extensions = () => {
   const counts = {};
   extensions.forEach((e) => (counts[e.id] = counts[e.id] ? counts[e.id] + 1 : 1));
 
-  const extensionComponents = extensions.map((ext, index) => (
-    <Extension key={`extension-${index}`} extension={ext} unique={counts[ext.id] === 1} />
+  const extensionComponents = extensions.map((ext) => (
+    <Extension
+      key={`extension-${ext.id}-${ext.version}`}
+      extension={ext}
+      unique={counts[ext.id] === 1}
+    />
   ));
 
   return (
