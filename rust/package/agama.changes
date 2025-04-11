@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 10 20:24:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify extra kernel parameters in profile
+  (jsc#PED-10810)
+
+-------------------------------------------------------------------
 Wed Apr  9 09:06:18 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Made `--api URL` work with `agama profile`

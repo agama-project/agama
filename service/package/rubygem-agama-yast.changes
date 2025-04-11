@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 10 20:26:29 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify extra kernel parameters for bootloader
+  (jsc#PED-10810)
+
+-------------------------------------------------------------------
 Wed Apr  9 06:52:58 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add auto-installation support for iSCSI
