@@ -200,7 +200,7 @@ export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
   const { key } = useRegistration();
   // FIXME: this needs to be fixed for RMT which allows registering with empty key
-  const isUnregistered = isEmpty(key);
+  const isRegistered = !isEmpty(key);
 
   // TODO: render something meaningful instead? "Product not registrable"?
   if (!product.registration) return;
@@ -212,9 +212,9 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
-        {isUnregistered && <HostnameAlert />}
-        {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
-        {!isUnregistered && <Extensions />}
+        {!isRegistered && <HostnameAlert />}
+        {!isRegistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {isRegistered && <Extensions />}
       </Page.Content>
     </Page>
   );

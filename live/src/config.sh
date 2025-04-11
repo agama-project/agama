@@ -12,12 +12,6 @@ echo "Configure image: [$kiwi_iname]..."
 # setup baseproduct link
 suseSetupProduct
 
-# save the build data
-mkdir -p /var/log/build
-cat << EOF > /var/log/build/info
-Build date: $(LC_ALL=C date -u "+%F %T %Z")
-EOF
-
 # enable the corresponding repository
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
 REPO="/etc/zypp/repos.d/agama-${DISTRO}.repo"
