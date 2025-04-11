@@ -23,12 +23,7 @@ use anyhow::Context;
 use jsonschema::JSONSchema;
 use log::info;
 use serde_json;
-use std::{
-    fs::{self, File},
-    io::Write,
-    path::Path,
-    process::Command,
-};
+use std::{fs, io::Write, path::Path, process::Command};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
@@ -62,16 +57,6 @@ impl AutoyastProfileImporter {
             autoinst_json
         ))?;
         Ok(Self { content })
-    }
-
-    pub fn write(&self, mut file: impl Write) -> anyhow::Result<()> {
-        file.write_all(self.content.as_bytes())?;
-        Ok(())
-    }
-
-    pub fn write_file<P: AsRef<Path>>(&self, path: P) -> anyhow::Result<()> {
-        let mut file = File::create(path)?;
-        self.write(&mut file)
     }
 }
 
