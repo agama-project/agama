@@ -272,6 +272,7 @@ type ConnectionOptions = {
 class Connection {
   id: string;
   status: ConnectionStatus = ConnectionStatus.UP;
+  state: ConnectionState;
   iface: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
@@ -349,6 +350,7 @@ export {
   ApFlags,
   ApSecurityFlags,
   Connection,
+  ConnectionState,
   ConnectionStatus,
   ConnectionMethod,
   ConnectionType,
