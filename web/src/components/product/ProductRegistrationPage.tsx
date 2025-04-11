@@ -40,7 +40,7 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Link, Page, PasswordInput } from "~/components/core";
-import { RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
+import { AddonInfo, RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
 import {
   useProduct,
@@ -205,7 +205,7 @@ const HostnameAlert = () => {
   );
 };
 
-const Extension = ({ extension, unique }) => {
+const Extension = ({ extension, isUnique }: { extension: AddonInfo; isUnique: boolean }) => {
   const { mutate: registerAddon } = useRegisterAddonMutation();
   const registeredExtensions = useRegisteredAddons();
   const [regCode, setRegCode] = useState("");
@@ -228,7 +228,7 @@ const Extension = ({ extension, unique }) => {
       id: extension.id,
       registrationCode: regCode,
       // omit the version if only one version of the extension exists
-      version: unique ? null : extension.version,
+      version: isUnique ? null : extension.version,
     };
 
     // @ts-expect-error
@@ -252,12 +252,12 @@ const Extension = ({ extension, unique }) => {
         )}
       </Title>
       <Content component="p">{extension.description}</Content>
+      {error && <Alert variant="warning" isInline title={error} />}
       <Content component="p">
         {registered ? (
           <RegisteredExtensionSection extension={registered} />
         ) : extension.available ? (
           <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
-            {error && <Alert variant="warning" isInline title={error} />}
             {!extension.free && (
               <FormGroup label={KEY_LABEL}>
                 <RegistrationCodeInput
@@ -294,16 +294,13 @@ const Extension = ({ extension, unique }) => {
 
 const Extensions = () => {
   const extensions = useAddons();
-
-  // count the extension versions
-  const counts = {};
-  extensions.forEach((e) => (counts[e.id] = counts[e.id] ? counts[e.id] + 1 : 1));
+  if (extensions.length === 0) return null;
 
   const extensionComponents = extensions.map((ext) => (
     <Extension
       key={`extension-${ext.id}-${ext.version}`}
       extension={ext}
-      unique={counts[ext.id] === 1}
+      isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
     />
   ));
 
