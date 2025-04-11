@@ -131,6 +131,7 @@ module Agama
           { dir: "/etc/udev/rules.d", file: "40-*" },
           { dir: "/etc/udev/rules.d", file: "41-*" },
           { dir: "/etc/udev/rules.d", file: "70-persistent-net.rules" },
+          # Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
           { dir: "/etc/nvme", file: "hostnqn" },
           { dir: "/etc/nvme", file: "hostid" }
         ].freeze
