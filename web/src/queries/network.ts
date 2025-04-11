@@ -26,6 +26,7 @@ import { useInstallerClient } from "~/context/installer";
 import {
   AccessPoint,
   Connection,
+  ConnectionState,
   Device,
   DeviceState,
   NetworkGeneralState,
@@ -67,7 +68,7 @@ const devicesQuery = () => ({
 });
 
 /**
- * Returns a query for retrieving data for the given conneciton name
+ * Returns a query for retrieving data for the given connection name
  */
 const connectionQuery = (name: string) => ({
   queryKey: ["network", "connections", name],
@@ -187,7 +188,9 @@ const useNetworkChanges = () => {
 
       const updatedConnections = connections.map((conn) => {
         if (conn.id === id) {
-          return { ...conn, state };
+          const { id: _, ...nextConnection } = conn;
+          nextConnection.state = state as ConnectionState;
+          return new Connection(id, nextConnection);
         }
         return conn;
       });
