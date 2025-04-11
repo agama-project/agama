@@ -59,7 +59,7 @@ describe Agama::Storage::ISCSI::Manager do
 
   let(:offload_card) { "test-card" }
 
-  let(:ibft) { { "iSCSI_INITIATOR_NAME" => "test-name" } }
+  let(:ibft) { { "iface.initiatorname" => "test-name" } }
 
   let(:yast_nodes) { [] }
 

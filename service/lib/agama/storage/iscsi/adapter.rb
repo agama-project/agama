@@ -67,8 +67,7 @@ module Agama
           Initiator.new.tap do |initiator|
             initiator.name = Yast::IscsiClientLib.initiatorname
             initiator.offload_card = Yast::IscsiClientLib.GetOffloadCard()
-            initiator.ibft_name = !Yast::IscsiClientLib.getiBFT.fetch("iSCSI_INITIATOR_NAME", "")
-              .empty?
+            initiator.ibft_name = !Yast::IscsiClientLib.getiBFT["iface.initiatorname"].to_s.empty?
           end
         end
 
