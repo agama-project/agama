@@ -38,6 +38,7 @@ jest.mock("~/queries/network", () => ({
   useConnectionMutation: () => ({
     mutateAsync: mockUpdateConnection,
   }),
+  useConnections: () => [],
 }));
 
 const networkMock = {

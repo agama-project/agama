@@ -32,8 +32,8 @@ import {
   Spinner,
 } from "@patternfly/react-core";
 import { Page, PasswordInput } from "~/components/core";
-import { useAddConnectionMutation, useConnectionMutation } from "~/queries/network";
-import { Connection, Device, DeviceState, WifiNetwork, Wireless } from "~/types/network";
+import { useAddConnectionMutation, useConnectionMutation, useConnections } from "~/queries/network";
+import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { isEmpty } from "~/utils";
@@ -99,46 +99,52 @@ const ConnectionError = ({ ssid, isPublicNetwork }) => {
 // FIXME: improve error handling. The errors props should have a key/value error
 //  and the component should show all of them, if any
 export default function WifiConnectionForm({ network }: { network: WifiNetwork }) {
+  const connections = useConnections();
+  const connection = connections.find((c) => c.id === network.ssid);
   const settings = network.settings?.wireless || new Wireless();
   const [error, setError] = useState(false);
-  const [device, setDevice] = useState<Device>();
   const [security, setSecurity] = useState<string>(
     settings?.security || securityFrom(network?.security || []),
   );
   const [password, setPassword] = useState<string>(settings.password || "");
-  const [isConnecting, setIsConnecting] = useState<boolean>(false);
+  const [isActivating, setIsActivating] = useState<boolean>(false);
+  const [isConnecting, setIsConnecting] = useState<boolean>(
+    connection?.state === ConnectionState.activating,
+  );
   const { mutateAsync: addConnection } = useAddConnectionMutation();
   const { mutateAsync: updateConnection } = useConnectionMutation();
 
-  const accept = async (e) => {
-    e.preventDefault();
-    setError(false);
-    setIsConnecting(true);
-    setDevice(network.device);
-    // FIXME: do not mutate the original object!
-    const connection = network.settings || new Connection(network.ssid);
-    connection.wireless = new Wireless({ ssid: network.ssid, security, password, hidden: false });
-    const action = network.settings ? updateConnection : addConnection;
-    action(connection).catch(() => setError(true));
-  };
-
   useEffect(() => {
-    setDevice(network.device);
-  }, [network.device]);
+    if (!isActivating) return;
 
-  useEffect(() => {
-    if (!device) return;
-
-    if (device?.state === DeviceState.CONNECTING) {
-      setError(false);
-      setIsConnecting(true);
-    }
-
-    if (isConnecting && device && device.state === DeviceState.FAILED) {
+    if (connection.state === ConnectionState.deactivated) {
       setError(true);
       setIsConnecting(false);
+      setIsActivating(false);
     }
-  }, [isConnecting, device]);
+  }, [isActivating, connection?.state]);
+
+  useEffect(() => {
+    if (isConnecting && connection?.state === ConnectionState.activating) {
+      setIsActivating(true);
+    }
+  }, [isConnecting, connection]);
+
+  const accept = async (e) => {
+    e.preventDefault();
+    // FIXME: do not mutate the original object!
+    const nextConnection = network.settings || new Connection(network.ssid);
+    nextConnection.wireless = new Wireless({
+      ssid: network.ssid,
+      security,
+      password,
+      hidden: false,
+    });
+    const action = network.settings ? updateConnection : addConnection;
+    action(nextConnection).catch(() => setError(true));
+    setError(false);
+    setIsConnecting(true);
+  };
 
   const isPublicNetwork = isEmpty(network.security);
 
