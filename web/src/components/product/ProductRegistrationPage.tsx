@@ -102,14 +102,14 @@ const RegisteredExtensionSection = ({ extension }) => {
   const [msg1, msg2] = _("The extension has been registered with key %s.").split("%s");
 
   return (
-    <span>
+    <Content>
       {msg1}
       <b>{showCode ? extension.registrationCode : mask(extension.registrationCode)}</b>
       {msg2}{" "}
       <Button variant="link" isInline onClick={() => setShowCode(!showCode)}>
         {showCode ? _("Hide") : _("Show")}
       </Button>
-    </span>
+    </Content>
   );
 };
 
