@@ -105,7 +105,7 @@ const register = ({ key, email }: { key: string; email?: string }) =>
   post("/api/software/registration", { key, email });
 
 /**
- * Request registration of selected product with given key
+ * Request registration of provided addon
  */
 const registerAddon = (addon: RegisteredAddonInfo) =>
   post("/api/software/registration/addons/register", addon);
