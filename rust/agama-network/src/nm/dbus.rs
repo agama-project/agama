@@ -547,7 +547,9 @@ fn bond_config_to_dbus(config: &BondConfig) -> HashMap<&str, zvariant::Value> {
 fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value> {
     let mut hash = HashMap::new();
 
-    hash.insert("stp", bridge.stp.into());
+    if let Some(stp) = bridge.stp {
+        hash.insert("stp", stp.into());
+    }
     if let Some(prio) = bridge.priority {
         hash.insert("priority", prio.into());
     }
@@ -573,7 +575,7 @@ fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BridgeConfig
     };
 
     Ok(Some(BridgeConfig {
-        stp: get_property(bridge, "stp")?,
+        stp: get_optional_property(bridge, "stp")?,
         priority: get_optional_property(bridge, "priority")?,
         forward_delay: get_optional_property(bridge, "forward-delay")?,
         hello_time: get_optional_property(bridge, "hello-time")?,
@@ -1302,7 +1304,10 @@ mod test {
     use crate::{
         model::*,
         nm::{
-            dbus::{BOND_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
+            dbus::{
+                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY,
+                WIRELESS_SECURITY_KEY,
+            },
             error::NmError,
         },
     };
