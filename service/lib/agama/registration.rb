@@ -29,6 +29,9 @@ require "y2packager/resolvable"
 require "agama/cmdline_args"
 require "agama/errors"
 require "agama/registered_addon"
+require "agama/ssl/certificate"
+require "agama/ssl/certificate_details"
+require "agama/ssl/errors"
 
 Yast.import "Arch"
 Yast.import "Pkg"
@@ -36,6 +39,8 @@ Yast.import "Pkg"
 module Agama
   # Handles everything related to registration of system to SCC, RMT or similar.
   class Registration
+    include Yast::I18n
+
     # NOTE: identical and keep in sync with Software::Manager::TARGET_DIR
     TARGET_DIR = "/run/agama/zypp"
     private_constant :TARGET_DIR
@@ -84,54 +89,58 @@ module Agama
     def register(code, email: "")
       return if product.nil? || reg_code
 
-      reg_params = connect_params(token: code, email: email)
+      catch_registration_errors do
+        reg_params = connect_params(token: code, email: email)
 
-      @login, @password = SUSE::Connect::YaST.announce_system(reg_params, target_distro)
-      # write the global credentials
-      # TODO: check if we can do it in memory for libzypp
-      SUSE::Connect::YaST.create_credentials_file(@login, @password, GLOBAL_CREDENTIALS_PATH)
+        @login, @password = SUSE::Connect::YaST.announce_system(reg_params, target_distro)
+        # write the global credentials
+        # TODO: check if we can do it in memory for libzypp
+        SUSE::Connect::YaST.create_credentials_file(@login, @password, GLOBAL_CREDENTIALS_PATH)
 
-      activate_params = {}
-      service = SUSE::Connect::YaST.activate_product(base_target_product, activate_params, email)
-      process_service(service)
+        activate_params = {}
+        service = SUSE::Connect::YaST.activate_product(base_target_product, activate_params, email)
+        process_service(service)
 
-      @reg_code = code
-      @email = email
-      run_on_change_callbacks
+        @reg_code = code
+        @email = email
+        run_on_change_callbacks
+      end
     end
 
     def register_addon(name, version, code)
-      register_version = if version.empty?
-        # version is not specified, find it automatically
-        find_addon_version(name)
-      else
-        # use the explicitly required version
-        version
+      catch_registration_errors do
+        register_version = if version.empty?
+          # version is not specified, find it automatically
+          find_addon_version(name)
+        else
+          # use the explicitly required version
+          version
+        end
+
+        if @registered_addons.any? { |a| a.name == name && a.version == register_version }
+          @logger.info "Addon #{name}-#{register_version} already registered, skipping registration"
+          return
+        end
+
+        @logger.info "Registering addon #{name}-#{register_version}"
+        # do not log the code, but at least log if it is empty
+        @logger.info "Using empty registration code" if code.empty?
+
+        target_product = OpenStruct.new(
+          arch:       Yast::Arch.rpm_arch,
+          identifier: name,
+          version:    register_version
+        )
+        activate_params = { token: code }
+        service = SUSE::Connect::YaST.activate_product(target_product, activate_params, @email)
+        process_service(service)
+
+        @registered_addons << RegisteredAddon.new(name, register_version, !version.empty?, code)
+        # select the products to install
+        @software.addon_products(find_addon_products)
+
+        run_on_change_callbacks
       end
-
-      if @registered_addons.any? { |a| a.name == name && a.version == register_version }
-        @logger.info "Addon #{name}-#{register_version} already registered, skipping registration"
-        return
-      end
-
-      @logger.info "Registering addon #{name}-#{register_version}"
-      # do not log the code, but at least log if it is empty
-      @logger.info "Using empty registration code" if code.empty?
-
-      target_product = OpenStruct.new(
-        arch:       Yast::Arch.rpm_arch,
-        identifier: name,
-        version:    register_version
-      )
-      activate_params = { token: code }
-      service = SUSE::Connect::YaST.activate_product(target_product, activate_params, @email)
-      process_service(service)
-
-      @registered_addons << RegisteredAddon.new(name, register_version, !version.empty?, code)
-      # select the products to install
-      @software.addon_products(find_addon_products)
-
-      run_on_change_callbacks
     end
 
     # Deregisters the selected product.
@@ -252,7 +261,86 @@ module Agama
     def connect_params(params = {})
       default_params = {}
       default_params[:url] = registration_url if registration_url
+      default_params[:verify_callback] = verify_callback
       default_params.merge(params)
+    end
+
+    # returns SSL verify callback
+    def verify_callback
+      lambda do |verify_ok, context|
+
+        # we cannot raise an exception with details here (all exceptions in
+        # verify_callback are caught and ignored), we need to store the error
+        # details in a global instance
+        store_ssl_error(context) unless verify_ok
+
+        verify_ok
+      rescue StandardError => e
+        @logger.error "Exception in SSL verify callback: #{e.class}: #{e.message} : #{e.backtrace}"
+        # the exception will be ignored, but reraise anyway...
+        raise e
+
+      end
+    end
+
+    def store_ssl_error(context)
+      @logger.error "SSL verification failed: #{context.error}: #{context.error_string}"
+      SSL::Errors.instance.ssl_error_code = context.error
+      SSL::Errors.instance.ssl_error_msg = context.error_string
+      SSL::Errors.instance.ssl_failed_cert =
+        context.current_cert ? SSL::Certificate.load(context.current_cert) : nil
+    end
+
+    def catch_registration_errors(&block)
+      # import the SSL certificate just once to avoid an infinite loop
+      certificate_imported = false
+      begin
+        # reset the previous SSL errors
+        Agama::SSL::Errors.instance.reset
+
+        block.call
+
+        true
+      rescue OpenSSL::SSL::SSLError => e
+        @logger.error "OpenSSL error: #{e}"
+        should_retry = handle_ssl_error(e, certificate_imported)
+        if should_retry
+          certificate_imported = true
+          SSL::Errors.instance.ssl_failed_cert.import
+          retry
+        end
+        false
+      end
+    end
+
+    def handle_ssl_error(_error, certificate_imported)
+      return false if certificate_imported
+
+      cert = SSL::Errors.instance.ssl_failed_cert
+      error_code = SSL::Errors.instance.ssl_error_code
+
+      puts "cert #{cert} code #{error_code}"
+      if cert && SSL::ErrorCodes::IMPORT_ERROR_CODES.include?(error_code)
+        message = format(
+          _("Secure Connection Error for %{url}: %{error}. Certificate details %{details}."),
+          url:     registration_url || "https://scc.suse.com",
+          error:   SSL::ErrorCodes::OPENSSL_ERROR_MESSAGES[error_code],
+          details: SSL::CertificateDetails.new(cert).summary
+        )
+        question = Agama::Question.new(
+          qclass:         "registration.certificate",
+          text:           message,
+          options:        [:Import, :Abort],
+          default_option: :Abort
+        )
+
+        questions_client = Agama::DBus::Clients::Questions.new(logger: @logger)
+        questions_client.ask(question) do |question_client|
+          return question_client.answer == :Import
+        end
+      end
+
+      false
     end
 
     # Returns the URL of the registration server
