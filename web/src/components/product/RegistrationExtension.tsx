@@ -1,0 +1,173 @@
+/*
+ * Copyright (c) [2025] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React, { useState } from "react";
+import {
+  ActionGroup,
+  Alert,
+  Button,
+  Content,
+  Form,
+  FormGroup,
+  Label,
+  Title,
+  Stack,
+} from "@patternfly/react-core";
+import { AddonInfo, RegisteredAddonInfo } from "~/types/software";
+import { useRegisteredAddons, useRegisterAddonMutation } from "~/queries/software";
+import { mask } from "~/utils";
+import { _ } from "~/i18n";
+import { KEY_LABEL, RegistrationCodeInput } from "./RegistrationComponents";
+
+/**
+ * Display registered status of the extension.
+ *
+ * @param param0
+ * @returns
+ */
+const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: string }) => {
+  const [showCode, setShowCode] = useState(false);
+
+  // TRANSLATORS: %s will be replaced by the registration key.
+  const [msg1, msg2] = _("The extension has been registered with key %s.").split("%s");
+
+  return (
+    <span>
+      {msg1}
+      <b>{showCode ? registrationCode : mask(registrationCode)}</b>
+      {msg2}{" "}
+      <Button variant="link" isInline onClick={() => setShowCode(!showCode)}>
+        {/* TRANSLATORS: switch for displaying or hiding the registration code */}
+        {showCode ? _("Hide") : _("Show")}
+      </Button>
+    </span>
+  );
+};
+
+/**
+ * Display an extension from the registration server.
+ *
+ * @param extension The extension to display
+ * @returns React component
+ */
+export default function RegistrationExtension({
+  extension,
+  isUnique,
+}: {
+  extension: AddonInfo;
+  isUnique: boolean;
+}) {
+  const { mutate: registerAddon } = useRegisterAddonMutation();
+  const registeredExtensions = useRegisteredAddons();
+  const [regCode, setRegCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const onRegisterError = ({ response }) => {
+    setError(response.data.message);
+  };
+
+  const registrationData = registeredExtensions.find(
+    (e) => e.id === extension.id && (e.version === extension.version || e.version === null),
+  );
+
+  const isRegistered = !!registrationData;
+
+  const submit = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const data: RegisteredAddonInfo = {
+      id: extension.id,
+      registrationCode: regCode,
+      // omit the version if only one version of the extension exists
+      version: isUnique ? null : extension.version,
+    };
+
+    // @ts-expect-error
+    registerAddon(data, { onError: onRegisterError, onSettled: () => setLoading(false) });
+  };
+
+  return (
+    <Stack hasGutter>
+      {/* remove the "(BETA)" suffix, we display a Beta label instead */}
+      <Title headingLevel="h4">
+        {extension.label.replace(/\s*\(beta\)$/i, "")}{" "}
+        {extension.release === "beta" && (
+          <Label color="blue" isCompact>
+            {/* TRANSLATORS: Beta version label */}
+            {_("Beta")}
+          </Label>
+        )}
+        {extension.recommended && (
+          <Label color="orange" isCompact>
+            {/* TRANSLATORS: Label for recommended extensions */}
+            {_("Recommended")}
+          </Label>
+        )}
+      </Title>
+      <Content component="p">{extension.description}</Content>
+      {error && <Alert variant="warning" isInline title={error} />}
+      <Content component="p">
+        {isRegistered && (
+          <RegisteredExtensionStatus registrationCode={registrationData.registrationCode} />
+        )}
+        {!isRegistered && extension.available && (
+          <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
+            {!extension.free && (
+              <FormGroup label={KEY_LABEL}>
+                <RegistrationCodeInput
+                  isDisabled={loading}
+                  id={`input-reg-code-${extension.id}-${extension.version}`}
+                  value={regCode}
+                  onChange={(_, v) => setRegCode(v)}
+                />
+              </FormGroup>
+            )}
+
+            <ActionGroup>
+              <Button
+                id={`register-button-${extension.id}-${extension.version}`}
+                variant="primary"
+                type="submit"
+                isInline
+                isLoading={loading}
+              >
+                {/* TRANSLATORS: button label */}
+                {_("Register")}
+              </Button>
+            </ActionGroup>
+          </Form>
+        )}
+        {!isRegistered && !extension.available && (
+          // TRANSLATORS: warning title, the extension is not available on the server and cannot be registered
+          <Alert title={_("Not available")} variant="warning">
+            {_(
+              // TRANSLATORS: warning message, the extension is not available on the server and cannot be registered
+              "This extension is not available on the server. Ask the server administrator to mirror the extension.",
+            )}
+          </Alert>
+        )}
+      </Content>
+    </Stack>
+  );
+}

@@ -24,8 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProductRegistrationPage from "./ProductRegistrationPage";
-import { Product, RegistrationInfo } from "~/types/software";
-import { useProduct, useRegistration } from "~/queries/software";
+import { AddonInfo, Product, RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
+import { useAddons, useProduct, useRegisteredAddons, useRegistration } from "~/queries/software";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -42,6 +42,8 @@ const sle: Product = {
 let selectedProduct: Product;
 let staticHostnameMock: string;
 let registrationInfoMock: RegistrationInfo;
+let addonInfoMock: AddonInfo[] = [];
+let registeredAddonInfoMock: RegisteredAddonInfo[] = [];
 const registerMutationMock = jest.fn();
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
@@ -52,6 +54,8 @@ jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useRegisterMutation: () => ({ mutate: registerMutationMock }),
   useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
+  useAddons: (): ReturnType<typeof useAddons> => addonInfoMock,
+  useRegisteredAddons: (): ReturnType<typeof useRegisteredAddons> => registeredAddonInfoMock,
   useProduct: (): ReturnType<typeof useProduct> => {
     return {
       products: [tw, sle],
@@ -198,6 +202,19 @@ describe("ProductRegistrationPage", () => {
     beforeEach(() => {
       selectedProduct = sle;
       registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
+      addonInfoMock = [
+        {
+          id: "sle-ha",
+          version: "16.0",
+          label: "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
+          available: true,
+          free: false,
+          recommended: false,
+          description: "SUSE Linux High Availability Extension provides ...",
+          type: "extension",
+          release: "beta",
+        },
+      ];
     });
 
     it("does not render a custom alert about hostname", () => {
@@ -220,6 +237,53 @@ describe("ProductRegistrationPage", () => {
       await user.click(visibilityCodeToggler);
       expect(screen.queryByText("INTERNAL-USE-ONLY-1234-5678")).toBeNull();
       screen.getByText(/\*?5678/);
+    });
+
+    it("renders available extensions", async () => {
+      const { container } = installerRender(<ProductRegistrationPage />);
+
+      // description is displayed
+      screen.getByText(addonInfoMock[0].description);
+      // label without "BETA"
+      screen.getByText("SUSE Linux Enterprise High Availability Extension 16.0 x86_64");
+
+      // registration input field is displayed
+      const addonRegCode = container.querySelector('[id="input-reg-code-sle-ha-16.0"]');
+      expect(addonRegCode).not.toBeNull();
+
+      // submit button is displayed
+      const addonRegButton = container.querySelector('[id="register-button-sle-ha-16.0"]');
+      expect(addonRegButton).not.toBeNull();
+    });
+
+    describe("when the extension is registered", () => {
+      beforeEach(() => {
+        registeredAddonInfoMock = [
+          {
+            id: "sle-ha",
+            version: "16.0",
+            registrationCode: "INTERNAL-USE-ONLY-1234-ad42",
+          },
+        ];
+      });
+
+      it("renders registration information with code partially hidden", async () => {
+        const { user } = installerRender(<ProductRegistrationPage />);
+
+        // the second "Show" button, the first one belongs to the base product registration code
+        const visibilityCodeToggler = screen.getAllByRole("button", { name: "Show" })[1];
+        expect(visibilityCodeToggler).not.toBeNull();
+
+        // only the end of the code is displayed
+        screen.getByText(/\*+ad42/);
+        // not the full code
+        expect(screen.queryByText(registeredAddonInfoMock[0].registrationCode)).toBeNull();
+
+        // after pressing the "Show" button
+        await user.click(visibilityCodeToggler);
+        // the full code is visible
+        screen.getByText(registeredAddonInfoMock[0].registrationCode);
+      });
     });
   });
 });
