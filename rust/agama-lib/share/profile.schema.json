@@ -68,7 +68,7 @@
           "minimum": 0
         },
         "extraKernelParams": {
-          "title": "Specify additional kernel parameters that are added beside proposed ones.",
+          "title": "Specify additional kernel parameters that are added beside ones added by the installer.",
           "type": "string"
         }
       },
