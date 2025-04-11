@@ -89,7 +89,7 @@ async fn test_network_state() -> Result<(), Box<dyn Error>> {
     let response = network_service.oneshot(request).await?;
     assert_eq!(response.status(), StatusCode::OK);
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""wireless_enabled":false"#));
+    assert!(body.contains(r#""wirelessEnabled":false"#));
     Ok(())
 }
 

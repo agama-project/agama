@@ -26,21 +26,11 @@ import {
   ApFlags,
   ApSecurityFlags,
   Connection,
-  ConnectionState,
   Device,
   IPAddress,
   Route,
   SecurityProtocols,
 } from "~/types/network";
-
-/**
- * Returns a human readable connection state
- */
-const connectionHumanState = (state: number): string => {
-  const stateIndex = Object.values(ConnectionState).indexOf(state);
-  const stateKey = Object.keys(ConnectionState)[stateIndex];
-  return stateKey.toLowerCase();
-};
 
 /**
  * Check if an IP is valid
@@ -203,7 +193,6 @@ export {
   buildAddresses,
   buildRoutes,
   connectionAddresses,
-  connectionHumanState,
   formatIp,
   intToIPString,
   ipPrefixFor,

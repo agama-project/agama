@@ -327,6 +327,11 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 return Ok(Some(NetworkChange::DeviceAdded(*device)));
             }
             Action::UpdateDevice(name, device) => {
+                if let Some(old_device) = self.state.get_device(&name) {
+                    if old_device == device.as_ref() {
+                        return Ok(None);
+                    }
+                }
                 self.state.update_device(&name, *device.clone())?;
                 return Ok(Some(NetworkChange::DeviceUpdated(name, *device)));
             }
@@ -344,6 +349,12 @@ impl<T: Adapter> NetworkSystemServer<T> {
             Action::UpdateConnection(conn, tx) => {
                 let result = self.state.update_connection(*conn);
                 tx.send(result).unwrap();
+            }
+            Action::ChangeConnectionState(id, state) => {
+                if let Some(conn) = self.state.get_connection_mut(&id) {
+                    conn.state = state;
+                    return Ok(Some(NetworkChange::ConnectionStateChanged { id, state }));
+                }
             }
             Action::UpdateGeneralState(general_state) => {
                 self.state.general_state = general_state;

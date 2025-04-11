@@ -26,12 +26,15 @@ use super::dbus::{
     cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, controller_from_dbus,
     merge_dbus_connections,
 };
-use super::model::NmDeviceType;
+use super::model::{NmConnectionState, NmDeviceType};
 use super::proxies::{
     AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
     SettingsProxy, WirelessProxy,
 };
-use crate::network::model::{AccessPoint, Connection, Device, GeneralState};
+use crate::network::model::{
+    AccessPoint, Connection, ConnectionConfig, Device, GeneralState, SecurityProtocol,
+};
+use agama_lib::dbus::get_optional_property;
 use agama_lib::error::ServiceError;
 use agama_lib::network::types::{DeviceType, SSID};
 use log;
@@ -187,6 +190,7 @@ impl<'a> NetworkManagerClient<'a> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;
         let mut connections: Vec<Connection> = Vec::with_capacity(paths.len());
+        let states = self.connection_states().await?;
         for path in paths {
             let proxy = ConnectionProxy::builder(&self.connection)
                 .path(path.as_str())?
@@ -200,11 +204,18 @@ impl<'a> NetworkManagerClient<'a> {
             }
 
             let settings = proxy.get_settings().await?;
-
             let controller = controller_from_dbus(&settings)?;
 
             match connection_from_dbus(settings) {
                 Ok(mut connection) => {
+                    let state = states
+                        .get(&connection.id)
+                        .map(|s| NmConnectionState(s.clone()));
+                    if let Some(state) = state {
+                        connection.state = state.try_into().unwrap_or_default();
+                    }
+
+                    Self::add_secrets(&mut connection.config, &proxy).await?;
                     if let Some(controller) = controller {
                         controlled_by.insert(connection.uuid, controller.to_string());
                     }
@@ -239,6 +250,20 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         Ok(connections)
+    }
+
+    pub async fn connection_states(&self) -> Result<HashMap<String, u32>, ServiceError> {
+        let mut states = HashMap::new();
+
+        for active_path in &self.nm_proxy.active_connections().await? {
+            let proxy = ActiveConnectionProxy::builder(&self.connection)
+                .path(active_path.as_str())?
+                .build()
+                .await?;
+            states.insert(proxy.id().await?, proxy.state().await?);
+        }
+
+        Ok(states)
     }
 
     /// Adds or updates a connection if it already exists.
@@ -365,5 +390,31 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         Ok(None)
+    }
+
+    /// Ancillary function to add secrets to a connection.
+    ///
+    /// TODO: add support for more security protocols.
+    pub async fn add_secrets(
+        config: &mut ConnectionConfig,
+        proxy: &ConnectionProxy<'_>,
+    ) -> Result<(), ServiceError> {
+        let ConnectionConfig::Wireless(ref mut wireless) = config else {
+            return Ok(());
+        };
+
+        if wireless.security == SecurityProtocol::WPA2 {
+            match proxy.get_secrets("802-11-wireless-security").await {
+                Ok(secrets) => {
+                    if let Some(secret) = secrets.get("802-11-wireless-security") {
+                        wireless.password = get_optional_property(&secret, "psk")?;
+                    }
+                }
+                Err(error) => {
+                    tracing::error!("Could not read connection secrets: {:?}", error);
+                }
+            }
+        }
+        Ok(())
     }
 }

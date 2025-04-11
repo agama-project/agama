@@ -30,7 +30,7 @@ use crate::network::{
     model::{Ipv4Method, Ipv6Method, SecurityProtocol, WirelessMode},
     nm::error::NmError,
 };
-use agama_lib::network::types::DeviceType;
+use agama_lib::network::types::{ConnectionState, DeviceType};
 use std::fmt;
 use std::str::FromStr;
 
@@ -107,6 +107,86 @@ impl TryFrom<NmDeviceType> for DeviceType {
             NmDeviceType(22) => Ok(DeviceType::Dummy),
             NmDeviceType(32) => Ok(DeviceType::Loopback),
             NmDeviceType(_) => Err(NmError::UnsupportedDeviceType(value.into())),
+        }
+    }
+}
+
+/// Device state
+#[derive(Default, Debug, PartialEq, Copy, Clone)]
+pub enum NmDeviceState {
+    #[default]
+    Unknown = 0,
+    Unmanaged = 10,
+    Unavailable = 20,
+    Disconnected = 30,
+    Prepare = 40,
+    Config = 50,
+    NeedAuth = 60,
+    IpConfig = 70,
+    IpCheck = 80,
+    Secondaries = 90,
+    Activated = 100,
+    Deactivating = 110,
+    Failed = 120,
+}
+
+#[derive(Debug, thiserror::Error, PartialEq)]
+#[error("Unsupported device state: {0}")]
+pub struct InvalidNmDeviceState(String);
+
+impl TryFrom<u8> for NmDeviceState {
+    type Error = InvalidNmDeviceState;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(NmDeviceState::Unknown),
+            10 => Ok(NmDeviceState::Unmanaged),
+            20 => Ok(NmDeviceState::Unavailable),
+            30 => Ok(NmDeviceState::Disconnected),
+            40 => Ok(NmDeviceState::Prepare),
+            50 => Ok(NmDeviceState::Config),
+            60 => Ok(NmDeviceState::NeedAuth),
+            70 => Ok(NmDeviceState::IpConfig),
+            80 => Ok(NmDeviceState::IpCheck),
+            90 => Ok(NmDeviceState::Secondaries),
+            100 => Ok(NmDeviceState::Activated),
+            110 => Ok(NmDeviceState::Deactivating),
+            120 => Ok(NmDeviceState::Failed),
+            _ => Err(InvalidNmDeviceState(value.to_string())),
+        }
+    }
+}
+
+/// Connection type
+///
+/// As we are just converting the number to its high-level representation,
+/// a newtype might be enough.
+#[derive(Debug, Default, Clone, Copy)]
+pub struct NmConnectionState(pub u32);
+
+impl From<NmConnectionState> for u32 {
+    fn from(value: NmConnectionState) -> u32 {
+        value.0
+    }
+}
+
+impl fmt::Display for NmConnectionState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl TryFrom<NmConnectionState> for ConnectionState {
+    type Error = NmError;
+
+    fn try_from(value: NmConnectionState) -> Result<Self, Self::Error> {
+        match value {
+            NmConnectionState(0) => Ok(ConnectionState::Deactivated),
+            NmConnectionState(1) => Ok(ConnectionState::Activating),
+            NmConnectionState(2) => Ok(ConnectionState::Activated),
+            NmConnectionState(3) => Ok(ConnectionState::Deactivating),
+            NmConnectionState(4) => Ok(ConnectionState::Deactivated),
+            NmConnectionState(_) => Err(NmError::UnsupportedConnectionState(value.into())),
         }
     }
 }
