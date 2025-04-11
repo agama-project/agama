@@ -66,6 +66,7 @@ software:
 
   mandatory_patterns:
     - enhanced_base
+    - bootloader
   optional_patterns: null # no optional pattern shared
   user_patterns:
     - cockpit
