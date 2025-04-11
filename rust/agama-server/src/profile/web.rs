@@ -224,7 +224,7 @@ async fn autoyast(
     }
 
     let url = Url::parse(query.url.as_ref().unwrap()).map_err(anyhow::Error::new)?;
-    let importer_res = AutoyastProfileImporter::read(&url);
+    let importer_res = AutoyastProfileImporter::read(&url).await;
     match importer_res {
         Ok(importer) => Ok(importer.content),
         Err(error) => {

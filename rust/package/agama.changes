@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 11 06:53:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Prevent agama-web-server from getting stuck in the POST
+  /api/profile/autoyast calls (gh#agama-project/agama#2259).
+- Temporarily disable AutoYaST profiles fetch errors.
+
+-------------------------------------------------------------------
 Thu Apr 10 20:24:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow to specify extra kernel parameters in profile
