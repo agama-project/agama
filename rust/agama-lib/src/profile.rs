@@ -50,6 +50,7 @@ impl AutoyastProfileImporter {
 
         let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
         tokio::process::Command::new("agama-autoyast")
+            .env("YAST_SKIP_PROFILE_FETCH_ERROR", "1")
             .args([url.as_str(), &tmp_dir.path().to_string_lossy()])
             .status()
             .await
