@@ -16,10 +16,7 @@ all: ${distdir} ${tmpdir}
 	./make-index > index.html
 	cp index.html ${distdir}
 
-# 'foo 2> >(grep ... >&2)' greps stderr and keeps it as stderr
-NO_COMMENTS=xmlstarlet canonic --without-comments 2> >(grep -v 'Attempt to load network entity' >&2)
-# bash because of the >() process substitution
-SHELL=/bin/bash
+NO_COMMENTS=xmlstarlet --quiet canonic --without-comments
 
 # check that the implementation and documentation haven't diverged
 # TODO: factor out a script to decouple Make syntax from the rest
