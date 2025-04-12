@@ -129,6 +129,15 @@ fi
 
 )
 
+# See "Install DocBook tooling" in .github/workflows/github-pages.yml
+# glib2-devel has gdbus-codegen
+$SUDO $ZYPPER install \
+  docbook-xsl-stylesheets \
+  glib2-devel \
+  xmlstarlet \
+  xmlto \
+  || exit 1
+
 # Rust service, CLI and auto-installation.
 
 # Only install cargo if it is not available (avoid conflicts with rustup)
