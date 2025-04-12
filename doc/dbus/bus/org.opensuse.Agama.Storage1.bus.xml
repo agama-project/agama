@@ -1,5 +1,4 @@
-<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
-"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <node name="/org/opensuse/Agama/Storage1">
   <node name="ISCSI" />
   <node name="iscsi_nodes" />
@@ -7,6 +6,24 @@
   <node name="system" />
   <node name="zfcp_controllers" />
   <node name="zfcp_disks" />
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg name="xml_data" direction="out" type="s"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.ObjectManager">
+    <method name="GetManagedObjects">
+      <arg name="res" direction="out" type="a{oa{sa{sv}}}"/>
+    </method>
+    <signal name="InterfacesAdded">
+      <arg name="object" type="o"/>
+      <arg name="interfaces_and_properties" type="a{sa{sv}}"/>
+    </signal>
+    <signal name="InterfacesRemoved">
+      <arg name="object" type="o"/>
+      <arg name="interfaces" type="as"/>
+    </signal>
+  </interface>
   <interface name="org.freedesktop.DBus.Properties">
     <method name="Get">
       <arg name="interface_name" direction="in" type="s"/>
@@ -26,24 +43,6 @@
       <arg name="interface" type="s"/>
       <arg name="changed_properties" type="a{sv}"/>
       <arg name="invalidated_properties" type="as"/>
-    </signal>
-  </interface>
-  <interface name="org.freedesktop.DBus.Introspectable">
-    <method name="Introspect">
-      <arg name="xml_data" direction="out" type="s"/>
-    </method>
-  </interface>
-  <interface name="org.freedesktop.DBus.ObjectManager">
-    <method name="GetManagedObjects">
-      <arg name="res" direction="out" type="a{oa{sa{sv}}}"/>
-    </method>
-    <signal name="InterfacesAdded">
-      <arg name="object" type="o"/>
-      <arg name="interfaces_and_properties" type="a{sa{sv}}"/>
-    </signal>
-    <signal name="InterfacesRemoved">
-      <arg name="object" type="o"/>
-      <arg name="interfaces" type="as"/>
     </signal>
   </interface>
   <interface name="org.opensuse.Agama1.Issues">
@@ -105,9 +104,6 @@
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
   </interface>
-  <interface name="org.opensuse.Agama.Storage1.Devices">
-    <property type="aa{sv}" name="Actions" access="read"/>
-  </interface>
   <interface name="org.opensuse.Agama.Storage1.DASD.Manager">
     <method name="Probe">
     </method>
@@ -130,6 +126,9 @@
       <arg name="job" direction="out" type="o"/>
     </method>
   </interface>
+  <interface name="org.opensuse.Agama.Storage1.Devices">
+    <property type="aa{sv}" name="Actions" access="read"/>
+  </interface>
   <interface name="org.opensuse.Agama.Storage1.ISCSI.Initiator">
     <method name="Discover">
       <arg name="address" direction="in" type="s"/>
@@ -144,7 +143,7 @@
     <property type="s" name="InitiatorName" access="readwrite"/>
     <property type="b" name="IBFT" access="read"/>
   </interface>
-    <interface name="org.opensuse.Agama.Storage1.Proposal.Calculator">
+  <interface name="org.opensuse.Agama.Storage1.Proposal.Calculator">
     <method name="DefaultVolume">
       <arg name="mount_path" direction="in" type="s"/>
       <arg name="volume" direction="out" type="a{sv}"/>
@@ -157,7 +156,7 @@
     <property type="as" name="ProductMountPoints" access="read"/>
     <property type="as" name="EncryptionMethods" access="read"/>
   </interface>
-    <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
+  <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
     <method name="Probe">
     </method>
     <property type="b" name="AllowLUNScan" access="read"/>

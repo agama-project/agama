@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node>
   <interface name="org.freedesktop.DBus.Introspectable">
+    <!--
+     Returns an XML description of the object, including its interfaces (with signals and
+     methods), objects below it in the object path tree, and its properties.
+     -->
     <method name="Introspect">
       <arg type="s" direction="out"/>
     </method>
   </interface>
   <interface name="org.freedesktop.DBus.ObjectManager">
+    <!--
+     The return value of this method is a dict whose keys are object paths. All returned object
+     paths are children of the object path implementing this interface, i.e. their object paths
+     start with the ObjectManager's object path plus '/'.
+
+     Each value is a dict whose keys are interfaces names. Each value in this inner dict is the
+     same dict that would be returned by the org.freedesktop.DBus.Properties.GetAll() method for
+     that combination of object path and interface. If an interface has no properties, the empty
+     dict is returned.
+     -->
     <method name="GetManagedObjects">
       <arg type="a{oa{sa{sv}}}" direction="out"/>
     </method>
@@ -28,29 +42,49 @@
     </signal>
   </interface>
   <interface name="org.freedesktop.DBus.Peer">
+    <!--
+     On receipt, an application should do nothing other than reply as usual. It does not matter
+     which object path a ping is sent to.
+     -->
     <method name="Ping">
     </method>
+    <!--
+     An application should reply the containing a hex-encoded UUID representing the identity of
+     the machine the process is running on. This UUID must be the same for all processes on a
+     single system at least until that system next reboots. It should be the same across reboots
+     if possible, but this is not always possible to implement and is not guaranteed. It does not
+     matter which object path a GetMachineId is sent to.
+     -->
     <method name="GetMachineId">
       <arg type="s" direction="out"/>
     </method>
   </interface>
   <interface name="org.freedesktop.DBus.Properties">
+    <!--
+     Get a property value.
+     -->
     <method name="Get">
       <arg name="interface_name" type="s" direction="in"/>
       <arg name="property_name" type="s" direction="in"/>
       <arg type="v" direction="out"/>
     </method>
+    <!--
+     Set a property value.
+     -->
     <method name="Set">
       <arg name="interface_name" type="s" direction="in"/>
       <arg name="property_name" type="s" direction="in"/>
       <arg name="value" type="v" direction="in"/>
     </method>
+    <!--
+     Get all properties.
+     -->
     <method name="GetAll">
       <arg name="interface_name" type="s" direction="in"/>
       <arg type="a{sv}" direction="out"/>
     </method>
     <!--
-     Emits the `org.freedesktop.DBus.Properties.PropertiesChanged` signal.
+     Emit the `org.freedesktop.DBus.Properties.PropertiesChanged` signal.
      -->
     <signal name="PropertiesChanged">
       <arg name="interface_name" type="s"/>
