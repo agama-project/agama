@@ -249,6 +249,10 @@ else
   $SUDO systemctl start NetworkManager
 fi
 
+# Let seed.sh see s390 D-Bus interfaces
+sed -i -e '/^AGAMA_MAINFRAME_COSPLAY=/d' /run/agama/environment.conf
+echo AGAMA_MAINFRAME_COSPLAY=${AGAMA_MAINFRAME_COSPLAY:-0} >> /run/agama/environment.conf
+
 # systemd reload and start of service
 (
   $SUDO systemctl daemon-reload

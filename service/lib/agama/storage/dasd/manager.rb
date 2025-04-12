@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "y2s390"
+require "y2s390" unless ENV["AGAMA_MAINFRAME_COSPLAY"] == "1"
 require "agama/storage/dasd/enable_operation"
 require "agama/storage/dasd/disable_operation"
 require "agama/storage/dasd/diag_operation"
@@ -53,7 +53,7 @@ module Agama
         # @param logger [Logger, nil]
         def initialize(logger: nil)
           @logger = logger || ::Logger.new($stdout)
-          @devices = Y2S390::DasdsCollection.new([])
+          @devices = Y2S390::DasdsCollection.new([]) unless ENV["AGAMA_MAINFRAME_COSPLAY"] == "1"
 
           @on_probe_callbacks = []
           @on_refresh_callbacks = []
