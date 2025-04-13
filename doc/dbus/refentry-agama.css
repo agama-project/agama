@@ -1,0 +1,14 @@
+body
+{
+  font-family: cantarell, sans-serif;
+}
+@media screen {
+  body
+  {
+    max-width: 60em;
+  }
+}
+@media screen and (min-width: 60em) {
+  /* screen larger than 60em */
+  body { margin: auto; }
+}

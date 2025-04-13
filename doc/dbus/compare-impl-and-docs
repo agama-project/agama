@@ -1,0 +1,40 @@
+#!/bin/sh
+# check that the implementation and documentation haven't diverged
+set -eu
+
+# TODO help message
+tmpdir=$1
+mkdir -p "$tmpdir"
+
+NO_COMMENTS="xmlstarlet --quiet canonic --without-comments"
+ALL_GOOD=true
+for doc_xml in org.opensuse.Agama*.doc.xml; do
+	IFACE="${doc_xml%.doc.xml}"
+	bus_xml=bus/$IFACE.bus.xml
+	doc_iface="$tmpdir"/$IFACE.doc.iface.xml
+	bus_iface="$tmpdir"/$IFACE.bus.iface.xml
+	
+	echo "Diffing $IFACE"
+	
+	${NO_COMMENTS} \
+	  "$doc_xml" \
+	  > "$doc_iface"
+
+	xmlstarlet ed \
+      -d "//interface[@name!='$IFACE']" \
+      "$bus_xml" \
+      | ${NO_COMMENTS} - \
+	  > "$bus_iface"
+
+	# using ALL_GOOD means show diffs for all interfaces, not only the first one
+	diff --ignore-blank-lines --ignore-trailing-space -u "$doc_iface" "$bus_iface" || ALL_GOOD=false
+done
+
+if $ALL_GOOD; then
+	echo "NO DIFF, YAY"
+else
+	echo "error: In the above diff, ignore the whitespace changes."
+	echo "error: Observe the API changes and make sure they are documented in *.doc.xml"
+	# fail the check
+	false
+fi
